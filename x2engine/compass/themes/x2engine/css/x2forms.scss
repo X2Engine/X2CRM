@@ -1,0 +1,874 @@
+/*****************************************************************************************
+ * X2Engine Open Source Edition is a customer relationship management program developed by
+ * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
+ * 
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU Affero General Public License version 3 as published by the
+ * Free Software Foundation with the addition of the following permission added
+ * to Section 15 as permitted in Section 7(a): FOR ANY PART OF THE COVERED WORK
+ * IN WHICH THE COPYRIGHT IS OWNED BY X2ENGINE, X2ENGINE DISCLAIMS THE WARRANTY
+ * OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
+ * 
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.  See the GNU Affero General Public License for more
+ * details.
+ * 
+ * You should have received a copy of the GNU Affero General Public License along with
+ * this program; if not, see http://www.gnu.org/licenses or write to the Free
+ * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301 USA.
+ * 
+ * You can contact X2Engine, Inc. P.O. Box 66752, Scotts Valley,
+ * California 95067, USA. or at email address contact@x2engine.com.
+ * 
+ * The interactive user interfaces in modified source and object code versions
+ * of this program must display Appropriate Legal Notices, as required under
+ * Section 5 of the GNU Affero General Public License version 3.
+ * 
+ * In accordance with Section 7(b) of the GNU Affero General Public License version 3,
+ * these Appropriate Legal Notices must retain the display of the "Powered by
+ * X2Engine" logo. If the display of the logo is not reasonably feasible for
+ * technical reasons, the Appropriate Legal Notices must display the words
+ * "Powered by X2Engine".
+ *****************************************************************************************/
+@import "standards";
+
+h2 .x2-button {
+    margin: 0 0 0 5px;
+}
+
+div.x2-layout {
+    width: auto;
+    margin-bottom: 5px;
+    overflow: hidden;
+    border: 1px solid #ccc;
+    background: #fafafa;
+    -moz-border-radius: 4px;
+    -o-border-radius: 4px;
+    -webkit-border-radius: 4px;
+    border-radius: 4px;
+    /*  -moz-box-shadow:    0 1px 6px rgba(0,0,0,0.5);
+    -webkit-box-shadow:   0 1px 6px rgba(0,0,0,0.5);
+    box-shadow:       0 1px 6px rgba(0,0,0,0.5); */
+}
+
+/* #main-column.half-width {border-right:1px solid #aaa;margin-right:-1px;} */
+/* .history.half-width {box-sizing:border-box;border-left:1px solid #aaa;} */
+
+#main-column {
+    margin-top: 5px;
+    > {
+    div, form {
+        margin: 0 0px 5px 0px;
+    }
+    }
+}
+
+.history {
+    padding: 0 5px;
+}
+
+#main-column > div.page-title-fixed-outer {
+    margin: 0 0 5px 0;
+    /* padding-right:7px; */
+}
+
+div {
+    &.x2-layout {
+    a {
+        text-decoration: none;
+        &:hover {
+            text-decoration: underline;
+        }
+    }
+    .formSection {
+        /* background:#fff; */
+        overflow: hidden;
+        /* disable */
+        /*border-top:1px solid #333;*/
+        &:first-child {
+        border-top: none;
+        }
+    }
+    .tableWrapper {
+        /*margin-left:16px;*/
+        width: auto;
+        /*border-left:1px solid #aaa;*/
+        border-top: 1px solid #ccc;
+        margin-bottom: -1px;
+        margin-right: -1px;
+        &.noTitle {
+        border-top: none;
+        }
+    }
+    .formSection {
+        &:first-child {
+            @include border-radius(3px 0 0 0)
+        }
+        &:last-child {
+            @include border-radius(0 0 0 3px)
+        }
+    }
+    .formSectionHeader {
+        /*float:left;*/
+        display: block;
+        /*background: black;*/
+        height: 16px;
+        border-top: 1px solid #ccc;
+        // @include border-radius(4px 4px 0 0);
+    }
+    .formSection:first-child .formSectionHeader {
+        border-top: none;
+    }
+    .showSection .formSectionHeader {
+        display: block;
+        /*width:15px;*/
+    }
+    .formSectionHeader a {
+
+        .fa {
+            width: 15px;
+        }
+
+        display: none;
+        float: left;
+        /* margin-right:1px; */
+        /*width:16px;*/
+        font-size: 12px;
+        font-style: normal;
+        text-decoration: none;
+        text-align: center;
+        /* margin-bottom:-5px; */
+    }
+    .sectionTitle {
+        /*filter: progid:DXImageTransform.Microsoft.Matrix(sizingMethod='auto expand',M11=0.0, M12=1.0, M21=-1.0, M22=0.0); /* IE6, IE7 */
+        margin-left: 2px;
+        display: inline-block;
+        white-space: nowrap;
+        padding-right: 5px;
+        color: #000;
+        font-weight: normal;
+        font-style: italic;
+        font-size: 11px;
+    }
+    }
+    padding-right: 0;
+}
+
+/* Form Sections */
+
+/* div.x2-layout .formSection hr {height:1px;margin:-1px 0 0 0;position:relative;background-color:#999;border-color:#999;} */
+
+.x2-layout .collapsible .sectionTitle {
+    padding-right: 0;
+}
+
+div.x2-layout .showSection .sectionTitle {
+    height: 15px;
+    /*-webkit-transform-origin: top left;
+    -moz-transform-origin:    top left;
+    -o-transform-origin:    top left;
+    -ms-transform-origin:   top left;
+    transform-origin:     top left;*/
+    /*-webkit-transform:  rotate(270deg) translate(-100%,0);
+    -moz-transform:   rotate(270deg) translate(-100%,0);
+    -o-transform:   rotate(270deg) translate(-100%,0);
+    -ms-transform:    rotate(270deg) translate(-100%,0);
+    transform:      rotate(270deg) translate(-100%,0);*/
+}
+
+.lt-ie9 div.x2-layout .showSection .sectionTitle {
+    filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=3);
+}
+
+div.x2-layout {
+    .formSection {
+    a {
+        &.formSectionShow, &.formSectionHide {
+        display: block;
+        margin-left: 2px;
+        margin-top: 2px;
+        opacity: 0.6;
+        height: 2px;
+        }
+        &.formSectionShow img {
+        height: 9px;
+        }
+        &.formSectionHide img {
+        height: 7px;
+        }
+        &.formSectionShow {
+        display: block;
+        margin-left: 2px;
+        }
+        &.formSectionHide {
+        display: none;
+        margin-left: 2px;
+        }
+    }
+    &.showSection a {
+        &.formSectionShow {
+        display: none !important;
+        float: left;
+        margin-left: 2px;
+        }
+        &.formSectionHide {
+        display: block !important;
+        float: left;
+        margin-left: 2px;
+        }
+    }
+    table {
+        position: relative;
+        /* margin:-1px 0 0 0; */
+        /*  border:1px solid #999;
+        border-width:1px 0 0 0; */
+        border-collapse: separate;
+    }
+    &:last-child table {
+        margin-bottom: -1px;
+    }
+    }
+    td {
+    overflow: hidden;
+    /* disable */
+    margin: 0;
+    padding: 0;
+    vertical-align: top;
+    border-right: 1px solid #ccc;
+    /* border-bottom:1px solid #999; */
+    /* background:#eee; */
+    &:last-child {
+        border-right: none !important;
+    }
+    }
+    .formItem {
+    /* set field width in this element */
+    /* position:relative; */
+    float: left;
+    /* white-space:nowrap; */
+    overflow: hidden;
+    /* disable */
+    margin-left: -1px;
+    margin-right: -1000px;
+    /* css voodoo: row extends all the way across */
+    padding-right: 1000px;
+    /* and doesnt' mess up the flow */
+    border: 1px solid #ccc;
+    border-width: 0 0 1px 1px;
+    &.multiLine {
+        overflow: hidden;
+    }
+    &.checkBox {
+        width: auto;
+    }
+    }
+    &.form-view .formItem {
+    border-width: 0 0 0;
+    }
+    .formItem {
+    label {
+        display: block;
+        font-size: 10px;
+        color: #666;
+        background: #eee;
+    }
+    &.noLabel label, &.inlineLabel label {
+        display: none;
+    }
+    &.topLabel label {
+        padding: 2px;
+        margin-right: -1002px;
+        /* css voodoo: label extends all the way across */
+        padding-right: 1000px;
+        /* and doesnt' mess up the flow */
+        border-bottom: 1px solid #ccc;
+    }
+    &.leftLabel label {
+        float: left;
+        padding: 3px 5px;
+        /* height:20px; */
+        padding-bottom: 2003px;
+        /* equal height columns hack */
+        margin-bottom: -2000px;
+        /* disable */
+        text-align: right;
+        width: 70px;
+        /* 69 */
+        vertical-align: middle;
+        /* border:1px solid #ccc;
+        border-right:none; */
+        border-right: 1px solid #ccc;
+    }
+    &.multiLine.leftLabel label {
+        padding-bottom: 2003px;
+        margin-bottom: -2000px;
+    }
+    label.groupLabel {
+        background: none;
+        display: inline;
+        margin-left: 5px;
+    }
+    }
+    input[type='checkbox'] {
+    height: 11px;
+    }
+    .formInputBox {
+    float: left;
+    /* disable */
+    /* width:auto; */
+    /* margin-left:80px; */
+    margin-right: 1px;
+    padding: 3px;
+    /* padding:0 10px 0 0; */
+    padding-bottom: 503px;
+    /* equal height columns hack */
+    margin-bottom: -500px;
+    /* disable */
+    /* margin-bottom:3px; */
+    font-weight: bold;
+    input, &.textBox {
+        font-weight: normal;
+    }
+    .checkboxWrapper {
+        display: inline-block;
+        vertical-align: middle;
+        height: 18px;
+        padding: 4px 0 0 4px;
+        /* height: 20px;
+        padding: 6px 6px 0 6px;
+        background: white;
+        border: 1px solid #CCC;
+        border-radius: 0 3px 3px 0; */
+    }
+    }
+    .formItem {
+    input[type="text"], textarea {
+        -webkit-appearance: none;
+        height: 22px;
+        width: 100% !important;
+        box-sizing: border-box;
+        /* disable */
+        -webkit-box-sizing: border-box;
+        -moz-box-sizing: border-box;
+        /* box-shadow: inset 0 1px 2px 0 rgba(0, 0, 0, 0.15); */
+        border: 1px solid #aaa;
+        /* border:1px solid #ccc; */
+        font-size: 12px;
+        font-family: Arial, Helvetica, sans-serif;
+        -moz-border-radius: 3px;
+        -o-border-radius: 3px;
+        -webkit-border-radius: 3px;
+        border-radius: 3px;
+        /*  -moz-border-radius:   0 3px 3px 0;
+        -o-border-radius:   0 3px 3px 0;
+        -webkit-border-radius:  0 3px 3px 0;
+        border-radius:      0 3px 3px 0; */
+        background: #fff;
+    }
+    }
+}
+
+/* div.x2-layout.form-view .formSectionHeader {border-top:1px solid #999;} */
+
+input[type="text"].record-name-autocomplete {
+    -webkit-appearance: none;
+    height: 22px;
+    width: 100% !important;
+    box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    border: 1px solid #aaa;
+    font-size: 12px;
+    font-family: Arial, Helvetica, sans-serif;
+    @include border-radius(3px);
+    background: #fff;
+}
+
+div.x2-layout {
+    .formItem .placeholder {
+    color: #aaa;
+    }
+    .formInputBox {
+    input {
+        margin: 0;
+        padding: 2px;
+        &[type="text"] {
+        width: 100%;
+        }
+    }
+    textarea {
+        padding: 2px;
+    }
+    select {
+        width: 100%;
+    }
+    input.input-percentage {
+        background: white url(../images/formEditor/percentage.gif) no-repeat 95%;
+    }
+    }
+    .tableWrapper .grid-view table.items {
+    clear: none;
+    margin-top: 0;
+    border: none;
+    }
+    div.error label, label.error, span.error {
+    color: #C00;
+    }
+    div.error {
+    input, textarea, select {
+        background: #FEE !important;
+        border-color: #C00 !important;
+    }
+    }
+    input.error, textarea.error, select.error {
+    background: #FEE !important;
+    border-color: #C00 !important;
+    }
+    .errorSummary {
+    background: #FEE;
+    border: 2px solid #C00;
+    font-size: 0.9em;
+    padding: 5px;
+    margin-bottom: 1px;
+    }
+    .errorMessage {
+    color: red;
+    font-size: 0.9em;
+    }
+    .errorSummary {
+    p {
+        margin: 0;
+        padding: 5px;
+    }
+    ul {
+        margin: 0;
+        padding: 0 0 0 20px;
+    }
+    }
+    &.editMode {
+    td {
+        border: 1px dashed #f00;
+        border-width: 1px 1px 1px 0;
+    }
+    .formSectionHeader {
+        width: 100%;
+        background: #fff;
+        float: none;
+        a {
+        display: inline;
+        float: right;
+        width: auto;
+        margin: 0 5px;
+        }
+    }
+    .showSection .formSectionHeader a.formSectionShow {
+        display: none;
+    }
+    .formSectionHeader {
+        a.formSectionHide {
+        display: none;
+        }
+        .formSectionShow, .formSectionHide {
+        float: left;
+        }
+    }
+    .showSection .sectionTitle {
+        -webkit-transform: none;
+        -moz-transform: none;
+        -o-transform: none;
+        -ms-transform: none;
+        transform: none;
+    }
+    }
+}
+
+/* div.form div.success input,div.form div.success textarea,div.form div.success select,div.form input.success,div.form textarea.success,div.form select.success {
+    background:#E6EFC2;
+    border-color:#C6D880;
+} */
+
+/* Editor CSS Begins Here */
+
+.lt-ie9 div.x2-layout.editMode .showSection .sectionTitle {
+    filter: none;
+}
+
+div.x2-layout.editMode {
+    .formTabOrder {
+    display: none;
+    top: 0;
+    right: 0;
+    position: absolute;
+    z-index: 10;
+    height: 15px;
+    width: 24px;
+    background: #990000;
+    font-size: 11px;
+    text-align: center;
+    color: #fff;
+    -moz-border-radius: 0 1px 0 4px;
+    -o-border-radius: 0 1px 0 4px;
+    -webkit-border-radius: 0 1px 0 4px;
+    border-radius: 0 1px 0 4px;
+    }
+    .formItem {
+    &.selected {
+        background: #90bede;
+        label, input, textarea {
+        border-color: #64879f;
+        background: #90bede;
+        }
+    }
+    &.ui-sortable-helper {
+        margin-right: 0;
+        padding-right: 5px;
+        border: 1px solid #ccc;
+        -moz-border-radius: 4px;
+        -o-border-radius: 4px;
+        -webkit-border-radius: 4px;
+        border-radius: 4px;
+    }
+    }
+    .formItemPlaceholder {
+    float: left;
+    margin: 2px 3px;
+    width: 3px;
+    height: 24px;
+    background: #66f0ff;
+    }
+    .formSectionPlaceholder {
+    width: auto;
+    height: 3px;
+    background: #66f0ff;
+    }
+    .formSortable {
+    min-height: 30px;
+    overflow: auto;
+    }
+    .formItem {
+    margin: 0;
+    padding: 0;
+    margin-right: 0;
+    padding-right: 0px;
+    label.topLabel {
+        padding: 2px;
+        margin: 0;
+    }
+    }
+    label.leftLabel {
+    /* margin:0;
+    padding:3px 5px;
+    margin-bottom:0; */
+    }
+    .formInputBox {
+    margin: 0;
+    padding: 3px;
+    margin-bottom: 0;
+    }
+}
+
+#formEditorControls, #fieldListTitle, .fieldListTitle {
+    font-size: 12px;
+    display: block;
+    padding: 5px 5px;
+    border-bottom: 1px solid #666;
+    background: #eee;
+    -moz-border-radius: 4px 4px 0 0;
+    -o-border-radius: 4px 4px 0 0;
+    -webkit-border-radius: 4px 4px 0 0;
+    border-radius: 4px 4px 0 0;
+}
+
+#formEditorControls {
+    /* display:none; */
+    position: relative;
+    z-index: 2;
+    clip: rect(0px, 1000px, 1000px, 0px);
+    margin-bottom: -1px;
+    -moz-box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.75);
+    -webkit-box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.75);
+    box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.75);
+}
+
+div.x2-layout.editMode #formEditorControls {
+    margin-bottom: 0;
+}
+
+#formEditorControls {
+    a.x2-button {
+    margin-bottom: 0;
+    }
+    .formItemOptions {
+    float: right;
+    margin: 0 5px 0 0;
+    display: none;
+    input {
+        width: 13px;
+        height: 13px;
+        padding: 0;
+        margin: 0 10px 0 3px;
+        vertical-align: bottom;
+        position: relative;
+        top: -3px;
+        *overflow: hidden;
+    }
+    select {
+        font-size: 11px;
+        margin: 0;
+        padding: 0;
+    }
+    }
+}
+
+#fieldListBox {
+    margin: 0 0 10px 0;
+    float: right;
+    clear: right;
+    width: 200px;
+    border: 1px solid #ccc;
+    -moz-border-radius: 4px;
+    -o-border-radius: 4px;
+    -webkit-border-radius: 4px;
+    border-radius: 4px;
+}
+
+#editorFieldList {
+    height: 400px;
+    padding: 5px;
+    overflow-y: scroll;
+    .formItem {
+    float: none;
+    margin: 0 2px 2px 0;
+    padding: 4px;
+    border: 1px solid #ccc;
+    -moz-border-radius: 4px;
+    -o-border-radius: 4px;
+    -webkit-border-radius: 4px;
+    border-radius: 4px;
+    background: #fafafa;
+    }
+    .formItemPlaceholder, .formInputBox {
+    display: none;
+    }
+    label {
+    color: #000;
+    padding: 1px 5px 1px 20px;
+    font-size: 12px;
+    font-weight: normal;
+    &.emailIcon {
+        background: url(../images/formEditor/email_icon.gif) 2px 0px no-repeat transparent;
+    }
+    }
+}
+
+/* Individual form field box  */
+
+ul.fieldlist li label.emailIcon {
+    background: url(../images/formEditor/email_icon.gif) 2px 0px no-repeat transparent;
+}
+
+#editorFieldList label.phoneIcon, ul.fieldlist li label.phoneIcon {
+    background: url(../images/formEditor/phone_icon.gif) 2px 0px no-repeat transparent;
+}
+
+#editorFieldList label.booleanIcon, ul.fieldlist li label.booleanIcon {
+    background: url(../images/formEditor/boolean_icon.gif) 2px 0px no-repeat transparent;
+}
+
+#editorFieldList label.dropdownIcon, ul.fieldlist li label.dropdownIcon {
+    background: url(../images/formEditor/dropdown_icon.gif) 2px 0px no-repeat transparent;
+}
+
+#editorFieldList label.dateIcon, ul.fieldlist li label.dateIcon {
+    background: url(../images/formEditor/date_icon.gif) 2px 0px no-repeat transparent;
+}
+
+#editorFieldList label.textIcon, ul.fieldlist li label.textIcon {
+    background: url(../images/formEditor/text_icon.gif) 2px 0px no-repeat transparent;
+}
+
+#editorFieldList label.varcharIcon, ul.fieldlist li label.varcharIcon {
+    background: url(../images/formEditor/varchar_icon.gif) 2px 0px no-repeat transparent;
+}
+
+#editorFieldList label.percentageIcon, ul.fieldlist li label.percentageIcon {
+    background: url(../images/formEditor/percentage_icon.gif) 2px 0px no-repeat transparent;
+}
+
+/* Tab Order Mode */
+
+#formEditor.tabOrderMode .formTabOrder {
+    display: block;
+}
+
+.quick-create-button {
+    &:hover {
+    color: #699c1c;
+    }
+    font-size: 24px;
+    font-weight: bold;
+    vertical-align: middle;
+    color: #82C71A;
+    display: inline-block;
+    cursor: pointer;
+}
+
+/* Custom CSS for Jquery UI Autocomplete */
+
+.ui-autocomplete {
+    max-height: 200px;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+/* Headers for sections within admin pages when the header is not a form input label: */
+
+span.mock-x2-form-label {
+    display: block;
+    font-size: 11px;
+    font-weight: bold;
+}
+
+/* Cron-related form items: */
+
+div.cron-job {
+    label.cron-checkitem {
+    display: inline-block;
+    &.big {
+        font-size: 1.3em;
+    }
+    }
+    input.cron-enabled {
+    display: inline-block;
+    }
+}
+
+.x2-forms-error-msg {
+    color: red;
+}
+
+/***********************************************************************
+* publish half width style  
+* Repeated 3 times:
+*   -once for browsers which don't support media queries
+*   -two more times for the cases where the right widgets are shown/hidden
+***********************************************************************/
+
+.history.half-width {
+    width: 35%;
+    margin-top: 5px;
+}
+
+div.half-width {
+    width: 65%;
+    float: left;
+}
+
+.history.half-width {
+    padding: 0;
+    > {
+    div, form {
+        margin: 0 0px 5px 0;
+    }
+    }
+}
+
+#main-column.half-width > div.page-title-fixed-outer {
+    padding-right: 10px;
+}
+
+/* .history.half-width > div, .history.half-width > form {padding-right:10px;margin-right:-10px;} */
+
+div.half-width > div.page-title, #main-column > div.page-title {
+    margin-left: 0;
+}
+
+div.half-width > div.form {
+    background: #fff;
+}
+
+#main-column.half-width > {
+    div, form {
+    margin: 0 5px 5px 0px;
+    }
+}
+
+@media (min-width: 1403px) {
+    .history {
+    width: 35%;
+    margin-top: 5px;
+    }
+    #main-column {
+    width: 65%;
+    float: left;
+    }
+    .history {
+    padding: 0;
+    > {
+        div, form {
+        margin: 0 0px 5px 0;
+        }
+    }
+    }
+    #main-column > {
+    div {
+        &.page-title-fixed-outer {
+        padding-right: 10px;
+        }
+        &.page-title {
+        margin-left: 0;
+        }
+        &.form {
+        background: #fff;
+        }
+        margin: 0 5px 5px 0px;
+    }
+    form {
+        margin: 0 5px 5px 0px;
+    }
+    }
+}
+
+@media (min-width: 1122px) {
+    .no-widgets {
+    .history {
+        width: 35%;
+        margin-top: 5px;
+    }
+    #main-column {
+        width: 65%;
+        float: left;
+    }
+    .history {
+        padding: 0;
+        > {
+        div, form {
+            margin: 0 0px 5px 0;
+        }
+        }
+    }
+    #main-column > {
+        div {
+        &.page-title-fixed-outer {
+            padding-right: 10px;
+        }
+        &.page-title {
+            margin-left: 0;
+        }
+        &.form {
+            background: #fff;
+        }
+        margin: 0 5px 5px 0px;
+        }
+        form {
+        margin: 0 5px 5px 0px;
+        }
+    }
+    }
+}
+
+#upload_iframe {
+    position: absolute;
+}

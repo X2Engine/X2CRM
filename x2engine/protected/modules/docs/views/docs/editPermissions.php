@@ -39,27 +39,22 @@ $user = Yii::app()->user->getName();
 
 $authParams['X2Model']=$model;
 
-$this->actionMenu = $this->formatMenu(array(
-	array('label'=>Yii::t('docs','List Docs'), 'url'=>array('index')),
-	array('label'=>Yii::t('docs','Create Doc'), 'url'=>array('create')),
-	array('label'=>Yii::t('docs','Create Email'), 'url'=>array('createEmail')),
-	array('label'=>Yii::t('docs','Create Quote'), 'url'=>array('createQuote')),
-	array('label'=>Yii::t('docs','View'), 'url'=>array('view','id'=>$model->id)),
-    array('label'=>Yii::t('docs','Edit Doc'), 'url'=>array('update', 'id'=>$model->id)),
-    array('label'=>Yii::t('docs','Delete Doc'), 'url'=>'#', 'linkOptions'=>array('submit'=>array('delete','id'=>$model->id),'confirm'=>Yii::t('docs','Are you sure you want to delete this item?')))
-),$authParams);
+$menuOptions = array(
+    'index', 'create', 'createEmail', 'createQuote', 'view', 'edit', 'delete',
+    'exportToHtml', 'permissions',
+);
+$this->insertMenu($menuOptions, $model, $authParams);
 
 
-if(array_search($user,$pieces)!=false || $user==$model->editPermissions || $user=='admin' || $user==$model->createdBy)
-	$this->actionMenu[]=array('label'=>Yii::t('docs','Edit Doc Permissions'));
-	
-$this->actionMenu[] = array('label'=>Yii::t('docs','Export Doc'),'url'=>array('exportToHtml','id'=>$model->id));
-	
 $form=$this->beginWidget('CActiveForm', array(
 	'id'=>'docs-form',
 	'enableAjaxValidation'=>false,
 ));?>
-<div class="page-title icon docs"><h2><?php echo Yii::t('docs','Edit Doc Permissions');?></h2></div>
+<div class="page-title icon docs"><h2>
+    <?php echo Yii::t('docs','Edit {module} Permissions', array(
+        '{module}' => Modules::displayName(false),
+    ));?>
+</h2></div>
 <div class="form">
 	<div class="row" style="width:500px;">
 		<?php echo Yii::t('docs','Please select which users are allowed to edit the document.  Use Control + Click to select or deselect individual users.'); ?>

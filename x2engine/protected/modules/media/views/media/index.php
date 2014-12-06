@@ -33,13 +33,11 @@
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2Engine".
  *****************************************************************************************/
-?>
 
-<?php
-$this->actionMenu = $this->formatMenu(array(
-	array('label'=>Yii::t('media', 'All Media')),
-	array('label'=>Yii::t('media', 'Upload'), 'url'=>array('upload')),
-));
+$menuOptions = array(
+    'index', 'upload',
+);
+$this->insertMenu($menuOptions);
 
 // init qtip for media filenames
 Yii::app()->clientScript->registerScript('media-qtip', '

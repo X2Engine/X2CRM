@@ -1,0 +1,92 @@
+/* line 2, ../../../../../compass/sass/protected/modules/charts/assets/css/charts.scss */
+/* line 4, ../../../../../compass/sass/protected/modules/charts/assets/css/charts.scss */
+
+div {
+  &.x2-chart-container-large {
+    width: 100%;
+    height: 600px;
+  }
+  &.x2-chart-container {
+    width: 100%;
+    height: 300px;
+  }
+  &.x2-chart-container-controls {
+    width: 100%;
+  }
+  &.x2-chart-container-left {
+    width: 45%;
+    float: left;
+    height: 300px;
+  }
+  &.x2-chart-container-right {
+    width: 45%;
+    float: right;
+    height: 300px;
+  }
+  &.x2-chart-container-center {
+    width: 100%;
+    margin: 0px auto;
+    height: 450px;
+  }
+  &.x2-chart-container-center-large {
+    width: 100%;
+    margin: 0px auto;
+    height: 600px;
+    max-width: 700px;
+  }
+  &.x2-chart-container-center-large-pie {
+    width: 100%;
+    margin: 0px auto;
+    height: 400px;
+    max-width: 440px;
+  }
+}
+
+/* line 8, ../../../../../compass/sass/protected/modules/charts/assets/css/charts.scss */
+
+/* line 12, ../../../../../compass/sass/protected/modules/charts/assets/css/charts.scss */
+
+/* line 15, ../../../../../compass/sass/protected/modules/charts/assets/css/charts.scss */
+
+/* line 20, ../../../../../compass/sass/protected/modules/charts/assets/css/charts.scss */
+
+/* line 25, ../../../../../compass/sass/protected/modules/charts/assets/css/charts.scss */
+
+/* line 30, ../../../../../compass/sass/protected/modules/charts/assets/css/charts.scss */
+
+/* line 36, ../../../../../compass/sass/protected/modules/charts/assets/css/charts.scss */
+
+/* line 6, ../../../../../compass/sass/protected/modules/charts/assets/css/charts.scss */
+/* line 10, ../../../../../compass/sass/protected/modules/charts/assets/css/charts.scss */
+/* line 13, ../../../../../compass/sass/protected/modules/charts/assets/css/charts.scss */
+/* line 18, ../../../../../compass/sass/protected/modules/charts/assets/css/charts.scss */
+/* line 23, ../../../../../compass/sass/protected/modules/charts/assets/css/charts.scss */
+/* line 28, ../../../../../compass/sass/protected/modules/charts/assets/css/charts.scss */
+/* line 34, ../../../../../compass/sass/protected/modules/charts/assets/css/charts.scss */
+/* line 42, ../../../../../compass/sass/protected/modules/charts/assets/css/charts.scss */
+/* line 60, ../../../../../compass/sass/protected/modules/charts/assets/css/charts.scss */
+
+.x2-chart {
+  text-align: left;
+  width: 100%;
+  height: 100%;
+}
+
+/* line 48, ../../../../../compass/sass/protected/modules/charts/assets/css/charts.scss */
+/* line 68, ../../../../../compass/sass/protected/modules/charts/assets/css/charts.scss */
+
+p.x2-chart-separator {
+  clear: both;
+}
+
+/* line 53, ../../../../../compass/sass/protected/modules/charts/assets/css/charts.scss */
+/* line 75, ../../../../../compass/sass/protected/modules/charts/assets/css/charts.scss */
+
+div.x2-chart-control {
+  LABEL, SPAN, INPUT {
+    display: inline !important;
+    width: auto !important;
+    height: 20px !important;
+    font-size: 14px !important;
+  }
+}

@@ -1,0 +1,622 @@
+/*****************************************************************************************
+ * X2Engine Open Source Edition is a customer relationship management program developed by
+ * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
+ * 
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU Affero General Public License version 3 as published by the
+ * Free Software Foundation with the addition of the following permission added
+ * to Section 15 as permitted in Section 7(a): FOR ANY PART OF THE COVERED WORK
+ * IN WHICH THE COPYRIGHT IS OWNED BY X2ENGINE, X2ENGINE DISCLAIMS THE WARRANTY
+ * OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
+ * 
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.  See the GNU Affero General Public License for more
+ * details.
+ * 
+ * You should have received a copy of the GNU Affero General Public License along with
+ * this program; if not, see http://www.gnu.org/licenses or write to the Free
+ * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301 USA.
+ * 
+ * You can contact X2Engine, Inc. P.O. Box 66752, Scotts Valley,
+ * California 95067, USA. or at email address contact@x2engine.com.
+ * 
+ * The interactive user interfaces in modified source and object code versions
+ * of this program must display Appropriate Legal Notices, as required under
+ * Section 5 of the GNU Affero General Public License version 3.
+ * 
+ * In accordance with Section 7(b) of the GNU Affero General Public License version 3,
+ * these Appropriate Legal Notices must retain the display of the "Powered by
+ * X2Engine" logo. If the display of the logo is not reasonably feasible for
+ * technical reasons, the Appropriate Legal Notices must display the words
+ * "Powered by X2Engine".
+ *****************************************************************************************/
+
+ @import "colors";
+ @import "standards";
+ @import "font-awesome";
+
+.grid-view {
+    th, td {
+        box-sizing: border-box;
+    }
+}
+
+.x2-grid-view-controls-buttons > a {
+        height: 24px;
+        width: 24px;
+        line-height: 24px;
+}
+
+
+/*.grid-view-loading {background:url(loading.gif) no-repeat;}*/
+
+/**
+ * --------------- Column Selector Dropdown ---------------
+ */
+
+ul.column-selector {
+    &.x2-dropdown-list {
+        display: none;
+        overflow-y: scroll;
+    }
+    &.stuck {
+        position: absolute !important;
+        top: 75px !important;
+    }
+    max-height: 300px;
+    &.fixed-header {
+        position: fixed;
+    }
+}
+
+/**
+ * ---------------- X2GridView Widget CSS -----------------
+ */
+
+.grid-view {
+    .title-bar {
+        display: block;
+        overflow: hidden;
+    }
+    .summary {
+        display: inline-block;
+        float: right;
+        color: #555;
+    }
+    .empty {
+        font-style: italic;
+    }
+    table {
+        border: 1px solid #aaa;
+        margin: 5px 0;
+    }
+}
+
+/* .grid-view h3, .grid-view h2 {float:left;margin:0 20px 0 0;} */
+
+.x2grid-body-container .items {
+    border-bottom: 1px solid #aaa;
+}
+
+/* border-collapse:separate; */
+
+/**
+ * ------------------ X2GridView Tables -------------------
+ */
+
+.grid-view table.items {
+    table-layout: fixed;
+    background: #fff;
+    width: 100%;
+    clear: both;
+    td {
+        padding: 3px 5px;
+        border-right: 1px solid #ccc;
+        /* border-top:1px solid #dbdad3 */
+        /* rgb(196,214,235) */
+        overflow: hidden;
+        white-space: nowrap;
+        word-wrap: normal;
+    }
+    th {
+        padding: 3px 5px;
+        border-right: 1px solid #ccc;
+        /* border-top:1px solid #dbdad3 */
+        /* rgb(196,214,235) */
+        overflow: hidden;
+        white-space: nowrap;
+        word-wrap: normal;
+        &:first-child {
+            border-left: none;
+            padding-left: 1px;
+            text-indent: -1px;
+        }
+    }
+    td:last-child, th:last-child {
+        border-right: none !important;
+    }
+    thead th {
+        line-height: 25px;
+        padding: 0;
+        /*border-left:1px solid #e6e6e6;*/
+        border-right-color: #b3b3b3;
+        border-bottom: 1px solid #b3b3b3;
+        color: #333;
+        text-align: center;
+        font-size: 11px;
+        font-weight: bold;
+        -webkit-appearance: none;
+        cursor: default;
+        background: #ddd;
+        /*background:-moz-linear-gradient(top,  #e0e0e0 0%, #ccc 100%);
+        background:-webkit-linear-gradient(top, #e0e0e0 0%, #ccc 100%);
+        background:-o-linear-gradient(top,      #e0e0e0 0%, #ccc 100%);
+        background:-ms-linear-gradient(top,     #e0e0e0 0%, #ccc 100%);
+        background:linear-gradient(to bottom,   #e0e0e0 0%, #ccc 100%);*/
+    }
+    th {
+        a {
+            display: block;
+            color: #333;
+            font-size: 11px;
+            text-decoration: none;
+        }
+        &:hover {
+            /* background-color:#f8f8f8; */
+        }
+    }
+    td a {
+        text-decoration: none;
+        &:hover {
+            text-decoration: underline;
+        }
+    }
+}
+
+/* .grid-view table.items thead td {border-top-color:#666;} */
+
+/* .grid-view table.items thead tr:hover {
+    background:none;
+} */
+
+/*
+ * ------------------- Rounded Borders --------------------
+ */
+
+.gridview.boxed table.items {
+    margin-top: 5px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    -moz-border-radius: 4px;
+    -webkit-border-radius: 4px;
+    -o-border-radius: 4px;
+}
+
+/* rounded corner on top left TH cells in THEAD */
+
+.grid-view {
+    &.boxed table.items {
+        th {
+            &:first-child {
+                border-radius: 4px 0 0 0;
+                -moz-border-radius: 4px 0 0 0;
+                -webkit-border-radius: 4px 0 0 0;
+                -o-border-radius: 4px 0 0 0;
+            }
+            &:last-child {
+                border-radius: 0 4px 0 0;
+                -moz-border-radius: 0 4px 0 0;
+                -webkit-border-radius: 0 4px 0 0;
+                -o-border-radius: 0 4px 0 0;
+            }
+        }
+        tr {
+            th:first-child, td:first-child {
+                /* border-left:none; */
+            }
+            &:first-child th {
+                border-top: none;
+            }
+        }
+        tbody tr:last-child td {
+            /* border-bottom-width:1px; */
+            &:first-child {
+                border-radius: 0 0 0 4px;
+                -moz-border-radius: 0 0 0 4px;
+                -webkit-border-radius: 0 0 0 4px;
+                -o-border-radius: 0 0 0 4px;
+            }
+            &:last-child {
+                border-radius: 0 0 4px 0;
+                -moz-border-radius: 0 0 4px 0;
+                -webkit-border-radius: 0 0 4px 0;
+                -o-border-radius: 0 0 4px 0;
+            }
+        }
+    }
+    table.items {
+        tr {
+            &.odd {
+                background: #F5F4DE;
+                /* #dce7f0; */
+                /* #dce7f0; */
+                /* background:#f7f6f0; */
+            }
+            &.unviewed td {
+                background: #eef0ff;
+                font-weight: bold;
+            }
+            &.filters {
+                background: #fff;
+                td {
+                    padding: 0;
+                    border: solid #b3b3b3;
+                    border-width: 0 1px 1px 0;
+                    border-bottom-color: #b3b3b3;
+                    border-right-color: #b3b3b3;
+                    background: #d8d8d8;
+                }
+                input, select {
+                    width: 100%;
+                    box-sizing: border-box;
+                    margin: 0;
+                    padding: 2px 4px;
+                    border: none;
+                    border-radius: 0;
+                }
+            }
+        }
+        th {
+            &.asc, &.desc {
+                // border-color: #3577d1;
+                @include dark-border($lightBlue);
+                // border-left-color: #79b4ff;
+                background: $lightBlue;
+            }
+
+            &.asc a, &.desc a {
+                color: #fff;
+                text-shadow: 0 0 2px rgba(0, 0, 0, 0.25);
+            }
+            
+            &.asc a {
+                @include fa-icon("caret-down", "after") {
+                    margin-left: 10px;
+                };
+            }
+
+            &.desc a {
+                @include fa-icon("caret-up", "after") {
+                    margin-left: 10px;
+                }
+            }
+        }
+    }
+    div {
+        &.x2grid-header-container {
+            overflow: hidden;
+            position: relative;
+            /* border-bottom:1px solid #666; */
+        }
+        &.x2grid-body-container {
+            overflow-x: auto;
+            overflow-y: hidden;
+            /* border-top:1px solid #666; */
+            /*  overflow-y:scroll;
+                max-height:710px; */
+        }
+    }
+    table.items.x2grid-resizable {
+        border-collapse: separate;
+        margin-top: 0;
+        border: none;
+        margin-bottom: 0;
+    }
+    .x2grid-body-container table.items.x2grid-resizable {
+        border-left: none;
+        border-right: none;
+        border-top: none;
+        border-bottom: 1px solid #D5D5D5;
+    }
+    table.items.x2grid-resizable tr:first-child td {
+        border-top: none;
+    }
+}
+
+/* rounded corner on top right TH cells in THEAD */
+
+/* left border on all left TD cells */
+
+/* top border on all left TD cells */
+
+/* bottom border on all bottom TD cells in TBODY */
+
+/* rounded corner on bottom left TD cells in TBODY */
+
+/* rounded corner on bottom right TD cells in TBODY */
+
+/*
+ * ---------------- Special Row Formatting ----------------
+ */
+
+/*
+ * ----------------------- Filters ------------------------
+ */
+
+/**
+ * -------------------- Column Sorting --------------------
+ */
+
+/**
+ * ------------- 2-part tables (fixed header) -------------
+ */
+
+/* .grid-view div.x2grid-header-container table.items tr.filters td {border-bottom:none;} */
+
+/**
+ * ------------------- x2.gridResizing --------------------
+ */
+
+                                                                /* .grid-view table.items.x2grid-resizable td.hover {
+    overflow:visible;
+    display:block;
+    position:absolute;
+    padding:6px 8px 6px 5px !important;
+    z-index:3;
+    border-right:1px solid #d3d3cc/* rgb(196,214,235) * /;
+} */
+/* .grid-view table.items.x2grid-resizable td div {white-space:nowrap;overflow:hidden;} */
+
+.x2grid-grips {
+    height: 0px;
+    position: relative;
+    div {
+        position: absolute;
+        top: 1px;
+        width: 9px;
+        margin-left: -9px;
+        z-index: 2;
+        cursor: col-resize;
+        /* background:rgba(255,0,0,0.2); */
+    }
+}
+
+/**
+ * ------------------ x2.gridColDragging ------------------
+ */
+
+.grid-view {
+    table.items {
+        &.x2grid-helper {
+            thead th {
+                height: 25px;
+                border: 1px solid #ccc;
+                border-width: 0 1px;
+                opacity: 0.75;
+                cursor: move;
+            }
+            a {
+                cursor: move;
+            }
+            td {
+                padding: 5px 5px;
+            }
+        }
+        td.spacer {
+            /* padding:0 !important; */
+            border-left: none !important;
+            border-right: none !important;
+            -moz-box-shadow: inset -1px 0 0 #999;
+            /* since IE has too many chromosomes, let's simulate a border! */
+            -webkit-box-shadow: inset -1px 0 0 #999;
+            box-shadow: inset -1px 0 0 #999;
+        }
+        th.spacer {
+            /* padding:0 !important; */
+            border-left: none !important;
+            border-right: none !important;
+            -moz-box-shadow: inset -1px 0 0 #999;
+            /* since IE has too many chromosomes, let's simulate a border! */
+            -webkit-box-shadow: inset -1px 0 0 #999;
+            box-shadow: inset -1px 0 0 #999;
+            &:first-child {
+                padding-left: 0;
+            }
+        }
+    }
+    .link-column img {
+        border: 0;
+    }
+    .button-column {
+        img {
+            border: 0;
+        }
+        text-align: center;
+    }
+    .checkbox-column {
+        text-align: center;
+    }
+    .pager {
+        border-top: 1px solid #aaa;
+        padding: 6px;
+        background: #fff;
+        margin-left: 0;
+        margin-right: 0;
+        margin-top: 1px;
+        margin-bottom: 3px;
+        text-align: right;
+        /*  border-radius:          4px 4px 4px 4px;
+            -moz-border-radius:     4px 4px 4px 4px;
+            -webkit-border-radius:  4px 4px 4px 4px;
+            -o-border-radius:       4px 4px 4px 4px; */
+        border-top: none;
+        /*float: right;*/
+    }
+}
+
+/**
+ * -------------- special column formatting ---------------
+ */
+
+/**
+ * ------------------- Pager formatting -------------------
+ */
+
+/**
+ * ------------------------- Misc -------------------------
+ */
+
+div.scrollbar-width-test {
+    height: 100px;
+    width: 100px;
+    position: absolute;
+    top: -100px;
+    left: 0;
+    overflow-x: hidden;
+    overflow-y: scroll;
+    /* visibility:hidden; */
+}
+
+.grid-view > .pager .yiiPager a {
+    padding: 2px 8px 2px 8px;
+}
+
+.yiiPager li a {
+    background: #fff;
+}
+
+/*
+loading anim
+*/
+
+.x2-gridview-updating-anim {
+    margin: auto;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    position: fixed;
+    z-index: 1000;
+    display: none;
+}
+
+.grid-view-loading .x2-gridview-updating-anim {
+    display: block !important;
+}
+
+/*
+activity indicator
+*/
+
+.grid-view {
+    .active-indicator, .inactive-indicator {
+        height: 12px;
+        display: block;
+        width: 12px;
+        text-align: center;
+        margin: auto;
+        border-radius: 9px;
+    }
+    .active-indicator {
+        background: rgb(11, 199, 11);
+        border: 1px solid rgb(162, 162, 162);
+    }
+    .inactive-indicator {
+        border: 1px solid rgb(219, 219, 219);
+        background: rgb(230, 230, 230);
+    }
+    .x2grid-body-container.x2grid-no-pager .x2grid-resizable {
+        border-bottom: none !important;
+        border-radius: 0 0 3px 3px !important;
+    }
+    table.items tr.filters select {
+        padding: 0;
+    }
+    div {
+        &.page-title .x2-grid-view-controls-buttons .x2-button,
+        &.grid-top-bar .x2-button-group .x2-button, 
+        &.page-title .x2-button-group .x2-button {
+            margin: -3px 0px 0 0;
+        }
+        &.grid-top-bar > a.x2-button, &.page-title > a.x2-button {
+            margin: -3px 5px 0 0;
+        }
+    }
+    .x2-button {
+        padding: 0 5px;
+    }
+    div {
+        &.grid-top-bar .x2-grid-view-controls-buttons, &.page-title .x2-grid-view-controls-buttons,
+        &.grid-top-bar .x2-button-group, &.page-title .x2-button-group {
+            display: inline-block;
+            margin: 0 5px 0 0;
+        }
+    }
+    .mass-action-more-button {
+        margin: -3px 5px 0 0;
+        vertical-align: middle;
+    }
+    ::-webkit-scrollbar-track:horizontal {
+        border-top: none;
+    }
+    .x2-bar {
+        width: 23px;
+        background-color: rgb(233, 233, 233);
+    }
+}
+
+/*
+Remove extra border when pager isn't shown
+*/
+
+/***********************************************************************
+* top bar buttons 
+***********************************************************************/
+
+/***********************************************************************
+* multiselect 
+***********************************************************************/
+
+.x2-datacolumn-multiselect + button {
+    width: 100% !important;
+    border: none !important;
+    padding: 0 !important;
+}
+
+.x2-gridview {
+    .x2grid-header-container .items {
+        margin-top: -1px;
+        margin-left: -1px;
+        margin-bottom: 0;
+        border-bottom: none;
+    }
+    .x2grid-body-container .items {
+        margin: 0;
+        margin-top: -1px;
+        margin-left: -1px;
+    }
+    table.items > tbody > tr > td.button-column.hide-edit-delete-buttons {
+        .update, .delete {
+            visibility: hidden;
+        }
+    }
+}
+
+/***********************************************************************
+* email client icons  
+***********************************************************************/
+
+#email-list .mailbox-controls .mailbox-back-button {
+    display: inline-block;
+    margin-top: 6px;
+    > span {
+        background: url('../../images/icons/back.png');
+        height: 24px;
+        width: 24px;
+        background-position-y: 5px;
+        background-position-x: 2px;
+        background-repeat: no-repeat;
+    }
+}

@@ -681,4 +681,26 @@ class User extends CActiveRecord {
         return $this->_fullName;
     }
 
+    public function getDisplayName ($plural=true) {
+        return Yii::t('users', '{user}', array(
+            '{user}' => Modules::displayName($plural, 'Users'),
+        ));
+    }
+
+    // check if user profile has a list to remember which calendars the user has checked
+    // if not, create the list
+    public function initCheckedCalendars() {
+        // calendar list not initialized?
+        if (is_null($this->showCalendars)) {
+            $showCalendars = array(
+                'userCalendars' => array('Anyone', $this->username),
+                'groupCalendars' => array(),
+                'sharedCalendars' => array(),
+                'googleCalendars' => array()
+            );
+            $this->showCalendars = CJSON::encode($showCalendars);
+
+            $this->update();
+        }
+    }
 }

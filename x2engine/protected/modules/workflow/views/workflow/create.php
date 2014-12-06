@@ -34,17 +34,19 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 
-$this->setPageTitle(Yii::t('workflow', 'Create Process'));
+$this->setPageTitle(Yii::t('workflow', 'Create {process}', array(
+    '{process}' => Modules::displayName(false)
+)));
 
-// $this->breadcrumbs=array(
-	// 'Workflows'=>array('index'),
-	// 'Create',
-// );
+$menuOptions = array(
+    'index', 'create',
+);
+$this->insertMenu($menuOptions);
 
-$this->actionMenu = $this->formatMenu(array(
-	array('label'=>Yii::t('workflow','All Processes'), 'url'=>array('index')),
-	array('label'=>Yii::t('app','Create')),
-));
 ?>
-<div class="page-title icon workflow"><h2><?php echo Yii::t('workflow','Create Process'); ?></h2></div>
+<div class="page-title icon workflow"><h2>
+    <?php echo Yii::t('workflow','Create {process}', array(
+        '{process}' => Modules::displayName(false)
+    )); ?>
+</h2></div>
 <?php echo $this->renderPartial('_form', array('model'=>$model)); ?>

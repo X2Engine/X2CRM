@@ -34,11 +34,10 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 
-$this->actionMenu = $this->formatMenu(array(
-	array('label'=>Yii::t('quotes','Quotes List'), 'url'=>array('index')),
-	array('label'=>Yii::t('quotes','Invoice List')),
-	array('label'=>Yii::t('quotes','Create'), 'url'=>array('create')),
-));
+$menuOptions = array(
+    'index', 'invoices', 'create',
+);
+$this->insertMenu($menuOptions);
 
 Yii::app()->clientScript->registerScript('search', "
 $('.search-button').click(function(){

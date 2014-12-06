@@ -46,12 +46,14 @@ class ImportExportBehavior extends CBehavior {
     /**
      * Sends the file to the web client upon request
      * @param type $file
+     * @return false if send file failed (if successful, script is terminated)
      */
-    public function sendFile($file){
+    public function sendFile($file, $deleteAfterSend=false){
         if(!preg_match('/(\.\.|\/)/', $file)){
             $file = Yii::app()->file->set($this->safePath($file));
-            $file->send();
+            return $file->send(false, false, $deleteAfterSend);
         }
+        return false;
     }
 
     /**

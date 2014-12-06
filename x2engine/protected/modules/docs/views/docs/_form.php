@@ -66,6 +66,12 @@ Yii::app()->clientScript->registerResponsiveCss('responsiveDocFormCss',"
 
 ");
 
+$modTitles = array(
+    'contact' => Modules::displayName(false, "Contacts"),
+    'account' => Modules::displayName(false, "Accounts"),
+    'quote' => Modules::displayName(false, "Quotes"),
+);
+
 $autosaveUrl = $this->createUrl('autosave').'?id='.$model->id;
 
 $js = '';
@@ -73,29 +79,43 @@ $js = '';
 if($model->type==='email' || $model->type ==='quote') {
 	$attributes = array();
 	if($model->type === 'email')
-		foreach(X2Model::model('Contacts')->attributeLabels() as $fieldName => $label)
+		foreach(X2Model::model('Contacts')->getAttributeLabels() as $fieldName => $label)
 			$attributes[$label] = '{'.$fieldName.'}';
 	else {
 		$accountAttributes = array();
 		$contactAttributes = array();
 		$quoteAttributes = array();
-		foreach(Contacts::model()->attributeLabels() as $fieldName => $label)
-			$contactAttributes[Yii::t('contacts',"Contact").": $label"] = "{Contact.$fieldName}";
-		foreach(Accounts::model()->attributeLabels() as $fieldName => $label)
-			$accountAttributes[Yii::t('accounts',"Account").": $label"] = "{Account.$fieldName}";
-		$quoteAttributes[Yii::t('quotes',"Quote").": ".Yii::t('quotes',"Item Table")] = '{Quote.lineItems}';
-		$quoteAttributes[Yii::t('quotes',"Quote").": ".Yii::t('quotes',"Date printed/emailed")] = '{Quote.dateNow}';
-		$quoteAttributes[Yii::t('quotes',"Quote").": ".Yii::t('quotes','"Quote" or "Invoice"')] = '{Quote.quoteOrInvoice}';
-		foreach(Quote::model()->attributeLabels() as $fieldName => $label)
-			$quoteAttributes["Quote: $label"] = "{Quote.$fieldName}";
+        foreach(Contacts::model()->getAttributeLabels() as $fieldName => $label) {
+            AuxLib::debugLog ('Iterating over contact attributes '.$fieldName.'=>'.$label);
+            $index = Yii::t('contacts',"{contact}", array(
+                '{contact}' => $modTitles['contact'],
+            )).": $label";
+            $contactAttributes[$index] = "{".$modTitles['contact'].".$fieldName}";
+        }
+        foreach(Accounts::model()->getAttributeLabels() as $fieldName => $label) {
+            AuxLib::debugLog ('Iterating over account attributes '.$fieldName.'=>'.$label);
+            $index = Yii::t('accounts',"{account}", array(
+                '{account}' => $modTitles['account'],
+            )).": $label";
+            $accountAttributes[$index] = "{".$modTitles['account'].".$fieldName}";
+        }
+
+        $Quote = Yii::t('quotes', "{quote}: ", array('{quote}' => $modTitles['quote']));
+        $quoteAttributes[$Quote.Yii::t('quotes',"Item Table")] = '{'.$modTitles['quote'].'.lineItems}';
+        $quoteAttributes[$Quote.Yii::t('quotes',"Date printed/emailed")] = '{'.$modTitles['quote'].'.dateNow}';
+        $quoteAttributes[$Quote.Yii::t('quotes','{quote} or Invoice', array('{quote}'=>$modTitles['quote']))] = '{'.$modTitles['quote'].'.quoteOrInvoice}';
+        foreach(Quote::model()->getAttributeLabels() as $fieldName => $label) {
+            $index = $Quote."$label";
+            $quoteAttributes[$index] = "{".$modTitles['quote'].".$fieldName}";
+        }
 	}
 	if($model->type === 'email') {
-		$js = 'x2.insertableAttributes = '.CJSON::encode(array(Yii::t('contacts','Contact Attributes')=>$attributes)).';';
+		$js = 'x2.insertableAttributes = '.CJSON::encode(array(Yii::t('contacts','{contact} Attributes', array('{contact}'=>$modTitles['contact']))=>$attributes)).';';
 	} else {
 		$js = 'x2.insertableAttributes = '.CJSON::encode(array(
-			Yii::t('docs','Contact Attributes')=>$contactAttributes,
-			Yii::t('docs','Account Attributes')=>$accountAttributes,
-			Yii::t('docs','Quote Attributes')=>$quoteAttributes
+			Yii::t('docs','{contact} Attributes', array('{contact}'=>$modTitles['contact'])) => $contactAttributes,
+			Yii::t('docs','{account} Attributes', array('{account}'=>$modTitles['account'])) => $accountAttributes,
+			Yii::t('docs','{quote} Attributes', array('{quote}'=>$modTitles['quote'])) => $quoteAttributes
 		)).';';
 	}
 }
@@ -109,7 +129,7 @@ $associationTypeOptions = Docs::modelsWhichSupportEmailTemplates ();
 $insertableAttributes = array ();
 foreach ($associationTypeOptions as $modelName=>$label) {
     $insertableAttributes[$modelName] = array ();
-    foreach(X2Model::model($modelName)->attributeLabels() as $fieldName => $label) {
+    foreach(X2Model::model($modelName)->getAttributeLabels() as $fieldName => $label) {
         $insertableAttributes[$modelName][$label] = '{'.$fieldName.'}';
     }
 }
@@ -271,7 +291,14 @@ $form = $this->beginWidget('CActiveForm', array(
 	<?php echo Yii::t('docs', '<b>Note:</b> You can use dynamic variables such as {firstName}, {lastName} or {phone} in your template. When you email a record of the specified type, these will be replaced by the appropriate value.'); ?>
 		</div><?php }elseif($model->type == 'quote'){ ?>
 		<div class="row">
-	<?php echo Yii::t('docs', '<strong>Note:</strong> You can use dynamic variables such as {Contact.firstName}, {Quote.dateCreated}, {Account.name} etc. in your template. When you email or print the quote, these will be replaced with the appropriate values from the quote or its associated contact/account.'); ?>
+    <?php echo Yii::t('docs', '<strong>Note:</strong> You can use dynamic variables such as {{contact}.firstName}, {{quote}.dateCreated}, {{account}.name} etc. in your template. When you email or print the {quoteLc}, these will be replaced with the appropriate values from the {quoteLc} or its associated {contactLc}/{accountLc}.', array(
+        '{contact}' => $modTitles['contact'],
+        '{account}' => $modTitles['account'],
+        '{quote}' => $modTitles['quote'],
+        '{contactLc}' => lcfirst($modTitles['contact']),
+        '{accountLc}' => lcfirst($modTitles['account']),
+        '{quoteLc}' => lcfirst($modTitles['quote']),
+    )); ?>
 		</div>
 <?php
 }

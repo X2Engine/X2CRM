@@ -49,9 +49,13 @@ class EmbeddedModelForm extends X2Widget {
 		$attr = $this->attribute;
 		if(!$this->model->$attr instanceof JSONEmbeddedModel)
 			$this->model->instantiateField($attr);
+		echo '<br />';
+		echo '<br />';
 		echo CHtml::activeLabel($this->model,$attr);
 		echo '<hr />';
 		$this->model->$attr->renderInputs();
+		echo '<br />';
+		echo '<br />';
 	}
 }
 

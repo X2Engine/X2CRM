@@ -44,6 +44,77 @@ abstract class X2Widget extends CWidget {
 
     protected $_module;
 
+    protected $_packages;
+
+    /**
+     * @var string $JSClass
+     */
+    public $JSClass = 'Widget'; 
+
+    /**
+     * @var string $element
+     */
+    public $element; 
+
+    /**
+     * @var string $namespace
+     */
+    public $namespace = ''; 
+
+	/**
+	 * Constructor.
+	 * @param CBaseController $owner owner/creator of this widget. It could be either a widget or a controller.
+	 */
+	public function __construct($owner=null)
+	{
+        parent::__construct ($owner);
+        $this->attachBehaviors($this->behaviors());
+	}
+
+    public function behaviors () {
+        return array ();
+    }
+
+    protected $_JSClassParams;
+    public function getJSClassParams () {
+        if (!isset ($this->_JSClassParams)) {
+            $this->_JSClassParams = array (
+                'element' => $this->element,
+                'namespace' => $this->namespace,
+            );
+        }
+        return $this->_JSClassParams;
+    }
+
+    public function instantiateJSClass () {
+        Yii::app()->clientScript->registerScript ($this->namespace.'JSClassInstantiation', "
+            $(function () {
+                x2.".$this->namespace.lcfirst ($this->JSClass)." = 
+                    new x2.$this->JSClass (".
+                        CJSON::encode ($this->getJSClassParams ()).
+                    ");
+            });
+        ", CClientScript::POS_END);
+    }
+
+    public function registerPackages () {
+        Yii::app()->clientScript->registerPackages ($this->getPackages (), true);
+    }
+
+    public function getPackages () {
+        if (!isset ($this->_packages)) {
+            $this->_packages = array (
+                'X2Widget' => array(
+                    'baseUrl' => Yii::app()->request->baseUrl,
+                    'js' => array(
+                        'js/X2Widget.js',
+                    ),
+                ),
+            );
+        }
+        return $this->_packages;
+    }
+
 	/**
 	 * Renders a view file.
 	 * Overrides {@link CBaseController::renderFile} to check if the requested view 

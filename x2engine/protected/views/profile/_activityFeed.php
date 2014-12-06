@@ -81,7 +81,7 @@ x2.activityFeed = new x2.ActivityFeed ({
         'broadcast error message 1' => Yii::t('app','Select at least one user to broadcast to'),
         'broadcast error message 2' => Yii::t('app','Select at least one broadcast method'),
         'Okay' => Yii::t('app','Okay'),
-        'Nevermind' => Yii::t('app','Nevermind'),
+        'Nevermind' => Yii::t('app','Cancel'),
         'Create' => Yii::t('app','Create'),
         'Cancel' => Yii::t('app','Cancel'),
         'Read more' => Yii::t('app','Read') . '&nbsp;' . Yii::t('app', 'More'),
@@ -112,7 +112,7 @@ x2.activityFeed = new x2.ActivityFeed ({
         </span>
         <a href='#' id='feed-filters-button' 
          class='filter-button right'>
-            <span></span>
+            <span class='fa fa-filter'></span>
         </a>
         <div id="menu-links" class="title-bar" style='display: none;'>
             <?php
@@ -239,28 +239,27 @@ $this->widget('zii.widgets.CListView', array(
     ),
     'id'=>'activity-feed',
     'pager' => array(
-                    'class' => 'ext.infiniteScroll.IasPager',
-                    'rowSelector'=>'.view.top-level',
-                    'listViewId' => 'activity-feed',
-                    'header' => '',
-                    'options'=>array(
-                        'onRenderComplete'=>'js:function(){
-                            x2.activityFeed.makePostsExpandable ();
-                            if(x2.activityFeed.minimizeFeed){
-                                x2.activityFeed.minimizePosts();
-                            }
-                            if(x2.activityFeed.commentFlag){
-                                $(".comment-link").click();
-                            }
-                            $.each($(".comment-count"),function(){
-                                if($(this).attr("val")>0){
-                                    $(this).parent().click();
-                                }
-                            });
-                        }'
-                    ),
-
-                  ),
+        'class' => 'ext.infiniteScroll.IasPager',
+        'rowSelector'=>'.view.top-level',
+        'listViewId' => 'activity-feed',
+        'header' => '',
+        'options'=>array(
+            'onRenderComplete'=>'js:function(){
+                x2.activityFeed.makePostsExpandable ();
+                if(x2.activityFeed.minimizeFeed){
+                    x2.activityFeed.minimizePosts();
+                }
+                if(x2.activityFeed.commentFlag){
+                    $(".comment-link").click();
+                }
+                $.each($(".comment-count"),function(){
+                    if($(this).attr("val")>0){
+                        $(this).parent().click();
+                    }
+                });
+            }'
+        ),
+    ),
     'baseScriptUrl'=>Yii::app()->request->baseUrl.'/themes/'.Yii::app()->theme->name.'/css/listview',
     'template'=>'{pager} {items}',
 ));

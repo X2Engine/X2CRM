@@ -147,6 +147,13 @@ class X2List extends X2Model {
         return '/contacts/contacts/list';
     }
 
+    public function getDisplayName ($plural=true) {
+        return Yii::t('contacts', '{contact} List|{contact} Lists', array(
+            (int) $plural,
+            '{contact}' => Modules::displayName(false, 'Contacts'),
+        ));
+    }
+
     public function createLink(){
         if(isset($this->id))
             return CHtml::link($this->name, array($this->getDefaultRoute(), 'id' => $this->id));

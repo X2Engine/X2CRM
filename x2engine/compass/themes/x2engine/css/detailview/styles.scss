@@ -1,0 +1,28 @@
+table.detail-view {
+  .null {
+    color: black;
+  }
+  background: white;
+  border-collapse: collapse;
+  width: 100%;
+  margin: 0;
+  th, td {
+    font-size: 0.9em;
+    border: 1px silver solid;
+    padding: 0.3em 0.6em;
+    vertical-align: top;
+  }
+  th {
+    text-align: right;
+    width: 160px;
+  }
+  tr {
+    &.odd, &.even {
+      background: white;
+    }
+  }
+}
+
+a {
+  text-decoration: none;
+}

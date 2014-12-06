@@ -496,5 +496,58 @@ class MediaController extends x2base {
         Yii::app()->end();
     }
 
+    /**
+     * Create a menu for Media
+     * @param array Menu options to remove
+     * @param X2Model Model object passed to the view
+     * @param array Additional menu parameters
+     */
+    public function insertMenu($selectOptions = array(), $model = null, $menuParams = null) {
+        $Media = Modules::displayName();
+        $modelId = isset($model) ? $model->id : 0;
+
+        /**
+         * To show all options:
+         * $menuOptions = array(
+         *     'index', 'upload', 'view', 'edit', 'delete',
+         * );
+         */
+
+        $menuItems = array(
+            array(
+                'name'=>'index',
+                'label'=>Yii::t('media', 'All {media}', array(
+                    '{media}' => $Media,
+                )),
+                'url'=>array('index')
+            ),
+            array(
+                'name'=>'upload',
+                'label'=>Yii::t('media', 'Upload'),
+                'url'=>array('upload')
+            ),
+            array(
+                'name'=>'view',
+                'label'=>Yii::t('media', 'View'),
+                'url'=>array('view', 'id'=>$modelId)
+            ),
+            array(
+                'name'=>'edit',
+                'label'=>Yii::t('media', 'Update'),
+                'url'=>array('update', 'id'=>$modelId)
+            ),
+            array(
+                'name'=>'delete',
+                'label'=>Yii::t('media', 'Delete'),
+                'url'=>'#',
+                'linkOptions'=>array(
+                    'submit'=>array('delete','id'=>$modelId),
+                    'confirm'=>Yii::t('media','Are you sure you want to delete this item?'))
+            ),
+        );
+
+        $this->prepareMenu($menuItems, $selectOptions);
+        $this->actionMenu = $this->formatMenu($menuItems, $menuParams);
+    }
 
 }

@@ -1,0 +1,130 @@
+/*****************************************************************************************
+ * X2Engine Open Source Edition is a customer relationship management program developed by
+ * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
+ * 
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU Affero General Public License version 3 as published by the
+ * Free Software Foundation with the addition of the following permission added
+ * to Section 15 as permitted in Section 7(a): FOR ANY PART OF THE COVERED WORK
+ * IN WHICH THE COPYRIGHT IS OWNED BY X2ENGINE, X2ENGINE DISCLAIMS THE WARRANTY
+ * OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
+ * 
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.  See the GNU Affero General Public License for more
+ * details.
+ * 
+ * You should have received a copy of the GNU Affero General Public License along with
+ * this program; if not, see http://www.gnu.org/licenses or write to the Free
+ * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301 USA.
+ * 
+ * You can contact X2Engine, Inc. P.O. Box 66752, Scotts Valley,
+ * California 95067, USA. or at email address contact@x2engine.com.
+ * 
+ * The interactive user interfaces in modified source and object code versions
+ * of this program must display Appropriate Legal Notices, as required under
+ * Section 5 of the GNU Affero General Public License version 3.
+ * 
+ * In accordance with Section 7(b) of the GNU Affero General Public License version 3,
+ * these Appropriate Legal Notices must retain the display of the "Powered by
+ * X2Engine" logo. If the display of the logo is not reasonably feasible for
+ * technical reasons, the Appropriate Legal Notices must display the words
+ * "Powered by X2Engine".
+ *****************************************************************************************/
+
+@import "colors";
+
+
+
+$contrast: 15%;
+
+@mixin dark-border($color) {
+	border: 1px solid darken($color, $contrast);
+}
+
+/***************************************
+* Mixin for border radius 
+***************************************/
+@mixin border-radius($radius: 3px) {
+-webkit-border-radius: $radius;
+   -moz-border-radius: $radius;
+    -ms-border-radius: $radius;
+	 -o-border-radius: $radius;
+        border-radius: $radius;
+}
+
+/***************************************
+* Mixin for text field placeholder text
+***************************************/
+@mixin placeholder {
+  ::-webkit-input-placeholder {@content}
+  :-moz-placeholder           {@content}
+  ::-moz-placeholder          {@content}
+  :-ms-input-placeholder      {@content}  
+}
+
+/***************************************
+* CSS to extend when something 
+* should look like a link
+***************************************/
+.pseudo-link {
+	cursor: pointer;
+	color: $darkBlue;
+	transition: color .1s;
+
+	&:hover {
+		color: lighten($darkBlue, $contrast);
+	}
+}
+
+/***************************************
+* CSS to extend when for elements that 
+* become opauqe on mouseover
+***************************************/
+
+@mixin opacity-hover($default: 0.3, $hover: 1.0) {
+	opacity: $default;
+
+	&:hover {
+		opacity: $hover;
+	}	
+}
+
+.opacity-hover {
+	@include opacity-hover();
+}
+
+@mixin box-shadow($content) {
+	-moz-box-shadow: $content;
+	-webkit-box-shadow: $content;
+	box-shadow: $content;
+}
+
+@mixin dropdown-corner-borders($color: #f6f6f6) {
+	border-right: 6px solid transparent;
+	border-bottom: 6px solid $color;
+	border-left: 6px solid transparent;
+	content: '';
+}
+
+@mixin fa($unicode, $placing: 'before') {
+	text-align: center;
+	text-decoration: none;
+	font-family: FontAwesome;
+
+	@if $placing == 'before' {
+		&:before {
+		    content: $unicode;
+		    @content; 
+		}		
+	} 
+	@else {
+		&:after {
+		    content: $unicode;        
+		    @content;
+		}		
+	}
+
+}
+

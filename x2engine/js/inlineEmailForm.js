@@ -49,30 +49,204 @@ function InlineEmailEditorManager (argsDict) {
         saveDefaultTemplateUrl: '', // points to action which saves default email template
         tmpUploadUrl: '',
         rmTmpUploadUrl: '',
+        reinstantiateEditorWhenShown: true,
+        disableTemplates: false
     };
     auxlib.applyArgs (this, defaultArgs, argsDict);
 
     this._settingsDialog = null;
+    this._callbacks = []; // array of functions which get executed after CKEditor is shown
+    this.element = $('#inline-email-form');
 
     this._init ();
-
 }
 
-/*
-Public static methods
-*/
+InlineEmailEditorManager.prototype.addCallback = function (fn) {
+    this._callbacks.push (fn);
+};
 
-/*
-Private static methods
-*/
+InlineEmailEditorManager.prototype.executeCallbacks = function () {
+    for (var i in this._callbacks) {
+        this._callbacks[i].call (this);
+    }
+};
 
-/*
-Public instance methods
-*/
+InlineEmailEditorManager.prototype.handleInlineEmailActionResponse = function (data) {
+    $('#email-sending-icon').hide();
+    if(data.error) {
+        if(data.modelHasErrors) {
+            // Error-highlight the fields that have errors:
+            for (var attr in data.modelErrors) {
+                // Skip the message area; it will turn the background pink, and that would be icky.
+                if(attr != 'message') { 
+                    $('input[name="InlineEmail['+attr+']"]').addClass('error');
+                }
+            }
+        } else {
+            $('#inline-email-errors').addClass('errorSummary');
+        }
+        $('#inline-email-errors').html(data.modelHasErrors ? data.modelErrorHtml : data.message).
+            show();
+        return false;
+    }
+    if(data !== undefined) {
+        // Submission was for getting new template. Fill in with template content.
+        if(data.scenario == 'template') { 
+            if (x2.isAndroid)
+                $('#email-message').val (data.attributes.message);    
+            else 
+                window.inlineEmailEditor.setData(data.attributes.message);
 
-/*
-Private instance methods
-*/
+            if (typeof data.attributes.to !== 'undefined' && data.attributes.to !== '')
+                $('input[name="InlineEmail[to]"]').val(data.attributes.to);
+            $('input[name="InlineEmail[subject]"]').val(data.attributes.subject);
+        } else { // Email was sent successfully. Reset everything.
+            this.afterSend (data);
+        }
+    }
+    return false;
+};
+
+InlineEmailEditorManager.prototype.clearForm = function () {
+    $('.error').removeClass('error');
+    $('#inline-email-errors').html('').hide();
+    $('#email-template').val(0);            
+    $('input[name="InlineEmail[subject]"]').val('');
+    this.element.find ('.upload-file-container').remove ();
+};
+
+InlineEmailEditorManager.prototype.afterSend = function (data) {
+    $('#inline-email-status').show().html(data.message);
+    this.clearForm ();
+    toggleEmailForm();
+    x2.Notifs.updateHistory();
+};
+
+InlineEmailEditorManager.prototype.prependToBody = function (text) {
+    inlineEmailEditor.updateElement ();
+    var tempContainer$ = $('<div>');
+    var message = $.makeArray ($($('#email-message').text ()));
+    message = $.makeArray ($(text)).concat (message);
+    tempContainer$.append (message);
+    inlineEmailEditor.setData (tempContainer$.html ());
+    return this;
+};
+
+InlineEmailEditorManager.prototype.focus = function () {
+    inlineEmailEditor.focus ();
+    return this;
+};
+
+InlineEmailEditorManager.prototype.setToField = function (val) {
+    $('#email-to').val (val);
+
+    return this;
+};
+
+InlineEmailEditorManager.prototype.setSubjectField = function (val) {
+    $('#InlineEmail_subject').val (val);
+    if (val)
+        this.element.find ('.email-title-bar > .widget-title').text (val);
+    else
+        this.element.find ('.email-title-bar > .widget-title').text (
+            this.translations['New Message']);
+
+    return this;
+};
+
+InlineEmailEditorManager.prototype.hideShowSubjectField = function (hide) {
+    if (hide) {
+        $('#InlineEmail_subject').parent ().hide ();
+    } else {
+        $('#InlineEmail_subject').parent ().show ();
+    }
+
+    return this;
+};
+
+/**
+ * Toggles the inline email form open or closed. Scrolls to the email form and animates 
+ * the form sliding open. Alternatively, slides the form closed.
+ *
+ * @param string mode (optional) used when opening the inline email form with
+ * a different model, i.e. a quote.
+ */
+InlineEmailEditorManager.prototype.toggleEmailForm = function (mode) {
+    mode = (typeof mode == 'undefined') ? 'default' : mode;
+    if(typeof x2.inlineQuotes != 'undefined') {
+        if(typeof x2.inlineQuotes.inlineEmailConfig == 'undefined')
+            x2.inlineQuotes.setInlineEmailConfig();
+        if(x2.inlineQuotes.inlineEmailMode != mode)
+            x2.inlineQuotes.resetInlineEmail();
+    }
+
+    if($('#inline-email-form .wide.form').hasClass('hidden') ||
+       $('#inline-email-form').is(':hidden')) {
+        this.showEmailForm ();
+    } else {
+        this.hideEmailForm ();
+    }
+
+    return this;
+};
+
+InlineEmailEditorManager.prototype.hideEmailForm = function (animate) {
+    animate = typeof animate === 'undefined' ? true : animate; 
+
+    if (animate)
+        $('#inline-email-form').animate({
+            opacity: 'hide',
+            height: 'hide'
+        }, 300); 
+    else
+        $('#inline-email-form').hide ();
+
+    return this;
+};
+
+InlineEmailEditorManager.prototype.showEmailForm = function (animate, scroll, focusOnSubject) {
+    animate = typeof animate === 'undefined' ? true : animate; 
+    scroll = typeof scroll === 'undefined' ? true : scroll; 
+    focusOnSubject = typeof focusOnSubject === 'undefined' ? true : focusOnSubject; 
+
+    if($('#inline-email-form .wide.form').hasClass('hidden')) {
+        $('#inline-email-form .wide.form').removeClass('hidden');
+        $('#inline-email-form .form.email-status').remove();
+        return;
+    }
+
+    if($('#inline-email-form').is(':hidden')) {
+        $('#inline-email-status').hide(); // Opening new form; hide previous submission's status
+        $(document).trigger('setupInlineEmailEditor');
+        $('.focus-mini-module').removeClass('focus-mini-module');
+        $('#inline-email-form').find('.wide.form').addClass('focus-mini-module');
+        if (scroll) {
+            $('html,body').animate({
+                scrollTop: ($('#inline-email-top').offset().top - 100)
+            }, 300);
+        }
+    }
+
+    if (focusOnSubject) {
+        /*($('#InlineEmail_subject')
+            .addClass('focus')
+            .focus()
+            .blur(function() {$(this).removeClass('focus');});*/
+    }
+
+    if (animate)
+        $('#inline-email-form').animate({
+            opacity: 'show',
+            height: 'show'
+        }, 300); 
+    else
+        $('#inline-email-form').show ();
+
+    if (!this.reinstantiateEditorWhenShown)
+        CKEDITOR.instances['email-message'].resize ('100%'); // prevent iframe from displaying blank
+
+    return this;
+};
 
 /**
  * Sets up the behavior of the settings menu 
@@ -85,6 +259,14 @@ InlineEmailEditorManager.prototype._setUpEmailSettingsMenuBehavior = function ()
         bind ('click.setUpEmailSettingsMenuBehavior', function () {
             that._settingsDialog.dialog ('open');
         });
+
+    $('#email-mini-module').mouseenter (function () {
+        $('#email-settings-button').show ();
+    });
+
+    $('#email-mini-module').mouseleave (function () {
+        $('#email-settings-button').hide ();
+    });
 };
 
 /**
@@ -144,7 +326,7 @@ InlineEmailEditorManager.prototype._setUpSettingsDialog = function () {
  */
 InlineEmailEditorManager.prototype._setUpFileUpload = function () {
     var that = this;
-    $(document).on ('change', '.x2-file-input', function () {
+    $(document).on ('change', '.x2-file-input', function (event) {
         x2.attachments.checkName(event); 
         if($('#submitAttach').attr('disabled') !== 'disabled') {
             x2.forms.fileUpload ($(this), that.tmpUploadUrl, that.rmTmpUploadUrl); 
@@ -152,10 +334,112 @@ InlineEmailEditorManager.prototype._setUpFileUpload = function () {
     });
 };
 
+InlineEmailEditorManager.prototype._setUpSubjectFieldBehavior = function () {
+    var that = this;
+    var subjectField$ = $('#InlineEmail_subject');
+    var title$ = this.element.find ('.email-title-bar > .widget-title');
+    subjectField$.blur (function () {
+        var val = $(this).val (); 
+        if (val) {
+            title$.text ($(this).val ());
+        } else {
+            title$.text (that.translations['New Message']);
+        }
+    });
+};
+
+InlineEmailEditorManager.prototype._setUpAddresseeRowsBehavior = function () {
+    var addresseeRows$ = this.element.find ('.addressee-rows');
+    var ccRow$ = $('#cc-row');
+    var ccToggle$ = $('#cc-toggle');
+    var bccRow$ = $('#bcc-row');
+    var bccToggle$ = $('#bcc-toggle');
+    auxlib.onClickOutside (addresseeRows$, function () {
+        if (!ccRow$.find ('input').val ()) {
+            ccRow$.hide ();
+            ccToggle$.show ();
+        }
+        if (!bccRow$.find ('input').val ()) {
+            bccRow$.hide ();
+            bccToggle$.show ();
+        }
+    });
+};
+
+
+/**
+ * Set up attachments in the email form so that the attachments div is droppable for
+ * files dragged over from the media widget. This is called when the page loads (if the
+ * page has an inline email form) and whenever the email form is replaced, like after an
+ * ajax call from pressing the preview button.
+ */
+InlineEmailEditorManager.prototype._setUpInlineEmailForm = function () {
+    var that = this;
+    $(document).trigger('setupInlineEmailEditor');
+    
+    // x2.emailEditor.setupEmailAttachments();
+    
+    x2.forms.initX2FileInput();
+    
+    $(document).mouseup(function() {
+        $('input.x2-file-input[type=file]').next().removeClass('active');
+    });
+
+    // init cc and bcc buttons
+    $('#cc-toggle').click(function() {
+        $(this).hide ();
+        $('#cc-row').show ();
+        $('#cc-row > input').focus ();
+    });
+    
+    $('#bcc-toggle').click(function() {
+        $(this).hide ();
+        $('#bcc-row').show ();
+        $('#bcc-row > input').focus ();
+    });
+    
+    $('#email-template').change(function() {
+        var template = $(this).val();
+        if(template != "0") {
+            if(inlineEmailSwitchConfirm()) {
+                if (!x2.isAndroid) window.inlineEmailEditor.updateElement();
+
+                x2.forms.clearDefaultValues (that.element.find ('form'));
+                $.ajax({
+                    'type': 'POST',
+                    'url': yii.scriptUrl+'/contacts/inlineEmail?ajax=1&template=1',
+                    'data': $(this).parents("form").serialize(),
+                    'beforeSend': function() {
+                        $('#email-sending-icon').show();
+                    }
+                }).done(function(data, textStatus, jqXHR) {
+                    x2.inlineEmailEditorManager.handleInlineEmailActionResponse(data);
+                });
+                x2.forms.restoreDefaultValues (that.element.find ('form'));
+            }
+        }
+    });
+};
+
+InlineEmailEditorManager.prototype._setUpCloseFunctionality = function () {
+    var that = this;
+    this.element.find ('.cancel-send-button').click (function () {
+        that.toggleEmailForm ();
+    });
+};
+
 InlineEmailEditorManager.prototype._init = function () {
-    this._setUpSettingsDialog ();
-    this._setUpEmailSettingsMenuBehavior ();
-    this._setUpFileUpload ();
+    var that = this;
+    $(function () {
+        if (!that.disableTemplates) {
+            that._setUpSettingsDialog ();
+            that._setUpEmailSettingsMenuBehavior ();
+        }
+        that._setUpSubjectFieldBehavior ();
+        that._setUpAddresseeRowsBehavior ();
+        that._setUpFileUpload ();
+        that._setUpCloseFunctionality ();
+    });
 };
 
 return InlineEmailEditorManager;
@@ -170,13 +454,15 @@ $(function() {
 
 
     function setupInlineEmailEditorAndroid () {
-        setupEmailAttachments('email-attachments');
+        x2.emailEditor.setupEmailAttachments('email-attachments');
     }
 
     /**
      * Initializes CKEditor in the email form, and the datetimepicker for the "send later" dropdown.
      */
     $(document).on('setupInlineEmailEditor',function(){
+        if (!x2.inlineEmailEditorManager.reinstantiateEditorWhenShown && 
+            window.inlineEmailEditor) return;
 
         if(window.inlineEmailEditor)
             window.inlineEmailEditor.destroy(true);
@@ -195,10 +481,11 @@ $(function() {
                        function exists) */
                     inlineEmailEditorCallback(); 
                 }
+                x2.inlineEmailEditorManager.executeCallbacks ();
                 x2.inlineEmailEditor.isSetUp = true;
             });
         
-        setupEmailAttachments('email-attachments');
+        x2.emailEditor.setupEmailAttachments('email-attachments');
     });
 
     $(document).delegate('#email-template','change',function() {
@@ -226,8 +513,6 @@ $(function() {
     
     if(window.hideInlineEmail)
         $('#inline-email-form').hide();
-    else
-        $(document).trigger('setupInlineEmailEditor');
 
     $('body').on('click','a',function(e) {
         if(/^mailto:/.exec(this.href)) {
@@ -243,113 +528,23 @@ $(function() {
     setupInlineEmailForm();
 });
 
-
 /**
- * Toggles the inline email form open or closed. Scrolls to the email form and animates 
- * the form sliding open. Alternatively, slides the form closed.
- *
- * The optional "mode" parameter is used when opening the inline email form with
- * a different model, i.e. a quote.
+ * Temporary (until refactor) wrapper around InlineEmailEditorManager method 
  */
 function toggleEmailForm(mode) {
     if (!x2.inlineEmailEditor.isSetUp && !x2.isAndroid) return;
-    mode = (typeof mode == 'undefined') ? 'default' : mode;
-    if(typeof x2.inlineQuotes != 'undefined') {
-        if(typeof x2.inlineQuotes.inlineEmailConfig == 'undefined')
-            x2.inlineQuotes.setInlineEmailConfig();
-        if(x2.inlineQuotes.inlineEmailMode != mode)
-            x2.inlineQuotes.resetInlineEmail();
-    }
-    
-    if($('#inline-email-form .wide.form').hasClass('hidden')) {
-        $('#inline-email-form .wide.form').removeClass('hidden');
-        $('#inline-email-form .form.email-status').remove();
-        return;
-    }
-    
-    if($('#inline-email-form').is(':hidden')) {
-        $('#inline-email-status').hide(); // Opening new form; hide previous submission's status
-        $(document).trigger('setupInlineEmailEditor');
-        $('.focus-mini-module').removeClass('focus-mini-module');
-        $('#inline-email-form').find('.wide.form').addClass('focus-mini-module');
-        $('html,body').animate({
-            scrollTop: ($('#inline-email-top').offset().top - 100)
-        }, 300);
-    }
-    
-    $('#inline-email-form').animate({
-        opacity: 'toggle',
-        height: 'toggle'
-    }, 300); // ,function() {  $('#inline-email-form #InlineEmail_subject').focus(); }
-    
-    $('#InlineEmail_subject')
-        .addClass('focus')
-        .focus()
-        .blur(function() {$(this).removeClass('focus');});
+
+    x2.inlineEmailEditorManager.toggleEmailForm ();
 }
 
-
-/**
- * Set up attachments in the email form so that the attachments div is droppable for
- * files dragged over from the media widget. This is called when the page loads (if the
- * page has an inline email form) and whenever the email form is replaced, like after an
- * ajax call from pressing the preview button.
- */
 function setupInlineEmailForm() {
-    
-    $(document).trigger('setupInlineEmailEditor');
-    
-    // setupEmailAttachments();
-    
-    x2.forms.initX2FileInput();
-    
-    $(document).mouseup(function() {
-        $('input.x2-file-input[type=file]').next().removeClass('active');
-    });
-
-    // init cc and bcc buttons
-    $('#cc-toggle').click(function() {
-        $(this).animate({
-                opacity: 'toggle',
-                width: 0
-            }, 400);
-        
-        $('#cc-row').slideDown(300);
-    });
-    
-    $('#bcc-toggle').click(function() {
-        $(this).animate({
-                opacity: 'toggle',
-                width: 0
-            }, 400);
-        
-        $('#bcc-row').slideDown(300);
-    });
-    
-    $('#email-template').change(function() {
-        var template = $(this).val();
-        if(template != "0") {
-            if(inlineEmailSwitchConfirm()) {
-                if (!x2.isAndroid) window.inlineEmailEditor.updateElement();
-                jQuery.ajax({
-                    'type':'POST',
-                    'url':yii.scriptUrl+'/contacts/inlineEmail?ajax=1&template=1',
-                    'data':jQuery(this).parents("form").serialize(),
-                    'beforeSend':function() {
-                        $('#email-sending-icon').show();
-                    }
-                }).done(function(data, textStatus, jqXHR) {
-                    handleInlineEmailActionResponse(data, textStatus, jqXHR);
-                });
-            }
-        }
-    });
+    x2.inlineEmailEditorManager._setUpInlineEmailForm ();
 }
 
 function inlineEmailSwitchConfirm() {
     if (x2.isAndroid) return true;
     var proceed = true;
-    var noChange = ! window.inlineEmailEditor.checkDirty();
+    var noChange = !window.inlineEmailEditor.checkDirty();
     if(!noChange)
         proceed = confirm($('#template-change-confirm').text());
     return proceed;
@@ -361,46 +556,4 @@ function inlineEmailSwitchConfirm() {
 function setInlineEmailFormLoading() {
     $('#email-sending-icon').show();
 }
-
-function handleInlineEmailActionResponse(data, textStatus, jqXHR) {    
-    $('#email-sending-icon').hide();
-    if(data.error) {
-        if(data.modelHasErrors) {
-            // Error-highlight the fields that have errors:
-            for (var attr in data.modelErrors) {
-                if(attr != 'message') { // Skip the message area; it will turn the background pink, and that would be icky.
-                    $('input[name="InlineEmail['+attr+']"]').addClass('error');
-                }
-            }
-        } else {
-            $('#inline-email-errors').addClass('errorSummary');
-        }
-        $('#inline-email-errors').html(data.modelHasErrors ? data.modelErrorHtml : data.message).show();
-        return false;
-    }
-    if(data !== undefined) {
-        if(data.scenario == 'template') { // Submission was for getting new template. Fill in with template content.
-            if (x2.isAndroid)
-                $('#email-message').val (data.attributes.message);    
-            else 
-                window.inlineEmailEditor.setData(data.attributes.message);
-
-            if (typeof data.attributes.to !== 'undefined' && data.attributes.to !== '')
-                $('input[name="InlineEmail[to]"]').val(data.attributes.to);
-            $('input[name="InlineEmail[subject]"]').val(data.attributes.subject);
-        } else { // Email was sent successfully. Reset everything.
-            
-            $('.error').removeClass('error');
-            $('#inline-email-status').show().html(data.message);
-            $('#inline-email-errors').html('').hide();
-            $('#email-template').val(0);            
-            $('input[name="InlineEmail[subject]"]').val('');
-            toggleEmailForm();
-            x2.Notifs.updateHistory();
-            
-        }
-    }
-    return false;
-}
-
 

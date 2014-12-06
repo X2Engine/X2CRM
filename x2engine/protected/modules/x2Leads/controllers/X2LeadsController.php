@@ -75,10 +75,6 @@ class X2LeadsController extends x2base {
         ));
     }
 
-    public function actions() {
-        return array_merge(parent::actions(), array(
-        ));
-    }
 
     public function actionGetItems(){
         $sql = 'SELECT id, name as value FROM x2_x2leads WHERE name LIKE :qterm ORDER BY name ASC';
@@ -103,12 +99,7 @@ class X2LeadsController extends x2base {
             // add opportunity to user's recent item list
             User::addRecentItem('l', $id, Yii::app()->user->getId()); 
 
-            parent::view($model, $type, array (
-                'conversionIncompatibilityWarnings' => 
-                    $model->getConversionIncompatibilityWarnings (),
-                'opportunity' => 
-                    $opportunity,
-            ));
+            parent::view($model, $type);
         }else{
             $this->redirect('index');
         }
@@ -233,18 +224,124 @@ class X2LeadsController extends x2base {
     }
 
     /**
-     * Converts a lead to an opportunity 
-     * @param int $id id of the lead
-     * @param bool $force If true, lead conversion will be attempted even if there are compatibility
-     *  issues.
+     * Create a menu for Leads
+     * @param array Menu options to remove
+     * @param X2Model Model object passed to the view
+     * @param array Additional menu parameters
      */
-    public function actionConvertLead ($id, $force=false) {
-        $model = $this->loadModel ($id);
-        $newOpportunity = $model->convertToOpportunity ($force);
-        if ($newOpportunity instanceof Opportunity && !$newOpportunity->hasErrors ()) {
-            $this->redirect($this->createUrl (
-                    '/opportunities/opportunities/view', array ('id' => $newOpportunity->id)));
-        }
-        $this->actionView ($id, $newOpportunity);
+    public function insertMenu($selectOptions = array(), $model = null, $menuParams = null) {
+        $Leads = Modules::displayName();
+        $Lead = Modules::displayName(false);
+        $modelId = isset($model) ? $model->id : 0;
+
+        /**
+         * To show all options:
+         * $menuOptions = array(
+         *     'index', 'create', 'view', 'edit', 'delete', 'attach', 'quotes',
+         *     'convert', 'print', 'import', 'export',
+         * );
+         */
+
+        $menuItems = array(
+            array(
+                'name'=>'index',
+                'label'=>Yii::t('x2Leads','{leads} List', array(
+                    '{leads}' => $Leads,
+                )),
+                'url'=>array('index')
+            ),
+            array(
+                'name'=>'create',
+                'label'=>Yii::t('x2Leads','Create {lead}', array(
+                    '{lead}' => $Lead,
+                )),
+                'url'=>array('create')
+            ),
+            array(
+                'name'=>'view',
+                'label'=>Yii::t('x2Leads','View'),
+                'url'=>array('view', 'id'=>$modelId)
+            ),
+            array(
+                'name'=>'edit',
+                'label'=>Yii::t('x2Leads','Edit {lead}', array(
+                    '{lead}' => $Lead,
+                )),
+                'url'=>array('update', 'id'=>$modelId)
+            ),
+            array(
+                'name'=>'delete',
+                'label'=>Yii::t('x2Leads','Delete {lead}', array(
+                    '{lead}' => $Lead,
+                )),
+                'url'=>'#',
+                'linkOptions'=>array(
+                    'submit'=>array('delete','id'=>$modelId),
+                    'confirm'=>'Are you sure you want to delete this item?')
+            ),
+            array(
+                'name'=>'attach',
+                'label'=>Yii::t('app','Attach A File/Photo'),
+                'url'=>'#',
+                'linkOptions'=>array('onclick'=>'toggleAttachmentForm(); return false;')
+            ),
+            array(
+                'name'=>'quotes',
+                'label' => Yii::t('quotes', 'Quotes/Invoices'),
+                'url' => 'javascript:void(0)',
+                'linkOptions' => array(
+                    'onclick' => 'x2.inlineQuotes.toggle(); return false;')
+            ),
+            array(
+                'name'=>'convertToContact',
+                'label' => Yii::t('x2Leads', 'Convert to {contact}', array(
+                    '{contact}' => Modules::displayName(false, "Contacts"),
+                )),
+                'url' => '#',
+                'linkOptions' => array ('id' => 'convert-lead-to-contact-button'),
+            ),
+            array(
+                'name'=>'convert',
+                'label' => Yii::t('x2Leads', 'Convert to {opportunity}', array(
+                    '{opportunity}' => Modules::displayName(false, "Opportunities"),
+                )),
+                'url' => '#',
+                'linkOptions' => array ('id' => 'convert-lead-button'),
+            ),
+            array(
+                'name'=>'print',
+                'label' => Yii::t('app', 'Print Record'),
+                'url' => '#',
+                'linkOptions' => array (
+                    'onClick'=>"window.open('".
+                        Yii::app()->createUrl('/site/printRecord', array (
+                            'modelClass' => 'X2Leads',
+                            'id' => $modelId,
+                            'pageTitle' => Yii::t('app', 'Leads').': '.(isset($model) ?
+                                $model->name : "")
+                        ))."');"
+	            )
+            ),
+            array(
+                'name'=>'import',
+                'label'=>Yii::t('x2Leads', 'Import {leads}', array(
+                    '{leads}' => $Leads,
+                )),
+                'url'=>array('admin/importModels', 'model'=>'X2Leads'),
+                'visible'=>Yii::app()->params->isAdmin
+            ),
+            array(
+                'name'=>'export',
+                'label'=>Yii::t('x2Leads', 'Export {leads}', array(
+                    '{leads}' => $Leads,
+                )),
+                'url'=>array('admin/exportModels', 'model'=>'X2Leads'),
+                'visible'=>Yii::app()->params->isAdmin
+            ),
+        );
+
+        $this->prepareMenu($menuItems, $selectOptions);
+        $this->actionMenu = $this->formatMenu($menuItems, $menuParams);
     }
+
 }

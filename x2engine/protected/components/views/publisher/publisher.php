@@ -36,17 +36,21 @@
 
 $form = $this->beginWidget('CActiveForm', array('id' => 'publisher-form')); 
 
-function echoTabRow ($tabs, $rowNum=1) {
-    ?><ul id='publisher-tabs-row-<?php echo $rowNum; ?>' style='display: none;'>
-            <?php 
-            // Publisher tabs
-            foreach ($tabs as $tab) {
-                ?> <li> <?php
-                $tab->renderTitle ();
-                ?> </li> <?php
-            }
-            ?>
-        </ul><?php    
+$publisherCreated = true;
+
+if(!function_exists('echoTabRow')){
+    function echoTabRow ($tabs, $rowNum=1) {
+        ?><ul id='publisher-tabs-row-<?php echo $rowNum; ?>' style='display: none;'>
+                <?php 
+                // Publisher tabs
+                foreach ($tabs as $tab) {
+                    ?> <li> <?php
+                    $tab->renderTitle ();
+                    ?> </li> <?php
+                }
+                ?>
+            </ul><?php    
+    }
 }
 
 ?>

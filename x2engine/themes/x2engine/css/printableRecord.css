@@ -32,127 +32,120 @@
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2Engine".
  *****************************************************************************************/
-
+/* line 22, ../../../compass/themes/x2engine/css/printableRecord.scss */
 .x2-layout {
-    min-width: 598px;
-	border: 1px solid black !important;
-	/*border: none !important;
-	background: #ffffff !important;*/
-	/*border-left: 1px solid black !important;
-	border-right: 1px solid black !important;
-	border-bottom: 1px solid black !important;*/
-	-moz-border-radius:		0px 0px 0px 0px !important;
-	-o-border-radius:		0px 0px 0px 0px !important;
-	-webkit-border-radius:	0px 0px 0px 0px !important;
-	border-radius:			0px 0px 0px 0px !important;
-	max-width: 900px !important;
+  min-width: 598px;
+  border: 1px solid black !important;
+  /*border: none !important;
+  background: #ffffff !important;*/
+  /*border-left: 1px solid black !important;
+  border-right: 1px solid black !important;
+  border-bottom: 1px solid black !important;*/
+  -moz-border-radius: 0px 0px 0px 0px !important;
+  -o-border-radius: 0px 0px 0px 0px !important;
+  -webkit-border-radius: 0px 0px 0px 0px !important;
+  border-radius: 0px 0px 0px 0px !important;
+  max-width: 900px !important;
 }
-
+/* line 35, ../../../compass/themes/x2engine/css/printableRecord.scss */
 .x2-layout .formInputBox {
-	/*min-width: 100px !important;
-	width: auto !important;*/
+  /*min-width: 100px !important;
+  width: auto !important;*/
 }
-
+/* line 39, ../../../compass/themes/x2engine/css/printableRecord.scss */
 .x2-layout a {
-	color: black !important;
+  color: black !important;
 }
-
+/* line 42, ../../../compass/themes/x2engine/css/printableRecord.scss */
 .x2-layout .showSection {
-	/*-moz-border-radius:		0px 0px 0px 0px !important;
-	-o-border-radius:		0px 0px 0px 0px !important;
-	-webkit-border-radius:	0px 0px 0px 0px !important;
-	border-radius:			0px 0px 0px 0px !important;*/
+  /*-moz-border-radius:		0px 0px 0px 0px !important;
+  -o-border-radius:		0px 0px 0px 0px !important;
+  -webkit-border-radius:	0px 0px 0px 0px !important;
+  border-radius:			0px 0px 0px 0px !important;*/
 }
-
+/* line 48, ../../../compass/themes/x2engine/css/printableRecord.scss */
 .x2-layout table {
-	border-spacing: 0 !important;
-	width: 100% !important;
-	max-width: 900px !important;
-	
+  border-spacing: 0 !important;
+  width: 100% !important;
+  max-width: 900px !important;
+}
+/* line 54, ../../../compass/themes/x2engine/css/printableRecord.scss */
+.x2-layout div.tableWrapper {
+  border-top: none !important;
+  /*border-top: 1px solid black !important;
+  border-left: none !important;*/
+  /*border-left: 1px solid black !important;
+  border-right: 1px solid black !important;*/
+}
+/* line 61, ../../../compass/themes/x2engine/css/printableRecord.scss */
+.x2-layout div.formSectionHeader {
+  /*border: none !important;*/
+  /*border-bottom: 1px solid black !important;*/
+  	/*border-top: 1px solid black !important;
+  
+  	-moz-border-radius:		0px 0px 0px 0px !important;
+  	-o-border-radius:		0px 0px 0px 0px !important;
+  	-webkit-border-radius:	0px 0px 0px 0px !important;
+  	border-radius:			0px 0px 0px 0px !important;*/
+}
+/* line 72, ../../../compass/themes/x2engine/css/printableRecord.scss */
+.x2-layout .formItem {
+  /*border-top: none !important;
+  border-left: none !important;
+  border-bottom: none !important;
+  border-right: 1px solid black !important;*/
+  /*border: none !important;*/
+  /*border: 1px solid black !important;*/
+}
+/* line 81, ../../../compass/themes/x2engine/css/printableRecord.scss */
+.x2-layout div.formItem.topLabel {
+  /*border-top: none !important;
+  border-left: 1px solid black !important;
+  border-right: 1px solid black !important;*/
+  border-bottom: none !important;
+}
+/* line 87, ../../../compass/themes/x2engine/css/printableRecord.scss */
+.x2-layout div.formItem.leftLabel {
+  border-bottom: none !important;
+  /*border-top: none !important;
+  border-left: 1px solid black !important;
+  border-right: 1px solid black !important;
+  border-bottom: 1px solid black !important;*/
+}
+/* line 96, ../../../compass/themes/x2engine/css/printableRecord.scss */
+.x2-layout .formItem.topLabel label {
+  /*border-top: 1px solid black !important;
+  border-bottom: 1px solid black !important;*/
+}
+/* line 100, ../../../compass/themes/x2engine/css/printableRecord.scss */
+.x2-layout .formItem.leftLabel {
+  /*border-left: none !important;*/
+}
+/* line 101, ../../../compass/themes/x2engine/css/printableRecord.scss */
+.x2-layout .formItem.leftLabel label {
+  /*border-right: 1px solid black !important;*/
+}
+/* line 107, ../../../compass/themes/x2engine/css/printableRecord.scss */
+.x2-layout label {
+  /*border-left: 1px solid black !important;*/
+  /*border-right: 1px solid black !important;*/
+  color: #000000 !important;
+  background: none !important;
+}
+/* line 113, ../../../compass/themes/x2engine/css/printableRecord.scss */
+.x2-layout div {
+  /*border-bottom: 1px solid black !important;*/
+}
+/* line 116, ../../../compass/themes/x2engine/css/printableRecord.scss */
+.x2-layout td div.leftLabel:last-child {
+  border-bottom: 1px solid black !important;
+  /*width: auto !important;*/
+  /*border-right: 1px solid black !important;*/
 }
 
 /*.x2-layout table {
 	border-top: 1px solid black !important;
 }*/
-
-.x2-layout div.tableWrapper {
-	border-top: none !important;
-
-	/*border-top: 1px solid black !important;
-	border-left: none !important;*/
-	/*border-left: 1px solid black !important;
-	border-right: 1px solid black !important;*/
-}
-
-.x2-layout div.formSectionHeader {
-	/*border: none !important;*/
-	/*border-bottom: 1px solid black !important;*/
-	/*border-top: 1px solid black !important;
-
-	-moz-border-radius:		0px 0px 0px 0px !important;
-	-o-border-radius:		0px 0px 0px 0px !important;
-	-webkit-border-radius:	0px 0px 0px 0px !important;
-	border-radius:			0px 0px 0px 0px !important;*/
-}
-
-.x2-layout .formItem {
-	/*border-top: none !important;
-	border-left: none !important;
-	border-bottom: none !important;
-	border-right: 1px solid black !important;*/
-	/*border: none !important;*/
-	/*border: 1px solid black !important;*/
-}
-
-.x2-layout div.formItem.topLabel {
-	/*border-top: none !important;
-	border-left: 1px solid black !important;
-	border-right: 1px solid black !important;*/
-}
-
-.x2-layout div.formItem.topLabel {
-	border-bottom: none !important;
-}
-
-.x2-layout div.formItem.leftLabel {
-	border-bottom: none !important;
-
-	/*border-top: none !important;
-	border-left: 1px solid black !important;
-	border-right: 1px solid black !important;
-	border-bottom: 1px solid black !important;*/
-}
-
-.x2-layout .formItem.topLabel label {
-	/*border-top: 1px solid black !important;
-	border-bottom: 1px solid black !important;*/
-}
-
-.x2-layout .formItem.leftLabel label {
-	/*border-right: 1px solid black !important;*/
-}
-
-.x2-layout .formItem.leftLabel {
-	/*border-left: none !important;*/
-}
-
-.x2-layout label {
-	/*border-left: 1px solid black !important;*/
-	/*border-right: 1px solid black !important;*/
-	color: #000000 !important;
-	background: none !important;
-}
-
-.x2-layout div {
-	/*border-bottom: 1px solid black !important;*/
-}
-
-.x2-layout td div.leftLabel:last-child {
-	border-bottom: 1px solid black !important;
-	/*width: auto !important;*/
-	/*border-right: 1px solid black !important;*/
-}
-
 /*.x2-layout table {
 	border-collapse: collapse !important; 
 	width: 100% !important;
@@ -170,65 +163,66 @@
 	border: 1px solid black !important; 
 	background:#eee !important;
 }*/
-
 /*div.x2-layout a.formSectionHide,
 div.x2-layout a.formSectionShow {*/
-
 /* hide min and max buttons */
-div.x2-layout .formSection.showSection a.formSectionShow,
-div.x2-layout .formSection.showSection a.formSectionHide {
-	display: none !important;
+/* line 150, ../../../compass/themes/x2engine/css/printableRecord.scss */
+div.x2-layout {
+  background: #fff !important;
 }
-
-
-
+/* line 153, ../../../compass/themes/x2engine/css/printableRecord.scss */
+div.x2-layout .formSection.showSection a.formSectionShow, div.x2-layout .formSection.showSection a.formSectionHide {
+  display: none !important;
+}
+/* line 157, ../../../compass/themes/x2engine/css/printableRecord.scss */
+div.x2-layout .formSection:first-child, div.x2-layout .formSection:last-child {
+  -moz-border-radius: 0px 0 0 0 !important;
+  -o-border-radius: 0px 0 0 0 !important;
+  -webkit-border-radius: 0px 0 0 0 !important;
+  border-radius: 0px 0 0 0 !important;
+}
+/* line 165, ../../../compass/themes/x2engine/css/printableRecord.scss */
+div.x2-layout .formSectionHeader {
+  border-top: 1px solid #000;
+  -moz-border-radius: 0px 0 0 0 !important;
+  -o-border-radius: 0px 0 0 0 !important;
+  -webkit-border-radius: 0px 0 0 0 !important;
+  border-radius: 0px 0 0 0 !important;
+}
+/* line 172, ../../../compass/themes/x2engine/css/printableRecord.scss */
+div.x2-layout td {
+  border-right: 1px solid #000 !important;
+}
+/* line 175, ../../../compass/themes/x2engine/css/printableRecord.scss */
+div.x2-layout .formItem {
+  border: 1px solid #000 !important;
+}
+/* line 177, ../../../compass/themes/x2engine/css/printableRecord.scss */
+div.x2-layout .formItem.topLabel label {
+  border-bottom: 1px solid #000 !important;
+}
+/* line 180, ../../../compass/themes/x2engine/css/printableRecord.scss */
+div.x2-layout .formItem.leftLabel label {
+  border-right: 1px solid #000 !important;
+}
+/* line 183, ../../../compass/themes/x2engine/css/printableRecord.scss */
+div.x2-layout .formItem input[type="text"], div.x2-layout .formItem textarea {
+  -moz-border-radius: 0px 0 0 0 !important;
+  -o-border-radius: 0px 0 0 0 !important;
+  -webkit-border-radius: 0px 0 0 0 !important;
+  border-radius: 0px 0 0 0 !important;
+  background: #fff !important;
+}
 
 /*
 Override rules in x2forms.css. Remove rounded borders, make borders black and 
 backgrounds white.
 */
-
-div.x2-layout {
-	background:#fff !important;
-}
-div.x2-layout .formSection:first-child {
-	-moz-border-radius:		0px 0 0 0 !important;
-	-o-border-radius:		0px 0 0 0 !important;
-	-webkit-border-radius:	0px 0 0 0 !important;
-	border-radius:			0px 0 0 0 !important;
-}
-div.x2-layout .formSection:last-child {
-	-moz-border-radius:		0px 0 0 0 !important;
-	-o-border-radius:		0px 0 0 0 !important;
-	-webkit-border-radius:	0px 0 0 0 !important;
-	border-radius:			0px 0 0 0 !important;
-}
-div.x2-layout .formSectionHeader {
-	border-top: 1px solid #000;
-	-moz-border-radius:		0px 0 0 0 !important;
-	-o-border-radius:		0px 0 0 0 !important;
-	-webkit-border-radius:	0px 0 0 0 !important;
-	border-radius:			0px 0 0 0 !important;
-}
-div.x2-layout td {
-	border-right:1px solid #000 !important;
-}
-div.x2-layout .formItem {
-	border:1px solid #000 !important;
-}
-div.x2-layout .formItem.topLabel label {
-	border-bottom:1px solid #000 !important;
-}
-div.x2-layout .formItem.leftLabel label {
-	border-right:1px solid #000 !important;
-}
-div.x2-layout .formItem input[type="text"], 
-div.x2-layout .formItem textarea, 
+/* line 198, ../../../compass/themes/x2engine/css/printableRecord.scss */
 input[type="text"].record-name-autocomplete {
-	-moz-border-radius:		0px 0 0 0 !important;
-	-o-border-radius:		0px 0 0 0 !important;
-	-webkit-border-radius:	0px 0 0 0 !important;
-	border-radius:			0px 0 0 0 !important;
-	background:#fff !important;
+  -moz-border-radius: 0px 0 0 0 !important;
+  -o-border-radius: 0px 0 0 0 !important;
+  -webkit-border-radius: 0px 0 0 0 !important;
+  border-radius: 0px 0 0 0 !important;
+  background: #fff !important;
 }
-

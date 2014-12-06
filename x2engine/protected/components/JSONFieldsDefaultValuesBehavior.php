@@ -34,11 +34,11 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 
-Yii::import ('application.components.JSONFieldsBehavior');
+Yii::import ('application.components.NormalizedJSONFieldsBehavior');
 
 /**
  * Enables transparent serialization and storage of array objects in database
- * fields as JSON strings. In contrast to JSONFieldsBehavior where JSON properties default to null,
+ * fields as JSON strings. In contrast to NormalizedJSONFieldsBehavior where JSON properties default to null,
  * here the transformAttributes array is treated as an associative array where the values are used 
  * as the default values for each JSON property. Note that a failure to explicitly define a 
  * default value in the transformAttributes array will result in potentially unexpected behavior
@@ -46,7 +46,7 @@ Yii::import ('application.components.JSONFieldsBehavior');
  * <JSON field 0> would be the default value of a JSON field called '0').
  * @package application.components
  */
-class JSONFieldsDefaultValuesBehavior extends JSONFieldsBehavior {
+class JSONFieldsDefaultValuesBehavior extends NormalizedJSONFieldsBehavior {
 
 	/**
 	 * Returns an array defining the expected structure of the JSON-bearing
@@ -64,5 +64,9 @@ class JSONFieldsDefaultValuesBehavior extends JSONFieldsBehavior {
 		}
 		return $this->_fields[$name];
 	}
+
+    public function afterConstruct ($event) {
+        $this->afterFind ($event);
+    }
 
 }

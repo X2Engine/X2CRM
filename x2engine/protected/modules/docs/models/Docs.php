@@ -207,24 +207,27 @@ class Docs extends X2Model {
                 );
                 $attributes = array();
                 foreach($models as $name => $modelObj) {
+                    $moduleTitle = Modules::displayName(false, $name."s");
                     if(empty($modelObj)) {
                         // Model will be blank
                         foreach ($staticModels[$name]->fields as $field) {
-                            $attributes['{' . $name . '.' . $field->fieldName . '}'] = '';
+                            $attributes['{' . $moduleTitle . '.' . $field->fieldName . '}'] = '';
                         }
                     } else {
                         // Insert attributes
                         foreach($modelObj->attributes as $fieldName => $value) {
-                            $attributes['{' . $name . '.' . $fieldName . '}'] = $encode ? 
+                            $attributes['{' . $moduleTitle. '.' . $fieldName . '}'] = $encode ? 
                                 CHtml::encode($value) : 
                                 $modelObj->renderAttribute($fieldName, false);
                         }
                     }
                 }
+                $quoteTitle = Modules::displayName(false, "Quotes");
                 $quoteParams = array(
-                    '{Quote.lineItems}' => $model->productTable(true),
-                    '{Quote.dateNow}' => date("F d, Y", time()),
-                    '{Quote.quoteOrInvoice}' => Yii::t('quotes',$model->type=='invoice' ? 'Invoice' : 'Quote'),
+                    '{'.$quoteTitle.'.lineItems}' => $model->productTable(true),
+                    '{'.$quoteTitle.'.dateNow}' => date("F d, Y", time()),
+                    '{'.$quoteTitle.'.quoteOrInvoice}' => Yii::t('quotes',
+                                $model->type=='invoice' ? 'Invoice' : $quoteTitle),
                 );
                 // Run the replacement:
                 $str = strtr($str,array_merge($attributes,$quoteParams));

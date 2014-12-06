@@ -96,5 +96,10 @@ class WebForm extends CActiveRecord {
 		}
 		parent::afterFind();
 	}
+
+    public function getDisplayName ($plural=true) {
+        return Yii::t('marketing', 'Web Form');
+    }
+
 }
 ?>

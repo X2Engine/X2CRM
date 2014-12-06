@@ -312,8 +312,6 @@ class WebFormAction extends CAction {
                 }
             }
 
-            $contact = Contacts::model()->findByAttributes(array('email' => $email));
-
             if(isset($email) && $email) {
                 $contact = Contacts::model()->findByAttributes(array('email' => $email));
             } else {
@@ -344,7 +342,8 @@ class WebFormAction extends CAction {
             if(!isset($model->subIssue) || $model->subIssue == '')
                 $model->subIssue = Yii::t('services', 'Other');
             $model->assignedTo = $this->controller->getNextAssignee();
-            $model->email = CHtml::encode($email);
+            if (isset($email))
+                $model->email = CHtml::encode($email);
             $now = time();
             $model->createDate = $now;
             $model->lastUpdated = $now;
@@ -564,9 +563,9 @@ class WebFormAction extends CAction {
      * @param null|string $leadSource
      */
     private static function generateLead (Contacts $contact, $leadSource=null) {
-
         $lead = new X2Leads ('webForm');
-        $lead->name = $contact->firstName.' '.$contact->lastName;
+        $lead->firstName = $contact->firstName;
+        $lead->lastName = $contact->lastName;
         $lead->leadSource = $leadSource;
         // disable validation to prevent saving from failing if leadSource isn't set
         if ($lead->save (false)) {

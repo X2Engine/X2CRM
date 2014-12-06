@@ -75,8 +75,8 @@ Yii::app()->clientScript->registerCss('loginExtraCss', "
 
 ");
 
-Yii::app()->clientScript->registerScript('loginPageJS', "
 
+Yii::app()->clientScript->registerScript('loginPageJS', "
 (function () {
 
 /*$('#login-form-inputs-container').children ('input').focus (function () {
@@ -93,11 +93,16 @@ document.getElementById('LoginForm_username').focus (); // for when autofocus is
     
 
 ", CClientScript::POS_READY);
+
+
+// Yii::app()->clientScript->registerScriptFile(Yii::app()->baseUrl.'/js/loginTheme.js', CClientScript::POS_END);
 ?>
 <div id="login-box-outer">
 <div class="container<?php echo (isset ($profileId) ? ' welcome-back-page' : ''); ?>" id="login-page">
 <div id="login-box">
+
     <div id='login-title-container'>
+<?php if(Yii::app()->settings->appName != "X2Engine"): ?>
         <h1 id='app-title'>
             <?php echo Yii::t('app', '{appName}', array (
                 '{appName}' => CHtml::encode (Yii::app()->settings->appName))); ?>
@@ -106,6 +111,7 @@ document.getElementById('LoginForm_username').focus (); // for when autofocus is
             <?php echo Yii::t('app', '{appDescription}', array (
                 '{appDescription}' => CHtml::encode (Yii::app()->settings->appDescription))); ?>
         </h2>
+    <?php endif ?>
     </div>
     <?php $form=$this->beginWidget('CActiveForm', array(
         // 'id' => 'login-form',
@@ -117,6 +123,10 @@ document.getElementById('LoginForm_username').focus (); // for when autofocus is
     ));
     ?>
     <div class="form" id="login-form">
+        <?php if( isset($_POST['themeName']) ) 
+            echo CHtml::hiddenField('themeName', $_POST['themeName']);    
+        ?>
+
         <div class="row">
             <div class="cell form-cell" id="login-form-inputs-container">
                 <?php
@@ -204,27 +214,49 @@ document.getElementById('LoginForm_username').focus (); // for when autofocus is
                         echo $form->error($model, 'rememberMe');
                     }?>
                 </div>
-                <div class='cell login-links right'>
+                <?php
+
+                    echo CHtml::link(Yii::t('app','Need help?'),array('/site/anonHelp'),
+                        array( 'class'=>'x2-minimal-link help-link'));
+                    ?>
+                </div><!-- .row.bottom-row -->
+                <div class="row login-links">
                     <?php
                     echo CHtml::link('<img src="'.Yii::app()->baseUrl.'/images/google_icon.png" id="google-icon" /> '.Yii::t('app', 'Sign in with Google'),
                         (@$_SERVER['HTTPS'] == 'on' ? 'https://' : 'http://') .
                         ((substr($_SERVER['HTTP_HOST'], 0, 4)=='www.')?substr($_SERVER['HTTP_HOST'], 4):$_SERVER['HTTP_HOST']) .
-                        $this->createUrl('/site/googleLogin'), array('class' => 'x2touch-link'));
+                        $this->createUrl('/site/googleLogin'), 
+                        array('class' => 'alt-sign-in-link google-sign-in-link'));
+                    echo CHtml::link(
+                        '<img src="'.Yii::app()->baseUrl.'/images/mobile.png" id="mobile-icon" /> 
+                            X2Touch Mobile',
+                        Yii::app()->getBaseUrl() . '/index.php/mobile/site/login',
+                        array('class'=>'x2touch-link alt-sign-in-link')); 
                     ?>
                 </div>
-                </div><!-- .row.bottom-row -->
-                <div class="row login-links">
-                    <?php
-                    echo CHtml::link(Yii::t('app','Need help?'),array('/site/anonHelp'));
-                    ?>
+                <div id="login-version">
+                    <a href='#' id='dark-theme-button' class='fa fa-adjust'></a>
+                    <span>VERSION <?php echo Yii::app()->params->version; ?>, <a href="http://www.x2engine.com">X2Engine, Inc.</a></span>
+                    <span><?php echo Yii::app()->getEditionLabel(true); ?>
+                    </span>
+                </div>
+                <div style='display:none' class="row theme-selection">
+                    <span class="switch" >
+                        <a class="fa fa-moon-o"></a>
+                    </span>
                 </div>
         </div><!-- #login-form-inputs-container -->
         </div><!-- .row -->
     </div><!-- # login-form -->
-<?php $this->endWidget(); ?>
+<?php $this->endWidget(); 
+?>
 </div><!-- #login-box -->
 </div><!-- #login-page -->
+
+
 <?php
 $this->renderPartial ('loginCompanyInfo');
 ?>
+
 </div>
+

@@ -34,19 +34,17 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 
-$this->actionMenu = $this->formatMenu(array(
-	array('label'=>Yii::t('profile','Social Feed'),'url'=>array('/profile/activity')),
-	array('label'=>Yii::t('users','Manage Users'), 'url'=>array('admin')),
-	array('label'=>Yii::t('users','Create User'), 'url'=>array('create')),
-	array('label'=>Yii::t('users','Invite Users'), 'url'=>array('inviteUsers')),
-	array('label'=>Yii::t('users','View User')),
-	array('label'=>Yii::t('profile','View Profile'),'url'=>array('/profile/view','id'=>$model->id)),
-	array('label'=>Yii::t('users','Update User'), 'url'=>array('update', 'id'=>$model->id)),
-	array('label'=>Yii::t('users','Delete User'), 'url'=>'#', 'linkOptions'=>array('submit'=>array('delete','id'=>$model->id),'confirm'=>Yii::t('app','Are you sure you want to delete this item?'))),
-));
+$menuOptions = array(
+    'feed', 'admin', 'create', 'invite', 'view', 'profile', 'edit', 'delete',
+);
+$this->insertMenu($menuOptions, $model);
+
 ?>
 <div class="page-title icon users">
-	<h2><span class="no-bold"><?php echo Yii::t('users','User:'); ?></span> <?php echo $model->firstName,' ',$model->lastName; ?></h2>
+    <h2><span class="no-bold">
+        <?php echo Yii::t('users','{user}:', array(
+            '{user}' => Modules::displayName(false),
+        )); ?></span> <?php echo $model->firstName,' ',$model->lastName; ?></h2>
 </div>
 <?php $this->widget('zii.widgets.CDetailView', array(
 	'data'=>$model,
@@ -71,7 +69,11 @@ $this->actionMenu = $this->formatMenu(array(
 	),
 )); ?>
 <br>
-<div class="page-title rounded-top"><h2><?php echo Yii::t('users','Action History'); ?></h2></div>
+<div class="page-title rounded-top"><h2>
+    <?php echo Yii::t('users','{action} History', array(
+        '{action}' => Modules::displayName(false, "Actions"),
+    )); ?>
+</h2></div>
 
 
 <?php

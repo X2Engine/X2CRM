@@ -40,24 +40,18 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->getBaseUrl().'/js/X2Tag
 Yii::app()->clientScript->registerScriptFile(Yii::app()->getBaseUrl().'/js/X2Tags/InlineTagsContainer.js');
 
 $authParams['X2Model'] = $model;
-$this->actionMenu = $this->formatMenu(array(
-	array('label'=>Yii::t('actions','Today\'s Actions'),'url'=>array('index')),
-	array('label'=>Yii::t('actions','All My Actions'),'url'=>array('viewAll')),
-	array('label'=>Yii::t('actions','Everyone\'s Actions'),'url'=>array('viewGroup')),
-	array('label'=>Yii::t('actions','Create Action'),'url'=>array('create','param'=>Yii::app()->user->getName().";none:0")),
-	array('label'=>Yii::t('actions','View')),
-	array('label'=>Yii::t('actions','Edit Action'),'url'=>array('update', 'id'=>$model->id)),
-	array('label'=>Yii::t('contacts','Share Action'),'url'=>array('shareAction','id'=>$model->id)),
-	array('label'=>Yii::t('actions','Delete Action'), 'url'=>'#', 'linkOptions'=>array('submit'=>array('delete','id'=>$model->id),'confirm'=>'Are you sure you want to delete this item?')),
-),$authParams);
+$menuOptions = array(
+    'todays', 'my', 'everyones', 'create', 'view', 'edit', 'share', 'delete',
+);
+$this->insertMenu($menuOptions, $model, $authParams);
 
 ?>
 <div class="page-title icon actions">
 	<h2><?php
 	if($model->associationName=='none')
-		echo Yii::t('actions','Action');
+		echo Yii::t('actions','{action}', array('{action}' => Modules::displayName()));
 	else
-		echo '<span class="no-bold">',Yii::t('actions','Action'),':</span> '.CHtml::encode($model->associationName); ?>
+		echo '<span class="no-bold">',Yii::t('actions','{action}', array('{action}' => Modules::displayName())),':</span> '.CHtml::encode($model->associationName); ?>
 	</h2>
 </div>
 <?php

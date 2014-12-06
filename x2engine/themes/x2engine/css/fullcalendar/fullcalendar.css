@@ -8,611 +8,646 @@
  * Date: Mon Feb 6 22:40:40 2012 -0800
  *
  */
-
-
+/* line 12, ../../../../compass/themes/x2engine/css/fullcalendar/fullcalendar.scss */
 .fc {
-	direction: ltr;
-	text-align: left;
-	}
-	
+  direction: ltr;
+  text-align: left;
+}
+/* line 15, ../../../../compass/themes/x2engine/css/fullcalendar/fullcalendar.scss */
 .fc table {
-	border-collapse: collapse;
-	border-spacing: 0;
-	}
-	
-html .fc,
+  border-collapse: collapse;
+  border-spacing: 0;
+}
+
+/* line 21, ../../../../compass/themes/x2engine/css/fullcalendar/fullcalendar.scss */
+html .fc {
+  font-size: 1em;
+}
+
+/* line 26, ../../../../compass/themes/x2engine/css/fullcalendar/fullcalendar.scss */
 .fc table {
-	font-size: 1em;
-	}
-	
-.fc td,
-.fc th {
-	padding: 0;
-	vertical-align: top;
-	}
-
-
+  font-size: 1em;
+}
+/* line 29, ../../../../compass/themes/x2engine/css/fullcalendar/fullcalendar.scss */
+.fc td, .fc th {
+  padding: 0;
+  vertical-align: top;
+}
 
 /* Header
 ------------------------------------------------------------------------*/
-
+/* line 38, ../../../../compass/themes/x2engine/css/fullcalendar/fullcalendar.scss */
 .fc-header td {
-	white-space: nowrap;
-	}
+  white-space: nowrap;
+}
 
+/* line 42, ../../../../compass/themes/x2engine/css/fullcalendar/fullcalendar.scss */
 .fc-header-left {
-	width: 25%;
-	text-align: left;
-	}
-	
+  width: 25%;
+  text-align: left;
+}
+
+/* line 47, ../../../../compass/themes/x2engine/css/fullcalendar/fullcalendar.scss */
 .fc-header-center {
-	text-align: center;
-	}
-	
+  text-align: center;
+}
+
+/* line 51, ../../../../compass/themes/x2engine/css/fullcalendar/fullcalendar.scss */
 .fc-header-right {
-	width: 25%;
-	text-align: right;
-	}
-	
+  width: 25%;
+  text-align: right;
+}
+
+/* line 56, ../../../../compass/themes/x2engine/css/fullcalendar/fullcalendar.scss */
 .fc-header-title {
-	display: inline-block;
-	vertical-align: top;
-	}
-	
+  display: inline-block;
+  vertical-align: top;
+}
+/* line 59, ../../../../compass/themes/x2engine/css/fullcalendar/fullcalendar.scss */
 .fc-header-title h2 {
-	margin-top: 0;
-	white-space: nowrap;
-	}
-	
+  margin-top: 0;
+  white-space: nowrap;
+}
+
+/* line 65, ../../../../compass/themes/x2engine/css/fullcalendar/fullcalendar.scss */
 .fc .fc-header-space {
-	padding-left: 10px;
-	}
-	
-.fc-header .fc-button {
-	margin-bottom: 1em;
-	vertical-align: top;
-	}
-	
-/* buttons edges butting together */
+  padding-left: 10px;
+}
 
+/* line 70, ../../../../compass/themes/x2engine/css/fullcalendar/fullcalendar.scss */
 .fc-header .fc-button {
-	margin-right: -1px;
-	}
-	
+  margin-bottom: 1em;
+  vertical-align: top;
+  margin-right: -1px;
+}
+/* line 75, ../../../../compass/themes/x2engine/css/fullcalendar/fullcalendar.scss */
 .fc-header .fc-corner-right {
-	margin-right: 1px; /* back to normal */
-	}
-	
+  margin-right: 1px;
+  /* back to normal */
+}
+/* line 79, ../../../../compass/themes/x2engine/css/fullcalendar/fullcalendar.scss */
 .fc-header .ui-corner-right {
-	margin-right: 0; /* back to normal */
-	}
-	
-/* button layering (for border precedence) */
-	
-.fc-header .fc-state-hover,
-.fc-header .ui-state-hover {
-	z-index: 2;
-	}
-	
+  margin-right: 0;
+  /* back to normal */
+}
+/* line 83, ../../../../compass/themes/x2engine/css/fullcalendar/fullcalendar.scss */
+.fc-header .fc-state-hover, .fc-header .ui-state-hover {
+  z-index: 2;
+}
+/* line 86, ../../../../compass/themes/x2engine/css/fullcalendar/fullcalendar.scss */
 .fc-header .fc-state-down {
-	z-index: 3;
-	}
+  z-index: 3;
+}
+/* line 89, ../../../../compass/themes/x2engine/css/fullcalendar/fullcalendar.scss */
+.fc-header .fc-state-active, .fc-header .ui-state-active {
+  z-index: 4;
+}
 
-.fc-header .fc-state-active,
-.fc-header .ui-state-active {
-	z-index: 4;
-	}
-	
-	
-	
+/* buttons edges butting together */
+/* button layering (for border precedence) */
 /* Content
 ------------------------------------------------------------------------*/
-	
+/* line 101, ../../../../compass/themes/x2engine/css/fullcalendar/fullcalendar.scss */
 .fc-content {
-	clear: both;
-	}
-	
+  clear: both;
+}
+
+/* line 105, ../../../../compass/themes/x2engine/css/fullcalendar/fullcalendar.scss */
 .fc-view {
-	width: 100%; /* needed for view switching (when view is absolute) */
-	overflow: hidden;
-	}
-	
-	
+  width: 100%;
+  /* needed for view switching (when view is absolute) */
+  overflow: hidden;
+}
 
 /* Cell Styles
 ------------------------------------------------------------------------*/
+/* line 114, ../../../../compass/themes/x2engine/css/fullcalendar/fullcalendar.scss */
+.fc-widget-header, .fc-widget-content {
+  /* <td>, usually */
+  border: 1px solid #ccc;
+}
 
-.fc-widget-header,    /* <th>, usually */
-.fc-widget-content {  /* <td>, usually */
-	border: 1px solid #ccc;
-	}
-	
-.fc-state-highlight { /* <td> today cell */ /* TODO: add .fc-today to <th> */
-	background: #ffc;
-	}
-	
-.fc-cell-overlay { /* semi-transparent rectangle while dragging */
-	background: #9cf;
-	opacity: .2;
-	filter: alpha(opacity=20); /* for IE */
-	}
-	
+/* line 119, ../../../../compass/themes/x2engine/css/fullcalendar/fullcalendar.scss */
+.fc-state-highlight {
+  /* <td> today cell */
+  /* TODO: add .fc-today to <th> */
+  background: #ffc;
+}
 
+/* line 125, ../../../../compass/themes/x2engine/css/fullcalendar/fullcalendar.scss */
+.fc-cell-overlay {
+  /* semi-transparent rectangle while dragging */
+  background: #9cf;
+  opacity: .2;
+  filter: alpha(opacity=20);
+  /* for IE */
+}
 
 /* Buttons
 ------------------------------------------------------------------------*/
-
+/* line 136, ../../../../compass/themes/x2engine/css/fullcalendar/fullcalendar.scss */
 .fc-button {
-	position: relative;
-	display: inline-block;
-	cursor: pointer;
-	}
-	
-.fc-state-default { /* non-theme */
-	border-style: solid;
-	border-width: 1px 0;
-	}
-	
+  position: relative;
+  display: inline-block;
+  cursor: pointer;
+}
+
+/* line 142, ../../../../compass/themes/x2engine/css/fullcalendar/fullcalendar.scss */
+.fc-state-default {
+  /* non-theme */
+  border-style: solid;
+  border-width: 1px 0;
+}
+
+/* line 148, ../../../../compass/themes/x2engine/css/fullcalendar/fullcalendar.scss */
 .fc-button-inner {
-	position: relative;
-	float: left;
-	overflow: hidden;
-	}
-	
-.fc-state-default .fc-button-inner { /* non-theme */
-	border-style: solid;
-	border-width: 0 1px;
-	}
-	
-.fc-button-content {
-	position: relative;
-	float: left;
-	height: 1.9em;
-	line-height: 1.9em;
-	padding: 0 .6em;
-	white-space: nowrap;
-	}
-	
-/* icon (for jquery ui) */
-	
-.fc-button-content .fc-icon-wrap {
-	position: relative;
-	float: left;
-	top: 50%;
-	}
-	
-.fc-button-content .ui-icon {
-	position: relative;
-	float: left;
-	margin-top: -50%;
-	*margin-top: 0;
-	*top: -50%;
-	}
-	
-/* gloss effect */
-	
-.fc-state-default .fc-button-effect {
-	position: absolute;
-	top: 50%;
-	left: 0;
-	}
-	
-.fc-state-default .fc-button-effect span {
-	position: absolute;
-	top: -100px;
-	left: 0;
-	width: 500px;
-	height: 100px;
-	border-width: 100px 0 0 1px;
-	border-style: solid;
-	border-color: #fff;
-	background: #444;
-	opacity: .09;
-	filter: alpha(opacity=9);
-	}
-	
-/* button states (determines colors)  */
-	
-.fc-state-default,
+  position: relative;
+  float: left;
+  overflow: hidden;
+}
+
+/* line 154, ../../../../compass/themes/x2engine/css/fullcalendar/fullcalendar.scss */
 .fc-state-default .fc-button-inner {
-	border-style: solid;
-	border-color: #ccc #bbb #aaa;
-	background: #F3F3F3;
-	color: #000;
-	}
-	
-.fc-state-hover,
+  /* non-theme */
+  border-style: solid;
+  border-width: 0 1px;
+}
+
+/* line 160, ../../../../compass/themes/x2engine/css/fullcalendar/fullcalendar.scss */
+.fc-button-content {
+  position: relative;
+  float: left;
+  height: 1.9em;
+  line-height: 1.9em;
+  padding: 0 .6em;
+  white-space: nowrap;
+}
+/* line 167, ../../../../compass/themes/x2engine/css/fullcalendar/fullcalendar.scss */
+.fc-button-content .fc-icon-wrap {
+  position: relative;
+  float: left;
+  top: 50%;
+}
+/* line 172, ../../../../compass/themes/x2engine/css/fullcalendar/fullcalendar.scss */
+.fc-button-content .ui-icon {
+  position: relative;
+  float: left;
+  margin-top: -50%;
+  *margin-top: 0;
+  *top: -50%;
+}
+
+/* icon (for jquery ui) */
+/* gloss effect */
+/* line 185, ../../../../compass/themes/x2engine/css/fullcalendar/fullcalendar.scss */
+.fc-state-default {
+  border-style: solid;
+  border-color: #ccc #bbb #aaa;
+  background: #F3F3F3;
+  color: #000;
+}
+/* line 186, ../../../../compass/themes/x2engine/css/fullcalendar/fullcalendar.scss */
+.fc-state-default .fc-button-effect {
+  position: absolute;
+  top: 50%;
+  left: 0;
+}
+/* line 190, ../../../../compass/themes/x2engine/css/fullcalendar/fullcalendar.scss */
+.fc-state-default .fc-button-effect span {
+  position: absolute;
+  top: -100px;
+  left: 0;
+  width: 500px;
+  height: 100px;
+  border-width: 100px 0 0 1px;
+  border-style: solid;
+  border-color: #fff;
+  background: #444;
+  opacity: .09;
+  filter: alpha(opacity=9);
+}
+/* line 208, ../../../../compass/themes/x2engine/css/fullcalendar/fullcalendar.scss */
+.fc-state-default .fc-button-inner {
+  border-style: solid;
+  border-color: #ccc #bbb #aaa;
+  background: #F3F3F3;
+  color: #000;
+}
+
+/* button states (determines colors)  */
+/* line 218, ../../../../compass/themes/x2engine/css/fullcalendar/fullcalendar.scss */
+.fc-state-hover {
+  border-color: #999;
+}
+/* line 220, ../../../../compass/themes/x2engine/css/fullcalendar/fullcalendar.scss */
 .fc-state-hover .fc-button-inner {
-	border-color: #999;
-	}
-	
-.fc-state-down,
+  border-color: #999;
+}
+
+/* line 225, ../../../../compass/themes/x2engine/css/fullcalendar/fullcalendar.scss */
+.fc-state-down {
+  border-color: #555;
+  background: #777;
+}
+/* line 228, ../../../../compass/themes/x2engine/css/fullcalendar/fullcalendar.scss */
 .fc-state-down .fc-button-inner {
-	border-color: #555;
-	background: #777;
-	}
-	
-.fc-state-active,
+  border-color: #555;
+  background: #777;
+}
+
+/* line 234, ../../../../compass/themes/x2engine/css/fullcalendar/fullcalendar.scss */
+.fc-state-active {
+  border-color: #555;
+  background: #777;
+  color: #fff;
+}
+/* line 238, ../../../../compass/themes/x2engine/css/fullcalendar/fullcalendar.scss */
 .fc-state-active .fc-button-inner {
-	border-color: #555;
-	background: #777;
-	color: #fff;
-	}
-	
-.fc-state-disabled,
-.fc-state-disabled .fc-button-inner {
-	color: #999;
-	border-color: #ddd;
-	}
-	
+  border-color: #555;
+  background: #777;
+  color: #fff;
+}
+
+/* line 245, ../../../../compass/themes/x2engine/css/fullcalendar/fullcalendar.scss */
 .fc-state-disabled {
-	cursor: default;
-	}
-	
+  color: #999;
+  border-color: #ddd;
+  cursor: default;
+}
+/* line 248, ../../../../compass/themes/x2engine/css/fullcalendar/fullcalendar.scss */
+.fc-state-disabled .fc-button-inner {
+  color: #999;
+  border-color: #ddd;
+}
+/* line 253, ../../../../compass/themes/x2engine/css/fullcalendar/fullcalendar.scss */
 .fc-state-disabled .fc-button-effect {
-	display: none;
-	}
-	
-	
+  display: none;
+}
 
 /* Global Event Styles
 ------------------------------------------------------------------------*/
-	 
+/* line 261, ../../../../compass/themes/x2engine/css/fullcalendar/fullcalendar.scss */
 .fc-event {
-	border-style: solid;
-	border-width: 0;
-	font-size: .85em;
-	cursor: default;
-	}
-	
-a.fc-event,
-.fc-event-draggable {
-	cursor: pointer;
-	}
-	
+  border-style: solid;
+  border-width: 0;
+  font-size: .85em;
+  cursor: default;
+}
+
+/* line 268, ../../../../compass/themes/x2engine/css/fullcalendar/fullcalendar.scss */
+a.fc-event, .fc-event-draggable {
+  cursor: pointer;
+}
+
+/* line 272, ../../../../compass/themes/x2engine/css/fullcalendar/fullcalendar.scss */
 a.fc-event {
-	text-decoration: none;
-	}
-	
+  text-decoration: none;
+}
+
+/* line 276, ../../../../compass/themes/x2engine/css/fullcalendar/fullcalendar.scss */
 .fc-rtl .fc-event {
-	text-align: right;
-	}
-	
+  text-align: right;
+}
+
+/* line 280, ../../../../compass/themes/x2engine/css/fullcalendar/fullcalendar.scss */
 .fc-event-skin {
-	border-color: #36c;     /* default BORDER color */
-	background-color: #36c; /* default BACKGROUND color */
-	color: #fff;            /* default TEXT color */
-	}
-	
+  border-color: #36c;
+  /* default BORDER color */
+  background-color: #36c;
+  /* default BACKGROUND color */
+  color: #fff;
+  /* default TEXT color */
+}
+
+/* line 289, ../../../../compass/themes/x2engine/css/fullcalendar/fullcalendar.scss */
 .fc-event-inner {
-	position: relative;
-	width: 100%;
-	height: 100%;
-	border-style: solid;
-	border-width: 0;
-	overflow: hidden;
-	}
-	
-.fc-event-time,
-.fc-event-title {
-	padding: 0 1px;
-	}
-	
-.fc .ui-resizable-handle { /*** TODO: don't use ui-resizable anymore, change class ***/
-	display: block;
-	position: absolute;
-	z-index: 99999;
-	overflow: hidden; /* hacky spaces (IE6/7) */
-	font-size: 300%;  /* */
-	line-height: 50%; /* */
-	}
-	
-	
-	
+  position: relative;
+  width: 100%;
+  height: 100%;
+  border-style: solid;
+  border-width: 0;
+  overflow: hidden;
+}
+
+/* line 298, ../../../../compass/themes/x2engine/css/fullcalendar/fullcalendar.scss */
+.fc-event-time, .fc-event-title {
+  padding: 0 1px;
+}
+
+/* line 302, ../../../../compass/themes/x2engine/css/fullcalendar/fullcalendar.scss */
+.fc .ui-resizable-handle {
+  /*** TODO: don't use ui-resizable anymore, change class ***/
+  display: block;
+  position: absolute;
+  z-index: 99999;
+  overflow: hidden;
+  /* hacky spaces (IE6/7) */
+  font-size: 300%;
+  /* */
+  line-height: 50%;
+  /* */
+}
+
 /* Horizontal Events
 ------------------------------------------------------------------------*/
-
+/* line 318, ../../../../compass/themes/x2engine/css/fullcalendar/fullcalendar.scss */
 .fc-event-hori {
-	border-width: 1px 0;
-	margin-bottom: 1px;
-	}
-	
-/* resizable */
-	
+  border-width: 1px 0;
+  margin-bottom: 1px;
+}
+/* line 321, ../../../../compass/themes/x2engine/css/fullcalendar/fullcalendar.scss */
 .fc-event-hori .ui-resizable-e {
-	top: 0           !important; /* importants override pre jquery ui 1.7 styles */
-	right: -3px      !important;
-	width: 7px       !important;
-	height: 100%     !important;
-	cursor: e-resize;
-	}
-	
+  top: 0           !important;
+  /* importants override pre jquery ui 1.7 styles */
+  right: -3px      !important;
+  width: 7px       !important;
+  height: 100%     !important;
+  cursor: e-resize;
+}
+/* line 329, ../../../../compass/themes/x2engine/css/fullcalendar/fullcalendar.scss */
 .fc-event-hori .ui-resizable-w {
-	top: 0           !important;
-	left: -3px       !important;
-	width: 7px       !important;
-	height: 100%     !important;
-	cursor: w-resize;
-	}
-	
+  top: 0           !important;
+  left: -3px       !important;
+  width: 7px       !important;
+  height: 100%     !important;
+  cursor: w-resize;
+}
+/* line 336, ../../../../compass/themes/x2engine/css/fullcalendar/fullcalendar.scss */
 .fc-event-hori .ui-resizable-handle {
-	_padding-bottom: 14px; /* IE6 had 0 height */
-	}
-	
-	
-	
+  _padding-bottom: 14px;
+  /* IE6 had 0 height */
+}
+
+/* resizable */
 /* Fake Rounded Corners (for buttons and events)
 ------------------------------------------------------------*/
-	
+/* line 347, ../../../../compass/themes/x2engine/css/fullcalendar/fullcalendar.scss */
 .fc-corner-left {
-	margin-left: 1px;
-	}
-	
-.fc-corner-left .fc-button-inner,
-.fc-corner-left .fc-event-inner {
-	margin-left: -1px;
-	}
-	
+  margin-left: 1px;
+}
+/* line 349, ../../../../compass/themes/x2engine/css/fullcalendar/fullcalendar.scss */
+.fc-corner-left .fc-button-inner, .fc-corner-left .fc-event-inner {
+  margin-left: -1px;
+}
+
+/* line 354, ../../../../compass/themes/x2engine/css/fullcalendar/fullcalendar.scss */
 .fc-corner-right {
-	margin-right: 1px;
-	}
-	
-.fc-corner-right .fc-button-inner,
-.fc-corner-right .fc-event-inner {
-	margin-right: -1px;
-	}
-	
+  margin-right: 1px;
+}
+/* line 356, ../../../../compass/themes/x2engine/css/fullcalendar/fullcalendar.scss */
+.fc-corner-right .fc-button-inner, .fc-corner-right .fc-event-inner {
+  margin-right: -1px;
+}
+
+/* line 361, ../../../../compass/themes/x2engine/css/fullcalendar/fullcalendar.scss */
 .fc-corner-top {
-	margin-top: 1px;
-	}
-	
+  margin-top: 1px;
+}
+/* line 363, ../../../../compass/themes/x2engine/css/fullcalendar/fullcalendar.scss */
 .fc-corner-top .fc-event-inner {
-	margin-top: -1px;
-	}
-	
+  margin-top: -1px;
+}
+
+/* line 368, ../../../../compass/themes/x2engine/css/fullcalendar/fullcalendar.scss */
 .fc-corner-bottom {
-	margin-bottom: 1px;
-	}
-	
+  margin-bottom: 1px;
+}
+/* line 370, ../../../../compass/themes/x2engine/css/fullcalendar/fullcalendar.scss */
 .fc-corner-bottom .fc-event-inner {
-	margin-bottom: -1px;
-	}
-	
-	
-	
+  margin-bottom: -1px;
+}
+
 /* Fake Rounded Corners SPECIFICALLY FOR EVENTS
 -----------------------------------------------------------------*/
-	
+/* line 378, ../../../../compass/themes/x2engine/css/fullcalendar/fullcalendar.scss */
 .fc-corner-left .fc-event-inner {
-	border-left-width: 1px;
-	}
-	
+  border-left-width: 1px;
+}
+
+/* line 382, ../../../../compass/themes/x2engine/css/fullcalendar/fullcalendar.scss */
 .fc-corner-right .fc-event-inner {
-	border-right-width: 1px;
-	}
-	
+  border-right-width: 1px;
+}
+
+/* line 386, ../../../../compass/themes/x2engine/css/fullcalendar/fullcalendar.scss */
 .fc-corner-top .fc-event-inner {
-	border-top-width: 1px;
-	}
-	
+  border-top-width: 1px;
+}
+
+/* line 390, ../../../../compass/themes/x2engine/css/fullcalendar/fullcalendar.scss */
 .fc-corner-bottom .fc-event-inner {
-	border-bottom-width: 1px;
-	}
-	
-	
-	
+  border-bottom-width: 1px;
+}
+
 /* Reusable Separate-border Table
 ------------------------------------------------------------*/
-
+/* line 397, ../../../../compass/themes/x2engine/css/fullcalendar/fullcalendar.scss */
 table.fc-border-separate {
-	border-collapse: separate;
-	}
-	
-.fc-border-separate th,
-.fc-border-separate td {
-	border-width: 1px 0 0 1px;
-	}
-	
-.fc-border-separate th.fc-last,
-.fc-border-separate td.fc-last {
-	border-right-width: 1px;
-	}
-	
-.fc-border-separate tr.fc-last th,
-.fc-border-separate tr.fc-last td {
-	border-bottom-width: 1px;
-	}
-	
-.fc-border-separate tbody tr.fc-first td,
-.fc-border-separate tbody tr.fc-first th {
-	border-top-width: 0;
-	}
-	
-	
+  border-collapse: separate;
+}
+
+/* line 402, ../../../../compass/themes/x2engine/css/fullcalendar/fullcalendar.scss */
+.fc-border-separate th, .fc-border-separate td {
+  border-width: 1px 0 0 1px;
+}
+/* line 405, ../../../../compass/themes/x2engine/css/fullcalendar/fullcalendar.scss */
+.fc-border-separate th.fc-last, .fc-border-separate td.fc-last {
+  border-right-width: 1px;
+}
+/* line 409, ../../../../compass/themes/x2engine/css/fullcalendar/fullcalendar.scss */
+.fc-border-separate tr.fc-last th, .fc-border-separate tr.fc-last td {
+  border-bottom-width: 1px;
+}
+/* line 414, ../../../../compass/themes/x2engine/css/fullcalendar/fullcalendar.scss */
+.fc-border-separate tbody tr.fc-first td, .fc-border-separate tbody tr.fc-first th {
+  border-top-width: 0;
+}
 
 /* Month View, Basic Week View, Basic Day View
 ------------------------------------------------------------------------*/
-
+/* line 424, ../../../../compass/themes/x2engine/css/fullcalendar/fullcalendar.scss */
 .fc-grid th {
-	text-align: center;
-	}
-	
+  text-align: center;
+}
+/* line 427, ../../../../compass/themes/x2engine/css/fullcalendar/fullcalendar.scss */
 .fc-grid .fc-day-number {
-	float: right;
-	padding: 0 2px;
-	}
-	
+  float: right;
+  padding: 0 2px;
+}
+/* line 431, ../../../../compass/themes/x2engine/css/fullcalendar/fullcalendar.scss */
 .fc-grid .fc-other-month .fc-day-number {
-	opacity: 0.3;
-	filter: alpha(opacity=30); /* for IE */
-	/* opacity with small font can sometimes look too faded
-	   might want to set the 'color' property instead
-	   making day-numbers bold also fixes the problem */
-	}
-	
+  opacity: 0.3;
+  filter: alpha(opacity=30);
+  /* for IE */
+  /* opacity with small font can sometimes look too faded
+     might want to set the 'color' property instead
+     making day-numbers bold also fixes the problem */
+}
+/* line 439, ../../../../compass/themes/x2engine/css/fullcalendar/fullcalendar.scss */
 .fc-grid .fc-day-content {
-	clear: both;
-	padding: 2px 2px 1px; /* distance between events and day edges */
-	}
-	
-/* event styles */
-	
+  clear: both;
+  padding: 2px 2px 1px;
+  /* distance between events and day edges */
+}
+/* line 444, ../../../../compass/themes/x2engine/css/fullcalendar/fullcalendar.scss */
 .fc-grid .fc-event-time {
-	font-weight: bold;
-	}
-	
+  font-weight: bold;
+}
+
+/* event styles */
 /* right-to-left */
-	
+/* line 454, ../../../../compass/themes/x2engine/css/fullcalendar/fullcalendar.scss */
 .fc-rtl .fc-grid .fc-day-number {
-	float: left;
-	}
-	
+  float: left;
+}
+/* line 457, ../../../../compass/themes/x2engine/css/fullcalendar/fullcalendar.scss */
 .fc-rtl .fc-grid .fc-event-time {
-	float: right;
-	}
-	
-	
+  float: right;
+}
 
 /* Agenda Week View, Agenda Day View
 ------------------------------------------------------------------------*/
-
+/* line 465, ../../../../compass/themes/x2engine/css/fullcalendar/fullcalendar.scss */
 .fc-agenda table {
-	border-collapse: separate;
-	}
-	
+  border-collapse: separate;
+}
+
+/* line 469, ../../../../compass/themes/x2engine/css/fullcalendar/fullcalendar.scss */
 .fc-agenda-days th {
-	text-align: center;
-	}
-	
+  text-align: center;
+}
+
+/* line 474, ../../../../compass/themes/x2engine/css/fullcalendar/fullcalendar.scss */
 .fc-agenda .fc-agenda-axis {
-	width: 50px;
-	padding: 0 4px;
-	vertical-align: middle;
-	text-align: right;
-	white-space: nowrap;
-	font-weight: normal;
-	}
-	
+  width: 50px;
+  padding: 0 4px;
+  vertical-align: middle;
+  text-align: right;
+  white-space: nowrap;
+  font-weight: normal;
+}
+/* line 482, ../../../../compass/themes/x2engine/css/fullcalendar/fullcalendar.scss */
 .fc-agenda .fc-day-content {
-	padding: 2px 2px 1px;
-	}
-	
+  padding: 2px 2px 1px;
+}
+
 /* make axis border take precedence */
-	
+/* line 490, ../../../../compass/themes/x2engine/css/fullcalendar/fullcalendar.scss */
 .fc-agenda-days .fc-agenda-axis {
-	border-right-width: 1px;
-	}
-	
+  border-right-width: 1px;
+}
+/* line 493, ../../../../compass/themes/x2engine/css/fullcalendar/fullcalendar.scss */
 .fc-agenda-days .fc-col0 {
-	border-left-width: 0;
-	}
-	
+  border-left-width: 0;
+}
+
 /* all-day area */
-	
+/* line 501, ../../../../compass/themes/x2engine/css/fullcalendar/fullcalendar.scss */
 .fc-agenda-allday th {
-	border-width: 0 1px;
-	}
-	
+  border-width: 0 1px;
+}
+/* line 504, ../../../../compass/themes/x2engine/css/fullcalendar/fullcalendar.scss */
 .fc-agenda-allday .fc-day-content {
-	min-height: 34px; /* TODO: doesnt work well in quirksmode */
-	_height: 34px;
-	}
-	
+  min-height: 34px;
+  /* TODO: doesnt work well in quirksmode */
+  _height: 34px;
+}
+
 /* divider (between all-day and slots) */
-	
+/* line 513, ../../../../compass/themes/x2engine/css/fullcalendar/fullcalendar.scss */
 .fc-agenda-divider-inner {
-	height: 2px;
-	overflow: hidden;
-	}
-	
+  height: 2px;
+  overflow: hidden;
+}
+
+/* line 518, ../../../../compass/themes/x2engine/css/fullcalendar/fullcalendar.scss */
 .fc-widget-header .fc-agenda-divider-inner {
-	background: #eee;
-	}
-	
+  background: #eee;
+}
+
 /* slot rows */
-	
+/* line 525, ../../../../compass/themes/x2engine/css/fullcalendar/fullcalendar.scss */
 .fc-agenda-slots th {
-	border-width: 1px 1px 0;
-	}
-	
+  border-width: 1px 1px 0;
+}
+/* line 528, ../../../../compass/themes/x2engine/css/fullcalendar/fullcalendar.scss */
 .fc-agenda-slots td {
-	border-width: 1px 0 0;
-	background: none;
-	}
-	
+  border-width: 1px 0 0;
+  background: none;
+}
+/* line 531, ../../../../compass/themes/x2engine/css/fullcalendar/fullcalendar.scss */
 .fc-agenda-slots td div {
-	height: 20px;
-	}
-	
-.fc-agenda-slots tr.fc-slot0 th,
-.fc-agenda-slots tr.fc-slot0 td {
-	border-top-width: 0;
-	}
-
-.fc-agenda-slots tr.fc-minor th,
-.fc-agenda-slots tr.fc-minor td {
-	border-top-style: dotted;
-	}
-	
+  height: 20px;
+}
+/* line 537, ../../../../compass/themes/x2engine/css/fullcalendar/fullcalendar.scss */
+.fc-agenda-slots tr.fc-slot0 th, .fc-agenda-slots tr.fc-slot0 td {
+  border-top-width: 0;
+}
+/* line 542, ../../../../compass/themes/x2engine/css/fullcalendar/fullcalendar.scss */
+.fc-agenda-slots tr.fc-minor th, .fc-agenda-slots tr.fc-minor td {
+  border-top-style: dotted;
+}
+/* line 545, ../../../../compass/themes/x2engine/css/fullcalendar/fullcalendar.scss */
 .fc-agenda-slots tr.fc-minor th.ui-widget-header {
-	*border-top-style: solid; /* doesn't work with background in IE6/7 */
-	}
-	
-
+  *border-top-style: solid;
+  /* doesn't work with background in IE6/7 */
+}
 
 /* Vertical Events
 ------------------------------------------------------------------------*/
-
+/* line 556, ../../../../compass/themes/x2engine/css/fullcalendar/fullcalendar.scss */
 .fc-event-vert {
-	border-width: 0 1px;
-	}
-	
-.fc-event-vert .fc-event-head,
-.fc-event-vert .fc-event-content {
-	position: relative;
-	z-index: 2;
-	width: 100%;
-	overflow: hidden;
-	}
-	
+  border-width: 0 1px;
+}
+/* line 558, ../../../../compass/themes/x2engine/css/fullcalendar/fullcalendar.scss */
+.fc-event-vert .fc-event-head, .fc-event-vert .fc-event-content {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  overflow: hidden;
+}
+/* line 564, ../../../../compass/themes/x2engine/css/fullcalendar/fullcalendar.scss */
 .fc-event-vert .fc-event-time {
-	white-space: nowrap;
-	font-size: 10px;
-	}
-	
-.fc-event-vert .fc-event-bg { /* makes the event lighter w/ a semi-transparent overlay  */
-	position: absolute;
-	z-index: 1;
-	top: 0;
-	left: 0;
-	width: 100%;
-	height: 100%;
-	background: #fff;
-	opacity: .3;
-	filter: alpha(opacity=30);
-	}
-	
-.fc .ui-draggable-dragging .fc-event-bg, /* TODO: something nicer like .fc-opacity */
-.fc-select-helper .fc-event-bg {
-	display: none\9; /* for IE6/7/8. nested opacity filters while dragging don't work */
-	}
-	
+  white-space: nowrap;
+  font-size: 10px;
+}
+/* line 568, ../../../../compass/themes/x2engine/css/fullcalendar/fullcalendar.scss */
+.fc-event-vert .fc-event-bg {
+  /* makes the event lighter w/ a semi-transparent overlay  */
+  position: absolute;
+  z-index: 1;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: #fff;
+  opacity: .3;
+  filter: alpha(opacity=30);
+}
+
+/* line 582, ../../../../compass/themes/x2engine/css/fullcalendar/fullcalendar.scss */
+.fc .ui-draggable-dragging .fc-event-bg, .fc-select-helper .fc-event-bg {
+  display: none\9;
+  /* for IE6/7/8. nested opacity filters while dragging don't work */
+}
+
 /* resizable */
-	
+/* line 589, ../../../../compass/themes/x2engine/css/fullcalendar/fullcalendar.scss */
 .fc-event-vert .ui-resizable-s {
-	bottom: 0        !important; /* importants override pre jquery ui 1.7 styles */
-	width: 100%      !important;
-	height: 8px      !important;
-	overflow: hidden !important;
-	line-height: 8px !important;
-	font-size: 11px  !important;
-	font-family: monospace;
-	text-align: center;
-	cursor: s-resize;
-	}
-	
-.fc-agenda .ui-resizable-resizing { /* TODO: better selector */
-	_overflow: hidden;
-	}
-	
-	
+  bottom: 0        !important;
+  /* importants override pre jquery ui 1.7 styles */
+  width: 100%      !important;
+  height: 8px      !important;
+  overflow: hidden !important;
+  line-height: 8px !important;
+  font-size: 11px  !important;
+  font-family: monospace;
+  text-align: center;
+  cursor: s-resize;
+}
+
+/* line 602, ../../../../compass/themes/x2engine/css/fullcalendar/fullcalendar.scss */
+.fc-agenda .ui-resizable-resizing {
+  /* TODO: better selector */
+  _overflow: hidden;
+}

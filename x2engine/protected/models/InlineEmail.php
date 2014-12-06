@@ -152,6 +152,11 @@ class InlineEmail extends CFormModel {
     public $emailBody = '';
     public $preview = false;
     public $stageEmail = false;
+
+
+     
+
+
     private $_recipientContacts;
 
     /**
@@ -214,6 +219,7 @@ class InlineEmail extends CFormModel {
             array('to,cc,bcc', 'parseMailingList'),
             array('emailSendTime', 'date', 'allowEmpty' => true, 'timestampAttribute' => 'emailSendTimeParsed'),
             array('to, cc, credId, bcc, message, template, modelId, modelName, subject', 'safe'),
+             
         );
     }
 
@@ -233,6 +239,7 @@ class InlineEmail extends CFormModel {
             'modelName' => Yii::t('app', 'Model Name'),
             'modelId' => Yii::t('app', 'Model ID'),
 			'credId' => Yii::t('app','Send As:'),
+             
         );
     }
 
@@ -313,7 +320,9 @@ class InlineEmail extends CFormModel {
                 $header .= '<br /><hr />';
                 $header .= CHtml::tag('strong', array(), Yii::t('media', 'Attachments:'))."<br />";
                 foreach($this->attachments as $attachment){
-                    $header .= CHtml::tag('span', array('class' => 'email-attachment-text'), $attachment['filename']).'<br />';
+                    $header .= CHtml::tag(
+                        'span', array('class' => 'email-attachment-text'),
+                        $attachment['filename']).'<br />';
                 }
             }
 
@@ -514,7 +523,7 @@ class InlineEmail extends CFormModel {
      */
     public function getTargetModel(){
         if(!isset($this->_targetModel)){
-            if(isset($this->modelId, $this->modelName)){
+            if(!empty ($this->modelId) && !empty ($this->modelName)){
                 $this->_targetModel = X2Model::model($this->modelName)->findByPk($this->modelId);
                 if($this->_targetModel === null)
                     $this->_targetModel = false;
@@ -793,6 +802,7 @@ class InlineEmail extends CFormModel {
      * form (if that's how this model is being used) is submitted.
      */
     public function recordEmailSent($makeEvent = true){
+         
 
         // The email record, with action header for display purposes:
         $emailRecordBody = $this->insertInBody(self::insertedPattern('ah', $this->actionHeader), 1, 1);
@@ -866,7 +876,8 @@ class InlineEmail extends CFormModel {
             }
         }
 
-        // Create action history events and event feed events for all contacts that were in the recipient list:
+        // Create action history events and event feed events for all contacts that were in the 
+        // recipient list:
         if($this->contactFlag){
             foreach($recipientContacts as $email => $contact){
                 $contact->lastActivity = $now;

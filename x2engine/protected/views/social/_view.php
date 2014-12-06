@@ -41,11 +41,14 @@
 		$parent=Events::model()->findByPk($data->associationId);
 		if($data->user==Yii::app()->user->getName() || $parent->associationId==Yii::app()->user->getId() || Yii::app()->params->isAdmin)
 			echo CHtml::link(
-                '[x]',
+                '',
                 array(
                     '/profile/deletePost',
                     'id'=>$data->id,
                     'profileId'=>$profileId,
+                ),
+                array(
+                	'class'=>'fa fa-close'
                 )
             ); //,array('class'=>'x2-button') ?>
 	</div>

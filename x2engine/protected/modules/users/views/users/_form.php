@@ -174,7 +174,7 @@ $(document).ready(function() {
             echo CHtml::dropDownList('roles[]',$selectedRoles,$roles,array('class'=>'multiselect','multiple'=>'multiple', 'size'=>6));
             ?>
             <br />
-            <label><?php echo Yii::t('app','Groups');?></label>
+            <label><?php echo Yii::t('app','{groups}', array('{groups}'=>Modules::displayName(true, "Groups")));?></label>
             <br />
             <?php
             echo CHtml::dropDownList('groups[]',$selectedGroups,$groups,array('class'=>'multiselect','multiple'=>'multiple', 'size'=>6));

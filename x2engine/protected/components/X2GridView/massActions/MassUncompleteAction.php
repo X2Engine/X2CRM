@@ -36,6 +36,30 @@
 
 class MassUncompleteAction extends MassAction {
 
+    protected $_label;
+
+    /**
+     * @return string label to display in the dropdown list
+     */
+    public function getLabel () {
+        if (!isset ($this->_label)) {
+            $this->_label = Yii::t('app', 'Uncomplete selected');
+        }
+        return $this->_label;
+    }
+
+    public function getPackages () {
+        return array_merge (parent::getPackages (), array (
+            'X2MassUncomplete' => array(
+                'baseUrl' => Yii::app()->request->baseUrl,
+                'js' => array(
+                    'js/X2GridView/MassUncompleteAction.js',
+                ),
+                'depends' => array ('X2MassAction'),
+            ),
+        ));
+    }
+
     public function execute (array $gvSelection) {
         $updatedRecordsNum = Actions::changeCompleteState ('uncomplete', $gvSelection);
         if ($updatedRecordsNum > 0) {

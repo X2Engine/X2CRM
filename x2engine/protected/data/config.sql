@@ -54,7 +54,8 @@ INSERT INTO x2_dropdowns (`id`, `name`, `options`) VALUES
 (120,   'Action Timers',    '{\"Research\":\"Research\",\"Meeting\":\"Meeting\",\"Email\":\"Email\"}'),
 (121,   'Event Subtypes',    '{\"Meeting\":\"Meeting\",\"Appointment\":\"Appointment\",\"Call\":\"Call\"}'),
 (122,   'Event Statuses',    '{\"Confirmed\":\"Confirmed\",\"Cancelled\":\"Cancelled\"}'),
-(123,   'Event Colors',    '{"#008000":"Green","#3366CC":"Blue","#FF0000":"Red","#FFA500":"Orange","#000000":"Black"}');
+(123,   'Event Colors',    '{"#008000":"Green","#3366CC":"Blue","#FF0000":"Red","#FFA500":"Orange","#000000":"Black"}'),
+(124,   'Priority',    '{"1":"Low","2":"Medium","3":"High"}');
 /*&*/
 INSERT INTO x2_dropdowns (`id`, `name`, `options`, `parent`, `parentVal`) VALUES
 (118,	'Contacted Quick Note','{"Not interested.":"Not interested.","Requested follow up call.":"Requested follow up call.","Contact made.":"Contact made."}', 117, 'Contacted'),
@@ -76,8 +77,8 @@ INSERT INTO x2_profile (fullName, username, emailAddress, status)
 INSERT INTO x2_profile (fullName, username, emailAddress, status)
 		VALUES ('API User', 'api', '{adminEmail}','0');
 /*&*/
-INSERT INTO x2_profile (username, status)
-		VALUES ('__x2_guest_profile__', '0');
+INSERT INTO x2_profile (id, fullName, username, emailAddress, status)
+		VALUES (-1, '', '__x2_guest_profile__', '', '0');
 /*&*/
 INSERT INTO x2_social (`type`, `data`) VALUES ('motd', 'Please enter a message of the day!');
 /*&*/
@@ -101,17 +102,19 @@ INSERT INTO x2_admin (timeout,webLeadEmail,emailFromAddr,currency,installDate,up
     'Your App Description'
 );
 /*&*/
-UPDATE x2_profile SET `widgets`='0:1:1:1:1:0:0:0:0:0:0:0:0',
-	`widgetOrder`='OnlineUsers:TimeZone:GoogleMaps:ChatBox:TagCloud:TwitterFeed:MessageBox:QuickContact:NoteBox:ActionMenu:MediaBox:DocViewer:TopSites';
+UPDATE x2_profile SET `widgets`='0:1:1:1:1:1:0:0:0:0:0:0:0:0',
+	`widgetOrder`='OnlineUsers:TimeZone:SmallCalendar:GoogleMaps:ChatBox:TagCloud:TwitterFeed:MessageBox:QuickContact:NoteBox:ActionMenu:MediaBox:DocViewer:TopSites';
 /*&*/
 INSERT INTO `x2_modules`
-(`name`, title, visible, menuPosition, searchable, editable, adminOnly, custom, toggleable)
+(`name`, title, visible, menuPosition, searchable, editable, adminOnly, custom, toggleable, pseudoModule)
 VALUES
-('x2Activity', 'Activity', 1, 0, 0, 0, 0, 0, 0);
+('x2Activity', 'Activity', 1, 0, 0, 0, 0, 0, 0, 1);
 /*&*/
 UPDATE `x2_modules` SET `visible`=0;
 /*&*/
 UPDATE `x2_modules` SET `visible`=1 WHERE `name` IN {visibleModules};
+/*&*/
+UPDATE `x2_modules` SET `itemName`= "Bug Report" WHERE `name` = "bugReports";
 /*&*/
 INSERT INTO `x2_tips` (`tip`, `edition`, `admin`, `module`) VALUES
 ("You can click on the icon with 4 outward arrows in the top right to hide the widget sidebar.",'opensource',0,'Layout'),

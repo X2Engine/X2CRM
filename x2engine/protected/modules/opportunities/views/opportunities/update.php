@@ -33,16 +33,13 @@
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2Engine".
  *****************************************************************************************/
+
 $authParams['X2Model'] = $model;
-$this->actionMenu = $this->formatMenu(array(
-	array('label'=>Yii::t('opportunities','Opportunities List'), 'url'=>array('index')),
-	array('label'=>Yii::t('opportunities','Create Opportunity'), 'url'=>array('create')),
-	array('label'=>Yii::t('app', 'Create Multiple'), 'url'=>array('/site/createRecords', 'ret'=>'opportunities'), 'linkOptions'=>array('id'=>'x2-create-multiple-records-button', 'class'=>'x2-hint', 'title'=>Yii::t('app', 'Create a Contact, Account, and Opportunity.'))),
-	array('label'=>Yii::t('module','View'), 'url'=>array('view', 'id'=>$model->id)),
-	array('label'=>Yii::t('opportunities','Edit Opportunity')),
-	array('label'=>Yii::t('accounts','Share Opportunity'),'url'=>array('shareOpportunity','id'=>$model->id)),
-	array('label'=>Yii::t('opportunities','Delete Opportunity'), 'url'=>'#', 'linkOptions'=>array('submit'=>array('delete','id'=>$model->id),'confirm'=>'Are you sure you want to delete this item?')),
-),$authParams);
+$menuOptions = array(
+    'index', 'create', 'view', 'edit', 'share', 'delete', 'quick',
+);
+$this->insertMenu($menuOptions, $model, $authParams);
+
 ?>
 <?php //echo CHtml::link('['.Yii::t('contacts','Show All').']','javascript:void(0)',array('id'=>'showAll','class'=>'right hide','style'=>'text-decoration:none;')); ?>
 <?php //echo CHtml::link('['.Yii::t('contacts','Hide All').']','javascript:void(0)',array('id'=>'hideAll','class'=>'right','style'=>'text-decoration:none;')); ?>

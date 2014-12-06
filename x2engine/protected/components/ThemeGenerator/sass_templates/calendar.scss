@@ -1,0 +1,38 @@
+#calendar-filter li, #user-calendars li, #group-calendar li {
+    color: "$text";
+}
+
+.fc-header {
+    background: "$highlight1";
+    color: "$text";
+}
+
+.fc-agenda-divider, .fc-agenda-slots, .fc-day-header, .fc-day {
+    border-color: "$lighter_content";
+    background: "$content";
+}
+
+.fc-today {
+    background: "$lighter_content";
+}
+
+.fc-day:hover {
+	background: "$light_content";
+}
+
+.fc-other-month .fc-day-link {
+    color: "$text";
+}
+
+tr.fc-first.fc-last {
+    background: "$content";
+}
+
+
+.fc-agenda-allday {
+    background: "$content";
+}
+
+.fc-header-title h2 {
+    color: "$smart_text";
+}

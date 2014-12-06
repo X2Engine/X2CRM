@@ -186,7 +186,8 @@ is not defined.
 */
 auxlib.applyArgs = function (obj, defaultArgs, args) {
 	for (var i in defaultArgs) {
-		if (typeof args[i] === 'undefined') {
+        
+        if (typeof args[i] === 'undefined') {
 			obj[i] = defaultArgs[i];
 		} else {
 			obj[i] = args[i];
@@ -196,7 +197,7 @@ auxlib.applyArgs = function (obj, defaultArgs, args) {
 
 /**
  * Calls callback when user clicks outside of elem
- * @param object elem jQuery element(s)
+ * @param object|string elem jQuery element(s) or selector
  * @param function callback 
  * @param boolean one if true, event handler will be bound until user clicks outside element
  */
@@ -205,10 +206,14 @@ auxlib.onClickOutside = (function () {
     return function (elem, callback, one, eventNamespace) {
         var eventNamespace = typeof eventNamespace === 'undefined' ? ++i : eventNamespace; 
         var one = typeof one === 'undefined' ?  false : one;          
-        var selector = elem.selector;
+        if (Object.prototype.toString.call (elem) === '[object String]')
+            var selector = elem;
+        else
+            var selector = elem.selector;
 
         var clickCallback = function (evt) {
             // clicked outside if target or target's parents do not match specified elements
+
             if ($.inArray ($(evt.target)[0], $(elem)) === -1 && 
                 $(evt.target).closest (selector).length === 0) {
 
@@ -309,7 +314,9 @@ auxlib.htmlEncode = function (text) {
 };
 
 auxlib.htmlDecode = function (html) {
-    return $('<div>', { 'html': html }).text ();
+    var textarea = $('<textarea>').get (0);
+    textarea.innerHTML = html;
+    return textarea.value;
 };
 
 /*
@@ -506,6 +513,90 @@ auxlib.getUnselected = function (elem) {
     },$.makeArray ($(elem).children ().not (':selected')));
 };
 
+auxlib.pageLoading = function () {
+    if (auxlib.throbber$)
+        auxlib.throbber$.remove ();
+    auxlib.throbber$ = $('<div>', {
+        'class': 'x2-loading-icon load8 full-page-loader x2-loader',
+    });
+    auxlib.throbber$.append ($('<div>', {
+        'class': 'loader'
+    }));
+    $('#content').append (auxlib.throbber$);
+    return auxlib.throbber$;
+};
+
+auxlib.pageLoadingStop = function () {
+    auxlib.throbber$.remove ();
+};
+
+auxlib.containerLoading = function (elem$) {
+    var throbber$ = $('<div>', {
+        'class': 'x2-loading-icon load8 x2-loader',
+    });
+    throbber$.append ($('<div>', {
+        'class': 'loader'
+    }));
+    elem$.append (throbber$);
+    throbber$.position ({
+        my: 'center center',
+        at: 'center center',
+        of: elem$
+    });
+    return throbber$;
+};
+
+auxlib.confirm = function (callback, translations) {
+    $('<div>').html (translations.message).dialog ({ 
+        title: translations.title,
+        height: 140,
+        resizable: false,
+        buttons: [
+            {    
+                text: translations.cancel,
+                click: function () {
+                    $(this).dialog ('close');
+                }
+            },
+            {    
+                text: translations.confirm,
+                click: function () {
+                    $(this).dialog ('close');
+                    callback ();
+                }
+            },
+        ],
+        close: function () {
+            $(this).dialog ('destroy');
+        }
+    });
+};
+
+auxlib.emptyNumArray = function (size, fill) {
+    if (typeof fill === 'undefined') {
+        fill = '0';
+    }
+
+    return auxlib.emptyStringArray(size, ''+fill).map(parseFloat);
+};
+
+auxlib.emptyStringArray = function (size, fill) {
+    if (typeof fill === 'undefined') {
+        fill = '';
+    }
+    return new Array(size+1).join(fill).split('');
+};
+
+auxlib.length = function(obj) {
+    return auxlib.keys(obj).length;
+}
+
+auxlib.fa = function(icon, htmlOptions) {
+    if (typeof htmlOptions === 'undefined'){
+        htmlOptions = {}
+    }
+    return $('<i class="fa"></i>', htmlOptions).addClass(icon);
+}
 
 $(function () {
 

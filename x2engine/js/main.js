@@ -33,6 +33,18 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 
+(function () {
+    if (!window.console) {
+        console = {};
+    }
+    var props = ['log', 'trace'];
+    for (var i in props) {
+        var prop = props[i];
+        if (!console[prop]) {
+            console[prop] = function () {};
+        }
+    }
+}) ();
 
 /**
  * Listens for AJAX requests that were redirected due to session

@@ -53,6 +53,15 @@ class WorkflowStageDetailsWidget extends SortableWidget {
 
     private $_currentWorkflow;
 
+    private $_associationType;
+
+    public function getAssociationType () {
+        if (!isset ($this->_associationType)) {
+            $this->_associationType = X2Model::getAssociationType (get_class ($this->model));
+        }
+        return $this->_associationType;
+    }
+
     public function getModule () {
         if (!isset ($this->_module)) {
             $this->_module = Yii::app()->getModule ('workflow');
@@ -63,7 +72,7 @@ class WorkflowStageDetailsWidget extends SortableWidget {
     public function getCurrentWorkflow () {
         if (!isset ($this->_currentWorkflow)) {
             $this->_currentWorkflow = $this->controller->getCurrentWorkflow(
-                $this->model->id, get_class ($this->model));
+                $this->model->id, $this->getAssociationType ());
         }
         return $this->_currentWorkflow;
     }
@@ -77,7 +86,8 @@ class WorkflowStageDetailsWidget extends SortableWidget {
                     'url'=>CHtml::normalizeUrl( //url to call.
                         array(
                             '/workflow/workflow/getWorkflow',
-                            'modelId'=>$this->model->id,'type'=>get_class ($this->model)
+                            'modelId'=>$this->model->id,
+                            'type'=>$this->getAssociationType ()
                         )
                     ), 
                     'update'=>'#workflow-diagram', //selector to update
@@ -196,7 +206,7 @@ class WorkflowStageDetailsWidget extends SortableWidget {
                     'Submit' => Yii::t('app', 'Submit'),
                 )).',
                 modelId: '.$this->model->id.',
-                modelName: "'.get_class ($this->model).'",
+                modelName: "'.$this->getAssociationType ().'",
                 startStageUrl: "'.
                     CHtml::normalizeUrl(array('/workflow/workflow/startStage')).
                 '",

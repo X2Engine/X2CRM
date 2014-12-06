@@ -196,6 +196,32 @@ if ($maxExecTime <= 30) {
                 . ' Leaving this option enabled is highly recommended, especially for large data sets.'),false); ?></div>
         <div class="cell"><?php echo CHtml::checkBox('performance-mode','checked');?></div>
     </div>
+    <div class="row">
+        <div class="cell"><strong><?php echo Yii::t('admin','Batch Size'); ?></strong></div>
+        <div class="cell"><?php echo X2Html::hint(Yii::t('admin',"Modify the number of records to be process per batch request."),false); ?></div>
+        <div class="cell"><?php echo CHtml::textField('batch-size', 25, array('style' => 'width: 32px')); ?></div>
+        <div class="cell"><?php
+            $this->widget('zii.widgets.jui.CJuiSlider', array(
+                'value' => 25,
+                'options' => array(
+                    'min' => 5,
+                    'max' => 1000,
+                    'step' => 5,
+                    'change' => "js:function(event,ui) {
+                                    $('#batch-size').val(ui.value);
+                                }",
+                    'slide' => "js:function(event,ui) {
+                                    $('#batch-size').val(ui.value);
+                                }",
+                ),
+                'htmlOptions' => array(
+                    'style' => 'width:200px;margin:6px 9px;',
+                    'id' => 'batch-size-slider',
+                ),
+            ));
+        ?></div>
+    </div>
+
 </div>
 <br /><br />
 <?php echo CHtml::link(Yii::t('admin',"Process Import"),"#",array('id'=>'process-link','class'=>'x2-button highlight'));?>
@@ -210,6 +236,9 @@ if ($maxExecTime <= 30) {
 
 </div>
 <div id="failures-box" style="color:red">
+
+</div>
+<div id="continue-box">
 
 </div>
 <script>
@@ -230,6 +259,9 @@ if ($maxExecTime <= 30) {
     $('#log-comment-box').change(function(){
        $('#comment-form').toggle();
     });
+    $('#batch-size').change(function() {
+        $('#batch-size-slider').slider('value', $('#batch-size').val ());
+    });
 
     function prepareImport(){
         $('#import-container').hide();
@@ -240,7 +272,7 @@ if ($maxExecTime <= 30) {
         var comment="";
         var routing=0;
         var skipActivityFeed=0;
-        var newFields = <?php echo CJSON::encode($newFields); ?>;
+        var batchSize = $('#batch-size').val();
         $('.import-attribute').each(function(){
             attributes.push ($(this).val());
             keys.push ($(this).attr('name'));
@@ -267,7 +299,7 @@ if ($maxExecTime <= 30) {
             if (success) {
                 $('#import-status').show();
                 startLoadingIcon ('#import-status');
-                importData (25);
+                importData (batchSize);
                 $('#prep-status-box').html (msg);
             } else {
                 $('#super-import-map-box').show();
@@ -337,11 +369,16 @@ if ($maxExecTime <= 30) {
         });
     }
     function importData(count){
+        var performanceMode = 0;
+        if ($('#performance-mode').attr('checked') == 'checked') {
+            performanceMode = 1;
+        }
         $.ajax({
             url:'importModelRecords',
             type:"POST",
             data:{
                 count:count,
+                'performance-mode':performanceMode,
                 model:"<?php echo $model; ?>"
             },
             success:function(data){
@@ -384,6 +421,13 @@ if ($maxExecTime <= 30) {
                             window.location.href = '<?php echo $this->createUrl('/admin/downloadData',array('file'=>'failedRecords.csv')); ?>';
                         });
                     }
+                    str = '<br />';
+                    str += '<?php echo CHtml::link(Yii::t('admin', 'Import more {records}', array(
+                        '{records}' => X2Model::getModelTitle($model),
+                    )), 'importModels?model='.$model, array('class' => 'x2-button')); ?>';
+                    str += '<?php echo CHtml::link(Yii::t('admin', 'Import to another module'), 'importModels',
+                        array('class' => 'x2-button')); ?>';
+                    $('#continue-box').html(str);
                     $.ajax({
                         url:'cleanUpModelImport',
                         complete:function(){
@@ -419,7 +463,7 @@ if ($maxExecTime <= 30) {
 
     function startLoadingIcon(elem) {
         $(elem).after ($('<span>', {
-            'class': 'x2-loading-icon',
+            'class': 'x2-gridview-updating-anim',
             style: 'position: absolute; height: 27px; background-size: 27px;',
             id: 'import-loading-icon'
         }));
@@ -462,14 +506,6 @@ if ($maxExecTime <= 30) {
     $('#export-map').click(function() {
         var keys = new Array();
         var attributes = new Array();
-        var newFields = <?php echo CJSON::encode($newFields) ?>;
-        $('#importMapping').find(':checked').each(function(){
-            keys.push($(this).val());
-            if (jQuery.inArray($(this).text(), newFields) != -1)
-                attributes.push('createNew');
-            else
-                attributes.push($(this).text());
-        });
         $('.import-attribute').each(function(){
             if ($(this).val() != '') {
                 // Add mapping overrides that are not marked 'DO NOT MAP'

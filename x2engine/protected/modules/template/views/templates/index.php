@@ -36,10 +36,10 @@
 include("protected/modules/templates/templatesConfig.php");
 
 $this->actionMenu = $this->formatMenu(array(
-    array('label'=>Yii::t('module','{X} List',array('{X}'=>$moduleConfig['recordName']))),
-    array('label'=>Yii::t('module','Create {X}',array('{X}'=>$moduleConfig['recordName'])), 'url'=>array('create')),
-    array('label'=>Yii::t('module', 'Import {X}',array('{X}'=>$moduleConfig['recordName'])), 'url'=>array('admin/importModels', 'model'=>ucfirst($moduleConfig['moduleName']))),
-    array('label'=>Yii::t('module', 'Export {X}',array('{X}'=>$moduleConfig['recordName'])), 'url'=>array('admin/exportModels', 'model'=>ucfirst($moduleConfig['moduleName'])))
+    array('label'=>Yii::t('module','{X} List',array('{X}'=>Modules::itemDisplayName()))),
+    array('label'=>Yii::t('module','Create {X}',array('{X}'=>Modules::itemDisplayName())), 'url'=>array('create')),
+    array('label'=>Yii::t('module', 'Import {X}',array('{X}'=>Modules::itemDisplayName())), 'url'=>array('admin/importModels', 'model'=>ucfirst($moduleConfig['moduleName']))),
+    array('label'=>Yii::t('module', 'Export {X}',array('{X}'=>Modules::itemDisplayName())), 'url'=>array('admin/exportModels', 'model'=>ucfirst($moduleConfig['moduleName'])))
 ));
 
 Yii::app()->clientScript->registerScript('search', "
@@ -65,7 +65,7 @@ $('.search-form form').submit(function(){
 
 $this->widget('X2GridView', array(
 	'id'=>'templates-grid',
-	'title'=>$moduleConfig['title'],
+	'title'=>Modules::displayName(true, $moduleConfig['moduleName']),
 	'buttons'=>array('advancedSearch','clearFilters','columnSelector','autoResize'),
 	'template'=> 
         '<div id="x2-gridview-top-bar-outer" class="x2-gridview-fixed-top-bar-outer">'.

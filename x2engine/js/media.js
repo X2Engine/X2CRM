@@ -78,8 +78,8 @@ function mediaFileUpload(form, fileField, action_url, remove_url) {
             	
             	var temp = $('<input>', {
             		'type': 'hidden',
-            		'name': 'AttachmentFiles[temp][]',
-            		'value': true
+            		'name': 'AttachmentFiles[types][]',
+            		'value': 'temp'
             	});
             	
             	

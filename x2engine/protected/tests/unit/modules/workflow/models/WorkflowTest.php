@@ -1,5 +1,4 @@
 <?php
-
 /*****************************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
@@ -36,12 +35,13 @@
  *****************************************************************************************/
 
 
+Yii::import('application.modules.workflow.*');
 Yii::import('application.modules.workflow.controllers.*');
 Yii::import('application.modules.workflow.models.*');
 Yii::import('application.modules.users.models.*');
 
 /**
- * @package application.tests.unit.modules.contacts.models
+ * @package application.tests.unit.modules.workflow.controllers
  */
 class WorkflowTest extends X2DbTestCase {
 
@@ -281,20 +281,27 @@ class WorkflowTest extends X2DbTestCase {
 
         VERBOSE_MODE && print_r ($counts);
 
-        $contactsDataProvider = WorkflowController::getStageMemberDataProvider (
+        $_SERVER['REQUEST_METHOD'] = 'POST';
+        $_SERVER['SERVER_NAME'] = 'localhost';
+        $controllerName = 'WorkflowController'; 
+        $moduleName = 'WorkflowModule'; 
+        Yii::app()->controller = new $controllerName (
+            'Workflow', new $moduleName ('Workflow', null));
+
+        $contactsDataProvider = Yii::app()->controller->getStageMemberDataProvider (
             'contacts', $workflow->id, array (
                 'start' => 0,
                 'end' => time (),
                 'workflowId' => $workflow->id,
             ), array ('range' => 'all'), $stageNumber, '');
 
-        $opportunitiesDataProvider = WorkflowController::getStageMemberDataProvider (
+        $opportunitiesDataProvider = Yii::app()->controller->getStageMemberDataProvider (
             'opportunities', $workflow->id, array (
                 'start' => 0,
                 'end' => time (),
                 'workflowId' => $workflow->id,
             ), array ('range' => 'all'), $stageNumber, '');
-        $accountsDataProvider = WorkflowController::getStageMemberDataProvider (
+        $accountsDataProvider = Yii::app()->controller->getStageMemberDataProvider (
             'accounts', $workflow->id, array (
                 'start' => 0,
                 'end' => time (),

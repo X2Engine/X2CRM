@@ -43,7 +43,7 @@ if(Yii::app()->params->isAdmin)
 <?php
 echo CHtml::beginForm();
 
-echo CHtml::textArea('message','',array('cols'=>16,'onclick'=>'clearText(this)'));
+echo CHtml::textArea('message','',array('class' => 'x2-textarea', 'cols'=>16,'onclick'=>'clearText(this)'));
 echo CHtml::ajaxSubmitButton('Submit',
 	array('/site/motd'),
 	array('update'=>'#motd-box'),

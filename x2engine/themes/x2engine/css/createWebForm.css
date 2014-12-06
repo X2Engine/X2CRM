@@ -32,186 +32,215 @@
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2Engine".
  *****************************************************************************************/
+/* line 23, ../../../compass/themes/x2engine/css/createWebForm.scss */
+label[for='generateLead'], label[for='generateAccount'] {
+  font-size: 15px !important;
+  color: #555;
+}
+/* line 27, ../../../compass/themes/x2engine/css/createWebForm.scss */
+label[for='generateLead'] + input, label[for='generateAccount'] + input {
+  margin-top: 11px !important;
+  margin-bottom: -11px !important;
+}
+/* line 31, ../../../compass/themes/x2engine/css/createWebForm.scss */
+label[for='generateLead'] + input + span, label[for='generateAccount'] + input + span {
+  position: relative;
+  top: -3px;
+}
 
-label[for='generateLead'],
-label[for='generateAccount'] {
-    font-size: 15px !important;
-    color: #555;
-}
-label[for='generateLead'] + input,
-label[for='generateAccount'] + input {
-    margin-top: 11px !important;
-    margin-bottom: -11px !important;
-}
-label[for='generateLead'] + input + span,
-label[for='generateAccount'] + input + span {
-    position: relative;
-    top: -3px;
-}
-
+/* line 37, ../../../compass/themes/x2engine/css/createWebForm.scss */
 #generate-lead-form {
-    margin-top: 10px;
+  margin-top: 10px;
 }
-
 
 /* override spectrum color picker css */
+/* line 44, ../../../compass/themes/x2engine/css/createWebForm.scss */
 div#web-form .sp-replacer {
-    padding: 0px !important;
+  padding: 0px !important;
 }
+/* line 47, ../../../compass/themes/x2engine/css/createWebForm.scss */
 div#web-form .sp-dd {
-    height: 13px !important;
+  height: 13px !important;
 }
+/* line 50, ../../../compass/themes/x2engine/css/createWebForm.scss */
 div#web-form .sp-preview {
-    width:20px !important;
-    height: 17px !important;
-    margin-right: 5px !important;
+  width: 20px !important;
+  height: 17px !important;
+  margin-right: 5px !important;
 }
 
+/* line 57, ../../../compass/themes/x2engine/css/createWebForm.scss */
 #sortable1, #sortable2 {
-    list-style-type: none;
-    margin: 0;
-    padding: 5px;
-    margin-right: 10px;
-    min-height: 300px;
+  list-style-type: none;
+  margin: 0;
+  padding: 5px;
+  margin-right: 10px;
+  min-height: 300px;
 }
 
+/* line 65, ../../../compass/themes/x2engine/css/createWebForm.scss */
 #sortable1 li, #sortable2 li {
-    margin: 0 5px 5px 5px;
-    padding: 5px;
-    -moz-border-radius:        4px;
-    -o-border-radius:          4px;
-    -webkit-border-radius:     4px;
-    border-radius:             4px;
-    background:#fafafa;
-    font-size: 12px;
-    color: black;
+  margin: 0 5px 5px 5px;
+  padding: 5px;
+  -moz-border-radius: 4px;
+  -o-border-radius: 4px;
+  -webkit-border-radius: 4px;
+  border-radius: 4px;
+  background: #fafafa;
+  font-size: 12px;
+  color: black;
 }
 
+/* line 77, ../../../compass/themes/x2engine/css/createWebForm.scss */
 #sortable1 li label, #sortable2 li label {
-    padding: 1px 5px 1px 20px;
+  padding: 1px 5px 1px 20px;
 }
 
+/* line 81, ../../../compass/themes/x2engine/css/createWebForm.scss */
 .ui-state-highlight {
-    height: 1.5em;
-    line-height: 1.2em;
+  height: 1.5em;
+  line-height: 1.2em;
 }
-div.web-form-fields.fields-container {
-    margin-bottom: 8px;
-}
+
+/* line 86, ../../../compass/themes/x2engine/css/createWebForm.scss */
 div.web-form-fields {
-    margin-bottom: 5px;
-    background: #F0F0F0;
-    border: 1px solid;
-    width: 150px;
-    height: 400px;
-    float: left;
-    margin: 0 5px;
-    clear:right;
-    width:200px;
-    border:1px solid #ccc;
-    -moz-border-radius:        4px;
-    -o-border-radius:        4px;
-    -webkit-border-radius:    4px;
-    border-radius:            4px;
-    overflow-y: scroll;
+  margin-bottom: 5px;
+  background: #F0F0F0;
+  border: 1px solid;
+  width: 150px;
+  height: 400px;
+  float: left;
+  margin: 0 5px;
+  clear: right;
+  width: 200px;
+  border: 1px solid #ccc;
+  -moz-border-radius: 4px;
+  -o-border-radius: 4px;
+  -webkit-border-radius: 4px;
+  border-radius: 4px;
+  overflow-y: scroll;
+}
+/* line 87, ../../../compass/themes/x2engine/css/createWebForm.scss */
+div.web-form-fields.fields-container {
+  margin-bottom: 8px;
 }
 
+/* line 107, ../../../compass/themes/x2engine/css/createWebForm.scss */
 #embedcode {
-	width: 95%;
-	min-height: 67px;
-	border: 1px solid #B9B9B9;
-	background: #F6F6F6;
-	color: #666;
-	-moz-box-shadow: 0 1px 0 #fff,inset 0 1px 1px rgba(0,0,0,.17);
-	-ms-box-shadow: 0 1px 0 #fff,inset 0 1px 1px rgba(0,0,0,.17);
-	-webkit-box-shadow: 0 1px 0 white,inset 0 1px 1px rgba(0, 0, 0, .17);
-	box-shadow: 0 1px 0 white,inset 0 1px 1px rgba(0, 0, 0, .17);
-	-moz-border-radius: 3px;
-	-webkit-border-radius: 3px;
-	border-radius: 3px;
+  width: 95%;
+  min-height: 67px;
+  border: 1px solid #B9B9B9;
+  background: #F6F6F6;
+  color: #666;
+  -moz-box-shadow: 0 1px 0 white, inset 0 1px 1px rgba(0, 0, 0, 0.17);
+  -ms-box-shadow: 0 1px 0 white, inset 0 1px 1px rgba(0, 0, 0, 0.17);
+  -webkit-box-shadow: 0 1px 0 white, inset 0 1px 1px rgba(0, 0, 0, 0.17);
+  box-shadow: 0 1px 0 white, inset 0 1px 1px rgba(0, 0, 0, 0.17);
+  -moz-border-radius: 3px;
+  -webkit-border-radius: 3px;
+  border-radius: 3px;
 }
-
+/* line 120, ../../../compass/themes/x2engine/css/createWebForm.scss */
 #embedcode:focus {
-	border-color: #4496E7;
-	color: #444;
-	background: white;
-	outline: 0;
+  border-color: #4496E7;
+  color: #444;
+  background: white;
+  outline: 0;
 }
 
+/* line 128, ../../../compass/themes/x2engine/css/createWebForm.scss */
 #iframe_example {
-	-moz-border-radius: 7px;
-	-webkit-border-radius: 7px;
-	border-radius: 7px;
-	padding: 9px;
-	background: #F0F0F0;
+  -moz-border-radius: 7px;
+  -webkit-border-radius: 7px;
+  border-radius: 7px;
+  padding: 9px;
+  background: #F0F0F0;
 }
+
+/* line 136, ../../../compass/themes/x2engine/css/createWebForm.scss */
 input#font, select#font {
-	width: 193px;
+  width: 193px;
 }
+
+/* line 140, ../../../compass/themes/x2engine/css/createWebForm.scss */
 input.half {
-	width: 69px;
+  width: 69px;
 }
+
+/* line 144, ../../../compass/themes/x2engine/css/createWebForm.scss */
 .ui-resizable-helper {
-	border: 1px solid black;
-	-moz-border-radius: 7px;
-	-webkit-border-radius: 7px;
-	border-radius: 7px;
-/*	margin: px; */
-/*	background-color: red; */
+  border: 1px solid black;
+  -moz-border-radius: 7px;
+  -webkit-border-radius: 7px;
+  border-radius: 7px;
+  /*	margin: px; */
+  /*	background-color: red; */
 }
 
+/* line 153, ../../../compass/themes/x2engine/css/createWebForm.scss */
 #save {
-    margin-top: 1px;
+  margin-top: 1px;
 }
-#reset-form {
+
+/* line 157, ../../../compass/themes/x2engine/css/createWebForm.scss */
+#reset-form, #delete-form {
+  float: left;
+  margin-right: 3px;
+  position: relative;
 }
-#reset-form,
-#delete-form {
-    float: left;
-    margin-right: 3px;
-    position: relative;
+
+/* line 163, ../../../compass/themes/x2engine/css/createWebForm.scss */
+#web-form-name, #saved-forms {
+  margin-right: 4px;
 }
-#web-form-name,
-#saved-forms {
-    margin-right: 4px;
-}
+
+/* line 167, ../../../compass/themes/x2engine/css/createWebForm.scss */
 .save-html-feedback {
-    margin-top: 9px !important;
+  margin-top: 9px !important;
 }
+
+/* line 172, ../../../compass/themes/x2engine/css/createWebForm.scss */
 #custom-html-input-container > h4 {
-    margin-right: 4px;
-    display: inline;
+  margin-right: 4px;
+  display: inline;
 }
+/* line 176, ../../../compass/themes/x2engine/css/createWebForm.scss */
 #custom-html-input-container .fieldhelp {
-    margin-top: 2px;
+  margin-top: 2px;
 }
+
+/* line 181, ../../../compass/themes/x2engine/css/createWebForm.scss */
 #custom-html-hint {
-    position: relative;
-    top: -2px;
+  position: relative;
+  top: -2px;
 }
+
+/* line 186, ../../../compass/themes/x2engine/css/createWebForm.scss */
 .errorMessage {
-    clear: both;
+  clear: both;
 }
 
-.feedback-container,
-.auxlib-error-box-msg {
-    line-height: 30px;
-    margin-left: 5px;
-    display: inline;
+/* line 190, ../../../compass/themes/x2engine/css/createWebForm.scss */
+.feedback-container, .auxlib-error-box-msg {
+  line-height: 30px;
+  margin-left: 5px;
+  display: inline;
 }
 
+/* line 196, ../../../compass/themes/x2engine/css/createWebForm.scss */
 #custom-css {
-    width: 440px;
-	height: 75px;
+  width: 440px;
+  height: 75px;
 }
-
 
 @media (max-width: 657px) {
-    #web-form .row {
-        overflow-x: hidden;
-    }
-    #custom-css {
-        width: 250px;
-    }
+  /* line 202, ../../../compass/themes/x2engine/css/createWebForm.scss */
+  #web-form .row {
+    overflow-x: hidden;
+  }
 
+  /* line 205, ../../../compass/themes/x2engine/css/createWebForm.scss */
+  #custom-css {
+    width: 250px;
+  }
 }

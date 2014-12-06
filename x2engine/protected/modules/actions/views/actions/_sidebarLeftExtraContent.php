@@ -36,7 +36,9 @@
 
 if ($this->showActions !== null) {
     $this->beginWidget('zii.widgets.CPortlet', array(
-        'title'=>Yii::t('actions', 'Show Actions'),
+        'title'=>Yii::t('actions', 'Show {module}', array(
+            '{module}' => Modules::displayName(),
+        )),
         'id'=>'actions-filter',
     ));
     echo '<div class="form no-border" style="text-align:center; height:25px;">';

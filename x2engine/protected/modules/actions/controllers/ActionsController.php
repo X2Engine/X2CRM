@@ -43,6 +43,16 @@ class ActionsController extends x2base {
     public $modelClass = 'Actions';
     public $showActions = null;
 
+    public function behaviors() {
+        return array_merge(parent::behaviors(), array(
+            'QuickCreateRelationshipBehavior' => array(
+                'class' => 'QuickCreateRelationshipBehavior',
+                'attributesOfNewRecordToUpdate' => array(
+                )
+            ),
+        ));
+    }
+
     /**
      * Specifies the access control rules.
      * This method is used by the 'accessControl' filter.
@@ -56,7 +66,7 @@ class ActionsController extends x2base {
             ),
             array('allow', // allow authenticated user to perform 'create' and 'update' actions
                 'actions' => array('index', 'view', 'create', 'createSplash', 'createInline', 'viewGroup', 'complete', //quickCreate
-                    'completeRedirect', 'update', 'quickUpdate', 'saveShowActions', 'viewAll', 'search', 'completeNew', 'parseType', 'uncomplete', 'uncompleteRedirect', 'delete', 'shareAction', 'inlineEmail', 'publisherCreate','saveShowActions'),
+                    'completeRedirect', 'update', 'quickUpdate', 'saveShowActions', 'viewAll', 'search', 'completeNew', 'parseType', 'uncomplete', 'uncompleteRedirect', 'delete', 'shareAction', 'inlineEmail', 'publisherCreate','saveShowActions', 'copyEvent'),
                 'users' => array('@'),
             ),
             array('allow', // allow admin user to perform 'admin' and 'delete' actions
@@ -293,7 +303,9 @@ class ActionsController extends x2base {
 
         if(isset($_POST['Actions'])){
             $model->setX2Fields($_POST['Actions']);
-            if($model->save()){
+            if (isset($_POST['x2ajax'])) {
+                $ajaxErrors = $this->quickCreate($model);
+            } elseif($model->save()){
                 if(isset($_POST['Actions']['reminder']) && $_POST['Actions']['reminder']){
                     $model->createNotifications (
                         $_POST['notificationUsers'],
@@ -306,11 +318,19 @@ class ActionsController extends x2base {
         if(empty($model->assignedTo)){
             $model->assignedTo = Yii::app()->user->getName();
         }
-        $this->render('create', array(
-            'model' => $model,
-            'users' => $users,
-            'modelList' => Fields::getDisplayedModelNamesList(),
-        ));
+        if (isset($_POST['x2ajax'])) {
+            $this->renderPartial ('_form', array(
+                'actionModel' => $model,
+                'users' => $users,
+                'modelList' => Fields::getDisplayedModelNamesList(),
+            ), false, true);
+        } else {
+            $this->render('create', array(
+                'model' => $model,
+                'users' => $users,
+                'modelList' => Fields::getDisplayedModelNamesList(),
+            ));
+        }
     }
 
     public function actionPublisherCreate(){
@@ -341,13 +361,12 @@ class ActionsController extends x2base {
                 $model->verifyCode = $_POST['Actions']['verifyCode'];
             }
             $model->setX2Fields($_POST['Actions']);
-
             // format dates,
             if (isset ($_POST[get_class($model)]['dueDate'])) {
                 $model->dueDate = Formatter::parseDateTime($_POST[get_class($model)]['dueDate']);
             }
 
-            if($_POST['SelectedTab'] == 'new-event'){
+            if($_POST['SelectedTab'] == 'new-event' || $_POST['SelectedTab'] == 'new-small-calendar-event'){
                 $model->disableBehavior('changelog');
                 $event = new Events;
                 $event->type = 'calendar_event';
@@ -452,6 +471,110 @@ class ActionsController extends x2base {
         } else {
             throw new CHttpException (400, Yii::t('app', 'Bad request'));
         }
+    }
+
+    /**
+     * Create a menu for Actions
+     * @param array Menu options to remove
+     * @param X2Model Model object passed to the view
+     * @param array Additional menu parameters
+     */
+    public function insertMenu($selectOptions = array(), $model = null, $menuParams = null) {
+        $Action = Modules::displayName(false);
+        $Actions = Modules::displayName();
+        $modelId = isset($model) ? $model->id : 0;
+
+        /**
+         * To show all options:
+         * $menuOptions = array(
+         *     'list', 'todays', 'my', 'everyones', 'create', 'view', 'edit', 'share',
+         *     'delete', 'import', 'export',
+         * );
+         */
+
+        $menuItems = array(
+            array(
+                'name'=>'list',
+                'label'=>Yii::t('actions','{module} List', array(
+                    '{module}' => Modules::displayName(false),
+                )),
+                'url'=>array('index'),
+            ),
+            array(
+                'name'=>'todays',
+                'label'=>Yii::t('actions','Today\'s {module}', array(
+                    '{module}' => $Actions,
+                )),
+                'url'=>array('index'),
+            ),
+            array(
+                'name'=>'my',
+                'label'=>Yii::t('actions','All My {module}', array(
+                    '{module}' => $Actions,
+                )),
+                'url'=>array('viewAll')
+            ),
+            array(
+                'name'=>'everyones',
+                'label'=>Yii::t('actions','Everyone\'s {module}', array(
+                    '{module}' => $Actions,
+                )),
+                'url'=>array('viewGroup')
+            ),
+            array(
+                'name'=>'create',
+                'label'=>Yii::t('actions','Create {module}', array(
+                    '{module}' => $Action,
+                )),
+                'url'=>array('create','param'=>Yii::app()->user->getName().";none:0")
+            ),
+            array(
+                'name'=>'view',
+                'label'=>Yii::t('actions','View'),
+                'url'=>array('view', 'id'=>$modelId),
+            ),
+            array(
+                'name'=>'edit',
+                'label'=>Yii::t('actions','Edit {module}', array(
+                    '{module}' => $Action,
+                )),
+                'url'=>array('update', 'id'=>$modelId)
+            ),
+            array(
+                'name'=>'share',
+                'label'=>Yii::t('contacts','Share {module}', array(
+                    '{module}' => $Action,
+                )),
+                'url'=>array('shareAction','id'=>$modelId)
+            ),
+            array(
+                'name'=>'delete',
+                'label'=>Yii::t('actions','Delete {module}', array(
+                    '{module}' => $Action,
+                )),
+                'url'=>'#',
+                'linkOptions'=>array(
+                    'submit'=>array('delete','id'=>$modelId),
+                    'confirm'=>'Are you sure you want to delete this item?')
+            ),
+            array(
+                'name'=>'import',
+                'label'=>Yii::t('actions', 'Import {module}', array(
+                    '{module}' => $Actions,
+                )),
+                'url'=>array('admin/importModels', 'model'=>'Actions'),
+            ),
+            array(
+                'name'=>'export',
+                'label'=>Yii::t('actions', 'Export {module}', array(
+                    '{module}' => $Actions,
+                )),
+                'url'=>array('admin/exportModels', 'model'=>'Actions'),
+            ),
+        );
+
+        $this->prepareMenu($menuItems, $selectOptions);
+        $this->actionMenu = $this->formatMenu($menuItems, $menuParams);
     }
 
     public function update($model, $oldAttributes, $api){
@@ -608,6 +731,21 @@ class ActionsController extends x2base {
             'notifType' => $notifType,
             'notifTime' => $notifTime,
         ));
+    }
+
+    public function actionCopyEvent ($id) {
+        $modelClass = $this->modelClass;
+        $model = $this->loadModel ($id);
+        $model->setX2Fields ($_POST[$modelClass]);
+        $model->id = null;
+        $copy = new $modelClass;
+        $copy->setAttributes ($model->getAttributes (), false);
+        if ($copy->save ()) {
+            $copy->syncGoogleCalendar('create');
+            echo $this->ajaxResponse ('success');
+        } else {
+            echo $this->ajaxResponse ('failure');
+        }
     }
 
     public function actionQuickUpdate($id){
@@ -1016,6 +1154,9 @@ class ActionsController extends x2base {
         }
         Yii::app()->end();
     }
+
+    
+
 
     /***********************************************************************
     * protected static methods

@@ -277,8 +277,7 @@ if ($isMyProfile) {
         <div class='responsive-menu-items'>
         <?php
         echo CHtml::link(
-            "<img src='".Yii::app()->theme->getBaseUrl ()."/images/icons/".
-                "Collapse_Widget.png' />", '#',
+            "<span class='fa fa-caret-down'></span>", '#',
             array(
                 'class' => 'icon right',
                 'id' => 'profile-info-minimize-button',
@@ -293,8 +292,7 @@ if ($isMyProfile) {
             )
         );
         echo CHtml::link(
-            "<img src='".Yii::app()->theme->getBaseUrl ()."/images/icons/".
-                "Expand_Widget.png' />", '#',
+            "<span class='fa fa-caret-left'></span>", '#',
             array(
                 'class' => 'icon right',
                 'id' => 'profile-info-maximize-button',
@@ -326,7 +324,7 @@ if ($isMyProfile) {
         </ul>
         <?php
         echo CHtml::link(
-            '<img src="'.Yii::app()->theme->getBaseUrl ().'/images/icons/Edit.png'.'" />', 
+            '<span class="fa fa-edit fa-lg"></span>', 
             $this->createUrl('update', array('id' => $model->id)),
             array(
                 'class' => 'edit right',

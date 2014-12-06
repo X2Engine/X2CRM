@@ -44,11 +44,13 @@
  */
 class InlineRelationshipsWidget extends SortableWidget {
 
+    public static $position = 0; 
+
     public $viewFile = '_inlineRelationshipsWidget';
 
 	public $model;
 
-    public $template = '<div class="submenu-title-bar widget-title-bar">{widgetLabel}{closeButton}{minimizeButton}{settingsMenu}</div>{widgetContents}';
+    public $template = '<div class="submenu-title-bar widget-title-bar">{widgetLabel}{newRelationshipButton}{displayModeButton}{fullGraphViewButton}{closeButton}{minimizeButton}{settingsMenu}</div>{widgetContents}';
 
     /**
      * Used to prepopulate create relationship forms
@@ -79,34 +81,86 @@ class InlineRelationshipsWidget extends SortableWidget {
                 array (
                     'label' => 'Relationships',
                     'hidden' => false,
+                    'pageSize' => 10,
+                    'mode' => 'simple', // simple | full
+                    'displayMode' => 'grid', // grid | graph
+                    'height' => '200',
                 )
             );
         }
         return self::$_JSONPropertiesStructure;
     }
 
+     
+
+     
+
+    public function renderNewRelationshipButton () {
+        echo 
+            "<button class='x2-button rel-title-bar-button' id='new-relationship-button' 
+              title='".CHtml::encode (Yii::t('app', 'Create a new relationship'))."'>
+                <span class='fa fa-plus'></span>".
+                CHtml::encode (Yii::t('app', 'Add'))."</button>";
+    }
+
     public function renderWidgetLabel () {
         $label = $this->getWidgetLabel ();
-        $relationshipCount = count ($this->model->getRelatedX2Models ());
+        $relationshipCount = count ($this->model->getVisibleRelatedX2Models ());
         echo "<div class='widget-title'>".
-            htmlspecialchars($label)."&nbsp($relationshipCount)</div>";
+            htmlspecialchars($label)."&nbsp(<number id='relationship-count' name='relationship-count'>$relationshipCount</number>)</div>";
     }
 
     public function getSetupScript () {
         if (!isset ($this->_setupScript)) {
             $widgetClass = get_called_class ();
-            $this->_setupScript = "
-                $(function () {
-                    x2.".$widgetClass.$this->widgetUID." = new x2.InlineRelationshipsWidget ({
-                        'widgetClass': '".$widgetClass."',
-                        'setPropertyUrl': '".Yii::app()->controller->createUrl (
-                            '/profile/setWidgetSetting')."',
-                        'cssSelectorPrefix': '".$this->widgetType."',
-                        'widgetType': '".$this->widgetType."',
-                        'widgetUID': '".$this->widgetUID."'
+            if (isset ($_GET['ajax'])) {
+                $this->_setupScript = "";
+            } else {
+                $modelsWhichSupportQuickCreate = 
+                    QuickCreateRelationshipBehavior::getModelsWhichSupportQuickCreate ();
+
+                // get create action urls for each linkable model
+                $createUrls = QuickCreateRelationshipBehavior::getCreateUrlsForModels (
+                    $modelsWhichSupportQuickCreate);
+
+                // get create relationship tooltips for each linkable model
+                $tooltips = QuickCreateRelationshipBehavior::getDialogTooltipsForModels (
+                    $modelsWhichSupportQuickCreate, get_class ($this->model));
+
+                // get create relationship dialog titles for each linkable model
+                $dialogTitles = QuickCreateRelationshipBehavior::getDialogTitlesForModels (
+                    $modelsWhichSupportQuickCreate);
+                $this->_setupScript = "
+                    $(function () {
+                        x2.inlineRelationshipsWidget = new x2.InlineRelationshipsWidget ({
+                            'displayMode': '".$this->getWidgetProperty ('displayMode')."',
+                            'widgetClass': '".$widgetClass."',
+                            'setPropertyUrl': '".Yii::app()->controller->createUrl (
+                                '/profile/setWidgetSetting')."',
+                            'cssSelectorPrefix': '".$this->widgetType."',
+                            'widgetType': '".$this->widgetType."',
+                            'widgetUID': '".$this->widgetUID."',
+                            'enableResizing': true,
+                            'height': '".$this->getWidgetProperty ('height')."',
+                            'recordId': ".$this->model->id.",
+                            'recordType': '".get_class ($this->model)."',
+                            defaultsByRelatedModelType: ".
+                                CJSON::encode ($this->defaultsByRelatedModelType).",
+                            createUrls: ".CJSON::encode ($createUrls).",
+                            dialogTitles: ".CJSON::encode ($dialogTitles).",
+                            tooltips: ".CJSON::encode ($tooltips).",
+                            modelsWhichSupportQuickCreate: 
+                                $.map (".CJSON::encode ($modelsWhichSupportQuickCreate).",
+                                    function (val) { return val; }),
+                            ajaxGetModelAutocompleteUrl: '".
+                                Yii::app()->controller->createUrl ('ajaxGetModelAutocomplete')."',
+                            createRelationshipUrl: '".
+                                Yii::app()->controller->createUrl ('/site/addRelationship')."',
+                            hasUpdatePermissions: ".$this->checkModuleUpdatePermissions ()."
+                        });
                     });
-                });
-            ";
+                ";
+            }
         }
         return $this->_setupScript;
     }
@@ -146,22 +200,6 @@ class InlineRelationshipsWidget extends SortableWidget {
 
             // used to instantiate html dropdown
             $linkableModelsOptions = $linkableModels;
-            //array_walk ($linkableModelsOptions, function (&$val, $key) { $val = $key; });
-
-            $modelsWhichSupportQuickCreate = 
-                QuickCreateRelationshipBehavior::getModelsWhichSupportQuickCreate ();
-
-            // get create action urls for each linkable model
-            $createUrls = QuickCreateRelationshipBehavior::getCreateUrlsForModels (
-                $modelsWhichSupportQuickCreate);
-
-            // get create relationship tooltips for each linkable model
-            $tooltips = QuickCreateRelationshipBehavior::getDialogTooltipsForModels (
-                $modelsWhichSupportQuickCreate, get_class ($this->model));
-
-            // get create relationship dialog titles for each linkable model
-            $dialogTitles = QuickCreateRelationshipBehavior::getDialogTitlesForModels (
-                $modelsWhichSupportQuickCreate);
 
             $hasUpdatePermissions = $this->checkModuleUpdatePermissions ();
 
@@ -171,17 +209,34 @@ class InlineRelationshipsWidget extends SortableWidget {
                     'model' => $this->model,
                     'modelName' => get_class ($this->model),
                     'linkableModelsOptions' => $linkableModelsOptions,
-                    'dialogTitles' => $dialogTitles,
-                    'tooltips' => $tooltips,
-                    'createUrls' => $createUrls,
-                    'defaultsByRelatedModelType' => $this->defaultsByRelatedModelType,
-                    'modelsWhichSupportQuickCreate' => $modelsWhichSupportQuickCreate,
-                    'hasUpdatePermissions' => $hasUpdatePermissions
+                    'hasUpdatePermissions' => $hasUpdatePermissions,
+                     
+                    'height' => $this->getWidgetProperty ('height'),
                 )
             );
         }
         return $this->_viewFileParams;
     } 
+
+    /**
+     * Override in child class. This content will be turned into a popup dropdown menu with the
+     * PopupDropdownMenu JS prototype.
+     */
+    protected function getSettingsMenuContent () {
+        $model = $this->getWidgetProperty ('mode');
+        $htmlStr = 
+            '<div class="widget-settings-menu-content" style="display:none;">';
+        $htmlStr .= 
+            "<div class='x2-button-group'>
+                <a class='simple-mode x2-button".($model === 'simple' ? ' disabled-link' : '')."' 
+                 href='#'>".CHtml::encode (Yii::t('app', 'Simple'))."</a>
+                <a class='full-mode x2-button".($model === 'full' ? ' disabled-link' : '')."' 
+                 href='#'>".CHtml::encode (Yii::t('app', 'Full'))."</a>
+            </div>";
+        $htmlStr .= '</div>';
+        return $htmlStr;
+    }
+
 }
 
 ?>

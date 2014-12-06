@@ -62,7 +62,8 @@ function RelationshipsManager (argsDict) {
         isViewPage: true, 
         
         // if set, updated after new record is created with new record's name
-        lookupFieldElement: null 
+        lookupFieldElement: null,
+        afterCreate: function () {}
     };
     auxlib.applyArgs (this, defaultArgs, argsDict);
 
@@ -200,9 +201,7 @@ RelationshipsManager.prototype._handleFormSubmission = function (form) {
             that._dialog.empty(); // clean up dialog
                 
             if(response['status'] == 'success') {
-                if($('#relationships-grid').length == 1) {
-                    $.fn.yiiGridView.update('relationships-grid');
-                }
+                that.afterCreate (response.attributes);
                 that._dialog.dialog ('close');
     
                 // indicate that we can append a create action page to this dialog

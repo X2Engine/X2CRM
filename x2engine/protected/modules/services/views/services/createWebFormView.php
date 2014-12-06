@@ -34,13 +34,10 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 
-$menuItems = array(
-    array('label'=>Yii::t('services','All Cases'), 'url'=>array('index')),
-    array('label'=>Yii::t('services','Create Case'), 'url'=>array('create')),
-    array('label'=>Yii::t('services','Create Web Form')),
+$menuOptions = array(
+    'index', 'create', 'createWebForm',
 );
-
-$this->actionMenu = $this->formatMenu($menuItems);
+$this->insertMenu($menuOptions);
 
 ?>
 <div class="page-title icon services">

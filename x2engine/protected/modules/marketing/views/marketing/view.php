@@ -33,6 +33,8 @@
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2Engine".
  *****************************************************************************************/
+
+ThemeGenerator::removeBackdrop();
 Yii::app()->clientScript->registerCss('recordViewCss',"
 
 #content {
@@ -72,21 +74,13 @@ if($model->launchDate){
 $this->pageTitle = $model->name;
 $themeUrl = Yii::app()->theme->getBaseUrl();
 $authParams['X2Model'] = $model;
-$this->actionMenu = $this->formatMenu(array(
-    array('label' => Yii::t('marketing', 'All Campaigns'), 'url' => array('index')),
-    array('label' => Yii::t('module', 'Create'), 'url' => array('create')),
-    array('label' => Yii::t('module', 'View')),
-    array('label' => Yii::t('module', 'Update'), 'url' => array('update', 'id' => $model->id)),
-    array('label' => Yii::t('module', 'Delete'), 'url' => '#', 'linkOptions' => array('submit' => array('delete', 'id' => $model->id), 'confirm' => Yii::t('app', 'Are you sure you want to delete this item?'))),
-    array('label' => Yii::t('contacts', 'Contact Lists'), 'url' => array('/contacts/contacts/lists')),
-	array(
-        'label'=>Yii::t('marketing','Newsletters'), 
-        'url'=>array('/marketing/weblist/index'),
-        'visible'=>(Yii::app()->contEd('pro'))
-    ),
-    array('label' => Yii::t('marketing', 'Web Lead Form'), 'url' => array('webleadForm')),
-    array('label' => Yii::t('app', 'X2Flow'), 'url' => array('/studio/flowIndex'), 'visible' => (Yii::app()->contEd('pro'))),
-        ), $authParams);
+
+$menuOptions = array(
+    'all', 'create', 'view', 'edit', 'delete', 'lists', 'newsletters',
+    'weblead', 'x2flow',
+);
+$this->insertMenu($menuOptions, $model, $authParams);
+
 ?>
 
 <div class="page-title-placeholder"></div>
@@ -94,9 +88,11 @@ $this->actionMenu = $this->formatMenu(array(
     <div class="page-title-fixed-inner">
 <div class="page-title icon marketing">
     <h2><?php echo CHtml::encode($model->name); ?></h2>
-    <?php if(Yii::app()->user->checkAccess('MarketingUpdate', $authParams)){ ?>
-        <a class="x2-button icon edit right" href="<?php echo $this->createUrl('update',array('id'=>$model->id)); ?>"><span></span></a>
-    <?php } ?>
+    <?php if(Yii::app()->user->checkAccess('MarketingUpdate', $authParams)){ 
+        echo X2Html::editRecordButton($model);
+    } 
+    echo X2Html::inlineEditButtons();
+    ?>
 </div>
 </div>
 </div>
@@ -194,7 +190,9 @@ $this->actionMenu = $this->formatMenu(array(
         'specialFields' => 
             '<div class="row">'.
                 CHtml::label(
-                    Yii::t('contacts','Contact'),
+                    Yii::t('contacts','{module}', array(
+                        '{module}' => Modules::displayName(false, "Contacts")
+                    )),
                     'Contacts[name]',
                     array('class'=>'x2-email-label')
                 ).$this->widget('zii.widgets.jui.CJuiAutoComplete', 
@@ -227,9 +225,12 @@ $this->actionMenu = $this->formatMenu(array(
                         'style'=>'display:inline-block; margin-left:5px;',
                         'title' => Yii::t(
                             'marketing',
-                            'The contact you enter here will be used for variable replacement, ' .
+                            'The {contact} you enter here will be used for variable replacement, ' .
                             'i.e. for "John Doe" the token {firstName} will get replaced with ' .
-                            '"John"')
+                            '"John"', array(
+                                '{contact}' => Modules::displayName(false, "Contacts"),
+                            )
+                        )
                     ),'[?]').'</div>',
     ));
 
@@ -260,8 +261,12 @@ $this->actionMenu = $this->formatMenu(array(
         <div id="campaign-attachments-wrapper" class="x2-layout form-view">
             <div class="formSection collapsible <?php echo $showAttachments ? 'showSection' : ''; ?>">
                 <div class="formSectionHeader">
-                    <a href="javascript:void(0)" class="formSectionHide">[–]</a>
-                    <a href="javascript:void(0)" class="formSectionShow">[+]</a>
+                    <a href="javascript:void(0)" class="formSectionHide">
+                        <?php echo X2Html::fa('fa-caret-down')?>
+                    </a>
+                    <a href="javascript:void(0)" class="formSectionShow">
+                        <?php echo X2Html::fa('fa-caret-right')?>
+                    </a>
                     <span class="sectionTitle"><?php echo Yii::t('app', 'Attachments'); ?></span>
                 </div>
                 <div id="campaign-attachments" class="tableWrapper" style="padding: 5px;
@@ -311,10 +316,13 @@ if(isset($contactList) && $model->launchDate){
                 'name' => 'email',
                 'header' => Yii::t('contacts', 'Email'),
                 'headerHtmlOptions' => array('style' => 'width: 20%;'),
-                //email comes from contacts table, emailAddress from list items table, we could have either one or none
-                'value' => '!empty($data["email"]) ? $data["email"] : (!empty($data["emailAddress"]) ? $data["emailAddress"] : "")',
+                //email comes from contacts table, emailAddress from list items table, we could 
+                // have either one or none
+                'value' => '!empty($data["email"]) ? 
+                    $data["email"] : (!empty($data["emailAddress"]) ? $data["emailAddress"] : "")',
             ),
             array(
+                'name' => 'sent',
                 'header' => Yii::t('marketing', 'Sent').': '.$contactList->statusCount('sent'),
                 'class' => 'CCheckBoxColumn',
                 'checked' => '$data["sent"] > 0',
@@ -326,23 +334,27 @@ if(isset($contactList) && $model->launchDate){
                 'name' => 'opened',
                 'value' => '$data["opened"]',
                 'header' => Yii::t('marketing', 'Opened').': '.$contactList->statusCount('opened'),
-                'class' => 'CDataColumn', // this is a raw CDataColumn because CCheckboxColumns are not sortable
+                // this is a raw CDataColumn because CCheckboxColumns are not sortable
+                'class' => 'CDataColumn', 
                 'type' => 'raw',
-                'value' => 'CHtml::checkbox("", $data["opened"] != 0, array("onclick"=>"return false;"))',
+                'value' => 'CHtml::checkbox(
+                    "", $data["opened"] != 0, array("onclick"=>"return false;"))',
                 'htmlOptions' => array('style' => 'text-align: center;'),
-                'headerHtmlOptions' => array('style' => 'width: 7%;', 'title' => $contactList->statusCount('opened'))
+                'headerHtmlOptions' => array(
+                    'style' => 'width: 7%;', 'title' => $contactList->statusCount('opened'))
             ),
-            /* disable this for now
-              array(
-              'header'=>Yii::t('marketing','Clicked') .': ' . $contactList->statusCount('clicked'),
-              'class'=>'CCheckBoxColumn',
-              'checked'=>'$data["clicked"] != 0',
-              'selectableRows'=>0,
-              'htmlOptions'=>array('style'=>'text-align: center;'),
-              'headerHtmlOptions'=>array('style'=>'width: 7%;')
-              ),
-              /* disable end */
             array(
+                'name' => 'clicked',
+                'header'=>
+                    Yii::t('marketing','Clicked') .': ' . $contactList->statusCount('clicked'),
+                'class'=>'CCheckBoxColumn',
+                'checked'=>'$data["clicked"] != 0',
+                'selectableRows'=>0,
+                'htmlOptions'=>array('style'=>'text-align: center;'),
+                'headerHtmlOptions'=>array('style'=>'width: 7%;')
+            ),
+            array(
+                'name' => 'unsubscribed',
                 'header' => Yii::t('marketing', 'Unsubscribed').': '.$contactList->statusCount('unsubscribed'),
                 'class' => 'CCheckBoxColumn',
                 'checked' => '$data["unsubscribed"] != 0',
@@ -351,6 +363,7 @@ if(isset($contactList) && $model->launchDate){
                 'headerHtmlOptions' => array('style' => 'width: 9%;', 'title' => $contactList->statusCount('unsubscribed'))
             ),
             array(
+                'name' => 'doNotEmail',
                 'header' => Yii::t('contacts', 'Do Not Email'),
                 'class' => 'CCheckBoxColumn',
                 'checked' => '$data["doNotEmail"] == 1',
@@ -376,30 +389,33 @@ if(isset($contactList) && $model->launchDate){
                 'value' => '$data["address"]." ".$data["address2"]." ".$data["city"]."'.
                 ' ".$data["state"]." ".$data["zipcode"]." ".$data["country"]'
             ),
-                ));
+        ));
     }
-    $this->widget('zii.widgets.grid.CGridView', array(
+    ?>
+    <div class='x2-layout-island'>
+    <?php
+    $this->widget('X2GridViewGeneric', array(
+        'defaultGvSettings' => array (
+            'name' => 140,
+            'email' => 140,
+            'opened' => 80,
+            'clicked' => 80,
+            'unsubscribed' => 80,
+            'doNotEmail' => 80,
+            'sent' => 80,
+        ),
         'id' => 'campaign-grid',
-        'baseScriptUrl' => Yii::app()->request->baseUrl.'/themes/'.Yii::app()->theme->name.'/css/gridview',
-        'template' => '{summary}{items}{pager}',
-        'summaryText' => Yii::t('app', 'Displaying {start}-{end} result(s).')
-        .'<div class="form no-border" style="margin: 0; padding: 2px 3px; display: inline-block;'.
-        ' vertical-align: middle; overflow: hidden;"> '
-        .CHtml::dropDownList('resultsPerPage', Profile::getResultsPerPage(), Profile::getPossibleResultsPerPage(), array(
-            'ajax' => array(
-                'url' => $this->createUrl('/profile/setResultsPerPage'),
-                'complete' => "function(response) { $.fn.yiiGridView.update('campaign-grid', {data: {'id_page': 1}}) }",
-                'data' => "js: {results: $(this).val()}",
-            ),
-            'style' => 'margin: 0;',
-        ))
-        .' </div>',
+	    'template'=> '<div class="page-title">{title}'
+		    .'{buttons}{summary}</div>{items}{pager}',
+        'buttons' => array ('autoResize'),
         'dataProvider' => $contactList->campaignDataProvider(Profile::getResultsPerPage()),
         'columns' => $displayColumns,
-        'enablePagination' => true
+        'enablePagination' => true,
+        'gvSettingsName' => 'campaignProgressGrid',
     ));
 }
 ?>
+    </div>
     </div>
 
 </div>

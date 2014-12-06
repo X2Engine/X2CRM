@@ -67,7 +67,7 @@ class UpdateStageAction extends WebUpdaterAction {
                 case 'enact':
                     // The final and most critical part of the update, where
                     // files are copied and database commands are run.
-                    $autoRestore = (bool) $autoRestore;
+                    $autoRestore = ($autoRestore === 'true') ? true : false;
                     $this->uniqueId = $uniqueId;
                     $this->enactChanges($autoRestore);
                     $this->respond(Yii::t('admin', 'All done.'));

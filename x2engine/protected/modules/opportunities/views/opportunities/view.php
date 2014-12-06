@@ -46,18 +46,6 @@ Yii::app()->clientScript->registerResponsiveCssFile(
 
 Yii::app()->clientScript->registerScriptFile(Yii::app()->getBaseUrl().'/js/Relationships.js');
 
-$authParams['X2Model'] = $model;
-$menuItems = array(
-	array('label'=>Yii::t('opportunities','Opportunities List'), 'url'=>array('index')),
-	array('label'=>Yii::t('opportunities','Create Opportunity'), 'url'=>array('create')),
-	array('label'=>Yii::t('opportunities','View')),
-	array('label'=>Yii::t('opportunities','Edit Opportunity'), 'url'=>array('update', 'id'=>$model->id)),
-	array('label'=>Yii::t('accounts','Share Opportunity'),'url'=>array('shareOpportunity','id'=>$model->id)),
-	array('label'=>Yii::t('opportunities','Delete Opportunity'), 'url'=>'#', 'linkOptions'=>array('submit'=>array('delete','id'=>$model->id),'confirm'=>'Are you sure you want to delete this item?')),
-	array('label'=>Yii::t('app','Attach A File/Photo'),'url'=>'#','linkOptions'=>array('onclick'=>'toggleAttachmentForm(); return false;')),
-	array('label'=>Yii::t('app','Email Contact'),'url'=>'#','linkOptions'=>array('onclick'=>'toggleEmailForm(); return false;'),'visible'=>(bool) $model->contactName),
-    array('label' => Yii::t('quotes', 'Quotes/Invoices'), 'url' => 'javascript:void(0)', 'linkOptions' => array('onclick' => 'x2.inlineQuotes.toggle(); return false;')),
-);
 $modelType = json_encode("Opportunities");
 $modelId = json_encode($model->id);
 Yii::app()->clientScript->registerScript('widgetShowData', "
@@ -65,27 +53,20 @@ $(function() {
 	$('body').data('modelType', $modelType);
 	$('body').data('modelId', $modelId);
 });");
+
+
+$authParams['X2Model'] = $model;
 $contactModule = Modules::model()->findByAttributes(array('name'=>'contacts'));
 $accountModule = Modules::model()->findByAttributes(array('name'=>'accounts'));
 
-if($contactModule->visible && $accountModule->visible)
-	$menuItems[] = 	array('label'=>Yii::t('app', 'Quick Create'), 'url'=>array('/site/createRecords', 'ret'=>'opportunities'), 'linkOptions'=>array('id'=>'x2-create-multiple-records-button', 'class'=>'x2-hint', 'title'=>Yii::t('app', 'Create a Contact, Account, and Opportunity.')));
-
-
-$menuItems[] = array(
-	'label' => Yii::t('app', 'Print Record'), 
-	'url' => '#',
-	'linkOptions' => array (
-		'onClick'=>"window.open('".
-			Yii::app()->createUrl('/site/printRecord', array (
-				'modelClass' => 'Opportunity', 
-				'id' => $model->id, 
-				'pageTitle' => Yii::t('app', 'Opportunity').': '.$model->name
-			))."');"
-	)
+$menuOptions = array(
+    'index', 'create', 'view', 'edit', 'share', 'delete', 'attach', 'quotes', 'import', 'export',
 );
+if ($contactModule->visible && $accountModule->visible)
+    $menuOptions[] = 'quick';
+$this->insertMenu($menuOptions, $model, $authParams);
 
-$this->actionMenu = $this->formatMenu($menuItems, $authParams);
+
 $themeUrl = Yii::app()->theme->getBaseUrl();
 ?>
 
@@ -95,18 +76,13 @@ $themeUrl = Yii::app()->theme->getBaseUrl();
 <div class="page-title icon opportunities">
 	<?php //echo CHtml::link('['.Yii::t('contacts','Show All').']','javascript:void(0)',array('id'=>'showAll','class'=>'right hide','style'=>'text-decoration:none;')); ?>
 	<?php //echo CHtml::link('['.Yii::t('contacts','Hide All').']','javascript:void(0)',array('id'=>'hideAll','class'=>'right','style'=>'text-decoration:none;')); ?>
-	<h2><span class="no-bold"><?php echo Yii::t('opportunities','Opportunity:'); ?> </span><?php echo CHtml::encode($model->name); ?></h2>
-	<?php echo CHtml::link('<span></span>',array('update', 'id'=>$model->id),array('class'=>'x2-button icon edit right')); ?>
+	<h2><span class="no-bold"><?php echo Yii::t('opportunities','{opportunity}:', array('{opportunity}'=>Modules::displayName(false))); ?> </span><?php echo CHtml::encode($model->name); ?></h2>
+	<?php echo X2Html::editRecordButton($model); ?>
     <?php if ((bool) $model->contactName) {
-        echo CHtml::link(
-        '<img src="'.Yii::app()->request->baseUrl.'/themes/x2engine/images/icons/email_button.png'.
-            '"></img>', '#',
-        array(
-            'class' => 'x2-button icon right email',
-            'title' => Yii::t('app', 'Open email form'),
-            'onclick' => 'toggleEmailForm(); return false;'
-        ));
-    } ?>
+        echo X2Html::emailFormButton();        
+    }
+    echo X2Html::inlineEditButtons();
+    ?>
 </div>
 </div>
 </div>
@@ -120,6 +96,15 @@ $this->beginWidget('CActiveForm', array(
 
 $this->renderPartial('application.components.views._detailView',array('model'=>$model,'modelName'=>'Opportunity'));
 $this->endWidget();
+
+$this->widget('InlineEmailForm', array(
+    'attributes' => array(
+        'modelName' => 'Opportunities',
+        'modelId' => $model->id,
+        'targetModel' => $model,
+    ),
+    'startHidden' => true,
+));
 
 $this->widget('X2WidgetList', array('block'=>'center', 'model'=>$model, 'modelType'=>'opportunities'));
 
@@ -177,11 +162,19 @@ $createAccountUrl = $this->createUrl('/accounts/accounts/create');
 $createOpportunityUrl=$this->createUrl('/opportunities/opportunities/create');
 $assignedTo = json_encode($model->assignedTo);
 $tooltip = json_encode(
-    Yii::t('opportunities', 'Create a new Opportunity associated with this Opportunity.'));
+    Yii::t('opportunities', 'Create a new {opportunity} associated with this {opportunity}.', array(
+        '{opportunity}' => Modules::displayName(false),
+    )));
 $contactTooltip = json_encode(
-    Yii::t('opportunities', 'Create a new Contact associated with this Opportunity.'));
+    Yii::t('opportunities', 'Create a new {contact} associated with this {opportunity}.', array(
+        '{opportunity}' => Modules::displayName(false),
+        '{contact}' => Modules::displayName(false, "Contacts"),
+    )));
 $accountsTooltip = json_encode(
-    Yii::t('opportunities', 'Create a new Account associated with this Opportunity.'));
+    Yii::t('opportunities', 'Create a new {account} associated with this {opportunity}.', array(
+        '{opportunity}' => Modules::displayName(false),
+        '{account}' => Modules::displayName(false, "Accounts"),
+    )));
 
 ?>
 </div>

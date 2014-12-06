@@ -99,7 +99,7 @@ class EmailDeliveryBehavior extends CBehavior {
      * 
      * @param type $header
      */
-    public static function addressHeaderToArray($header) {
+    public static function addressHeaderToArray($header,$ignoreInvalidAddresses=false) {
         // First, tokenize all pieces of the header to avoid splitting inside of
         // recipient names:
         preg_match_all('/"(?:\\\\.|[^\\\\"])*"|[^,\s]+/', $header, $matches);
@@ -134,10 +134,12 @@ class EmailDeliveryBehavior extends CBehavior {
                 if(count($matches) == 3 && $emailValidator->validateValue($matches[2])){  
                     $headerArray[] = array($matches[1], $matches[2]);
                 }else{
-                    throw new CException(Yii::t('app', 'Invalid email address list.'));
+                    if (!$ignoreInvalidAddresses)
+                        throw new CException(Yii::t('app', 'Invalid email address list.'));
                 }
             }else{
-                throw new CException(Yii::t('app', 'Invalid email address list.'));
+                if (!$ignoreInvalidAddresses)
+                    throw new CException(Yii::t('app', 'Invalid email address list:'.$recipient));
             }
         }
         return $headerArray;            
@@ -156,10 +158,11 @@ class EmailDeliveryBehavior extends CBehavior {
                     $phpMail->AddAddress($target[1], $target[0]);
             }
         } else{
-            if(count($addresses) == 2 && !is_array($addresses[0])){ // this is just an array of [name, address],
-                $phpMail->AddAddress($addresses[1], $addresses[0]); // not an array of arrays
+            if(count($addresses) == 2 && !is_array($addresses[0])){ 
+                // this is just an array of [name, address], not an array of arrays
+                $phpMail->AddAddress($addresses[1], $addresses[0]); 
             }else{
-                foreach($addresses as $target){  //this is an array of [name, address] subarrays
+                foreach($addresses as $target){ //this is an array of [name, address] subarrays
                     if(count($target) == 2)
                         $phpMail->AddAddress($target[1], $target[0]);
                 }
@@ -180,6 +183,20 @@ class EmailDeliveryBehavior extends CBehavior {
     }
 
     /**
+     * @param int size
+     * @throws Exception if size exceeds limit 
+     * @return true if file size is acceptable
+     */
+    public function validateFileSize ($size) {
+        if($size > (10 * 1024 * 1024)) { // 10mb file size limit
+            throw new Exception(
+                "Attachment '{$attachment['filename']}' exceeds size ".
+                "limit of 10mb.");
+        }
+        return true;
+    }
+
+    /**
      * Perform the email delivery with PHPMailer.
      *
      * Any special authentication and security should take place in here.
@@ -194,14 +211,14 @@ class EmailDeliveryBehavior extends CBehavior {
     public function deliverEmail($addresses, $subject, $message, $attachments = array()){
         if(YII_DEBUG && self::DEBUG_EMAIL) {
             // Fake a successful send
-            AuxLib::debugLog('Faking an email delivery to address(es): '.var_export($addresses,1));
+            /**/AuxLib::debugLog(
+                'Faking an email delivery to address(es): '.var_export($addresses,1));
             return $this->status = $this->getDebugStatus();
         }
 
         $phpMail = $this->mailer;
 
         try{
-
             $this->addEmailAddresses($phpMail, $addresses);
 
             $phpMail->Subject = $subject;
@@ -211,20 +228,27 @@ class EmailDeliveryBehavior extends CBehavior {
             // add attachments, if any
             if($attachments){
                 foreach($attachments as $attachment){
-                    if($attachment['temp']){ // stored as a temp file?
-                        $file = 'uploads/media/temp/'.$attachment['folder'].'/'.$attachment['filename'];
-                        if(file_exists($file)) // check file exists
-                            if(filesize($file) <= (10 * 1024 * 1024)) // 10mb file size limit
-                                $phpMail->AddAttachment($file);
-                            else
-                                throw new Exception("Attachment '{$attachment['filename']}' exceeds size limit of 10mb.");
-                    } else{ // stored in media library
-                        $file = 'uploads/media/'.$attachment['folder'].'/'.$attachment['filename'];
-                        if(file_exists($file)) // check file exists
-                            if(filesize($file) <= (10 * 1024 * 1024)) // 10mb file size limit
-                                $phpMail->AddAttachment($file);
-                            else
-                                throw new Exception("Attachment '{$attachment['filename']}' exceeds size limit of 10mb.");
+                    $type = $attachment['type'];
+                    switch ($type) {
+                        case 'temp': // stored as a temp file?
+                            $file = 'uploads/media/temp/'.$attachment['folder'].'/'.
+                                $attachment['filename'];
+                            if(file_exists($file)) // check file exists
+                                if ($this->validateFileSize (filesize ($file))) {
+                                    $phpMail->AddAttachment($file);
+                                }
+                            break;
+                        case 'media': // stored in media library
+                            $file = 'uploads/media/'.$attachment['folder'].'/'.
+                                $attachment['filename'];
+                            if(file_exists($file)) // check file exists
+                                if ($this->validateFileSize (filesize ($file))) {
+                                    $phpMail->AddAttachment($file);
+                                }
+                            break;
+                         
+                        default:
+                            throw new CException ('Invalid attachment type');
                     }
                 }
             }
@@ -234,8 +258,10 @@ class EmailDeliveryBehavior extends CBehavior {
             // delete temp attachment files, if they exist
             if($attachments){
                 foreach($attachments as $attachment){
-                    if($attachment['temp']){
-                        $file = 'uploads/media/temp/'.$attachment['folder'].'/'.$attachment['filename'];
+                    $type = $attachment['type'];
+                    if($type === 'temp'){
+                        $file = 'uploads/media/temp/'.$attachment['folder'].'/'.
+                            $attachment['filename'];
                         $folder = 'uploads/media/temp/'.$attachment['folder'];
                         if(file_exists($file))
                             unlink($file); // delete temp file
@@ -302,7 +328,8 @@ class EmailDeliveryBehavior extends CBehavior {
 					'address' => $this->credentials->auth->email
 				);
 			else {
-                if(empty($this->userProfile)){
+                if(empty($this->userProfile) ||
+                        $this->userProfile->username === Profile::GUEST_PROFILE_USERNAME) {
                     // The application:
                     $this->_from = array(
                         'name' => Yii::app()->settings->appName,
@@ -326,9 +353,11 @@ class EmailDeliveryBehavior extends CBehavior {
      */
     public function getMailer(){
         if(!isset($this->_mailer)){
-            require_once(realpath(Yii::app()->basePath.'/components/phpMailer/class.phpmailer.php'));
+            require_once(
+                realpath(Yii::app()->basePath.'/components/phpMailer/class.phpmailer.php'));
 
-            $phpMail = new PHPMailer(true); // the true param means it will throw exceptions on errors, which we need to catch
+            // the true param means it will throw exceptions on errors, which we need to catch
+            $phpMail = new PHPMailer(true); 
             $phpMail->CharSet = 'utf-8';
 
             $cred = $this->credentials;
@@ -346,7 +375,8 @@ class EmailDeliveryBehavior extends CBehavior {
                 // Use the specified credentials (which should have the sender name):
                 $phpMail->AddReplyTo($cred->auth->email, $cred->auth->senderName);
                 $phpMail->SetFrom($cred->auth->email, $cred->auth->senderName);
-                $this->from = array('address' => $cred->auth->email, 'name' => $cred->auth->senderName);
+                $this->from = array(
+                    'address' => $cred->auth->email, 'name' => $cred->auth->senderName);
             }else{ // Use the system default (legacy method)
                 switch(Yii::app()->settings->emailType){
                     case 'sendmail':
@@ -379,8 +409,10 @@ class EmailDeliveryBehavior extends CBehavior {
                     if(empty($this->userProfile->emailAddress))
                         throw new Exception('Your profile doesn\'t have a valid email address.');
 
-                    $phpMail->AddReplyTo($this->userProfile->emailAddress, $this->userProfile->fullName);
-                    $phpMail->SetFrom($this->userProfile->emailAddress, $this->userProfile->fullName);
+                    $phpMail->AddReplyTo(
+                        $this->userProfile->emailAddress, $this->userProfile->fullName);
+                    $phpMail->SetFrom(
+                        $this->userProfile->emailAddress, $this->userProfile->fullName);
                 } else{
                     $phpMail->AddReplyTo($from['address'], $from['name']);
                     $phpMail->SetFrom($from['address'], $from['name']);

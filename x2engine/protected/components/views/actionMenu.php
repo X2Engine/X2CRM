@@ -42,6 +42,9 @@ Yii::app()->clientScript->registerCss('actionMenu',"
 
 ");
 
+$Action = Modules::displayName(false, 'Actions');
+$Actions = Modules::displayName(true, 'Actions');
+
 Yii::app()->clientScript->registerScript('setShowActions', '
     if (typeof x2 == "undefined")
         x2 = {};
@@ -63,7 +66,11 @@ Yii::app()->clientScript->registerScript('setShowActions', '
             onclick="x2.setShowActions('all')">
             <?php echo $total; ?></a>
         </strong><?php 
-        echo Yii::t('app','Total Action|Total Actions',$total); 
+        echo Yii::t('app','Total {Action}|Total {Actions}', array(
+            $total,
+            '{Action}' => $Action,
+            '{Actions}' => $Actions,
+        ));
     ?></li>
 	<li>
         <strong>
@@ -71,7 +78,11 @@ Yii::app()->clientScript->registerScript('setShowActions', '
                 onclick="x2.setShowActions('uncomplete')">
             <?php echo $unfinished; ?></a>
         </strong><?php 
-        echo Yii::t('app','Incomplete Action|Incomplete Actions',$total); 
+        echo Yii::t('app','Incomplete {Action}|Incomplete {Actions}', array(
+            $unfinished,
+            '{Action}' => $Action,
+            '{Actions}' => $Actions,
+        ));
     ?></li>
 	<li>
         <strong>
@@ -79,7 +90,11 @@ Yii::app()->clientScript->registerScript('setShowActions', '
                 onclick="x2.setShowActions('overdue')">
             <?php echo $overdue; ?></a>
         </strong><?php 
-        echo Yii::t('app','Overdue Action|Overdue Actions',$total); 
+        echo Yii::t('app','Overdue {Action}|Overdue {Actions}', array(
+            $overdue,
+            '{Action}' => $Action,
+            '{Actions}' => $Actions,
+        ));
     ?></li>
 	<li>
         <strong>
@@ -87,7 +102,11 @@ Yii::app()->clientScript->registerScript('setShowActions', '
                 onclick="x2.setShowActions('complete')">
             <?php echo $complete; ?></a>
         </strong><?php 
-        echo Yii::t('app','Completed Action|Completed Actions',$total); 
+        echo Yii::t('app','Completed {Action}|Completed {Actions}', array(
+            $complete,
+            '{Action}' => $Action,
+            '{Actions}' => $Actions,
+        ));
     ?></li>
 </ul>
 

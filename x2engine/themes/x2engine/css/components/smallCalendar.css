@@ -1,0 +1,333 @@
+/*****************************************************************************************
+ * X2Engine Open Source Edition is a customer relationship management program developed by
+ * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
+ * 
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU Affero General Public License version 3 as published by the
+ * Free Software Foundation with the addition of the following permission added
+ * to Section 15 as permitted in Section 7(a): FOR ANY PART OF THE COVERED WORK
+ * IN WHICH THE COPYRIGHT IS OWNED BY X2ENGINE, X2ENGINE DISCLAIMS THE WARRANTY
+ * OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
+ * 
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.  See the GNU Affero General Public License for more
+ * details.
+ * 
+ * You should have received a copy of the GNU Affero General Public License along with
+ * this program; if not, see http://www.gnu.org/licenses or write to the Free
+ * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301 USA.
+ * 
+ * You can contact X2Engine, Inc. P.O. Box 66752, Scotts Valley,
+ * California 95067, USA. or at email address contact@x2engine.com.
+ * 
+ * The interactive user interfaces in modified source and object code versions
+ * of this program must display Appropriate Legal Notices, as required under
+ * Section 5 of the GNU Affero General Public License version 3.
+ * 
+ * In accordance with Section 7(b) of the GNU Affero General Public License version 3,
+ * these Appropriate Legal Notices must retain the display of the "Powered by
+ * X2Engine" logo. If the display of the logo is not reasonably feasible for
+ * technical reasons, the Appropriate Legal Notices must display the words
+ * "Powered by X2Engine".
+ *****************************************************************************************/
+/*********************************************************************************
+ * Copyright (C) 2011-2014 X2Engine Inc. All Rights Reserved.
+ *
+ * X2Engine Inc.
+ * P.O. Box 66752
+ * Scotts Valley, California 95067 USA
+ *
+ * Company website: http://www.x2engine.com
+ * Community and support website: http://www.x2community.com
+ *
+ * X2Engine Inc. grants you a perpetual, non-exclusive, non-transferable license
+ * to install and use this Software for your internal business purposes.
+ * You shall not modify, distribute, license or sublicense the Software.
+ * Title, ownership, and all intellectual property rights in the Software belong
+ * exclusively to X2Engine.
+ *
+ * THIS SOFTWARE IS PROVIDED "AS IS" AND WITHOUT WARRANTIES OF ANY KIND, EITHER
+ * EXPRESS OR IMPLIED, INCLUDING WITHOUT LIMITATION THE IMPLIED WARRANTIES OF
+ * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, TITLE, AND NON-INFRINGEMENT.
+ ********************************************************************************/
+/***********************************************************************
+* Grays 
+***********************************************************************/
+/***********************************************************************
+* Blues
+***********************************************************************/
+/***********************************************************************
+* Reds 
+***********************************************************************/
+/***********************************************************************
+* Greens 
+***********************************************************************/
+/*********************************************************************************
+ * Copyright (C) 2011-2014 X2Engine Inc. All Rights Reserved.
+ *
+ * X2Engine Inc.
+ * P.O. Box 66752
+ * Scotts Valley, California 95067 USA
+ *
+ * Company website: http://www.x2engine.com
+ * Community and support website: http://www.x2community.com
+ *
+ * X2Engine Inc. grants you a perpetual, non-exclusive, non-transferable license
+ * to install and use this Software for your internal business purposes.
+ * You shall not modify, distribute, license or sublicense the Software.
+ * Title, ownership, and all intellectual property rights in the Software belong
+ * exclusively to X2Engine.
+ *
+ * THIS SOFTWARE IS PROVIDED "AS IS" AND WITHOUT WARRANTIES OF ANY KIND, EITHER
+ * EXPRESS OR IMPLIED, INCLUDING WITHOUT LIMITATION THE IMPLIED WARRANTIES OF
+ * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, TITLE, AND NON-INFRINGEMENT.
+ ********************************************************************************/
+/*********************************************************************************
+ * Copyright (C) 2011-2014 X2Engine Inc. All Rights Reserved.
+ *
+ * X2Engine Inc.
+ * P.O. Box 66752
+ * Scotts Valley, California 95067 USA
+ *
+ * Company website: http://www.x2engine.com
+ * Community and support website: http://www.x2community.com
+ *
+ * X2Engine Inc. grants you a perpetual, non-exclusive, non-transferable license
+ * to install and use this Software for your internal business purposes.
+ * You shall not modify, distribute, license or sublicense the Software.
+ * Title, ownership, and all intellectual property rights in the Software belong
+ * exclusively to X2Engine.
+ *
+ * THIS SOFTWARE IS PROVIDED "AS IS" AND WITHOUT WARRANTIES OF ANY KIND, EITHER
+ * EXPRESS OR IMPLIED, INCLUDING WITHOUT LIMITATION THE IMPLIED WARRANTIES OF
+ * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, TITLE, AND NON-INFRINGEMENT.
+ ********************************************************************************/
+/***********************************************************************
+* Grays 
+***********************************************************************/
+/***********************************************************************
+* Blues
+***********************************************************************/
+/***********************************************************************
+* Reds 
+***********************************************************************/
+/***********************************************************************
+* Greens 
+***********************************************************************/
+/***************************************
+* Mixin for border radius 
+***************************************/
+/***************************************
+* Mixin for text field placeholder text
+***************************************/
+/***************************************
+* CSS to extend when something 
+* should look like a link
+***************************************/
+/* line 57, ../../../../compass/css/lib/standards.scss */
+.pseudo-link {
+  cursor: pointer;
+  color: #004baf;
+  transition: color .1s;
+}
+/* line 62, ../../../../compass/css/lib/standards.scss */
+.pseudo-link:hover {
+  color: #006cfb;
+}
+
+/***************************************
+* CSS to extend when for elements that 
+* become opauqe on mouseover
+***************************************/
+/* line 80, ../../../../compass/css/lib/standards.scss */
+.opacity-hover {
+  opacity: 0.3;
+}
+/* line 75, ../../../../compass/css/lib/standards.scss */
+.opacity-hover:hover {
+  opacity: 1;
+}
+
+/* line 26, ../../../../compass/themes/x2engine/css/components/smallCalendar.scss */
+#small-publisher .form.unselected-tab-row {
+  background: none !important;
+}
+
+/* line 31, ../../../../compass/themes/x2engine/css/components/smallCalendar.scss */
+#small-calendar {
+  border: none;
+}
+/* line 32, ../../../../compass/themes/x2engine/css/components/smallCalendar.scss */
+#small-calendar .fc-view-month .fc-event {
+  display: none;
+}
+/* line 36, ../../../../compass/themes/x2engine/css/components/smallCalendar.scss */
+#small-calendar .fc-header-title h2 {
+  background-image: none;
+  padding-left: 15px;
+}
+
+/* line 43, ../../../../compass/themes/x2engine/css/components/smallCalendar.scss */
+#widget_SmallCalendar .portlet-content {
+  padding: 0px;
+}
+/* line 46, ../../../../compass/themes/x2engine/css/components/smallCalendar.scss */
+#widget_SmallCalendar #header-title {
+  display: inline;
+}
+
+/* line 52, ../../../../compass/themes/x2engine/css/components/smallCalendar.scss */
+#small-calendar .fc-header {
+  border-radius: 0px;
+}
+/* line 55, ../../../../compass/themes/x2engine/css/components/smallCalendar.scss */
+#small-calendar .fc-header-title {
+  display: none;
+}
+/* line 58, ../../../../compass/themes/x2engine/css/components/smallCalendar.scss */
+#small-calendar .fc-button {
+  float: left;
+}
+/* line 61, ../../../../compass/themes/x2engine/css/components/smallCalendar.scss */
+#small-calendar .fc-header-left {
+  padding-left: 3px;
+  padding-top: 2px;
+  width: 100%;
+}
+/* line 66, ../../../../compass/themes/x2engine/css/components/smallCalendar.scss */
+#small-calendar .fc-day {
+  height: 0px !important;
+  background-color: white;
+  cursor: pointer;
+  cursor: hand;
+}
+/* line 71, ../../../../compass/themes/x2engine/css/components/smallCalendar.scss */
+#small-calendar .fc-day:hover {
+  background: #d9d9d9;
+}
+/* line 75, ../../../../compass/themes/x2engine/css/components/smallCalendar.scss */
+#small-calendar .day-number-link {
+  font-size: 14pt;
+  text-decoration: none;
+}
+/* line 79, ../../../../compass/themes/x2engine/css/components/smallCalendar.scss */
+#small-calendar .fc-day-number {
+  float: none;
+  text-align: center;
+  padding-top: 10px;
+}
+/* line 86, ../../../../compass/themes/x2engine/css/components/smallCalendar.scss */
+#small-calendar .fc-view-month .fc-today {
+  border: 1px solid #1e71e2;
+  background: #629ceb;
+}
+/* line 89, ../../../../compass/themes/x2engine/css/components/smallCalendar.scss */
+#small-calendar .fc-view-month .fc-today .day-number-link {
+  color: white;
+}
+/* line 93, ../../../../compass/themes/x2engine/css/components/smallCalendar.scss */
+#small-calendar .day-number-link:hover {
+  /* color: #666666; */
+}
+/* line 97, ../../../../compass/themes/x2engine/css/components/smallCalendar.scss */
+#small-calendar .ui-widget-content {
+  border-bottom: none;
+}
+/* line 100, ../../../../compass/themes/x2engine/css/components/smallCalendar.scss */
+#small-calendar .ui-widget-header, #small-calendar .fc-first {
+  border-left: none;
+}
+/* line 103, ../../../../compass/themes/x2engine/css/components/smallCalendar.scss */
+#small-calendar .fc-last {
+  border-right: none;
+}
+/* line 106, ../../../../compass/themes/x2engine/css/components/smallCalendar.scss */
+#small-calendar .fc-week.fc-last .fc-day {
+  border-bottom: none;
+}
+/* line 109, ../../../../compass/themes/x2engine/css/components/smallCalendar.scss */
+#small-calendar .fc-agenda-axis {
+  border-left: none;
+  border-bottom: none;
+}
+/* line 113, ../../../../compass/themes/x2engine/css/components/smallCalendar.scss */
+#small-calendar .fc-day-content .spacer {
+  display: none;
+}
+/* line 116, ../../../../compass/themes/x2engine/css/components/smallCalendar.scss */
+#small-calendar .fc-event-indicator {
+  width: 8px;
+  height: 8px;
+  background: #4078C3;
+  margin: auto;
+  border-radius: 5px;
+  display: inline-block;
+}
+/* line 125, ../../../../compass/themes/x2engine/css/components/smallCalendar.scss */
+#small-calendar .fc-indicator-container {
+  height: 10px !important;
+  display: block !important;
+  text-align: center;
+  padding: 2px;
+  padding-top: 0px;
+  overflow: hidden;
+}
+/* line 133, ../../../../compass/themes/x2engine/css/components/smallCalendar.scss */
+#small-calendar .x2-button-group {
+  margin-right: 5px;
+  float: left;
+}
+/* line 136, ../../../../compass/themes/x2engine/css/components/smallCalendar.scss */
+#small-calendar .x2-button-group .x2-button {
+  padding-left: 7px;
+  padding-right: 7px;
+  display: inline;
+}
+/* line 142, ../../../../compass/themes/x2engine/css/components/smallCalendar.scss */
+#small-calendar #add-button, #small-calendar #me-button {
+  margin: 3px;
+  float: right;
+  margin-left: 0px;
+}
+/* line 147, ../../../../compass/themes/x2engine/css/components/smallCalendar.scss */
+#small-calendar .fc-header-space {
+  display: none;
+}
+
+/* line 152, ../../../../compass/themes/x2engine/css/components/smallCalendar.scss */
+#small-publisher {
+  padding: 0px;
+}
+/* line 154, ../../../../compass/themes/x2engine/css/components/smallCalendar.scss */
+#small-publisher #publisher-tabs-row-1 {
+  display: none !important;
+}
+/* line 157, ../../../../compass/themes/x2engine/css/components/smallCalendar.scss */
+#small-publisher .form {
+  background: none !important;
+  border: none !important;
+}
+
+/* line 163, ../../../../compass/themes/x2engine/css/components/smallCalendar.scss */
+#me-button.pressed {
+  background: #629ceb;
+  color: white;
+  box-shadow: #357fe5 0px 1px 3px inset;
+}
+
+/* line 169, ../../../../compass/themes/x2engine/css/components/smallCalendar.scss */
+.ui-datepicker {
+  z-index: 1200 !important;
+}
+
+/* line 174, ../../../../compass/themes/x2engine/css/components/smallCalendar.scss */
+#small-publisher .cell:last-child {
+  display: none;
+}
+/* line 177, ../../../../compass/themes/x2engine/css/components/smallCalendar.scss */
+#small-publisher .cell.action-duration {
+  opacity: 0;
+  width: 0px;
+}

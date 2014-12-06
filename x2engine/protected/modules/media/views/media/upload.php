@@ -34,10 +34,11 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 
-$this->actionMenu = $this->formatMenu(array(
-	array('label'=>Yii::t('media', 'All Media'), 'url'=>array('index')),
-	array('label'=>Yii::t('media', 'Upload')),
-));
+$menuOptions = array(
+    'index', 'upload',
+);
+$this->insertMenu($menuOptions);
+
 ?>
 <div class="page-title icon media">
 <h2><?php echo Yii::t('media','Upload Media File'); ?></h2>

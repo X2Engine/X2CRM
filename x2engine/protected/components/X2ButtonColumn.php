@@ -41,6 +41,10 @@ Yii::import('zii.widgets.grid.CDataColumn');
  */
 class X2ButtonColumn extends CButtonColumn {
 
+    public $viewButtonImageUrl = false; 
+    public $updateButtonImageUrl = false; 
+    public $deleteButtonImageUrl = false; 
+
     /**
 	 * Registers the client scripts for the button column.
 	 */
@@ -56,7 +60,8 @@ class X2ButtonColumn extends CButtonColumn {
                 /* x2modstart */ 
 				$js[]= "
                     $(document).unbind ('click.CButtonColumn".$id."');
-                    $(document).on ('click.CButtonColumn".$id."','#{$this->grid->id} a.{$class}',$function);
+                    $(document).on (
+                        'click.CButtonColumn".$id."','#{$this->grid->id} a.{$class}',$function);
                 ";
                 /* x2modend */ 
 			}
@@ -64,6 +69,24 @@ class X2ButtonColumn extends CButtonColumn {
 
 		if($js!==array())
 			Yii::app()->getClientScript()->registerScript(__CLASS__.'#'.$this->id, implode("\n",$js));
+	}
+
+
+	/**
+	 * Initializes the default buttons (view, update and delete).
+	 */
+	protected function initDefaultButtons()
+	{
+        $this->viewButtonLabel = 
+            "<span class='fa fa-search' title='".CHtml::encode (Yii::t('app', 'View record'))."'>
+             </span>";
+        $this->updateButtonLabel = 
+            "<span class='fa fa-edit' title='".CHtml::encode (Yii::t('app', 'Edit record'))."'>
+             </span>";
+        $this->deleteButtonLabel = 
+            "<span class='fa fa-times x2-delete-icon' 
+              title='".CHtml::encode (Yii::t('app', 'Delete record'))."'></span>";
+        parent::initDefaultButtons ();
 	}
 
 }

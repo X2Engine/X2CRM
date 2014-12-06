@@ -134,11 +134,13 @@ $this->widget('zii.widgets.grid.CGridView', array(
                             rollbackStage(model+1,0);
                         }else{
                             $('#status-box').append("<br><br><b>Rollback Complete</b>");
+                            $('#rollback-link').hide();
                             alert("Done!");
                         }
                     }
                 }else{
                     $('#status-box').append("<br><br><b>Rollback Complete</b>");
+                    $('#rollback-link').hide();
                     alert("Done!");
                 }
             }

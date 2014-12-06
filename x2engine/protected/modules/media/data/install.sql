@@ -53,9 +53,13 @@ VALUES
 ('bg','Ravendale.jpg'),
 ('bg','DeathValley.jpg'),
 ('bg','Redwoods2.jpg'),
-('bg','pigeon_point.jpg'),
 ('bg','CanneryRow.jpg'),
-('bg','BeerCanRace.jpg');
+('bg','BeerCanRace.jpg'),
+('bg','AnaNuevo.jpg'),
+('bg','DavenportCA.jpg'),
+('bg','WaddellBeach.jpg'),
+('bg','Mushrooms.jpg');
+('bg','pigeon_point.jpg'),
 /*&*/
 INSERT INTO x2_media
 (id, associationType, fileName)
@@ -70,3 +74,11 @@ VALUES
 (2000, 'loginSound','X2_China.mp3'),
 (2001, 'loginSound','X2_India.mp3'),
 (2002, 'loginSound','X2_Latin_America.mp3');
+/*&*/
+INSERT INTO `x2_media` (`id`, `associationType`, `uploadedBy`, `fileName`, `description`, `private`) VALUES
+('-1', "theme",'admin','Default','{"themeName":"Default","background":"","content":"","text":"","link":"","highlight1":"","highlight2":"","private":"0"}',0),
+('-2', "theme",'admin','Terminal','{"themeName":"Terminal","background":"221E1E","content":"2E2E2E","text":"F7F7F7","link":"F2921D","highlight1":"1B1B1B","highlight2":"074E8C"}',0),
+('-3', "theme",'admin','Twilight','{"themeName":"Twilight","background":"0C1021","content":"0C1021","text":"F7F7F7","link":"FBDE2D","highlight1":"303E49","highlight2":"FF6400"}',0),
+('-4', "theme",'admin','Guava','{"themeName":"Guava","background":"F0AA81","content":"D6CCAD","text":"42282F","link":"2D4035","highlight1":"74A588","highlight2":"D6655A"}',0),
+('-5', "theme",'admin','Archaic','{"themeName":"Archaic","background":"1E1E20","content":"2A2C2B","text":"FFFFFF","link":"D9CB9E","highlight1":"1E1E20","highlight2":"A5382B"}',0),
+('-6', "theme",'admin','Phosphor','{"themeName":"Phosphor","background":"050320","content":"1E1E20","text":"ECF4EA","link":"44FF24","highlight1":"131A19","highlight2":"226B15"}',0);

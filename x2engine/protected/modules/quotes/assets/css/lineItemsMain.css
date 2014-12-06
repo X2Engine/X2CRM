@@ -32,49 +32,55 @@
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2Engine".
  *****************************************************************************************/
-
-
 /*
 center cells in the quotes table
 */
-.quote-table .input-cell
-{
-    text-align: center;
-    vertical-align: middle;
+/* line 26, ../../../../../compass/sass/protected/modules/quotes/assets/css/lineItemsMain.scss */
+/* line 26, ../../../../../compass/sass/protected/modules/quotes/assets/css/lineItemsMain.scss */
+/* line 27, ../../../../../compass/protected/modules/quotes/assets/css/lineItemsMain.scss */
+.quote-table {
+  background-color: #EEEEEE;
 }
-
-.quote-table .text-field
-{
-    vertical-align: middle;
-    padding: 0px 6px !important;
+/* line 29, ../../../../../compass/protected/modules/quotes/assets/css/lineItemsMain.scss */
+.quote-table .input-cell {
+  text-align: center;
+  vertical-align: middle;
 }
-
-
-.quote-table 
-{
-	background-color: #EEEEEE;
+/* line 33, ../../../../../compass/protected/modules/quotes/assets/css/lineItemsMain.scss */
+.quote-table .text-field {
+  vertical-align: middle;
+  padding: 0px 6px !important;
 }
-
-.quote-table td
-{
-    border-bottom: 1px solid rgb(194,194,194);
-    height: 2em;
+/* line 37, ../../../../../compass/protected/modules/quotes/assets/css/lineItemsMain.scss */
+.quote-table td {
+  border-bottom: 1px solid #c2c2c2;
+  height: 2em;
 }
-
-.quote-table tbody:last-child,
-.quote-table tbody .x2-last-child 
-{
-	border-bottom:none;	
+/* line 42, ../../../../../compass/protected/modules/quotes/assets/css/lineItemsMain.scss */
+.quote-table tbody:last-child, .quote-table tbody .x2-last-child {
+  border-bottom: none;
 }
-
+/* line 46, ../../../../../compass/protected/modules/quotes/assets/css/lineItemsMain.scss */
 .quote-table thead th {
-	background-color: transparent
+  background-color: transparent;
+}
+/* line 50, ../../../../../compass/protected/modules/quotes/assets/css/lineItemsMain.scss */
+.quote-table input:disabled, .quote-table input[readonly] {
+  background: none;
+  border: none;
+  color: black;
+  padding: 0px;
 }
 
-.quote-table input:disabled, .quote-table input[readonly]
-{
-    background: none;
-    border: none;
-    color: black;
-    padding: 0px;
-}
+/* line 28, ../../../../../compass/sass/protected/modules/quotes/assets/css/lineItemsMain.scss */
+/* line 32, ../../../../../compass/sass/protected/modules/quotes/assets/css/lineItemsMain.scss */
+/* line 36, ../../../../../compass/sass/protected/modules/quotes/assets/css/lineItemsMain.scss */
+/* line 41, ../../../../../compass/sass/protected/modules/quotes/assets/css/lineItemsMain.scss */
+/* line 45, ../../../../../compass/sass/protected/modules/quotes/assets/css/lineItemsMain.scss */
+/* line 49, ../../../../../compass/sass/protected/modules/quotes/assets/css/lineItemsMain.scss */
+/* line 27, ../../../../../compass/sass/protected/modules/quotes/assets/css/lineItemsMain.scss */
+/* line 31, ../../../../../compass/sass/protected/modules/quotes/assets/css/lineItemsMain.scss */
+/* line 36, ../../../../../compass/sass/protected/modules/quotes/assets/css/lineItemsMain.scss */
+/* line 41, ../../../../../compass/sass/protected/modules/quotes/assets/css/lineItemsMain.scss */
+/* line 45, ../../../../../compass/sass/protected/modules/quotes/assets/css/lineItemsMain.scss */
+/* line 49, ../../../../../compass/sass/protected/modules/quotes/assets/css/lineItemsMain.scss */

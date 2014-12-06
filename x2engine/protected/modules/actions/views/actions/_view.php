@@ -161,7 +161,7 @@ if(empty($data->type) || $data->type == 'weblead'){
                     array('assignedTo'=>$data->assignedTo))) {
 
                     echo CHtml::link(
-                        CHtml::image($themeUrl.'/images/icons/Uncomplete.png'), 
+                        X2Html::fa('fa-undo'), 
                         '#', array(   
                             'class' => 'uncomplete-button',
                             'title' => Yii::t('app', 'uncomplete'),
@@ -170,7 +170,7 @@ if(empty($data->type) || $data->type == 'weblead'){
                     'ActionsComplete',array('assignedTo'=>$data->assignedTo))){
 
                     echo CHtml::link(
-                        CHtml::image($themeUrl.'/images/icons/Complete.png'), 
+                        X2Html::fa('fa-check-square-o'), 
                         '#', array(
                             'class' => 'complete-button', 
                             'title' => Yii::t('app', 'complete'),
@@ -183,7 +183,7 @@ if(empty($data->type) || $data->type == 'weblead'){
 
                     echo ($data->type != 'attachment' && $data->type != 'email') ?
                         ' '.CHtml::link(
-                            CHtml::image($themeUrl.'/images/icons/Edit.png'), 
+                            X2Html::fa('fa-edit'), 
                             '#', array(
                                 'class' => 'update-button', 'title' => Yii::t('app', 'edit'),
                                 'data-action-id' => $data->id)) : '';
@@ -192,7 +192,7 @@ if(empty($data->type) || $data->type == 'weblead'){
                     'ActionsDelete',array('assignedTo'=>$data->assignedTo))){
 
                     echo ' '.CHtml::link(
-                        CHtml::image($themeUrl.'/images/icons/Delete_Activity.png'), 
+                        X2Html::fa('fa-times'), 
                         '#', array(
                             'onclick' => 'deleteAction('.$data->id.'); return false',
                             'title' => Yii::t('app', 'delete')

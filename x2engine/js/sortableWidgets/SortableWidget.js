@@ -49,6 +49,8 @@ function SortableWidget (argsDict) {
         deleteWidgetUrl: '',
         widgetClass: '', // the name of the associated widget class
         setPropertyUrl: '', // the url used to call the set profile widget property action
+        modelName: null, // The name of the model with the settings field
+        modelId: null,   // The id of the model with the settings field
         profileId: null, // the id of the profile associated with this widget
         widgetType: '', // (profile)
         widgetUID: null, 
@@ -176,7 +178,9 @@ SortableWidget.prototype.setProperty = function (key, value, callback) {
             key: key,
             value: value,
             widgetUID: this.widgetUID,
-            widgetType: this.widgetType
+            widgetType: this.widgetType,
+            modelName: this.modelName,
+            modelId: this.modelId,
         },
         success: function (data) {
             if (data === 'success') {
@@ -240,7 +244,7 @@ SortableWidget.prototype._setUpMinimizationBehavior = function () {
         function (evt) {
 
         evt.preventDefault ();
-        that.DEBUG && console.log ('click'); 
+        that.DEBUG && console.log (that.contentContainer); 
         var minimize = $(that.contentContainer).is (':visible');
         that.setProperty ('minimized', (minimize ? 1 : 0), function () {
             if (minimize) {
@@ -345,7 +349,9 @@ SortableWidget.prototype._setUpWidgetDeletion = function () {
                         url: that.deleteWidgetUrl,
                         data: {
                             widgetLayoutName: that.widgetType,
-                            widgetKey: that.widgetClass + '_' + that.widgetUID
+                            widgetKey: that.widgetClass + '_' + that.widgetUID,
+                            modelName: that.modelName,
+                            modelId: that.modelId,
                         },
                         type: 'POST',
                         success: function (data) {
@@ -353,6 +359,8 @@ SortableWidget.prototype._setUpWidgetDeletion = function () {
                                 $(that.element).remove ();
                                 delete that;
                                 deletionDialog$.dialog ('close');
+                                x2[that.widgetType + 'WidgetManager'].
+                                    afterDelete (that.element);
                             }
                         }
                     });
@@ -435,7 +443,10 @@ SortableWidget.prototype._onResize = function () {};
 /**
  * called by _setUpResizeBehavior () 
  */
-SortableWidget.prototype._afterStop = function () {};
+SortableWidget.prototype._afterStop = function () {
+    var that = this; 
+    that.setProperty ('height', that.element.height ());
+};
 
 /**
  * Sets up widget resize behavior 
@@ -463,12 +474,13 @@ SortableWidget.prototype._setUpResizeBehavior = function () {
                 'top': '',
             });
             that._afterStop ();
-            that.setProperty ('height', that._iframeElem.attr ('height'));
         },
         resize: function () { that._resizeEvent (); }
     });
     var resizeHandle = that.contentContainer.find ('.ui-resizable-handle');
 };
+
+SortableWidget.prototype._resizeEvent = function () {};
 
 /**
  * Detects presence of UI elements (and sets properties accordingly), calls their setup methods
@@ -499,6 +511,21 @@ SortableWidget.prototype._callUIElementSetupMethods = function () {
         this._setUpResizeBehavior ();
     }
 };
+
+SortableWidget.prototype.ajaxIdentity = function(argsDict) {
+    var defaultDict =  {
+        widgetUID: this.widgetUID,
+        widgetClass: this.widgetClass,
+        modelName: this.modelName,
+        modelId: this.modelId,
+    };
+
+    for (var i in argsDict) {
+        defaultDict[i] = argsDict[i];
+    }
+
+    return defaultDict;
+}
 
 /**
  * Sets up the widget 

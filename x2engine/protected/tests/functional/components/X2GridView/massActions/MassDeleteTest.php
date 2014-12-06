@@ -86,6 +86,7 @@ class MassDeleteTest extends X2DbTestCase {
         ob_start ();
         $response = CJSON::decode (curl_exec ($curlHandle));
         ob_clean ();
+        //println ('response = ');
         //print_r ($response);
         $this->assertEquals ('0 records deleted', $response['success'][0]);
         $this->assertEquals ('You were not authorized to delete 19 records', $response['error'][0]);

@@ -1,0 +1,23 @@
+/*.chart-gauge {
+  width: 300px;
+  height: 150px;
+  margin: 0px;
+  padding-left:10px;
+}
+
+.chart-color1 {
+  fill: rgba(233, 34, 19, 0.74);
+}
+
+.chart-color2 {
+  fill: rgba(233, 200, 26, 0.66);
+}
+
+.chart-color3 {
+  fill: rgba(87, 222, 44, 0.68);
+}
+
+.needle,
+.needle-center {
+  fill: #464A4F;
+}*/

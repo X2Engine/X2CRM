@@ -48,17 +48,18 @@ class X2CalendarPermissionsTest extends X2DbTestCase {
      */
     public function testGetViewableUserCalendarNames () {
         TestingAuxLib::suLogin ('admin');        
+        $viewable = array_keys (X2CalendarPermissions::getViewableUserCalendarNames ());
         $this->assertEquals (array_merge (
             array ('Anyone'), Yii::app()->db->createCommand ("
                 SELECT username
                 FROM x2_users
             ")->queryColumn ()), 
-            ArrayUtil::sort (
-                array_keys (X2CalendarPermissions::getViewableUserCalendarNames ())));
+            ArrayUtil::sort ($viewable));
 
         $user = $this->users ('testUser');
         TestingAuxLib::suLogin ('testUser');        
-        $this->assertEquals (ArrayUtil::sort (array_unique (array_merge (
+        $viewable = array_keys (X2CalendarPermissions::getViewableUserCalendarNames ());
+        $grantedUsers = array_unique (array_merge (
             array ('Anyone', 'testuser'), Yii::app()->db->createCommand ("
                 /**
                  * get names of users who have granted view permission to testuser and names of
@@ -70,9 +71,9 @@ class X2CalendarPermissionsTest extends X2DbTestCase {
                     SELECT distinct(user_id)
                     FROM x2_calendar_permissions
                 )
-            ")->queryColumn (array (':userId' => $user->id))))), 
-            ArrayUtil::sort (
-                array_keys (X2CalendarPermissions::getViewableUserCalendarNames ())));
+            ")->queryColumn (array (':userId' => $user->id))));
+        $this->assertEquals (ArrayUtil::sort ($grantedUsers), 
+            ArrayUtil::sort ($viewable));
     }
 
 }

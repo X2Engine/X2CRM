@@ -1,3 +1,4 @@
+@import url(http://fonts.googleapis.com/css?family=Lato:900);
 /*****************************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
@@ -32,38 +33,179 @@
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2Engine".
  *****************************************************************************************/
-
-
 /* narrow header */
+/* line 23, ../../../../../compass/protected/modules/mobile/assets/css/jqueryMobileCssOverrides.scss */
 .ui-header {
-	font-size: 12px !important;
+  font-size: 12px !important;
 }
 
 /* style text in footer */
+/* line 29, ../../../../../compass/protected/modules/mobile/assets/css/jqueryMobileCssOverrides.scss */
 .ui-footer {
-	text-shadow: none !important;
-	font-weight: normal !important;
-	font-size: 12px !important;
+  text-shadow: none !important;
+  font-weight: normal !important;
+  font-size: 12px !important;
+  background: none !important;
+  border: none !important;
+  opacity: 0.5;
+  color: white;
+  position: absolute;
+  bottom: 0px;
+}
+/* line 40, ../../../../../compass/protected/modules/mobile/assets/css/jqueryMobileCssOverrides.scss */
+.ui-footer #logo-container {
+  display: none;
+}
+/* line 43, ../../../../../compass/protected/modules/mobile/assets/css/jqueryMobileCssOverrides.scss */
+.ui-footer .ui-link {
+  font-weight: normal !important;
 }
 
 /* style links in footer */
-.ui-footer .ui-link {
-	font-weight: normal !important;
-	color: #3090D1 !important;
-}
-
 /* remove text shadow from footer text */
+/* line 54, ../../../../../compass/protected/modules/mobile/assets/css/jqueryMobileCssOverrides.scss */
 .ui-loader {
-    background: #5C5C5C !important;
-	color: #fff;
-	font-size: 12px !important;
-	text-shadow: none !important;
-    background: -moz-linear-gradient(top, #5C5C5C 0%, #1C1C1C 100%) !important;
-    background: -webkit-gradient(0% 0%,0% 100%,	from(	#5C5C5C ), to(	#1C1C1C	)) !important;
-    background: -webkit-linear-gradient(top, #5C5C5C 0%, #1C1C1C 100%) !important;
-    background: -o-linear-gradient(top, #5C5C5C 0%, #1C1C1C 100%) !important;
-    background: -ms-linear-gradient(top, #5C5C5C 0%, #1C1C1C 100%) !important;
-    background: linear-gradient(to bottom, #5C5C5C 0%, #1C1C1C 100%) !important;
+  background: #5C5C5C !important;
+  color: #fff;
+  font-size: 12px !important;
+  text-shadow: none !important;
+  background: -moz-linear-gradient(top, #5c5c5c 0%, #1c1c1c 100%) !important;
+  background: -webkit-gradient(0% 0%, 0% 100%, from(#5c5c5c), to(#1c1c1c)) !important;
+  background: -webkit-linear-gradient(top, #5c5c5c 0%, #1c1c1c 100%) !important;
+  background: -o-linear-gradient(top, #5c5c5c 0%, #1c1c1c 100%) !important;
+  background: -ms-linear-gradient(top, #5c5c5c 0%, #1c1c1c 100%) !important;
+  background: linear-gradient(to bottom, #5c5c5c 0%, #1c1c1c 100%) !important;
 }
 
+/* line 67, ../../../../../compass/protected/modules/mobile/assets/css/jqueryMobileCssOverrides.scss */
+#site-login, .ui-page, .ui-body-a {
+  color: white;
+  background: radial-gradient(#233d5f, #06090f);
+  text-shadow: none;
+}
 
+/* line 79, ../../../../../compass/protected/modules/mobile/assets/css/jqueryMobileCssOverrides.scss */
+.ui-input-text {
+  width: 100% !important;
+  box-sizing: border-box;
+}
+/* line 83, ../../../../../compass/protected/modules/mobile/assets/css/jqueryMobileCssOverrides.scss */
+.ui-input-text input {
+  height: 38px !important;
+  box-shadow: none !important;
+}
+
+/* line 90, ../../../../../compass/protected/modules/mobile/assets/css/jqueryMobileCssOverrides.scss */
+.ui-field-contain {
+  border: none;
+  padding-top: 0px;
+  padding-bottom: 10px;
+}
+/* line 91, ../../../../../compass/protected/modules/mobile/assets/css/jqueryMobileCssOverrides.scss */
+.ui-field-contain:first-child {
+  margin-top: 180px;
+}
+
+/* line 99, ../../../../../compass/protected/modules/mobile/assets/css/jqueryMobileCssOverrides.scss */
+.login-row {
+  width: 100%;
+  margin-top: 10px !important;
+}
+/* line 103, ../../../../../compass/protected/modules/mobile/assets/css/jqueryMobileCssOverrides.scss */
+.login-row td {
+  padding: 0px;
+  width: 50%;
+}
+/* line 107, ../../../../../compass/protected/modules/mobile/assets/css/jqueryMobileCssOverrides.scss */
+.login-row td:first-child {
+  padding-right: 5px;
+}
+/* line 110, ../../../../../compass/protected/modules/mobile/assets/css/jqueryMobileCssOverrides.scss */
+.login-row td:last-child {
+  padding-left: 5px;
+}
+
+/* line 116, ../../../../../compass/protected/modules/mobile/assets/css/jqueryMobileCssOverrides.scss */
+.remember-me-checkbox-container, .full-site {
+  display: inline-block;
+  box-sizing: border-box !important;
+  padding: 0px !important;
+  width: 100%;
+  margin-top: 15px !important;
+  margin-bottom: 15px !important;
+  height: 23px !important;
+}
+/* line 126, ../../../../../compass/protected/modules/mobile/assets/css/jqueryMobileCssOverrides.scss */
+.remember-me-checkbox-container .ui-checkbox, .full-site .ui-checkbox {
+  height: 30px !important;
+}
+/* line 128, ../../../../../compass/protected/modules/mobile/assets/css/jqueryMobileCssOverrides.scss */
+.remember-me-checkbox-container .ui-checkbox label, .full-site .ui-checkbox label {
+  margin: 0px !important;
+}
+/* line 133, ../../../../../compass/protected/modules/mobile/assets/css/jqueryMobileCssOverrides.scss */
+.remember-me-checkbox-container .ui-btn-inner, .full-site .ui-btn-inner {
+  font-size: 10px;
+  box-sizing: border-box !important;
+  padding: 5px 0px;
+  padding-left: 10px;
+  text-decoration: none !important;
+  color: white !important;
+}
+/* line 142, ../../../../../compass/protected/modules/mobile/assets/css/jqueryMobileCssOverrides.scss */
+.remember-me-checkbox-container input, .full-site input {
+  display: none;
+}
+
+/* line 149, ../../../../../compass/protected/modules/mobile/assets/css/jqueryMobileCssOverrides.scss */
+.errorMessage {
+  text-shadow: none;
+}
+
+/* line 153, ../../../../../compass/protected/modules/mobile/assets/css/jqueryMobileCssOverrides.scss */
+.ui-btn-up-a {
+  background: rgba(255, 255, 255, 0.1) !important;
+  border: none !important;
+}
+
+/* line 158, ../../../../../compass/protected/modules/mobile/assets/css/jqueryMobileCssOverrides.scss */
+.ui-btn-hover-a {
+  border: none !important;
+  background: rgba(255, 255, 255, 0.2);
+}
+
+/* line 164, ../../../../../compass/protected/modules/mobile/assets/css/jqueryMobileCssOverrides.scss */
+.x2-icon {
+  opacity: 0.7;
+  text-shadow: 1px 4px 6px #233d5f, 0 0 0 #233d5f, 1px 4px 6px #233d5f;
+  font-weight: bold;
+  font-size: 60px;
+  width: 100%;
+  text-align: center;
+  padding: 20% 0px;
+  line-height: 70%;
+}
+/* line 174, ../../../../../compass/protected/modules/mobile/assets/css/jqueryMobileCssOverrides.scss */
+.x2-icon div:last-child {
+  font-size: 50%;
+}
+
+/* line 181, ../../../../../compass/protected/modules/mobile/assets/css/jqueryMobileCssOverrides.scss */
+.background-stripe {
+  background-origin: content-box;
+  position: fixed;
+  width: 100px;
+  height: 120%;
+  top: -10%;
+  background: rgba(255, 255, 255, 0.1);
+  right: 32px;
+}
+/* line 196, ../../../../../compass/protected/modules/mobile/assets/css/jqueryMobileCssOverrides.scss */
+.background-stripe::after {
+  background: rgba(255, 255, 255, 0.1);
+  content: '';
+  position: absolute;
+  right: -12px;
+  height: 100%;
+  width: 6px;
+}

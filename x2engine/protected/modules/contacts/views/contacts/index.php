@@ -33,41 +33,36 @@
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2Engine".
  *****************************************************************************************/
-
-$menuItems = array(
-    array('label'=>Yii::t('contacts','All Contacts'),'url'=>array('index')),
-    array('label'=>Yii::t('contacts','Lists'),'url'=>array('lists')),
-    array('label'=>Yii::t('contacts','Create Contact'),'url'=>array('create')),
-    array('label'=>Yii::t('contacts','Create List'),'url'=>array('createList')),
-    array('label'=>Yii::t('contacts','View List')),
-    array('label'=>Yii::t('contacts','Import Contacts'), 'url'=>array('admin/importModels', 'model'=>'Contacts')),
-    array('label'=>Yii::t('contacts', 'Export Contacts'),'url'=>array('admin/exportModels', 'model'=>'Contacts')),
-    //array('label'=>Yii::t('contacts','Saved Searches'),'url'=>array('savedSearches'))
+$modTitles = array(
+    'contact' => Modules::displayName(false),
+    'contacts' => Modules::displayName(),
 );
 
 $heading = '';
 
-if($this->route=='contacts/contacts/index') {
-	$heading = Yii::t('contacts','All Contacts');
-	$dataProvider = $model->searchAll();
-	unset($menuItems[0]['url']); 
-	unset($menuItems[4]); // View List
-} elseif($this->route=='contacts/contacts/myContacts') {
-	$heading = Yii::t('contacts','My Contacts');
-	$dataProvider = $model->searchMyContacts();
-} elseif($this->route=='contacts/contacts/newContacts') {
-	$heading = Yii::t('contacts','Today\'s Contacts');
-	$dataProvider = $model->searchNewContacts();
-}
-
 $opportunityModule = Modules::model()->findByAttributes(array('name'=>'opportunities'));
 $accountModule = Modules::model()->findByAttributes(array('name'=>'accounts'));
 
-if($opportunityModule->visible && $accountModule->visible)
-	$menuItems[] = 	array('label'=>Yii::t('app', 'Quick Create'), 'url'=>array('/site/createRecords', 'ret'=>'contacts'), 'linkOptions'=>array('id'=>'x2-create-multiple-records-button', 'class'=>'x2-hint', 'title'=>Yii::t('app', 'Create a Contact, Account, and Opportunity.')));
-
-$this->actionMenu = $this->formatMenu($menuItems);
-
+$menuOptions = array(
+    'all', 'lists', 'create', 'import', 'export', 'map', 'savedMaps',
+);
+if($this->route=='contacts/contacts/index') {
+	$heading = Yii::t('contacts','All {module}', array('{module}'=>$modTitles['contacts']));
+	$dataProvider = $model->searchAll();
+	//unset($menuItems[0]['url']);
+	//unset($menuItems[4]); // View List
+} elseif($this->route=='contacts/contacts/myContacts') {
+	$heading = Yii::t('contacts','My {module}', array('{module}'=>$modTitles['contacts']));
+	$dataProvider = $model->searchMyContacts();
+    $menuOptions = array_merge($menuOptions, array('createList', 'viewList'));
+} elseif($this->route=='contacts/contacts/newContacts') {
+	$heading = Yii::t('contacts','Today\'s {module}', array('{module}'=>$modTitles['contacts']));
+	$dataProvider = $model->searchNewContacts();
+    $menuOptions = array_merge($menuOptions, array('createList', 'viewList'));
+}
+if ($opportunityModule->visible && $accountModule->visible)
+    $menuOptions[] = 'quick';
+$this->insertMenu($menuOptions);
 
 Yii::app()->clientScript->registerScript('search', "
 /*$('.search-button').unbind('click').click(function(){
@@ -101,14 +96,14 @@ $this->widget('X2GridView', array(
 	'id'=>'contacts-grid',
     'enableQtips' => true,
     'qtipManager' => array (
-        'X2QtipManager',
+        'X2GridViewQtipManager',
         'loadingText'=> addslashes(Yii::t('app','loading...')),
         'qtipSelector' => ".contact-name"
     ),
 	'title'=>$heading,
     'enableSelectAllOnAllPages' => true,
 	'buttons'=>array('advancedSearch','clearFilters','columnSelector','autoResize'),
-	'template'=> 
+	'template'=>
         '<div id="x2-gridview-top-bar-outer" class="x2-gridview-fixed-top-bar-outer">'.
         '<div id="x2-gridview-top-bar-inner" class="x2-gridview-fixed-top-bar-inner">'.
         '<div id="x2-gridview-page-title" '.
@@ -144,7 +139,7 @@ $this->widget('X2GridView', array(
 		),
 	),
     'massActions'=>array(
-        'addToList', 'newList'
+        'MassAddToList', 'NewListFromSelection'
     ),
 	'enableControls'=>true,
 	'enableTags'=>true,

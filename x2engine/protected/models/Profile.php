@@ -36,7 +36,7 @@
 
 Yii::import('application.components.X2LinkableBehavior');
 Yii::import('application.modules.users.models.*');
-Yii::import('application.components.JSONFieldsBehavior');
+Yii::import('application.components.NormalizedJSONFieldsBehavior');
 Yii::import('application.components.WidgetLayoutJSONFieldsBehavior');
 Yii::import('application.components.X2SmartSearchModelBehavior');
 Yii::import('application.components.sortableWidget.SortableWidget');
@@ -104,6 +104,9 @@ class Profile extends CActiveRecord {
     }
 
     public function behaviors(){
+        // Skip loading theme settins if this request isn't associated with a session, eg API
+        $theme = (Yii::app()->params->noSession ? array() :
+            ThemeGenerator::getProfileKeys());
         return array(
             'X2LinkableBehavior' => array(
                 'class' => 'X2LinkableBehavior',
@@ -116,15 +119,15 @@ class Profile extends CActiveRecord {
                 'defaults' => array(),
                 'defaultStickOnClear' => false
             ),
-            'JSONFieldsBehavior' => array(
-                'class' => 'application.components.JSONFieldsBehavior',
+            'NormalizedJSONFieldsBehavior' => array(
+                'class' => 'application.components.NormalizedJSONFieldsBehavior',
                 'transformAttributes' => array(
-                    'theme' => array(
+                    'theme' => array_merge($theme, array(
                         'backgroundColor', 'menuBgColor', 'menuTextColor', 'pageHeaderBgColor',
                         'pageHeaderTextColor', 'activityFeedWidgetBgColor',
                         'activityFeedWidgetTextColor', 'backgroundImg', 'backgroundTiling',
                         'pageOpacity', 'themeName', 'private', 'owner', 'loginSound',
-                        'notificationSound', 'gridViewRowColorOdd', 'gridViewRowColorEven'),
+                        'notificationSound', 'gridViewRowColorOdd', 'gridViewRowColorEven')),
                 ),
             ),
             'JSONFieldsDefaultValuesBehavior' => array(
@@ -146,6 +149,7 @@ class Profile extends CActiveRecord {
                 'transformAttributes' => array (
                     'profileWidgetLayout' => SortableWidget::PROFILE_WIDGET_PATH_ALIAS,
                     'recordViewWidgetLayout' => SortableWidget::RECORD_VIEW_WIDGET_PATH_ALIAS,
+                     
                 )
             ),
             'X2SmartSearchModelBehavior' => array (
@@ -153,6 +157,7 @@ class Profile extends CActiveRecord {
             )
         );
     }
+
 
     /**
      * @return array validation rules for model attributes.
@@ -563,7 +568,30 @@ class Profile extends CActiveRecord {
 
         // if widget settings haven't been set, give them default values
         if(Yii::app()->params->profile->widgetSettings == null){
-            $widgetSettings = array(
+            $widgetSettings = self::getDefaultWidgetSettings();
+
+            Yii::app()->params->profile->widgetSettings = json_encode($widgetSettings);
+            Yii::app()->params->profile->update(array('widgetSettings'));
+        }
+
+        $widgetSettings = json_decode(Yii::app()->params->profile->widgetSettings);
+
+        if(!isset($widgetSettings->MediaBox)){
+            $widgetSettings->MediaBox = array('mediaBoxHeight' => 150, 'hideUsers' => array());
+            Yii::app()->params->profile->widgetSettings = json_encode($widgetSettings);
+            Yii::app()->params->profile->update(array('widgetSettings'));
+        }
+
+        return json_decode(Yii::app()->params->profile->widgetSettings);
+    }
+
+    /**
+    * get an array of default widget values
+    * @return Array of default values for widgets
+    *
+    **/
+    public static function getDefaultWidgetSettings(){
+        return  array(
                 'ChatBox' => array(
                     'chatboxHeight' => 300,
                     'chatmessageHeight' => 50,
@@ -579,20 +607,75 @@ class Profile extends CActiveRecord {
                     'topsitesHeight' => 200,
                     'urltitleHeight' => 10,
                 ),
+                'MediaBox' => array(
+                    'mediaBoxHeight' => 150,
+                    'hideUsers' => array(),
+                ),
+                'TimeZone' => array(
+                    'clockType' => 'analog'
+                ),
+                'SmallCalendar' => array(
+                    'justMe' => 'false'
+                )
             );
+    }
 
-            Yii::app()->params->profile->widgetSettings = json_encode($widgetSettings);
+    /**
+    * Method to change a specific value in a widgets settings
+    * @param string    $widget Name of widget
+    * @param string    $setting Name of setting within the widget
+    * @param variable  $value to insert into the setting  
+    * @return boolean  false if profile did not exist
+    */
+    public static function changeWidgetSetting($widget, $setting, $value){
+        $profile = Yii::app()->params->profile;
+        if(isset($profile)){
+            $widgetSettings = self::getWidgetSettings();
+
+            if(!isset($widgetSettings->$widget))
+                self::getWidgetSetting($widget);
+
+
+            $widgetSettings->$widget->$setting = $value;
+            
+            Yii::app()->params->profile->widgetSettings = CJSON::encode($widgetSettings);
             Yii::app()->params->profile->update(array('widgetSettings'));
+            return true;
         }
 
-        $widgetSettings = json_decode(Yii::app()->params->profile->widgetSettings);
-        if(!isset($widgetSettings->MediaBox)){
-            $widgetSettings->MediaBox = array('mediaBoxHeight' => 150, 'hideUsers' => array());
+        return false;
+    }
+
+    /**
+    * Safely retrieves the settings of a widget, and pulls from the default if the setting does not exist
+    * @param string $widget The settings to return.
+    * @param string $setting Optional. 
+    * @return Object widget settings object
+    * @return String widget settings string (if $setting is set)
+    */
+    public static function getWidgetSetting($widget, $setting){
+        $widgetSettings = self::getWidgetSettings();
+
+        // Check if the widget setting exists
+        $defaultSettings = self::getDefaultWidgetSettings();
+        if(!isset($widgetSettings->$widget)){
+            $widgetSettings->$widget = $defaultSettings[$widget];
             Yii::app()->params->profile->widgetSettings = json_encode($widgetSettings);
             Yii::app()->params->profile->update(array('widgetSettings'));
+            $widgetSettings = self::getWidgetSettings();
+
+        // Check if the setting exists
+        } else if( isset($setting) && !isset($widgetSettings->$widget->$setting)){
+            $widgetSettings->$widget->$setting = $defaultSettings[$widget][$setting];
+            Yii::app()->params->profile->widgetSettings = json_encode($widgetSettings);
+            Yii::app()->params->profile->update(array('widgetSettings'));
+            $widgetSettings = self::getWidgetSettings();
         }
 
-        return json_decode(Yii::app()->params->profile->widgetSettings);
+        if( !isset($setting) )
+            return $widgetSettings->$widget;
+        else
+            return $widgetSettings->$widget->$setting;
     }
 
     public function getLink(){
@@ -845,6 +928,10 @@ class Profile extends CActiveRecord {
                     'title' => 'Recently Viewed',
                     'minimize' => false,
                 ),
+                'EmailInboxMenu' => array(
+                    'title' => 'Inbox Menu',
+                    'minimize' => false,
+                ),
                 'ActionTimer' => array(
                     'title' => 'Action Timer',
                     'minimize' => false,
@@ -889,6 +976,10 @@ class Profile extends CActiveRecord {
                 ),
             ),
             'right' => array(
+                'SmallCalendar' => array(
+                    'title' => 'Small Calendar',
+                    'minimize' => false,
+                ),
                 'ActionMenu' => array(
                     'title' => 'My Actions',
                     'minimize' => false,
@@ -907,6 +998,10 @@ class Profile extends CActiveRecord {
                 ),
                 'TimeZone' => array(
                     'title' => 'Clock',
+                    'minimize' => false,
+                ),
+                'SmallCalendar' => array(
+                    'title' => 'Calendar',
                     'minimize' => false,
                 ),
                 'MessageBox' => array(
@@ -1192,12 +1287,13 @@ class Profile extends CActiveRecord {
         ")->queryAll ());
     }
 
+    
+
     /**
      * @return Profile 
      */
     public function getGuestProfile () {
         return $this->findByAttributes (array ('username' => self::GUEST_PROFILE_USERNAME)); 
     }
-
 
 }

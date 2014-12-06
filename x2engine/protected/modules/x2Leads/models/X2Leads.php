@@ -64,7 +64,13 @@ class X2Leads extends X2Model {
 				'class' => 'application.components.ERememberFiltersBehavior',
 				'defaults'=>array(),
 				'defaultStickOnClear'=>false
-			)
+			),
+			'X2ModelConversionBehavior' => array(
+				'class' => 'application.components.recordConversion.X2ModelConversionBehavior',
+			),
+            'ContactsNameBehavior' => array(
+                'class' => 'application.components.ContactsNameBehavior',
+            ),
 		));
 	}
 
@@ -78,7 +84,6 @@ class X2Leads extends X2Model {
 	}
 
 	public static function getX2LeadsLinks($accountId) {
-
 		$allX2Leads = 
             X2Model::model('X2Leads')->findAllByAttributes(array('accountName'=>$accountId));
 
@@ -102,97 +107,5 @@ class X2Leads extends X2Model {
 
 		return $this->searchBase($criteria);
 	}
-
-    /**
-     * @return <array of strings> Incompatibility warnings to be presented to the user before
-     *  they convert the lead to an opportunity.
-     */
-    public function getConversionIncompatibilityWarnings () {
-        $warnings = array ();
-        $opportunity = Opportunity::model ();
-        $leadsAttrs = array_diff (
-            $this->attributeNames (), Opportunity::model()->attributeNames ());
-
-        foreach ($leadsAttrs as $name) {
-            $warnings[] = 
-                Yii::t('x2Leads', 
-                    'A field {fieldName} is in Leads but not in Opportunities.',
-                    array ('{fieldName}' => $name));
-        }
-
-        $sharedAttrs = array_intersect (
-            $this->attributeNames (), $opportunity->attributeNames ());
-        foreach ($sharedAttrs as $name) {
-            $leadField = $this->getField ($name);
-            $opportunityField = $opportunity->getField ($name);
-
-            if (!$leadField instanceof Fields || !$opportunityField instanceof Fields) {
-                continue;
-            }
-
-            if ($leadField->type !== $opportunityField->type) {
-                $warnings[] = 
-                    Yii::t('x2Leads', 
-                        'A field {fieldName} is in both Leads and Opportunities but the fields
-                         have different types.', array ('{fieldName}' => $name));
-            }
-        }
-
-        return $warnings;
-    }
-
-    /**
-     * Uses the attributes of this lead to generate a new opportunity. Then the lead is deleted.
-     * @param bool $force If true, lead will be converted to opportunitiy even if there is potential
-     *  for data loss
-     * @return Opportunity|false 
-     */
-    public function convertToOpportunity ($force=false) {
-        $attributes = $this->getAttributes ();
-        unset ($attributes['id']);
-        unset ($attributes['nameId']);
-        unset ($attributes['createDate']);
-        $opportunity = new Opportunity ();
-
-        if (!$force) { 
-            // don't convert if leads has fields not in opportunities
-            if (sizeof (
-                array_diff ($this->attributeNames (), $opportunity->attributeNames ())) > 0) {
-
-                return false;
-            }
-
-            // don't convert if a leads field and an opportunity field have the same name but a
-            // different type
-            $sharedAttrs = array_intersect (
-                $this->attributeNames (), $opportunity->attributeNames ());
-            foreach ($sharedAttrs as $name) {
-                $leadField = $this->getField ($name);
-                $opportunityField = $opportunity->getField ($name);
-
-                if (!$leadField instanceof Fields || !$opportunity instanceof Fields) {
-                    continue;
-                }
-
-                if ($leadField->type !== $opportunityField->type) {
-                    return false;
-                }
-            }
-        }
-
-        $opportunity->setAttributes ($attributes, false);
-
-        // don't create an opportunity creation notification or event
-        $opportunity->disableBehavior('changelog'); 
-        if ($opportunity->save ()) {
-            $opportunity->mergeRelatedRecords ($this, true, false, true);
-            $opportunity->mergeRelationships ($this);
-            $changeLogBehavior = $this->asa ('changelog');
-            $changeLogBehavior->createEvent = false; // don't create a lead deletion event
-            $this->delete ();
-            return $opportunity;
-        }
-        return $opportunity;
-    }
 
 }

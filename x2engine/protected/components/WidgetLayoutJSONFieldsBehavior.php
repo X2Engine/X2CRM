@@ -36,6 +36,7 @@
 
 Yii::import('application.components.util.ArrayUtil');
 Yii::import('application.components.sortableWidget.*');
+Yii::import('application.components.sortableWidget.dataWidgets.*');
 
 /**
  * Allows nested JSON structures with default values to be declared. The JSON structures must be 
@@ -53,7 +54,7 @@ Yii::import('application.components.sortableWidget.*');
  * 
  * @package application.components
  */
-class WidgetLayoutJSONFieldsBehavior extends JSONFieldsBehavior {
+class WidgetLayoutJSONFieldsBehavior extends NormalizedJSONFieldsBehavior {
 
 	protected $_fields;
 
@@ -104,20 +105,35 @@ class WidgetLayoutJSONFieldsBehavior extends JSONFieldsBehavior {
 			foreach($this->transformAttributes as $attr => $alias) {
                 $this->_fields[$attr] = array ();
 
-                // get expected fields form contents of widget directory
+                // get expected fields from contents of widget directory
                 $widgetClasses = array_map (function ($file) {
                     return preg_replace ('/\.php$/', '', $file);
                 }, array_filter (scandir(Yii::getPathOfAlias($alias)), function ($file) {
                     return preg_match ('/\.php$/', $file);
                 }));
 
+                $ordered = array ();
+
                 // get JSON structure from widget class property
+                $unordered = array ();
 			    foreach($widgetClasses as $widgetName) {
                     if (method_exists ($widgetName, 'getJSONPropertiesStructure')) {
-    				    $this->_fields[$attr][$widgetName] = 
+                        $unordered[$widgetName] = 
                             $widgetName::getJSONPropertiesStructure ();
+                        if ($widgetName::$position !== null) {
+                            $ordered[$widgetName] = $widgetName::$position;
+                        }
                     } 
                 }
+                asort ($ordered);
+                $orderedFields = array ();
+                foreach ($ordered as $widgetName => $position) {
+                    $orderedFields[$widgetName] = $unordered[$widgetName];
+                }
+                foreach (array_diff ($widgetClasses, array_keys ($ordered)) as $widgetName) {
+                    $orderedFields[$widgetName] = $unordered[$widgetName];
+                }
+                $this->_fields[$attr] = $orderedFields;
             }
 		}
 		return $this->_fields[$name];
@@ -136,7 +152,7 @@ class WidgetLayoutJSONFieldsBehavior extends JSONFieldsBehavior {
 
 	/**
 	 * Normalizes the attribute array to the structure defined in {@link fields}
-	 * and then JSON-encodes it to prepare it for saving. Unlike in JSONFieldsBehavior, 
+	 * and then JSON-encodes it to prepare it for saving. Unlike in NormalizedJSONFieldsBehavior, 
      * array normalization is performed recursively on array elements.
      *
 	 * @param type $name
@@ -154,7 +170,7 @@ class WidgetLayoutJSONFieldsBehavior extends JSONFieldsBehavior {
 	/**
 	 * JSON-decodes the value stored in the database column for the attribute,
 	 * and then normalizes it to the structure defined in {@link fields}
-	 * Unlike in JSONFieldsBehavior, array normalization is performed recursively on array 
+	 * Unlike in NormalizedJSONFieldsBehavior, array normalization is performed recursively on array 
      * elements.
      *
 	 * @param string $name The attribute to be unpacked

@@ -33,15 +33,13 @@
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2Engine".
  *****************************************************************************************/
+
 $authParams['X2Model']=$model;
-$this->actionMenu = $this->formatMenu(array(
-	array('label'=>Yii::t('accounts','All Accounts'), 'url'=>array('index')),
-	array('label'=>Yii::t('accounts','Create Account'), 'url'=>array('create')),
-	array('label'=>Yii::t('accounts','View'), 'url'=>array('view','id'=>$model->id)),
-	array('label'=>Yii::t('accounts','Edit Account')),
-	array('label'=>Yii::t('accounts','Share Account'),'url'=>array('shareAccount','id'=>$model->id)),
-	array('label'=>Yii::t('accounts','Delete Account'), 'url'=>'#', 'linkOptions'=>array('submit'=>array('delete','id'=>$model->id),'confirm'=>'Are you sure you want to delete this item?')),
-),$authParams);
+$menuOptions = array(
+    'all', 'create', 'view', 'edit', 'share', 'delete',
+);
+$this->insertMenu($menuOptions, $model, $authParams);
+
 ?>
 <?php //echo CHtml::link('['.Yii::t('contacts','Show All').']','javascript:void(0)',array('id'=>'showAll','class'=>'right hide','style'=>'text-decoration:none;')); ?>
 <?php //echo CHtml::link('['.Yii::t('contacts','Hide All').']','javascript:void(0)',array('id'=>'hideAll','class'=>'right','style'=>'text-decoration:none;')); ?>

@@ -12,13 +12,12 @@ CKEDITOR.editorConfig = function(config)
 	config.enterMode = CKEDITOR.ENTER_BR;
 	config.shiftEnterMode = CKEDITOR.ENTER_P;
 	
-	config.insertableAttributes = Array();
+	config.insertableAttributes = [];
 	
 	config.toolbar = 'Full';
 	config.height = 600;
 	config.resize_enabled = true;
-	config.removePlugins = 
-        'autogrow,blockquote,showblocks,elementspath,liststyle,tabletools,contextmenu';
+	config.removePlugins = 'autogrow,showblocks,elementspath,liststyle,tabletools,contextmenu';
 	
 	config.extraPlugins = 'insertattributes,confighelper';
     config.disableNativeSpellChecker = false; // allow use of browser's native spellchecker
@@ -49,7 +48,7 @@ CKEDITOR.editorConfig = function(config)
 		{name: 'basicstyles',items: ['Bold','Italic','Underline','Strike','Subscript','Superscript','-','RemoveFormat']},
 		{name: 'styles',items: ['Font','FontSize']},
 		{name: 'colors',items: ['TextColor','BGColor']},
-		{name: 'paragraph',items: ['NumberedList','BulletedList','-','Outdent','Indent','-','JustifyLeft','JustifyCenter','JustifyRight','JustifyBlock']}
+		{name: 'paragraph',items: ['NumberedList','BulletedList','-','Outdent','Indent','Blockquote','-','JustifyLeft','JustifyCenter','JustifyRight','JustifyBlock']}
 	
 	];
 	config.toolbar_MyEmailToolbar = [
@@ -63,7 +62,7 @@ CKEDITOR.editorConfig = function(config)
 		'/',
 		{name: 'basicstyles',items: ['Bold','Italic','Underline','Strike','Subscript','Superscript','-','RemoveFormat']},
 		{name: 'styles',items: ['Font','FontSize']},
-		{name: 'paragraph',items: ['NumberedList','BulletedList','-','Outdent','Indent','-','JustifyLeft','JustifyCenter','JustifyRight','JustifyBlock']}
+		{name: 'paragraph',items: ['NumberedList','BulletedList','-','Outdent','Indent','Blockquote','-','JustifyLeft','JustifyCenter','JustifyRight','JustifyBlock']}
 	];
     // same as toolbar_MyEmailToolbar but with source button removed
 	config.toolbar_MyTargetedContentToolbar = [

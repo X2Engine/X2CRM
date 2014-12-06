@@ -1,0 +1,303 @@
+/*****************************************************************************************
+ * X2Engine Open Source Edition is a customer relationship management program developed by
+ * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
+ * 
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU Affero General Public License version 3 as published by the
+ * Free Software Foundation with the addition of the following permission added
+ * to Section 15 as permitted in Section 7(a): FOR ANY PART OF THE COVERED WORK
+ * IN WHICH THE COPYRIGHT IS OWNED BY X2ENGINE, X2ENGINE DISCLAIMS THE WARRANTY
+ * OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
+ * 
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.  See the GNU Affero General Public License for more
+ * details.
+ * 
+ * You should have received a copy of the GNU Affero General Public License along with
+ * this program; if not, see http://www.gnu.org/licenses or write to the Free
+ * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301 USA.
+ * 
+ * You can contact X2Engine, Inc. P.O. Box 66752, Scotts Valley,
+ * California 95067, USA. or at email address contact@x2engine.com.
+ * 
+ * The interactive user interfaces in modified source and object code versions
+ * of this program must display Appropriate Legal Notices, as required under
+ * Section 5 of the GNU Affero General Public License version 3.
+ * 
+ * In accordance with Section 7(b) of the GNU Affero General Public License version 3,
+ * these Appropriate Legal Notices must retain the display of the "Powered by
+ * X2Engine" logo. If the display of the logo is not reasonably feasible for
+ * technical reasons, the Appropriate Legal Notices must display the words
+ * "Powered by X2Engine".
+ *****************************************************************************************/
+/*********************************************************************************
+ * Copyright (C) 2011-2014 X2Engine Inc. All Rights Reserved.
+ *
+ * X2Engine Inc.
+ * P.O. Box 66752
+ * Scotts Valley, California 95067 USA
+ *
+ * Company website: http://www.x2engine.com
+ * Community and support website: http://www.x2community.com
+ *
+ * X2Engine Inc. grants you a perpetual, non-exclusive, non-transferable license
+ * to install and use this Software for your internal business purposes.
+ * You shall not modify, distribute, license or sublicense the Software.
+ * Title, ownership, and all intellectual property rights in the Software belong
+ * exclusively to X2Engine.
+ *
+ * THIS SOFTWARE IS PROVIDED "AS IS" AND WITHOUT WARRANTIES OF ANY KIND, EITHER
+ * EXPRESS OR IMPLIED, INCLUDING WITHOUT LIMITATION THE IMPLIED WARRANTIES OF
+ * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, TITLE, AND NON-INFRINGEMENT.
+ ********************************************************************************/
+/***********************************************************************
+* Grays 
+***********************************************************************/
+/***********************************************************************
+* Blues
+***********************************************************************/
+/***********************************************************************
+* Reds 
+***********************************************************************/
+/***********************************************************************
+* Greens 
+***********************************************************************/
+/*********************************************************************************
+ * Copyright (C) 2011-2014 X2Engine Inc. All Rights Reserved.
+ *
+ * X2Engine Inc.
+ * P.O. Box 66752
+ * Scotts Valley, California 95067 USA
+ *
+ * Company website: http://www.x2engine.com
+ * Community and support website: http://www.x2community.com
+ *
+ * X2Engine Inc. grants you a perpetual, non-exclusive, non-transferable license
+ * to install and use this Software for your internal business purposes.
+ * You shall not modify, distribute, license or sublicense the Software.
+ * Title, ownership, and all intellectual property rights in the Software belong
+ * exclusively to X2Engine.
+ *
+ * THIS SOFTWARE IS PROVIDED "AS IS" AND WITHOUT WARRANTIES OF ANY KIND, EITHER
+ * EXPRESS OR IMPLIED, INCLUDING WITHOUT LIMITATION THE IMPLIED WARRANTIES OF
+ * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, TITLE, AND NON-INFRINGEMENT.
+ ********************************************************************************/
+/*********************************************************************************
+ * Copyright (C) 2011-2014 X2Engine Inc. All Rights Reserved.
+ *
+ * X2Engine Inc.
+ * P.O. Box 66752
+ * Scotts Valley, California 95067 USA
+ *
+ * Company website: http://www.x2engine.com
+ * Community and support website: http://www.x2community.com
+ *
+ * X2Engine Inc. grants you a perpetual, non-exclusive, non-transferable license
+ * to install and use this Software for your internal business purposes.
+ * You shall not modify, distribute, license or sublicense the Software.
+ * Title, ownership, and all intellectual property rights in the Software belong
+ * exclusively to X2Engine.
+ *
+ * THIS SOFTWARE IS PROVIDED "AS IS" AND WITHOUT WARRANTIES OF ANY KIND, EITHER
+ * EXPRESS OR IMPLIED, INCLUDING WITHOUT LIMITATION THE IMPLIED WARRANTIES OF
+ * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, TITLE, AND NON-INFRINGEMENT.
+ ********************************************************************************/
+/***********************************************************************
+* Grays 
+***********************************************************************/
+/***********************************************************************
+* Blues
+***********************************************************************/
+/***********************************************************************
+* Reds 
+***********************************************************************/
+/***********************************************************************
+* Greens 
+***********************************************************************/
+/***************************************
+* Mixin for border radius 
+***************************************/
+/***************************************
+* Mixin for text field placeholder text
+***************************************/
+/***************************************
+* CSS to extend when something 
+* should look like a link
+***************************************/
+/* line 57, ../../../../../compass/css/lib/standards.scss */
+.pseudo-link {
+  cursor: pointer;
+  color: #004baf;
+  transition: color .1s;
+}
+/* line 62, ../../../../../compass/css/lib/standards.scss */
+.pseudo-link:hover {
+  color: #006cfb;
+}
+
+/***************************************
+* CSS to extend when for elements that 
+* become opauqe on mouseover
+***************************************/
+/* line 80, ../../../../../compass/css/lib/standards.scss */
+.opacity-hover {
+  opacity: 0.3;
+}
+/* line 75, ../../../../../compass/css/lib/standards.scss */
+.opacity-hover:hover {
+  opacity: 1;
+}
+
+/* line 33, ../../../../../compass/themes/x2engine/css/components/DataWidget/DataWidget.scss */
+.data-widget.sortable-widget-container {
+  border-color: rgba(245, 245, 245, 0);
+}
+/* line 37, ../../../../../compass/themes/x2engine/css/components/DataWidget/DataWidget.scss */
+.data-widget.sortable-widget-container:hover {
+  border-color: rgba(69, 69, 69, 0.5);
+}
+/* line 41, ../../../../../compass/themes/x2engine/css/components/DataWidget/DataWidget.scss */
+.data-widget.sortable-widget-container .add-to-dashboard {
+  display: none;
+  float: right;
+  padding: 0px 11px;
+  line-height: 19px;
+  margin: 0px 10px;
+  cursor: pointer;
+}
+/* line 49, ../../../../../compass/themes/x2engine/css/components/DataWidget/DataWidget.scss */
+.data-widget.sortable-widget-container .add-to-dashboard.disabled-link {
+  opacity: 0.5;
+}
+/* line 54, ../../../../../compass/themes/x2engine/css/components/DataWidget/DataWidget.scss */
+.data-widget.sortable-widget-container:hover .add-to-dashboard {
+  display: inline-block;
+}
+/* line 59, ../../../../../compass/themes/x2engine/css/components/DataWidget/DataWidget.scss */
+.data-widget.sortable-widget-container .widget-title-bar {
+  cursor: grabbing;
+  transition: background .2s;
+  background: none;
+}
+/* line 65, ../../../../../compass/themes/x2engine/css/components/DataWidget/DataWidget.scss */
+.data-widget.sortable-widget-container:hover .widget-title-bar {
+  background: #d9d9d9;
+}
+/* line 69, ../../../../../compass/themes/x2engine/css/components/DataWidget/DataWidget.scss */
+.data-widget.sortable-widget-container .config-bar {
+  text-align: center;
+  display: none;
+  padding: 7px;
+  border-bottom: 1px solid #d9d9d9;
+}
+/* line 75, ../../../../../compass/themes/x2engine/css/components/DataWidget/DataWidget.scss */
+.data-widget.sortable-widget-container .config-bar:after {
+  clear: both;
+}
+/* line 80, ../../../../../compass/themes/x2engine/css/components/DataWidget/DataWidget.scss */
+.data-widget.sortable-widget-container .config-bar-item, .data-widget.sortable-widget-container .filter-menu ul li {
+  color: #9f9f9f;
+  transition: color .2s;
+  width: 10px;
+  margin: 0px 5px;
+  cursor: pointer;
+  float: left;
+}
+/* line 92, ../../../../../compass/themes/x2engine/css/components/DataWidget/DataWidget.scss */
+.data-widget.sortable-widget-container .config-bar-item:hover, .data-widget.sortable-widget-container .filter-menu ul li:hover {
+  color: #006cfb;
+}
+/* line 96, ../../../../../compass/themes/x2engine/css/components/DataWidget/DataWidget.scss */
+.data-widget.sortable-widget-container .config-bar-item.active, .data-widget.sortable-widget-container .filter-menu ul li.active {
+  color: #004baf;
+}
+/* line 100, ../../../../../compass/themes/x2engine/css/components/DataWidget/DataWidget.scss */
+.data-widget.sortable-widget-container .config-bar-item.spacer, .data-widget.sortable-widget-container .filter-menu ul li.spacer {
+  opacity: 0;
+  margin-left: 15px;
+  margin-right: 15px;
+}
+/* line 106, ../../../../../compass/themes/x2engine/css/components/DataWidget/DataWidget.scss */
+.data-widget.sortable-widget-container .config-bar-item.right, .data-widget.sortable-widget-container .filter-menu ul li.right {
+  float: right;
+}
+/* line 110, ../../../../../compass/themes/x2engine/css/components/DataWidget/DataWidget.scss */
+.data-widget.sortable-widget-container .config-bar-item#time-domain, .data-widget.sortable-widget-container .filter-menu ul li#time-domain {
+  color: #454545;
+  opacity: 0.5;
+}
+/* line 115, ../../../../../compass/themes/x2engine/css/components/DataWidget/DataWidget.scss */
+.data-widget.sortable-widget-container .config-bar-item.time-option, .data-widget.sortable-widget-container .filter-menu ul li.time-option {
+  width: auto;
+}
+/* line 119, ../../../../../compass/themes/x2engine/css/components/DataWidget/DataWidget.scss */
+.data-widget.sortable-widget-container .config-bar-item.indicator, .data-widget.sortable-widget-container .filter-menu ul li.indicator {
+  cursor: inherit;
+  color: inherit;
+  margin-right: 10px;
+}
+/* line 128, ../../../../../compass/themes/x2engine/css/components/DataWidget/DataWidget.scss */
+.data-widget.sortable-widget-container .filter-menu {
+  text-align: left;
+  padding-top: 5px;
+  display: none;
+}
+/* line 134, ../../../../../compass/themes/x2engine/css/components/DataWidget/DataWidget.scss */
+.data-widget.sortable-widget-container .filter-menu ul {
+  vertical-align: middle;
+  list-style-type: none;
+  display: inline-block;
+  margin: 0px;
+  padding: 0px;
+}
+/* line 141, ../../../../../compass/themes/x2engine/css/components/DataWidget/DataWidget.scss */
+.data-widget.sortable-widget-container .filter-menu ul.relative-time {
+  margin-right: 10px;
+}
+/* line 145, ../../../../../compass/themes/x2engine/css/components/DataWidget/DataWidget.scss */
+.data-widget.sortable-widget-container .filter-menu ul li {
+  width: auto;
+  margin: 0px 5px 0px 0px;
+  display: inline-block;
+}
+/* line 153, ../../../../../compass/themes/x2engine/css/components/DataWidget/DataWidget.scss */
+.data-widget.sortable-widget-container .filter-menu input {
+  width: 50px;
+  border-radius: 2px;
+  border: 1px solid #9f9f9f;
+  color: #9f9f9f;
+  font-size: 75%;
+  text-align: center;
+  padding: 1px 4px;
+}
+/* line 162, ../../../../../compass/themes/x2engine/css/components/DataWidget/DataWidget.scss */
+.data-widget.sortable-widget-container .filter-menu input.active-input {
+  border-color: #004baf;
+  color: #525252;
+}
+/* line 170, ../../../../../compass/themes/x2engine/css/components/DataWidget/DataWidget.scss */
+.data-widget.sortable-widget-container .row {
+  margin-bottom: 5px;
+}
+/* line 174, ../../../../../compass/themes/x2engine/css/components/DataWidget/DataWidget.scss */
+.data-widget.sortable-widget-container.dragging {
+  transition: opacity 0.3s;
+  opacity: 0.75;
+}
+/* line 180, ../../../../../compass/themes/x2engine/css/components/DataWidget/DataWidget.scss */
+.data-widget.sortable-widget-container .c3-tooltip .value, .data-widget.sortable-widget-container .c3-tooltip .name {
+  color: #454545;
+}
+
+/* line 187, ../../../../../compass/themes/x2engine/css/components/DataWidget/DataWidget.scss */
+.errorScreen {
+  width: 100%;
+  height: 100%;
+  min-height: 100px;
+  background: rgba(255, 255, 255, 0.5);
+  text-align: center;
+  padding-top: 100px;
+  padding-bototm: 100px;
+}

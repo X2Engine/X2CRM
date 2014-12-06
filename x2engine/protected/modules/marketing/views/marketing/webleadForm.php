@@ -35,26 +35,18 @@
  *****************************************************************************************/
 
 $this->pageTitle = Yii::t('marketing','Web Lead Form');
-$this->actionMenu = $this->formatMenu(array(
-	array('label'=>Yii::t('marketing','All Campaigns'), 'url'=>array('index')),
-	array('label'=>Yii::t('marketing','Create Campaign'), 'url'=>array('create')),
-	array('label'=>Yii::t('contacts','Contact Lists'),'url'=>array('/contacts/contacts/lists')),
-	array(
-        'label'=>Yii::t('marketing','Newsletters'), 
-        'url'=>array('/marketing/weblist/index'),
-        'visible'=>(Yii::app()->contEd('pro'))
-    ),
-	array('label'=>Yii::t('marketing','Web Lead Form')),
-	array('label'=>Yii::t('marketing','Web Tracker'), 'url'=>array('webTracker'),'visible'=>(Yii::app()->contEd('pro'))),
-    
-	array('label'=>Yii::t('app','X2Flow'),'url'=>array('/studio/flowIndex'),'visible'=>(Yii::app()->contEd('pro'))),
-));
+$menuOptions = array(
+    'all', 'create', 'lists', 'newsletters', 'weblead', 'webtracker', 'x2flow',
+);
+
+$this->insertMenu($menuOptions);
+
 ?>
 <div id='content-tray'>
 <div class="page-title icon marketing"><h2><?php echo Yii::t('marketing','Web Lead Form'); ?></h2></div>
 <div class="form">
-<?php echo Yii::t('marketing','Create a public form to receive new contacts.'),'<br>',
-	Yii::t('marketing','If no lead routing has been configured, all new contacts will be assigned to "Anyone".'); ?>
+<?php echo Yii::t('marketing','Create a public form to receive new {module}.', array('{module}'=>lcfirst(Modules::displayName(true, "Contacts")))),'<br>',
+	Yii::t('marketing','If no lead routing has been configured, all new {module} will be assigned to "Anyone".', array('{module}'=>lcfirst(Modules::displayName(false, "Contacts")))); ?>
 </div>
 <div class="form">
     <?php echo Yii::t('marketing','If you want to keep your current HTML forms but still get web leads into X2, please see the wiki article located here: {link}',array(

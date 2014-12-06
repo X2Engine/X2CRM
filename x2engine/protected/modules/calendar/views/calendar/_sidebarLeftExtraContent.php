@@ -52,7 +52,9 @@ if(isset($this->calendarUsers) && $this->calendarUsers !== null) {
 
     $this->beginWidget('LeftWidget',
         array(
-            'widgetLabel'=>Yii::t('calendar', 'User Calendars'),
+            'widgetLabel'=>Yii::t('calendar', 'User {calendars}', array(
+                '{calendars}' => Modules::displayName()."s",
+            )),
             'widgetName' => 'UserCalendars',
             'id'=>'user-calendars',
         )
@@ -92,9 +94,23 @@ if(isset($this->calendarUsers) && $this->calendarUsers !== null) {
     }
 }
 
+$modTitles = array();
+foreach (array("Actions", "Contacts", "Accounts", "Products", "Quotes",
+               "Media", "Opportunities") as $mod) {
+    $modTitles[strtolower($mod)] = Modules::displayName(true, $mod);
+}
 
 // Calendar Filters
 if(isset($this->calendarFilter) && $this->calendarFilter !== null) {
+    $modTitles = array(
+        'Accounts' => Modules::displayName (true, 'Accounts'),
+        'Actions' => Modules::displayName (true, 'Actions'),
+        'Contacts' => Modules::displayName (true, 'Contacts'),
+        'Media' => Modules::displayName (true, 'Media'),
+        'Opportunities' => Modules::displayName (true, 'Opportunities'),
+        'Products' => Modules::displayName (true, 'Products'),
+        'Quotes' => Modules::displayName (true, 'Quotes'),
+    );
     $this->beginWidget('LeftWidget',
         array(
             'widgetLabel'=>Yii::t('calendar', 'Filter'),
@@ -112,14 +128,33 @@ if(isset($this->calendarFilter) && $this->calendarFilter !== null) {
         $title = '';
         $class = '';
         $titles = array(
-            'contacts'=>Yii::t('calendar', 'Show Actions associated with Contacts'),
-            'accounts'=>Yii::t('calendar', 'Show Actions associated with Accounts'),
-            'opportunities'=>Yii::t(
-                'calendar', 'Show Actions associated with Opportunities'),
-            'quotes'=>Yii::t('calendar', 'Show Actions associated with Quotes'),
-            'products'=>Yii::t('calendar', 'Show Actions associated with Products'),
-            'media'=>Yii::t('calendar', 'Show Actions associated with Media'),
-            'completed'=>Yii::t('calendar', 'Show Completed Actions'),
+            'contacts'=>Yii::t('calendar', 'Show {actions} associated with {contacts}', array(
+                '{actions}' => $modTitles["Actions"],
+                '{contacts}' => $modTitles["Contacts"],
+            )),
+            'accounts'=>Yii::t('calendar', 'Show {actions} associated with {accounts}', array(
+                '{actions}' => $modTitles["Actions"],
+                '{accounts}' => $modTitles["Accounts"],
+            )),
+            'opportunities'=>Yii::t('calendar', 'Show {actions} associated with {opportunities}', array(
+                '{actions}' => $modTitles["Actions"],
+                '{opportunities}' => $modTitles["Opportunities"],
+            )),
+            'quotes'=>Yii::t('calendar', 'Show {actions} associated with {quotes}', array(
+                '{actions}' => $modTitles["Actions"],
+                '{quotes}' => $modTitles["Quotes"],
+            )),
+            'products'=>Yii::t('calendar', 'Show {actions} associated with {products}', array(
+                '{actions}' => $modTitles["Actions"],
+                '{products}' => $modTitles["Products"],
+            )),
+            'media'=>Yii::t('calendar', 'Show {actions} associated with {media}', array(
+                '{actions}' => $modTitles["Actions"],
+                '{media}' => $modTitles["Media"],
+            )),
+            'completed'=>Yii::t('calendar', 'Show Completed {actions}', array(
+                '{actions}' => $modTitles["Actions"],
+            )),
             'email'=>Yii::t('calendar', 'Show Emails'),
             'attachment'=>Yii::t('calendar', 'Show Attachments'),
         );
@@ -164,7 +199,9 @@ if(isset($this->groupCalendars) && $this->groupCalendars !== null) {
     ); 
     $this->beginWidget('LeftWidget',
             array(
-                'widgetLabel'=>Yii::t('calendar', 'Group Calendars'),
+                'widgetLabel'=>Yii::t('calendar', 'Group {calendars}', array(
+                    '{calendars}' => Modules::displayName()."s",
+                )),
                 'widgetName' => 'GroupCalendars',
                 'id'=>'group-calendar',
             )

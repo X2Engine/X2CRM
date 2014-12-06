@@ -101,6 +101,7 @@ $config = array(
     'import' => array(
         'application.components.ApplicationConfigBehavior',
         'application.components.X2UrlRule',
+        'application.components.ThemeGenerator.ThemeGenerator',
     // 'application.controllers.x2base',
     // 'application.models.*',
     // 'application.components.*',
@@ -143,10 +144,10 @@ $config = array(
                 'gii' => 'gii',
                 'gii/<controller:\w+>' => 'gii/<controller>',
                 'gii/<controller:\w+>/<action:\w+>' => 'gii/<controller>/<action>',
-                '<controller:(site|admin|profile|search|notifications|studio|gallery)>/<id:\d+>' => '<controller>/view',
-                '<controller:(site|admin|profile|search|notifications|studio|gallery)>/<action:\w+>/<id:\d+>' => '<controller>/<action>',
-                '<controller:(site|admin|profile|search|notifications|studio|gallery)>/<action:\w+>/id/<id:\d+>' => '<controller>/<action>',
-                '<controller:(site|admin|profile|api|search|notifications|studio|gallery)>/<action:\w+>' => '<controller>/<action>',
+                '<controller:(site|admin|profile|search|notifications|studio|gallery|relationships)>/<id:\d+>' => '<controller>/view',
+                '<controller:(site|admin|profile|search|notifications|studio|gallery|relationships)>/<action:\w+>/<id:\d+>' => '<controller>/<action>',
+                '<controller:(site|admin|profile|search|notifications|studio|gallery|relationships)>/<action:\w+>/id/<id:\d+>' => '<controller>/<action>',
+                '<controller:(site|admin|profile|api|search|notifications|studio|gallery|relationships)>/<action:\w+>' => '<controller>/<action>',
 
                 // REST-ful 2nd-gen API URLs
                 //
@@ -272,12 +273,21 @@ $config = array(
         'cache' => array(
             'class' => 'system.caching.CFileCache',
         ),
+        // cache which doesn't get cleared when admin index is visited
+        'cache2' => array(
+            'class' => 'X2FileCache',
+            'cachePath' => 'application.runtime.cache2',
+        ),
         'authCache' => array(
             'class' => 'application.components.X2AuthCache',
             'connectionID' => 'db',
             'tableName' => 'x2_auth_cache',
         // 'autoCreateCacheTable'=>false,
         ),
+        'sass' => array(
+            'class' => 'SassHandler',
+            'enableCompass' => true
+        )
     ),
     // application-level parameters that can be accessed
     // using Yii::app()->params['paramName']
@@ -303,6 +313,7 @@ $config = array(
             'ActionMenu' => 'My Actions',
             'MessageBox' => 'Message Board',
             'QuickContact' => 'Quick Contact',
+            'SmallCalendar' => 'Calendar',
             //'TwitterFeed'=>'Twitter Feed',
             'NoteBox' => 'Note Pad',
             'MediaBox' => 'Files',

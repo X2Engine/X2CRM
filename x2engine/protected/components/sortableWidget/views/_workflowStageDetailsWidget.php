@@ -62,7 +62,7 @@
         <?php
         // true = include dropdowns
         $workflowStatus = Workflow::getWorkflowStatus(
-            $currentWorkflow,$model->id,get_class ($model));    
+            $currentWorkflow,$model->id, X2Model::getAssociationType (get_class ($model)));
         //echo Workflow::renderWorkflow($workflowStatus); 
         if (sizeof ($workflowStatus['stages']) > 1) {
             $workflow = Workflow::model()->findByPk ($workflowStatus['id']);

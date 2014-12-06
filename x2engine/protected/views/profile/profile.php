@@ -70,6 +70,8 @@ if ($isMyProfile) {
         Yii::app()->getBaseUrl().'/js/sortableWidgets/ProfileWidgetManager.js', 
         CClientScript::POS_END);
     Yii::app()->clientScript->registerScript ('profilePageWidgetInitScript', "
+        $('#content').addClass('profile-content');
+
         x2.profileWidgetManager = new ProfileWidgetManager ({
             setSortOrderUrl: '".Yii::app()->controller->createUrl ('/profile/setWidgetOrder')."',
             showWidgetContentsUrl: '".Yii::app()->controller->createUrl (
@@ -85,6 +87,7 @@ if ($isMyProfile) {
         });
     ", CClientScript::POS_READY);
      
+     AuxLib::debugLogR($layout);
     /**
      * @param int $containerNumber The container for which widgets should get instantiated 
      * @param array $layout profile widget layout
@@ -97,6 +100,7 @@ if ($isMyProfile) {
             if ($settings['containerNumber'] == $containerNumber) {
                 SortableWidget::instantiateWidget ($widgetClass, $model);
             }
+
         }
     }
 ?>

@@ -34,5 +34,9 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 ?>
-<div class="page-title icon actions"><h2><?php echo Yii::t('actions','That action is not assigned to you.'); ?></h2></div>
+<div class="page-title icon actions"><h2>
+    <?php echo Yii::t('actions','That {action} is not assigned to you.', array(
+        '{action}' => Modules::displayName(false),
+    )); ?>
+</h2></div>
 <?php echo CHtml::link(Yii::t('app','Click here to return to where you were'),isset($_SERVER['HTTP_REFERER'])?$_SERVER['HTTP_REFERER']:Yii::app()->controller->createUrl('/actions/actions/index')); ?>

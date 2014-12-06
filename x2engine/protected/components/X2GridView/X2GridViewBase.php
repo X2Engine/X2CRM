@@ -36,6 +36,7 @@
 
 Yii::import('zii.widgets.grid.CGridView');
 Yii::import('X2DataColumn');
+Yii::import('application.components.X2GridView.massActions.MassAction');
 Yii::import('X2ButtonColumn');
 
 /**
@@ -45,24 +46,49 @@ Yii::import('X2ButtonColumn');
  * columns and also the adding of new columns based on the available fields for
  * the model.
  *
- * @property bool $isAdmin If true, the grid view will be generated under the
- *  assumption that the user viewing it has full/administrative access to
- *  whichever module that it is being used in.
  * @package application.components
  */
 abstract class X2GridViewBase extends CGridView {
     public $selectableRows = 0;
+    public $loadingCssClass = 'grid-view-loading';
     public $viewName;
     public $enableGvSettings = true;
     public $fullscreen = false;
     public $defaultGvSettings = array ();
     public $excludedColumns;
     public $enableControls = false;
+    public $enableCheckboxColumn = true;
+    public $enableGridResizing = true;
+    public $enableResponsiveTitleBar = true;
+    public $enableDbPersistentGvSettings = true;
     public $fixedHeader = false;
     public $summaryText;
     public $buttons = array();
     public $title;
+    public $gridViewJSClass = 'gvSettings';
     public $ajax = false;
+    public $massActions = array ();
+
+    /**
+     * @var string $pagerClass
+     */
+    public $pagerClass = 'CLinkPager';
+     
+    /**
+     * @var bool If true, the users will be able to select & perform mass action on all records 
+     *  all records in the dataprovider.
+     */
+    public $enableSelectAllOnAllPages = false;
+
+    /**
+     * @var string $gvControlsTemplate
+     */
+    public $gvControlsTemplate = '{view} {update} {delete}';
+
+    /**
+     * @var string $dataColumnClass
+     */
+    public $dataColumnClass = 'CDataColumn'; 
 
     /**
      * @var bool If true, window will automatically scroll to the top when the page is changed
@@ -80,10 +106,17 @@ abstract class X2GridViewBase extends CGridView {
 
     /**
      * @var bool whether qtips should be used, refresh method should be defined in a JS sub 
-     *  prototype of X2QtipManager
+     *  prototype of X2GridViewQtipManager
      */
     public $enableQtips = false;
 
+    /**
+     * @var string $moduleName Name of the module that the grid view is being
+     *  used in, for purposes of access control.
+     */
+    protected $_moduleName;
+
+    protected $_packages;
     protected $allFieldNames = array();
     protected $gvSettings = null;
     protected $columnSelectorId;
@@ -102,7 +135,35 @@ abstract class X2GridViewBase extends CGridView {
      */
     protected $_namespacePrefix;
 
+    abstract protected function setSummaryText ();
+
     abstract protected function generateColumns ();
+
+    public function registerPackages () {
+        Yii::app()->clientScript->registerPackages ($this->getPackages (), true);
+    }
+
+    public function getPackages () {
+        if (!isset ($this->_packages)) {
+            $this->_packages = array (
+                'QtipManager' => array(
+                    'baseUrl' => Yii::app()->request->baseUrl,
+                    'js' => array(
+                        'js/QtipManager.js',
+                    ),
+                ),
+                'X2GridViewQtipManager' => array(
+                    'baseUrl' => Yii::app()->request->baseUrl,
+                    'js' => array(
+                        'js/X2GridView/X2GridViewQtipManager.js',
+                    ),
+                    'depends' => array ('QtipManager', 'auxlib'),
+                ),
+            );
+        }
+        return $this->_packages;
+    }
+
 
     /**
      * Magic setter for gvSettingsName. 
@@ -110,6 +171,18 @@ abstract class X2GridViewBase extends CGridView {
      */
     public function setGvSettingsName ($gvSettingsName) {
         $this->_gvSettingsName = $gvSettingsName;
+    }
+
+    public function getModuleName() {
+        if(!isset($this->_moduleName)) {
+            if(!isset(Yii::app()->controller->module)) {
+                throw new CException(
+                    'X2GridView cannot be used both outside of a module that uses X2Model and '.
+                    'without specifying its moduleName property.');
+            }
+            $this->_moduleName = Yii::app()->controller->module->getName();
+        }
+        return $this->_moduleName;
     }
 
     /**
@@ -224,74 +297,48 @@ abstract class X2GridViewBase extends CGridView {
     abstract protected function addFieldNames ();
 
     protected function getGvControlsColumn ($width) {
+        $width = $this->formatWidth ($width);
         $newColumn = array ();
         $newColumn['id'] = $this->namespacePrefix.'C_gvControls';
         $newColumn['class'] = 'X2ButtonColumn';
         $newColumn['header'] = Yii::t('app','Tools');
-        $newColumn['headerHtmlOptions'] = array('style'=>'width:'.$width.'px;');
+        $newColumn['template'] = $this->gvControlsTemplate;
+        $newColumn['headerHtmlOptions'] = array('style'=>'width:'.$width.';');
         return $newColumn;
+    }
+
+    protected function formatWidth ($width) {
+        if (preg_match ('/[0-9]+px/', $width) ||
+            preg_match ('/[0-9]+%/', $width)) {
+            
+            return $width;
+        }
+
+        if (is_numeric ($width)) {
+            $width = $width . 'px';
+        } else {
+            $width = null;
+        }
+        return $width;
     }
 
     protected function getGvCheckboxColumn ($width) {
+        $width = $this->formatWidth ($width);
         $newColumn = array ();
         $newColumn['id'] = $this->namespacePrefix.'C_gvCheckbox';
-        $newColumn['class'] = 'CCheckBoxColumn';
+        $newColumn['class'] = 'X2CheckBoxColumn';
         $newColumn['selectableRows'] = 2;
-        $newColumn['headerHtmlOptions'] = array('style'=>'width:'.$width.'px;');
+        $newColumn['htmlOptions'] = array('style'=>'text-align: center;');
+        $newColumn['headerCheckBoxHtmlOptions'] = array('id'=>$newColumn['id'].'_all');
+        $newColumn['checkBoxHtmlOptions'] = array('class'=>'checkbox-column-checkbox');
+        $newColumn['headerHtmlOptions'] = array(
+            'style'=>'width:'.$width.';',
+            'class'=>'checkbox-column',
+        );
         return $newColumn;
     }
 
-    public function init() {
-        $this->pager = array (
-            'class' => 'CLinkPager', 
-            'header' => '',
-            'htmlOptions' => array (
-                'id' => $this->namespacePrefix . 'Pager'
-            ),
-            'firstPageCssClass' => '',
-            'lastPageCssClass' => '',
-            'prevPageLabel' => '<',
-            'nextPageLabel' => '>',
-            'firstPageLabel' => '<<',
-            'lastPageLabel' => '>>',
-        );
-
-        $this->baseScriptUrl = Yii::app()->theme->getBaseUrl().'/css/gridview';
-
-        $this->excludedColumns = empty($this->excludedColumns) ? array():
-            array_fill_keys ($this->excludedColumns,1);
-
-        // $this->id is the rendered HTML element's ID, i.e. "contacts-grid"
-        $this->ajax = isset($_GET[$this->ajaxVar]) && $_GET[$this->ajaxVar] === $this->id;
-
-        if($this->ajax) ob_clean();
-
-        $this->columnSelectorId = $this->getId() . '-column-selector';
-
-        /* 
-        Get gridview settings by looking in the URL:
-        This condition will pass in the case that an ajax update occurs following an ajax request 
-        to save the grid view settings. It is necessary because it allows the grid view to render 
-        properly even before the new grid view settings have been saved to the database.
-        */
-        if(isset($_GET[$this->namespacePrefix.'gvSettings']) && isset ($this->gvSettingsName)) {
-            $this->gvSettings = json_decode($_GET[$this->namespacePrefix.'gvSettings'],true);
-            Profile::setGridviewSettings($this->gvSettings, $this->gvSettingsName);
-        } else {
-            $this->gvSettings = Profile::getGridviewSettings($this->gvSettingsName);
-        }
-        // Use the hard-coded defaults (note: gvSettings has column name keys:
-        if($this->gvSettings == null)
-            $this->gvSettings = $this->defaultGvSettings;
-
-        // add controls column if specified
-        if($this->enableControls)
-            $this->allFieldNames['gvControls'] = Yii::t('app','Tools');
-
-        $this->allFieldNames['gvCheckbox'] = Yii::t('app', 'Checkbox');
-
-        $this->addFieldNames ();
-
+    protected function extractGvSettings () {
         // update columns if user has submitted data
         // has the user changed column visibility?
         if(isset($_GET[$this->namespacePrefix.'columns']) && isset ($this->gvSettingsName)) {
@@ -320,60 +367,87 @@ abstract class X2GridViewBase extends CGridView {
                 }
             }
         }
+    }
 
-//        // unset filters for hidden columns
-//        AuxLib::debugLogR ('unsetting filters/sort order');
-//        AuxLib::debugLogR ('$columnsSelected = ');
-//        AuxLib::debugLogR ($this->gvSettings);
-//
-//       AuxLib::debugLogR ('$_SESSION = ');
-//        AuxLib::debugLogR ($_SESSION);
-//
-//        $changed = $this->dataProvider->model->unsetFiltersNotIn (
-//            array_keys ($this->gvSettings));
-//        $changed |= $this->dataProvider->unsetSortOrderIfNotIn (
-//            array_keys ($this->gvSettings));
-//        if ($changed) 
-//            Yii::app()->controller->redirect(array(Yii::app()->controller->action->ID));
-//
-//        AuxLib::debugLogR ('$_SESSION = ');
-//        AuxLib::debugLogR ($_SESSION);
-        
+    public function setPager () {
+        $this->pager = array (
+            'class' => $this->pagerClass, 
+            'header' => '',
+            'htmlOptions' => array (
+                'id' => $this->namespacePrefix . 'Pager'
+            ),
+            'firstPageCssClass' => '',
+            'lastPageCssClass' => '',
+            'prevPageLabel' => '<',
+            'nextPageLabel' => '>',
+            'firstPageLabel' => '<<',
+            'lastPageLabel' => '>>',
+        );
+    }
+
+    public function init() {
+        $this->registerPackages ();
+        $this->setPager ();
+
+        $this->baseScriptUrl = Yii::app()->theme->getBaseUrl().'/css/gridview';
+
+        $this->excludedColumns = empty($this->excludedColumns) ? array():
+            array_fill_keys ($this->excludedColumns,1);
+
+        // $this->id is the rendered HTML element's ID, i.e. "contacts-grid"
+        $this->ajax = isset($_GET[$this->ajaxVar]) && $_GET[$this->ajaxVar] === $this->id;
+
+        if($this->ajax) {
+            ob_clean();
+        }
+
+        $this->columnSelectorId = $this->getId() . '-column-selector';
+
+        /* 
+        Get gridview settings by looking in the URL:
+        This condition will pass in the case that an ajax update occurs following an ajax request 
+        to save the grid view settings. It is necessary because it allows the grid view to render 
+        properly even before the new grid view settings have been saved to the database.
+        */
+        if(isset($_GET[$this->namespacePrefix.'gvSettings']) && isset ($this->gvSettingsName)) {
+            $this->gvSettings = json_decode($_GET[$this->namespacePrefix.'gvSettings'],true);
+            if ($this->enableDbPersistentGvSettings)
+                Profile::setGridviewSettings($this->gvSettings, $this->gvSettingsName);
+        } else if ($this->enableDbPersistentGvSettings) {
+            $this->gvSettings = Profile::getGridviewSettings($this->gvSettingsName);
+        }
+        // Use the hard-coded defaults (note: gvSettings has column name keys:
+        if($this->gvSettings == null)
+            $this->gvSettings = $this->defaultGvSettings;
+
+        // add controls column if specified
+        if($this->enableControls)
+            $this->allFieldNames['gvControls'] = Yii::t('app','Tools');
+
+        if ($this->enableCheckboxColumn)
+            $this->allFieldNames['gvCheckbox'] = Yii::t('app', 'Checkbox');
+
+        $this->addFieldNames ();
+        $this->extractGvSettings ();
+
         // prevents columns data from ending up in sort/pagination links
         unset($_GET[$this->namespacePrefix.'columns']); 
         unset($_GET['viewName']);
         unset($_GET[$this->namespacePrefix.'gvSettings']);
 
         // save the new Gridview Settings
-        Profile::setGridviewSettings($this->gvSettings,$this->gvSettingsName);
+        if ($this->enableDbPersistentGvSettings)
+            Profile::setGridviewSettings($this->gvSettings,$this->gvSettingsName);
 
         $columns = array();
         $datePickerJs = '';
 
         $this->generateColumns ();
+        natcasesort($this->allFieldNames); // sort column names
+        $this->generateColumnSelectorHtml ();
         
         // one blank column for the resizing widget
-        $this->columns[] = array('value'=>'','header'=>''); 
-
-        natcasesort($this->allFieldNames); // sort column names
-
-        // generate column selector HTML
-        $this->columnSelectorHtml = CHtml::beginForm(array('/site/saveGvSettings'),'get')
-            .'<ul class="column-selector'.
-            ($this->fixedHeader ? ' fixed-header' : '').'" id="'.$this->columnSelectorId.'">';
-        $i = 0;
-        foreach($this->allFieldNames as $fieldName=>&$attributeLabel) {
-            $i++;
-            $selected = array_key_exists($fieldName,$this->gvSettings);
-            $this->columnSelectorHtml .= "<li>"
-            .CHtml::checkbox($this->namespacePrefix.'columns[]',$selected,array(
-                'value'=>$fieldName,
-                'id'=>$this->namespacePrefix.'checkbox-'.$i
-            ))
-            .CHtml::label($attributeLabel,$fieldName.'_checkbox')
-            ."</li>";
-        }
-        $this->columnSelectorHtml .= '</ul></form>';
+        if ($this->enableGridResizing) $this->columns[] = array('value'=>'','header'=>''); 
 
         $themeURL = Yii::app()->theme->getBaseUrl();
         
@@ -426,21 +500,8 @@ Yii::app()->clientScript->registerScript(sprintf('%x', crc32(Yii::app()->name)),
             $('#".$this->getNamespacePrefix ()."-filter-hint').qtip ();
             // refresh checklist dropdown filters for multi-dropdown fields
             x2.forms.initializeMultiselectDropdowns ();
-
-            $('#".$this->getId()."').gvSettings({
-                viewName:'".$this->gvSettingsName."',
-                columnSelectorId:'".$this->columnSelectorId."',
-                columnSelectorHtml:'".addcslashes($this->columnSelectorHtml,"'")."',
-                namespacePrefix:'".$this->namespacePrefix."',
-                ajaxUpdate:".($this->ajax?'true':'false').",
-                fixedHeader: ".($this->fixedHeader ? 'true' : 'false').",
-                modelName: '".(isset ($this->modelName) ? $this->modelName : '')."',
-                enableScrollOnPageChange: ".
-                    ($this->enableScrollOnPageChange ? 'true' : 'false').",
-                sortStateKey: '".
-                    ($this->dataProvider->asa ('SmartDataProviderBehavior') ? 
-                        $this->dataProvider->getSortKey () : '')."'
-            });");
+        ");
+        $this->jSClassInstantiation ();
 
         if ($this->enableQtips) $this->setUpQtipManager ();
         if ($this->fixedHeader) $this->setUpStickyHeader ();
@@ -453,7 +514,24 @@ Yii::app()->clientScript->registerScript(sprintf('%x', crc32(Yii::app()->name)),
         parent::init();
     }
 
-    abstract protected function setSummaryText ();
+    public function generateColumnSelectorHtml () {
+        $this->columnSelectorHtml = CHtml::beginForm(array('/site/saveGvSettings'),'get')
+            .'<ul class="column-selector x2-dropdown-list'.
+            ($this->fixedHeader ? ' fixed-header' : '').'" id="'.$this->columnSelectorId.'">';
+        $i = 0;
+        foreach($this->allFieldNames as $fieldName=>&$attributeLabel) {
+            $i++;
+            $selected = array_key_exists($fieldName,$this->gvSettings);
+            $this->columnSelectorHtml .= "<li>"
+            .CHtml::checkbox($this->namespacePrefix.'columns[]',$selected,array(
+                'value'=>$fieldName,
+                'id'=>$this->namespacePrefix.'checkbox-'.$i
+            ))
+            .CHtml::label($attributeLabel,$fieldName.'_checkbox')
+            ."</li>";
+        }
+        $this->columnSelectorHtml .= '</ul></form>';
+    }
 
     public function getAfterAjaxUpdateStr () {
         return $this->afterGridViewUpdateJSString;
@@ -483,12 +561,11 @@ Yii::app()->clientScript->registerScript(sprintf('%x', crc32(Yii::app()->name)),
 
     public function run() {
         if($this->ajax) {
-            // remove any external JS and CSS files
+            // remove any external CSS files
             Yii::app()->clientScript->scriptMap['*.css'] = false;
         }
 
-        /* give this a special class so the javascript can tell it apart from the regular, lame
-        gridviews */
+        // give this a special class so the javascript can tell it apart from the Yii's gridviews 
         if(!isset($this->htmlOptions['class']))
             $this->htmlOptions['class'] = '';
         $this->htmlOptions['class'] .= ' x2-gridview';
@@ -517,7 +594,7 @@ Yii::app()->clientScript->registerScript(sprintf('%x', crc32(Yii::app()->name)),
 
     public static function getFilterHint() {
         $text = self::getFilterHintText ();
-        return X2Html::hint($text,false,'filter-hint');
+        return X2Html::hint ($text, false, 'filter-hint');
     }
 
     public static function getFilterHintText () {
@@ -535,10 +612,55 @@ Yii::app()->clientScript->registerScript(sprintf('%x', crc32(Yii::app()->name)),
         return $text;
     }
 
+    public function renderTopPager () {
+        $this->controller->renderPartial (
+            'application.components.views._x2GridViewTopPager', array (
+                'gridId' => $this->id,
+                'gridObj' => $this,
+                'namespacePrefix' => $this->namespacePrefix,
+            )
+        );
+    }
+    
+    /**
+     * Display mass actions ui buttons in top bar and set up related JS
+     */
+    public function renderMassActionButtons () {
+        $auth = Yii::app()->authManager;
+
+        $actionAccess = ucfirst(Yii::app()->controller->getId()). 'Delete';
+        $authItem = $auth->getAuthItem($actionAccess);
+
+        if(!is_null($authItem) && !Yii::app()->user->checkAccess($actionAccess)){
+            if(in_array('delete',$this->massActions))
+                unset($this->massActions[array_search('delete',$this->massActions)]);
+        }
+
+        if ($this->enableSelectAllOnAllPages) {
+            $idChecksum = $this->dataProvider->getIdChecksum ();
+        }
+
+        $massActionObjs = MassAction::getMassActionObjects ($this->massActions);
+
+        $this->controller->renderPartial (
+            'application.components.views._x2GridViewMassActionButtons', array (
+                'UIType' => 'buttons',
+                'massActions' => $this->massActions,
+                'massActionObjs' => $massActionObjs,
+                'gridId' => $this->id,
+                'namespacePrefix' => $this->namespacePrefix,
+                'modelName' => (isset ($this->modelName)) ? $this->modelName : null,
+                'gridObj' => $this,
+                'fixedHeader' => $this->fixedHeader,
+                'idChecksum' => $this->enableSelectAllOnAllPages ? $idChecksum : null,
+            )//, false, ($this->ajax ? true : false)
+        );
+    }
 
     public function renderFilterHint() {
         echo X2Html::hint(
-            self::getFilterHintText (),false,$this->getNamespacePrefix () . '-filter-hint',false,false);
+            self::getFilterHintText (), false, $this->getNamespacePrefix () . '-filter-hint', false,
+            false);
     }
 
     /**
@@ -580,8 +702,43 @@ Yii::app()->clientScript->registerScript(sprintf('%x', crc32(Yii::app()->name)),
             $this->renderEmptyText();
         }
 
-        echo "<div class='x2-gridview-updating-anim x2-loading-icon' style='display: none;'>".
-             "</div>";
+        echo X2Html::loadingIcon (
+            array('class' => 'x2-gridview-updating-anim', 'style' => 'display: none'));
+    }
+
+    /**
+     * @return array options to pass to grid view JS class constructor
+     */
+    protected function getJSClassOptions () {
+        return array (
+            'viewName' => $this->gvSettingsName,
+            'columnSelectorId' => $this->columnSelectorId,
+            'columnSelectorHtml' => addcslashes($this->columnSelectorHtml,"'"),
+            'namespacePrefix' => $this->namespacePrefix,
+            'ajaxUpdate' => $this->ajax,
+            'fixedHeader' => $this->fixedHeader,
+            'modelName' =>  (isset ($this->modelName) ? $this->modelName : ''),
+            'enableScrollOnPageChange' => $this->enableScrollOnPageChange,
+            'enableDbPersistentGvSettings' => $this->enableDbPersistentGvSettings,
+            'enableGridResizing' => $this->enableGridResizing,
+            'sortStateKey' => 
+                ($this->dataProvider->asa ('SmartDataProviderBehavior') ? 
+                    $this->dataProvider->getSortKey () : ''),
+        );
+    }
+
+    /**
+     * Register JS which instantiates grid view class
+     */
+    protected function jSClassInstantiation () {
+//        Yii::app()->clientScript->registerScript($this->id,"
+//            $('#".$this->getId()."').$this->gridViewJSClass (".
+//                CJSON::encode ($this->getJSClassOptions ()).");
+//        ", CClientScript::POS_END);
+        $this->addToAfterAjaxUpdate ("
+            $('#".$this->getId()."').$this->gridViewJSClass (".
+                CJSON::encode ($this->getJSClassOptions ()).");
+        ");
     }
 
     /**
@@ -593,11 +750,8 @@ Yii::app()->clientScript->registerScript(sprintf('%x', crc32(Yii::app()->name)),
 
         $protoName = $this->qtipManager[0];
         $protoProps = array_slice ($this->qtipManager, 1);
-        Yii::app()->clientScript->registerScriptFile (Yii::app()->getBaseUrl().
-            '/js/'.$protoName.'.js');
-
         Yii::app()->clientScript->registerScript($this->namespacePrefix.'qtipSetup', '
-            x2.'.$this->namespacePrefix.'qtipManager = new '.$protoName.' ('.
+            x2.'.$this->namespacePrefix.'qtipManager = new x2.'.$protoName.' ('.
                 CJSON::encode ($protoProps)
             .');
         ',CClientScript::POS_END);
@@ -607,21 +761,39 @@ Yii::app()->clientScript->registerScript(sprintf('%x', crc32(Yii::app()->name)),
                 x2.".$this->namespacePrefix."qtipManager.refresh (); }");
     }
 
-    /**
-     * Override of {@link CGridView::registerClientScript()}.
-     *
-     * Adds scripts essential to modifying the gridview (and saving its configuration).
-     */
-    public function registerClientScript() {
-        parent::registerClientScript();
+	/**
+	 * Registers necessary client scripts.
+     * This method is Copyright (c) 2008-2014 by Yii Software LLC
+     * http://www.yiiframework.com/license/ 
+	 */
+	public function registerClientScript()
+	{
+		$id=$this->getId();
+
+        /* x2modstart */ 
+		$options=$this->getYiiGridViewOptions ();
+		$options=CJavaScript::encode($options);
+        /* x2modend */ 
+
+		$cs=Yii::app()->getClientScript();
+		$cs->registerCoreScript('jquery');
+		$cs->registerCoreScript('bbq');
+		if($this->enableHistory)
+			$cs->registerCoreScript('history');
+		$cs->registerScriptFile($this->baseScriptUrl.'/jquery.yiigridview.js',CClientScript::POS_END);
+		$cs->registerScript(__CLASS__.'#'.$id,"jQuery('#$id').yiiGridView($options);");
+
+        /* x2modstart */ 
+        // Adds script essential to modifying the gridview (and saving its configuration).
         if($this->enableGvSettings) {
             Yii::app()->clientScript->registerScriptFile(Yii::app()->getBaseUrl().
                 '/js/X2GridView/x2gridview.js', CCLientScript::POS_END);
         }
-    }
+        /* x2modend */ 
+	}
 
     public function renderSummary () {
-        if (RESPONSIVE_LAYOUT) {
+        if (RESPONSIVE_LAYOUT && $this->enableResponsiveTitleBar) {
         Yii::app()->clientScript->registerCss('mobileDropdownCss',"
             .grid-view .mobile-dropdown-button {
                 float: right;
@@ -661,12 +833,64 @@ Yii::app()->clientScript->registerScript(sprintf('%x', crc32(Yii::app()->name)),
     }
 
     /**
+     * Code moved out of registerClientScript, allowing it to be more easily overridden
+     * This method is Copyright (c) 2008-2014 by Yii Software LLC
+     * http://www.yiiframework.com/license/ 
+     */
+    protected function getYiiGridViewOptions () {
+		$id=$this->getId();
+
+		if($this->ajaxUpdate===false)
+			$ajaxUpdate=false;
+		else
+			$ajaxUpdate=array_unique(preg_split('/\s*,\s*/',$this->ajaxUpdate.','.$id,-1,PREG_SPLIT_NO_EMPTY));
+		$options=array(
+			'ajaxUpdate'=>$ajaxUpdate,
+			'ajaxVar'=>$this->ajaxVar,
+			'pagerClass'=>$this->pagerCssClass,
+			'loadingClass'=>$this->loadingCssClass,
+			'filterClass'=>$this->filterCssClass,
+			'tableClass'=>$this->itemsCssClass,
+			'selectableRows'=>$this->selectableRows,
+			'enableHistory'=>$this->enableHistory,
+			'updateSelector'=>$this->updateSelector,
+			'filterSelector'=>$this->filterSelector
+		);
+
+		if($this->ajaxUrl!==null)
+			$options['url']=CHtml::normalizeUrl($this->ajaxUrl);
+		if($this->ajaxType!==null)
+			$options['ajaxType']=strtoupper($this->ajaxType);
+		if($this->enablePagination)
+			$options['pageVar']=$this->dataProvider->getPagination()->pageVar;
+		foreach(array('beforeAjaxUpdate', 'afterAjaxUpdate', 'ajaxUpdateError', 'selectionChanged') as $event)
+		{
+			if($this->$event!==null)
+			{
+				if($this->$event instanceof CJavaScriptExpression)
+					$options[$event]=$this->$event;
+				else
+					$options[$event]=new CJavaScriptExpression($this->$event);
+			}
+		}
+        return $options;
+    }
+
+    protected function getSortDirections () {
+        return $this->dataProvider->getSort()->getDirections();
+    }
+
+    /**
      * Echoes the markup for the gridview's table header.
+     *
+     * This method is Copyright (c) 2008-2014 by Yii Software LLC
+     * http://www.yiiframework.com/license/
      */
     public function renderTableHeader() {
         if(!$this->hideHeader) {
 
-            $sortDirections = $this->dataProvider->getSort()->getDirections();
+            /* x2modstart */ 
+            $sortDirections = $this->getSortDirections ();
             foreach($this->columns as $column) {
                 // determine sort state for this column (adapted from CSort::link())
                 if(property_exists($column,'name')) {
@@ -679,6 +903,7 @@ Yii::app()->clientScript->registerScript(sprintf('%x', crc32(Yii::app()->name)),
                     }
                 }
             }
+            /* x2modend */ 
             echo "<thead>\n";
 
             if($this->filterPosition===self::FILTER_POS_HEADER)
@@ -713,7 +938,9 @@ Yii::app()->clientScript->registerScript(sprintf('%x', crc32(Yii::app()->name)),
         if(0 === $count = count($this->buttons))
             return;
         if($count > 1)
-            echo '<div class="x2-button-group">';
+            echo '<div class="x2-button-group x2-grid-view-controls-buttons">';
+        else
+            echo '<div class="x2-grid-view-controls-buttons">';
         $lastChildClass = '';
         for ($i = 0; $i < $count; ++$i) {
             $button = $this->buttons[$i];
@@ -722,7 +949,7 @@ Yii::app()->clientScript->registerScript(sprintf('%x', crc32(Yii::app()->name)),
                 case 'advancedSearch':
                     break; // remove until fixed
                     echo CHtml::link(
-                        '<span></span>','#',array(
+                        '','#',array(
                             'title'=>Yii::t('app','Advanced Search'),
                             'class'=>'x2-button search-button'.$lastChildClass)
                         );
@@ -734,33 +961,83 @@ Yii::app()->clientScript->registerScript(sprintf('%x', crc32(Yii::app()->name)),
                         array('clearFilters'=>1)
                     );
                     echo CHtml::link(
-                        '<span></span>',$url,array('title'=>Yii::t('app','Clear Filters'),
-                        'class'=>'x2-button filter-button'.$lastChildClass)
+                        '',$url,array('title'=>Yii::t('app','Clear Filters'),
+                        'class'=>'fa fa-filter fa-lg x2-button filter-button'.$lastChildClass)
                     );
                     break;
                 case 'columnSelector':
                     echo CHtml::link(
-                        '<span></span>','javascript:void(0);',array('title'=>Yii::t('app',
-                        'Columns'),'class'=>'column-selector-link x2-button'.$lastChildClass)
+                        '','javascript:void(0);',array('title'=>Yii::t('app',
+                        'Columns'),
+                        'class'=>'fa fa-columns fa-lg column-selector-link x2-button'.
+                            $lastChildClass)
                     );
                     break;
                 case 'autoResize':
                     echo CHtml::link(
-                        '<span></span>','javascript:void(0);',
+                        '','javascript:void(0);',
                         array(
                             'title'=>Yii::t('app','Auto-Resize Columns'),
-                            'class'=>'auto-resize-button x2-button'.$lastChildClass)
+                            'class'=>'fa fa-arrows-h fa-lg auto-resize-button x2-button'.
+                                $lastChildClass)
                         );
                     break;
                 default:
                     echo $button;
             }
         }
-        if($count > 1)
-            echo '</div>';
+        echo '</div>';
     }
 
     protected function renderContentBeforeHeader () {}
+
+    /**
+     * Creates column objects and initializes them. Overrides {@link parent::initColumns}, 
+     * swapping hard coded reference to CDataColumn with the value of a public property.
+     *
+     * This method is Copyright (c) 2008-2014 by Yii Software LLC
+     * http://www.yiiframework.com/license/
+     */
+    protected function initColumns() {
+        if($this->columns===array()) {
+            if($this->dataProvider instanceof CActiveDataProvider) {
+                $this->columns=$this->dataProvider->model->attributeNames();
+            } elseif($this->dataProvider instanceof IDataProvider) {
+                // use the keys of the first row of data as the default columns
+                $data=$this->dataProvider->getData();
+                if(isset($data[0]) && is_array($data[0]))
+                    $this->columns=array_keys($data[0]);
+            }
+        }
+        $id=$this->getId();
+       AuxLib::debugLogR ('$this->columns = ');
+        AuxLib::debugLogR ($this->columns);
+
+        foreach($this->columns as $i=>$column) {
+            if(is_string($column)) {
+                $column=$this->createDataColumn($column);
+            } else {
+                if(!isset($column['class'])) {
+                    /* x2modstart */ 
+                    $column['class']=$this->dataColumnClass;
+                    /* x2modend */ 
+                }
+                $column=Yii::createComponent($column, $this);
+            }
+            if(!$column->visible) {
+                unset($this->columns[$i]);
+                continue;
+            }
+            if($column->id===null) {
+                $column->id=$id.'_c'.$i;
+            }
+            $this->columns[$i]=$column;
+        }
+
+        foreach($this->columns as $column) {
+            $column->init();
+        }
+    }
 
 }
 ?>

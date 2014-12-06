@@ -50,12 +50,14 @@ class X2LeadsTest extends X2DbTestCase {
 
         $leadAttrs = $lead1->getAttributes ();
 
-        $opportunity = $lead1->convertToOpportunity ();
+        $opportunity = $lead1->convert ('Opportunity');
 
         $opportunityAttrs = $opportunity->getAttributes ();
 
         unset ($leadAttrs['id']);
         unset ($leadAttrs['nameId']);
+        unset ($leadAttrs['firstName']);
+        unset ($leadAttrs['lastName']);
         unset ($leadAttrs['createDate']);
         unset ($opportunityAttrs['id']);
         unset ($opportunityAttrs['nameId']);

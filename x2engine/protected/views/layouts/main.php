@@ -103,63 +103,11 @@ foreach($checkFiles as $key => $value){
     if(!file_exists($key) || hash_file('md5', $key) !== $value)
         $logoMissing = true;
 }
-$theme2Css = '';
-if($logoMissing) {
-    $theme2Css = 
-        'html * {
-            background:url('.CHtml::normalizeUrl(array('/site/warning')).') !important;
-        } 
-        #bg{
-            display:none !important;
-        }';
-}
 
-$themeCss = '';
-if ($preferences != null && $preferences['menuTextColor'])
-    $themeCss .= '
-    ul.main-menu > li > a, ul.main-menu > li > span {
-        color:#'.$preferences['menuTextColor']." !important;
-    }\n";
-if ($preferences != null && $preferences['pageHeaderTextColor'])
-    $themeCss .= 
-    '.page-title .x2-minimal-button,
-    div.page-title, div.page-title h2 {
-        color:#'.$preferences['pageHeaderTextColor']." !important;
-    }\n";
-// calculate a slight gradient for menu bar color
-if ($preferences != null && $preferences['menuBgColor']) {
-    $themeCss .= '#header {
-        background: #' . $preferences['menuBgColor'] . ' !important;
-    }';
-}
-// calculate a slight gradient for menu bar color
-if ($preferences != null && $preferences['pageHeaderBgColor']) {
-    /*$rgb = X2Color::hex2rgb($preferences['pageHeaderBgColor']);*/
-    /*$darkerBgColor = '#'.X2Color::rgb2hex(
-        floor($rgb[0]*0.85),floor($rgb[1]*0.85),floor($rgb[2]*0.85));*/
-    /*$themeCss .= X2Color::gradientCss('#'.$preferences['pageHeaderBgColor'],$darkerBgColor).'}';*/
-    $themeCss .= '
-    div.page-title {
-        background-color: #'.$preferences['pageHeaderBgColor'].' !important;
-    }
-    ';
-}
-
-if ($preferences != null && $preferences['activityFeedWidgetBgColor']){
-    $themeCss .= '#feed-box {
-        background-color: #'.$preferences['activityFeedWidgetBgColor'].';
-     }';
-}
-if ($preferences != null && $preferences['gridViewRowColorEven']){
-    $themeCss .= 'div.grid-view table.items tr.even {
-        background: #'.$preferences['gridViewRowColorEven'].' !important;
-     }';
-}
-if ($preferences != null && $preferences['gridViewRowColorOdd']){
-    $themeCss .= 'div.x2-gridview tr.odd {
-        background: #'.$preferences['gridViewRowColorOdd'].' !important;
-     }';
-}
+/*********************************
+* Generate that the theme!
+********************************/
+ThemeGenerator::render();
 
 /* Retrieve flash messages and calculate the appropriate styles for flash messages if applicable */
 $allFlashes = Yii::app()->user->getFlashes();
@@ -172,9 +120,10 @@ foreach($allFlashes as $key => $message){
     }
 }
 
+
 if($n_flash = count($adminFlashes)) {
     $flashTotalHeight = 17; // See layout.css for details
-    $themeCss .= '
+    $themeCss = '
     div#header {
         position:fixed;
         top: '.($flashTotalHeight*$n_flash).'px;
@@ -195,10 +144,11 @@ if($n_flash = count($adminFlashes)) {
                 top: ".(string)($index*$flashTotalHeight)."px;
         }";
     }
+    
+    $cs->registerCss('applyTheme', $themeCss, 'screen', CClientScript::POS_HEAD);
 }
 
-$themeCss .= $theme2Css;
-$cs->registerCss('applyTheme', $themeCss, 'screen', CClientScript::POS_HEAD);
+// $themeCss .= $theme2Css;
 //$cs->registerCss('applyTheme2', $theme2Css, 'screen', CClientScript::POS_HEAD);
 
 mb_internal_encoding('UTF-8');
@@ -234,8 +184,7 @@ foreach($standardMenuItems as $key => $value){
             'url' => array("/profile/activity"),
             'active' => (strtolower($module) == strtolower($key)) ? true : null);
         continue;
-    }
-
+    }  
 
     $file = Yii::app()->file->set('protected/controllers/'.ucfirst($key).'Controller.php');
     $action = ucfirst($key).ucfirst($defaultAction);
@@ -252,12 +201,15 @@ foreach($standardMenuItems as $key => $value){
         if(!is_null($this->getModule()))
             $module = $this->getModule()->id;
         if($permission)
+            $active = (strtolower($module) == strtolower($key) && 
+                (!isset($_GET['static']) || $_GET['static'] != 'true')) ? true : null;
+             
             $menuItems[$key] = array(
                 'label' => Yii::t('app', $value), 
                 'url' => array("/$key/$defaultAction"),
                 'itemOptions' => array ('class' => 'top-bar-module-link'),
-                'active' => (strtolower($module) == strtolower($key) && 
-                    (!isset($_GET['static']) || $_GET['static'] != 'true')) ? true : null);
+                'active' => $active,
+            );
     } else{
         $page = Docs::model()->findByAttributes(
             array('name' => ucfirst(mb_ereg_replace('&#58;', ':', $value))));
@@ -357,7 +309,9 @@ $userMenu = array(
         ),
     ),
     array(
-        'label' => Yii::t('app', 'Users'), 
+        'label' => Yii::t('app', '{users}', array(
+            '{users}' => Modules::displayName(true, "Users"),
+        )), 
         'url' => array('/users/users/admin'),
         'visible' => $isAdmin,
         'itemOptions' => array (
@@ -366,7 +320,9 @@ $userMenu = array(
         ),
     ),
     array(
-        'label' => Yii::t('app', 'Users'), 
+        'label' => Yii::t('app', '{users}', array(
+            '{users}' => Modules::displayName(true, "Users"),
+        )), 
         'url' => array('/profile/profiles'),
         'visible' => !$isAdmin,
         'itemOptions' => array (
@@ -425,9 +381,12 @@ if(!$isGuest){
                     '<span>'.$notifCount.'</span>', '#', array('id' => 'main-menu-notif', 'style' => 'z-index:999;')),
             'itemOptions' => array('class' => 'special')),
         array('label' => CHtml::link(
-                    '<span>&nbsp;</span>', '#', array('class' => 'x2-button', 'id' => 'fullscreen-button')),
+                    '<i class="fa fa-lg fa-toggle-right"></i>', '#', array(
+                        'class' => 'x2-button', 
+                        'id' => 'fullscreen-button',
+                        'title'=> Yii::t('app', 'toggle widgets') )),
             'itemOptions' => array('class' => 'search-bar special')),
-        array('label' => CHtml::link('<div class="widget-icon"></div>', '#', array(
+        array('label' => CHtml::link('<div class="widget-icon"><i class="fa fa-lg fa-cog"></i></div>', '#', array(
                 'id' => 'widget-button',
                 'class' => 'x2-button',
                 'title' => 'hidden widgets'
@@ -447,7 +406,8 @@ if(!$isGuest){
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="<?php echo Yii::app()->language; ?>" lang="<?php echo Yii::app()->language; ?>">
 
 <head>
-<meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
 <link rel="icon" href="<?php echo Yii::app()->getFavIconUrl (); ?>" type="image/x-icon">
 <link rel="shortcut-icon" href="<?php echo Yii::app()->getFavIconUrl (); ?>" type="image/x-icon">
 <!--[if lt IE 8]>
@@ -499,6 +459,12 @@ if (RESPONSIVE_LAYOUT) {
     if($fullscreen) echo ' no-widgets'; 
     if(!RESPONSIVE_LAYOUT) echo ' disable-mobile-layout'; 
 ?>">
+
+<?php
+if (YII_DEBUG && YII_UNIT_TESTING) {
+    echo "<div id='qunit'></div>";
+}
+?>
 
 <div id="page-container">
 <div id="page">

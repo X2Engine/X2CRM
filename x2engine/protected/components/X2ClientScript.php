@@ -56,16 +56,34 @@ class X2ClientScript extends NLSClientScript {
 
     public function getDefaultPackages () {
         if (!isset ($this->_defaultPackages)) {
-            $this->_defaultPackages = array (
-                'auxlib' => array(
-                    'baseUrl' => Yii::app()->request->baseUrl,
-                    'js' => array(
-                        'js/auxlib.js',
-                    ),
-                ),
+            $this->_defaultPackages = array_merge (
+                $this->getIEDefaultPackages(), 
+                array(
+                    'auxlib' => array(
+                        'baseUrl' => Yii::app()->request->baseUrl,
+                        'js' => array(
+                            'js/auxlib.js'
+                        )
+                    )
+                )
             );
         }
         return $this->_defaultPackages;
+    }
+
+    public function getIEDefaultPackages() {
+        if (AuxLib::getIEVer() >= 9)  {
+            return array();
+        }
+        return array(
+            'aight' => array(
+                'baseUrl' => Yii::app()->request->baseUrl,
+                'js' => array(
+                    'js/lib/aight/aight.js',
+                ),
+                'depends' => array('jquery'),
+            ),
+        );     
     }
 
     /**
@@ -153,15 +171,11 @@ class X2ClientScript extends NLSClientScript {
     }
 
     /**
-     * Registers a set of packages at the specified position
+     * Registers a set of packages
      * @param Array $packages 
-     * @param Integer $position 
      * @param bool $useDefaultPackages 
      */
-    public function registerPackages ($packages, $position=null, $useDefaultPackages=false) {
-        if ($position === null) {
-            $position = CClientScript::POS_END;
-        }
+    public function registerPackages ($packages, $useDefaultPackages=false) {
         $oldPackages = Yii::app()->clientScript->packages;
         if ($useDefaultPackages) {
             Yii::app()->clientScript->packages = array_merge (
@@ -169,12 +183,9 @@ class X2ClientScript extends NLSClientScript {
         } else {
             Yii::app()->clientScript->packages = $packages;
         }
-        $oldCoreScriptPosition = Yii::app()->clientScript->coreScriptPosition;
-        Yii::app()->clientScript->coreScriptPosition = $position;
         foreach (array_keys ($packages) as $packageName) {
             Yii::app()->clientScript->registerPackage ($packageName);
         }
-        Yii::app()->clientScript->coreScriptPosition = $oldCoreScriptPosition;
         Yii::app()->clientScript->packages = $oldPackages;
     }
 
@@ -286,6 +297,76 @@ class X2ClientScript extends NLSClientScript {
 					$jsFiles[$url]=$value;
 			}
 			$this->scriptFiles[$this->coreScriptPosition]=$jsFiles;
+		}
+	}
+
+	/**
+	 * Inserts the scripts in the head section.
+	 * @param string $output the output to be inserted with scripts.
+     * This method is Copyright (c) 2008-2014 by Yii Software LLC
+     * http://www.yiiframework.com/license/ 
+	 */
+	public function renderHead(&$output)
+	{
+        parent::renderHead ($output);
+		$html='';
+		foreach($this->metaTags as $meta)
+			$html.=CHtml::metaTag($meta['content'],null,null,$meta)."\n";
+		foreach($this->linkTags as $link)
+			$html.=CHtml::linkTag(null,null,null,null,$link)."\n";
+		foreach($this->cssFiles as $url=>$media)
+			$html.=CHtml::cssFile($url,$media)."\n";
+        /* x2modstart */ 
+        if (Auxlib::getIEVer () < 10) { 
+            // merge inline css
+            $mergedCss = array ();
+            $mediaType = null;
+            foreach ($this->css as $css) {
+                if (preg_match ('/@import/', $css[0])) {
+                    $html .= CHtml::css($css[0],$css[1])."\n";
+                    continue;
+                }
+                if ($mediaType === null) { 
+                    $mediaType = $css[1];
+                }
+                if ($css[1] === $mediaType) {
+                    if (!isset ($mergedCss[$mediaType])) {
+                        $mergedCss[$mediaType] = '';
+                    }
+                    $mergedCss[$mediaType] .= "\n".$css[0];
+                }
+            }
+            foreach ($mergedCss as $type => $css) {
+                $html.=CHtml::css($css,$type)."\n";
+            }
+        } else {
+            foreach($this->css as $css)
+                $html.=CHtml::css($css[0],$css[1])."\n";
+        }
+        /* x2modend */ 
+		if($this->enableJavaScript)
+		{
+			if(isset($this->scriptFiles[self::POS_HEAD]))
+			{
+				foreach($this->scriptFiles[self::POS_HEAD] as $scriptFileValueUrl=>$scriptFileValue)
+				{
+					if(is_array($scriptFileValue))
+						$html.=CHtml::scriptFile($scriptFileValueUrl,$scriptFileValue)."\n";
+					else
+						$html.=CHtml::scriptFile($scriptFileValueUrl)."\n";
+				}
+			}
+			if(isset($this->scripts[self::POS_HEAD]))
+				$html.=$this->renderScriptBatch($this->scripts[self::POS_HEAD]);
+		}
+		if($html!=='')
+		{
+			$count=0;
+			$output=preg_replace('/(<title\b[^>]*>|<\\/head\s*>)/is','<###head###>$1',$output,1,$count);
+			if($count)
+				$output=str_replace('<###head###>',$html,$output);
+			else
+				$output=$html.$output;
 		}
 	}
 
@@ -405,6 +486,9 @@ class X2ClientScript extends NLSClientScript {
             '../../../js/qtip/jquery.qtip.min.css',
             '../../../js/checklistDropdown/jquery.multiselect.css',
             'rating/jquery.rating.css',
+            'fontAwesome/css/font-awesome.css',
+            'bootstrap/bootstrap.css',
+            'css-loaders/load8.css',
         );
 
         $responsiveCssFiles = array (
@@ -427,6 +511,7 @@ class X2ClientScript extends NLSClientScript {
      * Instantiates the Flashes utility class 
      */
     public function registerX2Flashes () {
+        $this->registerScriptFile($this->baseUrl.'/js/TopFlashes.js', CClientScript::POS_END);
         $this->registerScriptFile($this->baseUrl.'/js/X2Flashes.js', CClientScript::POS_END);
         $this->registerScript ('registerX2Flashes', "
         (function () {
@@ -439,8 +524,12 @@ class X2ClientScript extends NLSClientScript {
                 closeWidgetSrc: '".Yii::app()->getTheme()->getBaseUrl().
                     '/images/icons/Close_Widget.png'."',
                 translations: ".CJSON::encode (array (
-                    'noticeFlashList' => Yii::t('app', 'Action exectuted with'),
-                    'errorFlashList' => Yii::t('app', 'Action exectuted with'),
+                    'noticeFlashList' => Yii::t('app', '{Action} exectuted with', array(
+                        '{Action}'=>Modules::displayName(false, 'Actions')
+                    )),
+                    'errorFlashList' => Yii::t('app', '{Action} exectuted with', array(
+                        '{Action}'=>Modules::displayName(false, 'Actions')
+                    )),
                     'noticeItemName' => Yii::t('app', 'warnings'),
                     'errorItemName' => Yii::t('app', 'errors'),
                     'successItemName' => Yii::t('app', 'Close'),
@@ -475,6 +564,35 @@ class X2ClientScript extends NLSClientScript {
         ", CClientScript::POS_END);
     }
 
+    private function registerX2QuickCreate () {
+        $this->registerScriptFile($this->baseUrl.'/js/X2QuickCreate.js');
+        $modelsWhichSupportQuickCreate = 
+            QuickCreateRelationshipBehavior::getModelsWhichSupportQuickCreate (true);
+        $createUrls = QuickCreateRelationshipBehavior::getCreateUrlsForModels (
+            $modelsWhichSupportQuickCreate);
+        $dialogTitles = QuickCreateRelationshipBehavior::getDialogTitlesForModels (
+            $modelsWhichSupportQuickCreate);
+        $this->registerScript('registerQuickCreate',"
+            x2.quickCreate = new x2.QuickCreate ({
+                createRecordUrls: ".CJSON::encode ($createUrls).",
+                dialogTitles: ".CJSON::encode ($dialogTitles).",
+                translations: ".CJSON::encode (array (
+                ))."
+            });
+        ", CClientScript::POS_END);
+    }
+
+    private function registerAttachments () {
+        $this->registerScriptFile($this->baseUrl.'/js/Attachments.js');
+        $this->registerScript('X2ClientScript.registerAttachments',"
+            x2.attachments = new x2.Attachments ({
+                translations: ".CJSON::encode (array (
+                    'filetypeError' => Yii::t('app', '"{X}" is not an allowed filetype.'),
+                ))."
+            });
+        ", CClientScript::POS_END);
+    }
+
     /**
      * Passes locale-specific date format strings to JS. 
      */
@@ -496,19 +614,20 @@ class X2ClientScript extends NLSClientScript {
             defined($layoutConst) or define($layoutConst,false);
         }
 
-        $cs = $this;
         $fullscreen = $this->fullscreen;
         $profile = $this->profile;
-        
         $baseUrl = $this->baseUrl;
         $themeUrl = $this->themeUrl;
         $scriptUrl = $this->scriptUrl;
         $admin = $this->admin;
         $isGuest = $this->isGuest;
 
+
         // jQuery and jQuery UI libraries
-        $cs->registerCoreScript('jquery')
+        $this->registerCoreScript('jquery')
            ->registerCoreScript('jquery.ui');
+
+       $this->registerPackages($this->getDefaultPackages());
 
         $cldScript = $this->getCurrencyConfigScript ();
 
@@ -517,70 +636,81 @@ class X2ClientScript extends NLSClientScript {
             "'".addslashes(Yii::app()->createUrl('/profile/saveMiscLayoutSetting'))."'"
                 ), 'passAuxLibVars'
         );
+        
+        $this->registerX2ModelMappingsScript ();
+        $this->registerX2Forms ();
+        $this->registerX2QuickCreate ();
+        $this->registerX2Flashes ();
 
-        $cs->registerX2ModelMappingsScript ();
-        $cs->registerX2Forms ();
-        $cs->registerDateFormats ();
+        $this->registerAttachments ();
+        $this->registerDateFormats ();
+        if (YII_DEBUG) $this->registerScriptFile($baseUrl.'/js/Timer.js');
 
         // custom scripts
-        $cs->registerScriptFile($baseUrl.'/js/json2.js')
-                ->registerScriptFile($baseUrl.'/js/webtoolkit.sha256.js')
-                ->registerScriptFile($baseUrl.'/js/main.js', CCLientScript::POS_HEAD)
-                ->registerScriptFile($baseUrl.'/js/auxlib.js', CClientScript::POS_HEAD)
-                ->registerScriptFile($baseUrl.'/js/IframeFixOverlay.js', CClientScript::POS_HEAD)
-                ->registerScriptFile($baseUrl.'/js/LayoutManager.js')
-                //->registerScriptFile($baseUrl.'/js/X2Select.js')
-                ->registerScriptFile($baseUrl.'/js/media.js')
-                ->registerScript('formatCurrency-locales', $cldScript, CCLientScript::POS_HEAD)
-                ->registerScriptFile($baseUrl.'/js/modernizr.custom.66175.js')
-                ->registerScriptFile($baseUrl.'/js/widgets.js')
-                ->registerScriptFile($baseUrl.'/js/qtip/jquery.qtip.min.js')
-                ->registerScriptFile($baseUrl.'/js/ActionFrames.js')
-                ->registerScriptFile($baseUrl.'/js/bgrins-spectrum-2c2010c/spectrum.js')
-                ->registerScriptFile($baseUrl.'/js/ColorPicker.js', CCLientScript::POS_END)
-                ->registerScriptFile($baseUrl.'/js/PopupDropdownMenu.js', CCLientScript::POS_END)
-                ->registerScriptFile($baseUrl.'/js/checklistDropdown/jquery.multiselect.js');
+        $this->registerScriptFile($baseUrl.'/js/json2.js')
+            ->registerScriptFile($baseUrl.'/js/webtoolkit.sha256.js')
+            ->registerScriptFile($baseUrl.'/js/main.js', CCLientScript::POS_HEAD)
+            ->registerScriptFile($baseUrl.'/js/auxlib.js', CClientScript::POS_HEAD)
+            ->registerScriptFile($baseUrl.'/js/IframeFixOverlay.js', CClientScript::POS_HEAD)
+            ->registerScriptFile($baseUrl.'/js/LayoutManager.js')
+            //->registerScriptFile($baseUrl.'/js/X2Select.js')
+            ->registerScriptFile($baseUrl.'/js/media.js')
+            ->registerScript('formatCurrency-locales', $cldScript, CCLientScript::POS_HEAD)
+            ->registerScriptFile($baseUrl.'/js/modernizr.custom.66175.js')
+            ->registerScriptFile($baseUrl.'/js/widgets.js')
+            ->registerScriptFile($baseUrl.'/js/qtip/jquery.qtip.min.js')
+            ->registerScriptFile($baseUrl.'/js/ActionFrames.js')
+            ->registerScriptFile($baseUrl.'/js/bgrins-spectrum-2c2010c/spectrum.js')
+            ->registerScriptFile($baseUrl.'/js/ColorPicker.js', CCLientScript::POS_END)
+            ->registerScriptFile($baseUrl.'/js/PopupDropdownMenu.js', CCLientScript::POS_END)
+            ->registerScriptFile($baseUrl.'/js/checklistDropdown/jquery.multiselect.js');
+
+        if (YII_DEBUG && YII_UNIT_TESTING) {
+            $this->registerScriptFile (
+                $baseUrl.'/js/qunit/qunit-1.15.0.js', CClientScript::POS_HEAD);
+            $this->registerCssFile ($baseUrl.'/js/qunit/qunit-1.15.0.css');
+        }
 
         if(IS_IPAD){
-            $cs->registerScriptFile($baseUrl.'/js/jquery.mobile.custom.js');
+            $this->registerScriptFile($baseUrl.'/js/jquery.mobile.custom.js');
         }
         $this->registerInitScript ();
 
         if(Yii::app()->session['translate'])
-            $cs->registerScriptFile($baseUrl.'/js/translator.js');
+            $this->registerScriptFile($baseUrl.'/js/translator.js');
 
-        $cs->registerScriptFile($baseUrl.'/js/backgroundFade.js');
-        $cs->registerScript('datepickerLanguage', "
+        $this->registerScriptFile($baseUrl.'/js/backgroundFade.js');
+        $this->registerScript('datepickerLanguage', "
             $.datepicker.setDefaults($.datepicker.regional['']);
         ");
         $mmPath = Yii::getPathOfAlias('application.extensions.moneymask.assets');
         $aMmPath = Yii::app()->getAssetManager()->publish($mmPath);
-        $cs->registerScriptFile("$aMmPath/jquery.maskMoney.js");
-        $cs->registerCssFile($baseUrl.'/css/normalize.css', 'all')
+        $this->registerScriptFile("$aMmPath/jquery.maskMoney.js");
+        $this->registerCssFile($baseUrl.'/css/normalize.css', 'all')
             ->registerCssFile($themeUrl.'/css/print.css', 'print')
             ->registerCoreScript('cookie');
         $this->registerCombinedCss ();
         if(!RESPONSIVE_LAYOUT && IS_ANDROID) {
-            $cs->registerCssFile(
+            $this->registerCssFile(
                 $themeUrl.'/css/androidLayout.css', 'screen, projection');
         } elseif (IS_IPAD) {
-            $cs->registerCssFile($themeUrl.'/css/ipadLayout.css', 'screen, projection');
+            $this->registerCssFile($themeUrl.'/css/ipadLayout.css', 'screen, projection');
         }
 
-        $cs->registerScript('fullscreenToggle', '
+        $this->registerScript('fullscreenToggle', '
             window.enableFullWidth = '.(!Yii::app()->user->isGuest ? 
                 ($profile->enableFullWidth ? 'true' : 'false') : 'true').';
             window.fullscreen = '.($fullscreen ? 'true' : 'false').';
         ', CClientScript::POS_HEAD);
 
         if(is_object(Yii::app()->controller->module)){
-            $cs->registerScript('saveCurrModule', "
+            $this->registerScript('saveCurrModule', "
                 x2.currModule = '".Yii::app()->controller->module->name."';
             ", CClientScript::POS_HEAD);
         }
 
         if(!$isGuest){
-            $cs->registerScript('notificationsParams', "
+            $this->registerScript('notificationsParams', "
                 x2.notifications = new x2.Notifs ({
                     disablePopup: ".($profile->disableNotifPopup ? 'true' : 'false').",
                     translations: {
@@ -589,15 +719,15 @@ class X2ClientScript extends NLSClientScript {
                     }
                 });
             ", CClientScript::POS_READY);
-            $cs->registerScriptFile($baseUrl.'/js/jstorage.min.js')
+            $this->registerScriptFile($baseUrl.'/js/jstorage.min.js')
                ->registerScriptFile(
                 $baseUrl.'/js/notifications.js', CClientScript::POS_BEGIN);
         }
 
         if(!$isGuest && ($profile->language == 'he' || $profile->language == 'fa'))
-            $cs->registerCss('rtl-language', 'body{text-align:right;}');
+            $this->registerCss('rtl-language', 'body{text-align:right;}');
 
-        $cs->registerCoreScript('rating');
+        $this->registerCoreScript('rating');
     }
 
     public function getAdmin() {
@@ -688,6 +818,5 @@ class X2ClientScript extends NLSClientScript {
             }) ();
         ", CClientScript::POS_HEAD);
     }
-
 
 }

@@ -475,4 +475,113 @@ class DocsController extends x2base {
             'ImportExportBehavior' => array('class' => 'ImportExportBehavior'),
         ));
     }
+
+    /**
+     * Create a menu for Docs
+     * @param array Menu options to remove
+     * @param X2Model Model object passed to the view
+     * @param array Additional menu parameters
+     */
+    public function insertMenu($selectOptions = array(), $model = null, $menuParams = null) {
+        $Docs = Modules::displayName();
+        $Doc = Modules::displayName(false);
+        $user = Yii::app()->user->name;
+        $modelId = isset($model) ? $model->id : 0;
+
+        /**
+         * To show all options:
+         * $menuOptions = array(
+         *     'index', 'create', 'createEmail', 'createQuote', 'view', 'edit', 'delete',
+         *     'permissions', 'exportToHtml', 'import', 'export',
+         * );
+         */
+
+        $menuItems = array(
+            array(
+                'name'=>'index',
+                'label'=>Yii::t('docs','List {module}', array(
+                    '{module}'=>$Docs,
+                )),
+                'url'=>array('index')
+            ),
+            array(
+                'name'=>'create',
+                'label'=>Yii::t('docs','Create {module}', array(
+                    '{module}' => $Doc,
+                )),
+                'url'=>array('create')
+            ),
+            array(
+                'name'=>'createEmail',
+                'label'=>Yii::t('docs','Create Email'),
+                'url'=>array('createEmail')
+            ),
+            array(
+                'name'=>'createQuote',
+                'label'=>Yii::t('docs','Create {quote}', array(
+                    '{quote}' => Modules::displayName(false, "Quotes"),
+                )),
+                'url'=>array('createQuote')
+            ),
+            array(
+                'name'=>'view',
+                'label'=>Yii::t('docs','View'),
+                'url'=>array('view','id'=>$modelId)
+            ),
+            array(
+                'name'=>'edit',
+                'label' => Yii::t('docs', 'Edit {doc}', array(
+                    '{doc}' => $Doc,
+                )),
+                'url' => array('update', 'id' => $modelId)
+            ),
+            array(
+                'name'=>'delete',
+                'label' => Yii::t('docs', 'Delete {doc}', array(
+                    '{doc}' => $Doc,
+                )),
+                'url' => 'javascript:void(0);',
+                'linkOptions' => array(
+                    'submit' => array('delete', 'id' => $modelId),
+                    'confirm' => Yii::t('docs', 'Are you sure you want to delete this item?')
+                ),
+            ),
+            array(
+                'name'=>'permissions',
+                'label' => Yii::t('docs', 'Edit {doc} Permissions', array(
+                    '{doc}' => $Doc,
+                )),
+                'url' => array('changePermissions', 'id' => $modelId),
+                'visible' => isset($model) && (Yii::app()->params->isAdmin ||
+                            $user == $model->createdBy ||
+                            array_search($user, explode(", ",$model->editPermissions)) ||
+                            $user == $model->editPermissions)
+            ),
+            array(
+                'name'=>'exportToHtml',
+                'label' => Yii::t('docs', 'Export {doc}', array(
+                    '{doc}' => $Doc,
+                )),
+                'url' => array('exportToHtml', 'id' => $modelId)
+            ),
+            array(
+                'name'=>'import',
+                'label'=>Yii::t('docs', 'Import {module}', array(
+                    '{module}' => $Docs,
+                )),
+                'url'=>array('admin/importModels', 'model'=>'Docs'),
+            ),
+            array(
+                'name'=>'export',
+                'label'=>Yii::t('docs', 'Export {module}', array(
+                    '{module}' => $Docs,
+                )),
+                'url'=>array('admin/exportModels', 'model'=>'Docs'),
+            ),
+        );
+
+        $this->prepareMenu($menuItems, $selectOptions);
+        $this->actionMenu = $this->formatMenu($menuItems, $menuParams);
+    }
+
 }

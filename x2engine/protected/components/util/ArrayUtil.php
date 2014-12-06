@@ -187,7 +187,7 @@ class ArrayUtil {
      *  the array is copied before sorting
      * @return the sorted array
      */
-    public function sort (array &$array, $sideEffects=false) {
+    public static function sort (array &$array, $sideEffects=false) {
         if ($sideEffects) {
             sort ($array);
             return $array;
@@ -196,6 +196,45 @@ class ArrayUtil {
             sort ($newArray);
             return $newArray;
         }
+    }
+
+    /**
+     * Side effect free version of array_pop
+     */
+    public static function pop (array $array) {
+        $newArray = $array;
+        return array_pop ($newArray);
+    }
+
+    public static function transpose ($array) {
+        $newArray = array ();
+        $arraySize = count ($array);
+        for ($i = 0; $i < $arraySize; $i++) {
+            $val = $array[$i];
+            if (is_array ($val)) {
+                $valSize = count ($val);
+                $j = 0; 
+                foreach ($val as $key => $cellVal) {
+                    $newArray[$j][] = $cellVal;
+                    $j++;
+                }
+            } else {
+                $newArray[0][] = $val;
+            }
+        }
+        return $newArray;
+    }
+
+    /**
+     * Like array_search but returns numeric index instead of key 
+     */
+    public static function numericIndexOf ($needle, $haystack, $strict=false) {
+        $i = 0;
+        foreach ($haystack as $elem) {
+            if (!$strict && $elem == $needle || $strict && $elem === $needle) return $i;
+            $i++;
+        }
+        return false;
     }
 
 }

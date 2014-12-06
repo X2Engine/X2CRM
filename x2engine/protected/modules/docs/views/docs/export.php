@@ -37,24 +37,22 @@
 $pieces = explode(", ",$model->editPermissions);
 $user = Yii::app()->user->getName();
 
-$this->actionMenu=array(
-	array('label'=>Yii::t('docs','List Docs'), 'url'=>array('index')),
-	array('label'=>Yii::t('docs','Create Doc'), 'url'=>array('create')),
-	array('label'=>Yii::t('docs','Create Email'), 'url'=>array('createEmail')),
-	array('label'=>Yii::t('docs','Create Quote'), 'url'=>array('createQuote')),
-	array('label'=>Yii::t('docs','View'), 'url'=>array('view','id'=>$model->id)),
+$action = $this->action->id;
+$menuOptions = array(
+    'index', 'create', 'createEmail', 'createQuote', 'view', 'exportToHtml', 'permissions',
 );
-$this->actionMenu=$this->formatMenu($this->actionMenu,array());
-if($user=='admin' || $user==$model->createdBy)
-	$this->actionMenu[] = array('label'=>Yii::t('docs','Edit Doc'), 'url'=>array('update', 'id'=>$model->id));
-if($user=='admin')
-	$this->actionMenu[] = array('label'=>Yii::t('docs','Delete Doc'), 'url'=>'#', 'linkOptions'=>array('submit'=>array('delete','id'=>$model->id),'confirm'=>'Are you sure you want to delete this item?'));
-if(array_search($user,$pieces)!=false || $user==$model->editPermissions || $user=='admin' || $user==$model->createdBy)
-	$this->actionMenu[]=array('label'=>Yii::t('docs','Edit Doc Permissions'), 'url'=>array('changePermissions', 'id'=>$model->id));
-	
-$this->actionMenu[] = array('label'=>Yii::t('docs','Export Doc'));
+if ($model->checkEditPermission() && $action != 'update')
+    $menuOptions[] = 'edit';
+if (Yii::app()->user->checkAccess('DocsDelete', array('createdBy' => $model->createdBy)))
+    $menuOptions[] = 'delete';
+$this->insertMenu($menuOptions, $model);
+
 ?>
-<div class="page-title icon docs"><h2><?php echo Yii::t('docs','Export Doc');?></h2></div>
+<div class="page-title icon docs"><h2>
+    <?php echo Yii::t('docs','Export {module}', array(
+        '{module}' => Modules::displayName(false),
+    ));?>
+</h2></div>
 <div class="form"><div class="span-10">
 <?php echo Yii::t('docs','Please right click the link below and select "Save As" to download the document!  Left clicking opens the document in a printer-friendly mode.');?><br /><br />
 <?php echo $link; ?>

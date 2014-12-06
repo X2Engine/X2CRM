@@ -36,6 +36,50 @@
 
 class MassAddToList extends MassAction {
 
+    protected $_label;
+
+    /**
+     * @return string label to display in the dropdown list
+     */
+    public function getLabel () {
+        if (!isset ($this->_label)) {
+            $this->_label = Yii::t('app', 'Add selected to list');
+        }
+        return $this->_label;
+    }
+
+    /**
+     * Renders the mass action dialog, if applicable
+     * @param string $gridId id of grid view
+     */
+    public function renderDialog ($gridId, $modelName) {
+        $listNames = X2List::getAllStaticListNames (Yii::app()->controller);
+        echo "
+            <div class='mass-action-dialog' id='".$this->getDialogId ($gridId)."' 
+             style='display: none;'>
+                <span>".
+                    Yii::t('app', 'Select a list to which the selected records will be added.')."
+                </span>".
+                (empty($listNames)
+                    ? '<br><br>'.Yii::t('app','There are no static lists to which '
+                            . 'contacts can be added.').' '.
+                        CHtml::link(Yii::t('contacts','Create a List'),
+                                    array('/contacts/contacts/createList'))
+                    : CHtml::dropDownList ('addToListTarget', null, $listNames))."
+            </div>";
+    }
+
+    public function getPackages () {
+        return array_merge (parent::getPackages (), array (
+            'X2AddToList' => array(
+                'baseUrl' => Yii::app()->request->baseUrl,
+                'js' => array(
+                    'js/X2GridView/MassAddToList.js',
+                ),
+                'depends' => array ('X2MassAction'),
+            ),
+        ));
+    }
     public function execute (array $gvSelection) {
         if (Yii::app()->controller->modelClass !== 'Contacts' || !isset ($_POST['listId'])) {
             throw new CHttpException (400, Yii::t('app', 'Bad Request'));

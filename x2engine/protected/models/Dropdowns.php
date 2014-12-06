@@ -155,8 +155,8 @@ class Dropdowns extends CActiveRecord {
             if(!is_array($index))
                 $index = array();
             return implode(', ', array_map(function($o)use($arr){
-                                        return isset($arr[$o]) ? $arr[$o] : $o;
-                                    }, $index));
+                return isset($arr[$o]) ? $arr[$o] : $o;
+            }, $index));
         }
         if(isset($arr['options'])){
             $arr = $arr['options'];

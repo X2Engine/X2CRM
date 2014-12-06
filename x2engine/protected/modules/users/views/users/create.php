@@ -34,14 +34,17 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 
-$this->actionMenu = $this->formatMenu(array(
-	array('label'=>Yii::t('profile','Social Feed'),'url'=>array('/profile/activity')),
-	array('label'=>Yii::t('users','Manage Users'), 'url'=>array('admin')),
-	array('label'=>Yii::t('users','Create User')),
-	array('label'=>Yii::t('users','Invite Users'), 'url'=>array('inviteUsers')),
-));
+$menuOptions = array(
+    'feed', 'admin', 'create', 'invite',
+);
+$this->insertMenu($menuOptions);
+
 ?>
-<div class="page-title icon users"><h2><?php echo Yii::t('users','Create User'); ?></h2></div>
+<div class="page-title icon users"><h2>
+    <?php echo Yii::t('users','Create {user}', array(
+        '{user}' => Modules::displayName(false),
+    )); ?>
+</h2></div>
 <?php 
 echo $this->renderPartial(
     '_form', array(

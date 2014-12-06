@@ -41,11 +41,13 @@ Yii::app()->clientScript->registerCss('feedFiltersCSs',"
 
 
 #feed-filters-button {
+    color: inherit;
+    text-decoration: none;
     opacity: 0.5;
-    width: 42px;
+    margin-right: 9px;
+    margin-top: 3px;
 }
 #feed-filters-button > span {
-    height: 29px;
     display: block;
 }
 #feed-filters-button:hover {

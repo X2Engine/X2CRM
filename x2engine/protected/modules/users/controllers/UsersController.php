@@ -467,4 +467,86 @@ Please click on the link below to create an account at X2Engine!
             //'viewId'=>$viewId
         ));
     }
+
+    /**
+     * Create a menu for Users
+     * @param array Menu options to remove
+     * @param X2Model Model object passed to the view
+     * @param array Additional menu parameters
+     */
+    public function insertMenu($selectOptions = array(), $model = null, $menuParams = null) {
+        $Users = Modules::displayName();
+        $User = Modules::displayName(false);
+        $modelId = isset($model) ? $model->id : 0;
+
+        /**
+         * To show all options:
+         * $menuOptions = array(
+         *     'feed', 'admin', 'create', 'invite', 'view', 'profile', 'edit', 'delete',
+         * );
+         */
+
+        $menuItems = array(
+            array(
+                'name'=>'feed',
+                'label'=>Yii::t('profile','Social Feed'),
+                'url'=>array('/profile/index')
+            ),
+            array(
+                'name'=>'admin',
+                'label' => Yii::t('users', 'Manage {users}', array(
+                    '{users}' => $Users,
+                )),
+                'url'=>array('admin')
+            ),
+            array(
+                'name'=>'create',
+                'label' => Yii::t('users', 'Create {user}', array(
+                    '{user}' => $User,
+                )),
+                'url' => array('create')
+            ),
+            array(
+                'name'=>'invite',
+                'label' => Yii::t('users', 'Invite {users}', array(
+                    '{users}' => $Users,
+                )),
+                'url' => array('inviteUsers')
+            ),
+            array(
+                'name'=>'view',
+                'label'=>Yii::t('users','View {user}', array(
+                    '{user}' => $User,
+                )),
+                'url'=>array('view', 'id'=>$modelId)
+            ),
+            array(
+                'name'=>'profile',
+                'label'=>Yii::t('profile','View Profile'),
+                'url'=>array('/profile/view','id'=>$modelId)
+            ),
+            array(
+                'name'=>'edit',
+                'label'=>Yii::t('users','Update {user}', array(
+                    '{user}' => $User,
+                )),
+                'url'=>array('update', 'id'=>$modelId)
+            ),
+            array(
+                'name'=>'delete',
+                'label'=>Yii::t('users','Delete {user}', array(
+                    '{user}' => $User,
+                )),
+                'url'=>'#',
+                'linkOptions'=>array(
+                    'submit'=>array('delete','id'=>$modelId),
+                    'confirm'=>Yii::t('app','Are you sure you want to delete this item?'))
+            ),
+        );
+
+        $this->prepareMenu($menuItems, $selectOptions);
+        $this->actionMenu = $this->formatMenu($menuItems, $menuParams);
+    }
+
+
 }

@@ -43,6 +43,12 @@ Yii::import('application.models.X2Model');
 class Actions extends X2Model {
 
     const COLORS_DROPDOWN_ID = 123;
+
+    /**
+     * Setting associationType to this implies that the action is associated via the 
+     * x2_action_to_record table
+     */
+    const ASSOCIATION_TYPE_MULTI = '__multiple__';
     
     public $skipActionTimers = false;
 
@@ -59,10 +65,14 @@ class Actions extends X2Model {
 
     private $metaDataTemp = array (
         'eventSubtype' => null,
-        'eventStatus' => null
+        'eventStatus' => null,
+        
     );
 
     private static $_priorityLabels;
+
+    /* static variable to allow calling findAll without actionText */ 
+    private static $withActionText = true;
 
     /**
      * Returns the static model of the specified AR class.
@@ -126,6 +136,33 @@ class Actions extends X2Model {
     }
 
     /**
+     * Associate this action with a record (using join table)
+     * @param X2Model $model 
+     * @return mixed false if model couldn't be saved, -1 if association already exists, true
+     *  if successful
+     * @throws CException if this action has an invalid association type
+     */
+    public function multiAssociateWith (X2Model $model) {
+        if ($this->associationType !== self::ASSOCIATION_TYPE_MULTI) {
+            throw new CException (
+                'Attempting to multi-associate action with single association type');
+        }
+        $joinModel = ActionToRecord::model ()->findByAttributes (array (
+            'actionId' => $this->id,
+            'recordId' => $model->id,
+            'recordType' => get_class ($model),
+        ));
+        if ($joinModel) return -1;
+        $joinModel = new ActionToRecord; 
+        $joinModel->setAttributes (array (
+            'actionId' => $this->id,
+            'recordId' => $model->id,
+            'recordType' => get_class ($model),
+        ), false);
+        return $joinModel->save ();
+    }
+
+    /**
      * Returns action type specific attribute labels
      * @return String
      */
@@ -181,6 +218,22 @@ class Actions extends X2Model {
         return $label;
     }
 
+    public function attributeNames () {
+         return array_merge (parent::attributeNames (), array_keys ($this->metaDataTemp),
+            array ('actionDescription'));
+    }
+
+    public function getAttributes ($names=true) {
+        $attrs = parent::getAttributes ($names);
+        $filter =is_array ($names);
+        if (!$filter || in_array ('actionDescription', $names))
+            $attrs['actionDescription'] = $this->actionDescription;
+        foreach (array_keys ($this->metaDataTemp) as $name) {
+            if (!$filter || in_array ($name, $names))
+                $attrs[$name] = $this->$name;
+        }
+        return $attrs;
+    }
 
     public function getAttribute($name, $renderFlag = false, $makeLinks = false){
         if ($name === 'actionDescription') {
@@ -273,6 +326,33 @@ class Actions extends X2Model {
         }
     }
 
+
+    /** 
+    * Modified findAll function that doesn't attach actionText. See {@link X2Model::findAll}.
+    * @param mixed $condition query condition or criteria
+    * @param array $params parameters to be bound to an SQL statement.
+    * @return CActiveRecord[] list of active records satisfying the specified condition. 
+    * An empty array is returned if none is found.
+    */
+    public function findAllWithoutActionText($condition = '', $params = array()){
+        self::$withActionText = false;
+        $models = $this->findAll($condition, $params);
+        self::$withActionText = true;
+        return $models;
+    }
+
+    public function afterFind(){
+        if(self::$withActionText && $this->actionText instanceof ActionText){
+            $this->actionDescriptionTemp = $this->actionText->text;
+        }
+        if ($this->actionMetaData instanceof ActionMetaData) {
+            foreach ($this->metaDataTemp as $name => $value) {
+                $this->metaDataTemp[$name] = $this->actionMetaData->$name;
+            }
+        }
+        parent::afterFind();
+    }
+
     public function afterSave(){
         $this->saveMetaData ();
 
@@ -282,26 +362,17 @@ class Actions extends X2Model {
 
     public function requiredAssoc($attribute, $params = array()){
         // all action types but events require this attribute
-        if(!empty($this->type) && 
+        if($this->associationType !== self::ASSOCIATION_TYPE_MULTI &&
            (gettype ($this->type) !== 'string' || !preg_match ('/^event/', $this->type))) {
 
             if(empty($this->$attribute) || strtolower($this->$attribute) == 'none')
                 $this->addError(
                     $attribute, 
-                    Yii::t('actions', 'Association is required for actions of this type.'));
+                    Yii::t('actions', 'Association is required for actions of type {type}', array (
+                        '{type}' => $this->type,
+                    )));
         }
         return !$this->hasErrors();
-    }
-
-    public function afterFind(){
-        if($this->actionText instanceof ActionText){
-            $this->actionDescriptionTemp = $this->actionText->text;
-        }
-        if ($this->actionMetaData instanceof ActionMetaData) {
-            foreach ($this->metaDataTemp as $name => $value) {
-                $this->metaDataTemp[$name] = $this->actionMetaData->$name;
-            }
-        }
     }
 
     /**
@@ -316,7 +387,13 @@ class Actions extends X2Model {
             $event->type = $eventType;
             $event->associationType = 'Actions';
             $event->associationId = $this->id;
-            $event->user = $assignee;
+            if ($eventType === 'record_create') {
+                $event->user = Yii::app()->user->getName();
+                $event->save();
+                break; // only create one record, not one for each assignee
+            } else {
+                $event->user = $assignee;
+            }
             $event->save();
         }
     }
@@ -408,6 +485,8 @@ class Actions extends X2Model {
         $this->metaDataTemp['eventStatus'] = $value;
     }
 
+     
+
     public function setActionDescription($value){
         // Magic setter stores value in actionDescriptionTemp until saved
         $this->actionDescriptionTemp = $value;
@@ -420,6 +499,8 @@ class Actions extends X2Model {
     public function getEventStatus () {
         return $this->metaDataTemp['eventStatus'];
     }
+
+     
 
     public function getActionDescription(){
         // Magic getter only ever refers to actionDescriptionTemp
@@ -569,6 +650,25 @@ class Actions extends X2Model {
         }else{
             return CHtml::link($text, $this->getUrl());
         }
+    }
+
+    /**
+     * Queries the database for the first characters of an action description
+     * @param int $length length of string to retrieve
+     * @param string $overflow string to append to text if it overflows
+     * @return string
+     */
+    public function getShortActionText($length = 30, $overflow='...'){
+        $actionText = Yii::app()->db->createCommand()->
+            select('SUBSTR(text, 1,'.$length.') AS text, CHAR_LENGTH(text) AS length')->
+            from('x2_action_text')->
+            where('actionId='.$this->id)->queryRow();
+        
+        if($actionText['length'] > $length)
+            $actionText['text'] .= $overflow;
+
+        return $actionText['text'];
+
     }
 
     public function getAssociationLink(){
@@ -1005,10 +1105,21 @@ class Actions extends X2Model {
     public function renderAttribute(
         $fieldName, $makeLinks = true, $textOnly = true, $encode = true){
 
-        if($fieldName == 'priority'){
-            return $encode?CHtml::encode($this->getPriorityLabel()):$this->getPriorityLabel();
-        }else{
-            return parent::renderAttribute($fieldName, $makeLinks, $textOnly, $encode);
+        $render = function($x)use($encode) {
+            return $encode ? CHtml::encode($x) : $x;
+        };
+
+        switch ($fieldName) {
+            case 'stageNumber':
+                $workflow = $this->workflow;
+                if ($workflow)
+                    return $render ($workflow->getStageName ($this->stageNumber));
+                else
+                    return null;
+            case 'priority':
+                return $render ($this->getPriorityLabel ());
+            default:
+                return parent::renderAttribute($fieldName, $makeLinks, $textOnly, $encode);
         }
     }
 
@@ -1038,6 +1149,15 @@ class Actions extends X2Model {
             return CHtml::activeDropdownList($this,'priority',self::getPriorityLabels());
         } 
         return parent::renderInput($fieldName, $htmlOptions);
+    }
+
+    /**
+     * Overrides parent method to add models which can be linked through the association[id|type]
+     * fields.
+     * @return array static linked models indexed by link field name
+     */
+    public function getStaticLinkedModels () {
+        return array_merge (parent::getStaticLinkedModels (), self::getModuleModelsByName ());
     }
 
 }

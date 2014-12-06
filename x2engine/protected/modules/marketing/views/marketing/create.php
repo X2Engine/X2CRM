@@ -35,28 +35,11 @@
  *****************************************************************************************/
 
 $this->pageTitle = Yii::t('marketing','Create Campaign');
-$this->actionMenu = $this->formatMenu(array(
-	array('label'=>Yii::t('marketing','All Campaigns'), 'url'=>array('index')),
-	array('label'=>Yii::t('marketing','Create Campaign')),
-	array('label'=>Yii::t('contacts','Contact Lists'), 'url'=>array('/contacts/contacts/lists')),
-	array(
-        'label'=>Yii::t('marketing','Newsletters'), 
-        'url'=>array('/marketing/weblist/index'),
-        'visible'=>(Yii::app()->contEd('pro'))
-    ),
-	array('label'=>Yii::t('marketing','Web Lead Form'), 'url'=>array('webleadForm')),
-	array(
-        'label'=>Yii::t('marketing','Web Tracker'), 
-        'url'=>array('webTracker'),
-        'visible'=>(Yii::app()->contEd('pro'))
-    ),
-    
-	array(
-        'label'=>Yii::t('app','X2Flow'),
-        'url'=>array('/studio/flowIndex'),
-        'visible'=>(Yii::app()->contEd('pro'))
-    ),
-));
+$menuOptions = array(
+    'all', 'create', 'lists', 'newsletters', 'weblead', 'webtracker', 'x2flow',
+);
+
+$this->insertMenu($menuOptions);
 
 $form = $this->beginWidget('CActiveForm', array(
 	'id'=>'campaign-form',

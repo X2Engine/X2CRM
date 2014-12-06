@@ -1,0 +1,36 @@
+
+#sidebar-left-widget-box 
+#sidebar-full-controls li {
+	color: "$text";
+}	
+
+#sidebar-left-widget-box ul li span ,
+#sidebar-left-widget-box a:hover {
+    background: "$lighter_content";
+}
+
+
+#sidebar-left-widget-box textarea {
+	background: "$light_content";
+	color: "$text";
+}
+
+#x2-create-multiple-records-button {
+	color: "$link";
+	cursor: pointer !important;
+}
+
+.sidebar-left {
+	background: "$highlight1";
+}
+
+// #actions {
+// 	a, span {
+// 		background: "$content";
+
+// 		&:hover {
+// 			background: "$lighter_content";
+// 		}
+
+// 	}
+// }

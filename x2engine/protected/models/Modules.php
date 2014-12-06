@@ -16,14 +16,20 @@
  * @property integer $toggleable
  */
 class Modules extends CActiveRecord {
+
     /**
-     * Returns the static model of the specified AR class.
-     * @param string $className active record class name.
-     * @return Modules the static model class
+     * Cached Module titles
      */
-    public static function model($className=__CLASS__) {
-        return parent::model($className);
-    }
+    private static $_displayNames;
+
+	/**
+	 * Returns the static model of the specified AR class.
+	 * @param string $className active record class name.
+	 * @return Modules the static model class
+	 */
+	public static function model($className=__CLASS__) {
+		return parent::model($className);
+	}
 
     /**
      * @return string the associated database table name
@@ -84,6 +90,27 @@ class Modules extends CActiveRecord {
     }
 
     /**
+     * Clean up after custom modules when they are deleted. Note, this shouldn't be applicable to default modules,
+     * they cannot be deleted, only disabled
+     */
+    protected function afterDelete() {
+        parent::afterDelete();
+        if (!$this->custom)
+            return;
+
+        // remove associated Events, Actions, changelog entries, linked records, and Relationships
+        $events = X2Model::model('Events')->findAllByAttributes(array(
+            'associationType' => $this->name,
+        ));
+        $actions = X2Model::model('Actions')->findAllByAttributes(array(
+            'associationType' => $this->name,
+        ));
+        $models = array_merge ($events, $actions);
+        foreach ($models as $model)
+            $model->delete();
+    }
+
+    /**
      * Retrieves a list of models based on the current search/filter conditions.
      * @return CActiveDataProvider the data provider that can return the models based on the search/filter conditions.
      */
@@ -109,13 +136,6 @@ class Modules extends CActiveRecord {
         ));
     }
     
-    public static function moduleLabel($model) {
-        
-    }
-    public static function recordLabel($model) {
-        
-    }
-
     /**
      * Populate a list of available modules to import/export
      */
@@ -144,7 +164,7 @@ class Modules extends CActiveRecord {
     }
 
     /**
-     * @return array names of models associated with each module 
+     * @return array names of models associated with each module
      */
     public static function getNamesOfModelsOfModules () {
         $moduleNames = array_map (function ($record) {
@@ -159,6 +179,97 @@ class Modules extends CActiveRecord {
             }
         }
         return $models;
+    }
+
+    /**
+     * Retrieves the title of a given module or the current module
+     * if no module is specified
+     * @param bool Retrieve the plural form of the module name
+     * @param string Module to retrieve name for
+     * @return string|false Current module title, false if none could be found
+     */
+    public static function displayName($plural = true, $module = null) {
+        $moduleTitle = null;
+        if (!isset($module))
+            $module = Yii::app()->controller->module->name;
+
+        // return a cached value
+        if (isset(self::$_displayNames[$module][$plural]))
+            return self::$_displayNames[$module][$plural];
+
+        $moduleTitle = Yii::app()->db->createCommand()
+            ->select('title')
+            ->from('x2_modules')
+            ->where("name = :name")
+            ->bindValue(':name', $module)
+            ->limit(1)
+            ->queryScalar();
+
+        if (!$moduleTitle) return false;
+
+        if (Yii::app()->locale->id === 'en') {
+            // Handle silly English pluralization
+            if (!$plural) {
+                if (preg_match('/ies$/', $moduleTitle)) {
+                    $moduleTitle = preg_replace('/ies$/', 'y', $moduleTitle);
+                } else if (preg_match('/ses$/', $moduleTitle)) {
+                    $moduleTitle = preg_replace('/es$/', '', $moduleTitle);
+                } else if ($moduleTitle !== 'Process') {
+                    // Otherwise chop the trailing s
+                    $moduleTitle = trim($moduleTitle, 's');
+                }
+            } else {
+                if (preg_match('/y$/', $moduleTitle)) {
+                    $moduleTitle = preg_replace('/y$/', 'ies', $moduleTitle);
+                } else if (preg_match('/ss$/', $moduleTitle)) {
+                    $moduleTitle .= 'es';
+                }
+            }
+        }
+        self::$_displayNames[$module][$plural] = $moduleTitle;
+        return $moduleTitle;
+    }
+
+    /**
+     * Retrieves the item name for the specified Module
+     * @param string $module Module to retrieve item name for, or the current module if null
+     */
+    public static function itemDisplayName($moduleName = null) {
+        if (is_null($moduleName))
+            $moduleName = Yii::app()->controller->module->name;
+        $module = X2Model::model('Modules')->findByAttributes(array('name' => $moduleName));
+        $itemName = $moduleName;
+        if (!empty($module->itemName)) {
+            $itemName = $module->itemName;
+        } else {
+            // Attempt to load item name from legacy module options file
+            $moduleDir = implode(DIRECTORY_SEPARATOR, array(
+                'protected',
+                'modules',
+                $moduleName
+            ));
+            $configFile = implode(DIRECTORY_SEPARATOR, array(
+                $moduleDir,
+                lcfirst($moduleName)."Config.php"
+            ));
+
+            if (is_dir($moduleDir) && file_exists($configFile)) {
+                $file = Yii::app()->file->set($configFile);
+                $contents = $file->getContents();
+                if (preg_match("/.*'recordName'.*/", $contents, $matches)) {
+                    $itemNameLine = $matches[0];
+                    $itemNameRegex = "/.*'recordName'=>'([\w\s]*?)'.*/";
+                    $itemName = preg_replace($itemNameRegex, "$1", $itemNameLine);
+                    if (!empty($itemName)) {
+                        // Save this name in the database for the future
+                        $module->itemName = $itemName;
+                        $module->save();
+                    }
+                }
+            }
+        }
+
+        return $itemName;
     }
 
     /**

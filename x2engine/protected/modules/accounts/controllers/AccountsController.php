@@ -42,14 +42,14 @@ class AccountsController extends x2base {
 
     public $modelClass = 'Accounts';
 
-    public function accessRules(){
+    public function accessRules() {
         return array(
             array('allow',
                 'actions' => array('getItems'),
                 'users' => array('*'),
             ),
             array('allow', // allow authenticated user to perform 'create' and 'update' actions
-                'actions' => array('index', 'view', 'create', 'update', 'search', 'addUser', 'removeUser', 
+                'actions' => array('index', 'view', 'create', 'update', 'search', 'addUser', 'removeUser',
                     'addNote', 'deleteNote', 'saveChanges', 'delete', 'shareAccount', 'inlineEmail', 'qtip'),
                 'users' => array('@'),
             ),
@@ -63,17 +63,17 @@ class AccountsController extends x2base {
         );
     }
 
-    public function behaviors(){
+    public function behaviors() {
         return array_merge(parent::behaviors(), array(
             'QuickCreateRelationshipBehavior' => array(
                 'class' => 'QuickCreateRelationshipBehavior',
-                'attributesOfNewRecordToUpdate' => array (
-                    'Contacts' => array (
+                'attributesOfNewRecordToUpdate' => array(
+                    'Contacts' => array(
                         'nameId' => 'company',
                         'website' => 'website',
                         'phone' => 'phone',
                     ),
-                    'Opportunity' => array (
+                    'Opportunity' => array(
                         'accountName' => 'id',
                     )
                 )
@@ -81,7 +81,7 @@ class AccountsController extends x2base {
         ));
     }
 
-    public function actions(){
+    public function actions() {
         return array_merge(parent::actions(), array(
             'inlineEmail' => array(
                 'class' => 'InlineEmailAction',
@@ -93,15 +93,15 @@ class AccountsController extends x2base {
                 'class' => 'ExportAccountsReportAction',
             ),
             'accountsCampaign' => array(
-                'class'=>'AccountCampaignAction',
+                'class' => 'AccountCampaignAction',
             ),
         ));
     }
 
-    public function actionGetItems(){
+    public function actionGetItems() {
         $sql = 'SELECT id, name as value FROM x2_accounts WHERE name LIKE :qterm ORDER BY name ASC';
         $command = Yii::app()->db->createCommand($sql);
-        $qterm = $_GET['term'].'%';
+        $qterm = $_GET['term'] . '%';
         $command->bindParam(":qterm", $qterm, PDO::PARAM_STR);
         $result = $command->queryAll();
         echo CJSON::encode($result);
@@ -112,52 +112,64 @@ class AccountsController extends x2base {
      * Displays a particular model.
      * @param integer $id the ID of the model to be displayed
      */
-    public function actionView($id){
+    public function actionView($id) {
         $model = $this->loadModel($id);
-        if(!parent::checkPermissions($model, 'view'))
+        if (!parent::checkPermissions($model, 'view'))
             $this->denied();
-        
+
         // add account to user's recent item list
         User::addRecentItem('a', $id, Yii::app()->user->getId());
-
-        parent::view($model, 'accounts');
+        if ($model->checkForDuplicates()) {
+            $this->redirect($this->createUrl('/site/duplicateCheck', array(
+                        'moduleName' => 'accounts',
+                        'modelName' => 'Accounts',
+                        'id' => $id,
+                        'ref' => 'view',
+            )));
+        } else {
+            $model->duplicateChecked();
+            parent::view($model, 'accounts');
+        }
     }
 
-    public function actionShareAccount($id){
+    public function actionShareAccount($id) {
 
         $model = $this->loadModel($id);
-        $body = "\n\n\n\n".Yii::t('accounts', 'Account Record Details')." <br />
+        $body = "\n\n\n\n".Yii::t('accounts', '{module} Record Details', array(
+            '{module}'=>Modules::displayName(false)
+        ))." <br />
 <br />".Yii::t('accounts', 'Name').": $model->name
 <br />".Yii::t('accounts', 'Description').": $model->description
 <br />".Yii::t('accounts', 'Revenue').": $model->annualRevenue
 <br />".Yii::t('accounts', 'Phone').": $model->phone
 <br />".Yii::t('accounts', 'Website').": $model->website
 <br />".Yii::t('accounts', 'Type').": $model->type
-<br />".Yii::t('app', 'Link').": ".CHtml::link($model->name, array('/accounts/accounts/view', 'id'=>$model->id));
+<br />".Yii::t('app', 'Link') . ": " . CHtml::link($model->name,
+            array('/accounts/accounts/view', 'id'=>$model->id));
         $body = trim($body);
 
         $errors = array();
         $status = array();
         $email = array();
-        if(isset($_POST['email'], $_POST['body'])){
+        if (isset($_POST['email'], $_POST['body'])) {
 
-            $subject = Yii::t('accounts', "Account Record").": $model->name";
+            $subject = Yii::t('accounts', "Account Record") . ": $model->name";
             $email['to'] = $this->parseEmailTo($this->decodeQuotes($_POST['email']));
             $body = $_POST['body'];
             // if(empty($email) || !preg_match("/[a-zA-Z0-9._%-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}/",$email))
-            if($email['to'] === false)
+            if ($email['to'] === false)
                 $errors[] = 'email';
-            if(empty($body))
+            if (empty($body))
                 $errors[] = 'body';
 
-            if(empty($errors))
+            if (empty($errors))
                 $status = $this->sendUserEmail($email, $subject, $body);
 
-            if(array_search('200', $status)){
+            if (array_search('200', $status)) {
                 $this->redirect(array('view', 'id' => $model->id));
                 return;
             }
-            if($email['to'] === false)
+            if ($email['to'] === false)
                 $email = $_POST['email'];
             else
                 $email = $this->mailingListToString($email['to']);
@@ -171,33 +183,40 @@ class AccountsController extends x2base {
         ));
     }
 
-    public function actionCreate(){
+    public function actionCreate() {
         $model = new Accounts;
         $users = User::getNames();
         unset($users['admin']);
         unset($users['']);
-        foreach(Groups::model()->findAll() as $group)
+        foreach (Groups::model()->findAll() as $group)
             $users[$group->id] = $group->name;
 
 
-        if(isset($_POST['Accounts'])){
-            $temp = $model->attributes;
-            foreach($_POST['Accounts'] as $name => &$value){
-                if($value == $model->getAttributeLabel($name))
-                    $value = '';
-            }
+        if (isset($_POST['Accounts'])) {
+
             $model->setX2Fields($_POST['Accounts']);
 
-            if(isset($_POST['x2ajax'])){
-                $ajaxErrors = $this->quickCreate ($model);
-            }else{
-                if($model->save())
-                    $this->redirect(array('view', 'id' => $model->id));
+            if (isset($_POST['x2ajax'])) {
+                $ajaxErrors = $this->quickCreate($model);
+            } else {
+                if ($model->checkForDuplicates()) {
+                    Yii::app()->user->setState('json_attributes', json_encode($model->attributes));
+                    $this->redirect($this->createUrl('/site/duplicateCheck', array(
+                                'moduleName' => 'accounts',
+                                'modelName' => 'Accounts',
+                                'id' => null,
+                                'ref' => 'create',
+                    )));
+                } else {
+                    if ($model->save()) {
+                        $this->redirect(array('view', 'id' => $model->id));
+                    }
+                }
             }
         }
 
-        if(isset($_POST['x2ajax'])){
-            $this->renderInlineCreateForm ($model, isset ($ajaxErrors) ? $ajaxErrors : false);
+        if (isset($_POST['x2ajax'])) {
+            $this->renderInlineCreateForm($model, isset($ajaxErrors) ? $ajaxErrors : false);
         } else {
             $this->render('create', array(
                 'model' => $model,
@@ -222,11 +241,11 @@ class AccountsController extends x2base {
      * If update is successful, the browser will be redirected to the 'view' page.
      * @param integer $id the ID of the model to be updated
      */
-    public function actionUpdate($id){
+    public function actionUpdate($id) {
         $model = $this->loadModel($id);
-        if(isset($_POST['Accounts'])){
+        if (isset($_POST['Accounts'])) {
             $model->setX2Fields($_POST['Accounts']);
-            if($model->save())
+            if ($model->save())
                 $this->redirect(array('view', 'id' => $model->id));
         }
 
@@ -256,11 +275,11 @@ class AccountsController extends x2base {
       }
      */
 
-    public function actionAddUser($id){
+    public function actionAddUser($id) {
         $users = User::getNames();
         unset($users['admin']);
         unset($users['']);
-        foreach(Groups::model()->findAll() as $group){
+        foreach (Groups::model()->findAll() as $group) {
             $users[$group->id] = $group->name;
         }
         //$contacts = Contacts::getAllNames(); // very inefficient with large table
@@ -270,21 +289,21 @@ class AccountsController extends x2base {
         // Uncomment the following line if AJAX validation is needed
         // $this->performAjaxValidation($model);
 
-        if(isset($_POST['Accounts'])){
+        if (isset($_POST['Accounts'])) {
 
             $temp = $model->assignedTo;
             $tempArr = $model->attributes;
             $model->attributes = $_POST['Accounts'];
             $arr = $_POST['Accounts']['assignedTo'];
             $model->assignedTo = Fields::parseUsers($arr);
-            if($temp != "")
-                $temp.=", ".$model->assignedTo;
+            if ($temp != "")
+                $temp.=", " . $model->assignedTo;
             else
                 $temp = $model->assignedTo;
             $model->assignedTo = $temp;
             // $changes=$this->calculateChanges($tempArr,$model->attributes);
             // $model=$this->updateChangelog($model,$changes);
-            if($model->save())
+            if ($model->save())
                 $this->redirect(array('view', 'id' => $model->id));
         }
 
@@ -296,7 +315,7 @@ class AccountsController extends x2base {
         ));
     }
 
-    public function actionRemoveUser($id){
+    public function actionRemoveUser($id) {
 
         $model = $this->loadModel($id);
 
@@ -306,12 +325,12 @@ class AccountsController extends x2base {
         // Uncomment the following line if AJAX validation is needed
         // $this->performAjaxValidation($model);
 
-        if(isset($_POST['Accounts'])){
+        if (isset($_POST['Accounts'])) {
             $temp = $model->attributes;
             $model->attributes = $_POST['Accounts'];
             $arr = $_POST['Accounts']['assignedTo'];
 
-            foreach($arr as $id => $user){
+            foreach ($arr as $id => $user) {
                 unset($pieces[$user]);
             }
 
@@ -320,7 +339,7 @@ class AccountsController extends x2base {
             $model->assignedTo = $temp;
             // $changes=$this->calculateChanges($temp,$model->attributes);
             // $model=$this->updateChangelog($model,$changes);
-            if($model->save())
+            if ($model->save())
                 $this->redirect(array('view', 'id' => $model->id));
         }
 
@@ -331,16 +350,16 @@ class AccountsController extends x2base {
         ));
     }
 
-    public function delete($id){
+    public function delete($id) {
 
         $model = $this->loadModel($id);
         $dataProvider = new CActiveDataProvider('Actions', array(
-                    'criteria' => array(
-                        'condition' => 'associationId='.$id.' AND associationType=\'account\'',
-                        )));
+            'criteria' => array(
+                'condition' => 'associationId=' . $id . ' AND associationType=\'account\'',
+        )));
 
         $actions = $dataProvider->getData();
-        foreach($actions as $action){
+        foreach ($actions as $action) {
             $action->delete();
         }
         $this->cleanUpTags($model);
@@ -352,31 +371,152 @@ class AccountsController extends x2base {
      * If deletion is successful, the browser will be redirected to the 'admin' page.
      * @param integer $id the ID of the model to be deleted
      */
-    public function actionDelete($id){
-        if(Yii::app()->request->isPostRequest){
+    public function actionDelete($id) {
+        if (Yii::app()->request->isPostRequest) {
             $model = $this->loadModel($id);
-            Actions::model()->deleteAll('associationId='.$id.' AND associationType=\'account\'');
+            Actions::model()->deleteAll('associationId=' . $id . ' AND associationType=\'account\'');
             $this->cleanUpTags($model);
             $model->delete();
         } else
             throw new CHttpException(400, 'Invalid request. Please do not repeat this request again.');
         // if AJAX request (triggered by deletion via admin grid view), we should not redirect the browser
-        if(!isset($_GET['ajax']))
+        if (!isset($_GET['ajax']))
             $this->redirect(isset($_POST['returnUrl']) ? $_POST['returnUrl'] : array('index'));
     }
 
     /**
      * Lists all models.
      */
-    public function actionIndex(){
+    public function actionIndex() {
 
         $model = new Accounts('search');
         $this->render('index', array('model' => $model));
     }
 
-    public function actionQtip($id){
+    public function actionQtip($id) {
         $model = $this->loadModel($id);
         $this->renderPartial('qtip', array('model' => $model));
     }
-     
+
+    /**
+     * Create a menu for Accounts
+     * @param array Menu options to remove
+     * @param X2Model Model object passed to the view
+     * @param array Additional menu parameters
+     */
+    public function insertMenu($selectOptions = array(), $model = null, $menuParams = null) {
+        $Accounts = Modules::displayName();
+        $Account = Modules::displayName(false);
+        $modelId = isset($model) ? $model->id : 0;
+        $modelName = isset($model) ? $model->name : "";
+
+        /**
+         * To show all options:
+         * $menuOptions = array(
+         *     'all', 'create', 'report', 'import', 'export', 'view', 'edit', 'share',
+         *     'delete', 'email', 'attach', 'quotes', 'quick', 'print',
+         * );
+         */
+
+        $menuItems = array(
+            array(
+                'name'=>'all',
+                'label'=>Yii::t('accounts','All {module}', array('{module}'=>$Accounts)),
+                'url' => array('index'),
+            ),
+            array(
+                'name'=>'create',
+                'label'=>Yii::t('accounts','Create {module}', array('{module}'=>$Account)),
+                'url'=>array('create')
+            ),
+            array(
+                'name'=>'report',
+                'label'=>Yii::t('accounts','{module} Report', array('{module}'=>$Accounts)),
+                'url'=>array('accountsReport')
+            ),
+            array(
+                'name'=>'import',
+                'label'=>Yii::t('accounts',"Import {module}", array('{module}'=>$Accounts)),
+                'url'=>array('admin/importModels', 'model'=>'Accounts')
+            ),
+            array(
+                'name'=>'export',
+                'label'=>Yii::t('accounts','Export {module}', array('{module}'=>$Accounts)),
+                'url'=>array('admin/exportModels', 'model'=>'Accounts')
+            ),
+            array(
+                'name'=>'view',
+                'label'=>Yii::t('accounts','View'),
+                'url'=>array('view', 'id'=>$modelId),
+            ),
+            array(
+                'name'=>'edit',
+                'label'=>Yii::t('accounts','Edit {module}', array('{module}'=>$Account)),
+                'url'=>array('update', 'id'=>$modelId)
+            ),
+            array(
+                'name'=>'share',
+                'label'=>Yii::t('accounts','Share {module}', array('{module}'=>$Account)),
+                'url'=>array('shareAccount','id'=>$modelId)
+            ),
+            array(
+                'name'=>'delete',
+                'label'=>Yii::t('accounts','Delete {module}', array('{module}'=>$Account)),
+                'url'=>'#',
+                'linkOptions'=>array(
+                    'submit'=>array('delete','id'=>$modelId),
+                    'confirm'=>'Are you sure you want to delete this item?'
+                )
+            ),
+            array(
+                'name'=>'email',
+                'label' => Yii::t('app', 'Send Email'),
+                'url' => '#',
+                'linkOptions' => array('onclick' => 'toggleEmailForm(); return false;')
+            ),
+            array(
+                'name'=>'attach',
+                'label'=>Yii::t('app','Attach A File/Photo'),
+                'url'=>'#',
+                'linkOptions'=>array(
+                    'onclick'=>'toggleAttachmentForm(); return false;')
+            ),
+            array(
+                'name'=>'quotes',
+                'label' => Yii::t('quotes', 'Quotes/Invoices'),
+                'url' => 'javascript:void(0)',
+                'linkOptions' => array(
+                    'onclick' => 'x2.inlineQuotes.toggle(); return false;')
+            ),
+            array(
+                'name'=>'quick',
+                'label'=>Yii::t('app', 'Quick Create'),
+                'url'=>array('/site/createRecords', 'ret'=>'accounts'),
+                'linkOptions'=>array(
+                    'id'=>'x2-create-multiple-records-button',
+                    'class'=>'x2-hint',
+                    'title'=>Yii::t('app', 'Create a {contact}, {account}, and {opportunity}.', array(
+                        '{account}' => $Account,
+                        '{contact}' => Modules::displayName(false, "Contacts"),
+                        '{opportunity}' => Modules::displayName(false, "Opportunities"),
+                    )))
+            ),
+            array(
+                'name'=>'print',
+	            'label' => Yii::t('app', 'Print Record'),
+	            'url' => '#',
+	            'linkOptions' => array (
+		            'onClick'=>"window.open('".
+			            Yii::app()->createUrl('/site/printRecord', array (
+				            'modelClass' => 'Accounts',
+				            'id' => $modelId,
+				            'pageTitle' => Yii::t('app', 'Account').': '.$modelName
+			        ))."');"
+                ),
+	        ),
+        );
+
+        $this->prepareMenu($menuItems, $selectOptions);
+        $this->actionMenu = $this->formatMenu($menuItems, $menuParams);
+    }
 }

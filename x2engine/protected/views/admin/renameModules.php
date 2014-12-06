@@ -34,14 +34,50 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 ?>
-<div class="page-title"><h2><?php echo Yii::t('admin','Rename A Module'); ?></h2></div>
+<div class="page-title"><h2><?php echo Yii::t('admin','Rename a Module'); ?></h2></div>
 <div class="form">
 <?php echo Yii::t('admin','You can rename a module by selecting a module and typing the new name below.'); ?>
 <br><br>
+<?php
+    echo CHtml::label(Yii::t('admin', 'Module:'), '');
+    $moduleOptions = array_merge(array('' => Yii::t('admin', 'Please select a module')), $modules);
+    X2Html::getFlashes();
+    echo CHtml::form('renameModules','post',array('enctype'=>'multipart/form-data'));
+    echo CHtml::dropDownList('module', '', $moduleOptions)."<br><br>";
+    echo CHtml::label(Yii::t('admin', 'New Name:'), 'name');
+    echo CHtml::textField('name');
+    echo "<div id='itemNameField'>";
+    echo CHtml::label(Yii::t('admin', 'Item Name'), 'itemName');
+    echo CHtml::textField('itemName');
+    echo "</div>";
+    echo CHtml::submitButton(Yii::t('app','Submit'),array('class'=>'x2-button'));
+    echo CHtml::endForm();
+?> </div>
 
-<h2><?php echo Yii::t('admin','Rename A Module'); ?></h2>
-<?php echo CHtml::form('renameModules','post',array('enctype'=>'multipart/form-data')); ?>
-<?php echo CHtml::dropDownList('module', '', $modules); ?> <br><br>
-<?php echo CHtml::textField('name'); ?>
-<?php echo CHtml::submitButton(Yii::t('app','Submit'),array('class'=>'x2-button')); ?>
-<?php echo CHtml::endForm(); ?> </div>
+<?php Yii::app()->clientScript->registerScript ('renameModulesJs', "
+    $('#module').change(function() {
+        var selectedModule = $('#module').find(':selected').val();
+        var modules = ". CJSON::encode($modules) ."
+        var itemNames = ". CJSON::encode($itemNames) ."
+
+        $('#name').val(modules[selectedModule]);
+        if (typeof itemNames[selectedModule] !== 'undefined') {
+            $('#itemNameField').show();
+            $('#itemName').val(itemNames[selectedModule]);
+        } else {
+            $('#itemNameField').hide();
+            $('#itenName').val('');
+        }
+    });
+
+    $(function() {
+        // Hide the item name field on page load if module's items cannot be renamed
+        var selectedModule = $('#module').find(':selected').val();
+        var itemNames = ". CJSON::encode($itemNames) ."
+
+        if (typeof itemNames[selectedModule] === 'undefined') {
+            $('#itemNameField').hide();
+            $('#itenName').val('');
+        }
+    });
+", CClientScript::POS_READY);

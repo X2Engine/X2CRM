@@ -35,17 +35,11 @@
  *****************************************************************************************/
 
 $authParams['X2Model'] = $model;
-$this->actionMenu = $this->formatMenu(array(
-	array('label'=>Yii::t('contacts','All Contacts'),'url'=>array('index')),
-	array('label'=>Yii::t('contacts','Lists'),'url'=>array('lists')),
-	array('label'=>Yii::t('contacts','Create Contact'),'url'=>array('create')),
-	array('label'=>Yii::t('contacts','View'),'url'=>array('view', 'id'=>$model->id)),
-    array('label'=>Yii::t('contacts','Edit Contact')),
-    array('label'=>Yii::t('contacts','Save Contact'),'url'=>'#','linkOptions'=>array('onclick'=>"$('#save-button').click();return false;")),
-	array('label'=>Yii::t('contacts','Share Contact'),'url'=>array('shareContact','id'=>$model->id)),
-	array('label'=>Yii::t('contacts','Delete Contact'),'url'=>'#', 'linkOptions'=>array('submit'=>array('delete','id'=>$model->id),'confirm'=>'Are you sure you want to delete this item?')),
-	array('label'=>Yii::t('app', 'Quick Create'), 'url'=>array('/site/createRecords', 'ret'=>'contacts'), 'linkOptions'=>array('id'=>'x2-create-multiple-records-button', 'class'=>'x2-hint', 'title'=>Yii::t('app', 'Create a Contact, Account, and Opportunity.'))),
-),$authParams);
+
+$menuOptions = array(
+    'all', 'lists', 'create', 'view', 'edit', 'save', 'share', 'delete', 'quick',
+);
+$this->insertMenu($menuOptions, $model, $authParams);
 
 ?>
 <?php

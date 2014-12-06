@@ -80,12 +80,6 @@ class ServicesController extends x2base {
             'inlineEmail' => array(
                 'class' => 'InlineEmailAction',
             ),
-            'servicesReport' => array(
-                'class' => 'ServicesReportAction',
-            ),
-            'exportServiceReport' => array(
-                'class' => 'ExportServiceReportAction',
-            ),
         ));
     }
 
@@ -373,5 +367,113 @@ class ServicesController extends x2base {
             Yii::app()->params->profile->hideCasesWithStatus = CJSON::encode($hideStatuses);
             Yii::app()->params->profile->update(array('hideCasesWithStatus'));
         }
+    }
+
+    /**
+     * Create a menu for Services
+     * @param array Menu options to remove
+     * @param X2Model Model object passed to the view
+     * @param array Additional menu parameters
+     */
+    public function insertMenu($selectOptions = array(), $model = null, $menuParams = null) {
+        $Services = Modules::displayName();
+        $Service = Modules::displayName(false);
+        $modelId = isset($model) ? $model->id : 0;
+
+        /**
+         * To show all options:
+         * $menuOptions = array(
+         *     'index', 'create', 'view', 'edit', 'delete', 'email', 'attach', 'quotes',
+         *     'createWebForm', 'print', 'import', 'export',
+         * );
+         */
+
+        $menuItems = array(
+            array(
+                'name'=>'index',
+                'label'=>Yii::t('services','All Cases'),
+                'url'=>array('index')
+            ),
+            array(
+                'name'=>'create',
+                'label'=>Yii::t('services','Create Case'),
+                'url'=>array('create')
+            ),
+            array(
+                'name'=>'view',
+                'label'=>Yii::t('services','View'),
+                'url'=>array('view', 'id'=>$modelId)
+            ),
+            array(
+                'name'=>'edit',
+                'label'=>Yii::t('services','Edit Case'),
+                'url'=>array('update', 'id'=>$modelId)
+            ),
+            array(
+                'name'=>'delete',
+                'label'=>Yii::t('services','Delete Case'),
+                'url'=>'#',
+                'linkOptions'=>array(
+                    'submit'=>array('delete','id'=>$modelId),
+                    'confirm'=>'Are you sure you want to delete this item?')
+            ),
+            array(
+                'name'=>'email',
+                'label'=>Yii::t('app','Send Email'),
+                'url'=>'#',
+                'linkOptions'=>array('onclick'=>'toggleEmailForm(); return false;')
+            ),
+            array(
+                'name'=>'attach',
+                'label'=>Yii::t('app','Attach a File/Photo'),
+                'url'=>'#',
+                'linkOptions'=>array('onclick'=>'toggleAttachmentForm(); return false;')
+            ),
+            array(
+                'name'=>'quotes',
+                'label' => Yii::t('quotes', '{quotes}/Invoices', array(
+                    '{quotes}' => Modules::displayName(true, "Quotes"),
+                )),
+                'url' => 'javascript:void(0)',
+                'linkOptions' => array('onclick' => 'x2.inlineQuotes.toggle(); return false;')
+            ),
+            array(
+                'name'=>'createWebForm',
+                'label'=>Yii::t('services','Create Web Form'),
+                'url'=>array('createWebForm')
+            ),
+            array(
+                'name'=>'print',
+                'label' => Yii::t('app', 'Print Record'),
+                'url' => '#',
+                'linkOptions' => array (
+                    'onClick'=>"window.open('".
+                        Yii::app()->createUrl('/site/printRecord', array (
+                            'modelClass' => 'Services',
+                            'id' => $modelId,
+                            'pageTitle' => Yii::t('app', '{service} Case', array(
+                                '{service}' => $Service,
+                            )).': '.(isset($model) ? $model->name : "")
+                        ))."');"
+                )
+            ),
+            array(
+                'name'=>'import',
+                'label'=>Yii::t('services', 'Import {services}', array(
+                    '{services}' => $Services,
+                )),
+                'url'=>array('admin/importModels', 'model'=>'Services'),
+            ),
+            array(
+                'name'=>'export',
+                'label'=>Yii::t('services', 'Export {services}', array(
+                    '{services}' => $Services,
+                )),
+                'url'=>array('admin/exportModels', 'model'=>'Services'),
+            ),
+        );
+
+        $this->prepareMenu($menuItems, $selectOptions);
+        $this->actionMenu = $this->formatMenu($menuItems, $menuParams);
     }
 }

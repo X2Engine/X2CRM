@@ -46,7 +46,9 @@ if ($docId !== '') {
 if ($docId === '') {
 ?>
 <div class='default-text-container' style='display: none;'>
-<a href='#'><?php echo Yii::t('app', '-Click Here to Upload a Doc-'); ?></a>
+<a href='#'><?php echo Yii::t('app', '-Click Here to Upload a {Doc}-', array(
+    '{Doc}' => Modules::displayName(false, 'Docs'),
+)); ?></a>
 </div>
 <?php
 }

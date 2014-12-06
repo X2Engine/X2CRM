@@ -1,0 +1,3 @@
+id,createDate,lastUpdated,updatedBy,description,contactId,assignedTo,name,nameId,impact,status,subject,mainIssue,email,nextAction,resolution,subIssue,origin,escalatedTo,lastActivity,parentCase
+1000,"September 16, 2014 11:36:04 PM","September 16, 2014 11:36:04 PM",admin,"Employee #1337 has lost wifi connectivity.",,admin,1000,1000_1000,"2 - Critical",WIP,"Lost wifi connection","Internet Connection",,,,WiFi,Phone,,"September 16, 2014 11:36:04 PM",
+1001,"September 16, 2014 11:37:00 PM","September 16, 2014 11:37:00 PM",admin,,,admin,1001,1001_1001,"3 - Moderate","Waiting for response","Lost demo password",Software,,,,"Lost Password",Web,admin,"September 16, 2014 11:37:00 PM",

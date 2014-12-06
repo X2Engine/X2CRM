@@ -83,14 +83,18 @@ class LeftWidget extends CPortlet {
                     success:function(data){
                         if (data === "failure") return;
                         if(action === "expand"){
-                            $(link).html("<img src=\'"+yii.themeBaseUrl+"/images/icons/'.
+                            $(link).removeClass("fa-caret-left");
+                            $(link).addClass("fa-caret-down");
+                            $("ggads").html("<img src=\'"+yii.themeBaseUrl+"/images/icons/'.
                                 'Collapse_Widget.png\' />");
                             $(link).parents(".portlet-decoration").next().slideDown();
                             $(link).attr ("value", "collapse");
                             $(link).parents (".portlet-decoration").parent ().
                                 removeClass ("'.self::$leftWidgetCollapsedClass.'")
                         }else if(action === "collapse"){
-                            $(link).html("<img src=\'"+yii.themeBaseUrl+"/images/icons/'.
+                            $(link).removeClass("fa-caret-down");
+                            $(link).addClass("fa-caret-left");
+                            $("ggads").html("<img src=\'"+yii.themeBaseUrl+"/images/icons/'.
                                 'Expand_Widget.png\' />");
                             $(link).parents(".portlet-decoration").next().slideUp();
                             $(link).attr ("value", "expand");
@@ -118,15 +122,13 @@ class LeftWidget extends CPortlet {
         $themeURL = Yii::app()->theme->getBaseUrl();
 		$this->title =
             Yii::t('app', $this->widgetLabel).
-            CHtml::link(
-                CHtml::image(
-                    $themeURL."/images/icons/".(!$this->isCollapsed?"Collapse":"Expand").
-                    "_Widget.png"),
-                "#", array(
+            CHtml::tag( 'i',
+                array(
                     'title'=>Yii::t('app', $this->widgetLabel), 
                     'name'=>$this->widgetName, 
-                    'class'=>'left-widget-min-max right',
-                    'value'=>($this->isCollapsed ? 'expand' : 'collapse'))
+                    'class'=>'fa fa-lg right left-widget-min-max '.($this->isCollapsed ? 'fa-caret-left' : 'fa-caret-down'),
+                    'value'=>($this->isCollapsed ? 'expand' : 'collapse'),
+                    ), ' '
             );
         $this->htmlOptions = array(
             'class' => (!$this->isCollapsed ? "" : "hidden-filter")

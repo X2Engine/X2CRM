@@ -32,46 +32,82 @@
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2Engine".
  *****************************************************************************************/
-
+/* line 22, ../../../../../compass/sass/protected/modules/marketing/assets/css/emailProgressControl.scss */
+/* line 23, ../../../../../compass/sass/protected/modules/marketing/assets/css/emailProgressControl.scss */
+/* line 24, ../../../../../compass/protected/modules/marketing/assets/css/emailProgressControl.scss */
 #emailProgressControl-title {
-    margin-left: 5px;
+  margin-left: 5px;
 }
+
+/* line 27, ../../../../../compass/sass/protected/modules/marketing/assets/css/emailProgressControl.scss */
+/* line 30, ../../../../../compass/sass/protected/modules/marketing/assets/css/emailProgressControl.scss */
+/* line 32, ../../../../../compass/protected/modules/marketing/assets/css/emailProgressControl.scss */
 #emailProgressControl div.emailProgressControl-section {
-    padding: 5px;
+  padding: 5px;
 }
-#emailProgressControl button { 
-    display: inline-block;
+/* line 35, ../../../../../compass/protected/modules/marketing/assets/css/emailProgressControl.scss */
+#emailProgressControl button {
+  display: inline-block;
 }
+
+/* line 33, ../../../../../compass/sass/protected/modules/marketing/assets/css/emailProgressControl.scss */
+/* line 30, ../../../../../compass/sass/protected/modules/marketing/assets/css/emailProgressControl.scss */
+/* line 35, ../../../../../compass/sass/protected/modules/marketing/assets/css/emailProgressControl.scss */
+/* line 42, ../../../../../compass/sass/protected/modules/marketing/assets/css/emailProgressControl.scss */
+/* line 46, ../../../../../compass/protected/modules/marketing/assets/css/emailProgressControl.scss */
 #emailProgressControl-bar {
-    position: relative;
+  position: relative;
 }
+
+/* line 39, ../../../../../compass/sass/protected/modules/marketing/assets/css/emailProgressControl.scss */
+/* line 48, ../../../../../compass/sass/protected/modules/marketing/assets/css/emailProgressControl.scss */
+/* line 53, ../../../../../compass/protected/modules/marketing/assets/css/emailProgressControl.scss */
 #emailProgressControl-text {
-    position: absolute;
-    left: 50%;
-    font-weight: bold;
-    padding-top: 5px;
-    color:black;
-    text-shadow: 1px 1px 0 #fff;
+  position: absolute;
+  left: 50%;
+  font-weight: bold;
+  padding-top: 5px;
+  color: black;
+  text-shadow: 1px 1px 0 #fff;
 }
+
+/* line 48, ../../../../../compass/sass/protected/modules/marketing/assets/css/emailProgressControl.scss */
+/* line 59, ../../../../../compass/sass/protected/modules/marketing/assets/css/emailProgressControl.scss */
+/* line 65, ../../../../../compass/protected/modules/marketing/assets/css/emailProgressControl.scss */
 #emailProgressControl-textStatus {
-    display: inline-block;
-    margin-left: 20px;
-    margin-top: 6px;
+  display: inline-block;
+  margin-left: 20px;
+  margin-top: 6px;
 }
+
+/* line 54, ../../../../../compass/sass/protected/modules/marketing/assets/css/emailProgressControl.scss */
+/* line 67, ../../../../../compass/sass/protected/modules/marketing/assets/css/emailProgressControl.scss */
+/* line 74, ../../../../../compass/protected/modules/marketing/assets/css/emailProgressControl.scss */
 #emailProgressControl-throbber {
-    display: inline-block;
-    height: 20px;
-    width: 20px;
-    margin-top: 6px;
+  display: inline-block;
+  height: 20px;
+  width: 20px;
+  margin-top: 6px;
 }
+
+/* line 61, ../../../../../compass/sass/protected/modules/marketing/assets/css/emailProgressControl.scss */
+/* line 76, ../../../../../compass/sass/protected/modules/marketing/assets/css/emailProgressControl.scss */
+/* line 84, ../../../../../compass/protected/modules/marketing/assets/css/emailProgressControl.scss */
 #emailProgressControl-errors {
-    padding: 5px;
-    border: 1px dashed red;
-    margin-top:5px;
+  padding: 5px;
+  border: 1px dashed red;
+  margin-top: 5px;
 }
+/* line 88, ../../../../../compass/protected/modules/marketing/assets/css/emailProgressControl.scss */
 #emailProgressControl-errors .emailFail {
-    color: red;
+  color: red;
 }
+
+/* line 80, ../../../../../compass/sass/protected/modules/marketing/assets/css/emailProgressControl.scss */
+/* line 65, ../../../../../compass/sass/protected/modules/marketing/assets/css/emailProgressControl.scss */
+/* line 70, ../../../../../compass/sass/protected/modules/marketing/assets/css/emailProgressControl.scss */
+/* line 89, ../../../../../compass/sass/protected/modules/marketing/assets/css/emailProgressControl.scss */
+/* line 99, ../../../../../compass/protected/modules/marketing/assets/css/emailProgressControl.scss */
 #emailProgressControl-errorContainer {
-    display: none;
+  display: none;
 }

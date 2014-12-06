@@ -8,6 +8,7 @@ $tables = array_fill_keys($allEditions,array());
 // Professional Edition
 $tables['pro'][] = 'x2_action_timers';
 $tables['pro'][] = 'x2_reports';
+$tables['pro'][] = 'x2_reports_2';
 $tables['pro'][] = 'x2_forwarded_email_patterns';
 $tables['pro'][] = 'x2_gallery';
 $tables['pro'][] = 'x2_gallery_photo';

@@ -217,9 +217,9 @@ X2Chart.getJqplotPieConfig = function (argsDict) {
         seriesColors: color,
         grid: {
             drawGridLines: false,
-            gridLineColor: '#ffffff',
+            gridLineColor: 'rgba(0,0,0,0)',
             borderWidth: 0,
-            background: '#ffffff',
+            background: 'rgba(0,0,0,0)',
             shadow: false
         }
     };
@@ -1087,10 +1087,10 @@ X2Chart.getJqplotLineConfig = function (argsDict) {
         },
         grid: {
             drawGridLines: false,
-            gridLineColor: '#ffffff',
+            gridLineColor: 'rgba(0,0,0,0)',
             borderColor: '#999',
             borderWidth: 1,
-            background: '#ffffff',
+            background: 'rgba(0,0,0,0)',
             shadow: false
         },
         axes: {

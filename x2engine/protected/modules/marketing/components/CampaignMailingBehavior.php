@@ -186,14 +186,14 @@ class CampaignMailingBehavior extends EmailDeliveryBehavior {
      * @return type
      * @throws Exception
      */
-    public static function prepareEmail(Campaign $campaign, Contacts $contact){
+    public static function prepareEmail (Campaign $campaign, Contacts $contact) {
         $email = $contact->email;
         $now = time();
-        $uniqueId = md5(uniqid(mt_rand(), true));
+        $uniqueId = md5 (uniqid (mt_rand (), true));
+
         // Add some newlines to prevent hitting 998 line length limit in
         // phpmailer and rfc2821
         $emailBody = preg_replace('/<br>/', "<br>\n", $campaign->content);
-
 
         // Add links to attachments
         try{
@@ -208,7 +208,8 @@ class CampaignMailingBehavior extends EmailDeliveryBehavior {
                     if($file = $media->getPath()){
                         if(file_exists($file)){ // check file exists
                             if($url = $media->getFullUrl()){
-                                $emailBody .= CHtml::link($media->fileName, $media->fullUrl)."<br>\n";
+                                $emailBody .= CHtml::link($media->fileName, $media->fullUrl).
+                                    "<br>\n";
                             }
                         }
                     }
@@ -218,12 +219,11 @@ class CampaignMailingBehavior extends EmailDeliveryBehavior {
             throw $e;
         }
 
-
         // Insert unsubscribe link placeholder in the email body if there is
         // none already:
         if(!preg_match('/\{_unsub\}/', $campaign->content)){
-            $unsubText = "<br/>\n-----------------------<br/>\n"
-                    .Yii::t('marketing', 'To stop receiving these messages, click here').": {_unsub}";
+            $unsubText = "<br/>\n-----------------------<br/>\n".
+                Yii::t('marketing', 'To stop receiving these messages, click here').": {_unsub}";
             // Insert
             if(strpos($emailBody,'</body>')!==false) {
                 $emailBody = str_replace('</body>',$unsubText.'</body>',$emailBody);
@@ -232,18 +232,17 @@ class CampaignMailingBehavior extends EmailDeliveryBehavior {
             }
         }
 
-        // Replace links with tracking links.
-        //
-        // Left commented here for reference/historical purposes.
-        //
-        // The rationale for disabling this (magic redirect tracking links) is
-        // that it caused email to get caught in spam filters.
-        //
-        /*
-        $url = $this->createAbsoluteUrl('click', array('uid'=>$uniqueId, 'type'=>'click'));
-        $emailBody = preg_replace(
-        '/(<a[^>]*href=")([^"]*)("[^>]*>)/e', "(\"\\1" . $url . "&url=\" . urlencode(\"\\2\") . \"\\3\")", $emailBody);
-        */
+        if ($campaign->enableRedirectLinks) {
+            // Replace links with tracking links
+            $url = Yii::app()->controller->createAbsoluteUrl (
+                'click', array ('uid' => $uniqueId, 'type' => 'click'));
+            $emailBody = preg_replace_callback (
+                '/(<a[^>]*href=")([^"]*)("[^>]*>)/', 
+                function (array $matches) use ($url) {
+                    return $matches[1].$url.'&url='.urlencode ($matches[2]).''.
+                        $matches[3];
+                }, $emailBody);
+        }
 
         // Insert unsubscribe link(s):
         $unsubUrl = Yii::app()->createExternalUrl('/marketing/marketing/click', array(
@@ -252,7 +251,8 @@ class CampaignMailingBehavior extends EmailDeliveryBehavior {
             'email' => $email
                 ));
         $emailBody = preg_replace(
-                '/\{_unsub\}/', '<a href="'.$unsubUrl.'">'.Yii::t('marketing', 'unsubscribe').'</a>', $emailBody);
+            '/\{_unsub\}/', '<a href="'.$unsubUrl.'">'.Yii::t('marketing', 'unsubscribe').'</a>',
+            $emailBody);
 
         // Replace attribute variables:
         $replacementParams = array(
@@ -472,6 +472,7 @@ class CampaignMailingBehavior extends EmailDeliveryBehavior {
             $this->stateChangeType = self::STATE_RACECOND;
             return false;
         }
+
         // Additional checks
         //
         // Email hasn't been set blank:
@@ -481,6 +482,7 @@ class CampaignMailingBehavior extends EmailDeliveryBehavior {
             $this->stateChangeType = self::STATE_NULLADDRESS;
             return false;
         }
+
         // Contact unsubscribed suddenly
         if($this->stateChange = $this->stateChange || $this->listItem->unsubscribed!=0 || $this->recipient->doNotEmail!=0) {
             $this->status['message'] = Yii::t('marketing','Skipping {email}; the contact has unsubscribed.',array('{email}'=>$this->recipient->email));

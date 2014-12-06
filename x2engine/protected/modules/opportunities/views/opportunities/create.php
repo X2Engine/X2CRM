@@ -34,10 +34,15 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 
-$this->actionMenu = $this->formatMenu(array(
-	array('label'=>Yii::t('opportunities','Opportunities List'),'url'=>array('index')),
-	array('label'=>Yii::t('opportunities','Create Opportunity')),
-));
+$menuOptions = array(
+    'index', 'create',
+);
+$this->insertMenu($menuOptions);
+
 ?>
-<div class="page-title icon opportunities"><h2><?php echo Yii::t('opportunities','Create Opportunity'); ?></h2></div>
+<div class="page-title icon opportunities"><h2>
+    <?php echo Yii::t('opportunities','Create {opportunity}', array(
+        '{opportunity}'=>Modules::displayName(false),
+    )); ?>
+</h2></div>
 <?php echo $this->renderPartial('application.components.views._form', array('model'=>$model,'users'=>$users,'modelName'=>'Opportunity')); ?>

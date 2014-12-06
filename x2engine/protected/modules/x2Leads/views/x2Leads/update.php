@@ -39,13 +39,12 @@ $this->pageTitle = CHtml::encode (
 
 
 $authParams['assignedTo'] = $model->assignedTo;
-$this->actionMenu = $this->formatMenu(array(
-	array('label'=>Yii::t('x2Leads','Leads List'), 'url'=>array('index')),
-	array('label'=>Yii::t('x2Leads','Create Lead'), 'url'=>array('create')),
-	array('label'=>Yii::t('module','View'), 'url'=>array('view', 'id'=>$model->id)),
-	array('label'=>Yii::t('x2Leads','Edit Lead')),
-	array('label'=>Yii::t('x2Leads','Delete Lead'), 'url'=>'#', 'linkOptions'=>array('submit'=>array('delete','id'=>$model->id),'confirm'=>'Are you sure you want to delete this item?')),
-),$authParams);
+
+$menuOptions = array(
+    'index', 'create', 'view', 'edit', 'delete',
+);
+$this->insertMenu($menuOptions, $model, $authParams);
+
 ?>
 <div class="page-title icon x2Leads">
 	<h2><span class="no-bold"><?php echo Yii::t('module','Update'); ?>:</span> <?php echo CHtml::encode($model->name); ?></h2>

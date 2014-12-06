@@ -87,7 +87,7 @@ $this->widget('zii.widgets.grid.CGridView', array(
 			'type'=>'raw',
 		),
 		array(
-			'class'=>'CButtonColumn',
+			'class'=>'X2ButtonColumn',
 			'template'=>'{delete}',
 			'deleteButtonUrl'=>'Yii::app()->controller->createUrl("/notifications/delete",array("id"=>$data->id))',
 			'afterDelete'=>'function(link,success,data){

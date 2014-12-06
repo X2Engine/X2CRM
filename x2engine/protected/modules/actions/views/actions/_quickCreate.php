@@ -58,8 +58,11 @@ $form=$this->beginWidget('CActiveForm', array(
 		<?php echo $form->hiddenField($actionModel,'associationId'); ?>
 
 		
-		
-	<h2><?php echo Yii::t('actions','Action'); ?></h2>
+    <h2>
+        <?php echo Yii::t('actions','{module}', array(
+            '{module}' => Modules::displayName(false),
+        )); ?>
+    </h2>
 
 
 	<?php echo $form->errorSummary($actionModel); ?>
@@ -112,7 +115,10 @@ $form=$this->beginWidget('CActiveForm', array(
 
 	<div class="row buttons">
 		<?php
-		echo CHtml::htmlButton($actionModel->isNewRecord ? Yii::t('app','Submit Contact + Action'):Yii::t('app','Save'),
+            echo CHtml::htmlButton($actionModel->isNewRecord ? Yii::t('app','Submit {contact} + {action}', array(
+                '{contact}' => Modules::displayName(false, "Contacts"),
+                '{action}' => Modules::displayName(false),
+            )) : Yii::t('app','Save'),
 			array('type'=>'submit',
 				'class'=>'x2-button',
 				'id'=>'save-button1',
@@ -123,7 +129,9 @@ $form=$this->beginWidget('CActiveForm', array(
 		); ?>
 
 		<?php
-			echo CHtml::htmlButton(Yii::t('app','Submit Contact + Comment'),
+            echo CHtml::htmlButton(Yii::t('app','Submit {contact} + Comment', array(
+                '{contact}' => Modules::displayName(false, "Contacts"),
+            )),
 				array(
 					'type'=>'submit',
 					'class'=>'x2-button',

@@ -40,7 +40,7 @@ Yii::import('application.extensions.CJuiDateTimePicker.CJuiDateTimePicker');
     echo CHtml::form();
     echo Yii::t('actions',"Show me")." "
         .CHtml::dropDownList('complete',!empty($complete)?$complete:'No',array('No'=>Yii::t('actions','unfinished'),'Yes'=>Yii::t('actions','complete'),'all'=>Yii::t('actions','all')))
-        ." ".Yii::t('actions',"Actions assigned to")." "
+        ." ".Yii::t('actions',"{actions} assigned to", array('{actions}'=>Modules::displayName()))." "
         .CHtml::dropDownList('assignedTo',!empty($assignedTo)?$assignedTo:'me',array('me'=>Yii::t('actions','me'),'both'=>Yii::t('actions','me or anyone'),'all'=>Yii::t('actions','everyone')))
         ." ".Yii::t('actions',"that")." "
         .CHtml::dropDownList('dateType',!empty($dateType)?$dateType:'due',array('due'=>Yii::t('actions','are due'),'create'=>Yii::t('actions','were created')))

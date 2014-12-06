@@ -53,6 +53,7 @@ class Workflow extends CActiveRecord {
      */
     public function tableName() { return 'x2_workflows'; }
 
+    private static $_workflowOptions;
     private $_stageNameAutoCompleteSource;
 
     public function behaviors() {
@@ -133,6 +134,9 @@ class Workflow extends CActiveRecord {
         parent::afterSave();
     }
 
+    /**
+     * @return array workflow names indexed by id 
+     */
     public static function getList($enableNone=true) {
         $workflows = X2Model::model('Workflow')->findAll();
         $list = array();
@@ -141,6 +145,13 @@ class Workflow extends CActiveRecord {
         foreach ($workflows as $model)
             $list[$model->id] = $model->name;
         return $list;
+    }
+
+    public static function getWorkflowOptions () {
+        if (!isset (self::$_workflowOptions)) {
+            self::$_workflowOptions = self::getList (false);
+        }
+        return self::$_workflowOptions;
     }
 
     /**
@@ -1730,6 +1741,12 @@ class Workflow extends CActiveRecord {
             $listItemColors[$i - 1][] = "rgba($r, $g, $b, 0.12)";
         }
         return $listItemColors;
+    }
+
+    public function getDisplayName ($plural=true) {
+        return Yii::t('workflow', '{process}', array(
+            '{process}' => Modules::displayName($plural, 'Process'),
+        ));
     }
 
 }

@@ -193,13 +193,13 @@ foreach($data as $entry){
         <div class="top-sites-input">
         <?php
             echo CHtml::label(Yii::t('app', 'Title:'), 'url-title');
-            echo CHtml::textField('url-title', '');
+            echo CHtml::textField('url-title', '', array('class'=>'x2-textfield'));
         ?>
         </div><!-- .top-sites-input -->
         <div class="top-sites-input">
         <?php 
             echo CHtml::label(Yii::t('app','Link:'),'url-url');
-            echo CHtml::textField('url-url', '');
+            echo CHtml::textField('url-url', '',array('class'=>'x2-textfield'));
         ?>
         </div><!-- .top-sites-input -->
         <div class="top-sites-input submit">

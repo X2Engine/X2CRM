@@ -32,18 +32,18 @@
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2Engine".
  *****************************************************************************************/
-
 /*
 shift detail/form layouts to single column
 */
 @media (max-width: 777px) {
-    .formSectionRow td {
-        display: block;
-        width: 100% !important;
-    }
-    .formItem.leftLabel > .formInputBox {
-        width: 200px !important;
-    }
+  /* line 26, ../../../compass/themes/x2engine/css/responsiveX2Forms.scss */
+  .formSectionRow td {
+    display: block;
+    width: 100% !important;
+  }
+
+  /* line 30, ../../../compass/themes/x2engine/css/responsiveX2Forms.scss */
+  .formItem.leftLabel > .formInputBox {
+    width: 200px !important;
+  }
 }
-
-

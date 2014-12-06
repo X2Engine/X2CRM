@@ -70,7 +70,7 @@ function setUpTextEditor (suppressInsertableAttrs) {
 	} else {
 		window.emailEditor = createCKEditor("Campaign_content",{
 			tabIndex:5,
-			insertableAttributes:'.CJSON::encode(array(Yii::t('contacts','Contact Attributes')=>$insertableAttributes)).',
+			insertableAttributes:'.CJSON::encode(array(Yii::t('contacts','{module} Attributes', array('{module}'=>Modules::displayName(false, "Contacts")))=>$insertableAttributes)).',
 			fullPage:true
 		},function(){
 			window.emailEditor.document.on("keyup",function(){ 
@@ -91,7 +91,7 @@ function setUpTextEditor (suppressInsertableAttrs) {
 		.find("label").remove();
 
 
-	setupEmailAttachments("campaign-attachments");
+	x2.emailEditor.setupEmailAttachments("campaign-attachments");
 
 	$("#Campaign_templateDropdown").change(function() {
 		var template = $(this).val();
@@ -104,7 +104,8 @@ function setUpTextEditor (suppressInsertableAttrs) {
 			}).done(function(data) {
 				window.emailEditor.setData(data.body);
 				$(\'input[name="Campaign[subject]"]\').val(data.subject);
-				window.emailEditor.document.on("keyup",function(){ $("#Campaign_templateDropdown").val("0"); });
+				window.emailEditor.document.on(
+                    "keyup",function(){ $("#Campaign_templateDropdown").val("0"); });
 			});
 		}
 	});
@@ -160,10 +161,12 @@ $this->renderPartial('application.components.views._form', array(
 	'modelName'=>'Campaign',
 	'specialFields'=>array(
 		'template'=>CHtml::activeDropDownList(
-			$model,'template',array('0'=>Yii::t('docs','Custom Message')) + Docs::getEmailTemplates('email', 'Contacts'),
+			$model,'template',
+            array('0'=>Yii::t('docs','Custom Message')) + 
+                Docs::getEmailTemplates('email', 'Contacts'),
 			array(
 				'title'=>$model->getAttributeLabel('template'),
-				'id'=>'Campaign_templateDropdown'
+				'id'=>'Campaign_templateDropdown',
 			)
 		)
 	)
@@ -181,24 +184,29 @@ $this->renderPartial('application.components.views._form', array(
 			<div class="formSectionHeader">
 				<span class="sectionTitle"><?php echo Yii::t('app','Attachments'); ?></span>
 			</div>
-			<div id="campaign-attachments" class="tableWrapper" style="min-height: 100px; padding: 5px;">
-				<?php $attachments = $model->attachments; ?>
-				<?php if($attachments) { ?>
-					<?php foreach($attachments as $attachment) { ?>
-						<?php $media = $attachment->mediaFile; ?>
-						<?php if($media && $media->fileName) { ?>
+			<div id="campaign-attachments" class="tableWrapper" 
+             style="min-height: 100px; padding: 5px;">
+				<?php 
+                $attachments = $model->attachments;
+				if($attachments) {
+					foreach($attachments as $attachment) {
+						$media = $attachment->mediaFile;
+						if($media && $media->fileName) { 
+                        ?>
 							<div style="font-weight: bold;">
 								<span class="filename"><?php echo $media->fileName; ?></span>
 								<input type="hidden" value="<?php echo $media->id; ?>" 
 								 name="AttachmentFiles[id][]" class="AttachmentFiles">
-								<span class="remove"><a href="#">[x]</a></span>
+								<span class="remove fa fa-times"></span>
 							</div>
-						<?php } ?>
-					<?php } ?>
-				<?php } ?>
-				<div class="next-attachment" style="font-weight: bold;">
+						<?php 
+                        }
+					}
+				} 
+                ?>
+				<div class="next-attachment" style='font-weight: bold; display: none;'>
 					<span class="filename"></span>
-					<span class="remove"></span>
+					<span class="remove fa fa-times x2-icon-gray"></span>
 				</div>
 			</div>
 		</div>
@@ -206,6 +214,12 @@ $this->renderPartial('application.components.views._form', array(
 </div>
 
 <div class="row buttons">
-	<?php echo CHtml::submitButton($model->isNewRecord ? Yii::t('app','Create') : Yii::t('app','Save'),array('class'=>'x2-button','id'=>'save-button','tabindex'=>24)); ?>
+	<?php 
+    echo CHtml::submitButton(
+        $model->isNewRecord ? 
+            Yii::t('app','Create') : 
+            Yii::t('app','Save'),
+        array('class'=>'x2-button','id'=>'save-button','tabindex'=>24)); 
+    ?>
 </div>
 

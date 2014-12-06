@@ -38,11 +38,14 @@ Yii::import('zii.widgets.grid.CGridView');
 Yii::import('X2GridViewBase');
 
 /**
- * Custom grid view display function.
- *
- * @package application.components
+ * @package application.components.X2GridView
  */
 class X2GridViewGeneric extends X2GridViewBase {
+
+    /**
+     * @var bool $rememberColumnSort whether or not to preserve order of columns in gvSettings
+     */
+    public $rememberColumnSort = true;  
 
     /**
      * Used to populate allFieldNames property with attribute labels indexed by
@@ -60,14 +63,27 @@ class X2GridViewGeneric extends X2GridViewBase {
         $unsortedColumns = array ();
         foreach ($this->columns as &$column) {
             $name = (isset ($column['name'])) ? $column['name'] : '';
+            if (!isset ($column['id'])) {
+                if (isset ($column['class']) && 
+                    is_subclass_of ($column['class'], 'CCheckboxColumn')) {
+
+                    $column['id'] = $this->namespacePrefix.'C_gvCheckbox'.$name;
+                } else {
+                    $column['id'] = $this->namespacePrefix.'C_'.$name;
+                }
+            } else {
+                $column['id'] = $this->namespacePrefix.$column['id'];
+            }
             if (!isset ($this->gvSettings[$name])) {
                 $unsortedColumns[] = $column;
                 continue;
             }
             $width = $this->gvSettings[$name];
-            $width = (!empty($width) && is_numeric($width))? $width : null;
-            $column['headerHtmlOptions'] = array('style'=>'width:'.$width.'px;');
-            $column['id'] = $this->namespacePrefix.'C_'.$name;
+            $width = $this->formatWidth ($width);
+            $column['headerHtmlOptions'] = array('style'=>'width:'.$width.';');
+            $column['htmlOptions'] = X2Html::mergeHtmlOptions (
+                isset ($column['htmlOptions']) ? 
+                    $column['htmlOptions'] : array (), array ('width' => $width));
         }
         unset ($column); // unset lingering reference
 
@@ -82,17 +98,19 @@ class X2GridViewGeneric extends X2GridViewBase {
             $this->columns[] =  $this->getGvCheckboxColumn ($width);
         }
 
-        $sortedColumns = array ();
-        foreach ($this->gvSettings as $columnName => $width) {
-            foreach ($this->columns as $column) {
-                $name = (isset ($column['name'])) ? $column['name'] : '';
-                if ($name === $columnName) {
-                    $sortedColumns[] = $column;
-                    break;
-                } 
+        if ($this->rememberColumnSort) {
+            $sortedColumns = array ();
+            foreach ($this->gvSettings as $columnName => $width) {
+                foreach ($this->columns as $column) {
+                    $name = (isset ($column['name'])) ? $column['name'] : '';
+                    if ($name === $columnName) {
+                        $sortedColumns[] = $column;
+                        break;
+                    } 
+                }
             }
-        }
-        $this->columns = array_merge ($sortedColumns, $unsortedColumns);
+            $this->columns = array_merge ($sortedColumns, $unsortedColumns);
+        } 
     }
 
 
@@ -112,8 +130,9 @@ class X2GridViewGeneric extends X2GridViewBase {
                         $.fn.yiiGridView.update("'.$this->id.'"); 
                     }',
                 ),
+                'id' => 'resultsPerPage'.$this->id,
                 'style' => 'margin: 0;',
-                'class' => 'x2-select',
+                'class' => 'x2-select resultsPerPage',
             )
         ).'</div>';
     }

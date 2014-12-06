@@ -37,15 +37,10 @@
 $this->pageTitle = CHtml::encode (
     Yii::app()->settings->appName . ' - '.Yii::t('x2Leads', 'Leads'));
 
-
-$menuItems = array(
-	array('label'=>Yii::t('x2Leads','Leads List')),
-	array('label'=>Yii::t('x2Leads','Create Lead'), 'url'=>array('create')),
-        array('label'=>Yii::t('x2Leads', 'Import Leads'), 'url'=>array('admin/importModels', 'model'=>'X2Leads'), 'visible'=>Yii::app()->params->isAdmin),
-        array('label'=>Yii::t('x2Leads', 'Export Leads'), 'url'=>array('admin/exportModels', 'model'=>'X2Leads'), 'visible'=>Yii::app()->params->isAdmin),
+$menuOptions = array(
+    'index', 'create', 'import', 'export',
 );
-
-$this->actionMenu = $this->formatMenu($menuItems);
+$this->insertMenu($menuOptions);
 
 Yii::app()->clientScript->registerScript('search', "
 $('.search-button').click(function(){
@@ -62,7 +57,7 @@ $('.search-form form').submit(function(){
 
 $this->widget('X2GridView', array(
 	'id'=>'x2Leads-grid',
-	'title'=>Yii::t('x2Leads','Leads'),
+	'title'=>Yii::t('x2Leads','{leads}', array('{leads}' => Modules::displayName())),
 	'buttons'=>array('advancedSearch','clearFilters','columnSelector','autoResize'),
 	'template'=>
         '<div id="x2-gridview-top-bar-outer" class="x2-gridview-fixed-top-bar-outer">'.

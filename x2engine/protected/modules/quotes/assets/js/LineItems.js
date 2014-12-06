@@ -99,7 +99,10 @@ function LineItems (argsDict) {
 
     $(function () {
         // used to instantiate moneyMask fields
-        that._currencyConfig = $.extend ({}, x2.currencyInfo, {'affixStay' : true});
+        that._currencyConfig = $.extend ({}, x2.currencyInfo, {
+            affixStay: true,
+            allowNegative: true
+        });
     });
 
     this._init ();
@@ -254,7 +257,6 @@ a float, save the float, and convert the value of the input field back to a curr
 The converted currency is returned.
 */
 LineItems.prototype.extractCurrency = function (element) {
-    var that = this;
     return $(element).maskMoney ('unmasked')[0];
     /*$(element).toNumber(
         {'region': that.currency});

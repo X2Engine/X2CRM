@@ -73,7 +73,9 @@ $(document).ready(function() {
 		echo $form->error($model,'name'); 
         ?>
 	</div>
-        <label><?php echo Yii::t('groups','Users');?></label>
+        <label><?php echo Yii::t('groups','{users}', array(
+            '{users}' => Modules::displayName(true, "Users"),
+        ));?></label>
         <?php echo CHtml::dropDownList('users[]', isset($selected)?$selected:"", X2Model::getAssignmentOptions(false, false), array('class'=>'multiselect', 'multiple'=>'multiple')); ?>
         <br />
 

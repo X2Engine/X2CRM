@@ -34,12 +34,11 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 
-$this->actionMenu = $this->formatMenu(array(
-	array('label'=>Yii::t('products','Product List')),
-	array('label'=>Yii::t('products','Create'), 'url'=>array('create')),
-        array('label'=>Yii::t('products', 'Import Products'), 'url'=>array('admin/importModels', 'model'=>'Product'), 'visible'=>Yii::app()->params->isAdmin),
-        array('label'=>Yii::t('products', 'Export Products'), 'url'=>array('admin/exportModels', 'model'=>'Product'), 'visible'=>Yii::app()->params->isAdmin),
-));
+
+$menuOptions = array(
+    'index', 'create', 'import', 'export',
+);
+$this->insertMenu($menuOptions);
 
 Yii::app()->clientScript->registerScript('search', "
 $('.search-button').click(function(){
@@ -64,7 +63,7 @@ $('.search-form form').submit(function(){
 <?php
 $this->widget('X2GridView', array(
 	'id'=>'product-grid',
-	'title'=>Yii::t('products','Products'),
+	'title'=>Yii::t('products','{module}', array('{module}'=>Modules::displayName())),
 	'buttons'=>array('advancedSearch','clearFilters','columnSelector','autoResize'),
 	'template'=> 
         '<div id="x2-gridview-top-bar-outer" class="x2-gridview-fixed-top-bar-outer">'.

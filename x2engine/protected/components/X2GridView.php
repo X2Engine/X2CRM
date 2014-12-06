@@ -44,8 +44,6 @@ Yii::import('X2GridViewBase');
  * columns and also the adding of new columns based on the available fields for
  * the model.
  *
- * @property string $moduleName Name of the module that the grid view is being
- *  used in, for purposes of access control.
  * @property bool $isAdmin If true, the grid view will be generated under the
  *  assumption that the user viewing it has full/administrative access to
  *  whichever module that it is being used in.
@@ -56,25 +54,23 @@ class X2GridView extends X2GridViewBase {
     public $viewName;
 
     /**
+     * @var string $dataColumnClass
+     */
+    public $dataColumnClass = 'X2DataColumn'; 
+
+    /**
      * @var bool $enableTags if true, tags column can be added/removed by user. Don't enable this
      *  without adding support for tag filtering.
      */
     public $enableTags = false;
 
-    public $massActions = array ();
-    public $fields;
     public $allFields = array ();
     public $specialColumns;
-
-    /**
-     * @var bool If true, the users will be able to select & perform mass action on all records 
-     *  all records in the dataprovider.
-     */
-    public $enableSelectAllOnAllPages = false;
+    public $massActions = array (
+        );
 
     protected $_fieldModels;
     protected $_isAdmin;
-    protected $_moduleName;
     protected $specialColumnNames = array();
 
     public function __construct($owner = null){
@@ -138,8 +134,6 @@ class X2GridView extends X2GridViewBase {
             if((!isset($fieldPermissions[$field->id]) || $fieldPermissions[$field->id] > 0))
                 $this->allFields[$field->fieldName] = $field;
         }
-
-        $this->fields = $fields;
     }
 
     protected function getSpecialColumnName ($columnName) {
@@ -188,16 +182,17 @@ class X2GridView extends X2GridViewBase {
         } else {
             $newColumn = $this->createDefaultStyleColumn ($columnName, $width);
         }
+        if ($newColumn === array ()) return $newColumn;
+        $newColumn['htmlOptions'] = X2Html::mergeHtmlOptions (
+            isset ($newColumn['htmlOptions']) ? 
+                $newColumn['htmlOptions'] : array (), array ('width' => $width));
         return $newColumn;
     }
 
     protected function createDefaultStyleColumn ($columnName, $width) {
         $isCurrency = in_array($columnName,array('annualRevenue','quoteAmount'));
         $newColumn = array();
-        $fields = $this->fields;
-
-        if(isset ($fields) && 
-            (array_key_exists($columnName, $this->allFields))) { 
+        if ((array_key_exists($columnName, $this->allFields))) { 
 
             $newColumn['name'] = $columnName;
             $newColumn['id'] = $this->namespacePrefix.'C_'.$columnName;
@@ -221,6 +216,9 @@ class X2GridView extends X2GridViewBase {
             } elseif($this->allFields[$columnName]->type=='percentage') {
                 $newColumn['value'] = '$data["'.$columnName.'"]!==null&&$data["'.
                     $columnName.'"]!==""?((string)($data["'.$columnName.'"]))."%":null';
+            } elseif($this->allFields[$columnName]->type=='assignment') {
+                $newColumn['value'] = 'empty($data["'.$columnName.'"]) ? '.
+                    'Yii::t("app","Anyone"):User::getUserLinks($data["'.$columnName.'"])';
             } elseif($this->allFields[$columnName]->type=='dateTime') {
                 $newColumn['value'] = 'empty($data["'.$columnName.'"])? "" : '.
                     'Yii::app()->dateFormatter->formatDateTime($data["'.
@@ -266,15 +264,6 @@ class X2GridView extends X2GridViewBase {
         return $this->_isAdmin;
     }
 
-    public function getModuleName() {
-        if(!isset($this->_moduleName)) {
-            if(!isset(Yii::app()->controller->module))
-                throw new CException('X2GridView cannot be used both outside of a module that uses X2Model and without specifying its moduleName property.');
-            $this->_moduleName = Yii::app()->controller->module->getName();
-        }
-        return $this->_moduleName;
-    }
-
     public function init () {
         $this->handleFields ();
         if ($this->enableSelectAllOnAllPages) $this->dataProvider->calculateChecksum = true;
@@ -316,55 +305,6 @@ class X2GridView extends X2GridViewBase {
             '</div>';
     }
 
-    public function renderTopPager () {
-        $this->controller->renderPartial (
-            'application.components.views._x2GridViewTopPager', array (
-                'gridId' => $this->id,
-                'modelName' => $this->modelName,
-                'gridObj' => $this,
-                'namespacePrefix' => $this->namespacePrefix,
-            )
-        );
-    }
-
-    /**
-     * Display mass actions ui buttons in top bar and set up related JS
-     */
-    public function renderMassActionButtons () {
-        $auth = Yii::app()->authManager;
-        $actionAccess = ucfirst(Yii::app()->controller->getId()). 'Delete';
-        $authItem = $auth->getAuthItem($actionAccess);
-        if(!is_null($authItem) && !Yii::app()->user->checkAccess($actionAccess)){
-            if(in_array('delete',$this->massActions))
-                unset($this->massActions[array_search('delete',$this->massActions)]);
-        }
-
-//        $gridFilters = $this->dataProvider->model->getGridFilters ();
-//        if (is_array ($gridFilters)) {
-//            $fmtGridFilters = array ();
-//            foreach ($gridFilters as $attr => $val) {
-//                $fmtGridFilters[$this->modelName.'['.$attr.']'] = $val;
-//            }
-//        }
-
-        if ($this->enableSelectAllOnAllPages) {
-            $idChecksum = $this->dataProvider->getIdChecksum ();
-        }
-
-        $this->controller->renderPartial (
-            'application.components.views._x2GridViewMassActionButtons', array (
-                'UIType' => 'buttons',
-                'massActions' => $this->massActions,
-                'gridId' => $this->id,
-                'namespacePrefix' => $this->namespacePrefix,
-                'modelName' => $this->modelName,
-                'gridObj' => $this,
-                'fixedHeader' => $this->fixedHeader,
-                'idChecksum' => $this->enableSelectAllOnAllPages ? $idChecksum : null,
-            )//, false, ($this->ajax ? true : false)
-        );
-    }
-
     public function setModuleName($value) {
         $this->_moduleName = $value;
     }
@@ -374,52 +314,6 @@ class X2GridView extends X2GridViewBase {
             $this->renderSelectAllRecordsOnAllPagesStrip ();
         }
     }
-
-    /**
-     * Creates column objects and initializes them. Overrides CGridView's method, swapping
-     * CDataColumn for X2DataColumn.
-     *
-     * This method is Copyright (c) 2008-2014 by Yii Software LLC
-     * http://www.yiiframework.com/license/
-     */
-    protected function initColumns() {
-        if($this->columns===array()) {
-            if($this->dataProvider instanceof CActiveDataProvider) {
-                $this->columns=$this->dataProvider->model->attributeNames();
-            } elseif($this->dataProvider instanceof IDataProvider) {
-                // use the keys of the first row of data as the default columns
-                $data=$this->dataProvider->getData();
-                if(isset($data[0]) && is_array($data[0]))
-                    $this->columns=array_keys($data[0]);
-            }
-        }
-        $id=$this->getId();
-        foreach($this->columns as $i=>$column) {
-            if(is_string($column)) {
-                $column=$this->createDataColumn($column);
-            } else {
-                if(!isset($column['class']))
-                    /* x2modstart */ 
-                    $column['class']='X2DataColumn';
-                    /* x2modend */ 
-                $column=Yii::createComponent($column, $this);
-            }
-            if(!$column->visible) {
-                unset($this->columns[$i]);
-                continue;
-            }
-            if($column->id===null) {
-                $column->id=$id.'_c'.$i;
-            }
-            $this->columns[$i]=$column;
-        }
-
-        foreach($this->columns as $column) {
-            $column->init();
-        }
-    }
-
-
 
     private function renderSelectAllRecordsOnAllPagesStrip () {
         echo 

@@ -34,6 +34,8 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 
+Yii::import('application.components.X2GridView.massActions.*');
+
 abstract class MassAction extends CComponent {
 
     const SESSION_KEY_PREFIX = 'superMassAction';
@@ -43,9 +45,69 @@ abstract class MassAction extends CComponent {
     const BAD_COUNT_AND_CHECKSUM = 3;
 
     /**
+     * @var bool $hasButton If true, mass action has a button, otherwise it is assumed that the
+     *  mass action can only be accessed from the dropdown list
+     */
+    public $hasButton = false; 
+
+    /**
      * If true, user must enter their password before super mass action can proceed 
      */
     protected $requiresPasswordConfirmation = false;
+
+    protected $_label;
+
+    private $_packages;
+
+    /**
+     * @return string label to display in the dropdown list
+     */
+    abstract public function getLabel ();
+
+    /**
+     * @param array $gvSelection array of ids of records to perform mass action on
+     */
+    abstract public function execute (array $gvSelection);
+
+    public function renderDialog ($gridId, $modelName) {}
+
+    /**
+     * Instantiates mass action classes
+     * @return array  
+     */
+    public static function getMassActionObjects (array $classNames) {
+        $objs = array ();
+        foreach ($classNames as $className) {
+            $objs[] = new $className; 
+        }
+        return $objs;
+    }
+
+    public function registerPackages () {
+        Yii::app()->clientScript->registerPackages ($this->getPackages (), true);
+    }
+
+    public function getPackages () {
+        if (!isset ($this->_packages)) {
+            $this->_packages = array (
+                'X2MassAction' => array(
+                    'baseUrl' => Yii::app()->request->baseUrl,
+                    'js' => array(
+                        'js/X2GridView/MassAction.js',
+                    ),
+                    'depends' => array ('auxlib'),
+                ),
+            );
+        }
+        return $this->_packages;
+    }
+
+    /**
+     * Echoes flashes in the flashes arrays
+     */
+    public static function echoFlashes () {
+        echo CJSON::encode (self::getFlashes ());
+    }
 
     // used to hold success, warning, and error messages
     protected static $successFlashes = array ();
@@ -61,16 +123,56 @@ abstract class MassAction extends CComponent {
     }
 
     /**
-     * Echoes flashes in the flashes arrays
+     * @param string $gridId id of grid view
      */
-    public static function echoFlashes () {
-        echo CJSON::encode (self::getFlashes ());
+    public function getDialogId ($gridId) {
+        return "$gridId-".get_class ($this)."-dialog'" ;
     }
 
     /**
-     * @param array $gvSelection array of ids of records to perform mass action on
+     * Renders the mass action button, if applicable
      */
-    abstract public function execute (array $gvSelection);
+    public function renderButton () {
+        if (!$this->hasButton) return;
+        
+        echo "
+            <a href='#' title='".CHtml::encode ($this->getLabel ())."'
+             class='mass-action-button x2-button mass-action-button-".get_class ($this)."'>
+                <span></span>
+            </a>";
+    }
+
+    /**
+     * Renders the list item for the mass action dropdown 
+     */
+    public function renderListItem () {
+        echo "
+            <li class='mass-action-button mass-action-".get_class ($this)."' ".
+            ($this->hasButton ? 'style="display: none;"' : '').">
+            ".CHtml::encode ($this->getLabel ())."
+            </li>";
+    }
+
+    /**
+     * Check user password and echo either an error message or a unique id which gets used on
+     * subsequent requests to ensure that the user confirmed the action with their password
+     */
+    public static function superMassActionPasswordConfirmation () {
+        if (!isset ($_POST['password'])) 
+            throw new CHttpException (400, Yii::t('app', 'Bad Request'));
+        $loginForm = new LoginForm;
+        $loginForm->username = Yii::app()->params->profile->username;
+        $loginForm->password = $_POST['password'];
+        if ($loginForm->validate ()) {
+            do {
+                $uid = EncryptUtil::secureUniqueIdHash64 ();
+            } while (isset ($_SESSION[self::SESSION_KEY_PREFIX_PASS_CONFIRM.$uid]));
+            $_SESSION[self::SESSION_KEY_PREFIX_PASS_CONFIRM.$uid] = true;
+            echo CJSON::encode (array (true, $uid));
+        } else {
+            echo CJSON::encode (array (false, Yii::t('app', 'incorrect password')));
+        }
+    }
 
     /**
      * Helper method for superExecute. Returns array of ids of records in search results.
@@ -248,27 +350,6 @@ abstract class MassAction extends CComponent {
             $response['batchComplete'] = true;
         }
         return $response;
-    }
-
-    /**
-     * Check user password and echo either an error message or a unique id which gets used on
-     * subsequent requests to ensure that the user confirmed the action with their password
-     */
-    public static function superMassActionPasswordConfirmation () {
-        if (!isset ($_POST['password'])) 
-            throw new CHttpException (400, Yii::t('app', 'Bad Request'));
-        $loginForm = new LoginForm;
-        $loginForm->username = Yii::app()->params->profile->username;
-        $loginForm->password = $_POST['password'];
-        if ($loginForm->validate ()) {
-            do {
-                $uid = EncryptUtil::secureUniqueIdHash64 ();
-            } while (isset ($_SESSION[self::SESSION_KEY_PREFIX_PASS_CONFIRM.$uid]));
-            $_SESSION[self::SESSION_KEY_PREFIX_PASS_CONFIRM.$uid] = true;
-            echo CJSON::encode (array (true, $uid));
-        } else {
-            echo CJSON::encode (array (false, Yii::t('app', 'incorrect password')));
-        }
     }
 
 }

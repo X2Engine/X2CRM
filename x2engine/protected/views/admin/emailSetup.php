@@ -71,6 +71,10 @@ Yii::app()->clientScript->registerScript('toggleAuthInfo', "
         $('#save-button').addClass('highlight'); //css('background','yellow');
     });
 
+    $('#imap-poll-timeout').change(function(){
+        $('#imap-poll-slider').slider('value',$(this).val());
+    });
+
 ", CClientScript::POS_READY);
 ?>
 <div class="page-title"><h2><?php echo Yii::t('admin', 'Email Server Configuration'); ?></h2></div>
@@ -85,6 +89,9 @@ Yii::app()->clientScript->registerScript('toggleAuthInfo', "
                 ));
         echo $form->errorSummary($model);
         ?>
+
+        <?php  ?>
+
         <h4><?php echo Yii::t('admin', 'Default Email Delivery Method'); ?></h4>
         <p><?php
         echo Yii::t('admin', 'Define how the system sends email by default, when the email account is unspecified.').'<br /><br />';
@@ -299,7 +306,8 @@ Yii::app()->clientScript->registerScript('toggleAuthInfo', "
                 ?>
             </div>
         </div>
-        <br>
+        <br/><hr/>
+        <br/>
 
         <?php //echo $form->labelEx($admin,'chatPollTime');   ?>
         <?php // echo $form->textField($admin,'chatPollTime',array('id'=>'chatPollTime'));  ?>

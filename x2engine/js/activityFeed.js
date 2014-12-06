@@ -33,10 +33,7 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 
-
-
 x2.ActivityFeed = (function () {
-
 function ActivityFeed (argsDict) {
     var that = this;
     argsDict = typeof argsDict === 'undefined' ? {} : argsDict;
@@ -66,6 +63,8 @@ function ActivityFeed (argsDict) {
     that.editorIsExpanded = false; 
 
     this._init ();
+
+    this.setUpOpacityScreen ();
 }
 
 
@@ -405,6 +404,7 @@ ActivityFeed.prototype.setupEditorBehavior = function  () {
             var newHeight = 140;
             that.animateEditorVerticalResize (editorMinHeight, newHeight, 300);
             $("#post-buttons").slideDown (400);
+            $('#feed-form').css({opacity: 1.0});
             //x2.Select.reinitWidths ($('#post-buttons'));
         }
     });
@@ -417,6 +417,7 @@ ActivityFeed.prototype.setupEditorBehavior = function  () {
         if (that.editorIsExpanded && editorText === "" &&
             $('#upload').val () === "") {
 
+            $('#feed-form').css({opacity: 0.5});
             that.initMinimizeEditor ();
             that.finishMinimizeEditor ();
         }
@@ -505,6 +506,37 @@ ActivityFeed.prototype.setupActivityFeed = function  () {
         }
     });
 
+    $(document).on("click",".comment-link",function(e){
+        e.preventDefault();
+        var link = this;
+        var pieces = $(this).attr("id").split("-");
+        var id = pieces[0];
+        $.ajax({
+            url:"loadComments",
+            data:{
+                id:id,
+                profileId: x2.activityFeed.profileId 
+            },
+            success:function(data){
+                $("#"+id+"-comments").html(data);
+                //$(".empty").parent().hide();
+                $("#"+id+"-comment-box").slideDown(400);
+                $(link).hide();
+                $(link).next().show();
+            }
+        });
+    });
+
+    $(document).on("click",".comment-hide-link",function(e){
+        e.preventDefault();
+        $(this).hide();
+        $(this).prev().show();
+        var pieces = $(this).prev().attr("id").split("-");
+        var id = pieces[0];
+        $("#"+id+"-comment-box").slideUp(400);
+    });
+
+
     $('#submit-button').click (function () { that.publishPost (); });
 
     if ($("#sticky-feed .empty").length !== 0) {
@@ -517,9 +549,9 @@ ActivityFeed.prototype.setupActivityFeed = function  () {
     });
         
     // show all comments
-    $.each($(".comment-count"),function(){
+    $(".comment-count").each (function(){
         if($(this).attr("val")>0){
-            $(this).parent().click();
+            $(this).closest ('.comment-link').click();
         }
     });
 
@@ -659,179 +691,113 @@ ActivityFeed.prototype.setupMakeImportantDialog = function  () {
     var that = this;
     var link, pieces, id;
 
-    function clickMakeImportantButton () {
+    function clickMakeImportantButton (e) {
+        e.preventDefault();
+
+        link = this;
+
+        var post$ = $(link).parents(".view.top-level");
+        var important = post$.hasClass('important-action');
+        var attr = important ? 'unimportant' : 'important';
+        console.log(important);
+        console.log(attr);
+        pieces = $(link).attr("id").split("-");
+        id = pieces[0];
+
         $.ajax({
             url:"flagPost",
             data:{
                 id:id,
-                attr:"important",
-                //email:$("#emailUsers").attr("checked"),
-                color:$("#broadcastColor").val().replace("#","%23"),
-                fontColor:$("#fontColor").val().replace("#","%23"),
-                linkColor:$("#linkColor").val().replace("#","%23")
+                attr: attr,
             },
             success:function(data){
-                if($("#broadcastColor").val()==""){
-                    var color="#FFFFC2";
-                }else{
-                    var color=$("#broadcastColor").val();
-                }
-                var post$ = $(link).parents(".view.top-level");
-                var postLinks$ = post$.find ('div.event-text-box a');
-                var commentAge$ = post$.find ('div.event-text-box .comment-age');
-
-                if($("#fontColor").val()!=""){
-                    post$.css("color",$("#fontColor").val());
-                    commentAge$.css("color",$("#fontColor").val());
-                }
-                if($("#linkColor").val()!=""){
-                    postLinks$.css("color",$("#linkColor").val());
-                }
-                post$.css("background-color",color);
-                commentAge$.css("background-color",color);
-                $(link).toggle();
-                $(link).next().toggle();
-                $("#broadcastColor").val("");
-                $("#fontColor").val("");
-                $("#linkColor").val("");
-                x2.colorPicker.addCheckerImage ($("#broadcastColor"));
-                x2.colorPicker.addCheckerImage ($("#fontColor"));
-                x2.colorPicker.addCheckerImage ($("#linkColor"));
-                $('#make-important-dialog').dialog("close");
+                post$.toggleClass('important-action', !important);
+                $(link).siblings('.important-link, .unimportant-link').show();
+                $(link).hide();
             }
         });
     }
 
-    $(document).on("click",".important-link",function(e){
-        e.preventDefault();
-        link = this;
-        pieces = $(this).attr("id").split("-");
-        id = pieces[0];
-        $("#make-important-dialog").dialog({
-            //title: that.translations['MakeImportant Event'],
-            title: that.translations['Make Important'],
-            autoOpen: true,
-            height: "auto",
-            width: 657,
-            resizable: false,
-            show: 'fade',
-            hide: 'fade',
-            buttons: [
-                { 
-                    //text: that.translations['MakeImportant'],
-                    text: that.translations['Okay'],
-                    click: clickMakeImportantButton
-                },
-                { 
-                    text: that.translations['Nevermind'],
-                    click: function () {
-                        $('#make-important-dialog').dialog("close");
-                    }
-                }
-            ],
-        });
+    $('.important-link, .unimportant-link').click( clickMakeImportantButton );
 
-    });
-
-    auxlib.makeDialogClosableWithOutsideClick ($("#make-important-dialog"));
+    // auxlib.makeDialogClosableWithOutsideClick ($("#make-important-dialog"));
 }
 
 
 ActivityFeed.prototype.updateEventList = function  () {
     var that = this;
 
-    $(document).on("click",".comment-link",function(e){
-        e.preventDefault();
-        var link = this;
-        var pieces = $(this).attr("id").split("-");
-        var id = pieces[0];
-        $.ajax({
-            url:"loadComments",
-            data:{
-                id:id,
-                profileId: x2.activityFeed.profileId 
-            },
-            success:function(data){
-                $("#"+id+"-comments").html(data);
-                //$(".empty").parent().hide();
-                $("#"+id+"-comment-box").slideDown(400);
-                $(link).hide();
-                $(link).next().show();
-            }
-        });
-    });
+    // $(document).on("click",".unimportant-link",function(e){
+    //     e.preventDefault();
+    //     // clickMakeImportantButton(this, false);
+    // });
 
-    $(document).on("click",".comment-hide-link",function(e){
-        e.preventDefault();
-        $(this).hide();
-        $(this).prev().show();
-        var pieces = $(this).prev().attr("id").split("-");
-        var id = pieces[0];
-        $("#"+id+"-comment-box").slideUp(400);
-    });
-
-
-    $(document).on("click",".unimportant-link",function(e){
-        e.preventDefault();
-        var link = this;
-        var pieces = $(this).attr("id").split("-");
-        var id = pieces[0];
-        $.ajax({
-            url:"flagPost",
-            data:{id:id,attr:"unimportant"},
-            success:function(data){
-                var post$ = $(link).parents(".view.top-level");
-                post$.css({
-                    "background-color": "#fff",
-                    "color": "#222"
-                });
-                var postLinks$ = post$.find ('div.event-text-box a');
-                postLinks$.css ("color","#06c");
-                var commentAge$ = post$.find ('div.event-text-box .comment-age');
-                commentAge$.css({
-                    "background-color": "#fff",
-                    "color": "#666"
-                });
-            }
-        });
-        $(link).hide();
-        $(link).prev().show();
-        return false;
-    });
+    // $(document).on("click",".unimportant-link",function(e){
+    //     e.preventDefault();
+    //     var link = this;
+    //     var pieces = $(this).attr("id").split("-");
+    //     var id = pieces[0];
+    //     $.ajax({
+    //         url:"flagPost",
+    //         data:{id:id,attr:"unimportant"},
+    //         success:function(data){
+    //             var post$ = $(link).parents(".view.top-level");
+    //             post$.css({
+    //                 "background-color": "#fff",
+    //                 "color": "#222"
+    //             });
+    //             var postLinks$ = post$.find ('div.event-text-box a');
+    //             postLinks$.css ("color","#06c");
+    //             var commentAge$ = post$.find ('div.event-text-box .comment-age');
+    //             commentAge$.css({
+    //                 "background-color": "#fff",
+    //                 "color": "#666"
+    //             });
+    //         }
+    //     });
+    //     $(link).hide();
+    //     $(link).prev().show();
+    //     return false;
+    // });
 
     function incrementLikeCount (likeCountElem) {
         likeCount = parseInt ($(likeCountElem).html ().replace (/[() ]/g, ""), 10) + 1;
-        $(likeCountElem).html (" (" + likeCount + ")");
+        $(likeCountElem).html (" " + likeCount + "");
     }
 
     function decrementLikeCount (likeCountElem) {
         likeCount = parseInt ($(likeCountElem).html ().replace (/[() ]/g, ""), 10) - 1;
-        $(likeCountElem).html (" (" + likeCount + ")");
+        $(likeCountElem).html (" " + likeCount + "");
     }
 
+    var disableLikeButton = false;
     $(document).on("click",".like-button",function(e){
+        if (disableLikeButton) return;
         e.preventDefault();
-        var link=this;
+        var link = this;
         var pieces = $(this).attr("id").split("-");
         var id = pieces[0];
         var tmpElem = $("<span>", { "text": ($(link).text ()) });
-        $(link).after (tmpElem);
         $(link).toggle();
+        $(link).next().toggle();
+        $(link).after (tmpElem);
+        disableLikeButton = true;
         $.ajax({
             url:"likePost",
             data:{id:id},
             success:function(data){
+                disableLikeButton = false;
                 $(tmpElem).remove ();
                 if (data === "liked post") {
                     incrementLikeCount ($(link).next().next());
                 }
-                $(link).next().toggle();
                 reloadLikeHistory (id);
             }
         });
     });
 
     $(document).on("click",".unlike-button",function(e){
+        if (disableLikeButton) return;
         e.preventDefault();
         var link = this;
         var pieces = $(this).attr("id").split("-");
@@ -839,15 +805,17 @@ ActivityFeed.prototype.updateEventList = function  () {
         var tmpElem = $("<span>", { "text": ($(link).text ()) });
         $(link).after (tmpElem);
         $(link).toggle();
+        $(link).prev().toggle();
+        disableLikeButton = true;
         $.ajax({
             url:"likePost",
             data:{id:id},
             success:function(data){
+                disableLikeButton = false;
                 $(tmpElem).remove ();
                 if (data === "unliked post") {
                     decrementLikeCount ($(link).next());
                 }
-                $(link).prev().toggle();
                 reloadLikeHistory (id);
             }
         });
@@ -1397,6 +1365,43 @@ ActivityFeed.prototype._setUpFilters = function () {
 
 };
 
+ActivityFeed.prototype.setUpOpacityScreen = function () {
+    var that = this;
+
+    $('#feed-form').
+        css({
+            opacity: 0.5,
+            transition: 'opacity 0.2s'
+        }).
+        hover (function (){
+            if (!that.editorIsExpanded) {
+                $(this).css ({opacity: 1.0});
+            }
+        }, function() {
+            if (!that.editorIsExpanded) {
+                $(this).css ({opacity: 0.5});
+            }
+        });
+     
+    
+    // var focused = false;
+
+    // $(function() {
+        
+        
+    //     $(document).click(function (e)
+    //     {
+
+    //         if (!feedForm.is(e.target) 
+    //             && feedForm.has(e.target).length === 0) {
+    //             focused = false;
+    //             feedForm.css({opacity: 0.5});
+    //         }
+    //     });
+    // });
+
+}
+
 ActivityFeed.prototype._init = function () {
 
     var that = this;
@@ -1413,6 +1418,7 @@ ActivityFeed.prototype._init = function () {
         that._setUpFilters ();
     });
 };
+
 
 return ActivityFeed;
 

@@ -34,23 +34,19 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 
-$heading = Yii::t('contacts','Contact Lists'); 
+$heading = Yii::t('contacts','{module} Lists', array('{module}'=>Modules::displayName(false))); 
 $this->pageTitle = $heading;
-
-$menuItems = array(
-	array('label'=>Yii::t('contacts','All Contacts'),'url'=>array('index')),
-	array('label'=>Yii::t('contacts','Lists')),
-	array('label'=>Yii::t('contacts','Create Contact'),'url'=>array('create')),
-	array('label'=>Yii::t('contacts','Create List'),'url'=>array('createList')),
-);
 
 $opportunityModule = Modules::model()->findByAttributes(array('name'=>'opportunities'));
 $accountModule = Modules::model()->findByAttributes(array('name'=>'accounts'));
 
-if($opportunityModule->visible && $accountModule->visible)
-	$menuItems[] = array('label'=>Yii::t('app', 'Quick Create'), 'url'=>array('/site/createRecords', 'ret'=>'contacts'), 'linkOptions'=>array('id'=>'x2-create-multiple-records-button', 'class'=>'x2-hint', 'title'=>Yii::t('app', 'Create a Contact, Account, and Opportunity.')));
+$menuOptions = array(
+    'all', 'lists', 'create', 'createList',
+);
+if ($opportunityModule->visible && $accountModule->visible)
+    $menuOptions[] = 'quick';
+$this->insertMenu($menuOptions);
 
-$this->actionMenu = $this->formatMenu($menuItems);
 
 Yii::app()->clientScript->registerScript('search', "
 $('.search-button').click(function(){

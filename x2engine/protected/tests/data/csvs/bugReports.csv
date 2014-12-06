@@ -1,0 +1,4 @@
+id,assignedTo,name,nameId,description,createDate,lastUpdated,lastActivity,updatedBy,blocks,duplicate,file,line,phpVersion,severity,status,subject,type,visibility,x2Version,errorCode
+1,admin,1,1_1,"Testing the bug reports","September 18, 2014 12:34:19 AM","September 18, 2014 12:34:19 AM","September 18, 2014 12:34:19 AM",admin,,,,,5.3,4,Confirmed,"First Bug Report",,Public,4.0,
+2,admin,2,2_2,,"September 18, 2014 12:34:57 AM","September 18, 2014 12:34:57 AM","September 18, 2014 12:34:57 AM",admin,,1_1,,,5.4,4,Confirmed,"Second Bug Report",,Public,4.0,
+3,admin,3,3_3,"Some non-issue","September 18, 2014 12:35:39 AM","September 18, 2014 12:35:39 AM","September 18, 2014 12:35:39 AM",admin,,nonexistant_45,,,,1,Unconfirmed,"Third Bug Report",,Public,,

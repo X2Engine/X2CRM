@@ -38,43 +38,32 @@
 $pieces = explode(", ",$model->editPermissions);
 $user = Yii::app()->user->getName();
 
-$actionMenu = array(
-	array('label'=>Yii::t('docs','List Docs'), 'url'=>array('/docs/index')),
-	array('label'=>Yii::t('docs','Create Doc'), 'url'=>array('/docs/create')),
-	array('label'=>Yii::t('docs','Create Email'), 'url'=>array('/docs/createEmail')),
-	array('label'=>Yii::t('docs','Create Quote'), 'url'=>array('/docs/createQuote')),
+$authParams = array('X2Model' => $model);
+$menuOptions = array(
+    'index', 'create', 'createEmail', 'createQuote',
 );
-if(!$model->isNewRecord) {
-    $actionMenu[] = array('label'=>Yii::t('docs','View'), 'url'=>array('/docs/view','id'=>$model->id));
-
-    // Menu items that apply only to existing docs
-    if(array_search($user, $pieces) !== false || $user == $model->editPermissions || Yii::app()->params->isAdmin)
-        $actionMenu[] = array('label' => Yii::t('docs', 'Edit Doc'), 'url' => array('/docs/update', 'id' => $model->id));
-    if(Yii::app()->user->checkAccess('DocsDelete', array('createdBy' => $model->createdBy)))
-        $actionMenu[] = array('label' => Yii::t('docs', 'Delete Doc'), 'url' => 'javascript:void(0);', 'linkOptions' => array('submit' => array('/docs/delete', 'id' => $model->id), 'confirm' => Yii::t('docs', 'Are you sure you want to delete this item?')));
-    $actionMenu[] = array('label' => Yii::t('docs', 'Edit Doc Permissions'), 'url' => array('/docs/changePermissions', 'id' => $model->id));
-    $actionMenu[] = array('label' => Yii::t('docs', 'Export Doc'), 'url' => array('/docs/exportToHtml', 'id' => $model->id));
-}
-
 $action = $this->action->id;
-foreach(array_keys($actionMenu) as $ind) {
-    $menuActionRoute = explode('/',$actionMenu[$ind]['url'][0]);
-    $menuAction = array_pop($menuActionRoute);
-    if($menuAction == $action) {
-        unset($actionMenu[$ind]['url']);
-    }
+if (!$model->isNewRecord) {
+    $existingRecordMenuOptions = array(
+        'view', 'permissions', 'exportToHtml',
+    );
+    if ($model->checkEditPermission() && $action != 'update')
+        $existingRecordMenuOptions[] = 'edit';
+    if (Yii::app()->user->checkAccess('DocsDelete', array('createdBy' => $model->createdBy)))
+        $existingRecordMenuOptions[] = 'delete';
+    $menuOptions = array_merge($menuOptions, $existingRecordMenuOptions);;
 }
-
-$this->actionMenu = $this->formatMenu($actionMenu,array('X2Model'=>$model));
+$this->insertMenu($menuOptions, $model, $authParams);
 
 ?>
 <div class="page-title icon docs"><h2><span class="no-bold"><?php echo CHtml::encode($title); ?></span> <?php echo CHtml::encode($model->name); ?></h2>
 <?php
 if(!$model->isNewRecord){
     if($model->checkEditPermission() && $action != 'update'){
-        echo CHtml::link('<span></span>', array('/docs/docs/update', 'id' => $model->id), array('class' => 'x2-button x2-hint icon edit right', 'title' => Yii::t('docs', 'Edit')));
+        echo X2Html::editRecordButton($model);
+        // echo CHtml::link('<span></span>', array('/docs/docs/update', 'id' => $model->id), array('class' => 'x2-button x2-hint icon edit right', 'title' => Yii::t('docs', 'Edit')));
     }
-    echo CHtml::link('<span></span>', array('/docs/docs/create', 'duplicate' => $model->id), array('class' => 'x2-button icon copy right x2-hint', 'title' => Yii::t('docs', 'Make a copy')));
+    echo CHtml::link('<span></span>', array('/docs/docs/create', 'duplicate' => $model->id), array('class' => 'x2-button icon copy right', 'title' => Yii::t('docs', 'Make a copy')));
     echo "<br>\n";
 }
 ?>

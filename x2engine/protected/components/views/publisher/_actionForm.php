@@ -149,7 +149,9 @@ Yii::import('application.extensions.CJuiDateTimePicker.CJuiDateTimePicker');
                             60 => Yii::t('actions', '1 hour')
                         )
                     ).
-                    '<div>'.Yii::t('actions', ' before this action is due.').'</div>';
+                    '<div>'.Yii::t('actions', ' before this {action} is due.', array(
+                        '{action}'=>strtolower(Modules::displayName(false, 'Actions'))
+                    )).'</div>';
                 ?>
             </div><!-- #action-reminders -->
         </div>

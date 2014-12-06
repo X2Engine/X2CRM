@@ -1,0 +1,318 @@
+/*****************************************************************************************
+ * X2Engine Open Source Edition is a customer relationship management program developed by
+ * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
+ * 
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU Affero General Public License version 3 as published by the
+ * Free Software Foundation with the addition of the following permission added
+ * to Section 15 as permitted in Section 7(a): FOR ANY PART OF THE COVERED WORK
+ * IN WHICH THE COPYRIGHT IS OWNED BY X2ENGINE, X2ENGINE DISCLAIMS THE WARRANTY
+ * OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
+ * 
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.  See the GNU Affero General Public License for more
+ * details.
+ * 
+ * You should have received a copy of the GNU Affero General Public License along with
+ * this program; if not, see http://www.gnu.org/licenses or write to the Free
+ * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301 USA.
+ * 
+ * You can contact X2Engine, Inc. P.O. Box 66752, Scotts Valley,
+ * California 95067, USA. or at email address contact@x2engine.com.
+ * 
+ * The interactive user interfaces in modified source and object code versions
+ * of this program must display Appropriate Legal Notices, as required under
+ * Section 5 of the GNU Affero General Public License version 3.
+ * 
+ * In accordance with Section 7(b) of the GNU Affero General Public License version 3,
+ * these Appropriate Legal Notices must retain the display of the "Powered by
+ * X2Engine" logo. If the display of the logo is not reasonably feasible for
+ * technical reasons, the Appropriate Legal Notices must display the words
+ * "Powered by X2Engine".
+ *****************************************************************************************/
+
+@import "colors";
+@import "compass/css3/border-radius";
+
+/***********************************************************************
+* image attachments 
+***********************************************************************/
+
+#activity-feed-container {
+    @include border-radius(4px !important);
+    
+    .attachment-img {
+        height: 100px;
+    }
+
+    /*
+    override attachments widget style
+    */
+
+    #attachment-form {
+        .focus-mini-module {
+            box-shadow: none;
+        }
+        .form {
+            -moz-border-radius: 0px;
+            -o-border-radius: 0px;
+            -webkit-border-radius: 0px;
+            border-radius: 0px;
+            border-top: none;
+            border-left: none;
+            border-right: none;
+            margin-bottom: 0;
+        }
+    }
+
+    /* 
+    override spectrum color picker css 
+    */
+
+    .sp-replacer {
+        padding: 0px !important;
+        margin-left: 4px !important;
+        position: relative;
+        top: -2px;
+    }
+
+    .sp-dd {
+        height: 13px !important;
+    }
+
+    .sp-preview {
+        width: 20px !important;
+        height: 17px !important;
+        margin-right: 5px !important;
+    }
+
+    /*
+    Broadcast Dialog
+    */
+
+    #broadcast-dialog-user-select {
+        width: 460px;
+        height: 200px;
+    }
+
+    .dialog-explanation {
+        margin-bottom: 8px;
+        margin-top: 7px;
+    }
+
+    #broadcast-dialog {
+        label {
+            margin-bottom: 4px;
+        }
+        .sp-replacer {
+            margin-top: 6px;
+        }
+    }
+
+    /*
+    ckeditor
+    */
+
+    #cke_Events_text {
+        margin-bottom: 6px !important;
+    }
+
+    /* collapse bottom bar */
+
+    .cke_bottom {
+        background: none !important;
+        border-top: none !important;
+        display: inline !important;
+        height: 0px !important;
+        width: 0px !important;
+        padding: 0 0 0 0 !important;
+        margin: 0 0 0 0 !important;
+    }
+
+    /* move resizing handle */
+
+    .cke_resizer_ltr {
+        margin-right: 2px !important;
+    }
+
+    /*
+    Miscellaneous
+    */
+
+    .avatar-image {
+        /*border: 3px solid #f8f8f8;*/
+        border: 1px;
+        @include border-radius(4px);
+    }
+
+    .social-tabs a {
+        text-decoration: none;
+    }
+
+    .comment-textbox {
+        -webkit-appearance: none;
+        height: 22px;
+        width: 100% !important;
+        box-sizing: border-box;
+        -webkit-box-sizing: border-box;
+        -moz-box-sizing: border-box;
+        border: 1px solid #AAA;
+        font-size: 12px;
+        font-family: Arial, Helvetica, sans-serif;
+        @include border-radius(3px);
+        background: white;
+    }
+
+    .comment-box .items {
+        margin-left: 15px;
+    }
+
+    .important {
+        background-color: #FFFFC2;
+    }
+
+    #activity-feed .pager {
+        visibility: hidden;
+    }
+
+    .yiiPager {
+        display: none;
+    }
+
+    .activity-feed div.like-history-box {
+        padding-top: 6px;
+    }
+
+    #sticky-feed {
+         .important-action {
+            background: #FFFFC2;
+        }
+    }
+
+    #activity-feed.list-view .view.top-level.activity-feed {
+        padding: 5px;
+        overflow: auto;
+        &.important-action {
+            background: #FFFFC2;
+        }
+    }
+
+    /* make sticky feed posts broadcast bg color take fill entire space */
+
+    #sticky-feed .top-level.activity-feed {
+        overflow: auto;
+    }
+
+    .items {
+        @include border-radius(0px !important);
+        border-top: none !important;
+        border-left: none !important;
+        border-right: none !important;
+    }
+
+    /* Used to prevent issue with jquery expandable plugin. Allows expandable text
+    to float around the truncated text. */
+
+    .expandable-details-override {
+        display: inline !important;
+    }
+
+    .event-bottom-row {
+        margin-top: -5px;
+        .comment-age {
+            display: inline-block;
+            margin-top: 8px;
+            min-width: 25%;
+        }
+        .event-icon-button-container {
+            display: inline-block;
+            margin-top: -7px;
+        }
+    }
+
+    div#post-form {
+        margin-bottom: 0 !important;
+        border-top: none;
+        border-left: none;
+        border-right: none;
+        border-bottom: 1px solid #eee;
+        border-radius: 0;
+    }
+
+    .event-icon-button-container > * {
+        height: 20px;
+        opacity: 0.9;
+        display: inline-block;
+    }
+
+
+    .important-link, .sticky-link {
+        &.x2-hint {
+            color: $gray;
+        }
+    }
+
+
+    %icon {
+       margin-left: 10px;
+    }
+
+    %active-icon {
+        @extend %icon;
+        opacity: 0.6;
+        cursor: pointer;
+        color: $nearBlack;
+
+        &:hover {
+            opacity: 0.8;
+        }
+    }
+
+    %inactive-icon {
+        @extend %icon;
+        opacity: 1.0;
+        cursor: pointer;
+
+        &:hover {
+            opacity: 0.9;
+        }
+    }
+
+    .feed-comment-icon, .broadcast-icon, .like-icon, .sticky-icon, .feed-make-important-icon{
+        @extend %active-icon;
+    }
+
+    .unsticky-icon, .unlike-icon, .feed-make-unimportant-icon {
+        @extend %inactive-icon;
+    }
+    
+    .like-count {
+        @extend %active-icon;
+        opacity: 0.6;
+        padding-left: 3px;
+        color: $darkBlue;
+        margin-left: 0px;
+    }
+
+    .unlike-button[style*="none"] + .like-count {
+        color: $nearBlack;
+    }    
+    
+    #activity-feed-settings-button {
+        cursor: pointer;
+        float: right;
+        margin-top: 8px;
+        margin-right: 5px;
+        opacity: 0.7;
+        &:hover {
+            opacity: 1;
+        }
+    }
+
+    #second-row-buttons-container {
+        display: block;
+        margin-top: 7px;
+    }
+}

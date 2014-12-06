@@ -33,7 +33,7 @@
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2Engine".
  *****************************************************************************************/
-Yii::app()->clientScript->registerCss('recordViewCss',"
+Yii::app()->clientScript->registerCss('recordViewCss', "
 
 #content {
     background: none !important;
@@ -41,7 +41,7 @@ Yii::app()->clientScript->registerCss('recordViewCss',"
 }
 ");
 Yii::app()->clientScript->registerResponsiveCssFile(
-    Yii::app()->theme->baseUrl.'/css/responsiveRecordView.css');
+        Yii::app()->theme->baseUrl . '/css/responsiveRecordView.css');
 
 
 // quotes can be locked meaning they can't be changed anymore
@@ -72,7 +72,7 @@ var confirmBox = $('<div></div>')
     	resizable: false,
     	buttons: {
     		'Yes': function() {
-    			window.location = '". Yii::app()->createUrl('/quotes/quotes/update', array('id'=>$model->id)) ."';
+    			window.location = '" . Yii::app()->createUrl('/quotes/quotes/update', array('id' => $model->id)) . "';
     			$(this).dialog('close');
     		},
     		'No': function() {
@@ -83,7 +83,7 @@ var confirmBox = $('<div></div>')
 confirmBox.dialog('open');
 }
 
-",CClientScript::POS_HEAD);
+", CClientScript::POS_HEAD);
 $modelType = json_encode("Quotes");
 $modelId = json_encode($model->id);
 Yii::app()->clientScript->registerScript('widgetShowData', "
@@ -91,207 +91,185 @@ $(function() {
 	$('body').data('modelType', $modelType);
 	$('body').data('modelId', $modelId);
 });");
-if($contactId) {
-	$contact = Contacts::model()->findByPk($contactId); // used to determine if 'Send Email' menu item is displayed
+if ($contactId) {
+    $contact = Contacts::model()->findByPk($contactId); // used to determine if 'Send Email' menu item is displayed
 } else {
-  $contact = false;
+    $contact = false;
 }
 
 $authParams['X2Model'] = $model;
-$this->actionMenu = $this->formatMenu(array(
-	array('label'=>Yii::t('quotes','Quotes List'), 'url'=>array('index')),
-	array('label'=>Yii::t('quotes','Invoice List'), 'url'=>array('indexInvoice')),
-	array('label'=>Yii::t('quotes','Create'), 'url'=>array('create')),
-	array('label'=>Yii::t('quotes','View')),
-	array('label'=>Yii::t('app','Email '.($model->type=='invoice'?'Invoice':'Quote')),'url'=>'#','linkOptions'=>array('onclick'=>'toggleEmailForm(); return false;'),'visible'=>(bool) $contact),
-),$authParams);
-
-$strict = Yii::app()->params['admin']['quoteStrictLock'];
-if($model->locked)
-	if($strict && !Yii::app()->user->checkAccess('QuotesAdminAccess'))
-		$this->actionMenu[] = array('label'=>Yii::t('quotes','Update'), 'url'=>'#', 'linkOptions'=>array('onClick'=>'dialogStrictLock();'));
-	else
-		$this->actionMenu[] = array('label'=>Yii::t('quotes','Update'), 'url'=>'#', 'linkOptions'=>array('onClick'=>'dialogLock();'));
-else
-	$this->actionMenu[] = array('label'=>Yii::t('quotes','Update'), 'url'=>array('update', 'id'=>$model->id));
-
-$this->actionMenu[] = array('label'=>Yii::t('quotes','Delete'), 'url'=>'#', 'linkOptions'=>array('submit'=>array('delete','id'=>$model->id),'confirm'=>'Are you sure you want to delete this item?'));
-$this->actionMenu[] = array('label'=>Yii::t('app','Attach A File/Photo'),'url'=>'#','linkOptions'=>array('onclick'=>'toggleAttachmentForm(); return false;'));
-$this->actionMenu[] = array(
-	'label'=>($model->type == 'invoice' ? 
-        Yii::t('quotes', 'Print Invoice') : Yii::t('quotes','Print Quote')), 
-	'url'=>'#', 'linkOptions'=>array(
-		'onClick'=>"window.open('". Yii::app()->createUrl('/quotes/quotes/print', 
-		array('id'=>$model->id)) ."')")
-);
-if($model->type !== 'invoice') { 
-    $this->actionMenu[] = array(
-        'label' => Yii::t('quotes', 'Convert To Invoice'),
-        'url' => array ('convertToInvoice', 'id' => $model->id),
-    );
-} 
+$strict = Yii::app()->settings->quoteStrictLock;
 $themeUrl = Yii::app()->theme->getBaseUrl();
 
+$menuOptions = array(
+    'index', 'invoices', 'create', 'view', 'email',
+    'delete', 'attach', 'print', 'convert',
+);
+if ($contact)
+    $menuOptions[] = 'email';
+if ($model->locked)
+    if ($strict && !Yii::app()->user->checkAccess('QuotesAdminAccess'))
+        $menuOptions[] = 'editStrictLock';
+    else
+        $menuOptions[] = 'editLock';
+else
+    $menuOptions[] = 'edit';
+if ($model->type !== 'invoice')
+    $menuOptions[] = 'convert';
+$this->insertMenu($menuOptions, $model, $authParams);
 ?>
 
 <div class="page-title-placeholder"></div>
 <div class="page-title-fixed-outer">
     <div class="page-title-fixed-inner">
-<div class="responsive-page-title page-title icon quotes">
-	<h2><span class="no-bold"><?php echo ($model->type == 'invoice'? Yii::t('quotes', 'Invoice:') : Yii::t('quotes','Quote:')); ?></span> <?php echo $model->name==''?'#'.$model->id:CHtml::encode($model->name); ?></h2>
-    <?php
-    echo ResponsiveHtml::gripButton ();
-    ?>
-    <div class='responsive-menu-items'>
-<?php if($model->locked) { ?>
-	<?php if($strict && !Yii::app()->user->checkAccess('QuotesAdminAccess')) { ?>
-		<a class="x2-button icon edit right" href="#" onClick="dialogStrictLock();"><span></span></a>
-	<?php } else { ?>
-		<a class="x2-button icon edit right" href="#" onClick="dialogLock();"><span></span></a>
-	<?php } 
-} else { 
-	echo CHtml::link('<span></span>', array('update', 'id'=>$model->id), array('class'=>'x2-button icon edit right')); 
-} 
-echo CHtml::link(
-    '<img src="'.Yii::app()->request->baseUrl.'/themes/x2engine/images/icons/email_button.png'.
-        '"></img>', '#',
-    array(
-        'class' => 'x2-button icon right email',
-        'title' => Yii::t('app', 'Open email form'),
-        'onclick' => 'toggleEmailForm(); return false;'
-    )
-);
-if($model->type !== 'invoice') { ?>
-	<a class="x2-button right" href="<?php 
-        echo $this->createUrl('convertToInvoice',array('id'=>$model->id));?>">
-        <?php echo Yii::t('quotes', 'Convert To Invoice'); ?>
-    </a>
-<?php 
-} 
+        <div class="responsive-page-title page-title icon quotes">
+            <h2><span class="no-bold"><?php echo ($model->type == 'invoice' ? Yii::t('quotes', 'Invoice:') : Yii::t('quotes', '{module}:', array('{module}' => Modules::displayName(false)))); ?></span> <?php echo $model->name == '' ? '#' . $model->id : CHtml::encode($model->name); ?></h2>
+            <?php
+            echo ResponsiveHtml::gripButton();
+            ?>
+            <div class='responsive-menu-items'>
+                <?php if ($model->locked) { ?>
+                    <?php if ($strict && !Yii::app()->user->checkAccess('QuotesAdminAccess')) { ?>
+                        <a class="x2-button icon edit right" href="#" onClick="dialogStrictLock();"><span></span></a>
+                    <?php } else { ?>
+                        <a class="x2-button icon edit right" href="#" onClick="dialogLock();"><span></span></a>
+                    <?php
+                    }
+                } else {
+                    echo X2Html::editRecordButton($model);
+                }
+                echo X2Html::emailFormButton();
+                echo X2Html::inlineEditButtons();
 
-?>
+
+                if ($model->type !== 'invoice') {
+                    ?>
+                    <a class="x2-button right" href="<?php echo $this->createUrl('convertToInvoice', array('id' => $model->id)); ?>">
+                    <?php echo Yii::t('quotes', 'Convert To Invoice'); ?>
+                    </a>
+                       <?php
+                       }
+                       ?>
+            </div>
+        </div>
     </div>
-</div>
-</div>
 </div>
 <div id="main-column" class="half-width">
 <?php
 $form = $this->beginWidget('CActiveForm', array(
-	'id'=>'quotes-form',
-	'enableAjaxValidation'=>false,
-	'action'=>array('saveChanges','id'=>$model->id)
-));
-
-$this->renderPartial('application.components.views._detailView',array('model'=>$model,'modelName'=>'Quote'));
-?>
-<?php
-if($model->type == 'invoice') { ?>
-<div class="x2-layout form-view">
-	<div class="formSection showSection">
-		<div class="formSectionHeader">
-			<span class="sectionTitle" title="Invoice"><?php echo Yii::t('quotes', 'Invoice'); ?></span>
-		</div>
-		<div class="tableWrapper">
-			<table>
-				<tbody>
-					<tr class="formSectionRow">
-						<td style="width: 300px">
-							<div class="formItem leftLabel">
-								<label><?php echo Yii::t('quotes', 'Invoice Status'); ?></label>
-								<div class="formInputBox" style="width: 150px; height: auto;">
-									<?php echo $model->renderAttribute('invoiceStatus'); ?>
-								</div>
-							</div>
-							<div class="formItem leftLabel">
-								<label><?php echo Yii::t('quotes', 'Invoice Created'); ?></label>
-								<div class="formInputBox" style="width: 150px; height: auto;">
-									<?php echo $model->renderAttribute('invoiceCreateDate'); ?>
-								</div>
-							</div>
-						</td>
-						<td style="width: 300px">
-							<div class="formItem leftLabel">
-								<label><?php echo Yii::t('quotes', 'Invoice Issued'); ?></label>
-								<div class="formInputBox" style="width: 150px; height: auto;">
-									<?php echo $model->renderAttribute('invoiceIssuedDate'); ?>
-								</div>
-							</div>
-							<div class="formItem leftLabel">
-								<label><?php echo Yii::t('quotes', 'Invoice Payed'); ?></label>
-								<div class="formInputBox" style="width: 150px; height: auto;">
-									<?php echo $model->renderAttribute('invoicePayedDate'); ?>
-								</div>
-							</div>
-						</td>
-					</tr>
-				</tbody>
-			</table>
-		</div>
-	</div>
-</div>
-<?php } 
-
-$productField = Fields::model()->findByAttributes(array('modelName'=>'Quote', 'fieldName'=>'products'));
-?>
-<div class="x2-layout form-view">
-	<div class="formSection showSection">
-		<div class="formSectionHeader">
-			<span class="sectionTitle"><?php echo $productField->attributeLabel; ?></span>
-		</div>
-		<div class="tableWrapper">
-		<?php
-        $this->renderPartial ('_lineItems', array (
-            'model'=>$model,'readOnly'=>true,'namespacePrefix' => 'quotesView'
+    'id' => 'quotes-form',
+    'enableAjaxValidation' => false,
+    'action' => array('saveChanges', 'id' => $model->id)
         ));
-		?>
-		</div>
 
-	</div>
-</div>
+$this->renderPartial('application.components.views._detailView', array('model' => $model, 'modelName' => 'Quote'));
+?>
+    <?php if ($model->type == 'invoice') { ?>
+        <div class="x2-layout form-view">
+            <div class="formSection showSection">
+                <div class="formSectionHeader">
+                    <span class="sectionTitle" title="Invoice"><?php echo Yii::t('quotes', 'Invoice'); ?></span>
+                </div>
+                <div class="tableWrapper">
+                    <table>
+                        <tbody>
+                            <tr class="formSectionRow">
+                                <td style="width: 300px">
+                                    <div class="formItem leftLabel">
+                                        <label><?php echo Yii::t('quotes', 'Invoice Status'); ?></label>
+                                        <div class="formInputBox" style="width: 150px; height: auto;">
+    <?php echo $model->renderAttribute('invoiceStatus'); ?>
+                                        </div>
+                                    </div>
+                                    <div class="formItem leftLabel">
+                                        <label><?php echo Yii::t('quotes', 'Invoice Created'); ?></label>
+                                        <div class="formInputBox" style="width: 150px; height: auto;">
+    <?php echo $model->renderAttribute('invoiceCreateDate'); ?>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td style="width: 300px">
+                                    <div class="formItem leftLabel">
+                                        <label><?php echo Yii::t('quotes', 'Invoice Issued'); ?></label>
+                                        <div class="formInputBox" style="width: 150px; height: auto;">
+    <?php echo $model->renderAttribute('invoiceIssuedDate'); ?>
+                                        </div>
+                                    </div>
+                                    <div class="formItem leftLabel">
+                                        <label><?php echo Yii::t('quotes', 'Invoice Paid'); ?></label>
+                                        <div class="formInputBox" style="width: 150px; height: auto;">
+    <?php echo $model->renderAttribute('invoicePayedDate'); ?>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+<?php
+}
+
+$productField = Fields::model()->findByAttributes(array('modelName' => 'Quote', 'fieldName' => 'products'));
+?>
+    <div class="x2-layout form-view">
+        <div class="formSection showSection">
+            <div class="formSectionHeader">
+                <span class="sectionTitle"><?php echo $productField->attributeLabel; ?></span>
+            </div>
+            <div class="tableWrapper">
+<?php
+$this->renderPartial('_lineItems', array(
+    'model' => $model, 'readOnly' => true, 'namespacePrefix' => 'quotesView'
+));
+?>
+            </div>
+
+        </div>
+    </div>
 <?php
 /*
-$this->renderPartial('_detailView',
-	array(
-		'model'=>$model,
-		'form'=>$form,
-		'currentWorkflow'=>$currentWorkflow,
-		'dataProvider'=>$dataProvider,
-		'total'=>$total
-	)
-);
-*/
+  $this->renderPartial('_detailView',
+  array(
+  'model'=>$model,
+  'form'=>$form,
+  'currentWorkflow'=>$currentWorkflow,
+  'dataProvider'=>$dataProvider,
+  'total'=>$total
+  )
+  );
+ */
 $this->endWidget();
 
 $this->widget('InlineEmailForm', array(
     'attributes' => array(
-        'to' => !empty($contact) && $contact instanceof Contacts?'"'.$contact->name.'" <'.$contact->email.'>, ':'',
+        'to' => !empty($contact) && $contact instanceof Contacts ? '"' . $contact->name . '" <' . $contact->email . '>, ' : '',
         // 'subject'=>'hi',
         // 'redirect'=>'contacts/'.$model->id,
         'modelName' => 'Quote',
         'modelId' => $model->id,
         'message' => $this->getPrintQuote($model->id, true),
-        'subject' => $model->type == ('invoice' ? Yii::t('quotes', 'Invoice') : Yii::t('quotes', 'Quote')).'('.Yii::app()->settings->appName.'): '.$model->name,
+        'subject' => $model->type == ('invoice' ? Yii::t('quotes', 'Invoice') : Yii::t('quotes', '{quote}', array('{quote}' => Modules::displayName(false)))) . '(' . Yii::app()->settings->appName . '): ' . $model->name,
     ),
     'startHidden' => true,
     'templateType' => 'quote',
         )
 );
 ?>
-<?php $this->widget('X2WidgetList', array('block'=>'center', 'model'=>$model, 'modelType'=>'Quote')); ?>
+    <?php $this->widget('X2WidgetList', array('block' => 'center', 'model' => $model, 'modelType' => 'Quote')); ?>
 
-<?php $this->widget('Attachments',array('associationType'=>'quotes','associationId'=>$model->id,'startHidden'=>true)); ?>
+    <?php $this->widget('Attachments', array('associationType' => 'quotes', 'associationId' => $model->id, 'startHidden' => true)); ?>
 
 </div>
 <div class="history half-width">
-<?php
-
-$this->widget('Publisher',
-	array(
-		'associationType'=>'quotes',
-		'associationId'=>$model->id,
-		'assignedTo'=>Yii::app()->user->getName(),
-		'calendar' => false
-	)
-);
-$this->widget('History',array('associationType'=>'quotes','associationId'=>$model->id));
-?>
+    <?php
+    $this->widget('Publisher', array(
+        'associationType' => 'quotes',
+        'associationId' => $model->id,
+        'assignedTo' => Yii::app()->user->getName(),
+        'calendar' => false
+            )
+    );
+    $this->widget('History', array('associationType' => 'quotes', 'associationId' => $model->id));
+    ?>

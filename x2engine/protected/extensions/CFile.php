@@ -1243,7 +1243,9 @@ class CFile extends CApplicationComponent
      * appropriately, if not to say that it is your only alternative :).
      * @return file File download
      */
-    public function send($fakeName=false, $serverHandled=false)
+    public function send(
+        $fakeName=false, $serverHandled=false/* x2modstart */, 
+        $deleteAfterSend=false/* x2modend */)
     {
         if ($this->isFile)
         {
@@ -1280,6 +1282,11 @@ class CFile extends CApplicationComponent
                         echo $contents;
                     }
                 }
+                /* x2modstart */ 
+                if ($deleteAfterSend) {
+                    $this->delete ();
+                }
+                /* x2modend */ 
                 exit;
             }
 

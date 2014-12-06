@@ -85,8 +85,8 @@ class ArrayUtilTest extends X2TestCase {
         );
         $matches = ArrayUtil::arraySearchPreg ('o|t', $arr);
         VERBOSE_MODE && print_r ($matches);
-        $this->assertContains ('one', $matches);
-        $this->assertContains ('two', $matches);
+        $this->assertContains ('a', $matches);
+        $this->assertContains ('b', $matches);
         $arr = array (
             'a' => 'one',
             'b' => 'two',

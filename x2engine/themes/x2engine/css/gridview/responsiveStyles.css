@@ -32,151 +32,157 @@
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2Engine".
  *****************************************************************************************/
-
 /*
 fixed header disabled for mobile layout (should eventually be made sticky)
 */
 @media (min-width: 658px) {
-    .no-widgets .x2-gridview-fixed-top-bar-outer {
-        padding-right:5px;
-    }
+  /* line 26, ../../../../compass/themes/x2engine/css/gridview/responsiveStyles.scss */
+  .no-widgets .x2-gridview-fixed-top-bar-outer {
+    padding-right: 5px;
+  }
 
-    .grid-view .mobile-dropdown-button {
-        display: none !important;
-    }
-    .no-widgets .x2-gridview-fixed-top-bar-outer .x2-gridview-fixed-title {
-        margin: 0 0px 0 5px;
-    }
-    .x2-gridview-fixed-top-bar-outer .x2-gridview-fixed-title {
-        margin: 0 6px 0 5px;
-        width: auto;
-        -moz-border-radius: 0;
-        -o-border-radius: 0;
-        -webkit-border-radius: 0;
-        border-radius: 0;
-        border-left: 1px solid #b3b3b3;
-        border-right: 1px solid #b3b3b3;
-    }
+  /* line 29, ../../../../compass/themes/x2engine/css/gridview/responsiveStyles.scss */
+  .grid-view .mobile-dropdown-button {
+    display: none !important;
+  }
 
-    .no-widgets .x2-gridview-fixed-top-bar-outer .x2grid-header-container {
-        margin: 0 0px 0 5px;
-    }
+  /* line 32, ../../../../compass/themes/x2engine/css/gridview/responsiveStyles.scss */
+  .no-widgets .x2-gridview-fixed-top-bar-outer .x2-gridview-fixed-title {
+    margin: 0 0px 0 5px;
+  }
 
-    .x2-gridview-fixed-top-bar-outer .x2grid-header-container {
-        margin: 0 6px 0 5px;
-        border-left: 1px solid #b3b3b3;
-        border-right: 1px solid #b3b3b3;
-    }
+  /* line 35, ../../../../compass/themes/x2engine/css/gridview/responsiveStyles.scss */
+  .x2-gridview-fixed-top-bar-outer .x2-gridview-fixed-title {
+    margin: 0 6px 0 5px;
+    width: auto;
+    -moz-border-radius: 0;
+    -o-border-radius: 0;
+    -webkit-border-radius: 0;
+    border-radius: 0;
+    border-left: 1px solid #b3b3b3;
+    border-right: 1px solid #b3b3b3;
+  }
 
-    .x2-gridview-fixed-top-bar-outer + .x2grid-body-container .x2grid-grips div {
-        top: 75px !important;
-    }
+  /* line 45, ../../../../compass/themes/x2engine/css/gridview/responsiveStyles.scss */
+  .no-widgets .x2-gridview-fixed-top-bar-outer .x2grid-header-container {
+    margin: 0 0px 0 5px;
+  }
 
-    .x2-gridview-fixed-top-bar-outer .x2-gridview-fixed-top-bar-inner {
-        width: 100%;
-        padding-right: 22%;
-        padding-left: 11px;
-        height: 0;
-        -webkit-box-sizing: border-box;
-        -moz-box-sizing: border-box;
-        box-sizing: border-box;
-    }
+  /* line 48, ../../../../compass/themes/x2engine/css/gridview/responsiveStyles.scss */
+  .x2-gridview-fixed-top-bar-outer {
+    width: 100%;
+    height: 0px;
+    position: fixed;
+    z-index: 800;
+    left: 0;
+    top: 32px;
+    padding-left: 151px;
+    padding-right: 9px;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+  }
+  /* line 49, ../../../../compass/themes/x2engine/css/gridview/responsiveStyles.scss */
+  .x2-gridview-fixed-top-bar-outer .x2grid-header-container {
+    margin: 0 6px 0 5px;
+    border-left: 1px solid #b3b3b3;
+    border-right: 1px solid #b3b3b3;
+  }
+  /* line 54, ../../../../compass/themes/x2engine/css/gridview/responsiveStyles.scss */
+  .x2-gridview-fixed-top-bar-outer + .x2grid-body-container .x2grid-grips div {
+    top: 75px !important;
+  }
+  /* line 57, ../../../../compass/themes/x2engine/css/gridview/responsiveStyles.scss */
+  .x2-gridview-fixed-top-bar-outer .x2-gridview-fixed-top-bar-inner {
+    width: 100%;
+    padding-right: 22%;
+    padding-left: 11px;
+    height: 0;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+  }
 
-    .x2-gridview-fixed-top-bar-outer {
-        width: 100%;
-        height: 0px;
-        position: fixed;
-        z-index: 800;
-        left: 0;
-        top: 32px;
-        padding-left: 151px;
-        padding-right: 9px;
-        -webkit-box-sizing: border-box;
-        -moz-box-sizing: border-box;
-        box-sizing: border-box;
-    }
-
-    .x2-gridview-body-with-fixed-header {
-        padding-top: 75px;
-    }
-
+  /* line 78, ../../../../compass/themes/x2engine/css/gridview/responsiveStyles.scss */
+  .x2-gridview-body-with-fixed-header {
+    padding-top: 75px;
+  }
 }
-
 @media (max-width: 801px) and (min-width: 658px) {
-    .grid-view.fullscreen.show-mass-action-buttons .grid-view-summary-text {
-        display: none;
-    }
+  /* line 84, ../../../../compass/themes/x2engine/css/gridview/responsiveStyles.scss */
+  .grid-view.fullscreen.show-mass-action-buttons .grid-view-summary-text {
+    display: none;
+  }
 }
-
-
 @media (max-width: 1040px) and (min-width: 658px) {
-    .x2-gridview-fixed-top-bar-outer div.x2grid-header-container {
-        margin-left: 5px;
-    }
-    .x2-gridview-fixed-title + div.x2grid-header-container {
-        margin-left: 5px;
-    }
-    
-    .x2-gridview-fixed-top-bar-outer .x2-gridview-fixed-title {
-        margin: 0 -4px 0 5px;
-    }
-    .x2-gridview-fixed-top-bar-outer .x2grid-header-container {
-        margin: 0 -4px 0 5px;
-    }
-}
+  /* line 90, ../../../../compass/themes/x2engine/css/gridview/responsiveStyles.scss */
+  .x2-gridview-fixed-top-bar-outer div.x2grid-header-container, .x2-gridview-fixed-title + div.x2grid-header-container {
+    margin-left: 5px;
+  }
 
+  /* line 94, ../../../../compass/themes/x2engine/css/gridview/responsiveStyles.scss */
+  .x2-gridview-fixed-top-bar-outer .x2-gridview-fixed-title, .x2-gridview-fixed-top-bar-outer .x2grid-header-container {
+    margin: 0 -4px 0 5px;
+  }
+}
 @media (max-width: 1040px) {
-    .x2-gridview-fixed-top-bar-outer .x2grid-header-container {
-        margin: 0 0px 0 0px;
-    }
-
-    .x2-gridview-fixed-top-bar-outer .x2-gridview-fixed-top-bar-inner {
-        padding-right: 0;
-    }
+  /* line 102, ../../../../compass/themes/x2engine/css/gridview/responsiveStyles.scss */
+  .x2-gridview-fixed-top-bar-outer .x2grid-header-container {
+    margin: 0 0px 0 0px;
+  }
+  /* line 105, ../../../../compass/themes/x2engine/css/gridview/responsiveStyles.scss */
+  .x2-gridview-fixed-top-bar-outer .x2-gridview-fixed-top-bar-inner {
+    padding-right: 0;
+  }
 }
-
 @media (max-width: 370px) {
-    .x2-gridview-top-pager {
-        display: none !important;
-    }
+  /* line 112, ../../../../compass/themes/x2engine/css/gridview/responsiveStyles.scss */
+  .x2-gridview-top-pager {
+    display: none !important;
+  }
 }
 @media (max-width: 325px) {
-    .grid-view-summary-text {
-        display: none !important;
-    }
+  /* line 118, ../../../../compass/themes/x2engine/css/gridview/responsiveStyles.scss */
+  .grid-view-summary-text {
+    display: none !important;
+  }
 }
-
 @media (max-width: 657px) {
-    div.x2-gridview-fixed-top-bar-outer {
-        padding-left: 0px;
-        left: -11px;
-    }
+  /* line 124, ../../../../compass/themes/x2engine/css/gridview/responsiveStyles.scss */
+  div.x2-gridview-fixed-top-bar-outer {
+    padding-left: 0px;
+    left: -11px;
+  }
 
-    #actions-grid .page-title > h2, 
-    #users-grid .page-title > h2, 
-    #x2-gridview-page-title > h2 {
-        display: block !important;
-    }
-    .grid-view .page-title {
-        height: 36px;
-    }
+  /* line 128, ../../../../compass/themes/x2engine/css/gridview/responsiveStyles.scss */
+  #actions-grid .page-title > h2, #users-grid .page-title > h2, #x2-gridview-page-title > h2 {
+    display: block !important;
+  }
 
-    /* enables hiding of summary */ 
-    .grid-view .page-title .summary {
-        float: none;
-    }
-    .show-top-buttons.grid-view .page-title .summary {
-        float: right;
-    }
+  /* line 131, ../../../../compass/themes/x2engine/css/gridview/responsiveStyles.scss */
+  .grid-view .page-title {
+    height: 36px;
+  }
+  /* line 133, ../../../../compass/themes/x2engine/css/gridview/responsiveStyles.scss */
+  .grid-view .page-title .summary {
+    float: none;
+  }
 
-    ul.column-selector {
-        position:absolute !important;
-        top: 75px;
-    }
+  /* enables hiding of summary */
+  /* line 138, ../../../../compass/themes/x2engine/css/gridview/responsiveStyles.scss */
+  .show-top-buttons.grid-view .page-title .summary {
+    float: right;
+  }
 
-    .x2-gridview-mass-action-buttons .more-drop-down-list {
-        position: absolute !important;
-        /*top: 74px;*/
-    }
+  /* line 141, ../../../../compass/themes/x2engine/css/gridview/responsiveStyles.scss */
+  ul.column-selector {
+    position: absolute !important;
+    top: 75px;
+  }
 
+  /* line 145, ../../../../compass/themes/x2engine/css/gridview/responsiveStyles.scss */
+  .x2-gridview-mass-action-buttons .more-drop-down-list {
+    position: absolute !important;
+    /*top: 74px;*/
+  }
 }

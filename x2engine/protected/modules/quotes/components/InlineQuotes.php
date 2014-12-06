@@ -59,102 +59,88 @@ class InlineQuotes extends X2Widget {
 		if(isset($_POST))
 			$startHidden = false;
 
-		if($this->startHidden) {			
-		// register css
-		Yii::app()->clientScript->registerCss('inline-quotes-style','
-            .product-select-button {
-                padding: 0 0 0 0!important;
-            }
+		if($this->startHidden) {
+            // register css
+            Yii::app()->clientScript->registerCss('inline-quotes-style','
+                .product-select-button {
+                    padding: 0 0 0 0!important;
+                }
 
-            #wide-quote-form {
-                background: #F8F8F8;
-            }
+                #wide-quote-form {
+                    background: #F8F8F8;
+                }
 
-            .viewQuote hr {
-            	background-color: black;
-            	overflow: visible;
-            }
+                .viewQuote hr {
+                    background-color: black;
+                    overflow: visible;
+                }
 
-            .product-table th {
-            	background-color: inherit;
-            }
+                .product-table th {
+                    background-color: inherit;
+                }
 
-            .product-table tfoot {
-            	font-style: normal;
-            }
+                .product-table tfoot {
+                    font-style: normal;
+                }
 
-            .quote-detail-table {
-            	padding: 0;
-            	width: 100%;
-            }
+                .quote-detail-table {
+                    padding: 0;
+                    width: 100%;
+                }
 
-            .quote-detail-table th {
-            	background-color: inherit;
-            	color: #666;
-            	font-weight: normal;
-            	font-size: 0.8em;
-            	padding: 5px 0 0 0;
+                .quote-detail-table th {
+                    background-color: inherit;
+                    color: #666;
+                    font-weight: normal;
+                    font-size: 0.8em;
+                    padding: 5px 0 0 0;
 
-            }
+                }
 
-            .quote-detail-table td {
-            	font-weight: bold;
-            	padding: 0;
-            }
+                .quote-detail-table td {
+                    font-weight: bold;
+                    padding: 0;
+                }
 
-            .quote-create-table {
-            	width: 100%;
-            	padding: 0;
-            }
+                .quote-create-table {
+                    width: 100%;
+                    padding: 0;
+                }
 
-            .quote-create-table th {
-            	background-color: inherit;
-	            font-weight: bold;
-	            font-size: 0.8em;
-	            padding: 5px 0 0 0;
-            }
+                .quote-create-table th {
+                    background-color: inherit;
+                    font-weight: bold;
+                    font-size: 0.8em;
+                    padding: 5px 0 0 0;
+                }
 
-            .quote-detail-table td {
-            	padding: 0;
-            }
+                .quote-detail-table td {
+                    padding: 0;
+                }
 
-            .items td {
-	            border-top: none;
-	            border-bottom: none;
-            }');
+                .items td {
+                    border-top: none;
+                    border-bottom: none;
+                }');
 
-        if($this->startHidden)
-            Yii::app()->clientScript->registerScript('startQuotesHidden',"$('#quotes-form').hide();" ,CClientScript::POS_READY);
-        
-		$products = Product::model()->findAll(array('select'=>'id, name, price'));
-		$jsProductList = "\$(productList).append(\$('<option>', {value: 0}).append(''));\n";
-		$jsProductPrices = "var prices = [];\n";
-		$jsProductPrices .= "prices[0] = 0;\n";
-		foreach($products as $product) {
-			$jsProductList .= "\$(productList).append(\$('<option>', {value: {$product->id}}).append('{$product->name}'));\n";
-			$jsProductPrices .= "prices[{$product->id}] = {$product->price};\n";
-		}
-		
-		$productNames = Product::productNames();
-		$jsonProductList = json_encode($productNames);
+            if($this->startHidden)
+                Yii::app()->clientScript->registerScript('startQuotesHidden',"$('#quotes-form').hide();" ,CClientScript::POS_READY);
+            
+            // Set up the new create form:
+            $quotesAssetsUrl = $this->module->assetsUrl;
+            Yii::app()->clientScript->registerScriptFile($quotesAssetsUrl.'/js/inlineQuotes.js', CClientScript::POS_HEAD);
+            Yii::app()->clientScript->registerScriptFile($quotesAssetsUrl.'/js/LineItems.js', CClientScript::POS_HEAD);
 
-		$region = Yii::app()->getLocale()->getId();
+            Yii::app()->clientScript->registerCssFiles('InlineQuotesCss', array (
+                $quotesAssetsUrl.'/css/lineItemsMain.css',
+                $quotesAssetsUrl.'/css/lineItemsWrite.css',
+            ), false);
+            Yii::app()->clientScript->registerCoreScript('jquery.ui');
 
-        // Set up the new create form:
-        $quotesAssetsUrl = $this->module->assetsUrl;
-        Yii::app()->clientScript->registerScriptFile($quotesAssetsUrl.'/js/inlineQuotes.js', CClientScript::POS_HEAD);
-        Yii::app()->clientScript->registerScriptFile($quotesAssetsUrl.'/js/LineItems.js', CClientScript::POS_HEAD);
+            $this->contact = X2Model::model ('Contacts')->findByPk ($this->contactId);
 
-        Yii::app()->clientScript->registerCssFiles('InlineQuotesCss', array (
-            $quotesAssetsUrl.'/css/lineItemsMain.css',
-            $quotesAssetsUrl.'/css/lineItemsWrite.css',
-        ), false);
-        Yii::app()->clientScript->registerCoreScript('jquery.ui');
-
-        $this->contact = X2Model::model ('Contacts')->findByPk ($this->contactId);
-
-        //$this->contact = Contacts::model()->findByPk($this->contactId);
-        $iqConfig = array(
+            //$this->contact = Contacts::model()->findByPk($this->contactId);
+            $iqConfig = array(
                 'contact' => ($this->contact instanceof Contacts) ? CHtml::encode($this->contact->name) : '',
                 'account' => $this->account,
                 'sendingQuote' => false,
@@ -277,57 +263,13 @@ class InlineQuotes extends X2Widget {
             echo '<br /><hr />';
         }
 
-		// get a list of products for adding to quotes
-		$products = Product::model()->findAll(array('select'=>'id, name'));
-
         $quotes = $this->getRelatedQuotes ();
         
 		foreach($quotes as $quote) {
-			$products = Product::model()->findAll(array('select'=>'id, name, price'));
-			$quoteProducts = QuoteProduct::model()->findAllByAttributes(array('quoteId'=>$quote->id));
-			
-			// find associated products and their quantities
-			$quotesProducts = QuoteProduct::model()->findAllByAttributes(array('quoteId'=>$quote->id));
-			$orders = array(); // array of product-quantity pairs
-			$total = 0; // total price for the quote
-			foreach($quotesProducts as $qp) {
-		    	$price = $qp->price * $qp->quantity;
-		    	if($qp->adjustmentType == 'percent') {
-		    	    $price += $price * ($qp->adjustment / 100);
-		    	    $qp->adjustment = "{$qp->adjustment}%";
-		    	} else {
-		    		$price += $qp->adjustment;
-		    	}
-				$orders[] = array(
-		    		'name' => $qp->name,
-					'id' => $qp->productId,
-			    	'unit' => $qp->price,
-					'quantity'=> $qp->quantity,
-					'adjustment' => $qp->adjustment,
-					'price' => $price,
-				);
-				$order = end($orders);
-				$total += $order['price'];
-			}
-			
-			$dataProvider = new CArrayDataProvider($orders, array(
-				'keyField'=>'name',
-				'sort'=>array(
-					'attributes'=>array('name', 'unit', 'quantity', 'price'),
-				),
-				'pagination'=>array('pageSize'=>false),
-				
-			));
-			$newProductId = "new_product_" . $quote->id;
 			$this->render('viewQuotes', array(
 				'quote'=>$quote,
 				'recordId'=>$this->recordId,
 				'modelName'=>$this->modelName,
-				'dataProvider'=>$dataProvider,
-				'products'=>$products,
-				// 'productNames'=>$productNames,
-				'orders'=>$quoteProducts,
-				'total'=>$total,
                 'canDo' => $canDo
 			));
 		}
@@ -340,50 +282,10 @@ class InlineQuotes extends X2Widget {
         $quotes = $this->getRelatedQuotes (true);
 		
 		foreach($quotes as $quote) {
-			$products = Product::model()->findAll(array('select'=>'id, name, price'));
-			$quoteProducts = QuoteProduct::model()->findAllByAttributes(array('quoteId'=>$quote->id));
-			
-			// find associated products and their quantities
-			$quotesProducts = QuoteProduct::model()->findAllByAttributes(array('quoteId'=>$quote->id));
-			$orders = array(); // array of product-quantity pairs
-			$total = 0; // total price for the quote
-			foreach($quotesProducts as $qp) {
-		    	$price = $qp->price * $qp->quantity;
-		    	if($qp->adjustmentType == 'percent') {
-		    	    $price += $price * ($qp->adjustment / 100);
-		    	    $qp->adjustment = "{$qp->adjustment}%";
-		    	} else {
-		    		$price += $qp->adjustment;
-		    	}
-				$orders[] = array(
-		    		'name' => $qp->name,
-					'id' => $qp->productId,
-			    	'unit' => $qp->price,
-					'quantity'=> $qp->quantity,
-					'adjustment' => $qp->adjustment,
-					'price' => $price,
-				);
-				$order = end($orders);
-				$total += $order['price'];
-			}
-			
-			$dataProvider = new CArrayDataProvider($orders, array(
-				'keyField'=>'name',
-				'sort'=>array(
-					'attributes'=>array('name', 'unit', 'quantity', 'price'),
-				),
-				'pagination'=>array('pageSize'=>false),
-				
-			));
-			$newProductId = "new_product_" . $quote->id;
 			$this->render('viewQuotes', array(
 				'quote'=>$quote,
 				'recordId'=>$this->recordId,
 				'modelName'=>$this->modelName,
-				'dataProvider'=>$dataProvider,
-				'products'=>$products,
-				'orders'=>$quoteProducts,
-				'total'=>$total,
                 'canDo' => $canDo,
 			));
 		}

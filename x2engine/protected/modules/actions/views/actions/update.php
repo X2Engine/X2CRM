@@ -33,14 +33,13 @@
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2Engine".
  *****************************************************************************************/
+
 $authParams['X2Model'] = $model;
-$this->actionMenu = $this->formatMenu(array(
-	array('label'=>Yii::t('actions','Action List'),'url'=>array('index')),
-	array('label'=>Yii::t('actions','Create Action'),'url'=>array('create')), 
-	array('label'=>Yii::t('actions','Edit Action')),
-	array('label'=>Yii::t('contacts','Share Action'),'url'=>array('shareAction','id'=>$model->id)),
-	array('label'=>Yii::t('actions','Delete Action'), 'url'=>'#', 'linkOptions'=>array('submit'=>array('delete','id'=>$model->id),'confirm'=>'Are you sure you want to delete this item?')),
-),$authParams);
+$menuOptions = array(
+    'list', 'create', 'edit', 'share', 'delete',
+);
+$this->insertMenu($menuOptions, $model, $authParams);
+
 ?>
 <div class="page-title icon actions">
 
@@ -52,9 +51,11 @@ $this->actionMenu = $this->formatMenu(array(
 			echo '<span class="no-bold">',Yii::t('actions','Update Event:'),'</span> ',CHtml::encode($model->associationName);
 	} else {
 		if($model->associationType=='none')
-			echo Yii::t('actions','Update Action');
+			echo Yii::t('actions','Update {action}', array('{action}'=>Modules::displayName(false)));
 		else
-			echo '<span class="no-bold">',Yii::t('actions','Update Action:'),'</span> ',CHtml::encode($model->associationName);
+            echo '<span class="no-bold">',Yii::t('actions','Update {action}:', array(
+                '{action}' => Modules::displayName(false),
+            )),'</span> ',CHtml::encode($model->associationName);
 	}
 ?></h2>
 </div>

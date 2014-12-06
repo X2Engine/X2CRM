@@ -43,6 +43,7 @@ function X2Forms (argsDict) {
         translations: {}
     };
     auxlib.applyArgs (this, defaultArgs, argsDict);
+    this.defaultTextColor = 'rgb(93,93,93)';
 
     this._init ();
 }
@@ -116,6 +117,19 @@ X2Forms.prototype.initializeMultiselectDropdowns = function () {
     });
 };
 
+X2Forms.prototype.initializeMultiselects = function () {
+    var that = this;
+    $('.x2-multiselect').each (function () {
+
+        // don't reinitialize
+        if ($(this).next ().hasClass ('.ui-multiselect')) return;
+
+        $(this).multiselect ({ 
+            searchable: false 
+        });
+    });
+};
+
 /**
  * Creates an error message element which can be appended to a form and cleared with clearForm ().
  * @return object jQuery element containing specified error message
@@ -166,6 +180,7 @@ X2Forms.prototype.errorSummaryAppend = function (form$, errorMessages) {
 X2Forms.prototype.clearErrorMessages = function (form) {
     $(form).find ('.x2-forms-error-msg').remove ();
     $(form).find ('.error-summary-container').remove ();
+    $(form).find ('.errorSummary').remove ();
     $(form).find ('.error').removeClass ('error');
 };
 
@@ -195,6 +210,7 @@ X2Forms.prototype.clearForm = function (container, preserveDefaults) {
     $(container).find ('.error').removeClass ('error');
     $(container).find ('.x2-forms-error-msg').remove ();
     $(container).find ('.error-summary-container').remove ();
+    $(container).find ('.errorSummary').remove ();
 };
 
 /**
@@ -273,7 +289,7 @@ X2Forms.prototype.showShortDefaultText = function(field) {
     var longDefaultText = $(field).attr ('data-long-default-text');
     if(field.value === longDefaultText) {
         field.value = shortDefaultText;
-        field.style.color = '#aaa'
+        field.style.color = this.defaultTextColor;
     }
 };
 
@@ -291,7 +307,7 @@ X2Forms.prototype.showLongDefaultText = function(field) {
     var shortDefaultText = $(field).attr ('data-short-default-text');
     if(field.value === shortDefaultText) {
         field.value = longDefaultText;
-        field.style.color = '#aaa'
+        field.style.color = this.defaultTextColor
     }
 };
 
@@ -312,7 +328,7 @@ X2Forms.prototype.toggleTextResponsive = function(field) {
             field.style.color = 'black';
         } else {
             field.value = shortDefault;
-            field.style.color = '#aaa';
+            field.style.color = this.defaultTextColor;
         }
     } else {
         if (field.value === longDefault) {
@@ -320,7 +336,7 @@ X2Forms.prototype.toggleTextResponsive = function(field) {
             field.style.color = 'black';
         } else {
             field.value = longDefault;
-            field.style.color = '#aaa';
+            field.style.color = this.defaultTextColor;
         }
     }
 };
@@ -330,11 +346,11 @@ X2Forms.prototype.toggleTextResponsive = function(field) {
  */
 X2Forms.prototype.toggleText = function(field, focus) {
     if(field.defaultValue==field.value) {
-        field.value = ''
-        field.style.color = 'black'
+        field.value = '';
+        field.style.color = 'black';
     } else if(field.value=='') {
-        field.value = field.defaultValue
-        field.style.color = '#aaa'
+        field.value = field.defaultValue;
+        field.style.color = this.defaultTextColor;
     }
 };
 
@@ -346,20 +362,21 @@ X2Forms.prototype.toggleText = function(field, focus) {
  * @param object jQuery object
  */
 X2Forms.prototype.enableDefaultText = function (element) {
+    var that = this;
     if (!$(element).attr ('data-default-text')) {
         return;
     }
     var defaultText = $(element).attr ('data-default-text');
     if ($(element).val () === '') {
         $(element).val (defaultText); 
-        $(element).css ({color: '#aaa'});
+        $(element).css ({color: this.defaultTextColor});
     }
     $(element).off ('blur.defaultText').
         on ('blur.defaultText', function () {
 
         if ($(element).val () === '') {
             $(element).val (defaultText); 
-            $(element).css ({color: '#aaa'});
+            $(element).css ({color: that.defaultTextColor});
         }
     });
     $(element).off ('focus.defaultText').
@@ -368,6 +385,25 @@ X2Forms.prototype.enableDefaultText = function (element) {
         if ($(element).val () === $(element).attr ('data-default-text')) {
             $(element).val (''); 
             $(element).css ({color: 'black'});
+        }
+    });
+};
+
+/**
+ * Clears default values to prepare form for submission
+ */
+X2Forms.prototype.clearDefaultValues = function (form$) {
+    form$.find ('.x2-default-field').each (function () {
+        if ($(this).val () === $(this).attr ('data-default-text')) {
+            $(this).val ('');
+        }
+    });
+};
+
+X2Forms.prototype.restoreDefaultValues = function (form$) {
+    form$.find ('.x2-default-field').each (function () {
+        if ($(this).val () === '') { 
+            $(this).val ($(this).attr ('data-default-text'));
         }
     });
 };
@@ -384,7 +420,7 @@ X2Forms.prototype.formFieldBlur = function(elem) {
     var field = $(elem);
     if(field.val() == '') {
         field.val(field.attr('title'));
-        field.css('color','#aaa');
+        field.css('color',this.defaultTextColor);
     }
 };
 
@@ -495,8 +531,8 @@ X2Forms.prototype.fileUpload = function(fileField, action_url, remove_url) {
 
             var temp = $('<input>', {
                 'type': 'hidden',
-                'name': 'AttachmentFiles[temp][]',
-                'value': true
+                'name': 'AttachmentFiles[types][]',
+                'value': 'temp'
             });
 
             var parent = fileField.parent().parent().parent();
@@ -507,19 +543,15 @@ X2Forms.prototype.fileUpload = function(fileField, action_url, remove_url) {
             var newFileChooser = parent.clone(); 
 
             parent.removeClass('next-attachment');
+            parent.addClass ('upload-file-container');
             parent.append(file);
             parent.append(temp);
-
-            var remove = $("<a>", {
-                'href': "#",
-                'html': "[x]"
-            });
-
             parent.find('.filename').html(response['name']);
-            parent.find('.remove').append(remove);
+
+            var remove = parent.find('.remove');
 
             remove.click(function() {
-                that.removeAttachmentFile (remove.parent().parent(), remove_url); 
+                that.removeAttachmentFile ($(this).parent(), remove_url); 
                 return false;
             });
 
@@ -600,16 +632,25 @@ X2Forms.prototype.initX2FileInput = function() {
  * Hide input and place a loading gif in its place 
  * @param object the input element
  */
-X2Forms.prototype.inputLoading = function (elem) {
-    $(elem).before ($('<div>', {
-        'class': 'x2-loading-icon',
-        style: 'position: absolute; height: 27px; background-size: 27px;'
-    }));
-    $(elem).prev ().position ({
-        my: 'center',
-        at: 'center',
-        of: $(elem)
+X2Forms.prototype.inputLoading = function (elem, position) {
+    position = typeof position === 'undefined' ? true : position; 
+    var throbber$ = $('<div>', {
+        'class': 'x2-loading-icon load8 input-loading-icon x2-loader',
+        'style': 'float: left; position:absolute;',
     });
+    throbber$.append ($('<div>', {
+        'class': 'loader',
+        'style': 'margin: auto;',
+    }));
+    throbber$.width ($(elem).width ());
+    $(elem).before (throbber$);
+    if (position) {
+        $(elem).prev ().position ({
+            my: 'center',
+            at: 'center',
+            of: $(elem)
+        });
+    } 
     $(elem).css ({'visibility': 'hidden'});
 };
 
@@ -730,13 +771,47 @@ X2Forms.prototype.setUpRichTextareas = function () {
     });
 };
 
+X2Forms.prototype.setUpCollapsibles = function () {
+    $('.x2-collapsible-outer > .x2-collapse-handle').unbind ('click.setUpCollapibles').
+        bind ('click.setUpCollapibles', function () {
+
+        var collapsibleOuter$ = $(this).parent ();
+        var collapsible$ = collapsibleOuter$.find ('.x2-collapsible');
+        var collapseButton$ = collapsibleOuter$.find ('.x2-collapse-button');
+        var expandButton$ = collapsibleOuter$.find ('.x2-expand-button');
+        if (collapsibleOuter$.hasClass ('collapsed')) {
+            collapsibleOuter$.find ('.x2-collapsible').slideDown (200);
+            collapsibleOuter$.removeClass ('collapsed');
+            expandButton$.show ();
+            collapseButton$.hide ();
+        } else {
+            collapsibleOuter$.find ('.x2-collapsible').slideUp (200);
+            collapsibleOuter$.addClass ('collapsed');
+            expandButton$.hide ();
+            collapseButton$.show ();
+        }
+    });
+};
+
+X2Forms.prototype.disableButton = function (button$) {
+    button$.attr ('disabled', 'disabled');
+    button$.addClass ('x2-disabled-button');
+};
+
+X2Forms.prototype.enableButton = function (button$) {
+    button$.removeAttr ('disabled');
+    button$.removeClass ('x2-disabled-button');
+};
+
 X2Forms.prototype._init = function () {
     var that = this;
     $(function () { 
         that._setUpFormElementBehavior (); 
         that.initializeDefaultFields ();
         that.initializeMultiselectDropdowns ();
+        that.initializeMultiselects ();
         that.setUpRichTextareas ();
+        that.setUpCollapsibles ();
     });
 };
 

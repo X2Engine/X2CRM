@@ -34,10 +34,17 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 
-$this->actionMenu = $this->formatMenu(array(
-	array('label'=>Yii::t('actions','Action List'),'url'=>array('index')),
-	array('label'=>Yii::t('actions','Create')), 
-));
+
+$menuOptions = array(
+    'list', 'create',
+);
+$this->insertMenu($menuOptions);
+
 ?>
-<div class="page-title icon actions"><h2><?php echo Yii::t('actions','Create Action'); ?></h2></div>
+<div class="page-title icon actions"><h2>
+    <?php
+        echo Yii::t('actions','Create {module}', array(
+            '{module}' => Modules::displayName(false),
+    )); ?>
+</h2></div>
 <?php echo $this->renderPartial('_form', array('actionModel'=>$model, 'users'=>$users,'modelList'=>$modelList)); ?>

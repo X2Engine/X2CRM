@@ -34,11 +34,11 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 
-$this->actionMenu = $this->formatMenu(array(
-	array('label'=>Yii::t('services','All Cases'), 'url'=>array('index')),
-	array('label'=>Yii::t('services','Create Case')),
-	array('label'=>Yii::t('services','Create Web Form'), 'url'=>array('createWebForm')),
-));
+$menuOptions = array(
+    'index', 'create', 'createWebForm',
+);
+$this->insertMenu($menuOptions);
+
 ?>
 <div class="page-title icon services"><h2><?php echo Yii::t('services','Create Case'); ?></h2></div>
 
@@ -46,7 +46,9 @@ $this->actionMenu = $this->formatMenu(array(
 
 <?php
 $createContactUrl = $this->createUrl('/contacts/contacts/create');
-$contactTooltip = json_encode(Yii::t('contacts', 'Create a new Contact'));
+$contactTooltip = json_encode(Yii::t('contacts', 'Create a new {contact}', array(
+    '{contact}' => Modules::displayName(false, "Contacts"),
+)));
 
 Yii::app()->clientScript->registerScript('create-model', "
 	$(function() {

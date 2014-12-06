@@ -32,13 +32,14 @@
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2Engine".
  *****************************************************************************************/
-
+/* line 22, ../../../compass/themes/x2engine/css/ipadLayout.scss */
 #header {
-	position:static !important;
+  position: static !important;
 }
 
+/* line 26, ../../../compass/themes/x2engine/css/ipadLayout.scss */
 #page {
-	margin-top: 0 !important;
+  margin-top: 0 !important;
 }
 
 /*#sidebar-right {
@@ -56,4 +57,3 @@
 .sidebar-left {
 	width: 200px;
 }*/
-

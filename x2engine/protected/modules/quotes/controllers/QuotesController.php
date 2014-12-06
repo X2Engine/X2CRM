@@ -144,8 +144,6 @@ class QuotesController extends x2base {
 			throw new CHttpException(400);
 
 		$currency = Yii::app()->params->currency;
-		$productNames = Product::productNames();
-		$productCurrency = Product::productCurrency();
 
 		// Uncomment the following line if AJAX validation is needed
 		// $this->performAjaxValidation($model);
@@ -816,5 +814,127 @@ class QuotesController extends x2base {
     public function actionGetItems ($term) {
         X2LinkableBehavior::getItems ($term);
     }
+
+    /**
+     * Create a menu for Quotes
+     * @param array Menu options to remove
+     * @param X2Model Model object passed to the view
+     * @param array Additional menu parameters
+     */
+    public function insertMenu($selectOptions = array(), $model = null, $menuParams = null) {
+        $Quotes = Modules::displayName();
+        $Quote = Modules::displayName(false);
+        $modelId = isset($model) ? $model->id : 0;
+
+        /**
+         * To show all options:
+         * $menuOptions = array(
+         *     'index', 'invoices', 'create', 'view', 'email', 'edit', 'editLock', 'editStrictLock',
+         *     'delete', 'attach', 'print', 'import', 'export', 'convert',
+         * );
+         */
+
+        $menuItems = array(
+            array(
+                'name'=>'index',
+                'label'=>Yii::t('quotes','{module} List', array(
+                    '{module}'=>$Quotes
+                )),
+                'url' => array('index'),
+            ),
+            array(
+                'name'=>'invoices',
+                'label'=>Yii::t('quotes','Invoice List'),
+                'url'=>array('indexInvoice')
+            ),
+            array(
+                'name'=>'create',
+                'label'=>Yii::t('quotes','Create'),
+                'url'=>array('create')
+            ),
+            array(
+                'name'=>'view',
+                'label'=>Yii::t('quotes','View'),
+                'url'=>array('view', 'id'=>$modelId)
+            ),
+            array(
+                'name'=>'email',
+                'label'=>Yii::t('app','Email {type}', array(
+                    '{type}' => ((isset($model) && $model->type=='invoice') ? 'Invoice' : $Quote)
+                )),
+                'url'=>'#','linkOptions'=>array('onclick'=>'toggleEmailForm(); return false;'),
+            ),
+            array(
+                'name'=>'editStrictLock',
+                'label'=>Yii::t('quotes','Update'),
+                'url'=>'#',
+                'linkOptions'=>array('onClick'=>'dialogStrictLock();')
+            ),
+            array(
+                'name'=>'editLock',
+                'label'=>Yii::t('quotes','Update'),
+                'url'=>'#',
+                'linkOptions'=>array('onClick'=>'dialogLock();')
+            ),
+            array(
+                'name'=>'edit',
+                'label'=>Yii::t('quotes','Update'),
+                'url'=>array('update', 'id'=>$modelId),
+            ),
+            array(
+                'name'=>'delete',
+                'label'=>Yii::t('quotes','Delete'),
+                'url'=>'#',
+                'linkOptions'=>array(
+                    'submit'=>array('delete','id'=>$modelId),
+                    'confirm'=>'Are you sure you want to delete this item?'
+                ),
+            ),
+            array(
+                'name'=>'attach',
+                'label'=>Yii::t('app','Attach A File/Photo'),
+                'url'=>'#',
+                'linkOptions'=>array(
+                    'onclick'=>'toggleAttachmentForm(); return false;'
+                ),
+            ),
+            array(
+                'name'=>'print',
+                'label'=>((isset($model) && $model->type == 'invoice') ? 
+                    Yii::t('quotes', 'Print Invoice') : Yii::t('quotes','Print {quote}', array(
+                        '{quote}' => $Quote,
+                    ))),
+                'url'=>'#',
+                'linkOptions'=>array(
+                    'onClick'=>"window.open('".
+                        Yii::app()->createUrl('/quotes/quotes/print',
+                        array('id'=>$modelId)) ."')"
+                )
+            ),
+            array(
+                'name'=>'import',
+                'label'=>Yii::t('quotes', 'Import {module}', array(
+                    '{module}' =>$Quotes,
+                )),
+                'url'=>array('admin/importModels', 'model'=>'Quote'),
+            ),
+            array(
+                'name'=>'export',
+                'label'=>Yii::t('quotes', 'Export {module}', array(
+                    '{module}' => $Quotes,
+                )),
+                'url'=>array('admin/exportModels', 'model'=>'Quote'),
+            ),
+            array(
+                'name' => 'convert',
+                'label' => Yii::t('quotes', 'Convert To Invoice'),
+                'url' => array ('convertToInvoice', 'id' => $modelId),
+            ),
+        );
+
+        $this->prepareMenu($menuItems, $selectOptions);
+        $this->actionMenu = $this->formatMenu($menuItems, $menuParams);
+    }
+
 
 }
