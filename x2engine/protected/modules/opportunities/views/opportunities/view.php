@@ -77,24 +77,11 @@ $themeUrl = Yii::app()->theme->getBaseUrl();
 	<?php //echo CHtml::link('['.Yii::t('contacts','Show All').']','javascript:void(0)',array('id'=>'showAll','class'=>'right hide','style'=>'text-decoration:none;')); ?>
 	<?php //echo CHtml::link('['.Yii::t('contacts','Hide All').']','javascript:void(0)',array('id'=>'hideAll','class'=>'right','style'=>'text-decoration:none;')); ?>
 	<h2><span class="no-bold"><?php echo Yii::t('opportunities','{opportunity}:', array('{opportunity}'=>Modules::displayName(false))); ?> </span><?php echo CHtml::encode($model->name); ?></h2>
-	<?php echo CHtml::link('<span></span>',array('update', 'id'=>$model->id),array('class'=>'x2-button icon edit right')); ?>
+	<?php echo X2Html::editRecordButton($model); ?>
     <?php if ((bool) $model->contactName) {
-        echo CHtml::link(
-        '<img src="'.Yii::app()->request->baseUrl.'/themes/x2engine/images/icons/email_button.png'.
-            '"></img>', '#',
-        array(
-            'class' => 'x2-button icon right email',
-            'title' => Yii::t('app', 'Open email form'),
-            'onclick' => 'toggleEmailForm(); return false;'
-        ));
-        
+        echo X2Html::emailFormButton();        
     }
-    echo CHtml::link('<img src="'.Yii::app()->request->baseUrl.'/themes/x2engine/images/OK.png'.
-            '" style="height:18px;position:relative;top:3px;right:1px;"></img>','#',
-            array('id'=>'inline-edit-save','class'=>'x2-button icon right inline-edit-button','style'=>'display:none;'));
-    echo CHtml::link('<img src="'.Yii::app()->request->baseUrl.'/themes/x2engine/images/NOT_OK.png'.
-            '" style="height:18px;position:relative;top:3px;right:1px;"></img>','#',
-            array('id'=>'inline-edit-cancel','class'=>'x2-button icon right inline-edit-button','style'=>'display:none;'));
+    echo X2Html::inlineEditButtons();
     ?>
 </div>
 </div>

@@ -47,7 +47,7 @@ ul.x2-dropdown-list {
   background: $colors[content]
   border-color: $colors[lighter_content] 
 }
-  ul.x2-dropdown-list li:hover {
+  ul.x2-dropdown-list li:hover:not(.x2-button){
     background: $colors[bright_content] 
 }
 

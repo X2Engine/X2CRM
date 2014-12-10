@@ -2278,7 +2278,7 @@ abstract class X2Model extends CActiveRecord {
             }
             return CHtml::dropDownList(X2Model::getModelName($modelType) . '[' . $field->fieldName . ']', $selected, $options, array(
                         'disabled' => $equalFlag ? 'disabled' : '',
-                    )) . CHtml::hiddenField(X2Model::getModelName($modelType) . '[' . $field->fieldName . ']', $selected);
+                    )) . ($equalFlag?CHtml::hiddenField(X2Model::getModelName($modelType) . '[' . $field->fieldName . ']', $selected):"");
         } else {
             $str = str_replace("<br />", "\n", implode("\n--\n", $options));
             return CHtml::textArea(X2Model::getModelName($modelType) . '[' . $field->fieldName . ']', $str, array(

@@ -198,6 +198,14 @@ class ArrayUtil {
         }
     }
 
+    /**
+     * Side effect free version of array_pop
+     */
+    public static function pop (array $array) {
+        $newArray = $array;
+        return array_pop ($newArray);
+    }
+
     public static function transpose ($array) {
         $newArray = array ();
         $arraySize = count ($array);
@@ -215,6 +223,18 @@ class ArrayUtil {
             }
         }
         return $newArray;
+    }
+
+    /**
+     * Like array_search but returns numeric index instead of key 
+     */
+    public static function numericIndexOf ($needle, $haystack, $strict=false) {
+        $i = 0;
+        foreach ($haystack as $elem) {
+            if (!$strict && $elem == $needle || $strict && $elem === $needle) return $i;
+            $i++;
+        }
+        return false;
     }
 
 }

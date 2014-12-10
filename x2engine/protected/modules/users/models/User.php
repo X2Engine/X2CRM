@@ -508,6 +508,7 @@ class User extends CActiveRecord {
         }
         $links = array();
         $userCache = Yii::app()->params->userCache;
+        
         foreach($users as $user){
             if($user == 'Anyone' || $user == 'Email'){  // skip these, they aren't users
                 continue;
@@ -515,7 +516,7 @@ class User extends CActiveRecord {
                 if(isset($userCache[$user])){
                     $group = $userCache[$user];
                     //$links[] =  $makeLinks ? CHtml::link($group->name, array('/groups/groups/view', 'id' => $group->id)) : $group->name;
-                    $links[] = $makeLinks ? CHtml::link($group->name, Yii::app()->controller->createAbsoluteUrl('/groups/groups/view', array('id' => $group->id), array('style'=>'text-decoration:none;'))) : $group->name;
+                    $links[] = $makeLinks ? CHtml::link($group->name, Yii::app()->controller->createAbsoluteUrl('/groups/groups/view', array('id' => $group->id)), array('style'=>'text-decoration:none;')) : $group->name;
                 }else{
                     $group = Groups::model()->findByPk($user);
                     // $group = Groups::model()->findByPk($users);

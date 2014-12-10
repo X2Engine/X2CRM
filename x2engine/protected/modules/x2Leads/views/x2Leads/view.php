@@ -79,14 +79,12 @@ $themeUrl = Yii::app()->theme->getBaseUrl();
 <div class="page-title-placeholder"></div>
 <div class="page-title-fixed-outer">
     <div class="page-title-fixed-inner">
+
         <div class="page-title icon x2Leads">
             <h2><span class="no-bold"><?php echo Yii::t('x2Leads', 'Leads:'); ?> </span><?php echo CHtml::encode($model->name); ?></h2>
             <?php
-            echo CHtml::link('<span></span>', array('update', 'id' => $model->id), array('class' => 'x2-button icon edit right'));
-            echo CHtml::link('<img src="' . Yii::app()->request->baseUrl . '/themes/x2engine/images/OK.png' .
-                    '" style="height:18px;position:relative;top:3px;right:1px;"></img>', '#', array('id' => 'inline-edit-save', 'class' => 'x2-button icon right inline-edit-button', 'style' => 'display:none;'));
-            echo CHtml::link('<img src="' . Yii::app()->request->baseUrl . '/themes/x2engine/images/NOT_OK.png' .
-                    '" style="height:18px;position:relative;top:3px;right:1px;"></img>', '#', array('id' => 'inline-edit-cancel', 'class' => 'x2-button icon right inline-edit-button', 'style' => 'display:none;'));
+            echo X2Html::editRecordButton($model);
+            echo X2Html::inlineEditButtons();
             ?>
         </div>
     </div>

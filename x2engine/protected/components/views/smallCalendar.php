@@ -484,9 +484,6 @@ $(function(){
         var width = $('#small-calendar .fc-day').width();
         $('#small-calendar .day-number-link').css('font-size', width/3*1.25);
         $('#small-calendar .fc-day-number').css('padding-top', width/3/1.25);
-        // $('#small-calendar .fc-day-content').css('height', width/4);
-        // $('#small-calendar .fc-event-indicator').css('height', width/4).css('width', width/4);
-        // $('#small-calendar .fc-day').css('height', width);
 
         if($('.fc-header-left').height()> 50){
             $('#me-button, #add-button').css('float', 'left');
@@ -496,9 +493,13 @@ $(function(){
         }
 
         var title = $('#widget_SmallCalendar #widget-dropdown');
+
         var minimizeElement = $('#widget_SmallCalendar #widget-dropdown .portlet-minimize');
 
         var view = $('#small-calendar').fullCalendar('getView');
+        if (typeof view.title === 'undefined') {
+            return;
+        }
 
         title.html('');
         title.append('<div id=\"header-title\">'+view.title+'</div>');
@@ -509,23 +510,10 @@ $(function(){
 
 
         if(view.name == 'month'){
-            // $('#widget_SmallCalendar').resizable('destroy');
             $('#small-calendar-container').height('auto');
-            // $('#small-calendar').fullCalendar('option', 'height', 'auto');
         }
 
         if(view.name == 'agendaDay'){
-            // // height = $('#small-calendar').fullCalendar('height');
-            // $('#small-calendar').resizable({
-            //     handles: 's',
-            //     minHeight: 100,
-            //     start: function(event, ui) {
-                    
-            //     },
-            //     stop: function(event, ui) {
-            //        $('#small-calendar').fullCalendar('option','height',ui.size.height);
-            //     }
-            // });
             $('#small-calendar').fullCalendar('option', 'height', 350);
         }
     }

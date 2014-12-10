@@ -138,13 +138,13 @@
 * CSS to extend when something 
 * should look like a link
 ***************************************/
-/* line 56, ../../../compass/css/lib/standards.scss */
+/* line 57, ../../../compass/css/lib/standards.scss */
 .pseudo-link {
   cursor: pointer;
   color: #004baf;
   transition: color .1s;
 }
-/* line 61, ../../../compass/css/lib/standards.scss */
+/* line 62, ../../../compass/css/lib/standards.scss */
 .pseudo-link:hover {
   color: #006cfb;
 }
@@ -153,13 +153,13 @@
 * CSS to extend when for elements that 
 * become opauqe on mouseover
 ***************************************/
-/* line 70, ../../../compass/css/lib/standards.scss */
+/* line 80, ../../../compass/css/lib/standards.scss */
 .opacity-hover {
   opacity: 0.3;
 }
-/* line 73, ../../../compass/css/lib/standards.scss */
+/* line 75, ../../../compass/css/lib/standards.scss */
 .opacity-hover:hover {
-  opacity: 1.0;
+  opacity: 1;
 }
 
 /* line 39, ../../../compass/themes/x2engine/css/screen.scss */

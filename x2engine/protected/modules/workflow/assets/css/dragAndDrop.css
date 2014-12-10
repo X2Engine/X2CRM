@@ -35,54 +35,46 @@
 /***********************************************************************
 * top scroll bar 
 ***********************************************************************/
-/* line 26, ../../../../../compass/sass/protected/modules/workflow/assets/css/dragAndDrop.scss */
-/* line 26, ../../../../../compass/protected/modules/workflow/assets/css/dragAndDrop.scss */
+/* line 25, ../../../../../compass/protected/modules/workflow/assets/css/dragAndDrop.scss */
 #stage-member-list-container-top-scrollbar-outer {
   border-left: 1px solid #C2C2C2;
   border-right: 1px solid #C2C2C2;
 }
 
-/* line 31, ../../../../../compass/sass/protected/modules/workflow/assets/css/dragAndDrop.scss */
-/* line 33, ../../../../../compass/protected/modules/workflow/assets/css/dragAndDrop.scss */
+/* line 31, ../../../../../compass/protected/modules/workflow/assets/css/dragAndDrop.scss */
 #stage-member-list-container-top-scrollbar {
   width: 100%;
   margin-top: -1px;
   overflow-x: scroll;
 }
-/* line 37, ../../../../../compass/protected/modules/workflow/assets/css/dragAndDrop.scss */
+/* line 35, ../../../../../compass/protected/modules/workflow/assets/css/dragAndDrop.scss */
 #stage-member-list-container-top-scrollbar > div {
   height: 1px;
 }
 
-/* line 35, ../../../../../compass/sass/protected/modules/workflow/assets/css/dragAndDrop.scss */
-/* line 41, ../../../../../compass/sass/protected/modules/workflow/assets/css/dragAndDrop.scss */
-/* line 47, ../../../../../compass/protected/modules/workflow/assets/css/dragAndDrop.scss */
+/* line 43, ../../../../../compass/protected/modules/workflow/assets/css/dragAndDrop.scss */
 #workflow-filters-container.pipeline-view #process-status-container {
   width: auto !important;
   margin: 0 !important;
 }
-/* line 51, ../../../../../compass/protected/modules/workflow/assets/css/dragAndDrop.scss */
+/* line 47, ../../../../../compass/protected/modules/workflow/assets/css/dragAndDrop.scss */
 #workflow-filters-container.pipeline-view #data-summary-box {
   display: none !important;
 }
 
-/* line 45, ../../../../../compass/sass/protected/modules/workflow/assets/css/dragAndDrop.scss */
-/* line 50, ../../../../../compass/sass/protected/modules/workflow/assets/css/dragAndDrop.scss */
-/* line 60, ../../../../../compass/protected/modules/workflow/assets/css/dragAndDrop.scss */
+/* line 54, ../../../../../compass/protected/modules/workflow/assets/css/dragAndDrop.scss */
 .stage-member-info {
   line-height: 9px;
   color: #888888;
 }
 
-/* line 55, ../../../../../compass/sass/protected/modules/workflow/assets/css/dragAndDrop.scss */
-/* line 67, ../../../../../compass/protected/modules/workflow/assets/css/dragAndDrop.scss */
+/* line 60, ../../../../../compass/protected/modules/workflow/assets/css/dragAndDrop.scss */
 .stage-title-row {
   height: 0;
   /*margin-top: -20px;*/
 }
 
-/* line 60, ../../../../../compass/sass/protected/modules/workflow/assets/css/dragAndDrop.scss */
-/* line 74, ../../../../../compass/protected/modules/workflow/assets/css/dragAndDrop.scss */
+/* line 66, ../../../../../compass/protected/modules/workflow/assets/css/dragAndDrop.scss */
 .total-projected-stage-value {
   clear: both;
   /*color: rgb(88, 88, 88);*/
@@ -93,23 +85,20 @@
   font-size: 15px;
 }
 
-/* line 70, ../../../../../compass/sass/protected/modules/workflow/assets/css/dragAndDrop.scss */
-/* line 86, ../../../../../compass/protected/modules/workflow/assets/css/dragAndDrop.scss */
+/* line 77, ../../../../../compass/protected/modules/workflow/assets/css/dragAndDrop.scss */
 .total-stage-deals {
   font-weight: bold;
   color: #252525;
   font-size: 15px;
 }
 
-/* line 76, ../../../../../compass/sass/protected/modules/workflow/assets/css/dragAndDrop.scss */
-/* line 94, ../../../../../compass/protected/modules/workflow/assets/css/dragAndDrop.scss */
+/* line 84, ../../../../../compass/protected/modules/workflow/assets/css/dragAndDrop.scss */
 .stage-member-value {
   font-weight: bold;
   color: #252525;
 }
 
-/* line 81, ../../../../../compass/sass/protected/modules/workflow/assets/css/dragAndDrop.scss */
-/* line 101, ../../../../../compass/protected/modules/workflow/assets/css/dragAndDrop.scss */
+/* line 90, ../../../../../compass/protected/modules/workflow/assets/css/dragAndDrop.scss */
 .total-stage-deals {
   float: right;
   /*color: rgb(88, 88, 88);*/
@@ -117,8 +106,7 @@
   height: 0;
 }
 
-/* line 88, ../../../../../compass/sass/protected/modules/workflow/assets/css/dragAndDrop.scss */
-/* line 110, ../../../../../compass/protected/modules/workflow/assets/css/dragAndDrop.scss */
+/* line 98, ../../../../../compass/protected/modules/workflow/assets/css/dragAndDrop.scss */
 .stage-member-staging-area {
   /*width: 270px;*/
   width: 246px;
@@ -128,20 +116,17 @@
   overflow: hidden;
   z-index: 100;
 }
-/* line 118, ../../../../../compass/protected/modules/workflow/assets/css/dragAndDrop.scss */
+/* line 106, ../../../../../compass/protected/modules/workflow/assets/css/dragAndDrop.scss */
 .stage-member-staging-area .stage-member-button-container > a {
   display: none !important;
 }
 
-/* line 96, ../../../../../compass/sass/protected/modules/workflow/assets/css/dragAndDrop.scss */
-/* line 101, ../../../../../compass/sass/protected/modules/workflow/assets/css/dragAndDrop.scss */
-/* line 127, ../../../../../compass/protected/modules/workflow/assets/css/dragAndDrop.scss */
+/* line 113, ../../../../../compass/protected/modules/workflow/assets/css/dragAndDrop.scss */
 #stage-member-lists-container .yiiPager {
   display: none;
 }
 
-/* line 105, ../../../../../compass/sass/protected/modules/workflow/assets/css/dragAndDrop.scss */
-/* line 133, ../../../../../compass/protected/modules/workflow/assets/css/dragAndDrop.scss */
+/* line 117, ../../../../../compass/protected/modules/workflow/assets/css/dragAndDrop.scss */
 #add-a-deal-button {
   margin-top: 5px;
 }
@@ -149,39 +134,33 @@
 /***********************************************************************
 * filters 
 ***********************************************************************/
-/* line 114, ../../../../../compass/sass/protected/modules/workflow/assets/css/dragAndDrop.scss */
-/* line 143, ../../../../../compass/protected/modules/workflow/assets/css/dragAndDrop.scss */
+/* line 126, ../../../../../compass/protected/modules/workflow/assets/css/dragAndDrop.scss */
 #workflow-filters-container .row {
   float: left;
   clear: none;
 }
-/* line 147, ../../../../../compass/protected/modules/workflow/assets/css/dragAndDrop.scss */
+/* line 130, ../../../../../compass/protected/modules/workflow/assets/css/dragAndDrop.scss */
 #workflow-filters-container form {
   width: auto !important;
 }
-/* line 149, ../../../../../compass/protected/modules/workflow/assets/css/dragAndDrop.scss */
+/* line 132, ../../../../../compass/protected/modules/workflow/assets/css/dragAndDrop.scss */
 #workflow-filters-container form .x2-button {
   margin: 11px 0px 0 7px !important;
   padding: 2px 15px !important;
 }
-/* line 154, ../../../../../compass/protected/modules/workflow/assets/css/dragAndDrop.scss */
+/* line 137, ../../../../../compass/protected/modules/workflow/assets/css/dragAndDrop.scss */
 #workflow-filters-container #process-status-container {
   border-left: 1px solid #C2C2C2;
   border-right: 1px solid #C2C2C2;
   border-radius: 0;
 }
 
-/* line 118, ../../../../../compass/sass/protected/modules/workflow/assets/css/dragAndDrop.scss */
-/* line 120, ../../../../../compass/sass/protected/modules/workflow/assets/css/dragAndDrop.scss */
-/* line 125, ../../../../../compass/sass/protected/modules/workflow/assets/css/dragAndDrop.scss */
-/* line 132, ../../../../../compass/sass/protected/modules/workflow/assets/css/dragAndDrop.scss */
-/* line 169, ../../../../../compass/protected/modules/workflow/assets/css/dragAndDrop.scss */
+/* line 148, ../../../../../compass/protected/modules/workflow/assets/css/dragAndDrop.scss */
 #workflow-filters {
   margin: 5px 5px 0 0;
 }
 
-/* line 136, ../../../../../compass/sass/protected/modules/workflow/assets/css/dragAndDrop.scss */
-/* line 175, ../../../../../compass/protected/modules/workflow/assets/css/dragAndDrop.scss */
+/* line 153, ../../../../../compass/protected/modules/workflow/assets/css/dragAndDrop.scss */
 .stage-member-button-container {
   width: 91px;
   left: 153px;
@@ -191,8 +170,7 @@
   /*left: 20px;*/
 }
 
-/* line 145, ../../../../../compass/sass/protected/modules/workflow/assets/css/dragAndDrop.scss */
-/* line 186, ../../../../../compass/protected/modules/workflow/assets/css/dragAndDrop.scss */
+/* line 163, ../../../../../compass/protected/modules/workflow/assets/css/dragAndDrop.scss */
 .stage-icon-container {
   height: 18px;
   width: 18px;
@@ -201,23 +179,20 @@
   margin-right: 4px;
 }
 
-/* line 153, ../../../../../compass/sass/protected/modules/workflow/assets/css/dragAndDrop.scss */
-/* line 196, ../../../../../compass/protected/modules/workflow/assets/css/dragAndDrop.scss */
+/* line 172, ../../../../../compass/protected/modules/workflow/assets/css/dragAndDrop.scss */
 .stage-member-type-icon {
   opacity: 0.4;
   height: 18px;
   margin-right: 5px;
 }
 
-/* line 159, ../../../../../compass/sass/protected/modules/workflow/assets/css/dragAndDrop.scss */
-/* line 204, ../../../../../compass/protected/modules/workflow/assets/css/dragAndDrop.scss */
+/* line 179, ../../../../../compass/protected/modules/workflow/assets/css/dragAndDrop.scss */
 .stage-members {
   float: left;
   width: 246px;
 }
 
-/* line 164, ../../../../../compass/sass/protected/modules/workflow/assets/css/dragAndDrop.scss */
-/* line 211, ../../../../../compass/protected/modules/workflow/assets/css/dragAndDrop.scss */
+/* line 185, ../../../../../compass/protected/modules/workflow/assets/css/dragAndDrop.scss */
 #stage-member-lists-container {
   overflow-x: auto;
   /*background-color: rgb(247, 247, 247);*/
@@ -225,19 +200,17 @@
   min-height: 790px;
 }
 
-/* line 171, ../../../../../compass/sass/protected/modules/workflow/assets/css/dragAndDrop.scss */
-/* line 220, ../../../../../compass/protected/modules/workflow/assets/css/dragAndDrop.scss */
+/* line 193, ../../../../../compass/protected/modules/workflow/assets/css/dragAndDrop.scss */
 #content-container-inner {
   /*background-color: rgb(235, 235, 235);*/
 }
 
-/* line 176, ../../../../../compass/sass/protected/modules/workflow/assets/css/dragAndDrop.scss */
-/* line 227, ../../../../../compass/protected/modules/workflow/assets/css/dragAndDrop.scss */
+/* line 199, ../../../../../compass/protected/modules/workflow/assets/css/dragAndDrop.scss */
 .list-view .items {
   border: none !important;
   border-radius: 0 !important;
 }
-/* line 231, ../../../../../compass/protected/modules/workflow/assets/css/dragAndDrop.scss */
+/* line 203, ../../../../../compass/protected/modules/workflow/assets/css/dragAndDrop.scss */
 .list-view .pager {
   height: 40px;
   float: right;
@@ -249,32 +222,26 @@
   background: none;
 }
 
-/* line 180, ../../../../../compass/sass/protected/modules/workflow/assets/css/dragAndDrop.scss */
-/* line 193, ../../../../../compass/sass/protected/modules/workflow/assets/css/dragAndDrop.scss */
-/* line 248, ../../../../../compass/protected/modules/workflow/assets/css/dragAndDrop.scss */
+/* line 218, ../../../../../compass/protected/modules/workflow/assets/css/dragAndDrop.scss */
 .stage-member-container:hover, .stage-member-container.stage-highlight {
   background-color: #f3f3f3;
 }
 
-/* line 198, ../../../../../compass/sass/protected/modules/workflow/assets/css/dragAndDrop.scss */
-/* line 255, ../../../../../compass/protected/modules/workflow/assets/css/dragAndDrop.scss */
+/* line 224, ../../../../../compass/protected/modules/workflow/assets/css/dragAndDrop.scss */
 #stage-member-lists-container .record-stage-change-pending {
   background-color: #e6e6e6 !important;
 }
-/* line 257, ../../../../../compass/protected/modules/workflow/assets/css/dragAndDrop.scss */
+/* line 226, ../../../../../compass/protected/modules/workflow/assets/css/dragAndDrop.scss */
 #stage-member-lists-container .record-stage-change-pending:hover {
   background-color: #dfdfdf !important;
 }
 
-/* line 200, ../../../../../compass/sass/protected/modules/workflow/assets/css/dragAndDrop.scss */
-/* line 205, ../../../../../compass/sass/protected/modules/workflow/assets/css/dragAndDrop.scss */
-/* line 266, ../../../../../compass/protected/modules/workflow/assets/css/dragAndDrop.scss */
+/* line 233, ../../../../../compass/protected/modules/workflow/assets/css/dragAndDrop.scss */
 .list-view .items .empty {
   margin: 0 !important;
 }
 
-/* line 209, ../../../../../compass/sass/protected/modules/workflow/assets/css/dragAndDrop.scss */
-/* line 272, ../../../../../compass/protected/modules/workflow/assets/css/dragAndDrop.scss */
+/* line 238, ../../../../../compass/protected/modules/workflow/assets/css/dragAndDrop.scss */
 .stage-member-container, .list-view .items .empty {
   height: 45px;
   line-height: 36px;
@@ -282,14 +249,12 @@
   padding-left: 3px;
 }
 
-/* line 216, ../../../../../compass/sass/protected/modules/workflow/assets/css/dragAndDrop.scss */
-/* line 281, ../../../../../compass/protected/modules/workflow/assets/css/dragAndDrop.scss */
+/* line 246, ../../../../../compass/protected/modules/workflow/assets/css/dragAndDrop.scss */
 #stage-member-lists-container-inner {
   width: 999999px;
 }
 
-/* line 220, ../../../../../compass/sass/protected/modules/workflow/assets/css/dragAndDrop.scss */
-/* line 287, ../../../../../compass/protected/modules/workflow/assets/css/dragAndDrop.scss */
+/* line 251, ../../../../../compass/protected/modules/workflow/assets/css/dragAndDrop.scss */
 .stage-list-title {
   border-top: 1px solid #c2c2c2;
   border-bottom: 1px solid #dadada;
@@ -299,19 +264,16 @@
   line-height: 40px;
 }
 
-/* line 230, ../../../../../compass/sass/protected/modules/workflow/assets/css/dragAndDrop.scss */
-/* line 299, ../../../../../compass/protected/modules/workflow/assets/css/dragAndDrop.scss */
+/* line 262, ../../../../../compass/protected/modules/workflow/assets/css/dragAndDrop.scss */
 #content h2 {
   float: left;
 }
-/* line 302, ../../../../../compass/protected/modules/workflow/assets/css/dragAndDrop.scss */
+/* line 265, ../../../../../compass/protected/modules/workflow/assets/css/dragAndDrop.scss */
 #content .responsive-menu-items {
   float: right;
 }
 
-/* line 233, ../../../../../compass/sass/protected/modules/workflow/assets/css/dragAndDrop.scss */
-/* line 238, ../../../../../compass/sass/protected/modules/workflow/assets/css/dragAndDrop.scss */
-/* line 311, ../../../../../compass/protected/modules/workflow/assets/css/dragAndDrop.scss */
+/* line 272, ../../../../../compass/protected/modules/workflow/assets/css/dragAndDrop.scss */
 .stage-list-title h2 {
   line-height: 47px;
   margin: 0;
@@ -323,14 +285,12 @@
   display: block;
 }
 
-/* line 249, ../../../../../compass/sass/protected/modules/workflow/assets/css/dragAndDrop.scss */
-/* line 324, ../../../../../compass/protected/modules/workflow/assets/css/dragAndDrop.scss */
+/* line 284, ../../../../../compass/protected/modules/workflow/assets/css/dragAndDrop.scss */
 .total-stage-deals, .total-projected-stage-value {
   margin-top: -15px;
 }
 
-/* line 253, ../../../../../compass/sass/protected/modules/workflow/assets/css/dragAndDrop.scss */
-/* line 330, ../../../../../compass/protected/modules/workflow/assets/css/dragAndDrop.scss */
+/* line 289, ../../../../../compass/protected/modules/workflow/assets/css/dragAndDrop.scss */
 .workflow-stage-arrow {
   pointer-events: none;
   position: relative;
@@ -347,8 +307,7 @@
 /***********************************************************************
 * stage member container 
 ***********************************************************************/
-/* line 270, ../../../../../compass/sass/protected/modules/workflow/assets/css/dragAndDrop.scss */
-/* line 348, ../../../../../compass/protected/modules/workflow/assets/css/dragAndDrop.scss */
+/* line 306, ../../../../../compass/protected/modules/workflow/assets/css/dragAndDrop.scss */
 #stage-member-lists-container .stage-member-name {
   white-space: nowrap;
   text-overflow: ellipsis;
@@ -358,37 +317,35 @@
   float: left;
 }
 
-/* line 279, ../../../../../compass/sass/protected/modules/workflow/assets/css/dragAndDrop.scss */
-/* line 359, ../../../../../compass/protected/modules/workflow/assets/css/dragAndDrop.scss */
+/* line 316, ../../../../../compass/protected/modules/workflow/assets/css/dragAndDrop.scss */
 .stage-member-button {
   position: absolute;
 }
 
-/* line 284, ../../../../../compass/sass/protected/modules/workflow/assets/css/dragAndDrop.scss */
-/* line 366, ../../../../../compass/protected/modules/workflow/assets/css/dragAndDrop.scss */
+/* line 322, ../../../../../compass/protected/modules/workflow/assets/css/dragAndDrop.scss */
 #stage-member-lists-container .edit-details-button {
   right: 59px;
 }
-/* line 369, ../../../../../compass/protected/modules/workflow/assets/css/dragAndDrop.scss */
+/* line 325, ../../../../../compass/protected/modules/workflow/assets/css/dragAndDrop.scss */
 #stage-member-lists-container .undo-stage-button {
   right: 29px;
 }
-/* line 372, ../../../../../compass/protected/modules/workflow/assets/css/dragAndDrop.scss */
+/* line 328, ../../../../../compass/protected/modules/workflow/assets/css/dragAndDrop.scss */
 #stage-member-lists-container .complete-stage-button {
   right: 0px;
   margin: 11px 5px 0 0;
 }
-/* line 376, ../../../../../compass/protected/modules/workflow/assets/css/dragAndDrop.scss */
+/* line 332, ../../../../../compass/protected/modules/workflow/assets/css/dragAndDrop.scss */
 #stage-member-lists-container .undo-stage-button {
   margin: 11px 5px 0 0;
 }
-/* line 379, ../../../../../compass/protected/modules/workflow/assets/css/dragAndDrop.scss */
+/* line 335, ../../../../../compass/protected/modules/workflow/assets/css/dragAndDrop.scss */
 #stage-member-lists-container .edit-details-button {
   margin: 11px -1px 0 0;
   vertical-align: middle;
   padding: 0 5px;
 }
-/* line 383, ../../../../../compass/protected/modules/workflow/assets/css/dragAndDrop.scss */
+/* line 339, ../../../../../compass/protected/modules/workflow/assets/css/dragAndDrop.scss */
 #stage-member-lists-container .edit-details-button span {
   cursor: pointer;
   opacity: 0.3;
@@ -396,22 +353,14 @@
   height: 24px;
   width: 24px;
 }
-/* line 389, ../../../../../compass/protected/modules/workflow/assets/css/dragAndDrop.scss */
+/* line 345, ../../../../../compass/protected/modules/workflow/assets/css/dragAndDrop.scss */
 #stage-member-lists-container .edit-details-button span:hover {
   opacity: 0.4;
 }
-/* line 394, ../../../../../compass/protected/modules/workflow/assets/css/dragAndDrop.scss */
+/* line 350, ../../../../../compass/protected/modules/workflow/assets/css/dragAndDrop.scss */
 #stage-member-lists-container .complete-stage-button, #stage-member-lists-container .undo-stage-button {
   cursor: pointer;
   color: #b4b4b4;
   border-radius: 15px;
   width: 8px;
 }
-
-/* line 287, ../../../../../compass/sass/protected/modules/workflow/assets/css/dragAndDrop.scss */
-/* line 290, ../../../../../compass/sass/protected/modules/workflow/assets/css/dragAndDrop.scss */
-/* line 294, ../../../../../compass/sass/protected/modules/workflow/assets/css/dragAndDrop.scss */
-/* line 297, ../../../../../compass/sass/protected/modules/workflow/assets/css/dragAndDrop.scss */
-/* line 301, ../../../../../compass/sass/protected/modules/workflow/assets/css/dragAndDrop.scss */
-/* line 307, ../../../../../compass/sass/protected/modules/workflow/assets/css/dragAndDrop.scss */
-/* line 312, ../../../../../compass/sass/protected/modules/workflow/assets/css/dragAndDrop.scss */

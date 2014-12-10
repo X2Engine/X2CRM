@@ -78,25 +78,11 @@ $themeUrl = Yii::app()->theme->getBaseUrl();
 
 	<h2><span class="no-bold"><?php echo Yii::t('accounts','{module}:', array('{module}'=>Modules::displayName(false))); ?></span> <?php echo CHtml::encode($model->name); ?></h2>
 	<?php
-	if(Yii::app()->user->checkAccess('AccountsUpdate',$authParams)){ ?>
-		<a class="x2-button icon edit right" href="<?php echo $this->createUrl('update',array('id'=>$model->id));?>"><span></span></a>
-
-	<?php } 
-    echo CHtml::link(
-        '<img src="'.Yii::app()->request->baseUrl.'/themes/x2engine/images/icons/email_button.png'.
-            '"></img>', '#',
-        array(
-            'class' => 'x2-button icon right email',
-            'title' => Yii::t('app', 'Open email form'),
-            'onclick' => 'toggleEmailForm(); return false;'
-        )
-    );
-    echo CHtml::link('<img src="'.Yii::app()->request->baseUrl.'/themes/x2engine/images/OK.png'.
-            '" style="height:18px;position:relative;top:3px;right:1px;"></img>','#',
-            array('id'=>'inline-edit-save','class'=>'x2-button icon right inline-edit-button','style'=>'display:none;'));
-    echo CHtml::link('<img src="'.Yii::app()->request->baseUrl.'/themes/x2engine/images/NOT_OK.png'.
-            '" style="height:18px;position:relative;top:3px;right:1px;"></img>','#',
-            array('id'=>'inline-edit-cancel','class'=>'x2-button icon right inline-edit-button','style'=>'display:none;'));
+    if(Yii::app()->user->checkAccess('AccountsUpdate',$authParams)){
+        echo X2Html::editRecordButton($model);
+    } 
+    echo X2Html::emailFormButton();
+    echo X2Html::inlineEditButtons();
     ?>
 </div>
 </div>

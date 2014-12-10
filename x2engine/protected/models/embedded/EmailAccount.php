@@ -177,7 +177,7 @@ class EmailAccount extends JSONEmbeddedModel {
             array('user','emailUser'),
             array('server,user,email','length','min'=>1,'max'=>500,'allowEmpty'=>0),
             array('password','required'),
-            array('senderName,server,port,security,user,email,password','safe'),
+            array('senderName,server,port,security,user,email,password,imapPort,imapServer,imapSecurity,imapNoValidate','safe'),
         );
     }
 

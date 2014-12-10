@@ -377,39 +377,24 @@ $form = $this->beginWidget('X2ActiveForm', array(
     <div id="theme-attributes-body" class="row prefs-body" <?php echo
         ($miscLayoutSettings['themeSectionExpanded'] == false ? 'style="display: none;"' : ''); ?>>
         <div class="row" id='theme-mgmt-buttons'>
-   <!--          <label for="themeName">
-                <?php echo Yii::t('app', 'Predefined Theme') ?>
-            </label>
- -->
             <input type="hidden" id="themeName" class="theme-attr x2-select" name="preferences[themeName]" />
-<!--             <select id="themeName" class="theme-attr x2-select" name="preferences[themeName]">
-                <option value="" id="custom-theme-option">
-                    <?php echo Yii::t('app', 'Custom'); ?>
-                </option>
-                <?php foreach($myThemes->data as $theme){ ?>
-                    <option value="<?php echo $theme->id; ?>"
-                    <?php
-                    if($theme->fileName == $preferences['themeName']){
-                        echo "selected='selected'";
-                    }
-                    ?>>
-                                <?php echo $theme->fileName; ?>
-                    </option>
-                <?php } ?>
-            </select> -->
+
             <div class='x2-button-group'>
                 <button type='button' class='x2-button x2-small-button'
                         id='prefs-create-theme-button'>
+                            <?php echo X2Html::fa("fa-copy") ?>
                             <?php echo Yii::t('profile', 'New'); ?>
                 </button>
                 <!-- <span id="prefs-create-theme-hint" class='prefs-hint'></span> -->
                 <button type='button' class='x2-button x2-small-button'
                         id='prefs-save-theme-button'>
+                            <?php echo X2Html::fa("fa-save") ?>
                             <?php echo Yii::t('profile', 'Save'); ?>
                 </button>
                 <!-- <span id="prefs-save-theme-hint" class='hide prefs-hint'></span> -->
                 <button type='button' class='x2-button x2-small-button'
                         id='prefs-delete-theme-button'>
+                            <?php echo X2Html::fa("fa-trash") ?>
                             <?php echo Yii::t('profile', 'Delete'); ?>
                 </button>
                 <?php  ?>
@@ -419,96 +404,12 @@ $form = $this->beginWidget('X2ActiveForm', array(
                 'myThemes' => $myThemes,
                 'selected' => $preferences['themeName'])
             ); ?>
-            <!--<div id="create-theme-dialog" title="Create Theme">
-                <span class='left'> <?php //echo Yii::t('app', 'Theme name');    ?>: </span>
-                <input id="new-theme-name"> </input>
-                <input type="checkbox"> Private </input>
-                <br/>
-                <button class='dialog-create-button' class="x2-button">
-            <?php //echo Yii::t('app', 'Create');  ?>
-                </button>
-            </div>-->
-            <!--<button type='button' class='x2-button' id='export-theme-button'>
-            <?php //echo Yii::t('profile', 'Export Theme');  ?>
-            </button>
-            <button type='button' class='x2-button' id='upload-theme-button'>
-            <?php //echo Yii::t('profile', 'Upload Theme');   ?>
-            </button>-->
+
         </div>
 
         <?php 
-            $theme = new ThemeGenerator();
-            $theme->renderSettings();
+            ThemeGenerator::renderSettings();
         ?>
-       <!--  <div class="row">
-            <label for="backgroundColor">
-                <?php echo Yii::t('app', 'Background Color') ?>
-            </label>
-            <input id="backgroundColor" type="text" name="preferences[backgroundColor]"
-                   value="<?php echo $preferences['backgroundColor']; ?>"
-                   class='color-picker-input theme-attr'> </input>
-        </div>
-        <div class="row">
-            <label for="menuBgColor">
-                <?php echo Yii::t('app', 'Menu Background Color') ?>
-            </label>
-            <input id="menuBgColor" type="text" name="preferences[menuBgColor]"
-                   value="<?php echo $preferences['menuBgColor']; ?>"
-                   class='color-picker-input theme-attr'> </input>
-        </div>
-        <div class="row">
-            <label for="menuTextColor">
-                <?php echo Yii::t('app', 'Menu Text Color') ?>
-            </label>
-            <input id="menuTextColor" type="text" name="preferences[menuTextColor]"
-                   value="<?php echo $preferences['menuTextColor']; ?>"
-                   class='color-picker-input theme-attr'> </input>
-        </div>
-        <div class="row">
-            <label for="pageHeaderBgColor">
-                <?php echo Yii::t('app', 'Page Header Background Color') ?>
-            </label>
-            <input id="pageHeaderBgColor" type="text"
-                   name="preferences[pageHeaderBgColor]"
-                   value="<?php echo $preferences['pageHeaderBgColor']; ?>"
-                   class='color-picker-input theme-attr'> </input>
-        </div>
-        <div class="row">
-            <label for="pageHeaderTextColor">
-                <?php echo Yii::t('app', 'Page Header Text Color') ?>
-            </label>
-            <input id="pageHeaderTextColor" type="text"
-                   name="preferences[pageHeaderTextColor]"
-                   value="<?php echo $preferences['pageHeaderTextColor']; ?>"
-                   class='color-picker-input theme-attr'> </input>
-        </div>
-        <div class="row">
-            <label for="activityFeedWidgetBgColor">
-                <?php echo Yii::t('app', 'Activity Feed Widget Background Color'); ?>
-            </label>
-            <input id="activityFeedWidgetBgColor" type="text"
-                   name="preferences[activityFeedWidgetBgColor]"
-                   value="<?php echo $preferences['activityFeedWidgetBgColor']; ?>"
-                   class='color-picker-input theme-attr'> </input>
-        </div>
-        <div class="row">
-            <label for="gridViewRowColorOdd">
-                <?php echo Yii::t('app', 'Grid View Row Color 1'); ?>
-            </label>
-            <input id="gridViewRowColorOdd" type="text"
-                   name="preferences[gridViewRowColorOdd]"
-                   value="<?php echo $preferences['gridViewRowColorOdd']; ?>"
-                   class='color-picker-input theme-attr'> </input>
-        </div>
-        <div class="row">
-            <label for="gridViewRowColorEven">
-                <?php echo Yii::t('app', 'Grid View Row Color 2'); ?>
-            </label>
-            <input id="gridViewRowColorEven" type="text"
-                   name="preferences[gridViewRowColorEven]"
-                   value="<?php echo $preferences['gridViewRowColorEven']; ?>"
-                   class='color-picker-input theme-attr'> </input>
-        </div> -->
         <div class="row">
             <label for="backgroundTiling">
                 <?php echo Yii::t('app', 'Background Tiling') ?>
@@ -607,10 +508,6 @@ $form = $this->beginWidget('X2ActiveForm', array(
         </div>
     </div>
 
-    <?php /* <div class="row">
-      <?php echo $form->checkBox($model,'enableFullWidth'); ?>
-      <?php echo $form->labelEx($model,'enableFullWidth',array('style'=>'display:inline;')); ?>
-      </div> */ ?>
 </div>
 
 <div id="prefs-tags" class="form preferences-section">

@@ -1,88 +1,17 @@
-# X2Engine 4.3 #
-10/9/2014
+# 5.0.1 #
+12/9/2014
 
-New in 4.3 (see [CHANGELOG](CHANGELOG.md) for full history):
-
-* **Highlights**
-  * New calendar profile widget
-  * The clock widget now allows you to choose from analog, digital, and digital 24-hour
-  * Improvement to role access editor _(Professional Edition)_:
-    * New user interface enables more fine-grained control over role-based permissions
-  * Profile widget improvements:
-    * New website viewer widget
-    * Leads module grid widget
-    * Can now create grid widgets for custom modules
-    * Can now clone, rename, and delete profile widgets
-    * Persistent grid widget filters
-    * Quick Contact widget now provides appropriate input fields for all required fields
-  * Grid view improvements (Contacts module only):
-    * Can now select all records on all pages
-    * Perform updates on thousands of records at a time
-  * X2Flow improvements _(Professional Edition)_:
-    * Improved X2Flow Remote API Call Action supports custom request headers 
-    * New "Has Tags" flow condition
-  * Calendar improvements:
-    * New weekly agenda view
-    * New customizable event subtype and status dropdowns
-    * Can now customize event color dropdown
-  * Importer improvements:
-    * Added preset import maps to transfer records from other systems
-    * Action descriptions can now be imported/exported
-    * Actions associations will now be verified to ensure the type is known to X2 and that the associated record exists
-    * Added a loading throbber to indicate activity
-    * Added a timeout warning when max_execution_time is set to 30 seconds or less
-  * Static pages can now be created from existing Docs instead of only a new Doc
-  * New feature to validate email credentials from the 'Manage Apps' page
-  * Improved contact lists grid view
-* General changlog/developer notes
-  * Updated calendar widget to be hidden and shown according to persistent settings
-  * Fixed bug preventing tags from being added to leads
-  * Fixed inline process widget in Opportunities module
-  * Custom assignment fields now produce links in grid views
-  * Importer Bugfixes
-    * Action.description will now be automatically mapped
-    * Fixed bug when uploading import maps
-    * Added better handling of empty rows
-  * Fixed purification issue with insertableAttributes
-  * Patched file upload filter bypass vulnerability
-  * Fixed missing link to modify Doc permissions when logged in as admin
-  * Fixed issue that caused phone number links to be prepended international dialing codes unconditionally
-  * Updated the web lead form to search for duplicate contacts on all custom Contact email fields
-  * Fixed issue preventing Automatic Updates settings form from being saved
-  * Fixed issue which caused process funnel record counts to be incorrect
-  * Fixed bug in importer preventing action descriptions from being imported
-  * Improved error reporting and handling on media upload tool
-  * Improved currency validation and fixed consistency issues when changing a products currency
-  * Fixed error reporting when attempting to upgrade without a key
-  * _(Platinum Edition)_ Updated Fingerprint index to display a human-readable timezone string
-  * Default permissions will now be created when importing a module
-  * Fixed Account link type fields for Contacts and Opportunities created on the Quick Create page
-  * Fixed links in 'My Actions' widget
-  * Fixed bug in Google Calendar Sync which prevented calendar and action history from updating
-    after publishing events or actions
-  * Fixed bug in importer preventing equal valued fields from being set
-* Tracked Bug Fixes:  
-  * [1401](http://x2software.com/index.php/bugReports/1401): Undefined index: tags 
-  * [1492](http://x2software.com/index.php/bugReports/1492): User Report  
-  * [1553](http://x2software.com/index.php/bugReports/1553): "Do Not Email Page" does not save  
-  * [1554](http://x2software.com/index.php/bugReports/1554): explode() expects parameter 2 to be string, array given  
-  * [1555](http://x2software.com/index.php/bugReports/1555): Invalid argument supplied for foreach()  
-  * [1562](http://x2software.com/index.php/bugReports/1562): The system is unable to find the requested action "www.google.com".  
-  * [1565](http://x2software.com/index.php/bugReports/1565): CDbCommand failed to execute the SQL statement: SQLSTATE[42000]: Syntax error or access violation: 1064 You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '{"contacts\  
-  * [1567](http://x2software.com/index.php/bugReports/1567): Class: AnonContact not found.  
-  * [1572](http://x2software.com/index.php/bugReports/1572): Unable to resolve the request "actions/viewAll/showActions/incomplete".  
-  * [1574](http://x2software.com/index.php/bugReports/1574): Trying to get property of non-object  
-  * [1578](http://x2software.com/index.php/bugReports/1578): Undefined variable: users  
-  * [1584](http://x2software.com/index.php/bugReports/1584): Undefined variable: newFields
-  * [1589](http://x2software.com/index.php/bugReports/1589): CDbCommand failed to execute the SQL statement: SQLSTATE[23000]: Integrity constraint violation: 1062 Duplicate entry '3' for key 'PRIMARY'
-  * [1596](http://x2software.com/index.php/bugReports/1596): Undefined variable: fmtNumber
-  * [1621](http://x2software.com/index.php/bugReports/1621): Non-static method Tags::normalizeTags() should not be called statically, assuming $this from incompatible context  
-  * [1648](http://x2software.com/index.php/bugReports/1648): Invalid address:  
-  * [1659](http://x2software.com/index.php/bugReports/1659): User Report  
-  * [1660](http://x2software.com/index.php/bugReports/1660): Undefined index: first  
-  * [1688](http://x2software.com/index.php/bugReports/1688): Undefined index: last  
-  * [1697](http://x2software.com/index.php/bugReports/1697): htmlspecialchars(): Invalid multibyte sequence in argument  
-  * [1706](http://x2software.com/index.php/bugReports/1706): Undefined variable: email  
+* General Changelog / Developer Notes:
+  * New Outlook and Yahoo email credential types
+  * Leads "name" field is no longer overwritten with first name and last name if "name" field is already set
+* Tracked Bug Fixes:
+  * [1887](http://x2software.com/index.php/bugReports/1887): Array to string conversion  
+  * [1888](http://x2software.com/index.php/bugReports/1888): Array to string conversion  
+  * [1903](http://x2software.com/index.php/bugReports/1903): Undefined variable: active  
+  * [1910](http://x2software.com/index.php/bugReports/1910): Trying to get property of non-object  
+  * [1920](http://x2software.com/index.php/bugReports/1920): Property "Admin.imapPollTimeout" is not defined.  
+  * [1923](http://x2software.com/index.php/bugReports/1923): Undefined variable: active  
+  * [1924](http://x2software.com/index.php/bugReports/1924): Property "Admin.maxFailedLogins" is not defined.  
 
 
 

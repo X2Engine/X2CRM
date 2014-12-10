@@ -35,7 +35,6 @@
 
 (function($) {
 
-
 $.widget("x2.gridResizing", $.ui.mouse, {
     options:{
         minColWidth:30,

@@ -43,9 +43,7 @@ x2.ThemeSelector = (function(){
 			defaults: ['Default', 'Terminal'],
 			active: null,
 			user: null,
-			translations: {
-				defaultFields: 'Create New Theme to Edit'
-			}
+			translations: {}
 		};
 
 		auxlib.applyArgs(this, defaultArgs,argsDict);
@@ -100,7 +98,7 @@ x2.ThemeSelector = (function(){
 			var user = $(themeBox).find('#uploadedBy').attr('value');
 
             if (this.user !== user || this.defaults.indexOf(themeName) >= 0 ) {
-				$('.color-picker-input').attr('readonly','').attr('title', this.translations.defaultFields );
+				$('.color-picker-input').attr('readonly','').attr('title', this.translations.createNew );
 				$('.sp-replacer.sp-light').hide();
 			    x2.forms.disableButton ($('#prefs-delete-theme-button, #prefs-save-theme-button'));
             } else {

@@ -263,7 +263,8 @@ CREATE TABLE x2_modules (
 	editable				INT,
 	custom					INT,
 	enableRecordAliasing    TINYINT 	    DEFAULT 0,
-	itemName				VARCHAR(100)
+	itemName				VARCHAR(100),
+    pseudoModule            TINYINT         DEFAULT 0
 ) COLLATE = utf8_general_ci;
 /*&*/
 DROP TABLE IF EXISTS x2_notifications;

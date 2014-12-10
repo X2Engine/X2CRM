@@ -40,5 +40,20 @@
 	color: $colors[smart_text]
 }
 
+.event-icon-button-container span {
+}
+
+.activity-feed .active-icon:hover {
+	color: $colors[link]
+}
+
+.activity-feed .active-icon {
+	color: $colors[text]
+}
+
+
+.activity-feed .inactive-icon {
+	color: $colors[link]
+}
 
 "; ?>

@@ -49,6 +49,10 @@ Yii::app()->clientScript->registerCssFile($themeURL.'/css/main.css'.$jsVersion,'
 Yii::app()->clientScript->registerCssFile($themeURL.'/css/form.css'.$jsVersion,'screen, projection');
 Yii::app()->clientScript->registerCssFile($themeURL.'/css/ui-elements.css'.$jsVersion,'screen, projection');
 
+if (AuxLib::getIEVer() < 9) {
+	Yii::app()->clientScript->registerScriptFile(Yii::app()->baseUrl.'/js/lib/aight/aight.js');
+}
+
 $backgroundImg = '';
 $defaultOpacity = 1;
 $themeCss = '';
@@ -141,6 +145,6 @@ Yii::app()->clientScript
 	</div>
 </div>
 
-<?php $this->renderPartial ('loginTheme'); ?>
+<?php LoginThemeHelper::render() ?>
 </body>
 </html>

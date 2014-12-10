@@ -164,8 +164,10 @@ class MassActionTest extends X2WebTestCase {
 
     public function waitForSuperMassActionCompletion () {
         $this->waitForCondition (
-            "!window.$('.ui-dialog').length && 
-             !window.$('.x2-gridview-updating-anim').is (':visible')");
+            "(!window.$('.ui-dialog').length ||
+             !window.$('.ui-dialog').is (':visible')) && 
+             (!window.$('.grid-view-loading').length ||
+             !window.$('.grid-view-loading').is (':visible'))");
     }
 
     public function testMassUpdate () {
@@ -195,7 +197,7 @@ class MassActionTest extends X2WebTestCase {
                 ")->queryColumn ()), 
             array_map (function ($a) { return strtolower ($a); },  
                 $this->getNamesOfSelectedRecords ('Contacts')));
-        $this->clickMassActionOption ('updateField');
+        $this->clickMassActionOption ('MassUpdateFields');
         $this->selectFieldToUpdate ('firstName', 'f');
         $this->clickMassActionGoButton ();
         $this->waitForSuperMassActionCompletion ();
@@ -229,7 +231,7 @@ class MassActionTest extends X2WebTestCase {
         $this->filterBy ('Contacts', 'name', 'steve');
         $this->checkAll ('Contacts');
         $this->checkAllOnAllPages ('Contacts');
-        $this->clickMassActionButton ('delete');
+        $this->clickMassActionButton ('MassDelete');
         $this->clickMassActionGoButton ();
         $this->enterDoubleConfirmPassword ();
         $this->clickDoubleConfirmDialogGoButton ();

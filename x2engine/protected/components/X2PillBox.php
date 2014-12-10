@@ -72,6 +72,11 @@ class X2PillBox extends X2Widget {
     public $pillBoxJSClass = 'PillBox'; 
 
     /**
+     * @var array $htmlOptions
+     */
+    public $htmlOptions = array (); 
+
+    /**
      * @return arguments passed to $pillBoxJSClass constructor
      */
     public function getJSClassConstructorArgs () {
@@ -107,6 +112,12 @@ class X2PillBox extends X2Widget {
             ));
         }
         return $this->_packages;
+    }
+
+    public function init () {
+        unset ($this->htmlOptions['id']);
+        unset ($this->htmlOptions['name']);
+        parent::init ();
     }
 
     public function run () {

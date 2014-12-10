@@ -70,12 +70,9 @@ $(function() {
             <?php //echo CHtml::link('['.Yii::t('contacts','Show All').']','javascript:void(0)',array('id'=>'showAll','class'=>'right hide','style'=>'text-decoration:none;')); ?>
             <?php //echo CHtml::link('['.Yii::t('contacts','Hide All').']','javascript:void(0)',array('id'=>'hideAll','class'=>'right','style'=>'text-decoration:none;')); ?>
             <h2><span class="no-bold"><?php echo Yii::t('products', '{module}:', array('{module}' => Modules::displayName(false))); ?></span> <?php echo CHtml::encode($model->name); ?></h2>
-            <a class="x2-button icon edit right" href="<?php echo $this->createUrl('update', array('id' => $model->id)); ?>"><span></span></a>
             <?php
-            echo CHtml::link('<img src="' . Yii::app()->request->baseUrl . '/themes/x2engine/images/OK.png' .
-                    '" style="height:18px;position:relative;top:3px;right:1px;"></img>', '#', array('id' => 'inline-edit-save', 'class' => 'x2-button icon right inline-edit-button', 'style' => 'display:none;'));
-            echo CHtml::link('<img src="' . Yii::app()->request->baseUrl . '/themes/x2engine/images/NOT_OK.png' .
-                    '" style="height:18px;position:relative;top:3px;right:1px;"></img>', '#', array('id' => 'inline-edit-cancel', 'class' => 'x2-button icon right inline-edit-button', 'style' => 'display:none;'));
+            echo X2Html::editRecordButton($model);
+            echo X2Html::inlineEditButtons();
             ?>
         </div>
     </div>

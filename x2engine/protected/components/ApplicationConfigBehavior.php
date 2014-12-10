@@ -962,6 +962,9 @@ Yii::app()->clientScript->registerScript(sprintf('%x', crc32(Yii::app()->name)),
         Yii::import('application.components.permissions.*');
         Yii::import('application.modules.media.models.Media');
         Yii::import('application.modules.groups.models.Groups');
+        Yii::import('application.modules.charts.models.*');
+        Yii::import('application.modules.charts.components.*');
+        Yii::import('application.modules.charts.ChartsModule');
 
         $modules = $this->owner->modules;
         $arr = array();

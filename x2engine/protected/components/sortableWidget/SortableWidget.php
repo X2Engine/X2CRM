@@ -855,7 +855,7 @@ abstract class SortableWidget extends X2Widget {
                 'title' => Yii::t('app', 'Show Widget Settings'),
                 'class' => 'fa fa-cog fa-lg'
 
-            ));
+            ), ' ');
         $htmlStr .= '</a>';
         echo $htmlStr;
         echo $this->settingsMenuContent;
@@ -900,11 +900,11 @@ abstract class SortableWidget extends X2Widget {
     public function renderCloseButton () {
         $themeUrl = Yii::app()->theme->getBaseUrl();
         echo "<a class='widget-close-button x2-icon-button' href='#' style='display:none;'>";
-        echo CHtml::openTag( 'span',
+        echo CHtml::tag('span',
             array (
                 'class' => 'fa fa-times fa-lg',
-                'title' => Yii::t('app', 'Close Widget'))
-            ); 
+                'title' => Yii::t('app', 'Close Widget')
+            ), ' ');
         echo "</a>";
     }
 

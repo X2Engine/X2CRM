@@ -9,12 +9,27 @@
 .data-widget svg .tick line {
   stroke: $colors[text] 
 }
+
+.data-widget .config-bar li,
+.data-widget .config-bar .config-bar-item,
+.data-widget .config-bar .active, .data-widget .filter-menu li,
+.data-widget .filter-menu .config-bar-item,
+.data-widget .filter-menu {
+  opacity: 0.8;
+  color: $colors[text] 
+}
+
 .data-widget .config-bar li:hover,
 .data-widget .config-bar .config-bar-item:hover,
 .data-widget .config-bar .active, .data-widget .filter-menu li:hover,
 .data-widget .filter-menu .config-bar-item:hover,
 .data-widget .filter-menu .active {
+  opacity: 1.0;
   color: $colors[link] 
+}
+
+.config-bar {
+  border-color: $colors[border]
 }
 
 #chart-creator .choice.active {
@@ -69,6 +84,10 @@
 #chart-creator .checkbox-group .option.active {
   background: $colors[highlight2]
   color: $colors[smart_text2]
+}
+
+.chart-dashboard {
+  border-color: $colors[highlight1]
 }
 
 "; ?>

@@ -281,33 +281,45 @@
   opacity: 0.9;
   display: inline-block;
 }
-/* line 236, ../../../compass/themes/x2engine/css/activityFeed.scss */
-#activity-feed-container .like-count {
-  padding-left: 3px;
-}
-/* line 241, ../../../compass/themes/x2engine/css/activityFeed.scss */
+/* line 238, ../../../compass/themes/x2engine/css/activityFeed.scss */
 #activity-feed-container .important-link.x2-hint, #activity-feed-container .sticky-link.x2-hint {
   color: #c5c5c5;
 }
-/* line 246, ../../../compass/themes/x2engine/css/activityFeed.scss */
-#activity-feed-container .active-icon, #activity-feed-container .feed-comment-icon, #activity-feed-container .broadcast-icon, #activity-feed-container .like-icon, #activity-feed-container .sticky-icon, #activity-feed-container .feed-make-important-icon {
-  opacity: 0.5;
-  cursor: pointer;
+/* line 244, ../../../compass/themes/x2engine/css/activityFeed.scss */
+#activity-feed-container .feed-comment-icon, #activity-feed-container .broadcast-icon, #activity-feed-container .like-icon, #activity-feed-container .sticky-icon, #activity-feed-container .feed-make-important-icon, #activity-feed-container .like-count, #activity-feed-container .unsticky-icon, #activity-feed-container .unlike-icon, #activity-feed-container .feed-make-unimportant-icon {
+  margin-left: 10px;
 }
-/* line 250, ../../../compass/themes/x2engine/css/activityFeed.scss */
-#activity-feed-container .active-icon:hover, #activity-feed-container .feed-comment-icon:hover, #activity-feed-container .broadcast-icon:hover, #activity-feed-container .like-icon:hover, #activity-feed-container .sticky-icon:hover, #activity-feed-container .feed-make-important-icon:hover {
-  opacity: 0.7;
-}
-/* line 255, ../../../compass/themes/x2engine/css/activityFeed.scss */
-#activity-feed-container .inactive-icon, #activity-feed-container .unsticky-icon, #activity-feed-container .unlike-icon, #activity-feed-container .feed-make-unimportant-icon {
-  opacity: 0.9;
+/* line 248, ../../../compass/themes/x2engine/css/activityFeed.scss */
+#activity-feed-container .feed-comment-icon, #activity-feed-container .broadcast-icon, #activity-feed-container .like-icon, #activity-feed-container .sticky-icon, #activity-feed-container .feed-make-important-icon, #activity-feed-container .like-count {
+  opacity: 0.6;
   cursor: pointer;
+  color: #454545;
+}
+/* line 254, ../../../compass/themes/x2engine/css/activityFeed.scss */
+#activity-feed-container .feed-comment-icon:hover, #activity-feed-container .broadcast-icon:hover, #activity-feed-container .like-icon:hover, #activity-feed-container .sticky-icon:hover, #activity-feed-container .feed-make-important-icon:hover, #activity-feed-container .like-count:hover {
+  opacity: 0.8;
 }
 /* line 259, ../../../compass/themes/x2engine/css/activityFeed.scss */
-#activity-feed-container .inactive-icon:hover, #activity-feed-container .unsticky-icon:hover, #activity-feed-container .unlike-icon:hover, #activity-feed-container .feed-make-unimportant-icon:hover {
+#activity-feed-container .unsticky-icon, #activity-feed-container .unlike-icon, #activity-feed-container .feed-make-unimportant-icon {
   opacity: 1.0;
+  cursor: pointer;
 }
-/* line 273, ../../../compass/themes/x2engine/css/activityFeed.scss */
+/* line 264, ../../../compass/themes/x2engine/css/activityFeed.scss */
+#activity-feed-container .unsticky-icon:hover, #activity-feed-container .unlike-icon:hover, #activity-feed-container .feed-make-unimportant-icon:hover {
+  opacity: 0.9;
+}
+/* line 277, ../../../compass/themes/x2engine/css/activityFeed.scss */
+#activity-feed-container .like-count {
+  opacity: 0.6;
+  padding-left: 3px;
+  color: #004baf;
+  margin-left: 0px;
+}
+/* line 285, ../../../compass/themes/x2engine/css/activityFeed.scss */
+#activity-feed-container .unlike-button[style*="none"] + .like-count {
+  color: #454545;
+}
+/* line 289, ../../../compass/themes/x2engine/css/activityFeed.scss */
 #activity-feed-container #activity-feed-settings-button {
   cursor: pointer;
   float: right;
@@ -315,11 +327,11 @@
   margin-right: 5px;
   opacity: 0.7;
 }
-/* line 279, ../../../compass/themes/x2engine/css/activityFeed.scss */
+/* line 295, ../../../compass/themes/x2engine/css/activityFeed.scss */
 #activity-feed-container #activity-feed-settings-button:hover {
   opacity: 1;
 }
-/* line 284, ../../../compass/themes/x2engine/css/activityFeed.scss */
+/* line 300, ../../../compass/themes/x2engine/css/activityFeed.scss */
 #activity-feed-container #second-row-buttons-container {
   display: block;
   margin-top: 7px;

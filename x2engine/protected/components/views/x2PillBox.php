@@ -41,7 +41,5 @@ $(function () {
 });
 
 ", CClientScript::POS_END);
-
+echo X2Html::tag ('div', array_merge ($this->htmlOptions, array ('id' => $this->id)), ' ');
 ?>
-
-<div id='<?php echo $this->id; ?>'></div>

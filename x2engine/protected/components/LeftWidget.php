@@ -128,8 +128,7 @@ class LeftWidget extends CPortlet {
                     'name'=>$this->widgetName, 
                     'class'=>'fa fa-lg right left-widget-min-max '.($this->isCollapsed ? 'fa-caret-left' : 'fa-caret-down'),
                     'value'=>($this->isCollapsed ? 'expand' : 'collapse'),
-                    )
-                , ''
+                    ), ' '
             );
         $this->htmlOptions = array(
             'class' => (!$this->isCollapsed ? "" : "hidden-filter")

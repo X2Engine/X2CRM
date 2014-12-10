@@ -154,7 +154,7 @@ $important = $data->important ? 'important-action' : '';
 ?>
 
 
-<div class="view top-level activity-feed <?= $important ?>" style="<?php echo $style; ?>" id="<?php echo $data->id; ?>-feed-box">
+<div class="view top-level activity-feed <?php echo $important ?>" style="<?php echo $style; ?>" id="<?php echo $data->id; ?>-feed-box">
     <div class="img-box <?php echo $typeFile . " " . (($data->type == 'record_create') ? $data->associationType . '-create' : ""); ?>" title="<?php echo $data->parseType($data->type); ?>" style="width:45px;float:left;margin-right:5px;">
         <?php
         if ($data->type == 'record_create') {
@@ -210,9 +210,9 @@ $important = $data->important ? 'important-action' : '';
                 echo CHtml::link(
                         CHtml::tag(
                                 'span', array(
-                            'class' => 'feed-comment-icon fa fa-comment-o',
+                            'class' => 'feed-comment-icon fa fa-comment-o active-icon',
                             'title' => Yii::t('profile', 'Comment on this post')
-                        )) .
+                        ), ' ') .
                         '<span title="' . CHtml::encode(Yii::t('profile', 'View comments')) . '"
                            id="' . $data->id . '-comment-count" class="comment-count" 
                            val="'.$commentCount.'">'.
@@ -224,10 +224,10 @@ $important = $data->important ? 'important-action' : '';
                 echo CHtml::link(
                         CHtml::tag(
                                 'span', array(
-                            'class' => 'feed-comment-icon fa fa-comment',
+                            'class' => 'feed-comment-icon fa fa-comment inactive-icon',
                             'title' => Yii::t('profile', 'Hide comments'),
                             'style' => 'font-weight: bold;'
-                        )), '#', array(
+                        ), ' '), '#', array(
                     'class' => 'comment-hide-link', 'id' => $data->id . '-hide-link',
                     'style' => 'display:none;'
                         )
@@ -237,10 +237,11 @@ $important = $data->important ? 'important-action' : '';
                 <?php
                 $important = ($data->important == 1);
                 //echo CHtml::link(Yii::t('app','Broadcast Event'),'#',array('class'=>'important-link x2-hint','id'=>$data->id.'-important-link','style'=>($important?'display:none;':''),'title'=>Yii::t('app','Broadcasting an event will make it visible to any user viewing your events on the activity feed--regardless of type filters.')));
+                // echo " | ";
                 echo CHtml::link(
                         CHtml::tag('span', array(
-                            'class' => 'feed-make-important-icon fa fa-exclamation-circle',
-                        )), '#', array(
+                            'class' => 'feed-make-important-icon fa fa-exclamation-circle active-icon',
+                        ), ' '), '#', array(
                     'class' => 'important-link x2-hint', 'id' => $data->id . '-important-link',
                     'style' => ($important ? 'display:none;' : ''), 'title' => Yii::t('app', 'Designating an event as important will make it visible to any user viewing ' .
                             'your events on the activity feed--regardless of type filters.')
@@ -248,9 +249,9 @@ $important = $data->important ? 'important-action' : '';
                 );
                 echo CHtml::link(
                         CHtml::tag('span', array(
-                            'class' => 'feed-make-unimportant-icon fa fa-exclamation-circle',
+                            'class' => 'feed-make-unimportant-icon fa fa-exclamation-circle inactive-icon',
                             'title' => CHtml::encode(Yii::t('profile', 'Make unimportant'))
-                        )), '#', array(
+                        ), ' '), '#', array(
                     'class' => 'unimportant-link', 'id' => $data->id . '-unimportant-link',
                     'style' => ($important ? '' : 'display:none;')
                         )
@@ -263,8 +264,8 @@ $important = $data->important ? 'important-action' : '';
                     $sticky = ($data->sticky == 1);
                     echo CHtml::link(
                             CHtml::tag('span', array(
-                                'class' => 'sticky-icon fa fa-thumb-tack',
-                            )), '#', array(
+                                'class' => 'sticky-icon fa fa-thumb-tack active-icon',
+                            ), ' '), '#', array(
                         'class' => 'sticky-link x2-hint', 'id' => $data->id . '-sticky-link',
                         'style' => ($sticky ? 'display:none;' : ''),
                         'title' => Yii::t('app', 'Making an event sticky will cause it to always ' .
@@ -273,9 +274,9 @@ $important = $data->important ? 'important-action' : '';
                     );
                     echo CHtml::link(
                             CHtml::tag( 'span', array(
-                                'class' => 'unsticky-icon fa fa-thumb-tack',
+                                'class' => 'unsticky-icon fa fa-thumb-tack inactive-icon',
                                 'title' => Yii::t('profile', 'Undo Sticky')
-                            )), '#', array(
+                            ), ' '), '#', array(
                         'class' => 'unsticky-link', 'id' => $data->id . '-unsticky-link',
                         'style' => ($sticky ? '' : 'display:none;')
                             )
@@ -292,17 +293,16 @@ $important = $data->important ? 'important-action' : '';
                             'class' => 'like-button',
                             'style' => $likeDisplay
                         ),
-                        CHtml::tag( 'i', array(
-                                'class' => 'like-icon fa fa-thumbs-up',
-                                'title' => CHtml::encode(Yii::t('app', 'Like this post')),
-                            ), ''
-                        ) 
+                        X2Html::fa('fa-thumbs-up', array(
+                            'class' => 'like-icon active-icon',
+                            'title' => CHtml::encode(Yii::t('app', 'Like this post')),
+                        ))
                 );
                 echo CHtml::link(
                         CHtml::tag( 'span', array(
-                            'class' => 'unlike-icon fa fa-thumbs-up',
+                            'class' => 'unlike-icon fa fa-thumbs-up inactive-icon',
                             'title' => CHtml::encode(Yii::t('app', 'Unlike this post')),
-                        )), '#', array(
+                        ), ' '), '#', array(
                     'id' => $data->id . '-unlike-button',
                     'class' => 'unlike-button',
                     'style' => $unlikeDisplay
@@ -311,17 +311,15 @@ $important = $data->important ? 'important-action' : '';
                 echo CHtml::link(
                         $likeCount, '#', array(
                     'id' => $data->id . '-like-count',
-                    'class' => 'like-count',
+                    'class' => 'like-count active-icon',
                         )
                 );
-                ?>
-                <?php
                 // echo " | ";
                 echo CHtml::link(
                         CHtml::tag('span', array(
-                            'class' => 'broadcast-icon fa fa-wifi',
+                            'class' => 'broadcast-icon fa fa-bullhorn active-icon',
                             'title' => CHtml::encode(Yii::t('app', 'Broadcast this post')),
-                        )), '#', array(
+                        ), ' '), '#', array(
                     'id' => $data->id . '-broadcast-button',
                     'class' => 'broadcast-button',
                         )

@@ -106,9 +106,9 @@ UPDATE x2_profile SET `widgets`='0:1:1:1:1:1:0:0:0:0:0:0:0:0',
 	`widgetOrder`='OnlineUsers:TimeZone:SmallCalendar:GoogleMaps:ChatBox:TagCloud:TwitterFeed:MessageBox:QuickContact:NoteBox:ActionMenu:MediaBox:DocViewer:TopSites';
 /*&*/
 INSERT INTO `x2_modules`
-(`name`, title, visible, menuPosition, searchable, editable, adminOnly, custom, toggleable)
+(`name`, title, visible, menuPosition, searchable, editable, adminOnly, custom, toggleable, pseudoModule)
 VALUES
-('x2Activity', 'Activity', 1, 0, 0, 0, 0, 0, 0);
+('x2Activity', 'Activity', 1, 0, 0, 0, 0, 0, 0, 1);
 /*&*/
 UPDATE `x2_modules` SET `visible`=0;
 /*&*/
@@ -124,10 +124,3 @@ INSERT INTO `x2_tips` (`tip`, `edition`, `admin`, `module`) VALUES
 ("You can drag and drop widgets on the right sidebar to re-arrange their order.",'opensource',0,'Layout'),
 ("The options in the \"Quick Note\" menu on the publisher can be changed in the Dropdown Editor.",'opensource',1,'Admin'),
 ("You can see the history of related records by clicking \"Relationships\" on the History widget. Accounts do this by default.",'opensource',0,'Relationships');
-/*&*/
-INSERT INTO `x2_media` (`id`, `associationType`, `uploadedBy`, `fileName`, `description`, `private`) VALUES
-('-1', "theme",'admin','Default','{"themeName":"Default","background":"","content":"","text":"","link":"","highlight1":"","highlight2":"","backgroundTiling":"stretch","backgroundImg":"","owner":"admin","private":"0"}',0),
-('-2', "theme",'admin','Terminal','{"themeName":"Terminal","background":"221E1E","content":"2E2E2E","text":"F7F7F7","link":"F2921D","highlight1":"1B1B1B","highlight2":"074E8C","backgroundTiling":"stretch","backgroundImg":"","owner":"admin"}',0),
-('-3', "theme",'admin','Twilight','{"themeName":"Twilight","background":"0C1021","content":"0C1021","text":"F7F7F7","link":"FBDE2D","highlight1":"303E49","highlight2":"FF6400","backgroundTiling":"stretch","backgroundImg":"","owner":"admin"}',0),
-('-4', "theme",'admin','Guava','{"themeName":"Guava","background":"F0AA81","content":"D6CCAD","text":"42282F","link":"2D4035","highlight1":"74A588","highlight2":"D6655A","backgroundTiling":"stretch","backgroundImg":"","owner":"admin"}',0),
-('-5', "theme",'admin','Archaic','{"themeName":"Archaic","background":"1E1E20","content":"2A2C2B","text":"FFFFFF","link":"D9CB9E","highlight1":"1E1E20","highlight2":"A5382B","backgroundTiling":"stretch","backgroundImg":"","owner":"admin"}',0);

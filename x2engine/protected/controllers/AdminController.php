@@ -197,7 +197,6 @@ class AdminController extends Controller {
             'AccountsController' => 'application.modules.accounts.controllers.AccountsController',
             'ActionsController' => 'application.modules.actions.controllers.ActionsController',
             'CalendarController' => 'application.modules.calendar.controllers.CalendarController',
-            'ChartsController' => 'application.modules.charts.controllers.ChartsController',
             'ContactsController' => 'application.modules.contacts.controllers.ContactsController',
             'DocsController' => 'application.modules.docs.controllers.DocsController',
             'GroupsController' => 'application.modules.groups.controllers.GroupsController',
@@ -209,9 +208,6 @@ class AdminController extends Controller {
                 'application.modules.opportunities.controllers.OpportunitiesController',
             'ProductsController' => 'application.modules.products.controllers.ProductsController',
             'QuotesController' => 'application.modules.quotes.controllers.QuotesController',
-            //'RelationshipsController' => 
-                //'application.controllers.RelationshipsController',
-            'ReportsController' => 'application.modules.reports.controllers.ReportsController',
             'ServicesController' => 'application.modules.services.controllers.ServicesController',
             'UsersController' => 'application.modules.users.controllers.UsersController',
             'WorkflowController' => 'application.modules.workflow.controllers.WorkflowController',

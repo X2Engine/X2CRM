@@ -148,7 +148,8 @@ $verifyCredsUrl = Yii::app()->createUrl("profile/verifyCredentials");
         $(".credentials-verify").click(function(evt) {
             evt.preventDefault();
             var email = $("#Credentials_auth_email").val();
-            if ($('#Credentials_auth_user').length) // Check if user name is different than email
+            // Check if user name is different than email
+            if ($('#Credentials_auth_user').length && $('#Credentials_auth_user').val ()) 
                 email = $('#Credentials_auth_user').val();
             var password = $("#Credentials_auth_password").val();
 
@@ -171,7 +172,7 @@ $verifyCredsUrl = Yii::app()->createUrl("profile/verifyCredentials");
 
             var successMsg = "<?php echo Yii::t('app', 'Authentication successful.'); ?>";
             var failureMsg = "<?php echo Yii::t('app', 'Failed to authenticate! Please check you credentials.'); ?>";
-            $('#verify-credentials-loading').addClass ('loading-icon');
+            auxlib.containerLoading($('#verify-credentials-loading'));
             // Hide previous result if any
             $('#verification-result').html('');
             $('#verification-result').removeClass();
@@ -187,7 +188,8 @@ $verifyCredsUrl = Yii::app()->createUrl("profile/verifyCredentials");
                     security: security
                 },
                 complete: function(xhr) {
-                    $('#verify-credentials-loading').removeClass ('loading-icon');
+                    $('#verify-credentials-loading').children().remove();
+                    // auxlib.pageLoadingStop();
                     if (xhr.responseText === '') {
                         $("#verification-result").addClass('flash-success');
                         $("#verification-result").removeClass('flash-error');

@@ -88,9 +88,11 @@ $this->insertMenu($menuOptions, $model, $authParams);
     <div class="page-title-fixed-inner">
 <div class="page-title icon marketing">
     <h2><?php echo CHtml::encode($model->name); ?></h2>
-    <?php if(Yii::app()->user->checkAccess('MarketingUpdate', $authParams)){ ?>
-        <a class="x2-button icon edit right" href="<?php echo $this->createUrl('update',array('id'=>$model->id)); ?>"><span></span></a>
-    <?php } ?>
+    <?php if(Yii::app()->user->checkAccess('MarketingUpdate', $authParams)){ 
+        echo X2Html::editRecordButton($model);
+    } 
+    echo X2Html::inlineEditButtons();
+    ?>
 </div>
 </div>
 </div>
@@ -259,8 +261,12 @@ $this->insertMenu($menuOptions, $model, $authParams);
         <div id="campaign-attachments-wrapper" class="x2-layout form-view">
             <div class="formSection collapsible <?php echo $showAttachments ? 'showSection' : ''; ?>">
                 <div class="formSectionHeader">
-                    <a href="javascript:void(0)" class="formSectionHide">[–]</a>
-                    <a href="javascript:void(0)" class="formSectionShow">[+]</a>
+                    <a href="javascript:void(0)" class="formSectionHide">
+                        <?php echo X2Html::fa('fa-caret-down')?>
+                    </a>
+                    <a href="javascript:void(0)" class="formSectionShow">
+                        <?php echo X2Html::fa('fa-caret-right')?>
+                    </a>
                     <span class="sectionTitle"><?php echo Yii::t('app', 'Attachments'); ?></span>
                 </div>
                 <div id="campaign-attachments" class="tableWrapper" style="padding: 5px;

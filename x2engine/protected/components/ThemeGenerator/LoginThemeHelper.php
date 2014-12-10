@@ -112,8 +112,21 @@ class LoginThemeHelper {
 		$this->registerJS();
 	}
 
-	public function render(){
-		ThemeGenerator::renderTheme($this->currentTheme);
+	public static function render(){
+		$th = new LoginThemeHelper;
+		ThemeGenerator::renderTheme($th->currentTheme);
+		echo $th->formHtml();
+	}
+
+	public function formHtml(){
+		$html  = '';
+		$html .= CHtml::beginForm('','post', array(
+			'id'=>'dark-theme-form',
+		));
+		$html .= CHtml::hiddenField('themeName', $this->nextTheme);
+		$html .= CHtml::endForm();
+		return $html;
+
 	}
 
 	/**
@@ -162,17 +175,20 @@ class LoginThemeHelper {
 
 		/* This part will create a part of the theme selector specific to the current theme */
 
-		if( $this->currentTheme == 'Default' ) {
+		if( $this->currentTheme == ThemeGenerator::$defaultLight ) {
 			$theme = ThemeGenerator::loadDefault( $this->nextTheme );
 		} else {
 			$theme = ThemeGenerator::loadDefault( $this->currentTheme );
 		}
 
+		if (!isset($theme['background'])) {
+			$theme['background'] = '#000';
+		}
+
 		$themeBG = array ( 
-			'#'.$theme['background'],
+			$theme['background'],
 			X2Color::brightness( $theme['background'], -0.1),
 		);
-		AuxLib::debugLogR($themeBG);
 
 		$JSON = array(
 			'themeColorCookie' => self::LOGIN_BACKGROUND_COOKIE,
@@ -185,9 +201,7 @@ class LoginThemeHelper {
 		$JSON = CJSON::encode($JSON);
 
 		Yii::app()->clientScript->registerScript('LoginThemeHelperJS', "
-
 			new x2.LoginThemeHelper($JSON);
-
 		", CClientScript::POS_END);
 	}
 

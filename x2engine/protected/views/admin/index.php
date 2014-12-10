@@ -120,8 +120,8 @@ if(Yii::app()->session['versionCheck']==false && $admin->updateInterval > -1 && 
 <div class="form x2-layout-island">
     <h2 id="admin-support"><?php echo Yii::t('admin','Support'); ?></h2>
     <div class="row">
-        <div class="cell span-6"><?php echo CHtml::link(Yii::t('admin','X2Engine'),'http://www.x2engine.com'); ?><br><?php echo Yii::t('admin','Commercial support and hosting');?></div>
-        <div class="cell span-6"><?php echo CHtml::link(Yii::t('admin','Tutorial Videos'),'http://www.x2engine.com/video-tutorials/'); ?><br><?php echo Yii::t('admin','X2Engine Support Forums');?></div>
+        <div class="cell span-6"><?php echo CHtml::link(Yii::t('admin','X2Engine Inc'),'http://www.x2engine.com'); ?><br><?php echo Yii::t('admin','Commercial support and hosting');?></div>
+        <div class="cell span-6"><?php echo CHtml::link(Yii::t('admin','User Reference Guide'),'http://www.x2engine.com/reference_guide/'); ?><br><?php echo Yii::t('admin','X2Engine Reference');?></div>
         <div class="cell span-6"><?php echo CHtml::link(Yii::t('admin','Phone Support'),'callto:8312225333'); ?><br>831-222-5333 California PST</div>
     </div><br>
     <div class="row">

@@ -98,7 +98,7 @@ if ($contactId) {
 }
 
 $authParams['X2Model'] = $model;
-$strict = Yii::app()->params['admin']['quoteStrictLock'];
+$strict = Yii::app()->settings->quoteStrictLock;
 $themeUrl = Yii::app()->theme->getBaseUrl();
 
 $menuOptions = array(
@@ -136,20 +136,10 @@ $this->insertMenu($menuOptions, $model, $authParams);
                     <?php
                     }
                 } else {
-                    echo CHtml::link('<span></span>', array('update', 'id' => $model->id), array('class' => 'x2-button icon edit right'));
+                    echo X2Html::editRecordButton($model);
                 }
-                echo CHtml::link(
-                        '<img src="' . Yii::app()->request->baseUrl . '/themes/x2engine/images/icons/email_button.png' .
-                        '"></img>', '#', array(
-                    'class' => 'x2-button icon right email',
-                    'title' => Yii::t('app', 'Open email form'),
-                    'onclick' => 'toggleEmailForm(); return false;'
-                        )
-                );
-                echo CHtml::link('<img src="' . Yii::app()->request->baseUrl . '/themes/x2engine/images/OK.png' .
-                        '" style="height:18px;position:relative;top:3px;right:1px;"></img>', '#', array('id' => 'inline-edit-save', 'class' => 'x2-button icon right inline-edit-button', 'style' => 'display:none;'));
-                echo CHtml::link('<img src="' . Yii::app()->request->baseUrl . '/themes/x2engine/images/NOT_OK.png' .
-                        '" style="height:18px;position:relative;top:3px;right:1px;"></img>', '#', array('id' => 'inline-edit-cancel', 'class' => 'x2-button icon right inline-edit-button', 'style' => 'display:none;'));
+                echo X2Html::emailFormButton();
+                echo X2Html::inlineEditButtons();
 
 
                 if ($model->type !== 'invoice') {

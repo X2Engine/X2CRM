@@ -106,7 +106,7 @@ class Profile extends CActiveRecord {
     public function behaviors(){
         // Skip loading theme settins if this request isn't associated with a session, eg API
         $theme = (Yii::app()->params->noSession ? array() :
-            array_keys( ThemeGenerator::getSettings() ));
+            ThemeGenerator::getProfileKeys());
         return array(
             'X2LinkableBehavior' => array(
                 'class' => 'X2LinkableBehavior',

@@ -42,12 +42,7 @@ $this->insertMenu($menuOptions, $model);
 ?>
 <div class="page-title icon media"><h2><span class="no-bold"><?php echo Yii::t('media','File: '); ?></span> <?php echo $model->renderAttribute (($model->drive || !empty($model->name))? "name" : "fileName"); ?></h2>
 <?php
-echo CHtml::link(
-    '<span></span>', $this->createUrl('update', array('id' => $model->id)),
-    array(
-        'class' => 'x2-button icon edit right',
-        'title' => Yii::t('app', 'Edit Media'),
-    ));
+echo X2Html::editRecordbutton($model);
 ?>
 </div>
 

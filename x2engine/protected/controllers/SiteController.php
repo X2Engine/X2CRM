@@ -2294,6 +2294,9 @@ class SiteController extends x2base {
 
     
 
+    /**
+     * Save model attributes POSTed by inline edit form.
+     */
     public function actionAjaxSave() {
         if (isset($_POST['modelId'], $_POST['attributes'])) {
             $attributes = array();
@@ -2303,11 +2306,11 @@ class SiteController extends x2base {
                 if (is_null($modelName)) {
                     $modelName = $pieces[0];
                 }
-                $pieces[1] = str_replace(']', '', $pieces[1]);
-                $attributes[$pieces[1]] = $val;
+                $attribute = str_replace(']', '', $pieces[1]);
+                $attributes[$attribute] = $val;
             }
             $model = X2Model::model($modelName)->findByPk($_POST['modelId']);
-            if (isset($model)) {
+            if (isset($model) && Yii::app()->controller->checkPermissions($model,'edit')) {
                 $model->setX2Fields($attributes);
                 if ($model->save()) {
                     $retArr = array();

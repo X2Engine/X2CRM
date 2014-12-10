@@ -34,7 +34,7 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 ?>
-<h1><?php echo Yii::t('app','Bug Report Form'); ?></h1>
+<h1 id='bug-report-header'><?php echo Yii::t('app','Bug Report Form'); ?></h1>
 <div class="form" style="width:600px;">
     <?php echo Yii::t('app','This is the form to manually report bugs.'); ?>
     <br><br>

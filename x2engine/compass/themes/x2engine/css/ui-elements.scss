@@ -35,6 +35,7 @@
 
 @import "colors";
 @import "standards";
+@import "font-awesome";
 
 .x2-centered {
     position: absolute;
@@ -1157,7 +1158,6 @@ button.ui-button.ui-dialog-titlebar-close {
 }
 
 .ui-dialog {
-    opacity: 0.97;
     border: 1px solid #9b9b9b !important;
     z-index: 900000;
     @include box-shadow(0px 0px 5px 1px rgba(0, 0, 0, 0.5));
@@ -2136,6 +2136,9 @@ ul.x2-dropdown-list {
     &:hover {
         background: rgb(247, 247, 247);
     }
+    &.error {
+        background: $errorLightRed;
+    }
 }
 
 .x2-pill-box-options {
@@ -2462,7 +2465,7 @@ span {
 * Dialogs
 ***********************************************************************/
 .ui-dialog-titlebar-close {
-    @include fa('\f057');
+    @include fa-icon('times');
     @extend .opacity-hover;
 
     .ui-icon-closethick {

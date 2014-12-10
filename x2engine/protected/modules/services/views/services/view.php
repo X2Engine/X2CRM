@@ -58,6 +58,12 @@ $menuOptions = array(
 $this->insertMenu($menuOptions, $model, $authParams);
 $themeUrl = Yii::app()->theme->getBaseUrl();
 
+if ($model->contactId) {
+    // Retrieve the associated contact: the contactId
+    // field will be updated to only the model name
+    // while rendering the _detailView
+    $contact = $model->getLinkedModel('contactId');
+}
 
 $modelType = json_encode("Servces");
 $modelId = json_encode($model->id);
@@ -77,20 +83,9 @@ $(function() {
             <?php //if(Yii::app()->user->checkAccess('ServicesUpdate',$authParams)){  ?>
             <a class="x2-button icon edit right" href="<?php echo $this->createUrl('update', array('id' => $model->id)); ?>"><span></span></a>
                <?php
-               echo CHtml::link(
-                       '<img src="' . Yii::app()->request->baseUrl . '/themes/x2engine/images/icons/email_button.png' .
-                       '"></img>', '#', array(
-                   'class' => 'x2-button icon right email',
-                   'title' => Yii::t('app', 'Open email form'),
-                   'onclick' => 'toggleEmailForm(); return false;',
-                       )
-               );
-               echo CHtml::link('<img src="' . Yii::app()->request->baseUrl . '/themes/x2engine/images/OK.png' .
-                       '" style="height:18px;position:relative;top:3px;right:1px;"></img>', '#', array('id' => 'inline-edit-save', 'class' => 'x2-button icon right inline-edit-button', 'style' => 'display:none;'));
-               echo CHtml::link('<img src="' . Yii::app()->request->baseUrl . '/themes/x2engine/images/NOT_OK.png' .
-                       '" style="height:18px;position:relative;top:3px;right:1px;"></img>', '#', array('id' => 'inline-edit-cancel', 'class' => 'x2-button icon right inline-edit-button', 'style' => 'display:none;'));
+               echo X2Html::emailFormButton();
+               echo X2Html::inlineEditButtons();
                ?>
-               <?php //} ?>
         </div>
     </div>
 </div>
@@ -132,19 +127,17 @@ $(function() {
                 <?php
                 $this->endWidget();
 
-                if ($model->contactId) { // every service case should have a contact associated with it
-                    $contact = $model->contactIdModel;
-                    if ($contact) { // if associated contact exists, display mini contact view
+                if (isset($contact) && $contact) { // every service case should have a contact associated with it
                         ?>
             <div id='contact-info-container'>
             <?php
             $this->renderPartial(
-                    'application.modules.contacts.views.contacts._detailViewMini', array('model' => $contact, 'serviceModel' => $model));
-            ?>
+                'application.modules.contacts.views.contacts._detailViewMini', array(
+                    'model' => $contact,
+                    'serviceModel' => $model
+            )); ?>
             </div>
-                <?php
-            }
-        }
+        <?php }
 
         $to = null;
         if (isset($contact)) {

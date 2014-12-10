@@ -135,7 +135,13 @@ class Credentials extends CActiveRecord {
 	 * Model classes to include/list as valid for storing auth data
 	 * @var array
 	 */
-	protected $validModels = array('EmailAccount', 'GMailAccount', 'TwitterApp');
+	protected $validModels = array(
+        'EmailAccount',
+        'GMailAccount',
+        'OutlookEmailAccount',
+        'YahooEmailAccount',
+        'TwitterApp',
+    );
 
     public function afterDelete () {
         parent::afterDelete ();
@@ -276,7 +282,12 @@ class Credentials extends CActiveRecord {
 	 */
 	public function getDefaultSubstitutes(){
 		return array(
-			'email' => array('EmailAccount', 'GMailAccount'),
+			'email' => array(
+                'EmailAccount',
+                'GMailAccount',
+                'OutlookEmailAccount',
+                'YahooEmailAccount',
+            ),
             'twitter' => array ('TwitterApp'),
 //			'google' => array('GMailAccount'),
 		);
@@ -289,6 +300,8 @@ class Credentials extends CActiveRecord {
 		return array(
 			'EmailAccount' => array('email'),
 			'GMailAccount' => array('email'), // ,'google'),
+			'OutlookEmailAccount' => array('email'), 
+			'YahooEmailAccount' => array('email'), 
             'TwitterApp' => array ('twitter'),
 		);
 	}

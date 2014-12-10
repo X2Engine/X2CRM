@@ -48,7 +48,10 @@ $user = Yii::app()->user->name;
 $params = CJSON::encode(array(
 	'defaults' => array(ThemeGenerator::$defaultLight, ThemeGenerator::$defaultDark),
 	'active' => $selected,
-	'user' => $user
+	'user' => $user,
+	'translations' => array(
+		'createNew' => Yii::t('profile', 'Create a new theme to edit'),
+	)
 ));
 
 
@@ -64,7 +67,7 @@ $(function () {
 
 echo "<div class='theme-picker' id='theme-picker'>";
 
-$settings = array_keys( ThemeGenerator::getSettings() );
+$settings = ThemeGenerator::$settingsList;
 
 $themes = $myThemes->data;
 foreach($themes as $theme){
@@ -109,7 +112,7 @@ foreach($themes as $theme){
 					'name' => "$key",
 					'color'=> $color,
 					'style'=>"background: #$color; $display")
-				, '');
+				, ' ');
 			}
 
 		// echo "<div class='hidden' id='backgroundTiling' value='$scheme[backgroundTiling]' ></div>";
