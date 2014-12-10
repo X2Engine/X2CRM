@@ -138,7 +138,7 @@ class Admin extends CActiveRecord {
                 'appName,x2FlowRespectsDoNotEmail,doNotEmailPage,doNotEmailLinkText',
                 'safe'
             ),
-            array('imapPollTimeout', 'numerical', 'max' => 30, 'min' => 5),
+            
             
                 // The following rule is used by search().
                 // Please remove those attributes that should not be searched.

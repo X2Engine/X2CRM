@@ -2363,3 +2363,12 @@ body.disable-mobile-layout .page-title.icon.profile > h2 {
 .x2-col {
   float: left;
 }
+
+/***********************************************************************
+* IE8 banner
+***********************************************************************/
+/* line 1890, ../../../compass/themes/x2engine/css/layout.scss */
+.ie-banner {
+  width: 100%;
+  text-align: center;
+}

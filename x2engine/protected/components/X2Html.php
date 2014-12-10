@@ -367,7 +367,7 @@ class X2Html extends CHtml {
     }
 
     /**
-     * Created a <ul> tag with <li> items from an array 
+     * Create a <ul> tag with <li> items from an array 
      * @param $listContents array of list item attributes to add to the list
      * The 'content' key in the array will be put on the inside of the tag rather 
      * than be an attribute
@@ -397,8 +397,16 @@ class X2Html extends CHtml {
         $html .=  '</ul>';
 
         return $html;
-    }
+    }   
 
+
+    /**
+     * Create an font awesome icon tag
+     * @param string $iconClass fa- prepended name of icon such as 'fa-edit' or 'fa-copy'
+     * @param array $htmlOptions extra options to be passed to the tag
+     * @param string $optional content to be passed inside of the tag (not recommended)
+     * @return string generated html content
+     */
     public static function fa($iconClass, $htmlOptions = array(), $content=' ') {
         if (!isset($htmlOptions['class'])) {
             $htmlOptions['class'] = '';
@@ -408,6 +416,30 @@ class X2Html extends CHtml {
         return self::tag('i', $htmlOptions, $content);
     }
 
+    public static function IEBanner($ver = 9, $echo = true) {
+        if (AuxLib::getIEVer() >= $ver) {
+            return false;
+        }
+        
+        $htmlOptions = array(
+            'class' => 'ie-banner'
+        );
+
+        $message = 'This feature does not support your version of Internet Explorer';
+        
+        if ($echo) {
+            echo self::tag ('h2', $htmlOptions, Yii::t('app', $message));
+            return true;
+        } else {
+            return self::tag ('h2', $htmlOptions, Yii::t('app', $message));
+        }
+
+    }
+
+    /*********************************
+    * Record view Page title items
+    * (I believe these belong in a record-view shared class)
+    ********************************/
     public static function emailFormButton() {
         return CHtml::link(
             '', 
@@ -455,8 +487,6 @@ class X2Html extends CHtml {
 
         return $html;
     }
-
-
 
 
     public static function addErrorCss(&$htmlOptions) {

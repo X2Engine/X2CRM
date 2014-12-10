@@ -1,3 +1,18 @@
+# 5.0.1 #
+12/9/2014
+
+* General Changelog / Developer Notes:
+  * New Outlook and Yahoo email credential types
+  * Leads name field is no longer overwritten with first name and last name if name field is already set
+* Tracked Bug Fixes:
+  * [1887](http://x2software.com/index.php/bugReports/1887): Array to string conversion  
+  * [1888](http://x2software.com/index.php/bugReports/1888): Array to string conversion  
+  * [1903](http://x2software.com/index.php/bugReports/1903): Undefined variable: active  
+  * [1910](http://x2software.com/index.php/bugReports/1910): Trying to get property of non-object  
+  * [1920](http://x2software.com/index.php/bugReports/1920): Property "Admin.imapPollTimeout" is not defined.  
+  * [1923](http://x2software.com/index.php/bugReports/1923): Undefined variable: active  
+  * [1924](http://x2software.com/index.php/bugReports/1924): Property "Admin.maxFailedLogins" is not defined.  
+
 # 5.0 #
 12/5/2014
 

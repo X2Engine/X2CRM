@@ -75,15 +75,16 @@ class X2ClientScript extends NLSClientScript {
         if (AuxLib::getIEVer() >= 9)  {
             return array();
         }
-        return array(
-            'aight' => array(
-                'baseUrl' => Yii::app()->request->baseUrl,
-                'js' => array(
-                    'js/lib/aight/aight.js',
-                ),
-                'depends' => array('jquery'),
-            ),
-        );     
+        return array ();
+//        return array(
+//            'aight' => array(
+//                'baseUrl' => Yii::app()->request->baseUrl,
+//                'js' => array(
+//                    'js/lib/aight/aight.js',
+//                ),
+//                'depends' => array('jquery'),
+//            ),
+//        );     
     }
 
     /**

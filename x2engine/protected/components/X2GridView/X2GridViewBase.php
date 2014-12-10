@@ -1010,8 +1010,6 @@ Yii::app()->clientScript->registerScript(sprintf('%x', crc32(Yii::app()->name)),
             }
         }
         $id=$this->getId();
-       AuxLib::debugLogR ('$this->columns = ');
-        AuxLib::debugLogR ($this->columns);
 
         foreach($this->columns as $i=>$column) {
             if(is_string($column)) {

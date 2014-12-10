@@ -191,16 +191,17 @@ foreach($standardMenuItems as $key => $value){
     $authItem = $auth->getAuthItem($action);
     $permission = Yii::app()->user->checkAccess($action) || is_null($authItem);
     if($file->exists){
-        if($permission)
+        if($permission){
             $menuItems[$key] = array(
                 'label' => Yii::t('app', $value), 
                 'itemOptions' => array ('class' => 'top-bar-module-link'),
                 'url' => array("/$key/$defaultAction"),
                 'active' => (strtolower($module) == strtolower($key)) ? true : null);
+        }
     }elseif(is_dir('protected/modules/'.$key)){
         if(!is_null($this->getModule()))
             $module = $this->getModule()->id;
-        if($permission)
+        if($permission){
             $active = (strtolower($module) == strtolower($key) && 
                 (!isset($_GET['static']) || $_GET['static'] != 'true')) ? true : null;
              
@@ -210,6 +211,7 @@ foreach($standardMenuItems as $key => $value){
                 'itemOptions' => array ('class' => 'top-bar-module-link'),
                 'active' => $active,
             );
+        }
     } else{
         $page = Docs::model()->findByAttributes(
             array('name' => ucfirst(mb_ereg_replace('&#58;', ':', $value))));

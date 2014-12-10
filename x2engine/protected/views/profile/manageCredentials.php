@@ -66,10 +66,10 @@ Yii::app()->clientScript->registerScript('manageCredentialsScript', "
 <div class="credentials-storage">
 <?php
 $crit = new CDbCriteria(array(
-    'condition' => 'userId=:uid OR userId=-1',
+    'condition' => '(userId=:uid OR userId=-1) AND modelClass != "TwitterApp"',
     'order' => 'name ASC',
     'params' => array(':uid' => $profile->user->id),
-        )
+)
 );
 $staticModel = Credentials::model();
 $staticModel->private = 0;
@@ -78,7 +78,7 @@ if (Yii::app()->user->checkAccess('CredentialsSelectNonPrivate', array('model' =
 
 $dp = new CActiveDataProvider('Credentials', array(
     'criteria' => $crit,
-        ));
+));
 $this->widget('zii.widgets.CListView', array(
     'dataProvider' => $dp,
     'itemView' => '_credentialsView',
@@ -97,6 +97,7 @@ $this->widget('zii.widgets.CListView', array(
     echo CHtml::submitButton(
             Yii::t('app', 'Add New'), array('class' => 'x2-button', 'style' => 'float:left;margin-top:0'));
     $modelLabels = Credentials::model()->authModelLabels;
+    unset ($modelLabels['TwitterApp']);
     $types = array_merge(array(null => '- ' . Yii::t('app', 'select a type') . ' -'), $modelLabels);
     echo CHtml::dropDownList(
             'class', 'EmailAccount', $types, array(

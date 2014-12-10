@@ -475,7 +475,11 @@ class ProfileController extends x2base {
                 $model->lastUpdated = $time;
                 if ($model->save()) {
                     $message = Yii::t('app', 'Saved') . ' ' . Formatter::formatLongDateTime($time);
-                    $this->redirect(array('manageCredentials'));
+                    if ($model->modelClass === 'TwitterApp') {
+                        $this->redirect('/admin/index');
+                    } else {
+                        $this->redirect(array('manageCredentials'));
+                    }
                 }
             } else {
                 //AuxLib::debugLogR ($model->getErrors ());

@@ -960,6 +960,9 @@ class UpdaterBehavior extends ResponseBehavior {
             }else if($this->scenario == 'upgrade'){
                 // Change the edition and product key to reflect the upgrade:
                 $admin = CActiveRecord::model('Admin')->findByPk(1);
+                // refresh admin schema since it may have changed during db changes
+                Yii::app()->db->schema->refresh ();
+                $admin->refreshMetaData ();
                 $admin->edition = $this->manifest['targetEdition'];
                 if(!(empty($this->uniqueId)||$this->uniqueId=='none')) // Set new unique id
                     $admin->unique_id = $this->uniqueId;

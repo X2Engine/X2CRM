@@ -148,7 +148,8 @@ $verifyCredsUrl = Yii::app()->createUrl("profile/verifyCredentials");
         $(".credentials-verify").click(function(evt) {
             evt.preventDefault();
             var email = $("#Credentials_auth_email").val();
-            if ($('#Credentials_auth_user').length) // Check if user name is different than email
+            // Check if user name is different than email
+            if ($('#Credentials_auth_user').length && $('#Credentials_auth_user').val ()) 
                 email = $('#Credentials_auth_user').val();
             var password = $("#Credentials_auth_password").val();
 

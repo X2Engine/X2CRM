@@ -36,6 +36,11 @@
 
 class ContactsNameBehavior extends CActiveRecordBehavior {
 
+    /**
+     * @var bool $overrideName
+     */
+    public $overwriteName = true; 
+
 	public function events() {
 		return array_merge(parent::events(),array(
 			'onAfterFind'=>'afterFind',
@@ -62,6 +67,8 @@ class ContactsNameBehavior extends CActiveRecordBehavior {
     }
 
     public function setName() {
+        if ($this->owner->name && !$this->overwriteName) return;
+
         $admin = Yii::app()->settings;
         if (!empty($admin->contactNameFormat)) {
             $str = $admin->contactNameFormat;

@@ -569,7 +569,7 @@ auxlib.confirm = function (callback, translations) {
         close: function () {
             $(this).dialog ('destroy');
         }
-    });
+    }).css('min-height','3em');
 };
 
 auxlib.emptyNumArray = function (size, fill) {

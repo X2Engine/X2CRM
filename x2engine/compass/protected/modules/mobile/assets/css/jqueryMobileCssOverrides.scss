@@ -34,6 +34,10 @@
  *****************************************************************************************/
 /* narrow header */
 
+.ui-content {
+    padding-bottom: 35px !important;
+}
+
 .ui-header {
 	font-size: 12px !important;
 }
@@ -50,9 +54,16 @@
     color: white;
     position: absolute;
     bottom: 0px;
+    width: 100%;
+
+    & > p {
+        float: left;
+    }
 
     #logo-container {
-        display: none;
+        //display: none;
+        float: right;
+        margin-right: 8px;
     }
     .ui-link {
 		font-weight: normal !important;

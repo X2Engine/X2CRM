@@ -55,6 +55,20 @@ class RelationshipsGridModel extends CModel {
      */
     public $id; 
 
+    /**
+    * Added these to fix the readonly error 
+    */
+    public $name;
+
+    public $assignedTo;
+
+    public $label;
+
+    public $createDate;
+
+    public $relatedModelName;
+
+
 
     public function __construct ($scenario=null) {
         if ($scenario) {
@@ -185,3 +199,5 @@ class RelationshipsGridModel extends CModel {
 }
 
 ?>
+
+

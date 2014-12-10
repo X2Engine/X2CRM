@@ -64,4 +64,14 @@
 	color: $colors[text]
 }
 
+.field-custom.field-option {
+	color: $colors[smart_text2]
+	background: $colors[highlight2]
+}
+
+.field-option.field-modified {
+	color: $colors[smart_text]
+	background: $colors[highlight1]
+}
+
 "; ?>

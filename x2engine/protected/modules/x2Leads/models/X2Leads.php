@@ -70,6 +70,7 @@ class X2Leads extends X2Model {
 			),
             'ContactsNameBehavior' => array(
                 'class' => 'application.components.ContactsNameBehavior',
+                'overwriteName' => false,
             ),
 		));
 	}
