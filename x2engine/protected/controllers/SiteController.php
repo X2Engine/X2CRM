@@ -2235,13 +2235,12 @@ class SiteController extends x2base {
             if ($action === 'keepThis' && isset($_POST['data'])) {
                 $attributes = json_decode($_POST['data'], true);
                 if ($ref === 'view') {
-                    X2Model::model($modelName)->updateByPk(
-                        $attributes['id'], array('dupeCheck' => 1));
-                    $id = $attributes['id'];
+                    $model = $modelName::model ()->findByPk ($attributes['id']);
+                    $model->duplicateChecked ();
+                    $id = $model->id;
                 } elseif ($ref === 'create') {
-                    // If we want to keep a newly created record, we have to finish creation
-
                     $model = new $modelName;
+                    // If we want to keep a newly created record, we have to finish creation
                     foreach ($attributes as $key => $value) {
                         if ($key !== 'id') {
                             $model->$key = $value;

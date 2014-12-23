@@ -544,6 +544,7 @@ class ProfileController extends x2base {
             throw new CHttpException(404);
         if (!Yii::app()->user->checkAccess('CredentialsDelete', array('model' => $cred)))
             $this->denied();
+        
         $cred->delete();
         $this->redirect(array('/profile/manageCredentials'));
     }
@@ -587,7 +588,7 @@ class ProfileController extends x2base {
      */
     public function actionChangePassword($id) {
         if ($id == Yii::app()->user->getId()) {
-            $user = UserChild::model()->findByPk($id);
+            $user = User::model()->findByPk($id);
             if (isset($_POST['oldPassword']) && isset($_POST['newPassword']) && isset($_POST['newPassword2'])) {
 
                 $oldPass = $_POST['oldPassword'];
@@ -596,6 +597,9 @@ class ProfileController extends x2base {
                 if ((crypt($oldPass, '$5$rounds=32678$' . $user->password) == '$5$rounds=32678$' . $user->password) || md5($oldPass) == $user->password) {
                     if ($newPass == $newPass2) {
                         $user->password = md5($newPass);
+                        // Ensure an alias is set so that validation succeeds
+                        if (empty($user->userAlias))
+                            $user->userAlias = $user->username;
                         $user->save();
 
                         $this->redirect($this->createUrl('/profile/view', array('id' => $id)));
@@ -1183,7 +1187,7 @@ class ProfileController extends x2base {
         ));
         $_SESSION['stickyFlag'] = false;
 
-        $usersDataProvider = User::getUsersDataProvider();
+        $userModels = User::model ()->active ()->findAll ();
         return array(
             'model' => $profile,
             'isMyProfile' => !$publicProfile && $id === Yii::app()->params->profile->id,
@@ -1193,7 +1197,7 @@ class ProfileController extends x2base {
             'firstEventId' => !empty($firstId) ? $firstId : 0,
             'lastTimestamp' => $lastTimestamp,
             'stickyDataProvider' => $stickyDataProvider,
-            'usersDataProvider' => $usersDataProvider
+            'userModels' => $userModels
         );
     }
 
@@ -1690,8 +1694,10 @@ class ProfileController extends x2base {
                 } else {
                     // check that template exists, that it's of the correct doc type, and is 
                     // associated with the correct model type
-                    if ($template && $template->type === 'email' &&
-                            $template->associationType === X2Model::getModelName($moduleName)) {
+                    if ($template && 
+                        (($template->type === 'email' &&
+                         $template->associationType === X2Model::getModelName($moduleName)) ||
+                         ($template->type === 'quote' && $moduleName === 'quotes'))) {
 
                         $defaultEmailTemplates[$moduleName] = $templateId;
                         $profile->defaultEmailTemplates = CJSON::encode($defaultEmailTemplates);

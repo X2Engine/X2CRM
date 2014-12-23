@@ -118,8 +118,8 @@ Yii::app()->clientScript
 <meta charset="UTF-8" />
 <meta name="language" content="<?php echo Yii::app()->language; ?>" />
 
-<meta name="description" content="X2Engine - Open Source Customer Relationship Management (CRM) and Sales Force Application">
-<meta name="keywords" content="open source,CRM,customer relationship management,contact management,sales force,php,x2engine,X2Engine">
+<meta name="description" content="X2Engine - Open Source Sales CRM - Sales Software">
+<meta name="keywords" content="X2Engine,X2CRM,open source sales CRM,sales software">
 
 <link rel="icon" href="<?php echo Yii::app()->getFavIconUrl (); ?>" type="image/x-icon">
 <link rel="shortcut-icon" href="<?php echo Yii::app()->getFavIconUrl (); ?>" type="image/x-icon">

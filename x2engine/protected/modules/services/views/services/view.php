@@ -82,23 +82,23 @@ $(function() {
             <h2><?php echo Yii::t('services', 'Case {n}', array('{n}' => $model->id)); ?></h2>
             <?php //if(Yii::app()->user->checkAccess('ServicesUpdate',$authParams)){  ?>
             <a class="x2-button icon edit right" href="<?php echo $this->createUrl('update', array('id' => $model->id)); ?>"><span></span></a>
-               <?php
-               echo X2Html::emailFormButton();
-               echo X2Html::inlineEditButtons();
-               ?>
+            <?php
+            echo X2Html::emailFormButton();
+            echo X2Html::inlineEditButtons();
+            ?>
         </div>
     </div>
 </div>
 <div id="main-column" class="half-width">
-               <?php
-               $form = $this->beginWidget('CActiveForm', array(
-                   'id' => 'services-form',
-                   'enableAjaxValidation' => false,
-                   'action' => array('saveChanges', 'id' => $model->id),
-               ));
-               $this->renderPartial(
-                       'application.components.views._detailView', array('model' => $model, 'form' => $form, 'modelName' => 'services'));
-               ?>
+    <?php
+    $form = $this->beginWidget('CActiveForm', array(
+        'id' => 'services-form',
+        'enableAjaxValidation' => false,
+        'action' => array('saveChanges', 'id' => $model->id),
+    ));
+    $this->renderPartial(
+            'application.components.views._detailView', array('model' => $model, 'form' => $form, 'modelName' => 'services'));
+    ?>
 
     <?php $childCases = Services::model()->findAllByAttributes(array('parentCase' => $model->id)); ?>
     <?php if ($childCases) { ?>
@@ -108,89 +108,91 @@ $(function() {
                     <span class="sectionTitle"><?php echo Yii::t('services', 'Child Cases'); ?></span>
                 </div>
                 <div id="parent-case" class="tableWrapper" style="min-height: 75px; padding: 5px;">
-    <?php
-    $comma = false;
-    foreach ($childCases as $c) {
-        if ($comma) { // skip the first comma
-            echo ", ";
-        } else {
-            $comma = true;
-        }
-        echo $c->createLink();
-    }
-    ?>
+                    <?php
+                    $comma = false;
+                    foreach ($childCases as $c) {
+                        if ($comma) { // skip the first comma
+                            echo ", ";
+                        } else {
+                            $comma = true;
+                        }
+                        echo $c->createLink();
+                    }
+                    ?>
                 </div>
             </div>
         </div>
-                <?php } ?>
+    <?php } ?>
 
-                <?php
-                $this->endWidget();
+    <?php
+    $this->endWidget();
 
-                if (isset($contact) && $contact) { // every service case should have a contact associated with it
-                        ?>
-            <div id='contact-info-container'>
+    if (isset($contact) && $contact) { // every service case should have a contact associated with it
+        ?>
+        <div id='contact-info-container'>
             <?php
             $this->renderPartial(
-                'application.modules.contacts.views.contacts._detailViewMini', array(
-                    'model' => $contact,
-                    'serviceModel' => $model
-            )); ?>
-            </div>
-        <?php }
+                    'application.modules.contacts.views.contacts._detailViewMini', array(
+                'model' => $contact,
+                'serviceModel' => $model
+            ));
+            ?>
+        </div>
+        <?php
+    }
 
-        $to = null;
-        if (isset($contact)) {
-            $to = '"' . $contact->name . '" <' . $contact->email . '>, ';
-        }
+    $to = null;
+    if (isset($contact)) {
+        $to = '"' . $contact->name . '" <' . $contact->email . '>, ';
+    }
 
-        $this->widget('InlineEmailForm', array(
-            'attributes' => array(
-                'to' => $to,
-                'modelName' => 'Services',
-                'modelId' => $model->id,
-            ),
-            'startHidden' => true,
-        ));
+    $this->widget('InlineEmailForm', array(
+        'attributes' => array(
+            'to' => $to,
+            'modelName' => 'Services',
+            'modelId' => $model->id,
+        ),
+        'startHidden' => true,
+    ));
 
-        $this->widget('X2WidgetList', array(
-            'block' => 'center',
-            'model' => $model,
-            'modelType' => 'services'
-        ));
-        ?>
+    $this->widget('X2WidgetList', array(
+        'block' => 'center',
+        'model' => $model,
+        'modelType' => 'services'
+    ));
+    ?>
 
     <?php $this->widget('Attachments', array('associationType' => 'services', 'associationId' => $model->id, 'startHidden' => true)); ?>
 
     <?php
     ?>
     <div id="quote-form-wrapper">
-    <?php
-    $this->widget('InlineQuotes', array(
-        'startHidden' => true,
-        'contactId' => $model->getLinkedAttribute('contactId', 'id'),
-        'recordId' => $model->id,
-        'modelName' => X2Model::getModuleModelName()
-    ));
-    ?>
+        <?php
+        $this->widget('InlineQuotes', array(
+            'startHidden' => true,
+            'contactId' => $model->getLinkedAttribute('contactId', 'id'),
+            'recordId' => $model->id,
+            'modelName' => X2Model::getModuleModelName()
+        ));
+        ?>
     </div>
 
 </div>
 <div class="history half-width">
-        <?php
-        $this->widget('Publisher', array(
-            'associationType' => 'services',
-            'associationId' => $model->id,
-            'assignedTo' => Yii::app()->user->getName(),
-            'calendar' => false
-                )
-        );
+    <?php
+    $this->widget('Publisher', array(
+        'associationType' => 'services',
+        'associationId' => $model->id,
+        'assignedTo' => Yii::app()->user->getName(),
+        'calendar' => false
+            )
+    );
 
-        $this->widget('History', array('associationType' => 'services', 'associationId' => $model->id));
-        ?>
+    $this->widget('History', array('associationType' => 'services', 'associationId' => $model->id));
+    ?>
 </div>
 
-    <?php
-    $this->widget(
-            'CStarRating', array('name' => 'rating-js-fix', 'htmlOptions' => array('style' => 'display:none;')));
-    ?>
+<?php
+$this->widget(
+        'CStarRating', array('name' => 'rating-js-fix', 'htmlOptions' => array('style' => 'display:none;')));
+?>

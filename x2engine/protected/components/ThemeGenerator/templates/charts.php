@@ -58,9 +58,7 @@
     background: $colors[highlight2]
     color: $colors[smart_text2] 
 }
-#chart-creator .error-summary-container {
-  color: $colors[text] 
-}
+
 
 #report-container .hover-selection {
   color: $colors[smart_text2]

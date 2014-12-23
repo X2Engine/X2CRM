@@ -99,7 +99,7 @@ $borderGray: #B0B0B0;
         & > span {
             display: block;
             max-height: 242px;
-            overflow-y: scroll;
+            overflow-y: auto;
         }
         & li {
             &:hover {

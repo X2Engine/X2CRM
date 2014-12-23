@@ -319,7 +319,7 @@ class WebFormAction extends CAction {
             }
 
             if($contact){
-                $model->contactId = $contact->id;
+                $model->contactId = $contact->nameId;
             }else{
                 $model->contactId = "Unregistered";
             }

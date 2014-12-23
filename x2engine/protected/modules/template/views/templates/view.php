@@ -92,20 +92,8 @@ $(function() {
                 ?>
             </h2>
             <?php
-            echo CHtml::link(
-                    '<span></span>', $this->createUrl('update', array('id' => $model->id)), array(
-                'class' => 'x2-button icon edit right',
-                'title' => Yii::t('app', 'Edit {X}', array('{X}' => Modules::itemDisplayName())),
-                    )
-            );
-            echo CHtml::link(
-                    '<img src="' . Yii::app()->request->baseUrl . '/themes/x2engine/images/icons/email_button.png' .
-                    '"></img>', '#', array(
-                'class' => 'x2-button icon right email',
-                'title' => Yii::t('app', 'Open email form'),
-                'onclick' => 'toggleEmailForm(); return false;'
-                    )
-            );
+            echo X2Html::emailFormButton();
+            echo X2Html::editRecordButton($model);
             echo X2Html::inlineEditButtons();
             ?>
         </div>

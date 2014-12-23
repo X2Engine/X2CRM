@@ -1418,7 +1418,7 @@ class UpdaterBehaviorTest extends FileOperTestCase {
 
         ob_start();
         try {
-            $ube->runMigrationScripts($scripts,&$ran, true);
+            $ube->runMigrationScripts($scripts, $ran, true);
             ob_end_clean();
         } catch(Exception $e) {
             ob_end_clean();
@@ -1433,7 +1433,7 @@ class UpdaterBehaviorTest extends FileOperTestCase {
         $ran = array();
         $scripts = array($errorScript);
         ob_start();
-        $ube->runMigrationScripts($scripts,&$ran, true);
+        $ube->runMigrationScripts($scripts, $ran, true);
         // Retrieve error code from output
         $output = ob_get_clean();
         preg_match ('/\[(\d+)\]/', $output, $matches);
@@ -1448,7 +1448,7 @@ class UpdaterBehaviorTest extends FileOperTestCase {
         $scripts = array($exceptionScript);
         ob_start();
         try {
-            $ube->runMigrationScripts($scripts,&$ran, false);
+            $ube->runMigrationScripts($scripts,$ran, false);
             ob_end_clean();
         } catch(Exception $e) {
             ob_end_clean();

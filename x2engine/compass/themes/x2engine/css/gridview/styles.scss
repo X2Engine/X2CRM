@@ -282,13 +282,13 @@ ul.column-selector {
             }
             
             &.asc a {
-                @include fa-icon("caret-down", "after") {
+                @include fa-icon("caret-up", "after") {
                     margin-left: 10px;
                 };
             }
 
             &.desc a {
-                @include fa-icon("caret-up", "after") {
+                @include fa-icon("caret-down", "after") {
                     margin-left: 10px;
                 }
             }

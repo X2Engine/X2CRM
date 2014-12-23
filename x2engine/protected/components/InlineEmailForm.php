@@ -138,7 +138,9 @@ class InlineEmailForm extends X2Widget {
 
                 // ensure that template is still a valid default
                 if ($defaultTemplateDoc && 
-                    $defaultTemplateDoc->associationType === $this->associationType) {
+                    ($defaultTemplateDoc->associationType === $this->associationType ||
+                    $defaultTemplateDoc->type === 'quote' && 
+                    $this->model->targetModel instanceof Quote)) {
 
                     $this->template = $defaultTemplateId;
                 }

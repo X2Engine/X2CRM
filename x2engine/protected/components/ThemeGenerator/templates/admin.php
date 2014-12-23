@@ -40,7 +40,8 @@
 }
 
 #fieldListBox .formItem,
-#fieldListTitle {
+#fieldListTitle ,
+.fieldListTitle {
 	background: $colors[content]
 	color: $colors[text]
 	border-color: $colors[border]
@@ -72,6 +73,65 @@
 .field-option.field-modified {
 	color: $colors[smart_text]
 	background: $colors[highlight1]
+}
+
+/*********************************
+* Web Lead Form
+********************************/
+
+#web-form h4,
+#web-form .fieldhelp-above,
+#web-form .fieldhelp
+{
+	color: $colors[text]
+}
+
+.web-form-fields,
+.web-form-fields.fields-container,
+.web-form-fields .um-state-default ,
+.web-form-fields > div {
+	border: 1px solid;
+	border-color: $colors[border]
+	background: $colors[content]
+	color: $colors[text]
+}
+
+.web-form-fields .ui-state-highlight {
+	background: $colors[lighter_content]
+	border-color: $colors[border]
+}
+
+#iframe_example {
+	background: $colors[content]
+	border-color: $colors[border]
+}
+
+#roles-grid-container {
+	background: $colors[content]
+}
+
+
+#exception, 
+#editRole.x2-layout-island {
+	background: $colors[content]
+}
+
+.form h4 {
+	color: $colors[text]
+}
+
+#domain-alias-explanation {
+	background: $colors[content]
+	border-color: $colors[border]
+}
+
+#lead-activity-grid .rollback-link {
+	color: $colors[smart_text]
+}
+
+#failed-logins-grid,
+#login-history-grid {
+	border-color: $colors[border]
 }
 
 "; ?>

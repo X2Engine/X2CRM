@@ -288,4 +288,8 @@ textarea:not(.error) {
 	border-color: $colors[border]
 }
 
+.form-view div.ui-progressbar-value {
+	background: $colors[highlight2]
+}
+
 "; ?>

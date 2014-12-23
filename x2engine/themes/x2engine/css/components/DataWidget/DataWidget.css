@@ -183,14 +183,14 @@
 }
 /* line 65, ../../../../../compass/themes/x2engine/css/components/DataWidget/DataWidget.scss */
 .data-widget.sortable-widget-container:hover .widget-title-bar {
-  background: #d9d9d9;
+  background: #D9D9D9;
 }
 /* line 69, ../../../../../compass/themes/x2engine/css/components/DataWidget/DataWidget.scss */
 .data-widget.sortable-widget-container .config-bar {
   text-align: center;
   display: none;
   padding: 7px;
-  border-bottom: 1px solid #d9d9d9;
+  border-bottom: 1px solid #D9D9D9;
 }
 /* line 75, ../../../../../compass/themes/x2engine/css/components/DataWidget/DataWidget.scss */
 .data-widget.sortable-widget-container .config-bar:after {

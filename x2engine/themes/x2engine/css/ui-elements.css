@@ -200,7 +200,7 @@
 
 /* Font Awesome uses the Unicode Private Use Area (PUA) to ensure screen
      readers do not read off random characters that represent icons */
-/* line 224, ../../../compass/css/lib/_font-awesome.scss */
+/* line 222, ../../../compass/css/lib/_font-awesome.scss */
 .ui-dialog-titlebar-close:before {
   content: "\f00d";
 }
@@ -478,16 +478,16 @@ input.active, .ui-dialog .ui-dialog-buttonpane button:active {
 .ui-dialog .ui-dialog-buttonpane button.highlight:hover {
   background-color: #459C30;
 }
-/* line 290, ../../../compass/themes/x2engine/css/ui-elements.scss */
+/* line 289, ../../../compass/themes/x2engine/css/ui-elements.scss */
 .x2-button.highlight:active, .ui-datepicker-buttonpane button.highlight:active, .x2-button.highlight.clicked, .ui-datepicker-buttonpane button.highlight.clicked,
 .x2-minimal-button.highlight:active,
 .x2-minimal-button.highlight.clicked,
 .ui-dialog .ui-dialog-buttonpane button.highlight:active,
 .ui-dialog .ui-dialog-buttonpane button.highlight.clicked {
   background-color: #398B24;
-  -moz-box-shadow: inset 0 1px 1px 0 #4a7500;
-  -webkit-box-shadow: inset 0 1px 1px 0 #4a7500;
-  box-shadow: inset 0 1px 1px 0 #4a7500;
+  -moz-box-shadow: inset 0 1px 1px 0 #4A7500;
+  -webkit-box-shadow: inset 0 1px 1px 0 #4A7500;
+  box-shadow: inset 0 1px 1px 0 #4A7500;
 }
 
 /* line 298, ../../../compass/themes/x2engine/css/ui-elements.scss */
@@ -2665,7 +2665,7 @@ ul.x2-dropdown-list li:hover {
 }
 /* line 2314, ../../../compass/themes/x2engine/css/ui-elements.scss */
 .x2-collapsible-outer.collapsed > .x2-collapse-handle:hover {
-  background: #f4f4f4;
+  background: #F4F4F4;
   cursor: pointer;
 }
 

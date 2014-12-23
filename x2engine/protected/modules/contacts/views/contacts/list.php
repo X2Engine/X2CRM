@@ -119,7 +119,7 @@ $('#removeFromList').unbind('click').click(function() {
 <div class="search-form" style="display:none">
 <?php /* $this->renderPartial('_search',array(
     'model'=>$model,
-        'users'=>UserChild::getNames(),
+        'users'=>User::getNames(),
 )); */ ?>
 </div><!-- search-form -->
 <?php

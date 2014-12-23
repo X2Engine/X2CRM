@@ -85,7 +85,7 @@ class QuickCreateRelationshipBehavior extends CBehavior {
         array_walk (
             $createUrls,
             function (&$val, $key) {
-                $moduleName = strtolower (X2Model::getModuleName ($key));
+                $moduleName = lcfirst (X2Model::getModuleName ($key));
                 $val = Yii::app()->controller->createUrl ("/$moduleName/$moduleName/create");
             });
         return $createUrls;

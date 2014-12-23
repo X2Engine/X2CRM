@@ -290,7 +290,7 @@
 				$grid.addClass(settings.loadingClass);
 
                 /* x2modstart */ 
-                var requestType = (settings.updateRequestType !== 'undefined') ? 
+                var requestType = (typeof settings.updateRequestType !== 'undefined') ? 
                     settings.updateRequestType : 'GET';
                 /* x2modend */ 
 
@@ -363,13 +363,18 @@
 					}
 				}, options || {});
 				if (options.data !== undefined && options.type === 'GET') {
-					options.url = $.param.querystring(options.url, options.data);
+                    /* x2modstart */ 
+                    var overrideParams = 0;
+					options.url = $.param.querystring(options.url, options.data, overrideParams);
+                    /* x2modend */ 
 					options.data = {};
 				}
                 /* x2modstart */ 
                 if (options.type === 'POST') {
                     if (typeof options.data === 'undefined') options.data = {};
-					options.data = $.extend ($.deparam.querystring (options.url), options.data);
+                    var overrideParams = 0;
+					options.data = $.extend (
+                        $.deparam.querystring (options.url), options.data, overrideParams);
                 }
                 /* x2modend */ 
 

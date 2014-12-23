@@ -57,9 +57,10 @@ $this->insertMenu($menuOptions);
 <?php
 
 $this->widget('X2GridViewGeneric', array(
-    'htmlOptions' => array ('id' => 'workflow-grid'),
+    'id' => 'workflow-grid',
 	'dataProvider'=>$dataProvider,
-	'baseScriptUrl'=>Yii::app()->theme->getBaseUrl().'/css/gridview',
+    'baseScriptUrl'=>  
+        Yii::app()->request->baseUrl.'/themes/'.Yii::app()->theme->name.'/css/gridview',
     'title'=>Yii::t('workflow','{processes}', array(
         '{processes}' => Modules::displayName())),
     'template'=> '<div class="page-title icon workflow">{title}'.
@@ -68,12 +69,16 @@ $this->widget('X2GridViewGeneric', array(
     'buttons' => array ('autoResize'),
 	'enableSorting'=>false,
 	'gvSettingsName'=>'workflowIndex',
+    'defaultGvSettings' => array (
+        'name' => 240,
+        'isDefault' => 100,
+        'stages' => 100,
+    ),
 	'columns'=>array(
 		array(
 			'name'=>'name',
 			'value'=>'CHtml::link(CHtml::encode($data->name),array("view","id"=>$data->id))',
 			'type'=>'raw',
-			'headerHtmlOptions'=>array('style'=>'width:65%;'),
 		),
 		array(
 			'name'=>'isDefault',
@@ -81,7 +86,8 @@ $this->widget('X2GridViewGeneric', array(
 			'type'=>'raw',
 		),
 		array(
-			'name'=>Yii::t('workflow','Stages'),
+			'header'=>Yii::t('workflow','Stages'),
+			'name'=>'stages',
 			'value'=>'X2Model::model("WorkflowStage")->countByAttributes(array("workflowId"=>$data->id))',
 			'type'=>'raw',
 		),

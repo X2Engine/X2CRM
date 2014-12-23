@@ -219,6 +219,7 @@ abstract class X2Model extends CActiveRecord {
         'Services' => 'case',
         'Groups' => 'group',
         'Docs' => 'doc',
+        'X2Leads' => 'lead',
         'X2List' => 'list item',
     );
     private $_relatedX2Models;   // Relationship models stored in here
@@ -254,6 +255,7 @@ abstract class X2Model extends CActiveRecord {
         } else {
             throw new CHttpException(500, 'Class: ' . $className . " not found.");
         }
+        return false;
     }
 
     /**
@@ -477,9 +479,18 @@ abstract class X2Model extends CActiveRecord {
                 self::$translatedModelTitles = array ();
             }
             self::$translatedModelTitles[$singular] = array ();
-            $title = $modelClass::model ()->getDisplayName (!$singular);
+            try {
+                $model = self::model ($modelClass);
+            } catch (Exception $e) {
+                $model = null;
+            }
+            if ($model) {
+                $title = $model->getDisplayName (!$singular);
+            } else {
+                $title = $modelClass;
+            }
             self::$translatedModelTitles[$singular][$modelClass] = Yii::t(
-                isset(self::model($modelClass)->module) ? 
+                ($model && isset(self::model($modelClass)->module)) ? 
                     self::model($modelClass)->module : 'app', $title);
         }
         return self::$translatedModelTitles[$singular][$modelClass];
@@ -641,8 +652,8 @@ abstract class X2Model extends CActiveRecord {
     }
 
     private $_relationships;
-    public function getRelationships () {
-        if (!isset ($this->_relationships)) {
+    public function getRelationships ($refreshCache=false) {
+        if ($refreshCache || !isset ($this->_relationships)) {
             $this->_relationships = 
                 Relationships::model ()->findAll ($this->getRelationshipsCriteria ());
         }
@@ -702,7 +713,7 @@ abstract class X2Model extends CActiveRecord {
         if (!isset($this->_relatedX2Models) || $refreshCache) {
             $myModelName = get_class($this);
             $this->_relatedX2Models = array();
-            $relationships = $this->getRelationships ();
+            $relationships = $this->getRelationships ($refreshCache);
             $this->_relationships = $relationships;
             $modelRelationships = array();
             foreach ($relationships as $relationship) {
@@ -1195,6 +1206,7 @@ abstract class X2Model extends CActiveRecord {
     public function getLinkedModel($linkField, $lookup = true) {
         $nameId = $this->getAttribute($linkField);
         list($name, $id) = Fields::nameAndId($nameId);
+
         if (ctype_digit((string) $id)) {
             $field = $this->getField($linkField);
 
@@ -1929,9 +1941,10 @@ abstract class X2Model extends CActiveRecord {
             // ));
 
             case 'date':
+                $oldDateVal = $model->$fieldName;
                 $model->$fieldName = Formatter::formatDate($model->$fieldName, 'medium');
                 Yii::import('application.extensions.CJuiDateTimePicker.CJuiDateTimePicker');
-                return Yii::app()->controller->widget('CJuiDateTimePicker', array(
+                $input = Yii::app()->controller->widget('CJuiDateTimePicker', array(
                             'model' => $model, //Model object
                             'attribute' => $fieldName, //attribute name
                             'mode' => 'date', //use "time","date" or "datetime" (default)
@@ -1945,10 +1958,13 @@ abstract class X2Model extends CActiveRecord {
                                     ), $htmlOptions),
                             'language' => (Yii::app()->language == 'en') ? '' : Yii::app()->getLanguage(),
                                 ), true);
+                $model->$fieldName = $oldDateVal;
+                return $input;
             case 'dateTime':
+                $oldDateTimeVal = $model->$fieldName;
                 $model->$fieldName = Formatter::formatDateTime($model->$fieldName);
                 Yii::import('application.extensions.CJuiDateTimePicker.CJuiDateTimePicker');
-                return Yii::app()->controller->widget('CJuiDateTimePicker', array(
+                $input = Yii::app()->controller->widget('CJuiDateTimePicker', array(
                             'model' => $model, //Model object
                             'attribute' => $fieldName, //attribute name
                             'mode' => 'datetime', //use "time","date" or "datetime" (default)
@@ -1964,6 +1980,8 @@ abstract class X2Model extends CActiveRecord {
                                     ), $htmlOptions),
                             'language' => (Yii::app()->language == 'en') ? '' : Yii::app()->getLanguage(),
                                 ), true);
+                $model->$fieldName = $oldDateTimeVal;
+                return $input;
             case 'dropdown':
                 // Note: if desired to translate dropdown options, change the seecond argument to 
                 // $model->module
@@ -2030,11 +2048,12 @@ abstract class X2Model extends CActiveRecord {
                     if ($linkModel instanceof X2Model && $linkModel->asa('X2LinkableBehavior') instanceof X2LinkableBehavior) {
                         $linkSource = Yii::app()->controller->createUrl($linkModel->autoCompleteSource);
                         $linkId = $linkModel->id;
+                        $oldLinkFieldVal = $model->$fieldName; 
                         $model->$fieldName = $name;
                     }
                 }
 
-                return CHtml::hiddenField($field->modelName . '[' . $fieldName . '_id]', $linkId, array('id' => $field->modelName . '_' . $fieldName . "_id"))
+                $input = CHtml::hiddenField($field->modelName . '[' . $fieldName . '_id]', $linkId, array('id' => $field->modelName . '_' . $fieldName . "_id"))
                         . Yii::app()->controller->widget('zii.widgets.jui.CJuiAutoComplete', array(
                             'model' => $model,
                             'attribute' => $fieldName,
@@ -2078,7 +2097,8 @@ abstract class X2Model extends CActiveRecord {
                                 'title' => $field->attributeLabel,
                                     ), $htmlOptions)
                                 ), true);
-
+                if (isset ($oldLinkFieldVal)) $model->$fieldName = $oldLinkFieldVal;
+                return $input;
             case 'rating':
                 return Yii::app()->controller->widget('CStarRating', array(
                             'model' => $model,
@@ -2101,8 +2121,9 @@ abstract class X2Model extends CActiveRecord {
                                         ), $htmlOptions)) . '</div>';
 
             case 'assignment':
+                $oldAssignmentVal = $model->$fieldName;
                 $model->$fieldName = !empty($model->$fieldName) ? ($field->linkType == 'multiple' && !is_array($model->$fieldName) ? explode(', ', $model->$fieldName) : $model->$fieldName) : self::getDefaultAssignment();
-                return CHtml::activeDropDownList(
+                $dropdownList = CHtml::activeDropDownList(
                                 $model, $fieldName, X2Model::getAssignmentOptions(true, true), array_merge(array(
                             // 'tabindex'=>isset($item['tabindex'])? $item['tabindex'] : null,
                             // 'disabled'=>$item['readOnly']? 'disabled' : null,
@@ -2112,6 +2133,8 @@ abstract class X2Model extends CActiveRecord {
                             ($field->linkType == 'multiple' ? 'multiple' : null),
                                         ), $htmlOptions)
                 );
+                $model->$fieldName = $oldAssignmentVal;
+                return $dropdownList;
             /*
               $group = is_numeric($model->$fieldName);
               // if(is_numeric($model->assignedTo)){
@@ -2236,11 +2259,16 @@ abstract class X2Model extends CActiveRecord {
             case 'float':
             case 'int':
                 if (isset($model->$fieldName)) {
+                    $oldNumVal = $model->$fieldName;
                     $model->$fieldName = Yii::app()->locale->numberFormatter->formatDecimal($model->$fieldName);
                 }
-                return CHtml::activeTextField($model, $field->fieldName, array_merge(array(
+                $input = CHtml::activeTextField($model, $field->fieldName, array_merge(array(
                             'title' => $field->attributeLabel,
                                         ), $htmlOptions));
+                if (isset ($oldNumVal)) {
+                    $model->$fieldName = $oldNumVal;
+                }
+                return $input;
             default:
                 return CHtml::activeTextField($model, $field->fieldName, array_merge(array(
                             'title' => $field->attributeLabel,
@@ -2295,7 +2323,22 @@ abstract class X2Model extends CActiveRecord {
      */
     public function renderInput($fieldName, $htmlOptions = array()) {
         $field = $this->getField($fieldName);
+        
+        if (!$field) {
+            return $this->renderErroneousField();
+        }
+
         return self::renderModelInput($this, $field, $htmlOptions);
+    }
+
+    /**
+     * Renders an error when a field cannot be found
+     */
+    public function renderErroneousField() {
+        $html  = '<span class="erroneous-field">';
+        $html .=  Yii::t('app', 'Field could not be found');
+        $html .= '</span>';
+        return $html;
     }
 
     /**
@@ -2392,11 +2435,15 @@ abstract class X2Model extends CActiveRecord {
      * @return CActiveDataProvider the data provider that can return the models based on the 
      *  search/filter conditions.
      */
-    public function searchBase($criteria, $pageSize = null) {
-        if ($criteria === null)
-            $criteria = $this->getAccessCriteria();
-        else
-            $criteria->mergeWith($this->getAccessCriteria());
+    public function searchBase($criteria, $pageSize = null, $showHidden = false) {
+        if(isset($_GET['showHidden']) && $_GET['showHidden'] && Yii::app()->user->checkAccess(self::getModuleName(get_class($this)).'Admin')){
+            $showHidden = true;
+        }
+        if ($criteria === null){
+            $criteria = $this->getAccessCriteria('t', 'X2PermissionsBehavior', $showHidden);
+        }else{
+            $criteria->mergeWith($this->getAccessCriteria('t', 'X2PermissionsBehavior', $showHidden));
+        }
 
         $this->compareAttributes($criteria);
         $criteria->with = array(); // No joins necessary!
@@ -3100,17 +3147,27 @@ abstract class X2Model extends CActiveRecord {
 
     public function mergeActions(X2Model $model, $logMerge = false) {
         $ret = array();
+        $associationType =self::getAssociationType (get_class ($model));
+        $tartgetAssociationType =self::getAssociationType (get_class ($this));
         if ($logMerge) {
             $ids = Yii::app()->db->createCommand()
-                    ->select('id')
-                    ->from('x2_actions')
-                    ->where('associationType = :type AND associationId = :id', array(':type' => get_class($model), ':id' => $model->id))
-                    ->queryColumn();
+                ->select('id')
+                ->from('x2_actions')
+                ->where(
+                    'associationType = :type AND associationId = :id',
+                    array(':type' => $associationType, ':id' => $model->id))
+                ->queryColumn();
             $ret = $ids;
         }
+
         X2Model::model('Actions')->updateAll(array(
-            'associationId' => $this->id,
-                ), 'associationType = :type AND associationId = :id', array(':type' => get_class($model), ':id' => $model->id));
+                'associationType' => $tartgetAssociationType,
+                'associationId' => $this->id,
+            ), 'associationType = :type AND associationId = :id', 
+            array(
+                ':type' => $associationType,
+                ':id' => $model->id
+            ));
 
         return $ret;
     }
@@ -3119,33 +3176,41 @@ abstract class X2Model extends CActiveRecord {
         $ret = array();
         if ($logMerge) {
             $ids = Yii::app()->db->createCommand()
-                    ->select('id')
-                    ->from('x2_events')
-                    ->where('associationType = :type AND associationId = :id', array(':type' => get_class($model), ':id' => $model->id))
-                    ->queryColumn();
+                ->select('id')
+                ->from('x2_events')
+                ->where('associationType = :type AND associationId = :id', array(':type' => get_class($model), ':id' => $model->id))
+                ->queryColumn();
             $ret = $ids;
         }
         $count = X2Model::model('Events')->updateAll(array(
             'associationId' => $this->id,
-                ), 'associationType = :type AND associationId = :id', array(':type' => get_class($model), ':id' => $model->id));
+            ), 'associationType = :type AND associationId = :id', array(':type' => get_class($model), ':id' => $model->id));
         return $ret;
     }
 
     public function mergeNotifications(X2Model $model, $logMerge = false) {
         $ret = array();
+        $modelType = get_class ($model);
+        $targetModelType = get_class ($this);
         if ($logMerge) {
             $ids = Yii::app()->db->createCommand()
-                    ->select('id')
-                    ->from('x2_notifications')
-                    ->where('modelType = :type and modelId = :id', array(':type' => get_class($model), ':id' => $model->id))
-                    ->queryColumn();
+                ->select('id')
+                ->from('x2_notifications')
+                ->where(
+                    'modelType = :type and modelId = :id', 
+                    array(':type' => $modelType, ':id' => $model->id))
+                ->queryColumn();
             $ret = $ids;
         }
         X2Model::model('Notification')
-                ->updateAll(array(
-                    'modelId' => $this->id,
-                        ), 'modelType = :type AND modelId = :id', array(':type' => get_class($model), ':id' => $model->id)
-        );
+            ->updateAll(array(
+                'modelId' => $this->id,
+                'modelType' => $targetModelType,
+            ), 'modelType = :type AND modelId = :id', 
+            array(
+                ':type' => $modelType, 
+                ':id' => $model->id
+            ));
         return $ret;
     }
 
@@ -3164,12 +3229,16 @@ abstract class X2Model extends CActiveRecord {
      */
     public function mergeRelationships(X2Model $model, $logMerge = false) {
         $ret = array();
+        $modelType = get_class ($model);
+        $targetModelType = get_class ($this);
         if ($logMerge) {
             $ids = Yii::app()->db->createCommand()
-                    ->select('id')
-                    ->from('x2_relationships')
-                    ->where('firstType = :type AND firstId = :id', array(':type' => get_class($model), ':id' => $model->id))
-                    ->queryColumn();
+                ->select('id')
+                ->from('x2_relationships')
+                ->where(
+                    'firstType = :type AND firstId = :id', 
+                    array(':type' => $modelType, ':id' => $model->id))
+                ->queryColumn();
             if (!empty($ids)) {
                 $ret['first'] = $ids;
             }
@@ -3177,59 +3246,67 @@ abstract class X2Model extends CActiveRecord {
             $ids = Yii::app()->db->createCommand()
                     ->select('id')
                     ->from('x2_relationships')
-                    ->where('secondType = :type AND secondId = :id', array(':type' => get_class($model), ':id' => $model->id))
+                    ->where(
+                        'secondType = :type AND secondId = :id', 
+                        array(':type' => $modelType, ':id' => $model->id))
                     ->queryColumn();
             if (!empty($ids)) {
                 $ret['second'] = $ids;
             }
         }
         Relationships::model()->updateAll(array(
-            'firstId' => $this->id,
-                ), 'firstType = :type AND firstId = :id', array(
-            ':type' => get_class($model),
-            ':id' => $model->id,
-        ));
+                'firstId' => $this->id,
+                'firstType' => $targetModelType,
+            ), 'firstType = :type AND firstId = :id', array(
+                ':type' => $modelType,
+                ':id' => $model->id,
+            ));
         Relationships::model()->updateAll(array(
-            'secondId' => $this->id,
-                ), 'secondType = :type AND secondId = :id', array(
-            ':type' => get_class($model),
-            ':id' => $model->id,
-        ));
-
+                'secondId' => $this->id,
+                'secondType' => $targetModelType,
+            ), 'secondType = :type AND secondId = :id', array(
+                ':type' => $modelType,
+                ':id' => $model->id,
+            ));
         return $ret;
     }
 
     public function mergeLinkFields(X2Model $model, $logMerge = false) {
         $ret = array();
 
-        $linkFields = Fields::model()->findAllByAttributes(array('type' => 'Link', 'linkType' => get_class($model)));
+        $linkFields = Fields::model()
+            ->findAllByAttributes(array('type' => 'Link', 'linkType' => get_class($model)));
         foreach ($linkFields as $field) {
             if ($logMerge) {
                 $ids = Yii::app()->db->createCommand()
-                        ->select('id')
-                        ->from(X2Model::model($field->modelName)->tableName())
-                        ->where($field->fieldName . ' = :id', array(':id' => $model->nameId))
-                        ->queryColumn();
+                    ->select('id')
+                    ->from(X2Model::model($field->modelName)->tableName())
+                    ->where($field->fieldName . ' = :id', array(':id' => $model->nameId))
+                    ->queryColumn();
                 if (!empty($ids)) {
                     $ret[$field->modelName]['field'] = $field->fieldName;
                     $ret[$field->modelName]['ids'] = $ids;
                 }
             }
-            $affected = Yii::app()->db->createCommand()
-                    ->update(X2Model::model($field->modelName)->tableName(),
-                            array($field->fieldName => $this->nameId),
-                            $field->fieldName . ' = :id',
-                            array(':id' => $model->nameId));
+            Yii::app()->db->createCommand()->update(
+                X2Model::model($field->modelName)->tableName(),
+                array(
+                    $field->fieldName => $this->nameId,
+                ),
+                $field->fieldName . ' = :id',
+                array(':id' => $model->nameId));
         }
         return $ret;
     }
 
     public function revertMerge() {
         $mergeLog = Yii::app()->db->createCommand()
-                ->select('*')
-                ->from('x2_merge_log')
-                ->where('mergeModelId = :id AND modelType = :type', array(':id' => $this->id, ':type' => get_class($this)))
-                ->queryAll();
+            ->select('*')
+            ->from('x2_merge_log')
+            ->where(
+                'mergeModelId = :id AND modelType = :type', 
+                array(':id' => $this->id, ':type' => get_class($this)))
+            ->queryAll();
         if (!empty($mergeLog)) {
             foreach ($mergeLog as $log) {
                 $mergeData = json_decode($log['mergeData'], true);
@@ -3265,7 +3342,9 @@ abstract class X2Model extends CActiveRecord {
                 }
             }
             $mergeLog = Yii::app()->db->createCommand()
-                    ->delete('x2_merge_log', 'mergeModelId = :id AND modelType = :type', array(':id' => $this->id, ':type' => get_class($this)));
+                ->delete(
+                    'x2_merge_log', 'mergeModelId = :id AND modelType = :type', 
+                    array(':id' => $this->id, ':type' => get_class($this)));
             $this->delete();
         }
     }
@@ -3300,7 +3379,8 @@ abstract class X2Model extends CActiveRecord {
     public function unmergeLinkFields($id, $data) {
         $model = X2Model::model(get_class($this))->findByPk($id);
         foreach ($data as $modelName => $fieldData) {
-            X2Model::model($modelName)->updateByPk($fieldData['ids'], array($fieldData['field'] => $model->nameId));
+            X2Model::model($modelName)
+                ->updateByPk($fieldData['ids'], array($fieldData['field'] => $model->nameId));
         }
     }
 
@@ -3310,7 +3390,6 @@ abstract class X2Model extends CActiveRecord {
      * @return array of strings
      */
     private static $getInsertableAttributeTokensDepth = 0; // limits recursive depth
-
     public function getInsertableAttributeTokens() {
         X2Model::$getInsertableAttributeTokensDepth++;
         $tokens = array();

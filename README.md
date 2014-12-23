@@ -1,17 +1,28 @@
-# 5.0.1 #
-12/9/2014
+# 5.0.2 #
+12/22/2014
 
 * General Changelog / Developer Notes:
-  * New Outlook and Yahoo email credential types
-  * Leads "name" field is no longer overwritten with first name and last name if "name" field is already set
+  * Platinum Edition Changes:
+    * New login history export tool on the Advanced Security page
+  * Professional Edition Changes:
+    * Added a button to remove individual emails from newsletter recipient lists
+    * Email Manager module renamed "Email"
+    * Fixed AnonContact entries on activity feed
+  * Fixed bug preventing lead related records from transferring to target record upon conversion
+  * Added safeguard to prevent administrator account from being disabled
 * Tracked Bug Fixes:
-  * [1887](http://x2software.com/index.php/bugReports/1887): Array to string conversion  
-  * [1888](http://x2software.com/index.php/bugReports/1888): Array to string conversion  
-  * [1903](http://x2software.com/index.php/bugReports/1903): Undefined variable: active  
-  * [1910](http://x2software.com/index.php/bugReports/1910): Trying to get property of non-object  
-  * [1920](http://x2software.com/index.php/bugReports/1920): Property "Admin.imapPollTimeout" is not defined.  
-  * [1923](http://x2software.com/index.php/bugReports/1923): Undefined variable: active  
-  * [1924](http://x2software.com/index.php/bugReports/1924): Property "Admin.maxFailedLogins" is not defined.  
+  * [1938](http://x2software.com/index.php/bugReports/1938): Class:  not found.  
+  * [1940](http://x2software.com/index.php/bugReports/1940): imap_get_quotaroot(): c-client imap_getquotaroot failed  
+  * [1941](http://x2software.com/index.php/bugReports/1941): Unable to resolve the request "x2Leads/id/convert".  
+  * [1945](http://x2software.com/index.php/bugReports/1945): Inline edit checkbox fields always checked.  
+  * [1952](http://x2software.com/index.php/bugReports/1952): TimeSeriesForm and its behaviors do not have a method or closure named "getName".  
+  * [1955](http://x2software.com/index.php/bugReports/1955): Unable to resolve the request "charts/charts/index".  
+  * [1957](http://x2software.com/index.php/bugReports/1957): Unable to resolve the request "emailInboxes/updateSharedInbox/id/sharedInboxesIndex".  
+  * [1967](http://x2software.com/index.php/bugReports/1967): trim() expects parameter 1 to be string, array given  
+  * [1968](http://x2software.com/index.php/bugReports/1968): TimeSeriesForm and its behaviors do not have a method or closure named "getName".  
+  * [1971](http://x2software.com/index.php/bugReports/1971): TimeSeriesForm and its behaviors do not have a method or closure named "getName".  
+  * [1972](http://x2software.com/index.php/bugReports/1972): Class:  not found.  
+  * [1984](http://x2software.com/index.php/bugReports/1984): User Report  
 
 
 

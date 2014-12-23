@@ -34,23 +34,53 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 
-function instantiateUsersChart ($usersDataProvider, $objContext, $chartSubtype) {
-    $usersArr = array ();
-    foreach ($usersDataProvider->data as $user) {
-        $usersArr[$user->username] = $user->firstName.' '.$user->lastName;
+/**
+ * Move widget layouts from profile table into x2_settings table
+ */
+
+$migrateLayouts = function () {
+
+    $migrateIndividual = function ($profile, $type) {
+        $embeddedModelName = ucfirst ($type);
+        $recordId = $profile['id'];
+        $recordType = 'Profile';
+        $settings = $profile[$type];
+        $isDefault = true;
+        Yii::app()->db->createCommand ("
+            insert into x2_settings (
+                `recordId`, `recordType`, `embeddedModelName`, `settings`, `isDefault`) values
+                (:recordId, :recordType, :embeddedModelName, :settings, :isDefault)
+        ")->execute (array (
+            ':recordId' => $recordId,
+            ':recordType' => $recordType,
+            ':embeddedModelName' => $embeddedModelName,
+            ':settings' => $settings,
+            ':isDefault' => $isDefault,
+        ));
+    };
+
+    $profiles = Yii::app()->db->createCommand ("
+        select * from x2_profile
+    ")->queryAll ();
+
+    foreach ($profiles as $profile) {
+        foreach (array (
+            'profileWidgetLayout', 
+            'recordViewWidgetLayout') as 
+            $layoutName) {
+
+            if (isset ($profile[$layoutName]))
+                $migrateIndividual ($profile, $layoutName);
+        }
     }
 
-    $objContext->widget('X2Chart', array (
-        'getChartDataActionName' => 'getEventsBetween',
-        'suppressChartSettings' => false,
-        'actionParams' => array (),
-        'metricTypes' => $usersArr,
-        'chartType' => 'usersChart',
-        'getDataOnPageLoad' => true,
-        'hideByDefault' => false,
-        'chartSubtype' => $chartSubtype
-    ));
+    Yii::app()->db->createCommand ("
+        ALTER TABLE `x2_profile` DROP COLUMN `profileWidgetLayout`;
+        ALTER TABLE `x2_profile` DROP COLUMN `recordViewWidgetLayout`;
+        ALTER TABLE `x2_profile` DROP COLUMN `dataWidgetLayout`;
+    ")->execute ();
+};
 
-}
+$migrateLayouts ();
 
-instantiateUsersChart ($usersDataProvider, $this, $chartSubtype);
+?>

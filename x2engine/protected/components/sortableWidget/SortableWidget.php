@@ -395,8 +395,8 @@ abstract class SortableWidget extends X2Widget {
             }
         }
 
-        $widgetUniqueName = $widgetClass;
-        $uniqueId = '';
+        $uniqueId = uniqid ();
+        $widgetUniqueName = $widgetClass.'_'.$uniqueId;
         while (true) {
             if (!isset ($layout[$widgetUniqueName])) {
                 break;
@@ -410,6 +410,7 @@ abstract class SortableWidget extends X2Widget {
                 'hidden' => false,
                 'minimized' => false,
             ), $widgetSettings);
+
         $profile->$widgetLayoutPropertyName = $layout;
 
         if ($profile->update ()) {

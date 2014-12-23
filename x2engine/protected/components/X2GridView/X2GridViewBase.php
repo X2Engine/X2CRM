@@ -982,6 +982,20 @@ Yii::app()->clientScript->registerScript(sprintf('%x', crc32(Yii::app()->name)),
                                 $lastChildClass)
                         );
                     break;
+                
+                case 'showHidden':
+                    if(Yii::app()->user->checkAccess($this->_moduleName.'Admin')){
+                        $url = array_merge(
+                            array(Yii::app()->controller->action->id),
+                            array('showHidden'=>1)
+                        );
+                        echo CHtml::link(
+                                '',$url,array('title'=>Yii::t('app','Show Hidden'),
+                                    'class'=>'fa fa-eye-slash fa-lg x2-button show-hidden-button'.$lastChildClass));
+                    }else{
+                        continue;
+                    }
+                    break;
                 default:
                     echo $button;
             }

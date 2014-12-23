@@ -202,7 +202,6 @@ class AdminController extends Controller {
             'GroupsController' => 'application.modules.groups.controllers.GroupsController',
             'MarketingController' => 
                 'application.modules.marketing.controllers.MarketingController',
-            'WeblistController' => 'application.modules.marketing.controllers.WeblistController',
             'MediaController' => 'application.modules.media.controllers.MediaController',
             'OpportunitiesController' => 
                 'application.modules.opportunities.controllers.OpportunitiesController',
@@ -1687,11 +1686,14 @@ class AdminController extends Controller {
 
     public function actionTwitterIntegration () {
         $credId = Yii::app()->settings->twitterCredentialsId;
+
         if ($credId && ($cred = Credentials::model ()->findByPk ($credId))) {
-            $this->redirect ('/profile/createUpdateCredentials?id='.$credId);
+            $params =  array ('id' => $credId);
         } else {
-            $this->redirect ('/profile/createUpdateCredentials?class=TwitterApp');
+            $params = array('class' => 'TwitterApp');
         }
+            $url = Yii::app()->createUrl('/profile/createUpdateCredentials', $params);
+            $this->redirect ($url);
     }
 
     /**

@@ -115,11 +115,9 @@ fixed header disabled for mobile layout (should eventually be made sticky)
   }
 }
 @media (max-width: 1040px) and (min-width: 658px) {
-  /* line 90, ../../../../compass/themes/x2engine/css/gridview/responsiveStyles.scss */
-  .x2-gridview-fixed-top-bar-outer div.x2grid-header-container, .x2-gridview-fixed-title + div.x2grid-header-container {
+  /*.x2-gridview-fixed-top-bar-outer div.x2grid-header-container, .x2-gridview-fixed-title + div.x2grid-header-container {
     margin-left: 5px;
-  }
-
+  }*/
   /* line 94, ../../../../compass/themes/x2engine/css/gridview/responsiveStyles.scss */
   .x2-gridview-fixed-top-bar-outer .x2-gridview-fixed-title, .x2-gridview-fixed-top-bar-outer .x2grid-header-container {
     margin: 0 -4px 0 5px;

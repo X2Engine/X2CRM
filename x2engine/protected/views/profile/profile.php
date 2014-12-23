@@ -133,7 +133,7 @@ $this->renderPartial('_activityFeed', array(
     'firstEventId' => $firstEventId,
     'lastTimestamp' => $lastTimestamp,
     'stickyDataProvider' => $stickyDataProvider,
-    'usersDataProvider' => $usersDataProvider,
+    'userModels' => $userModels,
     'isMyProfile' => $isMyProfile
 ));
 ?>

@@ -197,7 +197,7 @@
   /* IE10 */
   background-image: -o-linear-gradient(white, white);
   /* Opera 11.10  */
-  background-image: linear-gradient(#ffffff, #ffffff);
+  background-image: linear-gradient(white, white);
 }
 
 /* line 70, ../../../../../compass/protected/modules/mobile/assets/css/x2MobileTheme.scss */
@@ -216,7 +216,7 @@
   /* IE10 */
   background-image: -o-linear-gradient(white, white);
   /* Opera 11.10  */
-  background-image: linear-gradient(#ffffff, #ffffff);
+  background-image: linear-gradient(white, white);
   background-image: none;
   border-width: 0;
 }
@@ -246,7 +246,7 @@
 /* line 110, ../../../../../compass/protected/modules/mobile/assets/css/x2MobileTheme.scss */
 .ui-btn-up-a {
   border: 1px solid #145072;
-  background: #384f6e;
+  background: #384F6E;
   font-weight: bold;
   color: white;
   text-shadow: 0 -1px 1px #145072;
@@ -422,7 +422,7 @@
   /* IE10 */
   background-image: -o-linear-gradient(white, #f1f1f1);
   /* Opera 11.10  */
-  background-image: linear-gradient(#ffffff, #f1f1f1);
+  background-image: linear-gradient(white, #f1f1f1);
 }
 /* line 307, ../../../../../compass/protected/modules/mobile/assets/css/x2MobileTheme.scss */
 .ui-btn-up-b:visited, .ui-btn-up-b a.ui-link-inherit {
@@ -602,7 +602,7 @@
   /* IE10 */
   background-image: -o-linear-gradient(white, #f1f1f1);
   /* Opera 11.10  */
-  background-image: linear-gradient(#ffffff, #f1f1f1);
+  background-image: linear-gradient(white, #f1f1f1);
 }
 /* line 487, ../../../../../compass/protected/modules/mobile/assets/css/x2MobileTheme.scss */
 .ui-btn-up-c:visited, .ui-btn-up-c a.ui-link-inherit {

@@ -1,6 +1,3 @@
-@import url("profile.css");
-@import url("activityFeed.css");
-@import url("../../../js/multiselect/css/ui.multiselect.css");
 /*****************************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
@@ -38,3 +35,6 @@
 /*
 file used to fix IE8 max 31 css file references issue
 */
+@import url("profile.css");
+@import url("activityFeed.css");
+@import url("../../../js/multiselect/css/ui.multiselect.css");

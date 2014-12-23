@@ -41,9 +41,9 @@ Yii::app()->clientScript->registerScriptFile(
 Yii::app()->clientScript->registerScriptFile(
     $this->module->assetsUrl.'/js/DragAndDropViewManager.js', CClientScript::POS_END);
 Yii::app()->clientScript->registerScriptFile(
-    Yii::app()->request->baseUrl.'/js/QTipManager.js', CClientScript::POS_END);
+    Yii::app()->request->baseUrl.'/js/QtipManager.js', CClientScript::POS_END);
 Yii::app()->clientScript->registerScriptFile(
-    Yii::app()->request->baseUrl.'/js/X2GridViewQtipManager.js', CClientScript::POS_END);
+    Yii::app()->request->baseUrl.'/js/X2GridView/X2GridViewQtipManager.js', CClientScript::POS_END);
 
 $listItemColors = Workflow::getPipelineListItemColors ($colors, true);
 $listItemColorCss = '';

@@ -164,12 +164,6 @@ Fields.prototype.getSelectedAttribute = function(attrName,attributeList) {
     return attr;
 };
 Fields.prototype.updateAttrListItem = function(elem,attributeList) {
-    console.log ('elem = ');
-        console.log (elem);
-        console.log ('attributeList = ');
-            console.log (attributeList);
-
-
     var that = this;
     var attr = elem.find(".x2fields-attribute select").val();
     var selectedAttribute = {};
@@ -243,15 +237,22 @@ Fields.prototype.updateValueCell = function(elem) {
     } else {
         valueCell.fadeIn(222);
         // if(valueCell.closest("fieldset").data("multiple"))    // if this is a multiselect field, decide whether to allow multiple selections
-            valueCell.find("select").attr("multiple",(operator === 'list' || operator === 'notList'? "multiple" : null));
+        var multiple = (operator === 'list' || operator === 'notList'? "multiple" : null);
+        valueCell.find("select").attr("multiple", multiple);
+        var select$ = valueCell.find ('select');
+        var name = select$.attr ('name');
+        if (multiple) {
+            if (!name.match (/\[\]$/)) {
+                select$.attr ('name', name + '[]');
+            }
+        } else {
+            if (name.match (/\[\]$/)) {
+                select$.attr ('name', name.replace (/\[\]$/, ''));
+            }
+        }
     }
 };
 Fields.prototype.createInput = function(attributes, name) {
-    console.log ('createInput');
-    console.log ('attributes = ');
-        console.log (attributes);
-
-    auxlib.trace ();
     var that = this;
     var name = typeof name === 'undefined' ? attributes.name : name; 
     var dropdownOptions = attributes.options;

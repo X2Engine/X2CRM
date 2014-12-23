@@ -1,4 +1,5 @@
 <?php
+
 /*****************************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
@@ -34,6 +35,7 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 
+
 $attributeLabels = $model->attributeLabels();
 
 // $showSocialMedia = Yii::app()->params->profile->showSocialMedia;
@@ -43,7 +45,7 @@ $cs = Yii::app()->getClientScript();
 
 
 if ($modelName == 'contacts' || $modelName == 'opportunities') {
-    $cs->registerScript('toggleWorkflow', "
+$cs->registerScript('toggleWorkflow', "
     function showWorkflow() {
         $('tr#workflow-row').show();
         $('tr#workflow-toggle').hide();
@@ -52,7 +54,7 @@ if ($modelName == 'contacts' || $modelName == 'opportunities') {
         $('tr#workflow-row').hide();
         $('tr#workflow-toggle').show();
     }
-    ", CClientScript::POS_HEAD);
+", CClientScript::POS_HEAD);
 }
 
 // $(function() {\n"
@@ -152,11 +154,11 @@ if ($layoutData !== false && isset($layoutData['sections']) && count($layoutData
         if ($section['collapsible']) {
             $htmlString .=
                     '<a href="javascript:void(0)" class="formSectionHide">
-                    '.X2Html::fa('fa-caret-down').'
+                    ' . X2Html::fa('fa-caret-down') . '
                 </a>';
             $htmlString .=
                     '<a href="javascript:void(0)" class="formSectionShow">
-                    '.X2Html::fa('fa-caret-right').'
+                    ' . X2Html::fa('fa-caret-right') . '
                 </a>';
         }
         if (!empty($section['title'])) {
@@ -184,7 +186,8 @@ if ($layoutData !== false && isset($layoutData['sections']) && count($layoutData
                             foreach ($col['items'] as &$item) {
 
 
-                                if (isset($item['name'], $item['labelType'], $item['readOnly'], $item['height'], $item['width'])) {
+                                if (isset($item['name'], $item['labelType'], $item['readOnly'], 
+                                    $item['height'], $item['width'])) {
 
                                     $fieldName = preg_replace('/^formItem_/u', '', $item['name']);
                                     if (isset($fields[$fieldName])) {
@@ -211,7 +214,7 @@ if ($layoutData !== false && isset($layoutData['sections']) && count($layoutData
                                             case 'top':
                                             default: $labelClass = 'topLabel';
                                         }
-                                        $inlineEdit = $modelEdit && (!$field->readOnly && (!isset($fieldPermissions[$field->id]) || (isset($fieldPermissions[$field->id]) && $fieldPermissions[$field->id] === 2)));
+                                        $inlineEdit = $modelEdit && $scenario != 'Inline' && (!$field->readOnly && (!isset($fieldPermissions[$field->id]) || (isset($fieldPermissions[$field->id]) && $fieldPermissions[$field->id] === 2)));
                                         $htmlString .= "<div id=\"{$field->modelName}_{$field->fieldName}_field\"" .
                                                 " class=\"formItem $labelClass";
                                         if ($inlineEdit) {
@@ -224,28 +227,31 @@ if ($layoutData !== false && isset($layoutData['sections']) && count($layoutData
                                         $style = 'width:' . $item['width'] . 'px;';
                                         if ($field->type == 'text') {
                                             $class .= ' textBox';
-                                            $style .= 'height:' . $item['height'] . 'px;';
-                                        }
-
-                                        if ($field->type === 'text')
                                             $textFieldHeight = $item['height'] . 'px';
+                                            $style .= 'min-height:' . $textFieldHeight;
+                                        }
 
                                         $htmlString .= '<div class="' . $class . '" style="' . $style . '">';
                                         if ($inlineEdit) {
-                                            $htmlString .= '<span class="model-input" id="' . $field->modelName . '_' . $field->fieldName . '_field-input" style="display:none">' . $model->renderInput($field->fieldName, array(
+                                            $htmlString .=
+                                                    '<span class="model-input" 
+                                                  id="' . $field->modelName . '_' .
+                                                    $field->fieldName . '_field-input" 
+                                                  style="display:none">' .
+                                                    $model->renderInput($field->fieldName, array(
                                                         'tabindex' => isset($item['tabindex']) ?
                                                                 $item['tabindex'] : null,
                                                         'disabled' => $item['readOnly'] ?
                                                                 'disabled' : null,
-                                                        'style' => $field->type === 'text' ?
-                                                                'height: ' . $textFieldHeight : '',
                                                     )) . '</span>';
                                             if ($field->type === 'rating') {
                                                 $val = $model->$fieldName;
                                                 if (empty($model->$fieldName)) {
                                                     $val = 0;
                                                 }
-                                                Yii::app()->clientScript->registerScript('rating-' . $fieldName, 'ratingFields["' . $field->modelName . '[' . $field->fieldName . ']"] = ' . $val, CClientScript::POS_READY);
+                                                Yii::app()->clientScript->registerScript(
+                                                        'rating-' . $fieldName, 'x2.inlineEditing.ratingFields["' . $field->modelName . '[' . $field->fieldName . ']"] = ' .
+                                                        $val, CClientScript::POS_READY);
                                             }
                                         }
                                         $htmlString .= '<span class="model-attribute" id="' . $field->modelName . '_' . $field->fieldName . '_field-field">';
@@ -287,21 +293,27 @@ if ($layoutData !== false && isset($layoutData['sections']) && count($layoutData
     }
     echo '</div>';
 }
-Yii::app()->clientScript->registerScript('inline-edit-js', "
+if ($scenario != 'Inline') {
+    Yii::app()->clientScript->registerScript('inline-edit-js', "
+;(function () {
     var editFlag = false;
     var linkClick = false;
-    var ratingFields = {};
+    x2.inlineEditing = {};
+    x2.inlineEditing.ratingFields = {};
     $('.model-attribute').on('click', 'a', function(event) {
         linkClick = true;
     });
     $('.inline-edit').on('click', function() {
         if(!linkClick){
             editFlag = true;
+            var inputContainer$ = $('#' + $(this).attr('id') + '-input');
+            var input$ = inputContainer$.find (':input');
+            var field$ = $('#' + $(this).attr('id') + '-field');
             $('.inline-edit-button').show();
-            $('#' + $(this).attr('id') + '-input').height($('#' + $(this).attr('id') + '-field').height());
-            $('#' + $(this).attr('id') + '-input').show();
-            $('#' + $(this).attr('id') + '-field').hide();
-            $('#' + $(this).attr('id') + '-input input').focus();
+            inputContainer$.height(field$.height());
+            if (input$.is ('textarea')) input$.height(field$.height());
+            inputContainer$.show ();
+            field$.hide ();
         }
         linkClick = false;
     });
@@ -313,25 +325,31 @@ Yii::app()->clientScript->registerScript('inline-edit-js', "
         return false;
     });
     $('#inline-edit-save').on('click', function() {
-        attributes = {};
+        var attributes = {};
         $('.model-input input, .model-input select, .model-input textarea').each(function() {
             attributes[$(this).attr('name')] = $(this).val();
         });
-        $.each(ratingFields, function(index, value) {
+        $.each(x2.inlineEditing.ratingFields, function(index, value) {
             if (typeof value === 'undefined') {
                 attributes[index] = '';
             } else {
                 attributes[index] = value;
             }
         });
+        $('.model-input :checkbox').each(function(){
+            if($(this).is(':checked')){
+                attributes[$(this).attr('name')] = 1;
+            }else{
+                attributes[$(this).attr('name')] = 0;
+            }
+        });
         $('.inline-edit-button').hide();
-        
         $.ajax({
             url: yii.scriptUrl + '/site/ajaxSave',
             type: 'POST',
             data: {attributes: attributes, modelId: $model->id},
             success: function(data) {
-                results = $.parseJSON(data);
+                var results = $.parseJSON(data);
                 $.each(results, function(index, value) {
                     $('#' + index + '_field-field').html(value);
                     $('#' + index + '_field-field input[type=radio]').rating();
@@ -348,5 +366,8 @@ Yii::app()->clientScript->registerScript('inline-edit-js', "
         if (editFlag) {
             return 'There are unsaved changes on this page.';
         }
-    });", CClientScript::POS_END);
+    });
+}) ();
+", CClientScript::POS_END);
+}
 ?>

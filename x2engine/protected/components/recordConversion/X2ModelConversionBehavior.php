@@ -183,11 +183,11 @@ class X2ModelConversionBehavior extends CActiveRecordBehavior {
 
         $targetModel->setAttributes ($attributes, false);
 
-        // don't create antargetModel creation notification or event
+        // don't create a targetModel creation notification or event
         $targetModel->disableBehavior('changelog'); 
         if ($targetModel->save ()) {
-            $targetModel->mergeRelatedRecords ($this->owner, true, false, true);
-            $targetModel->mergeRelationships ($this->owner);
+            $targetModel->mergeRelatedRecords (
+                $this->owner, true, false, true, true, true, false);
             $changeLogBehavior = $this->owner->asa ('changelog');
             $changeLogBehavior->createEvent = false; // don't create a lead deletion event
             $this->owner->delete ();

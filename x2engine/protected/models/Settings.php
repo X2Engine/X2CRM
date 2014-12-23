@@ -34,31 +34,35 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 
- Yii::import ('application.components.sortableWidget.ChartWidget');
-
 /**
- * @package application.components
+ * Model class for Generic settings with structure defined in embedded model class
  */
-class EventsChartProfileWidget extends ChartWidget {
 
-    public $chartType = 'eventsChart';
+class Settings extends CActiveRecord {
 
-    public $viewFile = '_eventsChartWidget';
-
-    private static $_JSONPropertiesStructure;
-
-    public static function getJSONPropertiesStructure () {
-        if (!isset (self::$_JSONPropertiesStructure)) {
-            self::$_JSONPropertiesStructure = array_merge (
-                parent::getJSONPropertiesStructure (),
-                array (
-                    'label' => 'Events',
-                )
-            );
-        }
-        return self::$_JSONPropertiesStructure;
+    public function tableName () {
+        return 'x2_settings';
     }
 
-    public function getSettingsFormFields () {}
+    /**
+     * Returns the static model of the specified AR class.
+     * @return Profile the static model class
+     */
+    public static function model($className = __CLASS__){
+        return parent::model($className);
+    }
+
+	public function behaviors(){
+		return array(
+			'JSONEmbeddedModelFieldsBehavior' => array(
+				'class' => 'application.components.JSONEmbeddedModelFieldsBehavior',
+				'transformAttributes' => array ('settings'),
+				'templateAttr' => 'embeddedModelName',
+				'encryptedFlagAttr' => false,
+			),
+		);
+	}
+
 }
+
 ?>

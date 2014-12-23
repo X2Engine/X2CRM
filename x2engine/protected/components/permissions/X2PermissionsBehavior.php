@@ -123,11 +123,14 @@ class X2PermissionsBehavior extends ModelPermissionsBehavior {
      * Returns a CDbCriteria containing record-level access conditions.
      * @return CDbCriteria
      */
-    public function getAccessCriteria($tableAlias='t', $paramsNamespace='X2PermissionsBehavior'){
+    public function getAccessCriteria(
+        $tableAlias='t', $paramsNamespace='X2PermissionsBehavior', $showHidden = false){
+
         $criteria = new CDbCriteria;
         $criteria->alias = $tableAlias;
         $accessLevel = $this->getAccessLevel();
-        $conditions=$this->getAccessConditions($accessLevel, $tableAlias, $paramsNamespace);
+        $conditions=$this->getAccessConditions(
+            $accessLevel, $tableAlias, $paramsNamespace, $showHidden);
         foreach($conditions as $arr){
             $criteria->addCondition($arr['condition'],$arr['operator']);
             if(!empty($arr['params']))
@@ -254,24 +257,34 @@ class X2PermissionsBehavior extends ModelPermissionsBehavior {
      * @return String The SQL conditions
      */
     public function getAccessConditions(
-        $accessLevel, $tableAlias='t', $paramsNamespace='X2PermissionsBehavior'){
+        $accessLevel, $tableAlias='t', $paramsNamespace='X2PermissionsBehavior', $showHidden=false){
 
         $user = Yii::app()->getSuModel()->username;
         $userId = Yii::app()->getSuModel()->id;
         $assignmentAttr = $this->getAssignmentAttr();
         $visibilityAttr = $this->getVisibilityAttr();
         $ret = array();
+        $prefix = empty($tableAlias)?'':"$tableAlias.";
 
         switch($accessLevel){
             case self::QUERY_ALL:
                 // User can view everything
-                $ret[] = array('condition'=>'TRUE', 'operator'=>'AND','params'=>array());
+                if(!$assignmentAttr || !$visibilityAttr || $showHidden){
+                    $ret[] = array('condition'=>'TRUE', 'operator'=>'AND','params'=>array());
+                } else {
+                    $ret[] = array(
+                        'condition'=>
+                            "NOT (".$prefix."$visibilityAttr=".self::VISIBILITY_PRIVATE." AND "
+                            . $prefix."$assignmentAttr='Anyone')",
+                        'operator'=>'OR',
+                        'params'=>array());
+                }
                 break;
             case self::QUERY_PUBLIC:
                 // User can view any public (shared) record
                 if($visibilityAttr != false){
                     $ret[] = array(
-                        'condition' => $tableAlias.".$visibilityAttr=".self::VISIBILITY_PUBLIC,
+                        'condition' => $prefix."$visibilityAttr=".self::VISIBILITY_PUBLIC,
                         'operator' => 'OR',
                         'params' => array()
                     );
@@ -282,8 +295,8 @@ class X2PermissionsBehavior extends ModelPermissionsBehavior {
                 if(!empty($groupmatesRegex)){
                     $ret[] = array(
                         'condition' => 
-                            "(".$tableAlias.".$visibilityAttr=".self::VISIBILITY_GROUPS.' '.
-                            "AND ".$tableAlias.".$assignmentAttr 
+                            "(".$prefix."$visibilityAttr=".self::VISIBILITY_GROUPS.' '.
+                            "AND ".$prefix."$assignmentAttr 
                                 REGEXP BINARY :".$paramsNamespace."groupmatesRegex)",
                         'operator' => 'OR',
                         'params' => array(
@@ -308,7 +321,7 @@ class X2PermissionsBehavior extends ModelPermissionsBehavior {
                 $groupRegex = self::getGroupIdRegex();
                 if(!empty($groupRegex)){
                     $ret[] = array(
-                        'condition' => "(".$tableAlias.".$assignmentAttr REGEXP BINARY 
+                        'condition' => "(".$prefix."$assignmentAttr REGEXP BINARY 
                             :".$paramsNamespace."visibilityGroupIdRegex)",
                         'operator' => 'OR',
                         'params' => array(

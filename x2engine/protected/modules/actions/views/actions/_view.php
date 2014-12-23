@@ -170,7 +170,7 @@ if(empty($data->type) || $data->type == 'weblead'){
                     'ActionsComplete',array('assignedTo'=>$data->assignedTo))){
 
                     echo CHtml::link(
-                        X2Html::fa('fa-check-square-o'), 
+                        X2Html::fa('fa-check-circle'), 
                         '#', array(
                             'class' => 'complete-button', 
                             'title' => Yii::t('app', 'complete'),
@@ -267,8 +267,8 @@ if($type == 'attachment' && $data->completedBy != 'Email') {
     </div>
     <div class="footer">
         <?php
-        if(isset($relationshipFlag) && $relationshipFlag){
-            $relString=" | ".X2Model::getModelLink($data->associationId,X2Model::getModelName($data->associationType));
+        if(isset($relationshipFlag) && $relationshipFlag && $data->associationId !== 0 && X2Model::getModelName($data->associationType) !== false){
+            $relString=" | ".X2Model::getModelLink($data->associationId, X2Model::getModelName($data->associationType));
         }else{
             $relString="";
         }

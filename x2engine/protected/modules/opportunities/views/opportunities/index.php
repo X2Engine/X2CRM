@@ -70,7 +70,7 @@ $this->widget('X2GridView', array(
     'title'=>Yii::t('opportunities','{opportunities}', array(
         '{opportunities}'=>Modules::displayName(),
     )),
-	'buttons'=>array('advancedSearch','clearFilters','columnSelector','autoResize'),
+	'buttons'=>array('advancedSearch','clearFilters','columnSelector','autoResize','showHidden'),
 	'template'=>
         '<div id="x2-gridview-top-bar-outer" class="x2-gridview-fixed-top-bar-outer">'.
         '<div id="x2-gridview-top-bar-inner" class="x2-gridview-fixed-top-bar-inner">'.

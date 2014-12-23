@@ -201,12 +201,12 @@
 /* Font Awesome uses the Unicode Private Use Area (PUA) to ensure screen
      readers do not read off random characters that represent icons */
 /* line 772, ../../../../compass/css/lib/_font-awesome.scss */
-.grid-view table.items th.asc a:after {
+.grid-view table.items th.desc a:after {
   content: "\f0d7";
 }
 
 /* line 775, ../../../../compass/css/lib/_font-awesome.scss */
-.grid-view table.items th.desc a:after {
+.grid-view table.items th.asc a:after {
   content: "\f0d8";
 }
 

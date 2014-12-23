@@ -1,3 +1,4 @@
+<?php
 /*****************************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
@@ -33,7 +34,12 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 
-INSERT INTO `x2_modules`
-(`name`, title, visible, menuPosition, searchable, editable, adminOnly, custom, toggleable)
-VALUES
-("charts", "Charts", 1, 14, 0, 0, 0, 0, 0);
+/**
+ * Manages record view widget settings
+ */
+
+class RecordViewWidgetLayout extends WidgetLayout {
+    protected $alias = 'application.components.sortableWidget.recordViewWidgets';
+}
+
+?>

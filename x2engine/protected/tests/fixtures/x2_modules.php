@@ -169,19 +169,7 @@ return array(
         'custom' => '0',
         'itemName' => NULL,
     ),
-    'reports' => array (
-        'id' => '14',
-        'name' => 'reports',
-        'title' => 'Reports',
-        'visible' => '1',
-        'menuPosition' => '13',
-        'searchable' => '0',
-        'toggleable' => '0',
-        'adminOnly' => '0',
-        'editable' => '0',
-        'custom' => '0',
-        'itemName' => NULL,
-    ),
+     
     'workflow' => array (
         'id' => '15',
         'name' => 'workflow',
@@ -195,19 +183,7 @@ return array(
         'custom' => '0',
         'itemName' => NULL,
     ),
-    'charts' => array (
-        'id' => '16',
-        'name' => 'charts',
-        'title' => 'Charts',
-        'visible' => '1',
-        'menuPosition' => '14',
-        'searchable' => '0',
-        'toggleable' => '0',
-        'adminOnly' => '0',
-        'editable' => '0',
-        'custom' => '0',
-        'itemName' => NULL,
-    ),
+     
     'services' => array (
         'id' => '17',
         'name' => 'services',
@@ -234,19 +210,7 @@ return array(
         'custom' => '0',
         'itemName' => 'Bug Report',
     ),
-    'emailInboxes' => array (
-        'id' => '19',
-        'name' => 'emailInboxes',
-        'title' => 'Email Manager',
-        'visible' => '1',
-        'menuPosition' => '18',
-        'searchable' => '1',
-        'toggleable' => '0',
-        'adminOnly' => '0',
-        'editable' => '1',
-        'custom' => '0',
-        'itemName' => NULL,
-    ),
+     
     'x2activity' => array (
         'id' => '20',
         'name' => 'x2Activity',

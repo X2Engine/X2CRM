@@ -68,10 +68,14 @@ X2ModelConversionWidget.prototype = auxlib.create (x2.Widget.prototype);
  */
 X2ModelConversionWidget.prototype._convert = function () {
     var that = this;
+    var pathname = window.location.href; 
+
+    pathname = pathname.replace('/id/'+this.modelId, '/');
+    pathname = pathname.replace('/'+this.modelId, '/');
 
     // no incompatibilities present. convert the lead
     if (!this.conversionIncompatibilityWarnings.length) {
-        window.location = 'convert?id=' + this.modelId + '&targetClass=' + this.targetClass;
+        window.location = pathname + 'convert?id=' + this.modelId + '&targetClass=' + this.targetClass;
         return false;
     }
 
@@ -87,7 +91,7 @@ X2ModelConversionWidget.prototype._convert = function () {
                 {
                     text: this.translations.convertAnyway,
                     click: function () {
-                        window.location = 'convert?force=1&id=' + that.modelId + '&' +
+                        window.location = pathname + 'convert?force=1&id=' + that.modelId + '&' +
                             'targetClass=' + that.targetClass;
                     }
                 },

@@ -1,18 +1,3 @@
-@import url("screen.css");
-@import url("auxlib.css");
-@import url("jquery-ui.css");
-@import url("dragtable.css");
-@import url("main.css");
-@import url("ui-elements.css");
-@import url("layout.css");
-@import url("details.css");
-@import url("x2forms.css");
-@import url("form.css");
-@import url("publisher.css");
-@import url("../../../js/bgrins-spectrum-2c2010c/spectrum.css");
-@import url("../../../js/qtip/jquery.qtip.min.css");
-@import url("../../../js/checklistDropdown/jquery.multiselect.css");
-@import url("rating/jquery.rating.css");
 /*****************************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
@@ -50,4 +35,19 @@
 /*
 file used to fix IE8 max 31 css file references issue
 */
+@import url("screen.css");
+@import url("auxlib.css");
+@import url("jquery-ui.css");
+@import url("dragtable.css");
+@import url("main.css");
+@import url("ui-elements.css");
+@import url("layout.css");
+@import url("details.css");
+@import url("x2forms.css");
+@import url("form.css");
+@import url("publisher.css");
+@import url("../../../js/bgrins-spectrum-2c2010c/spectrum.css");
+@import url("../../../js/qtip/jquery.qtip.min.css");
+@import url("../../../js/checklistDropdown/jquery.multiselect.css");
 /*@import url("bootstrap/bootstrap.css");*/
+@import url("rating/jquery.rating.css");

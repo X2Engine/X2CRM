@@ -38,4 +38,4 @@ CREATE TABLE x2_role_to_workflow(
 INSERT INTO `x2_modules`
 (`name`, title, visible, menuPosition, searchable, editable, adminOnly, custom, toggleable)
 VALUES
-("workflow", "Process", 1, 10, 0, 0, 0, 0, 0);
+("workflow", "Process", 1, 11, 0, 0, 0, 0, 0);

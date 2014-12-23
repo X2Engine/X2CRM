@@ -34,27 +34,12 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 
-Yii::import('application.components.util.ArrayUtil');
-Yii::import('application.components.sortableWidget.*');
-Yii::import('application.components.sortableWidget.dataWidgets.*');
+abstract class WidgetLayout extends JSONEmbeddedModel {
 
-/**
- * Allows nested JSON structures with default values to be declared. The JSON structures must be 
- * specified as the property of some class. To use this class, the structure of the
- * transformAttributes field of the behavior configuration array should looks as follows:
- *
- *  'transformAttributes' => array (
- *     <widget layout name> => array (
- *          <widget class name>
- *      )
- *  )
- * 
- * The class called <widget class name> must have a static method called 
- * getJSONPropertiesStructure () which returns the structure of the JSON field.
- * 
- * @package application.components
- */
-class WidgetLayoutJSONFieldsBehavior extends NormalizedJSONFieldsBehavior {
+    /**
+     * @var string $alias
+     */
+    protected $alias; 
 
 	protected $_fields;
 
@@ -94,49 +79,44 @@ class WidgetLayoutJSONFieldsBehavior extends NormalizedJSONFieldsBehavior {
 
 	/**
 	 * Returns an array defining the expected structure of the JSON-bearing
-	 * attribute specified by $name.
-	 *
-	 * @param $name
-	 * @return type
+	 * attribute 
+	 * @return array
 	 */
-	public function fields($name) {
+	public function fields() {
 		if(!isset($this->_fields)) {
 			$this->_fields = array();
-			foreach($this->transformAttributes as $attr => $alias) {
-                $this->_fields[$attr] = array ();
 
-                // get expected fields from contents of widget directory
-                $widgetClasses = array_map (function ($file) {
-                    return preg_replace ('/\.php$/', '', $file);
-                }, array_filter (scandir(Yii::getPathOfAlias($alias)), function ($file) {
-                    return preg_match ('/\.php$/', $file);
-                }));
+            // get expected fields from contents of widget directory
+            $widgetClasses = array_map (function ($file) {
+                return preg_replace ('/\.php$/', '', $file);
+            }, array_filter (scandir(Yii::getPathOfAlias($this->alias)), function ($file) {
+                return preg_match ('/\.php$/', $file);
+            }));
 
-                $ordered = array ();
+            $ordered = array ();
 
-                // get JSON structure from widget class property
-                $unordered = array ();
-			    foreach($widgetClasses as $widgetName) {
-                    if (method_exists ($widgetName, 'getJSONPropertiesStructure')) {
-                        $unordered[$widgetName] = 
-                            $widgetName::getJSONPropertiesStructure ();
-                        if ($widgetName::$position !== null) {
-                            $ordered[$widgetName] = $widgetName::$position;
-                        }
-                    } 
-                }
-                asort ($ordered);
-                $orderedFields = array ();
-                foreach ($ordered as $widgetName => $position) {
-                    $orderedFields[$widgetName] = $unordered[$widgetName];
-                }
-                foreach (array_diff ($widgetClasses, array_keys ($ordered)) as $widgetName) {
-                    $orderedFields[$widgetName] = $unordered[$widgetName];
-                }
-                $this->_fields[$attr] = $orderedFields;
+            // get JSON structure from widget class property
+            $unordered = array ();
+            foreach($widgetClasses as $widgetName) {
+                if (method_exists ($widgetName, 'getJSONPropertiesStructure')) {
+                    $unordered[$widgetName] = 
+                        $widgetName::getJSONPropertiesStructure ();
+                    if ($widgetName::$position !== null) {
+                        $ordered[$widgetName] = $widgetName::$position;
+                    }
+                } 
             }
+            asort ($ordered);
+            $orderedFields = array ();
+            foreach ($ordered as $widgetName => $position) {
+                $orderedFields[$widgetName] = $unordered[$widgetName];
+            }
+            foreach (array_diff ($widgetClasses, array_keys ($ordered)) as $widgetName) {
+                $orderedFields[$widgetName] = $unordered[$widgetName];
+            }
+            $this->_fields = $orderedFields;
 		}
-		return $this->_fields[$name];
+		return $this->_fields;
 	}
 
     /**
@@ -151,39 +131,32 @@ class WidgetLayoutJSONFieldsBehavior extends NormalizedJSONFieldsBehavior {
     }
 
 	/**
-	 * Normalizes the attribute array to the structure defined in {@link fields}
-	 * and then JSON-encodes it to prepare it for saving. Unlike in NormalizedJSONFieldsBehavior, 
-     * array normalization is performed recursively on array elements.
-     *
-	 * @param type $name
-	 * @return type
+     * Normalize attribute to properties array structures defined in widget classes
+	 * @return string
 	 */
-	public function packAttribute($name){
-		$fields = $this->fields($name);
-		$attribute = $this->getOwner()->$name;
-        $attribute = is_array ($attribute) ? 
-		    $this->normalizeToWidgetJSONPropertiesStructures ($fields, $attribute) : $fields; 
+    private $_attributes = null;
+	public function setAttributes ($values, $safeOnly=true){
+		$fields = $this->fields();
+        $attribute = is_array ($values) ? 
+		    $this->normalizeToWidgetJSONPropertiesStructures ($fields, $values) : $fields; 
         $this->removeExcludedFields ($attribute);
-		return CJSON::encode ($attribute);
+        $this->_attributes = $attribute;
 	}
 
 	/**
-	 * JSON-decodes the value stored in the database column for the attribute,
-	 * and then normalizes it to the structure defined in {@link fields}
-	 * Unlike in NormalizedJSONFieldsBehavior, array normalization is performed recursively on 
-     * array elements.
-     *
-	 * @param string $name The attribute to be unpacked
-	 * @return type
+     * Normalize attribute to properties array structures defined in widget classes
+	 * @return $attribute
 	 */
-	public function unpackAttribute($name){
-		$fields = $this->fields($name);
-		$attribute = CJSON::decode ($this->getOwner()->$name);
+    public function getAttributes ($names=null) {
+		$fields = $this->fields();
+        $exoAttr = $this->exoAttr;
+		$attribute = $this->_attributes;
         $attribute = is_array ($attribute) ? 
 		    $this->normalizeToWidgetJSONPropertiesStructures ($fields, $attribute) : $fields; 
         $this->removeExcludedFields ($attribute);
 		return $attribute;
-	}
+    }
+
 }
 
 ?>

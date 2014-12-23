@@ -144,18 +144,46 @@ class Profile extends CActiveRecord {
                 ),
                 'maintainCurrentFieldsOrder' => true
             ),
-            'WidgetLayoutJSONFieldsBehavior' => array(
-                'class' => 'application.components.WidgetLayoutJSONFieldsBehavior',
-                'transformAttributes' => array (
-                    'profileWidgetLayout' => SortableWidget::PROFILE_WIDGET_PATH_ALIAS,
-                    'recordViewWidgetLayout' => SortableWidget::RECORD_VIEW_WIDGET_PATH_ALIAS,
-                     
-                )
-            ),
             'X2SmartSearchModelBehavior' => array (
                 'class' => 'application.components.X2SmartSearchModelBehavior',
             )
         );
+    }
+
+    /**
+     * Save default layouts 
+     */
+    protected function afterSave () {
+        parent::afterSave ();
+        if ($this->_profileWidgetLayout) $this->_profileWidgetLayout->save ();
+        if ($this->_recordViewWidgetLayout) $this->_recordViewWidgetLayout->save ();
+         
+    }
+
+    private $_profileWidgetLayout; 
+    public function getProfileWidgetLayout () {
+        if (!isset ($this->_profileWidgetLayout)) {
+            $this->_profileWidgetLayout = $this->getWidgetLayout ('ProfileWidgetLayout');
+        }
+        return $this->_profileWidgetLayout->settings->attributes;
+    }
+
+    public function setProfileWidgetLayout ($layout) {
+        $this->_profileWidgetLayout->settings->attributes = $layout;
+    }
+
+     
+
+    private $_recordViewWidgetLayout; 
+    public function getRecordViewWidgetLayout () {
+        if (!isset ($this->_recordViewWidgetLayout)) {
+            $this->_recordViewWidgetLayout = $this->getWidgetLayout ('RecordViewWidgetLayout');
+        }
+        return $this->_recordViewWidgetLayout->settings->attributes;
+    }
+
+    public function setRecordViewWidgetLayout ($layout) {
+        $this->_recordViewWidgetLayout->settings->attributes = $layout;
     }
 
 
@@ -1294,6 +1322,26 @@ class Profile extends CActiveRecord {
      */
     public function getGuestProfile () {
         return $this->findByAttributes (array ('username' => self::GUEST_PROFILE_USERNAME)); 
+    }
+
+    /**
+     * @param string $name name of settings class
+     * @return Settings 
+     */
+    private function getWidgetLayout ($name) {
+        $attributes = array ( 
+            'recordType' => 'Profile',
+            'recordId' => $this->id,
+            'isDefault' => 1,
+            'embeddedModelName' => $name,
+        );
+        $model = Settings::model ()->findByAttributes ($attributes);
+        if (!$model) {
+            $model = new Settings;
+            $model->setAttributes ($attributes, false);
+            $model->unpackAll ();
+        }
+        return $model;
     }
 
 }

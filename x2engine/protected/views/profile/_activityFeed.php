@@ -295,7 +295,7 @@ $this->widget('zii.widgets.CListView', array(
         <?php echo Yii::t('app', 'Select a group of users to send this event to via email or notification.'); ?>
     </div>
     <select id='broadcast-dialog-user-select' class='multiselect' multiple='multiple' size='6'>
-        <?php foreach ($usersDataProvider->data as $user) { ?>
+        <?php foreach ($userModels as $user) { ?>
         <option value="<?php echo $user->id; ?>"> <?php echo $user->firstName . ' ' . $user->lastName; ?> </option>
         <?php } ?>
     </select>

@@ -113,15 +113,18 @@ class JSONEmbeddedModelFieldsBehavior extends EncryptedFieldsBehavior {
      * Returns the model object for the named attribute
      *
      * Instantiates a new model for the field and saves it in a "cache" of
-     * embedded models  for the active record object if necessary.
+     * embedded models for the active record object if necessary.
      * @param type $name The name of the attribute.
      * @return JSONEmbeddedModel
      */
     public function attributeModel($name,$attributes=null){
-        if(!(array_key_exists($name, $this->attrModels) && ($this->getOwner()->$name instanceof JSONEmbeddedModel))){
+        if(!(array_key_exists($name, $this->attrModels) && 
+             ($this->getOwner()->$name instanceof JSONEmbeddedModel))){
+
             $owner = $this->getOwner();
             // Resolve embedded model's class for this attribute.
-            if(array_key_exists($name, $this->fixedModelFields)){ // Assume a predefined, hard-coded model class to use.
+            if(array_key_exists($name, $this->fixedModelFields)){ 
+                // Assume a predefined, hard-coded model class to use.
                 $embeddedModelClass = $this->fixedModelFields[$name];
             }else{ // Get the model class from another attribute.
                 if(is_array($this->templateAttr)) {
@@ -130,12 +133,18 @@ class JSONEmbeddedModelFieldsBehavior extends EncryptedFieldsBehavior {
                     if(array_key_exists($name,$this->templateAttr)) {
                         $templateAttr = $this->templateAttr[$name];
                     } else {
-                        throw new CException(Yii::t('app','No field for {class} specifying the embedded model class of its attribute {attribute} has been specified in the configuration of JSONEmbeddedModelFieldsBehavior.',array('{class}'=>get_class($owner),'{attribute}'=>$name)));
+                        throw new CException(
+                            Yii::t('app','No field for {class} specifying the embedded model '.
+                            'class of its attribute {attribute} has been specified in the '.
+                            'configuration of JSONEmbeddedModelFieldsBehavior.',
+                            array('{class}'=>get_class($owner),'{attribute}'=>$name)));
                     }
                 } else {
-                    // There is one attribute that specifies the model class for all fields containing embedded models:
+                    // There is one attribute that specifies the model class for all fields 
+                    // containing embedded models:
                     $templateAttr = $this->templateAttr;
                 }
+
                 $embeddedModelClass = $owner->$templateAttr;
             }
 
@@ -144,15 +153,19 @@ class JSONEmbeddedModelFieldsBehavior extends EncryptedFieldsBehavior {
                 $embeddedModel = $this->attrModels[$name];
             } else {
                 // Create a new model
+
                 $embeddedModel = new $embeddedModelClass;
                 $embeddedModel->exoAttr = $name;
                 $embeddedModel->exoModel = $owner;
                 // Copy the reference into the "cache" array of models:
                 $this->attrModels[$name] = $embeddedModel;
             }
-            if(is_array($attributes)) { // Set attributes of the new model to those specified:
+            if(is_array($attributes)) { 
+                // Set attributes of the new model to those specified:
                 $embeddedModel->attributes = $attributes;
-            } else if(is_array($owner->$name)) { // Set attributes of the new model to those existing already and stored in the model:
+            } else if(is_array($owner->$name)) { 
+                // Set attributes of the new model to those existing already and stored in the 
+                // model:
                 $embeddedModel->attributes = $owner->$name;
             }
             return $embeddedModel;
@@ -170,7 +183,12 @@ class JSONEmbeddedModelFieldsBehavior extends EncryptedFieldsBehavior {
             $embeddedModel = $this->instantiateField($name);
             $embeddedModel->validate();
             if($embeddedModel->hasErrors()) {
-                $owner->addError($name,Yii::t('app','Errors encountered in {attribute}',array('{attribute}'=>$owner->getAttributeLabel($name))));
+                $owner->addError(
+                    $name,
+                    Yii::t(
+                        'app','Errors encountered in {attribute}',
+                        array('{attribute}'=>$owner->getAttributeLabel($name))
+                    ));
             }
         }
         parent::beforeValidate($event);
@@ -217,7 +235,8 @@ class JSONEmbeddedModelFieldsBehavior extends EncryptedFieldsBehavior {
      */
     public function packAttribute($name) {
         $encoded = CJSON::encode($this->attributeModel($name)->attributes);
-        return self::$encrypt && (bool) $this->encryptedFlagAttr ? parent::$encryption->encrypt($encoded) : $encoded;
+        return self::$encrypt && (bool) 
+            $this->encryptedFlagAttr ? parent::$encryption->encrypt($encoded) : $encoded;
     }
 
     /**
@@ -231,10 +250,13 @@ class JSONEmbeddedModelFieldsBehavior extends EncryptedFieldsBehavior {
         // First, fetch and decode the existing value
         $owner = $this->getOwner();
         $encryptedFlagAttr = $this->encryptedFlagAttr;
-        if($encryptedFlagAttr && self::$encrypt)
-            $attributes = CJSON::decode($owner->$encryptedFlagAttr ? parent::$encryption->decrypt($owner->$name) : $owner->$name);
-        else
+        if($encryptedFlagAttr && self::$encrypt) {
+            $attributes = CJSON::decode(
+                $owner->$encryptedFlagAttr ? 
+                    parent::$encryption->decrypt($owner->$name) : $owner->$name);
+        } else {
             $attributes = CJSON::decode($owner->$name);
+        }
         // Now the values can be loaded into the model:
         return $this->attributeModel($name,$attributes);
     }

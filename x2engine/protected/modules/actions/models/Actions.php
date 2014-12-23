@@ -361,7 +361,11 @@ class Actions extends X2Model {
     }
 
     public function requiredAssoc($attribute, $params = array()){
-        // all action types but events require this attribute
+        // all action types but events and empty require this attribute
+        if(!$this->type) {
+            return !$this->hasErrors();
+        }
+
         if($this->associationType !== self::ASSOCIATION_TYPE_MULTI &&
            (gettype ($this->type) !== 'string' || !preg_match ('/^event/', $this->type))) {
 

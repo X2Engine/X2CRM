@@ -71,7 +71,7 @@ $order = preg_replace('/\.desc$/', ' DESC', $order);
 
 // ensure that order attribute is valid
 $orderAttr = preg_replace ('/ DESC$/', '', $order);
-if (!Contacts::model ()->hasAttribute (trim ($orderAttr))) {
+if (!is_string ($orderAttr) || !Contacts::model ()->hasAttribute (trim ($orderAttr))) {
     $order = '';
 }
 

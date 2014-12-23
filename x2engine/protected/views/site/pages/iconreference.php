@@ -149,7 +149,7 @@ Yii::app()->clientScript->registerCss('icon-reference-css', $cssString);
                 <?php echo "<img src='" . Yii::app()->request->baseUrl.'/themes/x2engine/images/charts.png' . "'/>"; ?>
             </div>
             <div class="icon-description">
-                <p> <?php echo CHtml::link (Yii::t('app', 'Charts'), array ('/charts/charts/index')); ?> </p>
+                <p> <?php echo CHtml::link (Yii::t('app', 'Charts'), array ('/reports/chartDashboard')); ?> </p>
             </div>
         </div>
         <div class="row">

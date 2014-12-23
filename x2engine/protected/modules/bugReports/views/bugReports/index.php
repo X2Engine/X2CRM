@@ -68,7 +68,7 @@ $('.search-form form').submit(function(){
 $this->widget('X2GridView', array(
 	'id'=>'bugReports-grid',
 	'title'=>$moduleConfig['title'],
-	'buttons'=>array('advancedSearch','clearFilters','columnSelector','autoResize'),
+	'buttons'=>array('advancedSearch','clearFilters','columnSelector','autoResize','showHidden'),
 	'template'=> '<div class="page-title">{title}{buttons}{filterHint}{summary}</div>{items}{pager}',
 	'dataProvider'=>$model->searchWithStatusFilter(),
 	// 'enableSorting'=>false,

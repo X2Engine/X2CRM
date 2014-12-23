@@ -461,14 +461,14 @@ SortableWidget.prototype._setUpResizeBehavior = function () {
             Make the handle bigger to prevent iframe from triggeing mouseleave event.
             Also prevents widget controls from being hidden during resize.
             */
-            resizeHandle.css ({ 
+            that.resizeHandle.css ({ 
                 'height': '1000px',
                 'position': 'relative',
                 'top' : '-500px'
             });
         },
         stop: function () {
-            resizeHandle.css ({
+            that.resizeHandle.css ({
                 'height': '',
                 'position': '',
                 'top': '',
@@ -477,7 +477,7 @@ SortableWidget.prototype._setUpResizeBehavior = function () {
         },
         resize: function () { that._resizeEvent (); }
     });
-    var resizeHandle = that.contentContainer.find ('.ui-resizable-handle');
+    this.resizeHandle = that.contentContainer.find ('.ui-resizable-handle');
 };
 
 SortableWidget.prototype._resizeEvent = function () {};

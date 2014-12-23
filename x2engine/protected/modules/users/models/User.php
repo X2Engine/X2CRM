@@ -123,6 +123,7 @@ class User extends CActiveRecord {
             array('lastUpdated', 'length', 'max' => 30),
             array('userKey', 'length', 'max' => 32, 'min' => 3),
             array('backgroundInfo', 'safe'),
+            array('status', 'validateUserDisable'),
             array('username','in','not'=>true,'range'=>array('Guest','Anyone',Profile::GUEST_PROFILE_USERNAME),'message'=>Yii::t('users','The specified username is reserved for system usage.')),
             array('username', 'unique', 'allowEmpty' => false),
             array('userAlias', 'unique', 'allowEmpty' => false),
@@ -152,6 +153,15 @@ class User extends CActiveRecord {
         // class name for the relations automatically generated below.
         return array(
             'profile' => array(self::HAS_ONE, 'Profile', 'id'),
+        );
+    }
+
+    public function scopes () {
+        return array (
+            'active' => array (
+                'condition' => 'status=1',
+                'order' => 'lastName ASC',
+            ),
         );
     }
 
@@ -279,11 +289,11 @@ class User extends CActiveRecord {
 
     public static function getUsersDataProvider () {
         $usersDataProvider = new CActiveDataProvider('User', array(
-                    'criteria' => array(
-                        'condition' => 'status=1',
-                        'order' => 'lastName ASC'
-                    )
-                ));
+            'criteria' => array(
+                'condition' => 'status=1',
+                'order' => 'lastName ASC'
+            )
+        ));
         return $usersDataProvider;
     }
 
@@ -702,6 +712,16 @@ class User extends CActiveRecord {
             $this->showCalendars = CJSON::encode($showCalendars);
 
             $this->update();
+        }
+    }
+
+    /**
+     * Custom validation rule to ensure the primary admin account cannot be disabled
+     */
+    public function validateUserDisable() {
+        if ($this->status === '0' && $this->id == X2_PRIMARY_ADMIN_ID) {
+            $this->addError ('status', Yii::t('users',
+                'The primary admin account cannot be disabled'));
         }
     }
 }

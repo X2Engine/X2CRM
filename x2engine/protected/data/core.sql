@@ -357,9 +357,6 @@ CREATE TABLE x2_profile(
 	activityFeedOrder       TINYINT         DEFAULT 0,
     theme                   TEXT,
     showActions				VARCHAR(20),
-    profileWidgetLayout     TEXT,
-    recordViewWidgetLayout  TEXT,
-    dataWidgetLayout	    TEXT,
     miscLayoutSettings      TEXT,
     notificationSound       VARCHAR(100)    NULL DEFAULT "X2_Notification.mp3",
     loginSound              VARCHAR(100)    NULL DEFAULT "",
@@ -398,6 +395,18 @@ CREATE TABLE x2_profile(
 	leadRoutingAvailability	TINYINT			DEFAULT 1,
 	UNIQUE(username, emailAddress),
 	INDEX (username)
+) COLLATE = utf8_general_ci;
+/*&*/
+DROP TABLE IF EXISTS x2_settings;
+/*&*/
+CREATE TABLE x2_settings (
+	id						INT				NOT NULL AUTO_INCREMENT PRIMARY KEY,
+	recordId				INT             NOT NULL,
+	recordType              VARCHAR(31)     NOT NULL,
+	name                    VARCHAR(255),
+	embeddedModelName       VARCHAR(31),
+	settings                TEXT,
+	isDefault               TINYINT
 ) COLLATE = utf8_general_ci;
 /*&*/
 DROP TABLE IF EXISTS x2_relationships;

@@ -396,7 +396,7 @@ div.portlet-minimize a {
   opacity: 0.6;
 }
 
-/* line 252, ../../../compass/themes/x2engine/css/main.scss */
+/* line 249, ../../../compass/themes/x2engine/css/main.scss */
 div.portlet-minimize .expand-widget,
 .portlet-close-button,
 .activity-control-link,
@@ -1132,7 +1132,7 @@ div.img-box.feed {
   width: 16px;
 }
 
-/* line 903, ../../../compass/themes/x2engine/css/main.scss */
+/* line 902, ../../../compass/themes/x2engine/css/main.scss */
 div.loading-icon {
   background: url(../images/loading.gif) no-repeat;
   height: 32px;

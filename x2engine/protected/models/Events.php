@@ -88,8 +88,15 @@ class Events extends CActiveRecord {
                 case 'Product':
                     $model .= 's'; break;
             }
+            $requestedModel = $model;
             $model = Modules::displayName(false, ucfirst($model));
             $model = strtolower($model);
+            if (empty($model)) {
+                // If the model type couldn't be resolved, check for special cases
+                // of models without a dedicated module
+                if ($requestedModel === 'AnonContact')
+                    $model = 'anonymous contact';
+            }
         }
         return Yii::t('app', $model);
     }

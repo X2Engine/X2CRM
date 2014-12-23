@@ -67,7 +67,6 @@ class EncryptedFieldsBehavior extends TransformedFieldStorageBehavior {
 	 */
 	public $checkObject = true;
 
-
 	/**
 	 * Creates a new encryption utility object for use with this behavior.
 	 * @param type $keyFile
@@ -90,8 +89,10 @@ class EncryptedFieldsBehavior extends TransformedFieldStorageBehavior {
 	 * @throws Exception 
 	 */
     public function attach($owner){
-		if(!isset(self::$encryption) && $this->checkObject)
-			throw new Exception('Cannot use '.__CLASS__.'; encryption utility object has not been instantiated.');
+		if(!isset(self::$encryption) && $this->checkObject) {
+			throw new Exception(
+                'Cannot use '.__CLASS__.'; encryption utility object has not been instantiated.');
+        }
         parent::attach($owner);
 	}
 	/**
@@ -100,7 +101,8 @@ class EncryptedFieldsBehavior extends TransformedFieldStorageBehavior {
 	 * @return string
 	 */
 	public function packAttribute($name){
-		return self::$encrypt ? self::$encryption->encrypt($this->getOwner()->$name) : $this->getOwner()->$name;
+		return self::$encrypt ? 
+            self::$encryption->encrypt($this->getOwner()->$name) : $this->getOwner()->$name;
 	}
 
 	/**
@@ -109,10 +111,12 @@ class EncryptedFieldsBehavior extends TransformedFieldStorageBehavior {
 	 * @return string
 	 */
 	public function unpackAttribute($name){
-		if($this->getOwner()->$name)
-			return self::$encrypt ? self::$encryption->decrypt($this->getOwner()->$name) : $this->getOwner()->$name;
-		else
+		if($this->getOwner()->$name) {
+			return self::$encrypt ? 
+                self::$encryption->decrypt($this->getOwner()->$name) : $this->getOwner()->$name;
+		} else {
 			return null;
+        }
 	}
 }
 

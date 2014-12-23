@@ -88,7 +88,7 @@ class QuoteProduct extends CActiveRecord {
 		if($attr == 'adjustment' && $percentage) {
 			return $value.'%';
 		} else if($attr == 'price' || $attr == 'adjustment' || $attr == 'total') {
-			return Yii::app()->locale->numberFormatter->formatCurrency($value,$this->currency);
+            return $this->formatCurrency ($value);
 		} else {
 			return $value;
 		}
@@ -103,5 +103,14 @@ class QuoteProduct extends CActiveRecord {
 	public function renderAttribute($attr,$value=null) {
 		return CHtml::encode($this->formatAttribute($attr,$value));
 	}
+
+    /**
+     * Wrapper around formatCurrency which forces use of '-' negative prefix
+     */
+    private function formatCurrency ($value) {
+        return Yii::app ()->locale->numberFormatter->formatCurrency (
+            $value, $this->currency, '-¤');
+
+    }
 
 }

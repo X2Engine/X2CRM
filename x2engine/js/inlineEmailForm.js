@@ -227,13 +227,6 @@ InlineEmailEditorManager.prototype.showEmailForm = function (animate, scroll, fo
         }
     }
 
-    if (focusOnSubject) {
-        /*($('#InlineEmail_subject')
-            .addClass('focus')
-            .focus()
-            .blur(function() {$(this).removeClass('focus');});*/
-    }
-
     if (animate)
         $('#inline-email-form').animate({
             opacity: 'show',
@@ -244,6 +237,15 @@ InlineEmailEditorManager.prototype.showEmailForm = function (animate, scroll, fo
 
     if (!this.reinstantiateEditorWhenShown)
         CKEDITOR.instances['email-message'].resize ('100%'); // prevent iframe from displaying blank
+
+    if (focusOnSubject) {
+        $('#InlineEmail_subject')
+            .addClass('focus')
+            .focus();
+            /*.blur(function() {
+                $(this).removeClass('focus');
+            });*/
+    }
 
     return this;
 };

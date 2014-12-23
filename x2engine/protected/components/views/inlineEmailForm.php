@@ -173,11 +173,21 @@ Yii::app()->clientScript->registerCss('inlineEmailFormCss',"
     height: 0;
 }
 
+#email-mini-module .bottom-row-outer {
+    min-height: 51px;
+}
+
 #email-mini-module .last-button-row {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    display: inline-block;
+    float: right;
     padding: 3px;
 }
 
 #email-attachments {
+    float:left;
     padding-top: 10px;
     padding-left: 3px;
     overflow:visible;
@@ -191,8 +201,7 @@ Yii::app()->clientScript->registerCss('inlineEmailFormCss',"
 
 #email-attachments {
     position: relative;
-    top: -17px;
-    margin-bottom: -17px;
+    bottom: 0;
 }
 
 #email-attachments .upload-file-container {
@@ -236,8 +245,13 @@ Yii::app()->clientScript->registerCss('inlineEmailFormCss',"
     margin-bottom: 2px;
 }
 
+#send-email-button {
+    margin-right: 5px !important;
+}
+
 #send-email-button,
 #email-mini-module .cancel-send-button {
+    height: 35px;
     margin: 0;
     display: inline-block;
 }
@@ -423,22 +437,18 @@ Yii::app()->clientScript->registerResponsiveCss('inlineEmailFormResponsiveCss',"
                     'class' => 'x2-email-label',
                 ));
             if (!isset($this->template) && 
-                $target instanceof Quote && isset($target->template)) {
+                $target instanceof Quote && isset($target->template) &&
+                !isset ($this->model->template)) {
 
                 // When sending an InlineEmail targeting a Quote
-                list($templateName, $selectedTemplate) = 
-                    Fields::nameAndId($target->template);
-                echo CHtml::dropDownList(
-                    'template', $selectedTemplate,
-                    array('0' => Yii::t('docs', 'Custom Message')) + $templateList,
-                    array('id' => 'email-template'));
-            } else {
-                echo $form->dropDownList(
-                    $this->model, 'template',
-                    array('0' => Yii::t('docs', 'Custom Message')) + $templateList,
-                    array('id' => 'email-template'));
-            }
-            ?>
+                list($templateName, $selectedTemplate) = Fields::nameAndId($target->template);
+                $this->model->template = $selectedTemplate;
+            } 
+            echo $form->dropDownList(
+                $this->model, 'template',
+                array('0' => Yii::t('docs', 'Custom Message')) + $templateList,
+                array('id' => 'email-template'));
+        ?>
         </div>
         <?php
         }
@@ -454,6 +464,7 @@ Yii::app()->clientScript->registerResponsiveCss('inlineEmailFormResponsiveCss',"
         ?>
         </div>
     </div>
+    <div class="row bottom-row-outer">
         <div class="row" id="email-attachments">
             <div>
                 <?php 
@@ -513,6 +524,16 @@ Yii::app()->clientScript->registerResponsiveCss('inlineEmailFormResponsiveCss',"
 
         <div class="row buttons last-button-row">
             <?php
+
+            // if(is_file(__DIR__.'/inlineEmailForm_pro.php'))
+            // include('inlineEmailForm_pro.php');
+             
+
+            echo CHtml::resetButton(
+                Yii::t('app', 'Cancel'), 
+                array(
+                    'class' => 'x2-button right cancel-send-button x2-button-large'
+                ));
             echo CHtml::ajaxSubmitButton(
                 Yii::t('app', 'Send'), 
                 array(
@@ -534,18 +555,10 @@ Yii::app()->clientScript->registerResponsiveCss('inlineEmailFormResponsiveCss',"
                     'onclick' => 'if (!x2.isAndroid) window.inlineEmailEditor.updateElement();',
                 )
             );
-
-            // if(is_file(__DIR__.'/inlineEmailForm_pro.php'))
-            // include('inlineEmailForm_pro.php');
-             
-
-            echo CHtml::resetButton(
-                Yii::t('app', 'Cancel'), 
-                array(
-                    'class' => 'x2-button right cancel-send-button x2-button-large'
-                ));
             ?>
         </div>
+        <div class='clearfix'></div>
+    </div>
         <?php $this->endWidget(); ?>
     </div>
 </div>

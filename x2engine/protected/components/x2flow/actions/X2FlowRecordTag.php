@@ -67,7 +67,7 @@ class X2FlowRecordTag extends X2FlowAction {
 	public function execute(&$params) {
 		$tags = $this->parseOption('tags',$params);
 
-        $retVal;
+        $retVal = null;
         $model = $params['model'];
 		switch($this->parseOption('action',$params)) {
 			case 'add':

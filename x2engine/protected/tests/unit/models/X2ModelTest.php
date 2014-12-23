@@ -54,13 +54,8 @@ class X2ModelTest extends X2DbTestCase {
 
     public $fixtures = array(
         'contact' => 'Contacts',
+        'account' => 'Accounts',
     );
-
-    public static function referenceFixtures() {
-        return array(
-            'account' => 'Accounts'
-        );
-    }
 
     private $_nameFields;
 

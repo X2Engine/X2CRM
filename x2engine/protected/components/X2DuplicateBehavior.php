@@ -41,8 +41,6 @@
  */
 class X2DuplicateBehavior extends CActiveRecordBehavior {
 
-    private $duplicateCheckCriteria;
-
     // Set constants so that we can change these in the future without issue
     CONST DUPLICATE_FIELD = 'dupeCheck';
     CONST DUPLICATE_LIMIT = 5;
@@ -108,7 +106,7 @@ class X2DuplicateBehavior extends CActiveRecordBehavior {
                 $this->owner->visibility = 0;
             }
             if ($this->owner->hasAttribute('assignedTo')) {
-                $this->owner->assignedTo = Yii::app()->params->adminProf->username;
+                $this->owner->assignedTo = Yii::app()->params->adminProfile->username;
             }
             if ($this->owner->hasAttribute('doNotCall')) {
                 $this->owner->doNotCall = 1;
@@ -174,7 +172,7 @@ class X2DuplicateBehavior extends CActiveRecordBehavior {
      * records other than the currenly loaded one.
      */
     public function hideDuplicates() {
-        $criteria = $this->getDuplicateCheckCriteria();
+        $criteria = $this->getDuplicateCheckCriteria(false, null);
         $attributes = array(
             X2DuplicateBehavior::DUPLICATE_FIELD => 1,
         );
@@ -197,7 +195,7 @@ class X2DuplicateBehavior extends CActiveRecordBehavior {
      * Delete all potential duplicate records.
      */
     public function deleteDuplicates() {
-        $criteria = $this->getDuplicateCheckCriteria();
+        $criteria = $this->getDuplicateCheckCriteria(false, null);
         $this->owner->deleteAll($criteria);
     }
 
@@ -208,9 +206,10 @@ class X2DuplicateBehavior extends CActiveRecordBehavior {
      * @param boolean $refresh Force refresh of cached criteria
      * @return CDbCriteria
      */
-    private function getDuplicateCheckCriteria($refresh = false) {
-        if (!$refresh && isset($this->duplicateCheckCriteria)) {
-            return $this->duplicateCheckCriteria;
+    private $_duplicateCheckCriteria = array ();
+    private function getDuplicateCheckCriteria($refresh = false, $alias='t') {
+        if (!$refresh && isset($this->_duplicateCheckCriteria[$alias])) {
+            return $this->_duplicateCheckCriteria[$alias];
         }
         $dupeFields = $this->owner->duplicateFields();
         $criteria = new CDbCriteria();
@@ -224,11 +223,11 @@ class X2DuplicateBehavior extends CActiveRecordBehavior {
         } else {
             $criteria->compare('id', "<>" . $this->owner->id, false, "AND");
             if ($this->owner->asa('permissions')) {
-                $criteria->mergeWith($this->owner->getAccessCriteria());
+                $criteria->mergeWith($this->owner->getAccessCriteria($alias));
             }
         }
-        $this->duplicateCheckCriteria = $criteria;
-        return $this->duplicateCheckCriteria;
+        $this->_duplicateCheckCriteria[$alias] = $criteria;
+        return $this->_duplicateCheckCriteria[$alias];
     }
 
 }

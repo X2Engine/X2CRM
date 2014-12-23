@@ -8,4 +8,8 @@
   border-color: $colors[border] 
 }
 
+#campaign-toggle-button {
+	border-color: $colors[border]
+}
+
 "; ?>

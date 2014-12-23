@@ -151,112 +151,116 @@
 }
 
 /* line 26, ../../../../compass/themes/x2engine/css/components/smallCalendar.scss */
+#small-publisher .ui-widget-content {
+  border: none;
+}
+/* line 29, ../../../../compass/themes/x2engine/css/components/smallCalendar.scss */
 #small-publisher .form.unselected-tab-row {
   background: none !important;
 }
 
-/* line 31, ../../../../compass/themes/x2engine/css/components/smallCalendar.scss */
+/* line 34, ../../../../compass/themes/x2engine/css/components/smallCalendar.scss */
 #small-calendar {
   border: none;
 }
-/* line 32, ../../../../compass/themes/x2engine/css/components/smallCalendar.scss */
+/* line 35, ../../../../compass/themes/x2engine/css/components/smallCalendar.scss */
 #small-calendar .fc-view-month .fc-event {
   display: none;
 }
-/* line 36, ../../../../compass/themes/x2engine/css/components/smallCalendar.scss */
+/* line 39, ../../../../compass/themes/x2engine/css/components/smallCalendar.scss */
 #small-calendar .fc-header-title h2 {
   background-image: none;
   padding-left: 15px;
 }
 
-/* line 43, ../../../../compass/themes/x2engine/css/components/smallCalendar.scss */
+/* line 46, ../../../../compass/themes/x2engine/css/components/smallCalendar.scss */
 #widget_SmallCalendar .portlet-content {
   padding: 0px;
 }
-/* line 46, ../../../../compass/themes/x2engine/css/components/smallCalendar.scss */
+/* line 49, ../../../../compass/themes/x2engine/css/components/smallCalendar.scss */
 #widget_SmallCalendar #header-title {
   display: inline;
 }
 
-/* line 52, ../../../../compass/themes/x2engine/css/components/smallCalendar.scss */
+/* line 55, ../../../../compass/themes/x2engine/css/components/smallCalendar.scss */
 #small-calendar .fc-header {
   border-radius: 0px;
 }
-/* line 55, ../../../../compass/themes/x2engine/css/components/smallCalendar.scss */
+/* line 58, ../../../../compass/themes/x2engine/css/components/smallCalendar.scss */
 #small-calendar .fc-header-title {
   display: none;
 }
-/* line 58, ../../../../compass/themes/x2engine/css/components/smallCalendar.scss */
+/* line 61, ../../../../compass/themes/x2engine/css/components/smallCalendar.scss */
 #small-calendar .fc-button {
   float: left;
 }
-/* line 61, ../../../../compass/themes/x2engine/css/components/smallCalendar.scss */
+/* line 64, ../../../../compass/themes/x2engine/css/components/smallCalendar.scss */
 #small-calendar .fc-header-left {
   padding-left: 3px;
   padding-top: 2px;
   width: 100%;
 }
-/* line 66, ../../../../compass/themes/x2engine/css/components/smallCalendar.scss */
+/* line 69, ../../../../compass/themes/x2engine/css/components/smallCalendar.scss */
 #small-calendar .fc-day {
   height: 0px !important;
   background-color: white;
   cursor: pointer;
   cursor: hand;
 }
-/* line 71, ../../../../compass/themes/x2engine/css/components/smallCalendar.scss */
+/* line 74, ../../../../compass/themes/x2engine/css/components/smallCalendar.scss */
 #small-calendar .fc-day:hover {
-  background: #d9d9d9;
+  background: #D9D9D9;
 }
-/* line 75, ../../../../compass/themes/x2engine/css/components/smallCalendar.scss */
+/* line 78, ../../../../compass/themes/x2engine/css/components/smallCalendar.scss */
 #small-calendar .day-number-link {
   font-size: 14pt;
   text-decoration: none;
 }
-/* line 79, ../../../../compass/themes/x2engine/css/components/smallCalendar.scss */
+/* line 82, ../../../../compass/themes/x2engine/css/components/smallCalendar.scss */
 #small-calendar .fc-day-number {
   float: none;
   text-align: center;
   padding-top: 10px;
 }
-/* line 86, ../../../../compass/themes/x2engine/css/components/smallCalendar.scss */
+/* line 89, ../../../../compass/themes/x2engine/css/components/smallCalendar.scss */
 #small-calendar .fc-view-month .fc-today {
   border: 1px solid #1e71e2;
   background: #629ceb;
 }
-/* line 89, ../../../../compass/themes/x2engine/css/components/smallCalendar.scss */
+/* line 92, ../../../../compass/themes/x2engine/css/components/smallCalendar.scss */
 #small-calendar .fc-view-month .fc-today .day-number-link {
   color: white;
 }
-/* line 93, ../../../../compass/themes/x2engine/css/components/smallCalendar.scss */
+/* line 96, ../../../../compass/themes/x2engine/css/components/smallCalendar.scss */
 #small-calendar .day-number-link:hover {
   /* color: #666666; */
 }
-/* line 97, ../../../../compass/themes/x2engine/css/components/smallCalendar.scss */
+/* line 100, ../../../../compass/themes/x2engine/css/components/smallCalendar.scss */
 #small-calendar .ui-widget-content {
   border-bottom: none;
 }
-/* line 100, ../../../../compass/themes/x2engine/css/components/smallCalendar.scss */
+/* line 103, ../../../../compass/themes/x2engine/css/components/smallCalendar.scss */
 #small-calendar .ui-widget-header, #small-calendar .fc-first {
   border-left: none;
 }
-/* line 103, ../../../../compass/themes/x2engine/css/components/smallCalendar.scss */
+/* line 106, ../../../../compass/themes/x2engine/css/components/smallCalendar.scss */
 #small-calendar .fc-last {
   border-right: none;
 }
-/* line 106, ../../../../compass/themes/x2engine/css/components/smallCalendar.scss */
+/* line 109, ../../../../compass/themes/x2engine/css/components/smallCalendar.scss */
 #small-calendar .fc-week.fc-last .fc-day {
   border-bottom: none;
 }
-/* line 109, ../../../../compass/themes/x2engine/css/components/smallCalendar.scss */
+/* line 112, ../../../../compass/themes/x2engine/css/components/smallCalendar.scss */
 #small-calendar .fc-agenda-axis {
   border-left: none;
   border-bottom: none;
 }
-/* line 113, ../../../../compass/themes/x2engine/css/components/smallCalendar.scss */
+/* line 116, ../../../../compass/themes/x2engine/css/components/smallCalendar.scss */
 #small-calendar .fc-day-content .spacer {
   display: none;
 }
-/* line 116, ../../../../compass/themes/x2engine/css/components/smallCalendar.scss */
+/* line 119, ../../../../compass/themes/x2engine/css/components/smallCalendar.scss */
 #small-calendar .fc-event-indicator {
   width: 8px;
   height: 8px;
@@ -265,7 +269,7 @@
   border-radius: 5px;
   display: inline-block;
 }
-/* line 125, ../../../../compass/themes/x2engine/css/components/smallCalendar.scss */
+/* line 128, ../../../../compass/themes/x2engine/css/components/smallCalendar.scss */
 #small-calendar .fc-indicator-container {
   height: 10px !important;
   display: block !important;
@@ -274,59 +278,59 @@
   padding-top: 0px;
   overflow: hidden;
 }
-/* line 133, ../../../../compass/themes/x2engine/css/components/smallCalendar.scss */
+/* line 136, ../../../../compass/themes/x2engine/css/components/smallCalendar.scss */
 #small-calendar .x2-button-group {
   margin-right: 5px;
   float: left;
 }
-/* line 136, ../../../../compass/themes/x2engine/css/components/smallCalendar.scss */
+/* line 139, ../../../../compass/themes/x2engine/css/components/smallCalendar.scss */
 #small-calendar .x2-button-group .x2-button {
   padding-left: 7px;
   padding-right: 7px;
   display: inline;
 }
-/* line 142, ../../../../compass/themes/x2engine/css/components/smallCalendar.scss */
+/* line 145, ../../../../compass/themes/x2engine/css/components/smallCalendar.scss */
 #small-calendar #add-button, #small-calendar #me-button {
   margin: 3px;
   float: right;
   margin-left: 0px;
 }
-/* line 147, ../../../../compass/themes/x2engine/css/components/smallCalendar.scss */
+/* line 150, ../../../../compass/themes/x2engine/css/components/smallCalendar.scss */
 #small-calendar .fc-header-space {
   display: none;
 }
 
-/* line 152, ../../../../compass/themes/x2engine/css/components/smallCalendar.scss */
+/* line 155, ../../../../compass/themes/x2engine/css/components/smallCalendar.scss */
 #small-publisher {
   padding: 0px;
 }
-/* line 154, ../../../../compass/themes/x2engine/css/components/smallCalendar.scss */
+/* line 157, ../../../../compass/themes/x2engine/css/components/smallCalendar.scss */
 #small-publisher #publisher-tabs-row-1 {
   display: none !important;
 }
-/* line 157, ../../../../compass/themes/x2engine/css/components/smallCalendar.scss */
+/* line 160, ../../../../compass/themes/x2engine/css/components/smallCalendar.scss */
 #small-publisher .form {
   background: none !important;
   border: none !important;
 }
 
-/* line 163, ../../../../compass/themes/x2engine/css/components/smallCalendar.scss */
+/* line 166, ../../../../compass/themes/x2engine/css/components/smallCalendar.scss */
 #me-button.pressed {
   background: #629ceb;
   color: white;
   box-shadow: #357fe5 0px 1px 3px inset;
 }
 
-/* line 169, ../../../../compass/themes/x2engine/css/components/smallCalendar.scss */
+/* line 172, ../../../../compass/themes/x2engine/css/components/smallCalendar.scss */
 .ui-datepicker {
   z-index: 1200 !important;
 }
 
-/* line 174, ../../../../compass/themes/x2engine/css/components/smallCalendar.scss */
+/* line 177, ../../../../compass/themes/x2engine/css/components/smallCalendar.scss */
 #small-publisher .cell:last-child {
   display: none;
 }
-/* line 177, ../../../../compass/themes/x2engine/css/components/smallCalendar.scss */
+/* line 180, ../../../../compass/themes/x2engine/css/components/smallCalendar.scss */
 #small-publisher .cell.action-duration {
   opacity: 0;
   width: 0px;

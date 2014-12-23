@@ -67,8 +67,8 @@ abstract class JSONEmbeddedModel extends CModel {
     public $exoFormName;
 
     /**
-     * The name of the model to which this embedded model belongs
-     * @var type
+     * The model to which this embedded model belongs
+     * @var CActiveRecord
      */
     public $exoModel;
 
@@ -90,14 +90,14 @@ abstract class JSONEmbeddedModel extends CModel {
     /**
      * A UI-friendly name that the model should be called.
      */
-    public abstract function modelLabel();
+    public function modelLabel() {}
 
     /**
      * Child classes implementing this should generate all necessary input form
      * elements for modifying fields of the embedded model. The resulting
      * markup should be echoed out, not returned.
      */
-    public abstract function renderInputs();
+    public function renderInputs() {}
 
     /**
      * Generate form input name for an attribute so that the urlencoded post data

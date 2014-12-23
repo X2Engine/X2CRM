@@ -139,7 +139,7 @@
 .record-aliases-dropdown-container > .alias-dropdown > span {
   display: block;
   max-height: 242px;
-  overflow-y: scroll;
+  overflow-y: auto;
 }
 /* line 90, ../../../../../compass/themes/x2engine/css/components/views/recordAliasesWidget.scss */
 .record-aliases-dropdown-container > .alias-dropdown li {

@@ -205,6 +205,10 @@ class Quote extends X2Model {
 		$itemSet = array();
 		$existingItems = array();
 		foreach ($this->lineItems as $item) {
+            // Save the line item if it is new, eg, during duplication.
+            // We will be needing the ID
+            if ($item->isNewRecord)
+                $item->save();
 			$existingItems[$item->id] = $item;
 			$existingItemIds[] = (int) $item->id;
 		}
@@ -313,9 +317,11 @@ class Quote extends X2Model {
 		if(isset($this->_lineItems)){
 			foreach($this->_lineItems as $item){
 				$item->quoteId = $this->id;
-                                $product = X2Model::model('Products')->findByAttributes(array('name'=>$item->name));
-                                if (isset($product))
-                                    $item->productId = $product->id;
+                $product = X2Model::model('Products')->findByAttributes(array(
+                    'name'=>$item->name
+                ));
+                if (isset($product))
+                    $item->productId = $product->id;
 				$item->save();
 			}
 		}
@@ -631,7 +637,7 @@ class Quote extends X2Model {
 		return $this->searchBase($criteria);
 	}
 
-	public function searchBase($criteria, $pageSize=null) {
+	public function searchBase($criteria, $pageSize=null, $showHidden = false) {
 
 		$dateRange = X2DateUtil::partialDateRange($this->expectedCloseDate);
 		if ($dateRange !== false)
@@ -645,7 +651,7 @@ class Quote extends X2Model {
 		if ($dateRange !== false)
 			$criteria->addCondition('lastUpdated BETWEEN ' . $dateRange[0] . ' AND ' . $dateRange[1]);
 
-		return parent::searchBase($criteria, $pageSize);
+		return parent::searchBase($criteria, $pageSize, $showHidden);
 	}
 
 	/**

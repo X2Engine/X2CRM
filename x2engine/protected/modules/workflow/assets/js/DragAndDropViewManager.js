@@ -655,7 +655,8 @@ DragAndDropViewManager.prototype._completeStage = function (stage, modelId, type
                 that._updateStageLists (data['workflowStatus'], modelId, type);
                 that.DEBUG && console.log ('_completeStage' + stage);
                 that._updateListHeader ($(element), stage);
-                that._successFailureAnimation ($(element));
+                if (stage !== that.stageNames.length)
+                    that._successFailureAnimation ($(element));
             } else {
                 that._removeStagingClone ($(that._lastTouchedListItem));
                 that._successFailureAnimation ($(element), false);

@@ -205,10 +205,6 @@ class LoginThemeHelper {
 		", CClientScript::POS_END);
 	}
 
-
-
-
-
 }
 
 ?>

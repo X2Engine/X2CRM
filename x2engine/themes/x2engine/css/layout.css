@@ -168,7 +168,7 @@
 
 /* Font Awesome uses the Unicode Private Use Area (PUA) to ensure screen
      readers do not read off random characters that represent icons */
-/* line 383, ../../../compass/css/lib/_font-awesome.scss */
+/* line 382, ../../../compass/css/lib/_font-awesome.scss */
 .x2-button.icon.edit:before {
   content: "\f044";
 }
@@ -178,7 +178,7 @@ div.page-title .filter-button span:before {
   content: "\f0b0";
 }
 
-/* line 718, ../../../compass/css/lib/_font-awesome.scss */
+/* line 717, ../../../compass/css/lib/_font-awesome.scss */
 div.page-title .x2-button.icon.copy span:before {
   content: "\f0c5";
 }
@@ -188,7 +188,7 @@ div.page-title .x2-button.icon.email:before {
   content: "\f0e0";
 }
 
-/* line 26, ../../../compass/themes/x2engine/css/layout.scss */
+/* line 25, ../../../compass/themes/x2engine/css/layout.scss */
 div.no-selection,
 span.no-selection {
   -moz-user-select: none;

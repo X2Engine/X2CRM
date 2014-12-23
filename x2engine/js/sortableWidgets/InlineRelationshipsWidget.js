@@ -313,6 +313,8 @@ InlineRelationshipsWidget.prototype._setUpNewRelationshipsForm = function () {
     this._setUpCreateFormSubmission ();
 };
 
+
+
 InlineRelationshipsWidget.prototype._init = function () {
     SortableWidget.prototype._init.call (this);
     if (this.displayMode === 'grid') this.element.find ('.ui-resizable-handle').hide ();

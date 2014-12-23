@@ -103,7 +103,7 @@ $themeUrl = Yii::app()->theme->getBaseUrl();
 
 $menuOptions = array(
     'index', 'invoices', 'create', 'view', 'email',
-    'delete', 'attach', 'print', 'convert',
+    'delete', 'attach', 'print', 'convert', 'duplicate',
 );
 if ($contact)
     $menuOptions[] = 'email';

@@ -30,7 +30,7 @@ CREATE TABLE x2_bug_reports(
 INSERT INTO `x2_modules`
 (`name`, title, visible, menuPosition, searchable, editable, adminOnly, custom, toggleable)
 VALUES
-('bugReports', 'Bug Reports', 1, 17, 1, 1, 0, 0, 0);
+('bugReports', 'Bug Reports', 1, 19, 1, 1, 0, 0, 0);
 /*&*/
 INSERT INTO x2_fields
 (modelName, fieldName, attributeLabel, custom, `type`, required, readOnly, linkType, searchable, isVirtual, relevance, uniqueConstraint, safe, keyType)

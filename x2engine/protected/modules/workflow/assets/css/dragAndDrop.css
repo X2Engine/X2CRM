@@ -364,3 +364,36 @@
   border-radius: 15px;
   width: 8px;
 }
+
+/* Faile Arrow attempt
+.stage-list-title {
+// .workflow-stage-arr {
+    $margin: 15px;
+    $width: 200px;
+    $height: 90px;
+    box-sizing:border-box;
+    background: white;
+    // display: inline;
+    // position: relative;
+    margin-top: $margin;
+    padding-top: px;
+    margin-bottom: $margin;
+    height: $height - 2*$margin;
+    width: $width;
+
+    &:after {
+        $arrow-height: 30px;
+        $arrow-length: 30px;
+        position: relative;
+        display: inline-block;
+        left: $width;
+        top: $height/2 - ($arrow-height) - $margin;
+        width: 0;
+        height: 0;
+        border-top: $arrow-height solid transparent;
+        border-left: $arrow-length solid white;
+        border-bottom: $arrow-height solid transparent;
+        content: "";
+    }
+}
+*/

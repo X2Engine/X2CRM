@@ -119,6 +119,23 @@ class QuotesController extends x2base {
 		));
 	}
 
+    /**
+     * Return a set of copies of the specified quotes line items
+     * @param Quote The quote whose line items are to be duplicated
+     * @return array of line items
+     */
+    private function duplicateLineItems(Quote $quote) {
+        $lineItems = array();
+        foreach ($quote->lineItems as $item) {
+            $copy = new QuoteProduct;
+            foreach($item->attributes as $name => $value)
+                if ($name !== 'id' && $name !== 'listId')
+                    $copy->$name = $value;
+            $lineItems[] = $copy;
+        }
+        return $lineItems;
+    }
+
 	/**
 	 * Creates a new model.
 	 *
@@ -134,7 +151,7 @@ class QuotesController extends x2base {
 				foreach($copiedModel->attributes as $name => $value)
 					if($name != 'id')
 						$model->$name = $value;
-				$model->lineItems = $copiedModel->lineItems;
+				$model->lineItems = $this->duplicateLineItems($copiedModel);
 			}
 		}
 
@@ -220,6 +237,7 @@ class QuotesController extends x2base {
 			$model->setX2Fields($_POST['Quote']);
 			if(isset($_POST['lineitem']))
 				$model->lineItems = $_POST['lineitem'];
+
 			if(!$model->hasLineItemErrors) {
 				if($model->save()) {
 					$model->saveLineItems();
@@ -830,7 +848,7 @@ class QuotesController extends x2base {
          * To show all options:
          * $menuOptions = array(
          *     'index', 'invoices', 'create', 'view', 'email', 'edit', 'editLock', 'editStrictLock',
-         *     'delete', 'attach', 'print', 'import', 'export', 'convert',
+         *     'delete', 'attach', 'print', 'import', 'export', 'convert', 'duplicate'
          * );
          */
 
@@ -929,6 +947,11 @@ class QuotesController extends x2base {
                 'name' => 'convert',
                 'label' => Yii::t('quotes', 'Convert To Invoice'),
                 'url' => array ('convertToInvoice', 'id' => $modelId),
+            ),
+            array(
+                'name' => 'duplicate',
+                'label' => Yii::t('quotes', 'Duplicate'),
+                'url' => array ('create', 'duplicate' => $modelId),
             ),
         );
 
