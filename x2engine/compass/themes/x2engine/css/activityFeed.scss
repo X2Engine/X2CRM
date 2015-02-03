@@ -1,6 +1,6 @@
 /*****************************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2015 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -34,17 +34,22 @@
  *****************************************************************************************/
 
 @import "colors";
-@import "compass/css3/border-radius";
+@import "standards";
+@import "icons";
 
 /***********************************************************************
-* image attachments 
+* image attachments
 ***********************************************************************/
 
 #activity-feed-container {
     @include border-radius(4px !important);
-    
+
     .attachment-img {
         height: 100px;
+    }
+
+    div.page-title .x2-button.right {
+        margin: 5px 5px 5px 0px;
     }
 
     /*
@@ -67,8 +72,8 @@
         }
     }
 
-    /* 
-    override spectrum color picker css 
+    /*
+    override spectrum color picker css
     */
 
     .sp-replacer {
@@ -167,6 +172,20 @@
 
     .comment-box .items {
         margin-left: 15px;
+        // padding-right: 15px;
+        border: none;
+        // background: none;
+
+        > .view {
+
+            &:first-child {
+                border-radius: 2px 0px 0px 0px;
+            }
+
+            &:last-child {
+                border-radius: 0px 0px 2px 0px;
+            }
+        }
     }
 
     .important {
@@ -225,6 +244,9 @@
             display: inline-block;
             margin-top: 8px;
             min-width: 25%;
+            color: $darkBlue;
+            /* @theme color link */
+            @include opacity-hover(0.8);
         }
         .event-icon-button-container {
             display: inline-block;
@@ -254,7 +276,14 @@
         }
     }
 
+    .deleteButton {
+        @include opacity-hover(0.5);
+    }
 
+
+    /*******************************************
+    * pseudo elements to base the icons on
+    ******************************************/
     %icon {
        margin-left: 10px;
     }
@@ -287,7 +316,7 @@
     .unsticky-icon, .unlike-icon, .feed-make-unimportant-icon {
         @extend %inactive-icon;
     }
-    
+
     .like-count {
         @extend %active-icon;
         opacity: 0.6;
@@ -298,8 +327,8 @@
 
     .unlike-button[style*="none"] + .like-count {
         color: $nearBlack;
-    }    
-    
+    }
+
     #activity-feed-settings-button {
         cursor: pointer;
         float: right;
@@ -315,4 +344,98 @@
         display: block;
         margin-top: 7px;
     }
+
+    /*********************************
+    * Activity Feed Icon Styling
+    ********************************/
+    .img-box {
+        display: block;
+        float: left;
+        position: relative;
+        overflow: visible;
+
+        text-align: center;
+        font-size: 35px;
+        color: $darkBlue;
+        /* @theme color lighter_link */
+
+        width: 50px;
+        height: 45px;
+
+        padding-bottom: 5px;
+
+        &:before {
+            font-size: 30px !important;
+        }
+
+        $fa-map: (
+            ("action_complete"   "play-circle" "check")
+            ("action_reminder"   "exclamation-circle")
+            ("calendar_event"    "")
+            ("generic_calendar_event" "calendar-o") // This is just for the icon reference page
+            ("doc_update"        "file-text")
+
+            ("email_from"        "envelope")
+            ("email_clicked"     "envelope")
+
+            ("email_sent"         "envelope" "arrow-right")
+            ("email_sent_quote"   "envelope" "arrow-right")
+            ("email_sent_invoice" "envelope" "arrow-right")
+            ("invoice_emailed"    "envelope")
+            ("media"              "file-photo-o")
+            ("notif"              "comment")
+            ("voip_call"          "phone")
+            ("quote_emailed"      "envelope")
+            ("record_create"      "folder")
+            ("record_deleted"     "trash")
+            ("web_activity"       "globe")
+            ("weblead_create"     "globe" "star")
+        );
+
+        $x2-map: (
+            ("log_time"             "stopwatch")
+            ("case_escalated"       "service" "arrow-up")
+            ("email_opened"         "open-envelope")
+            ("email_opened_quote"   "open-envelope")
+            ("email_opened_invoice" "open-envelope")
+            ("workflow_revert"      "funnel" "undo")
+            ("workflow_complete"    "funnel" "check")
+            ("workflow_start"       "funnel" "arrow-right")
+        );
+
+        @include generate-icons ($fa-map);
+        @include generate-icons ($x2-map, "x2");
+
+
+        &.record_create {
+            @include stacked-icon('plus'); // ALl record Creates have a plus indicator
+
+            $fa-map: (
+                ("Campaign-create" "bullhorn")
+                ("Actions-create" "play-circle")
+                ("Accounts-create" "building")
+                ("Opportunity-create" "bullseye")
+                ("X2Leads-create" "star")
+                ("Docs-create" "file-text")
+                ("Groups-create" "users")
+                ("BugReports-create" "bug")
+                ("Charts-create" "bar-chart")
+                ("Reports-create" "file-text-o")
+              );
+
+            $x2-map: (
+                ("Quote-create" "quotes")
+                ("Product-create"  "package")
+                ("Services-create" "service")
+                ("Contacts-create" "contact")
+            );
+
+            @include generate-icons($fa-map);
+            @include generate-icons($x2-map, "x2");
+
+        }
+
+    }
+
+
 }

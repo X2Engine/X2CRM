@@ -1,7 +1,7 @@
 <?php
 /*****************************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2015 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -339,26 +339,52 @@ $this->beginWidget('LeftWidget',
         'id'=>'type-filter',
     )
 );
-echo CHtml::link(
-    Yii::t('app','All'),'#',
-    array(
-        'class'=>'x2-minimal-button filter-control-button',
-        'id'=>'all-button',
-        'style'=>'width:107px;'
-    )
-)."<br>";
-foreach($eventTypes as $type=>$name) {
-    echo CHtml::link(
-        CHtml::encode($name),'#',
-        array(
-            'class'=>'x2-minimal-button filter-control-button',
-            'id'=>$type.'-button','style'=>'width:107px;'
-        )
-    )."<br>";
+
+
+/*********************************
+* Sortable Filter Controls
+********************************/
+
+//Construct an array with ids as the filter type
+$filterButtons = array('all-button' => Yii::t('app', 'All'));
+foreach($eventTypes as $type => $name) {
+    $filterButtons[$type.'-button'] = $name;
 }
+
+// Go throught the ordered list and create the links
+$filterOrder = Profile::getWidgetSetting('FilterControls', 'order');
+foreach($filterOrder as $id) {
+    if (!isset($filterButtons[$id]))
+        continue;
+
+    echo CHtml::link(
+        $filterButtons[$id],
+        '#',
+        array(
+            'class' => 'x2-minimal-button filter-control-button',
+            'id' => $id,
+        )
+    );
+
+    unset($filterButtons[$id]);
+}
+
+// If any links werent in the list, create them at the bottom
+foreach($filterButtons as $id=>$name) {
+    echo CHtml::link(
+        $name, '#',
+        array(
+            'class' => 'x2-minimal-button filter-control-button',
+            'id' => $id,
+        )
+    );
+}
+
 $this->endWidget();
 $this->endWidget();
 echo "</div>";
+
+$settingsUrl = Yii::app()->createUrl('site/widgetSetting');
 Yii::app()->clientScript->registerScript('feed-filters','
     $("#sidebar-apply-feed-filters").click(function(e){
         e.preventDefault();
@@ -453,6 +479,19 @@ Yii::app()->clientScript->registerScript('feed-filters','
                 }
             }
         });
+    });
+
+    $("#sidebar-simple-controls .portlet-content").sortable({
+        stop: function (event, ui) {
+            $.ajax({
+                url: "'.$settingsUrl.'",
+                data: {
+                    widget: "FilterControls",
+                    setting: "order",
+                    value: $(this).sortable("toArray")
+                }
+            });
+        }
     });
 
 

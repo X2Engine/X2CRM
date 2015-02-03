@@ -1,6 +1,6 @@
 /*****************************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2015 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -50,7 +50,8 @@ function InlineEmailEditorManager (argsDict) {
         tmpUploadUrl: '',
         rmTmpUploadUrl: '',
         reinstantiateEditorWhenShown: true,
-        disableTemplates: false
+        disableTemplates: false,
+        originalContentHeight: 300
     };
     auxlib.applyArgs (this, defaultArgs, argsDict);
 
@@ -116,10 +117,11 @@ InlineEmailEditorManager.prototype.clearForm = function () {
 };
 
 InlineEmailEditorManager.prototype.afterSend = function (data) {
-    $('#inline-email-status').show().html(data.message);
+    x2.topFlashes.displayFlash (data.message, 'success');
     this.clearForm ();
     toggleEmailForm();
-    x2.Notifs.updateHistory();
+    x2.actionHistory.update ();
+    x2.TransactionalViewWidget.refresh ('EmailsWidget');
 };
 
 InlineEmailEditorManager.prototype.prependToBody = function (text) {
@@ -191,7 +193,7 @@ InlineEmailEditorManager.prototype.toggleEmailForm = function (mode) {
 };
 
 InlineEmailEditorManager.prototype.hideEmailForm = function (animate) {
-    animate = typeof animate === 'undefined' ? true : animate; 
+    animate = typeof animate === 'undefined' ? false : animate; 
 
     if (animate)
         $('#inline-email-form').animate({
@@ -205,9 +207,14 @@ InlineEmailEditorManager.prototype.hideEmailForm = function (animate) {
 };
 
 InlineEmailEditorManager.prototype.showEmailForm = function (animate, scroll, focusOnSubject) {
-    animate = typeof animate === 'undefined' ? true : animate; 
-    scroll = typeof scroll === 'undefined' ? true : scroll; 
+    animate = typeof animate === 'undefined' ? false : animate; 
+    scroll = typeof scroll === 'undefined' ? false : scroll; 
     focusOnSubject = typeof focusOnSubject === 'undefined' ? true : focusOnSubject; 
+
+    var that = this;
+    that.element.find ('.cke_contents').height (that.originalContentHeight);
+    this.element.find ('.email-reattach-button').css ('visibility', 'hidden');
+    this.element.addClass ('fixed-email-form').attr ('style', '');
 
     if($('#inline-email-form .wide.form').hasClass('hidden')) {
         $('#inline-email-form .wide.form').removeClass('hidden');
@@ -224,7 +231,7 @@ InlineEmailEditorManager.prototype.showEmailForm = function (animate, scroll, fo
             $('html,body').animate({
                 scrollTop: ($('#inline-email-top').offset().top - 100)
             }, 300);
-        }
+        } 
     }
 
     if (animate)
@@ -264,10 +271,14 @@ InlineEmailEditorManager.prototype._setUpEmailSettingsMenuBehavior = function ()
 
     $('#email-mini-module').mouseenter (function () {
         $('#email-settings-button').show ();
+        that.element.find ('.email-fullscreen-button').show ();
+        that.element.find ('.email-reattach-button').show ();
     });
 
     $('#email-mini-module').mouseleave (function () {
         $('#email-settings-button').hide ();
+        that.element.find ('.email-fullscreen-button').hide ();
+        that.element.find ('.email-reattach-button').hide ();
     });
 };
 
@@ -430,6 +441,38 @@ InlineEmailEditorManager.prototype._setUpCloseFunctionality = function () {
     });
 };
 
+InlineEmailEditorManager.prototype._setUpDraggability = function () {
+    var that = this;
+    this.element.draggable ({
+        handle: this.element.find ('.widget-title-bar'),
+        start: function () { 
+            that.element.removeClass ('fixed-email-form');
+            that.element.find ('.email-reattach-button').css ('visibility', 'visible');
+        }
+    });
+};
+
+InlineEmailEditorManager.prototype._setUpResizeBehavior = function () {
+    var that = this;
+    this.element.inlineEmailResizable ({
+        handles: 'n, s',
+        resize: function (evt, ui) {
+            var dy = ui.size.height - ui.originalSize.height;
+            that.element.find ('.cke_contents').height (
+                that.originalContentHeight + dy);
+        }
+    });
+};
+
+InlineEmailEditorManager.prototype._setUpButtonBehavior = function () {
+    var that = this;
+    this.element.find ('.email-reattach-button').click (function () {
+        that.element.addClass ('fixed-email-form').attr ('style', '');
+        that.element.find ('.email-reattach-button').css ('visibility', 'hidden');
+        return false;
+    });
+};
+
 InlineEmailEditorManager.prototype._init = function () {
     var that = this;
     $(function () {
@@ -441,6 +484,9 @@ InlineEmailEditorManager.prototype._init = function () {
         that._setUpAddresseeRowsBehavior ();
         that._setUpFileUpload ();
         that._setUpCloseFunctionality ();
+        that._setUpResizeBehavior ();
+        that._setUpDraggability ();
+        that._setUpButtonBehavior ();
     });
 };
 

@@ -1,7 +1,7 @@
 <?php
 /*****************************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2015 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -43,6 +43,16 @@
  */
 class Publisher extends X2Widget {
 
+    public static $actionTypeToTab = array (
+        'call' => 'PublisherCallTab',
+        'time' => 'PublisherTimeTab',
+        'action' => 'PublisherActionTab',
+        'note' => 'PublisherCommentTab',
+        'event' => 'PublisherEventTab',
+        'products' => 'PublisherProductsTab',
+    );
+
+    public $JSClass = 'Publisher';
     public $model;
     public $associationType; // type of record to associate actions with
     public $associationId = ''; // record to associate actions with
@@ -66,7 +76,10 @@ class Publisher extends X2Widget {
                 });
             $this->_tabs = array ();
             foreach ($visibleTabs as $tabName => $shown) {
-                $this->_tabs[] = new $tabName ();
+                $tab = new $tabName ();
+                $tab->publisher = $this;
+                $tab->namespace = $this->namespace;
+                $this->_tabs[] = $tab;
             }
         }
         return $this->_tabs;
@@ -81,13 +94,7 @@ class Publisher extends X2Widget {
      */
     public function getPackages () {
         if (!isset ($this->_packages)) {
-            $this->_packages = array (
-                'auxlib' => array(
-                    'baseUrl' => Yii::app()->request->baseUrl,
-                    'js' => array(
-                        'js/auxlib.js',
-                    ),
-                ),
+            $this->_packages = array_merge (parent::getPackages (), array (
                 'PublisherJS' => array(
                     'baseUrl' => Yii::app()->request->baseUrl,
                     'js' => array(
@@ -100,10 +107,25 @@ class Publisher extends X2Widget {
                     'js' => array(
                         'js/MultiRowTabs.js',
                     ),
+                    'depends' => array ('jquery', 'jquery.ui')
                 ),
-            );
+            ));
         }
         return $this->_packages;
+    }
+
+    public function getJSClassParams () {
+        if (!isset ($this->_JSClassParams)) {
+            $selectedTab = $this->tabs[0]->tabId;
+            $this->_JSClassParams = array_merge (parent::getJSClassParams (), array (
+                'translations' => array (),
+                'initTabId' => $selectedTab,
+                'publisherCreateUrl' => 
+                    Yii::app()->controller->createUrl ('/actions/actions/publisherCreate'),
+                'isCalendar' => $this->calendar,
+            ));
+        }
+        return $this->_JSClassParams;
     }
 
     public function run() {
@@ -115,112 +137,36 @@ class Publisher extends X2Widget {
         } else {
             $model->assignedTo = Yii::app()->user->getName();
         }
-        
         $this->model = $model;
-        $tabs = $this->tabs;
-        $selectedTab = $this->tabs[0]->tabId;
         $selectedTabObj = $this->tabs[0];
         $selectedTabObj->startVisible = true;
 
-        Yii::app()->clientScript
-            ->registerCoreScript('jquery')
-            ->registerCoreScript('jquery.ui');
-        Yii::app()->clientScript->registerPackages($this->packages);
+        Yii::app()->clientScript->registerPackages($this->packages, true);
+        $this->instantiateJSClass (false);
 
         Yii::app()->clientScript->registerScript('publisherScript',"
-        ;(function () {
-            // construct publisher object, passing tab objects to it
-            x2.publisher = new x2.Publisher ({
-                translations: {},
-                initTabId: '".$selectedTab."',
-                publisherCreateUrl: '".
-                    Yii::app()->controller->createUrl ('/actions/actions/publisherCreate')."'
-            });
-            x2.publisher.isCalendar = ".json_encode($this->calendar).";
-
-            x2.publisher.loadFrame = function (id,type){
-                if(type!='Action' && type!='QuotePrint'){
-                    var frame=
-                        '<iframe style=\"width:99%;height:99%\" ' +
-                          'src=\"".(Yii::app()->controller->createUrl('/actions/actions/viewEmail')).
-                            "?id='+id+'\"></iframe>';
-                }else if(type=='Action'){
-                    var frame=
-                        '<iframe style=\"width:99%;height:99%\" ' +
-                          'src=\"".(Yii::app()->controller->createUrl('/actions/actions/viewAction')).
-                            "?id='+id+'&publisher=true\"></iframe>';
-                } else if(type=='QuotePrint'){
-                    var frame=
-                        '<iframe style=\"width:99%;height:99%\" ' +
-                          'src=\"".(Yii::app()->controller->createUrl('/quotes/quotes/print')).
-                            "?id='+id+'\"></iframe>';
-                }
-                if(typeof x2.actionFrames.viewEmailDialog != 'undefined') {
-                    if($(x2.actionFrames.viewEmailDialog).is(':hidden')){
-                        $(x2.actionFrames.viewEmailDialog).remove();
-                    }else{
-                        return;
-                    }
-                }
-    
-                x2.actionFrames.viewEmailDialog = $('<div></div>', {id: 'x2-view-email-dialog'});
-    
-                x2.actionFrames.viewEmailDialog.dialog({
-                    title: '".Yii::t('app', 'View History Item')."',
-                    autoOpen: false,
-                    resizable: true,
-                    width: '650px',
-                    show: 'fade'
-                });
-                jQuery('body')
-                    .bind('click', function(e) {
-                        if(jQuery('#x2-view-email-dialog').dialog('isOpen')
-                            && !jQuery(e.target).is('.ui-dialog, a')
-                            && !jQuery(e.target).closest('.ui-dialog').length
-                        ) {
-                            jQuery('#x2-view-email-dialog').dialog('close');
-                        }
-                    });
-    
-                x2.actionFrames.viewEmailDialog.data('inactive', true);
-                if(x2.actionFrames.viewEmailDialog.data('inactive')) {
-                    x2.actionFrames.viewEmailDialog.append(frame);
-                    x2.actionFrames.viewEmailDialog.dialog('open').height('400px');
-                    x2.actionFrames.viewEmailDialog.data('inactive', false);
-                } else {
-                    x2.actionFrames.viewEmailDialog.dialog('open');
-                }
-            };
-
-        }) ();
+            x2.Publisher.translations['View History Item'] = '".
+                CHtml::encode (Yii::t('app', 'View History Item'))."';
         ", CClientScript::POS_END);
 
         Yii::app()->clientScript->registerScript('loadEmails', "
-
         $(document).on('ready',function(){
-            var timeout;
-            $(document).on('mouseenter','.email-frame',function(){
+            $(document).on('click','.email-frame',function(){
                 var id=$(this).attr('id');
-                timeout = setTimeout(function(){x2.publisher.loadFrame(id,'Email')},500);
+                x2.Publisher.loadFrame(id,'Email');
             });
-            $(document).on('mouseleave','.email-frame',function(){
-                clearTimeout(timeout);
-            });
-            $(document).on ('mouseenter', '.quote-frame', function(){
+            $(document).on ('click', '.quote-frame', function(){
                 var id=$(this).attr('id');
-                timeout = setTimeout(function(){x2.publisher.loadFrame(id,'Quote')},500);
-            }).mouseleave(function(){
-                clearTimeout(timeout);
-            }); // Legacy quote pop-out view
+                x2.Publisher.loadFrame(id,'Quote');
+            });
 
-            $('.quote-print-frame').mouseenter(function(){
+            $(document).on ('click', '.quote-print-frame', function(){
                 var id=$(this).attr('id');
-                timeout = setTimeout(function(){x2.publisher.loadFrame(id,'QuotePrint')},500);
-            }).mouseleave(function(){
-                clearTimeout(timeout);
-            }); // New quote pop-out view
+                x2.Publisher.loadFrame(id,'QuotePrint');
+            });
         });
         ", CClientScript::POS_HEAD);
+
         Yii::app()->clientScript->registerCss('recordViewPublisherCss', '
             .action-event-panel {
                 margin-top: 5px;
@@ -241,9 +187,6 @@ class Publisher extends X2Widget {
             .action-duration label {
                 font-size: 10px;
             }
-            #publisher .text-area-wrapper {
-                /*margin-right: 75px;*/
-            }
         ');
 
         $that = $this;
@@ -255,7 +198,7 @@ class Publisher extends X2Widget {
                     array_map(function($p)use($that){return $that->$p;}, $this->viewParams)
                 ),
                 array (
-                    'tabs' => $tabs,
+                    'tabs' => $this->tabs, 
                 )
             )
         );

@@ -7,7 +7,7 @@
 
 #sidebar-left-widget-box ul li span,
 #sidebar-left-widget-box a:hover {
-  background: $colors[lighter_content] 
+  background: $colors[light_content] 
 }
 
 #sidebar-left-widget-box textarea {
@@ -22,6 +22,18 @@
 
 .sidebar-left {
   background: $colors[highlight1] 
+}
+
+.x2-minimal-button {
+	color: $colors[link]
+}
+
+.x2-minimal-button:hover {
+	background: $colors[lighter_content]
+}
+
+#profile-info-widget #profile-badge {
+	border-color: $colors[border]
 }
 
 "; ?>

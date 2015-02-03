@@ -1,6 +1,6 @@
 /*****************************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2015 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -33,85 +33,210 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 
+@import "icons";
+
+#history {
+    .pager {
+        border: none;
+        margin: 0;
+    }
+}
+
 #publisher {
-  > {
-    .ui-tabs-nav {
-      /*display: inline-block;*/
-      display: block;
-      float: left;
-      margin-bottom: 0px;
-    }
-    #publisher-tabs-row-1 {
-      margin-right: -10px;
-    }
-  }
-  &.multi-row-tabs-publisher .form {
-    position: relative;
-    top: -1px;
-  }
-}
+    > {
+        .ui-tabs-nav {
+            /*display: inline-block;*/
+            display: block;
+            float: left;
+            margin-bottom: 0px;
+        }
+        #publisher-tabs-row-1 {
+            border-right: none !important;
+            margin-right: -10px;
+
+            li {
+                /*border: none !important; */
+                /*box-shadow: 0px -1.4px 3px rgba(0, 0, 0, 0.15);*/
+                &.ui-state-active {
+                    position: relative;
+                    z-index: 2;
+                }
+            }
+        }
 
 /***********************************************************************
-* multi row tabs 
+* multi row tabs
 ***********************************************************************/
+        #publisher-tabs-row-2 {
+            &.ui-tabs-nav li.ui-state-active {
+                position: relative;
+                z-index: 1;
+            }
+            background: #f8f8f8;
+            width: 100%;
+            box-sizing: border-box;
+            border-radius: 4px 4px 0 0;
+            height: 32px;
+            border: 1px solid #ccc;
+            border-bottom: none;
+            margin-bottom: -6px !important;
+            margin-top: 0px;
+            /*display: block !important;*/
+            li {
+                &:first-child {
+                    margin-left: 3px;
+                }
+                margin-top: -1px;
+                height: 24px;
+            }
 
-#publisher-tabs-row-2 {
-  &.ui-tabs-nav li.ui-state-active {
-    position: relative;
-    z-index: 1;
-  }
-  background: #f8f8f8;
-  width: 100%;
-  box-sizing: border-box;
-  border-radius: 4px 4px 0 0;
-  height: 32px;
-  border: 1px solid #ccc;
-  border-bottom: none;
-  margin-bottom: -6px !important;
-  margin-top: 0px;
-  /*display: block !important;*/
-  li {
-    &:first-child {
-      margin-left: 3px;
+            &.unselected-tab-row {
+                background: #eee;
+            }
+        }
+
     }
-    margin-top: -1px;
-    height: 24px;
-  }
-  &.unselected-tab-row {
-    background: #eee;
-  }
+    &.multi-row-tabs-publisher .form {
+        position: relative;
+        top: -1px;
+    }
 }
 
+
 /***********************************************************************
-* comment tab 
+* comment tab
 ***********************************************************************/
 
 #new-comment .text-area-wrapper, #products .text-area-wrapper {
-  margin-bottom: 5px;
+    margin-bottom: 5px;
 }
 
 /***********************************************************************
-* products tab 
+* products tab
 ***********************************************************************/
 
 /***********************************************************************
-* action tab 
+* action tab
 ***********************************************************************/
 
-#action-reminder-container {
-  font-size: 12px;
-  line-height: 22px;
-  select, input, div {
-    float: left;
-  }
-  select {
-    margin-left: 4px;
-  }
-  > div {
-    border-radius: 3px;
-    border: 1px solid rgb(206, 206, 206);
-    background: white;
-    padding: 5px;
-    margin-bottom: 6px;
-  }
+.action-event-panel {
+    .action-reminder-container {
+        font-size: 12px;
+        line-height: 22px;
+        select, input, div {
+            float: left;
+        }
+        select {
+            margin-left: 4px;
+        }
+        > div {
+            border-radius: 3px;
+            border: 1px solid rgb(206, 206, 206);
+            background: white;
+            padding: 5px;
+            margin-bottom: 6px;
+        }
+    }
 }
+
+
+/*********************************
+* Publisher and History Icon mapping
+********************************/
+$fa-map: (
+    ("action" "play-circle")
+    ("attachment" "play-circle")
+    ("complete" "play-circle")
+    ("email" "envelope")
+    ("email_quote" "envelope")
+    ("email_invoice" "envelope")
+    ("call" "phone")
+    ("note" "comment-o")
+    ("overdue" "" "exclamation")
+);
+
+$x2-map: (
+    ("workflow" "funnel")
+    ("time" "stopwatch")
+    ("campaignEmailOpened" "open-envelope")
+    ("emailOpened" "open-envelope")
+);
+
+#publisher .icon,
+.action.list-view .icon {
+    @include generate-icons($fa-map);
+    @include generate-icons($x2-map, "x2");
+}
+
+
+// #publisher .icon,
+// .action.list-view .icon {
+//         &.action {
+//                 @include fa-icon('play-circle');
+//                 // background: url(../images/actions.png) no-repeat center center;
+//         }
+//         &.attachment {
+//                 background: url(../images/action_attachment.png) no-repeat center center;
+//         }
+//         &.complete {
+//                 @include fa-icon('play-circle');
+//                 @include stacked-icon('check');
+//                 // background: url(../images/eventIcons/action_complete.png) no-repeat center center;
+//         }
+//         &.workflow {
+//                 @include x2-icon('funnel');
+//                 // background: url(../images/action_workflow.png) no-repeat center center;
+//         }
+//         &.email {
+//                 @include fa-icon('envelope');
+//                 // background: url(../images/eventIcons/email_sent.png) no-repeat center center;
+//         }
+//         &.email_quote {
+//                 @include fa-icon('envelope');
+//                 // background: url(../images/action_email_quote.png) no-repeat center center;
+//         }
+//         &.email_invoice {
+//                 @include fa-icon('envelope');
+//                 // background: url(../images/action_email_invoice.png) no-repeat center center;
+//         }
+//         &.campaignEmailOpened, &.emailOpened {
+//                 @include x2-icon('open-envelope');
+//                 // background: url(../images/eventIcons/email_opened.png) no-repeat center center;
+//         }
+//         &.note {
+//                 background: url(../images/x2flow/X2FlowRecordComment.png) no-repeat center center;
+//         }
+//         &.emailOpened_quote {
+//                 background: url(../images/eventIcons/email_opened_quote.png) no-repeat center center;
+//         }
+//         &.emailOpened_invoice {
+//                 background: url(../images/eventIcons/email_opened_invoice.png) no-repeat center center;
+//         }
+//         &.call {
+//                 background: url(../images/action_call.png) no-repeat center center;
+//         }
+//         &.marketing {
+//                 background: url(../images/action_marketing.png) no-repeat center center;
+//         }
+//         &.event {
+//                 background: url(../images/calendar.png) no-repeat center center;
+//         }
+//         &.emailFrom {
+//                 background: url(../images/eventIcons/email_sent.png) no-repeat center center;
+//         }
+//         &.quotes {
+//                 background: url(../images/quotes.png) no-repeat center center;
+//         }
+//         &.webactivity {
+//                 background: url(../images/action_webactivity.png) no-repeat center center;
+//         }
+//         &.overdue {
+//                 background: url(../images/actions.png) no-repeat center center;
+//         }
+//         &.time {
+//                 background: url(../images/action_time.png) no-repeat center center;
+//         }
+//         &.products {
+//                 background: url(../images/quotes.png) no-repeat center center;
+//         }
+// }

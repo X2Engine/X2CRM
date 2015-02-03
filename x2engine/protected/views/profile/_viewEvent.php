@@ -1,7 +1,7 @@
 <?php
 /*****************************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2015 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -166,7 +166,7 @@ $important = $data->important ? 'important-action' : '';
             if ($fileName == 'quote')
                 $fileName = 'quotes';
             if (file_exists('themes/' . Yii::app()->theme->name . '/images/' . $fileName . '.png')) {
-                echo "<div class='img-box plus-sign'></div>";
+                // echo "<div class='img-box plus-sign'></div>";
             }
         }
         if ($data->type == 'calendar_event') {
@@ -177,9 +177,10 @@ $important = $data->important ? 'important-action' : '';
         <?php
         if (!empty($avatar) && $data->type == 'feed') { // add css class to uploaded avatar images to round corners
             $CSSClass = $avatar == 'uploads/default.png' ? 'default-avatar-image' : 'avatar-image';
-            echo CHtml::image(Yii::app()->request->baseUrl . "/" . $avatar, '', array('class' => $CSSClass, 'height' => 45, 'width' => 45));
+            echo CHtml::image(Yii::app()->request->baseUrl . "/" . $avatar, '', array('class' => $CSSClass, 'height' => 35, 'width' => 35));
         }
         ?>
+        <div class='stacked-icon'></div>
     </div>
     <div class="event-text-box">
         <div class="deleteButton">
@@ -198,9 +199,10 @@ $important = $data->important ? 'important-action' : '';
             ?>
         </span>
         <div class='event-bottom-row'>
-            <span class="comment-age" id="<?php echo $data->id . "-" . $data->timestamp; ?>" 
-                  style="<?php echo $style; ?>">
-                      <?php echo Formatter::formatFeedTimestamp($data->timestamp); ?>
+            <span class="comment-age x2-hint" id="<?php echo $data->id . "-" . $data->timestamp; ?>" 
+                  style="<?php echo $style; ?>"
+                  title="<?php echo Formatter::formatFeedTimestamp($data->timestamp); ?>">
+                  <?php echo Formatter::formatFeedTimestamp($data->timestamp); ?>
             </span> 
             <span>
                 

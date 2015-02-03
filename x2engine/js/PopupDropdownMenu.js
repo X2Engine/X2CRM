@@ -1,6 +1,6 @@
 /*****************************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2015 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -145,11 +145,13 @@ PopupDropdownMenu.prototype._positionMenu = function () {
  */
 PopupDropdownMenu.prototype._setUpOpenButtonBehavior = function () {
     var that = this; 
-    that._openButton.click (function (evt) {
+    that._openButton.unbind ('click.PopupDropdownMenu._setUpOpenButtonBehavior').
+        bind ('click.PopupDropdownMenu._setUpOpenButtonBehavior', function (evt) {
+
         evt.preventDefault ();
         if (!that._containerElem.is (':visible')) {
             that._positionMenu ();
-            that._containerElem.fadeIn ();
+            that._containerElem.fadeIn (100);
             if (that.autoClose) {
                 $(document).one ('click', function () {
                     that.close ();

@@ -1,6 +1,6 @@
 /*****************************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2015 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -44,10 +44,13 @@
  */
 function GridViewWidget (argsDict) {
     var defaultArgs = {
+        showHeader: true,
+        hideFullHeader: false,
+        compactResultsPerPage: false
     };
     auxlib.applyArgs (this, defaultArgs, argsDict);
-
 	SortableWidget.call (this, argsDict);	
+    this.gridElem$ = this.element.find ('.x2-gridview');
 }
 
 GridViewWidget.prototype = auxlib.create (SortableWidget.prototype);
@@ -69,10 +72,19 @@ Public instance methods
 Private instance methods
 */
 
+GridViewWidget.prototype.refresh = function () {
+    this._refreshGrid ();
+};
+
+GridViewWidget.prototype._refreshGrid = function () {
+    var that = this;
+    x2[that.widgetType + 'WidgetManager'].refreshWidget (this.getWidgetKey ());
+};
+
 /**
  * Instantiate grid settings dialog and set up behavior of grid settings widget menu option
  */
-SortableWidget.prototype._setUpGridSettings = function () {
+GridViewWidget.prototype._setUpGridSettings = function () {
     var that = this;
     var settingsDialog$ = $('#grid-settings-dialog-' + this.getWidgetKey ());          
     settingsDialog$.dialog ({
@@ -103,6 +115,22 @@ SortableWidget.prototype._setUpGridSettings = function () {
     });
 };
 
+GridViewWidget.prototype._setUpShowHeaderButton = function () {
+    var that = this;
+    
+    if (that.hideFullHeader)
+        that.element.find ('.items').first ().toggle(that.showHeader);
+    else
+        that.element.find ('.page-title, tr.filters').toggle(that.showHeader);
+    this.element.find ('.widget-settings-menu-content .hide-settings').click (function () {
+        that.showHeader = !that.showHeader;
+        that.setProperty('showHeader', that.showHeader ? 1 : 0);
+        if (that.hideFullHeader)
+            that.element.find ('.items').first ().toggle(that.showHeader);
+        else
+            that.element.find ('.page-title, tr.filters').toggle(that.showHeader);
+    });
+}
 
 GridViewWidget.prototype._setUpTitleBarBehavior = function () {
     if (this.element.find ('.grid-settings-button').length) {
@@ -111,3 +139,30 @@ GridViewWidget.prototype._setUpTitleBarBehavior = function () {
     SortableWidget.prototype._setUpTitleBarBehavior.call (this);
 };
 
+GridViewWidget.prototype._setUpSettingsBehavior = function () {
+    // detach the CGridView summary and move it to the widget settings menu
+    if (this.compactResultsPerPage) {
+        var settingsMenu$ = $(this.elementSelector + ' .widget-settings-menu-content');
+        settingsMenu$.find ('.results-per-page-container').empty ().append (
+            this.contentContainer.find ('.summary').detach ());
+    }
+
+    SortableWidget.prototype._setUpSettingsBehavior.call (this);
+};
+
+GridViewWidget.prototype._setUpPageSizeSelection = function () {
+    var that = this;
+    if (this.compactResultsPerPage) {
+        var settingsMenu$ = $(this.elementSelector + ' .widget-settings-menu-content');
+        settingsMenu$.find ('.results-per-page-container select').change (function () {
+            that.setProperty ('resultsPerPage', $(this).val ());
+        });
+    }
+};
+
+
+GridViewWidget.prototype._init = function () {
+    SortableWidget.prototype._init.call (this);
+    this._setUpShowHeaderButton ();
+    this._setUpPageSizeSelection ();
+};

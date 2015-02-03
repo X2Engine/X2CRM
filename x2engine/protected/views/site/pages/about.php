@@ -1,7 +1,7 @@
 <?php
 /*****************************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2015 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -41,14 +41,16 @@ $this->layout = '//layouts/column1';
 $this->pageTitle=Yii::app()->settings->appName . ' - ' . Yii::t('app','About');
 ?>
 <?php
-$logo = Yii::app()->baseUrl.'/images/x2engine_crm.png';
-if(Yii::app()->edition !== 'opensource') {
-	$logo = Yii::app()->baseUrl.'/images/x2engine_crm_'.Yii::app()->edition.'.png';
-}
+$logo = Yii::app()->baseUrl.'/images/x2engine.png';
+
 ?>
 <div id='icon-container'>
 <?php
-echo CHtml::image($logo,'');
+if (ThemeGenerator::isThemed()) {
+	echo X2Html::x2icon('x2-logo-square', array('id' => 'x2-about-logo'));
+} else {
+	echo CHtml::image($logo,'');
+}
 ?>
 </div>
 <?php
@@ -212,6 +214,7 @@ Yii::app()->clientScript->registerScript('loadJqueryVersion',"$('#jqueryVersion'
 <?php //echo Yii::t('app','X2Engine Inc. is headquartered in beautiful Santa Cruz, California. We really enjoy meeting customers and partners whenever possible and encourage you to visit our offices when you find yourself in the San Francisco bay area.');
 ?>
 </div>
+<div class='clear'></div>
 
 
 

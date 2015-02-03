@@ -18,6 +18,7 @@
 	border-color: $colors[lighter_content]
 }
 
+
 #activity-feed-container .view.important-action {
 	background: $colors[opaque_highlight2]	
 }
@@ -51,9 +52,33 @@
 	color: $colors[text]
 }
 
-
 .activity-feed .inactive-icon {
 	color: $colors[link]
 }
+
+
+#activity-feed .calendar_event .date-box {
+	background: none !important;
+}
+
+#activity-feed .calendar_event .date-box {
+	border-color: $colors[link]
+}
+
+#activity-feed .calendar_event .date-box .month {
+	color: $colors[content]
+	background: $colors[link]
+	border-color: $colors[link]
+}
+
+#activity-feed .calendar_event .date-box .day{ 
+	background: $colors[content]
+	color: $colors[text]
+}
+
+#activity-feed .activity-feed > .img-box {
+	color: $colors[lighter_link]
+}
+
 
 "; ?>

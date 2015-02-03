@@ -134,4 +134,12 @@
 	border-color: $colors[border]
 }
 
+.icon-reference .icon-container { 
+	color: $colors[link]
+}
+
+.icon-reference .section-title { 
+	border-color: $colors[border]
+}
+
 "; ?>

@@ -1,6 +1,6 @@
 /*****************************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2015 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -339,8 +339,10 @@ x2.LayoutManager.prototype._setUpX2UIElements = function () {
 
 		if (window.fullscreen) {	// hide widgets
 			that.$body.addClass('no-widgets');
+			that.$body.removeClass('show-widgets');
 		} else if(that.pageMode != 0) {	// don't bring them back if the page is in compact mode
 			that.$body.removeClass('no-widgets');
+			that.$body.addClass('show-widgets');
 			$(document).trigger ('showWidgets');
 		}
 
@@ -448,9 +450,9 @@ x2.LayoutManager.prototype._setUpWindowResizeEvent = function () {
             if(that._historyMode !== newHistoryMode) {
                 that._historyMode = newHistoryMode;
                 if(that._historyMode === 1) {
-                    $(that._halfWidthSelector).addClass('half-width');
+                    //$(that._halfWidthSelector).addClass('half-width');
                 } else {
-                    $(that._halfWidthSelector).removeClass('half-width');
+                    //$(that._halfWidthSelector).removeClass('half-width');
                 }
             }
         };

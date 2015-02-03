@@ -1,7 +1,7 @@
 <?php
 /*****************************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2015 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -51,6 +51,7 @@ class GridViewSessionSettingsBehavior extends X2Settings {
      */
     public function saveSetting ($key, $val) {
         $uid = $this->getStatePrefix ();
+
         $gvSettings = CJSON::decode (Yii::app()->user->getState($uid));
         if (!is_array ($gvSettings))
             $gvSettings = array ();
@@ -66,6 +67,7 @@ class GridViewSessionSettingsBehavior extends X2Settings {
      */
     public function getSetting ($key) {
         $uid = $this->getStatePrefix ();
+
         $gvSettings = CJSON::decode (Yii::app()->user->getState($uid));
         if (is_array ($gvSettings) && isset ($gvSettings[$key])) {
             return $gvSettings[$key];

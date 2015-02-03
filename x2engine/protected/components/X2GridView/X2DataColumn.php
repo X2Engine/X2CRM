@@ -1,7 +1,7 @@
 <?php
 /*****************************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2015 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -72,6 +72,34 @@ class X2DataColumn extends CDataColumn {
         echo $value === null ? $this->grid->nullDisplay : $value; 
     }
 
+    /**
+     * This method is Copyright (c) 2008-2014 by Yii Software LLC
+     * http://www.yiiframework.com/license/ 
+     */
+	public function renderDataCell($row)
+	{
+		$data=$this->grid->dataProvider->data[$row];
+		$options=$this->htmlOptions;
+        /* x2modstart */  
+        if (isset ($options['title'])) 
+            $options['title'] = Expression::evaluate (
+                $options['title'], array('row'=>$row,'data'=>$data));
+        /* x2modend */ 
+		if($this->cssClassExpression!==null)
+		{
+			$class=$this->evaluateExpression($this->cssClassExpression,array('row'=>$row,'data'=>$data));
+			if(!empty($class))
+			{
+				if(isset($options['class']))
+					$options['class'].=' '.$class;
+				else
+					$options['class']=$class;
+			}
+		}
+		echo CHtml::openTag('td',$options);
+		$this->renderDataCellContent($row,$data);
+		echo '</td>';
+	}
     public function getData(){
         return $this->_data;
     }
@@ -170,5 +198,4 @@ class X2DataColumn extends CDataColumn {
                 parent::renderFilterCellContent();
         }
     }
-
 }

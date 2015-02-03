@@ -1,7 +1,7 @@
 <?php
 /*****************************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2015 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -35,6 +35,7 @@
  *****************************************************************************************/
 
  Yii::import ('application.components.X2Widget');
+ Yii::import ('application.components.sortableWidget.dataWidgets');
 
 /**
  * Base widget class for all of the profile widgets
@@ -54,6 +55,8 @@ abstract class SortableWidget extends X2Widget {
      */
     public static $position = null; 
 
+    public static $createByDefault = true;
+
     /**
      * @var string The type of widget that this is (profile). This value is used to detect the 
      *  view files and the profile model JSON property which stores the widget layout for widgets 
@@ -66,6 +69,11 @@ abstract class SortableWidget extends X2Widget {
      *      <widget type>WidgetLayout
      */
     public $widgetType;
+
+    /**
+     * @var SortableWidgetManager $widgetManager
+     */
+    public $widgetManager; 
 
     /**
      * @var string JS class which is used to manage the front-end behavior of this widget. This is 
@@ -237,6 +245,10 @@ abstract class SortableWidget extends X2Widget {
     }
 
     public static function subtypeIsValid ($widgetType, $widgetSubtype) {
+        if (in_array($widgetSubtype, SortableWidget::getWidgetSubtypes('data'))) {
+            return true;
+        }
+
         if ($widgetType === 'profile' && $widgetSubtype === 'TemplatesGridViewProfileWidget' ||
             in_array ($widgetSubtype, SortableWidget::getWidgetSubtypes ($widgetType))) {
 
@@ -316,7 +328,6 @@ abstract class SortableWidget extends X2Widget {
                 'minimized' => false, // required
                 'containerNumber' => 1,
                 'softDeleted' => false,
-
             );
         }
         return self::$_JSONPropertiesStructure;
@@ -344,9 +355,7 @@ abstract class SortableWidget extends X2Widget {
                     'profile' => $profile,
                     'widgetType' => $widgetType,
                 )
-        , $options ) 
-        );
-
+        , $options));
     }
 
     /**
@@ -657,7 +666,7 @@ abstract class SortableWidget extends X2Widget {
      */
     public function getPackages () {
         if (!isset ($this->_packages)) {
-            $this->_packages = array (
+            $this->_packages = array_merge (parent::getPackages (), array (
                 'auxlib' => array(
                     'baseUrl' => Yii::app()->request->baseUrl,
                     'js' => array(
@@ -669,9 +678,9 @@ abstract class SortableWidget extends X2Widget {
                     'js' => array(
                         'js/sortableWidgets/SortableWidget.js',
                     ),
-                    'depends' => array ('auxlib')
+                    'depends' => array ('auxlib', 'X2Widget')
                 ),
-            );
+            ));
         }
         return $this->_packages;
     }
@@ -716,7 +725,11 @@ abstract class SortableWidget extends X2Widget {
     public function registerSharedCss () {
         $sharedCss = $this->sharedCss;
         foreach ($sharedCss as $cssName => $css) {
-           Yii::app()->clientScript->registerCss($cssName, $css);
+            Yii::app()->clientScript->registerCss($cssName, $css);
+        }
+        foreach ($this->sharedCssFileNames as $filename) {
+            Yii::app()->clientScript->registerCssFile(
+                Yii::app()->theme->baseUrl.'/css/'.$filename); 
         }
     }
 
@@ -953,10 +966,12 @@ abstract class SortableWidget extends X2Widget {
     protected function getSettingsMenuContentEntries () {
         return ($this->relabelingEnabled ? 
             '<li class="relabel-widget-button">'.
+                X2Html::fa('fa-edit').
                 Yii::t('app', 'Rename Widget').
             '</li>' : '').
         ($this->canBeDeleted ? 
             '<li class="delete-widget-button">'.
+                X2Html::fa('fa-trash').
                 Yii::t('app', 'Delete Widget').
             '</li>' : '');
     }
@@ -986,6 +1001,19 @@ abstract class SortableWidget extends X2Widget {
     }
 
     /**
+     * Returns paths of shared css files relative to themes/x2engine/css. 
+     */
+    protected $_sharedCssFileNames;
+    public function getSharedCssFileNames () {
+        if (!isset ($this->_sharedCssFileNames)) {
+            $this->_sharedCssFileNames = array (
+                'components/sortableWidget/SortableWidget.css',
+            );
+        }
+        return $this->_sharedCssFileNames;
+    }
+
+    /**
      * Magic getter. Returns this widget's shared css
      * @return array key is the proposed name of the css string which should be passed as the first
      *  argument to yii's registerCss. The value is the css string.
@@ -1002,12 +1030,7 @@ abstract class SortableWidget extends X2Widget {
                     }
 
                     .sortable-widget-container {
-                        border: 1px solid #c5c5c5;
-                        border-radius:            4px 4px 4px 4px;
-                        -moz-border-radius:        4px 4px 4px 4px;
-                        -webkit-border-radius:    4px 4px 4px 4px;
-                        -o-border-radius:        4px 4px 4px 4px ;
-                        margin-top: 10px;
+                        margin-bottom: 10px;
                     }
 
                     .widget-title-bar {
@@ -1102,9 +1125,6 @@ abstract class SortableWidget extends X2Widget {
         return $this->_translations;
     }
 
-    /**
-     * Magic getter.
-     */
     protected function getJSSortableWidgetParams () {
         if (!isset ($this->_JSSortableWidgetParams)) {
             $this->_JSSortableWidgetParams = array (
@@ -1120,6 +1140,12 @@ abstract class SortableWidget extends X2Widget {
             );
         }
         return $this->_JSSortableWidgetParams;
+    }
+
+    public function init () {
+        if (!isset ($this->namespace))
+            $this->namespace = $this->getWidgetKey ();
+        parent::init ();
     }
 
 }

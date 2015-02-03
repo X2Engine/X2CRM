@@ -1,7 +1,7 @@
 <?php
 /*****************************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2015 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -48,6 +48,7 @@ Yii::app()->clientScript->registerResponsiveCss('responsiveActionsCss',"
 
     #action-list > .items {
         margin-right: 0 !important;
+        border: none !important;
     }
 
 }
@@ -97,7 +98,7 @@ $this->widget('zii.widgets.CListView', array(
             'afterAjaxUpdate'=>'js:function(){
                 clickedFlag=false;
                 lastClass="";
-                $(\'#advanced-controls\').after(\'<div class="form" id="action-view-pane" style="float:right;width:0px;display:none;padding:0px;"></div>\');
+                $(\'#advanced-controls\').after(\'<div class="form x2-layout-island" id="action-view-pane" style="float:right;width:0px;display:none;padding:0px;"></div>\');
             }',
         'pager' => array(
                     'class' => 'ext.infiniteScroll.IasPager',
@@ -202,10 +203,13 @@ $this->widget('zii.widgets.CListView', array(
 		width:99%;
 		height:800px;
 	}
+
+
     #action-list .items{
         clear:none;
         max-height:800px;
         overflow-y:auto;
+        border: none;
     }
     #action-list .view{
         clear:none;

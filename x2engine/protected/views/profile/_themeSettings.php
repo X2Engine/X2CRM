@@ -1,7 +1,7 @@
 <?php
 /*****************************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2015 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -71,13 +71,18 @@ $settings = ThemeGenerator::$settingsList;
 
 $themes = $myThemes->data;
 foreach($themes as $theme){
+	$scheme = CJSON::decode ($theme->description);
+	if (!is_array($scheme)){
+		continue;
+	}
+
 	$fileName = $theme->fileName;
 	if (strlen($fileName) > 15) {
 		$fileName = substr($fileName, 0, 15).'...';
 	}
 
+
 	$uploadedBy = $theme->uploadedBy;
-	$scheme = CJSON::decode ($theme->description);
 
 	echo CHtml::openTag ('div', array(
 		'class'=>"scheme-container",

@@ -28,6 +28,10 @@
 	background: $colors[highlight1]
 }	
 
+.ui-dialog input {
+	border-color: $colors[border]
+}
+
 
 ul.open {
 	background: $colors[highlight1]

@@ -1,6 +1,6 @@
 /*****************************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2015 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -375,8 +375,8 @@ LineItems.prototype.addLineItem = function (
     $firstCell = lineItemRow.append ($("<td>", {'class': 'first-cell'}));
     if (!that.readOnly) {
         $firstCell.find ('td').append (
-            $("<img>", {src: that.deleteImageSource, 'class': 'item-delete-button'}),
-            $("<img>", {src: that.arrowBothImageSource, 'class': 'handle arrow-both-handle'})
+            $("<span>", {'class': 'fa fa-times x2-delete-icon item-delete-button'}),
+            $("<span>", {'class': 'fa fa-arrows-v handle arrow-both-handle'})
         );
     }
     $inputCell = lineItemRow.append ($("<td>", {'class': 'x2-2nd-child input-cell'}).append (
@@ -569,8 +569,8 @@ LineItems.prototype.addAdjustment = function (
     $firstCell = lineItemRow.append ($("<td>", {'class': 'first-cell'}));
     if (!that.readOnly) {
         $firstCell.find ('td').append (
-            $("<img>", {src: that.deleteImageSource, 'class': 'item-delete-button'}),
-            $("<img>", {src: that.arrowBothImageSource, 'class': 'handle arrow-both-handle'})
+            $("<span>", {'class': 'fa fa-times x2-delete-icon item-delete-button'}),
+            $("<span>", {'class': 'fa fa-arrows-v handle arrow-both-handle'})
         );
     }
     lineItemRow.append ($("<td>"));

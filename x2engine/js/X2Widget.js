@@ -1,6 +1,6 @@
 /*****************************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2015 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -38,7 +38,6 @@
  */
 
 if (typeof x2 === 'undefined') x2 = {};
-
 x2.Widget = (function () {
 
 function Widget (argsDict) {
@@ -49,7 +48,7 @@ function Widget (argsDict) {
          * @var mixed css selector for pill box container element, the DOM node itself, or jQuery
          */
         element: null,
-        namespace: null
+        namespace: ''
     };
     auxlib.applyArgs (this, defaultArgs, argsDict);
 
@@ -58,6 +57,14 @@ function Widget (argsDict) {
 }
 
 Widget.dataKey = 'x2-widget';
+
+Widget.prototype.resolveIds = function (selector) {
+    return selector.replace (/#/, '#' + this.namespace);
+};
+
+Widget.prototype.resolveId = function (id) {
+    return '#' + this.namespace + id;
+};
 
 /**
  * Returns Widget instance associated with jQuery object

@@ -1,7 +1,7 @@
 <?php
 /*****************************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2015 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -80,6 +80,8 @@ $cssString = "
     div.icon-reference .icon-container {
         float: left;
         height: 60px;
+        font-size: 30px;
+        color: #004baf; // darkBlue in colors.scss
     }
  
     div.icon-reference .icon-description {
@@ -96,9 +98,19 @@ $cssString = "
         line-height: 14px;
     }
 
+    .img-box .stacked-icon {
+        top: 32px;
+    }
+
+    .icon-reference .section-title {
+        background: none;
+    }
+
+
 ";
 
-Yii::app()->clientScript->registerCss('icon-reference-css', $cssString);
+Yii::app()->clientScript->registerCss ('icon-reference-css', $cssString);
+
 
 ?>
 
@@ -114,7 +126,7 @@ Yii::app()->clientScript->registerCss('icon-reference-css', $cssString);
     <div class="column1 cell">
         <div class="row">
             <div class="icon-container">
-                <?php echo "<img src='" . Yii::app()->request->baseUrl.'/themes/x2engine/images/accounts.png' . "'/>"; ?>
+                <?php echo X2Html::fa('fa-building'); ?>
             </div>
             <div class="icon-description">
                 <p> <?php echo CHtml::link (Yii::t('accounts', 'Accounts'), array ('/accounts/accounts/index')); ?> </p>
@@ -122,7 +134,7 @@ Yii::app()->clientScript->registerCss('icon-reference-css', $cssString);
         </div>
         <div class="row">
             <div class="icon-container">
-                <?php echo "<img src='" . Yii::app()->request->baseUrl.'/themes/x2engine/images/eventIcons/feed.png' . "'/>"; ?>
+                <?php echo X2Html::x2icon('activity') ?>
             </div>
             <div class="icon-description">
                 <p> <?php echo CHtml::link (Yii::t('app', 'Activity Feed'), array ('/profile/view', 'id' => Yii::app()->user->getId())); ?> </p>
@@ -130,7 +142,7 @@ Yii::app()->clientScript->registerCss('icon-reference-css', $cssString);
         </div>
         <div class="row">
             <div class="icon-container">
-                <?php echo "<img src='" . Yii::app()->request->baseUrl.'/themes/x2engine/images/actions.png' . "'/>"; ?>
+                <?php echo X2Html::fa('fa-play-circle') ?>
             </div>
             <div class="icon-description">
                 <p> <?php echo CHtml::link (Yii::t('app', 'Actions'), array ('/actions/actions/index')); ?> </p>
@@ -138,7 +150,7 @@ Yii::app()->clientScript->registerCss('icon-reference-css', $cssString);
         </div>
         <div class="row">
             <div class="icon-container">
-                <?php echo "<img src='" . Yii::app()->request->baseUrl.'/themes/x2engine/images/calendar.png' . "'/>"; ?>
+                <?php echo X2Html::fa('fa-calendar-o') ?>
             </div>
             <div class="icon-description">
                 <p> <?php echo CHtml::link (Yii::t('calendar', 'Calendar'), array ('/calendar/calendar/index')); ?> </p>
@@ -146,15 +158,15 @@ Yii::app()->clientScript->registerCss('icon-reference-css', $cssString);
         </div>
         <div class="row">
             <div class="icon-container">
-                <?php echo "<img src='" . Yii::app()->request->baseUrl.'/themes/x2engine/images/charts.png' . "'/>"; ?>
+                <?php echo X2Html::fa('fa-bar-chart') ?>
             </div>
             <div class="icon-description">
-                <p> <?php echo CHtml::link (Yii::t('app', 'Charts'), array ('/reports/chartDashboard')); ?> </p>
+                <p> <?php echo Yii::t('app', 'Charts'); ?> </p>
             </div>
         </div>
         <div class="row">
             <div class="icon-container">
-                <?php echo "<img src='" . Yii::app()->request->baseUrl.'/themes/x2engine/images/contacts.png' . "'/>"; ?>
+                <?php echo X2Html::x2icon('contact') ?>
             </div>
             <div class="icon-description">
                 <p> <?php echo CHtml::link (Yii::t('contacts', 'Contacts'), array ('/contacts/contacts/index')); ?> </p>
@@ -162,7 +174,7 @@ Yii::app()->clientScript->registerCss('icon-reference-css', $cssString);
         </div>
         <div class="row">
             <div class="icon-container">
-                <?php echo "<img src='" . Yii::app()->request->baseUrl.'/themes/x2engine/images/docs.png' . "'/>"; ?>
+                <?php echo X2Html::fa('fa-file-o') ?>
             </div>
             <div class="icon-description">
                 <p> <?php echo CHtml::link (Yii::t('docs', 'Docs'), array ('/docs/docs/index')); ?> </p>
@@ -170,7 +182,7 @@ Yii::app()->clientScript->registerCss('icon-reference-css', $cssString);
         </div>
         <div class="row">
             <div class="icon-container">
-                <?php echo "<img src='" . Yii::app()->request->baseUrl.'/themes/x2engine/images/groups.png' . "'/>"; ?>
+                <?php echo X2Html::fa('fa-users'); ?>
             </div>
             <div class="icon-description">
                 <p> <?php echo CHtml::link (Yii::t('app', 'Groups'), array ('/groups/groups/index')); ?> </p>
@@ -180,7 +192,7 @@ Yii::app()->clientScript->registerCss('icon-reference-css', $cssString);
     <div class="cell">
         <div class="row">
             <div class="icon-container">
-                <?php echo "<img src='" . Yii::app()->request->baseUrl.'/themes/x2engine/images/eventIcons/media.png' . "'/>"; ?>
+                <?php echo X2Html::fa('fa-music'); ?>
             </div>
             <div class="icon-description">
                 <p> <?php echo CHtml::link (Yii::t('app', 'Media'), array ('/media/media/index')); ?> </p>
@@ -188,7 +200,7 @@ Yii::app()->clientScript->registerCss('icon-reference-css', $cssString);
         </div>
         <div class="row">
             <div class="icon-container">
-                <?php echo "<img src='" . Yii::app()->request->baseUrl.'/themes/x2engine/images/marketing.png' . "'/>"; ?>
+                <?php echo X2Html::fa('fa-bullhorn') ?>
             </div>
             <div class="icon-description">
                 <p> <?php echo CHtml::link (Yii::t('app', 'Marketing'), array ('/marketing/marketing/index')); ?> </p>
@@ -196,7 +208,7 @@ Yii::app()->clientScript->registerCss('icon-reference-css', $cssString);
         </div>
         <div class="row">
             <div class="icon-container">
-                <?php echo "<img src='" . Yii::app()->request->baseUrl.'/themes/x2engine/images/opportunities.png' . "'/>"; ?>
+                <?php echo X2Html::fa('fa-bullseye'); ?>
             </div>
             <div class="icon-description">
                 <p> <?php echo CHtml::link (Yii::t('opportunities', 'Opportunities'), array ('/opportunities/opportunities/index')); ?> </p>
@@ -204,7 +216,7 @@ Yii::app()->clientScript->registerCss('icon-reference-css', $cssString);
         </div>
         <div class="row">
             <div class="icon-container">
-                <?php echo "<img src='" . Yii::app()->request->baseUrl.'/themes/x2engine/images/products.png' . "'/>"; ?>
+                <?php echo X2Html::x2icon('package'); ?>
             </div>
             <div class="icon-description">
                 <p> <?php echo CHtml::link (Yii::t('products', 'Products'), array ('/products/products/index')); ?> </p>
@@ -212,7 +224,7 @@ Yii::app()->clientScript->registerCss('icon-reference-css', $cssString);
         </div>
         <div class="row">
             <div class="icon-container">
-                <?php echo "<img src='" . Yii::app()->request->baseUrl.'/themes/x2engine/images/eventIcons/quote_emailed.png' . "'/>"; ?>
+                <?php echo X2Html::x2icon('quotes'); ?>
             </div>
             <div class="icon-description">
                 <p> <?php echo CHtml::link (Yii::t('quotes', 'Quotes'), array ('/quotes/quotes/index')); ?> </p>
@@ -220,7 +232,7 @@ Yii::app()->clientScript->registerCss('icon-reference-css', $cssString);
         </div>
         <div class="row">
             <div class="icon-container">
-                <?php echo "<img src='" . Yii::app()->request->baseUrl.'/themes/x2engine/images/services.png' . "'/>"; ?>
+                <?php echo X2Html::x2icon('service'); ?>
             </div>
             <div class="icon-description">
                 <p> <?php echo CHtml::link (Yii::t('help', 'Services'), array ('/services/services/index')); ?> </p>
@@ -228,7 +240,7 @@ Yii::app()->clientScript->registerCss('icon-reference-css', $cssString);
         </div>
         <div class="row">
             <div class="icon-container">
-                <?php echo "<img src='" . Yii::app()->request->baseUrl.'/themes/x2engine/images/workflow.png' . "'/>"; ?>
+                <?php echo X2Html::x2icon('funnel'); ?>
             </div>
             <div class="icon-description">
                 <p> <?php echo CHtml::link (Yii::t('workflow', 'Process'), array ('/workflow/workflow/index')); ?> </p>
@@ -237,174 +249,61 @@ Yii::app()->clientScript->registerCss('icon-reference-css', $cssString);
     </div>
 </div>
 
+<?php 
+Yii::app()->clientScript->registerCssFile (Yii::app()->theme->baseUrl.'/css/activityFeed.css');
 
-<div id="icon-reference-section-2" class="icon-reference form p-20">
+/* The event icons are assigned in activityFeed.css, so this way reuses the assignments there */
+
+$arr1 = array (
+    'action_complete'    => 'Action Completed',
+    'action_reminder'    => 'Action Reminder',
+    'generic_calendar_event'     => 'Calendar Event',
+    'doc_update'         => 'Document Updated',
+    'email_from'         => 'Email Received',
+    'email_sent'         => 'Email Sent',
+    'record_create'      => 'Record Created',
+    'record_deleted'     => 'Record Deleted',
+);
+
+
+$arr2 = array (
+    'notif'              => 'Notification',
+    'web_activity'       => 'Web Activity',
+    'weblead_create'     => 'Web Lead Created',
+    'case_escalated'     => 'Case Escalated',
+    'email_opened'       => 'Email Opened',
+    'workflow_revert'    => 'Workflow Reverted',
+    'workflow_complete'  => 'Workflow Completed',
+    'workflow_start'     => 'Workflow Started',
+);
+
+
+function echoIcons ($array) {
+    foreach($array as $key => $value) {
+        echo "<div class='row'>
+            <div class='img-box $key'>
+                <div class='stacked-icon'></div>
+            </div>
+            <div class='icon-description'>
+                <p> 
+                    ".Yii::t ('help', $value)."
+                </p>
+            </div>
+        </div>";
+    }
+}
+?>
+
+
+<div id="activity-feed-container" class="icon-reference form p-20">
     <h2 class="section-title"> 
         <?php echo Yii::t ('help', 'Events'); ?>
     </h2>
     <div class="column1 cell">
-        <div class="row">
-            <div class="icon-container">
-                <?php echo "<img src='" . Yii::app()->request->baseUrl.'/themes/x2engine/images/eventIcons/action_complete.png' . "'/>"; ?>
-            </div>
-            <div class="icon-description">
-                <p> 
-                    <?php echo Yii::t ('help', 'Action Completed'); ?>
-                </p>
-            </div>
-        </div>
-        <div class="row">
-            <div class="icon-container">
-                <?php echo "<img src='" . Yii::app()->request->baseUrl.'/themes/x2engine/images/eventIcons/action_reminder.png' . "'/>"; ?>
-            </div>
-            <div class="icon-description">
-                <p> 
-                    <?php echo Yii::t ('help', 'Action Reminder'); ?>
-                </p>
-            </div>
-        </div>
-        <div class="row">
-            <div class="icon-container">
-                <?php echo "<img src='" . Yii::app()->request->baseUrl.'/themes/x2engine/images/eventIcons/calendar_event.png' . "'/>"; ?>
-            </div>
-            <div class="icon-description">
-                <p> 
-                    <?php echo Yii::t ('help', 'Calendar Event'); ?>
-                </p>
-            </div>
-        </div>
-        <div class="row">
-            <div class="icon-container">
-                <?php echo "<img src='" . Yii::app()->request->baseUrl.'/themes/x2engine/images/eventIcons/case_escalated.png' . "'/>"; ?>
-            </div>
-            <div class="icon-description">
-                <p> 
-                    <?php echo Yii::t ('help', 'Case Escalated'); ?>
-                </p>
-            </div>
-        </div>
-        <div class="row">
-            <div class="icon-container">
-                <?php echo "<img src='" . Yii::app()->request->baseUrl.'/themes/x2engine/images/eventIcons/doc_update.png' . "'/>"; ?>
-            </div>
-            <div class="icon-description">
-                <p> 
-                    <?php echo Yii::t ('help', 'Document Updated'); ?>
-                </p>
-            </div>
-        </div>
-        <div class="row">
-            <div class="icon-container">
-                <?php echo "<img src='" . Yii::app()->request->baseUrl.'/themes/x2engine/images/eventIcons/email_from.png' . "'/>"; ?>
-            </div>
-            <div class="icon-description">
-                <p> 
-                    <?php echo Yii::t ('help', 'Email Received'); ?>
-                </p>
-            </div>
-        </div>
-        <div class="row">
-            <div class="icon-container">
-                <?php echo "<img src='" . Yii::app()->request->baseUrl.'/themes/x2engine/images/eventIcons/email_opened.png' . "'/>"; ?>
-            </div>
-            <div class="icon-description">
-                <p> 
-                    <?php echo Yii::t ('help', 'Email Opened'); ?>
-                </p>
-            </div>
-        </div>
-        <div class="row">
-            <div class="icon-container">
-                <?php echo "<img src='" . Yii::app()->request->baseUrl.'/themes/x2engine/images/eventIcons/email_sent.png' . "'/>"; ?>
-            </div>
-            <div class="icon-description">
-                <p> 
-                    <?php echo Yii::t ('help', 'Email Sent'); ?>
-                </p>
-            </div>
-        </div>
+        <?php echoIcons($arr1); ?>
     </div>
     <div class="cell">
-        <div class="row">
-            <div class="icon-container">
-                <?php echo "<img src='" . Yii::app()->request->baseUrl.'/themes/x2engine/images/eventIcons/notif.png' . "'/>"; ?>
-            </div>
-            <div class="icon-description">
-                <p> 
-                    <?php echo Yii::t ('help', 'Notification'); ?>
-                </p>
-            </div>
-        </div>
-        <div class="row">
-            <div class="icon-container">
-                <?php echo "<img src='" . Yii::app()->request->baseUrl.'/themes/x2engine/images/eventIcons/record_create.png' . "'/>"; ?>
-            </div>
-            <div class="icon-description">
-                <p> 
-                    <?php echo Yii::t ('help', 'Record Created'); ?>
-                </p>
-            </div>
-        </div>
-        <div class="row">
-            <div class="icon-container">
-                <?php echo "<img src='" . Yii::app()->request->baseUrl.'/themes/x2engine/images/eventIcons/record_deleted.png' . "'/>"; ?>
-            </div>
-            <div class="icon-description">
-                <p> 
-                    <?php echo Yii::t ('help', 'Record Deleted'); ?>
-                </p>
-            </div>
-        </div>
-        <div class="row">
-            <div class="icon-container">
-                <?php echo "<img src='" . Yii::app()->request->baseUrl.'/themes/x2engine/images/eventIcons/web_activity.png' . "'/>"; ?>
-            </div>
-            <div class="icon-description">
-                <p> 
-                    <?php echo Yii::t ('app', 'Web Activity'); ?>
-                </p>
-            </div>
-        </div>
-        <div class="row">
-            <div class="icon-container">
-                <?php echo "<img src='" . Yii::app()->request->baseUrl.'/themes/x2engine/images/eventIcons/weblead_create.png' . "'/>"; ?>
-            </div>
-            <div class="icon-description">
-                <p> 
-                    <?php echo Yii::t ('help', 'Web Lead Created'); ?>
-                </p>
-            </div>
-        </div>
-        <div class="row">
-            <div class="icon-container">
-                <?php echo "<img src='" . Yii::app()->request->baseUrl.'/themes/x2engine/images/eventIcons/workflow_revert.png' . "'/>"; ?>
-            </div>
-            <div class="icon-description">
-                <p> 
-                    <?php echo Yii::t ('app', 'Workflow Reverted'); ?>
-                </p>
-            </div>
-        </div>
-        <div class="row">
-            <div class="icon-container">
-                <?php echo "<img src='" . Yii::app()->request->baseUrl.'/themes/x2engine/images/eventIcons/workflow_start.png' . "'/>"; ?>
-            </div>
-            <div class="icon-description">
-                <p> 
-                    <?php echo Yii::t ('app', 'Workflow Started'); ?>
-                </p>
-            </div>
-        </div>
-        <div class="row">
-            <div class="icon-container">
-                <?php echo "<img src='" . Yii::app()->request->baseUrl.'/themes/x2engine/images/eventIcons/workflow_complete.png' . "'/>"; ?>
-            </div>
-            <div class="icon-description">
-                <p> 
-                    <?php echo Yii::t ('help', 'Workflow Completed'); ?>
-                </p>
-            </div>
-        </div>
+        <?php echoIcons($arr2); ?>
     </div>
 </div>
 

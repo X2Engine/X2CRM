@@ -1,7 +1,7 @@
 <?php
 /*****************************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2015 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -36,14 +36,15 @@
 
 $canEdit = $model->id == Yii::app()->user->getId() || Yii::app()->params->isAdmin;
 
-$this->actionMenu = array(
-    array('label' => Yii::t('profile', 'View Profile'), 'url' => array('view', 'id' => $model->id)),
-    array('label' => Yii::t('profile', 'Edit Profile'), 'url' => array('update', 'id' => $model->id), 'visible' => $canEdit),
-    array('label' => Yii::t('profile', 'Change Settings'), 'url' => array('settings', 'id' => $model->id), 'visible' => ($model->id == Yii::app()->user->getId())),
-    array('label' => Yii::t('profile', 'Change Password'), 'visible' => ($model->id == Yii::app()->user->getId())),
-    array('label' => Yii::t('profile', 'Manage Apps'), 'url' => array('manageCredentials')),
-    
-);
+$this->insertActionMenu();
+// $this->actionMenu = array(
+//     array('label' => Yii::t('profile', 'View Profile'), 'url' => array('view', 'id' => $model->id)),
+//     array('label' => Yii::t('profile', 'Edit Profile'), 'url' => array('update', 'id' => $model->id), 'visible' => $canEdit),
+//     array('label' => Yii::t('profile', 'Change Settings'), 'url' => array('settings', 'id' => $model->id), 'visible' => ($model->id == Yii::app()->user->getId())),
+//     array('label' => Yii::t('profile', 'Change Password'), 'visible' => ($model->id == Yii::app()->user->getId())),
+//     array('label' => Yii::t('profile', 'Manage Apps'), 'url' => array('manageCredentials')),
+//     
+// );
 ?>
 <div class="page-title icon profile"><h2><?php echo Yii::t('profile', 'Change Password Form'); ?></h2></div>
 <?php echo CHtml::form(); ?>

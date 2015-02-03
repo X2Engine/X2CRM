@@ -1,7 +1,7 @@
 <?php
 /*****************************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2015 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -181,6 +181,14 @@ class X2Html extends CHtml {
      */
 	public static function dropDownList($name,$select,$data,$htmlOptions=array())
 	{
+        /* x2modstart */ 
+        if (isset($htmlOptions['class']) ) {
+            $htmlOptions['class'] .= ' x2-select';
+        } else {
+            $htmlOptions['class'] = 'x2-select';
+        }
+        /* x2modend */ 
+
 		$htmlOptions['name']=$name;
 
 		if(!isset($htmlOptions['id']))
@@ -219,12 +227,13 @@ class X2Html extends CHtml {
      */
 	public static function activeDropDownList($model,$attribute,$data,$htmlOptions=array())
 	{
-        if ( isset($htmlOptions['class'] ) ) {
+        /* x2modstart */ 
+        if (isset($htmlOptions['class']) ) {
             $htmlOptions['class'] .= ' x2-select';
         } else {
             $htmlOptions['class'] = 'x2-select';
         }
-
+        /* x2modend */ 
 
 		self::resolveNameID($model,$attribute,$htmlOptions);
 		$selection=self::resolveValue($model,$attribute);
@@ -339,26 +348,29 @@ class X2Html extends CHtml {
      * @return string
      */
     public static function activeDatePicker (
-        CModel $type, $attribute, array $htmlOptions = array (), $mode='date') {
+        CModel $type, $attribute, array $htmlOptions = array (), $mode='date', 
+        array $options = array ()) {
+
+        $options = array_merge (array(
+            'dateFormat' => Formatter::formatDatePicker(),
+            'changeMonth' => true,
+            'changeYear' => true,
+        ), $options);
 
         ob_start ();
         ob_implicit_flush(false);
         Yii::import ('application.extensions.CJuiDateTimePicker.CJuiDateTimePicker');
-        $renderWidget = function () use ($type, $attribute, $htmlOptions, $mode) {  
+        $renderWidget = function () use ($type, $attribute, $htmlOptions, $mode, $options) {  
             Yii::app()->controller->widget('CJuiDateTimePicker', array(
                 'model' => $type, 
                 'attribute' => $attribute, 
                 'mode' => $mode, 
-                'options' => array(
-                    'dateFormat' => Formatter::formatDatePicker(),
-                    'changeMonth' => true,
-                    'changeYear' => true,
-                ),
+                'options' => $options,
                 'htmlOptions' => $htmlOptions,
                 'language' => (Yii::app()->language == 'en') ? '' : Yii::app()->getLanguage(),
             ));
         };
-        if (isset ($_GET['ajax'])) { // process output if this is an ajax request
+        if (Yii::app()->controller->isAjaxRequest ()) { // process output if this is an ajax request
             X2Widget::ajaxRender ($renderWidget);
         } else {
             $renderWidget ();
@@ -399,6 +411,21 @@ class X2Html extends CHtml {
         return $html;
     }   
 
+    public static function popUpDropDown ($list, $htmlOptions=array()) { 
+        if (isset($htmlOptions['class'])) {
+            $htmlOptions['class'] .= ' popup-dropdown-menu';
+        } else {
+            $htmlOptions['class'] = 'popup-dropdown-menu';
+        }
+        
+        $ul = self::ul ($list);
+
+        return self::tag('div', $htmlOptions, $ul);
+
+
+    }
+
+
 
     /**
      * Create an font awesome icon tag
@@ -407,14 +434,31 @@ class X2Html extends CHtml {
      * @param string $optional content to be passed inside of the tag (not recommended)
      * @return string generated html content
      */
-    public static function fa($iconClass, $htmlOptions = array(), $content=' ') {
+    public static function fa($iconClass, $htmlOptions = array(), $content=' ', $tag='i') {
         if (!isset($htmlOptions['class'])) {
             $htmlOptions['class'] = '';
         }
         
         $htmlOptions['class'] .= " fa $iconClass";
+        return self::tag($tag, $htmlOptions, $content);
+    }
+
+    /**
+     * Create an custom icon tag
+     * @param string $iconClass name of icon such as 'contact' or 'activity'
+     * @param array $htmlOptions extra options to be passed to the tag
+     * @param string $optional content to be passed inside of the tag (not recommended)
+     * @return string generated html content
+     */
+    public static function x2icon($iconClass, $htmlOptions = array(), $content=' ') {
+        if (!isset($htmlOptions['class'])) {
+            $htmlOptions['class'] = '';
+        }
+        
+        $htmlOptions['class'] .= " icon-$iconClass";
         return self::tag('i', $htmlOptions, $content);
     }
+
 
     public static function IEBanner($ver = 9, $echo = true) {
         if (AuxLib::getIEVer() >= $ver) {
@@ -488,9 +532,85 @@ class X2Html extends CHtml {
         return $html;
     }
 
-
     public static function addErrorCss(&$htmlOptions) {
         return parent::addErrorCss ($htmlOptions);
     }
 
+    public static function quoteIcon () {
+        // return X2Html::x2icon('quotes');
+        return "
+            <span class='fa-stack quote-icon'>
+                <i class='fa fa-file-o fa-stack-1x fa-flip-horizontal'></i>
+                <i class='fa fa-pencil fa-stack-1x'></i>
+            </span>";
+    }
+
+    public static function activeRichTextArea (
+        CModel $model, $attribute, array $htmlOptions=array ()) {
+
+		Yii::app()->clientScript->registerScriptFile(
+            Yii::app()->getBaseUrl().'/js/emailEditor.js', CClientScript::POS_END);
+		Yii::app()->clientScript->registerScriptFile(
+            Yii::app()->getBaseUrl().'/js/ckeditor/ckeditor.js', CClientScript::POS_END);
+		Yii::app()->clientScript->registerScriptFile(
+            Yii::app()->getBaseUrl().'/js/ckeditor/adapters/jquery.js', CClientScript::POS_END);
+
+        if (isset ($htmlOptions['class'])) {
+            $htmlOptions['class'] .= ' x2-rich-textarea';
+        } else {
+            $htmlOptions['class'] = 'x2-rich-textarea';
+        }
+
+        if (!isset ($htmlOptions['width'])) {
+            $htmlOptions['width'] = '725px';
+        }
+        if (!isset ($htmlOptions['height'])) {
+            $htmlOptions['height'] = '125px';
+        }
+
+        return $this->textArea ($model, $attribute, $htmlOptions);
+    }
+
+    public static function minimizeButton (
+        array $htmlOptions=array (), $hideableSelector=null, $left=true, $defaultOpen=false) {
+
+        $orientation = $left ? 'left' : 'right';
+        if ($hideableSelector) {
+            $js = "$('$hideableSelector').toggle ();";
+        } else {
+            $js = "";
+        }
+        $html = 
+            X2Html::fa('fa-caret-'.$orientation, array_merge (array (
+                'style' => !$defaultOpen ? '' : 'display: none;',
+                'onClick' => '$(this).hide (); $(this).next ().show ();'.$js.
+                    '; event.stopPropagation (); event.preventDefault ();',
+            ), $htmlOptions)).
+            X2Html::fa('fa-caret-down', array_merge (array (
+                'style' => $defaultOpen ? '' : 'display: none;',
+                'onClick' => 
+                    '$(this).hide (); $(this).prev ().show ();'.$js.
+                    '; event.stopPropagation (); event.preventDefault ();',
+            ), $htmlOptions));
+        return $html;
+    }
+    
+    /**
+     * This method is Copyright (c) 2008-2014 by Yii Software LLC
+     * http://www.yiiframework.com/license/ 
+     */
+    public static function css($text, $media='', array $htmlOptions=array ())
+    {
+        if($media!=='')
+            $media=' media="'.$media.'"';
+        return "<style ".self::renderAttributes ($htmlOptions)
+            ." type=\"text/css\"{$media}>\n/*<![CDATA[*/\n{$text}\n/*]]>*/\n</style>";
+    }
+
+    public static function dynamicDate ($date) {
+        return '<span title="'.
+            CHtml::encode (Formatter::formatCompleteDate ($date)).'">'.
+            CHtml::encode (Formatter::formatDateDynamic ($date)).
+        '</span>';
+    }
 }

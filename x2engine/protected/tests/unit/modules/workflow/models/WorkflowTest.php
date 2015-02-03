@@ -1,7 +1,7 @@
 <?php
 /*****************************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2015 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -235,6 +235,7 @@ class WorkflowTest extends X2DbTestCase {
         // make record invisible
         $record = X2Model::getModelOfTypeWithId ($action->associationType, $action->associationId);
         $record->visibility = 0;
+        $record->assignedTo = 'admin';
         $this->assertSaves ($record);
 
         // ensure that admin user can still see the record
@@ -268,6 +269,40 @@ class WorkflowTest extends X2DbTestCase {
         $this->assertEquals (1, array_reduce ($counts, function ($a, $b) { return $a + $b; }, 0));
 
         TestingAuxLib::suLogin ('admin');
+    }
+
+    /**
+     * Tests a method in WorkflowController which belongs in the Workflow model class
+     */
+    public function testGetStageMemberDataProvider () {
+        $workflow = $this->workflows ('workflow2'); 
+        $workflowStatus = Workflow::getWorkflowStatus($workflow->id);
+        
+        $this->assertDataProviderCountMatchesStageCount ($workflow, $workflowStatus, 1);
+        $this->assertDataProviderCountMatchesStageCount ($workflow, $workflowStatus, 4);
+
+        // make record invisible
+        $action = Actions::model ()->findByAttributes (array (
+            'workflowId' => $workflow->id,
+            'complete' => 'No',
+            'stageNumber' => 4,
+        ));
+        $record = X2Model::getModelOfTypeWithId ($action->associationType, $action->associationId);
+        $record->visibility = 0;
+        $record->assignedTo = 'admin';
+        $this->assertSaves ($record);
+
+        $counts = $this->assertDataProviderCountMatchesStageCount ($workflow, $workflowStatus, 4);
+        $this->assertEquals (1, $counts[3]);
+
+        TestingAuxLib::suLogin ('testuser');
+        $counts = $this->assertDataProviderCountMatchesStageCount ($workflow, $workflowStatus, 4);
+        $this->assertEquals (0, $counts[3]);
+
+        $record->assignedTo = 'testuser';
+        $this->assertSaves ($record);
+        $counts = $this->assertDataProviderCountMatchesStageCount ($workflow, $workflowStatus, 4);
+        $this->assertEquals (1, $counts[3]);
     }
 
     private function assertDataProviderCountMatchesStageCount (
@@ -316,39 +351,6 @@ class WorkflowTest extends X2DbTestCase {
                 count ($accountsDataProvider->data));
 
         return $counts;
-    }
-
-    /**
-     * Tests a method in WorkflowController which belongs in the Workflow model class
-     */
-    public function testGetStageMemberDataProvider () {
-        $workflow = $this->workflows ('workflow2'); 
-        $workflowStatus = Workflow::getWorkflowStatus($workflow->id);
-        
-        $this->assertDataProviderCountMatchesStageCount ($workflow, $workflowStatus, 1);
-        $this->assertDataProviderCountMatchesStageCount ($workflow, $workflowStatus, 4);
-
-        // make record invisible
-        $action = Actions::model ()->findByAttributes (array (
-            'workflowId' => $workflow->id,
-            'complete' => 'No',
-            'stageNumber' => 4,
-        ));
-        $record = X2Model::getModelOfTypeWithId ($action->associationType, $action->associationId);
-        $record->visibility = 0;
-        $this->assertSaves ($record);
-
-        $counts = $this->assertDataProviderCountMatchesStageCount ($workflow, $workflowStatus, 4);
-        $this->assertEquals (1, $counts[3]);
-
-        TestingAuxLib::suLogin ('testuser');
-        $counts = $this->assertDataProviderCountMatchesStageCount ($workflow, $workflowStatus, 4);
-        $this->assertEquals (0, $counts[3]);
-
-        $record->assignedTo = 'testuser';
-        $this->assertSaves ($record);
-        $counts = $this->assertDataProviderCountMatchesStageCount ($workflow, $workflowStatus, 4);
-        $this->assertEquals (1, $counts[3]);
     }
 
 }

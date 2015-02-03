@@ -1,7 +1,7 @@
 <?php
 /*****************************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2015 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -34,6 +34,9 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 
+Yii::import ('application.modules.users.models.*');
+Yii::import ('application.modules.groups.models.*');
+
 /**
  * 
  * @package application.tests.unit.models
@@ -55,18 +58,26 @@ class RolesTest extends X2DbTestCase {
         $defaultTimeout = 60;
         Yii::app()->settings->timeout = $defaultTimeout;
         // admin's timeout should be the big one based on role
-        $this->assertEquals($this->role('longTimeout')->timeout, Roles::getUserTimeout($this->user('admin')->id));
+        $this->assertEquals(
+            $this->role('longTimeout')->timeout, 
+            Roles::getUserTimeout($this->user('admin')->id, false));
         // testuser's timeout should also be the big one, and not the "Peon"
         // role's timeout length
-        $this->assertEquals($this->role('longTimeout')->timeout, Roles::getUserTimeout($this->user('testUser')->id));
+        $this->assertEquals(
+            $this->role('longTimeout')->timeout,
+            Roles::getUserTimeout($this->user('testUser')->id, false));
         // testuser2's timeout should be the "Peon" role's timeout length
         // because that user has that role, and that role has a timeout longer
         // than the default timeout
-        $this->assertEquals($this->role('shortTimeout')->timeout, Roles::getUserTimeout($this->user('testUser2')->id));
+        $this->assertEquals(
+            $this->role('shortTimeout')->timeout,
+            Roles::getUserTimeout($this->user('testUser2')->id, false));
         // testuser3 should have no role. Here, let's ensure that in case the
         // fixtures have been modified otherwise
         RoleToUser::model()->deleteAllByAttributes(array('userId'=>$this->user('testUser3')->id));
-        $this->assertEquals($defaultTimeout,Roles::getUserTimeout($this->user('testUser3')->id));
+        $this->assertEquals(
+            $defaultTimeout,
+            Roles::getUserTimeout($this->user('testUser3')->id, false));
     }
 
     /**

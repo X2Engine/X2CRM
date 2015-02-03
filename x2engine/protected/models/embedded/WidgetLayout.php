@@ -1,7 +1,7 @@
 <?php
 /*****************************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2015 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -53,7 +53,6 @@ abstract class WidgetLayout extends JSONEmbeddedModel {
      */
     private function normalizeToWidgetJSONPropertiesStructures ($expectedFields, $currentFields) {
         $fields = array ();
-
         foreach ($currentFields as $key => $val) {
             // widget class name can optionally be followed by a sequence of digits. This is
             // used for widget cloning
@@ -67,9 +66,13 @@ abstract class WidgetLayout extends JSONEmbeddedModel {
             } 
         }
 
-        foreach ($expectedFields as $key => $val) {
-            if (!isset ($fields[$key])) {
-                $fields[$key] = $expectedFields[$key];
+        foreach ($expectedFields as $widgetClassName => $val) {
+            if (!$widgetClassName::$createByDefault) {
+                continue;
+            }
+
+            if (!isset ($fields[$widgetClassName])) {
+                $fields[$widgetClassName] = $expectedFields[$widgetClassName];
             }
         }
 
@@ -126,7 +129,11 @@ abstract class WidgetLayout extends JSONEmbeddedModel {
     private function removeExcludedFields (&$attribute) {
         // Templates Summary can be in saved json object but should not be added by default.
         // This is because templates summaries can be created but don't exist by default 
-        $excludeList = array ('TemplatesGridViewProfileWidget');
+        $excludeList = array (
+            'TemplatesGridViewProfileWidget',
+            'TransactionalViewWidget',
+            'RecordViewWidget',
+        );
         $attribute = array_diff_key ($attribute, array_flip ($excludeList));
     }
 

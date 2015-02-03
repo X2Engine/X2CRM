@@ -53,6 +53,18 @@ a#main-menu-nofif span {
 	color: #09f !important;
 }
 
+.three-user-menu-links {
+	background: $colors[highlight1];
+	border-bottom-color: $colors[darker_highlight1];
+}
+
+#top-menus-container {
+	background: $colors[highlight1];
+}
+
+#header #search-bar-title {
+	color: $colors[text]
+}
 
 
 "; ?>

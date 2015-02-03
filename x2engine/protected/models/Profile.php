@@ -1,7 +1,7 @@
 <?php
 /*****************************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2015 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -138,8 +138,13 @@ class Profile extends CActiveRecord {
                         'unhideTagsSectionExpanded'=>true, // preferences tag sub section
                         'x2flowShowLabels'=>true, // flow node labels
                         'profileInfoIsMinimized'=>false, // profile page profile info section
-                        'fullProfileInfo'=>false, // profile page profile info section
+                        // 'fullProfileInfo'=>false, // profile page profile info section
                         'perStageWorkflowView'=>true, // selected workflow view interface
+                        'columnWidth'=>50, // selected workflow view interface
+                        'recordViewColumnWidth'=>65, 
+                        'enableTransactionalView'=>false, 
+                        'enableJournalView'=>true, 
+                        'viewModeActionSubmenuOpen'=>true, 
                     ),
                 ),
                 'maintainCurrentFieldsOrder' => true
@@ -644,6 +649,9 @@ class Profile extends CActiveRecord {
                 ),
                 'SmallCalendar' => array(
                     'justMe' => 'false'
+                ),
+                'FilterControls' => array(
+                    'order' => array()
                 )
             );
     }
@@ -681,7 +689,7 @@ class Profile extends CActiveRecord {
     * @return Object widget settings object
     * @return String widget settings string (if $setting is set)
     */
-    public static function getWidgetSetting($widget, $setting){
+    public static function getWidgetSetting($widget, $setting=null){
         $widgetSettings = self::getWidgetSettings();
 
         // Check if the widget setting exists
@@ -944,6 +952,14 @@ class Profile extends CActiveRecord {
     function initLayout(){
         $layout = array(
             'left' => array(
+                'ProfileInfo' => array(
+                    'title' => 'Profile Info',
+                    'minimize' => false,
+                ),
+                'EmailInboxMenu' => array(
+                    'title' => 'Inbox Menu',
+                    'minimize' => false,
+                ),
                 'ActionMenu' => array(
                     'title' => 'Actions',
                     'minimize' => false,
@@ -954,10 +970,6 @@ class Profile extends CActiveRecord {
                 ),
                 'RecentItems' => array(
                     'title' => 'Recently Viewed',
-                    'minimize' => false,
-                ),
-                'EmailInboxMenu' => array(
-                    'title' => 'Inbox Menu',
                     'minimize' => false,
                 ),
                 'ActionTimer' => array(
@@ -1273,11 +1285,25 @@ class Profile extends CActiveRecord {
         }
     }
 
+    /**
+     * Renders the avatar image with max dimension 95x95
+     * @param int $id the profile id 
+     */
+    public static function renderEditableAvatar ($id) {
+        $userId = Yii::app()->user->id;
+
+        Yii::app()->controller->renderPartial('editableAvatar',
+            array('id' => $id, 'editable' => $id == $userId)
+        );
+    }
+
+
     public function getLastLogin () {
         return $this->user['lastLogin'];
     }
 
      
+
 
     /**
      * Return theme after checking for an enforced default 
@@ -1340,6 +1366,7 @@ class Profile extends CActiveRecord {
             $model = new Settings;
             $model->setAttributes ($attributes, false);
             $model->unpackAll ();
+            $model->save ();
         }
         return $model;
     }

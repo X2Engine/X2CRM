@@ -1,7 +1,7 @@
 <?php
 /*****************************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2015 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -33,17 +33,15 @@
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2Engine".
  *****************************************************************************************/
-
-$this->actionMenu = array(
-    array('label' => Yii::t('profile', 'View Profile'), 'url' => array('view', 'id' => $model->id)),
-    array('label' => Yii::t('profile', 'Edit Profile')),
-    array('label' => Yii::t('profile', 'Change Settings'), 'url' => array('settings', 'id' => $model->id), 'visible' => ($model->id == Yii::app()->user->id)),
-    array('label' => Yii::t('profile', 'Change Password'), 'url' => array('changePassword', 'id' => $model->id), 'visible' => ($model->id == Yii::app()->user->id)),
-    array('label' => Yii::t('profile', 'Manage Apps'), 'url' => array('manageCredentials')),
-    
-);
+$this->insertActionMenu();
 ?>
-<div class="page-title icon profile"><h2><?php echo Yii::t('profile', 'Update Your Profile'); ?></h2></div>
+<div class="page-title icon profile">
+<h2><?php echo Yii::t('profile', 'Update Your Profile ({name})', array(
+	'{name}' => $model->fullName
+)); ?></h2>
+</div>
 
-
-<?php echo $this->renderPartial('_form', array('model' => $model)); ?>
+<?php 
+Profile::renderEditableAvatar($model->id);
+echo $this->renderPartial('_form', array('model' => $model)); 
+?>

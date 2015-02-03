@@ -1,6 +1,6 @@
 /*****************************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2015 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -72,8 +72,8 @@ Public instance methods
  */
 PublisherEventTab.prototype.reset = function () {
     x2.PublisherTab.prototype.reset.call (this);
-    if ($('#association-type-autocomplete-container').length) {
-        $('#association-type-autocomplete-container').hide ();
+    if ($(this.resolveIds ('#association-type-autocomplete-container')).length) {
+        $(this.resolveIds ('#association-type-autocomplete-container')).hide ();
     }
 };
 
@@ -84,9 +84,9 @@ PublisherEventTab.prototype.reset = function () {
 PublisherEventTab.prototype.validate = function () {
     var errors = !x2.PublisherTab.prototype.validate.call (this);
 
-    if ($('#event-form-action-due-date').val () === '') {
+    if ($(this.resolveIds ('#event-form-action-due-date')).val () === '') {
         errors |= true;
-        $('#event-form-action-due-date').addClass ('error');
+        $(this.resolveIds ('#event-form-action-due-date')).addClass ('error');
         x2.forms.errorSummaryAppend (this._element, this.translations['startDateError']);
     }
 

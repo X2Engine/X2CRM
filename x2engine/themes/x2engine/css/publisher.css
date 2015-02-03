@@ -1,6 +1,6 @@
 /*****************************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2015 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -32,28 +32,407 @@
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2Engine".
  *****************************************************************************************/
-/* line 24, ../../../compass/themes/x2engine/css/publisher.scss */
+/*********************************************************************************
+ * Copyright (C) 2011-2014 X2Engine Inc. All Rights Reserved.
+ *
+ * X2Engine Inc.
+ * P.O. Box 66752
+ * Scotts Valley, California 95067 USA
+ *
+ * Company website: http://www.x2engine.com
+ * Community and support website: http://www.x2community.com
+ *
+ * X2Engine Inc. grants you a perpetual, non-exclusive, non-transferable license
+ * to install and use this Software for your internal business purposes.
+ * You shall not modify, distribute, license or sublicense the Software.
+ * Title, ownership, and all intellectual property rights in the Software belong
+ * exclusively to X2Engine.
+ *
+ * THIS SOFTWARE IS PROVIDED "AS IS" AND WITHOUT WARRANTIES OF ANY KIND, EITHER
+ * EXPRESS OR IMPLIED, INCLUDING WITHOUT LIMITATION THE IMPLIED WARRANTIES OF
+ * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, TITLE, AND NON-INFRINGEMENT.
+ ********************************************************************************/
+/*********************************************************************************
+ * Copyright (C) 2011-2014 X2Engine Inc. All Rights Reserved.
+ *
+ * X2Engine Inc.
+ * P.O. Box 66752
+ * Scotts Valley, California 95067 USA
+ *
+ * Company website: http://www.x2engine.com
+ * Community and support website: http://www.x2community.com
+ *
+ * X2Engine Inc. grants you a perpetual, non-exclusive, non-transferable license
+ * to install and use this Software for your internal business purposes.
+ * You shall not modify, distribute, license or sublicense the Software.
+ * Title, ownership, and all intellectual property rights in the Software belong
+ * exclusively to X2Engine.
+ *
+ * THIS SOFTWARE IS PROVIDED "AS IS" AND WITHOUT WARRANTIES OF ANY KIND, EITHER
+ * EXPRESS OR IMPLIED, INCLUDING WITHOUT LIMITATION THE IMPLIED WARRANTIES OF
+ * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, TITLE, AND NON-INFRINGEMENT.
+ ********************************************************************************/
+/***********************************************************************
+* Grays 
+***********************************************************************/
+/***********************************************************************
+* Blues
+***********************************************************************/
+/***********************************************************************
+* Reds 
+***********************************************************************/
+/***********************************************************************
+* Greens 
+***********************************************************************/
+/*
+  Icon Font: x2-icons
+*/
+@font-face {
+  font-family: "x2-icons";
+  src: url("./x2-icons_7c7d22f51cb290bdc9568a9059f6ba0e.eot");
+  src: url("./x2-icons_7c7d22f51cb290bdc9568a9059f6ba0e.eot?#iefix") format("embedded-opentype"), url(data:application/x-font-woff;charset=utf-8;base64,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), url("./x2-icons_7c7d22f51cb290bdc9568a9059f6ba0e.woff") format("woff"), url("./x2-icons_7c7d22f51cb290bdc9568a9059f6ba0e.ttf") format("truetype"), url("./x2-icons_7c7d22f51cb290bdc9568a9059f6ba0e.svg#x2-icons") format("svg");
+  font-weight: normal;
+  font-style: normal;
+}
+@media screen and (-webkit-min-device-pixel-ratio: 0) {
+  @font-face {
+    font-family: "x2-icons";
+    src: url("./x2-icons_7c7d22f51cb290bdc9568a9059f6ba0e.svg#x2-icons") format("svg");
+  }
+}
+/* line 24, ../../../compass/css/lib/x2-icons/x2-icons.scss */
+[data-icon]:before {
+  content: attr(data-icon);
+}
+
+/* line 26, ../../../compass/css/lib/x2-icons/x2-icons.scss */
+[data-icon]:before,
+.icon-activity:before,
+.icon-contact:before,
+.icon-envelope-arrow:before,
+.icon-funnel:before,
+#publisher .icon.workflow:before,
+.action.list-view .icon.workflow:before,
+.icon-funnel-arrow:before,
+.icon-funnel-check:before,
+.icon-funnel3:before,
+.icon-funnel4:before,
+.icon-open-envelope:before,
+#publisher .icon.campaignEmailOpened:before,
+.action.list-view .icon.campaignEmailOpened:before,
+#publisher .icon.emailOpened:before,
+.action.list-view .icon.emailOpened:before,
+.icon-open-envelope-o:before,
+.icon-package:before,
+.icon-quotes:before,
+.icon-service:before,
+.icon-stopwatch:before,
+#publisher .icon.time:before,
+.action.list-view .icon.time:before,
+.icon-x2-logo:before,
+.icon-x2-logo-square:before,
+.icon-x2-logo-square-small:before,
+.icon-x2engine:before {
+  display: inline-block;
+  font-family: "x2-icons";
+  font-style: normal;
+  font-weight: normal;
+  font-variant: normal;
+  line-height: 1;
+  text-decoration: inherit;
+  text-rendering: optimizeLegibility;
+  text-transform: none;
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-font-smoothing: antialiased;
+  font-smoothing: antialiased;
+}
+
+/* line 59, ../../../compass/css/lib/x2-icons/x2-icons.scss */
+.icon-activity:before {
+  content: "\f113";
+}
+
+/* line 60, ../../../compass/css/lib/x2-icons/x2-icons.scss */
+.icon-contact:before {
+  content: "\f10c";
+}
+
+/* line 61, ../../../compass/css/lib/x2-icons/x2-icons.scss */
+.icon-envelope-arrow:before {
+  content: "\f10d";
+}
+
+/* line 62, ../../../compass/css/lib/x2-icons/x2-icons.scss */
+.icon-funnel:before, #publisher .icon.workflow:before,
+.action.list-view .icon.workflow:before {
+  content: "\f109";
+}
+
+/* line 63, ../../../compass/css/lib/x2-icons/x2-icons.scss */
+.icon-funnel-arrow:before {
+  content: "\f10e";
+}
+
+/* line 64, ../../../compass/css/lib/x2-icons/x2-icons.scss */
+.icon-funnel-check:before {
+  content: "\f10f";
+}
+
+/* line 65, ../../../compass/css/lib/x2-icons/x2-icons.scss */
+.icon-funnel3:before {
+  content: "\f119";
+}
+
+/* line 66, ../../../compass/css/lib/x2-icons/x2-icons.scss */
+.icon-funnel4:before {
+  content: "\f11b";
+}
+
+/* line 67, ../../../compass/css/lib/x2-icons/x2-icons.scss */
+.icon-open-envelope:before, #publisher .icon.campaignEmailOpened:before,
+.action.list-view .icon.campaignEmailOpened:before, #publisher .icon.emailOpened:before,
+.action.list-view .icon.emailOpened:before {
+  content: "\f10a";
+}
+
+/* line 68, ../../../compass/css/lib/x2-icons/x2-icons.scss */
+.icon-open-envelope-o:before {
+  content: "\f10b";
+}
+
+/* line 69, ../../../compass/css/lib/x2-icons/x2-icons.scss */
+.icon-package:before {
+  content: "\f112";
+}
+
+/* line 70, ../../../compass/css/lib/x2-icons/x2-icons.scss */
+.icon-quotes:before {
+  content: "\f11c";
+}
+
+/* line 71, ../../../compass/css/lib/x2-icons/x2-icons.scss */
+.icon-service:before {
+  content: "\f111";
+}
+
+/* line 72, ../../../compass/css/lib/x2-icons/x2-icons.scss */
+.icon-stopwatch:before, #publisher .icon.time:before,
+.action.list-view .icon.time:before {
+  content: "\f114";
+}
+
+/* line 73, ../../../compass/css/lib/x2-icons/x2-icons.scss */
+.icon-x2-logo:before {
+  content: "\f117";
+}
+
+/* line 74, ../../../compass/css/lib/x2-icons/x2-icons.scss */
+.icon-x2-logo-square:before {
+  content: "\f116";
+}
+
+/* line 75, ../../../compass/css/lib/x2-icons/x2-icons.scss */
+.icon-x2-logo-square-small:before {
+  content: "\f118";
+}
+
+/* line 76, ../../../compass/css/lib/x2-icons/x2-icons.scss */
+.icon-x2engine:before {
+  content: "\f104";
+}
+
+/*********************************************************************************
+ * Copyright (C) 2011-2014 X2Engine Inc. All Rights Reserved.
+ *
+ * X2Engine Inc.
+ * P.O. Box 66752
+ * Scotts Valley, California 95067 USA
+ *
+ * Company website: http://www.x2engine.com
+ * Community and support website: http://www.x2community.com
+ *
+ * X2Engine Inc. grants you a perpetual, non-exclusive, non-transferable license
+ * to install and use this Software for your internal business purposes.
+ * You shall not modify, distribute, license or sublicense the Software.
+ * Title, ownership, and all intellectual property rights in the Software belong
+ * exclusively to X2Engine.
+ *
+ * THIS SOFTWARE IS PROVIDED "AS IS" AND WITHOUT WARRANTIES OF ANY KIND, EITHER
+ * EXPRESS OR IMPLIED, INCLUDING WITHOUT LIMITATION THE IMPLIED WARRANTIES OF
+ * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, TITLE, AND NON-INFRINGEMENT.
+ ********************************************************************************/
+/*********************************
+* Mixin to create a font-awesome 
+* icon without changing the layout
+********************************/
+/*!
+ *  Font Awesome 4.2.0 by @davegandy - http://fontawesome.io - @fontawesome
+ *  License - http://fontawesome.io/license (Font: SIL OFL 1.1, CSS: MIT License)
+ */
+/* line 55, ../../../compass/css/lib/_font-awesome.scss */
+#publisher .icon.action:before,
+.action.list-view .icon.action:before, #publisher .icon.attachment:before,
+.action.list-view .icon.attachment:before, #publisher .icon.complete:before,
+.action.list-view .icon.complete:before, #publisher .icon.email:before,
+.action.list-view .icon.email:before, #publisher .icon.email_quote:before,
+.action.list-view .icon.email_quote:before, #publisher .icon.email_invoice:before,
+.action.list-view .icon.email_invoice:before, #publisher .icon.call:before,
+.action.list-view .icon.call:before, #publisher .icon.note:before,
+.action.list-view .icon.note:before, #publisher .icon.overdue:before,
+.action.list-view .icon.overdue:before, #publisher .icon.overdue .stacked-icon:before,
+.action.list-view .icon.overdue .stacked-icon:before {
+  display: inline-block;
+  font: normal normal normal 14px/1 FontAwesome;
+  text-rendering: auto;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* makes the font 33% larger relative to the icon container */
+/* line 114, ../../../compass/css/lib/_font-awesome.scss */
+#publisher .pull-left.icon.action:before,
+.action.list-view .pull-left.icon.action:before, #publisher .pull-left.icon.attachment:before,
+.action.list-view .pull-left.icon.attachment:before, #publisher .pull-left.icon.complete:before,
+.action.list-view .pull-left.icon.complete:before, #publisher .pull-left.icon.email:before,
+.action.list-view .pull-left.icon.email:before, #publisher .pull-left.icon.email_quote:before,
+.action.list-view .pull-left.icon.email_quote:before, #publisher .pull-left.icon.email_invoice:before,
+.action.list-view .pull-left.icon.email_invoice:before, #publisher .pull-left.icon.call:before,
+.action.list-view .pull-left.icon.call:before, #publisher .pull-left.icon.note:before,
+.action.list-view .pull-left.icon.note:before, #publisher .pull-left.icon.overdue:before,
+.action.list-view .pull-left.icon.overdue:before, #publisher .icon.overdue .pull-left.stacked-icon:before,
+.action.list-view .icon.overdue .pull-left.stacked-icon:before {
+  margin-right: .3em;
+}
+
+/* line 117, ../../../compass/css/lib/_font-awesome.scss */
+#publisher .pull-right.icon.action:before,
+.action.list-view .pull-right.icon.action:before, #publisher .pull-right.icon.attachment:before,
+.action.list-view .pull-right.icon.attachment:before, #publisher .pull-right.icon.complete:before,
+.action.list-view .pull-right.icon.complete:before, #publisher .pull-right.icon.email:before,
+.action.list-view .pull-right.icon.email:before, #publisher .pull-right.icon.email_quote:before,
+.action.list-view .pull-right.icon.email_quote:before, #publisher .pull-right.icon.email_invoice:before,
+.action.list-view .pull-right.icon.email_invoice:before, #publisher .pull-right.icon.call:before,
+.action.list-view .pull-right.icon.call:before, #publisher .pull-right.icon.note:before,
+.action.list-view .pull-right.icon.note:before, #publisher .pull-right.icon.overdue:before,
+.action.list-view .pull-right.icon.overdue:before, #publisher .icon.overdue .pull-right.stacked-icon:before,
+.action.list-view .icon.overdue .pull-right.stacked-icon:before {
+  margin-left: .3em;
+}
+
+/* Font Awesome uses the Unicode Private Use Area (PUA) to ensure screen
+     readers do not read off random characters that represent icons */
+/* line 615, ../../../compass/css/lib/_font-awesome.scss */
+#publisher .icon.call:before,
+.action.list-view .icon.call:before {
+  content: "\f095";
+}
+
+/* line 799, ../../../compass/css/lib/_font-awesome.scss */
+#publisher .icon.email:before,
+.action.list-view .icon.email:before, #publisher .icon.email_quote:before,
+.action.list-view .icon.email_quote:before, #publisher .icon.email_invoice:before,
+.action.list-view .icon.email_invoice:before {
+  content: "\f0e0";
+}
+
+/* line 817, ../../../compass/css/lib/_font-awesome.scss */
+#publisher .icon.note:before,
+.action.list-view .icon.note:before {
+  content: "\f0e5";
+}
+
+/* line 1014, ../../../compass/css/lib/_font-awesome.scss */
+#publisher .icon.overdue .stacked-icon:before,
+.action.list-view .icon.overdue .stacked-icon:before {
+  content: "\f12a";
+}
+
+/* line 1086, ../../../compass/css/lib/_font-awesome.scss */
+#publisher .icon.action:before,
+.action.list-view .icon.action:before, #publisher .icon.attachment:before,
+.action.list-view .icon.attachment:before, #publisher .icon.complete:before,
+.action.list-view .icon.complete:before {
+  content: "\f144";
+}
+
+/************************************************
+* class to add to a container that has a stacked icon
+***********************************************/
+/* line 38, ../../../compass/css/lib/_icons.scss */
+.stacked-icon {
+  display: none;
+  position: absolute;
+  top: 23px;
+  left: 28px;
+  width: 11px;
+  height: 11px;
+  border-radius: 50%;
+  border: 2px solid #004baf;
+  background: white;
+  /* @theme border-color lighter_link */
+  /* @theme background content */
+  text-align: center;
+}
+/* line 57, ../../../compass/css/lib/_icons.scss */
+.stacked-icon:before {
+  width: 100%;
+  font-size: 10px;
+  position: relative;
+}
+
+/*********************************
+* Mixin to aid with the stacked icon
+********************************/
+/****************************************************
+* Mixin to generate a mapping of classes to icons
+* $list:  A multidimensional array
+: $type: which icon font to use ("fa" or "x2")
+: @content: extra rules to insert into each icon
+* Example: 
+*   $map: (
+*   	("email" "envelope" "check") 
+*   );
+* Will create the rule for '.email' to have the icon 
+* 'envelope' with a stacked icon of 'check'
+*
+* These icons are currently used in activity feed and publisher 
+*******************************************************/
+/* line 25, ../../../compass/themes/x2engine/css/publisher.scss */
+#history .pager {
+  border: none;
+  margin: 0;
+}
+
+/* line 32, ../../../compass/themes/x2engine/css/publisher.scss */
+#publisher > {
+  /***********************************************************************
+  * multi row tabs
+  ***********************************************************************/
+}
+/* line 33, ../../../compass/themes/x2engine/css/publisher.scss */
 #publisher > .ui-tabs-nav {
   /*display: inline-block;*/
   display: block;
   float: left;
   margin-bottom: 0px;
 }
-/* line 30, ../../../compass/themes/x2engine/css/publisher.scss */
+/* line 39, ../../../compass/themes/x2engine/css/publisher.scss */
 #publisher > #publisher-tabs-row-1 {
+  border-right: none !important;
   margin-right: -10px;
 }
-/* line 34, ../../../compass/themes/x2engine/css/publisher.scss */
-#publisher.multi-row-tabs-publisher .form {
-  position: relative;
-  top: -1px;
+/* line 43, ../../../compass/themes/x2engine/css/publisher.scss */
+#publisher > #publisher-tabs-row-1 li {
+  /*border: none !important; */
+  /*box-shadow: 0px -1.4px 3px rgba(0, 0, 0, 0.15);*/
 }
-
-/***********************************************************************
-* multi row tabs 
-***********************************************************************/
-/* line 44, ../../../compass/themes/x2engine/css/publisher.scss */
-#publisher-tabs-row-2 {
+/* line 46, ../../../compass/themes/x2engine/css/publisher.scss */
+#publisher > #publisher-tabs-row-1 li.ui-state-active {
+  position: relative;
+  z-index: 2;
+}
+/* line 56, ../../../compass/themes/x2engine/css/publisher.scss */
+#publisher > #publisher-tabs-row-2 {
   background: #f8f8f8;
   width: 100%;
   box-sizing: border-box;
@@ -65,57 +444,163 @@
   margin-top: 0px;
   /*display: block !important;*/
 }
-/* line 45, ../../../compass/themes/x2engine/css/publisher.scss */
-#publisher-tabs-row-2.ui-tabs-nav li.ui-state-active {
+/* line 57, ../../../compass/themes/x2engine/css/publisher.scss */
+#publisher > #publisher-tabs-row-2.ui-tabs-nav li.ui-state-active {
   position: relative;
   z-index: 1;
 }
-/* line 59, ../../../compass/themes/x2engine/css/publisher.scss */
-#publisher-tabs-row-2 li {
+/* line 71, ../../../compass/themes/x2engine/css/publisher.scss */
+#publisher > #publisher-tabs-row-2 li {
   margin-top: -1px;
   height: 24px;
 }
-/* line 60, ../../../compass/themes/x2engine/css/publisher.scss */
-#publisher-tabs-row-2 li:first-child {
+/* line 72, ../../../compass/themes/x2engine/css/publisher.scss */
+#publisher > #publisher-tabs-row-2 li:first-child {
   margin-left: 3px;
 }
-/* line 66, ../../../compass/themes/x2engine/css/publisher.scss */
-#publisher-tabs-row-2.unselected-tab-row {
+/* line 79, ../../../compass/themes/x2engine/css/publisher.scss */
+#publisher > #publisher-tabs-row-2.unselected-tab-row {
   background: #eee;
+}
+/* line 85, ../../../compass/themes/x2engine/css/publisher.scss */
+#publisher.multi-row-tabs-publisher .form {
+  position: relative;
+  top: -1px;
 }
 
 /***********************************************************************
-* comment tab 
+* comment tab
 ***********************************************************************/
-/* line 75, ../../../compass/themes/x2engine/css/publisher.scss */
+/* line 96, ../../../compass/themes/x2engine/css/publisher.scss */
 #new-comment .text-area-wrapper, #products .text-area-wrapper {
   margin-bottom: 5px;
 }
 
 /***********************************************************************
-* products tab 
+* products tab
 ***********************************************************************/
 /***********************************************************************
-* action tab 
+* action tab
 ***********************************************************************/
-/* line 87, ../../../compass/themes/x2engine/css/publisher.scss */
-#action-reminder-container {
+/* line 109, ../../../compass/themes/x2engine/css/publisher.scss */
+.action-event-panel .action-reminder-container {
   font-size: 12px;
   line-height: 22px;
 }
-/* line 90, ../../../compass/themes/x2engine/css/publisher.scss */
-#action-reminder-container select, #action-reminder-container input, #action-reminder-container div {
+/* line 112, ../../../compass/themes/x2engine/css/publisher.scss */
+.action-event-panel .action-reminder-container select, .action-event-panel .action-reminder-container input, .action-event-panel .action-reminder-container div {
   float: left;
 }
-/* line 93, ../../../compass/themes/x2engine/css/publisher.scss */
-#action-reminder-container select {
+/* line 115, ../../../compass/themes/x2engine/css/publisher.scss */
+.action-event-panel .action-reminder-container select {
   margin-left: 4px;
 }
-/* line 96, ../../../compass/themes/x2engine/css/publisher.scss */
-#action-reminder-container > div {
+/* line 118, ../../../compass/themes/x2engine/css/publisher.scss */
+.action-event-panel .action-reminder-container > div {
   border-radius: 3px;
   border: 1px solid #cecece;
   background: white;
   padding: 5px;
   margin-bottom: 6px;
+}
+
+/*********************************
+* Publisher and History Icon mapping
+********************************/
+/* line 30, ../../../compass/css/lib/_font-awesome.scss */
+#publisher .icon.action:before,
+.action.list-view .icon.action:before {
+  text-decoration: none;
+}
+/* line 30, ../../../compass/css/lib/_font-awesome.scss */
+#publisher .icon.attachment:before,
+.action.list-view .icon.attachment:before {
+  text-decoration: none;
+}
+/* line 30, ../../../compass/css/lib/_font-awesome.scss */
+#publisher .icon.complete:before,
+.action.list-view .icon.complete:before {
+  text-decoration: none;
+}
+/* line 30, ../../../compass/css/lib/_font-awesome.scss */
+#publisher .icon.email:before,
+.action.list-view .icon.email:before {
+  text-decoration: none;
+}
+/* line 30, ../../../compass/css/lib/_font-awesome.scss */
+#publisher .icon.email_quote:before,
+.action.list-view .icon.email_quote:before {
+  text-decoration: none;
+}
+/* line 30, ../../../compass/css/lib/_font-awesome.scss */
+#publisher .icon.email_invoice:before,
+.action.list-view .icon.email_invoice:before {
+  text-decoration: none;
+}
+/* line 30, ../../../compass/css/lib/_font-awesome.scss */
+#publisher .icon.call:before,
+.action.list-view .icon.call:before {
+  text-decoration: none;
+}
+/* line 30, ../../../compass/css/lib/_font-awesome.scss */
+#publisher .icon.note:before,
+.action.list-view .icon.note:before {
+  text-decoration: none;
+}
+/* line 30, ../../../compass/css/lib/_font-awesome.scss */
+#publisher .icon.overdue:before,
+.action.list-view .icon.overdue:before {
+  text-decoration: none;
+}
+/* line 70, ../../../compass/css/lib/_icons.scss */
+#publisher .icon.overdue .stacked-icon:before,
+.action.list-view #publisher .icon.overdue .stacked-icon:before,
+#publisher .action.list-view .icon.overdue .stacked-icon:before,
+.action.list-view .icon.overdue .stacked-icon:before {
+  top: 0px;
+  left: 0px;
+}
+/* line 73, ../../../compass/css/lib/_icons.scss */
+#publisher .icon.overdue .stacked-icon:before,
+.action.list-view #publisher .icon.overdue .stacked-icon:before,
+#publisher .action.list-view .icon.overdue .stacked-icon:before,
+.action.list-view .icon.overdue .stacked-icon:before {
+  top: 0px;
+  left: 0px;
+}
+/* line 79, ../../../compass/css/lib/_icons.scss */
+#publisher .icon.overdue .stacked-icon,
+.action.list-view .icon.overdue .stacked-icon {
+  display: inline-block;
+}
+/* line 30, ../../../compass/css/lib/_font-awesome.scss */
+#publisher .icon.overdue .stacked-icon:before,
+.action.list-view .icon.overdue .stacked-icon:before {
+  text-decoration: none;
+}
+/* line 84, ../../../compass/css/lib/_icons.scss */
+#publisher .icon.overdue .stacked-icon:before,
+.action.list-view .icon.overdue .stacked-icon:before {
+  position: absolute;
+  font-size: 10px;
+}
+/* line 27, ../../../compass/css/lib/_icons.scss */
+#publisher .icon.workflow:before,
+.action.list-view .icon.workflow:before {
+  text-decoration: none;
+}
+/* line 27, ../../../compass/css/lib/_icons.scss */
+#publisher .icon.time:before,
+.action.list-view .icon.time:before {
+  text-decoration: none;
+}
+/* line 27, ../../../compass/css/lib/_icons.scss */
+#publisher .icon.campaignEmailOpened:before,
+.action.list-view .icon.campaignEmailOpened:before {
+  text-decoration: none;
+}
+/* line 27, ../../../compass/css/lib/_icons.scss */
+#publisher .icon.emailOpened:before,
+.action.list-view .icon.emailOpened:before {
+  text-decoration: none;
 }

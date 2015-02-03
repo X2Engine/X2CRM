@@ -1,6 +1,6 @@
 /*****************************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2015 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -33,29 +33,58 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 
+/**
+ * Handles creation of record quick create dialogs
+ */
+
 x2.QuickCreate = (function () {
 
 function QuickCreate (argsDict) {
     var argsDict = typeof argsDict === 'undefined' ? {} : argsDict;
     var defaultArgs = {
         DEBUG: x2.DEBUG && false,
-        createRecordUrls: {},
-        dialogTitles: {},
+        /**
+         * @var string modelType name of X2Model child that has X2QuickCreateBehavior  
+         */
+        modelType: null,
+        /**
+         * @var object dialogAttributes dialog settings 
+         */
+        dialogAttributes: {},
+        /**
+         * @var object data to pass along with request for quick create form
+         */
+        data: {},
+        /**
+         * @var object attributes default attributes of new record
+         */
+        attributes: {},
+        /**
+         * @var function success callback called after successful record creation
+         */
+        success: function () {},
+        enableFlash: true
     };
     auxlib.applyArgs (this, defaultArgs, argsDict);
+    if (!QuickCreate.createRecordUrls[this.modelType]) throw new Error ('invalid model type');
+    this.createRecordUrl = QuickCreate.createRecordUrls[this.modelType];
+    this.dialogTitle = QuickCreate.dialogTitles[this.modelType];
+    this.openQuickCreateDialog ();
 }
 
-QuickCreate.prototype.openQuickCreateDialog = function (modelType, attributes, success) {
-    if (!this.createRecordUrls[modelType]) throw new Error ('invalid model type');
+QuickCreate.createRecordUrls = {};
+QuickCreate.dialogTitles = {};
+
+/**
+ * Open record creation dialog 
+ */
+QuickCreate.prototype.openQuickCreateDialog = function () { 
 
     var that = this;
-    success = typeof success === 'undefined' ? function () {} : success; 
-    var dialogTitle = this.dialogTitles[modelType];
-    var createRecordUrl = this.createRecordUrls[modelType];
 
     this._dialog = $('<div>');
-    this._dialog.dialog ({
-        title: dialogTitle,
+    this._dialog.dialog ($.extend ({
+        title: this.dialogTitle,
         autoOpen: false,
         resizable: true,
         width: '650px',
@@ -65,53 +94,49 @@ QuickCreate.prototype.openQuickCreateDialog = function (modelType, attributes, s
             that._dialog.dialog ('destroy');
             that._dialog.remove ();
         }
-    });
+    }, this.dialogAttributes));
 
-    var data = {
+    var data = $.extend (this.data, {
         x2ajax: true,
         validateOnly: true,
-    };
-    for (var attrName in attributes) {
-        data[modelType + '[' + attrName + ']'] = attributes[attrName];
+    });
+    for (var attrName in this.attributes) {
+        data[this.modelType + '[' + attrName + ']'] = this.attributes[attrName];
     }
 
     $.ajax ({
         type: 'post',
-        url: createRecordUrl, 
+        url: this.createRecordUrl, 
         data: data,
         success: function(response) {
             that._dialog.append(response);
             that._dialog.dialog('open');
+            
+            auxlib.onClickOutside (
+                '.ui-dialog',
+                function () { 
+                    if ($(that._dialog).closest ('.ui-dialog').length) 
+                        that._dialog.dialog ('close'); 
+                }, true);
             that._dialog.find('.formSectionHide').remove();
             var submit = that._dialog.find('[type="submit"]');
             var form = that._dialog.find('form');
-            //that._setAttributes (form, modelType, attributes);
             $(form).submit (function () {
-                that._handleFormSubmission (form, modelType, success);
+                that._handleFormSubmission (form);
                 return false;
             });
         }
     });
 };
 
-// attributes can now be set with initial request 
-//QuickCreate.prototype._setAttributes = function (form, modelType, attributes) {
-//    for (var attrName in attributes) {
-//        var attrVal = attributes[attrName];
-//        if (attrName.match (/^#|\./)) {
-//            var selector = attrName;
-//        } else {
-//            var selector = '#' + modelType + '_' + attrName;
-//        }
-//        form.find (selector).val (attrVal).change ();
-//    }
-//};
+QuickCreate.prototype.closeDialog = function () {
+    that._dialog.empty ().remove ()
+};
 
-QuickCreate.prototype._handleFormSubmission = function (form, modelType, success) {
+
+QuickCreate.prototype._handleFormSubmission = function (form) {
     if (form.find ('.error').length) return;
     var that = this;
-    var createRecordUrl = this.createRecordUrls[modelType];
-    success = typeof success === 'undefined' ? function () {} : success; 
     var formdata = form.serializeArray();
 
     formdata = formdata.concat ([{
@@ -124,18 +149,21 @@ QuickCreate.prototype._handleFormSubmission = function (form, modelType, success
         value: '1'
     }]);
 
-
     $.ajax ({
         type: 'post',
-        url: createRecordUrl, 
+        url: this.createRecordUrl, 
         data: formdata, 
         dataType: 'json',
         success: function(response) {
             that._dialog.empty ();
-            if (response['status'] === 'success') {
+            console.log ('response = ');
+                console.log (response);
+
+            if (response['status'] === 'success' || response[0] === 'success') {
                 that._dialog.remove ();
-                x2.topFlashes.displayFlash (response.message, 'success', 'clickOutside', false);
-                success (response.attributes);
+                if (that.enableFlash)
+                    x2.topFlashes.displayFlash (response.message, 'success', 'clickOutside', false);
+                that.success (response.attributes);
             } else if (response['status'] === 'userError') {
                 if(typeof response['page'] !== 'undefined') {
                     that._dialog.append(response['page']);
@@ -144,7 +172,7 @@ QuickCreate.prototype._handleFormSubmission = function (form, modelType, success
                     var submit = that._dialog.find('input[type="submit"]');
                     var form = that._dialog.find('form');
                     $(submit).unbind ('click').bind ('click', function() {
-                        return that._handleFormSubmission (form, modelType);
+                        return that._handleFormSubmission (form);
                     }, true);
                 }
             }

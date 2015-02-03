@@ -1,6 +1,6 @@
 /*****************************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2015 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -313,7 +313,7 @@ ActivityFeed.prototype.attachmentMenuBehavior = function  () {
 
 ActivityFeed.prototype.setupAndroidPublisher = function  () {
     var that = this;
-    $(document).on('focus','#feed-form textarea',function(){
+    $('#feed-form textarea').focus( function(){
         $(this).animate({"height":"50px"});
         $(this).next().slideDown(400);
     });
@@ -466,7 +466,7 @@ ActivityFeed.prototype.setupActivityFeed = function  () {
             });
     }
 
-    $(document).on("click","#min-posts",function(e){
+    $("#min-posts").click( function(e){
         e.preventDefault();
         that.minimizePosts();
         x2.activityFeed.minimizeFeed = true;
@@ -474,7 +474,7 @@ ActivityFeed.prototype.setupActivityFeed = function  () {
         $(this).prev().show();
     });
 
-    $(document).on("click","#restore-posts",function(e){
+    $("#restore-posts").click( function(e){
         e.preventDefault();
         that.restorePosts();
         x2.activityFeed.minimizeFeed = false;
@@ -482,7 +482,7 @@ ActivityFeed.prototype.setupActivityFeed = function  () {
         $(this).next().show();
     });
 
-    $(document).on("click","#clear-filters-link",function(e){
+    $("#clear-filters-link").click( function(e){
         e.preventDefault();
         var str=window.location+"";
         pieces = str.split("?");
@@ -496,17 +496,16 @@ ActivityFeed.prototype.setupActivityFeed = function  () {
     }
     $(".date-break.first").after("<div class='list-view'><div id='new-events' class='items' style='display:none;border-bottom:solid #BABABA;'></div></div>");
 
-    $(document).on("click","#toggle-all-comments",function(e){
+    $('#toggle-all-comments').click(function(e) {
         e.preventDefault();
         x2.activityFeed.commentFlag = !x2.activityFeed.commentFlag;
-        if(x2.activityFeed.commentFlag){
-            $(".comment-link").click();
-        }else{
-            $(".comment-hide-link").click();
-        }
+
+        var selector = x2.activityFeed.commentFlag ? 
+            '.comment-hide-link' : '.comment-link';
+        $(selector).click();
     });
 
-    $(document).on("click",".comment-link",function(e){
+    $(".comment-link").click( function(e){
         e.preventDefault();
         var link = this;
         var pieces = $(this).attr("id").split("-");
@@ -527,7 +526,7 @@ ActivityFeed.prototype.setupActivityFeed = function  () {
         });
     });
 
-    $(document).on("click",".comment-hide-link",function(e){
+    $(".comment-hide-link").click( function(e){
         e.preventDefault();
         $(this).hide();
         $(this).prev().show();
@@ -652,7 +651,7 @@ ActivityFeed.prototype.setupBroadcastDialog = function  () {
         });
     }
 
-    $(document).on("click",".broadcast-button",function(e){
+    $(".broadcast-button").click( function(e){
 
         link = this;
         e.preventDefault();
@@ -682,8 +681,8 @@ ActivityFeed.prototype.setupBroadcastDialog = function  () {
         });
 
     });
-
-    auxlib.makeDialogClosableWithOutsideClick ($("#broadcast-dialog"));
+    
+    // auxlib.makeDialogClosableWithOutsideClick ($("#broadcast-dialog"));
 }
 
 
@@ -727,12 +726,12 @@ ActivityFeed.prototype.setupMakeImportantDialog = function  () {
 ActivityFeed.prototype.updateEventList = function  () {
     var that = this;
 
-    // $(document).on("click",".unimportant-link",function(e){
+    // $(".unimportant-link").click( function(e){
     //     e.preventDefault();
     //     // clickMakeImportantButton(this, false);
     // });
 
-    // $(document).on("click",".unimportant-link",function(e){
+    // $(".unimportant-link").click( function(e){
     //     e.preventDefault();
     //     var link = this;
     //     var pieces = $(this).attr("id").split("-");
@@ -771,7 +770,7 @@ ActivityFeed.prototype.updateEventList = function  () {
     }
 
     var disableLikeButton = false;
-    $(document).on("click",".like-button",function(e){
+    $(".like-button").click( function(e){
         if (disableLikeButton) return;
         e.preventDefault();
         var link = this;
@@ -796,7 +795,7 @@ ActivityFeed.prototype.updateEventList = function  () {
         });
     });
 
-    $(document).on("click",".unlike-button",function(e){
+    $(".unlike-button").click( function(e){
         if (disableLikeButton) return;
         e.preventDefault();
         var link = this;
@@ -854,7 +853,7 @@ ActivityFeed.prototype.updateEventList = function  () {
     /*
     Display the like history in a drop down underneath the post
     */
-    $(document).on("click",".like-count",function(e){
+    $(".like-count").click( function(e){
         e.preventDefault();
         var pieces = $(this).attr("id").split("-");
         var id = pieces[0];
@@ -1098,7 +1097,7 @@ ActivityFeed.prototype.updateEventList = function  () {
         }
     }
 
-    $(document).on("click",".sticky-link",function(e){
+    $(".sticky-link").click( function(e){
         e.preventDefault();
         var link = this;
         var pieces = $(this).attr("id").split("-");
@@ -1119,7 +1118,7 @@ ActivityFeed.prototype.updateEventList = function  () {
         });
     });
 
-    $(document).on("click",".unsticky-link",function(e){
+    $(".unsticky-link").click( function(e){
         e.preventDefault();
         var link = this;
         var pieces = $(this).attr("id").split("-");
@@ -1190,7 +1189,7 @@ ActivityFeed.prototype.updateEventList = function  () {
     }
     updateFeed();
 
-    $(document).on("click",".delete-link",function(e){
+    $(".delete-link").click( function(e){
         var link = this;
         pieces = $(link).attr("id").split("-");
         id = pieces[0];
@@ -1250,10 +1249,10 @@ ActivityFeed.prototype._setUpTitleBar = function () {
         openButtonSelector: '#activity-feed-settings-button',
         defaultOrientation: 'left',
         css: {
-            height: '30px',
             'padding-left': '3px'
         }
     });
+
 };
 
 ActivityFeed.prototype._setUpFilters = function () {
@@ -1342,7 +1341,7 @@ ActivityFeed.prototype._setUpFilters = function () {
             $("#sidebar-toggle-filters-link").html(that.translations["Uncheck All"]);
         }
 
-        $(document).on("click",".toggle-filters-link",function(e){
+        $(".toggle-filters-link").click( function(e){
             e.preventDefault();
             checkedFlag =! checkedFlag;
             if(checkedFlag){
@@ -1402,6 +1401,27 @@ ActivityFeed.prototype.setUpOpacityScreen = function () {
 
 }
 
+/**
+ * Sets up relative time stamps. e.g. '10 minutes ago'
+ * runs on a 10 second loop
+ * @todo add locales, smart refreshing when new post is made
+ */
+ActivityFeed.prototype._setUpRelativeTimeStamps = function () {
+
+
+    var loop = function () {
+        var commentAges = $('#activity-feed .comment-age').each(function(d){
+            var timestamp = $(this).attr('id').split('-')[1]*1000;
+            $(this).html(moment(timestamp).fromNow());
+        });
+        setTimeout(loop, 10000);
+    }
+
+    loop();
+
+}
+
+
 ActivityFeed.prototype._init = function () {
 
     var that = this;
@@ -1416,7 +1436,9 @@ ActivityFeed.prototype._init = function () {
         that.setUpImageAttachmentBehavior ();
         that._setUpTitleBar ();
         that._setUpFilters ();
+        that._setUpRelativeTimeStamps ();
     });
+
 };
 
 

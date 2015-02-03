@@ -1,7 +1,7 @@
 <?php
 /*****************************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2015 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -51,6 +51,11 @@ abstract class PublisherTab extends X2Widget {
     public $title;
 
     /**
+     * @var Publisher $publisher
+     */
+    public $publisher; 
+
+    /**
      * @var bool If true, tab content container will be rendered with contents shown   
      */
     public $startVisible = false;
@@ -65,7 +70,7 @@ abstract class PublisherTab extends X2Widget {
      * Name of tab JS prototype 
      * @var String
      */
-    public $tabPrototypeName = 'PublisherTab';
+    public $JSClass = 'PublisherTab';
 
     /**
      * Packages which will be registered when the widget content gets rendered.
@@ -78,43 +83,42 @@ abstract class PublisherTab extends X2Widget {
     protected $_setupScript;
 
     /**
-     * Magic getter. Returns this widget's setup script.
-     * @return string JS string which gets registered when widget content gets rendered
+     * @param bool $onReady whether or not JS class should be instantiated after page is ready
      */
-    public function getSetupScript () {
-        if (!isset ($this->_setupScript)) {
-            $this->_setupScript = "
-                (function () {
-                    var tab = new x2.".$this->tabPrototypeName." ({
-                        id: '".$this->tabId."',
-                        translations: {
-                            beforeSubmit: '".addslashes(
-                                Yii::t('actions', 'Please enter a description.'))."',
-                            startDateError: '".addslashes(
-                                Yii::t('actions', 'Please enter a start date.'))."',
-                            endDateError: '".addslashes(
-                                Yii::t('actions', 'Please enter an end date.'))."',
-                        }
-                    });
-                    x2.publisher.addTab (tab);
-                }) ();
-            ";
+    public function instantiateJSClass ($onReady=true) {
+        parent::instantiateJSClass ($onReady);
+        if (isset ($this->publisher)) {
+            Yii::app()->clientScript->registerScript (
+                $this->namespace.get_class ($this).'AddTabJS', 
+                ($onReady ? "$(function () {" : "").
+                    $this->publisher->getJSObjectName ().".addTab (".
+                        $this->getJSObjectName ().");".
+                ($onReady ? "});" : ""), CClientScript::POS_END);
         }
-        return $this->_setupScript;
     }
+
+
+    public function getJSClassParams () {
+        if (!isset ($this->_JSClassParams)) {
+            $this->_JSClassParams = array_merge (parent::getJSClassParams (), array (
+                'id' => $this->tabId,
+                'translations' => array ( 
+                    'beforeSubmit' => Yii::t('actions', 'Please enter a description.'),
+                    'startDateError' => Yii::t('actions', 'Please enter a start date.'),
+                    'endDateError' => Yii::t('actions', 'Please enter an end date.'),
+                ),
+            ));
+        }
+        return $this->_JSClassParams;
+    }
+
 
     /**
      * Magic getter. Returns this widget's packages. 
      */
     public function getPackages () {
         if (!isset ($this->_packages)) {
-            $this->_packages = array (
-                'auxlib' => array(
-                    'baseUrl' => Yii::app()->request->baseUrl,
-                    'js' => array(
-                        'js/auxlib.js',
-                    ),
-                ),
+            $this->_packages = array_merge (parent::getPackages (), array (
                 'PublisherTabJS' => array(
                     'baseUrl' => Yii::app()->request->baseUrl,
                     'js' => array(
@@ -122,21 +126,20 @@ abstract class PublisherTab extends X2Widget {
                     ),
                     'depends' => array ('auxlib')
                 ),
-            );
+            ));
         }
         return $this->_packages;
     }
 
     public function renderTab ($viewParams) {
-        Yii::app()->clientScript->registerPackages ($this->packages);
-        Yii::app()->clientScript->registerScript (
-            $this->tabId.'Script', $this->setupScript, CClientScript::POS_END);
-        Yii::app()->controller->renderPartial ($this->viewFile, array_merge (
+        $this->registerPackages ();
+        $this->instantiateJSClass (false);
+        $this->render ($this->viewFile, array_merge (
             $viewParams, array ('startVisible' => $this->startVisible)));
     }
 
     public function renderTitle () {
-        echo '<a href="#'.$this->tabId.'">'.$this->title.'</a>';
+        echo '<a href="#'.$this->resolveId ($this->tabId).'">'.$this->title.'</a>';
     }
 
 }

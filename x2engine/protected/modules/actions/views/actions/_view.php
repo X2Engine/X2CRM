@@ -1,7 +1,7 @@
 <?php
 /*****************************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2015 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -91,7 +91,9 @@ if($type == 'workflow'){
     <!--<div class="deleteButton">
 <?php //echo CHtml::link('[x]',array('deleteNote','id'=>$data->id)); //,array('class'=>'x2-button')  ?>
     </div>-->
-    <div class="icon <?php echo $type; ?>"></div>
+    <div class="icon <?php echo $type; ?>">
+    <div class="stacked-icon"></div>
+    </div>
     <div class="header">
 <?php
 
@@ -144,7 +146,9 @@ if(empty($data->type) || $data->type == 'weblead'){
         $label = 'Quote:';
     } elseif(in_array($data->type, array('email', 'emailFrom', 'email_quote', 'email_invoice'))) {
         $label = 'Email Message:';
-    } elseif(in_array($data->type, array('emailOpened', 'emailOpened_quote', 'email_opened_invoice'))) {
+    } elseif(
+        in_array($data->type, array('emailOpened', 'emailOpened_quote', 'email_opened_invoice'))) {
+
         $label = 'Email Opened:';
     }
 
@@ -221,10 +225,20 @@ if($type == 'attachment' && $data->completedBy != 'Email') {
     if(!empty($data->actionDescription))
         echo CHtml::encode($data->actionDescription), '<br>';
     echo date('Y-m-d H:i:s', $data->completeDate);
-} elseif(in_array($data->type, array('email', 'emailFrom', 'email_quote', 'email_invoice', 'emailOpened', 'emailOpened_quote', 'emailOpened_invoice'))){
+} elseif(in_array($data->type, 
+    array(
+        'email',
+        'emailFrom',
+        'email_quote',
+        'email_invoice',
+        'emailOpened',
+        'emailOpened_quote', 
+        'emailOpened_invoice'
+    ))) {
 
     $legacy = false;
-    if(!preg_match(InlineEmail::insertedPattern('ah', '(.*)', 1, 'mis'), $data->actionDescription, $matches)){
+    if(!preg_match(
+        InlineEmail::insertedPattern('ah', '(.*)', 1, 'mis'), $data->actionDescription, $matches)){
         // Legacy pattern:
         preg_match('/<b>(.*?)<\/b>(.*)/mis', $data->actionDescription, $matches);
         $legacy = true;
@@ -249,18 +263,14 @@ if($type == 'attachment' && $data->completedBy != 'Email') {
     }else{
         echo $body;
     }
-    echo ($legacy ? '<br />' : '').CHtml::link('[View email]', '#', array('onclick' => 'return false;', 'id' => $data->id, 'class' => 'email-frame'));
+    echo ($legacy ? '<br />' : '').
+        CHtml::link(
+            '[View email]', '#', 
+            array('onclick' => 'return false;', 'id' => $data->id, 'class' => 'email-frame'));
+}elseif($data->type == 'quotesDeleted'){
+    echo $data->actionDescription;
 }elseif($data->type == 'quotes'){
-    $quotePrint = (bool)  preg_match('/^\d+$/',$data->actionDescription);
-    $objectId = $quotePrint ? $data->actionDescription : $data->id;
-    echo CHtml::link(
-        '[View quote]', 'javascript:void(0);',
-        array(
-            'onclick' => 'return false;',
-            'id' => $objectId,
-            'class' => $quotePrint ? 'quote-print-frame' : 'quote-frame'
-        )
-    );
+    $data->renderInlineViewLink ();
 } else
     echo Yii::app()->controller->convertUrls(CHtml::encode($data->actionDescription)); // convert LF and CRLF to <br />
 ?>

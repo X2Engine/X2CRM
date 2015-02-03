@@ -1,7 +1,7 @@
 <?php
 /*****************************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2015 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -34,12 +34,12 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 
- Yii::import ('application.components.sortableWidget.GridViewWidget');
+ Yii::import ('application.components.sortableWidget.ProfileGridViewWidget');
 
 /**
  * @package application.components
  */
-class ActionsGridViewProfileWidget extends GridViewWidget {
+class ActionsGridViewProfileWidget extends ProfileGridViewWidget {
 
     public $canBeDeleted = true;
 
@@ -138,6 +138,7 @@ class ActionsGridViewProfileWidget extends GridViewWidget {
                                         array("id"=>$data->id)))',
                 			'type'=>'raw',
                             'filter' => false,
+                            'sortable' => false,
                 		),
                 		'associationName'=>array(
                 			'name'=>'associationName',

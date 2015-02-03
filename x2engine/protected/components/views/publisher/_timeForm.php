@@ -1,7 +1,7 @@
 <?php
 /*****************************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2015 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -33,10 +33,9 @@
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2Engine".
  *****************************************************************************************/
-Yii::import('application.extensions.CJuiDateTimePicker.CJuiDateTimePicker');
 ?>
 
-<div id='log-time-spent' class='publisher-form' 
+<div id='<?php echo $this->resolveId ('log-time-spent'); ?>' class='publisher-form' 
  <?php echo ($startVisible ? '' : "style='display: none;'"); ?>>
 
 
@@ -76,47 +75,29 @@ Yii::import('application.extensions.CJuiDateTimePicker.CJuiDateTimePicker');
             $model->type = 'time';
             echo $form->label ($model,'dueDate',
                 array('class' => 'action-start-time-label')); 
-            $this->widget('CJuiDateTimePicker', array(
-                'model' => $model, //Model object
-                'attribute' => 'dueDate', //attribute name
-                'mode' => 'datetime', //use "time","date" or "datetime" (default)
-                'options' => array(
-                    'dateFormat' => Formatter::formatDatePicker('medium'),
-                    'timeFormat' => Formatter::formatTimePicker(),
-                    'ampm' => Formatter::formatAMPM(),
-                    'changeMonth' => true,
-                    'changeYear' => true,
-                ), // jquery plugin options
-                'language' => (Yii::app()->language == 'en') ? '' : Yii::app()->getLanguage(),
-                'htmlOptions' => array(
+            echo X2Html::activeDatePicker ($model, 'dueDate', array(
+                    // fix datepicker so it's always on top
                     'class'=>'action-due-date',
                     'onClick' => "$('#ui-datepicker-div').css('z-index', '100');",
-                    'id' => 'time-form-action-due-date'
-                ), // fix datepicker so it's always on top
-            ));
+                    'id' => $this->resolveId ('time-form-action-due-date'),
+                ), 'datetime', array (
+                    'dateFormat' => Formatter::formatDatePicker ('medium'),
+                    'timeFormat' => Formatter::formatTimePicker (),
+                    'ampm' => Formatter::formatAMPM (),
+                ));
 
             echo $form->label ($model,'completeDate', 
                 array('class' => 'action-end-time-label'));
-
-            $this->widget('CJuiDateTimePicker', array(
-                'model' => $model, //Model object
-                'attribute' => 'completeDate', //attribute name
-                'mode' => 'datetime', //use "time","date" or "datetime" (default)
-                'options' => array(
-                    'dateFormat' => Formatter::formatDatePicker('medium'),
-                    'timeFormat' => Formatter::formatTimePicker(),
-                    'ampm' => Formatter::formatAMPM(),
-                    'changeMonth' => true,
-                    'changeYear' => true,
-                ), // jquery plugin options
-                'language' => (Yii::app()->language == 'en') ? '' : Yii::app()->getLanguage(),
-                'htmlOptions' => array(
+            echo X2Html::activeDatePicker ($model, 'completeDate', array(
                     // fix datepicker so it's always on top
                     'onClick' => "$('#ui-datepicker-div').css('z-index', '100');", 
                     'class' => 'action-complete-date',
-                    'id' => 'time-form-action-complete-date'
-                ),
-            ));
+                    'id' => $this->resolveId ('time-form-action-complete-date'),
+                ), 'datetime', array (
+                    'dateFormat' => Formatter::formatDatePicker ('medium'),
+                    'timeFormat' => Formatter::formatTimePicker (),
+                    'ampm' => Formatter::formatAMPM (),
+                ));
             ?>
         </div>
     </div>

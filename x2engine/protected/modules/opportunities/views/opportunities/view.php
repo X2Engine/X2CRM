@@ -1,7 +1,7 @@
 <?php
 /*****************************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2015 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -43,6 +43,7 @@ Yii::app()->clientScript->registerCss('recordViewCss',"
 Yii::app()->clientScript->registerResponsiveCssFile(
     Yii::app()->theme->baseUrl.'/css/responsiveRecordView.css');
 
+$layoutManager = $this->widget ('RecordViewLayoutManager', array ('staticLayout' => false));
 
 Yii::app()->clientScript->registerScriptFile(Yii::app()->getBaseUrl().'/js/Relationships.js');
 
@@ -61,6 +62,7 @@ $accountModule = Modules::model()->findByAttributes(array('name'=>'accounts'));
 
 $menuOptions = array(
     'index', 'create', 'view', 'edit', 'share', 'delete', 'attach', 'quotes', 'import', 'export',
+    'editLayout',
 );
 if ($contactModule->visible && $accountModule->visible)
     $menuOptions[] = 'quick';
@@ -86,7 +88,8 @@ $themeUrl = Yii::app()->theme->getBaseUrl();
 </div>
 </div>
 </div>
-<div id="main-column" class="half-width">
+<div id="main-column" <?php echo $layoutManager->columnWidthStyleAttr (1); ?>>
+
 <?php
 $this->beginWidget('CActiveForm', array(
     'id'=>'contacts-form',
@@ -106,7 +109,6 @@ $this->widget('InlineEmailForm', array(
     'startHidden' => true,
 ));
 
-$this->widget('X2WidgetList', array('block'=>'center', 'model'=>$model, 'modelType'=>'opportunities'));
 
 // $this->widget('InlineTags', array('model'=>$model));
 
@@ -148,49 +150,14 @@ $this->widget(
     )
 ); 
 
-//$this->widget('InlineRelationships', array('model'=>$model, 'modelName'=>'Opportunity'));
-
-$linkModel = X2Model::model('Accounts')->findByPk($model->accountName);
-
-if (isset($linkModel))
-	$accountName = json_encode($linkModel->name);
-else
-	$accountName = json_encode('');
-
-$createContactUrl = $this->createUrl('/contacts/contacts/create');
-$createAccountUrl = $this->createUrl('/accounts/accounts/create');
-$createOpportunityUrl=$this->createUrl('/opportunities/opportunities/create');
-$assignedTo = json_encode($model->assignedTo);
-$tooltip = json_encode(
-    Yii::t('opportunities', 'Create a new {opportunity} associated with this {opportunity}.', array(
-        '{opportunity}' => Modules::displayName(false),
-    )));
-$contactTooltip = json_encode(
-    Yii::t('opportunities', 'Create a new {contact} associated with this {opportunity}.', array(
-        '{opportunity}' => Modules::displayName(false),
-        '{contact}' => Modules::displayName(false, "Contacts"),
-    )));
-$accountsTooltip = json_encode(
-    Yii::t('opportunities', 'Create a new {account} associated with this {opportunity}.', array(
-        '{opportunity}' => Modules::displayName(false),
-        '{account}' => Modules::displayName(false, "Accounts"),
-    )));
-
 ?>
 </div>
-<div class="history half-width">
 <?php
-$this->widget('Publisher',
-	array(
-		'associationType'=>'opportunities',
-		'associationId'=>$model->id,
-		'assignedTo'=>Yii::app()->user->getName(),
-		'calendar' => false
-	)
-);
-
-$this->widget('History',array('associationType'=>'opportunities','associationId'=>$model->id));
-?>
-</div>
-
-<?php $this->widget('CStarRating',array('name'=>'rating-js-fix', 'htmlOptions'=>array('style'=>'display:none;'))); ?>
+$this->widget(
+    'X2WidgetList', 
+    array(
+        'layoutManager' => $layoutManager,
+        'block'=>'center',
+        'model'=>$model,
+        'modelType'=>'opportunities'
+    ));

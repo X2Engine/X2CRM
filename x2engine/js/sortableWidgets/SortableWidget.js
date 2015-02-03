@@ -1,6 +1,6 @@
 /*****************************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2015 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -49,8 +49,8 @@ function SortableWidget (argsDict) {
         deleteWidgetUrl: '',
         widgetClass: '', // the name of the associated widget class
         setPropertyUrl: '', // the url used to call the set profile widget property action
-        modelName: null, // The name of the model with the settings field
-        modelId: null,   // The id of the model with the settings field
+        settingsModelName: null, // The name of the model with the settings field
+        settingsModelId: null,   // The id of the model with the settings field
         profileId: null, // the id of the profile associated with this widget
         widgetType: '', // (profile)
         widgetUID: null, 
@@ -61,8 +61,12 @@ function SortableWidget (argsDict) {
     };
 
     auxlib.applyArgs (this, defaultArgs, argsDict);
-
     this.elementSelector = '#' + this.widgetClass + '-widget-container-' + this.widgetUID;
+
+    x2.Widget.call (this, $.extend ({}, argsDict, {
+        element: this.elementSelector 
+    }));
+
     this.element = $(this.elementSelector); // the widget container
 
     // the widget content container (excludes the top bar)
@@ -72,8 +76,11 @@ function SortableWidget (argsDict) {
 
     SortableWidget.sortableWidgets.push (this);
 
+
     this._init ();
 }
+
+SortableWidget.prototype = auxlib.create (x2.Widget.prototype);
 
 /*
 Public static methods
@@ -179,8 +186,8 @@ SortableWidget.prototype.setProperty = function (key, value, callback) {
             value: value,
             widgetUID: this.widgetUID,
             widgetType: this.widgetType,
-            modelName: this.modelName,
-            modelId: this.modelId,
+            settingsModelName: this.settingsModelName,
+            settingsModelId: this.settingsModelId,
         },
         success: function (data) {
             if (data === 'success') {
@@ -279,12 +286,12 @@ SortableWidget.prototype._setUpCloseBehavior = function () {
         that.setProperty ('hidden', 1, function () {
             $(that.element).hide ();
             that._tearDownWidget ();
-            that.contentContainer.children ().remove ();
             // remove sort item class to prevent sort jitter
             $(that.element).removeClass (
                 x2[that.widgetType + 'WidgetManager'].getWidgetContainerSelector ().
                 replace (/\./, ''));
             x2[that.widgetType + 'WidgetManager'].addWidgetToHiddenWidgetsMenu (that.element);
+            $(that.element).children ().remove ();
         });
     });
 };
@@ -512,12 +519,16 @@ SortableWidget.prototype._callUIElementSetupMethods = function () {
     }
 };
 
+/**
+ * Returns a dictionary of variables needed to identifiy this widget's layout
+ */
 SortableWidget.prototype.ajaxIdentity = function(argsDict) {
     var defaultDict =  {
         widgetUID: this.widgetUID,
         widgetClass: this.widgetClass,
-        modelName: this.modelName,
-        modelId: this.modelId,
+        settingsModelName: this.settingsModelName,
+        settingsModelId: this.settingsModelId,
+        widgetType: this.widgetType
     };
 
     for (var i in argsDict) {

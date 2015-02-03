@@ -1,7 +1,7 @@
 <?php
 /*****************************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2015 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -34,6 +34,8 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 
+$layoutManager = $this->widget ('RecordViewLayoutManager', array ('staticLayout' => false));
+
 $this->pageTitle = CHtml::encode(
                 Yii::app()->settings->appName . ' - ' . Yii::t('x2Leads', 'View Lead'));
 
@@ -41,7 +43,7 @@ $authParams['assignedTo'] = $model->assignedTo;
 
 $menuOptions = array(
     'index', 'create', 'view', 'edit', 'delete', 'attach', 'quotes',
-    'convertToContact', 'convert', 'print',
+    'convertToContact', 'convert', 'print', 'editLayout',
 );
 $this->insertMenu($menuOptions, $model, $authParams);
 
@@ -89,7 +91,7 @@ $themeUrl = Yii::app()->theme->getBaseUrl();
         </div>
     </div>
 </div>
-<div id="main-column" class="half-width">
+<div id="main-column" <?php echo $layoutManager->columnWidthStyleAttr (1); ?>>
     <?php
     $this->beginWidget('CActiveForm', array(
         'id' => 'contacts-form',
@@ -109,7 +111,6 @@ $themeUrl = Yii::app()->theme->getBaseUrl();
         'startHidden' => true,
     ));
 
-    $this->widget('X2WidgetList', array('block' => 'center', 'model' => $model, 'modelType' => 'x2Leads'));
     ?>
     <div id="quote-form-wrapper">
     <?php
@@ -131,34 +132,29 @@ $this->widget(
 );
 ?>
 </div>
-<div class="history half-width">
-    <?php
-    $this->widget('Publisher', array(
-        'associationType' => 'x2Leads',
-        'associationId' => $model->id,
-        'assignedTo' => Yii::app()->user->getName(),
-        'calendar' => false
-            )
-    );
 
-    $this->widget('History', array('associationType' => 'x2Leads', 'associationId' => $model->id));
-    ?>
-</div>
-
-    <?php
-    $this->widget('CStarRating', array('name' => 'rating-js-fix', 'htmlOptions' => array('style' => 'display:none;')));
-
-    $this->widget('X2ModelConversionWidget', array(
-        'buttonSelector' => '#convert-lead-button',
-        'targetClass' => 'Opportunity',
-        'namespace' => 'Opportunity',
+<?php
+$this->widget(
+    'X2WidgetList', 
+    array(
+        'layoutManager' => $layoutManager,
+        'block' => 'center',
         'model' => $model,
+        'modelType' => 'x2Leads'
     ));
+$this->widget('CStarRating', array('name' => 'rating-js-fix', 'htmlOptions' => array('style' => 'display:none;')));
 
-    $this->widget('X2ModelConversionWidget', array(
-        'buttonSelector' => '#convert-lead-to-contact-button',
-        'targetClass' => 'Contacts',
-        'namespace' => 'Contacts',
-        'model' => $model,
-    ));
-    ?>
+$this->widget('X2ModelConversionWidget', array(
+    'buttonSelector' => '#convert-lead-button',
+    'targetClass' => 'Opportunity',
+    'namespace' => 'Opportunity',
+    'model' => $model,
+));
+
+$this->widget('X2ModelConversionWidget', array(
+    'buttonSelector' => '#convert-lead-to-contact-button',
+    'targetClass' => 'Contacts',
+    'namespace' => 'Contacts',
+    'model' => $model,
+));
+?>

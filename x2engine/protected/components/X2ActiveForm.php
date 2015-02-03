@@ -1,7 +1,7 @@
 <?php
 /*****************************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2015 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -37,42 +37,39 @@
 class X2ActiveForm extends CActiveForm {
 
     /**
-     * Overrides parent method to add custom select class 
+     * @var string $namespace
      */
-    public function dropDownList($model,$attribute,$data,$htmlOptions=array())
-    {
-        /* x2modstart */    
-        if (isset ($htmlOptions['class'])) {
-            $htmlOptions['class'] .= ' x2-select';
-        } else {
-            $htmlOptions['class'] = 'x2-select';
-        }
-        /* x2modend */ 
-        return CHtml::activeDropDownList($model,$attribute,$data,$htmlOptions);
+    public $namespace = '';  
+
+    public function resolveIds ($selector) {
+        return preg_replace ('/#/', '#'.$this->namespace, $selector);
     }
 
+    public function resolveId ($id) {
+        return $this->namespace.$id;
+    }
+
+    /**
+     * This method is Copyright (c) 2008-2014 by Yii Software LLC
+     * http://www.yiiframework.com/license/ 
+     */
+	public function dropDownList($model,$attribute,$data,$htmlOptions=array()) {
+		return X2Html::activeDropDownList($model,$attribute,$data,$htmlOptions);
+	}
+
     public function richTextArea (CModel $model, $attribute, array $htmlOptions=array ()) {
-		Yii::app()->clientScript->registerScriptFile(
-            Yii::app()->getBaseUrl().'/js/emailEditor.js', CClientScript::POS_END);
-		Yii::app()->clientScript->registerScriptFile(
-            Yii::app()->getBaseUrl().'/js/ckeditor/ckeditor.js', CClientScript::POS_END);
-		Yii::app()->clientScript->registerScriptFile(
-            Yii::app()->getBaseUrl().'/js/ckeditor/adapters/jquery.js', CClientScript::POS_END);
+        return X2Html::activeRichTextArea ($model, $attribute, $htmlOptions);
+    }
 
-        if (isset ($htmlOptions['class'])) {
-            $htmlOptions['class'] .= ' x2-rich-textarea';
-        } else {
-            $htmlOptions['class'] = 'x2-rich-textarea';
-        }
+    public function init () {
+        $this->id = $this->resolveId ($this->id);
+        parent::init ();
+    }
 
-        if (!isset ($htmlOptions['width'])) {
-            $htmlOptions['width'] = '725px';
-        }
-        if (!isset ($htmlOptions['height'])) {
-            $htmlOptions['height'] = '125px';
-        }
-
-        return $this->textArea ($model, $attribute, $htmlOptions);
+    public function resolveHtmlOptions (CModel $model, $attribute, array $htmlOptions = array ()) {
+        CHtml::resolveNameID ($model, $attribute, $htmlOptions);
+        $htmlOptions['id'] = $this->resolveId ($htmlOptions['id']);
+        return $htmlOptions;
     }
 
 }

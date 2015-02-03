@@ -2,8 +2,10 @@
 return array(
     'one' => array (
         'id' => '1',
-        'name' => 'One',
-        'nameId' => 'One_1',
+        'firstName' => 'Lead',
+        'lastName' => 'One',
+        'name' => 'Lead One',
+        'nameId' => 'Lead One_1',
         'accountName' => NULL,
         'quoteAmount' => '450.00',
         'salesStage' => 'Working',
@@ -21,8 +23,10 @@ return array(
     ),
     'two' => array (
         'id' => '2',
-        'name' => 'Two',
-        'nameId' => 'Two_2',
+        'firstName' => 'Lead',
+        'lastName' => 'Two',
+        'name' => 'Lead Two',
+        'nameId' => 'Lead Two_2',
         'accountName' => NULL,
         'quoteAmount' => '890.00',
         'salesStage' => 'Working',

@@ -1,7 +1,7 @@
 <?php
 /*****************************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2015 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -52,6 +52,8 @@ Yii::import('X2GridViewBase');
 class X2GridView extends X2GridViewBase {
     public $modelName;
     public $viewName;
+    public $fieldFormatter;
+    public $columnOverrides = array ();
 
     /**
      * @var string $dataColumnClass
@@ -65,7 +67,7 @@ class X2GridView extends X2GridViewBase {
     public $enableTags = false;
 
     public $allFields = array ();
-    public $specialColumns;
+    public $specialColumns = array ();
     public $massActions = array (
         );
 
@@ -103,6 +105,17 @@ class X2GridView extends X2GridViewBase {
             $this->allFieldNames[$fieldName] =
                 X2Model::model($this->modelName)->getAttributeLabel($field->fieldName);
         }
+    }
+
+    protected $_model;
+    public function getModel ($attr=null, $value=null) {
+        if (!isset ($this->_model)) {
+            $this->_model = X2Model::model ($this->modelName);
+            if (isset ($this->fieldFormatter))
+                $this->_model->formatter = $this->fieldFormatter;
+        }
+        if ($attr) $this->_model->$attr = $value;
+        return $this->_model;
     }
 
     protected function handleFields () {
@@ -144,7 +157,10 @@ class X2GridView extends X2GridViewBase {
     protected function createSpecialColumn ($columnName, $width) {
         $newColumn = $this->specialColumns[$columnName];
         $newColumn['id'] = $this->namespacePrefix.'C_'.$columnName;
-        $newColumn['headerHtmlOptions'] = array('style'=>'width:'.$width.'px;');
+        $newColumn['headerHtmlOptions'] = array('style'=>'width:'.$this->formatWidth ($width).';');
+        if (!isset ($newColumn['name']) && !isset ($newColumn['value'])) {
+            $newColumn['name'] = $columnName;
+        }
         return $newColumn;
     }
 
@@ -155,9 +171,7 @@ class X2GridView extends X2GridViewBase {
                 continue;
             }
 
-            // make sure width is reasonable
-            $width = (!empty($width) && is_numeric($width))? $width : null;
-            $col = $this->addNewColumn ($columnName, $width);
+            $col = $this->addNewColumn ($columnName, $this->formatWidth ($width));
             if (sizeof ($col))
                 $columns[] = $col;
         }
@@ -186,6 +200,10 @@ class X2GridView extends X2GridViewBase {
         $newColumn['htmlOptions'] = X2Html::mergeHtmlOptions (
             isset ($newColumn['htmlOptions']) ? 
                 $newColumn['htmlOptions'] : array (), array ('width' => $width));
+
+        if (isset ($this->columnOverrides[$columnName])) {
+            $newColumn = array_merge ($newColumn, $this->columnOverrides[$columnName]);
+        }
         return $newColumn;
     }
 
@@ -200,43 +218,15 @@ class X2GridView extends X2GridViewBase {
                 ->getAttributeLabel($columnName);
             $newColumn['fieldModel'] = isset($this->fieldModels[$columnName]) ?
                 $this->fieldModels[$columnName]->attributes : array();
-            $newColumn['headerHtmlOptions'] = array('style'=>'width:'.$width.'px;');
+            $newColumn['headerHtmlOptions'] = array(
+                'style'=>'width:'.$this->formatWidth ($width).';');
 
-            if($isCurrency) {
-                $newColumn['value'] = 'Yii::app()->locale->numberFormatter->'.
-                    'formatCurrency($data["'.$columnName.'"],Yii::app()->params->currency)';
-                $newColumn['type'] = 'raw';
-            } else if($columnName == 'assignedTo' || $columnName == 'updatedBy') {
-                $newColumn['value'] = 'empty($data["'.$columnName.'"])?'.
-                    'Yii::t("app","Anyone"):User::getUserLinks($data["'.$columnName.'"])';
-                $newColumn['type'] = 'raw';
-            } elseif($this->allFields[$columnName]->type=='date') {
-                $newColumn['value'] = 'empty($data["'.$columnName.'"])? "" : '.
-                    'Formatter::formatLongDate($data["'.$columnName.'"])';
-            } elseif($this->allFields[$columnName]->type=='percentage') {
-                $newColumn['value'] = '$data["'.$columnName.'"]!==null&&$data["'.
-                    $columnName.'"]!==""?((string)($data["'.$columnName.'"]))."%":null';
-            } elseif($this->allFields[$columnName]->type=='assignment') {
-                $newColumn['value'] = 'empty($data["'.$columnName.'"]) ? '.
-                    'Yii::t("app","Anyone"):User::getUserLinks($data["'.$columnName.'"])';
-            } elseif($this->allFields[$columnName]->type=='dateTime') {
-                $newColumn['value'] = 'empty($data["'.$columnName.'"])? "" : '.
-                    'Yii::app()->dateFormatter->formatDateTime($data["'.
-                    $columnName.'"],"medium")';
-            } elseif($this->allFields[$columnName]->type=='link') {
-                $newColumn['value'] = 'X2Model::getModelLinkMock(
-                    "'.$this->allFields[$columnName]->linkType.'",
-                    $data["'.$columnName.'"])';
-                $newColumn['type'] = 'raw';
-            } elseif($this->allFields[$columnName]->type=='boolean') {
-                $newColumn['value']='$data["'.$columnName.'"]==1?Yii::t("actions","Yes"):'.
-                    'Yii::t("actions","No")';
-                $newColumn['type'] = 'raw';
-            }elseif($this->allFields[$columnName]->type=='phone'){
-                $newColumn['type'] = 'raw';
-                $newColumn['value'] = 'X2Model::getPhoneNumber("'.$columnName.'","'.
-                    $this->modelName.'",$data["id"], true, true)';
-            }
+            $makeLinks = in_array (
+                $this->allFields[$columnName]->type, array ('phone', 'link', 'assignment'));
+            
+            $newColumn['value'] = 
+                 '$this->grid->getModel ("'.$columnName.'", $data["'.$columnName.'"])
+                     ->renderAttribute ("'.$columnName.'", '.($makeLinks ? 'true' : 'false').');';
         } else if($columnName == 'tags') {
             $newColumn['id'] = $this->namespacePrefix.'C_'.'tags';
             $newColumn['header'] = Yii::t('app','Tags');

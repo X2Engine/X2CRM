@@ -1,0 +1,355 @@
+/*****************************************************************************************
+ * X2Engine Open Source Edition is a customer relationship management program developed by
+ * X2Engine, Inc. Copyright (C) 2011-2015 X2Engine Inc.
+ * 
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU Affero General Public License version 3 as published by the
+ * Free Software Foundation with the addition of the following permission added
+ * to Section 15 as permitted in Section 7(a): FOR ANY PART OF THE COVERED WORK
+ * IN WHICH THE COPYRIGHT IS OWNED BY X2ENGINE, X2ENGINE DISCLAIMS THE WARRANTY
+ * OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
+ * 
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.  See the GNU Affero General Public License for more
+ * details.
+ * 
+ * You should have received a copy of the GNU Affero General Public License along with
+ * this program; if not, see http://www.gnu.org/licenses or write to the Free
+ * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301 USA.
+ * 
+ * You can contact X2Engine, Inc. P.O. Box 66752, Scotts Valley,
+ * California 95067, USA. or at email address contact@x2engine.com.
+ * 
+ * The interactive user interfaces in modified source and object code versions
+ * of this program must display Appropriate Legal Notices, as required under
+ * Section 5 of the GNU Affero General Public License version 3.
+ * 
+ * In accordance with Section 7(b) of the GNU Affero General Public License version 3,
+ * these Appropriate Legal Notices must retain the display of the "Powered by
+ * X2Engine" logo. If the display of the logo is not reasonably feasible for
+ * technical reasons, the Appropriate Legal Notices must display the words
+ * "Powered by X2Engine".
+ *****************************************************************************************/
+
+#widget_MessageBox .portlet-content {
+    text-align: center;
+}
+
+#motd-form {
+    text-align: left;
+}
+
+#widget_TwitterFeed .portlet-content, #widget_GoogleMaps .portlet-content {
+    padding: 0 0 10px 0;
+}
+
+#widget_TwitterFeed {
+    .twtr-hd {
+        padding: 5px 5px 0 5px;
+    }
+    .twtr-ft {
+        display: none;
+    }
+}
+
+#widget_QuickContact .portlet-content {
+    * {
+        font-size: 10px;
+    }
+    padding: 3px 3px 0 3px;
+}
+
+/***********************************************************************
+* activity feed widget 
+***********************************************************************/
+
+#widget_ChatBox {
+    > div.portlet-content {
+        overflow-y: hidden;
+    }
+    .portlet-content {
+        padding: 0;
+    }
+}
+
+#feed-box {
+    height: 200px;
+    width: auto;
+    margin: 5px;
+    padding: 0 4px;
+    overflow-y: auto;
+    word-wrap: break-word;
+    line-height: 1.1em;
+    font-size: 9pt;
+    color: #333;
+    background: #fcfcfc;
+    border: 1px solid #ddd;
+}
+
+/*#widget_ChatBox textarea, #chat.full-screen textarea {
+        display: block;
+        width: 100%;
+        margin: 0;
+        padding: 2px;
+        height: 50px;
+        border: 1px solid #ddd;
+        background: #fff;
+        font-family: Arial, Helvetica, sans-serif;
+        font-size: 12px;
+        resize: none;
+        overflow: hidden;
+}
+#widget_ChatBox div.textarea-container {
+        display: block;
+        margin: 0 11px 0 5px;
+        width: auto;
+}*/
+/*#chat.full-screen textarea {
+        margin: 0 5px 0 0;
+        padding: 5px;
+        display: inline;
+        float: left;
+        width: 565px;
+        height: 30px;
+}*/
+
+#widget_ChatBox input {
+    float: right;
+    width: 80px;
+}
+
+#feed-box {
+    div.message {
+        margin-bottom: 10px;
+        white-space: pre-wrap;
+    }
+    a {
+        text-decoration: none;
+    }
+    span.my-username {
+        color: #999;
+    }
+}
+
+#widget_ChatBox .chat-timestamp {
+    display: none;
+}
+
+#chat.full-screen {
+    #feed-box {
+        width: 650px;
+        margin: 5px 0;
+        padding: 5px;
+        height: 350px;
+    }
+    input {
+        float: left;
+        margin: 0;
+        width: 80px;
+        line-height: 16px;
+        padding: 12px;
+    }
+}
+
+#widget_ChatBox.full-screen {
+    .chat-timestamp {
+        display: inline;
+    }
+    input {
+        float: left;
+        width: auto;
+    }
+}
+
+
+
+/* #widget_NoteBox input {
+        width: 170px;
+} */
+
+/***********************************************************************
+* Tag Cloud 
+***********************************************************************/
+
+#widget_TagCloud .tag, #widget_MediaBox .media-item, .x2-tag-list .tag {
+    @include border-radius(4px);
+    border-style: solid;
+    border-width: 1px;
+    border-color: rgb(202, 202, 202);
+    margin: 2px 2px;
+    display: inline-block;
+    padding: 2px;
+    background-color: #f0f0f0;
+    input[type="text"] {
+        border: 1px solid $gray;
+    }
+}
+
+#widget_TagCloud .tag a, #widget_MediaBox .media-item a, .x2-tag-list .tag a {
+    text-decoration: none;
+    color: black;
+}
+
+#widget_OnlineUsers .user {
+    a {
+        text-decoration: none;
+        color: black;
+    }
+    @include border-radius(4px);
+    border: 1px solid rgb(202, 202, 202);
+    margin: 2px 2px;
+    display: block;
+    float: left;
+    padding: 2px;
+    background-color: #f0f0f0;
+}
+
+
+/***********************************************************************
+* Clock Widget
+***********************************************************************/
+#widget_TimeZone {
+    text-align: center;
+    .portlet-content {
+        overflow-y: hidden;
+    }
+    #tzClock {
+        position: relative;
+        display: block;
+        width: 88px;
+        height: 88px;
+        margin: 0 auto 0 auto;
+        background: url(../images/clockface.png);
+        list-style: none;
+    }
+    #tzClock2 {
+        display: block;
+    }
+    li {
+        position: absolute;
+        width: 4px;
+        height: 88px;
+        top: 0px;
+        left: 42px;
+        div {
+            margin: 0 auto;
+        }
+        &.sec div {
+            &:first-child {
+                margin-top: 12px;
+                width: 1px;
+                background: red;
+                height: 32px;
+            }
+            &:last-child {
+                width: 3px;
+                background: red;
+                height: 18px;
+            }
+        }
+        &.min div {
+            width: 2px;
+            margin-top: 14px;
+            background: black;
+            height: 30px;
+        }
+        &.hour div {
+            margin-top: 22px;
+            width: 3px;
+            background: black;
+            height: 23px;
+            @include border-radius(3px);
+        }
+    }
+}
+
+
+/***********************************************************************
+* NoteBox
+***********************************************************************/
+#widget_NoteBox {
+
+    .portlet-content {
+        padding: 0;
+        overflow: hidden;
+    }
+
+    textarea {
+        display: block;
+        margin: 0 5px;
+        padding: 2px;
+        width: 164px;
+        height: 50px;
+        border: 1px solid #ddd;
+        background: #fff;
+        font-family: Arial, Helvetica, sans-serif;
+        font-size: 12px;
+        resize: none;
+        overflow: hidden;
+    }
+}
+
+
+#note-box {
+    height: 200px;
+    width: auto;
+    margin: 5px;
+    padding: 0 4px;
+    overflow-y: auto;
+    word-wrap: break-word;
+    line-height: 1.1em;
+    font-size: 9pt;
+    color: #555;
+    background: #fcfcfc;
+    border: 1px solid #ddd;
+}
+
+
+/***********************************************************************
+* Doc Viewer
+***********************************************************************/
+#widget_DocViewer {
+
+    .portlet-content {
+        padding: 0;
+    }
+
+    textarea {
+        display: block;
+        margin: 0 5px;
+        padding: 2px;
+        width: 164px;
+        height: 50px;
+        border: 1px solid #ddd;
+        background: #fff;
+        font-family: Arial, Helvetica, sans-serif;
+        font-size: 12px;
+        resize: none;
+        overflow: hidden;
+    }
+
+    input {
+        width: 160px;
+    }
+}
+
+#docview-box {
+    height: 200px;
+    width: auto;
+    margin: 5px;
+    padding: 0 4px;
+    overflow-y: auto;
+    word-wrap: break-word;
+    line-height: 1.1em;
+    font-size: 9pt;
+    color: #555;
+    background: #fcfcfc;
+    border: 1px solid #ddd;
+}
+
+
+#docview-input {
+    padding: 5px;
+}

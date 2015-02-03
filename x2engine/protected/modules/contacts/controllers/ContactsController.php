@@ -2,7 +2,7 @@
 
 /*****************************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2015 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -156,6 +156,7 @@ class ContactsController extends x2base {
      * @param integer $id the ID of the model to be displayed
      */
     public function actionView($id) {
+        $this->noBackdrop = true;
         $contact = $this->loadModel($id);
         if ($this->checkPermissions($contact, 'view')) {
 
@@ -659,7 +660,6 @@ class ContactsController extends x2base {
         if (isset($_POST['Contacts'])) {
             $oldAttributes = $model->attributes;
 
-            //AuxLib::debugLogR ($_POST);
             $model->setX2Fields($_POST['Contacts']);
             /* if ($model->dupeCheck != '1') {
               $model->dupeCheck = 1;
@@ -713,20 +713,37 @@ class ContactsController extends x2base {
             /* } */
         }
         if ($renderFlag) {
-
             if (isset($_POST['x2ajax'])) {
                 Yii::app()->clientScript->scriptMap['*.js'] = false;
                 Yii::app()->clientScript->scriptMap['*.css'] = false;
                 if (isset($x2ajaxCreateError) && $x2ajaxCreateError == true) {
-                    $page = $this->renderPartial('application.components.views._form', array('model' => $model, 'users' => $users, 'modelName' => 'contacts'), true, true);
+                    $page = $this->renderPartial(
+                        'application.components.views._form', 
+                        array(
+                            'model' => $model,
+                            'users' => $users,
+                            'modelName' => 'contacts'
+                        ),
+                        true,
+                        true
+                    );
                     echo json_encode(
-                            array(
-                                'status' => 'userError',
-                                'page' => $page,
-                            )
+                        array(
+                            'status' => 'userError',
+                            'page' => $page,
+                        )
                     );
                 } else {
-                    $this->renderPartial('application.components.views._form', array('model' => $model, 'users' => $users, 'modelName' => 'contacts'), false, true);
+                    $this->renderPartial(
+                        'application.components.views._form', 
+                        array(
+                            'model' => $model,
+                            'users' => $users,
+                            'modelName' => 'contacts'
+                        ),
+                        false,
+                        true
+                    );
                 }
             } else {
                 $this->render('update', array(
@@ -1179,11 +1196,7 @@ class ContactsController extends x2base {
                 'label'=>Yii::t('contacts','Create {module}', array('{module}'=>$Contact)),
                 'url'=>array('create')
             ),
-            array(
-                'name'=>'view',
-                'label' => Yii::t('contacts', 'View'),
-                'url' => array('view', 'id' => $modelId),
-            ),
+            RecordViewLayoutManager::getViewActionMenuListItem ($modelId),
             array(
                 'name'=>'edit',
                 'label' => Yii::t('contacts', 'Edit {module}', array('{module}' => $Contact)), 
@@ -1280,11 +1293,12 @@ class ContactsController extends x2base {
                 'linkOptions'=>array(
                     'id'=>'x2-create-multiple-records-button',
                     'class'=>'x2-hint',
-                    'title'=>Yii::t('app', 'Create a {contact}, {account}, and {opportunity}.', array(
-                        '{contact}' => $Contact,
-                        '{account}' => Modules::displayName(false, "Accounts"),
-                        '{opportunity}' => Modules::displayName(false, "Opportunities"),
-                    )))
+                    'title'=>Yii::t('app', 'Create a {contact}, {account}, and {opportunity}.', 
+                        array(
+                            '{contact}' => $Contact,
+                            '{account}' => Modules::displayName(false, "Accounts"),
+                            '{opportunity}' => Modules::displayName(false, "Opportunities"),
+                        )))
             ),
             array(
                 'name' => 'print',
@@ -1295,10 +1309,12 @@ class ContactsController extends x2base {
                         Yii::app()->createUrl('/site/printRecord', array (
                             'modelClass' => 'Contacts',
                             'id' => $modelId,
-                            'pageTitle' => Yii::t('app', 'Contact').': '.(isset($model) ? $model->name : "")
+                            'pageTitle' => Yii::t('app', 'Contact').': '.(isset($model) ? 
+                                $model->name : "")
                         ))."');"
                 )
             ),
+            RecordViewLayoutManager::getEditLayoutActionMenuListItem (),
         );
 
         $this->prepareMenu($menuItems, $selectOptions);

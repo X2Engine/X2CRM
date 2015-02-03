@@ -1,7 +1,7 @@
 <?php
 /*****************************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2015 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -457,11 +457,7 @@ class OpportunitiesController extends x2base {
                 )),
                 'url'=>array('create')
             ),
-            array(
-                'name'=>'view',
-                'label'=>Yii::t('opportunities','View'),
-                'url'=>array('view','id'=>$modelId)
-            ),
+            RecordViewLayoutManager::getViewActionMenuListItem ($modelId),
             array(
                 'name'=>'edit',
                 'label'=>Yii::t('opportunities','Edit {opportunity}', array(
@@ -520,7 +516,8 @@ class OpportunitiesController extends x2base {
                         '{contact}'=>Modules::displayName(false, "Contacts"),
                         '{account}'=>Modules::displayName(false, "Accounts"),
                     )))
-            )
+            ),
+            RecordViewLayoutManager::getEditLayoutActionMenuListItem (),
         );
 
         $this->prepareMenu($menuItems, $selectOptions);

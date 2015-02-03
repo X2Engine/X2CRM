@@ -1,6 +1,6 @@
 /*****************************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2015 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -42,12 +42,10 @@ div.x2-layout {
     width: auto;
     margin-bottom: 5px;
     overflow: hidden;
-    border: 1px solid #ccc;
+    // border: 1px solid #ccc;
     background: #fafafa;
-    -moz-border-radius: 4px;
-    -o-border-radius: 4px;
-    -webkit-border-radius: 4px;
-    border-radius: 4px;
+
+    @include border-radius();
     /*  -moz-box-shadow:    0 1px 6px rgba(0,0,0,0.5);
     -webkit-box-shadow:   0 1px 6px rgba(0,0,0,0.5);
     box-shadow:       0 1px 6px rgba(0,0,0,0.5); */
@@ -59,14 +57,18 @@ div.x2-layout {
 #main-column {
     margin-top: 5px;
     > {
-    div, form {
-        margin: 0 0px 5px 0px;
-    }
+        div, form {
+            margin: 0 0px 5px 0px;
+        }
     }
 }
 
 .history {
     padding: 0 5px;
+
+    &.x2-layout-island.sortable-widget-container {
+        background: none !important;
+    }
 }
 
 #main-column > div.page-title-fixed-outer {
@@ -448,6 +450,7 @@ div.x2-layout {
     }
     }
     &.editMode {
+        @include standard-box-shadow();
     td {
         border: 1px dashed #f00;
         border-width: 1px 1px 1px 0;
@@ -573,12 +576,9 @@ div.x2-layout.editMode {
     font-size: 12px;
     display: block;
     padding: 5px 5px;
-    border-bottom: 1px solid #666;
+    // border-bottom: 1px solid #666;
     background: #eee;
-    -moz-border-radius: 4px 4px 0 0;
-    -o-border-radius: 4px 4px 0 0;
-    -webkit-border-radius: 4px 4px 0 0;
-    border-radius: 4px 4px 0 0;
+    @include border-radius(4px 4px 0 0);
 }
 
 #formEditorControls {
@@ -587,9 +587,7 @@ div.x2-layout.editMode {
     z-index: 2;
     clip: rect(0px, 1000px, 1000px, 0px);
     margin-bottom: -1px;
-    -moz-box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.75);
-    -webkit-box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.75);
-    box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.75);
+    // @include box-shadow(0 0 10px 0 rgba(black, 0.75));
 }
 
 div.x2-layout.editMode #formEditorControls {
@@ -762,7 +760,7 @@ div.cron-job {
 }
 
 div.half-width {
-    width: 65%;
+    //width: 65%;
     float: left;
 }
 
@@ -797,20 +795,20 @@ div.half-width > div.form {
 
 @media (min-width: 1403px) {
     .history {
-    width: 35%;
-    margin-top: 5px;
+        //width: 35%;
+        margin-top: 5px;
     }
     #main-column {
-    width: 65%;
-    float: left;
+        width: 65%;
+        float: left;
     }
     .history {
-    padding: 0;
-    > {
-        div, form {
-        margin: 0 0px 5px 0;
+        padding: 0;
+        > {
+            div, form {
+            margin: 0 0px 5px 0;
+            }
         }
-    }
     }
     #main-column > {
     div {
@@ -833,39 +831,39 @@ div.half-width > div.form {
 
 @media (min-width: 1122px) {
     .no-widgets {
-    .history {
-        width: 35%;
-        margin-top: 5px;
-    }
-    #main-column {
-        width: 65%;
-        float: left;
-    }
-    .history {
-        padding: 0;
-        > {
-        div, form {
-            margin: 0 0px 5px 0;
+        .history {
+            //width: 35%;
+            margin-top: 5px;
         }
+        #main-column {
+            width: 65%;
+            float: left;
         }
-    }
-    #main-column > {
-        div {
-        &.page-title-fixed-outer {
-            padding-right: 10px;
+        .history {
+            padding: 0;
+                > {
+                div, form {
+                    margin: 0 0px 5px 0;
+                }
+            }
         }
-        &.page-title {
-            margin-left: 0;
+        #main-column > {
+            div {
+            &.page-title-fixed-outer {
+                padding-right: 10px;
+            }
+            &.page-title {
+                margin-left: 0;
+            }
+            &.form {
+                background: #fff;
+            }
+            margin: 0 5px 5px 0px;
+            }
+            form {
+            margin: 0 5px 5px 0px;
+            }
         }
-        &.form {
-            background: #fff;
-        }
-        margin: 0 5px 5px 0px;
-        }
-        form {
-        margin: 0 5px 5px 0px;
-        }
-    }
     }
 }
 

@@ -1,7 +1,7 @@
 <?php
 /*****************************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2015 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -34,7 +34,6 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 
-Yii::import('application.extensions.CJuiDateTimePicker.CJuiDateTimePicker');
 Yii::app()->clientScript->registerCss('eventTabCss',"
 
 #calendar + br + #publisher-form #save-publisher {
@@ -95,7 +94,7 @@ $('#Actions_associationType').change (function () {
 
 ?>
 
-<div id='new-event' class='publisher-form' 
+<div id='<?php echo $this->resolveId ('new-event'); ?>' class='publisher-form' 
  <?php echo ($startVisible ? '' : "style='display: none;'"); ?>>
 
 
@@ -135,47 +134,30 @@ $('#Actions_associationType').change (function () {
             echo CHtml::activeLabel(
                 $model,'dueDate',
                 array('class' => 'action-start-time-label')); 
-            $this->widget('CJuiDateTimePicker', array(
-                'model' => $model, //Model object
-                'attribute' => 'dueDate', //attribute name
-                'mode' => 'datetime', //use "time","date" or "datetime" (default)
-                'options' => array(
-                    'dateFormat' => Formatter::formatDatePicker('medium'),
-                    'timeFormat' => Formatter::formatTimePicker(),
-                    'ampm' => Formatter::formatAMPM(),
-                    'changeMonth' => true,
-                    'changeYear' => true,
-                ), // jquery plugin options
-                'language' => (Yii::app()->language == 'en') ? '' : Yii::app()->getLanguage(),
-                'htmlOptions' => array(
+            echo X2Html::activeDatePicker ($model, 'dueDate', array(
+                    // fix datepicker so it's always on top
                     'class'=>'action-due-date',
                     'onClick' => "$('#ui-datepicker-div').css('z-index', '100');",
-                    'id' => 'event-form-action-due-date'
-                ), // fix datepicker so it's always on top
-            ));
+                    'id' => $this->resolveId ('event-form-action-due-date'),
+                ), 'datetime', array (
+                    'dateFormat' => Formatter::formatDatePicker ('medium'),
+                    'timeFormat' => Formatter::formatTimePicker (),
+                    'ampm' => Formatter::formatAMPM (),
+                ));
 
             echo CHtml::activeLabel(
                 $model,'completeDate', 
                 array('class' => 'action-end-time-label'));
-            $this->widget('CJuiDateTimePicker', array(
-                'model' => $model, //Model object
-                'attribute' => 'completeDate', //attribute name
-                'mode' => 'datetime', //use "time","date" or "datetime" (default)
-                'options' => array(
-                    'dateFormat' => Formatter::formatDatePicker('medium'),
-                    'timeFormat' => Formatter::formatTimePicker(),
-                    'ampm' => Formatter::formatAMPM(),
-                    'changeMonth' => true,
-                    'changeYear' => true,
-                ), // jquery plugin options
-                'language' => (Yii::app()->language == 'en') ? '' : Yii::app()->getLanguage(),
-                'htmlOptions' => array(
+            echo X2Html::activeDatePicker ($model, 'completeDate', array(
                     // fix datepicker so it's always on top
                     'onClick' => "$('#ui-datepicker-div').css('z-index', '100');", 
                     'class' => 'action-complete-date x2-forms',
                     'id' => 'event-form-action-complete-date'
-                ),
-            ));
+                ), 'datetime', array (
+                    'dateFormat' => Formatter::formatDatePicker ('medium'),
+                    'timeFormat' => Formatter::formatTimePicker (),
+                    'ampm' => Formatter::formatAMPM (),
+                ));
             ?>
         </div>
 
@@ -249,7 +231,8 @@ $('#Actions_associationType').change (function () {
                 $associationTypeOptions,
                 array('class'=>'action-associationType-dropdown')); 
             ?>
-            <div id='association-type-autocomplete-container' <?php 
+            <div id='<?php echo $this->resolveId ('association-type-autocomplete-container'); ?>' 
+             <?php 
              echo ($model->associationType === 'calendar' ? 'style="display: none;"' : ''); ?>>
             <?php
                 echo CHtml::label(

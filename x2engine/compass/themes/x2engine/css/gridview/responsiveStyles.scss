@@ -1,6 +1,6 @@
 /*****************************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2015 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -33,9 +33,14 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 
+@import "standards";
+
 /*
 fixed header disabled for mobile layout (should eventually be made sticky)
 */
+
+$right-margin: 3px;
+$left-margin: 3px;
 @media (min-width: 658px) {
   .no-widgets .x2-gridview-fixed-top-bar-outer {
     padding-right: 5px;
@@ -44,26 +49,23 @@ fixed header disabled for mobile layout (should eventually be made sticky)
     display: none !important;
   }
   .no-widgets .x2-gridview-fixed-top-bar-outer .x2-gridview-fixed-title {
-    margin: 0 0px 0 5px;
+    margin: 0 0px 0 $left-margin;
   }
   .x2-gridview-fixed-top-bar-outer .x2-gridview-fixed-title {
-    margin: 0 6px 0 5px;
+    margin: 0 6px 0 $left-margin;
     width: auto;
-    -moz-border-radius: 0;
-    -o-border-radius: 0;
-    -webkit-border-radius: 0;
-    border-radius: 0;
-    border-left: 1px solid #b3b3b3;
-    border-right: 1px solid #b3b3b3;
+    @include border-radius(0);
+    // border-left: 1px solid #b3b3b3;
+    // border-right: 1px solid #b3b3b3;
   }
   .no-widgets .x2-gridview-fixed-top-bar-outer .x2grid-header-container {
-    margin: 0 0px 0 5px;
+    margin: 0 0px 0 $left-margin;
   }
   .x2-gridview-fixed-top-bar-outer {
     .x2grid-header-container {
-      margin: 0 6px 0 5px;
-      border-left: 1px solid #b3b3b3;
-      border-right: 1px solid #b3b3b3;
+      margin: 0 6px 0 $left-margin;
+      // border-left: 1px solid #b3b3b3;
+      // border-right: 1px solid #b3b3b3;
     }
     + .x2grid-body-container .x2grid-grips div {
       top: 75px !important;
@@ -73,8 +75,6 @@ fixed header disabled for mobile layout (should eventually be made sticky)
       padding-right: 22%;
       padding-left: 11px;
       height: 0;
-      -webkit-box-sizing: border-box;
-      -moz-box-sizing: border-box;
       box-sizing: border-box;
     }
     width: 100%;
@@ -85,8 +85,6 @@ fixed header disabled for mobile layout (should eventually be made sticky)
     top: 32px;
     padding-left: 151px;
     padding-right: 9px;
-    -webkit-box-sizing: border-box;
-    -moz-box-sizing: border-box;
     box-sizing: border-box;
   }
   .x2-gridview-body-with-fixed-header {
@@ -106,7 +104,7 @@ fixed header disabled for mobile layout (should eventually be made sticky)
   }*/
   .x2-gridview-fixed-top-bar-outer {
     .x2-gridview-fixed-title, .x2grid-header-container {
-      margin: 0 -4px 0 5px;
+      margin: 0 -4px 0 $left-margin;
     }
   }
 }

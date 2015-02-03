@@ -1,3 +1,27 @@
+# 5.0.3b #
+1/20/2015
+
+* Highlights
+  * New Record Transactional View
+    * Provides an alternate view of a record's action history
+    * Individual widgets for each type of interaction (Calls, Emails, Actions, etc.)
+  * Professional Edition Changes:
+    * Charts created through the Reports Module can now be added to the profile dashboard
+  * Profile dashboard and record view column widths can now be adjusted
+  * Email Contact X2Flow action has a new option to enable email logging and tracking
+  * Application-wide icon update
+* General Changelog / Developer Notes:
+  * Updated Yii to version 1.1.16
+* Tracked Bug Fixes:
+  * [1994](http://x2software.com/index.php/bugReports/1994): Unable to resolve the request "accounts/view/id".  
+  * [2004](http://x2software.com/index.php/bugReports/2004): CDbCommand failed to execute the SQL statement: SQLSTATE[23000]: Integrity constraint violation: 1062 Duplicate entry '' for key 'c_email2'  
+  * [2007](http://x2software.com/index.php/bugReports/2007): The system is unable to find the requested action "webleadForm".  
+  * [2008](http://x2software.com/index.php/bugReports/2008): CDbCommand failed to execute the SQL statement: SQLSTATE[42S22]: Column not found: 1054 Unknown column 't.actionDescription' in 'order clause'  
+  * [2009](http://x2software.com/index.php/bugReports/2009): CDbCommand failed to execute the SQL statement: SQLSTATE[42000]: Syntax error or access violation: 1064 You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '' at line 3  
+  * [2048](http://x2software.com/index.php/bugReports/2048): htmlspecialchars(): Invalid multibyte sequence in argument  
+  * [2049](http://x2software.com/index.php/bugReports/2049): 
+  * [2086](http://x2software.com/index.php/bugReports/2086):   
+
 # 5.0.2 #
 12/22/2014
 

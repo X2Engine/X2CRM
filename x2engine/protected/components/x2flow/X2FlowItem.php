@@ -1,7 +1,7 @@
 <?php
 /*****************************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2015 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -88,7 +88,11 @@ abstract class X2FlowItem extends CComponent {
 
             // each option must be present in $this->config and $params
             if(!isset($configOptions[$optName])) {  
-                continue;                            // but just ignore them for future proofing
+                if (isset ($optRule['defaultVal'])) {
+                    $configOptions[$optName] = array ();
+                } else {
+                    continue; // but just ignore them for future proofing
+                }
             }
             // if params are provided, check them for this option name
             // if($params !== null && !isset($params[$optName]))    
@@ -101,41 +105,48 @@ abstract class X2FlowItem extends CComponent {
             // treat each option like a condition and compare it to the param.
 
             $option = &$configOptions[$optName];
+
             // set optional flag
             $option['optional'] = isset($optRule['optional']) && $optRule['optional'];
             $option['comparison'] = isset($optRule['comparison']) ? $optRule['comparison'] : true;
+
             // operator defaults to "=" if not set
-            $option['operator'] = isset($option['operator'])? $option['operator'] : '=';
+            $option['operator'] = isset($option['operator']) ? $option['operator'] : '=';
+
             // if there's a type setting, set that in the config data
             if(isset($optRule['type']))
                 $option['type'] = $optRule['type'];
+
             // if there's an operator setting, it must be valid
-            if(isset($optRule['operator']) && 
-               !in_array($optRule['operators'],$configOptions['operator'])) {
+            if(isset($optRule['operators']) &&
+               !in_array($option['operator'], $optRule['operators'])) {
 
                 return array (
                     false,
-                    Yii::t('studio', 'Flow item validation error'));
+                    Yii::t('studio', 'Flow item validation error: Invalid operator'));
             }
 
             // value must not be empty, unless it's an optional setting
             if(!isset($option['value']) || $option['value'] === null || $option['value'] === '') {
                 if(isset($optRule['defaultVal'])) {        // try to use the default value
-                    $option[$optName] = $optRule['defaultVal'];
+                    $option['value'] = $optRule['defaultVal'];
                 } elseif(!$option['optional']) {
                     // if not, fail if it was required
-                    if (YII_DEBUG)
-                        return array ( false,
+                    if (YII_DEBUG) {
+                        return array (
+                            false,
                             Yii::t('studio', 
                                 'Required flow item input missing: {optName} was left blank.',
                                 array ('{optName}' => $optName)));
-                    else
+                    } else {
                         return array (
                             false,
                             Yii::t('studio', 'Required flow item input missing'));
+                    }
                 }
             }
         }
+
         return array (true, '');
     }
 

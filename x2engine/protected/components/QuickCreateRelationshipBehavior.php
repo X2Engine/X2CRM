@@ -1,7 +1,7 @@
 <?php
 /*****************************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2015 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -52,6 +52,8 @@ class QuickCreateRelationshipBehavior extends CBehavior {
      *  the first model>)
      */
     public $attributesOfNewRecordToUpdate = array ();
+
+    protected $inlineFormPathAlias = 'application.components.views._form'; 
 
     private static $_modelsWhichSupportQuickCreate;
 
@@ -209,21 +211,20 @@ class QuickCreateRelationshipBehavior extends CBehavior {
     }
 
     /**
-     * Renders an inline record create form
+     * Renders an inline record create/update form
      * @param object $model 
      * @param bool $hasErrors
      */
-    public function renderInlineCreateForm ($model, $hasErrors) {
-        Yii::app()->clientScript->scriptMap['*.css'] = false;
+    public function renderInlineForm ($model, $hasErrors, array $viewParams = array ()) {
 
         if ($hasErrors) {
             $page = $this->owner->renderPartial(
-                'application.components.views._form', 
-                array(
+                $this->inlineFormPathAlias,
+                array_merge (array(
                     'model' => $model,
                     'modelName' => strtolower (get_class ($model)),
                     'suppressQuickCreate' => true,
-                ), true, true);
+                ), $viewParams), true, true);
             echo json_encode(
                 array(
                     'status' => 'userError',
@@ -231,12 +232,12 @@ class QuickCreateRelationshipBehavior extends CBehavior {
                 ));
         } else {
             $this->owner->renderPartial(
-                'application.components.views._form', 
-                array(
+                $this->inlineFormPathAlias,
+                array_merge (array(
                     'model' => $model, 
                     'modelName' => strtolower (get_class ($model)),
                     'suppressQuickCreate' => true,
-                ), false, true);
+                ), $viewParams), false, true);
         }
 
     }
@@ -308,6 +309,14 @@ class QuickCreateRelationshipBehavior extends CBehavior {
 
         if ($secondModel && $changed) return $secondModel;
         else return false;
+    }
+
+    /**
+     * Alias for {@link renderInlineForm} preserved for backwards compatibility with 
+     * TemplatesController.
+     */
+    public function renderInlineCreateForm ($model, $hasErrors) {
+        $this->renderInlineForm ($model, $hasErrors);
     }
 
 }

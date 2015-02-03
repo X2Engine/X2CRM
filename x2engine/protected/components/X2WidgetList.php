@@ -1,7 +1,7 @@
 <?php
 /*****************************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2015 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -43,14 +43,12 @@ class X2WidgetList extends X2Widget {
 
     public $model;
 
+    public $layoutManager;
+
     private $_profile;
 
     public function getProfile () {
-        if (!isset ($this->_profile)) {
-            $this->_profile = (Yii::app()->user->isGuest ? 
-                new Profile : Yii::app()->params->profile);
-        }
-        return $this->_profile;
+        return Yii::app()->params->profile;
     }
 
     /**
@@ -58,79 +56,12 @@ class X2WidgetList extends X2Widget {
      */
     public $widgetParamsByWidgetName = array ();
 
-    /**
-     * Renders widgets in layout 
-     */
-    private function renderWidget () {
-        $layout = $this->profile->recordViewWidgetLayout;
-
-        foreach($layout as $widgetClass => $settings){ // list of widgets
-            $widgetParams = array(
-                'model' => $this->model,
-                'profile' => $this->profile,
-                'widgetType' => 'recordView',
-            );
-
-            if (isset ($this->widgetParamsByWidgetName[$widgetClass])) {
-                foreach ($this->widgetParamsByWidgetName[$widgetClass] as $paramName => $value) {
-                    $widgetParams[$paramName] = $value;
-                }
-            }
-
-            if(!$this->isExcluded ($widgetClass)){
-                Yii::app()->controller->widget(
-                    'application.components.sortableWidget.recordViewWidget.'.$widgetClass, 
-                    $widgetParams);
-            }
-        }
-    }
-
     public function run(){
-        echo '<div id="content-widgets">';
-        echo '<div id="recordView-widgets-container-inner">';
-        $this->renderWidget ();
-        echo '</div>';
-        echo '</div>';
-
-
-        Yii::app()->clientScript->registerScriptFile(
-            Yii::app()->getBaseUrl().'/js/sortableWidgets/SortableWidgetManager.js', 
-            CClientScript::POS_END);
-        Yii::app()->clientScript->registerScriptFile(
-            Yii::app()->getBaseUrl().'/js/sortableWidgets/RecordViewWidgetManager.js', 
-            CClientScript::POS_END);
-        Yii::app()->clientScript->registerScript ('profilePageWidgetInitScript', "
-            x2.recordViewWidgetManager = new RecordViewWidgetManager ({
-                setSortOrderUrl: '".
-                    Yii::app()->controller->createUrl ('/profile/setWidgetOrder')."',
-                showWidgetContentsUrl: '".Yii::app()->controller->createUrl (
-                    '/profile/view', array ('id' => 1))."',
-                translations: ".CJSON::encode (array (
-                    'Create' => Yii::t('app',  'Create'),
-                    'Cancel' => Yii::t('app',  'Cancel'),
-                )).",
-                modelId: {$this->model->id},
-                modelType: '".get_class ($this->model)."'
-            });
-        ", CClientScript::POS_READY);
-
-    }
-
-    private function isExcluded ($name) {
-        $modelType = get_class ($this->model);
-
-        if ($modelType === 'Actions' && $name !== 'InlineTagsWidget' ||
-            $modelType !== 'Campaign' && $name === 'CampaignChartWidget' ||
-            ($modelType == 'BugReports' && $name!='WorkflowStageDetailsWidget') ||
-            ($modelType == 'Quote' && $name == 'WorkflowStageDetailsWidget') ||
-            ($modelType == 'Campaign' &&
-             ($name == 'WorkflowStageDetailsWidget' || $name === 'InlineRelationshipsWidget')) ||
-            ($modelType === 'Product' && $name === 'WorkflowStageDetailsWidget')) {
-
-            return true;
-        } else {
-            return false;
-        }
+        Yii::app()->controller->widget ('RecordViewWidgetManager', array (
+            'model' => $this->model,
+            'layoutManager' => $this->layoutManager,
+            'widgetParamsByWidgetName' => $this->widgetParamsByWidgetName,
+        ));
     }
 
     /***********************************************************************

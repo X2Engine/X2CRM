@@ -1,7 +1,7 @@
 <?php
 /*****************************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2015 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -33,6 +33,9 @@
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2Engine".
  *****************************************************************************************/
+
+$layoutManager = $this->widget ('RecordViewLayoutManager', array ('staticLayout' => false));
+
 Yii::app()->clientScript->registerCss('recordViewCss', "
 
 #content {
@@ -102,8 +105,8 @@ $strict = Yii::app()->settings->quoteStrictLock;
 $themeUrl = Yii::app()->theme->getBaseUrl();
 
 $menuOptions = array(
-    'index', 'invoices', 'create', 'view', 'email',
-    'delete', 'attach', 'print', 'convert', 'duplicate',
+    'index', 'invoices', 'create', 'view', 'email', 'delete', 'attach', 'print', 'convert', 
+    'duplicate', 'editLayout',
 );
 if ($contact)
     $menuOptions[] = 'email';
@@ -154,7 +157,7 @@ $this->insertMenu($menuOptions, $model, $authParams);
         </div>
     </div>
 </div>
-<div id="main-column" class="half-width">
+<div id="main-column" <?php echo $layoutManager->columnWidthStyleAttr (1); ?>>
 <?php
 $form = $this->beginWidget('CActiveForm', array(
     'id' => 'quotes-form',
@@ -257,19 +260,17 @@ $this->widget('InlineEmailForm', array(
         )
 );
 ?>
-    <?php $this->widget('X2WidgetList', array('block' => 'center', 'model' => $model, 'modelType' => 'Quote')); ?>
 
     <?php $this->widget('Attachments', array('associationType' => 'quotes', 'associationId' => $model->id, 'startHidden' => true)); ?>
 
 </div>
-<div class="history half-width">
-    <?php
-    $this->widget('Publisher', array(
-        'associationType' => 'quotes',
-        'associationId' => $model->id,
-        'assignedTo' => Yii::app()->user->getName(),
-        'calendar' => false
-            )
-    );
-    $this->widget('History', array('associationType' => 'quotes', 'associationId' => $model->id));
-    ?>
+<?php 
+$this->widget(
+    'X2WidgetList', 
+    array(
+        'layoutManager' => $layoutManager,
+        'block' => 'center',
+        'model' => $model,
+        'modelType' => 'Quote'
+    )); 
+?>

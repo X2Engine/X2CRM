@@ -1,7 +1,7 @@
 <?php
 /*****************************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2015 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -101,8 +101,10 @@ class InlineEmailForm extends X2Widget {
                 'InlineEmailEditorManager' => array(
                     'baseUrl' => Yii::app()->request->baseUrl,
                     'js' => array(
+                        'js/InlineEmailResizable.js',
                         'js/inlineEmailForm.js',
                     ),
+                    'depends' => array ('jquery.ui'),
                 ),
             ));
         }

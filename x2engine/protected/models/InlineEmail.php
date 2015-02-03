@@ -2,7 +2,7 @@
 
 /*****************************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2015 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -677,7 +677,9 @@ class InlineEmail extends CFormModel {
                         // Reset unique ID and insert a new tracking image with a new unique ID
                         $this->_trackingImage = null;
                         $this->_uniqueId = null;
-                        $this->message = replace_string($matchImg[0], self::insertedPattern('track', $this->trackingImage), $this->message);
+                        $this->message = replace_string(
+                            $matchImg[0], self::insertedPattern('track', $this->trackingImage), 
+                            $this->message);
                     }else{
                         $this->_trackingImage = $matchImg[1];
                         if(preg_match(self::UIDREGEX, $this->_trackingImage, $matchId)){
@@ -824,6 +826,7 @@ class InlineEmail extends CFormModel {
             $action->completedBy = $this->userProfile->username;
             $action->createDate = $now;
             $action->dueDate = $now;
+            $action->subject = $this->subject;
             $action->completeDate = $now;
             $action->complete = 'Yes';
             $action->actionDescription = $emailRecordBody;

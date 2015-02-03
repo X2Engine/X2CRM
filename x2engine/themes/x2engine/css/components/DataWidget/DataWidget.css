@@ -1,6 +1,6 @@
 /*****************************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2015 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -120,19 +120,22 @@
 * Mixin for border radius 
 ***************************************/
 /***************************************
+* Mixin for box shadow
+***************************************/
+/***************************************
 * Mixin for text field placeholder text
 ***************************************/
 /***************************************
 * CSS to extend when something 
 * should look like a link
 ***************************************/
-/* line 57, ../../../../../compass/css/lib/standards.scss */
+/* line 68, ../../../../../compass/css/lib/_standards.scss */
 .pseudo-link {
   cursor: pointer;
   color: #004baf;
   transition: color .1s;
 }
-/* line 62, ../../../../../compass/css/lib/standards.scss */
+/* line 73, ../../../../../compass/css/lib/_standards.scss */
 .pseudo-link:hover {
   color: #006cfb;
 }
@@ -141,11 +144,11 @@
 * CSS to extend when for elements that 
 * become opauqe on mouseover
 ***************************************/
-/* line 80, ../../../../../compass/css/lib/standards.scss */
+/* line 91, ../../../../../compass/css/lib/_standards.scss */
 .opacity-hover {
   opacity: 0.3;
 }
-/* line 75, ../../../../../compass/css/lib/standards.scss */
+/* line 86, ../../../../../compass/css/lib/_standards.scss */
 .opacity-hover:hover {
   opacity: 1;
 }
@@ -159,7 +162,7 @@
   border-color: rgba(69, 69, 69, 0.5);
 }
 /* line 41, ../../../../../compass/themes/x2engine/css/components/DataWidget/DataWidget.scss */
-.data-widget.sortable-widget-container .add-to-dashboard {
+.data-widget.sortable-widget-container .add-to-dashboard, .data-widget.sortable-widget-container .go-to-report {
   display: none;
   float: right;
   padding: 0px 11px;
@@ -168,35 +171,25 @@
   cursor: pointer;
 }
 /* line 49, ../../../../../compass/themes/x2engine/css/components/DataWidget/DataWidget.scss */
-.data-widget.sortable-widget-container .add-to-dashboard.disabled-link {
+.data-widget.sortable-widget-container .add-to-dashboard.disabled-link, .data-widget.sortable-widget-container .go-to-report.disabled-link {
   opacity: 0.5;
 }
 /* line 54, ../../../../../compass/themes/x2engine/css/components/DataWidget/DataWidget.scss */
-.data-widget.sortable-widget-container:hover .add-to-dashboard {
+.data-widget.sortable-widget-container:hover .add-to-dashboard, .data-widget.sortable-widget-container:hover .go-to-report {
   display: inline-block;
 }
-/* line 59, ../../../../../compass/themes/x2engine/css/components/DataWidget/DataWidget.scss */
-.data-widget.sortable-widget-container .widget-title-bar {
-  cursor: grabbing;
-  transition: background .2s;
-  background: none;
-}
-/* line 65, ../../../../../compass/themes/x2engine/css/components/DataWidget/DataWidget.scss */
-.data-widget.sortable-widget-container:hover .widget-title-bar {
-  background: #D9D9D9;
-}
-/* line 69, ../../../../../compass/themes/x2engine/css/components/DataWidget/DataWidget.scss */
+/* line 60, ../../../../../compass/themes/x2engine/css/components/DataWidget/DataWidget.scss */
 .data-widget.sortable-widget-container .config-bar {
   text-align: center;
   display: none;
   padding: 7px;
   border-bottom: 1px solid #D9D9D9;
 }
-/* line 75, ../../../../../compass/themes/x2engine/css/components/DataWidget/DataWidget.scss */
+/* line 66, ../../../../../compass/themes/x2engine/css/components/DataWidget/DataWidget.scss */
 .data-widget.sortable-widget-container .config-bar:after {
   clear: both;
 }
-/* line 80, ../../../../../compass/themes/x2engine/css/components/DataWidget/DataWidget.scss */
+/* line 71, ../../../../../compass/themes/x2engine/css/components/DataWidget/DataWidget.scss */
 .data-widget.sortable-widget-container .config-bar-item, .data-widget.sortable-widget-container .filter-menu ul li {
   color: #9f9f9f;
   transition: color .2s;
@@ -205,15 +198,15 @@
   cursor: pointer;
   float: left;
 }
-/* line 92, ../../../../../compass/themes/x2engine/css/components/DataWidget/DataWidget.scss */
+/* line 83, ../../../../../compass/themes/x2engine/css/components/DataWidget/DataWidget.scss */
 .data-widget.sortable-widget-container .config-bar-item:hover, .data-widget.sortable-widget-container .filter-menu ul li:hover {
   color: #006cfb;
 }
-/* line 96, ../../../../../compass/themes/x2engine/css/components/DataWidget/DataWidget.scss */
+/* line 87, ../../../../../compass/themes/x2engine/css/components/DataWidget/DataWidget.scss */
 .data-widget.sortable-widget-container .config-bar-item.active, .data-widget.sortable-widget-container .filter-menu ul li.active {
   color: #004baf;
 }
-/* line 100, ../../../../../compass/themes/x2engine/css/components/DataWidget/DataWidget.scss */
+/* line 91, ../../../../../compass/themes/x2engine/css/components/DataWidget/DataWidget.scss */
 .data-widget.sortable-widget-container .config-bar-item.spacer, .data-widget.sortable-widget-container .filter-menu ul li.spacer {
   width: 30px;
   height: 5px;
@@ -221,32 +214,32 @@
   opacity: 0;
   cursor: auto;
 }
-/* line 108, ../../../../../compass/themes/x2engine/css/components/DataWidget/DataWidget.scss */
+/* line 99, ../../../../../compass/themes/x2engine/css/components/DataWidget/DataWidget.scss */
 .data-widget.sortable-widget-container .config-bar-item.right, .data-widget.sortable-widget-container .filter-menu ul li.right {
   float: right;
 }
-/* line 112, ../../../../../compass/themes/x2engine/css/components/DataWidget/DataWidget.scss */
+/* line 103, ../../../../../compass/themes/x2engine/css/components/DataWidget/DataWidget.scss */
 .data-widget.sortable-widget-container .config-bar-item#time-domain, .data-widget.sortable-widget-container .filter-menu ul li#time-domain {
   color: #454545;
   opacity: 0.5;
 }
-/* line 117, ../../../../../compass/themes/x2engine/css/components/DataWidget/DataWidget.scss */
+/* line 108, ../../../../../compass/themes/x2engine/css/components/DataWidget/DataWidget.scss */
 .data-widget.sortable-widget-container .config-bar-item.time-option, .data-widget.sortable-widget-container .filter-menu ul li.time-option {
   width: auto;
 }
-/* line 121, ../../../../../compass/themes/x2engine/css/components/DataWidget/DataWidget.scss */
+/* line 112, ../../../../../compass/themes/x2engine/css/components/DataWidget/DataWidget.scss */
 .data-widget.sortable-widget-container .config-bar-item.indicator, .data-widget.sortable-widget-container .filter-menu ul li.indicator {
   cursor: inherit;
   color: inherit;
   margin-right: 10px;
 }
-/* line 130, ../../../../../compass/themes/x2engine/css/components/DataWidget/DataWidget.scss */
+/* line 121, ../../../../../compass/themes/x2engine/css/components/DataWidget/DataWidget.scss */
 .data-widget.sortable-widget-container .filter-menu {
   text-align: left;
   padding-top: 5px;
   display: none;
 }
-/* line 136, ../../../../../compass/themes/x2engine/css/components/DataWidget/DataWidget.scss */
+/* line 127, ../../../../../compass/themes/x2engine/css/components/DataWidget/DataWidget.scss */
 .data-widget.sortable-widget-container .filter-menu ul {
   vertical-align: middle;
   list-style-type: none;
@@ -254,17 +247,17 @@
   margin: 0px;
   padding: 0px;
 }
-/* line 143, ../../../../../compass/themes/x2engine/css/components/DataWidget/DataWidget.scss */
+/* line 134, ../../../../../compass/themes/x2engine/css/components/DataWidget/DataWidget.scss */
 .data-widget.sortable-widget-container .filter-menu ul.relative-time {
   margin-right: 10px;
 }
-/* line 147, ../../../../../compass/themes/x2engine/css/components/DataWidget/DataWidget.scss */
+/* line 138, ../../../../../compass/themes/x2engine/css/components/DataWidget/DataWidget.scss */
 .data-widget.sortable-widget-container .filter-menu ul li {
   width: auto;
   margin: 0px 5px 0px 0px;
   display: inline-block;
 }
-/* line 155, ../../../../../compass/themes/x2engine/css/components/DataWidget/DataWidget.scss */
+/* line 146, ../../../../../compass/themes/x2engine/css/components/DataWidget/DataWidget.scss */
 .data-widget.sortable-widget-container .filter-menu input {
   width: 50px;
   border-radius: 2px;
@@ -274,26 +267,26 @@
   text-align: center;
   padding: 1px 4px;
 }
-/* line 164, ../../../../../compass/themes/x2engine/css/components/DataWidget/DataWidget.scss */
+/* line 155, ../../../../../compass/themes/x2engine/css/components/DataWidget/DataWidget.scss */
 .data-widget.sortable-widget-container .filter-menu input.active-input {
   border-color: #004baf;
   color: #525252;
 }
-/* line 172, ../../../../../compass/themes/x2engine/css/components/DataWidget/DataWidget.scss */
+/* line 163, ../../../../../compass/themes/x2engine/css/components/DataWidget/DataWidget.scss */
 .data-widget.sortable-widget-container .row {
   margin-bottom: 5px;
 }
-/* line 176, ../../../../../compass/themes/x2engine/css/components/DataWidget/DataWidget.scss */
+/* line 167, ../../../../../compass/themes/x2engine/css/components/DataWidget/DataWidget.scss */
 .data-widget.sortable-widget-container.dragging {
   transition: opacity 0.3s;
   opacity: 0.75;
 }
-/* line 182, ../../../../../compass/themes/x2engine/css/components/DataWidget/DataWidget.scss */
+/* line 173, ../../../../../compass/themes/x2engine/css/components/DataWidget/DataWidget.scss */
 .data-widget.sortable-widget-container .c3-tooltip .value, .data-widget.sortable-widget-container .c3-tooltip .name {
   color: #454545;
 }
 
-/* line 189, ../../../../../compass/themes/x2engine/css/components/DataWidget/DataWidget.scss */
+/* line 180, ../../../../../compass/themes/x2engine/css/components/DataWidget/DataWidget.scss */
 .errorScreen {
   width: 100%;
   height: 100%;

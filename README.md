@@ -1,28 +1,26 @@
-# 5.0.2 #
-12/22/2014
+# 5.0.3b #
+1/20/2015
 
-* General Changelog / Developer Notes:
-  * Platinum Edition Changes:
-    * New login history export tool on the Advanced Security page
+* Highlights
+  * New Record Transactional View
+    * Provides an alternate view of a record's action history
+    * Individual widgets for each type of interaction (Calls, Emails, Actions, etc.)
   * Professional Edition Changes:
-    * Added a button to remove individual emails from newsletter recipient lists
-    * Email Manager module renamed "Email"
-    * Fixed AnonContact entries on activity feed
-  * Fixed bug preventing lead related records from transferring to target record upon conversion
-  * Added safeguard to prevent administrator account from being disabled
+    * Charts created through the Reports Module can now be added to the profile dashboard
+  * Profile dashboard and record view column widths can now be adjusted
+  * Email Contact X2Flow action has a new option to enable email logging and tracking
+  * Application-wide icon update
+* General Changelog / Developer Notes:
+  * Updated Yii to version 1.1.16
 * Tracked Bug Fixes:
-  * [1938](http://x2software.com/index.php/bugReports/1938): Class:  not found.  
-  * [1940](http://x2software.com/index.php/bugReports/1940): imap_get_quotaroot(): c-client imap_getquotaroot failed  
-  * [1941](http://x2software.com/index.php/bugReports/1941): Unable to resolve the request "x2Leads/id/convert".  
-  * [1945](http://x2software.com/index.php/bugReports/1945): Inline edit checkbox fields always checked.  
-  * [1952](http://x2software.com/index.php/bugReports/1952): TimeSeriesForm and its behaviors do not have a method or closure named "getName".  
-  * [1955](http://x2software.com/index.php/bugReports/1955): Unable to resolve the request "charts/charts/index".  
-  * [1957](http://x2software.com/index.php/bugReports/1957): Unable to resolve the request "emailInboxes/updateSharedInbox/id/sharedInboxesIndex".  
-  * [1967](http://x2software.com/index.php/bugReports/1967): trim() expects parameter 1 to be string, array given  
-  * [1968](http://x2software.com/index.php/bugReports/1968): TimeSeriesForm and its behaviors do not have a method or closure named "getName".  
-  * [1971](http://x2software.com/index.php/bugReports/1971): TimeSeriesForm and its behaviors do not have a method or closure named "getName".  
-  * [1972](http://x2software.com/index.php/bugReports/1972): Class:  not found.  
-  * [1984](http://x2software.com/index.php/bugReports/1984): User Report  
+  * [1994](http://x2software.com/index.php/bugReports/1994): Unable to resolve the request "accounts/view/id".  
+  * [2004](http://x2software.com/index.php/bugReports/2004): CDbCommand failed to execute the SQL statement: SQLSTATE[23000]: Integrity constraint violation: 1062 Duplicate entry '' for key 'c_email2'  
+  * [2007](http://x2software.com/index.php/bugReports/2007): The system is unable to find the requested action "webleadForm".  
+  * [2008](http://x2software.com/index.php/bugReports/2008): CDbCommand failed to execute the SQL statement: SQLSTATE[42S22]: Column not found: 1054 Unknown column 't.actionDescription' in 'order clause'  
+  * [2009](http://x2software.com/index.php/bugReports/2009): CDbCommand failed to execute the SQL statement: SQLSTATE[42000]: Syntax error or access violation: 1064 You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '' at line 3  
+  * [2048](http://x2software.com/index.php/bugReports/2048): htmlspecialchars(): Invalid multibyte sequence in argument  
+  * [2049](http://x2software.com/index.php/bugReports/2049): 
+  * [2086](http://x2software.com/index.php/bugReports/2086):   
 
 
 

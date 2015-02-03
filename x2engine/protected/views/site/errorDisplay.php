@@ -1,7 +1,7 @@
 <?php
 /*****************************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2015 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -35,7 +35,7 @@
  *****************************************************************************************/
 
 $errorTitle = Yii::t('app', 'Error {code}', array('{code}' => $code));
-$this->pageTitle = Yii::app()->settings->appName.' - '.$errorTitle;
+$this->pageTitle = Yii::app()->settings->appName . ' - ' . $errorTitle;
 ?>
 <div class="page-title">
     <h2><?php echo $errorTitle; ?></h2>
@@ -44,11 +44,14 @@ $this->pageTitle = Yii::app()->settings->appName.' - '.$errorTitle;
     <?php echo CHtml::encode($message); ?>
     <br><br>
     <?php
-    if($code == '404'){
+    if ($code == '404') {
         echo Yii::t('app', 'You have made an invalid request, please do not repeat this.');
     }
-    if($code='400' && isset($referer)){
-        echo Yii::t('app','If this happened by clicking a Delete button on a Grid, just go back to that page and it should work now. This is a known issue we are working to fix.');
+    if ($code = '400' && isset($referer)) {
+        echo Yii::t('app', 'If this happened by clicking a Delete button on a Grid, just go back to that page and it should work now. This is a known issue we are working to fix.');
+    }
+    if ($code = '500') {
+        echo Yii::t('app', 'This error was likely caused by a server configuration issue.');
     }
     ?>
 </div>

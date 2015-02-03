@@ -1,6 +1,6 @@
 /*****************************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2015 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -47,7 +47,7 @@ function mediaFileUpload(form, fileField, action_url, remove_url) {
     form.parentNode.appendChild(iframe);
     window.frames['upload_iframe'].name = "upload_iframe";
  
-    iframeId = document.getElementById("upload_iframe");
+    var iframeId = document.getElementById("upload_iframe");
  
     // Add event...
     var eventHandler = function () {
@@ -81,7 +81,6 @@ function mediaFileUpload(form, fileField, action_url, remove_url) {
             		'name': 'AttachmentFiles[types][]',
             		'value': 'temp'
             	});
-            	
             	
             	var parent = fileField.parent();
             	
@@ -128,7 +127,8 @@ function mediaFileUpload(form, fileField, action_url, remove_url) {
             setTimeout('iframeId.parentNode.removeChild(iframeId)', 250);
         }
         
-    $(form).data('oldAction', $(form).attr('action')); // save the form object, to be restored after uploading temp file
+    // save the form object, to be restored after uploading temp file
+    $(form).data('oldAction', $(form).attr('action')); 
  
     if (iframeId.addEventListener) iframeId.addEventListener("load", eventHandler, true);
     if (iframeId.attachEvent) iframeId.attachEvent("onload", eventHandler);
@@ -147,9 +147,10 @@ function mediaFileUpload(form, fileField, action_url, remove_url) {
     form.submit(); 
 }
 
-var illegal_ext = ['exe','bat','dmg','js','jar','swf','php','pl','cgi','htaccess','py'];    // array with disallowed extensions
 
 function mediaCheckName(el) {
+    // array with disallowed extensions
+    var illegal_ext = ['exe','bat','dmg','js','jar','swf','php','pl','cgi','htaccess','py'];    
     // - www.coursesweb.net
     // get the file name and split it to separe the extension
     var name = el.value;
@@ -208,11 +209,11 @@ function showAssociationAutoComplete(associationType) {
 
 function toggleUserMedia(userMedia, showhide, response) {
 	userMedia.toggle('blind');
-	var text;
-	if(response == true) {
-		var text = "[&ndash;]";
+	var buttonClass = $(showhide).find ('i').attr ('class');
+	if(response) {
+        buttonClass = buttonClass.replace (/left/, 'down');
 	} else {
-		var text = "[+]";
+        buttonClass = buttonClass.replace (/down/, 'left');
 	}
-	showhide.html(text);
+	showhide.find ('i').attr ('class', buttonClass);
 }

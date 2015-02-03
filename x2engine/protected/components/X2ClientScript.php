@@ -1,7 +1,7 @@
 <?php
 /*****************************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2015 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -184,6 +184,7 @@ class X2ClientScript extends NLSClientScript {
         } else {
             Yii::app()->clientScript->packages = $packages;
         }
+        
         foreach (array_keys ($packages) as $packageName) {
             Yii::app()->clientScript->registerPackage ($packageName);
         }
@@ -341,8 +342,17 @@ class X2ClientScript extends NLSClientScript {
                 $html.=CHtml::css($css,$type)."\n";
             }
         } else {
-            foreach($this->css as $css)
-                $html.=CHtml::css($css[0],$css[1])."\n";
+            foreach($this->css as $css) {
+                $text = $css[0];
+                $media = $css[1];
+
+                if (is_array ($text) && isset ($text['text']) && isset ($text['htmlOptions'])) {
+                    // special case for css registered with html options
+                    $html.=X2Html::css ($text['text'], $media, $text['htmlOptions']);
+                    continue;
+                }
+                $html.=CHtml::css($text, $media)."\n";
+            }
         }
         /* x2modend */ 
 		if($this->enableJavaScript)
@@ -491,6 +501,8 @@ class X2ClientScript extends NLSClientScript {
             'bootstrap/bootstrap.css',
             'css-loaders/load8.css',
         );
+         
+            $cssFiles[] = 'recordView.css';
 
         $responsiveCssFiles = array (
             'responsiveLayout.css',
@@ -574,12 +586,8 @@ class X2ClientScript extends NLSClientScript {
         $dialogTitles = QuickCreateRelationshipBehavior::getDialogTitlesForModels (
             $modelsWhichSupportQuickCreate);
         $this->registerScript('registerQuickCreate',"
-            x2.quickCreate = new x2.QuickCreate ({
-                createRecordUrls: ".CJSON::encode ($createUrls).",
-                dialogTitles: ".CJSON::encode ($dialogTitles).",
-                translations: ".CJSON::encode (array (
-                ))."
-            });
+            x2.QuickCreate.createRecordUrls = ".CJSON::encode ($createUrls).";
+            x2.QuickCreate.dialogTitles = ".CJSON::encode ($dialogTitles).";
         ", CClientScript::POS_END);
     }
 
@@ -626,7 +634,8 @@ class X2ClientScript extends NLSClientScript {
 
         // jQuery and jQuery UI libraries
         $this->registerCoreScript('jquery')
-           ->registerCoreScript('jquery.ui');
+           ->registerCoreScript('jquery.ui')
+           ->registerCoreScript('jquery.migrate');
 
        $this->registerPackages($this->getDefaultPackages());
 

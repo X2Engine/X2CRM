@@ -91,4 +91,9 @@ span.tag {
     border-color: $colors[text]
 }
 
+iframe {
+    background: white !important;
+    border-radius: 2px;
+}
+
 "; ?>

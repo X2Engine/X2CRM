@@ -2,7 +2,7 @@
 
 /*****************************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2015 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -191,12 +191,6 @@ if ($maxExecTime <= 30) {
         <div class="cell"><?php echo CHtml::checkBox('activity-feed-box');?></div>
     </div>
     <div class="row">
-        <div class="cell"><strong><?php echo Yii::t('admin','Performance mode'); ?></strong></div>
-        <div class="cell"><?php echo X2Html::hint(Yii::t('admin','If checked, certain shortcuts will be taken to increase the speed of the import, which includes skipping the "record created" X2Flow trigger.'
-                . ' Leaving this option enabled is highly recommended, especially for large data sets.'),false); ?></div>
-        <div class="cell"><?php echo CHtml::checkBox('performance-mode','checked');?></div>
-    </div>
-    <div class="row">
         <div class="cell"><strong><?php echo Yii::t('admin','Batch Size'); ?></strong></div>
         <div class="cell"><?php echo X2Html::hint(Yii::t('admin',"Modify the number of records to be process per batch request."),false); ?></div>
         <div class="cell"><?php echo CHtml::textField('batch-size', 25, array('style' => 'width: 32px')); ?></div>
@@ -228,6 +222,17 @@ if ($maxExecTime <= 30) {
 <br /><br />
 </div>
 <h3 id="import-status" style="display:none;"><?php echo Yii::t('admin','Import Status'); ?></h3>
+<div id="import-progress-bar" style="display:none;">
+<?php
+    if (array_key_exists('csvLength', $_SESSION)) {
+        $this->widget('X2ProgressBar', array(
+            'uid' => 'x2import',
+            'max' => $_SESSION['csvLength'],
+            'label' => '',
+        ));
+    }
+?>
+</div>
 <div id="prep-status-box" style="color:green">
 
 </div>
@@ -238,8 +243,18 @@ if ($maxExecTime <= 30) {
 <div id="failures-box" style="color:red">
 
 </div>
-<div id="continue-box">
-
+<div id="continue-box" style="display:none;">
+<br />
+<?php
+    echo CHtml::link(Yii::t('admin', 'Import more {records}', array(
+            '{records}' => X2Model::getModelTitle($model),
+        )), 'importModels?model='.$model, array('class' => 'x2-button'));
+    echo CHtml::link(Yii::t('admin', 'Import to another module'), 'importModels',
+        array('class' => 'x2-button'));
+    echo CHtml::link(Yii::t('admin', 'Rollback Import'),
+        array('rollbackImport', 'importId' => $_SESSION['importId']),
+        array('class' => 'x2-button', 'id' => 'revert-btn', 'style' => 'display:none;'));
+?>
 </div>
 <script>
     $(function() {
@@ -250,6 +265,7 @@ if ($maxExecTime <= 30) {
     
     var attributeLabels = <?php echo json_encode(X2Model::model($model)->attributeLabels(), false);?>;
     var modifiedPresetMap = false;
+    var loadingThrobber;
     $('#process-link').click(function(){
        prepareImport();
     });
@@ -298,7 +314,8 @@ if ($maxExecTime <= 30) {
         function showPreparationResult (success, msg) {
             if (success) {
                 $('#import-status').show();
-                startLoadingIcon ('#import-status');
+                $('#import-progress-bar').show();
+                loadingThrobber = auxlib.pageLoading();
                 importData (batchSize);
                 $('#prep-status-box').html (msg);
             } else {
@@ -369,16 +386,11 @@ if ($maxExecTime <= 30) {
         });
     }
     function importData(count){
-        var performanceMode = 0;
-        if ($('#performance-mode').attr('checked') == 'checked') {
-            performanceMode = 1;
-        }
         $.ajax({
             url:'importModelRecords',
             type:"POST",
             data:{
                 count:count,
-                'performance-mode':performanceMode,
                 model:"<?php echo $model; ?>"
             },
             success:function(data){
@@ -399,6 +411,8 @@ if ($maxExecTime <= 30) {
                                 array('{model}' => $model)); ?>";
                         $("#failures-box").html(str);
                     }
+                    // Increment the progress bar counter
+                    $('#x2-progress-bar-container-x2import').data('progressBar').incrementCount (Number(count));
                     importData(count);
                 }else{
                     str=data[1]+"<?php echo Yii::t('admin', " <b>{model}</b> have been successfully imported.",
@@ -421,20 +435,24 @@ if ($maxExecTime <= 30) {
                             window.location.href = '<?php echo $this->createUrl('/admin/downloadData',array('file'=>'failedRecords.csv')); ?>';
                         });
                     }
-                    str = '<br />';
-                    str += '<?php echo CHtml::link(Yii::t('admin', 'Import more {records}', array(
-                        '{records}' => X2Model::getModelTitle($model),
-                    )), 'importModels?model='.$model, array('class' => 'x2-button')); ?>';
-                    str += '<?php echo CHtml::link(Yii::t('admin', 'Import to another module'), 'importModels',
-                        array('class' => 'x2-button')); ?>';
-                    $('#continue-box').html(str);
+
+                    $('#continue-box').show();
+                    if ($('#failures-box').html().trim().length > 0) {
+                        // Present a button to rollback if there were any failures
+                        $('#revert-btn').show();
+                    }
+
+                    // Fill the progress bar
+                    var maxCsvLines = $('#x2-progress-bar-container-x2import').data('progressBar').getMax();
+                    $('#x2-progress-bar-container-x2import').data('progressBar').updateCount (maxCsvLines);
+
                     $.ajax({
                         url:'cleanUpModelImport',
                         complete:function(){
                             var str="<strong><?php echo Yii::t('admin', "Import Complete."); ?></strong>";
                             $('#prep-status-box').html(str);
+                            loadingThrobber.remove();
                             alert('<?php echo Yii::t('admin', 'Import Complete!'); ?>');
-                            $('#import-loading-icon').remove();
                         }
                     });
                 }
@@ -459,19 +477,6 @@ if ($maxExecTime <= 30) {
             record++;
         }
         $('.record-'+record).show();
-    }
-
-    function startLoadingIcon(elem) {
-        $(elem).after ($('<span>', {
-            'class': 'x2-gridview-updating-anim',
-            style: 'position: absolute; height: 27px; background-size: 27px;',
-            id: 'import-loading-icon'
-        }));
-        $('#import-loading-icon').position ({
-            my: 'center',
-            at: 'center',
-            of: $(elem)
-        });
     }
 
     function createDropdown(list, ignore) {

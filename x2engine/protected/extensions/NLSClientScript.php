@@ -642,10 +642,12 @@ var c = {
 			return true;
 		}
 
-		if (!$.nlsc.fetched) {
-			$.nlsc.fetched=1;
-			$.nlsc.fetchMap();
-		}//if
+        /* x2modstart */     
+//		if (!$.nlsc.fetched) {
+//			$.nlsc.fetched=1;
+//			$.nlsc.fetchMap();
+//		}//if
+        /* x2modend */ 
 		
 		var url = $.nlsc.normUrl(opt.url);
 
@@ -666,8 +668,15 @@ if ($.browser.msie)
 
 $.ajaxSetup(c);
 
+/* x2modstart */
+$(function () {
+    $.nlsc.fetched=1;
+    $.nlsc.fetchMap ();
+});
+/* x2modend */
+
 })(jQuery);
 
-',	CClientScript::POS_HEAD);
+', CClientScript::POS_HEAD);
 	}
 }

@@ -1,7 +1,7 @@
 <?php
 /*****************************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2015 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -42,15 +42,15 @@
  *
  * @package application.components.sortableWidget
  */
-class InlineRelationshipsWidget extends SortableWidget {
+class InlineRelationshipsWidget extends GridViewWidget {
 
-    public static $position = 0; 
+    public static $position = 5; 
 
     public $viewFile = '_inlineRelationshipsWidget';
 
 	public $model;
 
-    public $template = '<div class="submenu-title-bar widget-title-bar">{widgetLabel}{newRelationshipButton}{displayModeButton}{fullGraphViewButton}{closeButton}{minimizeButton}{settingsMenu}</div>{widgetContents}';
+    public $template = '<div class="submenu-title-bar widget-title-bar">{widgetLabel}{titleBarButtons}{closeButton}{minimizeButton}{settingsMenu}</div>{widgetContents}';
 
     /**
      * Used to prepopulate create relationship forms
@@ -58,21 +58,11 @@ class InlineRelationshipsWidget extends SortableWidget {
      */
     public $defaultsByRelatedModelType = array ();
 
+    protected $compactResultsPerPage = true; 
+
 	private $_relatedModels;
 
     private static $_JSONPropertiesStructure;
-
-    private function checkModuleUpdatePermissions () {
-        $moduleName = '';
-        if (is_object (Yii::app()->controller->module)) {
-            $moduleName = Yii::app()->controller->module->name;
-        } 
-        $actionAccess = ucfirst($moduleName).'Update';
-        $authItem = Yii::app()->authManager->getAuthItem($actionAccess);
-        return (!isset($authItem) || Yii::app()->user->checkAccess($actionAccess, array(
-            'X2Model' => $this->model
-        )));
-    }
 
     public static function getJSONPropertiesStructure () {
         if (!isset (self::$_JSONPropertiesStructure)) {
@@ -81,8 +71,8 @@ class InlineRelationshipsWidget extends SortableWidget {
                 array (
                     'label' => 'Relationships',
                     'hidden' => false,
-                    'pageSize' => 10,
-                    'mode' => 'simple', // simple | full
+                    'resultsPerPage' => 10, 
+                    'showHeader' => false,
                     'displayMode' => 'grid', // grid | graph
                     'height' => '200',
                 )
@@ -91,23 +81,65 @@ class InlineRelationshipsWidget extends SortableWidget {
         return self::$_JSONPropertiesStructure;
     }
 
-     
+    private $_filterModel;
+    public function getFilterModel () {
+        if (!isset ($this->_filterModel)) {
+            $model = $this->model;
+            $filterModel = new RelationshipsGridModel ('search');
+            $filterModel->myModel = $model;
+            $this->_filterModel = $filterModel;
+        }
+        return $this->_filterModel;
+    }
 
-     
+    public function getDataProvider () {
+        $model = $this->model;
+        $filterModel = $this->getFilterModel ();
 
-    public function renderNewRelationshipButton () {
+        // convert related models into grid models
+        $gridModels = array ();
+        foreach ($model->visibleRelatedX2Models as $relatedModel) {
+            $gridModels[] = Yii::createComponent (array (
+                'class' => 'RelationshipsGridModel', 
+                'relatedModel' => $relatedModel,
+                'myModel' => $model,
+                'id' => $model->id,
+            ));
+        }
+
+        // use filter model to filter grid models based on GET params
+        $gridModels = $filterModel->filterModels ($gridModels);
+        //$gridModels = $filterModel->sortModels ($gridModels, $this->widgetKey.'_sort');
+
+        $relationshipsDataProvider = new CArrayDataProvider($gridModels, array(
+            'id' => 'relationships-gridview',
+            'sort' => array(
+                'class' => 'SmartSort',
+                'uniqueId' => $this->widgetKey,
+                'sortVar' => $this->widgetKey.'_sort',
+                'attributes'=>array('name','relatedModelName','label','createDate','assignedTo'),
+            ),
+            'pagination' => array('pageSize'=>$this->getWidgetProperty ('resultsPerPage'))
+        ));
+        return $relationshipsDataProvider;
+    }
+
+    public function renderTitleBarButtons () {
+        echo '<div class="x2-button-group">';
         echo 
-            "<button class='x2-button rel-title-bar-button' id='new-relationship-button' 
-              title='".CHtml::encode (Yii::t('app', 'Create a new relationship'))."'>
-                <span class='fa fa-plus'></span>".
-                CHtml::encode (Yii::t('app', 'Add'))."</button>";
+            "<a class='x2-button rel-title-bar-button' id='new-relationship-button' 
+              title='".CHtml::encode (Yii::t('app', 'Create a new relationship'))."'>".
+                X2Html::fa ('fa-plus', array (), ' ', 'span').
+            "</a>";
+         
+        echo '</div>';
     }
 
     public function renderWidgetLabel () {
         $label = $this->getWidgetLabel ();
         $relationshipCount = count ($this->model->getVisibleRelatedX2Models ());
         echo "<div class='widget-title'>".
-            htmlspecialchars($label)."&nbsp(<number id='relationship-count' name='relationship-count'>$relationshipCount</number>)</div>";
+            htmlspecialchars($label)."&nbsp(<span id='relationship-count'>$relationshipCount</span>)</div>";
     }
 
     public function getSetupScript () {
@@ -132,32 +164,33 @@ class InlineRelationshipsWidget extends SortableWidget {
                     $modelsWhichSupportQuickCreate);
                 $this->_setupScript = "
                     $(function () {
-                        x2.inlineRelationshipsWidget = new x2.InlineRelationshipsWidget ({
-                            'displayMode': '".$this->getWidgetProperty ('displayMode')."',
-                            'widgetClass': '".$widgetClass."',
-                            'setPropertyUrl': '".Yii::app()->controller->createUrl (
-                                '/profile/setWidgetSetting')."',
-                            'cssSelectorPrefix': '".$this->widgetType."',
-                            'widgetType': '".$this->widgetType."',
-                            'widgetUID': '".$this->widgetUID."',
-                            'enableResizing': true,
-                            'height': '".$this->getWidgetProperty ('height')."',
-                            'recordId': ".$this->model->id.",
-                            'recordType': '".get_class ($this->model)."',
-                            defaultsByRelatedModelType: ".
-                                CJSON::encode ($this->defaultsByRelatedModelType).",
-                            createUrls: ".CJSON::encode ($createUrls).",
-                            dialogTitles: ".CJSON::encode ($dialogTitles).",
-                            tooltips: ".CJSON::encode ($tooltips).",
-                            modelsWhichSupportQuickCreate: 
-                                $.map (".CJSON::encode ($modelsWhichSupportQuickCreate).",
-                                    function (val) { return val; }),
-                            ajaxGetModelAutocompleteUrl: '".
-                                Yii::app()->controller->createUrl ('ajaxGetModelAutocomplete')."',
-                            createRelationshipUrl: '".
-                                Yii::app()->controller->createUrl ('/site/addRelationship')."',
-                            hasUpdatePermissions: ".$this->checkModuleUpdatePermissions ()."
-                        });
+                        x2.inlineRelationshipsWidget = new x2.InlineRelationshipsWidget (".
+                            CJSON::encode (array_merge ($this->getJSSortableWidgetParams (), array (
+                                'displayMode' => $this->getWidgetProperty ('displayMode'),
+                                'widgetClass' => $widgetClass,
+                                'setPropertyUrl' => Yii::app()->controller->createUrl (
+                                    '/profile/setWidgetSetting'),
+                                'cssSelectorPrefix' => $this->widgetType,
+                                'widgetType' => $this->widgetType,
+                                'widgetUID' => $this->widgetUID,
+                                'enableResizing' => true,
+                                'height' => $this->getWidgetProperty ('height'),
+                                'recordId' => $this->model->id,
+                                'recordType' => get_class ($this->model),
+                                'defaultsByRelatedModelType' => 
+                                    $this->defaultsByRelatedModelType,
+                                'createUrls' => $createUrls,
+                                'dialogTitles' => $dialogTitles,
+                                'tooltips' => $tooltips,
+                                'modelsWhichSupportQuickCreate' => 
+                                    array_values ($modelsWhichSupportQuickCreate),
+                                'ajaxGetModelAutocompleteUrl' => 
+                                    Yii::app()->controller->createUrl ('ajaxGetModelAutocomplete'),
+                                'createRelationshipUrl' => 
+                                    Yii::app()->controller->createUrl ('/site/addRelationship'),
+                                'hasUpdatePermissions' => $this->checkModuleUpdatePermissions (),
+                            )))."
+                        );
                     });
                 ";
             }
@@ -218,25 +251,21 @@ class InlineRelationshipsWidget extends SortableWidget {
         return $this->_viewFileParams;
     } 
 
-    /**
-     * Override in child class. This content will be turned into a popup dropdown menu with the
-     * PopupDropdownMenu JS prototype.
-     */
-    protected function getSettingsMenuContent () {
-        $model = $this->getWidgetProperty ('mode');
-        $htmlStr = 
-            '<div class="widget-settings-menu-content" style="display:none;">';
-        $htmlStr .= 
-            "<div class='x2-button-group'>
-                <a class='simple-mode x2-button".($model === 'simple' ? ' disabled-link' : '')."' 
-                 href='#'>".CHtml::encode (Yii::t('app', 'Simple'))."</a>
-                <a class='full-mode x2-button".($model === 'full' ? ' disabled-link' : '')."' 
-                 href='#'>".CHtml::encode (Yii::t('app', 'Full'))."</a>
-            </div>";
-        $htmlStr .= '</div>';
-        return $htmlStr;
+    private function checkModuleUpdatePermissions () {
+        $moduleName = '';
+        if (is_object (Yii::app()->controller->module)) {
+            $moduleName = Yii::app()->controller->module->name;
+        } 
+        $actionAccess = ucfirst($moduleName).'Update';
+        $authItem = Yii::app()->authManager->getAuthItem($actionAccess);
+        return (!isset($authItem) || Yii::app()->user->checkAccess($actionAccess, array(
+            'X2Model' => $this->model
+        )));
     }
 
+    public function init ($skipGridViewInit=false) {
+        return parent::init (true);
+    }
 }
 
 ?>

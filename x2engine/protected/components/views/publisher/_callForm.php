@@ -1,7 +1,7 @@
 <?php
 /*****************************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2015 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -36,7 +36,7 @@
 Yii::import('application.extensions.CJuiDateTimePicker.CJuiDateTimePicker');
  ?>
 
-<div id='log-a-call' class='publisher-form' 
+<div id='<?php echo $this->resolveId ('log-a-call'); ?>' class='publisher-form' 
  <?php echo ($startVisible ? '' : "style='display: none;'"); ?>>
 
 
@@ -45,27 +45,31 @@ Yii::import('application.extensions.CJuiDateTimePicker.CJuiDateTimePicker');
             <?php 
             echo CHtml::label(
                 Yii::t('app','Quick Note'), 'quickNote',
-                array('style' => 'display:inline-block;')); 
-            echo CHtml::dropDownList(
+                array(
+                    'style' => 'display:inline-block; margin-right: 10px;'
+                )); 
+            echo X2Html::dropDownList(
                 'quickNote', '', array_merge(array('' => '-'), Dropdowns::getItems(117)), 
                 array(
                     'ajax' => array(
                         'type' => 'GET', //request type
                         'url' => Yii::app()->controller->createUrl('/site/dynamicDropdown'),
                         'data' => 'js:{"val":$(this).val(),"dropdownId":"117"}',
-                        'update' => '#quickNote2',
-                        'complete' => 'function() {
+                        'update' => $this->resolveIds ('#quickNote2'),
+                        'complete' => $this->resolveIds ('function() {
                             auxlib.getElement("#call-action-description").val(""); 
-                        }',
+                        }'),
                     ),
-                    'class' => 'x2-select',
+                    'id' => $this->resolveId ('quickNote'),
                 )
             );
-            echo CHtml::dropDownList(
+            echo X2Html::dropDownList(
                 'quickNote2',
                 '',
                 array('' => '-'),
-                array ('class' => 'x2-select')
+                array (
+                    'id' => $this->resolveId ('quickNote2'),
+                )
             ); 
             ?>
         </div>
@@ -78,7 +82,7 @@ Yii::import('application.extensions.CJuiDateTimePicker.CJuiDateTimePicker');
                     'rows' => 3,
                     'cols' => 40,
                     'class'=>'action-description x2-textarea',
-                    'id'=>'call-action-description',
+                    'id'=>$this->resolveId ('call-action-description'),
                 ));
             ?>
         </div>
@@ -107,47 +111,30 @@ Yii::import('application.extensions.CJuiDateTimePicker.CJuiDateTimePicker');
             echo CHtml::activeLabel(
                 $model,'dueDate',
                 array('class' => 'action-start-time-label')); 
-            $this->widget('CJuiDateTimePicker', array(
-                'model' => $model, //Model object
-                'attribute' => 'dueDate', //attribute name
-                'mode' => 'datetime', //use "time","date" or "datetime" (default)
-                'options' => array(
-                    'dateFormat' => Formatter::formatDatePicker('medium'),
-                    'timeFormat' => Formatter::formatTimePicker(),
-                    'ampm' => Formatter::formatAMPM(),
-                    'changeMonth' => true,
-                    'changeYear' => true,
-                ), // jquery plugin options
-                'language' => (Yii::app()->language == 'en') ? '' : Yii::app()->getLanguage(),
-                'htmlOptions' => array(
-                    'class'=>'action-due-date',
-                    'onClick' => "$('#ui-datepicker-div').css('z-index', '100');",
-                    'id' => 'call-form-action-due-date'
-                ), // fix datepicker so it's always on top
-            ));
+            echo X2Html::activeDatePicker ($model, 'dueDate', array(
+                    // fix datepicker so it's always on top
+                    'onClick' => "$('#ui-datepicker-div').css('z-index', '100');", 
+                    'class' => 'action-due-date',
+                    'id' => $this->resolveId ('call-form-action-due-date'),
+                ), 'datetime', array (
+                    'dateFormat' => Formatter::formatDatePicker ('medium'),
+                    'timeFormat' => Formatter::formatTimePicker (),
+                    'ampm' => Formatter::formatAMPM (),
+                ));
 
             echo CHtml::activeLabel(
                 $model,'completeDate', 
                 array('class' => 'action-end-time-label'));
-            $this->widget('CJuiDateTimePicker', array(
-                'model' => $model, //Model object
-                'attribute' => 'completeDate', //attribute name
-                'mode' => 'datetime', //use "time","date" or "datetime" (default)
-                'options' => array(
-                    'dateFormat' => Formatter::formatDatePicker('medium'),
-                    'timeFormat' => Formatter::formatTimePicker(),
-                    'ampm' => Formatter::formatAMPM(),
-                    'changeMonth' => true,
-                    'changeYear' => true,
-                ), // jquery plugin options
-                'language' => (Yii::app()->language == 'en') ? '' : Yii::app()->getLanguage(),
-                'htmlOptions' => array(
+            echo X2Html::activeDatePicker ($model, 'completeDate', array(
                     // fix datepicker so it's always on top
                     'onClick' => "$('#ui-datepicker-div').css('z-index', '100');", 
                     'class' => 'action-complete-date',
-                    'id' => 'call-form-action-complete-date'
-                ),
-            ));
+                    'id' => $this->resolveId ('call-form-action-complete-date'),
+                ), 'datetime', array (
+                    'dateFormat' => Formatter::formatDatePicker ('medium'),
+                    'timeFormat' => Formatter::formatTimePicker (),
+                    'ampm' => Formatter::formatAMPM (),
+                ));
             ?>
         </div>
     </div><!-- #action-event-panel -->

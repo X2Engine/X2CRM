@@ -2,7 +2,7 @@
 
 /*****************************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2015 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -45,8 +45,8 @@ class ActionsController extends x2base {
 
     public function behaviors() {
         return array_merge(parent::behaviors(), array(
-            'QuickCreateRelationshipBehavior' => array(
-                'class' => 'QuickCreateRelationshipBehavior',
+            'ActionsQuickCreateRelationshipBehavior' => array(
+                'class' => 'ActionsQuickCreateRelationshipBehavior',
                 'attributesOfNewRecordToUpdate' => array(
                 )
             ),
@@ -128,16 +128,22 @@ class ActionsController extends x2base {
     public function actionViewEmail($id){
         $this->redirectOnNullModel = false;
         $action = $this->loadModel($id);
-        if(!Yii::app()->user->isGuest || Yii::app()->user->checkAccess(ucfirst($action->associationType).'View')){
+        if(!Yii::app()->user->isGuest || 
+            Yii::app()->user->checkAccess(ucfirst($action->associationType).'View')){
+
             if(!Yii::app()->user->isGuest){
-                echo preg_replace('/<\!--BeginOpenedEmail-->(.*?)<\!--EndOpenedEmail--!>/s', '', $action->actionDescription);
+                echo preg_replace(
+                    '/<\!--BeginOpenedEmail-->(.*?)<\!--EndOpenedEmail--!>/s', '', 
+                    $action->actionDescription);
             }else{
                 // Strip out the action header since it's being viewed directly:
                 $actionHeaderPattern = InlineEmail::insertedPattern('ah', '(.*)', 1, 'mis');
                 if(!preg_match($actionHeaderPattern, $action->actionDescription, $matches)){
-                    echo preg_replace('/<b>(.*?)<\/b>(.*)/mis', '', $action->actionDescription); // Legacy action header
+                    // Legacy action header
+                    echo preg_replace('/<b>(.*?)<\/b>(.*)/mis', '', $action->actionDescription); 
                 }else{
-                    echo preg_replace($actionHeaderPattern, '', $action->actionDescription); // Current action header
+                    // Current action header
+                    echo preg_replace($actionHeaderPattern, '', $action->actionDescription); 
                 }
             }
         }
@@ -301,10 +307,12 @@ class ActionsController extends x2base {
         $model = new Actions;
         $users = User::getNames();
 
+
         if(isset($_POST['Actions'])){
             $model->setX2Fields($_POST['Actions']);
             if (isset($_POST['x2ajax'])) {
                 $ajaxErrors = $this->quickCreate($model);
+                Yii::app()->end ();
             } elseif($model->save()){
                 if(isset($_POST['Actions']['reminder']) && $_POST['Actions']['reminder']){
                     $model->createNotifications (
@@ -319,16 +327,10 @@ class ActionsController extends x2base {
             $model->assignedTo = Yii::app()->user->getName();
         }
         if (isset($_POST['x2ajax'])) {
-            $this->renderPartial ('_form', array(
-                'actionModel' => $model,
-                'users' => $users,
-                'modelList' => Fields::getDisplayedModelNamesList(),
-            ), false, true);
+            $this->renderInlineForm ($model, false);
         } else {
             $this->render('create', array(
                 'model' => $model,
-                'users' => $users,
-                'modelList' => Fields::getDisplayedModelNamesList(),
             ));
         }
     }
@@ -366,7 +368,9 @@ class ActionsController extends x2base {
                 $model->dueDate = Formatter::parseDateTime($_POST[get_class($model)]['dueDate']);
             }
 
-            if($_POST['SelectedTab'] == 'new-event' || $_POST['SelectedTab'] == 'new-small-calendar-event'){
+            if($_POST['SelectedTab'] == 'new-event' || 
+                $_POST['SelectedTab'] == 'new-small-calendar-event'){
+
                 $model->disableBehavior('changelog');
                 $event = new Events;
                 $event->type = 'calendar_event';
@@ -727,7 +731,6 @@ class ActionsController extends x2base {
         $this->render('update', array(
             'model' => $model,
             'users' => $users,
-            'modelList' => Fields::getDisplayedModelNamesList(),
             'notifType' => $notifType,
             'notifTime' => $notifTime,
         ));

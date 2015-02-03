@@ -1,0 +1,253 @@
+/*****************************************************************************************
+ * X2Engine Open Source Edition is a customer relationship management program developed by
+ * X2Engine, Inc. Copyright (C) 2011-2015 X2Engine Inc.
+ * 
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU Affero General Public License version 3 as published by the
+ * Free Software Foundation with the addition of the following permission added
+ * to Section 15 as permitted in Section 7(a): FOR ANY PART OF THE COVERED WORK
+ * IN WHICH THE COPYRIGHT IS OWNED BY X2ENGINE, X2ENGINE DISCLAIMS THE WARRANTY
+ * OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
+ * 
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.  See the GNU Affero General Public License for more
+ * details.
+ * 
+ * You should have received a copy of the GNU Affero General Public License along with
+ * this program; if not, see http://www.gnu.org/licenses or write to the Free
+ * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301 USA.
+ * 
+ * You can contact X2Engine, Inc. P.O. Box 66752, Scotts Valley,
+ * California 95067, USA. or at email address contact@x2engine.com.
+ * 
+ * The interactive user interfaces in modified source and object code versions
+ * of this program must display Appropriate Legal Notices, as required under
+ * Section 5 of the GNU Affero General Public License version 3.
+ * 
+ * In accordance with Section 7(b) of the GNU Affero General Public License version 3,
+ * these Appropriate Legal Notices must retain the display of the "Powered by
+ * X2Engine" logo. If the display of the logo is not reasonably feasible for
+ * technical reasons, the Appropriate Legal Notices must display the words
+ * "Powered by X2Engine".
+ *****************************************************************************************/
+
+.page-title, 
+.section-title {
+    @include border-radius (2px 2px 0 0);
+    background-repeat: no-repeat;
+    background-position: 0 -5px;
+    padding: 0 5px;
+    border-bottom: 1px solid #aaa;
+
+    background: #c0c0c0;
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#c0c0c0', endColorstr='#b0b0b0',GradientType=0 );
+    line-height: 34px;
+    height: 35px;
+
+}
+
+
+table.fc-header {
+    @include border-radius (4px 4px 0 0);
+    background-repeat: no-repeat;
+    background-position: 0 -5px;
+    padding: 0 5px;
+    border-bottom: 1px solid #aaa;
+    background: #c0c0c0;
+
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#c0c0c0', endColorstr='#b0b0b0',GradientType=0 );
+
+    line-height: 34px;
+    height: 35px;
+
+}
+
+.grid-view div.page-title {
+    border-bottom: 1px solid #666;
+    h2 {
+        overflow: visible;
+    }
+}
+
+/* used when elements with page-title class are not at the top of the content box */
+.rounded-top {
+    @include border-radius (2px 2px 0 0);
+}
+
+
+table.fc-header .fc-header-title h2 {
+    display: inline-block;
+    padding-left: 49px;
+    margin-left: 0;
+    background-repeat: no-repeat;
+    background-position: -1px -5px;
+}
+
+// .page-title {
+// span.icon {
+//     &.contacts {
+//         @include x2-icon('contact');
+//         // background-image: url('../images/contacts.png');
+//         .page-title > &.contacts {
+//             font-size: 32px;
+//         }
+//     }
+
+// }
+
+.page-title {
+    background: #CECECE;
+    border-bottom: none;
+
+    // not sure where this rule is being used...
+    span.icon {
+        height: 29px;
+        width: 44px;
+        display: inline-block;
+        padding: 0;
+        background-position: -1px -7px;
+
+        &.contacts {
+            @include x2-icon('contact');
+            font-size: 31px;
+            margin-left: 10px;
+        }
+    }
+
+    // This may be able to be merged with .icon h2 below
+    h2 {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        width: auto;
+        padding-right: 14px;
+    }
+
+
+    // Most page titles use this rule
+    &.icon {
+        h2 {
+            display: inline-block;
+            padding-left: 49px;
+            margin-left: 0;
+            background-repeat: no-repeat;
+            background-position: -1px -5px;
+
+            &:before {
+                font-size: 20px !important;
+                margin-left: -39px;
+                margin-right: 12px;
+            }
+        }
+
+
+        $fa-map: (
+            ("emailInboxes h2" "envelope")
+            ("profile h2" "user")
+            ("actions h2" "play-circle")
+            ("accounts h2" "building")
+            ("opportunities h2" "bullseye")
+            ("marketing h2" "bullhorn")
+            ("x2flow h2" "sitemap, %fa-rotate-270")
+            ("x2Leads h2" "star")
+            ("docs h2" "file-text")
+            ("groups h2" "users")
+            ("media h2" "music")
+            ("users h2" "users")
+            ("charts h2" "bar-chart")
+        );
+
+        $x2-map: (
+            ("quotes h2" "quotes")
+            ("services h2" "service")
+            ("workflow h2" "funnel")
+            ("products h2" "package")
+            ("contacts h2" "contact")
+        );
+
+        @include generate-icons($fa-map);
+        @include generate-icons($x2-map, "x2");
+    }
+}
+
+table.fc-header .fc-header-title h2 {
+    @include fa-icon('calendar-o') {
+        position: relative;
+        left: -5px;
+        font-size: 21px;
+        margin-right: 4px;
+        margin-left: -32px;
+        top: 1px;
+    }
+}
+
+div.page-title.icon.activity-feed h2 {
+    @include x2-icon('activity') {
+        position: relative;
+        left: -10px;
+        font-size: 23px !important;
+        margin-right: 0px;
+        margin-left: -34px;
+        top: 2px;
+    };
+
+}
+
+.page-title .inline-edit-button {
+    & .fa {
+        position:relative;
+        top: -1px;
+        margin-right: 5px;
+    }  
+}
+
+td.fc-header-left h2 {
+    padding-left: 45px;
+}
+
+
+.page-title-placeholder {
+    height: 36px;
+    clear: both;
+}
+.page-title-fixed-outer {
+    width: 100%;
+    height: 0;
+    position: fixed;
+    z-index: 500;
+    top: 32px;
+    left: 0;
+    -webkit-transform: translateZ(0);
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+    padding-left: 151px;
+}
+
+
+.no-borders .page-title-fixed-outer {
+    padding-right: 36px;
+}
+
+
+.page-title-fixed-inner {
+    height: 0;
+    padding-right: 22%;
+    padding-left: 11px;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+}
+.page-title-fixed-outer {
+    div.page-title {
+        margin-left: 3px;
+        margin-right: 6px;
+        width: auto;
+        border: 1px solid #D1D1D1;
+        border-top: none;
+        @include border-radius (0 0 4px 4px);
+    }
+    padding-right: 9px;
+}

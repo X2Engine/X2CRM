@@ -1,7 +1,7 @@
 <?php
 /*****************************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2015 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -55,21 +55,33 @@ $escapedName = preg_replace('/[@\.]/','',$username);
         $visible = !in_array($username, $hideUsers);
         if(!$visible)
             $minimizeUserMedia .= "$('#".$escapedName."-media').hide();\n";
-        $minimizeLink = CHtml::ajaxLink($visible ? '[&ndash;]' : '[+]', $toggleUserMediaVisibleUrl, array('success' => "function(response) { toggleUserMedia($(\"#".$escapedName."-media\"), $('#".$escapedName."-media-showhide'), response); }", 'type' => 'GET'), array('id' => $escapedName."-media-showhide", 'class' => 'media-library-showhide')); // javascript function toggleUserMedia defined in js/media.js
+        $minimizeLink = CHtml::ajaxLink(
+            X2Html::fa ($visible ? 'fa-caret-down' : 'fa-caret-left'), 
+            $toggleUserMediaVisibleUrl, 
+            array(
+                'success' => "function(response) { 
+                    toggleUserMedia(
+                        $(\"#".$escapedName."-media\"), 
+                        $('#".$escapedName."-media-showhide'), response); 
+                }", 
+                'type' => 'GET'
+            ), array(
+                'id' => $escapedName."-media-showhide", 
+                'class' => 'media-library-showhide gray-link'
+            )); // javascript function toggleUserMedia defined in js/media.js
         ?>
         <strong><?php echo $fullname; ?></strong>
         <?php echo $minimizeLink; ?><br>
-
         <?php
         $myMediaItems = Yii::app()->db->createCommand()
-                ->select('id, uploadedBy, fileName, description, drive, name')
-                ->where('uploadedBy=:username AND drive=:drive AND associationType IN("none","docs")', array(':username' => $username, ':drive' => $this->drive))
-                ->from('x2_media')
-                ->queryAll();
+            ->select('id, uploadedBy, fileName, description, drive, name')
+            ->where(
+                'uploadedBy=:username AND drive=:drive AND associationType IN("none","docs")', 
+                array(':username' => $username, ':drive' => $this->drive))
+            ->from('x2_media')
+            ->queryAll();
         ?>
         <?php //$myMediaItems = Media::model()->findAllByAttributes(array('uploadedBy'=>$username)); // get current user's media  ?>
-
-
         <div id="<?php echo $escapedName; ?>-media" class="user-media-list">
             <?php
             foreach($myMediaItems as $item){
@@ -83,12 +95,15 @@ $escapedName = preg_replace('/[@\.]/','',$username);
                 if(mb_strlen($filename, 'UTF-8') > 35){
                     $filename = mb_substr($filename, 0, 32, 'UTF-8').'…';
                 }
-                echo CHtml::link($filename, array('/media/media/view', 'id'=>$item['id']), array(
-                    'class' => 'x2-link media'.(Media::isImageExt($item['fileName']) ? ' image-file' : ''),
-                    'id' => $baseId,
-                    'style' => 'cursor:pointer;',
-                    'data-url' => Media::getFullFileUrl($path),
-                ));
+                echo CHtml::link(
+                    $filename, array('/media/media/view', 'id'=>$item['id']), 
+                    array(
+                        'class' => 'x2-link media'.(Media::isImageExt($item['fileName']) ? 
+                            ' image-file' : ''),
+                        'id' => $baseId,
+                        'style' => 'cursor:pointer;',
+                        'data-url' => Media::getFullFileUrl($path),
+                    ));
                 echo '</span>';
 
                 if(Media::isImageExt($item['fileName'])){
@@ -113,10 +128,10 @@ $escapedName = preg_replace('/[@\.]/','',$username);
 
         <?php
         $users = Yii::app()->db->createCommand()
-                ->select('fullName, username')
-                ->where('username!=:username', array(':username' => Yii::app()->user->name))
-                ->from('x2_profile')
-                ->queryAll();
+            ->select('fullName, username')
+            ->where('username!=:username', array(':username' => Yii::app()->user->name))
+            ->from('x2_profile')
+            ->queryAll();
 
         $admin = Yii::app()->params->isAdmin;
         ?>
@@ -134,7 +149,21 @@ $escapedName = preg_replace('/[@\.]/','',$username);
                 <?php $toggleUserMediaVisibleUrl = Yii::app()->controller->createUrl('/media/media/toggleUserMediaVisible')."?user={$user['username']}"; ?>
                 <?php $visible = !in_array($user['username'], $hideUsers); ?>
                 <?php if(!$visible) $minimizeUserMedia .= "$('#{$user['username']}-media').hide();\n"; ?>
-                <?php $minimizeLink = CHtml::ajaxLink($visible ? '[&ndash;]' : '[+]', $toggleUserMediaVisibleUrl, array('success' => "function(response) { toggleUserMedia($('#{$user['username']}-media'), $('#{$user['username']}-media-showhide'), response); }", 'type' => 'GET'), array('id' => "{$user['username']}-media-showhide", 'class' => 'media-library-showhide')); // javascript function toggleUserMedia defined in js/media.js  ?>
+                <?php $minimizeLink = CHtml::ajaxLink(
+                    X2Html::fa ($visible ? 'fa-caret-down' : 'fa-caret-left'), 
+                    $toggleUserMediaVisibleUrl, 
+                    array(
+                        'success' => "function(response) { 
+                            toggleUserMedia(
+                                $('#{$user['username']}-media'), 
+                                $('#{$user['username']}-media-showhide'), 
+                                response); 
+                        }", 
+                        'type' => 'GET'
+                    ), array(
+                        'id' => "{$user['username']}-media-showhide", 
+                        'class' => 'media-library-showhide gray-link'
+                    )); // javascript function toggleUserMedia defined in js/media.js  ?>
                 <strong><?php echo $user['fullName']; ?></strong>
                 <?php echo $minimizeLink; ?><br>
                 <div id="<?php echo $user['username']; ?>-media" class="user-media-list">
@@ -186,24 +215,29 @@ $escapedName = preg_replace('/[@\.]/','',$username);
         <?php echo "</div>"; ?>
 
         <script>
-                $(document).on('click','.toggle-file-system',function(e){
-                    e.preventDefault();
-                    var id=$(this).attr('data-id');
-                    if($('#'+id).is(':hidden')){
-                        $.ajax({
-                            'url':'<?php echo Yii::app()->controller->createUrl('/media/media/recursiveDriveFiles') ?>',
-                            'data':{'folderId':id},
-                            'success':function(data){
-                                $('#'+id).html(data);
-                                $('#'+id).show();
-                                $('a.drive-link').draggable({revert: 'invalid', helper:'clone', revertDuration:200, appendTo:'body',iframeFix:true});
-                            }
-                        });
-                    }else{
-                        $('#'+id).html('').hide();
-                    }
-                });
-
+            $(document).on('click','.toggle-file-system',function(e){
+                e.preventDefault();
+                var id=$(this).attr('data-id');
+                if($('#'+id).is(':hidden')){
+                    $.ajax({
+                        'url':'<?php echo Yii::app()->controller->createUrl('/media/media/recursiveDriveFiles') ?>',
+                        'data':{'folderId':id},
+                        'success':function(data){
+                            $('#'+id).html(data);
+                            $('#'+id).show();
+                            $('a.drive-link').draggable({
+                                revert: 'invalid',
+                                helper:'clone',
+                                revertDuration:200,
+                                appendTo:'body',
+                                iframeFix:true
+                            });
+                        }
+                    });
+                }else{
+                    $('#'+id).html('').hide();
+                }
+            });
         </script>
         <style>
             .drive-link{

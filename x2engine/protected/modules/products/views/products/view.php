@@ -1,7 +1,7 @@
 <?php
 /*****************************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2015 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -34,6 +34,8 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 
+$layoutManager = $this->widget ('RecordViewLayoutManager', array ('staticLayout' => false));
+
 Yii::app()->clientScript->registerCss('recordViewCss', "
 
 #content {
@@ -49,10 +51,9 @@ $themeUrl = Yii::app()->theme->getBaseUrl();
 
 
 $menuOptions = array(
-    'index', 'create', 'view', 'edit', 'delete', 'print',
+    'index', 'create', 'view', 'edit', 'delete', 'print', 'editLayout',
 );
 $this->insertMenu($menuOptions, $model);
-
 
 $modelType = json_encode("Products");
 $modelId = json_encode($model->id);
@@ -77,16 +78,8 @@ $(function() {
         </div>
     </div>
 </div>
-<div id="main-column" class="half-width">
+<div id="main-column" <?php echo $layoutManager->columnWidthStyleAttr (1); ?>>
 <?php $this->renderPartial('application.components.views._detailView', array('model' => $model, 'modelName' => 'Product')); ?>
-
-    <?php
-    $this->widget('X2WidgetList', array(
-        'block' => 'center',
-        'model' => $model,
-        'modelType' => 'products'
-    ));
-    ?>
 
     <?php
     $this->widget(
@@ -97,16 +90,10 @@ $(function() {
     );
     ?>
 </div>
-<div class="history half-width">
-    <?php
-    $this->widget('Publisher', array(
-        'associationType' => 'products',
-        'associationId' => $model->id,
-        'assignedTo' => Yii::app()->user->getName(),
-        'calendar' => false
-            )
-    );
-
-    $this->widget('History', array('associationType' => 'products', 'associationId' => $model->id));
-    ?>
-</div>
+<?php
+$this->widget('X2WidgetList', array(
+    'layoutManager' => $layoutManager,
+    'block' => 'center',
+    'model' => $model,
+    'modelType' => 'products'
+));

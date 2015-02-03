@@ -1,7 +1,7 @@
 <?php
 /*****************************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2015 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -656,6 +656,12 @@ class Actions extends X2Model {
         }
     }
 
+    public function frameLink () {
+        return CHtml::link(
+            $this->actionDescription, '#', 
+            array('class' => 'action-frame-link', 'data-action-id' => $this->id));
+    }
+
     /**
      * Queries the database for the first characters of an action description
      * @param int $length length of string to retrieve
@@ -704,6 +710,7 @@ class Actions extends X2Model {
             case 'note': 
                 $timestamp = $this->completeDate; 
                 break;
+            case 'quotesDeleted': 
             case 'quotes': 
                 $timestamp = $this->createDate; 
                 break;
@@ -765,8 +772,13 @@ class Actions extends X2Model {
         Yii::app()->params->profile->actionFilters = json_encode($filters);
         Yii::app()->params->profile->update(array('actionFilters'));
         $criteria = X2Model::model('Actions')->getAccessCriteria();
-        $criteria->addCondition("(type !='workflow' AND type!='email' AND type!='event' AND type!='emailFrom' AND type!='attachment' AND type!='webactivity' AND type!='quotes' AND type!='emailOpened' AND type!='note') OR type IS NULL");
-        if(isset($filters['complete'], $filters['assignedTo'], $filters['dateType'], $filters['dateRange'], $filters['order'], $filters['orderType'])){
+        $criteria->addCondition(
+            "(type !='workflow' AND type!='email' AND type!='event' AND type!='emailFrom' AND 
+              type!='attachment' AND type!='webactivity' AND type not like 'quotes%' AND 
+              type!='emailOpened' AND type!='note') OR type IS NULL");
+        if(isset($filters['complete'], $filters['assignedTo'], $filters['dateType'], 
+            $filters['dateRange'], $filters['order'], $filters['orderType'])){
+
             switch($filters['complete']){
                 case "No":
                     $criteria->addCondition("complete='No' OR complete IS NULL");
@@ -858,7 +870,7 @@ class Actions extends X2Model {
         return $criteria;
     }
 
-    public function search($criteria = null){
+    public function search($criteria = null, $pageSize=null){
         if(!$criteria instanceof CDbCriteria){
             $criteria = $this->getAccessCriteria();
             $criteria->addCondition(
@@ -870,7 +882,8 @@ class Actions extends X2Model {
                 ':userNameRegex' => $this->getUserNameRegex ()
             ));
         }
-        return $this->searchBase($criteria);
+
+        return $this->searchBase($criteria, $pageSize=null);
     }
 
     /**
@@ -932,7 +945,7 @@ class Actions extends X2Model {
         return $this->searchBase($criteria);
     }
 
-    public function searchBase($criteria, $pageSize=null, $uniqueId=null){
+    public function searchBase($criteria, $pageSize=null, $showHidden=false){
         if ($pageSize === null) {
             $pageSize = Profile::getResultsPerPage ();
         }
@@ -948,17 +961,17 @@ class Actions extends X2Model {
                     complete="No", IFNULL(dueDate, IFNULL(createDate,0)), 
                     GREATEST(createDate, IFNULL(completeDate,0), IFNULL(lastUpdated,0))) DESC';
         }
-        $dataProvider = new SmartActiveDataProvider('Actions', 
-            array(
-                'sort' => array(
-                    'defaultOrder' => $order,
-                ),
-                'pagination' => array(
-                    'pageSize' => $pageSize
-                ),
-                'criteria' => $criteria,
-                'uid' => $uniqueId,
-                'dbPersistentGridSettings' => $this->dbPersistentGridSettings));
+        $dataProvider = new SmartActiveDataProvider('Actions', array(
+            'sort' => array(
+                'defaultOrder' => $order,
+            ),
+            'pagination' => array(
+                'pageSize' => $pageSize
+            ),
+            'criteria' => $criteria,
+            'uid' => $this->uid,
+            'dbPersistentGridSettings' => $this->dbPersistentGridSettings
+        ));
         return $dataProvider;
     }
 
@@ -1124,6 +1137,44 @@ class Actions extends X2Model {
                 return $render ($this->getPriorityLabel ());
             default:
                 return parent::renderAttribute($fieldName, $makeLinks, $textOnly, $encode);
+        }
+    }
+
+    public function renderInlineViewLink ($text=null) {
+        switch ($this->type) {
+            case 'quotes':
+                $quotePrint = (bool)  preg_match('/^\d+$/',$this->actionDescription);
+                $objectId = $quotePrint ? $this->actionDescription : $this->id;
+                if (!$text) {
+                    $text = Yii::t('app', '[View quote]');
+                }
+                echo CHtml::link(
+                    $text,
+                    'javascript:void(0);',
+                    array(
+                        'onclick' => 'return false;',
+                        'id' => $objectId,
+                        'class' => $quotePrint ? 'quote-print-frame' : 'quote-frame'
+                    )
+                );
+                break;
+            case 'email':
+            case 'emailFrom':
+            case 'email_quote':
+            case 'email_invoice':
+            case 'emailOpened':
+            case 'emailOpened_quote':
+            case 'emailOpened_invoice':
+                if (!$text) $text = Yii::t('app', '[View email]');
+                echo CHtml::link (
+                    $text,
+                    '#', 
+                    array(
+                        'onclick' => 'return false;',
+                        'id' => $this->id,
+                        'class' => 'email-frame'
+                    ));
+                break;
         }
     }
 

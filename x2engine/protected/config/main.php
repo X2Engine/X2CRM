@@ -1,7 +1,7 @@
 <?php
 /*****************************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2015 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -89,6 +89,19 @@ if (YII_DEBUG_TOOLBAR) {
     );
 }
 
+$noSession = php_sapi_name()=='cli';
+if (!$noSession) {
+    $userConfig = array(
+        'class' => 'X2WebUser',
+        // enable cookie-based authentication
+        'allowAutoLogin' => true,
+    );
+} else {
+    $userConfig = array(
+        'class' => 'X2NonWebUser',
+    );
+}
+
 $config = array(
     'basePath' => dirname(__FILE__).DIRECTORY_SEPARATOR.'..',
     'name' => $appName,
@@ -119,11 +132,7 @@ $config = array(
     'behaviors' => array('ApplicationConfigBehavior'),
     // application components
     'components' => array(
-        'user' => array(
-            'class' => 'X2WebUser',
-            // enable cookie-based authentication
-            'allowAutoLogin' => true,
-        ),
+        'user' => $userConfig,
         'file' => array(
             'class' => 'application.extensions.CFile',
         ),
@@ -325,7 +334,7 @@ $config = array(
         'version' => $version,
         'edition' => '',
         'buildDate' => $buildDate,
-        'noSession' => php_sapi_name()=='cli',
+        'noSession' => $noSession,
         'automatedTesting' => false,
         'supportedCurrencies' => array('USD', 'EUR', 'GBP', 'CAD', 'JPY', 'CNY', 'CHF', 'INR', 'BRL', 'VND'),
         'supportedCurrencySymbols' => array(),

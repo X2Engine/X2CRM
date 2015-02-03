@@ -1,7 +1,7 @@
 <?php
 /*****************************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2015 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -63,6 +63,7 @@ class EventsChartProfileWidget extends ChartWidget {
                         'startDate' => null,
                         'endDate' => null, 
                         'dateRange' => null,
+                        'dateRangeType' => null,
                         'binSize' => null,
                         'firstMetric' => null, 
                         'showRelationships' => null,
@@ -138,6 +139,7 @@ class EventsChartProfileWidget extends ChartWidget {
                 '1'=>'Public',
                 '0'=>'Private',
             );
+            $this->migrateDateRange();
             $chartSettingsData = self::getChartSettingsProvider ($this->chartType)->data;
             $this->_setupScript = parent::getSetupScript ()."
                 $(function () {
@@ -300,6 +302,37 @@ class EventsChartProfileWidget extends ChartWidget {
 			return $events;
 		}
 	}
+
+    /**
+     * Temporary Migration from the old chart settings to the new. 
+     */
+    public function migrateDateRange () {
+        $settings = $this->getWidgetProperty('chartSettings');
+
+        if (!isset($settings['dateRange'])) return;
+        $dateRange = $settings['dateRange'];
+
+        $mapping = array (
+            "Custom" => array('custom', 'day'),
+            "Today" => array('this', 'day'),
+            "Yesterday" => array('last', 'day'),
+            "This Week" => array('this', 'week'),
+            "Last Week" => array("last", "week"),
+            "This Month" => array("this", "month"),
+            "Last Month" => array("last", "month"),
+            "Last Three Months" => array("last", "quarter"),
+            "Last Six Months" => array("last", "year"),
+            "This Year" => array("this", "year"),
+            "Last Year" => array("last", "year")
+        );
+
+        if (array_key_exists($dateRange, $mapping)) {
+            $settings['dateRangeType'] = $mapping[$dateRange][0];
+            $settings['dateRange'] = $mapping[$dateRange][1];
+            $this->setWidgetProperty ('chartSettings', $settings);
+        }
+
+    }
 
 }
 ?>

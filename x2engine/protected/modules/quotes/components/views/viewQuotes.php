@@ -1,7 +1,7 @@
 <?php
 /*****************************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2015 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -48,7 +48,7 @@ foreach($fields as $field) {
 
 ?>
 
-<div class="row viewQuote" style="overflow: visible;">
+<div class="row viewQuote" style="overflow: visible;" >
 <?php
 $viewButton = CHtml::link(
 	'['. Yii::t('products', 'View') .']',
@@ -63,12 +63,20 @@ $updateButton = $canDo['QuickUpdate'] ? ' '. CHtml::link(
 ):'';
 $deleteButton = $canDo['QuickDelete'] ? ' '. CHtml::ajaxLink(
 	'['. Yii::t('quotes', 'Delete') .']', 
-	Yii::app()->createUrl('/quotes/quotes/quickDelete', array('id'=>$quote->id, 'recordId'=>$recordId)),
+	Yii::app()->createUrl(
+        '/quotes/quotes/quickDelete', array('id'=>$quote->id, 'recordId'=>$recordId)),
 	array(
 		'success' => "function(html) { x2.inlineQuotes.reloadAll(); }",
-        'beforeSend' => 'function(){return confirm('.json_encode(Yii::t('quotes','Are you sure you want to delete this quote?')).');}'
+        'beforeSend' => 'function(){
+            return confirm('.
+                json_encode(Yii::t('quotes','Are you sure you want to delete this quote?')).');
+        }'
 	),
-	array('id'=> "delete-quote-{$quote->id}", 'title'=>Yii::t('quotes', "Delete Quote"), 'live'=>false)
+	array(
+        'id'=> "delete-quote-{$quote->id}",
+        'title'=>Yii::t('quotes', "Delete Quote"),
+        'live'=>false
+    )
 ):'';
 $emailButton = 
     CHtml::link(

@@ -1,7 +1,7 @@
 <?php
 /*****************************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2015 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -34,8 +34,10 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 
+$layoutManager = $this->widget ('RecordViewLayoutManager', array ('staticLayout' => false));
+
 $menuOptions = array(
-    'index', 'upload', 'view', 'edit', 'delete',
+    'index', 'upload', 'view', 'edit', 'delete', 'editLayout',
 );
 $this->insertMenu($menuOptions, $model);
 
@@ -46,7 +48,7 @@ echo X2Html::editRecordbutton($model);
 ?>
 </div>
 
-<div id="main-column" class="half-width">
+<div id="main-column" <?php echo $layoutManager->columnWidthStyleAttr (1); ?>>
 <?php
 
 $parts = explode('.',$model->fileName);			// split filename on '.'
@@ -71,125 +73,124 @@ if(file_exists("uploads/media/{$model->uploadedBy}/{$model->fileName}")) {
 	if(in_array($file_ext,$legal_extensions))
 		$fileView .= CHtml::link(CHtml::image($fileURL,'',array('class'=>'attachment-img', 'style'=>'display: block; margin-left: auto; margin-right: auto; padding: 5px')),$fileURL);
 }
+
+if(!empty($fileView)) { ?>
+    <div style="float: left; margin-right: 5px;">
+        <div class="formItem" style="line-height: 200px; border: 1px solid #CCC; background: #FAFAFA; display: table-cell; -moz-border-radius: 4px; -o-border-radius: 4px; -webkit-border-radius: 4px; border-radius: 4px;">
+            <?php echo $fileView; ?>
+        </div>
+        <?php echo CHtml::link(Yii::t('media', 'Download File'),array('download','id'=>$model->id),array('class'=>'x2-button', 'style'=>'margin-top: 5px;')); ?>
+    </div>
+<?php 
+} 
 ?>
+<div class="x2-layout form-view" style="margin-bottom: 0;">
+    <div class="formSection showSection">
+        <div class="tableWrapper noTitle">
+            <table>
+                <tbody>
+                    <tr class="formSectionRow">
+                        <td style="width: 300px">
+                            <div class="formItem leftLabel">
+                                <label><?php echo Yii::t('media', 'Association Type'); ?></label>
+                                <div class="formInputBox" style="width: 200px; height: auto;">
+                                    <?php if($model->associationType) { ?>
+                                        <?php echo ($model->associationType == 'bg'? Yii::t('media', 'Background') : ucfirst($model->associationType)); ?>
+                                    <?php } ?>
+                                </div>
+                            </div>
 
-		<?php if(!empty($fileView)) { ?>
-			<div style="float: left; margin-right: 5px;">
-				<div class="formItem" style="line-height: 200px; border: 1px solid #CCC; background: #FAFAFA; display: table-cell; -moz-border-radius: 4px; -o-border-radius: 4px; -webkit-border-radius: 4px; border-radius: 4px;">
-					<?php echo $fileView; ?>
-				</div>
-				<?php echo CHtml::link(Yii::t('media', 'Download File'),array('download','id'=>$model->id),array('class'=>'x2-button', 'style'=>'margin-top: 5px;')); ?>
-			</div>
-		<?php } ?>
+                        </td>
+                    </tr>
 
-			<div class="x2-layout form-view" style="margin-bottom: 0;">
+                    <tr class="formSectionRow">
+                        <td style="width: 300px">
+                            <div class="formItem leftLabel">
+                                <label><?php echo Yii::t('media', 'Association Name'); ?></label>
+                                <div class="formInputBox" style="width: 200px; height: auto;">
+                                    <?php if($model->associationType && $model->associationType != 'bg') { ?>
+                                        <?php
+                                            if(!empty($model->associationId) && is_numeric($model->associationId) && $modelName=X2Model::getModelName($model->associationType)) {
+                                                $linkModel = X2Model::model($modelName)->findByPk($model->associationId);
+                                                if(isset($linkModel)){
+                                                    echo CHtml::link(CHtml::encode($linkModel->name), array('/'.$model->associationType.'/'.$model->associationId));
+                                                }else
+                                                    echo '';
+                                            } else {
+                                                echo '';
+                                            }
+                                        ?>
+                                    <?php } ?>
+                                </div>
+                            </div>
 
-				<div class="formSection showSection">
-					<div class="tableWrapper noTitle">
-						<table>
-							<tbody>
-								<tr class="formSectionRow">
-									<td style="width: 300px">
-										<div class="formItem leftLabel">
-											<label><?php echo Yii::t('media', 'Association Type'); ?></label>
-											<div class="formInputBox" style="width: 200px; height: auto;">
-												<?php if($model->associationType) { ?>
-													<?php echo ($model->associationType == 'bg'? Yii::t('media', 'Background') : ucfirst($model->associationType)); ?>
-												<?php } ?>
-											</div>
-										</div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
 
-									</td>
-								</tr>
+    <div class="formSection showSection">
+        <div class="tableWrapper">
+            <table>
+                <tbody>
+                    <tr class="formSectionRow">
+                        <td style="width: 300px">
+                            <div class="formItem leftLabel">
+                                <label><?php echo Yii::t('media', 'Private'); ?></label>
+                                <div class="formInputBox" style="width: 200px; height: auto;">
+                                    <?php echo CHtml::checkbox('private', $model->private, array( 'onclick'=>"return false", 'onkeydown'=>"return false")); ?>
+                                </div>
+                            </div>
 
-								<tr class="formSectionRow">
-									<td style="width: 300px">
-										<div class="formItem leftLabel">
-											<label><?php echo Yii::t('media', 'Association Name'); ?></label>
-											<div class="formInputBox" style="width: 200px; height: auto;">
-												<?php if($model->associationType && $model->associationType != 'bg') { ?>
-													<?php
-														if(!empty($model->associationId) && is_numeric($model->associationId) && $modelName=X2Model::getModelName($model->associationType)) {
-															$linkModel = X2Model::model($modelName)->findByPk($model->associationId);
-															if(isset($linkModel)){
-                                                                echo CHtml::link(CHtml::encode($linkModel->name), array('/'.$model->associationType.'/'.$model->associationId));
-                                                            }else
-																echo '';
-														} else {
-															echo '';
-														}
-													?>
-												<?php } ?>
-											</div>
-										</div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
 
-									</td>
-								</tr>
-							</tbody>
-						</table>
-					</div>
-				</div>
+    <div class="formSection showSection">
+        <div class="tableWrapper">
+            <table>
+                <tbody>
+                    <tr class="formSectionRow">
+                        <td style="width: 300px">
+                            <div class="formItem leftLabel">
+                                <label><?php echo Yii::t('media', 'Google Drive'); ?></label>
+                                <div class="formInputBox" style="width: 200px; height: auto;">
+                                    <?php echo CHtml::checkbox('drive', $model->drive, array( 'onclick'=>"return false", 'onkeydown'=>"return false")); ?>
+                                </div>
+                            </div>
 
-				<div class="formSection showSection">
-					<div class="tableWrapper">
-						<table>
-							<tbody>
-								<tr class="formSectionRow">
-									<td style="width: 300px">
-										<div class="formItem leftLabel">
-											<label><?php echo Yii::t('media', 'Private'); ?></label>
-											<div class="formInputBox" style="width: 200px; height: auto;">
-												<?php echo CHtml::checkbox('private', $model->private, array( 'onclick'=>"return false", 'onkeydown'=>"return false")); ?>
-											</div>
-										</div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
 
-									</td>
-								</tr>
-							</tbody>
-						</table>
-					</div>
-				</div>
+    <div class="formSection showSection">
+        <div class="tableWrapper">
+            <table>
+                <tbody>
+                    <tr class="formSectionRow">
+                        <td style="width: 300px">
+                            <div class="formItem leftLabel">
+                                <label><?php echo Yii::t('media', 'Description'); ?></label>
+                                <div class="formInputBox" style="height: auto;">
+                                    <?php echo CHtml::encode($model->description); ?>
+                                </div>
+                            </div>
 
-                <div class="formSection showSection">
-					<div class="tableWrapper">
-						<table>
-							<tbody>
-								<tr class="formSectionRow">
-									<td style="width: 300px">
-										<div class="formItem leftLabel">
-											<label><?php echo Yii::t('media', 'Google Drive'); ?></label>
-											<div class="formInputBox" style="width: 200px; height: auto;">
-												<?php echo CHtml::checkbox('drive', $model->drive, array( 'onclick'=>"return false", 'onkeydown'=>"return false")); ?>
-											</div>
-										</div>
-
-									</td>
-								</tr>
-							</tbody>
-						</table>
-					</div>
-				</div>
-
-				<div class="formSection showSection">
-					<div class="tableWrapper">
-						<table>
-							<tbody>
-								<tr class="formSectionRow">
-									<td style="width: 300px">
-										<div class="formItem leftLabel">
-                                            <label><?php echo Yii::t('media', 'Description'); ?></label>
-											<div class="formInputBox" style="height: auto;">
-												<?php echo CHtml::encode($model->description); ?>
-											</div>
-										</div>
-
-									</td>
-								</tr>
-							</tbody>
-						</table>
-					</div>
-				</div>
-			</div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
 <?php
 if(!$model->drive && empty($fileView)){
     echo CHtml::link(Yii::t('media', 'Download File'),array('download','id'=>$model->id),array('class'=>'x2-button', 'style'=>'margin-top: 5px; margin-left: 5px; margin-bottom: 10px'));
@@ -199,21 +200,16 @@ if(!$model->drive && empty($fileView)){
 
 
 </div>
+<?php
+$this->widget('X2WidgetList', array(
+    'layoutManager' => $layoutManager,
+    'block' => 'center',
+    'model' => $model,
+    'modelType' => 'media'
+));
+?>
 <style>
 .half-width {
     clear: none !important;
 }
 </style>
-<div class="history half-width" style="clear: both;">
-<?php $this->widget('Publisher',
-	array(
-		'associationType'=>'media',
-		'associationId'=>$model->id,
-		'assignedTo'=>Yii::app()->user->getName(),
-		'calendar' => false
-	)
-);
-$this->widget('History',array('associationType'=>'media','associationId'=>$model->id));
-
-?>
-</div>

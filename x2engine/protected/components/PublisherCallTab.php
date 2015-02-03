@@ -1,7 +1,7 @@
 <?php
 /*****************************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2015 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -45,7 +45,7 @@ class PublisherCallTab extends PublisherTab {
 
     public $tabId = 'log-a-call'; 
 
-    public $tabPrototypeName = 'PublisherCallTab';
+    public $JSClass = 'PublisherCallTab';
 
     /**
      * Packages which will be registered when the widget content gets rendered.
@@ -60,7 +60,7 @@ class PublisherCallTab extends PublisherTab {
             $this->_packages = array_merge (
                 parent::getPackages (),
                 array (
-                    'PublisherTimeTabTabJS' => array(
+                    'PublisherTimeTabJS' => array(
                         'baseUrl' => Yii::app()->request->baseUrl,
                         'js' => array(
                             'js/publisher/PublisherTimeTab.js',

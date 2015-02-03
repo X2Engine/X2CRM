@@ -1,7 +1,7 @@
 <?php
 /*****************************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2015 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -34,6 +34,8 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 
+$layoutManager = $this->widget ('RecordViewLayoutManager', array ('staticLayout' => false));
+
 Yii::app()->clientScript->registerCss('contactRecordViewCss', "
 
 #content {
@@ -47,10 +49,13 @@ Yii::app()->clientScript->registerResponsiveCssFile(
 
 include("protected/modules/templates/templatesConfig.php");
 
+$actionMenuViewItem = RecordViewLayoutManager::getViewActionMenuListItem ($model->id);
+if (isset ($actionMenuViewItem['url'])) unset ($actionMenuViewItem['url']);
+
 $this->actionMenu = $this->formatMenu(array(
     array('label' => Yii::t('module', '{X} List', array('{X}' => Modules::itemDisplayName())), 'url' => array('index')),
     array('label' => Yii::t('module', 'Create {X}', array('{X}' => Modules::itemDisplayName())), 'url' => array('create')),
-    array('label' => Yii::t('module', 'View {X}', array('{X}' => Modules::itemDisplayName()))),
+    $actionMenuViewItem,
     array('label' => Yii::t('module', 'Edit {X}', array('{X}' => Modules::itemDisplayName())), 'url' => array('update', 'id' => $model->id)),
     array('label' => Yii::t('module', 'Delete {X}', array('{X}' => Modules::itemDisplayName())), 'url' => '#', 'linkOptions' => array('submit' => array('delete', 'id' => $model->id), 'confirm' => Yii::t('app', 'Are you sure you want to delete this item?'))),
     array(
@@ -71,7 +76,8 @@ $this->actionMenu = $this->formatMenu(array(
             )) . "');"
         ),
     ),
-        ));
+    RecordViewLayoutManager::getEditLayoutActionMenuListItem (),
+));
 
 $modelType = json_encode("Templates");
 $modelId = json_encode($model->id);
@@ -92,14 +98,14 @@ $(function() {
                 ?>
             </h2>
             <?php
-            echo X2Html::emailFormButton();
             echo X2Html::editRecordButton($model);
+            echo X2Html::emailFormButton();
             echo X2Html::inlineEditButtons();
             ?>
         </div>
     </div>
 </div>
-<div id="main-column" class="half-width">
+<div id="main-column" <?php echo $layoutManager->columnWidthStyleAttr (1); ?>>
             <?php $this->renderPartial('application.components.views._detailView', array('model' => $model, 'modelName' => 'templates')); ?>
 
 <?php
@@ -120,7 +126,6 @@ $this->widget('InlineEmailForm', array(
 
 $this->widget('Attachments', array('associationType' => 'templates', 'associationId' => $model->id, 'startHidden' => true));
 
-$this->widget('X2WidgetList', array('model' => $model));
 ?>
     <div id="quote-form-wrapper">
     <?php
@@ -132,15 +137,9 @@ $this->widget('X2WidgetList', array('model' => $model));
     ?>
     </div>
 </div>
-<div class="history half-width">
-        <?php
-        $this->widget('Publisher', array(
-            'associationType' => 'templates',
-            'associationId' => $model->id,
-            'assignedTo' => Yii::app()->user->getName(),
-            'calendar' => false
-                )
-        );
-        $this->widget('History', array('associationType' => 'templates', 'associationId' => $model->id));
-        ?>
-</div>
+<?php
+$this->widget('X2WidgetList', 
+    array(
+        'layoutManager' => $layoutManager,
+        'model' => $model,
+    ));

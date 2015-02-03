@@ -2,7 +2,7 @@
 
 /*****************************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2015 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -232,7 +232,8 @@ abstract class X2Model extends CActiveRecord {
      */
 
     public function __construct(
-    $scenario = 'insert', $uid = null, $dbPersistentGridSettings = false, $disablePersistentGridSettings = false) {
+        $scenario = 'insert', $uid = null, $dbPersistentGridSettings = false, 
+        $disablePersistentGridSettings = false) {
 
         $this->uid = $uid;
         $this->dbPersistentGridSettings = $dbPersistentGridSettings;
@@ -905,13 +906,14 @@ abstract class X2Model extends CActiveRecord {
         ));
         // Clear out old relationships:
         Yii::app()->db->createCommand()
-                ->delete(Relationships::model()->tableName(), '(`firstType`=:ft AND `firstId`=:fid) '
-                        . 'OR (`secondType`=:st AND `secondId`=:sid)', array(
-                    ':ft' => $class,
-                    ':fid' => $this->id,
-                    ':st' => $class,
-                    ':sid' => $this->id
-        ));
+            ->delete(Relationships::model()->tableName(), 
+            '(`firstType`=:ft AND `firstId`=:fid) OR (`secondType`=:st AND `secondId`=:sid)', 
+            array(
+                ':ft' => $class,
+                ':fid' => $this->id,
+                ':st' => $class,
+                ':sid' => $this->id
+            ));
 
         // Clear out old phone numbers
         X2Model::model('PhoneNumber')->deleteAllByAttributes(array(
@@ -1077,6 +1079,7 @@ abstract class X2Model extends CActiveRecord {
             'search',
             'link',
             'foreignKey',
+            'uniqueIndex',
         );
         $fieldRules = array_fill_keys($fieldTypes, array());
         $validators = Fields::getFieldTypes('validator');
@@ -1101,11 +1104,16 @@ abstract class X2Model extends CActiveRecord {
             if ($_field->keyType === 'FOR') {
                 $fieldRules['foreignKey'][] = $_field->fieldName;
             }
+            if ($_field->keyType === 'UNI') {
+                $fieldRules['uniqueIndex'][] = $_field->fieldName;
+            }
         }
 
         return array(
             array(implode(',', $fieldRules['foreignKey']),
                 'application.components.validators.X2ModelForeignKeyValidator'),
+            array(implode(',', $fieldRules['uniqueIndex']),
+                'application.components.validators.X2ModelUniqueIndexValidator'),
             array(implode(',', $fieldRules['required']), 'required'),
             array(implode(',', $fieldRules['unique']), 'unique'),
             array(implode(',', $fieldRules['numerical']), 'numerical'),
@@ -1476,16 +1484,15 @@ abstract class X2Model extends CActiveRecord {
     }
 
     /**
-     * Filters attributes to those which the current user has view permission
+     * Filters attributes to those for which the current user has view permission
      * @return array attribute values indexed by name 
      */
     public function getVisibleAttributes () {
         if (!Yii::app()->params->isAdmin && !empty(Yii::app()->params->roles)) {
-            $fieldPermissions = $model->getFieldPermissions();
-        } else {
-            $bypassPermissions = true;
+            $fieldPermissions = $this->getFieldPermissions();
+        } else { // bypass permissions
+            return $this->getAttributes ();
         }
-        if ($bypassPermissions) return $this->getAttributes ();
 
         $visibleAttributeNames = array ();
         foreach ($fieldPermissions as $fieldName => $permission) {
@@ -1628,6 +1635,30 @@ abstract class X2Model extends CActiveRecord {
         return $succeeded;
     }
 
+    public function setFormatter ($class) {
+        if (is_string ($class)) {
+            $this->_formatter = Yii::createComponent (array (
+                'class' => $class,
+                'owner' => $this,
+            ));
+        } else if ($class instanceof FieldFormatter) {
+            $this->_formatter = $class;
+        } else {
+            throw new CException ('Invalid formatter object');
+        }
+    }
+
+    private $_formatter;
+    public function getFormatter () {
+        if (!isset ($this->_formatter)) {
+            $this->_formatter = Yii::createComponent (array (
+                'class' => 'FieldFormatter',
+                'owner' => $this,
+            ));
+        }
+        return $this->_formatter;
+    }
+
     /**
      * Renders an attribute of the model based on its field type
      * @param string $fieldName the name of the attribute to be rendered
@@ -1638,241 +1669,8 @@ abstract class X2Model extends CActiveRecord {
     public function renderAttribute(
         $fieldName, $makeLinks = true, $textOnly = true, $encode = true) {
 
-        $render = function($x)use($encode) {
-            return $encode ? CHtml::encode($x) : $x;
-        };
-
-        $field = $this->getField($fieldName);
-        if (!isset($field))
-            return null;
-
-        if (Yii::app()->params->noSession) {
-            $webRequestAttributes = array(
-                'rating', // Uses a Yii widget, which requires access to the controller
-                'assignment', // Depends on getUserLinks, which depends on the user session
-                'optionalAssignment', // Same as above
-                'url', // Renders an actual link
-                'text', // Uses convertUrls, which is in x2base
-            );
-            if (in_array($field->type, $webRequestAttributes))
-                return $render($this->$fieldName);
-        }
-
-        switch ($field->type) {
-            case 'date':
-                if (empty($this->$fieldName))
-                    return ' ';
-                elseif (is_numeric($this->$fieldName))
-                    return Formatter::formatLongDate($this->$fieldName);
-                else
-                    return $render($this->$fieldName);
-            case 'dateTime':
-                if (empty($this->$fieldName))
-                    return ' ';
-                elseif (is_numeric($this->$fieldName))
-                    return Formatter::formatCompleteDate($this->$fieldName);
-                else
-                    return $render($this->$fieldName);
-
-            case 'rating':
-                if ($textOnly) {
-                    return $render($this->$fieldName);
-                } else {
-                    return Yii::app()->controller->widget('CStarRating', array(
-                                'model' => $this,
-                                'name' => str_replace(
-                                        ' ', '-', get_class($this) . '-' . $this->id . '-rating-' . $field->fieldName),
-                                'attribute' => $field->fieldName,
-                                'readOnly' => true,
-                                // If not required, render the "cancel" button to clear the rating
-                                'allowEmpty' => !$field->required,
-                                'minRating' => 1, //minimal valuez
-                                'maxRating' => 5, //max value
-                                'starCount' => 5, //number of stars
-                                'cssFile' => Yii::app()->theme->getBaseUrl() .
-                                '/css/rating/jquery.rating.css',
-                                    ), true);
-                }
-
-            case 'assignment':
-                return User::getUserLinks($this->$fieldName, $makeLinks);
-
-            case 'optionalAssignment':
-                if ($this->$fieldName == '')
-                    return '';
-                else
-                    return User::getUserLinks($this->$fieldName);
-
-            case 'visibility':
-                switch ($this->$fieldName) {
-                    case '1':
-                        return Yii::t('app', 'Public');
-                        break;
-                    case '0':
-                        return Yii::t('app', 'Private');
-                        break;
-                    case '2':
-                        return Yii::t('app', 'User\'s Groups');
-                        break;
-                    default:
-                        return '';
-                }
-
-            case 'email':
-                if (empty($this->$fieldName)) {
-                    return '';
-                } else {
-                    $mailtoLabel = (isset($this->name) && !is_numeric($this->name)) ? '"' . $this->name . '" <' . $this->$fieldName . '>' : $this->$fieldName;
-                    return $makeLinks ? CHtml::mailto(CHtml::encode($this->$fieldName), $mailtoLabel) : $render($this->$fieldName);
-                }
-
-            case 'phone':
-                $value = X2Model::getPhoneNumber($fieldName, get_class($this), $this->id, $encode, $makeLinks, $this->$fieldName);
-                return $value;
-
-            case 'url':
-                if (!$makeLinks)
-                    return CHtml::encode($this->$fieldName);
-
-                if (empty($this->$fieldName)) {
-                    $text = '';
-                } elseif (!empty($field->linkType)) {
-                    switch ($field->linkType) {
-
-                        case 'skype':
-                            $text = '<a href="callto:' . $render($this->$fieldName) . '">' . $render($this->$fieldName) . '</a>';
-                            break;
-                        case 'googleplus':
-                            $text = '<a href="http://plus.google.com/' . $render($this->$fieldName) . '">' . $render($this->$fieldName) . '</a>';
-                            break;
-                        case 'twitter':
-                            $text = '<a href="http://www.twitter.com/#!/' . $render($this->$fieldName) . '">' . $render($this->$fieldName) . '</a>';
-                            break;
-                        case 'linkedin':
-                            $text = '<a href="http://www.linkedin.com/in/' . $render($this->$fieldName) . '">' . $render($this->$fieldName) . '</a>';
-                            break;
-                        default:
-                            $text = '<a href="http://www.' . $field->linkType . '.com/' . $render($this->$fieldName) . '">' . $render($this->$fieldName) . '</a>';
-                    }
-                } else {
-                    $text = trim(preg_replace(
-                                    array(
-                        '/<a([^>]*)target="?[^"\']+"?/i',
-                        '/<a([^>]+)>/i',
-                                    ), array(
-                        '<a\\1 target="_blank"',
-                        '<a\\1 target="_blank">',
-                                    ), $render($this->$fieldName)
-                    ));
-                    $oldText = $text;
-                    if (!function_exists('linkReplaceCallback')) {
-
-                        function linkReplaceCallback($matches) {
-                            return stripslashes((strlen($matches[2]) > 0 ? '<a href=\"' . $matches[2] . '\" target=\"_blank\">' . $matches[0] . '</a>' : $matches[0]));
-                        }
-
-                    }
-
-                    $text = trim(preg_replace_callback(
-                                    array(
-                        '/(?(?=<a[^>]*>.+<\/a>)(?:<a[^>]*>.+<\/a>)|([^="\']?)((?:https?|ftp|bf2|):\/\/[^<> \n\r]+))/ix',
-                                    ), 'linkReplaceCallback', $render($this->$fieldName)
-                    ));
-                    if ($text == trim($oldText)) {
-                        if (!function_exists('linkReplaceCallback2')) {
-
-                            function linkReplaceCallback2($matches) {
-                                return stripslashes((strlen($matches[2]) > 0 ? '<a href=\"http://' . $matches[2] . '\" target=\"_blank\">' . $matches[0] . '</a>' : $matches[0]));
-                            }
-
-                        }
-
-                        $text = trim(preg_replace_callback(
-                                        array(
-                            '/(^|\s|>)(www.[^<> \n\r]+)/ix',
-                                        ), 'linkReplaceCallback2', $render($this->$fieldName)
-                        ));
-                    }
-                }
-                return $text;
-
-            case 'link':
-                $linkedModel = $this->getLinkedModel($fieldName, false);
-                if ($linkedModel === null) {
-                    return $render($this->$fieldName);
-                } else {
-                    return $makeLinks ? $linkedModel->getLink() : $linkedModel->name;
-                }
-            case 'boolean':
-                return $textOnly ? $render($this->$fieldName) : CHtml::checkbox('', $this->$fieldName, array('onclick' => 'return false;', 'onkeydown' => 'return false;'));
-
-            case 'currency':
-                if ($this instanceof Product) // products have their own currency
-                    return Yii::app()->locale->numberFormatter->formatCurrency($this->$fieldName, $this->currency);
-                else
-                    return empty($this->$fieldName) ? 
-                        ($encode ? "&nbsp;" : '') : 
-                        Yii::app()->locale->numberFormatter->formatCurrency(
-                            $this->$fieldName, Yii::app()->params['currency']);
-
-            case 'percentage':
-                return $this->$fieldName !== null && $this->$fieldName !== '' ? (string) ($render($this->$fieldName)) . "%" : null;
-
-            case 'dropdown':
-                return $render(X2Model::model('Dropdowns')->getDropdownValue($field->linkType, $this->$fieldName));
-
-            case 'parentCase':
-                return $render(Yii::t(strtolower(Yii::app()->controller->id), $this->$fieldName));
-
-            case 'text':
-                return Yii::app()->controller->convertUrls($render($this->$fieldName));
-
-            case 'credentials':
-                $sysleg = Yii::t('app', 'System default (legacy)');
-                if ($this->$fieldName == -1) {
-                    return $sysleg;
-                } else {
-                    $creds = Credentials::model()->findByPk($this->$fieldName);
-                    if (!empty($creds))
-                        return $render($creds->name);
-                    else
-                        return $sysleg;
-                }
-            case 'timerSum':
-                $t_seconds = $this->$fieldName;
-                $t[] = floor($t_seconds / 3600); // Hours
-                $t[] = floor($t_seconds / 60) % 60; // Minutes
-                $t[] = $t_seconds % 60; // Seconds
-                $pad = function($t) {
-                    return str_pad((string) $t, 2, '0', STR_PAD_LEFT);
-                };
-                return implode(':', array_map($pad, $t));
-            case 'float':
-            case 'int':
-                if ($fieldName != 'id')
-                    return Yii::app()->locale->numberFormatter->formatDecimal($this->$fieldName);
-            case 'custom':
-                if ($field->linkType == 'display') {
-                    // Interpret as HTML. Restore curly braces in href
-                    // attributes that HTMLPurifier has replaced:
-                    $fieldText = preg_replace(
-                            '/%7B([\w\.]+)%7D/', '{$1}', $field->data);
-                    return Formatter::replaceVariables($fieldText, $this, '', false);
-                } elseif ($field->linkType == 'formula') {
-                    $evald = Formatter::parseFormula($field->data, array(
-                                'model' => $this
-                    ));
-                    if ($evald[0]) {
-                        return $render($evald[1]);
-                    } else {
-                        return Yii::t('app', 'Error parsing formula.') . ' ' . $evald[1];
-                    }
-                } else {
-                    return $render($this->$fieldName);
-                }
-            default:
-                return $render($this->$fieldName);
-        }
+        $formatter = $this->getFormatter ();
+        return $formatter->renderAttribute ($fieldName, $makeLinks, $textOnly, $encode);
     }
 
     /**
@@ -1884,14 +1682,18 @@ abstract class X2Model extends CActiveRecord {
      * @param string $default What to use in case phone number lookup failed;
      *  circumvents the need to re-query the model if used.
      */
-    public static function getPhoneNumber($field, $class, $id, $encode = false, $makeLink = false, $default = null) {
+    public static function getPhoneNumber(
+        $field, $class, $id, $encode = false, $makeLink = false, $default = null) {
+
         $phoneCheck = CActiveRecord::model('PhoneNumber')
-                ->findByAttributes(array('modelId' => $id, 'modelType' => $class, 'fieldName' => $field));
+            ->findByAttributes(
+                array('modelId' => $id, 'modelType' => $class, 'fieldName' => $field));
         if ($phoneCheck instanceof PhoneNumber && strlen($phoneCheck->number) == 10 &&
                 strpos($phoneCheck->number, '0') !== 0 && strpos($phoneCheck->number, '1') !== 0) {
 
             $number = (string) $phoneCheck->number;
-            $fmtNumber = "(" . substr($number, 0, 3) . ") " . substr($number, 3, 3) . "-" . substr($number, 6, 4);
+            $fmtNumber = "(" . substr($number, 0, 3) . ") " . substr($number, 3, 3) . "-" . 
+                substr($number, 6, 4);
         } elseif ($default != null) {
             $number = (string) $default;
             $fmtNumber = $default;
@@ -2436,13 +2238,16 @@ abstract class X2Model extends CActiveRecord {
      *  search/filter conditions.
      */
     public function searchBase($criteria, $pageSize = null, $showHidden = false) {
-        if(isset($_GET['showHidden']) && $_GET['showHidden'] && Yii::app()->user->checkAccess(self::getModuleName(get_class($this)).'Admin')){
+        if(isset($_GET['showHidden']) && $_GET['showHidden'] && 
+           Yii::app()->user->checkAccess(self::getModuleName(get_class($this)).'Admin')){
+
             $showHidden = true;
         }
         if ($criteria === null){
             $criteria = $this->getAccessCriteria('t', 'X2PermissionsBehavior', $showHidden);
         }else{
-            $criteria->mergeWith($this->getAccessCriteria('t', 'X2PermissionsBehavior', $showHidden));
+            $criteria->mergeWith(
+                $this->getAccessCriteria('t', 'X2PermissionsBehavior', $showHidden));
         }
 
         $this->compareAttributes($criteria);
@@ -3068,15 +2873,11 @@ abstract class X2Model extends CActiveRecord {
                     'class' => 'record-name-autocomplete x2-default-field',
                     'data-default-text' => Yii::t('app', 'Start typing to suggest...'),
                     'style' => 'color:#aaa',
-                        ), $htmlOptions),
+                ), $htmlOptions),
             ));
             Yii::app()->clientScript->registerScript('renderModelAutocomplete', "
-            x2.forms.enableDefaultText ($('.record-name-autocomplete'));
-            // $('.record-name-autocomplete').unbind ('keyup.renderModelAutocomplete').
-            //     bind ('keyup.renderModelAutocomplete', function () {
-            //         $(this).nextAll ('input').val ('');
-            //     });
-            ");
+                x2.forms.enableDefaultText ($('.record-name-autocomplete'));
+            ", CClientScript::POS_READY);
         };
 
         if ($ajax) {

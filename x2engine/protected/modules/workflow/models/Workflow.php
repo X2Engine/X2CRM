@@ -1,7 +1,7 @@
 <?php
 /*****************************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2015 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -964,6 +964,7 @@ class Workflow extends CActiveRecord {
 
      
     /**
+     * Get number of records at each stage
      * @param array $workflowStatus
      * @param array $dateRange return value of WorkflowController::getDateRange ()
      * @param string $users users filter
@@ -972,7 +973,6 @@ class Workflow extends CActiveRecord {
      */
     public static function getStageCounts (
         &$workflowStatus, $dateRange, $expectedCloseDateDateRange, $users='', $modelType='') {
-
 
         $stageCount = count($workflowStatus['stages']);
 
@@ -1006,6 +1006,7 @@ class Workflow extends CActiveRecord {
                 $modelName = X2Model::getModelName ($type);
                 list ($accessCondition, $accessConditionParams) = 
                     $modelName::model ()->getAccessSQLCondition ($tableName);
+
                 $countParams = array_merge ($params, $accessConditionParams);
                 $recordsAtStage += Yii::app()->db->createCommand()
                     ->select("COUNT(*)")

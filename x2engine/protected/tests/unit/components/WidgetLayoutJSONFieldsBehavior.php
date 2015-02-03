@@ -1,7 +1,7 @@
 <?php
 /*****************************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2015 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -50,14 +50,14 @@ class WidgetLayoutJSONFieldsBehaviorTest extends CActiveRecordBehaviorTestCase {
      * Ensure that fields array is populated from files in components/sortableWidget/profileWidgets 
      */
     public function testFields () {
-		$profile = new Profile();
-        $fields = $profile->asa ('WidgetLayoutJSONFieldsBehavior')->fields ('profileWidgetLayout');
+		$report = new Reports();
+        $fields = $report->asa ('WidgetLayoutJSONFieldsBehavior')->fields ('dataWidgetLayout');
         
         $expectedFieldKeys = array_map (function ($a) {
                 return preg_replace ('/\.php$/', '', $a);
             }, array_filter (
                 scandir(
-                    Yii::getPathOfAlias('application.components.sortableWidget.profileWidgets')),
+                    Yii::getPathOfAlias(SortableWidget::DATA_WIDGET_PATH_ALIAS)),
                     function ($a) {
                         return preg_match ('/\.php$/', $a);
                     })
@@ -69,10 +69,10 @@ class WidgetLayoutJSONFieldsBehaviorTest extends CActiveRecordBehaviorTestCase {
     }
 
     public function testUnpackAttribute () {
-		$profile = new Profile();
-        $fields = $profile->asa ('WidgetLayoutJSONFieldsBehavior')->fields ('profileWidgetLayout');
-        $unpackedAttribute = $profile->asa ('WidgetLayoutJSONFieldsBehavior')
-            ->unpackAttribute ('profileWidgetLayout');
+		$report = new Reports();
+        $fields = $report->asa ('WidgetLayoutJSONFieldsBehavior')->fields ('dataWidgetLayout');
+        $unpackedAttribute = $report->asa ('WidgetLayoutJSONFieldsBehavior')
+            ->unpackAttribute ('dataWidgetLayout');
         unset ($fields['TemplatesGridViewProfileWidget']);
 
         // since layout hasn't been set, unpacked attributes should match expected fields with 

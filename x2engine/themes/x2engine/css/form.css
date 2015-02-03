@@ -1,6 +1,6 @@
 /*****************************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2015 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -38,28 +38,28 @@
  * The styles can be applied to the following form structure:
  *
  * <div class="form">
- *	 <div class="row">
- *		 <label for="inputid">xyz</label>
- *		 <input name="inputid" id="inputid" type="text" />
- *		 <p class="hint">hint text</p>
- *	 </div>
- *	 <div class="row">
- *		 <label for="inputid">xyz</label>
- *		 <input name="inputid" id="inputid" type="text" />
- *		 <p class="hint">hint text</p>
- *	 </div>
- *	 <div class="row buttons">
- *		 <label for="inputid">xyz</label>
- *		 <input name="inputid" id="inputid" type="text" />
- *		 <p class="hint">hint text</p>
- *	 </div>
+ *   <div class="row">
+ *       <label for="inputid">xyz</label>
+ *       <input name="inputid" id="inputid" type="text" />
+ *       <p class="hint">hint text</p>
+ *   </div>
+ *   <div class="row">
+ *       <label for="inputid">xyz</label>
+ *       <input name="inputid" id="inputid" type="text" />
+ *       <p class="hint">hint text</p>
+ *   </div>
+ *   <div class="row buttons">
+ *       <label for="inputid">xyz</label>
+ *       <input name="inputid" id="inputid" type="text" />
+ *       <p class="hint">hint text</p>
+ *   </div>
  * </div>
  *
  * The above code will render the labels and input fields in separate lines.
  * In order to render them in the same line, please use the "wide" form as follows,
  *
  * <div class="wide form">
- *	 ......
+ *   ......
  * </div>
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
@@ -103,9 +103,9 @@ div.form, div.wide.form {
   -o-border-radius: 4px;
   -webkit-border-radius: 4px;
   border-radius: 4px;
-  /* -moz-box-shadow:		0 1px 6px rgba(0,0,0,0.5);
-  -webkit-box-shadow:		0 1px 6px rgba(0,0,0,0.5);
-  box-shadow:				0 1px 6px rgba(0,0,0,0.5); */
+  /* -moz-box-shadow:     0 1px 6px rgba(0,0,0,0.5);
+  -webkit-box-shadow:     0 1px 6px rgba(0,0,0,0.5);
+  box-shadow:             0 1px 6px rgba(0,0,0,0.5); */
   background: #fff;
   /*border:1px solid #C2C2C2;*/
   clear: both;
@@ -197,7 +197,7 @@ div.form input, div.form textarea, div.form select {
 }
 
 /*div.form input, div.form textarea {
-	-webkit-appearance:none;
+    -webkit-appearance:none;
 }*/
 /* line 190, ../../../compass/themes/x2engine/css/form.scss */
 div.form input[type="checkbox"] {
@@ -336,8 +336,8 @@ div.form input.error, div.form textarea.error, div.form select.error {
 }
 
 /* div.form div.success input,div.form div.success textarea,div.form div.success select,div.form input.success,div.form textarea.success,div.form select.success {
-	background: #E6EFC2;
-	border-color: #C6D880;
+    background: #E6EFC2;
+    border-color: #C6D880;
 } */
 /* line 318, ../../../compass/themes/x2engine/css/form.scss */
 div.form .errorSummary, .form2 .errorSummary {
@@ -684,6 +684,57 @@ html .cke_skin_kama .cke_focus {
   -moz-border-radius: 3px;
   -o-border-radius: 3px;
   -webkit-border-radius: 3px;
-  border: 1px solid #d3d3d3;
   border-radius: 3px;
+  border: 1px solid #d3d3d3;
+}
+
+/*********************************
+* Inline Editing
+********************************/
+/* line 654, ../../../compass/themes/x2engine/css/form.scss */
+.inline-edit .edit-icon,
+.inline-edit .cancel-icon,
+.inline-edit .confirm-icon {
+  float: right;
+  margin-top: 2px;
+  font-size: 14px;
+  transition: all 0.1s;
+}
+/* line 663, ../../../compass/themes/x2engine/css/form.scss */
+.inline-edit .cancel-icon,
+.inline-edit .confirm-icon {
+  margin-right: 4px;
+}
+/* line 668, ../../../compass/themes/x2engine/css/form.scss */
+.inline-edit .edit-icon {
+  display: none;
+  position: relative;
+  width: 0;
+  right: 25px;
+}
+/* line 674, ../../../compass/themes/x2engine/css/form.scss */
+.inline-edit .edit-icon.active {
+  opacity: 0.0;
+  width: 0px;
+  display: inline-block;
+  overflow: hidden;
+}
+/* line 682, ../../../compass/themes/x2engine/css/form.scss */
+.inline-edit:hover .edit-icon.active {
+  opacity: 1.0;
+  width: 15px;
+  display: inline-block;
+}
+/* line 688, ../../../compass/themes/x2engine/css/form.scss */
+.inline-edit .cancel-icon,
+.inline-edit .confirm-icon {
+  opacity: 0.0;
+  display: none;
+  transition: opacity 0.2s;
+}
+/* line 694, ../../../compass/themes/x2engine/css/form.scss */
+.inline-edit .cancel-icon.active,
+.inline-edit .confirm-icon.active {
+  opacity: 1.0;
+  display: inline-block;
 }

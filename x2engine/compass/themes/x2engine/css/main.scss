@@ -1,6 +1,6 @@
 /*****************************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2015 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -35,6 +35,8 @@
 
 @import "standards";
 @import "colors";
+@import "font-awesome";
+@import "icons";
 
 body {
     margin: 0;
@@ -152,7 +154,7 @@ ul.filter-hint {
     margin: 0;
 }
 
-#actions a, #recent-items .portlet-content a, #top-contacts .portlet-content a, #actions span, #recent-items span, #top-contacts span {
+#actions a, #recent-items .portlet-content a, #top-contacts .portlet-content a, #actions li > span, #recent-items span, #top-contacts span {
     display: block;
     padding: 5px 10px;
     font-weight: normal;
@@ -260,14 +262,14 @@ div.portlet-minimize {
     }
 }
 
-div.portlet-minimize .expand-widget,
+.portlet-minimize .expand-widget,
 .portlet-close-button,
 .activity-control-link, 
 .left-widget-min-max{
     opacity: 0.6;
 }
 
-div.portlet-minimize {
+.portlet-minimize {
     .collapse-widget {
         opacity: 0.6;
     }
@@ -284,7 +286,7 @@ div.portlet-minimize {
     opacity: 0.9;
 }
 
-div.portlet-minimize {
+.portlet-minimize {
     & a {
         color: inherit;
     }
@@ -305,308 +307,12 @@ div.portlet-minimize {
     }
 }
 
-#widget_MessageBox .portlet-content {
-    text-align: center;
-}
 
-#motd-form {
-    text-align: left;
-}
+/*********************************
+* Right Widget CSS
+********************************/
+@import "partials/rightWidgets";
 
-#widget_TwitterFeed .portlet-content, #widget_GoogleMaps .portlet-content {
-    padding: 0 0 10px 0;
-}
-
-#widget_TwitterFeed {
-    .twtr-hd {
-        padding: 5px 5px 0 5px;
-    }
-    .twtr-ft {
-        display: none;
-    }
-}
-
-#widget_QuickContact .portlet-content {
-    * {
-        font-size: 10px;
-    }
-    padding: 3px 3px 0 3px;
-}
-
-/***********************************************************************
-* activity feed widget 
-***********************************************************************/
-
-#widget_ChatBox {
-    > div.portlet-content {
-        overflow-y: hidden;
-    }
-    .portlet-content {
-        padding: 0;
-    }
-}
-
-#feed-box {
-    height: 200px;
-    width: auto;
-    margin: 5px;
-    padding: 0 4px;
-    overflow-y: auto;
-    word-wrap: break-word;
-    line-height: 1.1em;
-    font-size: 9pt;
-    color: #333;
-    background: #fcfcfc;
-    border: 1px solid #ddd;
-}
-
-/*#widget_ChatBox textarea, #chat.full-screen textarea {
-        display: block;
-        width: 100%;
-        margin: 0;
-        padding: 2px;
-        height: 50px;
-        border: 1px solid #ddd;
-        background: #fff;
-        font-family: Arial, Helvetica, sans-serif;
-        font-size: 12px;
-        resize: none;
-        overflow: hidden;
-}
-#widget_ChatBox div.textarea-container {
-        display: block;
-        margin: 0 11px 0 5px;
-        width: auto;
-}*/
-/*#chat.full-screen textarea {
-        margin: 0 5px 0 0;
-        padding: 5px;
-        display: inline;
-        float: left;
-        width: 565px;
-        height: 30px;
-}*/
-
-#widget_ChatBox input {
-    float: right;
-    width: 80px;
-}
-
-#feed-box {
-    div.message {
-        margin-bottom: 10px;
-        white-space: pre-wrap;
-    }
-    a {
-        text-decoration: none;
-    }
-    span.my-username {
-        color: #999;
-    }
-}
-
-#widget_ChatBox .chat-timestamp {
-    display: none;
-}
-
-#chat.full-screen {
-    #feed-box {
-        width: 650px;
-        margin: 5px 0;
-        padding: 5px;
-        height: 350px;
-    }
-    input {
-        float: left;
-        margin: 0;
-        width: 80px;
-        line-height: 16px;
-        padding: 12px;
-    }
-}
-
-#widget_ChatBox.full-screen {
-    .chat-timestamp {
-        display: inline;
-    }
-    input {
-        float: left;
-        width: auto;
-    }
-}
-
-#widget_NoteBox .portlet-content {
-    padding: 0;
-    overflow: hidden;
-}
-
-/* #widget_NoteBox input {
-        width: 170px;
-} */
-
-/***********************************************************************
-* tag cloud 
-***********************************************************************/
-
-#widget_TagCloud .tag, #widget_MediaBox .media-item, .x2-tag-list .tag {
-    @include border-radius(4px);
-    border-style: solid;
-    border-width: 1px;
-    border-color: rgb(202, 202, 202);
-    margin: 2px 2px;
-    display: inline-block;
-    padding: 2px;
-    background-color: #f0f0f0;
-    input[type="text"] {
-        border: 1px solid $gray;
-    }
-}
-
-#widget_TagCloud .tag a, #widget_MediaBox .media-item a, .x2-tag-list .tag a {
-    text-decoration: none;
-    color: black;
-}
-
-#widget_OnlineUsers .user {
-    a {
-        text-decoration: none;
-        color: black;
-    }
-    @include border-radius(4px);
-    border: 1px solid rgb(202, 202, 202);
-    margin: 2px 2px;
-    display: block;
-    float: left;
-    padding: 2px;
-    background-color: #f0f0f0;
-}
-
-#widget_TimeZone {
-    text-align: center;
-    .portlet-content {
-        overflow-y: hidden;
-    }
-    #tzClock {
-        position: relative;
-        display: block;
-        width: 88px;
-        height: 88px;
-        margin: 0 auto 0 auto;
-        background: url(../images/clockface.png);
-        list-style: none;
-    }
-    #tzClock2 {
-        display: block;
-    }
-    li {
-        position: absolute;
-        width: 4px;
-        height: 88px;
-        top: 0px;
-        left: 42px;
-        div {
-            margin: 0 auto;
-        }
-        &.sec div {
-            &:first-child {
-                margin-top: 12px;
-                width: 1px;
-                background: red;
-                height: 32px;
-            }
-            &:last-child {
-                width: 3px;
-                background: red;
-                height: 18px;
-            }
-        }
-        &.min div {
-            width: 2px;
-            margin-top: 14px;
-            background: black;
-            height: 30px;
-        }
-        &.hour div {
-            margin-top: 22px;
-            width: 3px;
-            background: black;
-            height: 23px;
-            border-radius: 3px;
-            -moz-border-radius: 3px;
-            -webkit-border-radius: 3px;
-            -o-border-radius: 3px;
-        }
-    }
-}
-
-#note-box {
-    height: 200px;
-    width: auto;
-    margin: 5px;
-    padding: 0 4px;
-    overflow-y: auto;
-    word-wrap: break-word;
-    line-height: 1.1em;
-    font-size: 9pt;
-    color: #555;
-    background: #fcfcfc;
-    border: 1px solid #ddd;
-}
-
-#widget_NoteBox textarea {
-    display: block;
-    margin: 0 5px;
-    padding: 2px;
-    width: 164px;
-    height: 50px;
-    border: 1px solid #ddd;
-    background: #fff;
-    font-family: Arial, Helvetica, sans-serif;
-    font-size: 12px;
-    resize: none;
-    overflow: hidden;
-}
-
-#widget_DocViewer {
-    .portlet-content {
-        padding: 0;
-    }
-    input {
-        width: 160px;
-    }
-}
-
-#docview-box {
-    height: 200px;
-    width: auto;
-    margin: 5px;
-    padding: 0 4px;
-    overflow-y: auto;
-    word-wrap: break-word;
-    line-height: 1.1em;
-    font-size: 9pt;
-    color: #555;
-    background: #fcfcfc;
-    border: 1px solid #ddd;
-}
-
-#widget_DocViewer textarea {
-    display: block;
-    margin: 0 5px;
-    padding: 2px;
-    width: 164px;
-    height: 50px;
-    border: 1px solid #ddd;
-    background: #fff;
-    font-family: Arial, Helvetica, sans-serif;
-    font-size: 12px;
-    resize: none;
-    overflow: hidden;
-}
-
-#docview-input {
-    padding: 5px;
-}
 
 div.shown {
     margin-left: 10px;
@@ -634,6 +340,13 @@ p.descrip {
 } */
 
 .history {
+    background: none !important;
+    border: none !important;
+    box-shadow: none !important;
+    #history {
+        @include standard-box-shadow ();
+    }
+
     .text-area-wrapper {
         margin: 0;
         padding: 2px 4px;
@@ -648,24 +361,41 @@ p.descrip {
         padding: 5px;
         margin: 5px 0 0 0;
         background: #fff;
-        border-radius: 4px 4px 0 0;
-        -moz-border-radius: 4px 4px 0 0;
-        -webkit-border-radius: 4px 4px 0 0;
-        -o-border-radius: 4px 4px 0 0;
+        @include border-radius(4px 4px 0 0);
     }
+
+    .action-history-controls {
+        border: none;
+    }
+
     .list-view .items {
-        border-radius: 0 0 4px 4px;
-        -moz-border-radius: 0 0 4px 4px;
-        -webkit-border-radius: 0 0 4px 4px;
-        -o-border-radius: 0 0 4px 4px;
+        border-left: none;
+        border-right: none;
+        border-bottom: none;
+        @include border-radius(0 0 4px 4px);
+    }
+
+    .action-history-controls {
+        @include border-radius(4px 4px 0 0 !important); 
+        margin-bottom: -2px !important;
+        border: none !important;
+        // border: 1px solid #c5c5c5 !important;
+    }
+
+    .history .pager {
+        @include border-radius(0 0 4px 4px !important); 
+        border: 1px solid #c5c5c5 !important;
+        margin-top: -3px !important;
     }
 }
+
 
 .ui-widget-content {
     /* background: none; */
 }
 
 .list-view {
+
     h2, h3, h4 {
         display: inline;
         margin-bottom: 0;
@@ -673,15 +403,9 @@ p.descrip {
     .items {
         clear: both;
         background: #fff;
-        -moz-border-radius: 4px;
-        -o-border-radius: 4px;
-        -webkit-border-radius: 4px;
-        border-radius: 4px;
+        @include border-radius(4px);
         border: 1px solid #ccc;
-        /*
-                -moz-box-shadow:         0 1px 6px rgba(0,0,0,0.5);
-                -webkit-box-shadow:         0 1px 6px rgba(0,0,0,0.5);
-                box-shadow:                 0 1px 6px rgba(0,0,0,0.5); */
+
     }
     .empty {
         margin: 0 0 5px 5px;
@@ -704,11 +428,6 @@ p.descrip {
         text-decoration: none;
     }
     .view.top-level {
-        /*top level comment*/
-        /*     -moz-border-radius: 4px;
-                -o-border-radius: 4px;
-                -webkit-border-radius: 4px;
-                border-radius: 4px; */
         border-top: 1px solid #ddd;
         padding: 2px 5px 10px 5px;
         &.date-break {
@@ -719,12 +438,9 @@ p.descrip {
         }
         .list-view {
             margin: 0 -5px;
-            -moz-border-radius: 0;
-            -o-border-radius: 0;
-            -webkit-border-radius: 0;
-            border-radius: 0;
-            border: none;
             padding: 0;
+            border: none;
+            @include border-radius(0);
         }
         form {
             margin-top: 5px;
@@ -736,10 +452,7 @@ p.descrip {
             padding: 2px 5px 2px 20px;
             border: solid #ddd;
             border-width: 1px 0 0 0;
-            -moz-border-radius: 0;
-            -o-border-radius: 0;
-            -webkit-border-radius: 0;
-            border-radius: 0;
+            @include border-radius(0);
         }
         &:first-child {
             border-top: none;
@@ -756,156 +469,15 @@ p.descrip {
         background: #fff;
         margin: 5px 0 0 0;
         text-align: right;
-        border-radius: 4px 4px 4px 4px;
-        -moz-border-radius: 4px 4px 4px 4px;
-        -webkit-border-radius: 4px 4px 4px 4px;
-        -o-border-radius: 4px 4px 4px 4px;
+        @include border-radius(4px 4px 4px 4px);
     }
 }
 
-/*.list-view .view.top-level.activity-feed {
-        padding: 10px 10px 15px 5px;
-}*/
-
-div {
-    &.img-box {
-        display: block;
-        float: left;
-        height: 45px;
-        width: 30px;
-        padding-bottom: 5px;
-        background-repeat: no-repeat;
-        background-position: center center;
-        /*     border: 1px solid #ddd;
-                border-width: 1px 0 0 1px; */
-        border-radius: 4px 0 0 0;
-        -moz-border-radius: 4px 0 0 0;
-        -o-border-radius: 4px 0 0 0;
-        -webkit-border-radius: 4px 0 0 0;
-    }
-    &.event-text-box {
-        margin-left: 50px;
-    }
-    &.img-box {
-        &.action_complete {
-            background-image: url(../images/eventIcons/action_complete.png);
-        }
-        &.action_reminder {
-            background-image: url(../images/eventIcons/action_reminder.png);
-        }
-        &.calendar_event {
-            background-image: url();
-        }
-        &.case_escalated {
-            background-image: url(../images/eventIcons/case_escalated.png);
-        }
-        &.doc_update {
-            background-image: url(../images/eventIcons/doc_update.png);
-        }
-        &.email_from {
-            background-image: url(../images/eventIcons/email_from.png);
-        }
-        &.email_opened, &.email_opened_quote, &.email_opened_invoice {
-            background-image: url(../images/eventIcons/email_opened.png);
-        }
-        &.email_clicked {
-            background-image: url(../images/eventIcons/web_activity.png);
-        }
-        &.email_sent, &.email_sent_quote, &.email_sent_invoice {
-            background-image: url(../images/eventIcons/email_sent.png);
-        }
-        &.invoice_emailed {
-            background-image: url(../images/eventIcons/invoice_emailed.png);
-        }
-        &.media {
-            background-image: url(../images/eventIcons/media.png);
-        }
-        &.notif {
-            background-image: url(../images/eventIcons/notif.png);
-        }
-        &.voip_call {
-            background-image: url(../images/eventIcons/voip_call.png);
-        }
-        &.log_time {
-            background-image: url(../images/action_time.png);
-        }
-        &.quote_emailed {
-            background-image: url(../images/eventIcons/quote_emailed.png);
-        }
-        &.record_create {
-            background-image: url(../images/eventIcons/record_create.png);
-        }
-        &.record_deleted {
-            background-image: url(../images/eventIcons/record_deleted.png);
-        }
-        &.web_activity {
-            background-image: url(../images/eventIcons/web_activity.png);
-        }
-        &.weblead_create {
-            background-image: url(../images/eventIcons/weblead_create.png);
-        }
-        &.workflow_complete {
-            background-image: url(../images/eventIcons/workflow_complete.png);
-        }
-        &.workflow_revert {
-            background-image: url(../images/eventIcons/workflow_revert.png);
-        }
-        &.workflow_start {
-            background-image: url(../images/eventIcons/workflow_start.png);
-        }
-        &.plus-sign {
-            margin-top: 25px;
-            margin-left: 5px;
-            background-image: url(../images/Plus_sign.png);
-            height: 20px;
-            width: 65px;
-        }
-        &.record_create {
-            &.Quote-create {
-                background-image: url(../images/quotes.png);
-            }
-            &.Contacts-create {
-                background-image: url(../images/contacts.png);
-            }
-            &.Campaign-create {
-                background-image: url(../images/campaign_create.png);
-            }
-            &.Actions-create {
-                background-image: url(../images/actions.png);
-            }
-            &.Accounts-create {
-                background-image: url(../images/accounts.png);
-            }
-            &.Opportunity-create {
-                background-image: url(../images/opportunities.png);
-            }
-            &.Product-create {
-                background-image: url(../images/products.png);
-            }
-            &.X2Leads-create {
-                background-image: url(../images/x2Leads.png);
-            }
-            &.Docs-create {
-                background-image: url(../images/docs.png);
-            }
-            &.Services-create {
-                background-image: url(../images/services.png);
-            }
-            &.Groups-create {
-                background-image: url(../images/groups.png);
-            }
-            &.BugReports-create {
-                background-image: url(../images/bugreports.png);
-            }
-        }
-    }
+.event-text-box {
+    margin-left: 50px;
 }
 
-/*
-div.img-box.feed {
-        background-image: url(../../../uploads/default.png);
-}
-*/
+
 
 .drive-icon {
     display: inline-block;
@@ -938,6 +510,9 @@ div.loading-icon,
     float: right;
 }
 
+/*********************************
+* Action List (In history panel)
+********************************/
 .action.list-view {
     .header {
         a {
@@ -948,20 +523,9 @@ div.loading-icon,
         padding: 2px 5px 2px 0;
         color: #666;
         font-weight: bold;
-        border-radius: 0 4px 0 0;
-        -moz-border-radius: 0 4px 0 0;
-        -o-border-radius: 0 4px 0 0;
-        -webkit-border-radius: 0 4px 0 0;
-        /* border-bottom: 1px solid #ddd; */
-        /* border-width: 0 0 1px 1px; */
-        /* background-color: #f8f8f8; */
-        b {
-            /* color: #333; */
-            a {
-                font-weight: normal;
-            }
-        }
+        @include border-radius(0 4px 0 0);
     }
+
     .buttons {
         float: right;
     }
@@ -976,17 +540,25 @@ div.loading-icon,
     }
     .icon {
         display: block;
+        position: relative;
         float: left;
         height: 55px;
         margin-left: -40px;
-        width: 45px;
-        /*     border: 1px solid #ddd;
-                border-width: 1px 0 0 1px; */
-        border-radius: 4px 0 0 0;
-        -moz-border-radius: 4px 0 0 0;
-        -o-border-radius: 4px 0 0 0;
-        -webkit-border-radius: 4px 0 0 0;
-        background: url(../images/actions.png) 0 0px no-repeat transparent;
+        width: 50px;
+
+        text-align: center;
+
+        font-size: 35px;
+        color: $darkBlue;
+        /* @theme color link */
+
+        @include fa-icon('play-circle');
+        // background: url(../images/actions.png) 0 0px no-repeat transparent;
+
+        &:before {
+            font-size: 30px !important;
+        }
+
         &.action-index {
             display: block;
             float: left;
@@ -996,10 +568,7 @@ div.loading-icon,
             width: 30px;
             /*     border: 1px solid #ddd;
                     border-width: 1px 0 0 1px; */
-            border-radius: 4px 0 0 0;
-            -moz-border-radius: 4px 0 0 0;
-            -o-border-radius: 4px 0 0 0;
-            -webkit-border-radius: 4px 0 0 0;
+            @include border-radius(4px 0 0 0)
         }
         &.uncomplete-box {
             background: url(../images/icons/Blue_box.png) 0 0px no-repeat transparent;
@@ -1009,158 +578,57 @@ div.loading-icon,
             margin-left: -1px;
             background: url(../images/icons/Complete.png) 0 0px no-repeat transparent;
         }
-        &.action {
-            background: url(../images/actions.png) no-repeat center center;
-        }
-        &.attachment {
-            background: url(../images/action_attachment.png) no-repeat center center;
-        }
-        &.complete {
-            background: url(../images/eventIcons/action_complete.png) no-repeat center center;
-        }
-        &.workflow {
-            background: url(../images/action_workflow.png) no-repeat center center;
-        }
-        &.email {
-            background: url(../images/eventIcons/email_sent.png) no-repeat center center;
-        }
-        &.email_quote {
-            background: url(../images/action_email_quote.png) no-repeat center center;
-        }
-        &.email_invoice {
-            background: url(../images/action_email_invoice.png) no-repeat center center;
-        }
-        &.campaignEmailOpened, &.emailOpened {
-            background: url(../images/eventIcons/email_opened.png) no-repeat center center;
-        }
-        &.note {
-            background: url(../images/x2flow/X2FlowRecordComment.png) no-repeat center center;
-        }
     }
 }
 
-/*     border: 1px solid #ddd;
-        border-width: 0 1px 0 1px; */
 
-#publisher .icon.note {
-    background: url(../images/x2flow/X2FlowRecordComment.png) no-repeat center center;
-}
-
-.action.list-view .icon {
-    &.emailOpened_quote {
-        background: url(../images/eventIcons/email_opened_quote.png) no-repeat center center;
-    }
-    &.emailOpened_invoice {
-        background: url(../images/eventIcons/email_opened_invoice.png) no-repeat center center;
-    }
-    &.call {
-        background: url(../images/action_call.png) no-repeat center center;
-    }
-}
-
-#publisher .icon {
-    &.call {
-        background: url(../images/action_call.png) no-repeat center center;
-    }
-    &.overdue {
-        background: url(../images/actions.png) no-repeat center center;
-    }
-}
-
-/*.action.list-view .icon.time {          background: url(../images/action_time.png) no-repeat center center; }*/
-
-.action.list-view .icon.time, #publisher .icon.time {
-    background: url(../images/action_time.png) no-repeat center center;
-}
-
-.action.list-view .icon {
-    &.marketing {
-        background: url(../images/action_marketing.png) no-repeat center center;
-    }
-    &.event {
-        background: url(../images/calendar.png) no-repeat center center;
-    }
-}
-
-#publisher .icon.event {
-    background: url(../images/calendar.png) no-repeat center center;
-}
-
-.action.list-view .icon.products, #publisher .icon.products {
-    background: url(../images/quotes.png) no-repeat center center;
-}
-
-.action.list-view .icon {
-    &.emailFrom {
-        background: url(../images/eventIcons/email_sent.png) no-repeat center center;
-    }
-    &.quotes {
-        background: url(../images/quotes.png) no-repeat center center;
-    }
-    &.webactivity {
-        background: url(../images/action_webactivity.png) no-repeat center center;
-    }
-}
-
-/*.history .action.list-view > .form {
-        border-right: none;
-        border-left: none;
-}
-.history.half-width .action.list-view > .form {
-        border-left: 1px solid #aaa;
-}
-.action.list-view > .items {
-        border-right: none;
-        border-left: none;
-}
-.history.half-width .action.list-view > .items {
-        border-left: 1px solid #ccc;
-}*/
-
-div {
-    &.control-button {
-        &.icon {
-            &.complete-button {
-                background: url('../images/icons/Complete.png') no-repeat center center;
-                height: 17px;
-                width: 22px;
-            }
-            &.uncomplete-button {
-                background: url('../images/icons/Uncomplete.png') no-repeat center center;
-                height: 17px;
-                width: 22px;
-            }
-            &.edit-button {
-                background: url('../images/icons/Edit.png') no-repeat center center;
-                height: 17px;
-                width: 22px;
-            }
-            &.delete-button {
-                background: url('../images/icons/Delete1.png') no-repeat center center;
-                height: 21px;
-                width: 21px;
-            }
-        }
-        &.sticky-button {
-            background: url('../images/Unsticky1.png') no-repeat center center;
-            height: 21px;
+/**
+ * These have been replaced by icons in-layout
+ */
+div.control-button {
+    &.icon {
+        &.complete-button {
+            background: url('../images/icons/Complete.png') no-repeat center center;
+            height: 17px;
             width: 22px;
-            &.unsticky {
-                background: url('../images/Sticky1.png') no-repeat center center;
-                height: 21px;
-                width: 22px;
-            }
+        }
+        &.uncomplete-button {
+            background: url('../images/icons/Uncomplete.png') no-repeat center center;
+            height: 17px;
+            width: 22px;
+        }
+        &.edit-button {
+            background: url('../images/icons/Edit.png') no-repeat center center;
+            height: 17px;
+            width: 22px;
+        }
+        &.delete-button {
+            background: url('../images/icons/Delete1.png') no-repeat center center;
+            height: 21px;
+            width: 21px;
         }
     }
-    &.sticky-icon {
-        float: right;
-        background: url('../images/Sticky1.png') no-repeat center center;
+    &.sticky-button {
+        background: url('../images/Unsticky1.png') no-repeat center center;
         height: 21px;
         width: 22px;
-        margin-top: 10px;
-        margin-right: 10px;
+        &.unsticky {
+            background: url('../images/Sticky1.png') no-repeat center center;
+            height: 21px;
+            width: 22px;
+        }
     }
 }
+
+div.sticky-icon {
+    float: right;
+    background: url('../images/Sticky1.png') no-repeat center center;
+    height: 21px;
+    width: 22px;
+    margin-top: 10px;
+    margin-right: 10px;
+}
+
 
 .action.list-view .items span.empty {
     padding: 10px;
@@ -1200,10 +668,7 @@ div.date-box {
     margin: 0 5px;
     border: 1px solid #000;
     background: #fff;
-    border-radius: 2px;
-    -moz-border-radius: 2px;
-    -webkit-border-radius: 2px;
-    -o-border-radius: 2px;
+    @include border-radius(2px);
     text-align: center;
     vertical-align: middle;
     span {
@@ -1231,10 +696,7 @@ div.date-box {
     border: 2px solid #999;
     display: block;
     float: left;
-    border-radius: 4px;
-    -moz-border-radius: 4px;
-    -webkit-border-radius: 4px;
-    -o-border-radius: 4px;
+    @include border-radius(4px);
 }
 
 .action.list-view div.date-box {
@@ -1242,6 +704,7 @@ div.date-box {
 }
 
 .list-view div.date-box {
+    background: none;
     .month {
         background: #999;
         font-size: 10px;
@@ -1259,7 +722,7 @@ div.date-box {
         border-color: #f8ab50;
     }
     &.p-1 {
-        border-color: #cbe24b;
+        border-color: $darkBlue;
     }
     &.p-3 .month {
         background: #f25050;
@@ -1270,8 +733,8 @@ div.date-box {
         border-color: #f8ab50;
     }
     &.p-1 .month {
-        background: #cbe24b;
-        border-color: #cbe24b;
+        background: $darkBlue;
+        border-color: $darkBlue;
     }
 }
 
@@ -1405,15 +868,6 @@ div#code-snippet {
     overflow-y: scroll;
 }
 
-/* .yiiLog td:nth-child(1), .yiiLog td:nth-child(2), .yiiLog th:nth-child(1), .yiiLog th:nth-child(2) {
-        display: none;
-} */
-
-/* give mini-modules with focus a green border */
-/*.focus-mini-module {
-        box-shadow: 0 0 4px 2px #579100;
-        border-color: #579100;
-}*/
 
 dt.yii-t {
     display: inline;

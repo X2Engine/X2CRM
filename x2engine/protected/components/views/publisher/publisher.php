@@ -1,7 +1,7 @@
 <?php
 /*****************************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2015 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -34,42 +34,43 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 
-$form = $this->beginWidget('CActiveForm', array('id' => 'publisher-form')); 
+$form = $this->beginWidget('X2ActiveForm', array('id' => 'publisher-form')); 
 
 $publisherCreated = true;
 
-if(!function_exists('echoTabRow')){
-    function echoTabRow ($tabs, $rowNum=1) {
-        ?><ul id='publisher-tabs-row-<?php echo $rowNum; ?>' style='display: none;'>
-                <?php 
-                // Publisher tabs
-                foreach ($tabs as $tab) {
-                    ?> <li> <?php
-                    $tab->renderTitle ();
-                    ?> </li> <?php
-                }
-                ?>
-            </ul><?php    
-    }
-}
+$that = $this; 
+$echoTabRow = function ($tabs, $rowNum=1) use ($that) {
+    ?><ul id='<?php echo $that->resolveId ('publisher-tabs-row-'.$rowNum); ?>' 
+       style='display: none;'>
+            <?php 
+            // Publisher tabs
+            foreach ($tabs as $tab) {
+                ?> <li> <?php
+                $tab->renderTitle ();
+                ?> </li> <?php
+            }
+            ?>
+        </ul><?php    
+};
 
 ?>
 
-<div id="publisher" <?php echo (sizeof ($tabs) > 4 ? 'class="multi-row-tabs-publisher"' : ''); ?>>
+<div id="<?php echo $this->resolveId ('publisher'); ?>" 
+ <?php echo (sizeof ($tabs) > 4 ? 'class="multi-row-tabs-publisher"' : ''); ?>>
     <?php
     $tabsTmp = $tabs;
     if (sizeof ($tabs) > 4) {
         $rowNum = 0;
         while (sizeof ($tabsTmp)) {
             $tabRow = array_slice ($tabsTmp, 0, 3);
-            echoTabRow ($tabRow, ++$rowNum);
+            $echoTabRow ($tabRow, ++$rowNum);
             $tabsTmp = array_slice ($tabsTmp, 3);
         }
     } else {
-        echoTabRow ($tabsTmp);
+        $echoTabRow ($tabsTmp);
     }
     ?>
-    <div class='clearfix'></div>
+    <div class='clearfix sortable-widget-handle'></div>
     <div class="form x2-layout-island">
     <?php
     // Publisher tab content 
@@ -102,7 +103,8 @@ if(!function_exists('echoTabRow')){
     }
     ?>
     <div class='row'>
-        <input type='submit' value='Save' id='save-publisher' class='x2-button'>
+        <input type='submit' value='Save' id='<?php echo $this->resolveId ('save-publisher'); ?>' 
+         class='x2-button'>
     </div>
     </div>
 </div>

@@ -2,7 +2,7 @@
 
 /*****************************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2015 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -99,7 +99,7 @@ if ($layoutData === false) {
 }
 
 if ($layoutData !== false && isset($layoutData['sections']) && count($layoutData['sections']) > 0) {
-    echo '<div class="x2-layout' . ((isset($halfWidth) && $halfWidth) ? ' half-width' : '') . '">';
+    echo '<div class="x2-layout x2-layout-island' . ((isset($halfWidth) && $halfWidth) ? ' half-width' : '') . '">';
     $formSettings = Profile::getFormSettings($modelName);
 
     $fieldPermissions = array();
@@ -249,9 +249,6 @@ if ($layoutData !== false && isset($layoutData['sections']) && count($layoutData
                                                 if (empty($model->$fieldName)) {
                                                     $val = 0;
                                                 }
-                                                Yii::app()->clientScript->registerScript(
-                                                        'rating-' . $fieldName, 'x2.inlineEditing.ratingFields["' . $field->modelName . '[' . $field->fieldName . ']"] = ' .
-                                                        $val, CClientScript::POS_READY);
                                             }
                                         }
                                         $htmlString .= '<span class="model-attribute" id="' . $field->modelName . '_' . $field->fieldName . '_field-field">';
@@ -274,7 +271,15 @@ if ($layoutData !== false && isset($layoutData['sections']) && count($layoutData
                                     }
                                 }
                                 unset($item);
-                                $htmlString .= '</div></div>';
+                                if ($inlineEdit) {
+                                    $htmlString .= CHtml::link (X2Html::fa('fa-edit'), '#', array('class' => 'edit-icon active'));
+                                }
+                                $htmlString .= '</div>';
+                                if ($inlineEdit) {
+                                    $htmlString .= CHtml::link (X2Html::fa('fa-check-circle'), '#', array('class' => 'confirm-icon'));
+                                    $htmlString .= CHtml::link (X2Html::fa('fa-times-circle'), '#', array('class' => 'cancel-icon'));
+                                }
+                                $htmlString .= '</div>';
                             }
                         }
                         $htmlString .= '</td>';
@@ -294,6 +299,18 @@ if ($layoutData !== false && isset($layoutData['sections']) && count($layoutData
     echo '</div>';
 }
 if ($scenario != 'Inline') {
+    $jsParams = CJSON::encode (array (
+        'modelId' => $model->id,
+        'translations' => array (
+            'unsavedChanges' => Yii::t('app', 'There are unsaved changes on this page.')
+        )
+    ));
+
+    Yii::app()->clientScript->registerScriptFile(Yii::app()->baseUrl.'/js/inlineEditor.js');
+    Yii::app()->clientScript->registerScript('inlineEditJS', "
+        new x2.InlineEditor($jsParams); 
+    ", CClientScript::POS_READY);
+    /*
     Yii::app()->clientScript->registerScript('inline-edit-js', "
 ;(function () {
     var editFlag = false;
@@ -303,12 +320,18 @@ if ($scenario != 'Inline') {
     $('.model-attribute').on('click', 'a', function(event) {
         linkClick = true;
     });
-    $('.inline-edit').on('click', function() {
+
+    $('.inline-edit .edit-icon').on('click', function() {
         if(!linkClick){
             editFlag = true;
-            var inputContainer$ = $('#' + $(this).attr('id') + '-input');
+            var inputContainer$ = $('#' + $(this).closest('.inline-edit').attr('id') + '-input');
             var input$ = inputContainer$.find (':input');
-            var field$ = $('#' + $(this).attr('id') + '-field');
+            var field$ = $('#' + $(this).closest('.inline-edit').attr('id') + '-field');
+
+            $(this).closest ('.inline-edit').find ('.cancel-icon, .confirm-icon').addClass('active'); 
+            $(this).removeClass('active');
+
+
             $('.inline-edit-button').show();
             inputContainer$.height(field$.height());
             if (input$.is ('textarea')) input$.height(field$.height());
@@ -317,6 +340,8 @@ if ($scenario != 'Inline') {
         }
         linkClick = false;
     });
+
+
     $('#inline-edit-cancel').on('click', function() {
         $('.inline-edit-button').hide();
         $('.model-input').hide();
@@ -324,6 +349,7 @@ if ($scenario != 'Inline') {
         editFlag = false;
         return false;
     });
+
     $('#inline-edit-save').on('click', function() {
         var attributes = {};
         $('.model-input input, .model-input select, .model-input textarea').each(function() {
@@ -369,5 +395,6 @@ if ($scenario != 'Inline') {
     });
 }) ();
 ", CClientScript::POS_END);
+*/
 }
 ?>

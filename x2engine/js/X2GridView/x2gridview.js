@@ -1,6 +1,6 @@
 /*****************************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2015 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -77,10 +77,12 @@ $.widget("x2.gridResizing", $.ui.mouse, {
         this.colStartW=0;
 
 
-        if(this.element.is('table'))
+        if(this.element.is('table')) {
             this.tables = $(this.element);
-        else
-            this.tables = $(this.element).find('table.items').addClass("x2grid-resizable"); //.data('x2resizableGrid',true);
+        } else {
+            this.tables = $(this.element).find('table.items').addClass("x2grid-resizable"); 
+                //.data('x2resizableGrid',true);
+        }
 
         this.t1.table = this.tables.eq(0);
         this.t2.table = this.tables.eq(1);
@@ -98,7 +100,8 @@ $.widget("x2.gridResizing", $.ui.mouse, {
 
         this.originalElement = this.element;
 
-        this.element = this.t1.gripContainer.add(this.t2.gripContainer);    // only apply mouse handling to the grips
+        // only apply mouse handling to the grips
+        this.element = this.t1.gripContainer.add(this.t2.gripContainer);    
 
         this._mouseInit();
     },
@@ -628,6 +631,25 @@ $.widget("x2.gvSettings", {
         this.tables.eq(1).parent().scroll(function() {
             self.tables.eq(0).parent().scrollLeft(self.tables.eq(1).parent().scrollLeft());
         });
+
+        this._setUpButtonBehavior ();
+    },
+    _setUpButtonBehavior: function () {
+        var that = this;
+        var showHiddenButton$ = this.element.find ('.show-hidden-button');
+        if (showHiddenButton$.length) {
+            showHiddenButton$.click (function () {
+                that._showHidden ($(this)); 
+                return false;
+            });
+        }
+    },
+    _showHidden: function (button$) {
+        var clicked = button$.hasClass ('clicked');
+        button$.toggleClass ('clicked');
+        $.fn.yiiGridView.update(this.element.attr('id'), {
+            data: { showHidden: !clicked ? 1 : 0 }
+        });
     },
     _setupColumnSelection: function (self) {
         if (!self.options.enableColumnSelection) return;
@@ -982,10 +1004,8 @@ $.widget("x2.gvSettings", {
     },
 
     _autoSizeColumns:function(self){
-        this.element.find ('td').css(
+        this.element.find ('td, th').css(
             'width', (100 / (this.element.find ('th').length)+"%"));
-        this.element.find ('th').css(
-            'width',(100/(this.element.find ('th').length)+"%"));
         this._compareGridviewSettings(self);
         this._setupGridviewResizing(self);
         this._setupGridviewDragging(self);

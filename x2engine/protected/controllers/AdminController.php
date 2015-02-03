@@ -2,7 +2,7 @@
 
 /*****************************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2015 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -3021,7 +3021,9 @@ class AdminController extends Controller {
             "updatedBy",
         );
 
-        $fields = Fields::model()->findAllByAttributes(array('modelName' => ucfirst($moduleName)));
+        $fields = Fields::model()->findAllByAttributes(array(
+            'modelName' => ucfirst($moduleName)
+        ));
         foreach ($fields as $field) {
             if (array_search($field->fieldName, $disallow) === false) {
                 $fieldType = $field->type;
@@ -3031,10 +3033,34 @@ class AdminController extends Controller {
                 } else {
                     $fieldType = 'VARCHAR(250)';
                 }
-                $sql.="/*&*/ALTER TABLE x2_$moduleName ADD COLUMN $field->fieldName $fieldType;/*&*/INSERT INTO x2_fields (modelName, fieldName, attributeLabel, modified, custom, type, linkType) VALUES ('$moduleName', '$field->fieldName', '$field->attributeLabel', '1', '1', '$field->type', '$field->linkType');";
+
+                $linkType = $field->linkType;
+                if ($field->type === 'dropdown') {
+                    // Export associated dropdown values
+                    $dropdown = Dropdowns::model()->findByPk ($field->linkType);
+                    if ($dropdown) {
+                        $sql .= "/*&*/INSERT INTO x2_dropdowns ".
+                                "(name, options, multi, parent, parentVal) ".
+                            "VALUES ".
+                                "('$dropdown->name', '$dropdown->options', '$dropdown->multi', ".
+                                "'$dropdown->parent', '$dropdown->parentVal');";
+                        // Temporarily set the linkType to the dropdowns name: this is to avoid
+                        // messy ID conflicts when importing a module to existing installations
+                        $linkType = $dropdown->name;
+                    }
+                }
+
+                $sql .= "/*&*/ALTER TABLE x2_$moduleName ADD COLUMN $field->fieldName $fieldType;";
+                $sql .= "/*&*/INSERT INTO x2_fields ".
+                        "(modelName, fieldName, attributeLabel, modified, custom, type, linkType) ".
+                    "VALUES ".
+                        "('$moduleName', '$field->fieldName', '$field->attributeLabel', '1', '1', ".
+                        "'$field->type', '$linkType');";
             }
         }
-        $formLayouts = X2Model::model('FormLayout')->findAllByAttributes(array('model' => $moduleName));
+        $formLayouts = X2Model::model('FormLayout')->findAllByAttributes(array(
+            'model' => $moduleName
+        ));
         foreach ($formLayouts as $layout) {
             $attributes = $layout->attributes;
             unset($attributes['id']);
@@ -3105,10 +3131,13 @@ class AdminController extends Controller {
             $temp = CUploadedFile::getInstanceByName('data');
             $temp->saveAs($filePath = $this->safePath('data.csv'));
             ini_set('auto_detect_line_endings', 1); // Account for Mac based CSVs if possible
-            if (file_exists($filePath))
+            $_SESSION['csvLength'] = 0;
+            if (file_exists($filePath)) {
                 $fp = fopen($filePath, 'r+');
-            else
+                $_SESSION['csvLength'] = $this->calculateCsvLength($filePath);
+            } else {
                 throw new Exception('There was an error saving the models file.');
+            }
 
             list($meta, $x2attributes) = $this->initializeModelImporter($fp);
             $preselectedMap = false;
@@ -3168,6 +3197,16 @@ class AdminController extends Controller {
     }
 
     /**
+     * Calculates the number of lines in a CSV file for import
+     * Warning: This must load and traverse the length of the file
+     */
+    protected function calculateCsvLength($csvfile) {
+        $lines = file($csvfile, FILE_SKIP_EMPTY_LINES);
+        $lineCount = count($lines) - 1;
+        return $lineCount;
+    }
+
+    /**
      * Read metadata from the CSV and initialize session variables
      * @param resource $fp File pointer to CSV
      * @return array CSV Metadata and X2Attributes
@@ -3220,6 +3259,7 @@ class AdminController extends Controller {
         $_SESSION['fields'] = X2Model::model(str_replace(' ', '', $_SESSION['model']))->getFields(true);
         $_SESSION['x2attributes'] = $x2attributes;
         $_SESSION['mapName'] = "";
+        $_SESSION['importId'] = $this->getNextImportId();
 
         return array($meta, $x2attributes);
     }
@@ -3390,7 +3430,6 @@ class AdminController extends Controller {
         if(isset($_POST['count']) && file_exists($path = $this->safePath('data.csv')) &&
                 isset($_POST['model'])){
 
-            X2Model::$autoPopulateFields = empty($_POST['performance-mode']);
             $importedIds = array();
             $modelName = ucfirst($_POST['model']);
             $count = $_POST['count']; // Number of records to import
@@ -3796,7 +3835,7 @@ class AdminController extends Controller {
             'fieldName' => 'nameId',
             'modelName' => $type,
         ));
-        if (!X2Model::$autoPopulateFields && $hasNameId) {
+        if ($hasNameId) {
             $importedIds = range (
                 $lastInsertId - $count + 1,
                 $lastInsertId
@@ -4104,57 +4143,73 @@ class AdminController extends Controller {
 
             $module = Yii::app()->file->set('data');
             if (!$module->exists) {
-                Yii::app()->user->setFlash('error', Yii::t('admin', 'There was an error uploading the module.'));
+                Yii::app()->user->setFlash('error', Yii::t('admin',
+                    'There was an error uploading the module.'));
                 $this->redirect('importModule');
             }
 
             $moduleName = $module->filename;
             if (X2Model::model('Modules')->findByAttributes(array('name' => $moduleName))) {
-                Yii::app()->user->setFlash('error', Yii::t('admin', 'Unable to upload module. A module with this name already exists.'));
+                Yii::app()->user->setFlash('error', Yii::t('admin',
+                    'Unable to upload module. A module with this name already exists.'));
                 $this->redirect('importModule');
             }
             if ($module->extension !== 'zip') {
-                Yii::app()->user->setFlash('error', Yii::t('admin', 'There was an error uploading the module. Please select a valid zip archive.'));
+                Yii::app()->user->setFlash('error', Yii::t('admin',
+                    'There was an error uploading the module. Please select a valid zip archive.'));
                 $this->redirect('importModule');
             }
 
             $filename = $this->asa('ImportExportBehavior')->safePath($moduleName . ".zip");
             if ($module->copy($filename) === false || !file_exists($filename)) {
-                Yii::app()->user->setFlash('error', Yii::t('admin', "There was an error saving the module."));
+                Yii::app()->user->setFlash('error', Yii::t('admin',
+                    "There was an error saving the module."));
                 $this->redirect('importModule');
             }
             $zip = Yii::app()->zip;
             if ($zip->extractZip($filename, 'protected/modules/') === false) {
-                Yii::app()->user->setFlash('error', Yii::t('admin', "There was an error unzipping the module. Please ensure the zip archive is not corrupt."));
+                Yii::app()->user->setFlash('error', Yii::t('admin',
+                    "There was an error unzipping the module. Please ensure the zip archive is not corrupt."));
                 $this->redirect('importModule');
             }
 
-            $regPath = "protected/modules/$moduleName/register.php";
-            $regFile = realpath($regPath);
-            if ($regFile) {
-                $install = require_once($regFile);
-                foreach ($install['install'] as $sql) {
-                    $sqlComm = $sql;
-                    if (is_string($sql)) {
-                        if (file_exists($sql)) {
-                            $sqlComm = explode('/*&*/', file_get_contents($sql));
-                        }
-                    }
-                    foreach ($sqlComm as $sqlLine) {
-                        if (!empty($sqlLine)) {
-                            $command = Yii::app()->db->createCommand($sqlLine);
-                            $command->execute();
-                        }
-                    }
-                }
-            }
+            $this->loadModuleData ($moduleName);
             unlink($filename);
 
-            $this->createDefaultModulePermissions(ucfirst($moduleName));
+            $this->createDefaultModulePermissions (ucfirst($moduleName));
+            $this->fixupImportedModuleDropdowns (array($moduleName));
 
             $this->redirect(array($moduleName . '/index'));
         }
         $this->render('importModule');
+    }
+
+    /**
+     * Private helper function to load module SQL
+     * @param string $moduleName Name of the module to install SQL from
+     */
+    private function loadModuleData($moduleName) {
+        $regPath = implode(DIRECTORY_SEPARATOR, array(
+            'protected', 'modules', $moduleName, 'register.php'
+        ));
+        $regFile = realpath($regPath);
+        if ($regFile) {
+            $install = require_once($regFile);
+            foreach ($install['install'] as $sql) {
+                $sqlComm = $sql;
+                if (is_string($sql)) {
+                    if (file_exists($sql)) {
+                        $sqlComm = explode('/*&*/', file_get_contents($sql));
+                    }
+                }
+                foreach ($sqlComm as $sqlLine) {
+                    if (!empty($sqlLine)) {
+                        $command = Yii::app()->db->createCommand($sqlLine);
+                        $command->execute();
+                    }
+                }
+            }
+        }
     }
 
     /**
@@ -4258,10 +4313,10 @@ class AdminController extends Controller {
 
                 // if this is the default view, unset defaultView for all other forms
                 if ($layoutModel->defaultView)
-                    FormLayout::clearDefaultViews($modelName, $layoutModel->scenario);
+                    FormLayout::clearDefaultFormLayouts ('view', $modelName, $layoutModel->scenario);
                 // if this is the default form, unset defaultForm for all other forms
                 if ($layoutModel->defaultForm)
-                    FormLayout::clearDefaultForms($modelName, $layoutModel->scenario);
+                    FormLayout::clearDefaultFormLayouts ('form', $modelName, $layoutModel->scenario);
 
                 $layoutModel->save();
                 $this->redirect(array('editor', 'id' => $id));
@@ -4924,17 +4979,6 @@ class AdminController extends Controller {
             if (isset($_POST['skipActivityFeed']) && $_POST['skipActivityFeed'] == 1) {
                 $_SESSION['skipActivityFeed'] = 1;
             }
-            $criteria = new CDbCriteria;
-            $criteria->order = "importId DESC";
-            $criteria->limit = 1;
-            $import = Imports::model()->find($criteria);
-            // Figure out which import this is so we can set up the Imports models
-            // for this import.
-            if (isset($import)) {
-                $_SESSION['importId'] = $import->importId + 1;
-            } else {
-                $_SESSION['importId'] = 1;
-            }
             $_SESSION['createRecords'] = $_POST['createRecords'] == "checked" ? "1" : "0";
             $_SESSION['imported'] = 0;
             $_SESSION['failed'] = 0;
@@ -4949,6 +4993,26 @@ class AdminController extends Controller {
                 $cache->flush();
             }
         }
+    }
+
+    /**
+     * Helper function to return the next importId
+     * @return int Next import ID
+     */
+    private function getNextImportId() {
+        $criteria = new CDbCriteria;
+        $criteria->order = "importId DESC";
+        $criteria->limit = 1;
+        $import = Imports::model()->find($criteria);
+
+        // Figure out which import this is so we can set up the Imports models
+        // for this import.
+        if (isset($import)) {
+            $importId = $import->importId + 1;
+        } else {
+            $importId = 1;
+        }
+        return $importId;
     }
 
     /**
@@ -5265,9 +5329,9 @@ class AdminController extends Controller {
                                      */
                                     if ($_SESSION['overwrite']) {
                                         if ($model->defaultView)
-                                            FormLayout::clearDefaultViews($modelName);
+                                            FormLayout::clearDefaultFormLayouts ('view', $modelName);
                                         if ($model->defaultForm)
-                                            FormLayout::clearDefaultForms($modelName);
+                                            FormLayout::clearDefaultFormLayouts ('form', $modelName);
                                     } else {
                                         $model->defaultView = false;
                                         $model->defaultForm = false;

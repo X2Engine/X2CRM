@@ -1,7 +1,7 @@
 <?php
 /*****************************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2015 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -48,11 +48,6 @@ class X2GridViewLess extends X2GridView {
      */
     protected $_modelAttrColumnNames;
 
-    /**
-     * @var object the model associated with the grid 
-     */
-    protected $_model;
-
     public function getIsAdmin() {
         if(!isset($this->_isAdmin)) {
             $this->_isAdmin = Yii::app()->params->isAdmin;
@@ -61,24 +56,16 @@ class X2GridViewLess extends X2GridView {
     }
 
     protected function getSpecialColumnName ($columnName) {
-        return $this->model->getAttributeLabel ($columnName);
+        return $this->getModel ()->getAttributeLabel ($columnName);
     }
 
     public function setModelAttrColumnNames ($val) {
         $this->_modelAttrColumnNames = $val;
     }
 
-    protected function getModel () {
-        if (!isset ($this->_model)) {
-            $modelName = $this->modelName;
-            $this->_model = $modelName::model ();
-        }
-        return $this->_model;
-    }
-
     public function getModelAttrColumnNames () {
         if (!isset ($this->_modelAttrColumnNames)) { // use model attributes if none specified
-            $attrs = array_keys ($this->model->getAttributes ());
+            $attrs = array_keys ($this->getModel ()->getAttributes ());
             $this->_modelAttrColumnNames = $attrs;
         }
         return $this->_modelAttrColumnNames;
@@ -88,7 +75,7 @@ class X2GridViewLess extends X2GridView {
         $this->addSpecialFieldNames ();
         $attrs = $this->modelAttrColumnNames;
         foreach ($attrs as $name) {
-            $this->allFieldNames[$name] = $this->model->getAttributeLabel ($name);
+            $this->allFieldNames[$name] = $this->getModel ()->getAttributeLabel ($name);
         }
     }
 
@@ -99,7 +86,7 @@ class X2GridViewLess extends X2GridView {
 
         $newColumn['name'] = $columnName;
         $newColumn['id'] = $this->namespacePrefix.'C_'.$columnName;
-        $newColumn['header'] = $this->model->getAttributeLabel ($columnName);
+        $newColumn['header'] = $this->getModel ()->getAttributeLabel ($columnName);
         $newColumn['headerHtmlOptions'] = array('style'=>'width:'.$width.'px;');
 
         if($isCurrency) {

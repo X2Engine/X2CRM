@@ -1,6 +1,6 @@
 /*****************************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2015 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -49,6 +49,32 @@ if(typeof x2.inlineQuotes == 'undefined')
 
 jQuery(document).ready(function ($) {
 
+// eventually all inline quotes code should all be moved into this class
+var InlineQuotes = (function () {
+
+function InlineQuotes (argsDict) {
+    var argsDict = typeof argsDict === 'undefined' ? {} : argsDict;
+    var defaultArgs = {
+        DEBUG: x2.DEBUG && false
+    };
+    auxlib.applyArgs (this, defaultArgs, argsDict);
+    x2.Widget.call (this, argsDict);
+    this._init ();
+}
+
+InlineQuotes.prototype = auxlib.create (x2.Widget.prototype);
+
+InlineQuotes.prototype._init = function () {
+    this.element$.find ('.widget-close-button').click (function () {
+        x2.inlineQuotes.toggle ();
+        return false;
+    });
+};
+
+return InlineQuotes;
+
+}) ();
+
 	// Declare all properties required for proper function
 	x2.inlineQuotes.declare = function() {
 
@@ -56,6 +82,9 @@ jQuery(document).ready(function ($) {
            quote table */
         x2.quotes = {};
         x2.quotes.view = "x2.inlineQuotes";
+        x2.inlineQuotes.obj = new InlineQuotes ({
+            element: $('#wide-quote-form')
+        });
 
 		// Basic properties:
 		x2.inlineQuotes.wrapper = $('#quote-create-form-wrapper').first();
@@ -122,10 +151,13 @@ jQuery(document).ready(function ($) {
 		}).done(function(html) {
 			$('#quote-form-wrapper').html(html).find('#quotes-form .wide.form').addClass('focus-mini-module');
 			x2.inlineQuotes.declare();
-			$.fn.yiiGridView.update("relationships-grid");
-			$.fn.yiiListView.update("history");
+            x2.inlineRelationshipsWidget.refresh ();
+            x2.actionHistory.update ();
+            x2.TransactionalViewWidget.refresh ('QuotesWidget'); 
 			$('html,body').animate({
-				scrollTop: x2.inlineQuotes.updatingId ? $('#quote-detail-' + id).offset().top : x2.inlineQuotes.wrapper.parents('#quote-form-wrapper').first().offset().top
+				scrollTop: x2.inlineQuotes.updatingId ? 
+                    $('#quote-detail-' + id).offset().top : 
+                    x2.inlineQuotes.wrapper.parents('#quote-form-wrapper').first().offset().top
 			},300);
 		});
 	}

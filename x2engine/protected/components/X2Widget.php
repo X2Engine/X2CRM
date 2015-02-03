@@ -1,7 +1,7 @@
 <?php
 /*****************************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2015 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -63,7 +63,8 @@ abstract class X2Widget extends CWidget {
 
 	/**
 	 * Constructor.
-	 * @param CBaseController $owner owner/creator of this widget. It could be either a widget or a controller.
+	 * @param CBaseController $owner owner/creator of this widget. It could be either a widget or a 
+     *  controller.
 	 */
 	public function __construct($owner=null)
 	{
@@ -75,26 +76,49 @@ abstract class X2Widget extends CWidget {
         return array ();
     }
 
+    protected $_translations;
+    protected function getTranslations () {
+        if (!isset ($this->_translations)) {
+            $this->_translations = array ();
+        }
+        return $this->_translations;
+    }
+
     protected $_JSClassParams;
     public function getJSClassParams () {
         if (!isset ($this->_JSClassParams)) {
             $this->_JSClassParams = array (
                 'element' => $this->element,
                 'namespace' => $this->namespace,
+                'translations' => $this->getTranslations (),
             );
         }
         return $this->_JSClassParams;
     }
 
-    public function instantiateJSClass () {
-        Yii::app()->clientScript->registerScript ($this->namespace.'JSClassInstantiation', "
-            $(function () {
-                x2.".$this->namespace.lcfirst ($this->JSClass)." = 
-                    new x2.$this->JSClass (".
+    public function resolveIds ($selector) {
+        return preg_replace ('/#/', '#'.$this->namespace, $selector);
+    }
+
+    public function resolveId ($id) {
+        return $this->namespace.$id;
+    }
+
+    public function getJSObjectName () {
+        return "x2.".$this->namespace.lcfirst ($this->JSClass);
+    }
+
+    /**
+     * @param bool $onReady whether or not JS class should be instantiated after page is ready
+     */
+    public function instantiateJSClass ($onReady=true) {
+        Yii::app()->clientScript->registerScript (
+            $this->namespace.get_class ($this).'JSClassInstantiation', 
+            ($onReady ? "$(function () {" : "").
+                $this->getJSObjectName ()."= new x2.$this->JSClass (".
                         CJSON::encode ($this->getJSClassParams ()).
-                    ");
-            });
-        ", CClientScript::POS_END);
+                    ");".
+            ($onReady ? "});" : ""), CClientScript::POS_END);
     }
 
     public function registerPackages () {

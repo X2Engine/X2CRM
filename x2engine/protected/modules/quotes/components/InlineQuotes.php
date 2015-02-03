@@ -1,7 +1,7 @@
 <?php
 /*****************************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2015 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -55,83 +55,24 @@ class InlineQuotes extends X2Widget {
 	public $startHidden = false;
 
 	public function init() {
+        $quotesAssetsUrl = $this->module->assetsUrl;
 	
 		if(isset($_POST))
 			$startHidden = false;
 
 		if($this->startHidden) {
-            // register css
-            Yii::app()->clientScript->registerCss('inline-quotes-style','
-                .product-select-button {
-                    padding: 0 0 0 0!important;
-                }
-
-                #wide-quote-form {
-                    background: #F8F8F8;
-                }
-
-                .viewQuote hr {
-                    background-color: black;
-                    overflow: visible;
-                }
-
-                .product-table th {
-                    background-color: inherit;
-                }
-
-                .product-table tfoot {
-                    font-style: normal;
-                }
-
-                .quote-detail-table {
-                    padding: 0;
-                    width: 100%;
-                }
-
-                .quote-detail-table th {
-                    background-color: inherit;
-                    color: #666;
-                    font-weight: normal;
-                    font-size: 0.8em;
-                    padding: 5px 0 0 0;
-
-                }
-
-                .quote-detail-table td {
-                    font-weight: bold;
-                    padding: 0;
-                }
-
-                .quote-create-table {
-                    width: 100%;
-                    padding: 0;
-                }
-
-                .quote-create-table th {
-                    background-color: inherit;
-                    font-weight: bold;
-                    font-size: 0.8em;
-                    padding: 5px 0 0 0;
-                }
-
-                .quote-detail-table td {
-                    padding: 0;
-                }
-
-                .items td {
-                    border-top: none;
-                    border-bottom: none;
-                }');
-
             if($this->startHidden)
-                Yii::app()->clientScript->registerScript('startQuotesHidden',"$('#quotes-form').hide();" ,CClientScript::POS_READY);
+                Yii::app()->clientScript->registerScript(
+                    'startQuotesHidden',"$('#quotes-form').hide();" ,CClientScript::POS_READY);
             
             // Set up the new create form:
-            $quotesAssetsUrl = $this->module->assetsUrl;
-            Yii::app()->clientScript->registerScriptFile($quotesAssetsUrl.'/js/inlineQuotes.js', CClientScript::POS_HEAD);
-            Yii::app()->clientScript->registerScriptFile($quotesAssetsUrl.'/js/LineItems.js', CClientScript::POS_HEAD);
+            Yii::app()->clientScript->registerScriptFile(
+                $quotesAssetsUrl.'/js/inlineQuotes.js', CClientScript::POS_HEAD);
+            Yii::app()->clientScript->registerScriptFile(
+                $quotesAssetsUrl.'/js/LineItems.js', CClientScript::POS_HEAD);
 
             Yii::app()->clientScript->registerCssFiles('InlineQuotesCss', array (
+                $quotesAssetsUrl.'/css/inlineQuotes.css',
                 $quotesAssetsUrl.'/css/lineItemsMain.css',
                 $quotesAssetsUrl.'/css/lineItemsWrite.css',
             ), false);
@@ -141,10 +82,12 @@ class InlineQuotes extends X2Widget {
 
             //$this->contact = Contacts::model()->findByPk($this->contactId);
             $iqConfig = array(
-                'contact' => ($this->contact instanceof Contacts) ? CHtml::encode($this->contact->name) : '',
+                'contact' => ($this->contact instanceof Contacts) ? 
+                    CHtml::encode($this->contact->name) : '',
                 'account' => $this->account,
                 'sendingQuote' => false,
-                'lockedMessage' => Yii::t('quotes','This quote is locked. Are you sure you want to update this quote?'),
+                'lockedMessage' => Yii::t(
+                    'quotes','This quote is locked. Are you sure you want to update this quote?'),
                 'deniedMessage' => Yii::t('quotes','This quote is locked.'),
                 'lockedDialogTitle' => Yii::t('quotes','Locked'),
                 'failMessage' => Yii::t('quotes', 'Could not save quote.'),
@@ -171,6 +114,7 @@ class InlineQuotes extends X2Widget {
                 ),
             );
             Yii::app()->clientScript->registerScript('quickquote-vars', '
+            ;(function () {
                 if(typeof x2 == "undefined"){
                     x2 = {};
                 }
@@ -179,23 +123,24 @@ class InlineQuotes extends X2Widget {
                     x2.inlineQuotes = iqConfig;
                 } else {
                     $.extend(x2.inlineQuotes,iqConfig);
-                }', CClientScript::POS_HEAD);
+                }
+            }) ();', CClientScript::POS_HEAD);
         }
         parent::init();
 	}
 
-        /**
-         * Getter and setter for contactId will also update recordId
-         * in order to remain backwards compatible.
-         */
-        public function getContactId() {
-          return $this->_contactId;  
-        }
+    /**
+     * Getter and setter for contactId will also update recordId
+     * in order to remain backwards compatible.
+     */
+    public function getContactId() {
+      return $this->_contactId;  
+    }
 
-        public function setContactId($value) {
-            $this->_contactId = $value;
-            $this->recordId = $value;
-        }
+    public function setContactId($value) {
+        $this->_contactId = $value;
+        $this->recordId = $value;
+    }
 
     /**
      * Returns all related invoices or quotes 
@@ -249,11 +194,21 @@ class InlineQuotes extends X2Widget {
 			'secondId'=>$this->contactId,
 		));*/
 		
-		echo '<div id="quotes-form">';
-		echo '<div id="wide-quote-form" class="wide x2-layout-island form" style="overflow: visible;">';
-		echo '<div id="quote-create-form-wrapper" style="display:none"></div>';
-		echo '<span style="font-weight:bold; font-size: 1.5em;">'. Yii::t('quotes','Quotes') .'</span>';
-		echo '<br /><br />';
+		echo 
+            '<div id="quotes-form" style="display: none;">
+                <div id="wide-quote-form" class="wide x2-layout-island form" 
+                 style="overflow: visible;">
+                <a class="widget-close-button x2-icon-button" href="#">
+                    <span class="fa fa-times fa-lg" 
+                     title="'.CHtml::encode (Yii::t('app', 'Close Widget')).'">
+                    </span>
+                </a>
+		        <div id="quote-create-form-wrapper" style="display:none"></div>
+		        <span class="quotes-section-title" 
+		         style="font-weight:bold; font-size: 1.5em;">'. 
+                    CHtml::encode (Yii::t('quotes','Quotes')) .
+                '</span>
+		    <br /><br />';
 
 		// Mini Create Quote Form
 		$model = new Quote;
@@ -275,9 +230,11 @@ class InlineQuotes extends X2Widget {
 		}
 		
 		
-		echo '<br /><br />';
-		echo '<span style="font-weight:bold; font-size: 1.5em;">'. Yii::t('quotes','Invoices') .'</span>';
-		echo '<br /><br />';
+		echo '<br /><br />
+		    <span class="quotes-section-title" 
+             style="font-weight:bold; font-size: 1.5em;">'. 
+                Yii::t('quotes','Invoices').'</span>
+		    <br /><br />';
 		
         $quotes = $this->getRelatedQuotes (true);
 		

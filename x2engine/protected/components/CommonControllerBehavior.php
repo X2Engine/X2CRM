@@ -1,7 +1,7 @@
 <?php
 /*****************************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2015 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -34,7 +34,6 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 
-
 /**
  * A behavior for controllers; contains methods common to controllers whether or
  * not they are children of x2base.
@@ -42,8 +41,8 @@
  * All controllers that use this behavior must declare the "modelClass" property.
  *
  * @property X2Model $model (read-only); in the context of viewing or updating a
- *	record, this contains the active record object corresponding to that record.
- *	Its value is set by calling {@link getModel()} with the ID of the desired record.
+ * 	record, this contains the active record object corresponding to that record.
+ * 	Its value is set by calling {@link getModel()} with the ID of the desired record.
  * @property string $resolvedModelClass (read-only) The class name of the model to use
  *  for {@link model}. In some cases (i.e. some older custom modules) the class
  *  name will not be specified in the controller, and thus it is useful to guess
@@ -52,11 +51,10 @@
  */
 class CommonControllerBehavior extends CBehavior {
 
-	/**
-	 * Stores the value of {@link $model}
-	 */
-	private $_model;
-
+    /**
+     * Stores the value of {@link $model}
+     */
+    private $_model;
     public $redirectOnNullModel = true;
     public $throwOnNullModel = true;
 
@@ -67,42 +65,41 @@ class CommonControllerBehavior extends CBehavior {
      */
     private $_resolvedModelClass;
 
-
-	public function attach($owner){
-		if(!property_exists($owner,'modelClass'))
-			throw new CException('Property "modelClass" must be declared in all controllers that use CommonControllerBehavior, but it is not declared in '.get_class($owner));
-		parent::attach($owner);
-	}
+    public function attach($owner) {
+        if (!property_exists($owner, 'modelClass'))
+            throw new CException('Property "modelClass" must be declared in all controllers that use CommonControllerBehavior, but it is not declared in ' . get_class($owner));
+        parent::attach($owner);
+    }
 
     /**
-	 * Returns the data model based on the primary key given.
-	 *
-	 * If the data model is not found, an HTTP exception will be raised.
-	 * @param integer $id the ID of the model to be loaded. Note, it is assumed that
-	 *	when this value is null, {@link _model} is set already; otherwise there's
-	 *	nothing that can be done to correctly resolve the model.
-	 * @param bool $throw Whether to throw a 404 upon not finding the model
-	 */
-	public function getModel($id=null){
+     * Returns the data model based on the primary key given.
+     *
+     * If the data model is not found, an HTTP exception will be raised.
+     * @param integer $id the ID of the model to be loaded. Note, it is assumed that
+     * 	when this value is null, {@link _model} is set already; otherwise there's
+     * 	nothing that can be done to correctly resolve the model.
+     * @param bool $throw Whether to throw a 404 upon not finding the model
+     */
+    public function getModel($id = null) {
         $throw = $this->throwOnNullModel;
         $redirect = $this->redirectOnNullModel;
-		if(!isset($this->_model)) {
+        if (!isset($this->_model)) {
             // Special case for Admin: let the ID be the one and only record if unspecified
-            if($this->resolvedModelClass == 'Admin' && empty($id))
+            if ($this->resolvedModelClass == 'Admin' && empty($id))
                 $id = 1;
 
             // Last-ditch effort:
-            if(isset($_GET['id'])) {
+            if (isset($_GET['id'])) {
                 $id = $_GET['id'];
             }
-            
+
             // ID was never specified, so there's no way to tell which record to
             // load. Redirect or throw an exception based on function args.
-			if($id === null) {
-                if($redirect) {
+            if ($id === null) {
+                if ($redirect) {
                     $this->owner->redirect(array('index'));
-                } elseif($throw) {
-                    throw new CHttpException(401,Yii::t('app','Invalid request; no record ID specified.'));
+                } elseif ($throw) {
+                    throw new CHttpException(401, Yii::t('app', 'Invalid request; no record ID specified.'));
                 }
             }
 
@@ -110,59 +107,59 @@ class CommonControllerBehavior extends CBehavior {
             $this->_model = CActiveRecord::model($this->resolvedModelClass)->findByPk((int) $id);
 
             // Model record couldn't be retrieved, so throw a 404:
-			if($this->_model === null && $throw)
-				throw new CHttpException(404, Yii::t('app', 'The requested page does not exist.'));
-		} else if($this->_model->id != $id && !empty($id)) { // A different record is being requested
-			// Change the ID and load the different record.
-			// Note that setting the attribute to null will cause isset to return false.
-			$this->_model = null;
-			return $this->getModel($id);
-		}
-		return $this->_model;
-	}
-    
-	/**
-	 * Obtain the IP address of the current web client.
-	 * @return string
-	 */
-	function getRealIp() {
-		foreach(array(
-			'HTTP_CLIENT_IP',
-			'HTTP_X_FORWARDED_FOR',
-			'HTTP_X_FORWARDED',
-			'HTTP_X_CLUSTER_CLIENT_IP',
-			'HTTP_FORWARDED_FOR',
-			'HTTP_FORWARDED',
-			'REMOTE_ADDR'
-		) as $var) {
-			if(array_key_exists($var,$_SERVER)){
-				foreach(explode(',',$_SERVER[$var]) as $ip) {
-					$ip = trim($ip);
+            if ($this->_model === null && $throw)
+                throw new CHttpException(404, Yii::t('app', 'The requested page does not exist.'));
+        } else if ($this->_model->id != $id && !empty($id)) { // A different record is being requested
+            // Change the ID and load the different record.
+            // Note that setting the attribute to null will cause isset to return false.
+            $this->_model = null;
+            return $this->getModel($id);
+        }
+        return $this->_model;
+    }
+
+    /**
+     * Obtain the IP address of the current web client.
+     * @return string
+     */
+    function getRealIp() {
+        foreach (array(
+    'HTTP_CLIENT_IP',
+    'HTTP_X_FORWARDED_FOR',
+    'HTTP_X_FORWARDED',
+    'HTTP_X_CLUSTER_CLIENT_IP',
+    'HTTP_FORWARDED_FOR',
+    'HTTP_FORWARDED',
+    'REMOTE_ADDR'
+        ) as $var) {
+            if (array_key_exists($var, $_SERVER)) {
+                foreach (explode(',', $_SERVER[$var]) as $ip) {
+                    $ip = trim($ip);
                     $filters = FILTER_FLAG_IPV4 | FILTER_FLAG_NO_RES_RANGE;
                     if (!YII_DEBUG)
                         $filters = $filters | FILTER_FLAG_NO_PRIV_RANGE;
-					if(filter_var($ip, FILTER_VALIDATE_IP, $filters) !== false)
-						return $ip;
-				}
-			}
-		}
-		return false;
-	}
+                    if (filter_var($ip, FILTER_VALIDATE_IP, $filters) !== false)
+                        return $ip;
+                }
+            }
+        }
+        return false;
+    }
 
     /**
      * Resolve and return the model class, if specified, or a guess.
      * @return string
      */
-    public function getResolvedModelClass(){
-        if(!isset($this->_resolvedModelClass)){
-            if(isset($this->owner->modelClass)){
+    public function getResolvedModelClass() {
+        if (!isset($this->_resolvedModelClass)) {
+            if (isset($this->owner->modelClass)) {
                 // Model class has been specified in the controller:
                 $modelClass = $this->owner->modelClass;
-            }else{
+            } else {
                 // Attempt to find an active record model named after the
                 // controller. Typically the case in custom modules.
                 $modelClass = ucfirst($this->owner->id);
-                if(!class_exists($modelClass)){
+                if (!class_exists($modelClass)) {
                     $modelClass = 'Admin'; // Fall-back default
                 }
             }
@@ -170,28 +167,46 @@ class CommonControllerBehavior extends CBehavior {
         }
         return $this->_resolvedModelClass;
     }
-    
-	/**
-	 * Kept for backwards compatibility with controllers (including custom ones)
-	 * that use loadModel.
-	 *
-	 * @return type
-	 */
-	public function loadModel($id) {
-		return $this->getModel($id);
-	}
 
-	/**
-	 * Renders Google Analytics tracking code, if enabled.
-	 *
-	 * @param type $location Named location in the app
-	 */
-	public function renderGaCode($location) {
-		$propertyId = Yii::app()->settings->{"gaTracking_" . $location};
-		if (!empty($propertyId))
-			$this->owner->renderPartial('application.components.views.gaTrackingScript', array('propertyId' => $propertyId));
-	}
+    /**
+     * Kept for backwards compatibility with controllers (including custom ones)
+     * that use loadModel.
+     *
+     * @return type
+     */
+    public function loadModel($id) {
+        return $this->getModel($id);
+    }
 
+    /**
+     * Renders Google Analytics tracking code, if enabled.
+     *
+     * @param type $location Named location in the app
+     */
+    public function renderGaCode($location) {
+        $propertyId = Yii::app()->settings->{"gaTracking_" . $location};
+        if (!empty($propertyId))
+            $this->owner->renderPartial('application.components.views.gaTrackingScript', array('propertyId' => $propertyId));
+    }
+
+    /**
+     * For server config or other expected errors which are not bugs but
+     * prevent the software from functioning properly.
+     * @param type $error
+     */
+    public function errorMessage($message, $code = 500, $type = "PHP Error") {
+        $error = array(
+            'code' => $code,
+            'type' => $type,
+            'message' => $message,
+            'file' => '',
+            'line' => '',
+            'trace' => '',
+            'source' => ''
+        );
+        $this->owner->render('/site/errorDisplay', $error);
+        Yii::app()->end();
+    }
 
 }
 

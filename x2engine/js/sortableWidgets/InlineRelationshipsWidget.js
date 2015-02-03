@@ -1,6 +1,6 @@
 /*****************************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2015 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -39,6 +39,7 @@ x2.InlineRelationshipsWidget = (function () {
 
 function InlineRelationshipsWidget (argsDict) {
     var defaultArgs = {
+        hideFullHeader: true,
         DEBUG: x2.DEBUG && false,
         recordId: null,
         recordType: null,
@@ -55,33 +56,18 @@ function InlineRelationshipsWidget (argsDict) {
         // used to determine which models the quick create button is displayed for
         modelsWhichSupportQuickCreate: []
     };
-    auxlib.applyArgs (this, defaultArgs, argsDict);
     this._relationshipsGridContainer$ = $('#relationships-form');
      
     this._gridViewButton$ = $('#rel-grid-view-button');
     this._form$ = $('#new-relationship-form');
     this._relationshipManager = null;
 
-    SortableWidget.call (this, argsDict);
+    auxlib.applyArgs (this, defaultArgs, argsDict);
+
+    GridViewWidget.call (this, argsDict);
 }
 
-InlineRelationshipsWidget.prototype = auxlib.create (SortableWidget.prototype);
-
-/*
-Public static methods
-*/
-
-/*
-Private static methods
-*/
-
-/*
-Public instance methods
-*/
-
-/*
-Private instance methods
-*/
+InlineRelationshipsWidget.prototype = auxlib.create (GridViewWidget.prototype);
 
 /**
  * Set up quick create button for given model class
@@ -136,12 +122,12 @@ InlineRelationshipsWidget.prototype._changeAutoComplete = function (modelType) {
             modelType: modelType
         },
         success: function (data) {
-
             // remove span element used by jQuery widget
             $('#inline-relationships-autocomplete-container input').
                 first ().next ('span').remove ();
             // replace old autocomplete with the new one
             $('#inline-relationships-autocomplete-container input').first ().replaceWith (data); 
+            $('#inline-relationships-autocomplete-container').find ('script').remove ();
  
             // remove the loading gif
             x2.forms.inputLoadingStop ($('#inline-relationships-autocomplete-container'));
@@ -210,23 +196,6 @@ InlineRelationshipsWidget.prototype._setUpCreateFormSubmission = function () {
     });
 };
 
-
-
-InlineRelationshipsWidget.prototype._setUpSettingsBehavior = function () {
-    // detach the CGridView summary and move it to the widget settings menu
-    var settingsMenu$ = $(this.elementSelector + ' .widget-settings-menu-content');
-    settingsMenu$.find ('ul').remove (); // remove unneeded default element
-    settingsMenu$.append (this.contentContainer.find ('.summary').detach ());
-
-    SortableWidget.prototype._setUpSettingsBehavior.call (this);
-};
-
-InlineRelationshipsWidget.prototype._setUpPageSizeSelection = function () {
-    var that = this;
-    $('#resultsPerPagerelationships-grid').change (function () {
-        that.setProperty ('pageSize', $(this).val ());
-    });
-};
 
 InlineRelationshipsWidget.prototype._changeMode = function (mode) {
     var form$ = $('#relationships-form');
@@ -316,7 +285,7 @@ InlineRelationshipsWidget.prototype._setUpNewRelationshipsForm = function () {
 
 
 InlineRelationshipsWidget.prototype._init = function () {
-    SortableWidget.prototype._init.call (this);
+    GridViewWidget.prototype._init.call (this);
     if (this.displayMode === 'grid') this.element.find ('.ui-resizable-handle').hide ();
     this._setUpPageSizeSelection ();
     this._setUpModeSelection ();

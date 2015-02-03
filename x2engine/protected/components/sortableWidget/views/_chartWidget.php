@@ -1,7 +1,7 @@
 <?php
 /*****************************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2015 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -203,22 +203,22 @@
             <?php
             if (!$suppressDateRangeSelector) {
             ?>
+            <select id="<?php echo $chartType; ?>-date-range-type-selector-<?php echo $widgetUID; ?>"
+             class="date-range-type-selector x2-select">
+                <option value="this"> <?php echo Yii::t('app', 'This') ?></option>
+                <option value="trailing"> <?php echo Yii::t('app', 'Trailing') ?></option>
+                <option value="last"> <?php echo Yii::t('app', 'Last') ?></option>
+                <option value="custom"> <?php echo Yii::t('app', 'Custom') ?></option>
+            </select>
+
             <select id="<?php echo $chartType; ?>-date-range-selector-<?php echo $widgetUID; ?>"
              class="date-range-selector x2-select">
-                 <option value="Custom"><?php echo Yii::t('app', 'Custom'); ?></option>
-                 <option value="Today"><?php echo Yii::t('app', 'Today'); ?></option>
-                 <option value="Yesterday"><?php echo Yii::t('app', 'Yesterday'); ?></option>
-                 <option value="This Week"><?php echo Yii::t('app', 'This Week'); ?></option>
-                 <option value="Last Week"><?php echo Yii::t('app', 'Last Week'); ?></option>
-                 <option value="This Month"><?php echo Yii::t('app', 'This Month'); ?></option>
-                 <option value="Last Month"><?php echo Yii::t('app', 'Last Month'); ?></option>
-                 <option value="Last Three Months"><?php 
-                    echo Yii::t('app', 'Last Three Months'); ?></option>
-                 <option value="Last Six Months"><?php 
-                    echo Yii::t('app', 'Last Six Months'); ?></option>
-                 <option value="This Year"><?php echo Yii::t('app', 'This Year'); ?></option>
-                 <option value="Last Year"><?php echo Yii::t('app', 'Last Year'); ?></option>
-                 <!--<option value="Data Domain"><?php //echo Yii::t('app', 'Data Domain'); ?></option>-->
+                <option value="day"> <?php echo Yii::t('app', 'Day') ?></option>
+                <option value="week"> <?php echo Yii::t('app', 'Week') ?></option>
+                <option value="month"> <?php echo Yii::t('app', 'Month') ?></option>
+                <option value="quarter"> <?php echo Yii::t('app', 'Quarter') ?></option>
+                <option value="year"> <?php echo Yii::t('app', 'Year') ?></option>
+
             </select>
             <?php
             }

@@ -1,6 +1,6 @@
 /*****************************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2015 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -2958,6 +2958,10 @@ X2Chart.prototype.applyChartSetting = function (settingsDict) {
                 var dateRange = thisX2Chart._dateRangeSelector$;
                 applyDateRange (dateRange, settingsDict[i]);
                 break;
+            case 'dateRangeType':        
+                var dateRange = thisX2Chart._dateRangeTypeSelector$;
+                applyDateRange (dateRange, settingsDict[i]);
+                break;
             default:
                 thisX2Chart.DEBUG && console.log ('Error: applyMultiselectSettings: default on switch');
         }
@@ -2968,98 +2972,35 @@ X2Chart.prototype.applyChartSetting = function (settingsDict) {
 Sets to and from date picker ui elements based on date range.
 */
 X2Chart.prototype.applyDateRange = function (dateRange) {
+    var dateRangeType = this._dateRangeTypeSelector$.val();
+    
+    if (dateRangeType == 'custom') {
+        return;
+    }
+
     var thisX2Chart = this;
 
     thisX2Chart.DEBUG && console.log ('dateRange = ' + dateRange);
     var fromDatepicker = thisX2Chart._chartDatepickerFrom$;
     var toDatepicker = thisX2Chart._chartDatepickerTo$;
 
-    switch (dateRange) {
-        case 'Custom':
-            break;
-        case 'Today':
-            var date = new Date ();
-            thisX2Chart.DEBUG && console.log ('date = ' + date);
-            $(fromDatepicker).datepicker ('setDate', date);
-            $(toDatepicker).datepicker ('setDate', date);
-            break;
-        case 'Yesterday':
-            var date = (+ new Date ()) - X2Chart.MSPERDAY;
-            thisX2Chart.DEBUG && console.log ('date = ' + date);
-            $(fromDatepicker).datepicker ('setDate', new Date (date));
-            $(toDatepicker).datepicker ('setDate', new Date (date));
-            break;
-        case 'Last Week':
-            var date = + new Date ();
-            var startTimestamp = thisX2Chart.getRoundedWeekTs (date - X2Chart.MSPERWEEK, true);
-            var endTimestamp = thisX2Chart.getRoundedWeekTs (date, true) - X2Chart.MSPERDAY;
-            $(fromDatepicker).datepicker ('setDate', new Date (startTimestamp));
-            $(toDatepicker).datepicker ('setDate', new Date (endTimestamp));
-            break;
-        case 'This Week':
-            var date = + new Date ();
-            var startTimestamp = thisX2Chart.getRoundedWeekTs (date, true);
-            $(fromDatepicker).datepicker ('setDate', new Date (startTimestamp));
-            $(toDatepicker).datepicker ('setDate', new Date (date));
-            break;
-        case 'This Month':
-            var date = + new Date ();
-            var startTimestamp = 
-                thisX2Chart.getRoundedMonthTs (date, 'month-bin-size', true);
-            $(fromDatepicker).datepicker ('setDate', new Date (startTimestamp));
-            $(toDatepicker).datepicker ('setDate', new Date (date));
-            break;
-        case 'Last Month':
-            var date = + new Date ();
-            var startTimestamp = 
-                thisX2Chart.shiftTimeStampOneInterval (date, 'month-bin-size', false);
-            var endTimestamp = thisX2Chart.getRoundedMonthTs (date, true) - X2Chart.MSPERDAY;
-            $(fromDatepicker).datepicker ('setDate', new Date (startTimestamp));
-            $(toDatepicker).datepicker ('setDate', new Date (endTimestamp));
-            break;
-        case 'Last Three Months':
-            var date = new Date ();
-            var M = date.getMonth () - 3;
-            var Y = date.getFullYear ();
-            Y = M < 0 ? Y - 1 : Y;
-            M = M < 0 ? 12 + M : M;
-            var startDate = (new Date (Y, M, 1, 0, 0, 0, 0));
-            $(fromDatepicker).datepicker ('setDate', startDate);
-            $(toDatepicker).datepicker ('setDate', date);
-            break;
-        case 'Last Six Months':
-            var date = new Date ();
-            var M = date.getMonth () - 6;
-            var Y = date.getFullYear ();
-            Y = M < 0 ? Y - 1 : Y;
-            M = M < 0 ? 12 + M : M;
-            var startDate = (new Date (Y, M, 1, 0, 0, 0, 0));
-            $(fromDatepicker).datepicker ('setDate', startDate);
-            $(toDatepicker).datepicker ('setDate', date);
-            break;
-        case 'This Year':
-            var date = new Date ();
-            var Y = date.getFullYear ();
-            var startDate = (new Date (Y, 0, 1, 0, 0, 0, 0));
-            $(fromDatepicker).datepicker ('setDate', startDate);
-            $(toDatepicker).datepicker ('setDate', date);
-            break;
-        case 'Last Year':
-            var date = new Date ();
-            var Y = date.getFullYear ();
-            var startDate = (new Date (Y - 2, 0, 1, 0, 0, 0, 0));
-            var endDate = (new Date (Y - 2, 11, 31, 0, 0, 0, 0));
-            $(fromDatepicker).datepicker ('setDate', startDate);
-            $(toDatepicker).datepicker ('setDate', endDate);
-            break;
-        /*case 'Data Domain':
-            var date = new Date ();
-            //$(fromDatepicker).datepicker ('setDate', new Date (startTimestamp));
-            $(toDatepicker).datepicker ('setDate', date);
-            break;*/
-        default:
-            thisX2Chart.DEBUG && console.log ('Error: setUpDateRangeSelector: default on switch');
+    var momentFunction = {
+        trailing: function(range){ return moment().subtract(1, range) },
+        this: function(range){ return moment().startOf(range) },
+        last: function(range){ return moment().subtract(1, range).startOf(range) },
+    }[dateRangeType];
+
+    var start = momentFunction(dateRange);
+    var end = moment();
+
+    if (dateRangeType == 'last') {
+        end = moment().subtract(1, dateRange).endOf(dateRange);
     }
+
+    $(fromDatepicker).datepicker ('setDate', new Date(start));
+    $(toDatepicker).datepicker ('setDate', new Date(end));
+
+    return;
 };
 
 /*
@@ -3077,6 +3018,17 @@ X2Chart.prototype.setUpDateRangeSelector = function () {
         thisX2Chart.saveChartSetting ('dateRange', dateRange);
         thisX2Chart.getEventsBetweenDates (true);
         thisX2Chart.setChartSettingName ('');  
+    });
+
+    thisX2Chart._dateRangeTypeSelector$.on ('change', function () {
+        var dateRangeType = $(this).val();
+        var isCustom = (dateRangeType == 'custom');
+        var opacity = isCustom ? 0.0 : 1.0;
+        thisX2Chart._dateRangeSelector$.css('opacity', opacity);
+        $(this).toggleClass('rounded', isCustom);
+        
+        thisX2Chart.saveChartSetting ('dateRangeType', dateRangeType);
+        thisX2Chart._dateRangeSelector$.trigger('change');
     });
 };
 
@@ -3216,7 +3168,6 @@ X2Chart.prototype.setSettingsFromCookie = function () {
     for (var settingName in thisX2Chart.lastChartSettings) {
         settingsDict[settingName] = thisX2Chart.lastChartSettings[settingName];
     }
-
     thisX2Chart.DEBUG && console.log ('applying settings ');
     thisX2Chart.DEBUG && console.log (settingsDict);
 
@@ -3620,6 +3571,8 @@ X2Chart.prototype._setUpElementProperties = function () {
         $('#' + this.chartType + '-chart-datepicker-to-' + this.widgetUID);
     this._dateRangeSelector$ = 
         $('#' + this.chartType + '-date-range-selector-' + this.widgetUID);
+    this._dateRangeTypeSelector$ =
+        $('#' + this.chartType + '-date-range-type-selector-' + this.widgetUID);
     this._createSettingButton$ = 
         $('#' + this.chartType + '-create-setting-button-' + this.widgetUID);
     this._deleteSettingButton$ = 

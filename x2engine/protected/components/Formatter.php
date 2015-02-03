@@ -1,7 +1,7 @@
 <?php
 /*****************************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2015 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -375,9 +375,9 @@ class Formatter {
      * @param type $lastName
      */
     public static function fullName($firstName,$lastName) {
-        return !empty(Yii::app()->settings->contactNameFormat)
-                    ? strtr(Yii::app()->settings->contactNameFormat, compact('lastName', 'firstName'))
-                    : "$firstName $lastName";
+        return !empty(Yii::app()->settings->contactNameFormat) ? 
+            strtr(Yii::app()->settings->contactNameFormat, compact('lastName', 'firstName')) : 
+            "$firstName $lastName";
     }
 
     /**
@@ -387,7 +387,8 @@ class Formatter {
      * @param type $firstNameCol
      * @param type $lastNameCol
      * @param type $as
-     * @return array An array with the first element being the SQL, the second any parameters to bind.
+     * @return array An array with the first element being the SQL, the second any parameters to 
+     *  bind.
      */
     public static function fullNameSelect($firstNameCol,$lastNameCol,$as=false) {
         $pre = ':fullName_'.uniqid().'_';
@@ -576,6 +577,28 @@ class Formatter {
     }
 
     /**
+     * @param mixed $date timestamp
+     * @return bool 
+     */
+    public static function isToday ($date) {
+        return date ('Ymd') === date ('Ymd', $date);
+    }
+
+    public static function isThisYear ($date) {
+        return date ('Y') === date ('Y', $date);
+    }
+
+    public static function formatDateDynamic ($date) {
+        if (self::isToday ($date)) {
+            return Yii::app()->dateFormatter->format ('h:mm a', $date);
+        } else if (self::isThisYear ($date)) {
+            return Yii::app()->dateFormatter->format ('MMM d', $date);
+        } else {
+            return Yii::app()->dateFormatter->formatDateTime ($date, 'short', null);
+        }
+    }
+
+    /**
      * Returns a formatted string for the date.
      *
      * @param integer $timestamp
@@ -597,7 +620,6 @@ class Formatter {
         if(empty($timestamp)){
             return '';
         }else if(Yii::app()->locale->getId() == 'en'){
-
             return Yii::app()->dateFormatter->format(
                 Yii::app()->locale->getDateFormat('medium').' '.
                     Yii::app()->locale->getTimeFormat('short'), 
@@ -639,9 +661,6 @@ class Formatter {
         }elseif(Yii::app()->locale->getId() == 'en'){
             return strtotime($date);
         } else {
-            /*AuxLib::debugLogR (Yii::app()->locale->getDateFormat($dateLength));
-            //AuxLib::debugLogR (Yii::app()->locale->getTimeFormat($timeLength));
-            //AuxLib::debugLogR ($date);*/
             return CDateTimeParser::parse(
                 $date, 
                 Yii::app()->locale->getDateFormat($dateLength).' '.
@@ -804,13 +823,18 @@ class Formatter {
             .'|'.$boolean
             .'|'.$singleQuotedString.')*;$#i';
         if(!preg_match($validPattern,$formula)) {
-            return array(false,Yii::t('admin','Input evaluates to an invalid formula: ').strtr($formula,$replacementTokens));
+            return array(
+                false,
+                Yii::t('admin','Input evaluates to an invalid formula: ').
+                    strtr($formula,$replacementTokens));
         }
 
         try{
             $retVal = @eval(strtr($formula,$replacementTokens));
         }catch(Exception $e){
-            return array(false,Yii::t('admin','Evaluated statement encountered an exception: '.$e->getMessage()));
+            return array(
+                false,
+                Yii::t('admin','Evaluated statement encountered an exception: '.$e->getMessage()));
         }
 
         return array(true,$retVal);
@@ -914,12 +938,14 @@ class Formatter {
         $words = explode(' ', $return_string);
 
         foreach ($words as $index => $word) {
-            $words[$index] = mb_strtoupper(mb_substr($word, 0, 1, $encoding), $encoding) . mb_substr($word, 1, mb_strlen($word, $encoding), $encoding);
+            $words[$index] = mb_strtoupper(mb_substr($word, 0, 1, $encoding), $encoding) . 
+                mb_substr($word, 1, mb_strlen($word, $encoding), $encoding);
         }
         $return_string = implode(' ', $words);
 
         $return_string = preg_replace($delimiters_pattern2, $delimiters_replace2, $return_string);
-        $return_string = preg_replace($delimiters_cleanup_replace1, $delimiters_cleanup_pattern1, $return_string);
+        $return_string = preg_replace(
+            $delimiters_cleanup_replace1, $delimiters_cleanup_pattern1, $return_string);
 
         return $return_string;
     }

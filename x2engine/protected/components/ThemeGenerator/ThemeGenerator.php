@@ -1,7 +1,7 @@
 <?php
 /*****************************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2015 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -191,18 +191,26 @@ class ThemeGenerator {
         $colors['border'] = $colors['lighter_content'];
 
         # Smart text for highlight 1 (Buttons and Windows)
-        if( $colors['highlight1'] && $colors['text'] ) {
+        if( isset($colors['highlight1'], $colors['text']) &&
+                !empty($colors['highlight1']) && !empty($colors['text']) ) {
             $colors['smart_text'] = X2Color::smartText($colors['highlight1'], $colors['text']);
         }
 
         # Smart text for highlight 2 (highlighted buttons)
-        if( $colors['highlight2']  && $colors['text'] ) {
+        if( isset($colors['highlight2'], $colors['text']) &&
+                !empty($colors['highlight2']) && !empty($colors['text']) ) {
             $colors['smart_text2'] = X2Color::smartText($colors['highlight2'], $colors['text']);
         }
 
         return $colors;
     }
 
+    /**
+     * Formats a color array to be CSS-ready by adding important tags and
+     * adding a key appended with hex that does not have the important tags
+     * @param array Array of color keys
+     * @return array Array of formatted array
+     */
     public static function formatColorArray($colors) {
         foreach($colors as $key => $value){
             # keep original value in special key
@@ -214,6 +222,11 @@ class ThemeGenerator {
         return $colors;
     }
 
+    /**
+     * Loads a formatted color array into the templates and returns the generated CSS
+     * @param array $colors Array of formatted colors
+     * @return string string of total generated CSS 
+     */
     public static function getCss($colors) {
         if (!$colors['themeName'] || $colors['themeName'] == self::$defaultLight){
             return "";
@@ -226,6 +239,8 @@ class ThemeGenerator {
 
     /**
      * Computes the theme and registers it with Yii
+     * @param array $colors If set, will render CSS with these colors
+     * Otherwise, it uses colors from the users profile
      */
     public static function render($colors = null) {
         if (!$colors) {
@@ -240,7 +255,7 @@ class ThemeGenerator {
             $colors = $profile->getTheme();
 
             // If the theme isnt generated, Generate it and save
-            if (!$colors['generated']) {
+            if (!array_key_exists('generated', $colors) || !$colors['generated']) {
                 $colors = self::generatePalette($colors);
                 $profile->theme = $colors;
                 $profile->save();
@@ -254,6 +269,7 @@ class ThemeGenerator {
 
     /**
      * Loads a theme for the login page
+     * @param string $themeName string of the theme to render
      */
     public static function loadDefault($themeName) {
         //In case default light was deleted
@@ -332,6 +348,9 @@ class ThemeGenerator {
         echo "<div style='clear:both;'></div>";
     }
 
+    /**
+     * Retrieves translations of field Names
+     */
     public static function getTranslations() {
         return array(
             'background' => Yii::t('profile', 'Background'),
@@ -343,6 +362,9 @@ class ThemeGenerator {
         );
     }
 
+    /**
+     * Function to remove the color from the #content element of a page. 
+     */
     public static function removeBackdrop() {
         Yii::app()->clientScript->registerScript ('RemoveBackropJS', '
             $(function() {
@@ -351,19 +373,24 @@ class ThemeGenerator {
         ', CClientScript::POS_END);
     }
 
+    public static function isThemed() {
+        $theme = Yii::app()->params->profile->theme['themeName'];
+        return ($theme && $theme != self::$defaultLight);
+    }
+
 
     /**
      * List of keys for the profile JSON fields behaviors
      */
     public static function getProfileKeys() {
         return array(
+            'themeName',
             'background',
             'content',
             'text',
             'link',
             'highlight1',
             'highlight2',
-            'themeName',
             'smart_text',
             'smart_text2',
             'darker_background',

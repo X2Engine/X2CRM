@@ -1,6 +1,6 @@
 /*****************************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2015 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -188,10 +188,7 @@ ul.column-selector {
 .gridview.boxed table.items {
     margin-top: 5px;
     border: 1px solid #ccc;
-    border-radius: 4px;
-    -moz-border-radius: 4px;
-    -webkit-border-radius: 4px;
-    -o-border-radius: 4px;
+    @include border-radius(4px);
 }
 
 /* rounded corner on top left TH cells in THEAD */
@@ -200,16 +197,10 @@ ul.column-selector {
     &.boxed table.items {
         th {
             &:first-child {
-                border-radius: 4px 0 0 0;
-                -moz-border-radius: 4px 0 0 0;
-                -webkit-border-radius: 4px 0 0 0;
-                -o-border-radius: 4px 0 0 0;
+                @include border-radius(4px 0 0 0);
             }
             &:last-child {
-                border-radius: 0 4px 0 0;
-                -moz-border-radius: 0 4px 0 0;
-                -webkit-border-radius: 0 4px 0 0;
-                -o-border-radius: 0 4px 0 0;
+                @include border-radius(0 4px 0 0);
             }
         }
         tr {
@@ -223,16 +214,10 @@ ul.column-selector {
         tbody tr:last-child td {
             /* border-bottom-width:1px; */
             &:first-child {
-                border-radius: 0 0 0 4px;
-                -moz-border-radius: 0 0 0 4px;
-                -webkit-border-radius: 0 0 0 4px;
-                -o-border-radius: 0 0 0 4px;
+                @include border-radius(0 0 0 4px);
             }
             &:last-child {
-                border-radius: 0 0 4px 0;
-                -moz-border-radius: 0 0 4px 0;
-                -webkit-border-radius: 0 0 4px 0;
-                -o-border-radius: 0 0 4px 0;
+                @include border-radius(0 0 4px 0);
             }
         }
     }
@@ -440,7 +425,7 @@ ul.column-selector {
     }
     .pager {
         border-top: 1px solid #aaa;
-        padding: 6px;
+        padding: 2px;
         background: #fff;
         margin-left: 0;
         margin-right: 0;
@@ -588,14 +573,14 @@ Remove extra border when pager isn't shown
 .x2-gridview {
     .x2grid-header-container .items {
         margin-top: -1px;
-        margin-left: -1px;
+        // margin-left: -1px;
         margin-bottom: 0;
         border-bottom: none;
     }
     .x2grid-body-container .items {
         margin: 0;
         margin-top: -1px;
-        margin-left: -1px;
+        // margin-left: -1px;
     }
     table.items > tbody > tr > td.button-column.hide-edit-delete-buttons {
         .update, .delete {
@@ -619,4 +604,9 @@ Remove extra border when pager isn't shown
         background-position-x: 2px;
         background-repeat: no-repeat;
     }
+}
+
+
+.sortable-widget-container .x2grid-header-container {
+    border-top: 1px solid #cfcfcf;
 }

@@ -1,7 +1,7 @@
 <?php
 /*****************************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2015 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -106,31 +106,7 @@ $(function() {
 });
 ');
 
-$filterModel = new RelationshipsGridModel ('search');
-$filterModel->myModel = $model;
-
-// convert related models into grid models
-$gridModels = array ();
-foreach ($model->visibleRelatedX2Models as $relatedModel) {
-    $gridModels[] = Yii::createComponent (array (
-        'class' => 'RelationshipsGridModel', 
-        'relatedModel' => $relatedModel,
-        'myModel' => $model,
-        'id' => $model->id,
-    ));
-}
-
-
-// use filter model to filter grid models based on GET params
-$gridModels = $filterModel->filterModels ($gridModels);
-
-$relationshipsDataProvider = new CArrayDataProvider($gridModels, array(
-    'id' => 'relationships-gridview',
-    'sort' => array(
-        'attributes'=>array('name','relatedModelName','label','createDate','assignedTo')),
-    'pagination' => array('pageSize'=>$this->getWidgetProperty ('pageSize'))
-));
-
+$relationshipsDataProvider = $this->getDataProvider ();
 
 ?>
 
@@ -208,6 +184,8 @@ $columns[] = array(
 $this->widget('X2GridViewGeneric', array(
     'id' => "relationships-grid",
     'enableGridResizing' => false,
+    'showHeader' => CPropertyValue::ensureBoolean (
+        $this->getWidgetProperty('showHeader')),
     'defaultGvSettings' => array (
         'name' => '25%',
         'relatedModelName' => '15%',
@@ -216,7 +194,7 @@ $this->widget('X2GridViewGeneric', array(
         'createDate' => '23%',
         'deletion.' => '7%',
     ),
-    'filter' => $filterModel,
+    'filter' => $this->getFilterModel (),
     'htmlOptions' => array (
         'class' => 
             ($relationshipsDataProvider->itemCount < $relationshipsDataProvider->totalItemCount ?
@@ -283,10 +261,10 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->getBaseUrl().'/js/Relat
     <div class='row'>
         <?php
         echo X2Html::label (Yii::t('app', 'Label:'), 'RelationshipLabelButton');
-        echo X2Html::textField ('firstLabel');
+        echo X2Html::textField ('secondLabel');
 
 
-        echo X2Html::textField ('secondLabel', '' ,array(
+        echo X2Html::textField ('firstLabel', '' ,array(
             'title' => Yii::t('apps','Create a different label for ').$model->name));
         echo X2Html::hiddenField ('mutual','true');
         echo X2Html::link (

@@ -1,7 +1,7 @@
 <?php
 /*****************************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2015 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -87,7 +87,7 @@ abstract class ChartWidget extends SortableWidget {
                     'suppressDateRangeSelector' => false,
                     'chartSubtype' => self::getJSONProperty (
                         $this->profile, 'chartSubtype', $this->widgetType, $this->widgetUID),
-                    'widgetUID' => $this->widgetUID,
+                    'widgetUID' => $this->widgetUID
                 )
             );
         }
@@ -159,6 +159,7 @@ abstract class ChartWidget extends SortableWidget {
                             'js/jqplot/plugins/jqplot.dateAxisRenderer.js',
                             'js/jqplot/plugins/jqplot.highlighter.js',
                             'js/jqplot/plugins/jqplot.enhancedLegendRenderer.js',
+                            'js/lib/moment-with-locales.min.js',
                             'js/sortableWidgets/ChartWidget.js',
                             'js/X2Chart/X2Chart.js',
                         ),

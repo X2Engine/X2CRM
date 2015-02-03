@@ -1,7 +1,7 @@
 <?php
 /*****************************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2015 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -74,15 +74,20 @@ class SmartSort extends CSort {
         $sorts=array();
         foreach($directions as $attribute=>$descending)
             $sorts[]=$descending ? $attribute.$this->separators[1].$this->descTag : $attribute;
+        /* x2modstart */ 
+        $explicitParams = $this->params!==null; 
+        /* x2modend */ 
         $params=$this->params===null ? $_GET : $this->params;
         $params[$this->sortVar]=implode($this->separators[0],$sorts);
         /* x2modstart */ 
-        foreach ($params as $key => $val) {
-             if (!preg_match ("/(^id$)|(^".
-                (isset ($this->uniqueId) ? $this->uniqueId : $this->modelClass)."_)/", $key)) {
+        if (!$explicitParams) {
+            foreach ($params as $key => $val) {
+                 if (!preg_match ("/(^id$)|(^".
+                    (isset ($this->uniqueId) ? $this->uniqueId : $this->modelClass)."_)/", $key)) {
 
-                unset ($params[$key]);
-             }
+                    unset ($params[$key]);
+                 }
+            }
         }
         /* x2modend */ 
 

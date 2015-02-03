@@ -1,7 +1,7 @@
 <?php
 /*****************************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2015 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -35,232 +35,15 @@
  *****************************************************************************************/
 
 $model->fullName = $model->user->getFullName();
-
-Yii::app()->clientScript->registerCss("viewProfile", "
-
-.profile-picture-row {
-    border-radius: 0 0px 3px 3px !important;
-    -moz-border-radius: 0 0px 3px 3px !important;
-    -webkit-border-radius: 0 0px 3px 3px !important;
-    -o-border-radius: 0 0px 3px 3px !important;
-}
-
-#toggle-full-profile {
-    background: rgb(255, 255, 255);
-    height: 0px;
-    font-size: 5px;
-    font-weight: bold;
-    line-height: 5px;
-    text-align: center;
-    padding: 1px;
-    cursor: pointer;
-    color: rgb(94, 94, 94);
-}
-
-#profile-image-container {
-    width: 100px;
-    height: 100px;
-    margin: auto;
-    margin-top: 4px;
-}
-
-.file-wrapper.full-profile-info {
-    height:211px;
-}
-
-.file-wrapper {
-    height: 119px;
-    display: block;
-}
-
-.profile-picture-row {
-    width: 35%;
-}
-
-#avatar-image {
-    margin:auto;
-    display:block;
-}
-
-#photo-upload-overlay {
-    margin: auto;
-    position: relative;
-    width: 91px;
-    border-top: none;
-    font-weight: bold;
-    font-size: 12px;
-    border: 2px solid rgb(204, 200, 200);
-    color: rgb(95, 94, 94);
-    height: 35px;
-    text-align: center;
-    background: rgb(213, 243, 255);
-    top: -37px;
-    border-radius: 0 0 4px 4px;
-    border-top: none;
-    opacity:0.7;
-}
-
-#photo-upload-overlay:hover {
-    cursor: pointer;
-}
-
-#photo-upload-overlay span {
-    display: table-cell;
-    vertical-align: middle;
-    width: 97px;
-    height: 35px;
-}
-
-.avatar-upload {
-    -webkit-border-radius:8px;
-    -moz-border-radius:8px;
-    -o-border-radius:8px;
-    border-radius:8px;
-}
-
-#profile-info {
-    margin-top: 0;
-    border-radius:            0px 0px 3px 3px;
-    -moz-border-radius:        0px 0px 3px 3px;
-    -webkit-border-radius:    0px 0px 3px 3px;
-    -o-border-radius:        0px 0px 3px 3px;
-    border-top: none;
-}
-
-");
-
-Yii::app()->clientScript->registerScript('profileInfo',"
-
-/**
- * Validate file extension of avatar image. Called during file field onchange event and upon dialog
- * submit.
- * @param object elem a jQuery object corresponding to the file field element
- * @param object submitButton a jQuery object corresponding to the dialog submit button
- * @return bool false if invalid, true otherwise
- */
-function validateAvatarFile (elem, submitButton) {
-    var isLegalExtension = false;
-    auxlib.destroyErrorFeedbackBox (elem);
-
-    // get the file name and split it to separate the extension
-    var name = elem.val ();
-
-    // name is valid
-    if (name.match (/.+\..+/)) {
-        var extension = name.split('.').pop ().toLowerCase ();
-
-        var legalExtensions = ['png','gif','jpg','jpe','jpeg'];        
-        if ($.inArray (extension, legalExtensions) !== -1)
-            isLegalExtension = true;
-    } else if (name !== '') {
-        var extension = '';
-    }
-
-    if(isLegalExtension) { // enable submit
-        submitButton.addClass ('highlight');
-    } else { // delete the file name, disable Submit, Alert message
-        elem.val ('');
-        if (typeof extension !== 'undefined') {
-            auxlib.createErrorFeedbackBox ({
-                prevElem: elem,
-                message: '".Yii::t('app', 'Invalid file type.')."'
-            });
-        } else {
-            auxlib.createErrorFeedbackBox ({
-                prevElem: elem,
-                message: '".Yii::t('app', 'Please upload a file.')."'
-            });
-        }
-        submitButton.removeClass ('highlight');
-    }
-        
-    return isLegalExtension;
-}
-
-/**
- * Setup avatar upload UI element behavior 
- */
-function setUpAvatarUpload () {
-
-    // hide/show overlay
-    $('#profile-image-container').mouseover (function () {
-        $('#photo-upload-overlay').show ();
-    }).mouseleave (function (evt) {
-        if ($(evt.relatedTarget).closest ('#avatar-image').length === 0 &&
-            $(evt.relatedTarget).closest ('#photo-upload-overlay span').length === 0)
-            $('#photo-upload-overlay').hide ();
-    });
-
-    // instantiate image upload dialog
-    $('#photo-upload-overlay').click (function () {
-        $('#photo-upload-dialog').dialog ({
-            title: '".Yii::t('app', 'Upload an Avatar Photo')."',
-            autoOpen: true,
-            width: 500,
-            buttons: [
-                {
-                    text: '".Yii::t('app', 'Submit')."',
-                    'class': 'photo-upload-dialog-submit-button',
-                    click: function () {
-                        if (validateAvatarFile (
-                            $('#avatar-photo-file-field'), 
-                            $('.photo-upload-dialog-submit-button'))) {
-
-                            $('#photo-form').submit ();
-                        }
-                    }
-                },
-                {
-                    text: '".Yii::t('app', 'Cancel')."',
-                    click: function () {
-                        $(this).dialog ('close');
-                    }
-                }
-            ],
-            close: function () {
-                $('#photo-upload-dialog').hide ();
-                $(this).dialog ('destroy');
-                auxlib.destroyErrorFeedbackBox ($('#avatar-photo-file-field'));
-            }
-        });
-    });
-}
-
-/**
- * Set up behavior of hide/show profile full details button 
- */
-function setUpProfileDetailsBehavior () {
-    $('#toggle-full-profile').click (function () {
-        if ($('.full-profile-details-row').is (':visible')) {
-            $('.full-profile-details-row').each (function () { $(this).hide (); });
-            $('.file-wrapper').removeClass ('full-profile-info');
-            auxlib.saveMiscLayoutSetting ('fullProfileInfo', 0);
-        } else {
-            $('.full-profile-details-row').each (function () { $(this).show (); });
-            $('.file-wrapper').addClass ('full-profile-info');
-            auxlib.saveMiscLayoutSetting ('fullProfileInfo', 1);
-        }
-    });
-}
-
-$(function() {
-    setUpProfileDetailsBehavior ();
-    setUpAvatarUpload ();
-
-    // set up add profile widgets dropdown
-    new PopupDropdownMenu ({
-        containerElemSelector: '#x2-hidden-profile-widgets-menu-container',
-        openButtonSelector: '#add-profile-widget-button-list-item'
-    });
-});
-
-",CClientScript::POS_HEAD);
+$isMyProfile = ($model->id === Yii::app()->params->profile->id);
 
 $attributeLabels = $model->attributeLabels();
 if ($isMyProfile) {
     $miscLayoutSettings = $model->miscLayoutSettings;
     $profileInfoMinimized = $miscLayoutSettings['profileInfoIsMinimized'];
-    $fullProfileInfo = $miscLayoutSettings['fullProfileInfo'];
+    $fullProfileInfo = true;
+    
+    // $fullProfileInfo = $miscLayoutSettings['fullProfileInfo'];
 }
 ?>
 <div id='profile-info-container' class='x2-layout-island'>
@@ -272,7 +55,7 @@ if ($isMyProfile) {
     </h2>
 <?php
     if ($isMyProfile) {
-        echo ResponsiveHtml::gripButton ();
+        // echo ResponsiveHtml::gripButton ();
         ?>
         <div class='responsive-menu-items'>
         <?php
@@ -306,11 +89,11 @@ if ($isMyProfile) {
                     return false;'
             )
         );
-        echo X2Html::settingsButton (Yii::t('app', 'Profile Settings'), 
-            array (
-                'id' => 'profile-settings-button',
-                'class' => 'right x2-popup-dropdown-button',
-            ));
+        // echo X2Html::settingsButton (Yii::t('app', 'Profile Settings'), 
+            // array (
+                // 'id' => 'profile-settings-button',
+                // 'class' => 'right x2-popup-dropdown-button',
+            // ));
         ?> 
         <ul id='profile-info-settings-menu' class='x2-popup-dropdown-menu' style='display: none;'>
             <li id='add-profile-widget-button-list-item'>
@@ -334,21 +117,22 @@ if ($isMyProfile) {
         ?>
         </div>
         <?php
-        echo $model->getHiddenProfileWidgetMenu ();
+        // echo $model->getHiddenProfileWidgetMenu ();
     }
 ?>
 </div>
 
-<div id='create-profile-widget-dialog' class='form' style='display: none;'>
+<!-- <div id='create-profile-widget-dialog' class='form' style='display: none;'>
     <label for='' class='left-label'><?php echo Yii::t('app', 'Widget Type: '); ?></label>
     <?php
     $widgetSubtypeOptions = SortableWidget::getWidgetSubtypeOptions ('profile');
     asort ($widgetSubtypeOptions);
+    // $widgetSubtypeOptions['ChartWidget'] = "Chart Widget";
     echo CHtml::dropDownList (
         'widgetType', '', $widgetSubtypeOptions);
     ?>
 </div>
-
+ -->
 <div id='profile-info-contents-container'
  <?php echo ($isMyProfile && $profileInfoMinimized ? 'style="display: none;"' : ''); ?>>
 <table id='profile-info' class="details">
@@ -356,45 +140,9 @@ if ($isMyProfile) {
         <td class="label" width="20%"><?php echo $attributeLabels['fullName']; ?></td>
         <td><b><?php echo CHtml::encode($model->fullName); ?></b></td>
         <td class='profile-picture-row' rowspan="9" style="text-align:center;">
-            <span class="file-wrapper<?php 
-             echo (!$isMyProfile || $fullProfileInfo ? ' full-profile-info' : ''); ?>">
-            <div id='profile-image-container'>
-            <?php Profile::renderFullSizeAvatar ($model->id); 
-            if($isMyProfile) {
-                ?>
-                <div id='photo-upload-overlay' style='display:none;'>
-                    <span><?php echo Yii::t('app', 'Change Avatar'); ?></span>
-                </div>
-            </div>
-            <div id='photo-upload-dialog' style='display:none;'>
-            <?php
-            echo CHtml::form(
-                'uploadPhoto/'.$model->id,'post',
-                array('enctype'=>'multipart/form-data', 'id'=>'photo-form'));
-            echo CHtml::fileField(
-                'photo','', array (
-                    'id' => 'avatar-photo-file-field',
-                    'onchange' => 
-                        'validateAvatarFile ($(this), $(".photo-upload-dialog-submit-button"));'
-                )).'<br />';
-            echo CHtml::endForm();
-            ?>
-            </div>
-            <?php
-            } 
-            ?>
+            <span class="file-wrapper full-profile-info">
+            <?php Profile::renderEditableAvatar($model->id);?>
             </span>
-            <?php 
-            if ($isMyProfile) {
-            ?>
-            </br>
-            <a id='view-public-profile-link' 
-             href="<?php echo Yii::app()->controller->createUrl (
-                '/profile/view', array ('id' => $model->id, 'publicProfile' => true)); ?>">
-                -<?php echo Yii::t('app', 'View Public Profile'); ?>-</a>
-            <?php
-            }
-            ?>
         </td>
     </tr>
     <tr>
@@ -427,11 +175,11 @@ if ($isMyProfile) {
         <td class="label"><?php echo Yii::t('profile','Signature'); ?></td>
         <td><div style="height:50px;width:0px;float:left;"></div><?php echo $model->getSignature(true); ?></td>
     </tr>
-    <tr>
+    <!--tr>
         <td id='toggle-full-profile' colspan='2'
-         <?php echo (!$isMyProfile ? 'style="display:none;"' : ''); ?>
-         title='<?php echo Yii::t('app', 'Toggle Full Profile Details'); ?>'>| | |</td>
-    </tr>
+         <!--?php echo (!$isMyProfile ? 'style="display:none;"' : ''); ?->
+         title='<!--?php echo Yii::t('app', 'Toggle Full Profile Details'); ?->'>| | |</td>
+    </tr-->
 </table>
 </div>
 </div>

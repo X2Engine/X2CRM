@@ -1,7 +1,7 @@
 <?php
 /*****************************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2015 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -65,7 +65,8 @@ class ProfileController extends x2base {
                     'setWidgetOrder', 'profiles', 'settings', 'deleteSound', 'deleteBackground',
                     'changePassword', 'setResultsPerPage', 'hideTag', 'unhideTag', 'resetWidgets',
                     'updatePost', 'loadTheme', 'createTheme', 'saveTheme', 'saveMiscLayoutSetting',
-                    'createUpdateCredentials', 'manageCredentials', 'deleteCredentials', 'verifyCredentials',
+                    'createUpdateCredentials', 'manageCredentials', 'deleteCredentials', 
+                    'verifyCredentials', 'ajaxGetModelAutoComplete',
                     'setDefaultCredentials', 'activity', 'ajaxSaveDefaultEmailTemplate',
                     'deleteActivityReport', 'createActivityReport', 'manageEmailReports',
                     'toggleEmailReport', 'deleteEmailReport', 'sendTestActivityReport',
@@ -572,7 +573,7 @@ class ProfileController extends x2base {
                     $this->redirect(array('view', 'id' => $model->id));
                 }
             }
-
+            
             $this->render('update', array(
                 'model' => $model,
                 'users' => $users,
@@ -964,6 +965,43 @@ class ProfileController extends x2base {
 
     }
 
+    /***********************************************************************
+     * Profile Page Methods
+     ***********************************************************************/
+
+    public function actionCreateChartingWidget () {
+        if (!isset ($_POST['widgetLayoutName']) || !isset ($_POST['chartId'])) {
+            throw new CHttpException (400, 'Bad Request');
+        }
+
+        $chartId = $_POST['chartId'];
+        $widgetSettings = array ();
+
+        $chart = Charts::findByPk($chartId);
+
+
+        if (preg_match ('/::/', $widgetClass)) {
+            // Custom module summary widget. extract model name
+            $widgetSettings['modelType'] = preg_replace ('/::.*$/', '', $widgetClass);
+            $widgetSettings['label'] = $widgetSettings['modelType'] . ' Summary';
+            $widgetClass = preg_replace ('/^.*::/', '', $widgetClass);
+            if (!class_exists ($widgetSettings['modelType'])) {
+                echo 'false';
+            }
+        }
+
+        $widgetLayoutName = $_POST['widgetLayoutName'];
+        list ($success, $uid) = SortableWidget::createSortableWidget (
+            Yii::app()->params->profile, $widgetClass, $widgetLayoutName, $widgetSettings);
+        if ($success) {
+            echo $widgetClass::getWidgetContents(
+                $this, Yii::app()->params->profile, $widgetLayoutName, $uid);
+        } else {
+            echo 'false';
+        }
+
+    }
+
     public function actionDeleteSortableWidget () {
         if (!isset ($_POST['widgetLayoutName']) || !isset ($_POST['widgetKey'])) {
             throw new CHttpException (400, 'Bad Request');
@@ -986,9 +1024,10 @@ class ProfileController extends x2base {
     }
 
     public static function getModelFromPost() {
-        if (isset($_POST['modelName']) && isset($_POST['modelId'])) {
-            if ($_POST['modelName'] && $_POST['modelId']) {
-                return X2Model::model($_POST['modelName'])->findByPk($_POST['modelId']);
+        if (isset($_POST['settingsModelName']) && isset($_POST['settingsModelId'])) {
+            if ($_POST['settingsModelName'] && $_POST['settingsModelId']) {
+                return X2Model::model($_POST['settingsModelName'])
+                    ->findByPk($_POST['settingsModelId']);
             }
         } 
 
@@ -1190,7 +1229,8 @@ class ProfileController extends x2base {
         $userModels = User::model ()->active ()->findAll ();
         return array(
             'model' => $profile,
-            'isMyProfile' => !$publicProfile && $id === Yii::app()->params->profile->id,
+            'profileId' => $profile->id,
+            'isMyProfile' => $isMyProfile,
             'dataProvider' => $dataProvider,
             'users' => $users,
             'lastEventId' => !empty($lastId) ? $lastId : 0,
@@ -1218,7 +1258,11 @@ class ProfileController extends x2base {
     public function actionView($id, $publicProfile = false) {
         if (isset($_GET['ajax'])) { // ajax request from grid view widget
             $_POST['widgetClass'] = $_GET['ajax'];
-            $_POST['widgetType'] = 'profile';
+            $_POST['widgetType'] = $_GET['widgetType'];
+            if ($_GET['widgetType'] === 'recordView') {
+                $_POST['modelId'] = $_GET['modelId'];
+                $_POST['modelType'] = $_GET['modelType'];
+            }
             $this->actionShowWidgetContents();
             return;
         }
@@ -1245,7 +1289,13 @@ class ProfileController extends x2base {
         }
 
         if (!Yii::app()->user->isGuest) {
-            $params = $this->getActivityFeedViewParams($id, $publicProfile);
+            $activityFeedParams = $this->getActivityFeedViewParams($id, $publicProfile);
+
+            $params = array(
+                'activityFeedParams' => $activityFeedParams,
+                'isMyProfile' => $activityFeedParams['isMyProfile'],
+                'model' => $activityFeedParams['model']
+            );
 
             $this->render('profile', $params);
         } else {
@@ -1494,8 +1544,8 @@ class ProfileController extends x2base {
     }
 
     /**
-      Create a new chart setting record in the chart settings table.
-      Called via ajax from the chart setting creation dialog.
+     * Create a new chart setting record in the chart settings table.
+     * Called via ajax from the chart setting creation dialog.
      */
     function actionCreateChartSetting() {
         if (isset($_POST['chartSettingAttributes'])) {
@@ -1523,8 +1573,8 @@ class ProfileController extends x2base {
     }
 
     /**
-      Delete a chart setting record from the chart settings table.
-      Called via ajax from the feed chart UI.
+     * Delete a chart setting record from the chart settings table.
+     * Called via ajax from the feed chart UI.
      */
     function actionDeleteChartSetting($chartSettingName) {
         $chartSetting = ChartSetting::model()->findByAttributes(array(
@@ -1722,5 +1772,51 @@ class ProfileController extends x2base {
         ));
     }
 
+    public function insertActionMenu () {
+        $model = Yii::app()->user;
+
+        $this->actionMenu = array(
+            array(
+                'name' => 'view', 
+                'label' => Yii::t('profile', 'Profile Dashboard'), 
+                'url' => array('view', 'id' => $model->id)
+            ),
+            array(
+                'name' => 'viewPublic', 
+                'label' => Yii::t('profile', 'View Profile'), 
+                'url' => array('view', 'id' => $model->id, 'publicProfile' => 1)
+            ),
+            array(
+                'name' => 'edit', 
+                'label' => Yii::t('profile', 'Edit Profile'),
+                'url' => array('update', 'id' => $model->id)
+            ),
+            array(
+                'name' => 'settings', 
+                'label' => Yii::t('profile', 'Change Settings'), 
+                'url' => array('settings', 'id' => $model->id), 'visible' => ($model->id == Yii::app()->user->id)
+            ),
+            array(
+                'name' => 'changePassword', 
+                'label' => Yii::t('profile', 'Change Password'), 
+                'url' => array('changePassword', 'id' => $model->id), 'visible' => ($model->id == Yii::app()->user->id)
+            ),
+            array(
+                'name' => 'manageCredentials', 
+                'label' => Yii::t('profile', 'Manage Apps'), 
+                'url' => array('manageCredentials')
+                ),
+            
+        );
+
+        if ($this->action->id == 'view') {
+            if (isset($_GET['publicProfile']) && $_GET['publicProfile']) {
+                unset($this->actionMenu[1]['url']);
+            } 
+            return;
+        }
+        
+        $this->prepareMenu ($this->actionMenu, true);
+    }
 
 }

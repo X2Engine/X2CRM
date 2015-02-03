@@ -1,7 +1,7 @@
 <?php
 /*****************************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2015 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -175,37 +175,29 @@ class FormLayout extends CActiveRecord {
     }
 
     /**
-     * Helper method to unset all defaultForm flags
+     * Helper method to unset all defaultView or defaultForm flags
+     * @param string $type Form type, either 'view' or 'form', or both if argument is omitted
      * @param string Model type to unset flags
      */
-    public static function clearDefaultForms($model = null, $scenario = null) {
-        $layouts = FormLayout::model()
-            ->findAllByAttributes(array(
-                'model' => $model,
-                'defaultForm' => 1,
-                'scenario' => $scenario
-            ));
-        foreach($layouts as &$layout){
-            $layout->defaultForm = false;
+    public static function clearDefaultFormLayouts($type = null, $model = null, $scenario = null) {
+        // Construct attributes to select form layouts
+        $attr = array('model' => $model);
+        if ($scenario)
+            $attr['scenario'] = $scenario;
+        if ($type === 'view')
+            $attr['defaultView'] = 1;
+        else if ($type === 'form')
+            $attr['defaultForm'] = 1;
+        $layouts = FormLayout::model()->findAllByAttributes ($attr);
+
+        foreach ($layouts as &$layout) {
+            if ($type === 'view')
+                $layout->defaultView = false;
+            else if ($type === 'form')
+                $layout->defaultForm = false;
+            else
+                $layout->defaultView = $layout->defaultForm = false;
             $layout->save();
         }
     }
-
-    /**
-     * Helper method to unset all defaultView flags
-     * @param string Model type to unset flags
-     */
-    public static function clearDefaultViews($model = null, $scenario = null) {
-        $layouts = FormLayout::model()
-            ->findAllByAttributes(array(
-                'model' => $model,
-                'defaultView' => 1,
-                'scenario' => $scenario
-            ));
-        foreach($layouts as &$layout){
-            $layout->defaultView = false;
-            $layout->save();
-        }
-    }
-
 }

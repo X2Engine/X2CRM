@@ -2,7 +2,7 @@
 
 /*****************************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2015 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -49,6 +49,108 @@ class History extends X2Widget {
     public $pageSize = 10; // how many records to show per page
     public $relationships = 0; // don't show actions on related records by default
 
+    public static function getCriteria (
+        $associationId, $associationType, $relationships, $historyType) {
+
+        // Based on our filter, we need a particular additional criteria
+        $historyCriteria = array(
+            'all' => '',
+            'action' => ' AND type IS NULL',
+            'overdueActions' => ' AND type IS NULL AND complete="NO" AND dueDate <= '.time (),
+            'incompleteActions' => ' AND type IS NULL AND complete="NO"',
+            'call' => ' AND type="call"',
+            'note' => ' AND type="note"',
+            'attachments' => ' AND type="attachment"',
+            'event' => ' AND type="event"',
+            'email' => 
+                ' AND type IN ("email","email_staged",'.
+                    '"email_opened","email_clicked","email_unsubscribed")',
+            'marketing' => 
+                ' AND type IN ("email","webactivity","weblead","email_staged",'.
+                    '"email_opened","email_clicked","email_unsubscribed","event")',
+             
+            'quotes' => 'AND type like "quotes%"',
+            'time' => ' AND type="time"',
+            'webactivity' => 'AND type IN ("weblead","webactivity")',
+            'workflow' => ' AND type="workflow"',
+        );
+        $multiAssociationIds = array ($associationId);
+        if($relationships){
+            // Add association conditions for our relationships
+            $type = $associationType;
+            $model = X2Model::model($type)->findByPk($associationId);
+            if(count($model->relatedX2Models) > 0){
+                $associationCondition =
+					"((associationId={$associationId} AND ".
+					"associationType='{$associationType}')";
+                // Loop through related models and add an association type OR for each
+                foreach($model->relatedX2Models as $relatedModel){
+                    if($relatedModel instanceof X2Model){
+                        $multiAssociationIds[] = $relatedModel->id;
+                        $associationCondition .=
+							" OR (associationId={$relatedModel->id} AND ".
+							"associationType='{$relatedModel->myModelName}')";
+                    }
+                }
+                $associationCondition.=")";
+            }else{
+                $associationCondition =
+					'associationId='.$associationId.' AND '.
+					'associationType="'.$associationType.'"';
+            }
+        }else{
+            $associationCondition =
+				'associationId='.$associationId.' AND '.
+				'associationType="'.$associationType.'"';
+        }
+        /* Fudge replacing Opportunity and Quote because they're stored as plural in the actions 
+        table */
+        $associationCondition =
+			str_replace('Opportunity', 'opportunities', $associationCondition);
+        $associationCondition = str_replace('Quote', 'quotes', $associationCondition);
+        $visibilityCondition = '';
+        $module = isset(Yii::app()->controller->module) ? 
+            Yii::app()->controller->module->getId() : Yii::app()->controller->getId();
+        // Apply history privacy settings so that only allowed actions are viewable.
+        if(!Yii::app()->user->checkAccess($module.'Admin')){
+            if(Yii::app()->settings->historyPrivacy == 'user'){
+                $visibilityCondition = ' AND (assignedTo="'.Yii::app()->user->getName().'")';
+            }elseif(Yii::app()->settings->historyPrivacy == 'group'){
+                $visibilityCondition = 
+                    ' AND (
+                        t.assignedTo IN (
+                            SELECT DISTINCT b.username 
+                            FROM x2_group_to_user a 
+                            INNER JOIN x2_group_to_user b ON a.groupId=b.groupId 
+                            WHERE a.username="'.Yii::app()->user->getName().'") OR 
+                            (t.assignedTo="'.Yii::app()->user->getName().'"))';
+            }else{
+                $visibilityCondition = 
+                    ' AND (visibility="1" OR assignedTo="'.Yii::app()->user->getName().'")';
+            }
+        }
+
+        $multiAssociationIdParams = AuxLib::bindArray ($multiAssociationIds);
+        $associationCondition = 
+            '(('.$associationCondition.') OR '.
+            'x2_action_to_record.recordId in '.AuxLib::arrToStrList (
+                array_keys ($multiAssociationIdParams)).')';
+
+        return Yii::createComponent ('CDbCriteria', array (
+            'order' => 'IF(complete="No", GREATEST(createDate, IFNULL(dueDate,0), '.
+                           'IFNULL(lastUpdated,0)), GREATEST(createDate, '.
+                           'IFNULL(completeDate,0), IFNULL(lastUpdated,0))) DESC',
+            'condition' => $associationCondition.
+                $visibilityCondition.$historyCriteria[$historyType],
+            'join' => 'LEFT JOIN x2_action_to_record ON actionId=t.id AND 
+                x2_action_to_record.recordType=:recordType',
+            'params' => array_merge (array (
+                ':recordType' => X2Model::getModelName ($associationType)
+            ), $multiAssociationIdParams),
+            'distinct' => true
+        ));
+    }
+
     /**
      * This renders the list view of the action history for a record.
      */
@@ -57,7 +159,7 @@ class History extends X2Widget {
             // Filter tabs allowed
             $historyTabs = array(
                 'all' => Yii::t('app', 'All'),
-                'actions' => Yii::t('app', '{actions}', array(
+                'action' => Yii::t('app', '{actions}', array(
                     '{actions}' => Modules::displayName(true, 'Actions'),
                 )),
                 'overdueActions' => Yii::t('app', 'Overdue {actions}', array(
@@ -67,9 +169,9 @@ class History extends X2Widget {
                     '{actions}' => Modules::displayName(true, 'Actions'),
                 )),
                 'attachments' => Yii::t('app', 'Attachments'),
-                'calls' => Yii::t('app', 'Calls'),
-                'comments' => Yii::t('app', 'Comments'),
-                'emails' => Yii::t('app', 'Emails'),
+                'call' => Yii::t('app', 'Calls'),
+                'note' => Yii::t('app', 'Comments'),
+                'email' => Yii::t('app', 'Emails'),
                 'event' => Yii::t('app', 'Events'),
                 'marketing' => Yii::t('app', 'Marketing'),
                 'time' => Yii::t('app', 'Logged Time'),
@@ -109,54 +211,13 @@ class History extends X2Widget {
             $historyTabs = array();
         }
         // Register JS to make the history tabs update the history when selected.
+        Yii::app()->clientScript->registerScriptFile(
+            Yii::app()->getBaseUrl ().'/js/ActionHistory.js'); 
         Yii::app()->clientScript->registerScript('history-tabs', "
-            var relationshipFlag={$this->relationships};
-            var currentHistory='".$this->historyType."';
-            $(document).on('change','#history-selector',function(){
-                $.fn.yiiListView.update('history',{ data:{ history: $(this).val() }});
+            x2.actionHistory = new x2.ActionHistory ({
+                relationshipFlag: {$this->relationships}
             });
-            $(document).on('click','#history-collapse',function(e){
-                e.preventDefault();
-                $('#history .description').toggle();
-            });
-            $(document).on('click','#show-history-link',function(e){
-                e.preventDefault();
-                $.fn.yiiListView.update('history',{ data:{ pageSize: 10000 }});
-            });
-            $(document).on('click','#hide-history-link',function(e){
-                e.preventDefault();
-                $.fn.yiiListView.update('history',{ data:{ pageSize: 10 }});
-            });
-            $(document).on('click','#show-relationships-link',function(e){
-                e.preventDefault();
-                if(relationshipFlag){
-                    relationshipFlag=0;
-                }else{
-                    relationshipFlag=1;
-                }
-                $.fn.yiiListView.update('history',{ data:{ relationships: relationshipFlag }});
-            });
-        "); // Script to make all the buttons on the history widget function via AJAX.
-
-        Yii::app()->clientScript->registerCss('historyWidgetCss',"
-            .action-history-controls {
-                border-radius: 4px 4px 0 0 !important; 
-                -moz-border-radius: 4px 4px 0 0 !important;
-                -webkit-border-radius: 4px 4px 0 0 !important;
-                -o-border-radius: 4px 4px 0 0 !important;
-                margin-bottom: -2px !important;
-                border-bottom: none !important;
-                border: 1px solid #c5c5c5 !important;
-            }
-            .history .pager {
-                border-radius: 0 0 4px 4px !important; 
-                -moz-border-radius: 0 0 4px 4px !important;
-                -webkit-border-radius: 0 0 4px 4px !important;
-                -o-border-radius: 0 0 4px 4px !important;
-                border: 1px solid #c5c5c5 !important;
-                margin-top: -3px !important;
-            }
-        ");
+        ", CClientScript::POS_END);
 
         $this->widget('application.components.X2ListView', array(
             'pager' => array (
@@ -232,104 +293,10 @@ class History extends X2Widget {
      * @return \CActiveDataProvider
      */
     public function getHistory(){
-        // Based on our filter, we need a particular additional criteria
-        $historyCriteria = array(
-            'all' => '',
-            'actions' => ' AND type IS NULL',
-            'overdueActions' => ' AND type IS NULL AND complete="NO" AND dueDate <= '.time (),
-            'incompleteActions' => ' AND type IS NULL AND complete="NO"',
-            'calls' => ' AND type="call"',
-            'comments' => ' AND type="note"',
-            'attachments' => ' AND type="attachment"',
-            'event' => ' AND type="event"',
-            'emails' => 
-                ' AND type IN ("email","email_staged",'.
-                    '"email_opened","email_clicked","email_unsubscribed")',
-            'marketing' => 
-                ' AND type IN ("email","webactivity","weblead","email_staged",'.
-                    '"email_opened","email_clicked","email_unsubscribed","event")',
-             
-            'quotes' => 'AND type="quotes"',
-            'time' => ' AND type="time"',
-            'webactivity' => 'AND type IN ("weblead","webactivity")',
-            'workflow' => ' AND type="workflow"',
-        );
-        $multiAssociationIds = array ($this->associationId);
-        if($this->relationships){
-            // Add association conditions for our relationships
-            $type = $this->associationType;
-            $model = X2Model::model($type)->findByPk($this->associationId);
-            if(count($model->relatedX2Models) > 0){
-                $associationCondition =
-					"((associationId={$this->associationId} AND ".
-					"associationType='{$this->associationType}')";
-                // Loop through related models and add an association type OR for each
-                foreach($model->relatedX2Models as $relatedModel){
-                    if($relatedModel instanceof X2Model){
-                        $multiAssociationIds[] = $relatedModel->id;
-                        $associationCondition .=
-							" OR (associationId={$relatedModel->id} AND ".
-							"associationType='{$relatedModel->myModelName}')";
-                    }
-                }
-                $associationCondition.=")";
-            }else{
-                $associationCondition =
-					'associationId='.$this->associationId.' AND '.
-					'associationType="'.$this->associationType.'"';
-            }
-        }else{
-            $associationCondition =
-				'associationId='.$this->associationId.' AND '.
-				'associationType="'.$this->associationType.'"';
-        }
-        /* Fudge replacing Opportunity and Quote because they're stored as plural in the actions 
-        table */
-        $associationCondition =
-			str_replace('Opportunity', 'opportunities', $associationCondition);
-        $associationCondition = str_replace('Quote', 'quotes', $associationCondition);
-        $visibilityCondition = '';
-        $module = isset(Yii::app()->controller->module) ? 
-            Yii::app()->controller->module->getId() : Yii::app()->controller->getId();
-        // Apply history privacy settings so that only allowed actions are viewable.
-        if(!Yii::app()->user->checkAccess($module.'Admin')){
-            if(Yii::app()->settings->historyPrivacy == 'user'){
-                $visibilityCondition = ' AND (assignedTo="'.Yii::app()->user->getName().'")';
-            }elseif(Yii::app()->settings->historyPrivacy == 'group'){
-                $visibilityCondition = 
-                    ' AND (
-                        t.assignedTo IN (
-                            SELECT DISTINCT b.username 
-                            FROM x2_group_to_user a 
-                            INNER JOIN x2_group_to_user b ON a.groupId=b.groupId 
-                            WHERE a.username="'.Yii::app()->user->getName().'") OR 
-                            (t.assignedTo="'.Yii::app()->user->getName().'"))';
-            }else{
-                $visibilityCondition = 
-                    ' AND (visibility="1" OR assignedTo="'.Yii::app()->user->getName().'")';
-            }
-        }
-
-        $multiAssociationIdParams = AuxLib::bindArray ($multiAssociationIds);
-        $associationCondition = 
-            '(('.$associationCondition.') OR '.
-            'x2_action_to_record.recordId in '.AuxLib::arrToStrList (
-                array_keys ($multiAssociationIdParams)).')';
-
         return new CActiveDataProvider('Actions', array(
-            'criteria' => array(
-                'order' => 'IF(complete="No", GREATEST(createDate, IFNULL(dueDate,0), '.
-                               'IFNULL(lastUpdated,0)), GREATEST(createDate, '.
-                               'IFNULL(completeDate,0), IFNULL(lastUpdated,0))) DESC',
-                'condition' => $associationCondition.
-                    $visibilityCondition.$historyCriteria[$this->historyType],
-                'join' => 'LEFT JOIN x2_action_to_record ON actionId=t.id AND 
-                    x2_action_to_record.recordType=:recordType',
-                'params' => array_merge (array (
-                    ':recordType' => X2Model::getModelName ($this->associationType)
-                ), $multiAssociationIdParams),
-                'distinct' => true
-            ),
+            'criteria' => self::getCriteria (
+                $this->associationId, $this->associationType, $this->relationships,
+                $this->historyType),
             'pagination' => array(
                 'pageSize' => $this->pageSize,
             )

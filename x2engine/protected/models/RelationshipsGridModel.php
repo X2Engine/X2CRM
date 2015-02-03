@@ -1,7 +1,7 @@
 <?php
 /*****************************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2015 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -65,10 +65,6 @@ class RelationshipsGridModel extends CModel {
     public $label;
 
     public $createDate;
-
-    public $relatedModelName;
-
-
 
     public function __construct ($scenario=null) {
         if ($scenario) {
@@ -175,6 +171,24 @@ class RelationshipsGridModel extends CModel {
         }
         return $filteredModels;
     }
+
+//    public function sortModels (array $gridModels, $sortKey) {
+//        if (!isset ($_GET[$sortKey])) return;
+//        $sortOrder = explode ('.', $_GET[$sortKey]);
+//        if (count ($sortOrder) > 1) $direction = $sortOrder[1];
+//        else $direction = 'asc';
+//        $sortAttr = $sortOrder[0];
+//        @usort ($gridModels, function ($a, $b) use ($sortAttr, $direction) { 
+//            if ($a->$sortAttr < $b->$sortAttr) {
+//                return ($direction === 'asc' ? -1 : 1);
+//            } elseif ($a->$sortAttr > $b->$sortAttr) {
+//                return ($direction === 'asc' ? 1 : -1);
+//            } else {
+//                return 0;
+//            }
+//        });
+//        return $gridModels;
+//    }
 
     private $_relatedModelType; 
     public function getRelatedModelName () {

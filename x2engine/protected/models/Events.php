@@ -2,7 +2,7 @@
 
 /*****************************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2015 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -87,6 +87,8 @@ class Events extends CActiveRecord {
             switch ($model) {
                 case 'Product':
                     $model .= 's'; break;
+                case 'Quote':
+                    $model .= 's'; break;
             }
             $requestedModel = $model;
             $model = Modules::displayName(false, ucfirst($model));
@@ -96,6 +98,8 @@ class Events extends CActiveRecord {
                 // of models without a dedicated module
                 if ($requestedModel === 'AnonContact')
                     $model = 'anonymous contact';
+                else if ($requestedModel === 'Campaign')
+                    $model = 'campaign';
             }
         }
         return Yii::t('app', $model);
@@ -941,6 +945,8 @@ class Events extends CActiveRecord {
     }
 
     public static function generateFeedEmail($filters, $userId, $range, $limit, $eventId, $deleteKey) {
+        $image = Yii::app()->getAbsoluteBaseUrl(true).'/images/x2engine.png';
+
         $msg = "<div id='wrap' style='width:6.5in;height:9in;margin-top:auto;margin-left:auto;margin-bottom:auto;margin-right:auto;'><html><body><center>";
         $msg .= '<table border="0" cellpadding="0" cellspacing="0" height="100%" id="top-activity" style="background: white; font-family: \'Helvetica Neue\', \'Helvetica\', Helvetica, Arial, sans-serif; font-weight: normal; font-style: normal; font-size: 14px; line-height: 1; color: #222222; position: relative; -webkit-font-smoothing: antialiased;background-color:#FAFAFA;height:25% !important; margin:0; padding:0; width:100% !important;" width="100%">'
                 . "<tbody><tr><td align=\"center\" style=\"padding-top:20px;\" valign=\"top\">"
@@ -950,7 +956,7 @@ class Events extends CActiveRecord {
 			<table border="0" cellpadding="0" cellspacing="0" id="templateHeader" width="600">
                             <tbody>
 				<tr>
-                                    <td class="headerContent" style="color:#202020;font-weight:bold;line-height:100%;padding:0;text-align:center;vertical-align:middle;font-family: inherit;font-weight: normal;font-size: 14px;margin-bottom: 17px"><img id="headerImage campaign-icon" src="' . Yii::app()->getBaseUrl(true) . '/images/x2engine_crm' . (Yii::app()->edition !== 'opensource' ? '_' . Yii::app()->edition . '.png' : '') . '" style="border:0; height:auto; line-height:100%; outline:none; text-decoration:none;max-width:600px;" /></td>
+                                    <td class="headerContent" style="color:#202020;font-weight:bold;line-height:100%;padding:0;text-align:center;vertical-align:middle;font-family: inherit;font-weight: normal;font-size: 14px;margin-bottom: 17px"><img id="headerImage campaign-icon" src="' . $image .'" style="border:0; height:auto; line-height:100%; outline:none; text-decoration:none;max-width:600px;" /></td>
                                 </tr>
                                 <tr>
                                     <td style="color:#202020;font-weight:bold;padding:5px;text-align:center;vertical-align:middle;font-family: inherit;font-weight: normal;font-size: 14px;"><h2>' . Yii::t('profile', 'Activity Feed Report') . '</h2></td>
@@ -1064,9 +1070,9 @@ class Events extends CActiveRecord {
                     ->where('username=:user', array(':user' => $event->user))
                     ->queryScalar();
             if (!empty($avatar) && file_exists($avatar)) {
-                $avatar = Yii::app()->getBaseUrl(true) . '/' . $avatar;
+                $avatar = Yii::app()->getAbsoluteBaseUrl() . '/' . $avatar;
             } else {
-                $avatar = Yii::app()->getBaseUrl(true) . '/uploads/default.png';
+                $avatar = Yii::app()->getAbsoluteBaseUrl(true) . '/uploads/default.png';
             }
             $typeFile = $event->type;
             if (in_array($event->type, array('email_sent', 'email_opened'))) {
@@ -1085,7 +1091,7 @@ class Events extends CActiveRecord {
             }
             $imgFile = $avatar;
             if (file_exists(Yii::app()->theme->getBasePath() . '/images/eventIcons/' . $typeFile . '.png')) {
-                $imgFile = Yii::app()->getBaseUrl(true) . '/themes/' . Yii::app()->theme->getName() . '/images/eventIcons/' . $typeFile . '.png';
+                $imgFile = Yii::app()->getAbsoluteBaseUrl() . '/themes/' . Yii::app()->theme->getName() . '/images/eventIcons/' . $typeFile . '.png';
             }
             $img = CHtml::image($imgFile, '', array(
                         'style' => 'width:45px;height:45px;float:left;margin-right:5px;',
@@ -1097,7 +1103,7 @@ class Events extends CActiveRecord {
         $msg .= "</tbody></table></td></tr>";
 
         $msg .= "<tr><td style='text-align:center'><hr width='60%'><table><tbody>";
-        $msg .= Yii::t('profile', "To stop receiving this report, ") . CHtml::link(Yii::t('profile', 'click here'), Yii::app()->getBaseUrl(true) . '/index.php/profile/deleteActivityReport?id=' . $eventId . '&deleteKey=' . $deleteKey);
+        $msg .= Yii::t('profile', "To stop receiving this report, ") . CHtml::link(Yii::t('profile', 'click here'), Yii::app()->getAbsoluteBaseUrl() . '/index.php/profile/deleteActivityReport?id=' . $eventId . '&deleteKey=' . $deleteKey);
         $msg .= "</tbody></table></td></tr>";
 
         $msg .= '</tbody></table></td></tr></tbody></table></td></tr>';

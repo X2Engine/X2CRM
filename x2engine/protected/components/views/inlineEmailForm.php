@@ -1,7 +1,7 @@
 <?php
 /*****************************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2015 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -284,7 +284,8 @@ Yii::app()->clientScript->registerResponsiveCss('inlineEmailFormResponsiveCss',"
 <div class="form email-status" id="inline-email-status" style="display:none"></div>
 <div id="inline-email-top"></div>
 
-<div id="inline-email-form" <?php echo $this->startHidden ? "style='display: none;'" : ''; ?>>
+<div id="inline-email-form" <?php echo $this->startHidden ? "style='display: none;'" : ''; ?>
+ class='fixed-email-form'>
     <span id="template-change-confirm" style="display:none"><?php 
         echo Yii::t(
             'app',
@@ -317,6 +318,7 @@ Yii::app()->clientScript->registerResponsiveCss('inlineEmailFormResponsiveCss',"
     <div id="email-mini-module" 
      class="wide x2-layout-island<?php if($emailSent) echo ' hidden'; ?>">
 
+    <span class='widget-resize-handle'></span>
     <div class='email-title-bar submenu-title-bar widget-title-bar'>
         <span class='widget-title'><?php 
             echo CHtml::encode (Yii::t('app', 'New Message')); ?></span>
@@ -338,6 +340,16 @@ Yii::app()->clientScript->registerResponsiveCss('inlineEmailFormResponsiveCss',"
         </ul>
         <?php
         }
+        ?>
+        <?php
+//        echo X2Html::fa ('fa-expand', array (
+//            'class' => 'email-fullscreen-button x2-icon-button fa-lg x2-hide',
+//        ));
+        echo X2Html::fa ('fa-level-down', array (
+            'class' => 'email-reattach-button x2-icon-button fa-lg x2-hide',
+            'style' => 'visibility: hidden;',
+            'title' => CHtml::encode (Yii::t('app', 'Reattach email form')),
+        ));
         ?>
     </div>
     <?php

@@ -1,6 +1,6 @@
 /*****************************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2015 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -120,19 +120,22 @@
 * Mixin for border radius 
 ***************************************/
 /***************************************
+* Mixin for box shadow
+***************************************/
+/***************************************
 * Mixin for text field placeholder text
 ***************************************/
 /***************************************
 * CSS to extend when something 
 * should look like a link
 ***************************************/
-/* line 57, ../../../../compass/css/lib/standards.scss */
+/* line 68, ../../../../compass/css/lib/_standards.scss */
 .pseudo-link {
   cursor: pointer;
   color: #004baf;
   transition: color .1s;
 }
-/* line 62, ../../../../compass/css/lib/standards.scss */
+/* line 73, ../../../../compass/css/lib/_standards.scss */
 .pseudo-link:hover {
   color: #006cfb;
 }
@@ -141,11 +144,11 @@
 * CSS to extend when for elements that 
 * become opauqe on mouseover
 ***************************************/
-/* line 80, ../../../../compass/css/lib/standards.scss */
+/* line 91, ../../../../compass/css/lib/_standards.scss */
 .opacity-hover {
   opacity: 0.3;
 }
-/* line 75, ../../../../compass/css/lib/standards.scss */
+/* line 86, ../../../../compass/css/lib/_standards.scss */
 .opacity-hover:hover {
   opacity: 1;
 }

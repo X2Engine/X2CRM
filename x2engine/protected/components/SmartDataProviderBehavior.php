@@ -1,7 +1,7 @@
 <?php
 /*****************************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2015 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -89,6 +89,7 @@ class SmartDataProviderBehavior extends CBehavior {
 
         // sort order gets saved in db or session depending on settingsBehavior
 		$key = $this->getSortKey ();
+
 		if(!empty($_GET[$key])){
             if (!$this->owner->disablePersistentGridSettings)
 			    $val = $this->saveSetting ('sort', $_GET[$key]);

@@ -1,7 +1,7 @@
 <?php
 /*****************************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2015 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -37,7 +37,7 @@
 Yii::import('application.extensions.CJuiDateTimePicker.CJuiDateTimePicker');
 ?>
 
-<div id='new-action' class='publisher-form' 
+<div id='<?php echo $this->resolveId ('new-action'); ?>' class='publisher-form' 
  <?php echo ($startVisible ? '' : "style='display: none;'"); ?>>
 
     <div class="row">
@@ -48,7 +48,7 @@ Yii::import('application.extensions.CJuiDateTimePicker.CJuiDateTimePicker');
                     'rows' => 3,
                     'cols' => 40,
                     'class'=>'action-description',
-                    'id'=>'action-action-description'
+                    'id'=>$this->resolveId ('action-action-description'),
                 ));
 
             ?>
@@ -65,23 +65,16 @@ Yii::import('application.extensions.CJuiDateTimePicker.CJuiDateTimePicker');
             echo CHtml::activeLabel(
                 $model,'dueDate',
                 array('class' =>  'action-due-date-label')); 
-            $this->widget('CJuiDateTimePicker', array(
-                'model' => $model, //Model object
-                'attribute' => 'dueDate', //attribute name
-                'mode' => 'datetime', //use "time","date" or "datetime" (default)
-                'options' => array(
-                    'dateFormat' => Formatter::formatDatePicker('medium'),
-                    'timeFormat' => Formatter::formatTimePicker(),
-                    'ampm' => Formatter::formatAMPM(),
-                    'changeMonth' => true,
-                    'changeYear' => true,
-                ), // jquery plugin options
-                'language' => (Yii::app()->language == 'en') ? '' : Yii::app()->getLanguage(),
-                'htmlOptions' => array(
+            echo X2Html::activeDatePicker ($model, 'dueDate', array(
+                    // fix datepicker so it's always on top
                     'class'=>'action-due-date',
-                    'onClick' => "$('#ui-datepicker-div').css('z-index', '100');"
-                ), // fix datepicker so it's always on top
-            ));
+                    'onClick' => "$('#ui-datepicker-div').css('z-index', '100');",
+                    'id' => $this->resolveId ('action-form-action-due-date'),
+                ), 'datetime', array (
+                    'dateFormat' => Formatter::formatDatePicker ('medium'),
+                    'timeFormat' => Formatter::formatTimePicker (),
+                    'ampm' => Formatter::formatAMPM (),
+                ));
             ?>
         </div><!-- .cell  - the due date and reminder option-->
             
@@ -118,12 +111,19 @@ Yii::import('application.extensions.CJuiDateTimePicker.CJuiDateTimePicker');
                 ?>
             </div><!-- .cell -->
         </div>
-        <div class='row' id='action-reminder-container'>
+        <div class='row action-reminder-container'>
             <?php 
-            echo $form->checkBox($model, 'reminder', array ('data-default' => '0')); 
-            echo CHtml::label(Yii::t('actions', 'Create Reminder'),'reminder');
+            echo $form->checkBox(
+                $model, 'reminder',
+                $form->resolveHtmlOptions ($model, 'reminder', array(
+                    'data-default' => '0',
+                ))
+            ); 
+            echo CHtml::label(
+                Yii::t('actions', 'Create Reminder'),$this->resolveId ('Actions_reminder'));
             ?>
-            <div style='display: none;' id='action-reminder-inputs'>
+            <div style='display: none;' 
+             id='<?php echo $this->resolveId ('action-reminder-inputs'); ?>'>
                 <?php 
                 echo 
                     '<div>'.Yii::t('actions', 'Create a notification reminder for ').'</div>'.

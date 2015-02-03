@@ -1,6 +1,6 @@
 /*****************************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2015 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -258,6 +258,8 @@ VALUES
 ('AdminDisableUser',0,'',NULL,'N;'),
 ('AdminBanIp',0,'',NULL,'N;'),
 ('AdminWhitelistIp',0,'',NULL,'N;'),
+('AdminImportPackage',0,'',NULL,'N;'),
+('AdminPreviewPackageImport',0,'',NULL,'N;'),
 ('AdminExportPackage',0,'',NULL,'N;'),
 ('AdminBeginPackageRevert',0,'',NULL,'N;'),
 ('AdminFinishPackageRevert',0,'',NULL,'N;'),

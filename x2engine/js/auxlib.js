@@ -1,6 +1,6 @@
 /*****************************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2015 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -186,7 +186,7 @@ is not defined.
 */
 auxlib.applyArgs = function (obj, defaultArgs, args) {
 	for (var i in defaultArgs) {
-        
+        if (typeof obj[i] !== 'undefined') continue;
         if (typeof args[i] === 'undefined') {
 			obj[i] = defaultArgs[i];
 		} else {
@@ -220,7 +220,7 @@ auxlib.onClickOutside = (function () {
                 callback.call (elem);
                 return true;
             } 
-            return false;
+            evt.stopPropagation ();
         };
         var evtName = 'click.onClickOutside' + eventNamespace;
         $("body").unbind (evtName);
@@ -596,6 +596,20 @@ auxlib.fa = function(icon, htmlOptions) {
         htmlOptions = {}
     }
     return $('<i class="fa"></i>', htmlOptions).addClass(icon);
+}
+
+auxlib.generateSelectors = function (object) {
+
+    for (var i in object) {
+        if (typeof object[i] === 'string' && 
+            (object[i][0] == '#' || object[i][0] == '.')) {
+            object['$' + i] = $(object[i]);
+        }
+    }
+}
+
+auxlib.msie = function () {
+    return (navigator.appVersion.indexOf("MSIE")!=-1);
 }
 
 $(function () {

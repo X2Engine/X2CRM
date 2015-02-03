@@ -2,7 +2,7 @@
 
 /*****************************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2015 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -115,7 +115,8 @@ class Quote extends X2Model {
 	 */
 	public function getAdjustmentLines(){
 		if(!isset($this->_adjustmentLines))
-			$this->_adjustmentLines = array_filter($this->lineItems,function($li){return $li->isTotalAdjustment;});
+			$this->_adjustmentLines = array_filter(
+                $this->lineItems,function($li){return $li->isTotalAdjustment;});
 		return $this->_adjustmentLines;
 	}
 
@@ -124,7 +125,8 @@ class Quote extends X2Model {
 	 */
 	public function getProductLines(){
 		if(!isset($this->_productLines))
-			$this->_productLines = array_filter($this->lineItems,function($li){return !$li->isTotalAdjustment;});
+			$this->_productLines = array_filter(
+                $this->lineItems,function($li){return !$li->isTotalAdjustment;});
 		return $this->_productLines;
 	}
 
@@ -143,9 +145,11 @@ class Quote extends X2Model {
         // NOTE: you may need to adjust the relation name and the related
         // class name for the relations automatically generated below.
         return array_merge(parent::relations(), array(
-                    'products' => array(self::HAS_MANY, 'QuoteProduct', 'quoteId', 'order' => 'lineNumber ASC'),
-                    'contact' => array(self::BELONGS_TO, 'Contacts', array('associatedContacts' => 'nameId'))
-                ));
+            'products' => array(
+                self::HAS_MANY, 'QuoteProduct', 'quoteId', 'order' => 'lineNumber ASC'),
+            'contact' => array(
+                self::BELONGS_TO, 'Contacts', array('associatedContacts' => 'nameId'))
+        ));
     }
 
 	/**
@@ -157,16 +161,16 @@ class Quote extends X2Model {
 
 	public function behaviors() {
 		return array_merge(parent::behaviors(), array(
-					'X2LinkableBehavior' => array(
-						'class' => 'X2LinkableBehavior',
-						'module' => 'quotes'
-					),
-					'ERememberFiltersBehavior' => array(
-						'class' => 'application.components.ERememberFiltersBehavior',
-						'defaults' => array(),
-						'defaultStickOnClear' => false
-					)
-				));
+            'X2LinkableBehavior' => array(
+                'class' => 'X2LinkableBehavior',
+                'module' => 'quotes'
+            ),
+            'ERememberFiltersBehavior' => array(
+                'class' => 'application.components.ERememberFiltersBehavior',
+                'defaults' => array(),
+                'defaultStickOnClear' => false
+            )
+        ));
 	}
 
 	/**
@@ -333,6 +337,11 @@ class Quote extends X2Model {
 		}
 	}
 
+    public function getContactId () {
+        list ($name, $id) = Fields::nameAndId ($this->associatedContacts);
+        return $id;
+    }
+
 	/**
 	 * Creates an action history event record in the contact/account
 	 */
@@ -349,13 +358,11 @@ class Quote extends X2Model {
 			'completedBy' => $this->createdBy,
 			'updatedBy' => $this->updatedBy
 		);
-		$ids = explode(',',$this->associatedContacts);
-		if(!empty($ids)) {
-			$cid = trim($ids[0]);
+		if(!empty($this->contactId)) {
 			$action = new Actions();
 			$action->attributes = $actionAttributes;
 			$action->associationType = 'contacts';
-			$action->associationId = $cid;
+			$action->associationId = $this->contactId;
 			$action->save();
 		}
 		if(!empty($this->accountName)) {
@@ -631,6 +638,14 @@ class Quote extends X2Model {
 		return $this->searchBase($criteria);
 	}
 
+    public function getName () {
+        if ($this->name == '') {
+            return $this->id;
+        } else {
+            return $this->name;
+        }
+    }
+
 	public function searchAdmin() {
 		$criteria = new CDbCriteria;
 
@@ -733,36 +748,31 @@ class Quote extends X2Model {
 	 * Clear out records associated with this quote before deletion.
 	 */
 	public function beforeDelete(){
-
 		QuoteProduct::model()->deleteAllByAttributes(array('quoteId'=>$this->id));
-		Relationships::model()->deleteAllByAttributes(array('firstType' => 'quotes', 'firstId' => $this->id));// delete associated actions
-		Actions::model()->deleteAllByAttributes(array('associationId'=>$this->id, 'associationType'=>'quotes'));
-//		$event = new Events;
-//		$event->type = 'record_deleted';
-//		$event->subtype = 'quote';
-//		$event->associationType = $this->myModelName;
-//		$event->associationId = $this->id;
-//		$event->text = $this->name;
-//		$event->user = $this->assignedTo;
-//		$event->save();
-		$name = $this->name;
-		// generate action record, for history
+
+        // for old relationships generated with incorrect type name
+		Relationships::model()->deleteAllByAttributes(
+            array('firstType' => 'quotes', 'firstId' => $this->id));
+
+		// generate action record for history
 		$contact = $this->contact;
 		if(!empty($contact)){
 			$action = new Actions;
 			$action->associationType = 'contacts';
-			$action->type = 'quotes';
+			$action->type = 'quotesDeleted';
 			$action->associationId = $contact->id;
 			$action->associationName = $contact->name;
-			$action->assignedTo = Yii::app()->getSuModel()->username; //  Yii::app()->user->getName();
-			$action->completedBy = Yii::app()->getSuModel()->username; // Yii::app()->user->getName();
+			$action->assignedTo = Yii::app()->getSuModel()->username; 
+			$action->completedBy = Yii::app()->getSuModel()->username;
 			$action->createDate = time();
 			$action->dueDate = time();
 			$action->completeDate = time();
 			$action->visibility = 1;
 			$action->complete = 'Yes';
-			$action->actionDescription = "Deleted Quote: <span style=\"font-weight:bold;\">{$this->id}</span> {$this->name}";
-			$action->save(); // Save after deletion of the model so that this action itself doensn't get deleted
+			$action->actionDescription = 
+                "Deleted Quote: <span style=\"font-weight:bold;\">{$this->id}</span> {$this->name}";
+            // Save after deletion of the model so that this action itself doensn't get deleted
+			$action->save(); 
 		}
 		return parent::beforeDelete();
 	}

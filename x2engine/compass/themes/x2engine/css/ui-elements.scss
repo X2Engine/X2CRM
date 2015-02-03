@@ -1,6 +1,6 @@
 /*****************************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2015 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -207,9 +207,7 @@ CSS "button" links to be used instead of actual buttons
     background-color: #E0E0E0;
     /*background: -webkit-gradient(linear, left top, left bottom, from(#bbb), to(#ccc));
     background: -moz-linear-gradient(top,  #bbb,  #ccc);*/
-    -moz-box-shadow: inset 0 1px 1px 0 #999;
-    -webkit-box-shadow: inset 0 1px 1px 0 #999;
-    box-shadow: inset 0 1px 1px 0 #999;
+    @include box-shadow(inset 0 1px 1px 0 #999);
     pointer-events: none;
     cursor: default;
 }
@@ -230,9 +228,8 @@ CSS "button" links to be used instead of actual buttons
     color: black;
     border-color: #A7A7A7;
     background: #cccccc;
-    -moz-box-shadow: inset 0 1px 1px 0 #999;
-    -webkit-box-shadow: inset 0 1px 1px 0 #999;
-    box-shadow: inset 0 1px 1px 0 #999;
+    @include box-shadow(inset 0 1px 1px 0 #999);
+    /* @theme background light_content */
 }
 
 .x2-minimal-button {
@@ -240,9 +237,8 @@ CSS "button" links to be used instead of actual buttons
         color: black;
         border-color: #A7A7A7;
         background: #cccccc;
-        -moz-box-shadow: inset 0 1px 1px 0 #999;
-        -webkit-box-shadow: inset 0 1px 1px 0 #999;
-        box-shadow: inset 0 1px 1px 0 #999;
+        @include box-shadow(inset 0 1px 1px 0 #999);
+        /* @theme background light_content */
     }
 }
 
@@ -251,9 +247,8 @@ CSS "button" links to be used instead of actual buttons
     color: black;
     border-color: #A7A7A7;
     background: #cccccc;
-    -moz-box-shadow: inset 0 1px 1px 0 #999;
-    -webkit-box-shadow: inset 0 1px 1px 0 #999;
-    box-shadow: inset 0 1px 1px 0 #999;
+    @include box-shadow(inset 0 1px 1px 0 #999);
+    /* @theme background light_highlight1 */
   }
   &.disabled {
     cursor: default !important;
@@ -267,9 +262,7 @@ CSS "button" links to be used instead of actual buttons
         color: black;
         border-color: #A7A7A7;
         background: #cccccc;
-        -moz-box-shadow: inset 0 1px 1px 0 #999;
-        -webkit-box-shadow: inset 0 1px 1px 0 #999;
-        box-shadow: inset 0 1px 1px 0 #999;
+        @include box-shadow(inset 0 1px 1px 0 #999);
     }
 }
 
@@ -277,9 +270,7 @@ input.active, .ui-dialog .ui-dialog-buttonpane button:active {
     color: black;
     border-color: #A7A7A7;
     background: #cccccc;
-    -moz-box-shadow: inset 0 1px 1px 0 #999;
-    -webkit-box-shadow: inset 0 1px 1px 0 #999;
-    box-shadow: inset 0 1px 1px 0 #999;
+    @include box-shadow(inset 0 1px 1px 0 #999);
 }
 
 .x2-button.clicked:hover, .x2-minimal-button.clicked:hover {
@@ -314,6 +305,10 @@ input.active, .ui-dialog .ui-dialog-buttonpane button:active {
         border-color: #B50000 !important;
         text-shadow: rgba(0, 0, 0, 0.5) 0 1px 3px;
         color: #fff;
+
+        /* @theme background highlight2 */
+        /* @theme border dark_highlight2 */
+
     }
 }
 
@@ -676,10 +671,10 @@ small x2-button
 }*/
 
 .ui-tabs {
-    border: none;
-    margin: 0 0 5px 0;
-    padding: 0;
-    background: none;
+    border: none !important;
+    margin: 0 0 5px 0 !important;
+    padding: 0 !important;
+    background: none !important;
     .ui-tabs-nav {
         background: none;
         border: none;
@@ -690,7 +685,7 @@ small x2-button
             background: #f8f8f8;
             font-size: 10pt;
             margin: 0 2px 0 0;
-            border: 1px solid #ccc;
+            border-color: #E1E1E1 !important;
             border-bottom: none;
             font-family: Arial, Helvetica, sans-serif;
             /* font-weight: bold; */
@@ -742,6 +737,8 @@ small x2-button
     -moz-border-radius: 4px;
     -webkit-border-radius: 4px;
     -o-border-radius: 4px;
+    position: relative;
+    z-index: 1;
 }
 
 .history .ui-tabs .form {
@@ -1158,10 +1155,10 @@ button.ui-button.ui-dialog-titlebar-close {
 }
 
 .ui-dialog {
-    border: 1px solid #9b9b9b !important;
+    // border: 1px solid #9b9b9b !important;
     z-index: 900000;
+    // border-width: 0;
     @include box-shadow(0px 0px 5px 1px rgba(0, 0, 0, 0.5));
-    border-width: 0;
 
     .ui-widget-header {
         margin: -4px -4px 0 -4px;
@@ -1493,6 +1490,7 @@ Ckeditor
         border-left: 6px solid transparent;
         content: '';
     }
+
     &.flipped:before {
         position: absolute;
         z-index: 501;
@@ -1507,26 +1505,42 @@ Ckeditor
         right: 6px;
     }
     z-index: 500;
-    -moz-box-shadow: 0 3px 15px 2px rgba(0, 0, 0, 0.5);
-    -webkit-box-shadow: 0 3px 15px 2px rgba(0, 0, 0, 0.5);
-    box-shadow: 0 3px 15px 2px rgba(0, 0, 0, 0.5);
-    background: rgb(247, 247, 247);
+    background: white;
+
     position: absolute;
-    border-radius: 4px;
-    -moz-border-radius: 4px;
-    -webkit-border-radius: 4px;
-    -o-border-radius: 4px;
+
+    @include box-shadow(0 3px 9px 0px rgba(0, 0, 0, 0.5));    
+    @include border-radius(2px);
+
     ul {
-        background: rgb(247, 247, 247);
+        background: $lightestGray;
         list-style: none;
         padding: 5px 0 5px 0;
         margin: 0;
         width: 200px;
-        border-radius: 4px 4px 4px 4px;
-        -moz-border-radius: 4px 4px 4px 4px;
-        -webkit-border-radius: 4px 4px 4px 4px;
-        -o-border-radius: 4px 4px 4px 4px;
+        @include border-radius(2px);
     }
+
+    li {
+        line-height: 26px;
+        padding: 0 5px 0px 5px;
+        cursor: pointer;
+        line-height: 26px;
+        padding: 0 5px 0px 5px;
+        // font-weight: bold;
+        color: $nearBlack;
+
+        &:hover {
+            background: darken($lightestGray, 5%);
+        }
+
+        .fa {
+            width: 10px;
+            margin-right: 10px;
+            margin-left: 5px;
+        }
+    }
+
 }
 
 ul.popup-dropdown-menu {
@@ -1535,23 +1549,7 @@ ul.popup-dropdown-menu {
     padding: 5px 0 5px 0;
     margin: 0;
     width: 200px;
-    border-radius: 4px 4px 4px 4px;
-    -moz-border-radius: 4px 4px 4px 4px;
-    -webkit-border-radius: 4px 4px 4px 4px;
-    -o-border-radius: 4px 4px 4px 4px;
-}
-
-.popup-dropdown-menu li {
-    line-height: 26px;
-    padding: 0 5px 0px 5px;
-    cursor: pointer;
-    &:hover {
-        background: rgb(216, 216, 216);
-    }
-    line-height: 26px;
-    padding: 0 5px 0px 5px;
-    font-weight: bold;
-    color: rgb(100, 100, 100);
+    @include border-radius(2px);
 }
 
 .x2-icon-button {
@@ -2050,7 +2048,7 @@ button.ui-multiselect {
 
 .x2-qtip {
     .qtip-content {
-        padding: 0;
+        padding: 0px 10px 10px 10px;
     }
     .qtip-loading-text {
         padding: 3px 5px;
@@ -2296,8 +2294,8 @@ ul.x2-dropdown-list {
 ***********************************************************************/
 // Add to an a tag with an empty href attribute
 .pseudo-link {
-        text-decoration: none;
-        cursor: pointer;
+    text-decoration: none;
+    cursor: pointer;
 }
 
 .x2-delete-icon {
@@ -2317,6 +2315,8 @@ ul.x2-dropdown-list {
         margin-right: -10px;
         border-top: 1px solid $gray;
         border-bottom: 1px solid $gray;
+        /* @theme border-color border */
+        
         .x2-collapsible {
                 padding: 10px;
                 padding-top: 0px;
@@ -2327,6 +2327,7 @@ ul.x2-dropdown-list {
         }
         &.collapsed > .x2-collapse-handle:hover {
                 background: $lightestGray;
+                /* @theme background bright_content */
                 cursor: pointer;
         }
 }
@@ -2470,6 +2471,18 @@ span {
 
     .ui-icon-closethick {
         display: none !important;
+    }
+}
+
+/***********************************************************************
+* icons 
+***********************************************************************/
+
+.quote-icon {
+    .fa-pencil {
+        position: relative;
+        left: 6px;
+        top: -2px;
     }
 }
 

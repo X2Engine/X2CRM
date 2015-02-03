@@ -1,6 +1,6 @@
 /*****************************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2015 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -34,23 +34,44 @@
  *****************************************************************************************/
 
 .chart-container {
-  border: none !important;
-  padding-bottom: 0px !important;
-  padding-left: 6px !important;
-  padding-right: 6px !important;
-  overflow: hidden !important;
-  .chart {
-    width: 98%;
-    height: 200px;
-    text-align: center;
-    margin: 0 auto;
-  }
+    border: none !important;
+    padding-bottom: 0px !important;
+    padding-left: 6px !important;
+    padding-right: 6px !important;
+    overflow: hidden !important;
+    .chart {
+        width: 98%;
+        height: 200px;
+        text-align: center;
+        margin: 0 auto;
+    }
+
+
+    .date-range-selector {
+        transition: opacity .2s;    
+        border-top-left-radius: 0px;
+        border-bottom-left-radius: 0px;
+        margin-left: -5px !important;
+
+
+    }
+
+    .date-range-type-selector {
+        transition: border-radius 0.5s;
+        border-top-right-radius: 0px;
+        border-bottom-right-radius: 0px;
+        margin-right: 0px !important;
+        &.rounded {
+            border-radius: 3px;
+        }  
+    }
+
 }
 
 /* Pie chart data labels */
 
 .jqplot-pie-series.jqplot-data-label {
-  color: #ffffff;
+    color: #ffffff;
 }
 
 /*
@@ -58,68 +79,68 @@ Pie chart overrides
 */
 
 .chart-container {
-  .chart.pie {
-    height: 235px !important;
-    /*margin-top: 28px;*/
-  }
-  .chart-legend.pie {
-    margin-top: -15px;
-    /*position: relative;
-    top: 5px;*/
-  }
-  .bin-size-button-set.pie {
-    display: none;
-  }
-  .datepicker-row {
-    &.pie {
-      /*float: right;
-      clear: none;*/
+    .chart.pie {
+        height: 235px !important;
+        /*margin-top: 28px;*/
     }
-    &.action-history-pie {
-      /*float: right;
-      clear: none;
-      position: relative;
-      z-index: 100;*/
+    .chart-legend.pie {
+        margin-top: -15px;
+        /*position: relative;
+        top: 5px;*/
     }
-  }
-  .rel-chart-data-checkbox-container.pie {
-    /*clear: both;*/
-  }
-  .top-button-row {
-    &.pie {
-      /*float: left;
-      clear: none;*/
-      display: none;
+    .bin-size-button-set.pie {
+        display: none;
     }
-    &.feed-pie {
-      /*float: left;
-      clear: none;*/
+    .datepicker-row {
+        &.pie {
+            /*float: right;
+            clear: none;*/
+        }
+        &.action-history-pie {
+            /*float: right;
+            clear: none;
+            position: relative;
+            z-index: 100;*/
+        }
     }
-  }
-  .create-setting-button.pie {
-    /*clear: both;
-    position: relative;
-    z-index: 100;*/
-  }
-  .ui-multiselect.pie {
-    display: none;
-  }
-  .predefined-settings.pie {
-    position: relative;
-    z-index: 100;
-  }
-  .rel-chart-data-checkbox-container {
-    margin-top: 4px;
-    height: 20px;
-    > {
-      input {
-        margin: 0 0 0 3px;
-      }
-      label {
-        margin: 0 0 0 0;
-      }
+    .rel-chart-data-checkbox-container.pie {
+        /*clear: both;*/
     }
-  }
+    .top-button-row {
+        &.pie {
+            /*float: left;
+            clear: none;*/
+            display: none;
+        }
+        &.feed-pie {
+            /*float: left;
+            clear: none;*/
+        }
+    }
+    .create-setting-button.pie {
+        /*clear: both;
+        position: relative;
+        z-index: 100;*/
+    }
+    .ui-multiselect.pie {
+        display: none;
+    }
+    .predefined-settings.pie {
+        position: relative;
+        z-index: 100;
+    }
+    .rel-chart-data-checkbox-container {
+        margin-top: 4px;
+        height: 20px;
+        > {
+            input {
+                margin: 0 0 0 3px;
+            }
+            label {
+                margin: 0 0 0 0;
+            }
+        }
+    }
 }
 
 /*
@@ -131,18 +152,18 @@ Chart setting dialog
 */
 
 .chart-setting-name-input-container {
-  margin-top: 9px !important;
-  margin-bottom: 0px !important;
+    margin-top: 9px !important;
+    margin-bottom: 0px !important;
 }
 
 .create-chart-setting-dialog input {
-  margin-top: 0px !important;
+    margin-top: 0px !important;
 }
 
 .chart-setting-name {
-  width: 170px !important;
-  margin-left: 4px !important;
-  margin-bottom: 4px !important;
+    width: 170px !important;
+    margin-left: 4px !important;
+    margin-bottom: 4px !important;
 }
 
 /*
@@ -150,26 +171,26 @@ Chart legend
 */
 
 .chart-legend {
-  padding-top: 7px;
-  padding-left: 15px;
-  table-layout: fixed;
-  width: 80%;
-  border-spacing: 4px;
-  .chart-color-label {
-    font-size: 12px;
-    color: #505050;
-  }
-  .chart-color-swatch {
-    width: 10px;
-    height: 10px;
-    margin-right: 4px;
-    float: left;
-    -moz-border-radius: 5px;
-    -o-border-radius: 5px;
-    -webkit-border-radius: 5px;
-    border-radius: 5px;
-    margin-top: 2px;
-  }
+    padding-top: 7px;
+    padding-left: 15px;
+    table-layout: fixed;
+    width: 80%;
+    border-spacing: 4px;
+    .chart-color-label {
+        font-size: 12px;
+        color: #505050;
+    }
+    .chart-color-swatch {
+        width: 10px;
+        height: 10px;
+        margin-right: 4px;
+        float: left;
+        -moz-border-radius: 5px;
+        -o-border-radius: 5px;
+        -webkit-border-radius: 5px;
+        border-radius: 5px;
+        margin-top: 2px;
+    }
 }
 
 /*
@@ -177,14 +198,14 @@ data point tooltip
 */
 
 .chart-tooltip {
-  padding: 4px;
-  min-width: 100px;
-  background: white;
-  border: 1px solid #ccc;
-  .chart-tooltip-date {
-    font-weight: bold;
-    color: .424242;
-  }
+    padding: 4px;
+    min-width: 100px;
+    background: white;
+    border: 1px solid #ccc;
+    .chart-tooltip-date {
+        font-weight: bold;
+        color: .424242;
+    }
 }
 
 /*
@@ -192,65 +213,65 @@ Chart settings
 */
 
 .chart-container {
-  .delete-setting-button {
-    margin-top: 6px;
-    margin-left: -2px;
-    margin-right: 11px;
-  }
-  .create-setting-button {
-    margin-bottom: 0;
-    margin-top: 2px;
-  }
-  .predefined-settings {
-    width: 100px;
-    margin-top: 4px;
-    margin-right: 4px;
-  }
-  .bin-size-button-set {
-    margin-top: 1px;
-  }
-  a {
-    text-decoration: none;
-  }
-  button.selected {
-    border: 1px solid black;
-  }
-  a.x2-button {
-    margin: 0px -4px 0 0;
-  }
-  .datepicker-row {
-    margin-top: -0px;
+    .delete-setting-button {
+        margin-top: 6px;
+        margin-left: -2px;
+        margin-right: 11px;
+    }
+    .create-setting-button {
+        margin-bottom: 0;
+        margin-top: 2px;
+    }
+    .predefined-settings {
+        width: 100px;
+        margin-top: 4px;
+        margin-right: 4px;
+    }
+    .bin-size-button-set {
+        margin-top: 1px;
+    }
+    a {
+        text-decoration: none;
+    }
+    button.selected {
+        border: 1px solid black;
+    }
+    a.x2-button {
+        margin: 0px -4px 0 0;
+    }
+    .datepicker-row {
+        margin-top: -0px;
+        button {
+            margin-right: 0;
+        }
+    }
+    .chart-filters-container {
+        height: 30px;
+        display: block;
+        button.ui-multiselect {
+            margin-right: 5px;
+            margin-bottom: 2px;
+        }
+    }
     button {
-      margin-right: 0;
+        &.show-chart-filters-button, &.hide-chart-filters-button {
+            margin: 1px 0 0 5px;
+        }
+        &.ui-multiselect {
+            float: left;
+            margin-top: 2px;
+        }
+        &.x2-small-button {
+            font-size: 80%;
+        }
     }
-  }
-  .chart-filters-container {
-    height: 30px;
-    display: block;
-    button.ui-multiselect {
-      margin-right: 5px;
-      margin-bottom: 2px;
+    .datepicker-row, .top-button-row {
+        /*position: relative;
+        z-index: 100;*/
     }
-  }
-  button {
-    &.show-chart-filters-button, &.hide-chart-filters-button {
-      margin: 1px 0 0 5px;
+    .chart-datepicker-to, .chart-datepicker-from {
+        width: 100px;
     }
-    &.ui-multiselect {
-      float: left;
-      margin-top: 2px;
-    }
-    &.x2-small-button {
-      font-size: 80%;
-    }
-  }
-  .datepicker-row, .top-button-row {
-    /*position: relative;
-    z-index: 100;*/
-  }
-  .chart-datepicker-to, .chart-datepicker-from {
-    width: 100px;
-  }
 }
 
 /*
@@ -266,41 +287,41 @@ advanced settings
 */
 
 .pie-chart-count-container {
-  display: inline;
-  margin-left: 67%;
-  bottom: 50px;
-  background: #E6E6E6;
-  padding: 3px 4px;
-  position: relative;
+    display: inline;
+    margin-left: 67%;
+    bottom: 50px;
+    background: #E6E6E6;
+    padding: 3px 4px;
+    position: relative;
 }
 
 /* ie8 fixes */
 
 .x2-chart-multiselect {
-  max-width: 225px;
-  width: 30%;
-  min-width: 150px;
+    max-width: 225px;
+    width: 30%;
+    min-width: 150px;
 }
 
 @media (max-width: 543px) {
-  .chart-legend {
-    width: 100%;
-  }
+    .chart-legend {
+        width: 100%;
+    }
 }
 
 @media (max-width: 470px) {
-  #actionHistoryChart-bin-size-button-set {
-    margin: auto;
-    left: 0;
-    right: 0;
-    position: absolute;
-    text-align: center;
-  }
-  body.show-left-bar #actionHistoryChart-bin-size-button-set {
-    left: 161px;
-    width: 300px;
-  }
-  .x2-chart-multiselect {
-    margin-top: 33px !important;
-  }
+    #actionHistoryChart-bin-size-button-set {
+        margin: auto;
+        left: 0;
+        right: 0;
+        position: absolute;
+        text-align: center;
+    }
+    body.show-left-bar #actionHistoryChart-bin-size-button-set {
+        left: 161px;
+        width: 300px;
+    }
+    .x2-chart-multiselect {
+        margin-top: 33px !important;
+    }
 }

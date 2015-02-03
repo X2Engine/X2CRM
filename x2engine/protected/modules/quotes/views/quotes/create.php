@@ -1,7 +1,7 @@
 <?php
 /*****************************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2015 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -39,19 +39,18 @@ $menuOptions = array(
 );
 $this->insertMenu($menuOptions);
 
-$title = CHtml::tag('h2',array(),Yii::t('quotes','Create {quote}', array(
+$title = CHtml::tag(
+    'h2',array('class' =>'quotes-section-title'),Yii::t('quotes','Create {quote}', array(
     '{quote}' => Modules::displayName(false),
 )));
 echo $quick?$title:CHtml::tag('div',array('class'=>'page-title icon quotes'),$title);
-?>
 
-<?php
 $form=$this->beginWidget('CActiveForm', array(
 	'id'=>'quotes-form',
 	'enableAjaxValidation'=>false,
 ));
 
-if($model->hasLineItemErrors): ?>
+if($model->hasLineItemErrors) { ?>
 <div class="errorSummary">
     <h3>
         <?php echo Yii::t('quotes','Could not save {quote} due to line item errors:',  array(
@@ -59,12 +58,13 @@ if($model->hasLineItemErrors): ?>
         )); ?>
     </h3>
 	<ul>
-	<?php foreach($model->lineItemErrors as $error): ?>
+	<?php foreach($model->lineItemErrors as $error) { ?>
 		<li><?php echo CHtml::encode($error); ?></li>
-	<?php endforeach; ?>
+	<?php } ?>
 	</ul>
 </div>
-<?php endif;
+<?php 
+}
 
 echo $this->renderPartial('application.components.views._form',
 	array(
@@ -84,28 +84,12 @@ echo $this->renderPartial('_lineItems', array(
     'namespacePrefix' => 'quotes'
 ));
 
-$templateRec = Yii::app()->db->createCommand()->select('nameId,name')->from('x2_docs')->where("type='quote'")->queryAll();
-$templates = array();
-$templates[null] = '(none)';
-foreach($templateRec as $tmplRec){
-	$templates[$tmplRec['nameId']] = $tmplRec['name'];
-}
-echo '<div style="display:inline-block; margin: 8px 11px;">';
-echo '<strong>'.$form->label($model, 'template').'</strong>&nbsp;';
-echo $form->dropDownList($model, 'template', $templates).'&nbsp;'
-    . CHtml::tag('span', array(
-        'class' => 'x2-hint',
-        'title' => Yii::t('quotes', 'To create a template for {quotes} and invoices, go to the {docs} module and select "Create {quote}".', array(
-            '{quotes}' => lcfirst(Modules::displayName()),
-            '{quote}' => Modules::displayName(false),
-            '{docs}' => Modules::displayName(true, "Docs"),
-        )),
-    ), '[?]');
-echo '</div><br />';
-echo '	<div class="row buttons" style="padding-left:0">'."\n";
-echo CHtml::submitButton(Yii::t('app', 'Create'), array('class' => 'x2-button'.($quick?' highlight':''), 'id' => 'quote-save-button', 'tabindex' => 25,'onClick' => 'return x2.quoteslineItems.validateAllInputs ();'))."\n";
-echo $quick?CHtml::button(Yii::t('app','Cancel'),array('class'=>'x2-button right','id'=>'quote-cancel-button','tabindex'=>24))."\n":'';
-echo "	</div>\n";
-echo '<div id="quotes-errors"></div>';
+echo $this->renderPartial('_sharedView', array (
+    'quick' => $quick,
+    'action' => 'Create',
+    'model' => $model,
+    'form' => $form,
+));
+
 $this->endWidget();
 ?>

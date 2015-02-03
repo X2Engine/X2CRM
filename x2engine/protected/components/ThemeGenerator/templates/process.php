@@ -30,6 +30,10 @@
 	display: none !important;
 }
 
+.workflow-stage-name {
+	color: black !important;
+}
+
 #stage-member-list-container-top-scrollbar-outer,
 .stage-list-title,
 #stage-member-lists-container .items .empty,
@@ -46,6 +50,8 @@
 .funnel-stage-count {
 	color: #222 !important;
 }
+
+
 
 #workflowDetailsForm .details,
 #workflowDetailsForm td,

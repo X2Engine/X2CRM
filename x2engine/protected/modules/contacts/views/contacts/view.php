@@ -1,7 +1,7 @@
 <?php
 /*****************************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2015 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -53,6 +53,8 @@ Yii::app()->clientScript->registerResponsiveCssFile(
 
 $this->setPageTitle(empty($model->name) ? $model->firstName." ".$model->lastName : $model->name);
 
+$layoutManager = $this->widget ('RecordViewLayoutManager', array ('staticLayout' => false));
+
 Yii::app()->clientScript->registerScript('hints', '
     $(".hint").qtip();
 ');
@@ -80,7 +82,7 @@ $serviceModule = Modules::model()->findByAttributes(array('name' => 'services'))
 
 $menuOptions = array(
     'all', 'lists', 'create', 'view', 'edit', 'share', 'delete',
-    'email', 'attach', 'quotes', 'print',
+    'email', 'attach', 'quotes', 'print', 'editLayout',
 );
 $menuOptions[] = ($subscribed ? 'unsubscribe' : 'subscribe');
 if ($opportunityModule->visible && $accountModule->visible)
@@ -176,7 +178,7 @@ if(true){ //!IS_ANDROID && !IS_IPAD){
         ';
 }
 ?>
-<div id="main-column">
+<div id="main-column" <?php echo $layoutManager->columnWidthStyleAttr (1); ?>>
     <div id='contacts-detail-view'> 
     <?php 
     $this->renderPartial(
@@ -241,37 +243,6 @@ if(true){ //!IS_ANDROID && !IS_IPAD){
     $leadStatus = $model->leadstatus;
 //*** End Create Related models ***/
 
-    $this->widget('X2WidgetList', array(
-        'model' => $model,
-        'widgetParamsByWidgetName' => array (
-            'InlineRelationshipsWidget' => array (
-                'defaultsByRelatedModelType' => array (
-                    'Accounts' => array (
-                        'name' => $accountName,
-                        'assignedTo' => $assignedTo,
-                        'phone' => $phone,
-                        'website' => $website
-                    ),
-                    'Contacts' => array (
-                        'company' => $accountName,
-                        'assignedTo' => $assignedTo,
-                        'leadSource' => $leadSource,
-                        'leadtype' => $leadtype,
-                        'leadstatus' => $leadStatus
-                    ),
-                    'Opportunity' => array (
-                        'accountName' => $accountName,
-                        'assignedTo' => $assignedTo,
-                    ),
-                    'Services' => array (
-                        'contactName' => $contactName,
-                        'assignedTo' => $assignedTo,
-                    )
-                )
-            )
-        )
-    ));
-
     $this->widget(
         'Attachments', array(
             'associationType' => 'contacts',
@@ -285,23 +256,41 @@ if(true){ //!IS_ANDROID && !IS_IPAD){
             'contactId' => $model->id,
             'account' => $model->getLinkedAttribute('company', 'name'),
             'modelName' => X2Model::getModuleModelName ()
-                )
-        );
+        ));
         ?>
     </div>
 
 </div>
-<div class="history half-width">
-    <?php
-    $this->widget('Publisher', array(
-        'associationType' => 'contacts',
-        'associationId' => $model->id,
-        'assignedTo' => Yii::app()->user->getName(),
-        'calendar' => false
+<?php
+$this->widget('X2WidgetList', array(
+    'model' => $model,
+    'layoutManager' => $layoutManager,
+    'widgetParamsByWidgetName' => array (
+        'InlineRelationshipsWidget' => array (
+            'defaultsByRelatedModelType' => array (
+                'Accounts' => array (
+                    'name' => $accountName,
+                    'assignedTo' => $assignedTo,
+                    'phone' => $phone,
+                    'website' => $website
+                ),
+                'Contacts' => array (
+                    'company' => $accountName,
+                    'assignedTo' => $assignedTo,
+                    'leadSource' => $leadSource,
+                    'leadtype' => $leadtype,
+                    'leadstatus' => $leadStatus
+                ),
+                'Opportunity' => array (
+                    'accountName' => $accountName,
+                    'assignedTo' => $assignedTo,
+                ),
+                'Services' => array (
+                    'contactName' => $contactName,
+                    'assignedTo' => $assignedTo,
+                )
             )
-    );
-
-    $this->widget('History', array('associationType' => 'contacts', 'associationId' => $model->id));
-    ?>
-</div>
-
+        )
+    )
+));
+?>

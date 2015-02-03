@@ -1,7 +1,7 @@
 <?php
 /*****************************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2015 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -189,7 +189,8 @@ foreach($standardMenuItems as $key => $value){
     $file = Yii::app()->file->set('protected/controllers/'.ucfirst($key).'Controller.php');
     $action = ucfirst($key).ucfirst($defaultAction);
     $authItem = $auth->getAuthItem($action);
-    $permission = Yii::app()->user->checkAccess($action) || is_null($authItem);
+    $permission = Yii::app()->params->isAdmin || Yii::app()->user->checkAccess($action) || 
+        is_null($authItem);
     if($file->exists){
         if($permission){
             $menuItems[$key] = array(
@@ -458,7 +459,7 @@ if (RESPONSIVE_LAYOUT) {
     }
 ?>" class="enable-search-bar-modes <?php 
     if($noBorders) echo 'no-borders'; 
-    if($fullscreen) echo ' no-widgets'; 
+    if($fullscreen) echo ' no-widgets'; else echo ' show-widgets';
     if(!RESPONSIVE_LAYOUT) echo ' disable-mobile-layout'; 
 ?>">
 
@@ -492,12 +493,18 @@ if (YII_DEBUG && YII_UNIT_TESTING) {
                         )); ?>"
                  id='search-bar-title' class='special'>
                 <?php
-                echo CHtml::image(
-                    Yii::app()->request->baseUrl.'/'.Yii::app()->params->logo, Yii::app()->settings->appName,
-                    array (
-                        'id' => 'your-logo',
-                        'class' => Yii::app()->params->logo === 'uploads/logos/yourlogohere.png' ? '' : 'custom-logo'
-                    ));
+                $custom = Yii::app()->params->logo !== 'uploads/logos/yourlogohere.png';
+                if ($custom) {
+                    echo CHtml::image(
+                        Yii::app()->request->baseUrl.'/'.Yii::app()->params->logo, Yii::app()->settings->appName,
+                        array (
+                            'id' => 'your-logo',
+                            'class' => 'custom-logo'
+                        ));
+                } else {
+                    echo CHtml::tag('span', array('id'=> 'x2-logo', 'class'=>'icon-x2-logo-square'), ' ');
+                }
+
                 ?>
                 </a>
                 <div id='top-menus-container'>

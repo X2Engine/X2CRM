@@ -2,7 +2,7 @@
 
 /*****************************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2015 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -203,19 +203,15 @@ class SiteController extends x2base {
     }
 
     /**
-     * Action to either retrieve or set a widget setting
+     * Action to set a widget setting
      * @param string $widget the widget name 
      * @param string $setting the setting name
      * @param string $value the value to save in the setting
      * */
-    public function actionWidgetSetting($widget, $setting, $value) {
-        if (isset($value)) {
-            Profile::changeWidgetSetting($widget, $setting, $value);
-        } else if (isset($setting)) {
-            echo CJSON::encode(Profile::getWidgetSetting($widget)->$setting);
-        } else {
-            echo CJSON::encode(Profile::getWidgetSetting($widget));
-        }
+    public function actionWidgetSetting($widget, $setting) {
+        $value = $_GET['value'];
+        Profile::changeWidgetSetting($widget, $setting, $value);
+
     }
 
     // Outputs white or black depending on input color

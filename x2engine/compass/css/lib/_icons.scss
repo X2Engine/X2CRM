@@ -1,0 +1,140 @@
+/*****************************************************************************************
+ * X2Engine Open Source Edition is a customer relationship management program developed by
+ * X2Engine, Inc. Copyright (C) 2011-2015 X2Engine Inc.
+ * 
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU Affero General Public License version 3 as published by the
+ * Free Software Foundation with the addition of the following permission added
+ * to Section 15 as permitted in Section 7(a): FOR ANY PART OF THE COVERED WORK
+ * IN WHICH THE COPYRIGHT IS OWNED BY X2ENGINE, X2ENGINE DISCLAIMS THE WARRANTY
+ * OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
+ * 
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.  See the GNU Affero General Public License for more
+ * details.
+ * 
+ * You should have received a copy of the GNU Affero General Public License along with
+ * this program; if not, see http://www.gnu.org/licenses or write to the Free
+ * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301 USA.
+ * 
+ * You can contact X2Engine, Inc. P.O. Box 66752, Scotts Valley,
+ * California 95067, USA. or at email address contact@x2engine.com.
+ * 
+ * The interactive user interfaces in modified source and object code versions
+ * of this program must display Appropriate Legal Notices, as required under
+ * Section 5 of the GNU Affero General Public License version 3.
+ * 
+ * In accordance with Section 7(b) of the GNU Affero General Public License version 3,
+ * these Appropriate Legal Notices must retain the display of the "Powered by
+ * X2Engine" logo. If the display of the logo is not reasonably feasible for
+ * technical reasons, the Appropriate Legal Notices must display the words
+ * "Powered by X2Engine".
+ *****************************************************************************************/
+
+@import "colors";
+@import "x2-icons/x2-icons";
+@import "font-awesome";
+
+@mixin x2-icon($name, $placing: 'before'){
+  &:#{$placing} {
+    text-decoration: none;
+
+    @extend .icon-#{$name} !optional;
+    @content;
+  }
+}
+
+/************************************************
+* class to add to a container that has a stacked icon
+***********************************************/
+.stacked-icon {
+    display: none;
+    position: absolute;
+
+    top: 23px;
+    left: 28px;
+
+    width: 11px;
+    height: 11px;
+
+    border-radius: 50%;
+    border: 2px solid $darkBlue;
+    background: white;
+
+    /* @theme border-color lighter_link */
+    /* @theme background content */
+
+    text-align: center;
+
+    &:before {
+    	width:100%;
+        font-size: 10px;
+        position: relative;
+    }
+}
+
+/*********************************
+* Mixin to aid with the stacked icon
+********************************/
+@mixin stacked-icon($icon) {
+
+    // Specific corrections / positioning can go here
+    %default {top: 0px; left: 0px;}
+    %plus {top: 1.0px; left: 0px;}
+    %check {top: 1px; left: 0px;}
+    %exclamation{top: 0px; left: 0px;}
+    %arrow-right{top: 0.5px; left: 1px;}
+    %star{top: 1px; left: 0px;}
+    %undo{top: 1px}
+    %arrow-up {}
+
+    .stacked-icon {
+        display: inline-block;
+        @include fa-icon($icon);
+    }
+
+    .stacked-icon:before {
+        position: absolute;
+        font-size: 10px;
+        @extend %default;
+
+        // optional settings for individual icons
+        @extend %#{$icon} !optional;
+    }
+}
+
+/****************************************************
+* Mixin to generate a mapping of classes to icons
+* $list:  A multidimensional array
+: $type: which icon font to use ("fa" or "x2")
+: @content: extra rules to insert into each icon
+* Example: 
+*   $map: (
+*   	("email" "envelope" "check") 
+*   );
+* Will create the rule for '.email' to have the icon 
+* 'envelope' with a stacked icon of 'check'
+*
+* These icons are currently used in activity feed and publisher 
+*******************************************************/
+@mixin generate-icons($list, $type:"fa") {
+	@each $entry in $list {
+	    $selector: nth($entry, 1);
+	    $icon: nth($entry, 2);
+
+	    &.#{$selector} { 
+	    	@if $type == "fa" {
+		        @include fa-icon ($icon) { @content };
+	    	} 
+	    	@else {
+		        @include x2-icon ($icon) { @content };
+	    	}
+
+	        @if length($entry) == 3 {
+	            @include stacked-icon (nth($entry, 3));
+	        }
+	    }
+	}
+}

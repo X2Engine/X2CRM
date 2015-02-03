@@ -1,7 +1,7 @@
 <?php
 /*****************************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2015 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -219,6 +219,9 @@ if(Yii::app()->session['versionCheck']==false && $admin->updateInterval > -1 && 
         <?php if (Yii::app()->edition != 'pla') { ?>
         <div class="cell span-6"><?php echo CHtml::link(Yii::t('admin','Upgrade X2Engine'),array('/admin/updater','scenario'=>'upgrade')); ?><br><?php echo Yii::t('admin','Upgrade X2Engine to get exclusive features and service. License key and registration info required.');?></div>
         <?php } ?>
+        <div class="cell span-6">
+            <?php echo CHtml::link(Yii::t('admin','Change the Application Name'),array('/admin/changeApplicationName')); ?><br><?php echo Yii::t('admin','Change the name of the application as displayed on the sign-in page and on page titles.');?>
+        </div>
     </div><!-- .row -->
     <div class="row">
         <?php $editionStart('pla'); ?>
