@@ -440,7 +440,7 @@ class MarketingController extends x2base {
         $campaign->save();
 
         Yii::app()->user->setFlash('success', Yii::t('marketing', 'Campaign launched'));
-        $this->redirect(array('view', 'id' => $id));
+        $this->redirect(array('view', 'id' => $id, 'launch' => true));
     }
 
     /**
@@ -460,7 +460,7 @@ class MarketingController extends x2base {
         $campaign->save();
         $message = $campaign->active ? Yii::t('marketing', 'Campaign resumed') : Yii::t('marketing', 'Campaign paused');
         Yii::app()->user->setFlash('notice', Yii::t('app', $message));
-        $this->redirect(array('view', 'id' => $id));
+        $this->redirect(array('view', 'id' => $id, 'launch' => true));
     }
 
     /**
@@ -791,11 +791,7 @@ class MarketingController extends x2base {
                 'label'=>Yii::t('marketing','Create Campaign'),
                 'url'=>array('create')
             ),
-            array(
-                'name'=>'view',
-                'label' => Yii::t('module', 'View'),
-                'url'=>array('view', 'id' => $modelId),
-            ),
+            RecordViewLayoutManager::getViewActionMenuListItem ($modelId),
             array(
                 'name'=>'viewAnon',
                 'label' => Yii::t('module', 'View'),
@@ -865,6 +861,7 @@ class MarketingController extends x2base {
                 'label' => Yii::t('app', 'Send Email'), 'url' => '#',
                 'linkOptions' => array('onclick' => 'toggleEmailForm(); return false;')
             ),
+            RecordViewLayoutManager::getEditLayoutActionMenuListItem (),
         );
 
         $this->prepareMenu($menuItems, $selectOptions);

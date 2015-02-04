@@ -307,12 +307,10 @@ class ActionsController extends x2base {
         $model = new Actions;
         $users = User::getNames();
 
-
         if(isset($_POST['Actions'])){
             $model->setX2Fields($_POST['Actions']);
             if (isset($_POST['x2ajax'])) {
                 $ajaxErrors = $this->quickCreate($model);
-                Yii::app()->end ();
             } elseif($model->save()){
                 if(isset($_POST['Actions']['reminder']) && $_POST['Actions']['reminder']){
                     $model->createNotifications (
@@ -339,6 +337,8 @@ class ActionsController extends x2base {
         if(isset($_POST['SelectedTab'], $_POST['Actions']) && 
            (!Yii::app()->user->isGuest || 
             Yii::app()->user->checkAccess($_POST['Actions']['associationType'].'View'))) {
+
+            Yii::app()->clientScript->scriptMap['*.css'] = false;
 
             // if association name is sent without id, try to lookup the record by name and type
             if (isset ($_POST['calendarEventTab']) && $_POST['calendarEventTab'] &&
@@ -472,6 +472,7 @@ class ActionsController extends x2base {
                 }
             }
             echo CJSON::encode (array ('success'));
+            Yii::app()->end ();
         } else {
             throw new CHttpException (400, Yii::t('app', 'Bad request'));
         }

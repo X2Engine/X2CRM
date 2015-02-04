@@ -35,6 +35,10 @@
 
 .connected-sortable-widget-container { 
     .transactional-view-widget {
+        .overdue {
+            font-weight: bold;
+            color: rgb(47, 47, 47);
+        }
         .widget-title {
             min-width: 135px;
         }

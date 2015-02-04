@@ -38,9 +38,9 @@ Yii::app()->clientScript->registerCss("AvatarCss", "
 
 #profile-image-container {
     width: 100px;
-    height: 100px;
     margin-top: 4px;
     margin: 15px;
+    position: relative;
 }
 
 .file-wrapper {
@@ -54,20 +54,23 @@ Yii::app()->clientScript->registerCss("AvatarCss", "
 }
 
 #photo-upload-overlay {
-    position: relative;
+    text-align: center;
+    position: absolute;
     width: 91px;
-    border-top: none;
+    height: 35px;
+    
     font-weight: bold;
     font-size: 12px;
-    border: 2px solid rgb(204, 200, 200);
-    color: rgb(95, 94, 94);
-    height: 35px;
-    text-align: center;
-    background: rgb(213, 243, 255);
-    top: -37px;
+
     border-radius: 0 0 4px 4px;
     border-top: none;
+    border: 2px solid rgb(204, 200, 200);
+    
+    color: rgb(95, 94, 94);
+    background: rgb(213, 243, 255);
+
     opacity:0.7;
+    top: 60px;
 }
 
 #photo-upload-overlay:hover {
@@ -86,6 +89,14 @@ Yii::app()->clientScript->registerCss("AvatarCss", "
     -moz-border-radius:8px;
     -o-border-radius:8px;
     border-radius:8px;
+}
+
+#reset-profile-avatar {
+    display:inline-block;
+    text-decoration: none;
+    margin-bottom: 5px;
+    margin-top: 5px;
+
 }
 
 ");
@@ -199,15 +210,27 @@ $(function() {
     <div id='photo-upload-overlay' style='display:none;'>
         <span><?php echo Yii::t('app', 'Change Avatar'); ?></span>
     </div>
-	<?php } ?>
-</div>
+	<?php 
+        }
+        $url = Yii::app()->createUrl ("profile/uploadPhoto", array ( 
+            'id'    => $id,
+            'clear' => true 
+        ));
+    ?>
+    <?php if (Profile::model()->findByPk($id)->avatar) { ?>
+    <a id='reset-profile-avatar' href='<?php echo $url ?>'>
+       <?php echo Yii::t('app', 'Reset avatar') ?>
+    </a>
+    <?php } ?>
+    </div>
 
 <?php if($editable) { ?>
 	<div id='photo-upload-dialog' style='display:none;'>
 	<?php
-	    echo CHtml::form (Yii::app()->createUrl("profile/uploadPhoto", 
-            array ('id' => $id)), 'post',
-	        array ('enctype'=>'multipart/form-data', 'id'=>'photo-form'));
+	    echo CHtml::form (
+            Yii::app()->createUrl ("profile/uploadPhoto", array ('id' => $id)),
+                'post',
+    	        array ('enctype'=>'multipart/form-data', 'id'=>'photo-form'));
 	    echo CHtml::fileField(
 	        'photo','', array (
 	            'id' => 'avatar-photo-file-field',
@@ -217,5 +240,7 @@ $(function() {
 	echo CHtml::endForm();
 	?>
 	</div>
+
 <?php } ?>
+
 

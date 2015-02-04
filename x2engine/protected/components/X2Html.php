@@ -568,7 +568,7 @@ class X2Html extends CHtml {
             $htmlOptions['height'] = '125px';
         }
 
-        return $this->textArea ($model, $attribute, $htmlOptions);
+        return CHtml::activeTextArea ($model, $attribute, $htmlOptions);
     }
 
     public static function minimizeButton (
@@ -613,4 +613,14 @@ class X2Html extends CHtml {
             CHtml::encode (Formatter::formatDateDynamic ($date)).
         '</span>';
     }
+
+    public static function defaultAvatar ($size='') {
+        return self::x2icon ('profile-large', array(
+            'style' => "font-size: ${size}px;",
+            'class' => 'default-avatar', 
+        ));
+    }
+
 }
+
+

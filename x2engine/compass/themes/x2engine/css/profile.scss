@@ -68,6 +68,10 @@
     margin-right: 8px;
 }
 
+#profile-widgets-container {
+    /*float: right !important;*/
+}
+
 #profile-widgets-container .x2grid-header-container table, #profile-widgets-container-2 .x2grid-header-container table {
     border: none;
 }
@@ -157,158 +161,7 @@
 * both when the right widgets are shown and when they are hidden.
 ***********************************************************************/
 
-@media (max-width: 657px) {
-    #activity-feed-container .responsive-page-title > .mobile-dropdown-button, #profile-info-container .responsive-page-title > .mobile-dropdown-button {
-        margin-top: -22px;
-        margin-right: 7px;
-    }
-}
-
-/* right widgets shown */
-/*@media (min-width: 1544px) {*/
-@media (max-width: 1344px) {
-    #profile-content-container.full-profile {
-        #profile-widgets-container,
-        #profile-widgets-container-2,
-        #activity-feed-container-outer {
-            float: left;
-            width: 100% !important;
-        }
-    }
-    #profile-layout-editor #screen-too-small {
-        display: inline-block !important;
-    }
-}
-
-@media (min-width: 1344px) {
-    #profile-content-container.full-profile {
-        #profile-info-container-outer {
-            float: left;
-            width: 52%;
-        }
-        #profile-widgets-container-2 {
-            // padding-bottom: 20px;
-            // margin-bottom: -20px;
-            /* prevent padding from taking up space in layout  */
-            &.empty-widget-container {
-                padding-bottom: 30px;
-            }
-        }
-        #profile-widgets-container-inner {
-            padding-bottom: 200px;
-            margin-bottom: -200px;
-            /* prevent padding from taking up space in layout  */
-            &.empty-widget-container {
-                height: 100%;
-                position: fixed;
-                width: 33%;
-            }
-        }
-        #profile-widgets-container-2 {
-            width: 52%;
-            clear: left;
-            float: left;
-            margin-left: 0;
-            margin-right: 0;
-            // margin-top: -10px;
-       
-        }
-        #activity-feed-container-outer {
-            width: 52%;
-            clear: left;
-            float: left;
-            margin-left: 0;
-            margin-right: 0;
-            // margin-top: 10px;
-       
-        }
-        #activity-feed-container {
-            margin-right: 0;
-        }
-        #profile-widgets-container {
-            float: right;
-            width: 48%;
-            // margin-top: -10px;
-       
-        }
-        #profile-widgets-container-inner {
-            margin-left: 9px;
-        }
-    }
-    /*  
-    Allows jQuery UI sortable to drop droppables into this container even if it's empty
-    */
-    /*  
-    Allows jQuery UI sortable to drop droppables into this container even if it's empty
-    */
-}
-
-/* right widgets hidden */
-/*@media (min-width: 1232px) {*/
-@media (min-width: 1032px) {
-    .no-widgets #profile-content-container.full-profile {
-        #profile-info-container-outer {
-            float: left;
-            width: 52%;
-        }
-        #profile-widgets-container-2 {
-            // padding-bottom: 20px;
-            // margin-bottom: -20px;
-            /* prevent padding from taking up space in layout  */
-            &.empty-widget-container {
-                padding-bottom: 30px;
-            }
-        }
-        #profile-widgets-container-inner {
-            padding-bottom: 200px;
-            margin-bottom: -200px;
-            /* prevent padding from taking up space in layout  */
-            &.empty-widget-container {
-                height: 100%;
-                position: fixed;
-                width: 33%;
-            }
-        }
-        #profile-widgets-container-2 {
-            width: 52%;
-            clear: left;
-            float: left;
-            margin-left: 0;
-            margin-right: 0;
-        }
-        #activity-feed-container-outer {
-            width: 52%;
-            clear: left;
-            float: left;
-            margin-left: 0;
-            margin-right: 0;
-            // margin-top: 10px;
-       
-        }
-        #activity-feed-container {
-            margin-right: 0;
-        }
-        #profile-widgets-container {
-            float: right;
-            width: 48%;
-            // margin-top: -10px;
-       
-        }
-        #profile-widgets-container-inner {
-            margin-left: 9px;
-        }
-    }
-    /*  
-    Allows jQuery UI sortable to drop droppables into this container even if it's empty
-    */
-    /*  
-    Allows jQuery UI sortable to drop droppables into this container even if it's empty
-    */
-}
-
-/* for browsers which don't support media queries */
-
-#content.wide-profile-widget-layout #profile-content-container.full-profile {
+@mixin profile-content(){
     #profile-info-container-outer {
         float: left;
         width: 52%;
@@ -344,7 +197,6 @@
         float: left;
         margin-left: 0;
         margin-right: 0;
-        // margin-top: 10px;
    
     }
     #activity-feed-container {
@@ -353,7 +205,6 @@
     #profile-widgets-container {
         float: right;
         width: 48%;
-        // margin-top: -10px;
    
     }
     #profile-widgets-container-inner {
@@ -361,10 +212,61 @@
     }
 }
 
-/*  
-Allows jQuery UI sortable to drop droppables into this container even if it's empty
-*/
+@mixin profile-content-compact(){
+    #profile-content-container.full-profile {
+        #profile-widgets-container,
+        #profile-widgets-container-2,
+        #activity-feed-container-outer {
+            float: left;
+            width: 100% !important;
+        }
+        #profile-widgets-container-inner {
+            margin-left: 0;
+        }
+    }
+    #profile-layout-editor .screen-too-small {
+        display: inline-block !important;
+    }
+}
 
-/*  
-Allows jQuery UI sortable to drop droppables into this container even if it's empty
-*/
+
+@media (max-width: 657px) {
+    #activity-feed-container .responsive-page-title > .mobile-dropdown-button, #profile-info-container .responsive-page-title > .mobile-dropdown-button {
+        margin-top: -22px;
+        margin-right: 7px;
+    }
+}
+
+/* right widgets shown */
+/*@media (min-width: 1544px) {*/
+@media (max-width: 1344px) {
+    body.show-widgets {
+        @include profile-content-compact();
+    }
+}
+
+@media (max-width: 1032px) {
+    body.no-widgets {
+        @include profile-content-compact();
+    }
+}
+
+
+// Full width 
+@media (min-width: 1344px) {
+    #profile-content-container.full-profile {
+        @include profile-content();
+   }
+}
+
+//Right Widgets hidden
+@media (min-width: 1032px) {
+    .no-widgets #profile-content-container.full-profile {
+        @include profile-content();
+    }
+}
+
+// Browsers without media Queries
+#profile-content-container.full-profile {
+    @include profile-content();
+}

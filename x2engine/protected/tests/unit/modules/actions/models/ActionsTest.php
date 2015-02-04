@@ -123,7 +123,7 @@ class ActionsTest extends CDbTestCase {
         VERBOSE_MODE && print (sizeof ($profiles)."\n");
 
         VERBOSE_MODE && print ('$profileUsernames  = ');
-        VERBOSE_MODE && print ($profileUsernames);
+        VERBOSE_MODE && print_r ($profileUsernames);
 
         $this->assertTrue (sizeof ($profiles) === 2);
         $this->assertTrue (in_array ('testuser', $profileUsernames));
@@ -144,7 +144,7 @@ class ActionsTest extends CDbTestCase {
         VERBOSE_MODE && print (sizeof ($profiles)."\n");
 
         VERBOSE_MODE && print ('$profileUsernames  = ');
-        VERBOSE_MODE && print ($profileUsernames);
+        VERBOSE_MODE && print_r ($profileUsernames);
 
         $this->assertTrue (sizeof ($profiles) === 2);
         $this->assertTrue (in_array ('testuser', $profileUsernames));
@@ -201,7 +201,7 @@ class ActionsTest extends CDbTestCase {
         $notifs = $action->createNotifications ('me');
         $this->assertTrue (sizeof ($notifs) === 1);
         $notifAssignees = array_map (function ($a) { return $a->user; }, $notifs);
-        VERBOSE_MODE && print ($notifAssignees);
+        VERBOSE_MODE && print_r ($notifAssignees);
         $this->assertTrue (in_array ('Guest', $notifAssignees));
 
         $notifs = $action->createNotifications ('both');
@@ -219,7 +219,7 @@ class ActionsTest extends CDbTestCase {
         VERBOSE_MODE && print ("\n");
         $action = $this->actions('action6');
         $completedNum = Actions::changeCompleteState ('complete', array ($action->id));
-        $this->assertTrue ($completedNum === 1);
+        $this->assertEquals (1, $completedNum);
         $action = Actions::model()->findByPk ($action->id);
         VERBOSE_MODE && print ($action->complete."\n");
         $this->assertTrue ($action->complete === 'Yes');

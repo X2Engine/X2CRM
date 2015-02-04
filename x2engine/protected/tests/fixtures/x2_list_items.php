@@ -24,7 +24,7 @@ return array(
 		'emailAddress' => 'contact3@test.com'
     ),
 	'newsletterEntry' => array(
-		'contactId' => NULL,
+		'contactId' => '',
 		'listId' => 31,
 		'uniqueId' => NULL,
 		'sent' => 0,
@@ -34,7 +34,7 @@ return array(
 		'emailAddress' => 'test@example.com'
 	),
 	'newsletterCampaignEntry' => array(
-		'contactId' => NULL,
+		'contactId' => '',
 		'listId' => 32,
 		'uniqueId' => '98sd8jv98djfw9ejfw9e8jw98efj',
 		'emailAddress' => 'test@example.com',
@@ -141,7 +141,7 @@ return array(
     'subscriber4' => array(
         'id' => '257',
         'emailAddress' => 'testcontact4@mailinator.com',
-        'contactId' => NULL,
+        'contactId' => '',
         'listId' => '18',
         'uniqueId' => NULL,
         'sent' => '0',
@@ -153,7 +153,7 @@ return array(
     'subscriber5' => array(
         'id' => '258',
         'emailAddress' => 'testcontact5@mailinator.com',
-        'contactId' => NULL,
+        'contactId' => '',
         'listId' => '18',
         'uniqueId' => NULL,
         'sent' => '0',
@@ -165,7 +165,7 @@ return array(
     'subscriber6' => array(
         'id' => '259',
         'emailAddress' => 'testcontact6@mailinator.com',
-        'contactId' => NULL,
+        'contactId' => '',
         'listId' => '18',
         'uniqueId' => NULL,
         'sent' => '0',
@@ -177,7 +177,7 @@ return array(
     'subscriber7' => array(
         'id' => '260',
         'emailAddress' => 'testcontact7@mailinator.com',
-        'contactId' => NULL,
+        'contactId' => '',
         'listId' => '18',
         'uniqueId' => NULL,
         'sent' => '0',

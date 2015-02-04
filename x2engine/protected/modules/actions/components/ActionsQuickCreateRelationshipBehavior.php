@@ -44,28 +44,34 @@ class ActionsQuickCreateRelationshipBehavior extends QuickCreateRelationshipBeha
      * @param bool $hasErrors
      */
     public function renderInlineForm ($model, $hasErrors, array $viewParams = array ()) {
-
         $formModel = new ActionsQuickCreateFormModel;
         $formModel->attributes = $_POST;
         $formModel->validate ();
-        $secondModelName = $formModel->secondModelName;
-        $secondModelId = $formModel->secondModelId;
-        $associationType = X2Model::getAssociationType ($secondModelName);
         $actionType = $formModel->actionType;
-        $tabClass = Publisher::$actionTypeToTab[$actionType];
-        $tab = new $tabClass;
-        $tab->namespace = get_class ($this);
-        $tab->startVisible = true;
-        $model->associationType = X2Model::getAssociationType ($secondModelName);
+        if ($actionType) {
+            $secondModelName = $formModel->secondModelName;
+            $secondModelId = $formModel->secondModelId;
+            $associationType = X2Model::getAssociationType ($secondModelName);
+            $model->associationType = X2Model::getAssociationType ($secondModelName);
+
+            $tabClass = Publisher::$actionTypeToTab[$actionType];
+            $tab = new $tabClass;
+            $tab->namespace = get_class ($this);
+            $tab->startVisible = true;
+
+            $this->owner->widget('Publisher', array(
+                'associationType' => $associationType,
+                'associationId' => $model->id,
+                'assignedTo' => Yii::app()->user->getName(),
+                'calendar' => false,
+                'renderTabs' => false,
+                'tabs' => array ($tab),
+                'namespace' => $tab->namespace,
+            ));
+        }
 
         switch ($actionType) {
             case 'action':
-//                $model->associationId = $formModel->secondModelId;
-//                $model->associationName = $formModel->model->name;
-//                parent::renderInlineForm ($model, $hasErrors, array_merge (array (
-//                    'namespace' => get_class ($this),
-//                ), $viewParams));
-//                break;
             case 'call':
             case 'note':
             case 'event':
@@ -80,7 +86,10 @@ class ActionsQuickCreateRelationshipBehavior extends QuickCreateRelationshipBeha
                     ), false, true);
                 break;
             default:
-                Yii::app()->controller->badRequest (Yii::t('app', 'Invalid action type'));
+                parent::renderInlineForm ($model, $hasErrors, array_merge (array (
+                    'namespace' => get_class ($this),
+                ), $viewParams));
+                //Yii::app()->controller->badRequest (Yii::t('app', 'Invalid action type'));
         }
     }
 
@@ -126,8 +135,11 @@ class ActionsQuickCreateFormModel extends X2FormModel {
     public function rules () {
         return array (
             array (
-                'secondModelName, secondModelId, actionType', 'required'
-            )
+                'secondModelName, secondModelId', 'required'
+            ),
+            array (
+                'actionType', 'safe',
+            ),
         );
     }
 }

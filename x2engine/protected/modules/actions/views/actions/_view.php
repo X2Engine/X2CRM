@@ -35,7 +35,7 @@
  *****************************************************************************************/
 
 Yii::app()->clientScript->registerScript('deleteActionJs', "
-function deleteAction(actionId) {
+function deleteAction(actionId, type) {
 
 	if(confirm('".Yii::t('app', 'Are you sure you want to delete this item?')."')) {
 		$.ajax({
@@ -49,6 +49,7 @@ function deleteAction(actionId) {
 
 					// event detected by x2chart.js
 					$(document).trigger ('deletedAction');
+                    x2.TransactionalViewWidget.refreshByActionType (type);
 				}
 		});
 	}
@@ -198,7 +199,8 @@ if(empty($data->type) || $data->type == 'weblead'){
                     echo ' '.CHtml::link(
                         X2Html::fa('fa-times'), 
                         '#', array(
-                            'onclick' => 'deleteAction('.$data->id.'); return false',
+                            'onclick' => 'deleteAction('.
+                                $data->id.', "'.$data->type.'"); return false',
                             'title' => Yii::t('app', 'delete')
                         ));
                 }

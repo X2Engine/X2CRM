@@ -223,6 +223,12 @@ class InlineEmail extends CFormModel {
         );
     }
 
+    public function relations () {
+        return array(
+            'credentials' => array(self::BELONGS_TO, 'Credentials', array ('credId' => 'id')),
+        );
+    }
+
     /**
      * Declares attribute labels.
      * @return array
@@ -569,8 +575,8 @@ class InlineEmail extends CFormModel {
             if(!Yii::app()->params->noSession){
                 $trackUrl = Yii::app()->createExternalUrl('/actions/actions/emailOpened', array('uid' => $this->uniqueId, 'type' => 'open'));
             }else{
-		// This might be a console application! In that case, there's
-		// no controller application component available.
+                // This might be a console application! In that case, there's
+                // no controller application component available.
                 $url = rtrim(Yii::app()->absoluteBaseUrl,'/');
 
                 if(!empty($url))
@@ -662,6 +668,7 @@ class InlineEmail extends CFormModel {
     public function insertTrackingImage($replace = false){
         $recipientContacts = $this->recipientContacts;
         if(count($recipientContacts) == 1){ 
+
             // Note, if there is more than one contact in the recipient list, it is
             // impossible to distinguish who opened the email, because both will be
             // sent the same email. Thus it will be disabled for this use case until
@@ -888,7 +895,7 @@ class InlineEmail extends CFormModel {
 
                 $skip = false;
                 $skipEvent = false;
-                if($this->modelName == 'Contacts'){
+                if($this->targetModel && get_class ($this->targetModel) === 'Contacts'){
                     $skip = $this->targetModel->id == $contact->id;
                 }else if($this->modelName == 'Quote'){
                     // An event has already been made for issuing the quote and

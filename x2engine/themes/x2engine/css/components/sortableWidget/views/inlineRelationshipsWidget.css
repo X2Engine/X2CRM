@@ -64,6 +64,9 @@
 /***********************************************************************
 * Greens 
 ***********************************************************************/
+/***********************************************************************
+* This section is made to correspond with the theme keys in ThemeGenerator
+***********************************************************************/
 /* line 25, ../../../../../../compass/themes/x2engine/css/components/sortableWidget/views/inlineRelationshipsWidget.scss */
 #InlineRelationshipsWidget-widget-container- .widget-title {
   min-width: 144px;

@@ -185,7 +185,10 @@ $language = (Yii::app()->language == 'en') ? '' : Yii::app()->getLanguage();
         $form = $this->beginWidget('CActiveForm', array(
             'id' => 'actions-frameUpdate-form',
             'enableAjaxValidation' => false,
-            'action' => 'update?id='.$model->id
+            'action' => 'update?id='.$model->id,
+            'htmlOptions' => array (
+                'data-action-type' => $model->type,
+            ),
         ));
         ?>
         <div class='form'>

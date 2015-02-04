@@ -37,13 +37,13 @@ x2.MassAddToList = (function () {
 
 function MassAddToList (argsDict) {
     var argsDict = typeof argsDict === 'undefined' ? {} : argsDict;
-    x2.MassAction.call (this, argsDict);
     var defaultArgs = {
         DEBUG: x2.DEBUG && false,
-        massActionName: 'addToList',
-        progressBarLabel: this.translations['added']
+        massActionName: 'addToList'
     };
     auxlib.applyArgs (this, defaultArgs, argsDict);
+    x2.MassAction.call (this, argsDict);
+    this.progressBarLabel = this.translations['added'];
     this.dialogTitle = this.massActionsManager.translations['addToList'];
     this.goButtonLabel = this.massActionsManager.translations['add'];
 }

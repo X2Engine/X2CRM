@@ -220,7 +220,15 @@ class X2FixtureManager extends CDbFixtureManager {
                         foreach($key as $k)
                             $pk[$k]=$row[$k];
                     }
-                    $this->_records[$name][$alias]=$model->findByPk($pk);
+//                    if ($model instanceof X2ListItem) {
+//                        // special case for X2ListItem since it has a pseudo-composite-primary-key
+//                        if (isset ($pk['contactId']) && $pk['contactId'] === null) {
+//                            unset ($pk['contactId']);
+//                        }
+//                        $this->_records[$name][$alias]=$model->findByAttributes($pk);
+//                    } else {
+                        $this->_records[$name][$alias]=$model->findByPk($pk);
+                    //}
                 /* x2modstart */ 
                 } else {
                     $model = CActiveRecord::model ($this->_records[$name][$alias]);

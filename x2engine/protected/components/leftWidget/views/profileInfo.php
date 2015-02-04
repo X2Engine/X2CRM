@@ -40,7 +40,7 @@
 
 <div id='profile-badge'>
 	<span id='profile-avatar'>
-	<?php Profile::renderFullSizeAvatar ($this->model->id); ?>
+	<?php Profile::renderFullSizeAvatar ($this->model->id, 45); ?>
 	</span>
 
 	<span id='info'>
@@ -54,15 +54,15 @@
 		?>
 	</div>
 
-	<div id='profile-edit'>
-		<?php echo X2Html::link(
+	<!--div id='profile-edit'>
+		<!?php echo X2Html::link(
 			Yii::t('profile','Edit Profile'),
 			Yii::app()->controller->createUrl('update', array(
 					'id' => $this->model->id 
 				))
 			);
-		?>
-	</div>
+		?!>
+	</div-->
 	</span>
 	<div class='clear'></div>
 </div>

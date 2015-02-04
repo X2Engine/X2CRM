@@ -45,7 +45,6 @@ var Point = x2.geometry.Point;
 function InlineFunnel (argsDict) {
     argsDict = typeof argsDict === 'undefined' ? {} : argsDict;
 
-    x2.BaseFunnel.call (this, argsDict);
     var defaultArgs = {
         completeButtonUrl: null,
         revertButtonUrl: null,
@@ -63,6 +62,7 @@ function InlineFunnel (argsDict) {
         uncompletionPermissions: []
     };
     auxlib.applyArgs (this, defaultArgs, argsDict);
+    x2.BaseFunnel.call (this, argsDict);
 
     this._funnelW1 = 160; // width of top of funnel
     this._funnelW2 = 100; // width of bottom of funnel

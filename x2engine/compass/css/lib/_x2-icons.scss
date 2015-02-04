@@ -1,0 +1,81 @@
+/*
+  Icon Font: x2-icons
+*/
+
+@font-face {
+  font-family: "x2-icons";
+  src: url("./x2-icons/x2-icons_22944e718c0be651c88d1109fe469031.eot");
+  src: url("./x2-icons/x2-icons_22944e718c0be651c88d1109fe469031.eot?#iefix") format("embedded-opentype"),
+       url("./x2-icons/x2-icons_22944e718c0be651c88d1109fe469031.woff") format("woff"),
+       url("./x2-icons/x2-icons_22944e718c0be651c88d1109fe469031.ttf") format("truetype"),
+       url("./x2-icons/x2-icons_22944e718c0be651c88d1109fe469031.svg#x2-icons") format("svg");
+  font-weight: normal;
+  font-style: normal;
+}
+
+@media screen and (-webkit-min-device-pixel-ratio:0) {
+  @font-face {
+    font-family: "x2-icons";
+    src: url("./x2-icons/x2-icons_22944e718c0be651c88d1109fe469031.svg#x2-icons") format("svg");
+  }
+}
+
+[data-icon]:before { content: attr(data-icon); }
+
+[data-icon]:before,
+.icon-activity:before,
+.icon-contact:before,
+.icon-envelope-arrow:before,
+.icon-funnel:before,
+.icon-funnel-arrow:before,
+.icon-funnel-check:before,
+.icon-funnel3:before,
+.icon-funnel4:before,
+.icon-old-open-envelope:before,
+.icon-old-open-envelope-o:before,
+.icon-open-envelope:before,
+.icon-package:before,
+.icon-profile:before,
+.icon-profile-large:before,
+.icon-quotes:before,
+.icon-service:before,
+.icon-stopwatch:before,
+.icon-x2-logo:before,
+.icon-x2-logo-square:before,
+.icon-x2-logo-square-small:before,
+.icon-x2engine:before {
+  display: inline-block;
+  font-family: "x2-icons";
+  font-style: normal;
+  font-weight: normal;
+  font-variant: normal;
+  line-height: 1;
+  text-decoration: inherit;
+  text-rendering: optimizeLegibility;
+  text-transform: none;
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-font-smoothing: antialiased;
+  font-smoothing: antialiased;
+}
+
+.icon-activity:before { content: "\f113"; }
+.icon-contact:before { content: "\f10c"; }
+.icon-envelope-arrow:before { content: "\f10d"; }
+.icon-funnel:before { content: "\f109"; }
+.icon-funnel-arrow:before { content: "\f10e"; }
+.icon-funnel-check:before { content: "\f10f"; }
+.icon-funnel3:before { content: "\f119"; }
+.icon-funnel4:before { content: "\f11b"; }
+.icon-old-open-envelope:before { content: "\f120"; }
+.icon-old-open-envelope-o:before { content: "\f121"; }
+.icon-open-envelope:before { content: "\f10a"; }
+.icon-package:before { content: "\f112"; }
+.icon-profile:before { content: "\f11e"; }
+.icon-profile-large:before { content: "\f11f"; }
+.icon-quotes:before { content: "\f11c"; }
+.icon-service:before { content: "\f111"; }
+.icon-stopwatch:before { content: "\f114"; }
+.icon-x2-logo:before { content: "\f117"; }
+.icon-x2-logo-square:before { content: "\f116"; }
+.icon-x2-logo-square-small:before { content: "\f118"; }
+.icon-x2engine:before { content: "\f104"; }

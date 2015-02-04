@@ -1,5 +1,5 @@
 # 4.2b #
-7/3/2014
+8/7/2014
 
 * Structural changes to the record view widget code breaks compatibility with 
   old custom record view widgets.

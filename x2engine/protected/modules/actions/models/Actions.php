@@ -645,7 +645,6 @@ class Actions extends X2Model {
     }
 
     public function getLink($length = 30, $frame = true){
-
         $text = $this->name;
         if($length && mb_strlen($text, 'UTF-8') > $length)
             $text = CHtml::encode(trim(mb_substr($text, 0, $length, 'UTF-8')).'...');
@@ -729,7 +728,7 @@ class Actions extends X2Model {
         return $timestamp;
     }
 
-    public static function parseStatus($dueDate){
+    public static function parseStatus($dueDate, $dateWidth='long', $timeWidth='short'){
         if(empty($dueDate)) // there is no due date
             return false;
         if(!is_numeric($dueDate))
@@ -739,10 +738,10 @@ class Actions extends X2Model {
         if($timeLeft < 0) {
             return 
                 "<span class='overdue'>".
-                    Formatter::formatDueDate($dueDate).
+                    Formatter::formatDueDate($dueDate, $dateWidth, $timeWidth).
                 "</span>"; // overdue by X hours/etc
         } else {
-            return Formatter::formatDueDate($dueDate);
+            return Formatter::formatDueDate($dueDate, $dateWidth, $timeWidth);
         }
     }
 
@@ -883,7 +882,7 @@ class Actions extends X2Model {
             ));
         }
 
-        return $this->searchBase($criteria, $pageSize=null);
+        return $this->searchBase($criteria, $pageSize);
     }
 
     /**
@@ -961,6 +960,7 @@ class Actions extends X2Model {
                     complete="No", IFNULL(dueDate, IFNULL(createDate,0)), 
                     GREATEST(createDate, IFNULL(completeDate,0), IFNULL(lastUpdated,0))) DESC';
         }
+
         $dataProvider = new SmartActiveDataProvider('Actions', array(
             'sort' => array(
                 'defaultOrder' => $order,

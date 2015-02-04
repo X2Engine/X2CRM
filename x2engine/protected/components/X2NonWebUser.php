@@ -35,7 +35,7 @@
  *****************************************************************************************/
 
 /**
- * User for non web requests (e.g. console applications and API requests)
+ * User for console applications. 
  */
 
 class X2NonWebUser extends CApplicationComponent implements IWebUser {
@@ -61,7 +61,7 @@ class X2NonWebUser extends CApplicationComponent implements IWebUser {
 	 * @return boolean whether the user is a guest (not authenticated)
 	 */
 	public function getIsGuest(){
-        return false;
+        return Yii::app()->getSuName () !== 'Guest';
     }
 
 	/**

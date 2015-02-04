@@ -44,6 +44,7 @@ class X2ButtonColumn extends CButtonColumn {
     public $viewButtonImageUrl = false; 
     public $updateButtonImageUrl = false; 
     public $deleteButtonImageUrl = false; 
+    public $name;
 
     /**
 	 * Registers the client scripts for the button column.

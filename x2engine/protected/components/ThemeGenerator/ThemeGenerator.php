@@ -39,8 +39,8 @@
 
 /**
  * Class to generate a CSS files from profile settings, works as a templating system.
- * Templates files are .php files that return a string of css. The array $colors will be sent to the files with generated keys
- * based on $settingsList. 
+ * Templates files are .php files that return a string of css. The array $colors will be sent to 
+ * the files with generated keys based on $settingsList. 
  *
  * For example, because 'text' is a key in $settingsList, 
  *       $colors[text]
@@ -62,7 +62,8 @@
  *  $colors[smart_text]
  *  $colors[smart_text2]
  *  
- *  will adapt based on the difference in contrast between highlight1 and highlight2 with text respecitvely 
+ *  will adapt based on the difference in contrast between highlight1 and highlight2 with text 
+ *  respectively 
  * 
  * 
  * An entry in the color array automatically adds the !important tag and a semicolon. 

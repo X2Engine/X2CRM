@@ -597,31 +597,32 @@ div.wide.form .buttons, div.wide.form .hint, div.wide.form .errorMessage {
 /* line 561, ../../../compass/themes/x2engine/css/form.scss */
 .x2-state-active, .form.x2-state-active {
   background: #c9dda1 !important;
+  /*@theme background: opaque_highlight2 */
 }
 
-/* line 565, ../../../compass/themes/x2engine/css/form.scss */
+/* line 566, ../../../compass/themes/x2engine/css/form.scss */
 .x2-state-hover, .form.x2-state-hover {
   background: #acce67 !important;
 }
 
-/* line 571, ../../../compass/themes/x2engine/css/form.scss */
+/* line 572, ../../../compass/themes/x2engine/css/form.scss */
 html .cke_skin_kama.ui-state-active .cke_wrapper {
   background: #c9dda1;
   box-shadow: inset 0 0 4px 1px #579100;
 }
-/* line 575, ../../../compass/themes/x2engine/css/form.scss */
+/* line 576, ../../../compass/themes/x2engine/css/form.scss */
 html .cke_skin_kama.ui-state-hover .cke_wrapper {
   background: #acce67;
   box-shadow: inset 0 0 4px 1px #579100;
 }
-/* line 580, ../../../compass/themes/x2engine/css/form.scss */
+/* line 581, ../../../compass/themes/x2engine/css/form.scss */
 html .cke_contents iframe {
   -moz-border-radius: 5px;
   -o-border-radius: 5px;
   -webkit-border-radius: 5px;
   border-radius: 5px;
 }
-/* line 586, ../../../compass/themes/x2engine/css/form.scss */
+/* line 587, ../../../compass/themes/x2engine/css/form.scss */
 html span.cke_skin_kama {
   -moz-border-radius: 5px;
   -webkit-border-radius: 5px;
@@ -629,19 +630,19 @@ html span.cke_skin_kama {
   border: 1px solid #ccc;
   padding: 0;
 }
-/* line 592, ../../../compass/themes/x2engine/css/form.scss */
+/* line 593, ../../../compass/themes/x2engine/css/form.scss */
 html span.cke_skin_kama#cke_Campaign_content {
   -moz-border-radius: 0px;
   -webkit-border-radius: 0px;
   border-radius: 0px;
   border: none;
 }
-/* line 600, ../../../compass/themes/x2engine/css/form.scss */
+/* line 601, ../../../compass/themes/x2engine/css/form.scss */
 html .cke_skin_kama .cke_wrapper {
   background-image: none;
   background-color: #eee;
 }
-/* line 604, ../../../compass/themes/x2engine/css/form.scss */
+/* line 605, ../../../compass/themes/x2engine/css/form.scss */
 html .cke_skin_kama .cke_focus {
   outline: none;
 }
@@ -649,36 +650,36 @@ html .cke_skin_kama .cke_focus {
 /***********************************************************************
 * form2  
 ***********************************************************************/
-/* line 615, ../../../compass/themes/x2engine/css/form.scss */
+/* line 616, ../../../compass/themes/x2engine/css/form.scss */
 .form2 {
   background: white;
 }
-/* line 617, ../../../compass/themes/x2engine/css/form.scss */
+/* line 618, ../../../compass/themes/x2engine/css/form.scss */
 .form2 input.left-input {
   display: inline-block;
 }
-/* line 620, ../../../compass/themes/x2engine/css/form.scss */
+/* line 621, ../../../compass/themes/x2engine/css/form.scss */
 .form2 input + .right-label {
   margin-left: 2px;
   position: relative;
   top: -2px;
   display: inline-block;
 }
-/* line 626, ../../../compass/themes/x2engine/css/form.scss */
+/* line 627, ../../../compass/themes/x2engine/css/form.scss */
 .form2 label.left-label + input {
   margin-left: 2px;
 }
-/* line 630, ../../../compass/themes/x2engine/css/form.scss */
+/* line 631, ../../../compass/themes/x2engine/css/form.scss */
 .form2 label + .x2-hint {
   margin-left: 4px;
 }
-/* line 633, ../../../compass/themes/x2engine/css/form.scss */
+/* line 634, ../../../compass/themes/x2engine/css/form.scss */
 .form2 label {
   font-size: 11px;
   color: #222;
   font-weight: bold;
 }
-/* line 638, ../../../compass/themes/x2engine/css/form.scss */
+/* line 639, ../../../compass/themes/x2engine/css/form.scss */
 .form2 input[type="text"] {
   padding: 2px 4px;
   -moz-border-radius: 3px;
@@ -691,7 +692,7 @@ html .cke_skin_kama .cke_focus {
 /*********************************
 * Inline Editing
 ********************************/
-/* line 654, ../../../compass/themes/x2engine/css/form.scss */
+/* line 655, ../../../compass/themes/x2engine/css/form.scss */
 .inline-edit .edit-icon,
 .inline-edit .cancel-icon,
 .inline-edit .confirm-icon {
@@ -700,39 +701,39 @@ html .cke_skin_kama .cke_focus {
   font-size: 14px;
   transition: all 0.1s;
 }
-/* line 663, ../../../compass/themes/x2engine/css/form.scss */
+/* line 664, ../../../compass/themes/x2engine/css/form.scss */
 .inline-edit .cancel-icon,
 .inline-edit .confirm-icon {
   margin-right: 4px;
 }
-/* line 668, ../../../compass/themes/x2engine/css/form.scss */
+/* line 669, ../../../compass/themes/x2engine/css/form.scss */
 .inline-edit .edit-icon {
   display: none;
   position: relative;
   width: 0;
   right: 25px;
 }
-/* line 674, ../../../compass/themes/x2engine/css/form.scss */
+/* line 675, ../../../compass/themes/x2engine/css/form.scss */
 .inline-edit .edit-icon.active {
   opacity: 0.0;
   width: 0px;
   display: inline-block;
   overflow: hidden;
 }
-/* line 682, ../../../compass/themes/x2engine/css/form.scss */
+/* line 683, ../../../compass/themes/x2engine/css/form.scss */
 .inline-edit:hover .edit-icon.active {
   opacity: 1.0;
   width: 15px;
   display: inline-block;
 }
-/* line 688, ../../../compass/themes/x2engine/css/form.scss */
+/* line 689, ../../../compass/themes/x2engine/css/form.scss */
 .inline-edit .cancel-icon,
 .inline-edit .confirm-icon {
   opacity: 0.0;
   display: none;
   transition: opacity 0.2s;
 }
-/* line 694, ../../../compass/themes/x2engine/css/form.scss */
+/* line 695, ../../../compass/themes/x2engine/css/form.scss */
 .inline-edit .cancel-icon.active,
 .inline-edit .confirm-icon.active {
   opacity: 1.0;

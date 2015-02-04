@@ -363,6 +363,13 @@ class Workflow extends CActiveRecord {
 
         assert (in_array ($action, array ('complete', 'start', 'revert')));
 
+        if (!isset ($workflowStatus['stages'][$stage])) {
+            $message = Yii::t(
+                'workflow', 'Stage {stage} does not exist', 
+                array ('{stage}' => $stage));
+            return false;
+        }
+
         // ensure that the stage is in a valid state
         switch ($action) {
             case 'complete':

@@ -65,16 +65,17 @@ class EventsWidget extends TransactionalViewWidget {
                 parent::getGridViewConfig (),
                 array (
                     'defaultGvSettings'=>array(
-                        'actionDescription' => null,
-                        'assignedTo' => null,
-                        'createDate' => null,
-                        'completeDate' => null,
+                        'actionDescription' => '25%',
+                        'assignedTo' => '21%',
+                        'dueDate' => 100,
+                        'completeDate' => 100,
                     ),
+                    'fieldFormatter' => 'EventsWidgetFieldFormatter',
                     'columnOverrides' => array (
                         'assignedTo' => array (
                             'header' => Yii::t('app', 'Created By'),
                         ),
-                        'createDate' => array (
+                        'dueDate' => array (
                             'header' => Yii::t('app', 'Start Date'),
                         ),
                         'completeDate' => array (

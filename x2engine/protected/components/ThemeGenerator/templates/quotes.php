@@ -1,23 +1,17 @@
 <?php return " 
 
-.quote-table,
-.quote-table tbody {
-	background: $colors[content]
-}
-.quote-table tbody td{
-	background: $colors[highlight1]
-}
-
 #quotes-form strong {
 	color: $colors[text]
 }
 
 ul.product-menu {
-	background: $colors[highlight1]
+	background: $colors[content]
+	border-color: $colors[border]
 }
 
 ul.product-menu a:hover {
-	background: $colors[lighter_highlight1]
+	background: $colors[light_content]
+	border-color: $colors[border]
 }
 
 .select-all-notice b {

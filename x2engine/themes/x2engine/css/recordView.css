@@ -33,7 +33,7 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 @media (max-width: 1129px) {
-  /* line 28, ../../../compass/themes/x2engine/css/recordView.scss */
+  /* line 27, ../../../compass/themes/x2engine/css/recordView.scss */
   body.no-widgets #main-column,
   body.no-widgets #RecordViewWidgetManagerwidgets-container,
   body.no-widgets #RecordViewWidgetManagerwidgets-container-2 {
@@ -41,62 +41,88 @@
   }
 }
 @media (max-width: 1406px) {
-  /* line 39, ../../../compass/themes/x2engine/css/recordView.scss */
+  /* line 27, ../../../compass/themes/x2engine/css/recordView.scss */
   body.show-widgets #main-column,
   body.show-widgets #RecordViewWidgetManagerwidgets-container,
   body.show-widgets #RecordViewWidgetManagerwidgets-container-2 {
     width: 100% !important;
   }
 }
-/* line 48, ../../../compass/themes/x2engine/css/recordView.scss */
+/* line 27, ../../../compass/themes/x2engine/css/recordView.scss */
+#content.record-view-single-column #main-column,
+#content.record-view-single-column #RecordViewWidgetManagerwidgets-container,
+#content.record-view-single-column #RecordViewWidgetManagerwidgets-container-2 {
+  width: 100% !important;
+}
+
+/* line 52, ../../../compass/themes/x2engine/css/recordView.scss */
 #email-mini-module {
   box-shadow: 0px 2px 6px 0.5px #7B7B7B;
   border-radius: 4px 4px 0 0;
 }
-/* line 52, ../../../compass/themes/x2engine/css/recordView.scss */
+/* line 56, ../../../compass/themes/x2engine/css/recordView.scss */
 #email-mini-module .email-title-bar {
   background: #b1b1b1;
 }
-/* line 54, ../../../compass/themes/x2engine/css/recordView.scss */
+/* line 58, ../../../compass/themes/x2engine/css/recordView.scss */
 #email-mini-module .email-title-bar .widget-title {
   color: white;
 }
 
-/* line 60, ../../../compass/themes/x2engine/css/recordView.scss */
+/* line 64, ../../../compass/themes/x2engine/css/recordView.scss */
 #inline-email-form {
   width: 713px;
   position: fixed !important;
   bottom: -5px;
   z-index: 900;
 }
-/* line 61, ../../../compass/themes/x2engine/css/recordView.scss */
+/* line 65, ../../../compass/themes/x2engine/css/recordView.scss */
+#inline-email-form .ui-icon-gripsmall-diagonal-se {
+  background-image: none !important;
+}
+/* line 68, ../../../compass/themes/x2engine/css/recordView.scss */
 #inline-email-form .errorSummary {
   margin-bottom: 0px !important;
 }
-/* line 68, ../../../compass/themes/x2engine/css/recordView.scss */
+/* line 75, ../../../compass/themes/x2engine/css/recordView.scss */
 #inline-email-form.fixed-email-form {
   bottom: -5px;
   right: 0 !important;
   left: auto !important;
   top: auto !important;
 }
-/* line 74, ../../../compass/themes/x2engine/css/recordView.scss */
+/* line 81, ../../../compass/themes/x2engine/css/recordView.scss */
 #inline-email-form .x2-icon-button {
   float: right;
   margin-top: 6px;
   margin-right: 7px;
+  /* @theme color: smart_text */
 }
-/* line 79, ../../../compass/themes/x2engine/css/recordView.scss */
+/* line 88, ../../../compass/themes/x2engine/css/recordView.scss */
 #inline-email-form .cke_resizer {
   display: none;
 }
+/* line 92, ../../../compass/themes/x2engine/css/recordView.scss */
+#inline-email-form .x2-email-label {
+  /* @theme color: smart_text */
+}
 
-/* line 84, ../../../compass/themes/x2engine/css/recordView.scss */
+/* line 97, ../../../compass/themes/x2engine/css/recordView.scss */
 #email-settings-menu {
   position: fixed;
 }
 
-/* line 90, ../../../compass/themes/x2engine/css/recordView.scss */
+/* line 103, ../../../compass/themes/x2engine/css/recordView.scss */
 body.show-widgets #inline-email-form.fixed-email-form {
   right: 20.5% !important;
+}
+
+/* line 109, ../../../compass/themes/x2engine/css/recordView.scss */
+.cke_combopanel {
+  display: none;
+}
+
+/* line 113, ../../../compass/themes/x2engine/css/recordView.scss */
+#RecordViewWidgetManagerwidgets-container-inner {
+  min-height: 300px;
 }

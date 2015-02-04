@@ -66,8 +66,8 @@ class X2ListTest extends X2DbTestCase {
         // A cursory check that the criteria generation works:
         $expectedContacts = $dyn->queryCommand()->queryAll(true);
         $this->assertEquals($expectedContactEmailAddresses, array_map(function($c){
-                            return $c['email'];
-                        }, $expectedContacts));
+            return $c['email'];
+        }, $expectedContacts));
         $this->assertEquals(3,count($expectedContacts));
         // Test that the static clone has all the correct list items.
         //
@@ -75,7 +75,7 @@ class X2ListTest extends X2DbTestCase {
         // "contact" relation in X2ListItem is expected to some day be
         // removed, when lists can be used for more than just contacts.
         $this->assertEquals($expectedContactEmailAddresses, array_map(function($i)use($modelName){
-                            return X2Model::model($modelName)->findByPk($i->contactId)->email;
+            return X2Model::model($modelName)->findByPk($i->contactId)->email;
         }, $dynClone->listItems));
 
         // Static clone of a static list:
@@ -104,8 +104,10 @@ class X2ListTest extends X2DbTestCase {
 
         // Static clone of a newsletter list:
         $static = $this->lists('staticDuplicateNewsletter');
+
         $modelName = $static->modelName;
         $staticClone = $static->staticDuplicate();
+        $staticClone->refresh ();
         $modelName = $static->modelName;
         $this->assertNotEmpty($staticClone);
         $this->assertEquals(4,count($staticClone->listItems));

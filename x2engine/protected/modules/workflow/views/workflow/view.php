@@ -310,7 +310,7 @@ $this->actionMenu[$unsetUrlIndex]['url'] = '#';
 
 ?>
 <div id='content-container-inner'>
-<div class="responsive-page-title page-title icon workflow x2-layout-island x2-layout-island-merge-bottom">
+<div class="responsive-page-title page-title icon workflow ">
     <h2><span class="no-bold">
         <?php echo Yii::t('workflow','{process}:', array(
             '{process}' => Modules::displayName(false),

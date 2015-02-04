@@ -160,14 +160,13 @@ ProfileWidgetManager.prototype._setUpCreateWidgetDialog = function () {
         ]
     });
 
-    dialog$.find('#widgetType').change(function (){
-        dialog$.find('#chart-name-container').toggle ($(this).val() == 'DataWidget');
-    })
+    
 
     // create-profile-widget-button
     $('#create-'+this.cssSelectorPrefix+'widget-button').click (function () {
         dialog$.dialog ('open');
     });
+
 };
 
 

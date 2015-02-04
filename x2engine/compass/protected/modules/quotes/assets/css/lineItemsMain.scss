@@ -35,56 +35,38 @@
 /*
 center cells in the quotes table
 */
-/* line 26, ../../../../../compass/sass/protected/modules/quotes/assets/css/lineItemsMain.scss */
-/* line 26, ../../../../../compass/sass/protected/modules/quotes/assets/css/lineItemsMain.scss */
-
 .quote-table {
-  background-color: #EEEEEE;
-  .input-cell {
-    text-align: center;
-    vertical-align: middle;
-  }
-  .text-field {
-    vertical-align: middle;
-    padding: 0px 6px !important;
-  }
-  td {
-    border-bottom: 1px solid #c2c2c2;
-    height: 2em;
-  }
-  tbody {
-    &:last-child, .x2-last-child {
-      border-bottom: none;
+    background-color: #EEEEEE;
+    /* @theme background dark_content */
+
+    .input-cell {
+        text-align: center;
+        vertical-align: middle;
     }
-  }
-  thead th {
-    background-color: transparent;
-  }
-  input {
-    &:disabled, &[readonly] {
-      background: none;
-      border: none;
-      color: black;
-      padding: 0px;
+    .text-field {
+        vertical-align: middle;
+        padding: 0px 6px !important;
     }
-  }
+    td {
+        border-bottom: 1px solid #c2c2c2;
+        height: 2em;
+        /* @theme border-color: border */
+    }
+    tbody {
+        &:last-child, .x2-last-child {
+            border-bottom: none;
+        }
+    }
+    thead th {
+        background-color: transparent;
+    }
+    input {
+        &:disabled, &[readonly] {
+            background: none;
+            border: none;
+            color: black;
+            padding: 0px;
+        }
+    }
 }
 
-/* line 28, ../../../../../compass/sass/protected/modules/quotes/assets/css/lineItemsMain.scss */
-
-/* line 32, ../../../../../compass/sass/protected/modules/quotes/assets/css/lineItemsMain.scss */
-
-/* line 36, ../../../../../compass/sass/protected/modules/quotes/assets/css/lineItemsMain.scss */
-
-/* line 41, ../../../../../compass/sass/protected/modules/quotes/assets/css/lineItemsMain.scss */
-
-/* line 45, ../../../../../compass/sass/protected/modules/quotes/assets/css/lineItemsMain.scss */
-
-/* line 49, ../../../../../compass/sass/protected/modules/quotes/assets/css/lineItemsMain.scss */
-
-/* line 27, ../../../../../compass/sass/protected/modules/quotes/assets/css/lineItemsMain.scss */
-/* line 31, ../../../../../compass/sass/protected/modules/quotes/assets/css/lineItemsMain.scss */
-/* line 36, ../../../../../compass/sass/protected/modules/quotes/assets/css/lineItemsMain.scss */
-/* line 41, ../../../../../compass/sass/protected/modules/quotes/assets/css/lineItemsMain.scss */
-/* line 45, ../../../../../compass/sass/protected/modules/quotes/assets/css/lineItemsMain.scss */
-/* line 49, ../../../../../compass/sass/protected/modules/quotes/assets/css/lineItemsMain.scss */

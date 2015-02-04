@@ -160,6 +160,11 @@ class Credentials extends CActiveRecord {
 		);
 	}
 
+    public function relations () {
+        return array(
+            'user' => array(self::BELONGS_TO, 'User', array ('userId' => 'id')),
+        );
+    }
 
 	public function behaviors(){
 		return array(

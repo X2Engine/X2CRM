@@ -652,6 +652,7 @@ X2Forms.prototype.inputLoading = function (elem, position) {
         });
     } 
     $(elem).css ({'visibility': 'hidden'});
+    return throbber$;
 };
 
 /**

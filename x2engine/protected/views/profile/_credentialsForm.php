@@ -75,7 +75,7 @@ if (!$disableMetaDataForm) {
 
     echo CHtml::activeLabel($model, 'private');
     echo CHtml::activeCheckbox($model, 'private',array('value'=>1));
-    echo CHtml::tag('span', array('class' => 'x2-hint', 'style'=>'display:inline-block; margin-left:5px;', 'title' => Yii::t('app', 'If you disable this option, administrators and users granted privilege to do so will be able to use these credentials on your behalf.')),'[?]');
+    echo X2Html::hint2(Yii::t('app', 'If you disable this option, administrators and users granted privilege to do so will be able to use these credentials on your behalf.'));
 
     if($model->isNewRecord){
         if(Yii::app()->user->checkAccess('CredentialsAdmin')){
@@ -187,10 +187,10 @@ $verifyCredsUrl = Yii::app()->createUrl("profile/verifyCredentials");
                     port: port,
                     security: security
                 },
-                complete: function(xhr) {
+                complete: function(xhr, textStatus) {
                     $('#verify-credentials-loading').children().remove();
                     // auxlib.pageLoadingStop();
-                    if (xhr.responseText === '') {
+                    if (xhr.responseText === '' && textStatus === 'success') {
                         $("#verification-result").addClass('flash-success');
                         $("#verification-result").removeClass('flash-error');
                         $("#verification-result").html(successMsg);

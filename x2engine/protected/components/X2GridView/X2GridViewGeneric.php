@@ -61,6 +61,7 @@ class X2GridViewGeneric extends X2GridViewBase {
 
     protected function generateColumns () {
         $unsortedColumns = array ();
+
         foreach ($this->columns as &$column) {
             $name = (isset ($column['name'])) ? $column['name'] : '';
             if (!isset ($column['id'])) {

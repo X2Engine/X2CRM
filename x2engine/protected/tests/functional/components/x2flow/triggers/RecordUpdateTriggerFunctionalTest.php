@@ -1,4 +1,4 @@
-<?
+<?php
 /*****************************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2015 X2Engine Inc.

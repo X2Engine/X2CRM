@@ -113,7 +113,7 @@ QuickCreate.prototype.openQuickCreateDialog = function () {
             that._dialog.dialog('open');
             
             auxlib.onClickOutside (
-                '.ui-dialog',
+                '.ui-dialog, .ui-datepicker',
                 function () { 
                     if ($(that._dialog).closest ('.ui-dialog').length) 
                         that._dialog.dialog ('close'); 
@@ -156,9 +156,6 @@ QuickCreate.prototype._handleFormSubmission = function (form) {
         dataType: 'json',
         success: function(response) {
             that._dialog.empty ();
-            console.log ('response = ');
-                console.log (response);
-
             if (response['status'] === 'success' || response[0] === 'success') {
                 that._dialog.remove ();
                 if (that.enableFlash)

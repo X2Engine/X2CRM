@@ -289,16 +289,18 @@ $(".cron-enabled").each(function() {
             foreach(array('title', 'longdesc', 'instructions') as $attr){
                 $viewData[$attr] = $this->jobAttr($tag, $attr);
             }
-            $jobSections[] = $this->render('application.components.views.cronJobForm', array_merge($viewData, array(
-                        'userCmd' => $this->allowUserCmdInput,
-                        'cmd' => $this->formData[$tag]['cmd'],
-                        'displayCmd' => isset($this->displayCmds[$tag])?$this->displayCmds[$tag]:'',
-                        'enabled' => $enabled,
-                        'labelClass' => $this->labelCssClass,
-                        'name' => $this->name,
-                        'tag' => $tag,
-                        'initialCron' => $this->formData[$tag],
-                    )),true);
+            $jobSections[] = $this->render(
+                'application.components.views.cronJobForm', array_merge($viewData, array(
+
+                'userCmd' => $this->allowUserCmdInput,
+                'cmd' => $this->formData[$tag]['cmd'],
+                'displayCmd' => isset($this->displayCmds[$tag])?$this->displayCmds[$tag]:'',
+                'enabled' => $enabled,
+                'labelClass' => $this->labelCssClass,
+                'name' => $this->name,
+                'tag' => $tag,
+                'initialCron' => $this->formData[$tag],
+            )),true);
         }
         echo implode($this->jobSeparator,$jobSections);
     }

@@ -313,7 +313,7 @@ ActivityFeed.prototype.attachmentMenuBehavior = function  () {
 
 ActivityFeed.prototype.setupAndroidPublisher = function  () {
     var that = this;
-    $('#feed-form textarea').focus( function(){
+    $(document).on('focus','#feed-form textarea',function(){
         $(this).animate({"height":"50px"});
         $(this).next().slideDown(400);
     });
@@ -466,7 +466,7 @@ ActivityFeed.prototype.setupActivityFeed = function  () {
             });
     }
 
-    $("#min-posts").click( function(e){
+    $(document).on("click","#min-posts",function(e){
         e.preventDefault();
         that.minimizePosts();
         x2.activityFeed.minimizeFeed = true;
@@ -474,7 +474,7 @@ ActivityFeed.prototype.setupActivityFeed = function  () {
         $(this).prev().show();
     });
 
-    $("#restore-posts").click( function(e){
+    $(document).on("click","#restore-posts",function(e){
         e.preventDefault();
         that.restorePosts();
         x2.activityFeed.minimizeFeed = false;
@@ -482,7 +482,7 @@ ActivityFeed.prototype.setupActivityFeed = function  () {
         $(this).next().show();
     });
 
-    $("#clear-filters-link").click( function(e){
+    $(document).on("click","#clear-filters-link",function(e){
         e.preventDefault();
         var str=window.location+"";
         pieces = str.split("?");
@@ -496,16 +496,17 @@ ActivityFeed.prototype.setupActivityFeed = function  () {
     }
     $(".date-break.first").after("<div class='list-view'><div id='new-events' class='items' style='display:none;border-bottom:solid #BABABA;'></div></div>");
 
-    $('#toggle-all-comments').click(function(e) {
+    $(document).on("click","#toggle-all-comments",function(e){
         e.preventDefault();
         x2.activityFeed.commentFlag = !x2.activityFeed.commentFlag;
-
-        var selector = x2.activityFeed.commentFlag ? 
-            '.comment-hide-link' : '.comment-link';
-        $(selector).click();
+        if(x2.activityFeed.commentFlag){
+            $(".comment-link").click();
+        }else{
+            $(".comment-hide-link").click();
+        }
     });
 
-    $(".comment-link").click( function(e){
+    $(document).on("click",".comment-link",function(e){
         e.preventDefault();
         var link = this;
         var pieces = $(this).attr("id").split("-");
@@ -526,7 +527,7 @@ ActivityFeed.prototype.setupActivityFeed = function  () {
         });
     });
 
-    $(".comment-hide-link").click( function(e){
+    $(document).on("click",".comment-hide-link",function(e){
         e.preventDefault();
         $(this).hide();
         $(this).prev().show();
@@ -651,7 +652,7 @@ ActivityFeed.prototype.setupBroadcastDialog = function  () {
         });
     }
 
-    $(".broadcast-button").click( function(e){
+    $(document).on("click",".broadcast-button",function(e){
 
         link = this;
         e.preventDefault();
@@ -681,8 +682,8 @@ ActivityFeed.prototype.setupBroadcastDialog = function  () {
         });
 
     });
-    
-    // auxlib.makeDialogClosableWithOutsideClick ($("#broadcast-dialog"));
+
+    auxlib.makeDialogClosableWithOutsideClick ($("#broadcast-dialog"));
 }
 
 
@@ -698,8 +699,6 @@ ActivityFeed.prototype.setupMakeImportantDialog = function  () {
         var post$ = $(link).parents(".view.top-level");
         var important = post$.hasClass('important-action');
         var attr = important ? 'unimportant' : 'important';
-        console.log(important);
-        console.log(attr);
         pieces = $(link).attr("id").split("-");
         id = pieces[0];
 
@@ -717,7 +716,7 @@ ActivityFeed.prototype.setupMakeImportantDialog = function  () {
         });
     }
 
-    $('.important-link, .unimportant-link').click( clickMakeImportantButton );
+    $(document).on('click', '.important-link, .unimportant-link', clickMakeImportantButton );
 
     // auxlib.makeDialogClosableWithOutsideClick ($("#make-important-dialog"));
 }
@@ -726,12 +725,12 @@ ActivityFeed.prototype.setupMakeImportantDialog = function  () {
 ActivityFeed.prototype.updateEventList = function  () {
     var that = this;
 
-    // $(".unimportant-link").click( function(e){
+    // $(document).on("click",".unimportant-link",function(e){
     //     e.preventDefault();
     //     // clickMakeImportantButton(this, false);
     // });
 
-    // $(".unimportant-link").click( function(e){
+    // $(document).on("click",".unimportant-link",function(e){
     //     e.preventDefault();
     //     var link = this;
     //     var pieces = $(this).attr("id").split("-");
@@ -770,7 +769,7 @@ ActivityFeed.prototype.updateEventList = function  () {
     }
 
     var disableLikeButton = false;
-    $(".like-button").click( function(e){
+    $(document).on("click",".like-button",function(e){
         if (disableLikeButton) return;
         e.preventDefault();
         var link = this;
@@ -795,7 +794,7 @@ ActivityFeed.prototype.updateEventList = function  () {
         });
     });
 
-    $(".unlike-button").click( function(e){
+    $(document).on("click",".unlike-button",function(e){
         if (disableLikeButton) return;
         e.preventDefault();
         var link = this;
@@ -853,7 +852,7 @@ ActivityFeed.prototype.updateEventList = function  () {
     /*
     Display the like history in a drop down underneath the post
     */
-    $(".like-count").click( function(e){
+    $(document).on("click",".like-count",function(e){
         e.preventDefault();
         var pieces = $(this).attr("id").split("-");
         var id = pieces[0];
@@ -1097,7 +1096,7 @@ ActivityFeed.prototype.updateEventList = function  () {
         }
     }
 
-    $(".sticky-link").click( function(e){
+    $(document).on("click",".sticky-link",function(e){
         e.preventDefault();
         var link = this;
         var pieces = $(this).attr("id").split("-");
@@ -1118,7 +1117,7 @@ ActivityFeed.prototype.updateEventList = function  () {
         });
     });
 
-    $(".unsticky-link").click( function(e){
+    $(document).on("click",".unsticky-link",function(e){
         e.preventDefault();
         var link = this;
         var pieces = $(this).attr("id").split("-");
@@ -1189,7 +1188,7 @@ ActivityFeed.prototype.updateEventList = function  () {
     }
     updateFeed();
 
-    $(".delete-link").click( function(e){
+    $(document).on("click",".delete-link",function(e){
         var link = this;
         pieces = $(link).attr("id").split("-");
         id = pieces[0];
@@ -1249,6 +1248,7 @@ ActivityFeed.prototype._setUpTitleBar = function () {
         openButtonSelector: '#activity-feed-settings-button',
         defaultOrientation: 'left',
         css: {
+            height: '30px',
             'padding-left': '3px'
         }
     });
@@ -1341,7 +1341,7 @@ ActivityFeed.prototype._setUpFilters = function () {
             $("#sidebar-toggle-filters-link").html(that.translations["Uncheck All"]);
         }
 
-        $(".toggle-filters-link").click( function(e){
+        $(document).on("click",".toggle-filters-link",function(e){
             e.preventDefault();
             checkedFlag =! checkedFlag;
             if(checkedFlag){

@@ -60,7 +60,12 @@ class CJuiDateTimePicker extends CJuiDatePicker
             Yii::app()->getBaseUrl().'/js/jquery-ui-timepicker-addon.js', CClientScript::POS_END);
         /* x2modend */  
 		
-		$cs->registerScript(__CLASS__, 	$this->defaultOptions?'jQuery.{$this->mode}picker.setDefaults('.CJavaScript::encode($this->defaultOptions).');':'');
+		$cs->registerScript(
+            __CLASS__, 	
+            $this->defaultOptions ?
+                'jQuery.{$this->mode}picker.setDefaults('.
+                    CJavaScript::encode($this->defaultOptions).');':
+            '');
 		$cs->registerScript(__CLASS__.'#'.$id, $js);
 
 	}

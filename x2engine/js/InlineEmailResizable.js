@@ -58,12 +58,18 @@ $.widget ("x2.inlineEmailResizable", $.ui.resizable, {
 		this._propagate("resize", event);
 
         /* x2modstart */ 
-		/*el.css({
-			top: this.position.top + "px", 
-            left: this.position.left + "px",
-			width: this.size.width + "px", 
-            height: this.size.height + "px"
-		});*/
+        if (!el.hasClass ('.fixed-email-form')) {
+            el.css({
+                top: this.position.top + "px", 
+                left: this.position.left + "px",
+            });
+            /*el.css({
+                top: this.position.top + "px", 
+                left: this.position.left + "px",
+                width: this.size.width + "px", 
+                height: this.size.height + "px"
+            });*/
+        }
         /* x2modend */ 
 
 		if (!this._helper && this._proportionallyResizeElements.length)

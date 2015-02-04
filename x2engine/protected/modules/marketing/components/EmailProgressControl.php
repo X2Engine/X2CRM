@@ -49,6 +49,8 @@ class EmailProgressControl extends X2Widget {
     private $_listItems;
     private $_sentCount;
     public $campaign;
+    public $JSClass = 'EmailProgressControl'; 
+
 
     public function getCampaignSize() {
         return count($this->listItems) + $this->sentCount;
@@ -76,72 +78,55 @@ class EmailProgressControl extends X2Widget {
         return $this->_sentCount;
     }
 
-    public function init() {
-        parent::init();
-        $admin = Yii::app()->settings;
+    public function getPackages () {
+        if (!isset ($this->_packages)) {
+            $this->_packages = array_merge (parent::getPackages(), array (
+                'emailProgressControl' => array(
+                    'baseUrl' => $this->module->assetsUrl, 
+                    'css' => array (
+                        '/css/emailProgressControl.css'
+                    ),
+                    'js' => array(
+                       '/js/emailProgressControl.js'
+                    ),
+                ))
+            );
+        }
+        return $this->_packages;
+    }
+
+    public function getJSClassParams () {
         $totalEmails = count($this->listItems) + $this->sentCount;
 
-        Yii::app()->clientScript->registerCssFile($this->module->assetsUrl.'/css/emailProgressControl.css');
-        Yii::app()->clientScript->registerScriptFile($this->module->assetsUrl.'/js/emailProgressControl.js');
-        Yii::app()->clientScript->registerScript('emailProgressControl-vars','
-            //x2.emailProgressControl.sentCount = '.$this->sentCount.';
-            x2.emailProgressControl.sentCount = 100;
-            x2.emailProgressControl.totalEmails = '.$totalEmails.';
-            x2.emailProgressControl.listItems = '.json_encode($this->listItems).';
-            x2.emailProgressControl.sendUrl = '.json_encode(Yii::app()->controller->createUrl('/marketing/marketing/mailIndividual')).';
-            x2.emailProgressControl.campaignId = '.$this->campaign->id.';
-            // Translation messages for the controls that will be dynamically updated
-            x2.emailProgressControl.text = '.json_encode(array(
-                'Resume' => Yii::t('campaign','Resume'),
-                'Pause' => Yii::t('campaign','Pause'),
-                'Could not send email due to an error in the request to the server.' => Yii::t('campaign','Could not send email due to an error in the request to the server.'),
-            )).';
-            x2.emailProgressControl.init();
-
-            // Make the "stop" button wait for the currently-sending email to complete.
-            $("#campaign-toggle-button").bind("click",function(event){
-                event.preventDefault();
-                var that = this;
-                if(x2.emailProgressControl.paused) {
-                    $(that).parents("form").submit();
-                } else {
-                    x2.emailProgressControl.afterSend = function() {
-                        $(that).parents("form").submit();
-                    }
-                }
-            });
-
-            // Ask the user if they would really like to cancel the current campaign
-            $("#campaign-complete-button").bind("click.confirm",function(event){
-                event.preventDefault();
-                var that = this;
-                var proceed = x2.emailProgressControl.listItems.length == 0;
-                if(!proceed)
-                    proceed = confirm('.json_encode(Yii::t('marketing','You have unsent mail in this campaign. Are you sure you want to forcibly mark this campaign as complete?')).');
-                if(proceed) {
-                    if(x2.emailProgressControl.paused) {
-                        $(that).parents("form").submit();
-                    } else {
-                        x2.emailProgressControl.afterSend = function() {
-                            $(that).parents("form").submit();
-                        }
-                    }
-                } else {
-                    x2.emailProgressControl.afterSend = function(){};
-                }
-            });
-
-            // And now finally:
-            if(x2.emailProgressControl.listItems.length > 0)
-                x2.emailProgressControl.start();
-            else
-                x2.emailProgressControl.pause();
-        ',CClientScript::POS_READY);
+        if (!isset ($this->_JSClassParams)) {
+            $this->_JSClassParams = array_merge ( parent::getJSClassParams(),
+                array(
+                    'sentCount' => $this->sentCount, 
+                    'totalEmails' => $totalEmails,
+                    'listItems' => $this->listItems,
+                    'sendUrl' => Yii::app()->controller->createUrl ('/marketing/marketing/mailIndividual'),
+                    'campaignId' => $this->campaign->id,
+                    'paused' => !(isset($_GET['launch']) && $_GET['launch'])
+                )
+            );
+        }
+        return $this->_JSClassParams;
     }
 
     public function run() {
-
         $this->render('emailProgressControl');
+        $this->registerPackages ();
+        $this->instantiateJSClass(true);
+    }
+
+    public function getTranslations() {
+        return array(
+            'confirm' => Yii::t('marketing', 'You have unsent mail in this campaign. Are you sure you want to forcibly mark this campaign as complete?'),
+            'pause' => Yii::t('marketing', 'Pause'),
+            'complete' => Yii::t('marketing', 'Email Delivery Complete'),
+            'resume' => Yii::t('marketing', 'Resume'),
+            'error' => Yii::t('marketing', 'Could not send email due to an error in the request to the server.')
+        );
     }
 }
 

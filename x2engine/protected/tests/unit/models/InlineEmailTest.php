@@ -150,10 +150,11 @@ class InlineEmailTest extends X2DbTestCase {
         // Test the validator parseMailingList: parsing the recipients out of address headers
         $this->eml = new InlineEmail();
         // Put it together and take it apart again:
-        $toList = array(array('This That', 'this.that@gmail.com'), array('Fruit Fly', 'fruit_@fly.com'));
+        $toList = array(
+            array('This That', 'this.that@gmail.com'), array('Fruit Fly', 'fruit_@fly.com'));
         $this->eml->to = implode(', ', array_map(function($t){
-                            return "\"{$t[0]}\" <{$t[1]}>";
-                        }, $toList));
+            return "\"{$t[0]}\" <{$t[1]}>";
+        }, $toList));
         $this->eml->parseMailingList('to');
         $this->assertEquals($toList, $this->eml->mailingList['to'], "Failed asserting that the addressee list was parsed properly.");
     }
@@ -165,7 +166,10 @@ class InlineEmailTest extends X2DbTestCase {
         $this->eml->subject = 'test email subject';
         $this->eml->message = '<html><head></head><body><h1>testing 123</h1></body></html>';
         $this->eml->to = '"Testfirstname Testlastname" <contact@test.com>';
-        $this->eml->from = '"Sales Rep" <sales@rep.com>';
+        $this->eml->from = array (
+            'name' => 'Sales Rep',
+            'address' => 'sales@rep.com',
+        );
         $this->eml->modelId = 12345;
         $this->eml->modelName = 'Contacts';
         $this->eml->userProfile = $profile;
@@ -179,7 +183,10 @@ class InlineEmailTest extends X2DbTestCase {
         $this->eml = new InlineEmail('custom');
         $this->eml->message = '<html><head></head><body><h1>testing 123</h1></body></html>';
         $this->eml->to = '"Testfirstname Testlastname" <contact@test.com>';
-        $this->eml->from = '"Sales Rep" <sales@rep.com>';
+        $this->eml->from = array (
+            'name' => 'Sales Rep',
+            'address' => 'sales@rep.com',
+        );
         $quote = $this->quote('docsTest');
         $this->eml->modelId = $quote->id;
         $this->eml->modelName = 'Quote';
@@ -247,7 +254,10 @@ class InlineEmailTest extends X2DbTestCase {
         $this->eml->modelId = $this->contacts('testAnyone')->id;
         $this->eml->modelName = 'Contacts';
         $this->eml->subject = 'Test Email Subject';
-        $this->eml->from = '"Sales Rep" <sales@rep.com>';
+        $this->eml->from = array (
+            'name' => 'Sales Rep',
+            'address' => 'sales@rep.com',
+        );
         $this->eml->to = '"Testfirstname Testlastname" <contact@test.com>';
         $this->eml->prepareBody();
         $record = $this->eml->insertInBody($this->eml->actionHeader, 1, 1);

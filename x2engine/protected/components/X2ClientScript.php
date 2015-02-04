@@ -324,8 +324,13 @@ class X2ClientScript extends NLSClientScript {
             $mergedCss = array ();
             $mediaType = null;
             foreach ($this->css as $css) {
-                if (preg_match ('/@import/', $css[0])) {
-                    $html .= CHtml::css($css[0],$css[1])."\n";
+                $text = $css[0];
+                if (is_array ($text) && isset ($text['text'])) {
+                    $text = $text['text'];
+                }
+
+                if (preg_match ('/@import/', $text)) {
+                    $html .= CHtml::css($text,$css[1])."\n";
                     continue;
                 }
                 if ($mediaType === null) { 
@@ -335,7 +340,7 @@ class X2ClientScript extends NLSClientScript {
                     if (!isset ($mergedCss[$mediaType])) {
                         $mergedCss[$mediaType] = '';
                     }
-                    $mergedCss[$mediaType] .= "\n".$css[0];
+                    $mergedCss[$mediaType] .= "\n".$text;
                 }
             }
             foreach ($mergedCss as $type => $css) {
@@ -379,6 +384,68 @@ class X2ClientScript extends NLSClientScript {
 			else
 				$output=$html.$output;
 		}
+	}
+
+	public function registerScript($id,$script,$position=null,array $htmlOptions=array())
+	{
+		if($position===null)
+			$position=$this->defaultScriptPosition;
+		$this->hasScripts=true;
+		if(empty($htmlOptions))
+			$scriptValue=$script;
+		else
+		{
+			if($position==self::POS_LOAD || $position==self::POS_READY)
+				throw new CException(Yii::t('yii','Script HTML options are not allowed for "CClientScript::POS_LOAD" and "CClientScript::POS_READY".'));
+			$scriptValue=$htmlOptions;
+			$scriptValue['content']=$script;
+		}
+		$this->scripts[$position][$id]=$scriptValue;
+		if($position===self::POS_READY || $position===self::POS_LOAD)
+			$this->registerCoreScript('jquery');
+		$params=func_get_args();
+		$this->recordCachingAction('clientScript','registerScript',$params);
+		return $this;
+	}
+
+    /**
+     * Modified to prevent duplicate rendering of scripts.
+     * This method is Copyright (c) 2008-2014 by Yii Software LLC
+     * http://www.yiiframework.com/license/ 
+     */
+    private $renderedScripts = array ();
+	protected function renderScriptBatch(array $scripts)
+	{
+		$html = '';
+		$scriptBatches = array();
+        /* x2modstart */ 
+		foreach($scripts as $scriptName => $scriptValue)
+		{
+            // scripts with numeric names are assumed to have been added in renderBodyEnd
+            if (!is_numeric ($scriptName) && isset ($this->renderedScripts[$scriptName])) continue;
+            $this->renderedScripts[$scriptName] = true;
+        /* x2modend */ 
+			if(is_array($scriptValue))
+			{
+				$scriptContent = $scriptValue['content'];
+				unset($scriptValue['content']);
+				$scriptHtmlOptions = $scriptValue;
+				ksort($scriptHtmlOptions);
+			}
+			else
+			{
+				$scriptContent = $scriptValue;
+				$scriptHtmlOptions = array();
+			}
+			$key=serialize($scriptHtmlOptions);
+			$scriptBatches[$key]['htmlOptions']=$scriptHtmlOptions;
+			$scriptBatches[$key]['scripts'][]=$scriptContent;
+		}
+		foreach($scriptBatches as $scriptBatch)
+			if(!empty($scriptBatch['scripts']))
+				$html.=CHtml::script(implode("\n",$scriptBatch['scripts']),$scriptBatch['htmlOptions'])."\n";
+
+		return $html;
 	}
 
     /**

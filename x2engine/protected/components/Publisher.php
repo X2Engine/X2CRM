@@ -57,6 +57,7 @@ class Publisher extends X2Widget {
     public $associationType; // type of record to associate actions with
     public $associationId = ''; // record to associate actions with
     public $assignedTo = null; // user actions will be assigned to by default
+    public $renderTabs = true;
 
     public $viewParams = array(
         'model',
@@ -87,6 +88,9 @@ class Publisher extends X2Widget {
 
     public function setTabs ($tabs) {
         $this->_tabs = $tabs;
+        foreach ($this->_tabs as $tab) {
+            $tab->publisher = $this;
+        }
     }
 
     /**
@@ -100,7 +104,7 @@ class Publisher extends X2Widget {
                     'js' => array(
                         'js/publisher/Publisher.js',
                     ),
-                    'depends' => array ('auxlib')
+                    'depends' => array ('auxlib', 'MultiRowTabsJS')
                 ),
                 'MultiRowTabsJS' => array(
                     'baseUrl' => Yii::app()->request->baseUrl,
@@ -123,9 +127,19 @@ class Publisher extends X2Widget {
                 'publisherCreateUrl' => 
                     Yii::app()->controller->createUrl ('/actions/actions/publisherCreate'),
                 'isCalendar' => $this->calendar,
+                'renderTabs' => $this->renderTabs,
             ));
         }
         return $this->_JSClassParams;
+    }
+
+    public function getTranslations () {
+        if (!isset ($this->_translations)) {
+            $this->_translations = array_merge (parent::getTranslations (), array (
+                'View History Item' => Yii::t('app', 'View History Item')
+            ));
+        }
+        return $this->_translations;
     }
 
     public function run() {
@@ -141,13 +155,8 @@ class Publisher extends X2Widget {
         $selectedTabObj = $this->tabs[0];
         $selectedTabObj->startVisible = true;
 
-        Yii::app()->clientScript->registerPackages($this->packages, true);
+        $this->registerPackages ();
         $this->instantiateJSClass (false);
-
-        Yii::app()->clientScript->registerScript('publisherScript',"
-            x2.Publisher.translations['View History Item'] = '".
-                CHtml::encode (Yii::t('app', 'View History Item'))."';
-        ", CClientScript::POS_END);
 
         Yii::app()->clientScript->registerScript('loadEmails', "
         $(document).on('ready',function(){
@@ -189,19 +198,21 @@ class Publisher extends X2Widget {
             }
         ');
 
-        $that = $this;
-        $this->render(
-            'application.components.views.publisher.publisher',
-            array_merge (
-                array_combine(
-                    $this->viewParams,
-                    array_map(function($p)use($that){return $that->$p;}, $this->viewParams)
-                ),
-                array (
-                    'tabs' => $this->tabs, 
+        if ($this->renderTabs) {
+            $that = $this;
+            $this->render(
+                'application.components.views.publisher.publisher',
+                array_merge (
+                    array_combine(
+                        $this->viewParams,
+                        array_map(function($p)use($that){return $that->$p;}, $this->viewParams)
+                    ),
+                    array (
+                        'tabs' => $this->tabs, 
+                    )
                 )
-            )
-        );
+            );
+        }
     }
 
     //////////////////////////////////////////////////////////////

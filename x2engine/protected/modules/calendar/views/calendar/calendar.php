@@ -632,6 +632,7 @@ $(function() {
 
             var buttonpaneHeight;
             //var textareaHeight;
+
             viewAction.x2Dialog({
                 title: boxTitle,
                 dialogClass: 'calendarViewEventDialog',

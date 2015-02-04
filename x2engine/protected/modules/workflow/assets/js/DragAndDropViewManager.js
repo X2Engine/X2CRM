@@ -44,7 +44,6 @@ x2.DragAndDropViewManager = (function () {
 function DragAndDropViewManager (argsDict) {
     argsDict = typeof argsDict === 'undefined' ? {} : argsDict;
 
-    x2.WorkflowManagerBase.call (this, argsDict);
     var defaultArgs = {
         DEBUG: false && x2.DEBUG,
         workflowId: null,
@@ -67,6 +66,7 @@ function DragAndDropViewManager (argsDict) {
         stageListItemColors: []
     };
     auxlib.applyArgs (this, defaultArgs, argsDict);
+    x2.WorkflowManagerBase.call (this, argsDict);
 
     this.stagesWhichRequireComments = auxlib.map (function (a) {
         return parseInt (a, 10);

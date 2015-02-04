@@ -187,6 +187,8 @@ Yii::app()->clientScript->registerCss('inlineEmailFormCss',"
 }
 
 #email-attachments {
+    width: 316px;
+    border-radius: 4px;
     float:left;
     padding-top: 10px;
     padding-left: 3px;

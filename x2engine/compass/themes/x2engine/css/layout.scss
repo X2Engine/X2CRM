@@ -32,7 +32,7 @@
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2Engine".
  *****************************************************************************************/
-
+ 
 @import "standards";
 @import "font-awesome";
 @import "icons";
@@ -81,10 +81,14 @@ menu with JS
     display: none;
     float: left;
     height: 25px;
-    padding-top: 7px;
+    font-size: 25px;
     width: 31px;
-    padding-right: 20px;
-    margin-right: -28px;
+    margin-top: 1px;
+    margin-left: 14px;
+    margin-right: 5px;
+
+    color: white;
+    /* @theme color: smart_text */
 }
 
 .x2-bar {
@@ -102,7 +106,7 @@ html {
 body {
     height: 100%;
     // background: #fdfdfd;
-    background: $lightestGray;
+    background: $background;
     /*min-width:880px;*/
     &:before {
         content: "";
@@ -146,6 +150,10 @@ body {
     background-image: url(../images/stripes2.png);
     background-repeat: no-repeat;
     background-size: auto;
+}
+
+.avatar-image {
+    font-size: 95px;
 }
 
 /************************************************************
@@ -1197,8 +1205,12 @@ div {
 }
 
 /***********************************************************************
-* webkit scroll bars 
+* scroll bars 
 ***********************************************************************/
+
+body {
+    -ms-overflow-style: scrollbar;
+}
 
 ::-webkit-scrollbar {
     height: 10px;

@@ -121,7 +121,7 @@ Check all records in data provider feature
 }
 .grid-view .x2-gridview-fixed-top-bar-outer .select-all-records-on-all-pages-strip-container {
     margin-right: 6px;
-    margin-left: 6px;
+    margin-left: 3px;
 }
 
 .grid-view .select-all-records-on-all-pages-strip-container {
@@ -460,23 +460,25 @@ Yii::app()->clientScript->registerScript($namespacePrefix.'massActionsInitScript
 
     <?php
     }
+    if (count ($massActionObjs) > 1) {
     ?>
-    <div class='mass-action-more-button-container'>
-        <button class='mass-action-more-button x2-button'  
-         title='<?php echo Yii::t('app', 'More mass actions'); ?>'>
-            <span class='more-button-label'>
-                <?php echo Yii::t('app', 'More'); ?>
-            </span>
-            <img class='more-button-arrow' 
-             src='<?php echo Yii::app()->getTheme()->getBaseUrl().
-                '/images/icons/Collapse_Widget.png'; ?>' />
-        </button>
-    </div>
-    <ul style='display: none;'
-     class="more-drop-down-list<?php echo ($fixedHeader ? ' fixed-header' : ''); ?>"> 
-    <?php
-    foreach ($massActionObjs as $obj) {
-        $obj->renderListItem ();
+        <div class='mass-action-more-button-container'>
+            <button class='mass-action-more-button x2-button'  
+             title='<?php echo Yii::t('app', 'More mass actions'); ?>'>
+                <span class='more-button-label'>
+                    <?php echo Yii::t('app', 'More'); ?>
+                </span>
+                <img class='more-button-arrow' 
+                 src='<?php echo Yii::app()->getTheme()->getBaseUrl().
+                    '/images/icons/Collapse_Widget.png'; ?>' />
+            </button>
+        </div>
+        <ul style='display: none;'
+         class="more-drop-down-list<?php echo ($fixedHeader ? ' fixed-header' : ''); ?>"> 
+        <?php
+        foreach ($massActionObjs as $obj) {
+            $obj->renderListItem ();
+        }
     }
     ?>
     </ul>

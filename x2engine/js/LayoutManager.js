@@ -60,8 +60,6 @@ x2.LayoutManager = function (argsDict) {
 	this.pageMode = -1;		// 0 compact (no widgets)
 	this.newPageMode = 0;	// 1 fixed width (960px)
 							// 2 fill screen (5% margins)
-    this._historyMode = -1;		
-
     // values cached on window resize
     this.windowWidth; 
     this.contentWidth;
@@ -71,7 +69,9 @@ x2.LayoutManager = function (argsDict) {
     this._hideWidgetsThreshold = 1040;
     //this._hideWidgetsThreshold = 940;
     this._fullSearchBarThreshold = x2.logoWidth ? x2.logoWidth + 915 : 915;
-    this._publisherHalfWidthThreshold = 940;
+    //this._publisherHalfWidthThreshold = 940;
+    this._recordViewSingleColumnThreshold = 1406;
+    this._recordViewSingleColumnThresholdNoWidgets = 1129;
     this._titleBarThresholds;
     this._logoWidth = x2.logoWidth ? x2.logoWidth : 30; // default logo width
     this._mobileLayout; // true if mobile layout is active
@@ -115,11 +115,16 @@ Private static methods
 Public instance methods
 */
 
+/**
+ * @deprecated
+ */
 x2.LayoutManager.prototype.setHalfWidthSelector = function (halfWidthSelector) {
     this._halfWidthSelector = halfWidthSelector;
-    this._historyMode = -1;
 };
 
+/**
+ * @deprecated
+ */
 x2.LayoutManager.prototype.setHalfWidthThreshold = function (halfWidthThreshold) {
     this._publisherHalfWidthThreshold = halfWidthThreshold;
 };
@@ -430,9 +435,11 @@ x2.LayoutManager.prototype._setUpWindowResizeEvent = function () {
 			
 			if(that.pageMode == 0) {
 				that.$body.addClass('no-widgets');
+				that.$body.removeClass('show-widgets');
 			} else {
 				 if(!window.fullscreen) {
 					that.$body.removeClass('no-widgets');
+					that.$body.addClass ('show-widgets');
 					$(document).trigger ('showWidgets');
 				}
 			}
@@ -442,18 +449,15 @@ x2.LayoutManager.prototype._setUpWindowResizeEvent = function () {
     // action history responsiveness setup
     this.addFnToResizeQueue ((function () {
         return function (windowWidth, contentWidth) {
-            if(contentWidth < that._publisherHalfWidthThreshold)
-                var newHistoryMode = 0; // underneath record
-            else
-                var newHistoryMode = 1 // side of record
-                
-            if(that._historyMode !== newHistoryMode) {
-                that._historyMode = newHistoryMode;
-                if(that._historyMode === 1) {
-                    //$(that._halfWidthSelector).addClass('half-width');
-                } else {
-                    //$(that._halfWidthSelector).removeClass('half-width');
-                }
+            if (that.$body.hasClass ('no-widgets') && 
+                windowWidth < that._recordViewSingleColumnThresholdNoWidgets) {
+                $('#content').addClass ('record-view-single-column');
+            } else if (that.$body.hasClass ('show-widgets') && 
+                windowWidth < that._recordViewSingleColumnThreshold) {
+
+                $('#content').addClass ('record-view-single-column');
+            } else {
+                $('#content').removeClass ('record-view-single-column');
             }
         };
     }) ());

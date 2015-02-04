@@ -38,6 +38,9 @@
  @import "font-awesome";
 
 .grid-view {
+    table {
+        border: none !important;
+    }
     th, td {
         box-sizing: border-box;
     }
@@ -467,6 +470,10 @@ div.scrollbar-width-test {
 .grid-view > .pager .yiiPager a {
     padding: 2px 8px 2px 8px;
 }
+/*.grid-view {
+    ul.yiiPager .selected a {
+    }
+}*/
 
 .yiiPager li a {
     background: #fff;

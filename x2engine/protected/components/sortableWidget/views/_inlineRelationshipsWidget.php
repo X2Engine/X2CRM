@@ -187,12 +187,12 @@ $this->widget('X2GridViewGeneric', array(
     'showHeader' => CPropertyValue::ensureBoolean (
         $this->getWidgetProperty('showHeader')),
     'defaultGvSettings' => array (
-        'name' => '25%',
-        'relatedModelName' => '15%',
-        'assignedTo' => '20%',
-        'label' => '10%',
-        'createDate' => '23%',
-        'deletion.' => '7%',
+        'name' => '22%',
+        'relatedModelName' => '18%',
+        'assignedTo' => '18%',
+        'label' => '18%',
+        'createDate' => '15%',
+        'deletion.' => 70,
     ),
     'filter' => $this->getFilterModel (),
     'htmlOptions' => array (

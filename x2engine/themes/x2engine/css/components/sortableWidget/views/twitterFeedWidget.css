@@ -64,6 +64,9 @@
 /***********************************************************************
 * Greens 
 ***********************************************************************/
+/***********************************************************************
+* This section is made to correspond with the theme keys in ThemeGenerator
+***********************************************************************/
 /* line 26, ../../../../../../compass/themes/x2engine/css/components/sortableWidget/views/twitterFeedWidget.scss */
 #twitter-widget-top-bar-logo {
   background-image: url(../../../../images/twitterIcons/Twitter_logo_blue.png);

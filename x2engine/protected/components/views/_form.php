@@ -51,6 +51,8 @@ Yii::app()->clientScript->registerScript('datePickerDefault', "
     $.datepicker.setDefaults ($.datepicker.regional['']);
 ", CClientScript::POS_READY);
 
+Yii::app()->clientScript->registerCssFile(Yii::app()->theme->baseUrl.'/css/recordEdit.css');
+
 Yii::app()->clientScript->registerScript('setFormName', "
 window.formName = '$modelName';
 ", CClientScript::POS_HEAD);
@@ -313,7 +315,7 @@ if (isset($layout)) {
 
 if ((isset($suppressForm) && !$suppressForm) || !isset($suppressForm)) {
     if ($renderFormTags) {
-        echo '<div class="row buttons">' .
+        echo '<div class="row buttons save-button-row">' .
         CHtml::submitButton(
                 $model->isNewRecord ? Yii::t('app', 'Create') : Yii::t('app', 'Save'), array('class' => 'x2-button', 'id' => 'save-button', 'tabindex' => 24)) .
         '</div>';

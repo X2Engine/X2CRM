@@ -110,6 +110,10 @@ override spectrum color picker css
   }
 }
 
+#main-column {
+    float: left !important; // fix for ie8
+}
+
 #RecordViewWidgetManagerwidgets-container {
     padding-top: 5px;
     float: right;

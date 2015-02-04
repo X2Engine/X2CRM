@@ -52,7 +52,7 @@ Yii::import('X2GridViewBase');
 class X2GridView extends X2GridViewBase {
     public $modelName;
     public $viewName;
-    public $fieldFormatter;
+    public $fieldFormatter = 'X2GridViewFieldFormatter';
     public $columnOverrides = array ();
 
     /**
@@ -111,8 +111,11 @@ class X2GridView extends X2GridViewBase {
     public function getModel ($attr=null, $value=null) {
         if (!isset ($this->_model)) {
             $this->_model = X2Model::model ($this->modelName);
-            if (isset ($this->fieldFormatter))
+            if (isset ($this->fieldFormatter) && 
+                method_exists ($this->_model, 'setFormatter')) {
+
                 $this->_model->formatter = $this->fieldFormatter;
+            }
         }
         if ($attr) $this->_model->$attr = $value;
         return $this->_model;
@@ -204,12 +207,14 @@ class X2GridView extends X2GridViewBase {
         if (isset ($this->columnOverrides[$columnName])) {
             $newColumn = array_merge ($newColumn, $this->columnOverrides[$columnName]);
         }
+
         return $newColumn;
     }
 
     protected function createDefaultStyleColumn ($columnName, $width) {
         $isCurrency = in_array($columnName,array('annualRevenue','quoteAmount'));
         $newColumn = array();
+
         if ((array_key_exists($columnName, $this->allFields))) { 
 
             $newColumn['name'] = $columnName;

@@ -90,7 +90,7 @@ if (YII_DEBUG_TOOLBAR) {
 }
 
 $noSession = php_sapi_name()=='cli';
-if (!$noSession) {
+if (!$noSession || YII_UNIT_TESTING) {
     $userConfig = array(
         'class' => 'X2WebUser',
         // enable cookie-based authentication

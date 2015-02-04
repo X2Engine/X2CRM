@@ -376,7 +376,7 @@ LineItems.prototype.addLineItem = function (
     if (!that.readOnly) {
         $firstCell.find ('td').append (
             $("<span>", {'class': 'fa fa-times x2-delete-icon item-delete-button'}),
-            $("<span>", {'class': 'fa fa-arrows-v handle arrow-both-handle'})
+            $("<span>", {'class': 'fa fa-sort handle arrow-both-handle'})
         );
     }
     $inputCell = lineItemRow.append ($("<td>", {'class': 'x2-2nd-child input-cell'}).append (
@@ -471,13 +471,13 @@ LineItems.prototype.addLineItem = function (
     if (!that.readOnly) { // set up product select menu behavior
         var productNameInput = $(lineItemRow).find ('input.product-name');
         $(productNameInput).autocomplete ({
-                source: that.productNames,
-                select: function (event, ui) { that.selectProductFromAutocomplete (event, ui); },
-                open: function (evt, ui) {
-                        if ($(that._productMenuSelector).is (":visible")) {
-                                $(that._productMenuSelector).hide ();
-                        }
+            source: that.productNames,
+            select: function (event, ui) { that.selectProductFromAutocomplete (event, ui); },
+            open: function (evt, ui) {
+                if ($(that._productMenuSelector).is (":visible")) {
+                    $(that._productMenuSelector).hide ();
                 }
+            }
         });
         that.formatAutocompleteWidget (productNameInput);
         $('tbody.sortable').sortable ('refresh');
@@ -570,7 +570,7 @@ LineItems.prototype.addAdjustment = function (
     if (!that.readOnly) {
         $firstCell.find ('td').append (
             $("<span>", {'class': 'fa fa-times x2-delete-icon item-delete-button'}),
-            $("<span>", {'class': 'fa fa-arrows-v handle arrow-both-handle'})
+            $("<span>", {'class': 'fa fa-sort handle arrow-both-handle'})
         );
     }
     lineItemRow.append ($("<td>"));
@@ -656,25 +656,28 @@ LineItems.prototype.selectProductFromAutocomplete = function (event, ui) {
     $(event.target).val (lineItemName);
     var lineItemPrice = $(event.target).attr ('name').replace (/name/, 'price');
     var lineItemDescription = $(event.target).attr ('name').replace (/name/, 'description');
-    $('[name="' + lineItemPrice + '"]').val (that.productPrices[lineItemName]).maskMoney ('mask');/*.
-        formatCurrency ({region: that.currency});*/
-    $('[name="' + lineItemDescription + '"]').val (that.productDescriptions[lineItemName]);
+    this.element$.find ('[name="' + lineItemPrice + '"]').
+        val (that.productPrices[lineItemName]).maskMoney ('mask');
+    this.element$.find ('[name="' + lineItemDescription + '"]').
+        val (that.productDescriptions[lineItemName]);
     that.validateName (event.target);
     that.updateTotals ();
     return false;
 };
 
-LineItems.prototype.selectProductFromDropDown = function (event, ui) {
+LineItems.prototype.selectProductFromDropDown = function (item) {
     var that = this;
-    event.preventDefault ();
     that.DEBUG && console.log ('selectProductFromDropDown');
-    var lineItemName = ui.item.text ();
+    var lineItemName = item.text ();
     $(that._clickedLineItem).val (lineItemName);
     var lineItemPrice = $(that._clickedLineItem).attr ('name').replace (/name/, 'price');
     var lineItemDescription = 
         $(that._clickedLineItem).attr ('name').replace (/name/, 'description');
-    $('[name="' + lineItemPrice + '"]').val (that.productPrices[lineItemName]).maskMoney ('mask');
-    $('[name="' + lineItemDescription + '"]').val (that.productDescriptions[lineItemName]);
+
+    this.element$.find ('[name="' + lineItemPrice + '"]').
+        val (that.productPrices[lineItemName]).maskMoney ('mask');
+    this.element$.find ('[name="' + lineItemDescription + '"]').
+        val (that.productDescriptions[lineItemName]);
     that.validateName (that._clickedLineItem);
     that.updateTotals ();
     return false;
@@ -723,17 +726,37 @@ LineItems.prototype.setupProductSelectMenu = function () {
         $(that._productMenuSelector).show ().position ({
             my: "left top",
             at: "left bottom",
-            of: $(this).prev ().prev ()
+            of: $(this).prev ()
         });
-        $(document).one ('click', function () {
-            $(that._productMenuSelector).hide ();
-        });
-        return false;
+        if (that.element$.closest ('.ui-dialog').length) {
+            that.element$.closest ('.ui-dialog').one ('click', function (event) {
+                var target = event.target;
+                if ($(target).closest ('.ui-menu-item').length || 
+                    $(target).is ('.ui-menu-item')) {
+
+                    // kludge to resolve menu item select event issue
+                    that.selectProductFromDropDown (
+                        ($(target).closest ('.ui-menu-item').length && 
+                        $(target).closest ('.ui-menu-item')) || $(target));
+                } 
+                $(that._productMenuSelector).hide ();
+            });
+        } else {
+            $(document).one ('click', function () {
+                $(that._productMenuSelector).hide ();
+            });
+        }
+        event.stopPropagation ();
     });
 
     $(that._productMenuSelector).hide ().menu ({select: function (event, ui) { 
-        return that.selectProductFromDropDown (event, ui); 
+        if (!that.element$.closest ('.ui-dialog').length) {
+            that.selectProductFromDropDown (ui.item); 
+        }
     }});
+
+    // kludge to prevent link behavior of menu items when line items are inside action frame
+    $(that._productMenuSelector).find ('a').attr ('href', 'javascript:void(0)');
 };
 
 /*
@@ -784,10 +807,10 @@ LineItems.prototype.checkAdjustment = function (element) {
 
     if (elemVal.match (/%/)) {
 
-        if ($('[name="' + typeElementName + '"]').val ().match (/total/)) {
-            $('[name="' + typeElementName + '"]').val ('totalPercent');
+        if (this.element$.find ('[name="' + typeElementName + '"]').val ().match (/total/)) {
+            this.element$.find ('[name="' + typeElementName + '"]').val ('totalPercent');
         } else {
-            $('[name="' + typeElementName + '"]').val ('percent');
+            this.element$.find ('[name="' + typeElementName + '"]').val ('percent');
         }
 
         if (elemVal.match (/^\-?[0-9]+(\.[0-9]+)?%$/)) {
@@ -800,10 +823,10 @@ LineItems.prototype.checkAdjustment = function (element) {
     } else {
         $(element).removeClass ('error');
 
-        if ($('[name="' + typeElementName + '"]').val ().match (/total/)) {
-            $('[name="' + typeElementName + '"]').val ('totalLinear');
+        if (this.element$.find ('[name="' + typeElementName + '"]').val ().match (/total/)) {
+            this.element$.find ('[name="' + typeElementName + '"]').val ('totalLinear');
         } else {
-            $('[name="' + typeElementName + '"]').val ('linear');
+            this.element$.find ('[name="' + typeElementName + '"]').val ('linear');
         }
 
         return true;
@@ -1042,6 +1065,7 @@ Private instance methods
 LineItems.prototype._init = function () {
     var that = this;
     $(function () {
+        that.element$ = $(that._containerElemSelector);
         that.maskMoney ([$(that._totalSelector), $(that._subtotalSelector)]);
 
         if (that.readOnly) {

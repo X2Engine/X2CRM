@@ -162,6 +162,7 @@
         float: right;
         margin-left: 0px;
     }
+
     .fc-header-space {
         display: none;
     }
@@ -186,6 +187,9 @@
     background: $lightBlue;
     color: white;
     box-shadow: darken($lightBlue, 10%) 0px 1px 3px inset;
+    /* @theme background: highlight2 */
+    /* @theme border-color: dark_highlight2 */
+    /* @theme color: smart_text2 */
 }
 
 .ui-datepicker {

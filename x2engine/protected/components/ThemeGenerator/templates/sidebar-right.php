@@ -30,7 +30,6 @@
 
 #widget_SmallCalendar #me-button.pressed {
 	box-shadow: none !important;
-	background: $colors[darker_highlight1]
 }
 
 

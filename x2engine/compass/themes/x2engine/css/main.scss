@@ -33,10 +33,16 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 
+// Import mixins + colors
 @import "standards";
 @import "colors";
+
+// Font awesome Pseudo classes
 @import "font-awesome";
+
+// Icon mixins and font
 @import "icons";
+
 
 body {
     margin: 0;
@@ -714,6 +720,7 @@ div.date-box {
     .day {
         font-size: 14px;
         line-height: 20px;
+        /* @theme color: lighter_link */
     }
     &.p-3 {
         border-color: #f25050;
@@ -723,6 +730,7 @@ div.date-box {
     }
     &.p-1 {
         border-color: $darkBlue;
+        /* @theme border-color: lighter_link */
     }
     &.p-3 .month {
         background: #f25050;
@@ -735,6 +743,9 @@ div.date-box {
     &.p-1 .month {
         background: $darkBlue;
         border-color: $darkBlue;
+        /* @theme background: lighter_link */
+        /* @theme border-color: lighter_link */
+        /* @theme color: content */
     }
 }
 

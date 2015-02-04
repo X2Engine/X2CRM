@@ -49,7 +49,6 @@ class QuotesWidget extends TransactionalViewWidget {
 
     public function getIcon () {
         return X2Html::x2icon ('quotes');
-        // return X2Html::quoteIcon ();
     }
 
     public function getPackages () {

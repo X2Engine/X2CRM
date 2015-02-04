@@ -179,7 +179,8 @@ class ContactsController extends x2base {
                 )));
             } else {
                 $contact->duplicateChecked();
-                User::addRecentItem('c', $id, Yii::app()->user->getId()); ////add contact to user's recent item list
+                // add contact to user's recent item list
+                User::addRecentItem('c', $id, Yii::app()->user->getId()); 
                 parent::view($contact, 'contacts');
             }
         } else

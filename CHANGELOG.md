@@ -1,3 +1,22 @@
+# 5.0.3 #
+1/30/2015
+
+* Highlights
+  * Added ability to export user changelog to CSV
+  * Record importer now provides a progress bar
+* General Changelog / Developer Notes:
+  * Fixed response handling when verifying application credentials
+* Tracked Bug Fixes:
+  * [1853](http://x2software.com/index.php/bugReports/1853): Undefined variable: report  
+  * [1855](http://x2software.com/index.php/bugReports/1855): Undefined variable: retVal  
+  * [1896](http://x2software.com/index.php/bugReports/1896): Argument 2 passed to X2Model::renderModelInput() must be an instance of Fields, null given, called in marketing/protected/models/X2Model.php on line 2298 and defined  
+  * [1899](http://x2software.com/index.php/bugReports/1899): User Report  
+  * [1905](http://x2software.com/index.php/bugReports/1905): Class: Charts not found.  
+  * [2107](http://x2software.com/index.php/bugReports/2107): Property "X2ButtonColumn.name" is not defined.  
+  * [2115](http://x2software.com/index.php/bugReports/2115): PublisherProductsTab and its behaviors do not have a method or closure named "renderPartial".  
+  * [2119](http://x2software.com/index.php/bugReports/2119): User Report  
+  * [2120](http://x2software.com/index.php/bugReports/2120): Invalid email address list
+
 # 5.0.3b #
 1/20/2015
 
@@ -21,6 +40,8 @@
   * [2048](http://x2software.com/index.php/bugReports/2048): htmlspecialchars(): Invalid multibyte sequence in argument  
   * [2049](http://x2software.com/index.php/bugReports/2049): 
   * [2086](http://x2software.com/index.php/bugReports/2086):   
+
+
 
 # 5.0.2 #
 12/22/2014
@@ -473,8 +494,8 @@
   * [1051](http://x2software.com/index.php/bugReports/1051): links with # in them get converted to tag search links  
   * [1183](http://x2software.com/index.php/bugReports/1183): Contacts and its behaviors do not have a method or closure named "getChanges".  
   * [1201](http://x2software.com/index.php/bugReports/1201): Unable to resolve the request "product/product/view".  
-  * [1204](http://x2software.com/index.php/bugReports/1204): Cannot modify header information - headers already sent by (output started at /home3/bigmoney/public_html/knockoutmultimedia.co/crm/protected/controllers/ProfileController.php:516)  
-  * [1223](http://x2software.com/index.php/bugReports/1223): Cannot modify header information - headers already sent by (output started at /home/inspirah/public_html/crm/protected/modules/actions/controllers/ActionsController.php:799)
+  * [1204](http://x2software.com/index.php/bugReports/1204): Cannot modify header information - headers already sent by (output started at protected/controllers/ProfileController.php:516)  
+  * [1223](http://x2software.com/index.php/bugReports/1223): Cannot modify header information - headers already sent by (output started at protected/modules/actions/controllers/ActionsController.php:799)
 * Bugs fixed in 4.1.1:
   * Lead conversion PHP error
   * (Platinum Edition) "Raw Input" API settings option not saving properly

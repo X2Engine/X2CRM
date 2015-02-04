@@ -97,9 +97,13 @@
         position: absolute;
         display: none;
         max-height: 16em;
-        overflow-y: scroll;
+        overflow-y: auto;
+        overflow-x: hidden;
         z-index: 5;
         font-size: 10px !important;
+        a {
+            text-decoration: none;
+        }
     }
     .quote-table {
         margin-bottom: 5px;
@@ -128,6 +132,7 @@
         td {
             padding-right: 5px;
             background-color: #FAFAFA;
+            /* @theme background-color: content */
             input.line-item-field {
                 border: 1px solid #aaa;
                 font-size: 12px;

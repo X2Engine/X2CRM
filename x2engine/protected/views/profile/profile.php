@@ -99,4 +99,3 @@ if ($isMyProfile) {
         </div>  
 
 </div>
-

@@ -64,39 +64,14 @@
 /***********************************************************************
 * Greens 
 ***********************************************************************/
-/***************************************
-* Mixin for border radius 
-***************************************/
-/***************************************
-* Mixin for box shadow
-***************************************/
-/***************************************
-* Mixin for text field placeholder text
-***************************************/
-/***************************************
-* CSS to extend when something 
-* should look like a link
-***************************************/
-/* line 68, ../../compass/css/lib/standards.scss */
-.pseudo-link {
-  cursor: pointer;
-  color: #004baf;
-  transition: color .1s;
+/***********************************************************************
+* This section is made to correspond with the theme keys in ThemeGenerator
+***********************************************************************/
+/* line 24, ../../../compass/themes/x2engine/css/viewChangelog.scss */
+.export-changelog {
+  width: 120px;
 }
-/* line 73, ../../compass/css/lib/standards.scss */
-.pseudo-link:hover {
-  color: #006cfb;
-}
-
-/***************************************
-* CSS to extend when for elements that 
-* become opauqe on mouseover
-***************************************/
-/* line 91, ../../compass/css/lib/standards.scss */
-.opacity-hover {
-  opacity: 0.3;
-}
-/* line 86, ../../compass/css/lib/standards.scss */
-.opacity-hover:hover {
-  opacity: 1;
+/* line 26, ../../../compass/themes/x2engine/css/viewChangelog.scss */
+.export-changelog i {
+  padding-right: 4px;
 }

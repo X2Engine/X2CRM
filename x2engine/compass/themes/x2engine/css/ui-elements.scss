@@ -83,10 +83,7 @@ Title bar for sections other than the main section (e.g. widgets)
     outline: none;
     color: #333;
     text-decoration: none;
-    border-radius: 3px;
-    -moz-border-radius: 3px;
-    -webkit-border-radius: 3px;
-    -o-border-radius: 3px;
+    @include border-radius (3px);
 }
 
 /* hide arrow on webkit browsers */
@@ -102,10 +99,7 @@ Title bar for sections other than the main section (e.g. widgets)
     outline: none;
     color: #333;
     text-decoration: none;
-    border-radius: 3px;
-    -moz-border-radius: 3px;
-    -webkit-border-radius: 3px;
-    -o-border-radius: 3px;
+    @include border-radius (3px);
 }
 
 .x2-select {
@@ -189,10 +183,7 @@ CSS "button" links to be used instead of actual buttons
     text-align: center;
     /*text-shadow: 0 1px 0 #fff;*/
     -webkit-appearance: none;
-    border-radius: 3px;
-    -moz-border-radius: 3px;
-    -webkit-border-radius: 3px;
-    -o-border-radius: 3px;
+    @include border-radius (3px);
     cursor: pointer;
 }
 
@@ -383,15 +374,17 @@ a {
 
 .x2-button {
     &.x2-blue {
-        border: 1px solid #3173CC;
-        background: #5B97E7;
+        // border: 1px solid #3173CC;
+        // background: #5B97E7;
+        border: 1px solid darken($lightBlue, 10%);
+        background: $lightBlue;
         /* Old browsers */
         &:hover {
-            background: #488fe2;
+            background: darken($lightBlue, 4%);
             /* Old browsers */
         }
         &:active {
-            background: #3d70b4;
+            background: darken($lightBlue, 8%);
             /* Old browsers */
         }
     }
@@ -552,51 +545,33 @@ small x2-button
     vertical-align: middle;
     margin: -3px 0 0 0;
     border-right-width: 0;
-    border-radius: 0;
-    -moz-border-radius: 0;
-    -webkit-border-radius: 0;
-    -o-border-radius: 0;
+    @include border-radius (0);
 }
 
 .x2-button-group .x2-button {
     vertical-align: middle;
     margin: -3px 0 0 0;
     border-right-width: 0;
-    border-radius: 0;
-    -moz-border-radius: 0;
-    -webkit-border-radius: 0;
-    -o-border-radius: 0;
+    @include border-radius (0);
     &:only-child, &.pseudo-only-child {
         border-right-width: 1px !important;
-        border-radius: 3px !important;
-        -moz-border-radius: 3px !important;
-        -webkit-border-radius: 3px !important;
-        -o-border-radius: 3px !important;
+        @include border-radius (3px !important);
     }
 }
 
 .button-group-pager .previous, .x2-button-group .x2-button:first-child {
-    border-radius: 3px 0 0 3px;
-    -moz-border-radius: 3px 0 0 3px;
-    -webkit-border-radius: 3px 0 0 3px;
-    -o-border-radius: 3px 0 0 3px;
+    @include border-radius (3px 0 0 3px);
 }
 
 .button-group-pager .next {
     border-right-width: 1px;
-    border-radius: 0 3px 3px 0;
-    -moz-border-radius: 0 3px 3px 0;
-    -webkit-border-radius: 0 3px 3px 0;
-    -o-border-radius: 0 3px 3px 0;
+    @include border-radius (0 3px 3px 0);
 }
 
 .x2-button-group .x2-button {
     &.x2-last-child, &:last-child, &.x2-last-child {
         border-right-width: 1px;
-        border-radius: 0 3px 3px 0;
-        -moz-border-radius: 0 3px 3px 0;
-        -webkit-border-radius: 0 3px 3px 0;
-        -o-border-radius: 0 3px 3px 0;
+        @include border-radius (0 3px 3px 0);
         margin-left: -4px;
     }
     :first-child {
@@ -629,11 +604,9 @@ small x2-button
 .x2-link {
     display: inline-block;
     font-weight: normal;
-    border-radius: 3px;
-    -moz-border-radius: 3px;
-    -webkit-border-radius: 3px;
-    -o-border-radius: 3px;
+    @include border-radius (3px);
     &.ui-draggable-dragging {
+        z-index: 1000;
         border: 1px solid #999;
         padding: 4px 2px;
         background-color: #eee;
@@ -685,14 +658,14 @@ small x2-button
             background: #f8f8f8;
             font-size: 10pt;
             margin: 0 2px 0 0;
+            
             border-color: #E1E1E1 !important;
+            /* @theme border-color: border */
+
             border-bottom: none;
             font-family: Arial, Helvetica, sans-serif;
             /* font-weight: bold; */
-            border-radius: 4px 4px 0 0;
-            -moz-border-radius: 4px 4px 0 0;
-            -webkit-border-radius: 4px 4px 0 0;
-            -o-border-radius: 4px 4px 0 0;
+            @include border-radius (4px 4px 0 0);
         }
     }
 }
@@ -717,10 +690,16 @@ small x2-button
 }
 
 .ui-tabs .ui-tabs-nav > li {
+    /* @theme background: dark_content */
+
     &.ui-state-active {
         border-color: #D1D1D1;
         border-bottom-color: #eee;
         background: #eee;
+
+        /* @theme border-bottom-color: content */
+        /* @theme background: content */
+
     }
     &.ui-state-hover {
         background: #fff;
@@ -733,10 +712,7 @@ small x2-button
 #publisher .form {
     background: #eee;
     border-color: #D1D1D1;
-    border-radius: 4px;
-    -moz-border-radius: 4px;
-    -webkit-border-radius: 4px;
-    -o-border-radius: 4px;
+    @include border-radius (4px);
     position: relative;
     z-index: 1;
 }
@@ -788,10 +764,7 @@ small x2-button
 }
 
 #doc-box {
-    -moz-border-radius: 4px;
-    -o-border-radius: 4px;
-    -webkit-border-radius: 4px;
-    border-radius: 4px;
+    @include border-radius (4px);
     border: 1px solid #ccc;
     clear: both;
     height: 600px;
@@ -845,27 +818,21 @@ div {
         background: #fff;
     }
     &.x2-sortlist li:first-child, &.x2-cond-list li:first-child {
-        -moz-border-radius: 4px 4px 0 0;
-        -o-border-radius: 4px 4px 0 0;
-        -webkit-border-radius: 4px 4px 0 0;
-        border-radius: 4px 4px 0 0;
+        @include border-radius (4px 4px 0 0);
     }
     &.x2-sortlist li:last-child, &.x2-cond-list li:last-child {
         border-bottom: 1px solid #b3b3b3;
-        -moz-border-radius: 0 0 4px 4px;
-        -o-border-radius: 0 0 4px 4px;
-        -webkit-border-radius: 0 0 4px 4px;
-        border-radius: 0 0 4px 4px;
+        @include border-radius (0 0 4px 4px);
     }
     &.x2-sortlist li:only-child, &.x2-cond-list li:only-child {
         border-bottom: 1px solid #b3b3b3;
-        -moz-border-radius: 4px;
-        -o-border-radius: 4px;
-        -webkit-border-radius: 4px;
-        border-radius: 4px;
+        @include border-radius (4px);
     }
     &.x2-sortlist {
         li {
+            /* @theme background: content */
+            /* @theme border-color: lighter_content */     
+
             &:first-child .handle {
                 -moz-box-shadow: inset 1px 1px 0 0 rgba(255, 255, 255, 0.3);
                 -webkit-box-shadow: inset 1px 1px 0 0 rgba(255, 255, 255, 0.3);
@@ -891,6 +858,12 @@ div {
                 -moz-box-shadow: inset 1px 0 0 0 rgba(255, 255, 255, 0.3);
                 -webkit-box-shadow: inset 1px 0 0 0 rgba(255, 255, 255, 0.3);
                 box-shadow: inset 1px 0 0 0 rgba(255, 255, 255, 0.3);
+
+                /* @theme border-color border */
+                /* @theme background: highlight1 */
+                &:hover {
+                    /* @theme background: lighter_highlight1 */
+                }
             }
         }
         .cell.inline-label {
@@ -995,15 +968,9 @@ div {
     .items {
         clear: both;
         background: #fff;
-        -moz-border-radius: 4px;
-        -o-border-radius: 4px;
-        -webkit-border-radius: 4px;
-        border-radius: 4px;
+        @include border-radius(4px);
         border: 1px solid #ccc;
-        /*
-                -moz-box-shadow:         0 1px 6px rgba(0,0,0,0.5);
-                -webkit-box-shadow:         0 1px 6px rgba(0,0,0,0.5);
-                box-shadow:                 0 1px 6px rgba(0,0,0,0.5); */
+        /* @theme border-color border */
     }
     .empty {
         margin: 0 0 5px 5px;
@@ -1027,10 +994,6 @@ div {
     }
     .view.top-level {
         /*top level comment*/
-        /*     -moz-border-radius: 4px;
-                -o-border-radius: 4px;
-                -webkit-border-radius: 4px;
-                border-radius: 4px; */
         border-top: 1px solid #ddd;
         padding: 2px 5px 10px 5px;
         &.activity-feed {
@@ -1044,10 +1007,7 @@ div {
         }
         .list-view {
             margin: 0 -5px;
-            -moz-border-radius: 0;
-            -o-border-radius: 0;
-            -webkit-border-radius: 0;
-            border-radius: 0;
+            @include border-radius (0);
             border: none;
             padding: 0;
         }
@@ -1061,10 +1021,7 @@ div {
             padding: 2px 5px 2px 20px;
             border: solid #ddd;
             border-width: 1px 0 0 0;
-            -moz-border-radius: 0;
-            -o-border-radius: 0;
-            -webkit-border-radius: 0;
-            border-radius: 0;
+            @include border-radius (0);
         }
         &:first-child {
             border-top: none;
@@ -1081,10 +1038,7 @@ div {
         background: #fff;
         margin: 5px 0 0 0;
         text-align: right;
-        border-radius: 4px 4px 4px 4px;
-        -moz-border-radius: 4px 4px 4px 4px;
-        -webkit-border-radius: 4px 4px 4px 4px;
-        -o-border-radius: 4px 4px 4px 4px;
+        @include border-radius (4px 4px 4px 4px);
     }
 }
 
@@ -1156,7 +1110,7 @@ button.ui-button.ui-dialog-titlebar-close {
 
 .ui-dialog {
     // border: 1px solid #9b9b9b !important;
-    z-index: 900000;
+    z-index: 1000;//00;
     // border-width: 0;
     @include box-shadow(0px 0px 5px 1px rgba(0, 0, 0, 0.5));
 
@@ -1240,10 +1194,7 @@ Yii pager
         color: #004baf !important;
         border: none !important;
         background: none !important;
-        border-radius: 12px;
-        -moz-border-radius: 12px;
-        -webkit-border-radius: 12px;
-        -o-border-radius: 12px;
+        @include border-radius (12px);
     }
 }
 
@@ -1395,10 +1346,7 @@ Ckeditor
 
 .cke_toolgroup .cke_button {
     border: 1px solid #e4e4e4 !important;
-    border-radius: 3px !important;
-    -moz-border-radius: 3px !important;
-    -webkit-border-radius: 3px !important;
-    -o-border-radius: 3px !important;
+    @include border-radius (3px !important);
 }
 
 .cke_button.cke_button__source, .cke_toolbox .cke_combo_button, .cke_toolbox_collapser {
@@ -1765,10 +1713,7 @@ button.ui-multiselect {
         background: -ms-linear-gradient(top,        #f0f0f0 0%, #dddddd 100%) !important;
         background: linear-gradient(to bottom,    #f0f0f0 0%, #dddddd 100%) !important;*/
         color: black !important;
-        border-radius: 4px 4px 0 0;
-        -moz-border-radius: 4px 4px 0 0;
-        -webkit-border-radius: 4px 4px 0 0;
-        -o-border-radius: 4px 4px 0 0;
+        @include border-radius (4px 4px 0 0);
         /*text-shadow: 0 1px 0 #fff !important;*/
         -webkit-appearance: none !important;
         /*-moz-box-shadow:     inset 0 1px 0 0 #fff !important;
@@ -1806,17 +1751,9 @@ button.ui-multiselect {
             border-left: 1px solid rgb(218, 218, 218);
             border-top: 1px solid rgb(218, 218, 218);
             border-bottom: 1px solid rgb(218, 218, 218);
-            /*border-radius:             4px 0 0 4px;
-            -moz-border-radius:         4px 0 0 4px;
-            -webkit-border-radius:     4px 0 0 4px;
-            -o-border-radius:         4px 0 0 4px;*/
         }
         &.available {
             border: 1px solid rgb(218, 218, 218);
-            /*border-radius:             0px 4px 4px 0;
-            -moz-border-radius:         0px 4px 4px 0;
-            -webkit-border-radius:     0px 4px 4px 0;
-            -o-border-radius:         0px 4px 4px 0;*/
         }
     }
     .ui-widget-header {
@@ -1891,10 +1828,7 @@ button.ui-multiselect {
     }
     width: 157px;
     height: 16px;
-    border-radius: 4px 4px 4px 4px;
-    -moz-border-radius: 4px 4px 4px 4px;
-    -webkit-border-radius: 4px 4px 4px 4px;
-    -o-border-radius: 4px 4px 4px 4px;
+    @include border-radius (4px 4px 4px 4px);
     background: rgb(230, 230, 230);
     border: 1px solid rgb(214, 214, 214);
     cursor: default;
@@ -1914,10 +1848,7 @@ button.ui-multiselect {
     border: 1px solid lightgrey;
     clear: both;
     list-style: none;
-    box-shadow: 0px 2px 2px 1px rgba(0, 0, 0, 0.1);
-    -moz-box-shadow: 0px 2px 2px 1px rgba(0, 0, 0, 0.1);
-    -webkit-box-shadow: 0px 2px 2px 1px rgba(0, 0, 0, 0.1);
-    -o-box-shadow: 0px 2px 2px 1px rgba(0, 0, 0, 0.1);
+    @include border-radius(0px 2px 2px 1px rgba (0, 0, 0, 0.1));
     margin-left: 4px;
     margin-bottom: 0;
     margin-right: 0;
@@ -1994,6 +1925,7 @@ button.ui-multiselect {
 #actionTimerControl-summary {
     display: block;
     border-top: 1px solid #CCCCCC;
+    /* @theme border-color border */
     margin-top: 5px;
 }
 
@@ -2007,6 +1939,7 @@ button.ui-multiselect {
     display: block;
     margin-bottom: 3px;
     border-bottom: 1px solid #CCCCCC;
+    /* @theme border-color border */
 }
 
 #actionTimerLog-form {
@@ -2486,3 +2419,19 @@ span {
     }
 }
 
+/***********************************************************************
+* ui menu
+***********************************************************************/
+
+.ui-menu {
+    .ui-menu-item {
+        &.ui-state-focus {
+            background: $lightestGray !important;
+        }
+    }
+}
+
+
+ul.ui-autocomplete > li > a {
+    text-decoration: none;
+}

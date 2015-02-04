@@ -2985,9 +2985,9 @@ X2Chart.prototype.applyDateRange = function (dateRange) {
     var toDatepicker = thisX2Chart._chartDatepickerTo$;
 
     var momentFunction = {
-        trailing: function(range){ return moment().subtract(1, range) },
-        this: function(range){ return moment().startOf(range) },
-        last: function(range){ return moment().subtract(1, range).startOf(range) },
+        trailing: function(range){ return moment().subtract(1, range); },
+        'this': function(range){ return moment().startOf(range); },
+        last: function(range){ return moment().subtract(1, range).startOf(range); },
     }[dateRangeType];
 
     var start = momentFunction(dateRange);

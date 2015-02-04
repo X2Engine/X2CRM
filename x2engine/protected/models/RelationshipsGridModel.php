@@ -121,7 +121,7 @@ class RelationshipsGridModel extends CModel {
                 echo $this->getLabel ();
                 break;
             case 'createDate':
-                echo $this->relatedModel->renderAttribute ('createDate');
+                echo X2Html::dynamicDate ($this->relatedModel->createDate);
                 break;
         }
     }
@@ -189,6 +189,10 @@ class RelationshipsGridModel extends CModel {
 //        });
 //        return $gridModels;
 //    }
+
+    public function setRelatedModelName ($name) {
+        $this->_relatedModelType = $name;
+    }
 
     private $_relatedModelType; 
     public function getRelatedModelName () {

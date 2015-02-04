@@ -232,9 +232,9 @@ class UpdateCommand extends CConsoleCommand {
                 return;
             }
         }else{
-            if(!$this->requirements['environment']['updates_connection']) {
+            if(!$this->requirements['requirements']['environment']['updates_connection']) {
                 $this->output(Yii::t('admin','Could not connect to the updates server, or an error occurred on the updates server.').' '.(
-                        $this->requirements['extensions']['curl'] || $this->requirements['environment']['allow_url_fopen']
+                        $this->requirements['requirements']['extensions']['curl'] || $this->requirements['requirements']['environment']['allow_url_fopen']
                         ? ''
                         : Yii::t('admin','Note, outbound HTTP requests are not permitted in this PHP runtime environment, because all methods of doing so have been disabled.')
                         ),1,1);

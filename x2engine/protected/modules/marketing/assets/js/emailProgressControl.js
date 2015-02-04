@@ -33,170 +33,250 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 
-if(typeof x2 == 'undefined')
-    x2 = {};
-if(typeof x2.emailProgressControl == 'undefined')
-    x2.emailProgressControl = {};
+x2.EmailProgressControl = (function() {
 
-x2.emailProgressControl.elements = {};
+    function EmailProgressControl(argsDict) {
+        var defaultArgs = {
 
-x2.emailProgressControl.getElement = function (selector) {
-    if(typeof this.elements[selector] == 'undefined') {
-        this.elements[selector] = this.container.find(selector);
+            sentCount: 0,
+            totalEmails: null,
+            listItems: [],
+            sendUrl: '',
+            campaignId: null,
+            translations: {
+                resume: '',
+                pause: '',
+                error: '',
+                confirm: ''
+            },
+
+            paused:  false,
+            currentlySending:  false, // Tells whether there's currently a send operation in progress
+            nErrors:  0, // Number of errors
+            containerSelector:  "#emailProgressControl",
+            elements: {}
+        };
+
+        auxlib.applyArgs (this, defaultArgs, argsDict);
+        this.init();
     }
-    return this.elements[selector];
-}
 
-x2.emailProgressControl.newSent = function (message)  {
 
-}
+    /**
+     * Initial set-up of the email widget
+     */
+    EmailProgressControl.prototype.init = function() {
+        var that = this;
+        this.setUpSelectors();
 
-x2.emailProgressControl.newSent = function (message)  {
-    
-}
+        this.bar.progressbar({
+            value: that.sentCount,
+            max: that.totalEmails,
+            change: function() {
+                that.updateTextCount();
+            }
+        });
 
-/**
- * This function will always be called after an email has finished sending.
- */
-x2.emailProgressControl.afterSend = function() {};
+        this.updateTextCount();
+        this.setUpButtons();
 
-/**
- * Initial set-up of the email widget
- */
-x2.emailProgressControl.init = function() {
-    // Tells whether the process is paused
-    this.paused = false;
-    // Tells whether there's currently a send operation in progress
-    this.currentlySending = false;
-    // Number of errors
-    this.nErrors = 0;
-    // Container div
-    this.container = $("#emailProgressControl");
-    // Progress bar
-    this.bar = this.getElement("#emailProgressControl-bar");
-    // Control div container
-    this.controls = this.getElement("#emailProgressControl-toolbar");
-    // Div displaying number of sends total
-    this.progressText = this.getElement("#emailProgressControl-text");
-    // Last message
-    this.textStatus = this.getElement('#emailProgressControl-textStatus');
-    // Displays error messages:
-    this.errorBox = this.getElement('#emailProgressControl-errors');
-    //
-    this.throbber = this.getElement('#emailProgressControl-throbber');
-    var that = this;
-    this.bar.progressbar({
-        value: that.sentCount,
-        max: that.totalEmails,
-        change: function() {
-            that.updateTextCount();
-        }
-    });
-
-    this.updateTextCount();
-
-    // Bind click handler to the pause button
-    this.toggleButton = this.controls.find('.startPause');
-    this.toggleButton.click(function() {
-        if(that.paused) {
+        // And now finally:
+        if(that.listItems.length > 0 && !this.paused)
             that.start();
-        } else {
+        else
             that.pause();
-        }
-    });
-    this.controls.find('.refresh').click(this.refresh);
-}
 
-/**
- * Start or resume sending email by making AJAX requests to the server.
- */
-x2.emailProgressControl.start = function () {
-    this.paused = false;
-    this.showThrobber();
-    this.toggleButton.text(this.text['Pause']);
-    this.send();
-}
-
-x2.emailProgressControl.pause = function () {
-    this.paused = true;
-    this.hideThrobber();
-    this.toggleButton.text(this.text['Resume']);
-}
-
-x2.emailProgressControl.errorMessage = function(message) {
-    this.getElement('#emailProgressControl-errorContainer').show();
-    this.errorBox.append(message+'<br />');
-}
-
-x2.emailProgressControl.refresh = function () {
-    if(typeof x2.campaignChart != "undefined")
-        x2.campaignChart.chart.getEventsBetweenDates();
-    $.fn.yiiGridView.update("campaign-grid", {
-        data: {
-            "id_page": 1
-        }
-    })
-
-}
-
-/**
- * Recursive AJAX function that works its way through the email queue.
- *
- * This is where both making the AJAX request and updating the progress bar/text
- * should happen.
- */
-x2.emailProgressControl.send = function () {
-    var that = this;
-    if(this.listItems.length == 0) {
-        // Halt; all done.
-        this.textStatus.text(this.text['Email delivery complete.']);
-        this.pause();
-        return;
     }
-    this.currentlySending = true;
-    var listItem = this.listItems.shift();
-    $.ajax({
-        url: that.sendUrl+'?campaignId='+that.campaignId+'&itemId='+listItem,
-        dataType:'json',
-        beforeSend: function () {that.showThrobber();}
-    }).done(function(response){
-        that.currentlySending = false;
-        // Update text status
-        that.textStatus.text(response.message);
-        if(!(response.error && response.fullStop)) {
-            // Update progress bar:
-            that.sentCount++;
-            that.bar.progressbar({'value':that.sentCount});
-            if(response.undeliverable) { // List it as undeliverable and keep going
-                that.errorMessage(response.message);
+
+    /**
+     * Sets up the queries that the widget uses
+     */
+    EmailProgressControl.prototype.setUpSelectors = function() {
+        this.container = $(this.containerSelector);
+        
+        // Progress bar
+        this.bar = this.getElement("#emailProgressControl-bar");
+        
+        // Control div container
+        this.controls = this.getElement("#emailProgressControl-toolbar");
+        
+        // Div displaying number of sends total
+        this.progressText = this.getElement("#emailProgressControl-text");
+        
+        // Last message
+        this.textStatus = this.getElement('#emailProgressControl-textStatus');
+        
+        // Displays error messages:
+        this.errorBox = this.getElement('#emailProgressControl-errors');
+        
+        this.throbber = this.getElement('#emailProgressControl-throbber');
+    }
+
+    /**
+     * Sets up the button click behaviors
+     */
+    EmailProgressControl.prototype.setUpButtons = function() {
+        var that = this;
+
+        // Pause Button
+        this.toggleButton = this.controls.find('.startPause');
+        this.toggleButton.click(function() {
+            if(that.paused) {
+                that.start();
+            } else {
+                that.pause();
             }
-            if(!that.paused) { // Send the next one!
-                that.send();
+        });
+        this.controls.find('.refresh').click(this.refresh);
+
+        // Stop Button
+        $("#campaign-toggle-button").bind("click",function(e){
+            e.preventDefault();
+            var element = this;
+            if(that.paused) {
+                $(element).parents("form").submit();
+            } else {
+                that.afterSend = function() {
+                    $(element).parents("form").submit();
+                }
             }
-        } else { // full stop
-            that.pause();
-            that.listItems.push(listItem); // Add the item back in at the end
-            that.errorMessage('<span class="emailFail">'+response.message+'</span>');
+        });
+
+        // Ask the user if they would really like to cancel the current campaign
+        $("#campaign-complete-button").bind("click.confirm",function(e){
+            e.preventDefault();
+            var element = this;
+            var proceed = that.listItems.length == 0;
+
+            if(!proceed)
+                proceed = confirm(that.translations['confirm']);
+
+            if(proceed) {
+                if(that.emailProgressControl.paused) {
+                    $(element).parents("form").submit();
+                } else {
+                    that.afterSend = function() {
+                        $(element).parents("form").submit();
+                    }
+                }
+            } else {
+                that.afterSend = function(){};
+            }
+        });
+    }
+
+
+    EmailProgressControl.prototype.getElement = function (selector) {
+        if(typeof this.elements[selector] == 'undefined') {
+            this.elements[selector] = this.container.find(selector);
         }
-    }).fail(function(jqXHR,textStatus,message) {
-        that.pause();
-        that.currentlySending = false;
-        that.listItems.push(listItem); // Add the item back in at the end
-        that.errorMessage('<span class="emailFail">'+that.text['Could not send email due to an error in the request to the server.']+' ('+textStatus+' '+jqXHR.errorCode+' '+message+')</span>');
-    }).always(function() {
-        that.hideThrobber();
-        that.afterSend();
-    });
-}
+        return this.elements[selector];
+    }
 
-x2.emailProgressControl.updateTextCount = function() {
-    this.progressText.text(this.sentCount + '/' + this.totalEmails);
-}
+    /**
+     * This function will always be called after an email has finished sending.
+     */
+    EmailProgressControl.prototype.afterSend = function() {};
 
-x2.emailProgressControl.showThrobber = function () {
-    this.throbber.show();
-}
+    /**
+     * Start or resume sending email by making AJAX requests to the server.
+     */
+    EmailProgressControl.prototype.start = function () {
+        this.paused = false;
+        this.showThrobber();
+        this.toggleButton.find('.button-text').text(this.translations['pause']);
+        this.toggleButton.find('.fa-pause').show();
+        this.toggleButton.find('.fa-play').hide();
+        this.send();
+    }
 
-x2.emailProgressControl.hideThrobber = function () {
-    this.throbber.hide();
-}
+    EmailProgressControl.prototype.pause = function () {
+        this.paused = true;
+        this.hideThrobber();
+        this.toggleButton.find('.button-text').text(this.translations['resume']);
+        this.toggleButton.find('.fa-pause').hide();
+        this.toggleButton.find('.fa-play').show();
+    }
+
+    EmailProgressControl.prototype.errorMessage = function(message) {
+        this.getElement('#emailProgressControl-errorContainer').show();
+        this.errorBox.append(message+'<br />');
+    }
+
+    EmailProgressControl.prototype.refresh = function () {
+        if(typeof x2.campaignChart != "undefined")
+            x2.campaignChart.chart.getEventsBetweenDates();
+        $.fn.yiiGridView.update("campaign-grid", {
+            data: {
+                "id_page": 1
+            }
+        })
+
+    }
+
+    /**
+     * Recursive AJAX function that works its way through the email queue.
+     *
+     * This is where both making the AJAX request and updating the progress bar/text
+     * should happen.
+     */
+    EmailProgressControl.prototype.send = function () {
+        var that = this;
+        if(this.listItems.length == 0) {
+            // Halt; all done.
+            this.textStatus.text(this.translations['complete']);
+            this.pause();
+            return;
+        }
+        this.currentlySending = true;
+        var listItem = this.listItems.shift();
+        $.ajax({
+            url: that.sendUrl+'?campaignId='+that.campaignId+'&itemId='+listItem,
+            dataType:'json',
+            beforeSend: function () {that.showThrobber();}
+        }).done(function(response){
+            that.currentlySending = false;
+            // Update text status
+            that.textStatus.text(response.message);
+            if(!(response.error && response.fullStop)) {
+                // Update progress bar:
+                that.sentCount++;
+                that.bar.progressbar({'value':that.sentCount});
+                if(response.undeliverable) { // List it as undeliverable and keep going
+                    that.errorMessage(response.message);
+                }
+                if(!that.paused) { // Send the next one!
+                    that.send();
+                }
+            } else { // full stop
+                that.pause();
+                that.listItems.push(listItem); // Add the item back in at the end
+                that.errorMessage('<span class="emailFail">'+response.message+'</span>');
+            }
+        }).fail(function(jqXHR,textStatus,message) {
+            that.pause();
+            that.currentlySending = false;
+            that.listItems.push(listItem); // Add the item back in at the end
+            that.errorMessage('<span class="emailFail">'+that.text['Could not send email due to an error in the request to the server.']+' ('+textStatus+' '+jqXHR.errorCode+' '+message+')</span>');
+        }).always(function() {
+            that.hideThrobber();
+            that.afterSend();
+        });
+    }
+
+    EmailProgressControl.prototype.updateTextCount = function() {
+        this.progressText.text(this.sentCount + '/' + this.totalEmails);
+    }
+
+    EmailProgressControl.prototype.showThrobber = function () {
+        this.throbber.show();
+    }
+
+    EmailProgressControl.prototype.hideThrobber = function () {
+        this.throbber.hide();
+    }
+
+
+    return EmailProgressControl;
+})();
+

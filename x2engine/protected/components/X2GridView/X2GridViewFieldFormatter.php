@@ -1,5 +1,4 @@
 <?php
-
 /*****************************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2015 X2Engine Inc.
@@ -35,39 +34,13 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 
-Yii::import ('application.components.*');
-Yii::import ('application.modules.charts.models.*');
-Yii::import ('application.modules.reports.models.*');
-Yii::import ('application.components.X2Settings.*');
+class X2GridViewFieldFormatter extends FieldFormatter {
 
-/**
- * @package application.tests.unit.components.sortableWidget
- */
-class ChartsTest extends X2DbTestCase {
-
-	public $fixtures = array(
-		'reports' => 'Reports'
-	);
-
-	public $settings= array(
-		array (
-		    'TimeSeriesFormModel' => array (
-	            'timeField' => 'createDate',
-	            'labelField' => 'leadSource',
-	            'reportId' => 1,
-	        )
-		),
-	);
-
-    public function testValidateSettings () {
-    	foreach($this->settings as $setting) {
-    		$chart = new Charts;
-    		$chart->settings = $setting;
-    		$this->assertTrue($chart->save());
-    		$this->assertEquals($chart->reportId, $setting['reportId']);
-    	}
+    protected function renderText ($field, $makeLinks, $textOnly, $encode) {
+        $fieldName = $field->fieldName;
+        $value = preg_replace("/(\<br ?\/?\>)|\n/"," ",$this->owner->$fieldName);
+        return Yii::app()->controller->convertUrls($this->render ($value, $encode));
     }
-
 
 }
 

@@ -84,7 +84,6 @@ $(function(){
 
         indicatorClass();
         initCalendar();
-        createPublisherDialog();
         applyHeader();
         justMeButton();
         miscModifications();
@@ -223,9 +222,6 @@ $(function(){
             windowResize: responsiveBehavior,
 
             dayClick: function(date, allDay, jsEvent, view) {
-                    if( view.name == 'agendaDay') {
-                        x2.calendarManager.insertDate(date, view, '#small-publisher');
-                    }
 
                     if( view.name == 'month') {
                         $('#small-calendar .fc-button-agendaDay').addClass('disabled-link');
@@ -378,51 +374,6 @@ $(function(){
             }
         });
     }
-    /**
-    * Dialog for the pop up publisher
-    */
-    function createPublisherDialog(){
-        $('#small-publisher').dialog({
-            title: 'New Calendar Event',
-            dialogClass: 'calendarViewEventDialog',
-            autoOpen: false,
-            resizable: true,
-            height: 'auto',
-            width: 400,
-            position: {my: 'right-12', at: 'left center', of: '#small-calendar'}, 
-            show: 'fade',
-            hide: 'fade',
-            open: function() {
-                // if(typeof x2.publisher._selectedTab !== 'undefined')
-                savedTab = x2.publisher._selectedTab.id;
-                savedForm = x2.publisher._form;
-
-                x2.publisher.switchToTab('new-small-calendar-event');
-                x2.publisher._selectedTab._form = $('#small-publisher .form');
-                var view = $('#small-calendar').fullCalendar('getView');
-
-                if( view.name === 'agendaDay')
-                    x2.calendarManager.insertDate(view.start);
-
-                $('#small-publisher').show();
-                $('#small-publisher #event-action-description').focus();
-                $('#small-publisher #event-action-description').removeAttr('disabled');
-                $('#small-publisher input').removeAttr('disabled');
-
-            },
-            close: function () {
-                // if(typeof savedTab !== 'undefined')
-                x2.publisher._form = savedForm;
-                x2.publisher.switchToTab(savedTab);
-
-                $('#small-publisher').find('textarea, input[type=\"text\"]').val('');
-            },
-            resizeStart: function () {
-            },
-            resize: function (event, ui) {
-            }
-        });
-    }
 
 
     // Make header a link to the full calendar 
@@ -460,10 +411,6 @@ $(function(){
         $('#small-calendar #add-button').appendTo(headerLeft).show();
         $('#small-calendar #me-button').appendTo(headerLeft).show();
         
-        // New event button Opens dialog
-        $('#small-calendar-container #add-button').click(function(evt){
-            $('#small-publisher').dialog('open');
-        });
 
         $('#small-calendar .page-title').removeClass('page-title');
 
@@ -529,81 +476,22 @@ $(function(){
 
 <div id='small-calendar-container'>
     <div id='small-calendar'>
-            <span style='display:none;' class="x2-button fc-button highlight" id="add-button" type='button' />
-            <?php echo Yii::t('calendar','Add Event') ?>
-            </span>
-            <span title='<?php echo Yii::t('calendar','Show just my events') ?>' 
-            style='display:none;' class="x2-button fc-button <?php if($justMe == 'true'){ echo 'pressed'; } ?>" id="me-button" type='button' />
-            <?php echo Yii::t('calendar','Just Me') ?>
-            </span>
-    </div>
-    <div id='small-publisher' style="display:none">
-        <?php
-        // if echoTabRow is already present, there are two publishers
-        $doublePublisher = function_exists('echoTabRow');
 
+            <?php 
+                // Be aware these buttons are added dynamically with JS
+                echo X2Html::link(
+                Yii::t('calendar','Full Calendar'),
+                Yii::app()->createUrl('/calendar'),
+                array (
+                    'style' =>'display:none;',
+                    'class' =>"x2-button fc-button",
+                    'id' =>"add-button",
+                    'type' =>'button',
+                ))
+            ?>                
 
-        $this->widget('Publisher', array(
-            'associationType' => 'calendar',
-            'tabs' => array (
-                new PublisherSmallCalendarEventTab ()
-            )
-        ));
-        ?>
+            <span title='<?php echo Yii::t('calendar','Show just my events') ?>'
+            style='display:none;' class="x2-button fc-button <?php if($justMe == 'true'){ echo 'pressed'; } ?>" id="me-button" type='button'><?php echo Yii::t('calendar','Just Me') ?></span>
     </div>
+
 </div>
-
-
-<?php 
-// This section must only be used when there are two publishers
-// Changes the form that the submit button submits
-
-// Publisher modifications that need to be called after the publisher is created
-$script = "
-// Closes dialog when a different publisher is selected
-(function(tabSelected) {
-  x2.publisher.tabSelected = function (event, ui) {
-    $('#small-publisher').dialog('close');
-    tabSelected.call(this, event, ui);
-  };
-}(x2.publisher.tabSelected));
-
-//Refetches after the dialog is submitted
-(function(updates){
-x2.Publisher.prototype.updates = function () {
-        $('#small-calendar').fullCalendar('refetchEvents'); // refresh calendar
-        $('#small-publisher').dialog('close');
-        updates.call(this);
-    };
-}(x2.Publisher.prototype.updates));
-
-// Switches to the first
-// creating the new event publisher switches tabs
-$(function() { 
-    // Set selected tab to first tab
-    x2.publisher.switchToTab(auxlib.keys(x2.publisher._tabs)[0]); 
-});
-
-";
-
-
-
-if ($doublePublisher) {
-    $script .= " 
-        $('#small-publisher #save-publisher').unbind('click');
-        $('#small-publisher #save-publisher').click (function (evt) {
-            var that = x2.publisher;
-            that._form=$('#small-publisher #publisher-form');
-            evt.preventDefault ();
-            if (!that.beforeSubmit ()) {
-                return false;
-            }
-            that._selectedTab.submit (that, that._form);
-            return false;
-        });
-    ";
-}
-
-Yii::app()->clientScript->registerScript("PublisherModificationJS" ,$script, CClientScript::POS_END);
-?>
-

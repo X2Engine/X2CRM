@@ -45,6 +45,7 @@
     }
     .quotes-section-title {
         color: black;
+        /* @theme color text */
         position: relative;
         top: 6px;
         font-weight: bold;
@@ -73,6 +74,7 @@
 
 .viewQuote hr {
     background-color: black;
+    /* @theme background-color opaque_text */
     overflow: visible;
 }
 

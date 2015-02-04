@@ -48,6 +48,7 @@ Private properties
 
 function ActionFrames (argsDict) {
     argsDict = typeof argsDict === 'undefined' ? {} : argsDict;
+    var that = this;
     var defaultArgs = {
         deleteActionUrl: '',
         /* required, the name of the variable in which this instance is saved. */
@@ -57,6 +58,7 @@ function ActionFrames (argsDict) {
                typeof $.fn.yiiListView.settings['history'] !== 'undefined') {
 
                 $.fn.yiiListView.update('history');
+                x2.TransactionalViewWidget.refreshByActionType (that.getActionType ());
             }
         }
     };
@@ -79,6 +81,11 @@ Private static methods
 /*
 Public instance methods
 */
+
+ActionFrames.prototype.getActionType = function () {
+    return $($(x2.actionFrames._frame).find ("iframe")[0].contentWindow.document).find ('form').
+        attr ('data-action-type');
+};
 
 ActionFrames.prototype.setLastClass = function (lastClass) {
     this._lastClass = lastClass;

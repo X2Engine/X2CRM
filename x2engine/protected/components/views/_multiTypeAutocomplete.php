@@ -43,7 +43,7 @@ $(function () {
 
     container$.find ('select').change (function () {
         var modelType = container$.find ('select').val ();
-        x2.forms.inputLoading (container$.find ('.record-name-autocomplete'));
+        var throbber$ = x2.forms.inputLoading (container$.find ('.record-name-autocomplete'));
         $.ajax ({
             type: 'GET',
             url: 'ajaxGetModelAutocomplete',
@@ -59,7 +59,7 @@ $(function () {
                 container$.find ('input').first ().replaceWith (data); 
      
                 // remove the loading gif
-                x2.forms.inputLoadingStop (container$.find ('.record-name-autocomplete'));
+                throbber$.remove ();
             }
         });
     });

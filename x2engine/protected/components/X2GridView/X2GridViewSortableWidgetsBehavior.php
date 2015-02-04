@@ -58,12 +58,15 @@ class X2GridViewSortableWidgetsBehavior extends CBehavior {
             $this->owner->sortableWidget->widgetType, $this->owner->sortableWidget->widgetUID);
 
         // add a dropdown to the summary text that let's user set how many rows to show on each page
-        $this->owner->summaryText = Yii::t('app','<b>{start}&ndash;{end}</b> of <b>{count}</b>').
+        $this->owner->summaryText = 
+            '<span class="grid-summary-container" style="'.
+                ($this->owner->hideSummary ? 'display: none;' : '').'">'.
+            Yii::t('app','<b>{start}&ndash;{end}</b> of <b>{count}</b>').
             '<div class="form no-border" style="display:inline;">'.
             CHtml::dropDownList(
                 $widgetClass.'resultsPerPage', 
                 $resultsPerPage,
-                Profile::getPossibleResultsPerPage(), 
+                $this->owner->getPossibleResultsPerPageFormatted (), 
                 array(
                     'class' => 'x2-minimal-select',
                     'onchange' => '$.ajax ({'.
@@ -88,7 +91,8 @@ class X2GridViewSortableWidgetsBehavior extends CBehavior {
                         '}'.
                     '});'
                 )). 
-            '</div>';
+            '</div>
+            </span>';
     }
 
 }

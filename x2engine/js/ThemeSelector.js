@@ -97,7 +97,7 @@ x2.ThemeSelector = (function(){
 
 			var user = $(themeBox).find('#uploadedBy').attr('value');
 
-            if (this.user !== user || this.defaults.indexOf(themeName) >= 0 ) {
+            if (this.user !== user || $.inArray (themeName, this.defaults) >= 0) {
 				$('.color-picker-input').attr('readonly','').attr('title', this.translations.createNew );
 				$('.sp-replacer.sp-light').hide();
 			    x2.forms.disableButton ($('#prefs-delete-theme-button, #prefs-save-theme-button'));

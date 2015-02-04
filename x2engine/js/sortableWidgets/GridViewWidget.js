@@ -115,20 +115,24 @@ GridViewWidget.prototype._setUpGridSettings = function () {
     });
 };
 
+GridViewWidget.prototype.toggleHeader = function (show) {
+    if (this.hideFullHeader)
+        this.element.find ('.items').first ().toggle(show);
+    else {
+        this.element.find ('.items').first ().toggle(true);
+        this.element.find ('.page-title, tr.filters').toggle(show);
+    }        
+}
+
 GridViewWidget.prototype._setUpShowHeaderButton = function () {
     var that = this;
-    
-    if (that.hideFullHeader)
-        that.element.find ('.items').first ().toggle(that.showHeader);
-    else
-        that.element.find ('.page-title, tr.filters').toggle(that.showHeader);
+
+    that.toggleHeader (that.showHeader);
+
     this.element.find ('.widget-settings-menu-content .hide-settings').click (function () {
         that.showHeader = !that.showHeader;
-        that.setProperty('showHeader', that.showHeader ? 1 : 0);
-        if (that.hideFullHeader)
-            that.element.find ('.items').first ().toggle(that.showHeader);
-        else
-            that.element.find ('.page-title, tr.filters').toggle(that.showHeader);
+        that.setProperty ('showHeader', that.showHeader ? 1 : 0);
+        that.toggleHeader (that.showHeader);
     });
 }
 
@@ -145,6 +149,8 @@ GridViewWidget.prototype._setUpSettingsBehavior = function () {
         var settingsMenu$ = $(this.elementSelector + ' .widget-settings-menu-content');
         settingsMenu$.find ('.results-per-page-container').empty ().append (
             this.contentContainer.find ('.summary').detach ());
+        settingsMenu$.find ('.results-per-page-container .summary').children ().show ();
+
     }
 
     SortableWidget.prototype._setUpSettingsBehavior.call (this);

@@ -44,7 +44,7 @@ class ContactsNameBehavior extends CActiveRecordBehavior {
 	public function events() {
 		return array_merge(parent::events(),array(
 			'onAfterFind'=>'afterFind',
-			'onBeforeSave'=>'beforeSave',
+			//'onBeforeSave'=>'beforeSave',
 		));
 	}
 
@@ -52,22 +52,18 @@ class ContactsNameBehavior extends CActiveRecordBehavior {
      * Sets the name field (full name) on record lookup
      */
     public function afterFind ($event) {
-        if (isset(Yii::app()->settings)) {
-            $this->setName();
-        }
+        $this->setName();
     }
 
-    /**
-     * Sets the name field (full name) before saving
-     */
-    public function beforeSave ($event) {
-        if (isset(Yii::app()->settings)) {
-            $this->setName();
-        }
-    }
+//    /**
+//     * Sets the name field (full name) before saving
+//     */
+//    public function beforeSave ($event) {
+//        $this->setName();
+//    }
 
     public function setName() {
-        if ($this->owner->name && !$this->overwriteName) return;
+        if (!isset (Yii::app()->settings) || $this->owner->name && !$this->overwriteName) return;
 
         $admin = Yii::app()->settings;
         if (!empty($admin->contactNameFormat)) {

@@ -32,27 +32,119 @@
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2Engine".
  *****************************************************************************************/
-/* line 22, ../../../compass/themes/x2engine/css/login.scss */
+/*********************************************************************************
+ * Copyright (C) 2011-2014 X2Engine Inc. All Rights Reserved.
+ *
+ * X2Engine Inc.
+ * P.O. Box 66752
+ * Scotts Valley, California 95067 USA
+ *
+ * Company website: http://www.x2engine.com
+ * Community and support website: http://www.x2community.com
+ *
+ * X2Engine Inc. grants you a perpetual, non-exclusive, non-transferable license
+ * to install and use this Software for your internal business purposes.
+ * You shall not modify, distribute, license or sublicense the Software.
+ * Title, ownership, and all intellectual property rights in the Software belong
+ * exclusively to X2Engine.
+ *
+ * THIS SOFTWARE IS PROVIDED "AS IS" AND WITHOUT WARRANTIES OF ANY KIND, EITHER
+ * EXPRESS OR IMPLIED, INCLUDING WITHOUT LIMITATION THE IMPLIED WARRANTIES OF
+ * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, TITLE, AND NON-INFRINGEMENT.
+ ********************************************************************************/
+/*********************************************************************************
+ * Copyright (C) 2011-2014 X2Engine Inc. All Rights Reserved.
+ *
+ * X2Engine Inc.
+ * P.O. Box 66752
+ * Scotts Valley, California 95067 USA
+ *
+ * Company website: http://www.x2engine.com
+ * Community and support website: http://www.x2community.com
+ *
+ * X2Engine Inc. grants you a perpetual, non-exclusive, non-transferable license
+ * to install and use this Software for your internal business purposes.
+ * You shall not modify, distribute, license or sublicense the Software.
+ * Title, ownership, and all intellectual property rights in the Software belong
+ * exclusively to X2Engine.
+ *
+ * THIS SOFTWARE IS PROVIDED "AS IS" AND WITHOUT WARRANTIES OF ANY KIND, EITHER
+ * EXPRESS OR IMPLIED, INCLUDING WITHOUT LIMITATION THE IMPLIED WARRANTIES OF
+ * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, TITLE, AND NON-INFRINGEMENT.
+ ********************************************************************************/
+/***********************************************************************
+* Grays 
+***********************************************************************/
+/***********************************************************************
+* Blues
+***********************************************************************/
+/***********************************************************************
+* Reds 
+***********************************************************************/
+/***********************************************************************
+* Greens 
+***********************************************************************/
+/***********************************************************************
+* This section is made to correspond with the theme keys in ThemeGenerator
+***********************************************************************/
+/***************************************
+* Mixin for border radius 
+***************************************/
+/***************************************
+* Mixin for box shadow
+***************************************/
+/***************************************
+* Mixin for text field placeholder text
+***************************************/
+/***************************************
+* CSS to extend when something 
+* should look like a link
+***************************************/
+/* line 68, ../../../compass/css/lib/_standards.scss */
+.pseudo-link {
+  cursor: pointer;
+  color: #004baf;
+  transition: color .1s;
+}
+/* line 73, ../../../compass/css/lib/_standards.scss */
+.pseudo-link:hover {
+  color: #006cfb;
+}
+
+/***************************************
+* CSS to extend when for elements that 
+* become opauqe on mouseover
+***************************************/
+/* line 91, ../../../compass/css/lib/_standards.scss */
+.opacity-hover {
+  opacity: 0.3;
+}
+/* line 86, ../../../compass/css/lib/_standards.scss */
+.opacity-hover:hover {
+  opacity: 1;
+}
+
+/* line 24, ../../../compass/themes/x2engine/css/login.scss */
 #app-title {
   color: #686868;
   margin: 0;
   margin-bottom: 3px;
 }
 
-/* line 28, ../../../compass/themes/x2engine/css/login.scss */
+/* line 30, ../../../compass/themes/x2engine/css/login.scss */
 #app-description {
   margin: auto;
   margin-bottom: 15px;
 }
 
-/* line 33, ../../../compass/themes/x2engine/css/login.scss */
+/* line 35, ../../../compass/themes/x2engine/css/login.scss */
 .partner-logo-cell {
   margin: auto;
   height: 71px;
   width: 80px;
 }
 
-/* line 39, ../../../compass/themes/x2engine/css/login.scss */
+/* line 41, ../../../compass/themes/x2engine/css/login.scss */
 #login-x2engine {
   text-align: center;
   width: 382px;
@@ -65,7 +157,7 @@
   text-decoration: none;
 }
 
-/* line 51, ../../../compass/themes/x2engine/css/login.scss */
+/* line 53, ../../../compass/themes/x2engine/css/login.scss */
 #login-x2engine-partner-content {
   text-align: center;
   width: 382px;
@@ -79,26 +171,26 @@
   margin-top: 19px;
 }
 
-/* line 64, ../../../compass/themes/x2engine/css/login.scss */
+/* line 66, ../../../compass/themes/x2engine/css/login.scss */
 #x2-info, #x2-partner-info {
   width: 382px;
   margin-top: 12px;
 }
 
-/* line 69, ../../../compass/themes/x2engine/css/login.scss */
+/* line 71, ../../../compass/themes/x2engine/css/login.scss */
 #partner-login-info-how-to {
   padding-top: 8px;
   padding-bottom: 8px;
   clear: both;
 }
 
-/* line 75, ../../../compass/themes/x2engine/css/login.scss */
+/* line 77, ../../../compass/themes/x2engine/css/login.scss */
 #partner-login-logo {
   height: 71px;
   width: 80px;
 }
 
-/* line 80, ../../../compass/themes/x2engine/css/login.scss */
+/* line 82, ../../../compass/themes/x2engine/css/login.scss */
 .avatar-upload {
   -webkit-border-radius: 8px;
   -moz-border-radius: 8px;
@@ -106,7 +198,7 @@
   border-radius: 8px;
 }
 
-/* line 87, ../../../compass/themes/x2engine/css/login.scss */
+/* line 89, ../../../compass/themes/x2engine/css/login.scss */
 #full-name {
   color: #686868;
   font-weight: bold;
@@ -114,76 +206,114 @@
   margin-bottom: 8px;
 }
 
-/* line 94, ../../../compass/themes/x2engine/css/login.scss */
+/* line 96, ../../../compass/themes/x2engine/css/login.scss */
 #login-page.welcome-back-page {
   width: 382px !important;
 }
-/* line 96, ../../../compass/themes/x2engine/css/login.scss */
+/* line 98, ../../../compass/themes/x2engine/css/login.scss */
 #login-page.welcome-back-page #login-logo {
   margin-top: 11px;
 }
 
-/* line 101, ../../../compass/themes/x2engine/css/login.scss */
+/* line 103, ../../../compass/themes/x2engine/css/login.scss */
 #login-version {
   /*height: 27px;*/
   margin-top: 10px;
   font-size: 9px;
   line-height: 14px;
 }
-/* line 106, ../../../compass/themes/x2engine/css/login.scss */
+/* line 108, ../../../compass/themes/x2engine/css/login.scss */
 #login-version span {
   opacity: 0.5;
   display: inline-block;
 }
 
-/* line 112, ../../../compass/themes/x2engine/css/login.scss */
+/* line 114, ../../../compass/themes/x2engine/css/login.scss */
 .company-logo-cell {
   margin: auto;
   height: 43px;
   width: 60px;
 }
 
-/* line 118, ../../../compass/themes/x2engine/css/login.scss */
+/* line 120, ../../../compass/themes/x2engine/css/login.scss */
 #login-page.welcome-back-page .form-cell {
   /*height: 154px;*/
 }
 
-/* line 122, ../../../compass/themes/x2engine/css/login.scss */
+/*********************************************************************************
+ * Copyright (C) 2011-2014 X2Engine Inc. All Rights Reserved.
+ *
+ * X2Engine Inc.
+ * P.O. Box 66752
+ * Scotts Valley, California 95067 USA
+ *
+ * Company website: http://www.x2engine.com
+ * Community and support website: http://www.x2community.com
+ *
+ * X2Engine Inc. grants you a perpetual, non-exclusive, non-transferable license
+ * to install and use this Software for your internal business purposes.
+ * You shall not modify, distribute, license or sublicense the Software.
+ * Title, ownership, and all intellectual property rights in the Software belong
+ * exclusively to X2Engine.
+ *
+ * THIS SOFTWARE IS PROVIDED "AS IS" AND WITHOUT WARRANTIES OF ANY KIND, EITHER
+ * EXPRESS OR IMPLIED, INCLUDING WITHOUT LIMITATION THE IMPLIED WARRANTIES OF
+ * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, TITLE, AND NON-INFRINGEMENT.
+ ********************************************************************************/
+/***********************************************************************
+* Grays 
+***********************************************************************/
+/***********************************************************************
+* Blues
+***********************************************************************/
+/***********************************************************************
+* Reds 
+***********************************************************************/
+/***********************************************************************
+* Greens 
+***********************************************************************/
+/***********************************************************************
+* This section is made to correspond with the theme keys in ThemeGenerator
+***********************************************************************/
+/* line 124, ../../../compass/themes/x2engine/css/login.scss */
 .avatar-cell {
-  /* width: 130px; */
   margin: auto;
   margin-bottom: 20px;
-  /* display: table-cell; */
-  /* float: left; */
   text-align: center;
 }
+/* line 129, ../../../compass/themes/x2engine/css/login.scss */
+.avatar-cell .default-avatar {
+  color: #D9D9D9;
+  text-shadow: 0px -1px 1px rgba(0, 0, 0, 0.3), 0px 1px 1px rgba(255, 255, 255, 0.3);
+  /* @theme color dark_content */
+}
 
-/* line 131, ../../../compass/themes/x2engine/css/login.scss */
+/* line 137, ../../../compass/themes/x2engine/css/login.scss */
 .image-alignment-helper {
   display: inline-block;
   height: 100%;
   vertical-align: middle;
 }
 
-/* line 137, ../../../compass/themes/x2engine/css/login.scss */
+/* line 143, ../../../compass/themes/x2engine/css/login.scss */
 #avatar-image {
   vertical-align: middle;
 }
 
-/* line 141, ../../../compass/themes/x2engine/css/login.scss */
+/* line 147, ../../../compass/themes/x2engine/css/login.scss */
 #login-title-container {
   text-align: center;
   margin: auto;
   margin-top: 16px;
   margin-bottom: 12px;
 }
-/* line 146, ../../../compass/themes/x2engine/css/login.scss */
+/* line 152, ../../../compass/themes/x2engine/css/login.scss */
 #login-title-container h1 {
   font-size: 27px;
   -webkit-font-smoothing: antialiased;
 }
 
-/* line 152, ../../../compass/themes/x2engine/css/login.scss */
+/* line 158, ../../../compass/themes/x2engine/css/login.scss */
 #login-page {
   border: 1px solid #cecece;
   -moz-box-shadow: 0 1px 1px rgba(0, 0, 0, 0.35);
@@ -203,13 +333,11 @@
   padding: 8px 3px;
   position: relative;
   /* border:1px solid rgba(0,0,0,0.25); */
-  border-radius: 6px;
-  -moz-border-radius: 6px;
   -webkit-border-radius: 6px;
+  -moz-border-radius: 6px;
+  -ms-border-radius: 6px;
   -o-border-radius: 6px;
-  /* 	-moz-box-shadow:	0 3px 10px rgba(0,0,0,0.25);
-  	-webkit-box-shadow:	0 3px 10px rgba(0,0,0,0.25);
-  	box-shadow:			0 3px 10px rgba(0,0,0,0.25); */
+  border-radius: 6px;
 }
 
 /* line 180, ../../../compass/themes/x2engine/css/login.scss */
@@ -278,10 +406,10 @@
   -moz-border-radius: 0;
   -o-border-radius: 0;
   -webkit-border-radius: 0;
-  /* 	border-radius:			4px;
-  	-moz-box-shadow:	inset 0 1px 2px rgba(0,0,0,0.6);
-  	-webkit-box-shadow:	inset 0 1px 2px rgba(0,0,0,0.6);
-  	box-shadow:			inset 0 1px 2px rgba(0,0,0,0.6); */
+  /*  border-radius:          4px;
+      -moz-box-shadow:    inset 0 1px 2px rgba(0,0,0,0.6);
+      -webkit-box-shadow: inset 0 1px 2px rgba(0,0,0,0.6);
+      box-shadow:         inset 0 1px 2px rgba(0,0,0,0.6); */
   /* border:1px solid #ddd; */
   /* border-color:rgba(0,0,0,0.2); */
 }
@@ -322,31 +450,31 @@
 
 /*#LoginForm_username,
 #LoginForm_password {
-    margin: 0;
+        margin: 0;
 }
 
 #LoginForm_username {
-    border-radius: 4px 4px 0 0 ;
-    -moz-border-radius: 4px 4px 0 0;
-    -webkit-border-radius: 4px 4px 0 0;
-    -o-border-radius: 4px 4px 0 0;
-    border-bottom: none;
+        border-radius: 4px 4px 0 0 ;
+        -moz-border-radius: 4px 4px 0 0;
+        -webkit-border-radius: 4px 4px 0 0;
+        -o-border-radius: 4px 4px 0 0;
+        border-bottom: none;
 }
 
 #LoginForm_password {
-    border-radius: 0 0 4px 4px ;
-    -moz-border-radius: 0 0 4px 4px;
-    -webkit-border-radius: 0 0 4px 4px;
-    -o-border-radius: 0 0 4px 4px;
-    margin-bottom: 13px;
+        border-radius: 0 0 4px 4px ;
+        -moz-border-radius: 0 0 4px 4px;
+        -webkit-border-radius: 0 0 4px 4px;
+        -o-border-radius: 0 0 4px 4px;
+        margin-bottom: 13px;
 }
 
 #LoginForm_username.login-input-focus {
-    border-bottom: 1px solid #aaa;
+        border-bottom: 1px solid #aaa;
 }
 
 #LoginForm_username.login-input-focus + #LoginForm_password {
-    border-top: none;
+        border-top: none;
 }*/
 /* line 305, ../../../compass/themes/x2engine/css/login.scss */
 #LoginForm_username, #LoginForm_password, #LoginForm_verifyCode {
@@ -598,16 +726,16 @@ racing stripe
 /* line 526, ../../../compass/themes/x2engine/css/login.scss */
 body {
   /*    background: url('../images/stripes_background.png') !important;
-      background-position: center -550px !important;
-      background-repeat: no-repeat !important;
+          background-position: center -550px !important;
+          background-repeat: no-repeat !important;
   */
 }
 
 /* line 533, ../../../compass/themes/x2engine/css/login.scss */
 #dark-theme-button {
   /*    position: absolute;
-      bottom:10px;
-      left: 10px;*/
+          bottom:10px;
+          left: 10px;*/
   /*z-index: 99;*/
   margin-left: 4px;
   float: left;

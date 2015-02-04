@@ -64,6 +64,9 @@
 /***********************************************************************
 * Greens 
 ***********************************************************************/
+/***********************************************************************
+* This section is made to correspond with the theme keys in ThemeGenerator
+***********************************************************************/
 /*********************************************************************************
  * Copyright (C) 2011-2014 X2Engine Inc. All Rights Reserved.
  *
@@ -115,6 +118,9 @@
 ***********************************************************************/
 /***********************************************************************
 * Greens 
+***********************************************************************/
+/***********************************************************************
+* This section is made to correspond with the theme keys in ThemeGenerator
 ***********************************************************************/
 /***************************************
 * Mixin for border radius 
@@ -228,21 +234,26 @@
 }
 
 /* line 57, ../../../compass/themes/x2engine/css/profile.scss */
+#profile-widgets-container {
+  /*float: right !important;*/
+}
+
+/* line 61, ../../../compass/themes/x2engine/css/profile.scss */
 #profile-widgets-container .x2grid-header-container table, #profile-widgets-container-2 .x2grid-header-container table {
   border: none;
 }
 
-/* line 61, ../../../compass/themes/x2engine/css/profile.scss */
+/* line 65, ../../../compass/themes/x2engine/css/profile.scss */
 #profile-widgets-container table, #profile-widgets-container-2 table {
   margin: 0;
 }
 
-/* line 65, ../../../compass/themes/x2engine/css/profile.scss */
+/* line 69, ../../../compass/themes/x2engine/css/profile.scss */
 #content .x2-layout-island {
   border: none;
 }
 
-/* line 73, ../../../compass/themes/x2engine/css/profile.scss */
+/* line 77, ../../../compass/themes/x2engine/css/profile.scss */
 #profile-info-container {
   -webkit-border-radius: 4px;
   -moz-border-radius: 4px;
@@ -251,25 +262,25 @@
   border-radius: 4px;
 }
 
-/* line 77, ../../../compass/themes/x2engine/css/profile.scss */
+/* line 81, ../../../compass/themes/x2engine/css/profile.scss */
 #profile-info {
   border: none !important;
 }
 
-/* line 81, ../../../compass/themes/x2engine/css/profile.scss */
+/* line 85, ../../../compass/themes/x2engine/css/profile.scss */
 #profile-right-content, #profile-left-content {
   box-sizing: border-box;
   display: inline-block;
   width: 40%;
 }
 
-/* line 87, ../../../compass/themes/x2engine/css/profile.scss */
+/* line 91, ../../../compass/themes/x2engine/css/profile.scss */
 #content {
   background: none !important;
   border: none !important;
 }
 
-/* line 96, ../../../compass/themes/x2engine/css/profile.scss */
+/* line 100, ../../../compass/themes/x2engine/css/profile.scss */
 #content .page-title {
   -webkit-border-radius: 2px 2px 0px 0px;
   -moz-border-radius: 2px 2px 0px 0px;
@@ -278,38 +289,38 @@
   border-radius: 2px 2px 0px 0px;
 }
 
-/* line 100, ../../../compass/themes/x2engine/css/profile.scss */
+/* line 104, ../../../compass/themes/x2engine/css/profile.scss */
 .profile-sort-placeholder {
   height: 200px;
 }
 
-/* line 104, ../../../compass/themes/x2engine/css/profile.scss */
+/* line 108, ../../../compass/themes/x2engine/css/profile.scss */
 #profile-info-container .page-title, #activity-feed-container .page-title {
   line-height: 29px;
   height: 30px;
 }
 
-/* line 109, ../../../compass/themes/x2engine/css/profile.scss */
+/* line 113, ../../../compass/themes/x2engine/css/profile.scss */
 #profile-info-container .page-title > h2, #activity-feed-container .page-title > h2 {
   font-size: 17px;
 }
 
-/* line 113, ../../../compass/themes/x2engine/css/profile.scss */
+/* line 117, ../../../compass/themes/x2engine/css/profile.scss */
 #profile-info-container .page-title > h2 {
   background-position: -1px -8px;
 }
 
-/* line 123, ../../../compass/themes/x2engine/css/profile.scss */
+/* line 127, ../../../compass/themes/x2engine/css/profile.scss */
 #profile-image-container {
   margin: auto;
 }
 
-/* line 127, ../../../compass/themes/x2engine/css/profile.scss */
+/* line 131, ../../../compass/themes/x2engine/css/profile.scss */
 .file-wrapper.full-profile-info {
   height: 211px;
 }
 
-/* line 131, ../../../compass/themes/x2engine/css/profile.scss */
+/* line 135, ../../../compass/themes/x2engine/css/profile.scss */
 .file-wrapper {
   height: 119px;
   display: block;
@@ -323,7 +334,7 @@
 * both when the right widgets are shown and when they are hidden.
 ***********************************************************************/
 @media (max-width: 657px) {
-  /* line 154, ../../../compass/themes/x2engine/css/profile.scss */
+  /* line 227, ../../../compass/themes/x2engine/css/profile.scss */
   #activity-feed-container .responsive-page-title > .mobile-dropdown-button, #profile-info-container .responsive-page-title > .mobile-dropdown-button {
     margin-top: -22px;
     margin-right: 7px;
@@ -332,46 +343,66 @@
 /* right widgets shown */
 /*@media (min-width: 1544px) {*/
 @media (max-width: 1344px) {
-  /* line 164, ../../../compass/themes/x2engine/css/profile.scss */
-  #profile-content-container.full-profile #profile-widgets-container,
-  #profile-content-container.full-profile #profile-widgets-container-2,
-  #profile-content-container.full-profile #activity-feed-container-outer {
+  /* line 210, ../../../compass/themes/x2engine/css/profile.scss */
+  body.show-widgets #profile-content-container.full-profile #profile-widgets-container,
+  body.show-widgets #profile-content-container.full-profile #profile-widgets-container-2,
+  body.show-widgets #profile-content-container.full-profile #activity-feed-container-outer {
     float: left;
     width: 100% !important;
   }
-
-  /* line 171, ../../../compass/themes/x2engine/css/profile.scss */
-  #profile-layout-editor #screen-too-small {
+  /* line 216, ../../../compass/themes/x2engine/css/profile.scss */
+  body.show-widgets #profile-content-container.full-profile #profile-widgets-container-inner {
+    margin-left: 0;
+  }
+  /* line 220, ../../../compass/themes/x2engine/css/profile.scss */
+  body.show-widgets #profile-layout-editor .screen-too-small {
+    display: inline-block !important;
+  }
+}
+@media (max-width: 1032px) {
+  /* line 210, ../../../compass/themes/x2engine/css/profile.scss */
+  body.no-widgets #profile-content-container.full-profile #profile-widgets-container,
+  body.no-widgets #profile-content-container.full-profile #profile-widgets-container-2,
+  body.no-widgets #profile-content-container.full-profile #activity-feed-container-outer {
+    float: left;
+    width: 100% !important;
+  }
+  /* line 216, ../../../compass/themes/x2engine/css/profile.scss */
+  body.no-widgets #profile-content-container.full-profile #profile-widgets-container-inner {
+    margin-left: 0;
+  }
+  /* line 220, ../../../compass/themes/x2engine/css/profile.scss */
+  body.no-widgets #profile-layout-editor .screen-too-small {
     display: inline-block !important;
   }
 }
 @media (min-width: 1344px) {
-  /* line 178, ../../../compass/themes/x2engine/css/profile.scss */
+  /* line 158, ../../../compass/themes/x2engine/css/profile.scss */
   #profile-content-container.full-profile #profile-info-container-outer {
     float: left;
     width: 52%;
   }
-  /* line 182, ../../../compass/themes/x2engine/css/profile.scss */
+  /* line 162, ../../../compass/themes/x2engine/css/profile.scss */
   #profile-content-container.full-profile #profile-widgets-container-2 {
     /* prevent padding from taking up space in layout  */
   }
-  /* line 186, ../../../compass/themes/x2engine/css/profile.scss */
+  /* line 166, ../../../compass/themes/x2engine/css/profile.scss */
   #profile-content-container.full-profile #profile-widgets-container-2.empty-widget-container {
     padding-bottom: 30px;
   }
-  /* line 190, ../../../compass/themes/x2engine/css/profile.scss */
+  /* line 170, ../../../compass/themes/x2engine/css/profile.scss */
   #profile-content-container.full-profile #profile-widgets-container-inner {
     padding-bottom: 200px;
     margin-bottom: -200px;
     /* prevent padding from taking up space in layout  */
   }
-  /* line 194, ../../../compass/themes/x2engine/css/profile.scss */
+  /* line 174, ../../../compass/themes/x2engine/css/profile.scss */
   #profile-content-container.full-profile #profile-widgets-container-inner.empty-widget-container {
     height: 100%;
     position: fixed;
     width: 33%;
   }
-  /* line 200, ../../../compass/themes/x2engine/css/profile.scss */
+  /* line 180, ../../../compass/themes/x2engine/css/profile.scss */
   #profile-content-container.full-profile #profile-widgets-container-2 {
     width: 52%;
     clear: left;
@@ -379,7 +410,7 @@
     margin-left: 0;
     margin-right: 0;
   }
-  /* line 209, ../../../compass/themes/x2engine/css/profile.scss */
+  /* line 187, ../../../compass/themes/x2engine/css/profile.scss */
   #profile-content-container.full-profile #activity-feed-container-outer {
     width: 52%;
     clear: left;
@@ -387,56 +418,47 @@
     margin-left: 0;
     margin-right: 0;
   }
-  /* line 218, ../../../compass/themes/x2engine/css/profile.scss */
+  /* line 195, ../../../compass/themes/x2engine/css/profile.scss */
   #profile-content-container.full-profile #activity-feed-container {
     margin-right: 0;
   }
-  /* line 221, ../../../compass/themes/x2engine/css/profile.scss */
+  /* line 198, ../../../compass/themes/x2engine/css/profile.scss */
   #profile-content-container.full-profile #profile-widgets-container {
     float: right;
     width: 48%;
   }
-  /* line 227, ../../../compass/themes/x2engine/css/profile.scss */
+  /* line 203, ../../../compass/themes/x2engine/css/profile.scss */
   #profile-content-container.full-profile #profile-widgets-container-inner {
     margin-left: 9px;
   }
-
-  /*  
-  Allows jQuery UI sortable to drop droppables into this container even if it's empty
-  */
-  /*  
-  Allows jQuery UI sortable to drop droppables into this container even if it's empty
-  */
 }
-/* right widgets hidden */
-/*@media (min-width: 1232px) {*/
 @media (min-width: 1032px) {
-  /* line 243, ../../../compass/themes/x2engine/css/profile.scss */
+  /* line 158, ../../../compass/themes/x2engine/css/profile.scss */
   .no-widgets #profile-content-container.full-profile #profile-info-container-outer {
     float: left;
     width: 52%;
   }
-  /* line 247, ../../../compass/themes/x2engine/css/profile.scss */
+  /* line 162, ../../../compass/themes/x2engine/css/profile.scss */
   .no-widgets #profile-content-container.full-profile #profile-widgets-container-2 {
     /* prevent padding from taking up space in layout  */
   }
-  /* line 251, ../../../compass/themes/x2engine/css/profile.scss */
+  /* line 166, ../../../compass/themes/x2engine/css/profile.scss */
   .no-widgets #profile-content-container.full-profile #profile-widgets-container-2.empty-widget-container {
     padding-bottom: 30px;
   }
-  /* line 255, ../../../compass/themes/x2engine/css/profile.scss */
+  /* line 170, ../../../compass/themes/x2engine/css/profile.scss */
   .no-widgets #profile-content-container.full-profile #profile-widgets-container-inner {
     padding-bottom: 200px;
     margin-bottom: -200px;
     /* prevent padding from taking up space in layout  */
   }
-  /* line 259, ../../../compass/themes/x2engine/css/profile.scss */
+  /* line 174, ../../../compass/themes/x2engine/css/profile.scss */
   .no-widgets #profile-content-container.full-profile #profile-widgets-container-inner.empty-widget-container {
     height: 100%;
     position: fixed;
     width: 33%;
   }
-  /* line 265, ../../../compass/themes/x2engine/css/profile.scss */
+  /* line 180, ../../../compass/themes/x2engine/css/profile.scss */
   .no-widgets #profile-content-container.full-profile #profile-widgets-container-2 {
     width: 52%;
     clear: left;
@@ -444,7 +466,7 @@
     margin-left: 0;
     margin-right: 0;
   }
-  /* line 272, ../../../compass/themes/x2engine/css/profile.scss */
+  /* line 187, ../../../compass/themes/x2engine/css/profile.scss */
   .no-widgets #profile-content-container.full-profile #activity-feed-container-outer {
     width: 52%;
     clear: left;
@@ -452,86 +474,71 @@
     margin-left: 0;
     margin-right: 0;
   }
-  /* line 281, ../../../compass/themes/x2engine/css/profile.scss */
+  /* line 195, ../../../compass/themes/x2engine/css/profile.scss */
   .no-widgets #profile-content-container.full-profile #activity-feed-container {
     margin-right: 0;
   }
-  /* line 284, ../../../compass/themes/x2engine/css/profile.scss */
+  /* line 198, ../../../compass/themes/x2engine/css/profile.scss */
   .no-widgets #profile-content-container.full-profile #profile-widgets-container {
     float: right;
     width: 48%;
   }
-  /* line 290, ../../../compass/themes/x2engine/css/profile.scss */
+  /* line 203, ../../../compass/themes/x2engine/css/profile.scss */
   .no-widgets #profile-content-container.full-profile #profile-widgets-container-inner {
     margin-left: 9px;
   }
-
-  /*  
-  Allows jQuery UI sortable to drop droppables into this container even if it's empty
-  */
-  /*  
-  Allows jQuery UI sortable to drop droppables into this container even if it's empty
-  */
 }
-/* for browsers which don't support media queries */
-/* line 305, ../../../compass/themes/x2engine/css/profile.scss */
-#content.wide-profile-widget-layout #profile-content-container.full-profile #profile-info-container-outer {
+/* line 158, ../../../compass/themes/x2engine/css/profile.scss */
+#profile-content-container.full-profile #profile-info-container-outer {
   float: left;
   width: 52%;
 }
-/* line 309, ../../../compass/themes/x2engine/css/profile.scss */
-#content.wide-profile-widget-layout #profile-content-container.full-profile #profile-widgets-container-2 {
+/* line 162, ../../../compass/themes/x2engine/css/profile.scss */
+#profile-content-container.full-profile #profile-widgets-container-2 {
   /* prevent padding from taking up space in layout  */
 }
-/* line 313, ../../../compass/themes/x2engine/css/profile.scss */
-#content.wide-profile-widget-layout #profile-content-container.full-profile #profile-widgets-container-2.empty-widget-container {
+/* line 166, ../../../compass/themes/x2engine/css/profile.scss */
+#profile-content-container.full-profile #profile-widgets-container-2.empty-widget-container {
   padding-bottom: 30px;
 }
-/* line 317, ../../../compass/themes/x2engine/css/profile.scss */
-#content.wide-profile-widget-layout #profile-content-container.full-profile #profile-widgets-container-inner {
+/* line 170, ../../../compass/themes/x2engine/css/profile.scss */
+#profile-content-container.full-profile #profile-widgets-container-inner {
   padding-bottom: 200px;
   margin-bottom: -200px;
   /* prevent padding from taking up space in layout  */
 }
-/* line 321, ../../../compass/themes/x2engine/css/profile.scss */
-#content.wide-profile-widget-layout #profile-content-container.full-profile #profile-widgets-container-inner.empty-widget-container {
+/* line 174, ../../../compass/themes/x2engine/css/profile.scss */
+#profile-content-container.full-profile #profile-widgets-container-inner.empty-widget-container {
   height: 100%;
   position: fixed;
   width: 33%;
 }
-/* line 327, ../../../compass/themes/x2engine/css/profile.scss */
-#content.wide-profile-widget-layout #profile-content-container.full-profile #profile-widgets-container-2 {
+/* line 180, ../../../compass/themes/x2engine/css/profile.scss */
+#profile-content-container.full-profile #profile-widgets-container-2 {
   width: 52%;
   clear: left;
   float: left;
   margin-left: 0;
   margin-right: 0;
 }
-/* line 334, ../../../compass/themes/x2engine/css/profile.scss */
-#content.wide-profile-widget-layout #profile-content-container.full-profile #activity-feed-container-outer {
+/* line 187, ../../../compass/themes/x2engine/css/profile.scss */
+#profile-content-container.full-profile #activity-feed-container-outer {
   width: 52%;
   clear: left;
   float: left;
   margin-left: 0;
   margin-right: 0;
 }
-/* line 343, ../../../compass/themes/x2engine/css/profile.scss */
-#content.wide-profile-widget-layout #profile-content-container.full-profile #activity-feed-container {
+/* line 195, ../../../compass/themes/x2engine/css/profile.scss */
+#profile-content-container.full-profile #activity-feed-container {
   margin-right: 0;
 }
-/* line 346, ../../../compass/themes/x2engine/css/profile.scss */
-#content.wide-profile-widget-layout #profile-content-container.full-profile #profile-widgets-container {
+/* line 198, ../../../compass/themes/x2engine/css/profile.scss */
+#profile-content-container.full-profile #profile-widgets-container {
   float: right;
   width: 48%;
 }
-/* line 352, ../../../compass/themes/x2engine/css/profile.scss */
-#content.wide-profile-widget-layout #profile-content-container.full-profile #profile-widgets-container-inner {
+/* line 203, ../../../compass/themes/x2engine/css/profile.scss */
+#profile-content-container.full-profile #profile-widgets-container-inner {
   margin-left: 9px;
 }
-
-/*  
-Allows jQuery UI sortable to drop droppables into this container even if it's empty
-*/
-/*  
-Allows jQuery UI sortable to drop droppables into this container even if it's empty
-*/

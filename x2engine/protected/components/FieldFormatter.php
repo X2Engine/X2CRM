@@ -165,6 +165,7 @@ class FieldFormatter extends CComponent {
         $value = X2Model::getPhoneNumber(
             $fieldName, get_class($this->owner), $this->owner->id, $encode, $makeLinks,
             $this->owner->$fieldName);
+        return $value;
     }
 
     protected function renderUrl ($field, $makeLinks, $textOnly, $encode) {
@@ -265,7 +266,9 @@ class FieldFormatter extends CComponent {
     protected function renderBoolean ($field, $makeLinks, $textOnly, $encode) {
         $fieldName = $field->fieldName;
         return $textOnly ? 
-            $this->render ($this->owner->$fieldName, $encode) : 
+            $this->render (
+                $this->owner->$fieldName ? 
+                    Yii::t('app', 'Yes') : Yii::t('app', 'No'), $encode) : 
             CHtml::checkbox(
                 '', $this->owner->$fieldName, 
                 array('onclick' => 'return false;', 'onkeydown' => 'return false;'));

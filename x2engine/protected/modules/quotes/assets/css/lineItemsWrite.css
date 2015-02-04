@@ -84,6 +84,9 @@
 /***********************************************************************
 * Greens 
 ***********************************************************************/
+/***********************************************************************
+* This section is made to correspond with the theme keys in ThemeGenerator
+***********************************************************************/
 /***************************************
 * Mixin for border radius 
 ***************************************/
@@ -195,11 +198,16 @@
   position: absolute;
   display: none;
   max-height: 16em;
-  overflow-y: scroll;
+  overflow-y: auto;
+  overflow-x: hidden;
   z-index: 5;
   font-size: 10px !important;
 }
 /* line 90, ../../../../../compass/protected/modules/quotes/assets/css/lineItemsWrite.scss */
+.line-items-write.line-items-table .product-menu a {
+  text-decoration: none;
+}
+/* line 94, ../../../../../compass/protected/modules/quotes/assets/css/lineItemsWrite.scss */
 .line-items-write .quote-table {
   margin-bottom: 5px;
   width: 100%;
@@ -212,28 +220,29 @@
   -o-border-radius: 4px;
   border-radius: 4px;
 }
-/* line 98, ../../../../../compass/protected/modules/quotes/assets/css/lineItemsWrite.scss */
+/* line 102, ../../../../../compass/protected/modules/quotes/assets/css/lineItemsWrite.scss */
 .line-items-write .quote-table input.error {
   background: #FEE;
   border-color: #C00 !important;
 }
-/* line 103, ../../../../../compass/protected/modules/quotes/assets/css/lineItemsWrite.scss */
+/* line 107, ../../../../../compass/protected/modules/quotes/assets/css/lineItemsWrite.scss */
 .line-items-write .quote-table .arrow-both-handle {
   margin-left: 10px;
   width: 1em;
   height: 1em;
   display: inline-block;
 }
-/* line 110, ../../../../../compass/protected/modules/quotes/assets/css/lineItemsWrite.scss */
+/* line 114, ../../../../../compass/protected/modules/quotes/assets/css/lineItemsWrite.scss */
 .line-items-write .quote-table .item-delete-button {
   display: inline-block;
 }
-/* line 114, ../../../../../compass/protected/modules/quotes/assets/css/lineItemsWrite.scss */
+/* line 118, ../../../../../compass/protected/modules/quotes/assets/css/lineItemsWrite.scss */
 .line-items-write .quote-table td {
   padding-right: 5px;
   background-color: #FAFAFA;
+  /* @theme background-color: content */
 }
-/* line 117, ../../../../../compass/protected/modules/quotes/assets/css/lineItemsWrite.scss */
+/* line 122, ../../../../../compass/protected/modules/quotes/assets/css/lineItemsWrite.scss */
 .line-items-write .quote-table td input.line-item-field {
   border: 1px solid #aaa;
   font-size: 12px;
@@ -246,14 +255,14 @@
   -o-border-radius: 3px;
   border-radius: 3px;
 }
-/* line 128, ../../../../../compass/protected/modules/quotes/assets/css/lineItemsWrite.scss */
+/* line 133, ../../../../../compass/protected/modules/quotes/assets/css/lineItemsWrite.scss */
 .line-items-write .quote-table > thead:first-child > tr > th {
   border-color: #CCCCCC;
   border-width: 0 0 1px 0;
   border-style: solid;
   text-align: left;
 }
-/* line 135, ../../../../../compass/protected/modules/quotes/assets/css/lineItemsWrite.scss */
+/* line 140, ../../../../../compass/protected/modules/quotes/assets/css/lineItemsWrite.scss */
 .line-items-write .quote-table > tbody.line-items > tr > td.x2-7th-child input, .line-items-write .quote-table > tbody.adjustments > tr > td.x2-7th-child input {
   background: none;
   border: none;
@@ -262,7 +271,7 @@
   overflow: hidden;
   text-overflow: ellipsis;
 }
-/* line 146, ../../../../../compass/protected/modules/quotes/assets/css/lineItemsWrite.scss */
+/* line 151, ../../../../../compass/protected/modules/quotes/assets/css/lineItemsWrite.scss */
 .line-items-write .quote-table input.total, .line-items-write .quote-table input.subtotal {
   background: none;
   border: none;
@@ -271,25 +280,25 @@
   overflow: hidden;
   text-overflow: ellipsis;
 }
-/* line 156, ../../../../../compass/protected/modules/quotes/assets/css/lineItemsWrite.scss */
+/* line 161, ../../../../../compass/protected/modules/quotes/assets/css/lineItemsWrite.scss */
 .line-items-write .line-item > .first-cell, .line-items-write .adjustment > .first-cell {
   width: 10%;
   padding-right: 0;
 }
-/* line 162, ../../../../../compass/protected/modules/quotes/assets/css/lineItemsWrite.scss */
+/* line 167, ../../../../../compass/protected/modules/quotes/assets/css/lineItemsWrite.scss */
 .line-items-write .quote-table > tbody.line-items > tr > td.x2-2nd-child {
   text-align: left;
   width: 22%;
   padding-right: 0;
 }
-/* line 167, ../../../../../compass/protected/modules/quotes/assets/css/lineItemsWrite.scss */
+/* line 172, ../../../../../compass/protected/modules/quotes/assets/css/lineItemsWrite.scss */
 .line-items-write .quote-table > thead > tr > th.line-item-name, .line-items-write .quote-table > tbody.line-items > tr > td.x2-2nd-child input {
   margin: 0 0 0 0;
   width: 85%;
   float: left;
   font-size: 12px;
 }
-/* line 174, ../../../../../compass/protected/modules/quotes/assets/css/lineItemsWrite.scss */
+/* line 179, ../../../../../compass/protected/modules/quotes/assets/css/lineItemsWrite.scss */
 .line-items-write .quote-table tr.line-item td.input-cell button.product-select-button {
   -webkit-border-radius: 0px 4px 4px 0px;
   -moz-border-radius: 0px 4px 4px 0px;
@@ -303,7 +312,7 @@
   margin: 0 0 0 0;
   border-left: none;
 }
-/* line 184, ../../../../../compass/protected/modules/quotes/assets/css/lineItemsWrite.scss */
+/* line 189, ../../../../../compass/protected/modules/quotes/assets/css/lineItemsWrite.scss */
 .line-items-write .product-name {
   -webkit-border-radius: 4px 0px 0px 4px !important;
   -moz-border-radius: 4px 0px 0px 4px !important;
@@ -311,88 +320,88 @@
   -o-border-radius: 4px 0px 0px 4px !important;
   border-radius: 4px 0px 0px 4px !important;
 }
-/* line 188, ../../../../../compass/protected/modules/quotes/assets/css/lineItemsWrite.scss */
+/* line 193, ../../../../../compass/protected/modules/quotes/assets/css/lineItemsWrite.scss */
 .line-items-write .quote-table .product-select-button img {
   margin: 0 -3px 0 0;
   width: 10px;
   height: 10px;
 }
-/* line 195, ../../../../../compass/protected/modules/quotes/assets/css/lineItemsWrite.scss */
+/* line 200, ../../../../../compass/protected/modules/quotes/assets/css/lineItemsWrite.scss */
 .line-items-write .quote-table > tbody.line-items > tr > td.x2-3rd-child {
   text-align: left;
   width: 16%;
 }
-/* line 198, ../../../../../compass/protected/modules/quotes/assets/css/lineItemsWrite.scss */
+/* line 203, ../../../../../compass/protected/modules/quotes/assets/css/lineItemsWrite.scss */
 .line-items-write .quote-table > tbody.line-items > tr > td.x2-3rd-child input {
   width: 100%;
   text-align: right;
   font-size: 12px;
 }
-/* line 204, ../../../../../compass/protected/modules/quotes/assets/css/lineItemsWrite.scss */
+/* line 209, ../../../../../compass/protected/modules/quotes/assets/css/lineItemsWrite.scss */
 .line-items-write .quote-table > tbody.line-items > tr > td.x2-4th-child {
   text-align: left;
   width: 12%;
 }
-/* line 209, ../../../../../compass/protected/modules/quotes/assets/css/lineItemsWrite.scss */
+/* line 214, ../../../../../compass/protected/modules/quotes/assets/css/lineItemsWrite.scss */
 .line-items-write .quote-table > tbody.adjustments > tr > td.x2-4th-child {
   text-align: left;
   width: 12%;
 }
-/* line 213, ../../../../../compass/protected/modules/quotes/assets/css/lineItemsWrite.scss */
+/* line 218, ../../../../../compass/protected/modules/quotes/assets/css/lineItemsWrite.scss */
 .line-items-write .quote-table > tbody.line-items > tr > td.x2-4th-child input {
   width: 100%;
   text-align: right;
   font-size: 12px;
 }
-/* line 218, ../../../../../compass/protected/modules/quotes/assets/css/lineItemsWrite.scss */
+/* line 223, ../../../../../compass/protected/modules/quotes/assets/css/lineItemsWrite.scss */
 .line-items-write .quote-table > tbody.adjustments > tr > td.x2-4th-child input {
   width: 100%;
   text-align: left;
   font-size: 12px;
 }
-/* line 223, ../../../../../compass/protected/modules/quotes/assets/css/lineItemsWrite.scss */
+/* line 228, ../../../../../compass/protected/modules/quotes/assets/css/lineItemsWrite.scss */
 .line-items-write .quote-table > tbody.line-items > tr > td.x2-5th-child, .line-items-write .quote-table > tbody.adjustments > tr > td.x2-5th-child {
   text-align: left;
   width: 12%;
 }
-/* line 227, ../../../../../compass/protected/modules/quotes/assets/css/lineItemsWrite.scss */
+/* line 232, ../../../../../compass/protected/modules/quotes/assets/css/lineItemsWrite.scss */
 .line-items-write .quote-table > tbody.line-items > tr > td.x2-5th-child input, .line-items-write .quote-table > tbody.adjustments > tr > td.x2-5th-child input {
   width: 100%;
   font-size: 12px;
   text-align: right;
 }
-/* line 232, ../../../../../compass/protected/modules/quotes/assets/css/lineItemsWrite.scss */
+/* line 237, ../../../../../compass/protected/modules/quotes/assets/css/lineItemsWrite.scss */
 .line-items-write .quote-table > tbody.line-items > tr > td.x2-6th-child, .line-items-write .quote-table > tbody.adjustments > tr > td.x2-6th-child {
   text-align: left;
   width: 12%;
 }
-/* line 236, ../../../../../compass/protected/modules/quotes/assets/css/lineItemsWrite.scss */
+/* line 241, ../../../../../compass/protected/modules/quotes/assets/css/lineItemsWrite.scss */
 .line-items-write .quote-table > tbody.line-items > tr > td.x2-6th-child input, .line-items-write .quote-table > tbody.adjustments > tr > td.x2-6th-child input {
   width: 100%;
   font-size: 12px;
 }
-/* line 240, ../../../../../compass/protected/modules/quotes/assets/css/lineItemsWrite.scss */
+/* line 245, ../../../../../compass/protected/modules/quotes/assets/css/lineItemsWrite.scss */
 .line-items-write .quote-table > tbody.line-items > tr > td.x2-7th-child, .line-items-write .quote-table > tbody.adjustments > tr > td.x2-7th-child {
   text-align: left;
   width: 24%;
 }
-/* line 244, ../../../../../compass/protected/modules/quotes/assets/css/lineItemsWrite.scss */
+/* line 249, ../../../../../compass/protected/modules/quotes/assets/css/lineItemsWrite.scss */
 .line-items-write .quote-table > tbody.line-items > tr > td.x2-7th-child input, .line-items-write .quote-table > tbody.adjustments > tr > td.x2-7th-child input {
   width: 100%;
   font-size: 12px;
 }
-/* line 249, ../../../../../compass/protected/modules/quotes/assets/css/lineItemsWrite.scss */
+/* line 254, ../../../../../compass/protected/modules/quotes/assets/css/lineItemsWrite.scss */
 .line-items-write .quote-table .subtotal-container, .line-items-write .quote-table .total-container {
   width: 22%;
   text-align: left;
 }
-/* line 254, ../../../../../compass/protected/modules/quotes/assets/css/lineItemsWrite.scss */
+/* line 259, ../../../../../compass/protected/modules/quotes/assets/css/lineItemsWrite.scss */
 .line-items-write .quote-table input.subtotal, .line-items-write .quote-table input.total {
   width: 100%;
   font-size: 12px;
 }
 
-/* line 262, ../../../../../compass/protected/modules/quotes/assets/css/lineItemsWrite.scss */
+/* line 267, ../../../../../compass/protected/modules/quotes/assets/css/lineItemsWrite.scss */
 .quotes-error-summary {
   background: #FEE;
   border: 2px solid #C00;
@@ -402,23 +411,23 @@
   margin-top: 5px;
   color: black !important;
 }
-/* line 272, ../../../../../compass/protected/modules/quotes/assets/css/lineItemsWrite.scss */
+/* line 277, ../../../../../compass/protected/modules/quotes/assets/css/lineItemsWrite.scss */
 .quotes-error-summary p {
   margin: 0;
   padding: 5px;
 }
-/* line 276, ../../../../../compass/protected/modules/quotes/assets/css/lineItemsWrite.scss */
+/* line 281, ../../../../../compass/protected/modules/quotes/assets/css/lineItemsWrite.scss */
 .quotes-error-summary ul {
   margin: 0;
   padding: 0 0 0 20px;
 }
 
 @media (max-width: 657px) {
-  /* line 285, ../../../../../compass/protected/modules/quotes/assets/css/lineItemsWrite.scss */
+  /* line 290, ../../../../../compass/protected/modules/quotes/assets/css/lineItemsWrite.scss */
   .line-items-write .quote-table .input-cell {
     padding-right: 0px;
   }
-  /* line 288, ../../../../../compass/protected/modules/quotes/assets/css/lineItemsWrite.scss */
+  /* line 293, ../../../../../compass/protected/modules/quotes/assets/css/lineItemsWrite.scss */
   .line-items-write .quote-table .arrow-both-handle {
     margin-left: 0px;
   }

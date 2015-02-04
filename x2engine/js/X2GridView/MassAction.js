@@ -119,7 +119,6 @@ MassAction.prototype.openDialog = function () {
                 'class': 'x2-dialog-go-button',
                 click: function () { 
                     if (that.validateMassActionDialogForm ()) {
-                        $(dialog).dialog ('widget').find ('.x2-dialog-go-button').hide ();
                         x2.forms.inputLoading (
                             $(dialog).dialog ('widget').find ('.x2-dialog-go-button'), false);
                         if (that.massActionsManager._allRecordsOnAllPagesSelected) {
@@ -141,13 +140,13 @@ MassAction.prototype.openDialog = function () {
         ],
         close: function () {
             $(dialog).hide ();
-            x2.forms.inputLoading (
+            x2.forms.inputLoadingStop (
                 $(dialog).dialog ('widget').find ('.x2-dialog-go-button'));
             $(dialog).dialog ('widget').find ('.x2-dialog-go-button').show ();
             $('#' + that.massActionsManager.gridId + '-mass-action-buttons .mass-action-button').
                 removeAttr ('disabled', 'disabled');
             if (!superExecute && !execute) that.massActionsManager.massActionInProgress = false;
-            $(dialog).dialog ('destroy'); 
+            $(dialog).dialog ('destroy').hide (); 
         }
     });
 

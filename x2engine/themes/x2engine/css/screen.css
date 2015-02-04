@@ -76,6 +76,9 @@
 /***********************************************************************
 * Greens 
 ***********************************************************************/
+/***********************************************************************
+* This section is made to correspond with the theme keys in ThemeGenerator
+***********************************************************************/
 /*********************************************************************************
  * Copyright (C) 2011-2014 X2Engine Inc. All Rights Reserved.
  *
@@ -127,6 +130,9 @@
 ***********************************************************************/
 /***********************************************************************
 * Greens 
+***********************************************************************/
+/***********************************************************************
+* This section is made to correspond with the theme keys in ThemeGenerator
 ***********************************************************************/
 /***************************************
 * Mixin for border radius 
@@ -1300,6 +1306,8 @@ div.append-bottom, .append-bottom {
 hr {
   background: #ddd;
   color: #ddd;
+  /* @theme background: opaque_text */
+  /* @theme color: opaque_text */
   clear: both;
   float: none;
   width: 100%;
@@ -1307,14 +1315,14 @@ hr {
   margin: 0 0 1em;
   border: none;
 }
-/* line 980, ../../../compass/themes/x2engine/css/screen.scss */
+/* line 982, ../../../compass/themes/x2engine/css/screen.scss */
 hr.space {
   background: #fff;
   color: #fff;
   visibility: hidden;
 }
 
-/* line 987, ../../../compass/themes/x2engine/css/screen.scss */
+/* line 989, ../../../compass/themes/x2engine/css/screen.scss */
 .clearfix:after, .container:after {
   content: "\0020";
   display: block;
@@ -1324,12 +1332,12 @@ hr.space {
   overflow: hidden;
 }
 
-/* line 996, ../../../compass/themes/x2engine/css/screen.scss */
+/* line 998, ../../../compass/themes/x2engine/css/screen.scss */
 .clearfix, .container {
   display: block;
 }
 
-/* line 1000, ../../../compass/themes/x2engine/css/screen.scss */
+/* line 1002, ../../../compass/themes/x2engine/css/screen.scss */
 .clear {
   clear: both;
 }

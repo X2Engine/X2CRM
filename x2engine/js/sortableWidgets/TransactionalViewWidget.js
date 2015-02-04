@@ -70,12 +70,34 @@ TransactionalViewWidget.refreshAll = function () {
     }
 };
 
+TransactionalViewWidget.refreshByActionType = function (actionType) {
+    actionType = typeof actionType === 'undefined' ? '' : actionType; 
+    switch (actionType) {
+        case '':     
+        case 'action':     
+            x2.TransactionalViewWidget.refresh ('ActionsWidget'); 
+            break;
+        case 'call':     
+            x2.TransactionalViewWidget.refresh ('CallsWidget'); 
+            break;
+        case 'event':     
+            x2.TransactionalViewWidget.refresh ('EventsWidget'); 
+            break;
+        case 'note':     
+            x2.TransactionalViewWidget.refresh ('CommentsWidget'); 
+            break;
+        case 'products':     
+            x2.TransactionalViewWidget.refresh ('ProductsWidget'); 
+            break;
+        case 'time':     
+            x2.TransactionalViewWidget.refresh ('LoggedTimeWidget'); 
+            break;
+    }
+};
+
 TransactionalViewWidget.refresh = function (type) {
     for (var widgetKey in TransactionalViewWidget.widgets) {
         var regex = new RegExp ('^' + type + '_.*$');
-        console.log ('widgetKey = ');
-            console.log (widgetKey);
-
         if (widgetKey.match (regex)) {
             TransactionalViewWidget.widgets[widgetKey]._refreshGrid (); 
         }
@@ -111,8 +133,8 @@ TransactionalViewWidget.prototype._setUpCreateButtonBehavior = function () {
             },
             enableFlash: false,
             success: function () {
-                that._refreshGrid ();
-                x2.actionHistory.update ();
+                //that._refreshGrid ();
+                //x2.actionHistory.update ();
             }
         });
     });

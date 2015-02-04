@@ -189,12 +189,14 @@ class QuickCreateRelationshipBehavior extends CBehavior {
                     ));
             } else if (isset ($_POST['quickCreateOnly']) && $_POST['quickCreateOnly']) {
                 $model->refresh ();
+                $modelClass = get_class ($model);
+                $modelLink = ($modelClass === 'Actions' ? $model->getLink (30, false) : $model->getLink());
                 echo CJSON::encode (
                     array (
                         'status' => 'success',
                         'message' => Yii::t('app', '{recordType} created: {link}', array (
-                            '{recordType}' => get_class ($model),
-                            '{link}' => $model->link 
+                            '{recordType}' => $modelClass,
+                            '{link}' => $modelLink,
                         )),
                         'attributes' => $model->getVisibleAttributes (),
                     ));
@@ -216,7 +218,6 @@ class QuickCreateRelationshipBehavior extends CBehavior {
      * @param bool $hasErrors
      */
     public function renderInlineForm ($model, $hasErrors, array $viewParams = array ()) {
-
         if ($hasErrors) {
             $page = $this->owner->renderPartial(
                 $this->inlineFormPathAlias,

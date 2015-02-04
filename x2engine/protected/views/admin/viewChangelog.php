@@ -33,9 +33,9 @@
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2Engine".
  *****************************************************************************************/
-?>
 
-<?php
+Yii::app()->clientScript->registerCssFile(Yii::app()->theme->baseUrl.'/css/viewChangelog.css');
+
 $this->widget('zii.widgets.grid.CGridView', array(
     'id' => 'changelog-grid',
     'baseScriptUrl' => Yii::app()->request->baseUrl.'/themes/'.Yii::app()->theme->name.'/css/gridview',
@@ -73,10 +73,34 @@ $this->widget('zii.widgets.grid.CGridView', array(
     ),
 ));
 echo "<br>";
-echo CHtml::link(Yii::t('admin','Clear Changelog'), '#', array('class' => 'x2-button', 'submit' => 'clearChangelog', 'confirm' => 'Are you sure you want to clear the changelog?'));
-?>
-<script>
+echo CHtml::link(
+    Yii::t('admin','Clear Changelog'), '#', array(
+        'class' => 'x2-button',
+        'submit' => 'clearChangelog',
+        'confirm' => 'Are you sure you want to clear the changelog?',
+));
+echo CHtml::link(
+    Yii::t('admin',X2Html::fa('fa-share fa-lg').'Export Changelog'), '#', array(
+        'class' => 'x2-button export-changelog',
+        'id' => 'export-changelog',
+));
+
+Yii::app()->clientScript->registerScript ('changelog-js', '
     function refreshQtipHistory(){
-        $('.x2-hint').qtip();
+        $(".x2-hint").qtip();
     }
-</script>
+
+    $("#export-changelog").click(function(evt) {
+        evt.preventDefault();
+        $.ajax ({
+            url: "'.$this->createUrl ('exportChangelog').'",
+            success: function() {
+                window.location.href = "'.
+                    $this->createUrl('/admin/downloadData', array(
+                        'file' => 'changelog.csv',
+                    )).
+                '";
+            }
+        });
+    });
+', CClientScript::POS_END);

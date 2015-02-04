@@ -99,6 +99,10 @@ PublisherTab.prototype.submit = function (publisher, form) {
             } else {
                 publisher.updates();
                 publisher.reset();
+                if ($(that._elemSelector).closest ('.ui-dialog').length) {
+                    // if tab is in a transactional widget dialog
+                    $(that._elemSelector).closest ('.ui-dialog').remove ();
+                }
             }
         }
     });
@@ -185,7 +189,12 @@ PublisherTab.prototype._setUpActionDescriptionBehavior = function () {
     });
 };
 
-PublisherTab.prototype._init = function () {};
+PublisherTab.prototype._init = function () {
+    var that = this;
+    $(function () {
+        that.run ();
+    });
+};
 
 return PublisherTab;
 

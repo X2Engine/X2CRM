@@ -152,7 +152,7 @@ $('#Actions_associationType').change (function () {
                     // fix datepicker so it's always on top
                     'onClick' => "$('#ui-datepicker-div').css('z-index', '100');", 
                     'class' => 'action-complete-date x2-forms',
-                    'id' => 'event-form-action-complete-date'
+                    'id' => $this->resolveId ('event-form-action-complete-date'),
                 ), 'datetime', array (
                     'dateFormat' => Formatter::formatDatePicker ('medium'),
                     'timeFormat' => Formatter::formatTimePicker (),

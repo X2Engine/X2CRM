@@ -69,6 +69,22 @@ class LoggedTimeWidget extends TransactionalViewWidget {
                             'header' => Yii::t('app', 'Created By'),
                         ),
                     ),
+                    'defaultGvSettings' => array (
+                        'actionDescription' => '35%',
+                        'assignedTo' => '21%',
+                        'timeSpent' => 79,
+                        'createDate' => 60,
+                    ),
+                )
+            );
+            $this->_gridViewConfig['specialColumns'] = array_merge (
+                $this->_gridViewConfig['specialColumns'],
+                array (
+                    'timeSpent' => array (
+                        'name' => 'timeSpent',
+                        'value' => 'Formatter::secondsToHours ($data->timeSpent)',
+                        'type' => 'raw',
+                    ),
                 )
             );
         }

@@ -37,7 +37,7 @@
     if (!window.console) {
         console = {};
     }
-    var props = ['log', 'trace'];
+    var props = ['log', 'trace', 'debug'];
     for (var i in props) {
         var prop = props[i];
         if (!console[prop]) {

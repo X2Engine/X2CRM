@@ -44,44 +44,7 @@ Yii::app()->clientScript->registerCss('actionsFormCss',"
     }
 ");
 
-Yii::app()->clientScript->registerScript('validate', '
-$(document).ready(function(){
-	$("#actions-newCreate-form").submit(function(){
-        x2.forms.clearErrorMessages ($("#action-form"));
-		if($("#action-form #'.CHtml::activeId($actionModel, 'associationType').'").val()!="none"){
-			if($("#action-form #'.CHtml::activeId($actionModel, 'associationId').'").val()==""){
-                $("#auto_select").addClass ("error");
-                x2.forms.errorSummaryAppend ($("#action-form"), [
-				    "'.Yii::t('actions', "Please enter a valid association").'"
-                ]);
-				return false;
-			}
-		}
-        var actionDescription$ = 
-            $("#action-form #'.CHtml::activeId($actionModel, 'actionDescription').'");
-        if(actionDescription$.hasClass ("x2-required") && 
-           actionDescription$.val()=="" && 
-           $("#'.CHtml::activeId($actionModel, 'subject').'").val()==""){
 
-            actionDescription$.addClass ("error");
-            $("#'.CHtml::activeId($actionModel, 'subject').'").addClass ("error");
-            x2.forms.errorSummaryAppend ($("#action-form"), [
-                "'.Yii::t('actions', "Please enter a description or subject").'"
-            ]);
-            return false;
-        }
-	}
-	);
-}
-);');
-Yii::app()->clientScript->registerScript('highlightSaveAction', "
-$(function(){
-	$('#action-form input, #action-form select, #action-form textarea').change(function(){
-        //css('background','yellow');
-		$('#save-button, #save-button1, #save-button2').addClass('highlight'); 
-	});
-}
-);");
 $themeUrl = Yii::app()->theme->getBaseUrl();
 $backdating = !(Yii::app()->user->checkAccess('ActionsAdmin') || 
     Yii::app()->settings->userActionBackdating);
@@ -279,7 +242,7 @@ $backdating = !(Yii::app()->user->checkAccess('ActionsAdmin') ||
                         array('{action}'=>Modules::displayName(false))).
                 "</label>", '#', 
                 array(
-                    'id' => 'reminder-link',
+                    'id' => $form->resolveId ('reminder-link'),
                     'style' => 'color:black;text-decoration:none;'
                 )); 
         ?></span>
@@ -326,7 +289,7 @@ $backdating = !(Yii::app()->user->checkAccess('ActionsAdmin') ||
                     '{action}' => Modules::displayName(false),
                 ))."</label>";
             echo CHtml::link($linkContent, '#', array(
-                'id' => 'backdating-link',
+                'id' => $form->resolveId ('backdating-link'),
                 'style' => 'color:black;text-decoration:none;'
             )); ?>
         </span>
@@ -366,8 +329,8 @@ $backdating = !(Yii::app()->user->checkAccess('ActionsAdmin') ||
             </div><!-- .cell -->
             <?php if($actionModel->isTimedType) { ?>
             <div class="cell">
-                <?php echo $form->labelEx($actionModel, 'startDate'); ?>
-                <?php
+                <?php 
+                echo $form->labelEx($actionModel, 'startDate');
                 $actionModel->dueDate = Formatter::formatDateTime($actionModel->dueDate);
                 echo X2Html::activeDatePicker ($actionModel, 'dueDate', 
                     $form->resolveHtmlOptions ($actionModel, 'dueDate', array(
@@ -419,29 +382,66 @@ if(!$backdating &&
 } 
 ?>
 </div>
-<?php $this->endWidget(); ?>
-<script>
-    $(document).on('click','#reminder-link',function(e){
+<?php 
+$this->endWidget(); 
+
+Yii::app()->clientScript->registerScript('_actionsFormJS', '
+$(function () {
+	$("#actions-newCreate-form").submit(function(){
+        x2.forms.clearErrorMessages ($("#action-form"));
+		if($("#action-form #'.CHtml::activeId($actionModel, 'associationType').'").val()!="none"){
+			if($("#action-form #'.CHtml::activeId($actionModel, 'associationId').'").val()==""){
+                $("#auto_select").addClass ("error");
+                x2.forms.errorSummaryAppend ($("#action-form"), [
+				    "'.Yii::t('actions', "Please enter a valid association").'"
+                ]);
+				return false;
+			}
+		}
+        var actionDescription$ = 
+            $("#action-form #'.CHtml::activeId($actionModel, 'actionDescription').'");
+        if(actionDescription$.hasClass ("x2-required") && 
+           actionDescription$.val()=="" && 
+           $("#'.CHtml::activeId($actionModel, 'subject').'").val()==""){
+
+            actionDescription$.addClass ("error");
+            $("#'.CHtml::activeId($actionModel, 'subject').'").addClass ("error");
+            x2.forms.errorSummaryAppend ($("#action-form"), [
+                "'.Yii::t('actions', "Please enter a description or subject").'"
+            ]);
+            return false;
+        }
+	});
+
+       
+    $("'.$form->resolveIds ("#reminder-link").'").click (function(e){
         e.preventDefault();
-        if($('#action-reminders').is(':hidden')){
-            $('#action-reminders').slideDown();
-            $(this).find('img').attr('src',yii.themeBaseUrl+'/images/icons/Collapse_Widget.png');
+        if($("#action-reminders").is(":hidden")){
+            $("#action-reminders").slideDown();
+            $(this).find("img").attr("src",yii.themeBaseUrl+"/images/icons/Collapse_Widget.png");
         }else{
-            $('#action-reminders').slideUp();
-            $(this).find('img').attr('src',yii.themeBaseUrl+'/images/icons/Expand_Inverted.png');
+            $("#action-reminders").slideUp();
+            $(this).find("img").attr("src",yii.themeBaseUrl+"/images/icons/Expand_Inverted.png");
         }
     });
-    $(document).on('click','#backdating-link',function(e){
+    $("'.$form->resolveIds ("#backdating-link").'").click (function(e){
         e.preventDefault();
-        if($('#action-backdating').is(':hidden')){
-            $('#action-backdating').slideDown();
-            $(this).find('img').attr('src',yii.themeBaseUrl+'/images/icons/Collapse_Widget.png');
+        if($("#action-backdating").is(":hidden")){
+            $("#action-backdating").slideDown();
+            $(this).find("img").attr("src",yii.themeBaseUrl+"/images/icons/Collapse_Widget.png");
         }else{
-            $('#action-backdating').slideUp();
-            $(this).find('img').attr('src',yii.themeBaseUrl+'/images/icons/Expand_Inverted.png');
+            $("#action-backdating").slideUp();
+            $(this).find("img").attr("src",yii.themeBaseUrl+"/images/icons/Expand_Inverted.png");
         }
     });
-    $(document).on('ready',function(){
-        $('#Actions_subject').focus();
+
+    $(document).on("ready",function(){
+        $("#Actions_subject").focus();
     });
-</script>
+
+	$("#action-form input, #action-form select, #action-form textarea").change(function(){
+		$("#save-button, #save-button1, #save-button2").addClass("highlight"); 
+	});
+});
+', CClientScript::POS_END);
+?>

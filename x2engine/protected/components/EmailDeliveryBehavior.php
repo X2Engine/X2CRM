@@ -127,7 +127,8 @@ class EmailDeliveryBehavior extends CBehavior {
             if($emailValidator->validateValue($recipient)) {
                 $headerArray[] = array('', $recipient);
             } elseif(strlen($recipient) < 255 && 
-                preg_match('/^"?([^"]*)"?\s*<(.+)>$/i', $recipient, $matches)){ 
+
+                preg_match('/^"?((?:\\\\"|[^"])*)"?\s*<(.+)>$/i', $recipient, $matches)){
                 // otherwise, it must be of the variety <email@example.com> "Bob Slydel"
 
                 // (with or without quotes)
@@ -322,12 +323,12 @@ class EmailDeliveryBehavior extends CBehavior {
      */
     public function getFrom(){
         if(!isset($this->_from)) {
-			if($this->credentials)
+			if($this->credentials) {
 				$this->_from = array(
 					'name' => $this->credentials->auth->senderName,
 					'address' => $this->credentials->auth->email
 				);
-			else {
+			} else {
                 if(empty($this->userProfile) ||
                         $this->userProfile->username === Profile::GUEST_PROFILE_USERNAME) {
                     // The application:

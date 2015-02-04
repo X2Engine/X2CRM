@@ -64,6 +64,9 @@
 /***********************************************************************
 * Greens 
 ***********************************************************************/
+/***********************************************************************
+* This section is made to correspond with the theme keys in ThemeGenerator
+***********************************************************************/
 /* 
 override spectrum color picker css 
 */
@@ -139,12 +142,17 @@ override spectrum color picker css
 }
 
 /* line 99, ../../../compass/themes/x2engine/css/sortableWidgets.scss */
+#main-column {
+  float: left !important;
+}
+
+/* line 103, ../../../compass/themes/x2engine/css/sortableWidgets.scss */
 #RecordViewWidgetManagerwidgets-container {
   padding-top: 5px;
   float: right;
 }
 
-/* line 104, ../../../compass/themes/x2engine/css/sortableWidgets.scss */
+/* line 108, ../../../compass/themes/x2engine/css/sortableWidgets.scss */
 #RecordViewWidgetManagerwidgets-container-2 {
   width: 65%;
   float: left;
@@ -153,7 +161,7 @@ override spectrum color picker css
   padding-right: 5px;
 }
 
-/* line 114, ../../../compass/themes/x2engine/css/sortableWidgets.scss */
+/* line 118, ../../../compass/themes/x2engine/css/sortableWidgets.scss */
 .connected-sortable-widget-container > .sortable-widget-container .widget-title-bar .create-button {
   margin-left: 65px;
   margin-bottom: 0;
@@ -166,18 +174,18 @@ override spectrum color picker css
   margin-left: 9px !important;
   margin-top: 1px !important;
 }
-/* line 125, ../../../compass/themes/x2engine/css/sortableWidgets.scss */
+/* line 129, ../../../compass/themes/x2engine/css/sortableWidgets.scss */
 .connected-sortable-widget-container > .sortable-widget-container .widget-title-bar .create-button span {
   color: #01b701;
 }
-/* line 129, ../../../compass/themes/x2engine/css/sortableWidgets.scss */
+/* line 133, ../../../compass/themes/x2engine/css/sortableWidgets.scss */
 .connected-sortable-widget-container > .sortable-widget-container .widget-title-bar .widget-label-icon {
   float: left;
   position: relative;
   top: 3px;
   margin-right: 7px;
 }
-/* line 135, ../../../compass/themes/x2engine/css/sortableWidgets.scss */
+/* line 139, ../../../compass/themes/x2engine/css/sortableWidgets.scss */
 .connected-sortable-widget-container > .sortable-widget-container .widget-title-bar .quote-icon {
   position: relative;
   top: -6px;

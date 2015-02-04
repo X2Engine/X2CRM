@@ -59,7 +59,8 @@ if ($associationType !== 'calendar') {
 }
 ?>
 <div class='row'>
-    <input type='submit' value='Save' id='save-publisher' class='x2-button'>
+    <input type='submit' value='Save' id='<?php echo $form->resolveId ('save-publisher'); ?>' 
+     class='x2-button'>
     <?php echo CHtml::hiddenField('SelectedTab', $tab->tabId); ?> 
 </div>
 <?php $this->endWidget(); ?>

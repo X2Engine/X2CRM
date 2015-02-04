@@ -71,5 +71,8 @@
 	border-bottom-color: $colors[content]
 }
 
+#profile-image-container  .default-avatar {
+	color: $colors[text]
+}
 
 "; ?>

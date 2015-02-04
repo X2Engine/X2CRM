@@ -1,4 +1,3 @@
-<?php
 /*****************************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2015 X2Engine Inc.
@@ -34,27 +33,7 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 
-
-Yii::import('application.modules.reports.controllers.*');
-
-/**
- * @package application.tests.unit.modules.reports.controllers
- */
-class ReportsControllerTest extends X2TestCase {
-
-    public $fixtures = array (
-    );
-
-    public static function referenceFixtures(){
-        return array(
-        );
-    }
-
-    public function testGetJoinCriteria () {
-        $fn = TestingAuxLib::setPublic ('ReportsController', 'getJoinCriteria');
-    }
-
-
+div.save-button-row {
+    padding-bottom: 1px;
 }
 
-?>

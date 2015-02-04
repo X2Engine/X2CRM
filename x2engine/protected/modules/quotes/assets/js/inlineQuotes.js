@@ -151,7 +151,8 @@ return InlineQuotes;
 		}).done(function(html) {
 			$('#quote-form-wrapper').html(html).find('#quotes-form .wide.form').addClass('focus-mini-module');
 			x2.inlineQuotes.declare();
-            x2.inlineRelationshipsWidget.refresh ();
+            if (x2.inlineRelationshipsWidget)
+                x2.inlineRelationshipsWidget.refresh ();
             x2.actionHistory.update ();
             x2.TransactionalViewWidget.refresh ('QuotesWidget'); 
 			$('html,body').animate({

@@ -245,9 +245,7 @@ abstract class SortableWidget extends X2Widget {
     }
 
     public static function subtypeIsValid ($widgetType, $widgetSubtype) {
-        if (in_array($widgetSubtype, SortableWidget::getWidgetSubtypes('data'))) {
-            return true;
-        }
+         
 
         if ($widgetType === 'profile' && $widgetSubtype === 'TemplatesGridViewProfileWidget' ||
             in_array ($widgetSubtype, SortableWidget::getWidgetSubtypes ($widgetType))) {

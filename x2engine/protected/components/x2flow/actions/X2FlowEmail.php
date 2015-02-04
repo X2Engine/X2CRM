@@ -105,6 +105,9 @@ class X2FlowEmail extends BaseX2FlowEmail {
 
 		//$eml->from = array('address'=>$this->parseOption('from',$params),'name'=>'');
         $eml->credId = $this->parseOption('from',$params);
+        if ($eml->credentials && $eml->credentials->user)
+            $eml->setUserProfile($eml->credentials->user->profile);
+
         //printR ($eml->from, true);
 		$eml->subject = Formatter::replaceVariables($this->parseOption('subject',$params),$params['model']);
 

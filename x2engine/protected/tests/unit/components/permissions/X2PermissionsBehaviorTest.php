@@ -32,8 +32,10 @@ class X2PermissionsBehaviorTest extends X2DbTestCase {
         $this->assertEquals(true, is_array($action->getAccessConditions(0, false , 'admin')));
         
         $accessLevel3 = $action->getAccessConditions(3, 'visibility', 'admin');
-        $this->assertEquals('TRUE', $accessLevel3[0]['condition']);
-        $this->assertEquals('AND', $accessLevel3[0]['operator']);
+        $this->assertEquals(
+            "NOT (visibility.visibility=0 AND visibility.assignedTo='Anyone')",
+            $accessLevel3[0]['condition']);
+        $this->assertEquals('OR', $accessLevel3[0]['operator']);
         
         $accessLevel2 = $action->getAccessConditions(1, 'visibility', 'admin');
         $this->assertRegExp("/^.*REGEXP BINARY.*$/", $accessLevel2[0]['condition']);

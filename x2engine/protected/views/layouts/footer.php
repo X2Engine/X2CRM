@@ -49,7 +49,15 @@
 	<?php } ?>
 	<br>
 	<?php
-    echo CHtml::link(CHtml::image(Yii::app()->params->x2Power,'',array('id'=>'powered-by-x2engine')),'http://www.x2engine.com/'); ?>
+    echo CHtml::link(
+        CHtml::image(
+            Yii::app()->params->x2Power,
+            '',
+            array(
+                'id'=>'powered-by-x2engine',
+            )
+        ),'http://www.x2engine.com/'); 
+    ?>
 	<div id="response-time">
 	<?php
 	echo round(Yii::getLogger()->getExecutionTime()*1000), 'ms ';

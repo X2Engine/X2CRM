@@ -61,13 +61,40 @@ class ActionsWidget extends TransactionalViewWidget {
         return self::$_JSONPropertiesStructure;
     }
 
+    public function getDataProvider () {
+        if (!isset ($this->_dataProvider)) {
+            $this->_dataProvider = parent::getDataProvider ();
+            if (!isset ($_GET[$this->getWidgetKey ().'_sort'])) {
+                $this->_dataProvider->criteria->order = 'dueDate asc';
+            }
+        }
+        return $this->_dataProvider;
+    }
+
     public function getGridViewConfig () {
         if (!isset ($this->_gridViewConfig)) {
             $this->_gridViewConfig = array_merge (
                 parent::getGridViewConfig (),
                 array (
+                    'defaultGvSettings' => array (
+                        'actionDescription' => '38%',
+                        'assignedTo' => '22%',
+                        'dueDate' => 155,
+                    ),
                 )
             );
+            $this->_gridViewConfig['specialColumns'] = array_merge (
+                $this->_gridViewConfig['specialColumns'],
+                array (
+                    'dueDate' => array (
+                        'name' => 'dueDate',
+                        'header' => Yii::t('app', 'Due Date'),
+                        'value' => 'Actions::parseStatus ($data->dueDate, "short", "short")',
+                        'type' => 'raw',
+                    ),
+                )
+            );
+
         }
         return $this->_gridViewConfig;
     }

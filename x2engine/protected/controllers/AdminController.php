@@ -1399,6 +1399,22 @@ class AdminController extends Controller {
     }
 
     /**
+     * Export all changelog entries to CSV
+     */
+    public function actionExportChangelog() {
+        $csv = $this->safePath ('changelog.csv');
+        $fp = fopen ($csv, 'w+');
+        $meta = array_keys (Changelog::model()->attributes);
+        fputcsv ($fp, $meta);
+        $records = Changelog::model()->findAll();
+        foreach ($records as $record) {
+            $line = $record->attributes;
+            fputcsv ($fp, $line);
+        }
+        fclose ($fp);
+    }
+
+    /**
      * Delete all changelog entries from the database.
      */
     public function actionClearChangelog() {
@@ -3784,15 +3800,14 @@ class AdminController extends Controller {
         }
         $this->handleImportAccounting ($modelContainer[$modelName], $modelName, $lastInsertedIds,
             $relationships, $createdLinkedModels, $mappedId);
-        $this->massUpdateImportedNameIds ($lastInsertedIds[$modelName], $modelName,
-            $primaryModelCount);
+        $this->massUpdateImportedNameIds ($primaryIdRange, $modelName);
 
         // Now create remaining auxiliary records
         foreach ($modelContainer as $type => $models) {
             if ($type === $modelName) // these were already processed
                 continue;
 
-            if ($modelName === 'Actions' && $type = 'ActionText') {
+            if ($modelName === 'Actions' && $type === 'ActionText') {
                 // set the actionIds and insert ActionText records
                 $firstInsertedId = $primaryIdRange[0];
                 $actionTexts = array();
@@ -3811,8 +3826,11 @@ class AdminController extends Controller {
                 $this->fixupLinkFields ($modelName, $type, $primaryIdRange);
                 // related records won't have ID set; therefore, lastInsertId would have
                 // returned the first record in a sequence
-                $this->massUpdateImportedNameIds ($lastInsertedIds[$type] + count($models) - 1,
-                    $type, count($models));
+                $idRange = range(
+                    $lastInsertedIds[$type],
+                    $lastInsertedIds[$type] + count($models) - 1
+                );
+                $this->massUpdateImportedNameIds ($idRange, $type);
             }
         }
         $this->establishImportRelationships ($relationships, $primaryIdRange[0],
@@ -3830,18 +3848,13 @@ class AdminController extends Controller {
      * Populate the nameId field since auto-populating fields is
      * disabled and it is far more efficient to do it in a single query
      */
-    protected function massUpdateImportedNameIds($lastInsertId, $type, $count) {
+    protected function massUpdateImportedNameIds($importedIds, $type) {
         $hasNameId = Fields::model()->findByAttributes(array(
             'fieldName' => 'nameId',
             'modelName' => $type,
         ));
-        if ($hasNameId) {
-            $importedIds = range (
-                $lastInsertId - $count + 1,
-                $lastInsertId
-            );
+        if ($hasNameId)
             X2Model::massUpdateNameId($type,$importedIds);
-        }
     }
 
     /**

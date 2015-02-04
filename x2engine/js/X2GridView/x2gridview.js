@@ -570,6 +570,7 @@ $.widget("x2.gvSettings", {
 
     _create: function() {
         var self = this;
+        var that = this;
 
         self.prevGvSettings = '';
         self.saveGridviewSettingsTimeout = null;
@@ -611,6 +612,11 @@ $.widget("x2.gvSettings", {
             self._autoSizeColumns(self);
         });
 
+        this.element.find('.refresh-button').unbind ('click');
+        this.element.find('.refresh-button').on('click',function() {
+            that.refresh (); 
+        });
+
         this.element.find ('.filter-button').unbind ('click');
         this.element.find ('.filter-button').on ('click', function (evt) {
             evt.preventDefault ();
@@ -650,6 +656,9 @@ $.widget("x2.gvSettings", {
         $.fn.yiiGridView.update(this.element.attr('id'), {
             data: { showHidden: !clicked ? 1 : 0 }
         });
+    },
+    refresh: function () {
+        $.fn.yiiGridView.update(this.element.attr('id'));
     },
     _setupColumnSelection: function (self) {
         if (!self.options.enableColumnSelection) return;
@@ -849,10 +858,13 @@ $.widget("x2.gvSettings", {
         var headerCells = this.tables.eq(0).find('tr:first th');
 
         var cols = this.tables.eq(0).find('tr').first().children();
+
         var gvSettings = '{';
         var tableData = [];
-        for(var i=0;i<headerCells.length-1;i++) {
+        for(var i=0;i<headerCells.length;i++) {
+            if ($(headerCells[i]).hasClass ('dummy-column')) continue;
             var width = cols.eq(i).width();
+
             if(width != 0)
                 tableData.push('\"'+headerCells.eq(i).attr('id').
                     replace (/^.*?C_/, '')+'\":'+width);
@@ -1004,8 +1016,15 @@ $.widget("x2.gvSettings", {
     },
 
     _autoSizeColumns:function(self){
-        this.element.find ('td, th').css(
-            'width', (100 / (this.element.find ('th').length)+"%"));
+        var that = this;
+        this.element.find ('th').not ('.dummy-column').each (function () {
+            var width = '' + $(this).width ();
+            if (width.match (/%/)) {
+                $(this).width (100 / (that.element.find ('th').length)+"%");
+            } else {
+                $(this).width (that.element.width () / (that.element.find ('th').length) + "px");
+            }
+        });
         this._compareGridviewSettings(self);
         this._setupGridviewResizing(self);
         this._setupGridviewDragging(self);

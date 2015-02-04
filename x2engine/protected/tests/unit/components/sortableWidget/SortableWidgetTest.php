@@ -73,7 +73,8 @@ class SortableWidgetTest extends X2DbTestCase {
         $createdWidgetAttr = array_diff_key ($widgetLayoutAfter, $widgetLayoutBefore);
         VERBOSE_MODE && print_r ($createdWidgetAttr);
         // ensure that widget settings were saved correctly
-        $this->assertEquals ($widgetSubtype.'_'.$uid, array_pop (array_keys ($createdWidgetAttr)));
+        $keys = array_keys ($createdWidgetAttr);
+        $this->assertEquals ($widgetSubtype.'_'.$uid, array_pop ($keys));
         $this->assertEquals (
             $createdWidgetAttr[$widgetSubtype.'_'.$uid],
             $widgetSubtype::getJSONPropertiesStructure ());

@@ -271,13 +271,20 @@ if ($layoutData !== false && isset($layoutData['sections']) && count($layoutData
                                     }
                                 }
                                 unset($item);
-                                if ($inlineEdit) {
-                                    $htmlString .= CHtml::link (X2Html::fa('fa-edit'), '#', array('class' => 'edit-icon active'));
-                                }
                                 $htmlString .= '</div>';
                                 if ($inlineEdit) {
-                                    $htmlString .= CHtml::link (X2Html::fa('fa-check-circle'), '#', array('class' => 'confirm-icon'));
-                                    $htmlString .= CHtml::link (X2Html::fa('fa-times-circle'), '#', array('class' => 'cancel-icon'));
+                                    $htmlString .= CHtml::link (X2Html::fa('fa-edit'), '#', array(
+                                        'class' => 'edit-icon active',
+                                        'title' => Yii::t('app','Edit field'),
+                                    ));
+                                    $htmlString .= CHtml::link (X2Html::fa('fa-check-circle'), '#', array(
+                                        'class' => 'confirm-icon',
+                                        'title' => Yii::t('app', 'Confirm changes'),
+                                    ));
+                                    $htmlString .= CHtml::link (X2Html::fa('fa-times-circle'), '#', array(
+                                        'class' => 'cancel-icon',
+                                        'title' => Yii::t('app', 'Cancel changes'),
+                                    ));
                                 }
                                 $htmlString .= '</div>';
                             }
@@ -310,91 +317,5 @@ if ($scenario != 'Inline') {
     Yii::app()->clientScript->registerScript('inlineEditJS', "
         new x2.InlineEditor($jsParams); 
     ", CClientScript::POS_READY);
-    /*
-    Yii::app()->clientScript->registerScript('inline-edit-js', "
-;(function () {
-    var editFlag = false;
-    var linkClick = false;
-    x2.inlineEditing = {};
-    x2.inlineEditing.ratingFields = {};
-    $('.model-attribute').on('click', 'a', function(event) {
-        linkClick = true;
-    });
-
-    $('.inline-edit .edit-icon').on('click', function() {
-        if(!linkClick){
-            editFlag = true;
-            var inputContainer$ = $('#' + $(this).closest('.inline-edit').attr('id') + '-input');
-            var input$ = inputContainer$.find (':input');
-            var field$ = $('#' + $(this).closest('.inline-edit').attr('id') + '-field');
-
-            $(this).closest ('.inline-edit').find ('.cancel-icon, .confirm-icon').addClass('active'); 
-            $(this).removeClass('active');
-
-
-            $('.inline-edit-button').show();
-            inputContainer$.height(field$.height());
-            if (input$.is ('textarea')) input$.height(field$.height());
-            inputContainer$.show ();
-            field$.hide ();
-        }
-        linkClick = false;
-    });
-
-
-    $('#inline-edit-cancel').on('click', function() {
-        $('.inline-edit-button').hide();
-        $('.model-input').hide();
-        $('.model-attribute').show();
-        editFlag = false;
-        return false;
-    });
-
-    $('#inline-edit-save').on('click', function() {
-        var attributes = {};
-        $('.model-input input, .model-input select, .model-input textarea').each(function() {
-            attributes[$(this).attr('name')] = $(this).val();
-        });
-        $.each(x2.inlineEditing.ratingFields, function(index, value) {
-            if (typeof value === 'undefined') {
-                attributes[index] = '';
-            } else {
-                attributes[index] = value;
-            }
-        });
-        $('.model-input :checkbox').each(function(){
-            if($(this).is(':checked')){
-                attributes[$(this).attr('name')] = 1;
-            }else{
-                attributes[$(this).attr('name')] = 0;
-            }
-        });
-        $('.inline-edit-button').hide();
-        $.ajax({
-            url: yii.scriptUrl + '/site/ajaxSave',
-            type: 'POST',
-            data: {attributes: attributes, modelId: $model->id},
-            success: function(data) {
-                var results = $.parseJSON(data);
-                $.each(results, function(index, value) {
-                    $('#' + index + '_field-field').html(value);
-                    $('#' + index + '_field-field input[type=radio]').rating();
-                    $('#' + index + '_field-field input[type=radio]').rating('readOnly', true);
-                });
-                $('.model-input').hide();
-                $('.model-attribute').show();
-                editFlag = false;
-            }
-        });
-        return false;
-    });
-    $(window).bind('beforeunload', function() {
-        if (editFlag) {
-            return 'There are unsaved changes on this page.';
-        }
-    });
-}) ();
-", CClientScript::POS_END);
-*/
 }
 ?>

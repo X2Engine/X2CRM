@@ -316,6 +316,13 @@ class Formatter {
         }
     }
 
+    public static function secondsToHours ($seconds) {
+        $decHours = $seconds / 3600;
+        return Yii::t(
+            'app', '{decHours} hours', 
+            array ('{decHours}' => sprintf('%0.2f', $decHours)));
+    }
+
     /**
      * Formats a time interval.
      *
@@ -565,11 +572,12 @@ class Formatter {
         return Yii::app()->dateFormatter->formatDateTime($date, null, $width);
     }
 
-    public static function formatDueDate($date){
+    public static function formatDueDate($date, $dateWidth='long', $timeWidth='short'){
         if(!is_numeric($date))
             $date = strtotime($date); // make sure $date is a proper timestamp
-        return date('l', $date)." ".Yii::app()->dateFormatter->formatDateTime($date, 'long', null).
-            " - ".Yii::app()->dateFormatter->formatDateTime($date, null, 'short');
+        return date('l', $date)." ".
+            Yii::app()->dateFormatter->formatDateTime($date, $dateWidth, null).
+            " - ".Yii::app()->dateFormatter->formatDateTime($date, null, $timeWidth);
     }
 
     public static function formatCompleteDate($date){

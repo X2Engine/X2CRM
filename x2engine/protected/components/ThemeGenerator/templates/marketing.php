@@ -12,4 +12,8 @@
 	border-color: $colors[border]
 }
 
+#campaign-grid {
+	background: $colors[content]
+}
+
 "; ?>

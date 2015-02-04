@@ -37,11 +37,11 @@ x2.EmailMassAction = (function () {
 
 function EmailMassAction (argsDict) {
     var argsDict = typeof argsDict === 'undefined' ? {} : argsDict;
-    x2.MassAction.call (this, argsDict);
     var defaultArgs = {
         DEBUG: x2.DEBUG && false
     };
     auxlib.applyArgs (this, defaultArgs, argsDict);
+    x2.MassAction.call (this, argsDict);
 }
 
 EmailMassAction.prototype = auxlib.create (x2.MassAction.prototype);
@@ -57,7 +57,7 @@ EmailMassAction.prototype.getExecuteParams = function () {
  */
 EmailMassAction.prototype.execute = function () {
     var that = this;
-    var selectedRecords = that.massActionsManager._getSelectedRecords () 
+    var selectedRecords = that.massActionsManager._getSelectedRecords ();
     $.ajax({
         url: that.massActionsManager.massActionUrl,
         type:'GET',

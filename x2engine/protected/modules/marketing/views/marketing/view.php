@@ -34,6 +34,8 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 
+$layoutManager = $this->widget ('RecordViewLayoutManager', array ('staticLayout' => false));
+
 $this->noBackdrop = true;
 Yii::app()->clientScript->registerCss('recordViewCss',"
 
@@ -96,7 +98,7 @@ $this->insertMenu($menuOptions, $model, $authParams);
 </div>
 </div>
 </div>
-<div id="main-column" class="half-width">
+<div id="main-column" <?php echo $layoutManager->columnWidthStyleAttr (1); ?>>
     <?php
     foreach(Yii::app()->user->getFlashes() as $key => $message){
         echo '<div class="flash-'.$key.'">'.$message."</div>\n";
@@ -289,11 +291,6 @@ $this->insertMenu($menuOptions, $model, $authParams);
         </div>
     <?php
 }
-$this->widget('X2WidgetList', array(
-    'block' => 'center',
-    'model' => $model,
-    'modelType' => 'Marketing'
-));
 
 ?>
 
@@ -419,16 +416,11 @@ if(isset($contactList) && $model->launchDate){
     </div>
 
 </div>
-<div class="history half-width">
+
 <?php
-$this->widget('Publisher', array(
-    'associationType' => 'marketing',
-    'associationId' => $model->id,
-    'assignedTo' => Yii::app()->user->getName(),
-    'calendar' => false
+$this->widget('X2WidgetList', array(
+    'layoutManager' => $layoutManager,
+    'block' => 'center',
+    'model' => $model,
+    'modelType' => 'Marketing'
 ));
-
-$this->widget('History', array('associationType' => 'marketing', 'associationId' => $model->id));
-?>
-</div>
-

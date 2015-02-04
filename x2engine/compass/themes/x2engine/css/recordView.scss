@@ -37,26 +37,30 @@
 $recordViewSingleColumnThreshold: 1406px;
 $recordViewSingleColumnThresholdNoWidgets: 1129px;
 
+@mixin record-view-columns(){
+    #main-column, 
+    #RecordViewWidgetManagerwidgets-container,
+    #RecordViewWidgetManagerwidgets-container-2 
+    {
+        width: 100% !important;
+    }
+}
+
+
 @media (max-width: $recordViewSingleColumnThresholdNoWidgets) {
     body.no-widgets {
-        #main-column, 
-        #RecordViewWidgetManagerwidgets-container,
-        #RecordViewWidgetManagerwidgets-container-2 
-        {
-            width: 100% !important;
-        }
+        @include record-view-columns();
     }
 }
 
 @media (max-width: $recordViewSingleColumnThreshold) {
     body.show-widgets {
-        #main-column, 
-        #RecordViewWidgetManagerwidgets-container,
-        #RecordViewWidgetManagerwidgets-container-2 
-        {
-            width: 100% !important;
-        }
+        @include record-view-columns();
     }
+}
+
+#content.record-view-single-column {
+    @include record-view-columns();
 }
 
 #email-mini-module {
@@ -72,6 +76,9 @@ $recordViewSingleColumnThresholdNoWidgets: 1129px;
 }
 
 #inline-email-form {
+    .ui-icon-gripsmall-diagonal-se {
+        background-image: none !important;
+    }
     .errorSummary {
         margin-bottom: 0px !important;
     }
@@ -89,9 +96,15 @@ $recordViewSingleColumnThresholdNoWidgets: 1129px;
         float: right;
         margin-top: 6px;
         margin-right: 7px;
+
+        /* @theme color: smart_text */
     }
     .cke_resizer {
         display: none;
+    }
+
+    .x2-email-label {
+        /* @theme color: smart_text */
     }
 }
 
@@ -105,4 +118,12 @@ body.show-widgets {
             right: 20.5% !important;
         }
     }
+}
+
+.cke_combopanel {
+    display: none;
+}
+
+#RecordViewWidgetManagerwidgets-container-inner {
+    min-height: 300px;
 }

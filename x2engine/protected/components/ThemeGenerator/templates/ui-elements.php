@@ -172,20 +172,6 @@ select:hover {
 	color: $colors[lighter_text]
 }
 
-
-.x2-sortlist .ui-sortable li {
-	background: $colors[content]
-	border-color: $colors[lighter_content]
-}
-
-.x2-sortlist .ui-sortable li .handle{
-	background: $colors[highlight1]
-}
-
-.x2-sortlist .ui-sortable li .handle:hover{
-	background: $colors[lighter_highlight1]
-}
-
 .ui-button, 
 .page-title .x2-minimal-button,
 .x2-button {

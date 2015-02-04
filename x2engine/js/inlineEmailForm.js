@@ -45,13 +45,15 @@ x2.InlineEmailEditorManager = (function () {
 function InlineEmailEditorManager (argsDict) {
     argsDict = typeof argsDict === 'undefined' ? {} : argsDict;
     var defaultArgs = {
-        translations: [],
+        translations: {},
         saveDefaultTemplateUrl: '', // points to action which saves default email template
         tmpUploadUrl: '',
         rmTmpUploadUrl: '',
         reinstantiateEditorWhenShown: true,
         disableTemplates: false,
-        originalContentHeight: 300
+        enableResizability: true
+        //originalContentHeight: 300,
+        //originalContentWidth: 713
     };
     auxlib.applyArgs (this, defaultArgs, argsDict);
 
@@ -212,7 +214,8 @@ InlineEmailEditorManager.prototype.showEmailForm = function (animate, scroll, fo
     focusOnSubject = typeof focusOnSubject === 'undefined' ? true : focusOnSubject; 
 
     var that = this;
-    that.element.find ('.cke_contents').height (that.originalContentHeight);
+    this.element.find ('.cke_contents').attr ('style', '');
+    that.element.find ('.cke_contents').height (300);
     this.element.find ('.email-reattach-button').css ('visibility', 'hidden');
     this.element.addClass ('fixed-email-form').attr ('style', '');
 
@@ -221,6 +224,7 @@ InlineEmailEditorManager.prototype.showEmailForm = function (animate, scroll, fo
         $('#inline-email-form .form.email-status').remove();
         return;
     }
+
 
     if($('#inline-email-form').is(':hidden')) {
         $('#inline-email-status').hide(); // Opening new form; hide previous submission's status
@@ -454,22 +458,70 @@ InlineEmailEditorManager.prototype._setUpDraggability = function () {
 
 InlineEmailEditorManager.prototype._setUpResizeBehavior = function () {
     var that = this;
+    var prevWidth, prevHeight, prevDx = 0, prevDy = 0, dx, dy;
     this.element.inlineEmailResizable ({
-        handles: 'n, s',
+        handles: 'n, s, e, w, se',
         resize: function (evt, ui) {
-            var dy = ui.size.height - ui.originalSize.height;
-            that.element.find ('.cke_contents').height (
-                that.originalContentHeight + dy);
+            dy = ui.size.height - ui.originalSize.height;
+            dx = ui.size.width - ui.originalSize.width;
+            that.element.css ('height', 'auto');
+            that.element.css ('width', 'auto');
+            if (prevDy !== dy && prevHeight !== ui.size.height) {
+                that.element.find ('.cke_contents').height (
+                    that.originalContentHeight + dy);
+            }
+            if (prevDx !== dx && prevWidth !== ui.size.width) { 
+                that.element.find ('.cke_contents').width (
+                    that.originalContentWidth + dx);
+                that.element.width (that.originalContentWidth + dx);
+            }
+            prevWidth = ui.size.width;
+            prevHeight = ui.size.height;
+        },
+        stop: function () {
+            prevHeight = that.originalContentHeight = that.element.find ('.cke_contents').height ();
+            prevWidth = that.originalContentWidth = that.element.width ();
+            dx = dy = 0;
         }
+    });
+    this.addCallback (function () {
+        prevHeight = that.originalContentHeight = that.element.find ('.cke_contents').height ();
+        prevWidth = that.originalContentWidth = that.element.width ();
     });
 };
 
 InlineEmailEditorManager.prototype._setUpButtonBehavior = function () {
     var that = this;
-    this.element.find ('.email-reattach-button').click (function () {
-        that.element.addClass ('fixed-email-form').attr ('style', '');
+    this.element.find ('.email-reattach-button').click (function (evt) {
+        that.element.addClass ('fixed-email-form')
+        that.element.css ('left', '');
+        that.element.css ('right', '');
+        that.element.css ('top', '');
+        that.element.css ('bottom', '');
+        that.element.css ('height', '');
         that.element.find ('.email-reattach-button').css ('visibility', 'hidden');
-        return false;
+    });
+};
+
+/**
+ * kludge to get ckeditor dropdown menus to be properly positioned
+ */
+InlineEmailEditorManager.prototype._ckeFixes = function () {
+    var that = this;
+    this.addCallback (function () {
+
+        // event triggered after dropdown is opened
+        window.inlineEmailEditor.on ('panelShow', function () {
+            $('.cke_combopanel').css ({
+                'position': 'fixed',
+                'display': 'block'
+            });
+            $('.cke_combopanel').position ({
+                my: 'left top-1',
+                at: 'left bottom',
+                of: $('.cke_combo_on > a')
+            });
+        });
     });
 };
 
@@ -484,10 +536,13 @@ InlineEmailEditorManager.prototype._init = function () {
         that._setUpAddresseeRowsBehavior ();
         that._setUpFileUpload ();
         that._setUpCloseFunctionality ();
-        that._setUpResizeBehavior ();
+        if (this.enableResizability)
+            that._setUpResizeBehavior ();
         that._setUpDraggability ();
         that._setUpButtonBehavior ();
+        that._ckeFixes ();
     });
+
 };
 
 return InlineEmailEditorManager;

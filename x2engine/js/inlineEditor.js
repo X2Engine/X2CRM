@@ -33,8 +33,6 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 
-ratingFields = {};
-
 x2.InlineEditor = (function() {
 
 	function InlineEditor(argsDict) {
@@ -51,7 +49,6 @@ x2.InlineEditor = (function() {
 
 	    auxlib.applyArgs (this, defaultArgs, argsDict);
 	    auxlib.generateSelectors(this);
-	    console.debug(this);
 	    this.init();
 	}
 
@@ -115,11 +112,21 @@ x2.InlineEditor = (function() {
 			that.resetField(inlineEdit);
 		});
 
-		$(document).keypress(function(e) {
-			if(e.which == 27) {
-				$(that.cancelIcon+'.active').click ();
-			}
-		});
+		// Doesn't seem to work...
+		// $(document).keypress(function(e) {
+		// 	console.log(e.which);
+		// 	if(e.which != 27)  return;
+
+		// 	var active = $(this.activeElement);
+		// 	console.log(active);
+		// 	if (active.is('textarea')) return;
+
+		// 	var inlineEdit = active.closest (that.inlineEdit);
+		// 	console.log(inlineEdit);
+		// 	if (inlineEdit.length == 0) return;
+
+		// 	inlineEdit.find (that.cancelIcon+'.active').click ();
+		// });
 
 	
 	}
@@ -141,7 +148,7 @@ x2.InlineEditor = (function() {
 			    }
 			);
 
-		    $.each(ratingFields, function(index, value) {
+		    $.each(x2.InlineEditor.ratingFields, function(index, value) {
 		        if (typeof value === 'undefined') {
 		            attributes[index] = '';
 		        } else {
@@ -174,11 +181,22 @@ x2.InlineEditor = (function() {
 
 		});
 
-		
+		// Set up key functions
 		$(document).keypress(function(e) {
-			if(e.which == 13) {
-				$(that.confirmIcon+'.active').click ();
-			}
+			// 13 is the Enter Key
+			if(e.which != 13)  return;
+
+			// Dont trigger on textareas
+			var active = $(this.activeElement);
+			if (active.is('textarea')) return;
+
+			// find the closest editable field if there is one
+			var inlineEdit = active.closest (that.inlineEdit);
+			if (inlineEdit.length == 0) return;
+
+			e.preventDefault();
+			// Trigger clicking the confirm icon;
+			inlineEdit.find (that.confirmIcon +'.active').click ();
 		});
 
 	}
@@ -208,3 +226,6 @@ x2.InlineEditor = (function() {
 	return InlineEditor;
 
 })();
+
+x2.InlineEditor.ratingFields = {};
+

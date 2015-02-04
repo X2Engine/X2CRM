@@ -985,6 +985,8 @@ div.append-bottom, .append-bottom {
 hr {
   background: #ddd;
   color: #ddd;
+  /* @theme background: opaque_text */
+  /* @theme color: opaque_text */
   clear: both;
   float: none;
   width: 100%;

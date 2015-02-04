@@ -37,7 +37,7 @@ $.widget ('x2.x2Dialog', $.ui.dialog, {
 
     /**
      * Modified to enable button rows. To use button rows add a dummy button with the property
-     * lineBreak set to true.
+     * lineBreak set to true. Currently this supports only one additional row.
      * This function is a modified version of a base jQuery UI function
      * jQuery UI Sortable @VERSION
      * http://jqueryui.com
@@ -48,74 +48,79 @@ $.widget ('x2.x2Dialog', $.ui.dialog, {
      *
      * http://api.jqueryui.com/sortable/
      */
-	_createButtons: function( buttons ) {
+	_createButtons: function() {
 		var that = this,
-			hasButtons = false;
+			buttons = this.options.buttons;
 
 		// if we already have a button pane, remove it
 		this.uiDialogButtonPane.remove();
 		this.uiButtonSet.empty();
 
-		if ( typeof buttons === "object" && buttons !== null ) {
-			$.each( buttons, function() {
-				return !(hasButtons = true);
-			});
+		if ( $.isEmptyObject( buttons ) || ($.isArray( buttons ) && !buttons.length) ) {
+			this.uiDialog.removeClass( "ui-dialog-buttons" );
+			return;
 		}
-		if ( hasButtons ) {
-            /* x2modstart */ 
-            row$ = null;
-            var startedRow = false;
-            /* x2modend */ 
-			$.each( buttons, function( name, props ) {
-				var button, click;
-                /* x2modstart */ 
-                if (props.lineBreak) {
-                    if (startedRow) {
-                        that.uiButtonSet.append ($('<br>'));
-                        that.uiButtonSet.append (row$);
-                    }
-                    row$ = $('<div>', {
-                            'class': 'dialog-button-row'
-                    });
-                    startedRow = true;
-                    return;
-                }
-                /* x2modend */ 
 
-				props = $.isFunction( props ) ?
-					{ click: props, text: name } :
-					props;
-				// Default to a non-submitting button
-				props = $.extend( { type: "button" }, props );
-				// Change the context for the click callback to be the main element
-				click = props.click;
-				props.click = function() {
-					click.apply( that.element[0], arguments );
-				};
-                /* x2modend */ 
-                if (startedRow) {
-                    button = $( "<button></button>", props )
-                        .appendTo( row$ );
-                } else {
-                    button = $( "<button></button>", props )
-                        .appendTo( that.uiButtonSet );
-                }
-                /* x2modend */ 
-				if ( $.fn.button ) {
-					button.button();
-				}
-			});
+        /* x2modstart */ 
+        row$ = null;
+        var startedRow = false;
+        /* x2modend */ 
+		$.each( buttons, function( name, props ) {
+			var click, buttonOptions;
+			props = $.isFunction( props ) ?
+				{ click: props, text: name } :
+				props;
+
             /* x2modstart */ 
-            if (row$) {
-                that.uiButtonSet.append ($('<br>'));
-                that.uiButtonSet.append (row$);
+            if (props.lineBreak) {
+                if (startedRow) {
+                    that.uiButtonSet.append ($('<br>'));
+                    that.uiButtonSet.append (row$);
+                }
+                row$ = $('<div>', {
+                        'class': 'dialog-button-row'
+                });
+                startedRow = true;
+                return;
             }
             /* x2modend */ 
-			this.uiDialog.addClass( "ui-dialog-buttons" );
-			this.uiDialogButtonPane.appendTo( this.uiDialog );
-		} else {
-			this.uiDialog.removeClass( "ui-dialog-buttons" );
-		}
-	}
+
+			// Default to a non-submitting button
+			props = $.extend( { type: "button" }, props );
+			// Change the context for the click callback to be the main element
+			click = props.click;
+			props.click = function() {
+				click.apply( that.element[ 0 ], arguments );
+			};
+			buttonOptions = {
+				icons: props.icons,
+				text: props.showText
+			};
+			delete props.icons;
+			delete props.showText;
+
+            /* x2modend */ 
+            if (startedRow) {
+                button = $( "<button></button>", props )
+				    .button( buttonOptions )
+                    .appendTo( row$ );
+            } else {
+                button = $( "<button></button>", props )
+				    .button( buttonOptions )
+                    .appendTo( that.uiButtonSet );
+            }
+            /* x2modend */ 
+		});
+
+        /* x2modstart */ 
+        if (row$) {
+            that.uiButtonSet.append ($('<br>'));
+            that.uiButtonSet.append (row$);
+        }
+        /* x2modend */ 
+
+		this.uiDialog.addClass( "ui-dialog-buttons" );
+		this.uiDialogButtonPane.appendTo( this.uiDialog );
+	},
 });
 

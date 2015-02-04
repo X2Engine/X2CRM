@@ -55,7 +55,7 @@ class ProfileInfo extends LeftWidget {
 		    'ProfileInfoWidgetCSS' => array(
 		    	'baseUrl' => Yii::app()->theme->baseUrl,
 		    	'css' => array(
-		    		'css/components/leftWidget/profileInfo.css'
+		    		'css/components/leftWidgets/profileInfo.css'
 				),
 		    )
 		);

@@ -1280,8 +1280,12 @@ class Profile extends CActiveRecord {
                 '" class="avatar-upload" '.
                 'src="'.Yii::app()->request->baseUrl.'/'.$model->avatar.'" />';
         } else {
-            echo '<img id="avatar-image" width="'.$dimensionLimit.'" height="'.$dimensionLimit.'" src='.
-                Yii::app()->request->baseUrl."/uploads/default.png".'>';
+            echo X2Html::x2icon ('profile-large', array(
+                'class' => 'avatar-image default-avatar',
+                'style' => "font-size: ${dimensionLimit}px",
+            )); 
+            // echo '<img id="avatar-image" width="'.$dimensionLimit.'" height="'.$dimensionLimit.'" src='.
+                // Yii::app()->request->baseUrl."/uploads/default.png".'>';
         }
     }
 

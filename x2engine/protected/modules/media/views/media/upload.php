@@ -58,7 +58,7 @@ $this->insertMenu($menuOptions);
 			<table>
 				<tbody>
 					<tr class="formSectionRow">
-						<td style="background: #FAFAFA;">
+						<td>
 							<div class="x2-file-wrapper">
 							    <input type="file" class="x2-file-input" name="upload" onChange="x2.uploadMedia(this)">
 							    <input type="button" class="x2-button" value="<?php echo Yii::t('media', 'Choose File'); ?>">

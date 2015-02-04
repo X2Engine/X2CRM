@@ -193,6 +193,7 @@ abstract class TransactionalViewWidget extends GridViewWidget {
     public function getGridViewConfig () {
         if (!isset ($this->_gridViewConfig)) {
             $this->_gridViewConfig = array_merge (parent::getGridViewConfig (), array (
+                'possibleResultsPerPage' => array (5, 10, 20, 30, 40, 50, 75, 100),
                 'sortableWidget' => $this,
                 'moduleName' => 'Actions', 
                 'sortableWidget' => $this,
@@ -208,13 +209,14 @@ abstract class TransactionalViewWidget extends GridViewWidget {
                 'dataProvider'=>$this->dataProvider,
                 'filter'=>$this->model,
                 'pager'=>array('class'=>'CLinkPager','maxButtonCount'=>10),
-                'modelName'=> get_class ($this->model),
+                'modelName'=> 'Actions',
                 'viewName'=>'profile',
                 'gvSettingsName'=> get_called_class ().$this->widgetUID,
                 'enableControls'=>true,
                 'filter' => new Actions ('search', $this->widgetKey),
                 'fullscreen'=>false,
                 'enableSelectAllOnAllPages' => false,
+                'hideSummary' => true,
                 'defaultGvSettings'=>array(
                     'actionDescription' => '38%',
                     'assignedTo' => '28%',
@@ -242,7 +244,7 @@ abstract class TransactionalViewWidget extends GridViewWidget {
         $tabs = Yii::app()->settings->actionPublisherTabs;
         $actionTypeToTab = Publisher::$actionTypeToTab;
 
-        if ($this->widgetManager->layoutManager->staticLayout) {
+        if (isset ($this->widgetManager) && $this->widgetManager->layoutManager->staticLayout) {
             // don't display transactional view widgets on legacy record view pages (e.g. on old
             // custom modules)
             return;

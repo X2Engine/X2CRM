@@ -94,10 +94,11 @@ class X2ListItem extends CActiveRecord {
 	/**
 	 * Yii needs this since this model does not have a primary key column in db
 	 * If this isn't here, referring to this as a relation in other models will fail
+     * -Commented out since this started causing issues in Yii 1.1.16-
 	 */
-	public function primaryKey() {
-		return array('contactId','listId');
-	}
+//	public function primaryKey() {
+//		return array('id','contactId','listId');
+//	}
 
 	/**
 	 * @return array customized attribute labels (name=>label)

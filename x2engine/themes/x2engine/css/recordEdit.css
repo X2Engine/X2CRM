@@ -1,5 +1,3 @@
-<?php
-
 /*****************************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2015 X2Engine Inc.
@@ -34,56 +32,7 @@
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2Engine".
  *****************************************************************************************/
-
-Yii::import ('application.components.*');
-Yii::import ('application.modules.charts.models.*');
-Yii::import ('application.components.X2Settings.*');
-Yii::import ('application.components.sortableWidget.dataWidgets.*');
-
-/**
- * @package application.tests.unit.components.sortableWidget
- */
-class DataWidgetTest extends X2DbTestCase {
-
-    public $fixtures = array(
-        'charts' => 'Charts',
-        'reports' => 'Reports'
-    );
-
-    public function testError() {
-    	$errors = array( 
-    		'ajoaijwf',
-    		'general',
-    		'missingColumn',
-    		);
-
-    	//Ensure theres not an error 
-    	foreach ($errors as $key => $value) {
-	    	$this->assertNotEmpty(DataWidget::error());
-    	}
-
-    	//Ensure the general key is the default
-    	$this->assertEquals(DataWidget::error('UF83ld!@'), DataWidget::error('general'));
-    }
-
-    public function testGetSettings() {
-    	$widget = new DataWidget;
-    	$widget->profile = $this->reports('testReport1');
-    	$widget->widgetUID = '546fe2089f793';
-    	$settings = $widget->settings;
-
-    	$keys = DataWidget::getJSONPropertiesStructure();
-
-    	foreach($keys as $key => $value) {
-    		$this->assertArrayHasKey($key, $settings);
-    	}
-
-    	$this->assertEquals(count($keys), count($settings));
-
-    }
-
-
-
+/* line 22, ../../../compass/themes/x2engine/css/recordEdit.scss */
+div.save-button-row {
+  padding-bottom: 1px;
 }
-
-?>

@@ -40,12 +40,12 @@ x2.WorkflowManager = (function () {
 function WorkflowManager (argsDict) {
     argsDict = typeof argsDict === 'undefined' ? {} : argsDict;
 
-    x2.WorkflowManagerBase.call (this, argsDict);
     var defaultArgs = {
         modelId: null,
         modelName: '',
     };
     auxlib.applyArgs (this, defaultArgs, argsDict);
+    x2.WorkflowManagerBase.call (this, argsDict);
 
     this._init ();
 }

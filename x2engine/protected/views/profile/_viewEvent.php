@@ -54,17 +54,12 @@ if (class_exists($data->associationType)) {
     }
 }
 Yii::app()->params->isAdmin = Yii::app()->user->checkAccess('AdminIndex');
-
 $avatar = Yii::app()->db->createCommand()
         ->select('avatar')
         ->from('x2_profile')
         ->where('username=:user', array(':user' => $data->user))
         ->queryScalar();
-if (!empty($avatar) && file_exists($avatar)) {
-    $avatar = $avatar;
-} else {
-    $avatar = 'uploads/default.png';
-}
+
 $themeUrl = Yii::app()->theme->getBaseUrl();
 $typeFile = $data->type;
 if (in_array($data->type, array('email_sent', 'email_opened'))) {
@@ -175,9 +170,15 @@ $important = $data->important ? 'important-action' : '';
         ?>
         <?php //  echo ($data->type!='feed')?CHtml::image($imgUrl,'',array('title'=>$data->parseType($data->type))):""; ?>
         <?php
-        if (!empty($avatar) && $data->type == 'feed') { // add css class to uploaded avatar images to round corners
+        if ($data->type == 'feed') { 
+            // add css class to uploaded avatar images to round corners
             $CSSClass = $avatar == 'uploads/default.png' ? 'default-avatar-image' : 'avatar-image';
-            echo CHtml::image(Yii::app()->request->baseUrl . "/" . $avatar, '', array('class' => $CSSClass, 'height' => 35, 'width' => 35));
+
+            if(!empty($avatar) && file_exists($avatar)) {
+                echo CHtml::image(Yii::app()->request->baseUrl . "/" . $avatar, '', array('class' => $CSSClass, 'height' => 35, 'width' => 35));
+            } else {
+                Profile::renderFullSizeAvatar(0, 35);
+            }
         }
         ?>
         <div class='stacked-icon'></div>

@@ -1,5 +1,5 @@
-# 5.0.3b #
-1/20/2015
+# 5.0.3 #
+1/30/2015
 
 * Highlights
   * New Record Transactional View
@@ -8,11 +8,19 @@
   * Professional Edition Changes:
     * Charts created through the Reports Module can now be added to the profile dashboard
   * Profile dashboard and record view column widths can now be adjusted
-  * Email Contact X2Flow action has a new option to enable email logging and tracking
   * Application-wide icon update
+  * Email Contact X2Flow action has a new option to enable email logging and tracking
+  * Added ability to export user changelog to CSV
+  * Record importer now provides a progress bar
 * General Changelog / Developer Notes:
   * Updated Yii to version 1.1.16
+  * Fixed response handling when verifying application credentials
 * Tracked Bug Fixes:
+  * [1853](http://x2software.com/index.php/bugReports/1853): Undefined variable: report  
+  * [1855](http://x2software.com/index.php/bugReports/1855): Undefined variable: retVal  
+  * [1896](http://x2software.com/index.php/bugReports/1896): Argument 2 passed to X2Model::renderModelInput() must be an instance of Fields, null given, called in /marketing/protected/models/X2Model.php on line 2298 and defined  
+  * [1899](http://x2software.com/index.php/bugReports/1899): User Report  
+  * [1905](http://x2software.com/index.php/bugReports/1905): Class: Charts not found.  
   * [1994](http://x2software.com/index.php/bugReports/1994): Unable to resolve the request "accounts/view/id".  
   * [2004](http://x2software.com/index.php/bugReports/2004): CDbCommand failed to execute the SQL statement: SQLSTATE[23000]: Integrity constraint violation: 1062 Duplicate entry '' for key 'c_email2'  
   * [2007](http://x2software.com/index.php/bugReports/2007): The system is unable to find the requested action "webleadForm".  
@@ -21,6 +29,10 @@
   * [2048](http://x2software.com/index.php/bugReports/2048): htmlspecialchars(): Invalid multibyte sequence in argument  
   * [2049](http://x2software.com/index.php/bugReports/2049): 
   * [2086](http://x2software.com/index.php/bugReports/2086):   
+  * [2107](http://x2software.com/index.php/bugReports/2107): Property "X2ButtonColumn.name" is not defined.  
+  * [2115](http://x2software.com/index.php/bugReports/2115): PublisherProductsTab and its behaviors do not have a method or closure named "renderPartial".  
+  * [2119](http://x2software.com/index.php/bugReports/2119): User Report  
+  * [2120](http://x2software.com/index.php/bugReports/2120): Invalid email address list
 
 
 

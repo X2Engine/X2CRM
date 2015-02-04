@@ -116,7 +116,7 @@ class X2FlowApiCall extends X2FlowAction {
         if (!$success) return array ($success, $message);
         $url = $this->config['options']['url']['value'];
 
-        if (YII_DEBUG && YII_UNIT_TESTING) {
+        if (YII_UNIT_TESTING) {
             $hostInfo = 'localhost';
         } else {
             $hostInfo = preg_replace ('/^https?:\/\//', '', Yii::app()->request->getHostInfo ());

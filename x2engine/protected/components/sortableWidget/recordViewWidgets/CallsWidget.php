@@ -67,6 +67,12 @@ class CallsWidget extends TransactionalViewWidget {
             $this->_gridViewConfig = array_merge (
                 parent::getGridViewConfig (),
                 array (
+                    'defaultGvSettings' => array (
+                        'actionDescription' => '35%',
+                        'assignedTo' => '21%',
+                        'duration' => 79,
+                        'createDate' => 60,
+                    ),
                     'columnOverrides' => array (
                         'assignedTo' => array (
                             'header' => Yii::t('app', 'Completed By'),
@@ -74,6 +80,17 @@ class CallsWidget extends TransactionalViewWidget {
                         'createDate' => array (
                             'header' => Yii::t('app', 'Call Date'),
                         ),
+                    ),
+                )
+            );
+            $this->_gridViewConfig['specialColumns'] = array_merge (
+                $this->_gridViewConfig['specialColumns'],
+                array (
+                    'duration' => array (
+                        'header' => Yii::t('app', 'Duration') ,
+                        'value' => 'Formatter::secondsToHours (
+                            $data->completeDate - $data->dueDate)',
+                        'type' => 'raw',
                     ),
                 )
             );

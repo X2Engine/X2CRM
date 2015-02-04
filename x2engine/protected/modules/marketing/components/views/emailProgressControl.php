@@ -43,9 +43,19 @@
             <div class="emailProgressControl-section"><div id="emailProgressControl-bar"><div id="emailProgressControl-text"></div></div></div>
             <div class="emailProgressControl-section">
                 <div id="emailProgressControl-toolbar">
-                    <button class="startPause x2-button"><?php echo Yii::t('marketing', 'Pause') ?></button>
-                    <button class="refresh x2-button" title="<?php echo CHtml::encode(Yii::t('marketing','Click to refresh displays of campaign data on this page.')); ?>"><?php echo Yii::t('marketing', 'Update'); ?></button>
-                    <img id="emailProgressControl-throbber" style="display: none;" src="<?php echo Yii::app()->theme->baseUrl; ?>/images/loading.gif" />
+                    <button class="startPause x2-button">
+                    
+                        <?php echo X2Html::fa('fa-pause'); ?>
+                        <?php echo X2Html::fa('fa-play'); ?>
+                        <span class='button-text'>
+                            <?php echo Yii::t('marketing', 'Pause') ?>
+                        </span>
+                    </button>
+                    <button class="refresh x2-button" title="<?php echo CHtml::encode(Yii::t('marketing','Click to refresh displays of campaign data on this page.')); ?>">
+                        <?php echo X2Html::fa('fa-refresh'); ?>
+                        <?php echo Yii::t('marketing', 'Refresh'); ?>
+                    </button>
+                    <span id="emailProgressControl-throbber" style="display: none;" class='load8 x2-loader loader' ></span>
                     <div id="emailProgressControl-textStatus"></div>
                 </div>
             </div>

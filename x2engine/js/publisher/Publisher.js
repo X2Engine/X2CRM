@@ -54,11 +54,12 @@ function Publisher (argsDict) {
         tabs: [], // PublisherTab objects
         initTabId: null, // id of initially active tab 
         publisherCreateUrl: '', // url of action to call when publisher form is submitted
-        isCalendar: false
+        isCalendar: false,
+        renderTabs: true
     };
     auxlib.applyArgs (this, defaultArgs, argsDict);
 
-    this._selectedTab; // id of currently selected tab
+    this._selectedTabId; // id of currently selected tab
 
     this._tabs = {}; // dictionary of tabs indexed by tab id
     for (var i = 0; i < this.tabs.length; ++i) {
@@ -163,12 +164,16 @@ Publisher.prototype.getElement = function (selector) {
 Publisher.prototype.reset = function () {
     var that = this;
 
-    this._selectedTab.reset ();
+    this.getSelectedTab ().reset ();
     
     // reset save button
     auxlib.getElement(this.resolveId ('save-publisher')).removeClass('highlight');
 
     this.blur ();
+};
+
+Publisher.prototype.getSelectedTab = function () {
+    return this._tabs[this._selectedTabId];
 };
 
 /**
@@ -188,14 +193,13 @@ Publisher.prototype.switchToTab = function (selectedTabId) {
 
     // set field SelectedTab for use in POST request
     auxlib.getElement(this.resolveId ('SelectedTab')).val(selectedTabId);
-    this._selectedTab = this._tabs[selectedTabId];
+    this._selectedTabId = selectedTabId;
 
-    that.DEBUG && console.log (this._selectedTab);
     // enable current tab for elements, disable inactive tab form elements
     that.DEBUG && console.log ($.extend ({}, this.tabs));
     for (var tabId in this.tabs) {
         var tab = this.tabs[tabId];
-        if (this._selectedTab !== tab) {
+        if (this.getSelectedTab () !== tab) {
             that.DEBUG && console.log ('disabling:');
             that.DEBUG && console.log (tab);
             tab.disable ();
@@ -225,7 +229,6 @@ Publisher.prototype.updates = function () {
 
     if($('.list-view').length !== 0) {
         $.fn.yiiListView.update($('.list-view').attr('id'));
-        // TODO: optimize by refreshing only relevant widgets
         this.updateTransactionalView ();
     }
 
@@ -234,7 +237,7 @@ Publisher.prototype.updates = function () {
 };
 
 Publisher.prototype.updateTransactionalView = function () {
-    switch (this._selectedTab.id) {
+    switch (this._selectedTabId) {
         case 'new-action':     
             x2.TransactionalViewWidget.refresh ('ActionsWidget'); 
             break;
@@ -260,7 +263,7 @@ Publisher.prototype.updateTransactionalView = function () {
  * Ad-hoc quasi-validation for the publisher
  */
 Publisher.prototype.beforeSubmit = function() {
-    if (!this._selectedTab.validate ()) {
+    if (!this.getSelectedTab ().validate ()) {
         return false;
     }
     return true; // form is sane: submit!
@@ -271,7 +274,7 @@ Publisher.prototype.beforeSubmit = function() {
  */
 Publisher.prototype.blur = function () {
     $(this.resolveId ("save-publisher")).removeClass("highlight");
-    this._selectedTab.blur ();
+    this.getSelectedTab ().blur ();
 };
 
 /*
@@ -309,7 +312,7 @@ Publisher.prototype._setUpSaveButtonBehavior = function () {
         if (!that.beforeSubmit ()) {
             return false;
         }
-        that._selectedTab.submit (that, that._form);
+        that.getSelectedTab ().submit (that, that._form);
         return false;
     });
 
@@ -319,22 +322,26 @@ Publisher.prototype._init = function () {
     var that = this;
 
     $(function () {
-        for (var i in that.tabs) that.tabs[i].run ();
+        //for (var i in that.tabs) that.tabs[i].run ();
         that._form = $(that.resolveId ('publisher-form')); // publisher form element
         that._setUpSaveButtonBehavior ();
 
-        $(that.resolveId ("publisher")).multiRowTabs({
-            activate: function(event, ui) { that.tabSelected(event, ui); },
-        });
-        
-        if ($('[aria-controls="'+that.initTabId+'"]').hasClass ('ui-state-active')) {
-            that.switchToTab (that.initTabId);
-        } else {
-            $('[href="#' + that.initTabId +'"]').click (); // switch to initial tab
-        }
+        if (that.renderTabs) {
+            $(that.resolveId ("publisher")).multiRowTabs({
+                activate: function(event, ui) { that.tabSelected(event, ui); },
+            });
+            
+            if ($('[aria-controls="'+that.initTabId+'"]').hasClass ('ui-state-active')) {
+                that.switchToTab (that.initTabId);
+            } else {
+                $('[href="#' + that.initTabId +'"]').click (); // switch to initial tab
+            }
 
-        // show the tab rows now that we've instantiated the tab widget
-        $(that.resolveId ('publisher') + ' > ul').show (); 
+            // show the tab rows now that we've instantiated the tab widget
+            $(that.resolveId ('publisher') + ' > ul').show (); 
+        } else {
+            that._selectedTabId = that.initTabId;
+        }
 
     });
 };

@@ -280,10 +280,12 @@ $searchbarHtml = CHtml::beginForm(array('/search/search'), 'get')
             'autocomplete' => 'off'
         )).'</form>';
 
-if(!empty($profile->avatar) && file_exists($profile->avatar))
-    $avatar = Yii::app()->request->baseUrl.'/'.$profile->avatar;
-else
-    $avatar = Yii::app()->request->baseUrl.'/uploads/default.png';
+if(!empty($profile->avatar) && file_exists($profile->avatar)) {
+    $src = Yii::app()->request->baseUrl.'/'.$profile->avatar;
+    $avatar = CHtml::image( $src, '', array('height' => 25, 'width' => 25));
+} else {
+    $avatar = X2Html::defaultAvatar (25);
+}
 
 $widgetsImageUrl = $themeUrl.'/images/admin_settings.png';
 if(!Yii::app()->user->isGuest){
@@ -397,8 +399,7 @@ if(!$isGuest){
             'itemOptions' => array('class' => 'search-bar special'
             )),
         array(
-            'label' => CHtml::image(
-                    $avatar, '', array('height' => 25, 'width' => 25)).Yii::app()->getSuModel()->getAlias(),
+            'label' => $avatar.Yii::app()->suModel->alias,
             'itemOptions' => array(
                 'id' => 'profile-dropdown', 'class' => 'dropdown'),
             'items' => $userMenuItems
@@ -482,9 +483,10 @@ if (YII_DEBUG && YII_UNIT_TESTING) {
         <div id="header-inner">
             <div id="main-menu-bar">
                 <div id='show-left-menu-button'>
-                    <div class='x2-bar'></div>
-                    <div class='x2-bar'></div>
-                    <div class='x2-bar'></div>
+                    <i class='fa fa-bars'></i>
+                    <!-- <div class='x2-bar'></div> -->
+                    <!-- <div class='x2-bar'></div> -->
+                    <!-- <div class='x2-bar'></div> -->
                 </div>
                 <a href="<?php echo $isGuest
                         ? $this->createUrl('/site/login')

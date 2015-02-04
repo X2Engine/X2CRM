@@ -37,13 +37,13 @@ x2.MassRemoveFromList = (function () {
 
 function MassRemoveFromList (argsDict) {
     var argsDict = typeof argsDict === 'undefined' ? {} : argsDict;
-    x2.MassAction.call (this, argsDict);
     var defaultArgs = {
         DEBUG: x2.DEBUG && false,
-        massActionName: 'removeFromList',
-        progressBarLabel: this.translations['removed']
+        massActionName: 'removeFromList'
     };
     auxlib.applyArgs (this, defaultArgs, argsDict);
+    x2.MassAction.call (this, argsDict);
+    this.progressBarLabel = this.translations['removed'];
     this.dialogTitle = this.massActionsManager.translations['removeFromList'];
     this.goButtonLabel = this.massActionsManager.translations['remove'];
 }

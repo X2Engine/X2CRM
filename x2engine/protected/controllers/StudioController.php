@@ -162,7 +162,6 @@ class StudioController extends x2base {
     }
 
     public function actionGetParams($name,$type) {
-
         if($type === 'action') {
             $paramRules = X2FlowAction::getParamRules($name);    // X2Flow Actions
         } elseif($type === 'trigger') {

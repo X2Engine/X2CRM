@@ -45,7 +45,6 @@ var Point = x2.geometry.Point;
 function Funnel (argsDict) {
     argsDict = typeof argsDict === 'undefined' ? {} : argsDict;
 
-    x2.BaseFunnel.call (this, argsDict);
     var defaultArgs = {
         stageValues: null, // array of projected deal values for each stage
         totalValue: null, // formatted sum of stageValues
@@ -53,6 +52,7 @@ function Funnel (argsDict) {
         stageNameLinks: null, // array of links which open stage details
     };
     auxlib.applyArgs (this, defaultArgs, argsDict);
+    x2.BaseFunnel.call (this, argsDict);
 
     this._stageHeight = 32; // temporary. replace when stage heights are depend on status
 

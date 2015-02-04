@@ -846,6 +846,10 @@ abstract class X2Model extends CActiveRecord {
      * @returns the answer from {@link CActiveRecord::beforeSave()}
      */
     public function beforeSave() {
+        if ($this->asa ('ContactsNameBehavior')) {
+            $this->asa ('ContactsNameBehavior')->setName ();
+        }
+
         $this->_runAfterCreate = $this->getIsNewRecord();
         if (!$this->_runAfterCreate) {
             $this->updateNameId();
@@ -1903,17 +1907,23 @@ abstract class X2Model extends CActiveRecord {
                 return $input;
             case 'rating':
                 return Yii::app()->controller->widget('CStarRating', array(
-                            'model' => $model,
-                            'attribute' => $field->fieldName,
-                            'readOnly' => isset($htmlOptions['disabled']) && $htmlOptions['disabled'],
-                            'minRating' => Fields::RATING_MIN, //minimal value
-                            'maxRating' => Fields::RATING_MAX, //max value
-                            'starCount' => Fields::RATING_MAX - Fields::RATING_MIN + 1, //number of stars
-                            'cssFile' => Yii::app()->theme->getBaseUrl() . '/css/rating/jquery.rating.css',
-                            'htmlOptions' => $htmlOptions,
-                            'callback'=>'function(value, link){ '
-                                . 'if(typeof ratingFields != "undefined"){ratingFields["'.$field->modelName.'['.$field->fieldName.']"] = value;}}',
-                                ), true);
+                    'model' => $model,
+                    'attribute' => $field->fieldName,
+                    'readOnly' => isset($htmlOptions['disabled']) && $htmlOptions['disabled'],
+                    'minRating' => Fields::RATING_MIN, //minimal value
+                    'maxRating' => Fields::RATING_MAX, //max value
+                    'starCount' => Fields::RATING_MAX - Fields::RATING_MIN + 1, //number of stars
+                    'cssFile' => Yii::app()->theme->getBaseUrl() . '/css/rating/jquery.rating.css',
+                    'htmlOptions' => $htmlOptions,
+                    'callback'=>'function(value, link){
+                        if (typeof x2 !== "undefined" &&
+                            typeof x2.InlineEditor !== "undefined" &&
+                            typeof x2.InlineEditor.ratingFields !== "undefined") {
+
+                            x2.InlineEditor.ratingFields["'.
+                                $field->modelName.'['.$field->fieldName.']"] = value;
+                        }
+                    }',), true);
 
             case 'boolean':
                 return '<div class="checkboxWrapper">'
@@ -2335,6 +2345,7 @@ abstract class X2Model extends CActiveRecord {
                 if (!empty($this->$fieldName)) {
                     // get operator and convert date string to timestamp
                     $retArr = $this->unshiftOperator($this->$fieldName);
+
                     $operator = $retArr[0];
                     $timestamp = Formatter::parseDate($retArr[1]);
                     if (!$timestamp) {
@@ -2568,6 +2579,7 @@ abstract class X2Model extends CActiveRecord {
      *  be created properly.
      */
     public function updateNameIdRefs() {
+
         // Update all references to this model via the nameId field.
         //
         // The name field and thus nameId field may have changed. Update all
@@ -2576,7 +2588,8 @@ abstract class X2Model extends CActiveRecord {
             return;
         }
         $nameId = $this->nameId;
-        $oldNameId = isset($this->_oldAttributes['nameId']) ? $this->_oldAttributes['nameId'] : null;
+        $oldNameId = isset($this->_oldAttributes['nameId']) ? 
+            $this->_oldAttributes['nameId'] : null;
         if ($nameId !== $oldNameId) {
             // First, however, we need to get references:
             $modelName = get_class($this);
@@ -2595,7 +2608,8 @@ abstract class X2Model extends CActiveRecord {
                         $table = X2Model::model($field->modelName)->tableName();
                         self::$_nameIdRefs[$modelName][$table][] = $field->fieldName;
                     }
-                    Yii::app()->cache->set($cacheIndex, self::$_nameIdRefs[$modelName], 0); // cache the data
+                    // cache the data
+                    Yii::app()->cache->set($cacheIndex, self::$_nameIdRefs[$modelName], 0); 
                 }
             }
 
@@ -2603,7 +2617,8 @@ abstract class X2Model extends CActiveRecord {
             foreach (self::$_nameIdRefs[$modelName] as $table => $columns) {
                 foreach ($columns as $column) {
                     Yii::app()->db->createCommand()->update(
-                            $table, array($column => $nameId), "$column=:nid", array(':nid' => $oldNameId)
+                        $table, array($column => $nameId), 
+                        "$column=:nid", array(':nid' => $oldNameId)
                     );
                 }
             }

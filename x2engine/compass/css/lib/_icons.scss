@@ -34,8 +34,8 @@
  *****************************************************************************************/
 
 @import "colors";
-@import "x2-icons/x2-icons";
 @import "font-awesome";
+@import "x2-icons";
 
 @mixin x2-icon($name, $placing: 'before'){
   &:#{$placing} {
@@ -84,7 +84,7 @@
     %default {top: 0px; left: 0px;}
     %plus {top: 1.0px; left: 0px;}
     %check {top: 1px; left: 0px;}
-    %exclamation{top: 0px; left: 0px;}
+    %exclamation{top: 1px; left: 0px;}
     %arrow-right{top: 0.5px; left: 1px;}
     %star{top: 1px; left: 0px;}
     %undo{top: 1px}

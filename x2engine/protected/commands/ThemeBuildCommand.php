@@ -72,6 +72,16 @@ class ThemeBuildCommand extends CConsoleCommand {
             $this->outputFile = $args[1];
         }
 
+        if(isset($args[0]) && $args[0] == '-keys') {
+            echo "These are the avaliable theming keys\n";
+
+            foreach(ThemeGenerator::getProfileKeys() as $key) {
+                echo "$key\n";
+            }
+
+            return;
+        }
+
         echo "Building theme...\n";
         // First, we recieve a list of all CSS files
         $paths = $this->getCssFiles ($this->inputDir);
@@ -200,6 +210,7 @@ class ThemeBuildCommand extends CConsoleCommand {
 
         // Remove extra spaces in between
         $stripped = preg_replace('/\ \ */', ' ', $stripped);
+        $stripped = preg_replace('/:/', '', $stripped);
         $params = split(' ', $stripped);
 
 
@@ -249,7 +260,7 @@ class ThemeBuildCommand extends CConsoleCommand {
     }
 
     public function getHelp() {
-        return "\nBuilds a php theme file from various @theme tags in all CSS files. \nUsage: themebuild [INPUT DIRECTORY] [OUTPUT FILE]\n\n";
+        return "\nBuilds a php theme file from various @theme tags in all CSS files. \nUsage: themebuild [INPUT DIRECTORY] [OUTPUT FILE]\n\nOptions: themebuild -keys \n\t This will list all the avaliable keys for theming.\n";
     }
 
 }
