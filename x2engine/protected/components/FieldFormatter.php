@@ -52,7 +52,7 @@ class FieldFormatter extends CComponent {
         if (!isset($field))
             return null;
 
-        if (Yii::app()->params->noSession) {
+        if (!YII_UNIT_TESTING && Yii::app()->params->noSession) {
             $webRequestAttributes = array(
                 'rating', // Uses a Yii widget, which requires access to the controller
                 'assignment', // Depends on getUserLinks, which depends on the user session
@@ -183,17 +183,17 @@ class FieldFormatter extends CComponent {
                     break;
                 case 'googleplus':
                     $text = '<a href="http://plus.google.com/' . 
-                        $this->render ($this->owner->$fieldName, $encode) . '">' . $render($this->owner->$fieldName, $encode) . 
+                        $this->render ($this->owner->$fieldName, $encode) . '">' . $this->render($this->owner->$fieldName, $encode) . 
                         '</a>';
                     break;
                 case 'twitter':
                     $text = '<a href="http://www.twitter.com/#!/' . 
-                        $this->render ($this->owner->$fieldName, $encode) . '">' . $render($this->owner->$fieldName, $encode) . 
+                        $this->render ($this->owner->$fieldName, $encode) . '">' . $this->render($this->owner->$fieldName, $encode) . 
                         '</a>';
                     break;
                 case 'linkedin':
                     $text = '<a href="http://www.linkedin.com/in/' . 
-                        $this->render ($this->owner->$fieldName, $encode) . '">' . $render($this->owner->$fieldName, $encode) . 
+                        $this->render ($this->owner->$fieldName, $encode) . '">' . $this->render($this->owner->$fieldName, $encode) . 
                         '</a>';
                     break;
                 default:
@@ -276,7 +276,7 @@ class FieldFormatter extends CComponent {
 
     protected function renderCurrency ($field, $makeLinks, $textOnly, $encode) {
         $fieldName = $field->fieldName;
-        if ($this instanceof Product) { // products have their own currency
+        if ($this->owner instanceof Product) { // products have their own currency
             return Yii::app()->locale->numberFormatter->formatCurrency(
                 $this->owner->$fieldName, $this->owner->currency);
         } else {
@@ -345,7 +345,7 @@ class FieldFormatter extends CComponent {
     }
 
     protected function renderFloat ($field, $makeLinks, $textOnly, $encode) {
-        return $this->renderInt ($field);
+        return $this->renderInt ($field, $makeLinks, $textOnly, $encode);
     }
 
     protected function renderCustom ($field, $makeLinks, $textOnly, $encode) {
@@ -355,10 +355,10 @@ class FieldFormatter extends CComponent {
             // attributes that HTMLPurifier has replaced:
             $fieldText = preg_replace(
                     '/%7B([\w\.]+)%7D/', '{$1}', $field->data);
-            return Formatter::replaceVariables($fieldText, $this, '', false);
+            return Formatter::replaceVariables($fieldText, $this->owner, '', false);
         } elseif ($field->linkType == 'formula') {
             $evald = Formatter::parseFormula($field->data, array(
-                        'model' => $this
+                'model' => $this->owner,
             ));
             if ($evald[0]) {
                 return $this->render ($evald[1], $encode);

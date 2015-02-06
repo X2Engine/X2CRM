@@ -211,7 +211,7 @@ class ExportFixtureCommand extends CConsoleCommand {
         if ($writeCond !== 's') 
 		    file_put_contents($filePath, $fileCont);
         else
-            print ($fileCont);
+            /**/print ($fileCont);
 		echo "\nExport complete.\n";
 	}
 

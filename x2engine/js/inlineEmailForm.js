@@ -217,6 +217,7 @@ InlineEmailEditorManager.prototype.showEmailForm = function (animate, scroll, fo
     this.element.find ('.cke_contents').attr ('style', '');
     that.element.find ('.cke_contents').height (300);
     this.element.find ('.email-reattach-button').css ('visibility', 'hidden');
+    var wasHidden = $('#inline-email-form').is(':hidden');
     this.element.addClass ('fixed-email-form').attr ('style', '');
 
     if($('#inline-email-form .wide.form').hasClass('hidden')) {
@@ -225,8 +226,7 @@ InlineEmailEditorManager.prototype.showEmailForm = function (animate, scroll, fo
         return;
     }
 
-
-    if($('#inline-email-form').is(':hidden')) {
+    if(wasHidden) {
         $('#inline-email-status').hide(); // Opening new form; hide previous submission's status
         $(document).trigger('setupInlineEmailEditor');
         $('.focus-mini-module').removeClass('focus-mini-module');
@@ -536,7 +536,7 @@ InlineEmailEditorManager.prototype._init = function () {
         that._setUpAddresseeRowsBehavior ();
         that._setUpFileUpload ();
         that._setUpCloseFunctionality ();
-        if (this.enableResizability)
+        if (that.enableResizability)
             that._setUpResizeBehavior ();
         that._setUpDraggability ();
         that._setUpButtonBehavior ();
@@ -569,6 +569,7 @@ $(function() {
 
         if(window.inlineEmailEditor)
             window.inlineEmailEditor.destroy(true);
+
         $('#email-message').val(x2.inlineEmailOriginalBody);
         window.inlineEmailEditor = createCKEditor(
             'email-message',

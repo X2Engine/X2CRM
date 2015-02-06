@@ -204,22 +204,6 @@ $this->widget('zii.widgets.CListView', array(
 		height:800px;
 	}
 
-
-    #action-list .items{
-        clear:none;
-        max-height:800px;
-        overflow-y:auto;
-        border: none;
-    }
-    #action-list .view{
-        clear:none;
-    }
-    #action-list .view:hover{
-        background-color:#FFFFC2;
-    }
-    .important{
-        background-color:#FFFFC2;
-    }
     .complete{
         color:green;
     }

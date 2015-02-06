@@ -36,6 +36,9 @@
 
 
 Yii::app()->clientScript->registerCss('inlineEmailFormCss',"
+.cke_combopanel {
+    display: none;
+}
 
 #email-mini-module > .email-title-bar {
     padding: 0 5px;

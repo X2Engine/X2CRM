@@ -850,7 +850,6 @@ $.widget("x2.gvSettings", {
         });
     },
     _compareGridviewSettings:function(self) {
-        //console.log ('_compareGridviewSettings');
         self.options.DEBUG && console.log ('this = ');
         self.options.DEBUG && console.log (this);
 

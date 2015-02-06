@@ -62,6 +62,12 @@
 
 #inline-email-form {
     margin-top: 5px;
+    .last-button-row {
+        bottom: 5px !important;
+    }
+    #email-settings-button {
+        display: none !important;
+    }
 }
 
 /***********************************************************************

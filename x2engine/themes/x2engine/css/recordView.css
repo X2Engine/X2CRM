@@ -118,11 +118,6 @@ body.show-widgets #inline-email-form.fixed-email-form {
 }
 
 /* line 109, ../../../compass/themes/x2engine/css/recordView.scss */
-.cke_combopanel {
-  display: none;
-}
-
-/* line 113, ../../../compass/themes/x2engine/css/recordView.scss */
 #RecordViewWidgetManagerwidgets-container-inner {
   min-height: 300px;
 }

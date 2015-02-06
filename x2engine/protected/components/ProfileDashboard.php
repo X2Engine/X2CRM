@@ -207,6 +207,7 @@ class ProfileDashboard extends CWidget {
 		);
 	}
 
+
 	public function getTranslations () {
 		return array(
 			'createProfileWidgetDialogTitle' => Yii::t('profile', 'Create Profile Widget'),

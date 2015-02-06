@@ -1,39 +1,17 @@
-# 5.0.3 #
-1/30/2015
+# 5.0.4 #
+2/5/2015
 
-* Highlights
-  * New Record Transactional View
-    * Provides an alternate view of a record's action history
-    * Individual widgets for each type of interaction (Calls, Emails, Actions, etc.)
-  * Professional Edition Changes:
-    * Charts created through the Reports Module can now be added to the profile dashboard
-  * Profile dashboard and record view column widths can now be adjusted
-  * Application-wide icon update
-  * Email Contact X2Flow action has a new option to enable email logging and tracking
-  * Added ability to export user changelog to CSV
-  * Record importer now provides a progress bar
 * General Changelog / Developer Notes:
-  * Updated Yii to version 1.1.16
-  * Fixed response handling when verifying application credentials
+  * Fixed bug affecting X2Flow API actions made after X2Flow Wait actions
 * Tracked Bug Fixes:
-  * [1853](http://x2software.com/index.php/bugReports/1853): Undefined variable: report  
-  * [1855](http://x2software.com/index.php/bugReports/1855): Undefined variable: retVal  
-  * [1896](http://x2software.com/index.php/bugReports/1896): Argument 2 passed to X2Model::renderModelInput() must be an instance of Fields, null given, called in /marketing/protected/models/X2Model.php on line 2298 and defined  
-  * [1899](http://x2software.com/index.php/bugReports/1899): User Report  
-  * [1905](http://x2software.com/index.php/bugReports/1905): Class: Charts not found.  
-  * [1994](http://x2software.com/index.php/bugReports/1994): Unable to resolve the request "accounts/view/id".  
-  * [2004](http://x2software.com/index.php/bugReports/2004): CDbCommand failed to execute the SQL statement: SQLSTATE[23000]: Integrity constraint violation: 1062 Duplicate entry '' for key 'c_email2'  
-  * [2007](http://x2software.com/index.php/bugReports/2007): The system is unable to find the requested action "webleadForm".  
-  * [2008](http://x2software.com/index.php/bugReports/2008): CDbCommand failed to execute the SQL statement: SQLSTATE[42S22]: Column not found: 1054 Unknown column 't.actionDescription' in 'order clause'  
-  * [2009](http://x2software.com/index.php/bugReports/2009): CDbCommand failed to execute the SQL statement: SQLSTATE[42000]: Syntax error or access violation: 1064 You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '' at line 3  
-  * [2048](http://x2software.com/index.php/bugReports/2048): htmlspecialchars(): Invalid multibyte sequence in argument  
-  * [2049](http://x2software.com/index.php/bugReports/2049): 
-  * [2086](http://x2software.com/index.php/bugReports/2086):   
-  * [2107](http://x2software.com/index.php/bugReports/2107): Property "X2ButtonColumn.name" is not defined.  
-  * [2115](http://x2software.com/index.php/bugReports/2115): PublisherProductsTab and its behaviors do not have a method or closure named "renderPartial".  
-  * [2119](http://x2software.com/index.php/bugReports/2119): User Report  
-  * [2120](http://x2software.com/index.php/bugReports/2120): Invalid email address list
-
+  * [2149](http://x2software.com/index.php/bugReports/2149): Missing argument 2 for FieldFormatter::renderInt(), called in /opt/bitnami/apps/x2crm/htdocs/protected/components/FieldFormatter.php on line 348 and defined  
+  * [2152](http://x2software.com/index.php/bugReports/2152): User Report  
+  * [2153](http://x2software.com/index.php/bugReports/2153): X2Flow  Compare Attribute using "In List" with dropdown fields fails to save  
+  * [2156](http://x2software.com/index.php/bugReports/2156): FieldFormatter and its behaviors do not have a method or closure named "getFields".  
+  * [2158](http://x2software.com/index.php/bugReports/2158): Unable to resolve the request "actions/id/complete".  
+  * [2159](http://x2software.com/index.php/bugReports/2159): Trying to get property of non-object  
+  * [2160](http://x2software.com/index.php/bugReports/2160): Undefined variable: render  
+  * [2161](http://x2software.com/index.php/bugReports/2161): User Report  
 
 
 

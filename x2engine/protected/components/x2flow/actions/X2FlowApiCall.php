@@ -119,7 +119,7 @@ class X2FlowApiCall extends X2FlowAction {
         if (YII_UNIT_TESTING) {
             $hostInfo = 'localhost';
         } else {
-            $hostInfo = preg_replace ('/^https?:\/\//', '', Yii::app()->request->getHostInfo ());
+            $hostInfo = preg_replace ('/^https?:\/\//', '', Yii::app()->getAbsoluteBaseUrl ());
         }
 
         $url = preg_replace ('/^https?:\/\//', '', $url);
@@ -149,7 +149,7 @@ class X2FlowApiCall extends X2FlowAction {
         if (YII_DEBUG && YII_UNIT_TESTING) {
             $absoluteBaseUrl = 'http://localhost';
         } else {
-            $absoluteBaseUrl = Yii::app()->getBaseUrl (true);
+            $absoluteBaseUrl = Yii::app()->getAbsoluteBaseUrl ();
         }
         $absoluteBaseUrl = preg_replace ('/^https?:\/\//', '', $absoluteBaseUrl);
         $url = preg_replace ('/^https?:\/\//', '', $url);

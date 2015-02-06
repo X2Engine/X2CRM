@@ -141,7 +141,7 @@ PublisherTimeTab.prototype._updateActionEndTime = function (event) {
         endTime = endObj.datepicker('getDate');
     }
     beginTime = beginObj.datepicker('getDate');
-    if(x2.publisher._selectedTab.id != 'new-event' &&
+    if(this.publisher.getSelectedTab ().id != 'new-event' &&
        (endTime >= currentTime || beginTime.getTime() + totalDuration > currentTime.getTime())) {
 
         // Push the beginning time back so the end time doesn't go into the future:

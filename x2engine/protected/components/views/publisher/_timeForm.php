@@ -47,7 +47,7 @@
                     'rows' => 3,
                     'cols' => 40,
                     'class'=>'action-description',
-                    'id'=>'time-action-description',
+                    'id'=>$this->resolveId ('time-action-description'),
                 ));
             ?>
         </div>

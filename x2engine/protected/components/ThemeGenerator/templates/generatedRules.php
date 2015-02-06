@@ -96,22 +96,27 @@
 		border-color: $colors[border]
 	}
 
-	/* line 1911, ../../../compass/themes/x2engine/css/ui-elements.scss */
+	.list-view.action#action-list .view:hover,
+	.list-view.action#action-list .important {
+		background: $colors[opaque_highlight2]
+	}
+
+	/* line 1931, ../../../compass/themes/x2engine/css/ui-elements.scss */
 	#actionTimerControl-summary {
 		border-color: $colors[border]
 	}
 
-	/* line 1922, ../../../compass/themes/x2engine/css/ui-elements.scss */
+	/* line 1942, ../../../compass/themes/x2engine/css/ui-elements.scss */
 	#actionTimerDisplay {
 		border-color: $colors[border]
 	}
 
-	/* line 2228, ../../../compass/themes/x2engine/css/ui-elements.scss */
+	/* line 2248, ../../../compass/themes/x2engine/css/ui-elements.scss */
 	.x2-collapsible-outer {
 		border-color: $colors[border]
 	}
 
-	/* line 2247, ../../../compass/themes/x2engine/css/ui-elements.scss */
+	/* line 2267, ../../../compass/themes/x2engine/css/ui-elements.scss */
 	.x2-collapsible-outer.collapsed > .x2-collapse-handle:hover {
 		background: $colors[bright_content]
 	}
@@ -144,12 +149,12 @@
 		color: $colors[smart_text2]
 	}
 
-	/* line 77, ../../../compass/themes/x2engine/css/recordView.scss */
+	/* line 81, ../../../compass/themes/x2engine/css/recordView.scss */
 	#inline-email-form .x2-icon-button {
 		color: $colors[smart_text]
 	}
 
-	/* line 88, ../../../compass/themes/x2engine/css/recordView.scss */
+	/* line 92, ../../../compass/themes/x2engine/css/recordView.scss */
 	#inline-email-form .x2-email-label {
 		color: $colors[smart_text]
 	}
@@ -225,12 +230,12 @@
 		color: $colors[smart_text]
 	}
 
-	/* line 174, ../../../compass/themes/x2engine/css/partials/_main-menu.scss */
+	/* line 176, ../../../compass/themes/x2engine/css/partials/_main-menu.scss */
 	#main-menu-bar #x2-logo {
 		color: $colors[smart_text]
 	}
 
-	/* line 212, ../../../compass/themes/x2engine/css/partials/_main-menu.scss */
+	/* line 214, ../../../compass/themes/x2engine/css/partials/_main-menu.scss */
 	#search-bar button.x2-button span {
 		color: $colors[smart_text]
 	}

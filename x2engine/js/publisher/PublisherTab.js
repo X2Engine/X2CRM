@@ -57,6 +57,7 @@ function PublisherTab (argsDict) {
     x2.Widget.call (this, argsDict);
 
     this._elemSelector = this.resolveIds ('#' + this.id);
+    this.publisher = null;
     this._init ();
 }
 
@@ -122,7 +123,6 @@ PublisherTab.prototype.reset = function () {
  */
 PublisherTab.prototype.disable = function () {
     var that = this;
-    that.DEBUG && console.log ('disable');
     x2.forms.disableEnableFormSubsection (this._element, true);
 };
 
@@ -168,6 +168,7 @@ PublisherTab.prototype.validate = function () {
 
 PublisherTab.prototype.run = function () {
     var that = this;
+
     that._element = $(that._elemSelector);
     x2.forms.setDefaults (that._element);
     that._setUpActionDescriptionBehavior ();

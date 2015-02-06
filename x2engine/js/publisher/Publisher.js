@@ -140,6 +140,7 @@ Public instance methods
 */
 
 Publisher.prototype.addTab = function (tab) {
+    tab.publisher = this;
     this._tabs[tab.id] = tab;
     this.tabs.push (tab);
 };
@@ -200,8 +201,6 @@ Publisher.prototype.switchToTab = function (selectedTabId) {
     for (var tabId in this.tabs) {
         var tab = this.tabs[tabId];
         if (this.getSelectedTab () !== tab) {
-            that.DEBUG && console.log ('disabling:');
-            that.DEBUG && console.log (tab);
             tab.disable ();
             tab.blur ();
         } else {
@@ -322,7 +321,7 @@ Publisher.prototype._init = function () {
     var that = this;
 
     $(function () {
-        //for (var i in that.tabs) that.tabs[i].run ();
+        for (var i in that.tabs) that.tabs[i].run ();
         that._form = $(that.resolveId ('publisher-form')); // publisher form element
         that._setUpSaveButtonBehavior ();
 

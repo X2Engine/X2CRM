@@ -1040,6 +1040,26 @@ div {
         text-align: right;
         @include border-radius (4px 4px 4px 4px);
     }
+
+    &.action#action-list {
+        .items{
+            clear:none;
+            max-height:800px;
+            overflow-y:auto;
+            border: none;
+        }
+       .view{
+            clear:none;
+        }
+
+        .view:hover,
+        .important {
+            background-color:#FFFFC2;
+            /* @theme background: opaque_highlight2 */
+        }
+
+
+    }
 }
 
 .flush-grid-view {

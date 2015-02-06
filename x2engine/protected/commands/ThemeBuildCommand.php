@@ -64,15 +64,15 @@ class ThemeBuildCommand extends CConsoleCommand {
      * Entry point
      */
     public function run($args) {
-        if(isset($args[0])) {
+        if (isset($args[0])) {
             $this->inputDir = $args[0];
         }
 
-        if(isset($args[1])) {
+        if (isset($args[1])) {
             $this->outputFile = $args[1];
         }
 
-        if(isset($args[0]) && $args[0] == '-keys') {
+        if (isset($args[0]) && $args[0] == '--keys') {
             echo "These are the avaliable theming keys\n";
 
             foreach(ThemeGenerator::getProfileKeys() as $key) {
@@ -94,7 +94,7 @@ class ThemeBuildCommand extends CConsoleCommand {
         }
 
         echo "$length css files found\n";
-        echo "Scanning for theme tags...";
+        echo "Scanning for theme tags\n";
         $counter = 0.0;
 
         // Now, we collect the rules from each file, merging duplicate entries
@@ -104,13 +104,14 @@ class ThemeBuildCommand extends CConsoleCommand {
             
             // print loading status....
             while ($counter < $i/$length) {
-                echo '.';
                 $counter+= 0.1;
+                $this->progressBar($counter);
             }
+
         }
 
         $matchesLength = count($matches);
-        echo "done\n$matchesLength rules found\n";
+        echo "\r$matchesLength rules found     \n";
 
         if ($matchesLength < 1) {
             echo "No rules found, aborting\n";
@@ -125,6 +126,11 @@ class ThemeBuildCommand extends CConsoleCommand {
             $output .= $this->formatRule($selector, $rule);
         }
         $output .= "\n \"; ?>"; // Footer
+
+        if (sha1_file($this->outputFile) == sha1($output)) {
+            echo "No changes detected in $this->outputFile\n";
+            return;
+        }
 
         echo "Saving to $this->outputFile\n";
         file_put_contents ($this->outputFile, $output);
@@ -260,8 +266,21 @@ class ThemeBuildCommand extends CConsoleCommand {
     }
 
     public function getHelp() {
-        return "\nBuilds a php theme file from various @theme tags in all CSS files. \nUsage: themebuild [INPUT DIRECTORY] [OUTPUT FILE]\n\nOptions: themebuild -keys \n\t This will list all the avaliable keys for theming.\n";
+        return "\nBuilds a php theme file from various @theme tags in all CSS files. \nUsage: themebuild [INPUT DIRECTORY] [OUTPUT FILE]\n\nOptions: themebuild --keys \n\t This will list all the avaliable keys for theming.\n";
     }
+
+    // Fun progress bar
+    public function progressBar($amount) {
+        echo "\r".($amount*100)."% |";
+        for ($j = 0; $j < 10; $j++) {
+            if($j <  $amount * 10) {
+                echo '-';
+            } else {
+                echo ' ';
+            }
+        }
+        echo '|';
+}
 
 }
 

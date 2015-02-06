@@ -63,6 +63,8 @@ abstract class X2DbTestCase extends CDbTestCase {
         return array();
     }
 
+    protected $assertUTConstantSet = false;
+
     protected static $skipAllTests = false;
     
     protected static $loadFixtures = LOAD_FIXTURES;
@@ -80,6 +82,15 @@ abstract class X2DbTestCase extends CDbTestCase {
             $this->fixtures = array_merge ($fixtures, self::referenceFixtures ());
         }
         parent::setUp ();
+    }
+
+    public function testConstantSet () {
+        if ($this->assertUTConstantSet) {
+            $this->assertEquals (true, YII_UNIT_TESTING);
+            if (!YII_UNIT_TESTING) {
+                self::$skipAllTests = true;
+            }
+        }
     }
 
     /**

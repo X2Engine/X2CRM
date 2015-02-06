@@ -1,3 +1,18 @@
+# 5.0.4 #
+2/5/2015
+
+* General Changelog / Developer Notes:
+  * Fixed bug affecting X2Flow API actions made after X2Flow Wait actions
+* Tracked Bug Fixes:
+  * [2149](http://x2software.com/index.php/bugReports/2149): Missing argument 2 for FieldFormatter::renderInt(), called in /opt/bitnami/apps/x2crm/htdocs/protected/components/FieldFormatter.php on line 348 and defined  
+  * [2152](http://x2software.com/index.php/bugReports/2152): User Report  
+  * [2153](http://x2software.com/index.php/bugReports/2153): X2Flow  Compare Attribute using "In List" with dropdown fields fails to save  
+  * [2156](http://x2software.com/index.php/bugReports/2156): FieldFormatter and its behaviors do not have a method or closure named "getFields".  
+  * [2158](http://x2software.com/index.php/bugReports/2158): Unable to resolve the request "actions/id/complete".  
+  * [2159](http://x2software.com/index.php/bugReports/2159): Trying to get property of non-object  
+  * [2160](http://x2software.com/index.php/bugReports/2160): Undefined variable: render  
+  * [2161](http://x2software.com/index.php/bugReports/2161): User Report  
+
 # 5.0.3 #
 1/30/2015
 

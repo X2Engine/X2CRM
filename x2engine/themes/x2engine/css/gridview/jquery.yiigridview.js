@@ -369,22 +369,28 @@
                     /* x2modend */ 
 					options.data = {};
 				}
-                /* x2modstart */ 
-                if (options.type === 'POST') {
-                    if (typeof options.data === 'undefined') options.data = {};
-                    var overrideParams = 0;
-					options.data = $.extend (
-                        $.deparam.querystring (options.url), options.data, overrideParams);
-                }
-                /* x2modend */ 
 
 				if (settings.ajaxUpdate !== false) {
 					options.url = $.param.querystring(options.url, settings.ajaxVar + '=' + id);
+                    /* x2modstart */ 
+                    if (options.type === 'POST') {
+                        if (typeof options.data === 'undefined') options.data = {};
+                        options.data = $.extend (
+                            $.deparam.querystring (options.url), options.data);
+                    }
+                    /* x2modend */ 
 					if (settings.beforeAjaxUpdate !== undefined) {
 						settings.beforeAjaxUpdate(id, options);
 					}
 					$.ajax(options);
 				} else {  // non-ajax mode
+                    /* x2modstart */ 
+                    if (options.type === 'POST') {
+                        if (typeof options.data === 'undefined') options.data = {};
+                        options.data = $.extend (
+                            $.deparam.querystring (options.url), options.data);
+                    }
+                    /* x2modend */ 
 					if (options.type === 'GET') {
 						window.location.href = options.url;
 					} else {  // POST mode

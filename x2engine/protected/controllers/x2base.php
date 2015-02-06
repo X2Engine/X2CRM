@@ -141,9 +141,11 @@ abstract class x2base extends X2Controller {
                 'class' => 'InlineEmailAction',
             ),
         );
-        $module = Modules::model ()->findByAttributes (array ('name' => $this->module->name));
-        if ($module->enableRecordAliasing) {
-            $actions = array_merge ($actions, RecordAliases::getActions ());
+        if ($this->module) {
+            $module = Modules::model ()->findByAttributes (array ('name' => $this->module->name));
+            if ($module->enableRecordAliasing) {
+                $actions = array_merge ($actions, RecordAliases::getActions ());
+            }
         }
         if ($this->modelClass !== '') {
             $modelClass = $this->modelClass;
