@@ -1,7 +1,7 @@
 <?php
 return array (
 
-'Icon Reference'=>'Pictogram Reference',
+'Icon Reference'=>'Pictogram Referentie',
 'X2Engine Modules'=>'X2Engine Modules',
 'Events'=>'Evenementen',
 'Action Reminder'=>'Actie Herinnering',
@@ -10,6 +10,6 @@ return array (
 'Document Updated'=>'Document Bijgewerkt',
 'Email Opened'=>'Email Geopend',
 'Email Sent'=>'E-mail Verzonden',
-'Web Lead Created'=>'Web Lood Gemaakt',
+'Web Lead Created'=>'Web Lead Gemaakt',
 'Workflow Completed'=>'Workflow Voltooid',
 );
