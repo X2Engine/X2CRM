@@ -101,10 +101,11 @@ Yii::import('application.extensions.CJuiDateTimePicker.CJuiDateTimePicker');
             </div><!-- .cell -->
             <div class="cell">
                 <?php 
-                echo $form->label($model, 'visibility',array('class'=>'action-visibility-label')); 
+                echo $form->label($model, 'visibility',array('class'=>'action-visibility-label'));
+                $permissionsBehavior = Yii::app()->params->modelPermissions;
                 echo $form->dropDownList(
                     $model, 'visibility', 
-                    X2PermissionsBehavior::getVisibilityOptions(),
+                    $permissionsBehavior::getVisibilityOptions(),
                     array(
                         'class'=>'action-visibility-dropdown x2-select',
                     )); 

@@ -35,11 +35,12 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 
+Yii::import ('application.tests.unit.components.FormatterTestBase');
+
 /**
- * 
  * @author Demitri Morgan <demitri@x2engine.com>
  */
-class FormatterTest extends X2DbTestCase {
+class FormatterTest extends FormatterTestBase {
 
     public $fixtures = array(
         'contacts' => 'Contacts',
@@ -47,41 +48,7 @@ class FormatterTest extends X2DbTestCase {
     );
 
     public function testParseFormula() {
-        $formula = "='My name is '.".'{name}'.".' and I work at '.".'{company.name}'.".' which '.".'{company.description};';
-        $contact = $this->contacts('testFormula');
-        $evald = Formatter::parseFormula($formula,array('model'=>$contact));
-        $this->assertTrue($evald[0],$evald[1]);
-        $this->assertEquals('My name is '.$this->contacts('testFormula')->name
-                .' and I work at '.$this->accounts('testQuote')->name
-                .' which '.$this->accounts('testQuote')->description,
-                $evald[1]);
-
-        // Now let's throw some bad code in there:
-        //
-        // system call:
-        $formula = '=exec("echo YOU SHOULD NOT SEE THIS MESSAGE, EVER");';
-        $evald = Formatter::parseFormula($formula,array('model'=>$contact));
-        $this->assertFalse($evald[0]);
-        $formula = '="Unfortunately, string expressions in formulae with anything
-            aside from spaces, alphanumerics and underscores aren\'t supported yet."';
-        $evald = Formatter::parseFormula($formula,array());
-        $this->assertFalse($evald[0]);
-
-        // Test typecasting:
-        //
-        // integer:
-        $contact->createDate = '1';
-        $evald = Formatter::parseFormula("={createDate}+2",array('model'=>$contact));
-        $this->assertEquals(3,$evald[0]);
-        // boolean:
-        $contact->doNotEmail = true;
-        $evald = Formatter::parseFormula("={doNotEmail} or false",array('model'=>$contact));
-        $this->assertTrue($evald[0]);
-        // double:
-        $contact->dealvalue = '25.3';
-        $evald = Formatter::parseFormula("={dealvalue}*44.1",array('model'=>$contact));
-        $this->assertEquals(1115.73,$evald[0]);
-
+        $this->parseFormulaAssertions ('Formatter');
     }
 
     /**

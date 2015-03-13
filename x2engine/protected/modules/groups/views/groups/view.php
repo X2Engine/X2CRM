@@ -44,7 +44,7 @@ $this->insertMenu($menuOptions, $model);
     <h2><span class="no-bold">
         <?php echo Yii::t('groups','{group}:', array(
             '{group}' => Modules::displayName(false),
-        )); ?></span> <?php echo $model->name; ?></h2>
+        )); ?></span> <?php echo $model->renderAttribute ('name'); ?></h2>
 </div>
 <div class="form" style="min-height:300px;">
 <?php $this->renderPartial('_view',array('data'=>$model,'users'=>$users)); ?>

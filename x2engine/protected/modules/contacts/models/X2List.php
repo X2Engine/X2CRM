@@ -71,13 +71,18 @@ class X2List extends X2Model {
 
     public function behaviors(){
         return array(
+            'ERememberFiltersBehavior' => array(
+                'class' => 'application.components.ERememberFiltersBehavior',
+                'defaults' => array(),
+                'defaultStickOnClear' => false
+            ),
             'X2LinkableBehavior' => array(
                 'class' => 'X2LinkableBehavior',
                 'baseRoute' => '/contacts/contacts/list',
                 'autoCompleteSource' => '/contacts/contacts/getLists',
             ),
             'X2PermissionsBehavior' => array(
-                'class' => 'application.components.permissions.X2PermissionsBehavior'
+                'class' => 'application.components.permissions.'.Yii::app()->params->modelPermissions
             ),
             'X2FlowTriggerBehavior' => array('class' => 'X2FlowTriggerBehavior'),
         );
@@ -446,16 +451,45 @@ class X2List extends X2Model {
         // get search conditions (WHERE, JOIN, ORDER BY, etc) from the criteria
         $searchConditions = Yii::app()->db->getCommandBuilder()
             ->createFindCommand($tableSchema, $criteria)->getText();
-
-        $rowNumberQuery = Yii::app()->db->createCommand('
-            SELECT r-1 
-            FROM (
-                SELECT *,@rownum:=@rownum + 1 AS r 
-                FROM ('.$searchConditions.') t1, (SELECT @rownum:=0) r) t2 
-            WHERE t2.id='.$modelId
-        );
+        
+        
+        /*
+         * VCR Button Row Number Selection Query
+         * 
+         * This complicated block of code defines where a record is in the row
+         * set to determine its position for VCR controls. This relies on SQL
+         * variables and incrementing the variable in each row of the result set
+         * from the subquery. A version of this query in plain MySQL looks like:
+         * SELECT r-1 
+         *   FROM (
+         *       SELECT *,@rownum:=@rownum + 1 AS r 
+         *       FROM ('.$searchConditions.') t1, (SELECT @rownum:=0) r) t2 
+         *   WHERE t2.id='.$modelId
+         */
+        $varPrefix = '@'; //Current prefix is MySQL specific
+        $varName = $varPrefix.'rownum';
+        $varText = 'SET '.$varName.' = 0'; // Current declaration is MySQL specific
+        Yii::app()->db->createCommand()
+                ->setText($varText)
+                ->execute();
+        $subQuery = Yii::app()->db->createCommand()
+                ->select('*, ('.$varName.':='.$varName.'+1) r')
+                ->from('('.$searchConditions.') t1')
+                ->getText();
+        $rowNumberQuery = Yii::app()->db->createCommand()
+                ->select('(r-1)')
+                ->from('('.$subQuery.') t2')
+                ->where('t2.id=:t2_id');
+        
+//        $rowNumberQuery = Yii::app()->db->createCommand('
+//            SELECT r-1 
+//            FROM (
+//                SELECT *,@rownum:=@rownum + 1 AS r 
+//                FROM ('.$searchConditions.') t1, (SELECT @rownum:=0) r) t2 
+//            WHERE t2.id='.$modelId
+//        );
         // attach params from $criteria to this query
-        $rowNumberQuery->params = $criteria->params;
+        $rowNumberQuery->params = array_merge(array(':t2_id'=>$modelId),$criteria->params);
         $rowNumber = $rowNumberQuery->queryScalar();
 
         if($rowNumber === false){ // the specified record isn't in this list
@@ -836,6 +870,47 @@ class X2List extends X2Model {
             $this->processCriteria();
         }
         return parent::afterSave();
+    }
+
+    /**
+     * Filter array of lists based on attributes of this list
+     */
+    public function filter (array $lists) {
+        $filterAttrs = array ();
+        foreach ($this->getAttributes () as $attr => $val) {
+            if (isset ($val) && $val !== '') {
+                if ($attr === 'assignedTo') {
+                    $filterAttrs[$attr] = $this->compareAssignment ($val);
+                    if (is_array ($filterAttrs[$attr])) {
+                        $filterAttrs[$attr] =  array_map (function ($elem) {
+                            return strtolower ($elem); 
+                        }, $filterAttrs[$attr]);
+                    }
+                } else {
+                    $filterAttrs[$attr] = $val;
+                }
+            }
+        }
+
+        $filteredLists = array ();
+        foreach ($lists as $list) {
+            $pass = true;
+            foreach ($filterAttrs as $attr => $val) {
+                if ($attr === 'assignedTo') {
+                    if (!is_array ($val) ||
+                        !in_array (strtolower ($list->$attr), $val)) {
+
+                        $pass = false;
+                        break;
+                    }
+                } elseif (!preg_match ("/$val/i", (string) $list->$attr)) {
+                    $pass = false;
+                    break;
+                }
+            }
+            if ($pass) $filteredLists[] = $list;
+        }
+        return $filteredLists;
     }
 
 }

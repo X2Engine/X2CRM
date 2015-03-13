@@ -68,13 +68,18 @@ class TestingAuxLib  {
      * @return function Takes an array of arguments as a parameter and calls
      *  the specified method with those arguments.
      */
-    public static function setPublic ($classNameOrInstance, $methodName) {
-        if (is_string ($classNameOrInstance)) {
+    public static function setPublic ($classNameOrInstance, $methodName, $static=false) {
+        if (!$static && is_string ($classNameOrInstance)) {
             $class = new $classNameOrInstance ();
-        } else {
+            $className = $classNameOrInstance;
+        } elseif (!$static) {
             $class = $classNameOrInstance;
+            $className = get_class ($class);
+        } else {
+            $class = null;
+            $className = $classNameOrInstance;
         }
-        $method = new ReflectionMethod (get_class ($class), $methodName);
+        $method = new ReflectionMethod ($className, $methodName);
         $method->setAccessible (TRUE);
         return function ($arguments=array ()) use ($method, $class) {
             return $method->invokeArgs ($class, $arguments);
@@ -159,6 +164,18 @@ class TestingAuxLib  {
         $sessionId = array_pop (array_pop ($matches)); // get the last match
         ob_clean ();
         return $sessionId;
+    }
+
+    public static function printExec ($command) {
+        $output = array (); 
+        $retVar;
+        $retVal = exec ($command, $output, $retVar);
+        VERBOSE_MODE && print_r ($output);
+        return $output;
+    }   
+
+    public static function runCronCommand () {
+        self::printExec ('curl '.TEST_BASE_URL.'api/x2cron &>/dev/null');
     }
 
 // not tested yet, might eventually be useful

@@ -138,9 +138,22 @@ class Credentials extends CActiveRecord {
 	protected $validModels = array(
         'EmailAccount',
         'GMailAccount',
+        'MandrillAccount',
         'OutlookEmailAccount',
+        'SendgridAccount',
         'YahooEmailAccount',
         'TwitterApp',
+    );
+
+	/**
+	 * Model classes which support the IMAP protocol
+	 * @var array
+	 */
+    protected static $imapModels = array(
+        'EmailAccount',
+        'GMailAccount',
+        'OutlookEmailAccount',
+        'YahooEmailAccount',
     );
 
     public function afterDelete () {
@@ -271,7 +284,8 @@ class Credentials extends CActiveRecord {
 	 */
 	public function getDefaultCredentials($refresh=false){
 		if(!isset(self::$_defaultCredentials) || $refresh){
-			$allDefaults = Yii::app()->db->createCommand()->select('*')->from('x2_credentials_default')->queryAll();
+			$allDefaults = Yii::app()->db->createCommand()
+                ->select('*')->from('x2_credentials_default')->queryAll();
 			self::$_defaultCredentials = array_fill_keys(array_map(function($d){
 								return $d['userId'];
 							}, $allDefaults), array());
@@ -290,7 +304,9 @@ class Credentials extends CActiveRecord {
 			'email' => array(
                 'EmailAccount',
                 'GMailAccount',
+                'MandrillAccount',
                 'OutlookEmailAccount',
+                'SendgridAccount',
                 'YahooEmailAccount',
             ),
             'twitter' => array ('TwitterApp'),
@@ -305,8 +321,10 @@ class Credentials extends CActiveRecord {
 		return array(
 			'EmailAccount' => array('email'),
 			'GMailAccount' => array('email'), // ,'google'),
-			'OutlookEmailAccount' => array('email'), 
-			'YahooEmailAccount' => array('email'), 
+			'MandrillAccount' => array('email'),
+			'OutlookEmailAccount' => array('email'),
+			'SendgridAccount' => array('email'),
+			'YahooEmailAccount' => array('email'),
             'TwitterApp' => array ('twitter'),
 		);
 	}
@@ -421,18 +439,25 @@ class Credentials extends CActiveRecord {
      *  attributes.
 	 */
 	public static function getCredentialOptions (
-        $model,$name,$type='email',$uid=null,$htmlOptions=array(),$excludeLegacy=false){
+        $model,$name,$type='email',$uid=null,$htmlOptions=array(),$excludeLegacy=false,$imapOnly=false){
 
 		// First get credentials available to the user:
 		$defaultUserId = in_array($uid,self::$sysUseId) ? 
             $uid : 
             ($uid !==null ? $uid : Yii::app()->user->id); // The "user" (actual user or system role)
 		$uid = Yii::app()->user->id; // The actual user
+
         // Users can always use their own credentials, it's assumed
 		$criteria = new CDbCriteria(array('params'=>array(':uid'=>$uid))); 
 		$staticModel = self::model();
 		$staticModel->userId = self::SYS_ID;
 		$criteria->addCondition('userId=:uid');
+
+        // Exclude accounts types that do not support IMAP if requested
+        if ($imapOnly) {
+            $criteria->addInCondition ('modelClass', self::$imapModels);
+        }
+
 		// Include system-owned credentials
 		if(Yii::app()->user->checkAccess(
             'CredentialsSelectSystemwide',array('model'=>$staticModel))) {
@@ -442,6 +467,7 @@ class Credentials extends CActiveRecord {
 			$defaultUserId = $uid;
         }
 		$staticModel->private = 0;
+
 		// Include non-private credentials if the user has access to them
 		if(Yii::app()->user->checkAccess(
             'CredentialsSelectNonPrivate',array('model'=>$staticModel))) {
@@ -507,12 +533,14 @@ class Credentials extends CActiveRecord {
      *  credentials with modelClass "EmailAccount" and "GMailAccount"
 	 * @param integer $uid The user ID or system role ID for which the input is being generated
 	 * @param array $htmlOptions HTML options to pass to {@link CHtml::activeDropDownList()}
+	 * @param array $excludeLegacy Exclude the sendmail legacy option
+	 * @param array $imapOnly Hide models which do not support IMAP
 	 * @return string
 	 */
 	public static function selectorField(
-        $model,$name,$type='email',$uid=null,$htmlOptions=array(),$excludeLegacy=false) {
+        $model,$name,$type='email',$uid=null,$htmlOptions=array(),$excludeLegacy=false,$imapOnly=false) {
 
-        $retDict = self::getCredentialOptions ($model,$name,$type,$uid,$htmlOptions,$excludeLegacy);
+        $retDict = self::getCredentialOptions ($model,$name,$type,$uid,$htmlOptions,$excludeLegacy,$imapOnly);
         $credentials = $retDict['credentials'];
         $htmlOptions = $retDict['htmlOptions'];
 		return CHtml::activeDropDownList($model,$name,$credentials,$htmlOptions);

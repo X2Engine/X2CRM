@@ -1124,12 +1124,12 @@ class ProfileController extends x2base {
         $_POST['widgetClass'] = $_GET['widgetClass'];
         $_POST['widgetType'] = $_GET['widgetType'];
 
-        if (isset($_GET['modelName'])) {
-            $_POST['modelName'] = $_GET['modelName'];
+        if (isset($_GET['settingsModelName'])) {
+            $_POST['settingsModelName'] = $_GET['settingsModelName'];
         }
 
-        if (isset($_GET['modelId'])) {
-            $_POST['modelId'] = $_GET['modelId'];
+        if (isset($_GET['settingsModelId'])) {
+            $_POST['settingsModelId'] = $_GET['settingsModelId'];
         }
 
 

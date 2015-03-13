@@ -44,14 +44,6 @@ function QuickCreate (argsDict) {
     var defaultArgs = {
         DEBUG: x2.DEBUG && false,
         /**
-         * @var string modelType name of X2Model child that has X2QuickCreateBehavior  
-         */
-        modelType: null,
-        /**
-         * @var object dialogAttributes dialog settings 
-         */
-        dialogAttributes: {},
-        /**
          * @var object data to pass along with request for quick create form
          */
         data: {},
@@ -66,14 +58,18 @@ function QuickCreate (argsDict) {
         enableFlash: true
     };
     auxlib.applyArgs (this, defaultArgs, argsDict);
+    x2.QuickCRUD.call (this, argsDict);
     if (!QuickCreate.createRecordUrls[this.modelType]) throw new Error ('invalid model type');
     this.createRecordUrl = QuickCreate.createRecordUrls[this.modelType];
     this.dialogTitle = QuickCreate.dialogTitles[this.modelType];
     this.openQuickCreateDialog ();
+
 }
 
 QuickCreate.createRecordUrls = {};
 QuickCreate.dialogTitles = {};
+
+QuickCreate.prototype = auxlib.create (x2.QuickCRUD.prototype);
 
 /**
  * Open record creation dialog 
@@ -82,19 +78,7 @@ QuickCreate.prototype.openQuickCreateDialog = function () {
 
     var that = this;
 
-    this._dialog = $('<div>');
-    this._dialog.dialog ($.extend ({
-        title: this.dialogTitle,
-        autoOpen: false,
-        resizable: true,
-        width: '650px',
-        show: 'fade',
-        hide: 'fade',
-        close: function () {
-            that._dialog.dialog ('destroy');
-            that._dialog.remove ();
-        }
-    }, this.dialogAttributes));
+    x2.QuickCRUD.prototype.openQuickCRUDDialog.call (this);
 
     var data = $.extend (this.data, {
         x2ajax: true,
@@ -135,7 +119,7 @@ QuickCreate.prototype.closeDialog = function () {
 
 
 QuickCreate.prototype._handleFormSubmission = function (form) {
-    if (form.find ('.error').length) return;
+    //if (form.find ('.error').length) return;
     var that = this;
     var formdata = form.serializeArray();
 
@@ -168,9 +152,10 @@ QuickCreate.prototype._handleFormSubmission = function (form) {
                     that._dialog.find('.create-account').remove();
                     var submit = that._dialog.find('input[type="submit"]');
                     var form = that._dialog.find('form');
-                    $(submit).unbind ('click').bind ('click', function() {
-                        return that._handleFormSubmission (form);
-                    }, true);
+                    $(form).submit (function () {
+                        that._handleFormSubmission (form);
+                        return false;
+                    });
                 }
             }
         }

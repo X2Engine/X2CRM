@@ -50,6 +50,7 @@ class CreateWebFormAction extends CAction {
      *  
      */
     public function run(){
+        AuxLib::debugLogR($_POST);
         $modelClass = $this->controller->modelClass;
         if ($modelClass === 'Campaign') $modelClass = 'Contacts';
 

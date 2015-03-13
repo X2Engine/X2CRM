@@ -36,6 +36,9 @@
 
 $this->noBackdrop = true;
 
+Yii::app()->clientScript->registerCssFile($this->module->assetsUrl.'/css/calendarLayout.css');
+
+
 $halfWidthThreshold = 1200; // content width past which publisher moves to the right of calendar
 Yii::app()->clientScript->registerCss('calendarResponsiveCss',"
 

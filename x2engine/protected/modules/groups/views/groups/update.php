@@ -41,7 +41,7 @@ $this->insertMenu($menuOptions, $model);
 
 ?>
 <div class="page-title icon groups">
-	<h2><span class="no-bold"><?php echo Yii::t('groups','Update'); ?>:</span> <?php echo $model->name; ?></h2>
+	<h2><span class="no-bold"><?php echo Yii::t('groups','Update'); ?>:</span> <?php echo $model->renderAttribute('name'); ?></h2>
 </div>
 
 <?php echo $this->renderPartial('_form', array('model'=>$model, 'users'=>$users, 'selected'=>$selected)); ?>

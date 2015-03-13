@@ -43,7 +43,7 @@
  *
  * @package application.components
  */
-class QuickCreateRelationshipBehavior extends CBehavior {
+class QuickCreateRelationshipBehavior extends QuickCRUDBehavior {
 
     /**
      * Used to specify which attributes (for a given model type) should be updated to match
@@ -83,14 +83,7 @@ class QuickCreateRelationshipBehavior extends CBehavior {
      * @return array of urls for create actions of each model in $models 
      */
     public static function getCreateUrlsForModels ($models) {
-        $createUrls = array_flip ($models);
-        array_walk (
-            $createUrls,
-            function (&$val, $key) {
-                $moduleName = lcfirst (X2Model::getModuleName ($key));
-                $val = Yii::app()->controller->createUrl ("/$moduleName/$moduleName/create");
-            });
-        return $createUrls;
+        return parent::getUrlsForModels ($models, 'create');
     }
 
     /**

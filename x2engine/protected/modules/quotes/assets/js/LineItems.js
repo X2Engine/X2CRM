@@ -78,7 +78,11 @@ function LineItems (argsDict) {
         /**
          * @param string used to prefix unique identifiers (e.g. html element ids)
          */
-        namespacePrefix: null
+        namespacePrefix: null,
+        /**
+         * @param string url to request product options for combo box 
+         */
+        getItemsUrl: null
     };
     auxlib.applyArgs (this, defaultArgs, argsDict);
     var that = this;
@@ -360,14 +364,14 @@ LineItems.prototype.addLineItem = function (
 
     var that = this;
     if (!fillLineItem) {
-            values = { // default values,
-                    "product-name": ['' /* default input value */, false /* validation error */],
-                    "price": ['0', false],
-                    "quantity": ['1', false],
-                    "adjustment": ['0', false],
-                    "description": ['', false],
-                    "adjustment-type": ['linear', false]
-            }
+        values = { // default values,
+            "product-name": ['' /* default input value */, false /* validation error */],
+            "price": ['0', false],
+            "quantity": ['1', false],
+            "adjustment": ['0', false],
+            "description": ['', false],
+            "adjustment-type": ['linear', false]
+        }
     }
 
     var lineItemRow = $("<tr>", {'class': 'line-item'});
@@ -388,9 +392,9 @@ LineItems.prototype.addLineItem = function (
             name: 'lineitem[' + ++that._lineCounter + '][name]' })
     ));
     if (!that.readOnly) {
-        $inputCell.find ('input').after (
+        /*$inputCell.find ('input').after (
             $("<button>", {'class': 'x2-button product-select-button', 'type': 'button'}).
-                append ($("<img>", { src: that.arrowDownImageSource })));
+                append ($("<img>", { src: that.arrowDownImageSource })));*/
     }
     lineItemRow.append ($("<td>", {'class': 'x2-3rd-child input-cell'}).append (
         $("<input>", {
@@ -470,16 +474,27 @@ LineItems.prototype.addLineItem = function (
 
     if (!that.readOnly) { // set up product select menu behavior
         var productNameInput = $(lineItemRow).find ('input.product-name');
-        $(productNameInput).autocomplete ({
+        x2.combodebug = new x2.ComboBox ({
+            element: productNameInput,
+            getItemsUrl: this.getItemsUrl,
+            optionClick: function (option$) {
+                that.selectProductFromDropDown (option$.text (), option$.data ('data-val'));
+            },
+            onShow: function () {
+                that._clickedLineItem = $(this.element);
+            }
+        });
+        /*$(productNameInput).autocomplete ({
             source: that.productNames,
             select: function (event, ui) { that.selectProductFromAutocomplete (event, ui); },
             open: function (evt, ui) {
                 if ($(that._productMenuSelector).is (":visible")) {
                     $(that._productMenuSelector).hide ();
                 }
+                }
             }
         });
-        that.formatAutocompleteWidget (productNameInput);
+        that.formatAutocompleteWidget (productNameInput);*/
         $('tbody.sortable').sortable ('refresh');
     }
     if (!fillLineItem) { // format default input field values
@@ -648,116 +663,134 @@ LineItems.prototype.addAdjustment = function (
     that.updateTotals ();
 };
 
-LineItems.prototype.selectProductFromAutocomplete = function (event, ui) {
-    var that = this;
-    that.DEBUG && console.log ('selectProductFromAutocomplete');
-    event.preventDefault ();
-    var lineItemName = ui.item.label;
-    $(event.target).val (lineItemName);
-    var lineItemPrice = $(event.target).attr ('name').replace (/name/, 'price');
-    var lineItemDescription = $(event.target).attr ('name').replace (/name/, 'description');
-    this.element$.find ('[name="' + lineItemPrice + '"]').
-        val (that.productPrices[lineItemName]).maskMoney ('mask');
-    this.element$.find ('[name="' + lineItemDescription + '"]').
-        val (that.productDescriptions[lineItemName]);
-    that.validateName (event.target);
-    that.updateTotals ();
-    return false;
-};
+//LineItems.prototype.selectProductFromAutocomplete = function (event, ui) {
+//    var that = this;
+//    that.DEBUG && console.log ('selectProductFromAutocomplete');
+//    event.preventDefault ();
+//    var lineItemName = ui.item.label;
+//    $(event.target).val (lineItemName);
+//    var lineItemPrice = $(event.target).attr ('name').replace (/name/, 'price');
+//    var lineItemDescription = $(event.target).attr ('name').replace (/name/, 'description');
+//    this.element$.find ('[name="' + lineItemPrice + '"]').
+//        val (that.productPrices[lineItemName]).maskMoney ('mask');
+//    this.element$.find ('[name="' + lineItemDescription + '"]').
+//        val (that.productDescriptions[lineItemName]);
+//    that.validateName (event.target);
+//    that.updateTotals ();
+//    return false;
+//};
 
-LineItems.prototype.selectProductFromDropDown = function (item) {
+//LineItems.prototype.selectProductFromDropDown = function (item) {
+//    var that = this;
+//    that.DEBUG && console.log ('selectProductFromDropDown');
+//    var lineItemName = item.text ();
+//    $(that._clickedLineItem).val (lineItemName);
+//    var lineItemPrice = $(that._clickedLineItem).attr ('name').replace (/name/, 'price');
+//    var lineItemDescription = 
+//        $(that._clickedLineItem).attr ('name').replace (/name/, 'description');
+//
+//    this.element$.find ('[name="' + lineItemPrice + '"]').
+//        val (that.productPrices[lineItemName]).maskMoney ('mask');
+//    this.element$.find ('[name="' + lineItemDescription + '"]').
+//        val (that.productDescriptions[lineItemName]);
+//    that.validateName (that._clickedLineItem);
+//    that.updateTotals ();
+//    return false;
+//};
+
+LineItems.prototype.selectProductFromDropDown = function (name, attrs) {
     var that = this;
     that.DEBUG && console.log ('selectProductFromDropDown');
-    var lineItemName = item.text ();
+    var lineItemName = name;
     $(that._clickedLineItem).val (lineItemName);
     var lineItemPrice = $(that._clickedLineItem).attr ('name').replace (/name/, 'price');
     var lineItemDescription = 
         $(that._clickedLineItem).attr ('name').replace (/name/, 'description');
 
     this.element$.find ('[name="' + lineItemPrice + '"]').
-        val (that.productPrices[lineItemName]).maskMoney ('mask');
+        val (attrs.price).maskMoney ('mask');
     this.element$.find ('[name="' + lineItemDescription + '"]').
-        val (that.productDescriptions[lineItemName]);
+        val (attrs.description);
     that.validateName (that._clickedLineItem);
     that.updateTotals ();
     return false;
 };
 
-LineItems.prototype.formatAutocompleteWidget = function (element) {
-    var that = this;
-    var widget = $(element).autocomplete ("widget");
-    $(widget).css ({
-            "font-size": "10px",
-            "max-height": "16em",
-            "overflow-y": "scroll"
-    });
-    $(window).resize (function () {
-        $(widget).hide ();
-    });
-};
+//LineItems.prototype.formatAutocompleteWidget = function (element) {
+//    var that = this;
+//    var widget = $(element).autocomplete ("widget");
+//    $(widget).css ({
+//            "font-size": "10px",
+//            "max-height": "16em",
+//            "overflow-y": "scroll"
+//    });
+//    $(window).resize (function () {
+//        $(widget).hide ();
+//    });
+//};
 
 /*
 Sets up a combo box that allows ad-hoc line item names and selection from a
 list of existing products
 */
-LineItems.prototype.setupProductSelectMenu = function () {
-    var that = this;
-    if (that.productNames) {
-        $(this._containerElemSelector + ' input.product-name').autocomplete ({
-            source: that.productNames,
-            select: function (event, ui) { 
-                return that.selectProductFromAutocomplete (event, ui); 
-            },
-            open: function (evt, ui) {
-                if ($(that._productMenuSelector).is (":visible")) {
-                    $(that._productMenuSelector).hide ();
-                }
-            }
-        });
-        $(this._containerElemSelector + ' input.product-name').each (function () {
-            that.formatAutocompleteWidget ($(this));
-        });
-    }
-
-    $(that._lineItemsSelector).on (
-        'click', '.product-select-button', function (event) {
-
-        that._clickedLineItem = $(this).siblings ('.line-item-field');
-        $(that._productMenuSelector).show ().position ({
-            my: "left top",
-            at: "left bottom",
-            of: $(this).prev ()
-        });
-        if (that.element$.closest ('.ui-dialog').length) {
-            that.element$.closest ('.ui-dialog').one ('click', function (event) {
-                var target = event.target;
-                if ($(target).closest ('.ui-menu-item').length || 
-                    $(target).is ('.ui-menu-item')) {
-
-                    // kludge to resolve menu item select event issue
-                    that.selectProductFromDropDown (
-                        ($(target).closest ('.ui-menu-item').length && 
-                        $(target).closest ('.ui-menu-item')) || $(target));
-                } 
-                $(that._productMenuSelector).hide ();
-            });
-        } else {
-            $(document).one ('click', function () {
-                $(that._productMenuSelector).hide ();
-            });
-        }
-        event.stopPropagation ();
-    });
-
-    $(that._productMenuSelector).hide ().menu ({select: function (event, ui) { 
-        if (!that.element$.closest ('.ui-dialog').length) {
-            that.selectProductFromDropDown (ui.item); 
-        }
-    }});
-
-    // kludge to prevent link behavior of menu items when line items are inside action frame
-    $(that._productMenuSelector).find ('a').attr ('href', 'javascript:void(0)');
-};
+//LineItems.prototype.setupProductSelectMenu = function () {
+//    var that = this;
+//    if (that.productNames) {
+//        $(this._containerElemSelector + ' input.product-name').autocomplete ({
+//            source: that.productNames,
+//            select: function (event, ui) { 
+//                return that.selectProductFromAutocomplete (event, ui); 
+//            },
+//            open: function (evt, ui) {
+//                if ($(that._productMenuSelector).is (":visible")) {
+//                    $(that._productMenuSelector).hide ();
+//                }
+//            }
+//        });
+//        $(this._containerElemSelector + ' input.product-name').each (function () {
+//            that.formatAutocompleteWidget ($(this));
+//        });
+//    }
+//
+//    $(that._lineItemsSelector).on (
+//        'click', '.product-select-button', function (event) {
+//
+//        that._clickedLineItem = $(this).siblings ('.line-item-field');
+//        $(that._productMenuSelector).show ().position ({
+//            my: "left top",
+//            at: "left bottom",
+//            of: $(this).prev ()
+//        });
+//        if (that.element$.closest ('.ui-dialog').length) {
+//            that.element$.closest ('.ui-dialog').one ('click', function (event) {
+//                var target = event.target;
+//                if ($(target).closest ('.ui-menu-item').length || 
+//                    $(target).is ('.ui-menu-item')) {
+//
+//                    // kludge to resolve menu item select event issue
+//                    that.selectProductFromDropDown (
+//                        ($(target).closest ('.ui-menu-item').length && 
+//                        $(target).closest ('.ui-menu-item')) || $(target));
+//                } 
+//                $(that._productMenuSelector).hide ();
+//            });
+//        } else {
+//            $(document).one ('click', function () {
+//                $(that._productMenuSelector).hide ();
+//            });
+//        }
+//        event.stopPropagation ();
+//    });
+//
+//    $(that._productMenuSelector).hide ().menu ({select: function (event, ui) { 
+//        if (!that.element$.closest ('.ui-dialog').length) {
+//            that.selectProductFromDropDown (ui.item); 
+//        }
+//    }});
+//
+//    // kludge to prevent link behavior of menu items when line items are inside action frame
+//    $(that._productMenuSelector).find ('a').attr ('href', 'javascript:void(0)');
+//};
 
 /*
 Recalculate line item total, the subtotal, and the overall total
@@ -1015,7 +1048,7 @@ LineItems.prototype.setupEditingBehavior = function () {
         $(that._productMenuSelector).hide ();
     });
 
-    that.setupProductSelectMenu ();
+    //that.setupProductSelectMenu ();
 
     that.DEBUG && console.log ('setupEditingBehavior');
     $(that._containerElemSelector + ' .quote-table tbody.sortable').sortable ({

@@ -87,30 +87,30 @@ Private instance methods
 /**
  * Check if layout should be rearranged after widget is added to layout 
  */
-RecordViewWidgetManager.prototype._afterShowWidgetContents = function () {
-    this._hideShowHiddenProfileWidgetsText ();
-    x2.profile.checkAddWidgetsColumn (); 
-};
-
-/**
- * Overrides parent method. 
- */
-RecordViewWidgetManager.prototype._afterShowWidgetContents = function () {
+RecordViewWidgetManager.prototype._afterShowWidgetContents = function (widget$) {
+    //this._hideShowHiddenProfileWidgetsText ();
+    //x2.profile.checkAddWidgetsColumn (); 
     hideShowHiddenWidgetSubmenuDividers ();
+    widget$.data ('x2-widget').afterRefresh ();
 };
-
 
 /**
  * Override parent method. Add model id and type to GET params
  */
 RecordViewWidgetManager.prototype._getShowWidgetContentsData = function (widgetClass) {
     var that = this;
-    return {
+    var data = {
         widgetClass: widgetClass, 
         widgetType: that.widgetType,
         modelId: that.modelId,
         modelType: that.modelType
     };
+
+    // brittle kludge to check type of widget being updated/shown
+    if (x2[widgetClass.replace (/_$/, '')] instanceof x2.TransactionalViewWidget) {
+        data.relationships = x2.TransactionalViewWidget.relationships ? 1 : 0;
+    }
+    return data;
 };
 
 RecordViewWidgetManager.prototype._setUpRecordViewTypeToggleBehavior = function () {

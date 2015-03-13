@@ -94,7 +94,7 @@ class X2FlowTestBase extends X2DbTestCase {
     /**
      * Checks each entry in triggerLog looking for errors
      * @param array $trace One of the return value of executeFlow ()
-     * @return bool true if an error was found in the log, false otherwise
+     * @return bool false if an error was found in the log, true otherwise
      */
     public function checkTrace ($trace) {
         if (!$trace[0]) return false;

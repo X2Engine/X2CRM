@@ -277,14 +277,18 @@ class FieldFormatter extends CComponent {
     protected function renderCurrency ($field, $makeLinks, $textOnly, $encode) {
         $fieldName = $field->fieldName;
         if ($this->owner instanceof Product) { // products have their own currency
-            return Yii::app()->locale->numberFormatter->formatCurrency(
+            $currency = Yii::app()->locale->numberFormatter->formatCurrency(
                 $this->owner->$fieldName, $this->owner->currency);
         } else {
-            return empty($this->owner->$fieldName) ? 
+            $currency = empty($this->owner->$fieldName) ?
                 ($encode ? "&nbsp;" : '') : 
                 Yii::app()->locale->numberFormatter->formatCurrency(
                     $this->owner->$fieldName, Yii::app()->params['currency']);
         }
+        if ($encode)
+            return CHtml::encode($currency);
+        else
+            return $currency;
     }
 
     protected function renderPercentage ($field, $makeLinks, $textOnly, $encode) {

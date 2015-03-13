@@ -51,7 +51,7 @@ if ($isMyProfile) {
 <div class="responsive-page-title page-title icon profile">
     <h2>
         <span class="no-bold"><?php echo Yii::t('profile','Profile:'); ?></span>
-        <?php echo $model->fullName; ?>
+        <?php echo CHtml::encode($model->fullName); ?>
     </h2>
 <?php
     if ($isMyProfile) {
@@ -163,12 +163,12 @@ if ($isMyProfile) {
     </tr>
     <tr>
         <td class="label"><?php echo $attributeLabels['emailAddress']; ?></td>
-        <td><b><?php echo CHtml::mailto($model->emailAddress); ?></b></td>
+        <td><b><?php echo CHtml::mailto(CHtml::encode($model->emailAddress)); ?></b></td>
     </tr>
     <tr class='full-profile-details-row' <?php 
      echo (!$isMyProfile || $fullProfileInfo ? '' : 'style="display:none;"'); ?>>
         <td class="label"><?php echo $attributeLabels['googleId']; ?></td>
-        <td><b><?php echo CHtml::mailto($model->googleId); ?></b></td>
+        <td><b><?php echo CHtml::mailto(CHtml::encode($model->googleId)); ?></b></td>
     </tr>
     <tr class='full-profile-details-row' <?php 
      echo (!$isMyProfile || $fullProfileInfo ? '' : 'style="display:none;"'); ?>>

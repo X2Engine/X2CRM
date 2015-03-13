@@ -465,9 +465,9 @@ if (RESPONSIVE_LAYOUT) {
 ?>">
 
 <?php
-if (YII_DEBUG && YII_UNIT_TESTING) {
-    echo "<div id='qunit'></div>";
-}
+//if (YII_DEBUG && YII_UNIT_TESTING) {
+//    echo "<div id='qunit'></div>";
+//}
 ?>
 
 <div id="page-container">
@@ -499,6 +499,13 @@ if (YII_DEBUG && YII_UNIT_TESTING) {
                 if ($custom) {
                     echo CHtml::image(
                         Yii::app()->request->baseUrl.'/'.Yii::app()->params->logo, Yii::app()->settings->appName,
+                        array (
+                            'id' => 'your-logo',
+                            'class' => 'custom-logo'
+                        ));
+                } else if (Auxlib::isIE()) {
+                    echo CHtml::image(
+                        Yii::app()->request->baseUrl.'/images/x2-logo-square.png', Yii::app()->settings->appName,
                         array (
                             'id' => 'your-logo',
                             'class' => 'custom-logo'

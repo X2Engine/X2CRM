@@ -70,6 +70,11 @@ $config['components']['log']['routes'] = array(
 		'logFile' => php_sapi_name() == 'cli' ? 'test.log' : 'test-web.log',
         'levels' => 'error,warning,trace,info',
         'categories' => 'application.*'
+	),
+	array(
+		'class' => 'CFileLogRoute',
+		'logFile' => php_sapi_name() == 'cli' ? 'test-debug.log' : 'test-web-debug.log',
+        'categories' => 'application.debug'
 	)
 );
 $config['params']['automatedTesting'] = true;

@@ -211,7 +211,6 @@ class SiteController extends x2base {
     public function actionWidgetSetting($widget, $setting) {
         $value = $_GET['value'];
         Profile::changeWidgetSetting($widget, $setting, $value);
-
     }
 
     // Outputs white or black depending on input color
@@ -1575,8 +1574,12 @@ class SiteController extends x2base {
      */
     public function actionAppendTag() {
         if (isset($_POST['Type'], $_POST['Id'], $_POST['Tag']) &&
-                (ctype_alpha($_POST['Type']) || $_POST['Type'] === 'X2Leads')) {
+                preg_match('/^[\w\d_-]+$/', $_POST['Type'])) {
 
+            if (!class_exists($_POST['Type'])) {
+                echo 'false';
+                return;
+            }
             $model = X2Model::model($_POST['Type'])->findByPk($_POST['Id']);
             echo $model->addTags($_POST['Tag']);
             exit;
@@ -1595,9 +1598,13 @@ class SiteController extends x2base {
      */
     public function actionRemoveTag() {
         if (isset($_POST['Type'], $_POST['Id'], $_POST['Tag']) &&
-                (ctype_alpha($_POST['Type']) || $_POST['Type'] === 'X2Leads')) {
-            $model = X2Model::model($_POST['Type'])->findByPk($_POST['Id']);
+                preg_match('/^[\w\d_-]+$/', $_POST['Type'])) {
 
+            if (!class_exists($_POST['Type'])) {
+                echo 'false';
+                return;
+            }
+            $model = X2Model::model($_POST['Type'])->findByPk($_POST['Id']);
             if ($model !== null && $model->removeTags($_POST['Tag'])) {
                 echo 'true';
                 return;
@@ -1683,14 +1690,22 @@ class SiteController extends x2base {
      */
 
     public function actionPrintRecord($modelClass, $id, $pageTitle = '') {
+        $this->layout = '//layouts/print';
+
+        $modelTitle = '';
+        if (preg_match('/: /', $pageTitle)) {
+            $modelTitle = preg_replace('/(^.*):\ .*/', '\1', $pageTitle);
+            $pageTitle = preg_replace('/^.*:\ /', '', $pageTitle);
+        }
         if (isset($id) && isset($modelClass)) {
             //$model = $this->getModel ($id, true, $modelClass);
             $model = CActiveRecord::model($modelClass)->findByPk((int) $id);
-            echo $this->renderPartial('printableRecord', array(
+            echo $this->render('printableRecord', array(
                 'model' => $model,
                 'modelClass' => $modelClass,
                 'id' => $id,
-                'pageTitle' => $pageTitle
+                'pageTitle' => $pageTitle,
+                'modelTitle' => $modelTitle
                     ), true);
             return;
         }
@@ -2197,7 +2212,7 @@ class SiteController extends x2base {
     }
 
     public function actionDuplicateCheck(
-        $moduleName, $modelName, $id = null, $ref = 'view', $showAll = false) {
+    $moduleName, $modelName, $id = null, $ref = 'view', $showAll = false) {
 
         if (empty($id)) {
             $model = X2Model::model($modelName);
@@ -2231,8 +2246,8 @@ class SiteController extends x2base {
             if ($action === 'keepThis' && isset($_POST['data'])) {
                 $attributes = json_decode($_POST['data'], true);
                 if ($ref === 'view') {
-                    $model = $modelName::model ()->findByPk ($attributes['id']);
-                    $model->duplicateChecked ();
+                    $model = $modelName::model()->findByPk($attributes['id']);
+                    $model->duplicateChecked();
                     $id = $model->id;
                 } elseif ($ref === 'create') {
                     $model = new $modelName;
@@ -2305,12 +2320,12 @@ class SiteController extends x2base {
                 $attributes[$attribute] = $val;
             }
             $model = X2Model::model($modelName)->findByPk($_POST['modelId']);
-            if (isset($model) && Yii::app()->controller->checkPermissions($model,'edit')) {
+            if (isset($model) && Yii::app()->controller->checkPermissions($model, 'edit')) {
                 $model->setX2Fields($attributes);
                 if ($model->save()) {
                     $retArr = array();
                     foreach (array_intersect_key($model->attributes, $attributes) as $attr => $key) {
-                        $retArr[$modelName.'_'.$attr] = $model->renderAttribute($attr, true, false);
+                        $retArr[$modelName . '_' . $attr] = $model->renderAttribute($attr, true, false);
                     }
                     echo json_encode($retArr);
                 } else {

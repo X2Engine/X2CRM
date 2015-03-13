@@ -39,6 +39,7 @@ Yii::import('application.modules.workflow.*');
 Yii::import('application.modules.workflow.controllers.*');
 Yii::import('application.modules.workflow.models.*');
 Yii::import('application.modules.users.models.*');
+Yii::import('application.modules.groups.models.*');
 
 /**
  * @package application.tests.unit.modules.workflow.controllers
@@ -48,15 +49,19 @@ class WorkflowTest extends X2DbTestCase {
     public $fixtures = array (
         'contacts' => array ('Contacts', '.WorkflowTests'),
         'actions' => array ('Actions', '.WorkflowTests'),
+        'workflows' => array ('Workflow', '.WorkflowTests'),
     );
 
     public static function referenceFixtures(){
         return array(
             'x2flow' => array ('X2Flow', '.WorkflowTests'),
-            'workflows' => array ('Workflow', '.WorkflowTests'),
             'workflowStages' => array ('WorkflowStage', '.WorkflowTests'),
             'roleToWorkflow' => array (':x2_role_to_workflow', '.WorkflowTests'),
             'users' => 'User',
+            'groups' => 'Groups',
+            'groupToUser' => 'GroupToUser',
+            'roles' => 'Roles',
+            'roleToUser' => 'RoleToUser',
         );
     }
 

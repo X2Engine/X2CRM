@@ -284,11 +284,28 @@ InlineRelationshipsWidget.prototype._setUpNewRelationshipsForm = function () {
 
 
 
+InlineRelationshipsWidget.prototype._setUpInlineViewButtons = function () {
+    var that = this;
+    this.element.find ('tr').mouseover (function () {
+        console.log ('mouseover'); 
+        $(this).find ('.fa-eye').show (); 
+    });
+    this.element.find ('tr').mouseout (function () {
+        $(this).find ('.fa-eye').hide (); 
+    });
+};
+
+SortableWidget.prototype.afterRefresh = function () {
+    x2.QuickRead.instantiateQuickReadLinks (this.element);
+};
+
+
 InlineRelationshipsWidget.prototype._init = function () {
     GridViewWidget.prototype._init.call (this);
     if (this.displayMode === 'grid') this.element.find ('.ui-resizable-handle').hide ();
     this._setUpPageSizeSelection ();
     this._setUpModeSelection ();
+    this._setUpInlineViewButtons ();
      
 
     if (this.hasUpdatePermissions) this._setUpNewRelationshipsForm ();

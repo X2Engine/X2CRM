@@ -275,12 +275,13 @@ class ContactsController extends x2base {
     }
 
     /**
-     *  Used for auto-complete methods.  This method is likely obsolete.
+     *  Used for auto-complete methods
      */
     public function actionGetItems() {
         $model = new Contacts('search');
         $visCriteria = $model->getAccessCriteria();
-        list($fullNameCol, $fullNameParam) = Formatter::fullNameSelect('firstName', 'lastName', 'value');
+        list($fullNameCol,$fullNameParam) = Formatter::fullNameSelect(
+            'firstName', 'lastName', 'value');
         // This is necessary because the query won't work if one simply compares
         // the ad-hoc column "value" as "value LIKE :qterm".
         list($fullNameCol2, $fullNameParam2) = Formatter::fullNameSelect('firstName', 'lastName');
@@ -290,10 +291,13 @@ class ContactsController extends x2base {
                 ' . $fullNameCol2 . ' LIKE :qterm) AND (' . $visCriteria->condition . ')
             ORDER BY firstName ASC';
         $command = Yii::app()->db->createCommand($sql);
-        $params = array(':qterm' => $_GET['term'] . '%') + $fullNameParam + $fullNameParam2 + $visCriteria->params;
+
+        $params = array(':qterm' => $_GET['term'] . '%') + $fullNameParam + $fullNameParam2 + 
+            $visCriteria->params;
         $result = $command->queryAll(true, $params);
         foreach (array_keys($result) as $key) {
-            $result[$key]['assignedTo'] = implode(', ', $model->getAssigneeNames($result[$key]['assignedTo']));
+            $result[$key]['assignedTo'] = implode(
+                ', ', $model->getAssigneeNames($result[$key]['assignedTo']));
         }
         echo CJSON::encode($result);
         exit;
@@ -757,18 +761,28 @@ class ContactsController extends x2base {
 
     // Displays all visible Contact Lists
     public function actionLists() {
+        $filter = new X2List ('search');
         $criteria = new CDbCriteria();
         $criteria->addCondition('type="static" OR type="dynamic"');
         if (!Yii::app()->params->isAdmin) {
-            $condition = 'visibility="1" OR assignedTo="Anyone"  OR assignedTo="' . Yii::app()->user->getName() . '"';
+            $condition = 
+                'visibility="1" OR assignedTo="Anyone" OR 
+                 assignedTo="' . Yii::app()->user->getName() . '"';
             /* x2temp */
-            $groupLinks = Yii::app()->db->createCommand()->select('groupId')->from('x2_group_to_user')->where('userId=' . Yii::app()->user->getId())->queryColumn();
+            $groupLinks = Yii::app()->db->createCommand()
+                ->select('groupId')
+                ->from('x2_group_to_user')
+                ->where('userId=' . Yii::app()->user->getId())->queryColumn();
             if (!empty($groupLinks))
                 $condition .= ' OR assignedTo IN (' . implode(',', $groupLinks) . ')';
 
             $condition .= 'OR (visibility=2 AND assignedTo IN
                 (SELECT username FROM x2_group_to_user WHERE groupId IN
-                    (SELECT groupId FROM x2_group_to_user WHERE userId=' . Yii::app()->user->getId() . ')))';
+                    (SELECT groupId 
+                     FROM x2_group_to_user 
+                     WHERE userId=' . Yii::app()->user->getId() . ')
+                )
+            )';
             $criteria->addCondition($condition);
         }
 
@@ -777,6 +791,7 @@ class ContactsController extends x2base {
         //$criteria->offset = isset($_GET['page']) ? $_GET['page'] * $perPage - 3 : -3;
         //$criteria->limit = $perPage;
         $criteria->order = 'createDate DESC';
+        $filter->compareAttributes ($criteria);
 
         $contactLists = X2Model::model('X2List')->findAll($criteria);
 
@@ -825,15 +840,33 @@ class ContactsController extends x2base {
             $newContacts,
         );
 
-        $dataProvider = new CArrayDataProvider(array_merge($contactListData, $contactLists), array(
+        $filteredPseudoLists = $filter->filter ($contactListData);
+        $lists = array_merge($filteredPseudoLists, $contactLists);
+        $dataProvider = new CArrayDataProvider($lists, array(
             'pagination' => array('pageSize' => $perPage),
             'sort' => array(
-                'attributes' => array('name', 'type', 'count', 'assignedTo')),
+                'attributes' => array(
+                    'name',
+                    // secondary order is needed to fix https://github.com/yiisoft/yii/issues/2082
+                    'type' => array (
+                        'asc' => 'type asc, id desc',
+                        'desc' => 'type desc, id desc',
+                    ),
+                    'count' => array (
+                        'asc' => 'count asc, id desc',
+                        'desc' => 'count desc, id desc',
+                    ),
+                    'assignedTo' => array (
+                        'asc' => 'assignedTo asc, id desc',
+                        'desc' => 'assignedTo desc, id desc',
+                    ),
+                )),
             'totalItemCount' => count($contactLists) + 3,
         ));
 
         $this->render('listIndex', array(
             'contactLists' => $dataProvider,
+            'filter' => $filter,
         ));
     }
 

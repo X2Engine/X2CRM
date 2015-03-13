@@ -35,27 +35,30 @@
 
 
 
+x2.ServiceWebFormDesigner = (function(){
 
-function ServiceWebFormDesigner (argsList) {
-	WebFormDesigner.call (this, argsList);	
-}
+	function ServiceWebFormDesigner (argsList) {
+		x2.WebFormDesigner.call (this, argsList);	
+	}
 
-ServiceWebFormDesigner.prototype = auxlib.create (WebFormDesigner.prototype);
+	ServiceWebFormDesigner.prototype = auxlib.create (x2.WebFormDesigner.prototype);
 
-/*
-Public static methods
-*/
+	/*
+	Public static methods
+	*/
 
-/*
-Private static methods
-*/
+	/*
+	Private static methods
+	*/
 
-/*
-Public instance methods
-*/
+	/*
+	Public instance methods
+	*/
 
-/*
-Private instance methods
-*/
+	/*
+	Private instance methods
+	*/
+	return ServiceWebFormDesigner;
 
+})();
 

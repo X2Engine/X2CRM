@@ -41,7 +41,7 @@
  * @author Demitri Morgan <demitri@x2engine.com>
  */
 class UpdaterPackageCommand extends CConsoleCommand {
-	public function run() {
+	public function run($args) {
         $comp = new CComponent();
         $ubconfig = array_merge(array(
             'class' => 'UpdaterBehavior',

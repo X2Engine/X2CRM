@@ -37,7 +37,7 @@ $this->insertActionMenu();
 ?>
 <div class="page-title icon profile">
 <h2><?php echo Yii::t('profile', 'Update Your Profile ({name})', array(
-	'{name}' => $model->fullName
+	'{name}' => CHtml::encode($model->fullName)
 )); ?></h2>
 </div>
 

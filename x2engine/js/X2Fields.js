@@ -33,6 +33,7 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 
+
 if (typeof x2 === 'undefined') x2 = {};
 
 x2.Fields = (function () {
@@ -225,7 +226,8 @@ Fields.prototype.createValueCell = function(attributes) {
     return cell;
 };
 /**
- * Alters the value field based on the current operator:  hides if operator is "empty" or "not empty", converts to multiselect if "in list" or "not in list"
+ * Alters the value field based on the current operator:  hides if operator is "empty" or 
+ * "not empty", converts to multiselect if "in list" or "not in list"
  */
 Fields.prototype.updateValueCell = function(elem) {
     var that = this;
@@ -260,7 +262,8 @@ Fields.prototype.createInput = function(attributes, name) {
     var safeAttributes = {    // only these properties can actually be passed to $.attr()
         id: attributes.id,
         name: name,
-        value: attributes.value
+        value: attributes.value,
+        multiple: attributes.multiple
     };
 
     /**
@@ -415,6 +418,8 @@ Fields.prototype.createInput = function(attributes, name) {
         case 'optionalAssignment':
             if(attributes.value !== undefined && attributes.value instanceof Array)
                 safeAttributes.multiple = "multiple";
+            if(typeof attributes.value === "undefined")
+                safeAttributes.value = attributes.defaultVal;
             return this.buildDropdown(dropdownOptions,safeAttributes);
             
         case 'tags':

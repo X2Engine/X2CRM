@@ -38,7 +38,7 @@
 // Yii::setPathOfAlias('custom','custom');
 // This is the main Web application configuration. Any writable
 // CWebApplication properties can be configured here.
-if (YII_DEBUG && YII_UNIT_TESTING) {
+if (YII_UNIT_TESTING) {
     include "X2Config-test.php";
 } else {
     include "X2Config.php";
@@ -85,7 +85,7 @@ $debugLogRoutes = array(
 if (YII_DEBUG_TOOLBAR) {
     $debugLogRoutes[] = array (
         'class' => 'ext.yii-debug-toolbar.YiiDebugToolbarRoute',
-        'ipFilters' => array('127.0.0.1'),
+        'ipFilters' => array('*'),
     );
 }
 
@@ -338,10 +338,12 @@ $config = array(
         'automatedTesting' => false,
         'supportedCurrencies' => array('USD', 'EUR', 'GBP', 'CAD', 'JPY', 'CNY', 'CHF', 'INR', 'BRL', 'VND'),
         'supportedCurrencySymbols' => array(),
+        'modelPermissions'=>'X2PermissionsBehavior',
+        'controllerPermissions'=>'X2ControllerPermissionsBehavior',
     ),
 );
 
-if (YII_DEBUG && YII_UNIT_TESTING)
+if (YII_UNIT_TESTING)
     $config['components']['urlManager']['rules'] = array_merge (
         array ('profileTest/<action:\w+>' => 'profileTest/<action>'),
         $config['components']['urlManager']['rules']);

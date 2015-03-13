@@ -119,15 +119,15 @@ class ProfilesGridViewProfileWidget extends ProfileGridViewWidget {
                         'fullName'=>array(
                             'name'=>'fullName',
                             'header'=>Yii::t('profile', 'Full Name'),
-                            'value'=>'CHtml::link($data->fullName,array("view","id"=>$data->id))',
+                            'value'=>'CHtml::link(CHtml::encode($data->fullName),array("view","id"=>$data->id))',
                             'type'=>'raw',
                         ),
                         'lastLogin'=>array(
                             'name'=>'lastLogin',
                             'header'=>Yii::t('profile', 'Last Login'),
-                            'value'=>'($data->user->lastLogin == 0 ? "" : '.
+                            'value'=>'$data->user ? ($data->user->lastLogin == 0 ? "" : '.
                                 'Yii::app()->dateFormatter->formatDateTime ('.
-                                    '$data->user->lastLogin, "medium"))',
+                                    '$data->user->lastLogin, "medium")) : ""',
                             'type'=>'raw',
                         ),
                         'isActive'=>array(
@@ -144,7 +144,7 @@ class ProfilesGridViewProfileWidget extends ProfileGridViewWidget {
                         'username' => array(
                             'name' => 'username',
                             'header' => Yii::t('profile','Username'),
-                            'value' => 'CHtml::encode($data->user->alias)',
+                            'value' => '$data->user ? CHtml::encode($data->user->alias) : ""',
                             'type' => 'raw'
                         ),
                         'leadRoutingAvailability' => array(

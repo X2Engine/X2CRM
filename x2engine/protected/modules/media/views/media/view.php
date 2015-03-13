@@ -95,7 +95,7 @@ if(!empty($fileView)) { ?>
                                 <label><?php echo Yii::t('media', 'Association Type'); ?></label>
                                 <div class="formInputBox" style="width: 200px; height: auto;">
                                     <?php if($model->associationType) { ?>
-                                        <?php echo ($model->associationType == 'bg'? Yii::t('media', 'Background') : ucfirst($model->associationType)); ?>
+                                        <?php echo ($model->associationType == 'bg'? Yii::t('media', 'Background') : CHtml::encode(ucfirst($model->associationType))); ?>
                                     <?php } ?>
                                 </div>
                             </div>

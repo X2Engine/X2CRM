@@ -36,16 +36,19 @@
 
 class CutDownPermissionsForestTest extends X2DbTestCase {
 
+    // skipped since migration script tests aren't relevant after corresponding release
+    protected static $skipAllTests = true;
+
     /**
      * Contains dump of database at 4.1.7 Platinum after adding custom roles called TestRole and
      * SuperTestRole. SuperTestRole is flagged as Admin
      */
-    public $fixtures = array (
-        'authItem' => array (':x2_auth_item', '.CutDownPermissionsForestTest'), 
-        'fields' => array ('Fields', '.CutDownPermissionsForestTest'), 
-        'dropdowns' => array ('Dropdowns', '.CutDownPermissionsForestTest'), 
-        'authItemChild' => array (':x2_auth_item_child', '.CutDownPermissionsForestTest'), 
-    );
+//    public $fixtures = array (
+//        'authItem' => array (':x2_auth_item', '.CutDownPermissionsForestTest'), 
+//        'fields' => array ('Fields', '.CutDownPermissionsForestTest'), 
+//        'dropdowns' => array ('Dropdowns', '.CutDownPermissionsForestTest'), 
+//        'authItemChild' => array (':x2_auth_item_child', '.CutDownPermissionsForestTest'), 
+//    );
 
     /**
      * Runs 4.2b migration scripts on auth tables with custom roles set up in version 4.1.7. 
@@ -61,25 +64,25 @@ class CutDownPermissionsForestTest extends X2DbTestCase {
             from x2_auth_item_child
             where parent='TestRole'
         ")->queryAll ());
-        print_r ($testRoleAuthItemChildren);
+        VERBOSE_MODE && print_r ($testRoleAuthItemChildren);
 
         // run first migration script
         $command = Yii::app()->basePath . '/yiic runmigrationscript ' .
             'migrations/4.2b/1407436318-update-sql.php';
         $return_var;
         $output = array ();
-        print_r (exec ($command, $return_var, $output));
-        print_r ($return_var);
-        print_r ($output);
+        VERBOSE_MODE && print_r (exec ($command, $return_var, $output));
+        VERBOSE_MODE && print_r ($return_var);
+        VERBOSE_MODE && print_r ($output);
 
         // run second migration script
         $command = Yii::app()->basePath . '/yiic runmigrationscript ' .
             'migrations/4.2b/1406225725-cut-down-permissions-forest.php';
         $return_var;
         $output = array ();
-        print_r (exec ($command, $return_var, $output));
-        print_r ($return_var);
-        print_r ($output);
+        VERBOSE_MODE && print_r (exec ($command, $return_var, $output));
+        VERBOSE_MODE && print_r ($return_var);
+        VERBOSE_MODE && print_r ($output);
 
          // Get all children of test role after migration scripts run
         $newTestRoleAuthItemChildren = array_map (function ($row) {
@@ -89,11 +92,11 @@ class CutDownPermissionsForestTest extends X2DbTestCase {
             from x2_auth_item_child
             where parent='TestRole'
         ")->queryAll ());
-        print_r ($newTestRoleAuthItemChildren);
+        VERBOSE_MODE && print_r ($newTestRoleAuthItemChildren);
 
         // ensure that permisions were added properly by migration scripts
         foreach ($testRoleAuthItemChildren as $child) {
-            println ('asserting correctness of restructured permissions for '.$child);
+            VERBOSE_MODE && println ('asserting correctness of restructured permissions for '.$child);
             $module = preg_replace (
                 '/(PrivateReadOnly|PrivateUpdate|PrivateFull|PrivateBasic|ReadOnly|Basic|Update|'.
                 'Full|Admin)Access$/', '', $child);

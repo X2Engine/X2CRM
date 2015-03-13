@@ -179,18 +179,7 @@ class AdminController extends Controller {
         echo "There are " . count($totalWords) . " entries in the translation files.";
     }
 
-    /**
-     * A function to print a list of actions which are present in controller files
-     * but no corresponding permission exists in the database.
-     *
-     * This function should ideally be run before each release as a developer tool
-     * to view what permissions are missing from the software. Any controller action
-     * with no permission associated with it is assumed to be allowed so this is
-     * a good way to look for potential security holes. Please note that all
-     * relevant controllers must be specified by name in the array at the top
-     * of the function.
-     */
-    public function actionFindMissingPermissions() {
+    private static function findMissingPermissions () {
         $controllers = array(
             'AdminController' => 'application.controllers.AdminController',
             'StudioController' => 'application.controllers.StudioController',
@@ -249,7 +238,23 @@ class AdminController extends Controller {
                 }
             }
         }
-        /**/printR($missingPermissions);
+        return $missingPermissions;
+
+    }
+
+    /**
+     * A function to print a list of actions which are present in controller files
+     * but no corresponding permission exists in the database.
+     *
+     * This function should ideally be run before each release as a developer tool
+     * to view what permissions are missing from the software. Any controller action
+     * with no permission associated with it is assumed to be allowed so this is
+     * a good way to look for potential security holes. Please note that all
+     * relevant controllers must be specified by name in the array at the top
+     * of the function.
+     */
+    public function actionFindMissingPermissions() {
+        /**/printR (self::findMissingPermissions ());
     }
 
     
@@ -280,7 +285,7 @@ class AdminController extends Controller {
         // Backwards-compatible way (to make updates safe) of determining if the user has admin rights.
         $imAdmin = false;
         if (Yii::app()->params->hasProperty('isAdmin')) {
-            $imAdmin = Yii::app()->user->checkAccess($action) || is_null($authItem) || Yii::app()->params->isAdmin;
+            $imAdmin = Yii::app()->params->isAdmin || Yii::app()->user->checkAccess($action) || is_null($authItem);
         } else if (version_compare(Yii::app()->params->version, '2.0') >= 0) {
             $imAdmin = Yii::app()->user->checkAccess('AdminIndex') || is_null($authItem);
         } else {
@@ -1144,12 +1149,12 @@ class AdminController extends Controller {
                 $selected[] = $user;
             }
             foreach ($allUsers as $user) {
-                $unselected[$user->username] = $user->firstName . " " . $user->lastName;
+                $unselected[CHtml::encode($user->username)] = CHtml::encode($user->firstName . " " . $user->lastName);
             }
             /* x2temp */
             $groups = Groups::model()->findAll();
             foreach ($groups as $group) {
-                $unselected[$group->id] = $group->name;
+                $unselected[$group->id] = CHtml::encode($group->name);
             }
             /* end x2temp */
             unset($unselected['admin']);
@@ -1752,6 +1757,7 @@ class AdminController extends Controller {
      * @param bool $save If set to 1/true, attempt to save the model; otherwise just echo the form.
      */
     public function actionCreateUpdateField($search = 0, $save = 0, $override = 0) {
+        $changedType = false;
         if ($search) {
             // A field is being looked up, to populate form fields for customizing
             // an existing field
@@ -1769,7 +1775,10 @@ class AdminController extends Controller {
         }
 
         if (isset($_POST['Fields']) && ($model->isNewRecord || $override)) {
+            $oldType = $model->type;
             $model->attributes = $_POST['Fields'];
+            // field name exists if model refers to actual db record
+            if ($model->fieldName && $model->type !== $oldType) $changedType = true;
         }
 
         $message = '';
@@ -1807,7 +1816,8 @@ class AdminController extends Controller {
             'new' => $new,
             'dummyModel' => $dummyModel,
             'message' => $message,
-            'error' => $error
+            'error' => $error,
+            'changedType' => $changedType,
         ));
     }
 
@@ -3679,7 +3689,7 @@ class AdminController extends Controller {
      * @param X2Model $model Current moel to import
      */
     protected function fixupImportedAttributes($modelName, X2Model &$model) {
-        if ($modelName === 'Contacts') {
+        if ($modelName === 'Contacts' || $modelName === 'X2Leads') {
             // Help out the user in the special case where a Contact's full name
             // is set, but first and last name aren't, or vice versa.
             if (!empty($model->name) && (empty($model->firstName) && empty($model->lastName))) {
@@ -4007,7 +4017,7 @@ class AdminController extends Controller {
 
             $sql = 'UPDATE `'.$primaryTable.'` a JOIN `'.$secondaryTable.'` b '.
                        'ON a.'.$field.' = b.name '.
-                       'SET `'.$field.'` = CONCAT(b.name, \''.Fields::NAMEID_DELIM.'\', b.id) '.
+                       'SET a.`'.$field.'` = CONCAT(b.name, \''.Fields::NAMEID_DELIM.'\', b.id) '.
                        'WHERE a.id in ('.implode(',', $primaryIdRange).')';
             Yii::app()->db->createCommand ($sql)->execute();
         }
@@ -5842,4 +5852,17 @@ class AdminController extends Controller {
     }
 
     
+    
+//    public function actionTestURL(){
+//        $baseUrl = Yii::app()->request->getIsSecureConnection()?"https://":"http://"
+//                .Yii::app()->request->serverName;
+//        $baseUri = Yii::app()->baseUrl;
+//        if(empty(Yii::app()->settings->externalBaseUrl)){
+//            Yii::app()->settings->externalBaseUrl = $baseUrl;
+//        }
+//        if(empty(Yii::app()->settings->externalBaseUri)){
+//            Yii::app()->settings->externalBaseUri = $baseUri;
+//        }
+//        Yii::app()->settings->save();
+//    }
 }

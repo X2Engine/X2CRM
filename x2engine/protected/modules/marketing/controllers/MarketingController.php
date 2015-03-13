@@ -89,18 +89,20 @@ class MarketingController extends x2base {
      * Deletes a web form record with the specified id 
      * @param int $id
      */
-    /*public function actionAjaxDeleteWebForm ($id) {
+    public function actionDeleteWebForm ($id) {
         $model = WebForm::model ()->findByPk ($id); 
+        $name = $model->name;
         $success = false;
+
         if ($model) {
             $success = $model->delete ();
         }
         AuxLib::ajaxReturn (
             $success,  
-            Yii::t('app', 'Success'),
+            Yii::t('app', "Deleted '$name'"),
             Yii::t('app', 'Unable to delete web form')
         );
-    }*/
+    }
 
     
 

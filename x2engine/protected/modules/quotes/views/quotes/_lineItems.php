@@ -73,6 +73,9 @@ $titleTranslations = array( // keys correspond to CSS classes of each input fiel
 );
 
 if (!$readOnly) {
+    Yii::app()->clientScript->registerScriptFile(
+        Yii::app()->getBaseUrl ().'/js/ComboBox.js', CClientScript::POS_HEAD);  
+    Yii::app()->clientScript->registerCssFile(Yii::app()->theme->baseUrl.'/css/comboBox.css'); 
     Yii::app()->clientScript->registerCssFiles('lineItemsCss',
         array (
             $module->assetsUrl . '/css/lineItemsMain.css',
@@ -86,7 +89,8 @@ if (!$readOnly) {
         ), false);
 }
 
-Yii::app()->clientScript->registerScriptFile ($module->assetsUrl.'/js/LineItems.js', CClientScript::POS_HEAD);
+Yii::app()->clientScript->registerScriptFile (  
+    $module->assetsUrl.'/js/LineItems.js', CClientScript::POS_HEAD);
 
 $lineItemsVarInsertionScript = '';
 
@@ -163,7 +167,8 @@ x2.<?php echo $namespacePrefix; ?>lineItems = new x2.LineItems ({
     view: 'default',
     productLines: productLines,
     adjustmentLines: adjustmentLines,
-    namespacePrefix: '<?php echo $namespacePrefix; ?>'
+    namespacePrefix: '<?php echo $namespacePrefix; ?>',
+    getItemsUrl: '<?php echo Yii::app()->createUrl ('/products/products/getItems2'); ?>'
 });
 
 }) ();
@@ -171,18 +176,18 @@ x2.<?php echo $namespacePrefix; ?>lineItems = new x2.LineItems ({
 </script>
 
 <?php
-if (YII_DEBUG && YII_UNIT_TESTING) {
-    Yii::app()->clientScript->registerScriptFile($module->assetsUrl . '/js/quotesUnitTests.js',
-        CClientScript::POS_END);
-}
+//if (YII_DEBUG && YII_UNIT_TESTING) {
+//    Yii::app()->clientScript->registerScriptFile($module->assetsUrl . '/js/quotesUnitTests.js',
+//        CClientScript::POS_END);
+//}
 ?>
 
 <div id="<?php echo $namespacePrefix ?>-line-items-table" class='line-items-table<?php echo $actionsTab ? ' line-items-mini' : ''; echo $readOnly ? ' line-items-read' : ' line-items-write'; ?>'>
 
 <?php
-if (YII_DEBUG && YII_UNIT_TESTING) {
-    echo "<div id='qunit-fixture'></div>";
-}
+//if (YII_DEBUG && YII_UNIT_TESTING) {
+//    echo "<div id='qunit-fixture'></div>";
+//}
 ?>
 
 <?php

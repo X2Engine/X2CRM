@@ -614,6 +614,10 @@ class X2Html extends CHtml {
         '</span>';
     }
 
+    public static function divider($width='100%', $margin='15px') {
+        return "<div class='x2-divider' style='width:100%;max-width:$width; margin-top: $margin; margin-bottom: $margin'></div>";
+    }
+
     public static function defaultAvatar ($size='') {
         return self::x2icon ('profile-large', array(
             'style' => "font-size: ${size}px;",

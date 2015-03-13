@@ -229,6 +229,8 @@ abstract class SortableWidget extends X2Widget {
             throw new CException ('invalid widget type');
         }
 
+        
+
         if (!isset ($cache[$widgetType])) {
             $excludeList = array ('TemplatesGridViewProfileWidget.php');
             $cache[$widgetType] = array_map (function ($file) {

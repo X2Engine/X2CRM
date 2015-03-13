@@ -220,6 +220,8 @@ SortableWidgetManager.prototype._showWidgetContents = function (widgetKey) {
 
                 widget$.replaceWith (data.widget);
                 hideShowHiddenWidgetSubmenuDividers ();
+                widget$ = 
+                    $('#' + widgetKey.replace (/_.*$/, '') + '-widget-container-' + data.uid);
                 that._afterShowWidgetContents (widget$);
             }
         }

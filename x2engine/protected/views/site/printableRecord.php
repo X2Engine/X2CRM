@@ -36,45 +36,63 @@
 
 ?>
 
-<html>
-	<head>
-		<meta charset="UTF-8">
-		<link rel='stylesheet' type='text/css' 
-		 href='<?php echo Yii::app()->getTheme()->getBaseUrl().'/css/x2forms.css'; ?>'/>
-		<link rel='stylesheet' type='text/css' 
-		 href='<?php echo Yii::app()->getTheme()->getBaseUrl().'/css/printableRecord.css'; ?>'/>
-		<!--<link rel='stylesheet' type='text/css' 
-		 href='<?php //echo Yii::app()->getClientScript()->getCoreScriptUrl().'/rating/jquery.rating.css'; ?>'/>-->
-		<link rel='stylesheet' type='text/css' 
-		 href='<?php echo Yii::app()->theme->getBaseUrl().'/css/rating/jquery.rating.css'; ?>'/>
-		<script src='<?php echo Yii::app()->getClientScript()->getCoreScriptUrl().
-		 '/jquery.js'; ?>'></script>
-		<script src='<?php echo Yii::app()->getClientScript()->getCoreScriptUrl().
-		 '/jquery.metadata.js'; ?>'></script>
-		<script src='<?php echo Yii::app()->getClientScript()->getCoreScriptUrl().
-		 '/jquery.rating.js'; ?>'></script>
-	</head>
-	<body>
+<meta charset="UTF-8">
+<link rel='stylesheet' type='text/css' 
+ href='<?php echo Yii::app()->getTheme()->getBaseUrl().'/css/x2forms.css'; ?>'/>
+<link rel='stylesheet' type='text/css' 
+ href='<?php echo Yii::app()->getTheme()->getBaseUrl().'/css/printableRecord.css'; ?>'/>
+<!--<link rel='stylesheet' type='text/css' 
+ href='<?php //echo Yii::app()->getClientScript()->getCoreScriptUrl().'/rating/jquery.rating.css'; ?>'/>-->
+<link rel='stylesheet' type='text/css' 
+ href='<?php echo Yii::app()->theme->getBaseUrl().'/css/rating/jquery.rating.css'; ?>'/>
+<script src='<?php echo Yii::app()->getClientScript()->getCoreScriptUrl().
+ '/jquery.js'; ?>'></script>
+<script src='<?php echo Yii::app()->getClientScript()->getCoreScriptUrl().
+ '/jquery.metadata.js'; ?>'></script>
+<script src='<?php echo Yii::app()->getClientScript()->getCoreScriptUrl().
+ '/jquery.rating.js'; ?>'></script>
 
-	<h1 id='page-title'><?php echo addslashes ($pageTitle); ?></h1>
+<div class='config-panel-content'>
+</div>
 
-	<?php 
-	$this->renderPartial('application.components.views._detailView', 
-		array('model' => $model, 'modelName' => $modelClass)); 
-	?>
+<h1 id='page-title'><?php echo addslashes ($pageTitle); ?></h1>
+<h3 id='model-title'><?php echo addslashes ($modelTitle); ?></h3>
 
-	<script>
-		// replace stars with textual representation
-		$('span[id^="<?php echo $modelClass; ?>-<?php echo $id; ?>-rating"]').each (function () {
-			var stars = $(this).find ('[checked="checked"]').val ();
-            stars = stars ? stars : 0;
-			$(this).children ().remove ();
-			$(this).html (stars + '/5 <?php echo addslashes (Yii::t('app', 'Stars')); ?>');
+<?php //echo X2Html::divider(); ?>
+
+<?php 
+$this->renderPartial('application.components.views._detailView', 
+	array('model' => $model, 'modelName' => $modelClass)); 
+?>
+
+<script>
+	$('title').html("<?php echo $pageTitle ?>");
+
+	// replace stars with textual representation
+	$('span[id^="<?php echo $modelClass; ?>-<?php echo $id; ?>-rating"]').each (function () {
+		var stars = $(this).find ('[checked="checked"]').val ();
+        stars = stars ? stars : 0;
+		$(this).children ().remove ();
+		$(this).html (stars + '/5 <?php echo addslashes (Yii::t('app', 'Stars')); ?>');
+	});
+
+	var sections = 1;
+	$('.sectionTitle').each(function(){
+		var title = $(this).html();
+		if (!title) {
+			title = 'Section ' + sections++;
+		}
+		var row = $('<div class="row"></div>').appendTo($('.config-panel-content'));
+		$('<span class="label"></span>').appendTo(row).html(title)
+		var check = $('<input type="checkbox" checked />').appendTo(row);
+
+		var that = this;
+		check.change(function(){
+			$(that).closest('.formSection').toggle();
 		});
-	</script>
+	});
 
-	</body>
-</html>
+</script>
 
 
 

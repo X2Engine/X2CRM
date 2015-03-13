@@ -51,7 +51,12 @@ class ActionOverdueTrigger extends X2FlowTrigger {
 			'info' => Yii::t('studio',$this->info),
 			'modelClass' => 'Actions',
 			'options' => array(
-				array('name'=>'duration','label'=>Yii::t('studio','Time Overdue (s)'),'type'=>'numeric','optional'=>1),
+				array(
+                    'name'=>'duration',
+                    'label'=>Yii::t('studio', 'Time Overdue (s)'),
+                    'type'=>'numeric',
+                    'optional'=>1
+                ),
 			));
 	}
 	

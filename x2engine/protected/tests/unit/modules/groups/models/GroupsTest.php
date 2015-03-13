@@ -64,8 +64,8 @@ class GroupTest extends CDbTestCase {
             $userIds = array_map (function ($a) { return $a['id']; }, $groupModel->users);
 
             if(VERBOSE_MODE) {
-                print ($groupModel->id."\n");
-                print_r ($userIds);
+                VERBOSE_MODE && print ($groupModel->id."\n");
+                VERBOSE_MODE && print_r ($userIds);
             }
             
             /*
@@ -94,10 +94,8 @@ class GroupTest extends CDbTestCase {
 
     public function testAfterDelete () {
         $group = Groups::model ()->findByPk ('1');
-        if (VERBOSE_MODE) {
-            print ('id of group to delete: ');
-            print ($group->id);
-        }
+        VERBOSE_MODE && print ('id of group to delete: ');
+        VERBOSE_MODE && print ($group->id);
         
         // assert that group to user records exist for this group
         $this->assertTrue (

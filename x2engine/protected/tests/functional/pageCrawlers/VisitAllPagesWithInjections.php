@@ -44,6 +44,12 @@ Yii::import('application.tests.functional.pageCrawlers.VisitAllPagesTest');
 class VisitAllPagesWithInjections extends VisitAllPagesTest {
 
     /**
+     * ID to assign models for injection vulnerability testing
+     */
+    const INJECTION_TESTID = 10666;
+    const INJECTION_USERNAME = 'hacker x';
+
+    /**
      * Crawl as admin to check all pages without restrictions
      * @var array
      */
@@ -55,8 +61,10 @@ class VisitAllPagesWithInjections extends VisitAllPagesTest {
     /**
      * Manually inject the database
      */
+    private static $prepared = false;
     public function setup() {
         parent::setup();
+        if (self::$prepared) return;
 
         // Prepare DB with injection statements
         // See: https://www.owasp.org/index.php/XSS_Filter_Evasion_Cheat_Sheet for more
@@ -72,11 +80,12 @@ class VisitAllPagesWithInjections extends VisitAllPagesTest {
             'x2_auth_item', 'x2_cron_events', 'x2_chart_settings', 'x2_email_reports',
             'x2_credentials_default', 'x2_gallery_photo', 'x2_fields', 'x2_forwarded_email_patterns',
             'x2_gallery_to_model', 'x2_list_criteria', 'x2_list_items', 'x2_trigger_logs',
-            'x2_password_reset', 'x2_timezones', 'x2_workflow_stages', 'x2_sessions', 'x2_profile',
+            'x2_password_reset', 'x2_timezones', 'x2_workflow_stages', 'x2_sessions',// 'x2_profile',
+            'x2_action_to_record', 'x2_role_to_workflow', 'x2_failed_logins', 'x2_credentials',
         );
         $ignoreFields = array(
             'nameId', 'actionDescription', 'actionId', 'existingProducts', 'products',
-            'masterId', 'username', 'parameters',
+            'masterId', 'username', 'parameters', 'twitterCredentialsId', 'modelClass',
         );
 
         // Prepare a mapping of table names to an array of string-type attributes
@@ -87,7 +96,7 @@ class VisitAllPagesWithInjections extends VisitAllPagesTest {
                 continue;
             $columns = array();
             foreach ($schema->columns as $column => $attrs) {
-                if (!in_array($attrs->type, array('string'))
+                if (!in_array($attrs->type, array('string', 'integer'))
                         || in_array($column, $ignoreFields))
                     continue;
                 $columns[$column] = $attrs->type;
@@ -99,9 +108,6 @@ class VisitAllPagesWithInjections extends VisitAllPagesTest {
         $currentInjectionString = 0;
         foreach ($tables as $table => $fields) {
             $columns = array();
-            if (array_key_exists('id', $fields))
-                $columns['id'] = 666;
-
             foreach ($fields as $field => $type) {
                 $value = $injectionStrings[ $currentInjectionString ];
                 $identifier = "XSS from $field in $table";
@@ -109,9 +115,22 @@ class VisitAllPagesWithInjections extends VisitAllPagesTest {
                 $currentInjectionString = ($currentInjectionString + 1) % count($injectionStrings);
             }
 
+            if (array_key_exists('id', $fields)) {
+                Yii::app()->db->createCommand()->delete($table, 'id = :id',
+                    array(':id' => self::INJECTION_TESTID));
+                $columns['id'] = self::INJECTION_TESTID;
+            }
+            // Set artifical user's status to active
+            if ($table == 'x2_users') {
+                $columns['status'] = 1;
+                $columns['username'] = self::INJECTION_USERNAME;
+            } else if ($table == 'x2_profile')
+                $columns['username'] = self::INJECTION_USERNAME;
+
             if (!empty($table) && !empty($columns))
                 Yii::app()->db->createCommand()->insert($table, $columns);
         }
+        self::$prepared = true;
     }
 
     /**
@@ -122,14 +141,32 @@ class VisitAllPagesWithInjections extends VisitAllPagesTest {
             $this->allPages,
             $this->adminPages
         );
+        // Skip pages that render rich text: this data is passed through
+        // HTMLPurifier before persisting in the database
+        $skipPages = array(
+            'contacts/shareContact/id/1195',
+            'accounts/shareAccount/id/1',
+            'marketing/5',
+            'weblist/view?id=18',
+            'actions/shareAction/id/1',
+            'docs/1',
+            'docs/update/id/1',
+            'quotes/1',
+            'quotes/convertToInvoice/id/1',
+            'quotes/update/id/1',
+            'profile/update/1',
+        );
+        $injectionPages = array_diff ($injectionPages, $skipPages);
 
         // Process pages and set id to the 'injected' record
-        foreach ($injectionPages as &$page) {
-            if (preg_match('/\d+$/', $page))
-                $page = preg_replace('/\d+$/', 666, $page);
+        $pageList = array();
+        foreach ($injectionPages as $page) {
+            if (preg_match('/\d+(\?|$)/', $page))
+                $page = preg_replace('/\d+(\?|$)/', self::INJECTION_TESTID.'\1', $page);
+            $pageList[] = $page;
         }
 
-        $this->visitPages ($injectionPages, true);
+        $this->visitPages ($pageList, true);
     }
 
     /**

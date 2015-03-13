@@ -119,7 +119,7 @@ x2.dragAndDropViewManager = new x2.DragAndDropViewManager ({
     <div class='dialog-description'>
         <?php echo Yii::t(
             'workflow', 'Start the {workflowName} {process} for the following record:', array (
-                '{workflowName}' => $model->name,
+                '{workflowName}' => CHtml::encode($model->name),
                 '{process}' => Modules::displayName(false),
             )); ?> 
     </div>

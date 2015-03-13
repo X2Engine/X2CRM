@@ -90,7 +90,7 @@ class X2FlowEmail extends BaseX2FlowEmail {
 	public function execute(&$params) {
 		$eml = new InlineEmail;
 		$options = &$this->config['options'];
-		$eml->to = Formatter::replaceVariables ($this->parseOption('to',$params), $params['model']);
+		$eml->to = $this->parseOption('to', $params);
         
         $historyFlag = false;
         if(isset($params['model'])){
@@ -109,12 +109,12 @@ class X2FlowEmail extends BaseX2FlowEmail {
             $eml->setUserProfile($eml->credentials->user->profile);
 
         //printR ($eml->from, true);
-		$eml->subject = Formatter::replaceVariables($this->parseOption('subject',$params),$params['model']);
+		$eml->subject = $this->parseOption('subject',$params);
 
         // "body" option (deliberately-entered content) takes precedence over template
 		if(isset($options['body']['value']) && !empty($options['body']['value'])) {	
             $eml->scenario = 'custom';
-			$eml->message = InlineEmail::emptyBody(Formatter::replaceVariables($this->parseOption('body',$params),$params['model']));
+			$eml->message = InlineEmail::emptyBody($this->parseOption('body',$params));
 			$eml->prepareBody();
 			// $eml->insertSignature(array('<br /><br /><span style="font-family:Arial,Helvetica,sans-serif; font-size:0.8em">','</span>'));
 		} elseif(!empty($options['template']['value'])) {
@@ -130,7 +130,7 @@ class X2FlowEmail extends BaseX2FlowEmail {
 
 		$result = $eml->send($historyFlag);
 		if (isset($result['code']) && $result['code'] == 200) {
-            if (YII_DEBUG && YII_UNIT_TESTING) {
+            if (YII_UNIT_TESTING) {
                 return array(true, $eml->message);
             } else {
                 return array(true, "");

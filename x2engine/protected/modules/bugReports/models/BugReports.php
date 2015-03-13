@@ -42,7 +42,7 @@ Yii::import('application.models.X2Model');
  */
 class BugReports extends X2Model {
 
-    public $supportsWorkflow = false;
+    public $supportsWorkflow = true;
 
 	/**
 	 * Returns the static model of the specified AR class.

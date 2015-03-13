@@ -143,9 +143,22 @@
             <?php echo $form->labelEx($model, 'type'); ?>
             <?php
             if(!$new && !$model->custom)
-                echo '<span style="color:red">'.Yii::t('admin', 'Changing the type of a default field is strongly discouraged.')
-                        .' '.Yii::t('admin','It may result in data loss or irregular application behavior.').'</span><br>';
-            
+                echo '<span style="color:red">'.
+                    Yii::t('admin', 'Changing the type of a default field is strongly discouraged.')
+                        .' '.Yii::t(
+                        'admin',
+                        'It may result in data loss or irregular application behavior.').
+                    '</span><br>';
+            if(!$new && $model->custom && $changedType)
+                echo '<span style="color:red">'.
+                    Yii::t('admin', 
+                        'Changing the type of a field may result in alteration of data. For '.
+                        'example, changing a field from type "{text}" to type "{varchar}" '.
+                        'shortens the fields width, potentially truncating field values.', array (
+                            '{text}' => Yii::t('app', 'Multiple Line Text Area'),
+                            '{varchar}' => Yii::t('app', 'Single Line Text Area'),
+                        )).
+                    '</span><br>';
             echo $form->dropDownList($model, 'type', Fields::getFieldTypes('title'), array(
                 'id' => 'fieldType',
                 'class' => ($new ? 'new' : 'existing')

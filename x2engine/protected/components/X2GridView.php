@@ -108,17 +108,20 @@ class X2GridView extends X2GridViewBase {
     }
 
     protected $_model;
-    public function getModel ($attr=null, $value=null) {
+    public function getModel ($row=null, $data=null) {
         if (!isset ($this->_model)) {
             $this->_model = X2Model::model ($this->modelName);
-            if (isset ($this->fieldFormatter) && 
-                method_exists ($this->_model, 'setFormatter')) {
-
-                $this->_model->formatter = $this->fieldFormatter;
-            }
         }
-        if ($attr) $this->_model->$attr = $value;
         return $this->_model;
+    }
+
+    public function setFormatter ($data) {
+        if (isset ($this->fieldFormatter) && 
+            method_exists ($data, 'setFormatter')) {
+
+            $data->formatter = $this->fieldFormatter;
+        }
+        return $data;
     }
 
     protected function handleFields () {
@@ -230,7 +233,7 @@ class X2GridView extends X2GridViewBase {
                 $this->allFields[$columnName]->type, array ('phone', 'link', 'assignment'));
             
             $newColumn['value'] = 
-                 '$this->grid->getModel ("'.$columnName.'", $data["'.$columnName.'"])
+                 '$this->grid->setFormatter ($data)
                      ->renderAttribute ("'.$columnName.'", '.($makeLinks ? 'true' : 'false').');';
         } else if($columnName == 'tags') {
             $newColumn['id'] = $this->namespacePrefix.'C_'.'tags';

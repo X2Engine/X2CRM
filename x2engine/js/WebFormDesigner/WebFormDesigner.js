@@ -33,418 +33,514 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 
+x2.WebFormDesigner = (function() {
+
+    /*
+    Base prototype. Should not be instantiated. 
+    */
+
+    function WebFormDesigner (argsDict) {
+        var that = this;
+
+        // properties that can be set with constructor arguments
+        var defaultArgs = {
+            translations: [], // used for various web form text
+            iframeSrc: '', 
+            externalAbsoluteBaseUrl: '', // used for specifying web form generation script source
+            saveUrl: '', // used to save the web form settings
+            savedForms: {}, // used to cache previously viewed forms
+            fields: [],
+            colorfields: [],
+            deleteFormUrl: '',
+            listId: null
+        };
+        auxlib.applyArgs (this, defaultArgs, argsDict);
+
+        $(document).on ('ready', function () {
+            that._init ();
+        });
+    }
 
 
+    /*
+    Public static methods
+    */
 
-/*
-Base prototype. Should not be instantiated. 
-*/
+    /*
+    Private static methods
+    */
 
-function WebFormDesigner (argsDict) {
-    var that = this;
+    WebFormDesigner.sanitizeInput = function (value) {
+        return encodeURIComponent(value.replace(/(^[ ]*)|([ ]*$)|([^a-zA-Z0-9#,])/g, ''));
+    }
 
-	// properties that can be set with constructor arguments
-	var defaultArgs = {
-		translations: [], // used for various web form text
-		iframeSrc: '', 
-		externalAbsoluteBaseUrl: '', // used for specifying web form generation script source
-		saveUrl: '', // used to save the web form settings
-		savedForms: {}, // used to cache previously viewed forms
-        fields: [],
-        colorfields: [],
-        deleteFormUrl: '',
-        listId: null
-	};
+    /*
+    Public instance methods
+    */
 
-	auxlib.applyArgs (this, defaultArgs, argsDict);
-
-    $(document).on ('ready', function () {
-        that._init ();
-    });
-}
-
-
-/*
-Public static methods
-*/
-
-/*
-Private static methods
-*/
-
-WebFormDesigner.sanitizeInput = function (value) {
-    return encodeURIComponent(value.replace(/(^[ ]*)|([ ]*$)|([^a-zA-Z0-9#,])/g, ''));
-}
-
-/*
-Public instance methods
-*/
-
-/*
-Private instance methods
-*/
-
-
-/*
-Set up form submission behavior.
-*/
-WebFormDesigner.prototype._setUpFormSubmission = function () {
-    var that = this;
-    $('#web-form-submit-button').on('click', function(evt) {
-        evt.preventDefault ();
-        that._refreshForm ();
-        var formJSON = auxlib.formToJSON ($('#web-form-designer-form'));
+    /*
+    Private instance methods
+    */
+    WebFormDesigner.prototype._saveForm = function (json) {
+        var that = this;
         $.ajax({
             url: that.saveUrl,
             type: 'POST',
-            data: formJSON,
+            data: json,
             success: function (data, status, xhr) {
                 that.saved (data, status, xhr);
             }
         });
-        return false;
-    });
-};
+    }
 
-/*
-Sets up the web form designer
-*/
-WebFormDesigner.prototype._init = function () {
-    var that = this;
-    x2.DEBUG && console.log (this);
+    /*
+    Set up form submission behavior.
+    */
+    WebFormDesigner.prototype._setUpFormSubmission = function () {
+        var that = this;
+        $('#web-form-submit-button').on('click', function(evt) {
+            evt.preventDefault ();
+            that._refreshForm ();
 
-    // set up embedded code container behavior
-    $('#embedcode').focus(function() {
-        $(this).select();
-    });
-    $('#embedcode').mouseup(function(e) {
-        e.preventDefault();
-    });
-    $('#embedcode').focus();
-
-    // instantiate color pickers
-    $.each(that.colorfields, function(i, field) {
-        var selector = '#' + field;
-        x2.colorPicker.setUp ($(selector));
-        x2.DEBUG && console.log ('color change: that = ');
-        x2.DEBUG && console.log (that);
-        $(selector).on ('change', function () { that.updateParams (); });
-    });
-    
-    // set up form field behavior
-    $.each(that.fields, function(i, field) {
-        $('#'+field).on('change', function () { that.updateParams (); });
-    });
-
-    // set up save web form button behavior
-    $('#web-form-save-button').click(function(e) {
-
-        // check form empty input
-        if ($.trim($('#web-form-name').val()).length === 0) { // invalid, show errors
-            $('#web-form-name').addClass('error');
-            $('[for="web-form-name"]').addClass('error');
-            $('#web-form-save-button').after('<div class="errorMessage">'+
-                that.translations.nameRequiredMsg+'</div>');
-            e.preventDefault(); //has no effect
+            var formJSON = auxlib.formToJSON ($('#web-form-designer-form'));
+            formJSON.name = $('#web-form-name').val();
+            that._saveForm(formJSON);
             return false;
-        } else { // name validated, remove error messages
-            $('#web-form-name').removeClass('error');
-            $('[for="web-form-name"]').removeClass('error');
-            $('#web-form-save-button').next('.errorMessage').remove ();
-        }
-    });
+        });
 
-    that._setUpFormSubmission ();
+        $('#generate').click(function(){
+            $('#web-form-submit-button').click();
+        });
 
-    // set up saved form selection behavior
-    $('#saved-forms').on('change', function() {
-        var id = $(this).val();
+        $('#web-form-new-button').click(function(){
+            that._updateFields ({
+                params: that.defaultJSON,
+                name: $('#web-form-new-name').val()
+            });
+            // $('#web-form-submit-button').click();
+            $('#new-field').slideToggle();
+        });
+    };
+
+    /*
+    Sets up the web form designer
+    */
+    WebFormDesigner.prototype._init = function () {
+        var that = this;
+
+        // set up embedded code container behavior
+        $('#embedcode').focus(function() {
+            $(this).select();
+        });
+        $('#embedcode').mouseup(function(e) {
+            e.preventDefault();
+        });
+        $('#embedcode').focus();
+
+        // instantiate color pickers
+        $.each(that.colorfields, function(i, field) {
+            var selector = '#' + field;
+            x2.colorPicker.setUp ($(selector));
+            $(selector).on ('change', function () { that.updateParams (); });
+        });
+        
+        // set up form field behavior
+        $.each(that.fields, function(i, field) {
+            $('#'+field).on('change', function () { that.updateParams (); });
+        });
+
+        // set up save web form button behavior
+        $('#web-form-save-button').click(function(e) {
+
+            // check form empty input
+            if ($.trim($('#web-form-name').val()).length === 0) { // invalid, show errors
+                $('#web-form-name').addClass('error');
+                $('[for="web-form-name"]').addClass('error');
+                $('#web-form-save-button').after('<div class="errorMessage">'+
+                    that.translations.nameRequiredMsg+'</div>');
+                e.preventDefault(); //has no effect
+                return false;
+            } else { // name validated, remove error messages
+                $('#web-form-name').removeClass('error');
+                $('[for="web-form-name"]').removeClass('error');
+                $('#web-form-save-button').next('.errorMessage').remove ();
+            }
+        });
+
+        that._setUpFormSubmission ();
+
+        // set up saved form selection behavior
+        $('#saved-forms').on('change', function() {
+            var id = $(this).val();
+            that._showHideDeleteButton ();
+
+            // clear old form, populate form with saved input
+            that._clearFields();
+            if (id != 0) {
+                var match = $.grep(that.savedForms, function(el, i) {
+                    return id == el.id;
+                });
+                that._updateFields(match[0]);
+                $('#web-form-inner').show();
+            } else {
+                that._updateFields({
+                    params: that.defaultJSON,
+                });
+                $('#web-form-inner').hide();
+            }
+
+            // update iframe and embedded code
+            that.updateParams();
+            // $('#embedcode').focus();  
+            $.each(that.colorfields, function(i, field) {
+                if ($('#'+field).val () === '') {
+                    x2.colorPicker.addCheckerImage ($('#'+field));
+                } else {
+                    x2.colorPicker.removeCheckerImage ($('#'+field));
+                }
+            });
+
+            // extra behaviors set in child prototype
+            that._afterSavedFormsChange ();
+
+            
+        });
+
+        // set up iframe resizing behavior
+        $('#iframe_example').data('src',that.iframeSrc);
+        $('#iframe_example').resizable({
+            start: function(event, ui) {
+
+            },
+            stop: function(event, ui) {
+                that.updateParams();
+                //$(this).removeAttr('style');
+            },
+            helper: 'ui-resizable-helper',
+            resize: function(event, ui) {
+            //    $('#iframe_example').width(ui.size.width);
+            //    $('#iframe_example').height(ui.size.height);
+            //    $('#iframe_example iframe').attr('width', ui.size.width);
+            //    $('#iframe_example iframe').attr('height', ui.size.height);
+            },
+        });
+
+        // set up reset form button behavior
+        $('#reset-form').on('click', function(evt) {
+            evt.stopPropagation ();
+            $("#saved-forms").val("0").change();
+            return false;
+        });
+
+        that._afterInit ();
+
+        that.updateParams();
+
+
         that._showHideDeleteButton ();
 
-        // clear old form, populate form with saved input
-        that._clearFields();
-        if (id != 0) {
-            var match = $.grep(that.savedForms, function(el, i) {
-                return id == el.id;
-            });
-            that._updateFields(match[0]);
-        } 
+        that._setUpFormButtons ();
+        that._setUpFormDeletion ();
 
-        // update iframe and embedded code
-        that.updateParams();
-        $('#embedcode').focus();  
-        $.each(that.colorfields, function(i, field) {
-            if ($('#'+field).val () === '') {
-                x2.colorPicker.addCheckerImage ($('#'+field));
-            } else {
-                x2.colorPicker.removeCheckerImage ($('#'+field));
-            }
+        // Get the default form 
+        this.defaultJSON = auxlib.formToJSON ($('#web-form-designer-form'));
+        console.log(this.defaultJSON);
+
+        this.formName = '';
+
+        
+
+        that._setUpTabs();
+
+    };
+    WebFormDesigner.prototype._setUpTabs = function () {
+        var tabs = $('#webform-tabs');
+        var ul = tabs.find('ul').first();
+
+        $('.webform-tab').each(function(){
+            var title = $(this).data('title');
+            var id = '#' + $(this).attr('id');
+            var li = $('<li></li>').appendTo(ul);
+
+            $('<a></a>').
+            attr('href', id).
+            html(title).
+            appendTo(li);
+
         });
 
-        // extra behaviors set in child prototype
-        that._afterSavedFormsChange ();
-    });
-
-    // set up iframe resizing behavior
-    $('#iframe_example').data('src',that.iframeSrc);
-    $('#iframe_example').resizable({
-        start: function(event, ui) {
-
-        },
-        stop: function(event, ui) {
-            that.updateParams();
-            //$(this).removeAttr('style');
-        },
-        helper: 'ui-resizable-helper',
-        resize: function(event, ui) {
-        //    $('#iframe_example').width(ui.size.width);
-        //    $('#iframe_example').height(ui.size.height);
-        //    $('#iframe_example iframe').attr('width', ui.size.width);
-        //    $('#iframe_example iframe').attr('height', ui.size.height);
-        },
-    });
-
-    // set up reset form button behavior
-    $('#reset-form').on('click', function(evt) {
-        evt.stopPropagation ();
-        $("#saved-forms").val("0").change();
-        return false;
-    });
-
-    that._afterInit ();
-
-    that.updateParams();
-
-    //that._setUpFormDeletion ();
-};
-
-WebFormDesigner.prototype._showHideDeleteButton = function () {
-    if ($('#saved-forms').find (':selected').val () === '0') {
-        $('#delete-form').hide ();
-    } else {
-        $('#delete-form').show ();
-    }
-};
-
-/**
- * Sets up behavior of 'Delete Form' button
- */
-WebFormDesigner.prototype._setUpFormDeletion = function () {
-    var that = this; 
-    $('#delete-form').on ('click', function (evt) {
-        var formId = $('#saved-forms').val ();
-        auxlib.destroyErrorFeedbackBox ($('#saved-forms'));
-        $.ajax ({
-            url: that.deleteFormUrl,
-            type: 'GET',
-            data: {
-                id: formId, 
-            },
-            dataType: 'json',
-            success: function (data) {
-                if (data[0]) {
-                    $('#saved-forms').find ('[value="' + formId + '"]').remove ();
-                    auxlib.createReqFeedbackBox ({
-                        prevElem: $('#delete-form'),
-                        message: data[1],
-                        disableButton: $('#delete-form')
-                    });
-                    that._showHideDeleteButton ();
-                } else {
-                    auxlib.createErrorFeedbackBox ({
-                        prevElem: $('#delete-form'),
-                        message: data[1],
-                    });
-                }
-            }
+        $('.webform-tab-content').each(function(){
+            var id = $(this).data('tab');
+            $(this).appendTo('#'+id+' .tab-content');
         });
-    });
-};
 
-// override in child prototype
-WebFormDesigner.prototype._afterSavedFormsChange = function () {};
-
-// override in child prototype
-WebFormDesigner.prototype._afterInit = function () {};
-
-
-/*
-Generates a new iframe with the user-set dimensions and with GET parameters corresponding
-to the current form input.
-*/
-WebFormDesigner.prototype.updateParams = function (iframeContainer) {
-    var that = this;
-    x2.DEBUG && console.log (that);
-
-    if ($(iframeContainer).data ('ignoreChange')) {
-        return;
-    }
-    var params = [];
-    if (that.listId !== null) {
-        params.push('lid='+that.listId);
+        tabs.tabs();
     }
 
-    x2.DEBUG && console.log (that.fields);
-    $.each(that.fields, function(i, field) {
-        x2.DEBUG && console.log ('getting field: ' + field);
-        var value = WebFormDesigner.sanitizeInput($('#'+field).val());
-        if (value.length > 0) { params.push(field+'='+value); }
-    });
-
-    /* send iframe height to iframe contents view so that iframe contents can be set to correct
-    height on iframe load */
-    var iframeHeight = $('#iframe_example').height ();
-    params.push ('iframeHeight=' + (Math.floor (iframeHeight)));
-
-    var query = this._generateQuery(params);
-
-    var iframeWidth;
-    if ($('#iframe_example').find ('iframe').length) {
-        iframeWidth = $('#iframe_example').width ();
-    } else {
-        iframeWidth = 200;
-    }
-
-    /* 
-    */
-    var embedCode = '<iframe name="web-form-iframe" src="' + that.iframeSrc + query +
-        '" frameborder="0" scrolling="0" width="' + iframeWidth +  '" height="' + 
-        iframeHeight + '"></iframe>';
-    $('#embedcode').val(embedCode);
-
-    $('#iframe_example').children ('iframe').remove ();
-    $('#iframe_example').append (embedCode);
-};
-
-/*
-Generates a GET parameter string from the given paramaters array
-*/
-WebFormDesigner.prototype._generateQuery = function (params) {
-    var query = '';
-    var first = true;
-
-    for (var i = 0; i < params.length; i++) {
-        if (params[i].search(/^[^=]+=[^=]+$/) != -1) {
-            if (first) {
-                query += '?'; first = false;
-            } else {
-                query += '&';
-            }
-
-            query += params[i];
+    WebFormDesigner.prototype._showHideDeleteButton = function () {
+        if ($('#saved-forms').val () === '0') {
+            $('#delete-form').addClass ('disabled');
+        } else {
+            $('#delete-form').removeClass ('disabled');
         }
+    };
+
+    WebFormDesigner.prototype._setUpFormButtons = function () {
+        var buttons = $('#webform-buttons');
+        var that = this;
+
+        buttons.find('#save-as').click(function(){
+            $('#web-form-name').val(that.formName);
+            $('#web-form #save-field').slideToggle();
+
+            if($('#web-form #new-field').is(':visible')) {
+                $('#web-form #new-field').slideToggle();
+            }
+        });
+
+        buttons.find('#new-form').click(function(){
+            $('#web-form-new-name').val('');
+            $('#web-form #new-field').slideToggle();
+
+            if($('#web-form #save-field').is(':visible')) {
+                $('#web-form #save-field').slideToggle();
+            }
+        });
+
+        $('#clipboard').click(function(){
+            $('#embedcode').focus();
+            $('#copy-help').show();
+            setTimeout(function(){
+                $('#copy-help').hide();
+            }, 2000);
+        });
     }
+
+    /**
+     * Sets up behavior of 'Delete Form' button
+     */
+    WebFormDesigner.prototype._setUpFormDeletion = function () {
+        var that = this; 
+        $('#delete-form').on ('click', function (evt) {
+            var formId = $('#saved-forms').val ();
+            auxlib.destroyErrorFeedbackBox ($('#saved-forms'));
+            $.ajax ({
+                url: that.deleteFormUrl,
+                type: 'GET',
+                data: {
+                    id: formId, 
+                },
+                dataType: 'json',
+                success: function (data) {
+                    if (data[0]) {
+                        $('#saved-forms').find ('[value="' + formId + '"]').remove();
+                        $('#saved-forms').change();
+                        x2.topFlashes.displayFlash(data[1], 'success');
+                    } else {
+                        x2.topFlashes.displayFlash(data[1], 'error');
+                    }
+
+                }
+            });
+        });
+    };
+
+    // override in child prototype
+    WebFormDesigner.prototype._afterSavedFormsChange = function () {};
+
+    // override in child prototype
+    WebFormDesigner.prototype._afterInit = function () {};
+
+
+    /*
+    Generates a new iframe with the user-set dimensions and with GET parameters corresponding
+    to the current form input.
+    */
+    WebFormDesigner.prototype.updateParams = function (iframeContainer) {
+        var that = this;
+
+        if ($(iframeContainer).data ('ignoreChange')) {
+            return;
+        }
+        var params = [];
+        if (that.listId !== null) {
+            params.push('lid='+that.listId);
+        }
+
+        $.each(that.fields, function(i, field) {
+            var value = WebFormDesigner.sanitizeInput($('#'+field).val());
+            if (value.length > 0) { params.push(field+'='+value); }
+        });
+
+        /* send iframe height to iframe contents view so that iframe contents can be set to correct
+        height on iframe load */
+        var iframeHeight = $('#iframe_example').height ();
+        params.push ('iframeHeight=' + (Math.floor (iframeHeight)));
+
+        var query = this._generateQuery(params);
+
+        var iframeWidth;
+        if ($('#iframe_example').find ('iframe').length) {
+            iframeWidth = $('#iframe_example').width ();
+        } else {
+            iframeWidth = 200;
+        }
+
+        /* 
+        */
+        var embedCode = '<iframe name="web-form-iframe" src="' + that.iframeSrc + query +
+            '" frameborder="0" allowtransparency="true" scrolling="0" width="' + iframeWidth +  '" height="' + 
+            iframeHeight + '"></iframe>';
+
+        if ($('#saved-forms').val() != 0) {
+            $('#embedcode').val(embedCode);
+        } else {
+            $('#embedcode').val('');
+        }
+
+        $('#iframe_example').children ('iframe').remove ();
+        $('#iframe_example').append (embedCode);
+    };
+
+    /*
+    Generates a GET parameter string from the given paramaters array
+    */
+    WebFormDesigner.prototype._generateQuery = function (params) {
+        var query = '';
+        var first = true;
+
+        for (var i = 0; i < params.length; i++) {
+            if (params[i].search(/^[^=]+=[^=]+$/) != -1) {
+                if (first) {
+                    query += '?'; first = false;
+                } else {
+                    query += '&';
+                }
+
+                query += params[i];
+            }
+        }
+
+        
+
+        query = this._appendToQuery (query);
+
+        return query;
+    };
 
     
 
-    query = this._appendToQuery (query);
+    /**
+     * Use to refresh form data before submission
+     */
+    WebFormDesigner.prototype._refreshForm = function () {
+         
+    };
 
-    return query;
-};
+    // override in child prototype
+    WebFormDesigner.prototype._appendToQuery = function (query) {
+        return query;
+    };
 
+    /*
+    Clear form inputs.
+    */
+    WebFormDesigner.prototype._clearFields = function () {
+        var that = this;
+        $('#web-form-name').val('');
+        $.each(that.fields, function(i, field) {
+            $('#'+field).val('');
+        });
+    };
 
+    /*
+    Populate form with form settings
+    */
+    WebFormDesigner.prototype._updateFields = function (form) {
+        var that = this;
 
-/**
- * Use to refresh form data before submission
- */
-WebFormDesigner.prototype._refreshForm = function () {
-     
-};
+        that.DEBUG && console.log ('_updateFields');
+        that.DEBUG && console.log (form.params);
+        $('#web-form-name').val(form.name);
+        that.formName = form.name;
+        if (form.params) {
+            $.each(form.params, function(key, value) {
+                if ($.inArray(key, that.fields) != -1) {
+                    $('#'+key).val(value);
+                }
+                if ($.inArray(key, that.colorfields) != -1) {
+                    $('#'+key).spectrum ("set", $('#'+key).val ());
+                }
+            });
+        }
 
-// override in child prototype
-WebFormDesigner.prototype._appendToQuery = function (query) {
-    return query;
-};
+        this._updateExtraFields (form);
+        this._updateCustomFields (form);
+    };
 
-/*
-Clear form inputs.
-*/
-WebFormDesigner.prototype._clearFields = function () {
-    var that = this;
-    $('#web-form-name').val('');
-    $.each(that.fields, function(i, field) {
-        $('#'+field).val('');
-    });
-};
+    // override in child prototype
+    WebFormDesigner.prototype._updateExtraFields = function (form) {
+        return;
+    };
 
-/*
-Populate form with form settings
-*/
-WebFormDesigner.prototype._updateFields = function (form) {
-    var that = this;
+    
 
-    that.DEBUG && console.log ('_updateFields');
-    that.DEBUG && console.log (form.params);
-    $('#web-form-name').val(form.name);
-    if (form.params) {
-        $.each(form.params, function(key, value) {
-            if ($.inArray(key, that.fields) != -1) {
-                $('#'+key).val(value);
-            }
-            if ($.inArray(key, that.colorfields) != -1) {
-                $('#'+key).spectrum ("set", $('#'+key).val ());
+    
+
+    
+
+    // override in child prototype
+    WebFormDesigner.prototype._updateCustomFields = function (form) {
+         
+    };
+
+    // override in child prototype
+    WebFormDesigner.prototype._beforeSaved = function () {};
+
+    /*
+    Called on ajax success. Form saved successfully. Alert user and cache the form.
+    */
+    WebFormDesigner.prototype.saved = function (data, status, xhr) {
+        var that = this;
+
+        this._beforeSaved ();
+        var newForm = $.parseJSON(data);
+        if (typeof newForm.errors !== "undefined") { return; }
+        this._cacheSavedForm (newForm);
+        that.updateParams();
+        $('#web-form-save-button').removeClass ('highlight');
+        x2.topFlashes.displayFlash(that.translations.formSavedMsg, 'success');
+        that._showHideDeleteButton ();
+
+        if ($('#save-field').is(':visible')) {
+            $('#save-field').slideToggle();
+        } 
+        if (!$('#web-form-inner').is(':visible')) {
+            $('#web-form-inner').show();
+        }
+    }
+
+    /*
+    Cache saved forms on client for fast access on form switch
+    */
+    WebFormDesigner.prototype._cacheSavedForm = function (newForm) {
+        var that = this;
+
+        newForm.params = $.parseJSON(newForm.params);
+        var index = -1;
+        $.each(that.savedForms, function(i, el) {
+            if (newForm.id == el.id) {
+                index = i;
             }
         });
-    }
-
-    this._updateExtraFields (form);
-    this._updateCustomFields (form);
-};
-
-// override in child prototype
-WebFormDesigner.prototype._updateExtraFields = function (form) {
-    return;
-};
-
-
-
-
-
-
-
-// override in child prototype
-WebFormDesigner.prototype._updateCustomFields = function (form) {
-     
-};
-
-// override in child prototype
-WebFormDesigner.prototype._beforeSaved = function () {};
-
-/*
-Called on ajax success. Form saved successfully. Alert user and cache the form.
-*/
-WebFormDesigner.prototype.saved = function (data, status, xhr) {
-    var that = this;
-
-    this._beforeSaved ();
-    var newForm = $.parseJSON(data);
-    if (typeof newForm.errors !== "undefined") { return; }
-    this._cacheSavedForm (newForm);
-    that.updateParams();
-    $('#web-form-save-button').removeClass ('highlight');
-    alert(that.translations.formSavedMsg);
-    that._showHideDeleteButton ();
-}
-
-/*
-Cache saved forms on client for fast access on form switch
-*/
-WebFormDesigner.prototype._cacheSavedForm = function (newForm) {
-    var that = this;
-
-    newForm.params = $.parseJSON(newForm.params);
-    var index = -1;
-    $.each(that.savedForms, function(i, el) {
-        if (newForm.id == el.id) {
-            index = i;
+        if (index != -1) {
+            that.savedForms.splice(index, 1, newForm);
+        } else {
+            that.savedForms.push(newForm);
+            $('#saved-forms').append('<option value="'+newForm.id+'">'+newForm.name+'</option>');
         }
-    });
-    if (index != -1) {
-        that.savedForms.splice(index, 1, newForm);
-    } else {
-        that.savedForms.push(newForm);
-        $('#saved-forms').append('<option value="'+newForm.id+'">'+newForm.name+'</option>');
+        $('#saved-forms').val(newForm.id);
     }
-    $('#saved-forms').val(newForm.id);
-}
 
+    return WebFormDesigner;
+})();

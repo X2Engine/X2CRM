@@ -122,69 +122,76 @@
 #relationships-grid .x2grid-body-container > .items td {
   border-right: none;
 }
-/* line 77, ../../../../../../compass/themes/x2engine/css/components/sortableWidget/views/inlineRelationshipsWidget.scss */
+/* line 75, ../../../../../../compass/themes/x2engine/css/components/sortableWidget/views/inlineRelationshipsWidget.scss */
+#relationships-grid .x2grid-body-container > .items td > a {
+  max-width: 90%;
+  display: inline-block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+/* line 83, ../../../../../../compass/themes/x2engine/css/components/sortableWidget/views/inlineRelationshipsWidget.scss */
 #relationships-grid .x2grid-body-container.x2grid-no-pager {
   border-bottom: none;
   padding-bottom: 2px;
 }
-/* line 81, ../../../../../../compass/themes/x2engine/css/components/sortableWidget/views/inlineRelationshipsWidget.scss */
+/* line 87, ../../../../../../compass/themes/x2engine/css/components/sortableWidget/views/inlineRelationshipsWidget.scss */
 #relationships-grid .pager {
   margin-right: 2px;
   float: right;
   padding: 1px;
 }
 
-/* line 88, ../../../../../../compass/themes/x2engine/css/components/sortableWidget/views/inlineRelationshipsWidget.scss */
+/* line 94, ../../../../../../compass/themes/x2engine/css/components/sortableWidget/views/inlineRelationshipsWidget.scss */
 #relationships-grid.has-pager ~ #new-relationship-form {
   position: relative;
   top: -24px;
   margin-bottom: -24px;
 }
 
-/* line 94, ../../../../../../compass/themes/x2engine/css/components/sortableWidget/views/inlineRelationshipsWidget.scss */
+/* line 100, ../../../../../../compass/themes/x2engine/css/components/sortableWidget/views/inlineRelationshipsWidget.scss */
 #quick-create-record {
   position: relative;
   top: 7px;
   right: 9px;
 }
 
-/* line 100, ../../../../../../compass/themes/x2engine/css/components/sortableWidget/views/inlineRelationshipsWidget.scss */
+/* line 106, ../../../../../../compass/themes/x2engine/css/components/sortableWidget/views/inlineRelationshipsWidget.scss */
 #InlineRelationshipsWidget-widget-container- .summary {
   padding: 5px;
 }
 
-/* line 104, ../../../../../../compass/themes/x2engine/css/components/sortableWidget/views/inlineRelationshipsWidget.scss */
+/* line 110, ../../../../../../compass/themes/x2engine/css/components/sortableWidget/views/inlineRelationshipsWidget.scss */
 #new-relationship-form {
   border-top: 1px solid #D9D9D9;
   box-sizing: border-box;
   padding: 6px;
 }
 
-/* line 111, ../../../../../../compass/themes/x2engine/css/components/sortableWidget/views/inlineRelationshipsWidget.scss */
+/* line 117, ../../../../../../compass/themes/x2engine/css/components/sortableWidget/views/inlineRelationshipsWidget.scss */
 #relationships-grid .x2grid-header-container {
   border: 1px solid #c5c5c5;
   border-bottom: none;
   border-left: none;
   border-right: none;
 }
-/* line 117, ../../../../../../compass/themes/x2engine/css/components/sortableWidget/views/inlineRelationshipsWidget.scss */
+/* line 123, ../../../../../../compass/themes/x2engine/css/components/sortableWidget/views/inlineRelationshipsWidget.scss */
 #relationships-grid .x2grid-body-container {
   border: none;
   border-bottom: 1px solid #c5c5c5;
 }
 
-/* line 124, ../../../../../../compass/themes/x2engine/css/components/sortableWidget/views/inlineRelationshipsWidget.scss */
+/* line 130, ../../../../../../compass/themes/x2engine/css/components/sortableWidget/views/inlineRelationshipsWidget.scss */
 #new-relationship-form div.row label {
   font-weight: bold;
   font-size: 8pt;
   color: #454545;
   width: 60px;
 }
-/* line 130, ../../../../../../compass/themes/x2engine/css/components/sortableWidget/views/inlineRelationshipsWidget.scss */
+/* line 136, ../../../../../../compass/themes/x2engine/css/components/sortableWidget/views/inlineRelationshipsWidget.scss */
 #new-relationship-form div.row * {
   display: inline-block;
 }
-/* line 133, ../../../../../../compass/themes/x2engine/css/components/sortableWidget/views/inlineRelationshipsWidget.scss */
+/* line 139, ../../../../../../compass/themes/x2engine/css/components/sortableWidget/views/inlineRelationshipsWidget.scss */
 #new-relationship-form div.row input[type="text"] {
   width: 192px;
   padding: 2px !important;
@@ -193,7 +200,7 @@
   margin-right: 5px;
   font-size: 12px;
 }
-/* line 141, ../../../../../../compass/themes/x2engine/css/components/sortableWidget/views/inlineRelationshipsWidget.scss */
+/* line 147, ../../../../../../compass/themes/x2engine/css/components/sortableWidget/views/inlineRelationshipsWidget.scss */
 #new-relationship-form div.row select {
   width: 192px;
   padding: 2px !important;
@@ -206,36 +213,36 @@
 
 /* Strange behavior: auto complete field and 
 * select box 6 pixels shorter than told to be */
-/* line 155, ../../../../../../compass/themes/x2engine/css/components/sortableWidget/views/inlineRelationshipsWidget.scss */
+/* line 161, ../../../../../../compass/themes/x2engine/css/components/sortableWidget/views/inlineRelationshipsWidget.scss */
 #inline-relationships-autocomplete-container {
   margin-top: 1px;
 }
-/* line 157, ../../../../../../compass/themes/x2engine/css/components/sortableWidget/views/inlineRelationshipsWidget.scss */
+/* line 163, ../../../../../../compass/themes/x2engine/css/components/sortableWidget/views/inlineRelationshipsWidget.scss */
 #inline-relationships-autocomplete-container + input {
   position: relative;
   top: 1px;
 }
 
-/* line 164, ../../../../../../compass/themes/x2engine/css/components/sortableWidget/views/inlineRelationshipsWidget.scss */
+/* line 170, ../../../../../../compass/themes/x2engine/css/components/sortableWidget/views/inlineRelationshipsWidget.scss */
 #new-relationship-form .record-name-autocomplete {
   width: 198px !important;
   height: 19px;
 }
-/* line 168, ../../../../../../compass/themes/x2engine/css/components/sortableWidget/views/inlineRelationshipsWidget.scss */
+/* line 174, ../../../../../../compass/themes/x2engine/css/components/sortableWidget/views/inlineRelationshipsWidget.scss */
 #new-relationship-form div.row {
   text-align: left;
   display: block;
   padding: 5px;
 }
 
-/* line 175, ../../../../../../compass/themes/x2engine/css/components/sortableWidget/views/inlineRelationshipsWidget.scss */
+/* line 181, ../../../../../../compass/themes/x2engine/css/components/sortableWidget/views/inlineRelationshipsWidget.scss */
 #RelationshipLabelButton {
   border-radius: 2px;
   font-weight: bold;
   padding: 2px;
 }
 
-/* line 181, ../../../../../../compass/themes/x2engine/css/components/sortableWidget/views/inlineRelationshipsWidget.scss */
+/* line 187, ../../../../../../compass/themes/x2engine/css/components/sortableWidget/views/inlineRelationshipsWidget.scss */
 #quick-create-record {
   margin-left: 11px;
   margin-top: 2px;
@@ -243,7 +250,7 @@
   top: 3px;
 }
 
-/* line 188, ../../../../../../compass/themes/x2engine/css/components/sortableWidget/views/inlineRelationshipsWidget.scss */
+/* line 194, ../../../../../../compass/themes/x2engine/css/components/sortableWidget/views/inlineRelationshipsWidget.scss */
 #add-relationship-button {
   margin-left: 65px;
   clear: both;

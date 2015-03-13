@@ -114,7 +114,8 @@ CREATE TABLE x2_admin(
     doNotEmailPage   LONGTEXT DEFAULT NULL,
     doNotEmailLinkText          VARCHAR(255) DEFAULT NULL,
     twitterCredentialsId        INT UNSIGNED,
-    twitterRateLimits           TEXT DEFAULT NULL
+    twitterRateLimits           TEXT DEFAULT NULL,
+    triggerLogMax               INT UNSIGNED DEFAULT 1000000
 ) ENGINE=InnoDB, COLLATE = utf8_general_ci;
 /*&*/
 DROP TABLE IF EXISTS x2_api_hooks;

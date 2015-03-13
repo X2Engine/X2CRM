@@ -47,6 +47,16 @@ class FieldsTest extends X2TestCase {
     private $_testColumnName;
     private $_testTableName;
 
+    public $fixtures = array (
+        'contacts' => 'Contacts'
+    );
+
+    public static function tearDownAfterClass () {
+        Yii::app()->db->schema->refresh ();
+        Contacts::model ()->refreshMetaData ();
+        Contacts::model ()->resetFieldsPropertyCache ();
+        parent::tearDownAfterClass ();
+    }
 
     public function testCountNonNull() {
         $f = new Fields;
@@ -55,6 +65,12 @@ class FieldsTest extends X2TestCase {
         $f->defaultValue = 66;
         Yii::app()->fixture->load(array('accounts'=>array('Accounts','.fieldsTest')));
         $this->assertEquals(2,(int) $f->countNonNull());
+    }
+
+    public function setup () {
+        $this->_testColumnName = null;
+        $this->_testTableName = null;
+        parent::setup ();
     }
 
     /**
@@ -173,15 +189,87 @@ class FieldsTest extends X2TestCase {
         $this->assertTrue(!in_array($field->fieldName,$columnsAfterDrop),"Column {$field->fieldName} was not dropped.");
     }
 
-    public function testDropColumn() {
-        $field = new Fields;
+    public function testModifyColumn () {
+        $schema = Yii::app()->db->schema;
         $field = new Fields('test');
         $field->modelName = $this->getTestModelName();
         $field->fieldName = $this->getTestColumnName();
         $field->type = 'varchar';
         $field->custom = 0;
-        $field->createColumn();
+        $tableName = X2Model::model($field->modelName)->tableName();
+        try {
+            $field->createColumn();
+        } catch(Exception $e) {
+            $this->tearDownTestColumn();
+            throw $e;
+        }
+        Yii::app()->db->schema->refresh();
+        $columnsAfterAdd = Yii::app()->db->schema->tables[$tableName]->columnNames;
+        $column = Yii::app()->db->schema->tables[$tableName]->columns[$field->fieldName];
+        $this->assertEquals ('varchar(255)', $column->dbType);
+        $this->assertTrue(
+            in_array($field->fieldName,$columnsAfterAdd),
+            "Column {$field->fieldName} was not created.");
+
+        // test column modification
+        $field->type = 'float';
+        $this->assertTrue ($field->modifyColumn ());
+        Yii::app()->db->schema->refresh();
+        $column = Yii::app()->db->schema->tables[$tableName]->columns[$field->fieldName];
+        $this->assertEquals ('float', $column->dbType);
+
+        // test strict mode. Try to truncate column and ensure that modifyColumn returns false in
+        // indicating CDbException
+        $contact = Contacts::model ()->findByPk (12345);
+        if (!$contact) { 
+            // temporary fix to get test to work in opensource. For some reason the contact 
+            // fixture isn't being loaded.
+            $contact = new Contacts;
+            $contact->setAttributes (array (
+                'id' => 12345,
+                'name' => 'Testfirstname Testlastname',
+                'nameId' => 'Testfirstname Testlastname_12345',
+                'company' => 'Black Mesa_1',
+                'firstName' => 'Testfirstname',
+                'lastName' => 'Testlastname',
+                'email' => 'contact@test.com',
+                'assignedTo' => 'Anyone',
+                'visibility' => 1,
+                'phone' => '(234) 918-2348',
+                'phone2' => '398-103-6291',
+                'trackingKey' => '12345678901234567890'
+            ), false);
+            $contact->save ();
+        }
+        $fieldName = $field->fieldName;
+        $field->type = 'text';
+        $this->assertTrue ($field->modifyColumn ());
+        Yii::app()->db->schema->refresh();
+        $column = $schema->tables[$tableName]->columns[$field->fieldName];
+        $this->assertEquals ('text', $column->dbType);
+        $contact->refreshMetaData ();
+        // set field value to a string with length > 255
+        $contact->$fieldName = '111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111';
+        $this->assertSaves ($contact);
+        $field->type = 'varchar';
+        Yii::app()->db->createCommand('set sql_mode=STRICT_ALL_TABLES;')->execute();
+        $this->assertFalse ($field->modifyColumn ());
+        $column = $schema->tables[$tableName]->columns[$field->fieldName];
+        $this->assertEquals ('text', $column->dbType);
+        Yii::app()->db->createCommand('set sql_mode="";')->execute();
+
+        $this->tearDownTestColumn();
     }
+
+//    public function testDropColumn() {
+//        $field = new Fields;
+//        $field = new Fields('test');
+//        $field->modelName = $this->getTestModelName();
+//        $field->fieldName = $this->getTestColumnName();
+//        $field->type = 'varchar';
+//        $field->custom = 0;
+//        $field->createColumn();
+//    }
 
     public function testNameAndId() {
         $d = Fields::NAMEID_DELIM;

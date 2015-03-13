@@ -73,7 +73,7 @@ $names = array();
 foreach($users as $name=>$user) {
     if(!Yii::app()->authManager->checkAccess('administrator', $user->id)
             && $user->id != Yii::app()->getSuId()){
-        $names[$user->id] = $name;
+        $names[$user->id] = CHtml::encode($name);
     }
 
 }

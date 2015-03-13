@@ -65,6 +65,14 @@ Title bar for sections other than the main section (e.g. widgets)
     background: #ddd;
 }
 
+.quick-read-link {
+    & + a.fa-eye {
+        position: relative;
+        left: 4px;
+    }
+}
+
+
 /***********************************************************************
 * x2-select
 ***********************************************************************/
@@ -2234,6 +2242,7 @@ ul.x2-dropdown-list {
     bottom: 0;
     left: 0;
     margin: auto;
+    z-index: 10;
 }
 
 .load8.input-loading-icon .loader {
@@ -2249,6 +2258,10 @@ ul.x2-dropdown-list {
 .pseudo-link {
     text-decoration: none;
     cursor: pointer;
+}
+
+.pseudo-link:hover {
+    text-decoration: none !important;
 }
 
 .x2-delete-icon {
@@ -2455,3 +2468,6 @@ span {
 ul.ui-autocomplete > li > a {
     text-decoration: none;
 }
+
+
+

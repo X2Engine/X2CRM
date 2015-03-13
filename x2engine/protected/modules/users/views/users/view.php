@@ -44,7 +44,7 @@ $this->insertMenu($menuOptions, $model);
     <h2><span class="no-bold">
         <?php echo Yii::t('users','{user}:', array(
             '{user}' => Modules::displayName(false),
-        )); ?></span> <?php echo $model->firstName,' ',$model->lastName; ?></h2>
+        )); ?></span> <?php echo CHtml::encode($model->firstName,' ',$model->lastName); ?></h2>
 </div>
 <?php $this->widget('zii.widgets.CDetailView', array(
 	'data'=>$model,

@@ -70,6 +70,7 @@ class UpdateStageAction extends WebUpdaterAction {
                     $autoRestore = ($autoRestore === 'true') ? true : false;
                     $this->uniqueId = $uniqueId;
                     $this->enactChanges($autoRestore);
+                    $this->finalizeUpdate($scenario, $uniqueId, $this->version, $this->edition);
                     $this->respond(Yii::t('admin', 'All done.'));
                     break;
                 case 'check':

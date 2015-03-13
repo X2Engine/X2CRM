@@ -49,15 +49,16 @@
  * @package application.models
  */
 Yii::import('application.components.x2flow.X2FlowItem');
+Yii::import('application.components.x2flow.X2FlowFormatter');
 Yii::import('application.components.x2flow.actions.*');
 Yii::import('application.components.x2flow.triggers.*');
 Yii::import('application.models.ApiHook');
 
 class X2Flow extends CActiveRecord {
+
     /**
      * @const max number of nested calls to {@link X2Flow::trigger()}
      */
-
     const MAX_TRIGGER_DEPTH = 0;
 
     /**
@@ -124,21 +125,32 @@ class X2Flow extends CActiveRecord {
                     }
                 }
             } else {
-
-                $flowAction = X2FlowAction::create($item);
-                $paramRules = $flowAction->paramRules ();
-                list ($success, $message) = $flowAction->validateOptions ($paramRules, null, true);
-                if ($success === false) {
-                    $valid = false;
-                    $this->addError ('flow', $flowAction->title.': '.$message);
+                $valid = $this->validateFlowItem ($item);
+                if (!$valid) {
                     break;
-                } else if ($success === X2FlowItem::VALIDATION_WARNING) {
-                    Yii::app()->user->setFlash (
-                        'notice', Yii::t('studio', $message));
                 }
             }
         }
         return $valid;
+    }
+
+    /**
+     * Validates flow item (trigger or action) 
+     * @return bool true if options are valid, false otherwise
+     */
+    private function validateFlowItem ($config, $action=true) {
+        $class = $action ? 'X2FlowAction' : 'X2FlowTrigger';
+        $flowItem = $class::create ($config);
+        $paramRules = $flowItem->paramRules (); 
+        list ($success, $message) = $flowItem->validateOptions ($paramRules, null, true);
+        if ($success === false) {
+            $this->addError ('flow', $flowItem->title.': '.$message);
+            return false;
+        } else if ($success === X2FlowItem::VALIDATION_WARNING) {
+            Yii::app()->user->setFlash (
+                'notice', Yii::t('studio', $message));
+        }
+        return true;
     }
 
     /**
@@ -147,15 +159,27 @@ class X2Flow extends CActiveRecord {
     public function validateFlow ($attribute) {
         $flow = CJSON::decode ($this->$attribute);
 
-        if (isset ($flow['items'])) {
-            $items = $flow['items'];
-            if ($this->validateFlowPrime ($items)) {
+        if(isset($flow['trigger']) && isset ($flow['items'])) {
+            if (!$this->validateFlowItem ($flow['trigger'])) {
+                return false;
+            }
+            if ($this->validateFlowPrime ($flow['items'])) {
                 return true;
             } 
         } else {
             $this->addError ($attribute, Yii::t('studio', 'Invalid flow'));
             return false;
         }
+    }
+
+    public function afterSave () {
+        $flow = CJSON::decode ($this->flow);
+        $triggerClass = $flow['trigger']['type'];
+        if ($triggerClass === 'PeriodicTrigger') {
+            $trigger = X2FlowTrigger::create ($flow['trigger']);
+            $trigger->afterFlowSave ($this);
+        }
+        parent::afterSave ();
     }
 
     /**
@@ -278,6 +302,9 @@ class X2Flow extends CActiveRecord {
             $params['modelClass'] = get_class($params['model']);
         }
 
+        // if flow id is specified, only execute flow with specified id
+        if (isset ($params['flowId'])) $flowAttributes['id'] = $params['flowId'];
+
         $flowTraces = array();
         $flows = CActiveRecord::model('X2Flow')->findAllByAttributes($flowAttributes);
 
@@ -296,32 +323,21 @@ class X2Flow extends CActiveRecord {
         $flowRetVal = null;
         foreach($flows as &$flow) {
 
-            // if flow id is specified, only execute flow with specified id
-            if (isset ($params['flowId']) && $flow->id !== $params['flowId']) continue;
             $triggerLog = new TriggerLog;
             $triggerLog->triggeredAt = $triggeredAt;
             $triggerLog->flowId = $flow->id;
             $triggerLog->save ();
 
-            //$flowTrace = self::executeFlow($flow, $params, null, $triggerLog->id);
-            //AuxLib::debugLog ('executing flow');
             $flowRetArr = self::executeFlow($flow, $params, null, $triggerLog->id);
-            //AuxLib::debugLog ('executing flow ret');
             $flowTrace = $flowRetArr['trace'];
             $flowRetVal = (isset ($flowRetArr['retVal'])) ? $flowRetArr['retVal'] : null;
-            //AuxLib::debugLog ($flowRetArr);
-            //AuxLib::debugLogR ($flowRetArr);
             $flowRetVal = self::extractRetValFromTrace ($flowTrace);
-            //AuxLib::debugLogR ('$flowRetVal = ');
-            //AuxLib::debugLogR ($flowRetVal);
-
             $flowTraces[] = $flowTrace;
 
             // save log for triggered flow
             $triggerLog->triggerLog =
                 CJSON::encode (array_merge (array ($triggerInfo), array ($flowTrace)));
             $triggerLog->save ();
-            //AuxLib::debugLog ('log save');
         }
 
         // old logging system, uncomment to enable file based logging
@@ -601,7 +617,7 @@ class X2Flow extends CActiveRecord {
         return $results;
     }
 
-    public function validateAndExecute ($item, $flowAction, $params, $triggerLogId=null) {
+    public function validateAndExecute ($item, $flowAction, &$params, $triggerLogId=null) {
         $logEntry;
         $validationRetStatus = $flowAction->validate($params, $this->id);
         if ($validationRetStatus[0] === true) {
@@ -621,10 +637,10 @@ class X2Flow extends CActiveRecord {
      */
     public static function parseValue($value, $type, &$params = null, $renderFlag=true){
 
-        if(is_string($value) && isset($params['model'])){
-            if(strpos($value, '=') === 0){
+        if (is_string ($value)){
+            if (strpos ($value, '=') === 0){
                 // It's a formula. Evaluate it.
-                $evald = Formatter::parseFormula($value, $params);
+                $evald = X2FlowFormatter::parseFormula($value, $params);
 
                 // Fail silently because there's not yet a good way of reporting
                 // problems that occur in parseFormula --
@@ -633,7 +649,8 @@ class X2Flow extends CActiveRecord {
                     $value = $evald[1];
             } else {
                 // Run token replacement:
-                $value = Formatter::replaceVariables($value, $params['model'], $type, $renderFlag);
+                $value = X2FlowFormatter::replaceVariables(
+                    $value, $params, $type, $renderFlag, true);
             }
         }
 

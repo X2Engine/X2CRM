@@ -37,13 +37,6 @@
 $layoutManager = $this->widget ('RecordViewLayoutManager', array ('staticLayout' => false));
 
 $this->noBackdrop = true;
-Yii::app()->clientScript->registerCss('recordViewCss',"
-
-#content {
-    background: none !important;
-    border: none !important;
-}
-");
 
 Yii::app()->clientScript->registerResponsiveCssFile(
     Yii::app()->theme->baseUrl.'/css/responsiveRecordView.css');

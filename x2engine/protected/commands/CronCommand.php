@@ -43,7 +43,7 @@
  */
 class CronCommand extends CConsoleCommand {
 
-    public function run(){
+    public function run ($args){
         $this->attachBehaviors(array(
             'X2CronBehavior' => array(
                 'class' => 'application.components.X2CronBehavior',

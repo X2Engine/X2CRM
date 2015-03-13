@@ -206,6 +206,21 @@ class ProductsController extends x2base {
     }
 
     /**
+     * Retrieve items for combo box
+     * @param string $prefix parameter to getItems2
+     * @param int $page parameter to getItems2
+     */
+    public function actionGetItems2 () {
+        $prefix = isset ($_POST['prefix']) ? $_POST['prefix'] : '';
+        $page = isset ($_POST['page']) ? $_POST['page'] : 0;
+        $pageSize = isset ($_POST['pageSize']) ? $_POST['pageSize'] : 20;
+
+        $items = X2Model::model ($this->modelClass)->getItems2 (
+            $prefix, $page, $pageSize, array ('id', 'description', 'price'), 'name');
+        echo CJSON::encode ($items);
+    }
+
+    /**
      * Create a menu for Products
      * @param array Menu options to remove
      * @param X2Model Model object passed to the view

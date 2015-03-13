@@ -47,6 +47,7 @@ class PersistentGridSettingsTest extends X2DbTestCase {
         Yii::app()->params->profile->generalGridViewSettings = '';
         Yii::app()->params->profile->save ();
         $models = X2Model::getModelNames (); 
+        unset ($models['EmailInboxes']);
         foreach ($models as $class => $title) {
             VERBOSE_MODE && println ('testing sort for '.$class);
             $uid = rand ();
@@ -135,6 +136,7 @@ class PersistentGridSettingsTest extends X2DbTestCase {
      */
     public function testX2ModelSessionSettings () {
         $models = X2Model::getModelNames (); 
+        unset ($models['EmailInboxes']);
         foreach ($models as $class => $title) {
             $_SESSION = array ();
             VERBOSE_MODE && println ('testing sort for '.$class);

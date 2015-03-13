@@ -76,7 +76,10 @@ $(document).ready(function() {
         <label><?php echo Yii::t('groups','{users}', array(
             '{users}' => Modules::displayName(true, "Users"),
         ));?></label>
-        <?php echo CHtml::dropDownList('users[]', isset($selected)?$selected:"", X2Model::getAssignmentOptions(false, false), array('class'=>'multiselect', 'multiple'=>'multiple')); ?>
+        <?php
+            $assignmentOptions = array_map(array('CHtml', 'encode'), X2Model::getAssignmentOptions(false, false));
+            echo CHtml::dropDownList('users[]', isset($selected)?$selected:"", $assignmentOptions, array('class'=>'multiselect', 'multiple'=>'multiple'));
+        ?>
         <br />
 
 	<div class="row buttons">

@@ -103,7 +103,7 @@ class Actions extends X2Model {
                 'defaults' => array(),
                 'defaultStickOnClear' => false
             ),
-            'permissions' => array('class' => 'X2PermissionsBehavior'),
+            'permissions' => array('class' => Yii::app()->params->modelPermissions),
             //'changelog' => array('class' => 'X2ChangeLogBehavior'),
         );
     }
@@ -1106,9 +1106,16 @@ class Actions extends X2Model {
         return self::$_priorityLabels;
     }
 
+    /**
+     * Retrieve the priority label string, or return the default priority ("Low")
+     * @return string Priority label
+     */
     public function getPriorityLabel() {
         $priorityLabels = self::getPriorityLabels();
-        return empty($this->priority) ? $priorityLabels[1] : $priorityLabels[$this->priority];
+        $label = $priorityLabels[1];
+        if (!empty($this->priority) && array_key_exists($this->priority, $priorityLabels))
+            $label = $priorityLabels[$this->priority];
+        return $label;
     }
 
     /**

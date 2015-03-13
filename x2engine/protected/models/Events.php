@@ -136,6 +136,10 @@ class Events extends CActiveRecord {
                             if (isset($action) && (strcasecmp($action->associationType, 'contacts') === 0 || in_array($action->type, array('call', 'note', 'time')))) {
                                 // Special considerations for publisher-created actions, i.e. call, note, time, and anything associated with a contact
                                 $actionFlag = true;
+                                // Retrieve the assigned user from the related action
+                                $relatedAction = Actions::model()->findByPk ($this->associationId);
+                                if ($authorText)
+                                    $authorText = User::getUserLinks ($relatedAction->assignedTo);
                             }
                         }
                         if ($actionFlag) {
@@ -588,7 +592,7 @@ class Events extends CActiveRecord {
                 }
                 break;
             default:
-                $text = $authorText . $this->text;
+                $text = $authorText . CHtml::encode($this->text);
                 break;
         }
         if ($truncated && mb_strlen($text, 'UTF-8') > 250) {

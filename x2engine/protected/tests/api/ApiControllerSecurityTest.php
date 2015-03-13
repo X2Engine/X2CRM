@@ -120,7 +120,10 @@ class ApiControllerSecurityTest extends CURLDbTestCase {
 
 		// Test access permissions:
 		$origUrlFormat = $this->_urlFormat;
-		$param = array();
+		$param = $this->param;
+		$user->userKey = $param['userKey'];
+		$user->save();
+
 		$this->_urlFormat = 'api/checkPermissions/action/{action}/username/{username}/api/1';
 		$urlParam['{username}'] = 'testuser';
 
@@ -133,10 +136,12 @@ class ApiControllerSecurityTest extends CURLDbTestCase {
 				$ch = $this->getCurlHandle($urlParam,$param);
 				$apiAccess = curl_exec($ch) == 'true';
 				$access = false;
-				foreach ($roles as $role) {
-					$access = $access || $auth->checkAccess($urlParam['{action}'], $role->roleId);
-				}
-				$this->assertEquals($access,$apiAccess,'Failed asserting consistency between API-reported permissions and internal app permissions.');
+                $access = $auth->checkAccess($urlParam['{action}'], $user->id);
+                VERBOSE_MODE && println ('Action:');
+                VERBOSE_MODE && print_r ($urlParam);
+                VERBOSE_MODE && println ((int) $access);
+                VERBOSE_MODE && println ((int) $apiAccess);
+				$this->assertEquals((int) $access, (int) $apiAccess,'Failed asserting consistency between API-reported permissions and internal app permissions.');
 			}
 		}
 		$this->_urlFormat = $origUrlFormat;

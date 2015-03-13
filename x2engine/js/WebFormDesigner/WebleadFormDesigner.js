@@ -34,69 +34,61 @@
  *****************************************************************************************/
 
 
+x2.WebleadFormDesigner = (function(){
 
-
-function WebleadFormDesigner (argsList) {
-	WebFormDesigner.call (this, argsList);	
-}
-
-WebleadFormDesigner.prototype = auxlib.create (WebFormDesigner.prototype);
-
-/*
-Public static methods
-*/
-
-/*
-Private static methods
-*/
-
-/*
-Public instance methods
-*/
-
-WebleadFormDesigner.prototype._setUpGenerateAssociatedRecordMenu = function () {
-
-    $('#generate-lead-checkbox').change (function () {
-        if ($(this).is (':checked')) {
-            $('#generate-lead-form').slideDown ();
-        } else {
-            $('#generate-lead-form').slideUp ();
-        }
-    });
-};
-
-/*
-Private instance methods
-*/
-
-WebleadFormDesigner.prototype._updateExtraFields = function (form) {
-
-    if(typeof form.generateLead !== 'undefined') {
-        if (parseInt (form.generateLead, 10) === 1) {
-            $('#generate-lead-checkbox').prop ('checked', true);
-        } else {
-            $('#generate-lead-checkbox').prop ('checked', false);
-        }
-        $('#generate-lead-checkbox').change ();
-    }
-    if(typeof form.generateAccount !== 'undefined') {
-        if (parseInt (form.generateAccount, 10) === 1) {
-            $('#generate-account-checkbox').prop ('checked', true);
-        } else {
-            $('#generate-account-checkbox').prop ('checked', false);
-        }
-        $('#generate-account-checkbox').change ();
+    function WebleadFormDesigner (argsList) {
+        x2.WebFormDesigner.call (this, argsList);  
     }
 
-    if(typeof form.leadSource !== 'undefined') {
-        $('#leadSource').val (form.leadSource);
+    WebleadFormDesigner.prototype = auxlib.create (x2.WebFormDesigner.prototype);
+
+    /*
+    Public instance methods
+    */
+
+    WebleadFormDesigner.prototype._setUpGenerateAssociatedRecordMenu = function () {
+
+        $('#generate-lead-checkbox').change (function () {
+            if ($(this).is (':checked')) {
+                $('#generate-lead-form').slideDown ();
+            } else {
+                $('#generate-lead-form').slideUp ();
+            }
+        });
+    };
+
+    /*
+    Private instance methods
+    */
+
+    WebleadFormDesigner.prototype._updateExtraFields = function (form) {
+
+        if(typeof form.generateLead !== 'undefined') {
+            if (parseInt (form.generateLead, 10) === 1) {
+                $('#generate-lead-checkbox').prop ('checked', true);
+            } else {
+                $('#generate-lead-checkbox').prop ('checked', false);
+            }
+            $('#generate-lead-checkbox').change ();
+        }
+        if(typeof form.generateAccount !== 'undefined') {
+            if (parseInt (form.generateAccount, 10) === 1) {
+                $('#generate-account-checkbox').prop ('checked', true);
+            } else {
+                $('#generate-account-checkbox').prop ('checked', false);
+            }
+            $('#generate-account-checkbox').change ();
+        }
+
+        if(typeof form.leadSource !== 'undefined') {
+            $('#leadSource').val (form.leadSource);
+        }
+
+    };
+
+    WebleadFormDesigner.prototype._init = function () {
+        this._setUpGenerateAssociatedRecordMenu ();
+        x2.WebFormDesigner.prototype._init.call (this);
     }
-
-};
-
-WebleadFormDesigner.prototype._init = function () {
-    this._setUpGenerateAssociatedRecordMenu ();
-    WebFormDesigner.prototype._init.call (this);
-}
-
-
+    return WebleadFormDesigner;
+})();

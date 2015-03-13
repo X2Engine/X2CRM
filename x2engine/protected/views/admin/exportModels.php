@@ -36,7 +36,7 @@
  *****************************************************************************************/
 
 ?>
-<div class="page-title icon contacts"><h2><?php echo Yii::t('contacts','Export {model}', array('{model}'=>$model)); ?></h2></div>
+<div class="page-title icon contacts"><h2><?php echo Yii::t('contacts','Export {model}', array('{model}'=>Modules::displayName(true, $model))); ?></h2></div>
 <div class="form">
     
 <?php if (!empty($model)) { ?>

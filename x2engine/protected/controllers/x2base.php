@@ -101,7 +101,7 @@ abstract class x2base extends X2Controller {
             'CommonControllerBehavior' => array(
                 'class' => 'application.components.CommonControllerBehavior'),
             'PermissionsBehavior' => array(
-                'class' => 'application.components.permissions.X2ControllerPermissionsBehavior'),
+                'class' => 'application.components.permissions.'.Yii::app()->params->controllerPermissions),
         );
     }
 
@@ -1390,6 +1390,26 @@ abstract class x2base extends X2Controller {
     protected function badRequestException ($message=null) {
         if ($message === null) $message = Yii::t('app', 'Bad request.');
         return new CHttpException (400, $message);
+    }
+
+    public function actionQuickView ($id) {
+        $model = $this->loadModel($id);
+        if (!FormLayout::model()->findByAttributes (array ('model' => get_class ($model)))) {
+            echo Yii::t('app', 'Quick view not supported');
+        }
+        if ($this->checkPermissions($model, 'view')) {
+            $this->renderPartial(
+                'application.components.views._detailView', 
+                array(
+                    'model' => $model,
+                    'modelName' => get_class ($model),
+                    'scenario'=>'Inline',
+                    'nameLink' => true,
+                )
+            , false, true);
+            return;
+        }
+        throw new CHttpException (403);
     }
 
 }

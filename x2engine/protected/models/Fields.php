@@ -586,6 +586,24 @@ class Fields extends CActiveRecord {
         } else
             return $value;
     }
+
+    /**
+     * Table modification is performed before field update since field should not be saved if
+     * column data type cannot be updated
+     * TODO: place column modification in a transaction with field update
+     */
+    public function beforeSave () {
+        $valid = parent::beforeSave ();
+        if ($valid) {
+            $table = Yii::app()->db->schema->tables[$this->myTableName];
+            $existing = array_key_exists($this->fieldName, $table->columns) && 
+                $table->columns[$this->fieldName] instanceof CDbColumnSchema;
+            if($existing){ 
+                $valid = $this->modifyColumn();
+            }
+        }
+        return $valid;
+    }
     
     /**
      * Perform the creation of a new database column.
@@ -599,11 +617,12 @@ class Fields extends CActiveRecord {
     public function afterSave(){
         // Does the column already exist?
         $table = Yii::app()->db->schema->tables[$this->myTableName];
-        $existing = array_key_exists($this->fieldName, $table->columns) && $table->columns[$this->fieldName] instanceof CDbColumnSchema;
+        $existing = array_key_exists($this->fieldName, $table->columns) && 
+            $table->columns[$this->fieldName] instanceof CDbColumnSchema;
 
         if(!$existing){ // Going to create the column.
             $this->createColumn();
-        }
+        } 
         if($this->keyType != 'PRI' && $this->keyType != 'FIX'){
             // The key for this column is not primary/hard-coded (managed by
             // X2Engine developers, and cannot be user-modified), so it can
@@ -694,6 +713,31 @@ class Fields extends CActiveRecord {
         }catch(CDbException $e){
             $this->delete(); // If the SQL failed, remove the x2_fields record of it to prevent issues.
         }
+    }
+
+    /**
+     * Modifies the data type of an existing column 
+     */
+    public function modifyColumn () {
+        // Get the column definition.
+        $fieldType = $this->type;
+        $columnDefinitions = Fields::getFieldTypes('columnDefinition');
+
+        if(isset($columnDefinitions[$fieldType])){
+            $fieldType = $columnDefinitions[$fieldType];
+        }else{
+            $fieldType = 'VARCHAR(250)';
+        }
+
+        //Yii::app()->db->createCommand('set sql_mode=STRICT_ALL_TABLES;')->execute();
+        $sql = "ALTER TABLE `{$this->myTableName}` MODIFY COLUMN `{$this->fieldName}` $fieldType";
+        try{
+            Yii::app()->db->createCommand($sql)->execute();
+        }catch(CDbException $e){
+            $this->addError ('type', $e->getMessage ());
+            return false;
+        }
+        return true;
     }
 
     /**

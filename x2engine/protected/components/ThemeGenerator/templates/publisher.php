@@ -4,10 +4,6 @@
 	border-color: $colors[lighter_content];
 }
 
-#publisher .text-area-wrapper {
-	border-color: $colors[border]
-}
-
 #publisher #action-reminder-inputs {
 	background: $colors[content]
 	color: $colors[text]
@@ -19,8 +15,5 @@
 	background: $colors[content]
 }
 
-.error-summary-container {
-	background: #FEE !important;
-}
 
 "; ?>

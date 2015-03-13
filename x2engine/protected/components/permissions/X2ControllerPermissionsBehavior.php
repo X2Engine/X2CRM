@@ -96,8 +96,8 @@ class X2ControllerPermissionsBehavior extends ControllerPermissionsBehavior {
 
         // Return true if the user is explicitly allowed to do it, or if there is no permission 
         // item, or if they are an admin
-        if (!($authItem instanceof CAuthItem) || 
-            Yii::app()->user->checkAccess($actionAccess, $params) || Yii::app()->params->isAdmin) {
+        if (Yii::app()->params->isAdmin || !($authItem instanceof CAuthItem) || 
+            Yii::app()->user->checkAccess($actionAccess, $params)) {
 
             return true;
         } elseif (Yii::app()->user->isGuest) {
@@ -189,7 +189,7 @@ class X2ControllerPermissionsBehavior extends ControllerPermissionsBehavior {
                     $params['module'] = $this->owner->getModule()->getId();
                 $authItem = $auth->getAuthItem($action);
                 if (!isset($item['visible']) || $item['visible'] == true) {
-                    $item['visible'] = Yii::app()->user->checkAccess($action, $params) || is_null($authItem) || Yii::app()->params->isAdmin;
+                    $item['visible'] = Yii::app()->params->isAdmin || Yii::app()->user->checkAccess($action, $params) || is_null($authItem);
                 }
             } else {
                 if (isset($item['linkOptions']['submit'])) {

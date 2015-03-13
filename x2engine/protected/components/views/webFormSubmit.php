@@ -39,6 +39,7 @@
 mb_internal_encoding('UTF-8');
 mb_regex_encoding('UTF-8');
 Yii::app()->params->profile = Profile::model()->findByPk(1);
+$webForm = WebForm::model()->findByPk($_GET['webFormId']);
 ?>
 
 <!DOCTYPE html>
@@ -55,6 +56,9 @@ body {
 	font-family: Arial, Helvetica, sans-serif;
 	width:189px;
 }
+<?php if ($webForm) {
+	echo $webForm->css; 
+} ?>
 </style>
 </head>
 <body>

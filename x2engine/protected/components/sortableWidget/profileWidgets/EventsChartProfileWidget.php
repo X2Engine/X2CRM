@@ -139,7 +139,6 @@ class EventsChartProfileWidget extends ChartWidget {
                 '1'=>'Public',
                 '0'=>'Private',
             );
-            $this->migrateDateRange();
             $chartSettingsData = self::getChartSettingsProvider ($this->chartType)->data;
             $this->_setupScript = parent::getSetupScript ()."
                 $(function () {
@@ -302,37 +301,6 @@ class EventsChartProfileWidget extends ChartWidget {
 			return $events;
 		}
 	}
-
-    /**
-     * Temporary Migration from the old chart settings to the new. 
-     */
-    public function migrateDateRange () {
-        $settings = $this->getWidgetProperty('chartSettings');
-
-        if (!isset($settings['dateRange'])) return;
-        $dateRange = $settings['dateRange'];
-
-        $mapping = array (
-            "Custom" => array('custom', 'day'),
-            "Today" => array('this', 'day'),
-            "Yesterday" => array('last', 'day'),
-            "This Week" => array('this', 'week'),
-            "Last Week" => array("last", "week"),
-            "This Month" => array("this", "month"),
-            "Last Month" => array("last", "month"),
-            "Last Three Months" => array("last", "quarter"),
-            "Last Six Months" => array("last", "year"),
-            "This Year" => array("this", "year"),
-            "Last Year" => array("last", "year")
-        );
-
-        if (array_key_exists($dateRange, $mapping)) {
-            $settings['dateRangeType'] = $mapping[$dateRange][0];
-            $settings['dateRange'] = $mapping[$dateRange][1];
-            $this->setWidgetProperty ('chartSettings', $settings);
-        }
-
-    }
 
 }
 ?>

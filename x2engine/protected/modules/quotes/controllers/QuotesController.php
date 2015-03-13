@@ -271,6 +271,7 @@ class QuotesController extends x2base {
 	 * Print a quote using a template or the legacy print view.
 	 */
 	public function actionPrint($id) {
+        header('Content-type: text/html; charset=utf-8');
 		echo $this->getPrintQuote($id);
 		return;
 	}

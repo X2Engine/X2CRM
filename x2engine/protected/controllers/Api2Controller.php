@@ -275,7 +275,7 @@ class Api2Controller extends CController {
                     // Instantiate a new active record model, but go through
                     // getStaticModel to check for class validity:
                     $class = get_class($this->getStaticModel());
-                    $this->model = new $class;
+                    if (!isset ($this->_model)) $this->model = new $class;
                 }
 
                 // Set attributes
@@ -765,7 +765,8 @@ class Api2Controller extends CController {
                 }
                 break;
             case 'visibility':
-                return X2PermissionsBehavior::getVisibilityOptions();
+                $permissionsBehavior = Yii::app()->params->modelPermissions;
+                return $permissionsBehavior::getVisibilityOptions();
         }
         return array();
     }
@@ -1352,7 +1353,6 @@ class Api2Controller extends CController {
      */
     public function kludgesForActions(){
         $method = Yii::app()->request->requestType;
-
         if($_GET['_class'] == 'Actions'){
             // Check association:
             if(isset($_GET['associationType'], $_GET['associationId'])){

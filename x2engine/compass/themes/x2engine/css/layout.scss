@@ -37,7 +37,6 @@
 @import "font-awesome";
 @import "icons";
 
-
 div.no-selection,
 span.no-selection {
         -moz-user-select: none; 
@@ -1204,6 +1203,10 @@ div {
     }
 }
 
+#campaign-attachments-wrapper {
+    @include standard-box-shadow ();
+}
+
 /***********************************************************************
 * scroll bars 
 ***********************************************************************/
@@ -1372,5 +1375,28 @@ body.disable-mobile-layout {
         position: relative;
         top: 2px;
         margin-right: 3px;
+    }
+}
+
+
+/***********************************************************************
+* Divider
+***********************************************************************/
+.x2-divider {
+    display: block;
+    width: 100%;
+    height: 0px;
+
+    border-top: 1px solid $lightGray;
+
+    margin-top: 15px;
+    margin-bottom: 15px;
+
+    /* @theme border-color: border */
+
+}
+.detail-view {
+    a {
+        color: #004baf;
     }
 }

@@ -240,6 +240,8 @@ Private instance methods
  */
 SortableWidget.prototype._afterMaximize = function () {};
 
+SortableWidget.prototype.afterRefresh = function () {};
+
 /**
  * Sets up behavior of the minimization/maximization button
  */
@@ -357,8 +359,8 @@ SortableWidget.prototype._setUpWidgetDeletion = function () {
                         data: {
                             widgetLayoutName: that.widgetType,
                             widgetKey: that.widgetClass + '_' + that.widgetUID,
-                            modelName: that.modelName,
-                            modelId: that.modelId,
+                            settingsModelName: that.settingsModelName,
+                            settingsModelId: that.settingsModelId,
                         },
                         type: 'POST',
                         success: function (data) {

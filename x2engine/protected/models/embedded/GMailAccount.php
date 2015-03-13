@@ -121,7 +121,7 @@ class GMailAccount extends EmailAccount {
         return array(
             array('email','email'),
             array('senderName,email,password', 'required'),
-            array('senderName,email,password', 'safe'),
+            array('senderName,email,password,imapPort,imapSecurity,imapNoValidate,imapServer', 'safe'),
         );
     }
 

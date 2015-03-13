@@ -103,6 +103,123 @@ class Formatter {
     }
 
     /**
+     * Parses a "formula" for the flow.
+     *
+     * If the first character in a string value in X2Flow is the "=" character, it
+     * will be treated as valid PHP code to be executed. This function uses {@link getSafeWords}
+     * to determine a list of functions which the user can execute in the code,
+     * and strip any which are not allowed. This should generally be used for
+     * mathematical operations, like calculating dynamic date offsets.
+     *
+     * @param string $input The code to be executed
+     * @param array $params Optional extra parameters, notably the Model triggering the flow
+     * @return array An array with the first element true or false corresponding to
+     *  whether execution succeeded, the second, the value returned by the formula.
+     */
+    public static function parseFormula($input, array $params = array()){
+        if(strpos($input,'=') !== 0) {
+            return array(false,Yii::t('admin','Formula does not begin with "="'));
+        }
+        
+        $formula = substr($input, 1); // Remove the "=" character from in front
+        
+        $replacementTokens = static::getReplacementTokens ($formula, $params, false, false);
+        
+        // Run through all short codes and ensure they're proper PHP expressions
+        // that correspond to their value, i.e. strings will become string
+        // expressions, integers will become integers, etc.
+        //
+        // This step is VITALLY IMPORTANT to the security and stability of
+        // X2Flow's formula parsing.
+        foreach(array_keys($replacementTokens) as $token) {
+            $type = gettype($replacementTokens[$token]);
+
+            if(!in_array($type,array("boolean","integer","double","string","NULL"))) {
+                // Safeguard against "array to string conversion" and "warning,
+                // object of class X could not be converted to string" errors.
+                // This case shouldn't happen and is not valid, so nothing
+                // smarter need be done here than to simply set the replacement
+                // value to its corresponding token.
+                $replacementTokens[$token] = var_export($token,true);
+
+            } else if ($type === 'string') {
+                // Escape/convert values into valid PHP expressions
+                $replacementTokens[$token] = var_export($replacementTokens[$token],true);
+            }
+        }
+
+        // Prepare formula for eval:
+        if(strpos($formula, ';') !== strlen($formula) - 1){
+            // Eval requires a ";" at the end to execute properly
+            $formula .= ';';
+        }
+        if(strpos($formula, 'return ') !== 0){
+            // Eval requires a "return" at the front.
+            $formula = 'return '.$formula;
+        }
+
+        // Validity check: ensure the formula only consists of "safe" functions,
+        // the existing variable tokens, spaces, and PHP operators:
+        foreach(array_keys($replacementTokens) as $token) {
+            $shortCodePatterns[] = preg_quote($token,'#');
+        }
+        // PHP operators
+        $charOp = '[\[\]()<>=!^|?:*+%/\-\.]';
+        $charOpOrWhitespace = '(?:'.$charOp.'|\s)';
+        $phpOper = implode ('|', array (
+            $charOpOrWhitespace,
+            $charOpOrWhitespace.'and',
+            $charOpOrWhitespace.'or',
+            $charOpOrWhitespace.'xor',
+            $charOpOrWhitespace.'false',
+            $charOpOrWhitespace.'true',
+        ));
+        // allow empty string '' and prevent final single quote from being escaped
+        $singleQuotedString = '\'\'|\'[^\']*[^\\\\\']\''; // Only simple strings currently supported
+        $number = $charOpOrWhitespace.'[0-9]+(?:\.[0-9]+)?';
+        $validPattern = '#^return(?:'
+            .self::getSafeWords($charOpOrWhitespace)
+            .(empty($shortCodePatterns)?'':('|'.implode('|',$shortCodePatterns)))
+            .'|'.$phpOper
+            .'|'.$number
+            .'|'.$singleQuotedString.')*;$#i';
+
+        if(!preg_match($validPattern,$formula)) {
+            return array(
+                false,
+                Yii::t('admin','Input evaluates to an invalid formula: ').
+                    strtr($formula,$replacementTokens));
+        }
+
+        try{
+            $retVal = @eval(strtr($formula,$replacementTokens));
+        }catch(Exception $e){
+            return array(
+                false,
+                Yii::t('admin','Evaluated statement encountered an exception: '.$e->getMessage()));
+        }
+
+        return array(true,$retVal);
+    }
+
+    /**
+     * Returns a list of safe functions for formula parsing
+     *
+     * This function will generate a string to be inserted into the regex defined
+     * in the {@link parseFormula} function, where each function not listed in the
+     * $safeWords array here will be stripped from code execution.
+     * @return String A string with each function listed as to be inserted into
+     * a regular expression.
+     */
+    private static function getSafeWords($prefix){
+        $safeWords = array(
+            $prefix.'echo[ (]',
+            $prefix.'time[ (]',
+        );
+        return implode('|',$safeWords);
+    }
+
+    /**
      * Parses text for short codes and returns an associative array of them.
      *
      * @param string $value The value to parse
@@ -111,28 +228,32 @@ class Formatter {
      * @param bool $makeLinks If the render flag is set, determines whether to render attributes
      *  as links
      */
-    public static function getReplacementTokens($value,$model,$renderFlag,$makeLinks) {
+    protected static function getReplacementTokens(
+        $value, array $params, $renderFlag, $makeLinks) {
+
+        if (!isset ($params['model'])) throw new CException ('Missing model param');
+
+        $model = $params['model'];
+
         // Pattern will match {attr}, {attr1.attr2}, {attr1.attr2.attr3}, etc.
         $codes = array();
         // Types of each value for the short codes:
         $codeTypes = array();
         $fieldTypes = array_map(function($f){return $f['phpType'];},Fields::getFieldTypes());
         $fields = $model->getFields(true);
-        preg_match_all('/{([a-z]\w*)(\.[a-z]\w*)*?}/i', trim($value), $matches); // check for variables
+        // check for variables
+        preg_match_all('/{([a-z]\w*)(\.[a-z]\w*)*?}/i', trim($value), $matches); 
 
         if(!empty($matches[0])){
             foreach($matches[0] as $match){
                 $match = substr($match, 1, -1); // Remove the "{" and "}" characters
                 $attr = $match;
-                if(strpos($match, '.') !== false){ // We found a link attribute (i.e. {company.name})
+                if(strpos($match, '.') !== false){ 
+                    // We found a link attribute (i.e. {company.name})
+
                     $newModel = $model;
                     $pieces = explode('.',$match);
                     $first = array_shift($pieces);
-                    $tmpModel = Formatter::parseShortCode($first, $newModel); // First check if the first piece is part of a short code, like "user"
-                    if(isset($tmpModel) && $tmpModel instanceof CActiveRecord){
-                        $newModel = $tmpModel; // If we got a model from our short code, use that
-                        $attr = implode('.',$pieces); // Also, set the attribute to have the first item removed.
-                    }
 
                     $codes['{'.$match.'}'] = $newModel->getAttribute(
                         $attr, $renderFlag, $makeLinks);
@@ -142,10 +263,8 @@ class Formatter {
                             : 'string';
 
                 }else{ // Standard attribute
-                    if(isset($params[$match])){ // First check if we provided a value for this attribute
-                        $codes['{'.$match.'}'] = $params[$match];
-                        $codeTypes[$match] = gettype($params[$match]);
-                    }elseif($model->hasAttribute($match)){ // Next ensure the attribute exists on the model
+                    // Check if the attribute exists on the model
+                    if($model->hasAttribute($match)){ 
                         $codes['{'.$match.'}'] = $model->getAttribute(
                             $match, $renderFlag, $makeLinks);
                         $codeTypes[$match] = isset($fields[$match]) 
@@ -153,17 +272,17 @@ class Formatter {
                                 ? $fieldTypes[$fields[$match]->type]
                                 : 'string';
                         
-                    }else{ // Finally, try to parse it as a short code if nothing else worked
-                        $shortCodeValue = Formatter::parseShortCode($match, $model);
-                        if(!is_null($shortCodeValue)){
-                            $codes['{'.$match.'}'] = $shortCodeValue;
-                            $codeTypes[$match] = gettype($shortCodeValue);
-                        }
                     }
                 }
             }
         }
 
+        $codes = self::castReplacementTokenTypes ($codes, $codeTypes);
+
+        return $codes;
+    }
+
+    protected static function castReplacementTokenTypes (array $codes, array $codeTypes) {
         // ensure that value of replacement token is of an acceptable type
         foreach ($codes as $name => $val) {
             if(!in_array(gettype ($val),array("boolean","integer","double","string","NULL"))) {
@@ -709,8 +828,8 @@ class Formatter {
      * @return String The formatted string
      */
     public static function parseEmail($str){
-        $str = preg_replace('/<\!--BeginOpenedEmail-->(.*?)<\!--EndOpenedEmail--!>/s', '', $str);
-        $str = preg_replace('/<\!--BeginActionHeader-->(.*?)<\!--EndActionHeader--!>/s', '', $str);
+        $str = preg_replace('/<\!--BeginOpenedEmail-->(.*?)<\!--EndOpenedEmail-->/s', '', $str);
+        $str = preg_replace('/<\!--BeginActionHeader-->(.*?)<\!--EndActionHeader-->/s', '', $str);
         $str = strip_tags($str);
         return $str;
     }
@@ -739,7 +858,11 @@ class Formatter {
      * @return String A modified version of $value with attributes replaced.
      */
     public static function replaceVariables(
-        $value, $model, $type = '', $renderFlag=true, $makeLinks=true){
+        $value, $params, $type = '', $renderFlag=true, $makeLinks=true){
+
+        if (!is_array ($params)) {
+            $params = array ('model' => $params);
+        }
 
         $matches = array();
         if($renderFlag && ($type === '' || $type === 'text' || $type === 'richtext')){
@@ -748,147 +871,8 @@ class Formatter {
             $renderFlag = false;
         }
         
-        $shortCodeValues = self::getReplacementTokens($value,$model,$renderFlag,$makeLinks);
-
+        $shortCodeValues = static::getReplacementTokens($value, $params, $renderFlag, $makeLinks);
         return strtr($value,$shortCodeValues);
-    }
-
-    /**
-     * Parses a "formula" for the flow.
-     *
-     * If the first character in a string value in X2Flow is the "=" character, it
-     * will be treated as valid PHP code to be executed. This function uses {@link getSafeWords}
-     * to determine a list of functions which the user can execute in the code,
-     * and strip any which are not allowed. This should generally be used for
-     * mathematical operations, like calculating dynamic date offsets.
-     *
-     * @param string $input The code to be executed
-     * @param array $params Optional extra parameters, notably the Model triggering the flow
-     * @return array An array with the first element true or false corresponding to
-     *  whether execution succeeded, the second, the value returned by the formula.
-     */
-    public static function parseFormula($input,$params = array()){
-        if(strpos($input,'=') !== 0) {
-            return array(false,Yii::t('admin','Formula does not begin with "="'));
-        }
-        
-        $formula = substr($input, 1); // Remove the "=" character from in front
-        
-        // If we find a model, relace any variables inside of our formula (i.e. {lastUpdated})
-        if(isset($params['model'])){ 
-            $replacementTokens = self::getReplacementTokens($formula, $params['model'], false, false);
-        } else {
-            $replacementTokens = $params;
-        }
-        
-        // Run through all short codes and ensure they're proper PHP expressions
-        // that correspond to their value, i.e. strings will become string
-        // expressions, integers will become integers, etc.
-        //
-        // This step is VITALLY IMPORTANT to the security and stability of
-        // X2Flow's formula parsing.
-        foreach(array_keys($replacementTokens) as $token) {
-            $type = gettype($replacementTokens[$token]);
-
-            if(!in_array($type,array("boolean","integer","double","string","NULL"))) {
-                // Safeguard against "array to string conversion" and "warning,
-                // object of class X could not be converted to string" errors.
-                // This case shouldn't happen and is not valid, so nothing
-                // smarter need be done here than to simply set the replacement
-                // value to its corresponding token.
-                $replacementTokens[$token] = var_export($token,true);
-
-            } else if ($type === 'string') {
-                // Escape/convert values into valid PHP expressions
-                $replacementTokens[$token] = var_export($replacementTokens[$token],true);
-            }
-        }
-
-        // Prepare formula for eval:
-        if(strpos($formula, ';') !== strlen($formula) - 1){
-            // Eval requires a ";" at the end to execute properly
-            $formula.=';';
-        }
-        if(strpos($formula, 'return ') !== 0){
-            // Eval requries a "return" at the front.
-            $formula = 'return '.$formula;
-        }
-
-        // Validity check: ensure the formula only consists of "safe" functions,
-        // the existing variable tokens, spaces, and PHP operators:
-        foreach(array_keys($replacementTokens) as $token) {
-            $shortCodePatterns[] = preg_quote($token,'#');
-        }
-        $phpOper = '[\[\]()<>=!^|?:*+%/\-\.]|and |or |xor |\s'; // PHP operators
-        $singleQuotedString = '\'[^\']*\''; // Only simple strings currently supported
-        $number = '[0-9]+(?:\.[0-9]+)?';
-        $boolean = '(?:false|true)';
-        $validPattern = '#^return (?:'
-            .self::getSafeWords()
-            .(empty($shortCodePatterns)?'':('|'.implode('|',$shortCodePatterns)))
-            .'|'.$phpOper
-            .'|'.$number
-            .'|'.$boolean
-            .'|'.$singleQuotedString.')*;$#i';
-        if(!preg_match($validPattern,$formula)) {
-            return array(
-                false,
-                Yii::t('admin','Input evaluates to an invalid formula: ').
-                    strtr($formula,$replacementTokens));
-        }
-
-        try{
-            $retVal = @eval(strtr($formula,$replacementTokens));
-        }catch(Exception $e){
-            return array(
-                false,
-                Yii::t('admin','Evaluated statement encountered an exception: '.$e->getMessage()));
-        }
-
-        return array(true,$retVal);
-    }
-
-    /**
-     * Parses a "short code" as a part of variable replacement.
-     *
-     * Short codes are defined in the file protected/components/x2flow/shortcodes.php
-     * and are a list of manually defined pieces of code to be run in variable replacement.
-     * Because they are stored in a protected directory, validation on allowed
-     * functions is not performed, as it is the user's responsibility to edit this file.
-     *
-     * @param String $key The key of the short code to be used
-     * @param X2Model $model The model having variables replaced, some short codes
-     * use a model
-     * @return mixed Returns the result of code evaluation if a short code
-     * existed for the index $key, otherwise null
-     */
-    public static function parseShortCode($key, $model){
-        $path = implode(DIRECTORY_SEPARATOR,
-            array(Yii::app()->basePath,'components','x2flow','shortcodes.php'));
-        if(file_exists($path)){
-            $shortCodes = include(Yii::getCustomPath ($path));
-            if(isset($shortCodes[$key])){
-                return eval($shortCodes[$key]);
-            }
-        }
-        return null;
-    }
-
-    /**
-     * Returns a list of safe functions for formula parsing
-     *
-     * This function will generate a string to be inserted into the regex defined
-     * in the {@link parseFormula} function, where each function not listed in the
-     * $safeWords array here will be stripped from code execution.
-     * @return String A string with each function listed as to be inserted into
-     * a regular expression.
-     */
-    private static function getSafeWords(){
-        $safeWords = array(
-            'echo[ (]',
-            'time[ (]',
-        );
-        return implode('|',$safeWords);
     }
 
     /**

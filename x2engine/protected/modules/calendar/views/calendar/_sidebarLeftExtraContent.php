@@ -81,7 +81,7 @@ if(isset($this->calendarUsers) && $this->calendarUsers !== null) {
                     this.name, this.checked, $editable);", 
             )
         );
-        echo "<label for=\"$userName\">$user</label>\n";
+        echo "<label for=\"$userName\">".CHtml::encode ($user)."</label>\n";
         echo "</li>";
     }
     echo "</ul>\n";

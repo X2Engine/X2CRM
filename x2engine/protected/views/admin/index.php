@@ -171,6 +171,9 @@ if(Yii::app()->session['versionCheck']==false && $admin->updateInterval > -1 && 
         <?php $editionStart('pro'); ?>
         <div class="cell span-6"><?php echo CHtml::link(Yii::t('admin','X2Flow'),array('/studio/flowIndex')); ?><br><?php echo Yii::t('admin','Program X2Engine with custom automation directives using a visual design interface.');?></div>
         <?php $editionEnd('pro'); ?>
+        <?php $editionStart('pro'); ?>
+        <div class="cell span-6"><?php echo CHtml::link(Yii::t('admin','X2Flow Settings'),array('/admin/flowSettings')); ?><br><?php echo Yii::t('admin','X2Flow configuration options');?></div>
+        <?php $editionEnd('pro'); ?>
         <?php $editionStart('pla'); ?>
         <div class="cell span-6"><?php echo CHtml::link(Yii::t('admin','Import Flow'),array('/studio/importFlow')); ?><br><?php echo Yii::t('admin','Import automation flows created using the X2Flow design studio.');?></div>
         <?php $editionEnd('pla'); ?>

@@ -604,7 +604,7 @@ Yii::app()->clientScript->registerScript(sprintf('%x', crc32(Yii::app()->name)),
                     $this->_absoluteBaseUrl = 'http://localhost';
                 }
             }else{
-                $this->_absoluteBaseUrl = $this->owner->baseUrl;
+                $this->_absoluteBaseUrl = $this->owner->getBaseUrl (true);
             }
         }
         return $this->_absoluteBaseUrl;

@@ -644,17 +644,34 @@ class X2ClientScript extends NLSClientScript {
         ", CClientScript::POS_END);
     }
 
-    private function registerX2QuickCreate () {
-        $this->registerScriptFile($this->baseUrl.'/js/X2QuickCreate.js');
+    private function registerX2QuickCRUD () {
+        $this->registerPackages (array (
+            'QuickCRUD' => array(
+                'baseUrl' => Yii::app()->request->baseUrl,
+                'js' => array(
+                    'js/X2Widget.js',
+                    'js/X2QuickCRUD.js',
+                    'js/X2QuickCreate.js',
+                    'js/X2QuickRead.js',
+                ),
+            ),
+        ));
         $modelsWhichSupportQuickCreate = 
             QuickCreateRelationshipBehavior::getModelsWhichSupportQuickCreate (true);
         $createUrls = QuickCreateRelationshipBehavior::getCreateUrlsForModels (
             $modelsWhichSupportQuickCreate);
+        $viewUrls = QuickCRUDBehavior::getUrlsForModels (
+            QuickCRUDBehavior::getModelsWhichSupportQuickView (), 'view');
         $dialogTitles = QuickCreateRelationshipBehavior::getDialogTitlesForModels (
             $modelsWhichSupportQuickCreate);
         $this->registerScript('registerQuickCreate',"
             x2.QuickCreate.createRecordUrls = ".CJSON::encode ($createUrls).";
             x2.QuickCreate.dialogTitles = ".CJSON::encode ($dialogTitles).";
+            x2.QuickRead.viewRecordUrls = ".CJSON::encode ($viewUrls).";
+            x2.QuickRead.translations = ".CJSON::encode (array (
+                'View inline record details' => Yii::t('app', 'View inline record details'),
+            )).";
+            x2.QuickRead.dialogTitles = ".CJSON::encode ($dialogTitles).";
         ", CClientScript::POS_END);
     }
 
@@ -716,7 +733,7 @@ class X2ClientScript extends NLSClientScript {
         
         $this->registerX2ModelMappingsScript ();
         $this->registerX2Forms ();
-        $this->registerX2QuickCreate ();
+        $this->registerX2QuickCRUD ();
         $this->registerX2Flashes ();
 
         $this->registerAttachments ();
@@ -742,11 +759,11 @@ class X2ClientScript extends NLSClientScript {
             ->registerScriptFile($baseUrl.'/js/PopupDropdownMenu.js', CCLientScript::POS_END)
             ->registerScriptFile($baseUrl.'/js/checklistDropdown/jquery.multiselect.js');
 
-        if (YII_DEBUG && YII_UNIT_TESTING) {
-            $this->registerScriptFile (
-                $baseUrl.'/js/qunit/qunit-1.15.0.js', CClientScript::POS_HEAD);
-            $this->registerCssFile ($baseUrl.'/js/qunit/qunit-1.15.0.css');
-        }
+//        if (YII_UNIT_TESTING) {
+//            $this->registerScriptFile (
+//                $baseUrl.'/js/qunit/qunit-1.15.0.js', CClientScript::POS_HEAD);
+//            $this->registerCssFile ($baseUrl.'/js/qunit/qunit-1.15.0.css');
+//        }
 
         if(IS_IPAD){
             $this->registerScriptFile($baseUrl.'/js/jquery.mobile.custom.js');

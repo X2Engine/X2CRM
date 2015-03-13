@@ -68,6 +68,12 @@ class NotificationsController extends CController {
             ));
             Yii::app()->end();
         }
+        
+        Yii::import('application.models.Events');
+        Yii::import('application.components.Formatter');
+        Yii::import('application.components.FieldFormatter');
+        Yii::import('application.controllers.x2base');
+        Yii::import('application.controllers.X2Controller');
 
         if(!isset($_GET['lastNotifId']))    // if the client doesn't specify the last
             $_GET['lastNotifId'] = 0;        // message ID received, send everything
@@ -86,10 +92,6 @@ class NotificationsController extends CController {
         if(isset($_GET['lastTimestamp']) && is_numeric($_GET['lastTimestamp'])){
             $lastTimestamp=$_GET['lastTimestamp'];
         }
-        Yii::import('application.models.Events');
-        Yii::import('application.components.Formatter');
-        Yii::import('application.controllers.x2base');
-        Yii::import('application.controllers.X2Controller');
         if($lastEventId==0){
             $limit=20;
         }else{

@@ -142,18 +142,18 @@ class X2FlowApiCall extends X2FlowAction {
 
     /**
      * Try to prevent api requests to X2Engine's api. This is a looser check than
-     * validateOptions (). ValidateOptions () can produce false positives which we wouldn't want
-     * to have effect flow execution.
+     * validateOptions (). ValidateOptions () is more likely to produce false positives which we 
+     * wouldn't want to have effect flow execution.
      */
     private function validateUrl ($url) {
-        if (YII_DEBUG && YII_UNIT_TESTING) {
+        if (YII_UNIT_TESTING) {
             $absoluteBaseUrl = 'http://localhost';
         } else {
             $absoluteBaseUrl = Yii::app()->getAbsoluteBaseUrl ();
         }
         $absoluteBaseUrl = preg_replace ('/^https?:\/\//', '', $absoluteBaseUrl);
         $url = preg_replace ('/^https?:\/\//', '', $url);
-        if (preg_match ("/^".preg_quote ($absoluteBaseUrl, '/')."/", $url)) {
+        if (preg_match ("/^".preg_quote ($absoluteBaseUrl, '/').".*\/api2?\/.*/", $url)) {
             return false;
         }
         return true;
@@ -214,24 +214,32 @@ class X2FlowApiCall extends X2FlowAction {
             }
 
             $context = stream_context_create(array('http' => $httpOptions));
-            if (!$this->getMakeRequest ()) {
-                return array (true, array_merge (array ('url' => $url), $httpOptions));
-            } else {
-                if (!$this->validateUrl ($url)) {
+            if (!$this->validateUrl ($url)) {
+                if (YII_UNIT_TESTING) {
+                    return array(
+                        false, 
+                        array ('url' => $url)
+                    );
+                } else {
                     return array(
                         false, 
                         Yii::t('studio', 'Requests cannot be made to X2Engine\'s API from X2Flow.')
                     );
                 }
+            }
+            if (!$this->getMakeRequest ()) {
+                return array (true, array_merge (array ('url' => $url), $httpOptions));
+            } else {
                 $response = @file_get_contents($url, false, $context);
+                $params['returnValue'] = $response;
                 if ($response !== false) {
-                    if (YII_DEBUG && YII_UNIT_TESTING) {
+                    if (YII_UNIT_TESTING) {
                         return array(true, $response);
                     } else {
                         return array(true, Yii::t('studio', "Remote API call succeeded"));
                     }
                 }else{
-                    if (YII_DEBUG && YII_UNIT_TESTING) {
+                    if (YII_UNIT_TESTING) {
                         return array(false, var_dump ($http_response_header));
                     } else {
                         return array(false, Yii::t('studio', "Remote API call failed!"));

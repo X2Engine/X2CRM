@@ -67,7 +67,7 @@ $('#save-button')
 
 $users = User::model()->findAllByAttributes(array('status'=>User::STATUS_ACTIVE));
 $thisUser = null;
-$users = array_combine(array_map(function($u){return $u->fullName;},$users),$users);
+$users = array_combine(array_map(function($u){return CHtml::encode($u->fullName);},$users),$users);
 ksort($users);
 
 if(isset($id)) {
@@ -113,7 +113,7 @@ if(isset($id)) {
     $viewPermission = X2CalendarPermissions::getUserIdsWithViewPermission($id);
 	$editPermission = X2CalendarPermissions::getUserIdsWithEditPermission($id);
 	
-	$fullname = $thisUser->fullName;
+	$fullname = CHtml::encode($thisUser->fullName);
 	
 	echo CHtml::hiddenField('user-id', $id); // save user id for POST
 	?>
@@ -172,7 +172,7 @@ $this->endWidget();
 	<div style="padding: 8px">
 	<?php
 	foreach($users as $user) {
-			echo CHtml::link($user->fullName, $this->createUrl('', array('id'=>$user->id)));
+			echo CHtml::link(CHtml::encode ($user->fullName), $this->createUrl('', array('id'=>$user->id)));
 			echo "<br>\n";
 	}
 	?>

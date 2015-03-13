@@ -1,7 +1,6 @@
-<?php
 /*****************************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2014 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2015 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -34,9 +33,47 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 
-/**
- * @package application.modules.docs.models
- */
-class DocChild extends Docs {
-	
+x2.QuickCRUD = (function () {
+
+function X2QuickCRUD (argsDict) {
+    var argsDict = typeof argsDict === 'undefined' ? {} : argsDict;
+    var defaultArgs = {
+        DEBUG: x2.DEBUG && false,
+        /**
+         * @var string modelType name of X2Model child that has X2QuickCreateBehavior  
+         */
+        modelType: null,
+        /**
+         * @var object dialogAttributes dialog settings 
+         */
+        dialogAttributes: {},
+    };
+    this.dialogResizable = true;
+    auxlib.applyArgs (this, defaultArgs, argsDict);
+    x2.Widget.call (this, argsDict);
 }
+
+X2QuickCRUD.prototype = auxlib.create (x2.Widget.prototype);
+
+X2QuickCRUD.prototype.openQuickCRUDDialog = function () {
+    var that = this;
+
+    this._dialog = $('<div>');
+    this._dialog.dialog ($.extend ({
+        title: this.dialogTitle,
+        autoOpen: false,
+        resizable: this.dialogResizable,
+        width: '650px',
+        show: 'fade',
+        hide: 'fade',
+        close: function () {
+            that._dialog.dialog ('destroy');
+            that._dialog.remove ();
+        }
+    }, this.dialogAttributes));
+
+};
+
+return X2QuickCRUD;
+
+}) ();

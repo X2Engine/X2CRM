@@ -44,7 +44,7 @@ Yii::import('application.components.util.*');
  */
 class CryptSetupCommand {
 
-    public function run(){
+    public function run($args){
 
         $encryption = new EncryptUtil('protected/config/encryption.key', 'protected/config/encryption.iv');
         if($encryption->saveNew())

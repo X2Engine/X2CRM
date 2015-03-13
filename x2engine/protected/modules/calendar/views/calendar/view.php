@@ -33,9 +33,7 @@
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2Engine".
  *****************************************************************************************/
-?>
 
-<?php
 /* if(Yii::app()->settings->googleIntegration) { // menu if google integration is enables has additional options
 	$menuItems = array(
 		array('label'=>Yii::t('calendar','Calendar')),

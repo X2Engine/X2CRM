@@ -163,7 +163,8 @@ class Workflow extends CActiveRecord {
         /* can only uncomplete if there is no restriction on backdating, or we're 
            still within the edit time window */
         return Yii::app()->params->isAdmin ||
-            Yii::app()->settings->workflowBackdateWindow < 0 || 
+            Yii::app()->settings->workflowBackdateWindow < 0 ||
+            $workflowStatus['stages'][$stage]['completeDate'] == 0 ||
             (time() - $workflowStatus['stages'][$stage]['completeDate']) < 
                  Yii::app()->settings->workflowBackdateWindow;
     }

@@ -1,18 +1,30 @@
-# 5.0.4 #
-2/5/2015
+# 5.0.5b #
+3/10/2015
 
+* Highlights
+  * Professional Edition Changes
+    * New Charts drilldown feature allows you to quickly get a list of records associated with charted data points
+    * New scatter plot charting option 
+    * New column aggregation option for time series charts
+    * Improved reports print view adds new configuration options and allows inclusion of charts
+    * New X2Flow Periodic Trigger allows flows to be triggered according to a schedule
+  * Redesigned Web Form Designer
+    * More intuitive and compact interface
+    * Improved style of default web form
+  * Record print view given configuration options and an improved look
+  * Details of related records can now be viewed from the inline relationships widget
+  * New option in transactional view widgets to display actions of related records
 * General Changelog / Developer Notes:
-  * Fixed bug affecting X2Flow API actions made after X2Flow Wait actions
-* Tracked Bug Fixes:
-  * [2149](http://x2software.com/index.php/bugReports/2149): Missing argument 2 for FieldFormatter::renderInt(), called in /opt/bitnami/apps/x2crm/htdocs/protected/components/FieldFormatter.php on line 348 and defined  
-  * [2152](http://x2software.com/index.php/bugReports/2152): User Report  
-  * [2153](http://x2software.com/index.php/bugReports/2153): X2Flow  Compare Attribute using "In List" with dropdown fields fails to save  
-  * [2156](http://x2software.com/index.php/bugReports/2156): FieldFormatter and its behaviors do not have a method or closure named "getFields".  
-  * [2158](http://x2software.com/index.php/bugReports/2158): Unable to resolve the request "actions/id/complete".  
-  * [2159](http://x2software.com/index.php/bugReports/2159): Trying to get property of non-object  
-  * [2160](http://x2software.com/index.php/bugReports/2160): Undefined variable: render  
-  * [2161](http://x2software.com/index.php/bugReports/2161): User Report  
-
+  * The response of API calls made through X2Flow's API Call Action can now be retrieved in subsequent flow actions with the token "{returnValue}" 
+  * The X2Flow trigger logs table now has a maximum record count which can be configured from the new X2Flow Settings admin page. The default maximum is 1 million records
+  * Fixed bug preventing data types of columns from changing when updated through the Manage Fields page
+* Tracked Bug Fixes:  
+  * [2170](http://x2software.com/index.php/bugReports/2170): Trying to get property of non-object  
+  * [2176](http://x2software.com/index.php/bugReports/2176): Undefined index: doNotEmailLink  
+  * [2177](http://x2software.com/index.php/bugReports/2177): Trying to get property of non-object  
+  * [2213](http://x2software.com/index.php/bugReports/2213): Class:  not found.  
+  * [2215](http://x2software.com/index.php/bugReports/2215): could not generate checksum  
+  * [2219](http://x2software.com/index.php/bugReports/2219): Undefined variable: inlineEdit  
 
 
 # Introduction #

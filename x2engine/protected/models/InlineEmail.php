@@ -267,7 +267,7 @@ class InlineEmail extends CFormModel {
      */
     public static function insertedPattern($name, $inside, $re = 0, $reFlags = ''){
         $tn = constant('self::'.strtoupper($name.'tag'));
-        $tag = "<!--Begin$tn-->~inside~<!--End$tn--!>";
+        $tag = "<!--Begin$tn-->~inside~<!--End$tn-->";
         if($re)
             $tag = '/'.preg_quote($tag)."/$reFlags";
         return str_replace('~inside~', $inside, $tag);

@@ -95,7 +95,7 @@ abstract class VisitAllPagesTest extends X2WebTestCase {
         'contacts/id/1195',
         'contacts/update/id/1195',
         'contacts/shareContact/id/1195',
-        'contacts/viewRelationships/id/1195',
+        //'contacts/viewRelationships/id/1195',
         'contacts/lists',
         'contacts/myContacts',
         'contacts/createList',
@@ -177,10 +177,10 @@ abstract class VisitAllPagesTest extends X2WebTestCase {
         'quotes/update/id/1',
          
         // charts
-        'charts/leadVolume',
-        'charts/marketing',
-        'charts/pipeline',
-        'charts/sales',
+        //'charts/leadVolume',
+        //'charts/marketing',
+        //'charts/pipeline',
+        //'charts/sales',
         // media
         'media/index',
         'media/1',

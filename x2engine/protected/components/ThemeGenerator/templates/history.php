@@ -1,23 +1,23 @@
 <?php return "
 
-#history.list-view {
+#history {
 	color: $colors[text]
 }
 
-#history.list-view .items {
+#history .items {
 	border-color: $colors[lighter_content]
 }
 
-#history.list-view .items {
+#history .items {
 	background: $colors[content]
 }
 
-#history.list-view .items .footer ,
-#history.list-view .items .header {
+#history .items .footer ,
+#history .items .header {
 	color: $colors[lighter_text]
 }
 
-#history.list-view .items .description {
+#history .items .description {
 	color: $colors[text]
 }
 

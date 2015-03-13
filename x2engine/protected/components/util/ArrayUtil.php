@@ -158,6 +158,10 @@ class ArrayUtil {
      * @return type an array of keys if $in_array is valid, or false if not.
      */
     public static function arraySearchPreg($find, $in_array, $keys_found = array()) {
+        // Escape slashes so that the pcre regex doesn't contain an invalid modifier
+        // in the event of invalid data
+        $find = preg_replace ('/\//', '\/', $find);
+
         if (is_array($in_array)) {
             foreach ($in_array as $key => $val) {
                 if (is_array($val)) {

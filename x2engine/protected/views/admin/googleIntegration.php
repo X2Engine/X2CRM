@@ -73,11 +73,17 @@ $form=$this->beginWidget('CActiveForm', array(
 
 		<?php echo Yii::t('admin','Google integration allows users to link their calendars on X2Engine with Google Calendars as well as log in with their Google IDs.'); ?>
 		<br><br>
-
-		<?php echo Yii::t('admin', 'You will need to create a google app in order to use google integration.'); ?>
-		<?php echo Yii::t('admin','You can find your Client ID, Client Secret, and API Key on your '); ?>
-		<?php echo CHtml::link(Yii::t('admin', 'google console'), 'http://code.google.com/apis/console'); ?>.
-		<?php echo Yii::t('admin', 'Also, the following links need to be added to your app\'s Authorized Redirect URIs:'); ?>
+		<?php 
+        echo Yii::t('admin', 'You will need to create a google app in order to use google integration.'); 
+		echo Yii::t('admin','You can find your Client ID, Client Secret, and API Key on your '); 
+		echo CHtml::link(
+            Yii::t('admin', 'google console'), 
+            'https://console.developers.google.com/project'
+        );
+        ?>.
+		<?php 
+        echo Yii::t('admin', 'Also, the following links need to be added to your app\'s Authorized Redirect URIs:'); 
+        ?>
 		<br><br>
 <textarea class='x2-xxwide-input' style="padding:5px; height:60px;line-height:20px;" disabled="disabled">
 <?php echo (@$_SERVER['HTTPS'] == 'on' ? 'https://' : 'http://') . $_SERVER['HTTP_HOST'] . $this->createUrl('/calendar/calendar/syncActionsToGoogleCalendar'); ?>

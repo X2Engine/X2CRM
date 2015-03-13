@@ -367,7 +367,6 @@ foreach ($massActionObjs as $obj) {
 
 Yii::app()->clientScript->registerScript($namespacePrefix.'massActionsInitScript',"
     if (typeof x2.".$namespacePrefix."MassActionsManager === 'undefined') {
-        console.log ('new X2GridViewMassActionsManager');
         x2.".$namespacePrefix."MassActionsManager = new x2.GridViewMassActionsManager ({
             massActions: ".CJSON::encode ($massActions).",
             gridId: '".$gridId."',

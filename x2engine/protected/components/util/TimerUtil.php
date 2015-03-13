@@ -66,6 +66,10 @@ class TimerUtil {
         return $this;
     }
 
+    public function getTime () {
+        return (round ($this->endTime - $this->startTime, 2));
+    }
+
 }
 
 ?>

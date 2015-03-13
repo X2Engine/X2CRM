@@ -197,6 +197,7 @@ class UpdateCommand extends CConsoleCommand {
             $this->output(Yii::t('admin','Unlocking the app.'));
             Yii::app()->setLocked(false);
         }
+        $this->finalizeUpdate($scenario, $this->uniqueId, $this->version, $this->edition);
         $this->output(Yii::t('admin','All done.'));
     }
 

@@ -47,6 +47,17 @@ class TriggerLog extends CActiveRecord {
 		return parent::model($className);
 	}
 
+    public function behaviors() {
+        return array_merge (parent::behaviors (), array(
+            'RecordLimitBehavior' => array(
+                'class' => 'RecordLimitBehavior',
+                'limit' => Yii::app()->settings->triggerLogMax,
+                'timestampField' => 'triggeredAt',
+            ),
+        ));
+    }
+
+
 	/**
 	 * @return string the associated database table name
 	 */

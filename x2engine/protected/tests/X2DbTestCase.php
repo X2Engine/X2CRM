@@ -74,10 +74,10 @@ abstract class X2DbTestCase extends CDbTestCase {
     private static $_referenceFixtureRows = array();
 
     public function setUp () {
-        if (self::$skipAllTests) {
+        if (static::$skipAllTests) {
             $this->markTestSkipped ();
         }
-        if (!self::$loadFixtures) {
+        if (!static::$loadFixtures) {
             $fixtures = is_array ($this->fixtures) ? $this->fixtures : array ();
             $this->fixtures = array_merge ($fixtures, self::referenceFixtures ());
         }
@@ -88,7 +88,7 @@ abstract class X2DbTestCase extends CDbTestCase {
         if ($this->assertUTConstantSet) {
             $this->assertEquals (true, YII_UNIT_TESTING);
             if (!YII_UNIT_TESTING) {
-                self::$skipAllTests = true;
+                static::$skipAllTests = true;
             }
         }
     }
@@ -131,6 +131,8 @@ abstract class X2DbTestCase extends CDbTestCase {
      * sets up some special environment variables before proceeding.
      */
     public static function setUpBeforeClass(){
+        if (!YII_UNIT_TESTING) throw new CException ('YII_UNIT_TESTING must be set to true');
+        Yii::app()->cache->flush ();
         self::setUpAppEnvironment(); 
 
         // Load "reference fixtures", needed for reference, which do not need

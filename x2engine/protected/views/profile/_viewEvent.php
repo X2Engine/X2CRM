@@ -150,7 +150,7 @@ $important = $data->important ? 'important-action' : '';
 
 
 <div class="view top-level activity-feed <?php echo $important ?>" style="<?php echo $style; ?>" id="<?php echo $data->id; ?>-feed-box">
-    <div class="img-box <?php echo $typeFile . " " . (($data->type == 'record_create') ? $data->associationType . '-create' : ""); ?>" title="<?php echo $data->parseType($data->type); ?>" style="width:45px;float:left;margin-right:5px;">
+    <div class="img-box test <?php echo CHtml::encode($typeFile) . " " . (($data->type == 'record_create') ? $data->associationType . '-create' : ""); ?>" title="<?php echo CHtml::encode($data->parseType($data->type)); ?>" style="width:45px;float:left;margin-right:5px;">
         <?php
         if ($data->type == 'record_create') {
             $fileName = strtolower($data->associationType);

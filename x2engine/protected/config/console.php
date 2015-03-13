@@ -59,8 +59,17 @@ $config['components']['log']['routes'] = array(
 	array(
 		'class' => 'CFileLogRoute',
 		'logFile' => 'console.log',
-	)
+	),
 );
+if (YII_DEBUG && YII_LOGGING)
+    $config['components']['log']['routes'][] =
+        array(
+            'class' => 'CFileLogRoute',
+            'categories' => 'application.debug',
+            'logFile' => 'debug.log',
+            'maxLogFiles' => 10,
+            'maxFileSize' => 128,
+        );
 
 $custom = dirname(__FILE__).'/../../custom/protected/config/'.(YII_UNIT_TESTING?'test':'console').'.php';
 if($custom = realpath($custom)) {

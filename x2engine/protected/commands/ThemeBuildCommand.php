@@ -257,6 +257,9 @@ class ThemeBuildCommand extends CConsoleCommand {
 
         $string .= "\t$selector";
 
+        // Insert a rule so a no-theme class overrides theme
+        $string = preg_replace('/\ *{/', ':not(.no-theme) {', $string);
+
         foreach($rule as $value) {
             $string .= "\t\t".$value['rule'].': $colors['.$value['value']."]\n";
         }

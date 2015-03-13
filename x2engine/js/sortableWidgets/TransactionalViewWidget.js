@@ -57,6 +57,9 @@ function TransactionalViewWidget (argsDict) {
 
 TransactionalViewWidget.widgets = {};
 
+// whether or not to display actions of related records
+TransactionalViewWidget.relationships = false; 
+
 TransactionalViewWidget.prototype = auxlib.create (GridViewWidget.prototype);
 
 
@@ -140,9 +143,19 @@ TransactionalViewWidget.prototype._setUpCreateButtonBehavior = function () {
     });
 };
 
+TransactionalViewWidget.prototype._setUpRelationshipsButtonBehavior = function () {
+    var that = this;
+    this.element.find ('.relationships-toggle input').change (function () {
+        TransactionalViewWidget.relationships = $(this).is (':checked'); 
+        TransactionalViewWidget.refreshAll ();
+        $('#show-relationships-link').click (); // update action history
+    });
+};
+
 TransactionalViewWidget.prototype._setUpTitleBarBehavior = function () {
     this._createButton$ = this.element.find ('.create-button');
     this._setUpCreateButtonBehavior ();
+    this._setUpRelationshipsButtonBehavior ();
     GridViewWidget.prototype._setUpTitleBarBehavior.call (this);
 };
 

@@ -148,8 +148,9 @@ class Api2InputTest extends Api2TestBase {
         $action = array(
             'actionDescription' => 'Lunch meeting',
             'type' => 'event',
-            'associationType' => 'contacts',
-            'associationId' => $this->contacts('testFormula')->id,
+            // these should be set automatically by the api2 actions kludge
+            //'associationType' => 'contacts',
+            //'associationId' => $this->contacts('testFormula')->id,
             'dueDate' => 1398987130,
             'complete' => 'No',
         );

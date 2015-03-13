@@ -103,6 +103,7 @@ abstract class X2Model extends CActiveRecord {
      * List of mapping between module names/associationType values and model class names
      */
     public static $associationModels = array(
+        'bugreports' => 'BugReports',
         'media' => 'Media',
         'actions' => 'Actions',
         'calendar' => 'X2Calendar',
@@ -750,6 +751,13 @@ abstract class X2Model extends CActiveRecord {
         return $this->_visibleRelatedX2Models;
     }
 
+    
+    public function resetFieldsPropertyCache () {
+        $key = $this->tableName();
+        self::$_fields[$key] = null;
+        $this->queryFields();
+    }
+
     /**
      * Queries and caches Fields objects for the model.
      *
@@ -815,7 +823,7 @@ abstract class X2Model extends CActiveRecord {
             'X2FlowTriggerBehavior' => array('class' => 'X2FlowTriggerBehavior'),
             'tags' => array('class' => 'TagBehavior'),
             'changelog' => array('class' => 'X2ChangeLogBehavior'),
-            'permissions' => array('class' => 'X2PermissionsBehavior'),
+            'permissions' => array('class' => Yii::app()->params->modelPermissions),
         );
         if (Yii::app()->contEd('pro')) {
             $behaviors['galleryBehavior'] = array(
@@ -1280,7 +1288,11 @@ abstract class X2Model extends CActiveRecord {
      * @return string a link to the model, or $id if the model is invalid
      */
     public static function getModelLink($id, $class, $requireAbsoluteUrl = false) {
-        $model = X2Model::model($class)->findByPk($id);
+        try {
+            $model = X2Model::model($class)->findByPk($id);
+        } catch (CHttpException $e) {
+            $model = null;
+        }
         if (isset($model) && !is_null($model->asa('X2LinkableBehavior'))) {
             if (isset(Yii::app()->controller) && method_exists(Yii::app()->controller, 'checkPermissions')) {
                 if (Yii::app()->controller->checkPermissions($model, 'view')) {
@@ -1365,26 +1377,33 @@ abstract class X2Model extends CActiveRecord {
 
     /**
      * Like getModelTypes () except that only types of models whic support relationships are 
-     * returned
-     * @param boolean $assoc
-     * @return array 
+     * returned. 
+     * 
+     * if $assoc is true, the return array will appear as so:
+     *        array (
+     *            <Model Name> => <Translated Model Name>, ...
+     *        )
+     * if $assoc is false:
+     *        array (
+     *            <index> => <Model Name>, ...
+     *        )
+     * 
+     * @param boolean $assoc to return as an associative array or not
+     * @return array of model names as specified above
      */
     public static function getModelTypesWhichSupportRelationships($assoc = false) {
-        $modelTypes = self::getModelTypes($assoc);
+        $modelTypes = self::getModelTypes(true);
         $filteredTypes = array ();
-        if ($assoc) {
-            foreach ($modelTypes as $type => $title) {
-                if (X2Model::Model ($type)->supportsRelationships) {
-                    $filteredTypes[$type] = $title;
-                }
-            }
-        } else {
-            foreach ($modelTypes as $type) {
-                if (X2Model::Model ($type)->supportsRelationships) {
+        foreach ($modelTypes as $type => $title) {
+            if (X2Model::Model ($type)->supportsRelationships) {
+                if ($assoc) {
+                    $filteredTypes[$type] = $title; 
+                } else {
                     $filteredTypes[] = $type;
                 }
             }
         }
+
         return $filteredTypes;
     }
 
@@ -2020,7 +2039,8 @@ abstract class X2Model extends CActiveRecord {
                                         ), $htmlOptions));
 
             case 'visibility':
-                return CHtml::activeDropDownList($model, $field->fieldName, X2PermissionsBehavior::getVisibilityOptions(), array_merge(array(
+                $permissionsBehavior = Yii::app()->params->modelPermissions;
+                return CHtml::activeDropDownList($model, $field->fieldName, $permissionsBehavior::getVisibilityOptions(), array_merge(array(
                             'title' => $field->attributeLabel,
                             'id' => $field->modelName . "_visibility",
                                         ), $htmlOptions));
@@ -2254,10 +2274,10 @@ abstract class X2Model extends CActiveRecord {
             $showHidden = true;
         }
         if ($criteria === null){
-            $criteria = $this->getAccessCriteria('t', 'X2PermissionsBehavior', $showHidden);
+            $criteria = $this->getAccessCriteria('t', Yii::app()->params->modelPermissions, $showHidden);
         }else{
             $criteria->mergeWith(
-                $this->getAccessCriteria('t', 'X2PermissionsBehavior', $showHidden));
+                $this->getAccessCriteria('t', Yii::app()->params->modelPermissions, $showHidden));
         }
 
         $this->compareAttributes($criteria);
@@ -2384,7 +2404,7 @@ abstract class X2Model extends CActiveRecord {
                                 trim($data)), array(0, 'f', 'false', Yii::t('actions', 'No')), true) ? 0 : 1;
     }
 
-    protected function compareAssignment($data) {
+    public function compareAssignment($data) {
         if (is_null($data) || $data == '')
             return null;
         $userNames = Yii::app()->db->createCommand()
@@ -2797,10 +2817,17 @@ abstract class X2Model extends CActiveRecord {
     /**
      * Should be used before inserting user-generated input into SQL string in cases
      * where parameter binding cannot be used (e.g. for SQL object names). 
-     * @param string $attribute Name of attribute
+     * @param array|string $attribute Name of attribute(s)
      * @throws CException If attribute does not exist
      */
-    public static function checkThrowAttrError($attribute) {
+    public static function checkThrowAttrError ($attribute) {
+        if (is_array ($attribute)) {
+            foreach ($attribute as $name) {
+                self::checkThrowAttrError ($name);
+            }
+            return;
+        }
+
         // prevent SQL injection by validating attribute name
         if (!self::model(get_called_class())->hasAttribute($attribute)) {
             throw new CException(

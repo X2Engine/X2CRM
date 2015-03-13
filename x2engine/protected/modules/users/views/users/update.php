@@ -42,7 +42,7 @@ $this->insertMenu($menuOptions, $model);
 ?>
 
 <?php $model->password=''; ?>
-<div class="page-title icon users"><h2><span class="no-bold"><?php echo Yii::t('module','Update'); ?>:</span> <?php echo $model->firstName,' ',$model->lastName; ?></h2></div>
+<div class="page-title icon users"><h2><span class="no-bold"><?php echo Yii::t('module','Update'); ?>:</span> <?php echo CHtml::encode($model->firstName),' ',CHtml::encode($model->lastName); ?></h2></div>
 
 
 <?php echo $this->renderPartial(

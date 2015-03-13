@@ -48,21 +48,31 @@ class X2FlowCreateNotif extends X2FlowAction {
 
     public function paramRules(){
         $notifTypes = array('auto' => 'Auto', 'custom' => 'Custom');
-        $assignmentOptions = array('{assignedTo}' => '{'.Yii::t('studio', 'Owner of Record').'}') + X2Model::getAssignmentOptions(false, false); // '{assignedTo}', no groups, no 'anyone'
+        $assignmentOptions = array(
+            '{assignedTo}' => '{'.Yii::t('studio', 'Owner of Record').'}'
+        ) + X2Model::getAssignmentOptions (false, false); // '{assignedTo}', no groups, no 'anyone'
 
         return array(
             'title' => Yii::t('studio', $this->title),
             // 'info' => Yii::t('studio',$this->info),
             'options' => array(
-                array('name' => 'user', 'label' => Yii::t('studio', 'User'), 'type' => 'assignment', 'options' => $assignmentOptions), // just users, no groups or 'anyone'
+                array(
+                    'name' => 'user', 
+                    'label' => Yii::t('studio', 'User'),
+                    'type' => 'assignment',
+                    'options' => $assignmentOptions
+                ), // just users, no groups or 'anyone'
                 // array('name'=>'type','label'=>'Type','type'=>'dropdown','options'=>$notifTypes),
-                array('name' => 'text', 'label' => Yii::t('studio', 'Message'), 'optional' => 1),
-                ));
+                array(
+                    'name' => 'text', 
+                    'label' => Yii::t('studio', 'Message'), 
+                    'optional' => 1
+                ),
+            ));
     }
 
     public function execute(&$params){
         $options = &$this->config['options'];
-
         $notif = new Notification;
         $notif->user = $this->parseOption('user', $params);
         $notif->createdBy = 'API';

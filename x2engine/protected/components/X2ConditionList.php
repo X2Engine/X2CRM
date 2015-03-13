@@ -123,7 +123,9 @@ class X2ConditionList extends X2Widget {
                     'js' => array(
                         'js/X2Fields.js',
                         'js/X2FieldsGeneric.js',
+                        'js/jquery-ui-timepicker-addon.js',
                     ),
+                    'depends' => array ('jquery.ui')
                 ),
                 'X2ConditionListJS' => array(
                     'baseUrl' => Yii::app()->request->baseUrl,

@@ -78,7 +78,6 @@ abstract class X2FlowItem extends CComponent {
      */
     public function validateOptions(&$paramRules,$params=null,$showWarnings=false) {
         $configOptions = &$this->config['options'];
-        // die(var_dump($configOptions));
 
         // loop through options defined in paramRules() and make sure they're all set in $config
         foreach($paramRules['options'] as &$optRule) {    
@@ -125,12 +124,17 @@ abstract class X2FlowItem extends CComponent {
                     false,
                     Yii::t('studio', 'Flow item validation error: Invalid operator'));
             }
-
+            
             // value must not be empty, unless it's an optional setting
             if(!isset($option['value']) || $option['value'] === null || $option['value'] === '') {
-                if(isset($optRule['defaultVal'])) {        // try to use the default value
+                if($option['value'] !== null && $option['value'] !== '' && 
+                    isset($optRule['defaultVal'])) { // use the default value 
                     $option['value'] = $optRule['defaultVal'];
-                } elseif(!$option['optional']) {
+                } elseif(!$option['optional'] &&
+                    // non-optional option can be allowed to be '' if defaultVal is set to ''
+                    (!isset ($optRule['defaultVal']) || !isset ($option['value']) ||
+                     $optRule['defaultVal'] !== $option['value'])) {
+
                     // if not, fail if it was required
                     if (YII_DEBUG) {
                         return array (

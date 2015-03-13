@@ -126,10 +126,9 @@ class RepairUserDataCommandTest extends CDbTestCase {
         $return_var;
         $output = array ();
         $command = Yii::app()->basePath."/yiic repairuserdata repair --username='testUser'";
-        if(VERBOSE_MODE)
-            println("Running $command...");
+        VERBOSE_MODE && println("Running $command...");
         ob_start();
-        println (exec ($command, $return_var, $output));
+        VERBOSE_MODE && println (exec ($command, $return_var, $output));
         if(VERBOSE_MODE)
             ob_end_flush();
         else

@@ -171,7 +171,7 @@ html {
     if (!empty($_GET['bs'])) {
         $border = intval(preg_replace('/[^0-9]/', '', $_GET['bs']));
     } else if (!empty($_GET['bc'])) {
-        $border = 1;
+        $border = 0;
     } else $border = 0;
     $padding = 36;
     $height = $height - $padding - (2 * $border);
@@ -187,8 +187,7 @@ html {
     -moz-border-radius: 3px;
     -webkit-border-radius: 3px;
     border-radius: 3px;
-    padding-bottom: <?php echo $padding ."px;\n"?>
-    height: <?php echo $height ."px;\n"?>
+    height: auto;
 }
 body {
     <?php
@@ -207,15 +206,27 @@ body {
     ?>
     font-size:12px;
 }
+
 input {
     border: 1px solid #AAA;
+    font-family: inherit;
+}
+.row {
+    margin-bottom: 10px;
 }
 textarea {
-    width: 166px;
+    box-sizing: border-box;
+    width: 100%;
     height: 100px;
+    border-radius: 2px;
+    font-family: inherit;
 }
 input[type="text"] {
-    width: 170px;
+    box-sizing: border-box;
+    padding: 2px;
+    width: 100%;
+    border-radius: 2px;
+    line-height: 1.5em;
 }
 #contact-header{
     color:white;
@@ -223,13 +234,19 @@ input[type="text"] {
     font-size: 16px;
 }
 #submit {
+    box-sizing:border-box;
     float: right;
     margin-top: 7px;
     margin-bottom: 5px;
-    margin-right: 0px;
+    padding: 7px;
+    border-radius: 2px;
+    width: 100%;
+    font-family: inherit;
+}
+#submit:hover {
+    
 }
 .submit-button-row {
-    width: 172px;
     height: 30px;
 }
 <?php
@@ -273,13 +290,11 @@ function renderFields ($fieldList, $type, $form, $model, $contactFields=null) {
             $starred = strpos($label, '*') !== false;
             ?>
             <div class="row">
-                <b>
                     <?php
                     echo $label;
                     echo ($field['required'] && !$starred ? 
                         '<span class="asterisk"> *</span>' : '');
                     ?>
-                </b>
                 <?php
             if($field['position'] == 'top') { ?>
                 <br />

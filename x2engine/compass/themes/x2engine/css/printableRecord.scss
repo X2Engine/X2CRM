@@ -33,175 +33,111 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 
+@import "standards";
+@import "colors";
+
+$borders: 1px solid $lightGray;
+
+#page-title {
+    margin-top: 0px;
+}
+#model-title {
+    margin-top: 5px;
+    margin-bottom: 5px;
+}
+
 .x2-layout {
-  min-width: 598px;
-  border: 1px solid black !important;
-  /*border: none !important;
-  background: #ffffff !important;*/
-  /*border-left: 1px solid black !important;
-  border-right: 1px solid black !important;
-  border-bottom: 1px solid black !important;*/
-  -moz-border-radius: 0px 0px 0px 0px !important;
-  -o-border-radius: 0px 0px 0px 0px !important;
-  -webkit-border-radius: 0px 0px 0px 0px !important;
-  border-radius: 0px 0px 0px 0px !important;
-  max-width: 900px !important;
-  .formInputBox {
-    /*min-width: 100px !important;
-    width: auto !important;*/
-  }
-  a {
-    color: black !important;
-  }
-  .showSection {
-    /*-moz-border-radius:		0px 0px 0px 0px !important;
-    -o-border-radius:		0px 0px 0px 0px !important;
-    -webkit-border-radius:	0px 0px 0px 0px !important;
-    border-radius:			0px 0px 0px 0px !important;*/
-  }
-  table {
-    border-spacing: 0 !important;
-    width: 100% !important;
+    min-width: 598px;
+    @include border-radius(0px 0px 0px 0px !important);
     max-width: 900px !important;
-  }
-  div {
-    &.tableWrapper {
-      border-top: none !important;
-      /*border-top: 1px solid black !important;
-      border-left: none !important;*/
-      /*border-left: 1px solid black !important;
-      border-right: 1px solid black !important;*/
+
+    a {
+        color: black !important;
     }
-    &.formSectionHeader {
-      /*border: none !important;*/
-      /*border-bottom: 1px solid black !important;*/
-      	/*border-top: 1px solid black !important;
-      
-      	-moz-border-radius:		0px 0px 0px 0px !important;
-      	-o-border-radius:		0px 0px 0px 0px !important;
-      	-webkit-border-radius:	0px 0px 0px 0px !important;
-      	border-radius:			0px 0px 0px 0px !important;*/
+
+    table {
+        border-spacing: 0 !important;
+        width: 100% !important;
+        max-width: 900px !important;
+        border-right: $borders;
+        border-bottom: $borders;
     }
-  }
-  .formItem {
-    /*border-top: none !important;
-    border-left: none !important;
+
+    div.tableWrapper {
+        border-left: $borders;
+        border-right: $borders;
+        border-bottom: 1px solid rgba(white,0);
+        border-top: none !important;
+    }
+
+Item.topLabel,
+Item.leftLabel {
     border-bottom: none !important;
-    border-right: 1px solid black !important;*/
-    /*border: none !important;*/
-    /*border: 1px solid black !important;*/
-  }
-  div.formItem {
-    &.topLabel {
-      /*border-top: none !important;
-      border-left: 1px solid black !important;
-      border-right: 1px solid black !important;*/
-      border-bottom: none !important;
-    }
-    &.leftLabel {
-      border-bottom: none !important;
-      /*border-top: none !important;
-      border-left: 1px solid black !important;
-      border-right: 1px solid black !important;
-      border-bottom: 1px solid black !important;*/
-    }
-  }
-  .formItem {
-    &.topLabel label {
-      /*border-top: 1px solid black !important;
-      border-bottom: 1px solid black !important;*/
-    }
-    &.leftLabel {
-      label {
-        /*border-right: 1px solid black !important;*/
-      }
-      /*border-left: none !important;*/
-    }
-  }
-  label {
-    /*border-left: 1px solid black !important;*/
-    /*border-right: 1px solid black !important;*/
-    color: #000000 !important;
-    background: none !important;
-  }
-  div {
-    /*border-bottom: 1px solid black !important;*/
-  }
-  td div.leftLabel:last-child {
-    border-bottom: 1px solid black !important;
-    /*width: auto !important;*/
-    /*border-right: 1px solid black !important;*/
-  }
 }
 
-/*.x2-layout table {
-	border-top: 1px solid black !important;
-}*/
+    label {
+        color: #000000 !important;
+        background: none !important;
+    }
 
-/*.x2-layout table {
-	border-collapse: collapse !important; 
-	width: 100% !important;
-	display: inline !important;
+    td div.leftLabel:last-child {
+        border-bottom: $borders;
+
+    }
 }
 
-.x2-layout th {
-	padding: 5px !important; 
-	border: 1px solid black !important; 
-	background:#eee !important;
-}
-
-.x2-layout th {
-	padding: 5px !important; 
-	border: 1px solid black !important; 
-	background:#eee !important;
-}*/
-
-/*div.x2-layout a.formSectionHide,
-div.x2-layout a.formSectionShow {*/
 
 /* hide min and max buttons */
 
 div.x2-layout {
-  .formSection {
-    &.showSection a {
-      &.formSectionShow, &.formSectionHide {
-        display: none !important;
-      }
+    .formSection {
+        &.showSection a {
+            &.formSectionShow, &.formSectionHide {
+                display: none !important;
+            }
+        }
+
+        &:first-child,
+        &:last-child {
+            @include border-radius(0px 0 0 0 !important);
+        }
     }
-    &:first-child, &:last-child {
-      -moz-border-radius: 0px 0 0 0 !important;
-      -o-border-radius: 0px 0 0 0 !important;
-      -webkit-border-radius: 0px 0 0 0 !important;
-      border-radius: 0px 0 0 0 !important;
+    background: #fff !important;
+    .formSectionHeader {
+        border-top: $borders !important;
+        border-left: $borders;
+        border-right: $borders;
+
+        @include border-radius(0px 0 0 0 !important);
+        background: $lightGray;
+        font-family: Montserrat;
+        height: auto;
+        margin-top: 15px;
+
+        .sectionTitle {
+            font-style: normal;
+            padding: 5px;
+        }
     }
-  }
-  background: #fff !important;
-  .formSectionHeader {
-    border-top: 1px solid #000;
-    -moz-border-radius: 0px 0 0 0 !important;
-    -o-border-radius: 0px 0 0 0 !important;
-    -webkit-border-radius: 0px 0 0 0 !important;
-    border-radius: 0px 0 0 0 !important;
-  }
-  td {
-    border-right: 1px solid #000 !important;
-  }
-  .formItem {
-    border: 1px solid #000 !important;
-    &.topLabel label {
-      border-bottom: 1px solid #000 !important;
+    td {
+        border-right: $borders !important;
     }
-    &.leftLabel label {
-      border-right: 1px solid #000 !important;
+    .formItem {
+        border: $borders !important;
+        &.topLabel label {
+            border-bottom: $borders !important;
+        }
+        &.leftLabel label {
+            border-right: $borders !important;
+        }
+        input[type="text"], textarea {
+            @include border-radius(0px 0 0 0 !important);
+            background: #fff !important;
+        }
     }
-    input[type="text"], textarea {
-      -moz-border-radius: 0px 0 0 0 !important;
-      -o-border-radius: 0px 0 0 0 !important;
-      -webkit-border-radius: 0px 0 0 0 !important;
-      border-radius: 0px 0 0 0 !important;
-      background: #fff !important;
+    .formInputBox {
+        font-weight: normal;
     }
-  }
 }
 
 /*
@@ -210,9 +146,14 @@ backgrounds white.
 */
 
 input[type="text"].record-name-autocomplete {
-  -moz-border-radius: 0px 0 0 0 !important;
-  -o-border-radius: 0px 0 0 0 !important;
-  -webkit-border-radius: 0px 0 0 0 !important;
-  border-radius: 0px 0 0 0 !important;
-  background: #fff !important;
+    @include border-radius(0px 0 0 0 !important);
+    background: #fff !important;
+}
+
+
+// Hide Editing Icons
+.edit-icon,
+.confirm-icon,
+.cancel-icon {
+    display: none;
 }

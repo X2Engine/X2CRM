@@ -113,7 +113,13 @@ $this->widget('X2GridViewLess', array(
 		'fullName'=>array(
 			'name'=>'fullName',
 			'header'=>Yii::t('profile', 'Full Name'),
-			'value'=>'CHtml::link($data->fullName,array("view","id"=>$data->id))',
+			'value'=>'CHtml::link(CHtml::encode($data->fullName),array("view","id"=>$data->id))',
+			'type'=>'raw',
+		),
+		'tagLine'=>array(
+			'name'=>'tagLine',
+			'header'=>Yii::t('profile', 'Tag Line'),
+			'value'=>'CHtml::encode($data->tagLine)',
 			'type'=>'raw',
 		),
 		'isActive'=>array(

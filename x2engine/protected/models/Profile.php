@@ -142,7 +142,7 @@ class Profile extends CActiveRecord {
                         'perStageWorkflowView'=>true, // selected workflow view interface
                         'columnWidth'=>50, // selected workflow view interface
                         'recordViewColumnWidth'=>65, 
-                        'enableTransactionalView'=>false, 
+                        'enableTransactionalView'=>true, 
                         'enableJournalView'=>true, 
                         'viewModeActionSubmenuOpen'=>true, 
                     ),

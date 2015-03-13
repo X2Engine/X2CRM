@@ -48,6 +48,7 @@ class MassAddToListTest extends X2DbTestCase {
      * Create new list from selection then mass add to newly created list
      */
     public function testExecute () {
+        TestingAuxLib::suLogin ('admin');
         X2List::model ()->deleteAllByAttributes (array ('name' => 'test'));
         $newList = new NewListFromSelection;
         $addToList = new MassAddToList;
@@ -60,7 +61,9 @@ class MassAddToListTest extends X2DbTestCase {
         Yii::app()->controller = new ContactsController (
             'contacts', new ContactsModule ('contacts', null));
         $gvSelection = range (1, 2);
-        $newList->execute ($gvSelection);
+        AuxLib::debugLogR ($newList->execute ($gvSelection));
+        $getFlashes = TestingAuxLib::setPublic ('NewListFromSelection', 'getFlashes');
+        AuxLib::debugLogR ($getFlashes ());
         $list = X2List::model ()->findByAttributes (array ('name' => 'test'));
         $itemIds = $list->queryCommand (true)->select ('id')->queryColumn ();
         $this->assertEquals (array (1, 2), $itemIds);

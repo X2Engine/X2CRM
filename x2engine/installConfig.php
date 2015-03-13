@@ -12,6 +12,7 @@ $adminPassword = 'admin';
 $adminUsername = 'admin';
 $dummyData = 0;
 $baseUrl = '';
+$baseUri = '';
 $unique_id = 'none';
 // Default visible modules (set manually to a comma-delineated list as desired)
 $visibleModules = implode(',',(array) require(dirname(__FILE__).implode(DIRECTORY_SEPARATOR,array('','protected','data','')).'enabledModules.php'));

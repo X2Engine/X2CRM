@@ -957,6 +957,7 @@ class UpdaterBehavior extends ResponseBehavior {
                 $this->resetAssets();
                 // Apply configuration changes and clear out the assets folder:
                 $this->regenerateConfig($this->manifest['targetVersion'], $this->manifest['updaterVersion'], $this->manifest['buildDate']);
+                $this->version = $this->manifest['targetVersion'];
             }else if($this->scenario == 'upgrade'){
                 // Change the edition and product key to reflect the upgrade:
                 $admin = CActiveRecord::model('Admin')->findByPk(1);
@@ -967,6 +968,7 @@ class UpdaterBehavior extends ResponseBehavior {
                 if(!(empty($this->uniqueId)||$this->uniqueId=='none')) // Set new unique id
                     $admin->unique_id = $this->uniqueId;
                 $admin->save();
+                $this->edition = $admin->edition;
             }
         }catch(Exception $e){
             $lastException = $e;
@@ -1060,6 +1062,22 @@ class UpdaterBehavior extends ResponseBehavior {
                 $dbRestoreMessage = Yii::t('admin', 'If you made a backup of the database before running the updater, you will need to apply it manually.');
         }
         $this->sqlError($sql, $sqlRun, "$sqlErr\n$dbRestoreMessage", $throw);
+    }
+
+    /**
+     * Notify the server that the update has finished
+     */
+    public function finalizeUpdate($scenario, $unique_id, $version, $edition) {
+        if ($scenario !== 'update')
+            return;
+        $params = array(
+            'unique_id' => $unique_id,
+            'version' => $version,
+            'edition' => $edition,
+        );
+        return FileUtil::getContents (
+            $this->updateServer . '/installs/updates/finalizeUpdate?' . 
+                http_build_query ($params, '', '&'));
     }
 
     /**

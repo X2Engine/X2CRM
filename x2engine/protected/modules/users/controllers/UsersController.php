@@ -95,11 +95,11 @@ class UsersController extends x2base {
         $model=new User;
         $groups=array();
         foreach(Groups::model()->findAll() as $group){
-            $groups[$group->id]=$group->name;
+            $groups[$group->id]=CHtml::encode($group->name);
         }
         $roles=array();
         foreach(Roles::model()->findAll() as $role){
-            $roles[$role->id]=$role->name;
+            $roles[$role->id]=CHtml::encode($role->name);
         }
 
         // Uncomment the following line if AJAX validation is needed
@@ -213,7 +213,7 @@ class UsersController extends x2base {
         $model=$this->loadModel($id);
         $groups=array();
         foreach(Groups::model()->findAll() as $group){
-            $groups[$group->id]=$group->name;
+            $groups[$group->id]=CHtml::encode($group->name);
         }
         $selectedGroups=array();
         foreach(GroupToUser::model()->findAllByAttributes(array('userId'=>$model->id)) as $link){
@@ -221,7 +221,7 @@ class UsersController extends x2base {
         }
         $roles=array();
         foreach(Roles::model()->findAll() as $role){
-            $roles[$role->id]=$role->name;
+            $roles[$role->id]=CHtml::encode($role->name);
         }
         $selectedRoles=array();
         foreach(RoleToUser::model()->findAllByAttributes(array('userId'=>$model->id)) as $link){
@@ -348,27 +348,34 @@ Please click on the link below to create an account at X2Engine!
             $list=trim($list);
             $emails=explode(',',$list);
             foreach($emails as &$email){
-                $key=substr(str_shuffle(str_repeat('ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789',16)),0,16);
+                $key=substr(str_shuffle(str_repeat(
+                    'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789',16)),0, 16);
                 $user=new User('invite');
                 $email=trim($email);
                 $user->inviteKey=$key;
                 $user->temporary=1;
                 $user->emailAddress=$email;
                 $user->status=0;
-                $userList=User::model()->findAllByAttributes(array('emailAddress'=>$email,'temporary'=>1));
+                $userList=User::model()->findAllByAttributes(
+                    array('emailAddress'=>$email,'temporary'=>1));
                 foreach($userList as $userRecord){
                     if(isset($userRecord)){
                         $userRecord->delete();
                     }
                 }
                 $user->save();
-                $link=CHtml::link('Create Account',(@$_SERVER['HTTPS'] == 'on' ? 'https://' : 'http://') . $_SERVER['HTTP_HOST'] . $this->createUrl('/users/users/createAccount',array('key'=>$key)));
+                $link=CHtml::link(
+                    'Create Account',
+                    (@$_SERVER['HTTPS'] == 'on' ? 'https://' : 'http://') . $_SERVER['HTTP_HOST'] . 
+                    $this->createUrl('/users/users/createAccount',array('key'=>$key)));
                 $mail=new InlineEmail;
                 $mail->to=$email;
                 // Get email password
-                $cred = Credentials::model()->getDefaultUserAccount(Credentials::$sysUseId['systemResponseEmail'],'email');
+                $cred = Credentials::model()->getDefaultUserAccount(
+                    Credentials::$sysUseId['systemResponseEmail'],'email');
                 if($cred==Credentials::LEGACY_ID)
-                    $cred = Credentials::model()->getDefaultUserAccount(Yii::app()->user->id,'email');
+                    $cred = Credentials::model()->getDefaultUserAccount(
+                        Yii::app()->user->id,'email');
                 if($cred != Credentials::LEGACY_ID)
                     $mail->credId = $cred;
                 $mail->subject=$subject;
@@ -462,7 +469,7 @@ Please click on the link below to create an account at X2Engine!
     }
 
     private function renderTopContacts() {
-        $this->renderPartial('application.components.views.topContacts',array(
+        $this->renderPartial('application.components.leftWidget.views.topContacts',array(
             'topContacts'=>User::getTopContacts(),
             //'viewId'=>$viewId
         ));

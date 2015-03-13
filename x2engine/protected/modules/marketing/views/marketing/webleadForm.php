@@ -43,21 +43,12 @@ $this->insertMenu($menuOptions);
 
 ?>
 <div id='content-tray'>
-<div class="page-title icon marketing"><h2><?php echo Yii::t('marketing','Web Lead Form'); ?></h2></div>
-<div class="form">
-<?php echo Yii::t('marketing','Create a public form to receive new {module}.', array('{module}'=>lcfirst(Modules::displayName(true, "Contacts")))),'<br>',
-	Yii::t('marketing','If no lead routing has been configured, all new {module} will be assigned to "Anyone".', array('{module}'=>lcfirst(Modules::displayName(false, "Contacts")))); ?>
-</div>
-<div class="form">
-    <?php echo Yii::t('marketing','If you want to keep your current HTML forms but still get web leads into X2, please see the wiki article located here: {link}',array(
-        '{link}' => CHtml::link(Yii::t('marketing','Web Lead API'),'http://wiki.x2engine.com/wiki/Web_Lead_API_(new)', array('target'=>'_blank')),
-    )) ?>
+<div class="page-title icon marketing"><h2><?php echo Yii::t('marketing','Web Lead Form'); ?></h2>
 </div>
 <?php
-$this->renderPartial ('application.components.views._createWebForm',
+$this->widget('application.components.WebFormDesigner.WebLeadFormDesigner', 
     array(
         'forms'=>$forms,
-        'webFormType'=>'weblead'
     )
 );
 ?>

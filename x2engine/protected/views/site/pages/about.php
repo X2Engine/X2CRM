@@ -89,7 +89,6 @@ Yii::app()->clientScript->registerScript('loadJqueryVersion',"$('#jqueryVersion'
 		<ul>
 			<li>John Roberts</li>
 			<li>Derek Mueller</li>
-			<li>Tony Zavala</li>
 			<li>Raymond Colebaugh</li>
 			<li>Alex Rowe</li>
 			<li>Jake Houser</li>
@@ -98,20 +97,13 @@ Yii::app()->clientScript->registerScript('loadJqueryVersion',"$('#jqueryVersion'
 		<h4 class="clear"><?php echo CHtml::encode (Yii::t('app','Contributors'));?></h4>
 		<ul class="inline">
 			<li>Demitri Morgan</li>
-			<li>Sandra Tam</li>
             <li>Matthew Pearson</li>
-			<li>James Thomas</li>
-			<li>Andrew Hoffman</li>
 			<li>Zach Louden</li>
 			<li>Steve Lance</li>
 			<li>DJ Visbal</li>
 			<li>John Mendonca</li>
-			<li>Xinyi Lin</li>
-			<li>Haley Sedam</li>
 			<li>Ben Hoehn</li>
 			<li>Bill Posner</li>
-			<li>Chris Hodges</li>
-			<li>Bastian Pfaff</li>
 		</ul>
 	</div>
 	<hr>

@@ -527,7 +527,8 @@ auxlib.pageLoading = function () {
 };
 
 auxlib.pageLoadingStop = function () {
-    auxlib.throbber$.remove ();
+    if (auxlib.throbber$)
+        auxlib.throbber$.remove ();
 };
 
 auxlib.containerLoading = function (elem$) {

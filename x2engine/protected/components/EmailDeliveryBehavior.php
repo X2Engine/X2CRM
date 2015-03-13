@@ -276,7 +276,12 @@ class EmailDeliveryBehavior extends CBehavior {
             $this->status['code'] = '200';
             $this->status['exception'] = null;
             $this->status['message'] = Yii::t('app', 'Email Sent!');
-        }catch(Exception $e){
+        }catch (phpmailerException $e){
+            // Catch PHPMailer specific exceptions for pretty error printing
+            $this->status['code'] = '500';
+            $this->status['exception'] = $e;
+            $this->status['message'] = $phpMail->ErrorInfo." ".$e->getFile()." L".$e->getLine();
+        }catch (Exception $e){
             $this->status['code'] = '500';
             $this->status['exception'] = $e;
             $this->status['message'] = $e->getMessage()." ".$e->getFile()." L".$e->getLine();

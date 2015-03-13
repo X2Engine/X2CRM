@@ -114,7 +114,7 @@ background-size: cover; }*/
 
 h1, h2, h3, h4, h5, h6 {
   font-weight: normal;
-  color: #555;
+  color: #222;
 }
 
 h1 {
@@ -141,13 +141,15 @@ h3 {
 
 h4 {
   font-size: 1.1em;
-  font-weight: bold;
+  // font-weight: bold;
+  letter-spacing: 0.5px;
   margin-bottom: 0.25em;
 }
 
 h5 {
   font-size: 1em;
-  font-weight: bold;
+  // font-weight: bold;
+  letter-spacing: 0.5px;
   margin-bottom: 0.25em;
 }
 

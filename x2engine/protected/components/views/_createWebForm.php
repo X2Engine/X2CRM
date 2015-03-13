@@ -83,6 +83,7 @@ AuxLib::registerTranslationsScript ('webFormDesigner', $translations, 'marketing
 
 Yii::app()->clientScript->registerCssFile(
     Yii::app()->getTheme()->getBaseUrl().'/css/createWebForm.css');
+
 Yii::app()->clientScript->registerScriptFile(
     Yii::app()->getBaseUrl().'/js/WebFormDesigner/WebFormDesigner.js',CClientScript::POS_END);
 

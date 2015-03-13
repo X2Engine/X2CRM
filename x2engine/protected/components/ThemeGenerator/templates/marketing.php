@@ -16,4 +16,8 @@
 	background: $colors[content]
 }
 
+#newsletter-history {
+	background: $colors[content]
+}
+
 "; ?>

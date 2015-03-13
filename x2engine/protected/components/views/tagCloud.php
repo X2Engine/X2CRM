@@ -81,7 +81,9 @@ foreach($myTags as &$tag) {
 <?php
 foreach($allTags as &$tag) {
 	echo 
-        '<span style="position:relative;" class="tag hide" tag-name="'.substr($tag['tag'],1).'">'.
+        '<span style="position:relative;" class="tag hide" tag-name="'.
+            substr(CHtml::encode($tag['tag']),1).
+        '">'.
             CHtml::link(
                 CHtml::encode ($tag['tag']),
                 array(

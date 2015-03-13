@@ -213,6 +213,7 @@ $this->beginWidget('zii.widgets.CPortlet',
 );
 echo '<ul style="font-size: 0.8em; font-weight: bold; color: black;">';
 foreach($eventTypes as $type=>$name) {
+    $type = CHtml::encode($type);
     echo "<li>\n";
     $checked = in_array($type,$typeFilters)?false:true;
     $title = '';
@@ -348,7 +349,8 @@ $this->beginWidget('LeftWidget',
 //Construct an array with ids as the filter type
 $filterButtons = array('all-button' => Yii::t('app', 'All'));
 foreach($eventTypes as $type => $name) {
-    $filterButtons[$type.'-button'] = $name;
+    $type = CHtml::encode($type);
+    $filterButtons[$type.'-button'] = CHtml::encode($name);
 }
 
 // Go throught the ordered list and create the links

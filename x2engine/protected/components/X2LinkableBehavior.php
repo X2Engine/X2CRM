@@ -204,6 +204,55 @@ class X2LinkableBehavior extends CActiveRecordBehavior {
     }
 
     /**
+     * Improved version of getItems which enables use of empty search string, pagination, and
+     * configurable option values/names.
+     * @param string $prefix name prefix of items to retrieve
+     * @param int $page page number of results to retrieve
+     * @param int $limit max number of results to retrieve
+     * @param string|array $valueAttr attribute(s) used to popuplate the option values. If an 
+     *  array is passed, value will composed of values of each of the attributes specified, joined
+     *  by commas
+     * @param string $nameAttr attribute used to popuplate the option names
+     * @return array name, value pairs
+     */
+    public function getItems2 (
+        $prefix='', $page=0, $limit=20, $valueAttr='name', $nameAttr='name') {
+
+        $modelClass = get_class ($this->owner);
+        $model = CActiveRecord::model ($modelClass);
+        $table = $model->tableName ();
+        $offset = intval ($page) * intval ($limit);
+
+        AuxLib::coerceToArray ($valueAttr);
+        $modelClass::checkThrowAttrError (array_merge ($valueAttr, array ($nameAttr)));
+        $params = array ();
+        if ($prefix !== '') {
+            $params[':prefix'] = $prefix . '%';
+        }
+        $offset = abs ((int) $offset);
+        $limit = abs ((int) $limit);
+        $command = Yii::app()->db->createCommand ("
+            SELECT " . implode (',', $valueAttr) . ", $nameAttr as __name
+            FROM $table
+            WHERE " . ($prefix === '' ? 
+               '1=1' : ($nameAttr . ' LIKE :prefix')
+            ) . "
+            ORDER BY __name
+            LIMIT $offset, $limit
+        ");
+        $rows = $command->queryAll (true, $params);
+
+        $items = array ();
+        foreach ($rows as $row) {
+            $name = $row['__name'];
+            unset ($row['__name']);
+            $items[] = array ($name, $row);
+        }
+
+        return $items;
+    }
+
+    /**
      * Sets the {@link module} property
      * @param string $value
      */

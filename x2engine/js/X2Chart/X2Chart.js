@@ -93,6 +93,7 @@ function X2Chart (argsDict) {
     $(window).bind (
         'resize.' + this.chartType + this.widgetUID, 
         x2[thisX2Chart.chartType + this.widgetUID].windowResizeFunction);
+
 }
 
 /************************************************************************************
@@ -2870,10 +2871,11 @@ X2Chart.prototype.applyChartSetting = function (settingsDict) {
             datepicker ('setDate', endDate);
     }
 
-    function applyDateRange (selector, dateRange) {
+    function applyDateRange (selector, dateRange, typeSelector, dateRangeType) {
         thisX2Chart.DEBUG && console.log ('applying date range');
-        thisX2Chart.applyDateRange (dateRange);
+        thisX2Chart.applyDateRange (dateRange, dateRangeType);
         auxlib.selectOptionFromSelector (selector, dateRange, true);
+        auxlib.selectOptionFromSelector (typeSelector, dateRangeType, true);
     }
 
     function applyBinSize (binSize) {
@@ -2956,11 +2958,8 @@ X2Chart.prototype.applyChartSetting = function (settingsDict) {
                 break;
             case 'dateRange':        
                 var dateRange = thisX2Chart._dateRangeSelector$;
-                applyDateRange (dateRange, settingsDict[i]);
-                break;
-            case 'dateRangeType':        
-                var dateRange = thisX2Chart._dateRangeTypeSelector$;
-                applyDateRange (dateRange, settingsDict[i]);
+                var dateRangeType = thisX2Chart._dateRangeTypeSelector$;
+                applyDateRange (dateRange, settingsDict[i], dateRangeType, settingsDict.dateRangeType);
                 break;
             default:
                 thisX2Chart.DEBUG && console.log ('Error: applyMultiselectSettings: default on switch');
@@ -2971,8 +2970,10 @@ X2Chart.prototype.applyChartSetting = function (settingsDict) {
 /*
 Sets to and from date picker ui elements based on date range.
 */
-X2Chart.prototype.applyDateRange = function (dateRange) {
-    var dateRangeType = this._dateRangeTypeSelector$.val();
+X2Chart.prototype.applyDateRange = function (dateRange, dateRangeType) {
+    if (typeof dateRangeType === 'undefined' || dateRangeType === null) {
+        dateRangeType = this._dateRangeTypeSelector$.val();
+    }
     
     if (dateRangeType == 'custom') {
         return;
@@ -3260,6 +3261,10 @@ X2Chart.prototype.setUpChartSettings = function () {
                     chartSettingAttributes['settings']['dateRange'] = 
                         thisX2Chart._dateRangeSelector$.val ();
                     break;
+                case 'dateRangeType':
+                    chartSettingAttributes['settings']['dateRangeType'] = 
+                        thisX2Chart._dateRangeTypeSelector$.val ();
+                    break;
                 default: 
                     thisX2Chart.DEBUG && console.log ('Error: createChartSetting: default switch');
             }
@@ -3286,7 +3291,7 @@ X2Chart.prototype.setUpChartSettings = function () {
                     thisX2Chart._predefinedSettings$.children ().
                         removeAttr ('selected');
                     thisX2Chart._predefinedSettings$.
-                        append ($('<option>', {
+                        append ($('<option></option>', {
 
                         'value': chartSettingName,
                         'text': chartSettingName
@@ -3464,7 +3469,17 @@ X2Chart.prototype.setUpChartSettings = function () {
         } else {
             thisX2Chart._deleteSettingButton$.hide ();
         }
-        thisX2Chart.saveChartSetting ('chartSetting', $(this).val ());
+
+        /** 
+         * Temporary Fix 
+         * There is a parallel request going out since many 'change' triggers are
+         * called. They 'accumulate' the changes of the previous calls, so only the 
+         * final one is necessary. 
+         */
+        var element = this;
+        setTimeout(function(){
+            thisX2Chart.saveChartSetting ('chartSetting', $(element).val ());
+        }, 1000);
     });
 };
 

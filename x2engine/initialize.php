@@ -118,7 +118,9 @@ $dbKeys = array(
     'language',
     'timezone',
     'visibleModules',
-    'app'
+    'app',
+    'baseUrl',
+    'baseUri'
 );
 // Values gathered for statistical/anonymous survey purposes:
 $sendArgs = array(
@@ -501,7 +503,6 @@ function installStage($stage) {
             } else {
                 $gii = "array(\n\t'class'=>'system.gii.GiiModule',\n\t'password'=>'password',\n\t/* If the following is removed, Gii defaults to localhost only. Edit carefully to taste: */\n\t 'ipFilters'=>array('127.0.0.1', '::1'),\n)";
             }
-            $config['baseUrl'] = is_int(strpos($config['baseUrl'], 'initialize.php')) ? substr($config['baseUrl'], 0, strpos($config['baseUrl'], 'initialize.php')) : $config['baseUrl'];
             $X2Config = "<?php\n";
             foreach (array('appName', 'email', 'host', 'user', 'pass', 'dbname', 'version') as $confKey)
                 $X2Config .= "\$$confKey = " . var_export($config[$confMap[$confKey]], 1) . ";\n";
@@ -513,7 +514,7 @@ function installStage($stage) {
             foreach ($dbKeys as $property)
                 $dbConfig['{' . $property . '}'] = $config[$property];
             $contents = file_get_contents('webConfig.php');
-            $contents = preg_replace('/\$url\s*=\s*\'\'/', "\$url=" . var_export($config['baseUrl'], 1), $contents);
+            $contents = preg_replace('/\$url\s*=\s*\'\'/', "\$url=" . var_export($config['baseUrl'].$config['baseUri'], 1), $contents);
             $contents = preg_replace('/\$user\s*=\s*\'\'/', "\$user=" . var_export($config['adminUsername'], 1), $contents);
             $contents = preg_replace('/\$userKey\s*=\s*\'\'/', "\$userKey=" . var_export($config['adminUserKey'], 1), $contents);
             file_put_contents('webConfig.php', $contents);
@@ -734,8 +735,8 @@ if ($silent) {
         $config[$checkbox] = (isset($_POST[$checkbox]) && $_POST[$checkbox] == 1) ? 1 : 0;
     }
     $config['unique_id'] = isset($_POST['unique_id']) ? $_POST['unique_id'] : 'none';
-    $config['baseUrl'] = $_SERVER['SERVER_NAME'] . $_SERVER['REQUEST_URI'];
-}
+    $config['baseUrl'] = (empty($_SERVER['HTTPS'])?"http://":"https://").$_SERVER['SERVER_NAME'];
+}   $config['baseUri'] = is_int(strpos($_SERVER['REQUEST_URI'], 'initialize.php')) ? substr($_SERVER['REQUEST_URI'], 0, strpos($_SERVER['REQUEST_URI'], 'initialize.php')) : $_SERVER['REQUEST_URI'];
 //if(!in_array($config['type'],array('Silent','Bitnami','Testing'))) // Special installation types
 //	$config['type'] = $config['test_db']==1?'Testing':($silent ? 'Silent' : 'On Premise');
 $config['GD_support'] = function_exists('gd_info') ? '1' : '0';

@@ -49,6 +49,9 @@ function ConditionList (argsDict) {
         value: []
     };
     auxlib.applyArgs (this, defaultArgs, argsDict);
+   console.log ('this.value = ');
+    console.log (this.value);
+
 
     this._container$ = $(this.containerSelector);
     this._sortList$ = this._container$.children ('.x2-cond-list');
@@ -99,7 +102,7 @@ ConditionList.prototype._setUpAddRemoveConditionBehavior = function () {
         var attr;
         field$.find (':input').each (function (index, elem) {
             attr = $(elem).attr ('name');
-            if (typeof attr !== 'undefined' && attr !== false) {
+            if (typeof attr !== 'undefined' && attr !== false && $(elem).attr ('name')) {
                 $(elem).attr ('name', $(elem).attr ('name').replace (/\[i\]/, '[' + i + ']'));
             }
         });
@@ -146,7 +149,8 @@ ConditionList.prototype._reindexInputs = function () {
     var that = this;
     this._sortList$.children ('ol').children ().each (function (i, elem) {
         $(elem).find (':input').each (function (j, elem) {
-            $(elem).attr ('name', $(elem).attr ('name').replace (/\[[i0-9]+\]/, '[' + i + ']'));
+            if ($(elem).attr ('name')) 
+                $(elem).attr ('name', $(elem).attr ('name').replace (/\[[i0-9]+\]/, '[' + i + ']'));
         });
     });
 };

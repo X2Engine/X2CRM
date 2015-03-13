@@ -49,8 +49,8 @@ class FieldFormatterTest extends X2DbTestCase {
 //    );
 
     public static function referenceFixtures () {
-        return  array (
-            'fields' => array ('Fields', '.FieldFormatterTest'),
+        return array (
+            'contacts' => 'Contacts',
         );
     }
 
@@ -64,61 +64,51 @@ class FieldFormatterTest extends X2DbTestCase {
         $_SERVER['SERVER_NAME'] = 'http://localhost';
         Yii::app()->cache->flush ();
         $contacts = Contacts::model ();
-        try {
-            Contacts::model()->c_TestInt;
-        } catch (Exception $e) {
-            Yii::app()->db->createCommand ("
-                alter table x2_contacts add column c_TestInt bigint(20) default null;
-            ")->execute ();
-        }
-        try {
-            Contacts::model()->c_TestPercentage;
-        } catch (Exception $e) {
-            Yii::app()->db->createCommand ("
-                alter table x2_contacts add column c_TestPercentage float default null;
-            ")->execute ();
-        }
-        try {
-            Contacts::model()->c_TestFloat;
-        } catch (Exception $e) {
-            Yii::app()->db->createCommand ("
-                alter table x2_contacts add column c_TestFloat float default null;
-            ")->execute ();
-        }
-        try {
-            Contacts::model()->c_TestTimerSum;
-        } catch (Exception $e) {
-            Yii::app()->db->createCommand ("
-                alter table x2_contacts add column c_TestTimerSum int(11) default null;
-            ")->execute ();
-        }
-        try {
-            Contacts::model()->c_TestCustom;
-        } catch (Exception $e) {
-            Yii::app()->db->createCommand ("
-                alter table x2_contacts add column c_TestCustom varchar(255) default null;
-            ")->execute ();
-        }
-        try {
-            Contacts::model()->c_TestUrlEmptyLinkType;
-        } catch (Exception $e) {
-            Yii::app()->db->createCommand ("
-                alter table x2_contacts add column c_TestUrlEmptyLinkType varchar(32) default null;
-            ")->execute ();
-        }
-        self::tryAddCol ($contacts, 'c_TestCustom2', 'varchar(255)');
-        self::tryAddCol ($contacts, 'c_TestCustom3', 'varchar(255)');
+        self::tryAddCol ($contacts, 'c_TestInt', 'int');
+        self::tryAddCol ($contacts, 'c_TestPercentage', 'percentage');
+        self::tryAddCol ($contacts, 'c_TestFloat', 'float');
+        self::tryAddCol ($contacts, 'c_TestTimerSum', 'timerSum');
+        self::tryAddCol ($contacts, 'c_TestCustom', 'custom');
+        self::tryAddCol ($contacts, 'c_TestUrlEmptyLinkType', 'url');
+        self::tryAddCol ($contacts, 'c_TestCustom2', 'custom');
+        self::tryAddCol ($contacts, 'c_TestCustom3', 'custom');
         Yii::app()->db->schema->refresh ();
+        Yii::app()->cache->flush ();
+        Contacts::model ()->resetFieldsPropertyCache ();
         Contacts::model ()->refreshMetaData ();
     }
 
     private static function tryAddCol ($model, $col, $type) {
-        try {
-            Contacts::model()->$col;
-        } catch (Exception $e) {
-            Yii::app()->db->createCommand ("
-                alter table x2_contacts add column $col $type default null;
-            ")->execute ();
+        if (!Fields::model ()->findByAttributes (array (
+            'fieldName' => $col,
+            'modelName' => get_class ($model),
+            ))) {
+
+            $field = new Fields;
+            $field->setAttributes (array (
+                'modelName' => get_class ($model),
+                'fieldName' => $col,
+                'attributeLabel' => $col,
+                'modified' => '1',
+                'custom' => 1,
+                'type' => $type,
+                'required' => '0',
+                'uniqueConstraint' => '0',
+                'safe' => '1',
+                'readOnly' => '0',
+                'linkType' => NULL,
+                'searchable' => '0',
+                'relevance' => 'Low',
+                'isVirtual' => '0',
+                'defaultValue' => NULL,
+                'keyType' => '',
+                'data' => NULL,
+            ), false);
+            if (!$field->save ()) {
+                AuxLib::debugLogR ('$col = ');
+                AuxLib::debugLogR ($col);
+                AuxLib::debugLogR ($field->getErrors ());
+            }
         }
     }
 
@@ -126,21 +116,22 @@ class FieldFormatterTest extends X2DbTestCase {
      * Clean up custom field columns 
      */
     public static function tearDownAfterClass () {
-        Yii::app()->db->createCommand ("
-            alter table x2_contacts drop column c_TestInt;
-            alter table x2_contacts drop column c_TestPercentage;
-            alter table x2_contacts drop column c_TestFloat;
-            alter table x2_contacts drop column c_TestTimerSum;
-            alter table x2_contacts drop column c_TestCustom;
-            alter table x2_contacts drop column c_TestCustom2;
-            alter table x2_contacts drop column c_TestCustom3;
-            alter table x2_contacts drop column c_TestUrlEmptyLinkType;
-        ")->execute ();
+        $fields = Fields::model ()->findAllByAttributes (array (
+            'custom' => 1,
+        ));
+        foreach ($fields as $field) assert ($field->delete ());
+        Yii::app()->db->schema->refresh ();
+        Yii::app()->cache->flush ();
+        Contacts::model ()->refreshMetaData ();
+        Contacts::model ()->resetFieldsPropertyCache ();
+       AuxLib::debugLogR ('Contacts::model ()->getAttributes () = ');
+        AuxLib::debugLogR (Contacts::model ()->getAttributes ());
+
         parent::tearDownAfterClass ();
     }
 
     /**
-     * Call render atleast once for each field type  
+     * Call render at least once for each field type  
      */
     public function testRender () {
         Yii::app()->cache->flush ();

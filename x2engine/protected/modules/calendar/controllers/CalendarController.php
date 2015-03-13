@@ -247,6 +247,11 @@ class CalendarController extends x2base {
         }
     }
 
+    // overridden to disable parent method
+    public function actionQuickView ($id) {
+        echo Yii::t('app', 'Quick view not supported');
+    }
+
     /**
      * Create shared calendar
      */
@@ -398,7 +403,7 @@ class CalendarController extends x2base {
      */
     private function constructFilterClause(array $filter){
         $clause = "";
-        $clause .= "((complete != \"Yes\") "; // add completed actions
+        $clause .= "((complete != \"Yes\") "; // add incomplete actions
         if(in_array('contacts', $filter))
             $clause .= "OR (associationType = \"contacts\") "; // add contact actions
         if(in_array('accounts', $filter))
@@ -1261,7 +1266,8 @@ class CalendarController extends x2base {
         $criteria = $staticAction->getAccessCriteria();
         // Assignment condition: all events for the user whose calendar is being viewed:
         $criteria->addCondition('`assignedTo` REGEXP BINARY :unameRegex');
-        $criteria->params[':unameRegex'] = X2PermissionsBehavior::getUserNameRegex($calendarUser);
+        $permissionsBehavior = Yii::app()->params->modelPermissions;
+        $criteria->params[':unameRegex'] = $permissionsBehavior::getUserNameRegex($calendarUser);
         // Action type filters:
         $criteria->addCondition(self::constructFilterClause($filter));
         $criteria->addCondition("`type` IS NULL OR `type`='' OR `type`!='quotes'");

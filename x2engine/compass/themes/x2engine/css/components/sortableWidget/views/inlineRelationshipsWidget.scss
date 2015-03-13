@@ -86,6 +86,12 @@
         border-bottom: none;
         td {
             border-right: none;
+            & > a {
+                max-width: 90%;
+                display: inline-block;
+                overflow: hidden;
+                text-overflow: ellipsis;
+            }
         }
     }
     .x2grid-body-container.x2grid-no-pager {

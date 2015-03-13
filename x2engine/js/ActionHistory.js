@@ -78,6 +78,8 @@ ActionHistory.prototype._setUpEvents = function () {
             that.relationshipFlag=1;
         }
         that.update ();
+        x2.TransactionalViewWidget.relationships = that.relationshipFlag;
+        x2.TransactionalViewWidget.refreshAll ();
     });
 };
 

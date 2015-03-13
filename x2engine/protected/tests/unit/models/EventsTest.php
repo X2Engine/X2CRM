@@ -59,7 +59,7 @@ class EventsTest extends X2DbTestCase {
         extract (Events::getFilteredEventsDataProvider (
             $profile, $isMyProfile, null, false));
         $data = $dataProvider->getData ();
-        print (count ($data));*/
+        VERBOSE_MODE && print (count ($data));*/
     }
 
     /**

@@ -427,23 +427,33 @@ class Quote extends X2Model {
 		// Declare element templates
 		$thProduct = '<th style="'.$thProductStyle.'">{c}</th>';
 		$tdDef = '<td style="'.$defaultStyle.'">{c}</td>';
-		$th = '<th style="'.$thStyle.'">{c}</th>';
 		$td = '<td style="'.$tdStyle.'">{c}</td>';
 		$tdFooter = '<td style="'.$tdFooterStyle.'">{c}</td>';
 		$tdBox = '<td style="'.$tdBoxStyle.'">{c}</td>';
 		$hr = '<hr style="width: 100%;height:2px;background:black;" />';
 		$tr = '<tr>{c}</tr>';
 		$colRange = range(2,7);
-		$span = array_combine($colRange,array_map(function($s){return "<td colspan=\"$s\"></td>";},$colRange));
+		$span = array_combine($colRange,array_map(function($s){
+            return "<td colspan=\"$s\"></td>";},$colRange));
 		$span[1] = '<td></td>';
 
 		$markup = array();
 
 		// Table opening and header
 		$markup[] = "<table style=\"$tableStyle\"><thead>";
-		$row = array(str_replace('{c}',Yii::t('products','Line Item'),$thProduct));
-		foreach(array('Unit Price','Quantity','Adjustment','Comments','Price') as $columnHeader) {
-			$row[] = str_replace('{c}',Yii::t('products',$columnHeader),$th);
+        $row = array ();
+		foreach(array(
+            'Line Item' => '20%; min-width: 200px;',
+            'Unit Price' => '17.5%',
+            'Quantity' => '15%',
+            'Adjustment' => '15%',
+            'Comments' => '15%',
+            'Price' => '20%'
+        ) as $columnHeader => $width) {
+            $row[] = 
+                '<th style="'.$thStyle."width: $width;".'">'.
+                    Yii::t('products',$columnHeader).
+                '</th>';
 		}
 		$markup[] = str_replace('{c}',implode("\n",$row),$tr);
 

@@ -46,10 +46,12 @@ $accountModule = Modules::model()->findByAttributes(array('name' => 'accounts'))
 $menuOptions = array(
     'all', 'lists', 'create', 'import', 'export', 'map', 'savedMaps',
 );
+$enableSelectAllOnAllPages = false;
 if ($this->route == 'contacts/contacts/index') {
     $heading = Yii::t('contacts', 'All {module}', array('{module}' => $modTitles['contacts']));
     
     $dataProvider = $model->searchAll();
+    $enableSelectAllOnAllPages = true;
     //unset($menuItems[0]['url']);
     //unset($menuItems[4]); // View List
 } elseif ($this->route == 'contacts/contacts/myContacts') {
@@ -103,7 +105,7 @@ $('#content').on('mouseup','#contacts-grid a',function(e) {
             'qtipSelector' => ".contact-name"
         ),
         'title' => $heading,
-        'enableSelectAllOnAllPages' => true,
+        'enableSelectAllOnAllPages' => $enableSelectAllOnAllPages,
         'buttons' => array('advancedSearch', 'clearFilters', 'columnSelector', 'autoResize', 'showHidden'),
         'template' =>
         '<div id="x2-gridview-top-bar-outer" class="x2-gridview-fixed-top-bar-outer">' .

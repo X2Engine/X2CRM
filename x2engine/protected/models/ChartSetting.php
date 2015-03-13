@@ -65,7 +65,7 @@ class ChartSetting extends CActiveRecord {
                 'transformAttributes' => array('settings' => array(
                     'startDate', 'endDate', 'binSize', 'firstMetric', 'visibilityFilter',
 					'usersFilter', 'eventsFilter', 'socialSubtypesFilter',
-					'dateRange'))
+					'dateRange', 'dateRangeType'))
             )
         );
     }

@@ -47,6 +47,8 @@
  * @package application.views.admin 
  */
 
+$protocol = (!empty ($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https' : 'http';
+
 ?>
 <?php echo "\n<!-- \begin{UpdatesForm} -->"; ?>
 <?php echo $form->wrapTitle($form->os ? $form->message['updatesTitle'] : $form->message['registrationTitle']); ?>
@@ -238,7 +240,7 @@
                     
                 // Now it is time to connect to the updates server
 				if(!isos || ((postData.unique_id == 'none' || empty(postData.unique_id)) && elts.receiveUpdates.is(":checked"))) {
-                    var submitToUrl = 'http://x2planet.com/installs/registry/<?php echo $form->os ? 'new' : 'register'; ?>';
+                    var submitToUrl = '<?php echo $protocol; ?>://x2planet.com/installs/registry/<?php echo $form->os ? 'new' : 'register'; ?>';
 					form.find('.error').removeClass('error');
 					status.fadeIn(300).html(loadingImg);
                     if($.browser.msie || typeof window.XDomainRequest != 'undefined') {

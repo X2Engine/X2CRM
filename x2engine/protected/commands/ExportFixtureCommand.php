@@ -88,10 +88,12 @@ class ExportFixtureCommand extends CConsoleCommand {
         ),
 		4 => array(
             'writeCond', 
-            'overwrite (o), rename existing (r), output to stdout (s)',
+            'overwrite (o), rename existing (r), output to stdout (s), output to file ([filename])',
             'r',
-            '$pass=in_array($arg_in, array("o","r","s"));',
-            'Must be "o", "r", or "s"'
+            '$pass=true;',
+            '',
+            //'$pass=in_array($arg_in, array("o","r","s"));',
+            //'Must be "o", "r", or "s"'
         ),
 	);
 	public $fixtureDir;
@@ -168,6 +170,8 @@ class ExportFixtureCommand extends CConsoleCommand {
                     break;
                 case 's': 
                     break;
+                default: // filename
+				    echo "\nWriting to file $writeCond\n";
             }
 		}
 
@@ -208,10 +212,13 @@ class ExportFixtureCommand extends CConsoleCommand {
 		}
 		$fileCont .= ");\n?>";
 
-        if ($writeCond !== 's') 
+        if (!in_array ($writeCond, array ('s', 'r', 'o'))) {
+		    file_put_contents($writeCond, $fileCont);
+        } elseif ($writeCond !== 's')  {
 		    file_put_contents($filePath, $fileCont);
-        else
+        } else {
             /**/print ($fileCont);
+        }
 		echo "\nExport complete.\n";
 	}
 

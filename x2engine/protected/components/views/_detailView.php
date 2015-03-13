@@ -91,6 +91,10 @@ if (method_exists($model, 'getFields')) {
 if ($layoutData === false) {
     $layout = FormLayout::model()->findByAttributes(
             array('model' => ucfirst($modelName), 'defaultView' => 1, 'scenario' => $scenario));
+    if (!$layout && $scenario === 'Inline') {
+        $layout = FormLayout::model()->findByAttributes(
+                array('model' => ucfirst($modelName), 'defaultView' => 1, 'scenario' => 'Default'));
+    }
 
     if (isset($layout)) {
         $layoutData = json_decode($layout->layout, true);
@@ -99,7 +103,7 @@ if ($layoutData === false) {
 }
 
 if ($layoutData !== false && isset($layoutData['sections']) && count($layoutData['sections']) > 0) {
-    echo '<div class="x2-layout x2-layout-island' . ((isset($halfWidth) && $halfWidth) ? ' half-width' : '') . '">';
+    echo '<div class="detail-view x2-layout x2-layout-island' . ((isset($halfWidth) && $halfWidth) ? ' half-width' : '') . '">';
     $formSettings = Profile::getFormSettings($modelName);
 
     $fieldPermissions = array();
@@ -184,8 +188,7 @@ if ($layoutData !== false && isset($layoutData['sections']) && count($layoutData
                         $htmlString .= "<td$width>";
                         if (isset($col['items'])) {
                             foreach ($col['items'] as &$item) {
-
-
+                                $inlineEdit = false;
                                 if (isset($item['name'], $item['labelType'], $item['readOnly'], 
                                     $item['height'], $item['width'])) {
 
@@ -214,7 +217,13 @@ if ($layoutData !== false && isset($layoutData['sections']) && count($layoutData
                                             case 'top':
                                             default: $labelClass = 'topLabel';
                                         }
-                                        $inlineEdit = $modelEdit && $scenario != 'Inline' && (!$field->readOnly && (!isset($fieldPermissions[$field->id]) || (isset($fieldPermissions[$field->id]) && $fieldPermissions[$field->id] === 2)));
+                                        $inlineEdit = 
+                                            $modelEdit && 
+                                            $scenario != 'Inline' && 
+                                            (!$field->readOnly && 
+                                            (!isset($fieldPermissions[$field->id]) || 
+                                                (isset($fieldPermissions[$field->id]) && 
+                                                $fieldPermissions[$field->id] === 2)));
                                         $htmlString .= "<div id=\"{$field->modelName}_{$field->fieldName}_field\"" .
                                                 " class=\"formItem $labelClass";
                                         if ($inlineEdit) {

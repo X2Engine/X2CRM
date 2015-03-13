@@ -70,13 +70,31 @@ abstract class ModelPermissionsBehavior extends CActiveRecordBehavior {
      */
     abstract function getAccessConditions($accessLevel);
 
+    /**
+     * 
+     */
     abstract function getAssignmentAttr();
 
     /**
-     * Returns
+     * 
      */
     abstract function getVisibilityAttr();
-
+    
+    /**
+     * 
+     */
+    public static function getVisibilityOptions(){
+        return array();
+    }
+    
+    /*
+     * Returns regex for performing SQL assignedTo field comparisons.
+     * @return string This can be inserted (with parameter binding) into SQL queries to
+     *  determine if an action is assigned to a given user.
+     */
+    public static function getUserNameRegex ($username=null) {
+        return '(^|, )'.($username===null?Yii::app()->getSuName():$username).'($|, )';
+    }
 }
 
 ?>

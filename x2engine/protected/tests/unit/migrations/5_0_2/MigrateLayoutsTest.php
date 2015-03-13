@@ -36,6 +36,9 @@
 
 class MigrateLayoutsTest extends X2DbTestCase {
 
+    // skipped since migration script tests aren't relevant after corresponding release
+    protected static $skipAllTests = true;
+
       
 
 

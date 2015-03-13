@@ -64,9 +64,9 @@ class ActionsWidget extends TransactionalViewWidget {
     public function getDataProvider () {
         if (!isset ($this->_dataProvider)) {
             $this->_dataProvider = parent::getDataProvider ();
-            if (!isset ($_GET[$this->getWidgetKey ().'_sort'])) {
-                $this->_dataProvider->criteria->order = 'dueDate asc';
-            }
+            //if (!isset ($_GET[$this->getWidgetKey ().'_sort'])) {
+                //$this->_dataProvider->criteria->order = 'dueDate asc';
+            //}
         }
         return $this->_dataProvider;
     }

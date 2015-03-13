@@ -1515,6 +1515,20 @@ class UpdaterBehaviorTest extends FileOperTestCase {
         $ube->cleanUp();
     }
 
+    public function testFinalizeUpdate () {
+        $updaterBehavior = $this->instantiateUBe();
+        $unique_id = Yii::app()->settings->unique_id;
+        $version = Yii::app()->params->version;
+        $edition = Yii::app()->edition;
+
+        // default function return value since finalizeUpdate ignores upgrade scenario
+        $this->assertNull (
+            $updaterBehavior->finalizeUpdate ('upgrade', $unique_id, $version, $edition));
+
+        $this->assertNotNull (
+            gettype ($updaterBehavior->finalizeUpdate ('update', $unique_id, $version, $edition)));
+    }
+
 }
 
 ?>

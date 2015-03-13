@@ -45,6 +45,6 @@ $this->insertMenu($menuOptions, $model);
 
 ?>
 <div class="page-title icon workflow">
-<h2><span class="no-bold"><?php echo Yii::t('module','Update'); ?>:</span> <?php echo $model->name; ?></h2>
+<h2><span class="no-bold"><?php echo Yii::t('module','Update'); ?>:</span> <?php echo CHtml::encode ($model->name); ?></h2>
 </div>
 <?php echo $this->renderPartial('_form', array('model'=>$model)); ?>

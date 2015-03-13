@@ -54,6 +54,19 @@ class X2TestCase extends CTestCase {
         parent::setUpBeforeClass();
     }
 
+    /**
+     * Assert thet the model can be saved without error and, if errors are present, print
+     * out the corresponding error messages.
+     * @param CActiveRecord $model
+     */
+    public function assertSaves (CActiveRecord $model) {
+        $saved = $model->save ();
+        if ($model->hasErrors ()) {
+            VERBOSE_MODE && print_r ($model->getErrors ());
+        }
+        $this->assertTrue ($saved);
+    }
+
 }
 
 ?>

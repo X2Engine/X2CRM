@@ -65,10 +65,11 @@ $users=User::getNames();
 unset($users['']);
 unset($users['Anyone']);
 unset($users['admin']);
+$users = array_map (array('CHtml', 'encode'), $users);
 /* x2temp */
 $groups=Groups::model()->findAll();
 foreach($groups as $group){
-    $users[$group->id]=$group->name;
+    $users[$group->id] = CHtml::encode ($group->name);
 }
 /* end x2temp */
 ?>

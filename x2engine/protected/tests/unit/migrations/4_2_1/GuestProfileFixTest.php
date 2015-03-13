@@ -36,15 +36,18 @@
 
 
 class GuestProfileFixTest extends X2DbTestCase {
+    
+    // skipped since migration script tests aren't relevant after corresponding release
+    protected static $skipAllTests = true;
 
     /**
      * Contains dump of profile and users table at 4.2 Platinum after creating a new users after
      * a fresh install
      */
-    public $fixtures = array (
-        'profiles' => array ('Profile', '.GuestProfileFixTest'), 
-        'users' => array ('User', '.GuestProfileFixTest'), 
-    );
+//    public $fixtures = array (
+//        'profiles' => array ('Profile', '.GuestProfileFixTest'), 
+//        'users' => array ('User', '.GuestProfileFixTest'), 
+//    );
 
     public static function setUpBeforeClass () {
         // must be set to true so that the command uses the test database

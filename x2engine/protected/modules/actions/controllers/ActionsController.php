@@ -133,7 +133,7 @@ class ActionsController extends x2base {
 
             if(!Yii::app()->user->isGuest){
                 echo preg_replace(
-                    '/<\!--BeginOpenedEmail-->(.*?)<\!--EndOpenedEmail--!>/s', '', 
+                    '/<\!--BeginOpenedEmail-->(.*?)<\!--EndOpenedEmail-->/s', '', 
                     $action->actionDescription);
             }else{
                 // Strip out the action header since it's being viewed directly:

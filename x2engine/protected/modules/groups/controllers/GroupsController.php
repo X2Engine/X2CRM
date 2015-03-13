@@ -154,6 +154,7 @@ class GroupsController extends x2base {
 			else
 				$users=array();
 			if($model->save()){
+                $changeMade = false;
 				foreach($users as $user){
 					$link=new GroupToUser;
 					$link->groupId=$model->id;
@@ -162,10 +163,13 @@ class GroupsController extends x2base {
                         $link->userId=$userRecord->id;
                         $link->username=$userRecord->username;
                         $test=GroupToUser::model()->findByAttributes(array('groupId'=>$model->id,'userId'=>$userRecord->id));
-                        if(!isset($test))
+                        if(!isset($test)) {
                             $link->save();
+                            $changeMade = true;
+                        }
                     }
 				}
+                if ($changeMade) Yii::app()->authCache->clear ();
 				$this->redirect(array('view','id'=>$model->id));
 			}
 		}

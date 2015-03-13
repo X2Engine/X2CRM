@@ -33,21 +33,5 @@
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2Engine".
  *****************************************************************************************/
+?>
 
-/**
- * X2FlowTrigger 
- * 
- * @package application.components.x2flow.actions
- */
-class TimerTrigger extends X2FlowTrigger {
-	public $title = 'Time Trigger';
-	public $info = 'This flow will be triggered automatically whenever the cronjob runs. Use the "Time of Day" and "Day of Week" conditions to control how often it runs.';
-	
-	public function paramRules() {
-		return array(
-			'title' => Yii::t('studio',$this->title),
-			'info' => Yii::t('studio',$this->info),
-			'options' => array()
-		);
-	}
-}

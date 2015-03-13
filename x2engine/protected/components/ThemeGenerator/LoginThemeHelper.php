@@ -34,6 +34,22 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 
+/**
+ * Class to assist the login theme cookies and Javascript.
+ * The login page has both the ability to change the background color and 
+ * ability to change overall theme of the page. The cookie saved will be the background color
+ * and the theme name. 
+ *
+ * If the user is on default theme and changes the theme to dark theme, The app will change this
+ * users theme to the dark theme. 
+ * If the user is on a custom theme and logs in with the default theme, the theme of the app will
+ * not change, to respect the option to have a default login page but a themed app. 
+ *
+ * The right most background color option will be the color of the theme background. 
+ * 
+ * @package application.components
+ * @author Alex Rowe <alex@x2engine.com>
+ */
 class LoginThemeHelper {
 
 	/**
@@ -137,6 +153,7 @@ class LoginThemeHelper {
 		if ( !isset($_POST[self::LOGIN_THEME_COOKIE]) ) {
 			return;
 		}
+
 
 		$themeName = $_POST[self::LOGIN_THEME_COOKIE];
 	    $profile = X2Model::model('Profile')->findByPk(Yii::app()->user->id);

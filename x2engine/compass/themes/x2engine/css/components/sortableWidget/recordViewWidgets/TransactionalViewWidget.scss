@@ -35,6 +35,16 @@
 
 .connected-sortable-widget-container { 
     .transactional-view-widget {
+        .relationships-toggle {
+            input {
+                margin-left: 5px;
+                position: relative;
+                top: 2px;
+            }
+            span {
+                margin-left: 5px;
+            }
+        }
         .overdue {
             font-weight: bold;
             color: rgb(47, 47, 47);

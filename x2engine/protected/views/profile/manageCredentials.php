@@ -35,14 +35,6 @@
  *****************************************************************************************/
 
 $this->insertActionMenu();
-// $this->actionMenu = array(
-//     array('label' => Yii::t('profile', 'View Profile'), 'url' => array('view', 'id' => $profile->id)),
-//     array('label' => Yii::t('profile', 'Edit Profile'), 'url' => array('update', 'id' => $profile->id)),
-//     array('label' => Yii::t('profile', 'Change Settings'), 'url' => array('settings', 'id' => $profile->id), 'visible' => ($profile->id == Yii::app()->user->id)),
-//     array('label' => Yii::t('profile', 'Change Password'), 'url' => array('changePassword', 'id' => $profile->id), 'visible' => ($profile->id == Yii::app()->user->id)),
-//     array('label' => Yii::t('profile', 'Manage Apps')),
-//     
-// );
 
 Yii::app()->clientScript->registerScript('manageCredentialsScript', "
 
