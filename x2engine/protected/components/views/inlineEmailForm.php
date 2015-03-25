@@ -584,7 +584,7 @@ Yii::app()->clientScript->registerResponsiveCss('inlineEmailFormResponsiveCss',"
 if (!$this->disableTemplates) {
 ?>
 <div id='email-settings-dialog' style='display: none;'>
-    <form>
+    <form><!-- saved via ajax, so it doesn't need a CSRF token hidden input -->
         <span id='email-settings-info'><?php echo Yii::t(
             'app', 'Designate an email template as the default template for {moduleName}.',
             array ('{moduleName}' => strtolower (X2Model::getModuleName ($associationType)))); ?>

@@ -55,7 +55,6 @@ class FontPickerInput extends CFormElement {
 		'times'=>'"Times New Roman", Times, serif',
 		'trebuchet'=>'"Trebuchet MS", Helvetica, sans-serif',
 		'verdana'=>'Verdana, Geneva, sans-serif',
-		'montserrat'=>'Montserrat, sans-serif',
 	);
 
 	protected static $fontsDisplay = array(
@@ -73,7 +72,6 @@ class FontPickerInput extends CFormElement {
 		'times'=>'Times New Roman',
 		'trebuchet'=>'Trebuchet MS, Helvetica',
 		'verdana'=>'Verdana, Geneva',
-		'montserrat'=>'Montserrat, sans-serif',
 	);
 
 	public static function getFontCss($key) {

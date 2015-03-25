@@ -193,6 +193,11 @@ table {
     th {
       padding: 5px;
       background: #fff;
+
+      /* @theme background: content */
+      /* @theme color: text */
+      /* @theme border-color: border */
+
       border-top: 1px solid #dfdfdf;
       border-left: 1px solid #dfdfdf;
       vertical-align: top;
@@ -204,6 +209,11 @@ table {
     td {
       padding: 5px;
       background: #fff;
+
+      /* @theme background: content */
+      /* @theme color: text */
+      /* @theme border-color: border */
+
       border-top: 1px solid #dfdfdf;
       border-left: 1px solid #dfdfdf;
       vertical-align: top;

@@ -34,7 +34,10 @@
  *****************************************************************************************/
 
 @import "standards";
-@import url(http://fonts.googleapis.com/css?family=Montserrat);
+@import "colors";
+@import "fonts";
+
+@include Montserrat;
 
 body {
 	font-family: Arial, sans-serif;
@@ -79,7 +82,9 @@ h1, h2, h3, h4, h5, th {
 	left: 0px;
 
 	margin: 8px;
-	padding: 15px;
+
+	$padding: 15px;
+	padding: $padding;
 
 	background: white;
 
@@ -92,6 +97,17 @@ h1, h2, h3, h4, h5, th {
 
 	h3 {
 		margin-top: 0px;
+	}
+
+	h4 {
+		background: $lightestGray;
+		
+		padding: 5px;
+
+		margin-bottom: 10px;
+		margin-top: 10px;
+		margin-left: -$padding;
+		margin-right: -$padding;
 	}
 
 	.label {

@@ -37,7 +37,7 @@
 <div class="page-title rounded-top"><h2><?php echo Yii::t('admin','Edit Dropdown'); ?></h2></div>
 <div class="form">
 <?php
-$list=Dropdowns::model()->findAll();
+$list = Dropdowns::model()->findAll();
 $names=array();
 foreach($list as $dropdown){
     $names[$dropdown->id]=$dropdown->name;

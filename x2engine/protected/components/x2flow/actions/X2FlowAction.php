@@ -62,8 +62,12 @@ abstract class X2FlowAction extends X2FlowItem {
         if(isset($paramRules['modelRequired'])) {
             if(!isset($params['model']))    // model not provided when required
                 return array (false, Yii::t('admin', "Flow item validation error"));
-            if($paramRules['modelRequired'] != 1 && $paramRules['modelRequired'] !== get_class($params['model']))    // model is not the correct type
+            if($paramRules['modelRequired'] != 1 && 
+                $paramRules['modelRequired'] !== get_class($params['model'])) {
+
+                // model is not the correct type
                 return array (false, Yii::t('admin', "Flow item validation error"));
+            }
         }
         return $this->validateOptions($paramRules);
     }

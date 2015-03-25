@@ -105,6 +105,7 @@ x2.WebFormDesigner = (function() {
             var formJSON = auxlib.formToJSON ($('#web-form-designer-form'));
             formJSON.name = $('#web-form-name').val();
             that._saveForm(formJSON);
+
             return false;
         });
 
@@ -112,12 +113,24 @@ x2.WebFormDesigner = (function() {
             $('#web-form-submit-button').click();
         });
 
+        /*********************************
+        * Resets form and saves as a new Form
+        ********************************/
         $('#web-form-new-button').click(function(){
             that._updateFields ({
                 params: that.defaultJSON,
                 name: $('#web-form-new-name').val()
             });
-            // $('#web-form-submit-button').click();
+            
+
+            // Wipe inputs
+            $('#web-form-designer-form :input')
+             .not(':button, :submit, :reset, [type="hidden"]')
+             .val('')
+             .removeAttr('checked')
+             .removeAttr('selected');
+
+            $('#web-form-submit-button').click();
             $('#new-field').slideToggle();
         });
     };
@@ -186,6 +199,8 @@ x2.WebFormDesigner = (function() {
                 that._updateFields({
                     params: that.defaultJSON,
                 });
+                
+                
                 $('#web-form-inner').hide();
             }
 
@@ -244,7 +259,6 @@ x2.WebFormDesigner = (function() {
 
         // Get the default form 
         this.defaultJSON = auxlib.formToJSON ($('#web-form-designer-form'));
-        console.log(this.defaultJSON);
 
         this.formName = '';
 
@@ -253,7 +267,11 @@ x2.WebFormDesigner = (function() {
         that._setUpTabs();
 
     };
+
+    // Finds all the tab containers in the view files, and creates 
+    // tabs out of them. 
     WebFormDesigner.prototype._setUpTabs = function () {
+        var that = this;
         var tabs = $('#webform-tabs');
         var ul = tabs.find('ul').first();
 
@@ -269,10 +287,13 @@ x2.WebFormDesigner = (function() {
 
         });
 
+        // Tabs can be appended to accross view files
         $('.webform-tab-content').each(function(){
             var id = $(this).data('tab');
             $(this).appendTo('#'+id+' .tab-content');
         });
+
+        
 
         tabs.tabs();
     }

@@ -64,7 +64,7 @@ $this->widget('zii.widgets.grid.CGridView', array(
         array(
             'header' => Yii::t('admin','Delete Tag'),
             'type' => 'raw',
-            'value' => "CHtml::link(Yii::t('admin','Delete Tag'),'#',array('class'=>'x2-button', 'submit'=>'deleteTag?tag='.\substr(\$data->tag,1),'confirm'=>Yii::t('admin','Are you sure you want to delete this tag?')))"
+            'value' => "CHtml::link(Yii::t('admin','Delete Tag'),'#',array('class'=>'x2-button', 'csrf'=>true,'submit'=>'deleteTag?tag='.\substr(\$data->tag,1),'confirm'=>Yii::t('admin','Are you sure you want to delete this tag?')))"
         ),
     ),
 ));

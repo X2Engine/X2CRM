@@ -73,7 +73,7 @@ $cs->registerScript('ConfigMenuJS', "
 	
 	<!-- Configuration Panel-->
 	<div id='config-panel'>
-		<h3><?php echo Yii::t('app', 'Configuration')?></h3>
+		<h3 id='config-panel-header'><?php echo Yii::t('app', 'Configuration')?></h3>
 		<div id='config-panel-inner'></div>
 		<div class="row">
 			<button class='label x2-button' id='print-button' type="button" onClick="window.print()"><i class='fa fa-print'></i> <?php echo Yii::t('app','Print') 
@@ -90,6 +90,10 @@ $cs->registerScript('ConfigMenuJS', "
 	<!-- Remove the Loader, and remove the screen -->
 	<script type='text/javascript'>
 	    $(function(){
+	    	if ($('#config-panel-inner').children().length == 0) {
+	    		$('#config-panel-header').hide();
+	    	}
+
 	    	auxlib.pageLoadingStop();
 	        $('#screen').css('opacity', 0);
 	        setTimeout(function(){

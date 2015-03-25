@@ -1381,7 +1381,7 @@ class UpdaterBehaviorTest extends FileOperTestCase {
         copy($ube->webRoot.DIRECTORY_SEPARATOR.FileUtil::rpath($script),$ube->sourceDir.DIRECTORY_SEPARATOR.FileUtil::rpath($script));
         ob_start();
         $scripts = array($script);
-        $ube->runMigrationScripts($scripts,$ran,false);
+        $ran = $ube->runMigrationScripts($scripts,$ran,false);
         ob_end_clean();
         $this->assertEquals(1,count($ran));
         $this->assertFileExists($testfile = $ube->webRoot.DIRECTORY_SEPARATOR.'testfile');

@@ -37,8 +37,8 @@
 ?>
 
 <!-- dialog for completing a stage requiring a comment-->
-<div id='workflowCommentDialog'>
-    <form>
+<div id='workflowCommentDialog' style='display: none;'>
+    <form><!-- submitted via ajax, so it doesn't need CSRF token hidden input -->
         <div class="row">
             <?php echo Yii::t('workflow','Please summarize how this stage was completed.'); ?></div>
         <div class="row">

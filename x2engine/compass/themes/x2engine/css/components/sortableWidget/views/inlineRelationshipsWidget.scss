@@ -35,12 +35,63 @@
 
 @import "colors.scss";
 
+#RecordViewWidgetManagerwidgets-container {
+    .formSectionRow td {
+        display: block;
+        width: 100% !important;
+    }
+    .formItem.leftLabel > .formInputBox {
+        width: 200px !important;
+    }
+}
+
 #InlineRelationshipsWidget-widget-container- {
     .widget-title {
         min-width: 144px;
     }
     .x2-button-group {
         margin: 0;
+    }
+
+    .detail-view-toggle {
+        cursor: pointer;
+        span {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            position: relative;
+            margin-right: 5px;
+            top: -1px;
+            font-size: 14px;
+            color: grey;
+            /* @theme color: text */
+        }
+    }
+    .relationships-grid-details-container {
+
+        & > td {
+            border-top: 1px solid rgb(204, 204, 204);
+            border-bottom: 1px solid rgb(204, 204, 204);
+            /* @theme border-color: border */
+        }
+        &:last-child {
+            & > td {
+                border-bottom: none;
+            }
+        }
+        td {
+            padding: 0;
+            white-space: normal;
+        }
+        table {
+            margin: 0;
+        }
+        .detail-view {
+            margin-bottom: 0;
+            .fa-caret-down {
+                display: none;
+            }
+        }
     }
 }
 
@@ -84,7 +135,7 @@
     }
     .x2grid-body-container > .items {
         border-bottom: none;
-        td {
+        & > tbody > tr > td {
             border-right: none;
             & > a {
                 max-width: 90%;

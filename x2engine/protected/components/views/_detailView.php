@@ -319,7 +319,8 @@ if ($scenario != 'Inline') {
         'modelId' => $model->id,
         'translations' => array (
             'unsavedChanges' => Yii::t('app', 'There are unsaved changes on this page.')
-        )
+        ),
+        'csrfToken' => Yii::app()->request->getCsrfToken(),
     ));
 
     Yii::app()->clientScript->registerScriptFile(Yii::app()->baseUrl.'/js/inlineEditor.js');

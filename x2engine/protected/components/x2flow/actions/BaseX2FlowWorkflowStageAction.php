@@ -75,9 +75,6 @@ abstract class BaseX2FlowWorkflowStageAction extends X2FlowAction {
      * Validates type of model that triggered the flow
      */
     public function validate (&$params=array (), $flowId) {
-        if (!isset ($params['model'])) {
-            return array (false, '');
-        }
         $model = $params['model'];
         $modelName = get_class ($model);
 

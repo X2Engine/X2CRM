@@ -212,6 +212,9 @@ table.details tr:last-child td:only-child {
 table.details th {
   padding: 5px;
   background: #fff;
+  /* @theme background: content */
+  /* @theme color: text */
+  /* @theme border-color: border */
   border-top: 1px solid #dfdfdf;
   border-left: 1px solid #dfdfdf;
   vertical-align: top;
@@ -220,10 +223,13 @@ table.details th {
   font-style: normal;
   font-weight: normal;
 }
-/* line 190, ../../../compass/themes/x2engine/css/details.scss */
+/* line 195, ../../../compass/themes/x2engine/css/details.scss */
 table.details td {
   padding: 5px;
   background: #fff;
+  /* @theme background: content */
+  /* @theme color: text */
+  /* @theme border-color: border */
   border-top: 1px solid #dfdfdf;
   border-left: 1px solid #dfdfdf;
   vertical-align: top;
@@ -232,16 +238,16 @@ table.details td {
   font-style: normal;
   font-weight: normal;
 }
-/* line 200, ../../../compass/themes/x2engine/css/details.scss */
+/* line 210, ../../../compass/themes/x2engine/css/details.scss */
 table.details td.label {
   background: white;
   text-align: right;
 }
-/* line 205, ../../../compass/themes/x2engine/css/details.scss */
+/* line 215, ../../../compass/themes/x2engine/css/details.scss */
 table.details a {
   text-decoration: none;
 }
-/* line 208, ../../../compass/themes/x2engine/css/details.scss */
+/* line 218, ../../../compass/themes/x2engine/css/details.scss */
 table.details tr:first-child td.description {
   border-radius: 4px 4px 0 0;
   -moz-border-radius: 4px 4px 0 0;
@@ -249,17 +255,17 @@ table.details tr:first-child td.description {
   -o-border-radius: 4px 4px 0 0;
   border-left-width: 1px;
 }
-/* line 215, ../../../compass/themes/x2engine/css/details.scss */
+/* line 225, ../../../compass/themes/x2engine/css/details.scss */
 table.details td.text-field {
   height: auto;
 }
-/* line 217, ../../../compass/themes/x2engine/css/details.scss */
+/* line 227, ../../../compass/themes/x2engine/css/details.scss */
 table.details td.text-field div.spacer {
   height: 40px;
   width: 0px;
   float: left;
 }
-/* line 223, ../../../compass/themes/x2engine/css/details.scss */
+/* line 233, ../../../compass/themes/x2engine/css/details.scss */
 table.details input {
   margin: 0;
 }
@@ -267,50 +273,50 @@ table.details input {
 /* no top or left borders on the TD cells */
 /* make all the TD cell corner round too because browsers are stupid */
 /* rounded corners on description cell */
-/* line 236, ../../../compass/themes/x2engine/css/details.scss */
+/* line 246, ../../../compass/themes/x2engine/css/details.scss */
 .details textarea {
   margin: 0;
 }
 
-/* line 242, ../../../compass/themes/x2engine/css/details.scss */
+/* line 252, ../../../compass/themes/x2engine/css/details.scss */
 table.details.hint {
   color: #999;
   margin: 0;
   padding: 0;
 }
-/* line 247, ../../../compass/themes/x2engine/css/details.scss */
+/* line 257, ../../../compass/themes/x2engine/css/details.scss */
 table.details.note {
   font-style: italic;
 }
-/* line 251, ../../../compass/themes/x2engine/css/details.scss */
+/* line 261, ../../../compass/themes/x2engine/css/details.scss */
 table.detailsspan.required {
   color: red;
 }
-/* line 254, ../../../compass/themes/x2engine/css/details.scss */
+/* line 264, ../../../compass/themes/x2engine/css/details.scss */
 table.detailsdiv.error label, table.detailslabel.error, table.detailsspan.error {
   color: #C00;
 }
-/* line 258, ../../../compass/themes/x2engine/css/details.scss */
+/* line 268, ../../../compass/themes/x2engine/css/details.scss */
 table.detailsdiv.error input, table.detailsdiv.error textarea, table.detailsdiv.error select {
   background: #FEE;
   border-color: #C00;
 }
-/* line 263, ../../../compass/themes/x2engine/css/details.scss */
+/* line 273, ../../../compass/themes/x2engine/css/details.scss */
 table.detailsinput.error, table.detailstextarea.error, table.detailsselect.error {
   background: #FEE;
   border-color: #C00;
 }
-/* line 268, ../../../compass/themes/x2engine/css/details.scss */
+/* line 278, ../../../compass/themes/x2engine/css/details.scss */
 table.detailsdiv.success input, table.detailsdiv.success textarea, table.detailsdiv.success select {
   background: #E6EFC2;
   border-color: #C6D880;
 }
-/* line 273, ../../../compass/themes/x2engine/css/details.scss */
+/* line 283, ../../../compass/themes/x2engine/css/details.scss */
 table.detailsinput.success, table.detailstextarea.success, table.detailsselect.success {
   background: #E6EFC2;
   border-color: #C6D880;
 }
-/* line 277, ../../../compass/themes/x2engine/css/details.scss */
+/* line 287, ../../../compass/themes/x2engine/css/details.scss */
 table.details.errorSummary {
   background: #FEE;
   border: 2px solid #C00;

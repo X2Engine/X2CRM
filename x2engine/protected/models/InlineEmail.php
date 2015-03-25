@@ -487,8 +487,14 @@ class InlineEmail extends CFormModel {
     public function checkDoNotEmailFields () {
         $allRecipientContacts = array();
         foreach($this->recipients as $target){
-            foreach (Contacts::model()->findAllByAttributes(
-                array('email' => $target[1])) as $contact) {
+            foreach (
+                Contacts::model()->findAllByAttributes(
+                    array('email' => $target[1]),
+                    'visibility!=:private OR assignedTo!="Anyone"',
+                    array ( 
+                        ':private' => X2PermissionsBehavior::VISIBILITY_PRIVATE
+                    )
+                ) as $contact) {
 
                 $allRecipientContacts[] = $contact;
             }

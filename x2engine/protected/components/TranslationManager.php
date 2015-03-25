@@ -457,6 +457,7 @@ function removeLine(object) {
 		<td colspan="3" id="translationPane"><div id="iframeBox"><!--<iframe id="googleTranslate" scrolling="no" name="googleTranslate" src="http://translate.google.com/"></iframe>--></div></td>
 	</tr>
 </table>
+<?php echo X2Html::csrfToken (); ?>
 </form>
 <div class="rounded" id="footer">
 	<div id="footer-logos">

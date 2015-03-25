@@ -121,6 +121,7 @@ abstract class X2GridViewBase extends CGridView {
      */
     protected $_moduleName;
 
+    protected $_resultsPerPage;
     protected $_packages;
     protected $allFieldNames = array();
     protected $gvSettings = null;
@@ -143,6 +144,17 @@ abstract class X2GridViewBase extends CGridView {
     abstract protected function setSummaryText ();
 
     abstract protected function generateColumns ();
+
+    public function setResultsPerPage ($resultsPerPage) {
+        $this->_resultsPerPage = $resultsPerPage;
+    }
+
+    public function getResultsPerPage () {
+        if (!isset ($this->_resultsPerPage)) {
+            $this->_resultsPerPage = Profile::getResultsPerPage ();
+        }
+        return $this->_resultsPerPage;
+    }
 
     public function registerPackages () {
         Yii::app()->clientScript->registerPackages ($this->getPackages (), true);

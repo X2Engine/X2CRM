@@ -109,12 +109,12 @@ class RelationshipsGridModel extends CModel {
     public function renderAttribute ($name) {
         switch ($name) {
             case 'name':
-                echo $this->relatedModel->getLink (array (
+                echo $this->relatedModel->getLink (/*array (
                     'class' => 'quick-read-link',
                     'data-id' => $this->relatedModel->id,
                     'data-class' => get_class ($this->relatedModel),
                     'data-name' => CHtml::encode ($this->relatedModel->name),
-                ));
+                )*/);
                 break;
             case 'relatedModelName':
                 echo $this->getRelatedModelName ();

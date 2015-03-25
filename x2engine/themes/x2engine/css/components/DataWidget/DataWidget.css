@@ -33,7 +33,7 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 /*********************************************************************************
- * Copyright (C) 2011-2014 X2Engine Inc. All Rights Reserved.
+ * Copyright (C) 2011-2015 X2Engine Inc. All Rights Reserved.
  *
  * X2Engine Inc.
  * P.O. Box 66752
@@ -68,7 +68,7 @@
 * This section is made to correspond with the theme keys in ThemeGenerator
 ***********************************************************************/
 /*********************************************************************************
- * Copyright (C) 2011-2014 X2Engine Inc. All Rights Reserved.
+ * Copyright (C) 2011-2015 X2Engine Inc. All Rights Reserved.
  *
  * X2Engine Inc.
  * P.O. Box 66752
@@ -87,8 +87,12 @@
  * EXPRESS OR IMPLIED, INCLUDING WITHOUT LIMITATION THE IMPLIED WARRANTIES OF
  * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, TITLE, AND NON-INFRINGEMENT.
  ********************************************************************************/
+/***************************************
+* This file is responsible for mantaining
+* general purpose mixins and classes. 
+***************************************/
 /*********************************************************************************
- * Copyright (C) 2011-2014 X2Engine Inc. All Rights Reserved.
+ * Copyright (C) 2011-2015 X2Engine Inc. All Rights Reserved.
  *
  * X2Engine Inc.
  * P.O. Box 66752
@@ -135,32 +139,43 @@
 * CSS to extend when something 
 * should look like a link
 ***************************************/
-/* line 68, ../../../../../compass/css/lib/_standards.scss */
+/* line 73, ../../../../../compass/css/lib/_standards.scss */
 .pseudo-link {
   cursor: pointer;
   color: #004baf;
   transition: color .1s;
 }
-/* line 73, ../../../../../compass/css/lib/_standards.scss */
+/* line 78, ../../../../../compass/css/lib/_standards.scss */
 .pseudo-link:hover {
   color: #006cfb;
 }
 
 /***************************************
 * CSS to extend when for elements that 
-* become opauqe on mouseover
+* become transparent on mouseover
 ***************************************/
-/* line 91, ../../../../../compass/css/lib/_standards.scss */
+/* line 96, ../../../../../compass/css/lib/_standards.scss */
 .opacity-hover, .data-widget.sortable-widget-container .inline-report-container .inline-report-close {
   opacity: 0.3;
 }
-/* line 86, ../../../../../compass/css/lib/_standards.scss */
+/* line 91, ../../../../../compass/css/lib/_standards.scss */
 .opacity-hover:hover, .data-widget.sortable-widget-container .inline-report-container .inline-report-close:hover {
   opacity: 1;
 }
 
+/*********************************
+* Box Shadow Prefixer
+********************************/
+/***************************************
+* Apply the standard box shadow currently
+* used on x2-island-layout items
+***************************************/
+/*******************************************
+* Mixin for applying a fontAwesome icon
+* SEE _icons.scss FOR A BETTER IMPLEMENTATION
+******************************************/
 /*********************************************************************************
- * Copyright (C) 2011-2014 X2Engine Inc. All Rights Reserved.
+ * Copyright (C) 2011-2015 X2Engine Inc. All Rights Reserved.
  *
  * X2Engine Inc.
  * P.O. Box 66752
@@ -179,6 +194,11 @@
  * EXPRESS OR IMPLIED, INCLUDING WITHOUT LIMITATION THE IMPLIED WARRANTIES OF
  * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, TITLE, AND NON-INFRINGEMENT.
  ********************************************************************************/
+/************************************************
+* This File is a pseudo-class translation of all 
+* the font-awesome classes. This way, these classes
+* can be extended. 
+*************************************************/
 /*********************************
 * Mixin to create a font-awesome 
 * icon without changing the layout
@@ -187,7 +207,7 @@
  *  Font Awesome 4.2.0 by @davegandy - http://fontawesome.io - @fontawesome
  *  License - http://fontawesome.io/license (Font: SIL OFL 1.1, CSS: MIT License)
  */
-/* line 55, ../../../../../compass/css/lib/_font-awesome.scss */
+/* line 61, ../../../../../compass/css/lib/_font-awesome.scss */
 .data-widget.sortable-widget-container .inline-report-container .inline-report-close:before {
   display: inline-block;
   font: normal normal normal 14px/1 FontAwesome;
@@ -197,19 +217,19 @@
 }
 
 /* makes the font 33% larger relative to the icon container */
-/* line 114, ../../../../../compass/css/lib/_font-awesome.scss */
+/* line 120, ../../../../../compass/css/lib/_font-awesome.scss */
 .data-widget.sortable-widget-container .inline-report-container .pull-left.inline-report-close:before {
   margin-right: .3em;
 }
 
-/* line 117, ../../../../../compass/css/lib/_font-awesome.scss */
+/* line 123, ../../../../../compass/css/lib/_font-awesome.scss */
 .data-widget.sortable-widget-container .inline-report-container .pull-right.inline-report-close:before {
   margin-left: .3em;
 }
 
 /* Font Awesome uses the Unicode Private Use Area (PUA) to ensure screen
      readers do not read off random characters that represent icons */
-/* line 222, ../../../../../compass/css/lib/_font-awesome.scss */
+/* line 228, ../../../../../compass/css/lib/_font-awesome.scss */
 .data-widget.sortable-widget-container .inline-report-container .inline-report-close:before {
   content: "\f00d";
 }
@@ -340,7 +360,7 @@
   cursor: pointer;
   margin-right: 5px;
 }
-/* line 30, ../../../../../compass/css/lib/_font-awesome.scss */
+/* line 36, ../../../../../compass/css/lib/_font-awesome.scss */
 .data-widget.sortable-widget-container .inline-report-container .inline-report-close:before {
   text-decoration: none;
 }

@@ -187,7 +187,8 @@ html {
     -moz-border-radius: 3px;
     -webkit-border-radius: 3px;
     border-radius: 3px;
-    height: auto;
+    padding-bottom: <?php echo $padding ."px;\n"?>
+    height: <?php echo $height ."px;\n"?>
 }
 body {
     <?php
@@ -224,9 +225,12 @@ textarea {
 input[type="text"] {
     box-sizing: border-box;
     padding: 2px;
-    width: 100%;
     border-radius: 2px;
     line-height: 1.5em;
+}
+br + input[type="text"],
+input[type="hidden"] + input[type="text"] {
+    width: 100%;
 }
 #contact-header{
     color:white;

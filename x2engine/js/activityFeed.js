@@ -428,8 +428,8 @@ ActivityFeed.prototype.setupEditorBehavior = function  () {
         event.stopPropagation ();
     });*/
 
-    $('#submit-button').click (function () { that.publishPost (); });
-    $('#save-button').click (function () { that.publishPost (); });
+    $('#submit-button').click (function () { return that.publishPost (); });
+    $('#save-button').click (function () { return that.publishPost (); });
 
 }
 

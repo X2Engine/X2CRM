@@ -162,7 +162,10 @@ class ApiControllerSecurityTest extends CURLDbTestCase {
 		$ch = $this->getCurlHandle($urlParam,$this->param);
 		$response = curl_exec($ch);
 //		file_put_contents('api_response.html',$response);
-		$this->assertEquals(501, curl_getinfo($ch,CURLINFO_HTTP_CODE));
+        $this->assertTrue(
+            501 == curl_getinfo($ch,CURLINFO_HTTP_CODE) ||
+            preg_match ('/open_basedir restriction in effect/', $response)); 
+
 		
 		// Model class exists but isn't a child of X2Model
 		$urlParam['{model}'] = 'Admin'; // Nobody should be able to change this!

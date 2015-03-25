@@ -48,7 +48,7 @@ class X2FlowRecordUpdate extends X2FlowAction {
         return array(
             'title' => Yii::t('studio', $this->title),
             'info' => Yii::t('studio', $this->info),
-            'modelReqired' => 1,
+            'modelRequired' => 1,
             // 'modelClass' => 'modelClass',
             'options' => array(
                 array('name' => 'attributes'),

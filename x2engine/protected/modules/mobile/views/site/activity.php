@@ -73,6 +73,7 @@ $this->widget('MenuList', array(
     </fieldset>
     <button type='submit' class='x2-button' id='feed-post-button' 
      data-inline='true'><?php echo Yii::t('app', 'Submit Post'); ?></button>
+     <?php echo X2Html::csrfToken(); ?>
 </form>
 <div id="attachments" style='display: none;'>
 <?php
@@ -132,7 +133,8 @@ $this->widget (
                     "text":$("#feed-post-editor").val(),
                     "associationId":$("#feed-post-association-id").val(),
                     "visibility":$("#feed-post-visibility").val(),
-                    "subtype":$("#feed-post-subtype").val()
+                    "subtype":$("#feed-post-subtype").val(),
+                    "YII_CSRF_TOKEN": '<?php echo Yii::app()->request->csrfToken ?>'
                 },
                 success:function(){
                     $('#feed-post-editor').val ('');

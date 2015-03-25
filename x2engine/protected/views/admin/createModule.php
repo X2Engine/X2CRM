@@ -154,4 +154,5 @@ Yii::app()->clientScript->registerCss ('createModule', "
         <br>
         <input type="Submit" name="Submit" value="<?php echo Yii::t('app', 'Submit'); ?>" 
          class="x2-button" />
+         <?php echo X2Html::csrfToken(); ?>
 </div>

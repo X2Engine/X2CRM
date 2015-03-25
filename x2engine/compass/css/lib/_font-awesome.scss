@@ -33,11 +33,17 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 
+/************************************************
+* This File is a pseudo-class translation of all 
+* the font-awesome classes. This way, these classes
+* can be extended. 
+*************************************************/
+
+
 /*********************************
 * Mixin to create a font-awesome 
 * icon without changing the layout
 ********************************/
-
 @mixin fa-icon($name, $placing: 'before'){
 
     @if $placing == 'before' {

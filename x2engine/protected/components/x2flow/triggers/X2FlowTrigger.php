@@ -264,7 +264,6 @@ abstract class X2FlowTrigger extends X2FlowItem {
      * @return array (error status, message)
      */
     public function check(&$params) {
-        //AuxLib::debugLogR ('X2FlowTrigger: check');
         foreach($this->config['options'] as $name => &$option) {
             // modelClass is a special case, ignore it
             if($name === 'modelClass')    
@@ -278,33 +277,31 @@ abstract class X2FlowTrigger extends X2FlowItem {
             if(isset($option['type']))
                 $value = X2Flow::parseValue($value,$option['type'],$params);
 
-            //AuxLib::debugLogR ('evalComp');
-           //AuxLib::debugLogR ('$params = ');
-            //AuxLib::debugLogR ($params);
-           //AuxLib::debugLogR ('$name = ');
-            //AuxLib::debugLogR ($name);
-           //AuxLib::debugLogR ('$option = ');
-            //AuxLib::debugLogR ($option);
-
-
             if (isset ($option['comparison']) && !$option['comparison']) {
                 continue;
             }
 
-            if(!self::evalComparison($params[$name], $option['operator'], $value)) {
-                //AuxLib::debugLogR ('done evalComp');
-                return array (
-                    false, 
-                    Yii::t('studio', 'the following condition did not pass: ' .
-                        '{name} {operator} {value}', array (
-                            '{name}' => $params[$name],
-                            '{operator}' => $option['operator'],
-                            '{value}' => $value,
-                        ))
-                );
+            if(!static::evalComparison($params[$name], $option['operator'], $value)) {
+                if (is_string ($value) && is_string ($params[$name]) && 
+                    is_string ($option['operator'])) {
+
+                    return array (
+                        false, 
+                        Yii::t('studio', 'The following condition did not pass: ' .
+                            '{name} {operator} {value}', array (
+                                '{name}' => $params[$name],
+                                '{operator}' => $option['operator'],
+                                '{value}' => (string) $value,
+                            ))
+                    );
+                } else {
+                    return array (
+                        false, 
+                        Yii::t('studio', 'Condition failed')
+                    );
+                }
             }
         }
-        //AuxLib::debugLogR ('return');
 
         return $this->checkConditions($params);
     }
@@ -545,8 +542,10 @@ abstract class X2FlowTrigger extends X2FlowItem {
      * @return boolean
      */
     public static function evalComparison($subject,$operator,$value=null) {
+        $expectsArray = array ('list', 'notList', 'between');
+
         // $value needs to be a comma separated list
-        if(in_array($operator,array('list','notList','between'),true) && !is_array($value)) {    
+        if(in_array($operator,$expectsArray,true) && !is_array($value)) {    
             $value = explode(',',$value);
 
             $len = count($value);
@@ -556,6 +555,14 @@ abstract class X2FlowTrigger extends X2FlowItem {
                     unset($value[$i]);
             }
         }
+
+//        if (!in_array ($operator, $expectsArray, true) && is_array ($value)) {
+//            if (count ($value) > 1) {
+//                return false;
+//            } else {
+//                $value = array_pop ($value);
+//            }
+//        }
 
         switch($operator) {
             case '=':
@@ -861,6 +868,6 @@ abstract class X2FlowTrigger extends X2FlowItem {
     }
 
     public static function getTriggerInstances(){
-        return self::getInstances('triggers',array(__CLASS__,'X2FlowSwitch','BaseTagTrigger','BaseWorkflowStageTrigger', 'BaseWorkflowTrigger'));
+        return self::getInstances('triggers',array(__CLASS__,'X2FlowSwitch','BaseTagTrigger','BaseWorkflowStageTrigger', 'BaseWorkflowTrigger', 'BaseUserTrigger'));
     }
 }

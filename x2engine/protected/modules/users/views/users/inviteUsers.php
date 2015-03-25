@@ -63,4 +63,5 @@ $this->insertMenu($menuOptions);
 	<div class="row"><textarea id='invitation-email-list' name="emails"></textarea></div>
 	<div class="row"><input type="submit" value="<?php echo Yii::t('app','Submit');?>" class="x2-button"></div>
 </div>
+<?php echo X2Html::csrfToken(); ?>
 </form>

@@ -33,7 +33,7 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 /*********************************************************************************
- * Copyright (C) 2011-2014 X2Engine Inc. All Rights Reserved.
+ * Copyright (C) 2011-2015 X2Engine Inc. All Rights Reserved.
  *
  * X2Engine Inc.
  * P.O. Box 66752
@@ -52,8 +52,13 @@
  * EXPRESS OR IMPLIED, INCLUDING WITHOUT LIMITATION THE IMPLIED WARRANTIES OF
  * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, TITLE, AND NON-INFRINGEMENT.
  ********************************************************************************/
+/************************************************
+* This file mantains several important mixins for 
+* Font Icons. The two sources of font icons are 
+* font-awesome, and x2-icons (custom icons).
+*************************************************/
 /*********************************************************************************
- * Copyright (C) 2011-2014 X2Engine Inc. All Rights Reserved.
+ * Copyright (C) 2011-2015 X2Engine Inc. All Rights Reserved.
  *
  * X2Engine Inc.
  * P.O. Box 66752
@@ -88,7 +93,7 @@
 * This section is made to correspond with the theme keys in ThemeGenerator
 ***********************************************************************/
 /*********************************************************************************
- * Copyright (C) 2011-2014 X2Engine Inc. All Rights Reserved.
+ * Copyright (C) 2011-2015 X2Engine Inc. All Rights Reserved.
  *
  * X2Engine Inc.
  * P.O. Box 66752
@@ -107,6 +112,11 @@
  * EXPRESS OR IMPLIED, INCLUDING WITHOUT LIMITATION THE IMPLIED WARRANTIES OF
  * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, TITLE, AND NON-INFRINGEMENT.
  ********************************************************************************/
+/************************************************
+* This File is a pseudo-class translation of all 
+* the font-awesome classes. This way, these classes
+* can be extended. 
+*************************************************/
 /*********************************
 * Mixin to create a font-awesome 
 * icon without changing the layout
@@ -115,7 +125,7 @@
  *  Font Awesome 4.2.0 by @davegandy - http://fontawesome.io - @fontawesome
  *  License - http://fontawesome.io/license (Font: SIL OFL 1.1, CSS: MIT License)
  */
-/* line 55, ../../../compass/css/lib/_font-awesome.scss */
+/* line 61, ../../../compass/css/lib/_font-awesome.scss */
 #publisher .icon.action:before,
 .action.list-view .icon.action:before, #publisher .icon.attachment:before,
 .action.list-view .icon.attachment:before, #publisher .icon.complete:before,
@@ -135,7 +145,7 @@
 }
 
 /* makes the font 33% larger relative to the icon container */
-/* line 114, ../../../compass/css/lib/_font-awesome.scss */
+/* line 120, ../../../compass/css/lib/_font-awesome.scss */
 #publisher .pull-left.icon.action:before,
 .action.list-view .pull-left.icon.action:before, #publisher .pull-left.icon.attachment:before,
 .action.list-view .pull-left.icon.attachment:before, #publisher .pull-left.icon.complete:before,
@@ -150,7 +160,7 @@
   margin-right: .3em;
 }
 
-/* line 117, ../../../compass/css/lib/_font-awesome.scss */
+/* line 123, ../../../compass/css/lib/_font-awesome.scss */
 #publisher .pull-right.icon.action:before,
 .action.list-view .pull-right.icon.action:before, #publisher .pull-right.icon.attachment:before,
 .action.list-view .pull-right.icon.attachment:before, #publisher .pull-right.icon.complete:before,
@@ -167,13 +177,13 @@
 
 /* Font Awesome uses the Unicode Private Use Area (PUA) to ensure screen
      readers do not read off random characters that represent icons */
-/* line 615, ../../../compass/css/lib/_font-awesome.scss */
+/* line 621, ../../../compass/css/lib/_font-awesome.scss */
 #publisher .icon.call:before,
 .action.list-view .icon.call:before {
   content: "\f095";
 }
 
-/* line 799, ../../../compass/css/lib/_font-awesome.scss */
+/* line 805, ../../../compass/css/lib/_font-awesome.scss */
 #publisher .icon.email:before,
 .action.list-view .icon.email:before, #publisher .icon.email_quote:before,
 .action.list-view .icon.email_quote:before, #publisher .icon.email_invoice:before,
@@ -181,19 +191,19 @@
   content: "\f0e0";
 }
 
-/* line 817, ../../../compass/css/lib/_font-awesome.scss */
+/* line 823, ../../../compass/css/lib/_font-awesome.scss */
 #publisher .icon.note:before,
 .action.list-view .icon.note:before {
   content: "\f0e5";
 }
 
-/* line 1014, ../../../compass/css/lib/_font-awesome.scss */
+/* line 1020, ../../../compass/css/lib/_font-awesome.scss */
 #publisher .icon.overdue .stacked-icon:before,
 .action.list-view .icon.overdue .stacked-icon:before {
   content: "\f12a";
 }
 
-/* line 1086, ../../../compass/css/lib/_font-awesome.scss */
+/* line 1092, ../../../compass/css/lib/_font-awesome.scss */
 #publisher .icon.action:before,
 .action.list-view .icon.action:before, #publisher .icon.attachment:before,
 .action.list-view .icon.attachment:before, #publisher .icon.complete:before,
@@ -376,10 +386,11 @@
   content: "\f104";
 }
 
-/************************************************
-* class to add to a container that has a stacked icon
-***********************************************/
-/* line 38, ../../../compass/css/lib/_icons.scss */
+/**************************************************
+* Class to add to a container that has a stacked icon
+* These are the icons displayed on the activity feed
+**************************************************/
+/* line 45, ../../../compass/css/lib/_icons.scss */
 .stacked-icon {
   display: none;
   position: absolute;
@@ -394,16 +405,16 @@
   /* @theme background content */
   text-align: center;
 }
-/* line 57, ../../../compass/css/lib/_icons.scss */
+/* line 64, ../../../compass/css/lib/_icons.scss */
 .stacked-icon:before {
   width: 100%;
   font-size: 10px;
   position: relative;
 }
 
-/*********************************
+/****************************************
 * Mixin to aid with the stacked icon
-********************************/
+*****************************************/
 /****************************************************
 * Mixin to generate a mapping of classes to icons
 * $list:  A multidimensional array
@@ -412,9 +423,12 @@
 * Example: 
 *   $map: (
 *   	("email" "envelope" "check") 
+*       ("process" "funnel")
 *   );
 * Will create the rule for '.email' to have the icon 
 * 'envelope' with a stacked icon of 'check'
+* and a rule for '.process' to have the icon 'funnel'
+* with no stacked icon. 
 *
 * These icons are currently used in activity feed and publisher 
 *******************************************************/
@@ -532,52 +546,52 @@
 /*********************************
 * Publisher and History Icon mapping
 ********************************/
-/* line 30, ../../../compass/css/lib/_font-awesome.scss */
+/* line 36, ../../../compass/css/lib/_font-awesome.scss */
 #publisher .icon.action:before,
 .action.list-view .icon.action:before {
   text-decoration: none;
 }
-/* line 30, ../../../compass/css/lib/_font-awesome.scss */
+/* line 36, ../../../compass/css/lib/_font-awesome.scss */
 #publisher .icon.attachment:before,
 .action.list-view .icon.attachment:before {
   text-decoration: none;
 }
-/* line 30, ../../../compass/css/lib/_font-awesome.scss */
+/* line 36, ../../../compass/css/lib/_font-awesome.scss */
 #publisher .icon.complete:before,
 .action.list-view .icon.complete:before {
   text-decoration: none;
 }
-/* line 30, ../../../compass/css/lib/_font-awesome.scss */
+/* line 36, ../../../compass/css/lib/_font-awesome.scss */
 #publisher .icon.email:before,
 .action.list-view .icon.email:before {
   text-decoration: none;
 }
-/* line 30, ../../../compass/css/lib/_font-awesome.scss */
+/* line 36, ../../../compass/css/lib/_font-awesome.scss */
 #publisher .icon.email_quote:before,
 .action.list-view .icon.email_quote:before {
   text-decoration: none;
 }
-/* line 30, ../../../compass/css/lib/_font-awesome.scss */
+/* line 36, ../../../compass/css/lib/_font-awesome.scss */
 #publisher .icon.email_invoice:before,
 .action.list-view .icon.email_invoice:before {
   text-decoration: none;
 }
-/* line 30, ../../../compass/css/lib/_font-awesome.scss */
+/* line 36, ../../../compass/css/lib/_font-awesome.scss */
 #publisher .icon.call:before,
 .action.list-view .icon.call:before {
   text-decoration: none;
 }
-/* line 30, ../../../compass/css/lib/_font-awesome.scss */
+/* line 36, ../../../compass/css/lib/_font-awesome.scss */
 #publisher .icon.note:before,
 .action.list-view .icon.note:before {
   text-decoration: none;
 }
-/* line 30, ../../../compass/css/lib/_font-awesome.scss */
+/* line 36, ../../../compass/css/lib/_font-awesome.scss */
 #publisher .icon.overdue:before,
 .action.list-view .icon.overdue:before {
   text-decoration: none;
 }
-/* line 70, ../../../compass/css/lib/_icons.scss */
+/* line 77, ../../../compass/css/lib/_icons.scss */
 #publisher .icon.overdue .stacked-icon:before,
 .action.list-view #publisher .icon.overdue .stacked-icon:before,
 #publisher .action.list-view .icon.overdue .stacked-icon:before,
@@ -585,7 +599,7 @@
   top: 0px;
   left: 0px;
 }
-/* line 73, ../../../compass/css/lib/_icons.scss */
+/* line 80, ../../../compass/css/lib/_icons.scss */
 #publisher .icon.overdue .stacked-icon:before,
 .action.list-view #publisher .icon.overdue .stacked-icon:before,
 #publisher .action.list-view .icon.overdue .stacked-icon:before,
@@ -593,38 +607,38 @@
   top: 1px;
   left: 0px;
 }
-/* line 79, ../../../compass/css/lib/_icons.scss */
+/* line 86, ../../../compass/css/lib/_icons.scss */
 #publisher .icon.overdue .stacked-icon,
 .action.list-view .icon.overdue .stacked-icon {
   display: inline-block;
 }
-/* line 30, ../../../compass/css/lib/_font-awesome.scss */
+/* line 36, ../../../compass/css/lib/_font-awesome.scss */
 #publisher .icon.overdue .stacked-icon:before,
 .action.list-view .icon.overdue .stacked-icon:before {
   text-decoration: none;
 }
-/* line 84, ../../../compass/css/lib/_icons.scss */
+/* line 91, ../../../compass/css/lib/_icons.scss */
 #publisher .icon.overdue .stacked-icon:before,
 .action.list-view .icon.overdue .stacked-icon:before {
   position: absolute;
   font-size: 10px;
 }
-/* line 27, ../../../compass/css/lib/_icons.scss */
+/* line 33, ../../../compass/css/lib/_icons.scss */
 #publisher .icon.workflow:before,
 .action.list-view .icon.workflow:before {
   text-decoration: none;
 }
-/* line 27, ../../../compass/css/lib/_icons.scss */
+/* line 33, ../../../compass/css/lib/_icons.scss */
 #publisher .icon.time:before,
 .action.list-view .icon.time:before {
   text-decoration: none;
 }
-/* line 27, ../../../compass/css/lib/_icons.scss */
+/* line 33, ../../../compass/css/lib/_icons.scss */
 #publisher .icon.campaignEmailOpened:before,
 .action.list-view .icon.campaignEmailOpened:before {
   text-decoration: none;
 }
-/* line 27, ../../../compass/css/lib/_icons.scss */
+/* line 33, ../../../compass/css/lib/_icons.scss */
 #publisher .icon.emailOpened:before,
 .action.list-view .icon.emailOpened:before {
   text-decoration: none;

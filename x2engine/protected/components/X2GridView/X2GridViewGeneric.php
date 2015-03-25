@@ -116,13 +116,19 @@ class X2GridViewGeneric extends X2GridViewBase {
 
 
     public function setSummaryText () {
+        if ($this->asa ('X2GridViewSortableWidgetsBehavior')) {
+            $this->setSummaryTextForSortableWidgets ();
+            return;
+        }
 
         /* add a dropdown to the summary text that let's user set how many rows to show on each 
            page */
         $this->summaryText =  Yii::t('app', '<b>{start}&ndash;{end}</b> of <b>{count}</b>')
         .'<div class="form no-border" style="display:inline;"> '
         .CHtml::dropDownList(
-            'resultsPerPage', Profile::getResultsPerPage(), Profile::getPossibleResultsPerPage(),
+            'resultsPerPage', 
+            $this->getResultsPerPage (), 
+            $this->getPossibleResultsPerPageFormatted(),
             array(
                 'ajax' => array(
                     'url' => Yii::app()->controller->createUrl('/profile/setResultsPerPage'),

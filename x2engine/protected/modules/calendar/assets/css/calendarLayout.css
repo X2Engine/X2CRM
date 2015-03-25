@@ -35,28 +35,29 @@
 /* line 22, ../../../../../compass/protected/modules/calendar/assets/css/calendarLayout.scss */
 table.page-title {
   background: #CECECE !important;
+  /* @theme background: highlight1 */
   border-bottom: none !important;
   display: block;
   height: 19px;
   box-sizing: border-box;
 }
-/* line 28, ../../../../../compass/protected/modules/calendar/assets/css/calendarLayout.scss */
+/* line 31, ../../../../../compass/protected/modules/calendar/assets/css/calendarLayout.scss */
 table.page-title tbody {
   display: block !important;
   width: 100%;
 }
-/* line 32, ../../../../../compass/protected/modules/calendar/assets/css/calendarLayout.scss */
+/* line 35, ../../../../../compass/protected/modules/calendar/assets/css/calendarLayout.scss */
 table.page-title tr {
   display: block !important;
   width: 100%;
 }
-/* line 36, ../../../../../compass/protected/modules/calendar/assets/css/calendarLayout.scss */
+/* line 39, ../../../../../compass/protected/modules/calendar/assets/css/calendarLayout.scss */
 table.page-title .fc-header-left {
   float: left !important;
   display: block !important;
   height: 10px;
 }
-/* line 41, ../../../../../compass/protected/modules/calendar/assets/css/calendarLayout.scss */
+/* line 44, ../../../../../compass/protected/modules/calendar/assets/css/calendarLayout.scss */
 table.page-title .fc-header-right {
   float: right !important;
   display: block !important;

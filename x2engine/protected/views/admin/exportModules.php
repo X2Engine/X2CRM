@@ -51,6 +51,7 @@
 	</select>
 	<br><br>
 	<input type="submit" class="x2-button" value="<?php echo Yii::t('admin','Export');?>" />
+    <?php echo X2Html::csrfToken(); ?>
 </form>
 <?php 
 if($dlFlag){

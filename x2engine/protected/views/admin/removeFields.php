@@ -73,5 +73,6 @@ $("#select-field-remove").change(function(event){
     <div style="display:none;" id="n-records-lost"></div>
 
 	<input class="x2-button" type="submit" value="<?php echo Yii::t('admin','Delete');?>" />
+    <?php echo X2Html::csrfToken(); ?>
 </form>
 </div>

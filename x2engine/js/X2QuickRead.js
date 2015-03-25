@@ -41,7 +41,8 @@ function X2QuickRead (argsDict) {
         DEBUG: x2.DEBUG && false,
         modelName: null,
         modelId: null,
-        mode: 'dialog'
+        mode: 'dialog',
+        afterRequest: function () {}
     };
     auxlib.applyArgs (this, defaultArgs, argsDict);
     x2.QuickCRUD.call (this, argsDict);
@@ -80,10 +81,8 @@ $(function () { X2QuickRead.instantiateQuickReadLinks (); });
 
 X2QuickRead.prototype = auxlib.create (x2.QuickCRUD.prototype);
 
-X2QuickRead.prototype.openQuickCRUDDialog = function () {
-
+X2QuickRead.prototype.requestDetails = function (callback) {
     var that = this;
-    x2.QuickCRUD.prototype.openQuickCRUDDialog.call (this);
 
     var data = $.extend (this.data, {
         x2ajax: true,
@@ -94,17 +93,27 @@ X2QuickRead.prototype.openQuickCRUDDialog = function () {
         url: this.viewRecordUrl + '?id=' + this.modelId, 
         data: data,
         success: function(response) {
-            that._dialog.append(response);
-            that._dialog.dialog('open');
-            
-            auxlib.onClickOutside (
-                '.ui-dialog, .ui-datepicker',
-                function () { 
-                    if ($(that._dialog).closest ('.ui-dialog').length) 
-                        that._dialog.dialog ('close'); 
-                }, true);
-            that._dialog.find('.formSectionHide').remove();
+            callback (response);
         }
+    });
+};
+
+X2QuickRead.prototype.openQuickCRUDDialog = function () {
+
+    var that = this;
+    x2.QuickCRUD.prototype.openQuickCRUDDialog.call (this);
+
+    this.requestDetails (function (response) {
+        that._dialog.append(response);
+        that._dialog.dialog('open');
+        
+        auxlib.onClickOutside (
+            '.ui-dialog, .ui-datepicker',
+            function () { 
+                if ($(that._dialog).closest ('.ui-dialog').length) 
+                    that._dialog.dialog ('close'); 
+            }, true);
+        that._dialog.find('.formSectionHide').remove();
     });
 
 };
@@ -113,6 +122,7 @@ X2QuickRead.prototype._init = function () {
     if (this.mode === 'dialog') {
         this.openQuickCRUDDialog ();
     } else {
+        this.requestDetails (this.afterRequest);
     }
 };
 

@@ -1,4 +1,3 @@
-<?php
 /*****************************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2015 X2Engine Inc.
@@ -34,57 +33,33 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 
-Yii::import('application.components.util.*');
-Yii::import('system.test.CTestCase');
-Yii::import('system.test.CDbTestCase');
-Yii::import('system.test.CWebTestCase');
-Yii::import('application.tests.*');
+/***************************************************
+* This file is where new fonts should be included,
+* with a mixin to include special fonts on a per-font 
+* basis
+****************************************************/
 
-/**
- * Allows you to quickly update database with changes to individual fixture files
- */
-class LoadFixturesCommand extends CConsoleCommand {
+// Root Path of fonts
+$PATH: '/css/lib/fonts';
 
-    /**
-     * Each alias should be of the form <modelClass>[.<fixture suffix>]?
-     * @param array $fixtureAlias 
-     */
-    public function actionLoad (array $fixtureAlias=array (), array $testClassName=array ()) {
-        /**/print ("Loading fixtures\n");
-        
-        if (!YII_UNIT_TESTING) {
-            throw new CException ('YII_UNIT_TESTING must be set to true');
-        }
-        define('LOAD_FIXTURES', false);
-
-        // build a dummy test class with the specified fixtures, then instantiate the class and
-        // load the fixtures into the DB.
-        eval ("class DummyTest extends X2DbTestCase {}");
-        $fixtures = array ();
-        foreach ($fixtureAlias as $alias) {
-            $pieces = explode ('.', $alias);
-            if (count ($pieces) === 2) { 
-                $modelClass = $pieces[0];
-                $alias = $pieces[1];
-                $fixtures[$alias] = array ($modelClass, '.'.$alias);
-            } else {
-                $modelClass = $pieces[0];
-                $fixtures[$alias] = $modelClass;
-            }
-        }
-        foreach ($testClassName as $classPath) {
-            Yii::import ($classPath);
-            $className = preg_replace ('/^.*\./', '', $classPath);
-            $testClass = new $className;
-            $fixtures = array_merge ($fixtures, $testClass->fixtures);
-        }
-        print_r ($fixtures);
-
-        $dummyTest = new DummyTest;
-        $dummyTest->getFixtureManager ()->loadFixtures = true;
-        $dummyTest->getFixtureManager ()->load ($fixtures);
-    }
-
+// Appends the path to the file name, 
+// wraps in a url tag
+@mixin src($file-name) {
+    src: url("#{$PATH}/#{$file-name}");
 }
 
-?>
+
+// Montserrat Font
+@mixin Montserrat() {
+	@font-face {
+	    font-family: Montserrat;
+	    font-weight: bold;
+	    @include src("Montserrat-Bold.ttf");
+	}
+
+	@font-face {
+	    font-family: Montserrat;
+	    font-weight: normal;
+	    @include src("Montserrat-Regular.ttf");
+	}	
+}

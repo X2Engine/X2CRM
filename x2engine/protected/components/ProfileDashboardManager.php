@@ -40,7 +40,7 @@
  * @package application.components
  * @author Alex Rowe <alex@x2engine.com>
  */
-class ProfileDashboard extends CWidget {
+class ProfileDashboardManager extends CWidget {
 
 	/**
 	 * @var model Profile to be rendered

@@ -33,6 +33,12 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 
+/************************************************
+* This file mantains several important mixins for 
+* Font Icons. The two sources of font icons are 
+* font-awesome, and x2-icons (custom icons).
+*************************************************/
+
 @import "colors";
 @import "font-awesome";
 @import "x2-icons";
@@ -46,9 +52,10 @@
   }
 }
 
-/************************************************
-* class to add to a container that has a stacked icon
-***********************************************/
+/**************************************************
+* Class to add to a container that has a stacked icon
+* These are the icons displayed on the activity feed
+**************************************************/
 .stacked-icon {
     display: none;
     position: absolute;
@@ -75,9 +82,9 @@
     }
 }
 
-/*********************************
+/****************************************
 * Mixin to aid with the stacked icon
-********************************/
+*****************************************/
 @mixin stacked-icon($icon) {
 
     // Specific corrections / positioning can go here
@@ -113,9 +120,12 @@
 * Example: 
 *   $map: (
 *   	("email" "envelope" "check") 
+*       ("process" "funnel")
 *   );
 * Will create the rule for '.email' to have the icon 
 * 'envelope' with a stacked icon of 'check'
+* and a rule for '.process' to have the icon 'funnel'
+* with no stacked icon. 
 *
 * These icons are currently used in activity feed and publisher 
 *******************************************************/

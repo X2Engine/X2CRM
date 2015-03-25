@@ -86,8 +86,8 @@ if(!empty($status)) {
 
     <b><span<?php if(in_array('body',$errors)) echo ' class="error"'; ?>><?php echo Yii::t('app','Message Body');?></span></b><br />
     <textarea name="body" id="input" style="height:200px;width:558px;"<?php if(in_array('body',$errors)) echo ' class="error"'; ?>><?php echo $body; ?></textarea><br />
-
-	<input type="submit" class="x2-button" value="<?php echo Yii::t('app','Share');?>" />
+    <input type="submit" class="x2-button" value="<?php echo Yii::t('app','Share');?>" />
+    <?php echo X2Html::csrfToken(); ?>
 </form>
 </div>
 <?php

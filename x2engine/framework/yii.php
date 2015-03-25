@@ -27,8 +27,19 @@ class Yii extends YiiBase
     public static $paths = array();
 	protected static $rootPath;
 
-	public static function getRootPath() {
-        if (YII_DEBUG && YII_UNIT_TESTING) { 
+    /**
+     * Precondition: Request component has already been created. If it hasn't, infinite recursion 
+     * will occur when Yii::app()->getRequest () is called implicitly by self::app()->request.
+     */
+	private static function getRootPath() {
+        // method doesn't exist for console apps
+        if (method_exists (Yii::app(), 'componentCreated') && 
+            !Yii::app()->componentCreated ('request')) {
+
+            throw new CException ('request component has not been created');
+        }
+
+        if (YII_UNIT_TESTING) { 
             // resets root path to the webroot so that custom files can be detected
             $path = array ();
             exec ('pwd', $path);
@@ -63,8 +74,12 @@ class Yii extends YiiBase
 	 * @return String $path The original file path, or the version in /custom if it exists
 	 */
 	public static function getCustomPath($path) {
+        if (method_exists (Yii::app(), 'componentCreated') && 
+            !Yii::app()->componentCreated ('request')) return $path;
+
 		//calculate equivalent path in /custom, ie. from [root]/[path] to [root]/custom/[path]
-		$customPath = str_replace(self::getRootPath(),self::getRootPath().DIRECTORY_SEPARATOR.'custom',$path);
+		$customPath = str_replace(
+            self::getRootPath(),self::getRootPath().DIRECTORY_SEPARATOR.'custom',$path);
 
 		if(file_exists($customPath))
 			$path = $customPath;
@@ -78,7 +93,11 @@ class Yii extends YiiBase
 	 * @return String $path The path to the original file or folder
 	 */
 	public static function resetCustomPath($customPath) {
-		return str_replace(self::getRootPath().DIRECTORY_SEPARATOR.'custom',self::getRootPath(),$customPath);
+        if (method_exists (Yii::app(), 'componentCreated') && 
+            !Yii::app()->componentCreated ('request')) return $customPath;
+
+		return str_replace(
+            self::getRootPath().DIRECTORY_SEPARATOR.'custom',self::getRootPath(),$customPath);
 	}
 
 	/**

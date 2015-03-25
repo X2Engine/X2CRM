@@ -47,6 +47,8 @@
  */
 class Campaign extends X2Model {
 
+    const CAMPAIGN_TYPE_DROPDOWN = 107;
+
     public $supportsWorkflow = false;
 
 	public static function model($className=__CLASS__) {

@@ -49,6 +49,12 @@
         cursor: pointer;
     }
 
+    .x2-button-group {
+        float: right;
+        margin-right: 5px !important;
+    }
+
+
     #minimize-button .fa {
         @extend .opacity-hover;
         color: inherit;

@@ -41,7 +41,7 @@
     
 
 <div class="row">
-    <div class="cell" style="max-width:400px;">
+    <div class="cell" style="width:400px;">
         <div style="margin-bottom: 1em;">
             <h4><?php echo Yii::t('marketing','Saved Forms').':'; ?></h4>
             <div class="row">
@@ -56,46 +56,44 @@
             </div>
             <div class="row">
                 <div class='x2-button-group' id='webform-buttons'>
-                    <span id='new-form' class='x2-button'><i class='fa fa-file-o'></i> New</span
-                    ><span id='save-as' class='x2-button'><i class='fa fa-save'></i> Save As..</span
-                    ><span id='delete-form' class='x2-button'><i class='fa fa-trash'></i> Delete</span>
+                    <span id='new-form' class='x2-button'><i class='fa fa-file-o'></i> <?php echo Yii::t('app','New'); ?></span
+                    ><span id='save-as' class='x2-button'><i class='fa fa-save'></i> <?php echo Yii::t('app','Save As..'); ?></span
+                    ><span id='delete-form' class='x2-button'><i class='fa fa-trash'></i> <?php echo Yii::t('app','Delete'); ?></span>
                </div>
             </div>
-            <div class="cell">
-                <div class="row" id="save-field" style='display:none'>
-                    <?php
-                    echo CHtml::label(Yii::t('marketing','Name'), 'web-form-name');
-                    echo CHtml::textField('name', '', array (
-                        "id" => 'web-form-name',
-                        "class"=>"left")
-                    );
-                    echo CHtml::button (
-                        Yii::t('marketing','Save'), 
-                        array(
-                            'name'=>'save',
-                            'id'=>'web-form-submit-button',
-                            'class'=>'x2-button highlight x2-small-button'
-                        )
-                    );
-                    ?>
-                </div>
-                <div class="row" id="new-field" style='display:none'>
-                    <?php
-                    echo CHtml::label(Yii::t('marketing','Name'), 'web-form-name');
-                    echo CHtml::textField('name', '', array (
-                        "id" => 'web-form-new-name',
-                        "class"=>"left")
-                    );
-                    echo CHtml::button (
-                        Yii::t('marketing','Create'), 
-                        array(
-                            'name'=>'save',
-                            'id'=>'web-form-new-button',
-                            'class'=>'x2-button highlight x2-small-button'
-                        )
-                    );
-                    ?>
-                </div>
+            <div class="row" id="save-field" style='display:none'>
+                <?php
+                echo CHtml::label(Yii::t('marketing','Name'), 'web-form-name');
+                echo CHtml::textField('name', '', array (
+                    "id" => 'web-form-name',
+                    "class"=>"left")
+                );
+                echo CHtml::button (
+                    Yii::t('marketing','Save'), 
+                    array(
+                        'name'=>'save',
+                        'id'=>'web-form-submit-button',
+                        'class'=>'x2-button highlight x2-small-button'
+                    )
+                );
+                ?>
+            </div>
+            <div class="row" id="new-field" style='display:none'>
+                <?php
+                echo CHtml::label(Yii::t('marketing','Name'), 'web-form-name');
+                echo CHtml::textField('name', '', array (
+                    "id" => 'web-form-new-name',
+                    "class"=>"left")
+                );
+                echo CHtml::button (
+                    Yii::t('marketing','Create'), 
+                    array(
+                        'name'=>'save',
+                        'id'=>'web-form-new-button',
+                        'class'=>'x2-button highlight x2-small-button'
+                    )
+                );
+                ?>
             </div>
 
         </div>
@@ -138,11 +136,12 @@
             echo Yii::t('marketing','Generate HTML & Save') ?></span>
             <i class='fa fa-long-arrow-right'></i>
             <input readonly type='text' id="embedcode" 
-            /><span class='x2-button' id='clipboard' title='Copy to Clipboard'><i class='fa fa-clipboard'></i></span><span style='display:none'id='copy-help'><p class='fieldhelp'>Ctrl-c to copy</p></span>
+            /><span class='x2-button' id='clipboard' title='Select Text'><i class='fa fa-clipboard'></i></span><span style='display:none'id='copy-help'><p class='fieldhelp'>
+            <?php $help = Auxlib::isMac() ? "⌘-c to copy" : "ctrl-c to copy"; ?>
+            <?php echo Yii::t('app', $help) ?></p></span>
         </div>
     </div>
 </div>
-
 
 <?php echo X2Html::divider('650px', '5px'); ?>
 
@@ -153,7 +152,7 @@
     <ul>
     </ul>
 
-    <div class="webform-tab" id='style-tab' data-title='Style'>
+    <div class="webform-tab" id='style-tab' data-title='<?php echo Yii::t('marketing','Style'); ?>'>
         <div class='tab-content'>
             <div id="settings" class="cell">
                 <h4><?php echo Yii::t('marketing','Style') .':'; ?></h4>

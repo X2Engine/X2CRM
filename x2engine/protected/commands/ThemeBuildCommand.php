@@ -229,6 +229,12 @@ class ThemeBuildCommand extends CConsoleCommand {
         $rule = $params[0];
         $value = $params[1];
 
+        // Throw exception if it is not a valid key
+        if (!in_array($value, ThemeGenerator::getProfileKeys())) {
+            $comment = preg_replace('/\/\*(.*)\*\//', '\1', $comment);
+            throw new Exception("\nTheme Key '$value' is not a valid key.\nFound at$comment");
+        }
+
         return array ( 
                 $selector, 
                 $comment, 

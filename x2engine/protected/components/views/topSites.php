@@ -219,7 +219,7 @@ foreach($data as $entry){
         );?>
         </div><!-- .top-sites-input -->
     </div>
-
+    <!-- Submitted via ajax, no CSRF Token Required -->
 </form>
 </div>
 </div>

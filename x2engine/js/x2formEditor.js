@@ -234,7 +234,8 @@ function addFormSection(type,columns,title) {
 	html += '<a href="javascript:void(0)" class="formSectionDelCol">&ndash;Col</a>';
 	html += '<a href="javascript:void(0)" class="formSectionAddCol">+Col</a>';
 	html += '<a href="javascript:void(0)" class="formSectionSetName">Rename</a>';
-	html += '<a href="javascript:void(0)" class="formSectionDelete">[ x ]</a>';
+	html += '<a href="javascript:void(0)" class="formSectionDelete">' + 
+		'<i class="fa fa-times"></i></a>';
 	// add toggle link if this is collapsible
 	if(type == 'collapsible')
 		html += '<a href="javascript:void(0)" class="formSectionShow">[+]</a><a href="javascript:void(0)" class="formSectionHide">[&ndash;]</a>';

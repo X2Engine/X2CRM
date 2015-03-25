@@ -33,6 +33,9 @@
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2Engine".
  *****************************************************************************************/
+
+Yii::import ('application.components.sortableWidget.components.InlineRelationshipsGridView');
+
 Yii::app()->clientScript->registerCssFile(
     Yii::app()->theme->baseUrl.'/css/components/sortableWidget/views/inlineRelationshipsWidget.css'
 );
@@ -119,6 +122,20 @@ $relationshipsDataProvider = $this->getDataProvider ();
 
 $columns = array(
     array(
+        'name' => 'expandButton.',
+        'header' => '',
+        'value' => "
+            '<span class=\'detail-view-toggle\' title=\'".
+                CHtml::encode (Yii::t('app', 'View inline record details'))."\'
+                data-id=\''.\$data->relatedModel->id.'\'
+                data-class=\''.get_class (\$data->relatedModel).'\'
+                data-name=\''.CHtml::encode (\$data->relatedModel->name).'\'>
+                <span class=\'fa fa-caret-right\'></span>
+                <span class=\'fa fa-caret-down\' style=\'display: none;\'></span>
+            </span>'",
+        'type' => 'raw',
+    ),
+    array(
         'name' => 'name',
         'header' => Yii::t("contacts", 'Name'),
         'value' => '$data->renderAttribute ("name")',
@@ -161,7 +178,8 @@ $columns[] = array(
         'class' =>'delete-button-cell'
     ),
     'value' => 
-        "CHtml::ajaxLink(
+        "
+        CHtml::ajaxLink(
             '<span class=\'fa fa-times x2-delete-icon\'></span>',
             '".Yii::app()->controller->createUrl('/site/deleteRelationship').
                 "?firstId='.\$data->relatedModel->id.
@@ -181,12 +199,15 @@ $columns[] = array(
 );
 
 
-$this->widget('X2GridViewGeneric', array(
+$this->widget('InlineRelationshipsGridView', array(
     'id' => "relationships-grid",
+    'possibleResultsPerPage' => array(5, 10, 20, 30, 40, 50, 75, 100),
     'enableGridResizing' => false,
-    'showHeader' => CPropertyValue::ensureBoolean (
-        $this->getWidgetProperty('showHeader')),
+    'showHeader' => CPropertyValue::ensureBoolean ($this->getWidgetProperty('showHeader')),
+    'resultsPerPage' => $this->getWidgetProperty ('resultsPerPage'),
+    'sortableWidget' => $this,
     'defaultGvSettings' => array (
+        'expandButton.' => '12',
         'name' => '22%',
         'relatedModelName' => '18%',
         'assignedTo' => '18%',
@@ -208,6 +229,8 @@ $this->widget('X2GridViewGeneric', array(
     'afterAjaxUpdate' => 'js: function(id, data) { refreshQtip(); }',
     'dataProvider' => $relationshipsDataProvider,
     'columns' => $columns,
+    'enableColDragging' => false,
+    'rememberColumnSort' => false,
 ));
 ?>
 </div>
@@ -278,11 +301,12 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->getBaseUrl().'/js/Relat
     </div>
     
     <?php 
+        echo X2Html::csrfToken();
         echo CHtml::button (
             Yii::t('app', 'Create Relationship'), 
             array('id' => 'add-relationship-button', 'class'=>'x2-button'));
     ?>
-
+    
 </form>
 
 <?php 

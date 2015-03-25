@@ -948,9 +948,20 @@ class SiteController extends x2base {
                         $model->createDate = time();
                         $model->lastUpdated = time();
                         $model->fileName = $name;
-                        if ($model->save()) {
-                            
-                        }
+
+                        if (!$model->save()) {
+                            $errors = $model->getErrors ();
+                            $error = ArrayUtil::pop (ArrayUtil::pop ($errors));
+                            Yii::app()->user->setFlash(
+                                'top-error', Yii::t('app', 'Attachment failed. '.$error));
+                            $this->redirect(
+                                array(
+                                    $model->associationType . '/' . $model->associationType . 
+                                        '/view', 
+                                    'id' => $model->associationId
+                                ));  
+                            Yii::app()->end ();
+                        }    
 
                         // handle different upload types
                         switch ($model->associationType) {

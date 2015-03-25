@@ -130,7 +130,7 @@ class DuplicateBehaviorTest extends X2DbTestCase {
         $contact->markAsDuplicate();
         $this->assertEquals(1, $contact->dupeCheck);
         $this->assertEquals(0, $contact->visibility);
-        $this->assertEquals('admin', $contact->assignedTo);
+        $this->assertEquals('Anyone', $contact->assignedTo);
 
         $contact->markAsDuplicate('delete');
         $contact = Contacts::model()->findByPk(1);
@@ -142,7 +142,7 @@ class DuplicateBehaviorTest extends X2DbTestCase {
         $this->assertEquals('Anyone', $account->assignedTo);
         $account->markAsDuplicate();
         $this->assertEquals(1, $account->dupeCheck);
-        $this->assertEquals('admin', $account->assignedTo);
+        $this->assertEquals('Anyone', $account->assignedTo);
 
         $account->markAsDuplicate('delete');
         $account = Accounts::model()->findByPk(1);
@@ -154,17 +154,21 @@ class DuplicateBehaviorTest extends X2DbTestCase {
         Yii::app()->params->adminProf = Profile::model()->findByPk(1);
         $contact = $this->contacts('contact1');
         $this->assertEquals(8, $contact->countDuplicates());
+
         $duplicates = $contact->getDuplicates(true);
         $this->assertEquals(8, count($duplicates));
-        $contact->hideDuplicates();
-        $this->assertEquals(8, $contact->countDuplicates());
+
         $newDuplicates = $contact->getDuplicates(true);
+        $contact->hideDuplicates();
+        $this->assertEquals(0, $contact->countDuplicates());
+
         $this->assertEquals(8, count($newDuplicates));
+
         // Spot check the fields of one of the duplicates
         $dupeContact = $this->contacts('contact2');
         $this->assertEquals(1, $dupeContact->dupeCheck);
         $this->assertEquals(0, $dupeContact->visibility);
-        $this->assertEquals('admin', $dupeContact->assignedTo);
+        $this->assertEquals('Anyone', $dupeContact->assignedTo);
     }
 
     public function testDeleteDuplicates() {

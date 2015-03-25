@@ -209,18 +209,23 @@ class Docs extends X2Model {
                 );
                 $attributes = array();
                 foreach($models as $name => $modelObj) {
-                    $moduleTitle = Modules::displayName(false, $name."s");
+                    $moduleRef = Modules::displayName(false, $name."s");
                     if(empty($modelObj)) {
                         // Model will be blank
                         foreach ($staticModels[$name]->fields as $field) {
-                            $attributes['{' . $moduleTitle . '.' . $field->fieldName . '}'] = '';
+                            $attributes['{' . $moduleRef . '.' . $field->fieldName . '}'] = '';
                         }
                     } else {
                         // Insert attributes
                         foreach($modelObj->attributes as $fieldName => $value) {
-                            $attributes['{' . $moduleTitle. '.' . $fieldName . '}'] = $encode ? 
-                                CHtml::encode($value) : 
-                                $modelObj->renderAttribute($fieldName, false);
+                            if ($renderFlag) {
+                                $attributes['{' . $moduleRef. '.' . $fieldName . '}'] =
+                                    $modelObj->renderAttribute(
+                                        $fieldName, false, true, $encode);
+                            } else {
+                                $attributes['{' . $moduleRef. '.' . $fieldName . '}'] =
+                                    $modelObj->getAttribute ($fieldName);
+                            }
                         }
                     }
                 }

@@ -591,6 +591,16 @@ abstract class X2Model extends CActiveRecord {
     }
 
     /**
+     * Hides record from all but admin users who have "Show Hidden" turned on
+     */
+    public function hide () {
+        $visibilityAttr = $this->getVisibilityAttr ();
+        $assignmentAttr = $this->getAssignmentATtr ();
+        $this->$visibilityAttr = X2PermissionsBehavior::VISIBILITY_PRIVATE;
+        $this->$assignmentAttr = 'Anyone';
+    }
+
+    /**
      * Use all email addresses of the model for finding a record
      * @param type $email
      */

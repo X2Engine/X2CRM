@@ -52,7 +52,12 @@ class X2FlowCreateEvent extends X2FlowAction {
             'title' => Yii::t('studio', $this->title),
             'info' => Yii::t('studio', $this->info),
             'options' => array(
-                array('name' => 'type', 'label' => Yii::t('studio', 'Post Type'), 'type' => 'dropdown', 'options' => $eventTypes),
+                array(
+                    'name' => 'type', 
+                    'label' => Yii::t('studio', 'Post Type'), 
+                    'type' => 'dropdown', 
+                    'options' => $eventTypes
+                ),
                 array('name' => 'text', 'label' => Yii::t('studio', 'Text'), 'type' => 'text'),
                 array('name' => 'user', 'optional' => 1, 'label' => 'User (optional)', 'type' => 'dropdown', 'options' => array('' => '----------', 'auto' => 'Auto') + X2Model::getAssignmentOptions(false, false)),
                 array(
@@ -76,7 +81,7 @@ class X2FlowCreateEvent extends X2FlowAction {
 
         if($type === 'auto'){
             if(!isset($params['model']))
-                return false;
+                return array (false, '');
             $notif->modelType = get_class($params['model']);
             $notif->modelId = $params['model']->id;
             $notif->type = $this->getNotifType();
@@ -96,7 +101,10 @@ class X2FlowCreateEvent extends X2FlowAction {
             $event->type = 'feed';
             $event->subtype = $type;
             $event->text = $text;
-            if($user == 'auto' && isset($params['model']) && $params['model']->hasAttribute('assignedTo') && !empty($params['model']->assignedTo)){
+            if($user == 'auto' && isset($params['model']) && 
+                $params['model']->hasAttribute('assignedTo') && 
+                !empty($params['model']->assignedTo)){
+
                 $event->user = $params['model']->assignedTo;
             }elseif(!empty($user)){
                 $event->user = $user;

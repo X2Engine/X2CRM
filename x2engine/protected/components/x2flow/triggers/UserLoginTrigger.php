@@ -39,31 +39,7 @@
  *
  * @package application.components.x2flow.actions
  */
-class UserLoginTrigger extends X2FlowTrigger {
+class UserLoginTrigger extends BaseUserTrigger {
 	public $title = 'User Signed In';
 	public $info = 'Triggered when a user signs in to X2Engine.';
-
-	public function paramRules() {
-		return array(
-			'title' => Yii::t('studio',$this->title),
-			'info' => Yii::t('studio',$this->info),
-			'options' => array(
-				array(
-                    'name'=>'user',
-                    'label'=>Yii::t('studio','User'),
-                    'type'=>'dropdown',
-                    'multiple'=>1,
-                    'options'=>array ('' => Yii::t('x2flow', 'Anyone')) + 
-                        X2Model::getAssignmentOptions(false,false),
-                    'operators'=>array(
-                        '=',
-                        '<>',
-                        'list',
-                        'notList'
-                    ),
-                    'optional'=>1
-                ),
-            )
-        );
-	}
 }

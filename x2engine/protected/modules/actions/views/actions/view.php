@@ -87,7 +87,7 @@ $completeUrl = $this->createUrl ('complete', array (
 ?>
 
 <div class="form" id="action-form">
-	<form id="complete-action" name="complete-action" action="<?php echo $completeUrl ?>">
+	<form id="complete-action" name="complete-action" method='POST' action="<?php echo $completeUrl ?>">
 		<b><?php echo Yii::t('actions','Completion Notes'); ?></b>
 		<textarea name="note" rows="4" ></textarea>
 	<div class="row buttons">
@@ -95,7 +95,7 @@ $completeUrl = $this->createUrl ('complete', array (
 		<button type="submit" name="submit" class="x2-button" value="completeNew"><?php echo Yii::t('actions','Complete + New Action'); ?></button>
 
 	</div>
-
+    <?php echo X2Html::csrfToken (); ?>   
 	</form>
 </div>
 <?php

@@ -241,7 +241,7 @@ $feedcontainerFixHeight = $feedcontainerHeight + 10;
 		</div>
 	</div>
 </div>
-<form id='feed-post-publisher'>
+<form id='feed-post-publisher'><!-- submitted via ajax, doesn't need csrf token -->
     <textarea class='x2-textarea' type='text' name='name' id='feed-post-editor' 
      placeholder='<?php echo Yii::t('app', 'Enter text here...'); ?>'></textarea>
     <div id='feed-post-controls' style='display:none;'>

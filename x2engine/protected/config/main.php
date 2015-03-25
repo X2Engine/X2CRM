@@ -234,6 +234,10 @@ $config = array(
         'session' => array(
             'timeout' => 3600,
         ),
+        'request' => array(
+            'class' => 'application.components.X2HttpRequest',
+            'enableCsrfValidation' => true,
+        ),
         // 'db'=>array(
         // 'connectionString' => 'sqlite:'.dirname(__FILE__).'/../data/testdrive.db',
         // ),
@@ -248,18 +252,15 @@ $config = array(
             'schemaCachingDuration' => 84600
         ),
         'authManager' => array(
-            'class' => 'X2AuthManager',
+            'class' => 'application.components.X2AuthManager',
             'connectionID' => 'db',
             'defaultRoles' => array('guest', 'authenticated', 'admin'),
             'itemTable' => 'x2_auth_item',
             'itemChildTable' => 'x2_auth_item_child',
             'assignmentTable' => 'x2_auth_assignment',
         ),
-        // 'clientScript'=>array(
-        // 'class' => 'X2ClientScript',
-        // ),
         'clientScript'=>array(
-            'class' => 'X2ClientScript',
+            'class' => 'application.components.X2ClientScript',
             'mergeJs' => false,
             'mergeCss' => false,
         ),
@@ -274,7 +275,7 @@ $config = array(
                 : (YII_LOGGING ? $defaultLogRoutes : array()))
         ),
         'messages' => array(
-            'class' => 'X2MessageSource',
+            'class' => 'application.components.X2MessageSource',
 //			 'forceTranslation'=>true,
 //             'logBlankMessages'=>false,
 //			 'onMissingTranslation'=>create_function('$event', 'Yii::log("[".$event->category."] ".$event->message,"missing","translations");'),

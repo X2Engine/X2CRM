@@ -45,6 +45,17 @@
 class X2WebApplication extends CWebApplication {
 
 	/**
+	 * Checks whether the named component has been created.
+	 * @param string $id application component ID
+	 * @return boolean whether the named application component has been created
+	 */
+	public function componentCreated($id)
+	{
+        $components = $this->getComponents (true);
+		return isset($components[$id]);
+	}
+
+	/**
 	 * Creates a controller instance based on a route.
 	 * Modified to check in /custom for controller files.
 	 * See {@link CWebApplication::createController()} for details.

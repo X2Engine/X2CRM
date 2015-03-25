@@ -129,7 +129,9 @@ div.web-form-fields {
         transition: border 0.1s;
         &:hover {
             transition: border 0s;
+
             border: 1px solid $lightBlue;
+            /* @theme border-color highlight2 */
         }
     }
 
@@ -268,7 +270,10 @@ div.web-form-fields {
         border-radius: 2px;
         background: #eee;
 
-        /* @theme background: light_content */
+        border: 1px solid rgba(white,0);
+        /* @theme background: content */
+        /* @theme border-color: border */
+
 
         h4 {
             margin-top: 0px;

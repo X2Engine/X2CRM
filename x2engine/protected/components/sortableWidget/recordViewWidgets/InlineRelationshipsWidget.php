@@ -251,6 +251,16 @@ class InlineRelationshipsWidget extends GridViewWidget {
         return $this->_viewFileParams;
     } 
 
+    protected function getSettingsMenuContentEntries () {
+        return 
+            '<li class="expand-detail-views">'.
+                X2Html::fa('fa-toggle-down').
+                Yii::t('profile', 'Toggle Detail Views').
+            '</li>'.
+            parent::getSettingsMenuContentEntries ();
+    }
+
+
     private function checkModuleUpdatePermissions () {
         $moduleName = '';
         if (is_object (Yii::app()->controller->module)) {

@@ -625,6 +625,10 @@ class X2Html extends CHtml {
         ));
     }
 
+    public static function csrfToken(){
+        return self::hiddenField('YII_CSRF_TOKEN', Yii::app()->request->csrfToken);
+    }
+
 }
 
 

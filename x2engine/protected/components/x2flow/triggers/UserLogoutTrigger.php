@@ -39,30 +39,7 @@
  *
  * @package application.components.x2flow.actions
  */
-class UserLogoutTrigger extends X2FlowTrigger {
+class UserLogoutTrigger extends BaseUserTrigger {
 	public $title = 'User Signed Out';
 	public $info = 'Triggered when a user signs out of X2Engine.';
-
-	public function paramRules() {
-		return array(
-			'title' => Yii::t('studio',$this->title),
-			'info' => Yii::t('studio',$this->info),
-			'options' => array(
-				array(
-                    'name'=>'user',
-                    'label'=>Yii::t('studio','User'),
-                    'type'=>'dropdown',
-                    'multiple'=>1,
-                    'options'=>array ('' => Yii::t('x2flow', 'Anyone')) + 
-                        X2Model::getAssignmentOptions(false,false),
-                    'operators'=>array(
-                        '=',
-                        '<>',
-                        'list',
-                        'notList'
-                    ),
-                    'optional'=>1
-                ),
-			));
-	}
 }

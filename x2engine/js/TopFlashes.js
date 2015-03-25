@@ -73,6 +73,12 @@ TopFlashes.prototype.displayFlash = function (message, type, closeMethod, encode
 
     this.clearFlash ();
     this.container$.append (flashContainer$);
+    this._setUpCloseMethod (flashContainer$, closeMethod);
+
+};
+
+TopFlashes.prototype._setUpCloseMethod = function (flashContainer$, closeMethod) {
+    var that = this;
 
     switch (closeMethod) {
         case 'fade':
@@ -91,6 +97,12 @@ TopFlashes.prototype.displayFlash = function (message, type, closeMethod, encode
     }
 };
 
+TopFlashes.initializeContainer = function () {
+    if ($('#top-flashes-container').length) {
+        x2.topFlashes._setUpCloseMethod ($('#top-flashes-container'), 'clickOutside');
+    }
+};
+
 TopFlashes.prototype.clearFlash = function () {
     this.container$.children ().remove ();
 };
@@ -101,6 +113,10 @@ TopFlashes.prototype._init = function () {
     });
     $('#page-container').append (this.container$);
 };
+
+$(function () {
+    TopFlashes.initializeContainer (); 
+});
 
 return new TopFlashes;
 

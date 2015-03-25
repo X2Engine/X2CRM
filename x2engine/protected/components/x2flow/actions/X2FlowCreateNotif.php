@@ -49,7 +49,8 @@ class X2FlowCreateNotif extends X2FlowAction {
     public function paramRules(){
         $notifTypes = array('auto' => 'Auto', 'custom' => 'Custom');
         $assignmentOptions = array(
-            '{assignedTo}' => '{'.Yii::t('studio', 'Owner of Record').'}'
+            '{assignedTo}' => '{'.Yii::t('studio', 'Owner of Record').'}',
+            //'{user.username}' => '{'.Yii::t('studio', 'Current User').'}'
         ) + X2Model::getAssignmentOptions (false, false); // '{assignedTo}', no groups, no 'anyone'
 
         return array(

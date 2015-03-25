@@ -51,7 +51,6 @@ Yii::import('application.components.util.*');
  */
 class RepairUserDataCommandTest extends CDbTestCase {
 
-
     public $fixtures = array (
         'users' => 'User',
         'groups' => array ('Groups', '_1'),
@@ -87,6 +86,7 @@ class RepairUserDataCommandTest extends CDbTestCase {
         // reassigned but left valid complete/updatedBy fields
         $action1 = $this->actions ('action1');
         $this->assertTrue ($action1->assignedTo === 'testUser');
+        $this->assertTrue ($action1->completedBy === 'testUser2');
 
         // reassigned and updated completedBy field
         $action2 = $this->actions ('action2');

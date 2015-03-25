@@ -126,7 +126,7 @@ class X2PermissionsBehavior extends ModelPermissionsBehavior {
      * @return CDbCriteria
      */
     public function getAccessCriteria(
-    $tableAlias = 't', $paramsNamespace = 'X2PermissionsBehavior', $showHidden = false) {
+        $tableAlias = 't', $paramsNamespace = 'X2PermissionsBehavior', $showHidden = false) {
 
         $criteria = new CDbCriteria;
         $criteria->alias = $tableAlias;

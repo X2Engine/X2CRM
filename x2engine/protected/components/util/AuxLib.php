@@ -321,4 +321,10 @@ class AuxLib {
         return ob_get_clean();
     }
 
+    // Determines if the user is using a Mac
+    public static function isMac () {
+        $user_agent = getenv ("HTTP_USER_AGENT");
+        return (strpos ($user_agent, "Mac") !== false);
+    }
+
 }

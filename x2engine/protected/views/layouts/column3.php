@@ -41,6 +41,8 @@ Yii::import('application.components.leftWidget.*');
 LeftWidget::registerScript ();
 $noBackdrop = isset($this->noBackdrop) && $this->noBackdrop ? 'no-backdrop' : '';
 
+X2Flashes::renderTopFlashes ('top-error');
+
 ?>
 
     <div id='sidebar-left-widget-box'>

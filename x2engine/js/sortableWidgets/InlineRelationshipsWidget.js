@@ -166,7 +166,7 @@ InlineRelationshipsWidget.prototype._submitCreateRelationshipForm = function () 
     $.ajax ({
         url: this.createRelationshipUrl,
         type: 'POST', 
-        data: $('#new-relationship-form').serializeArray (),
+        data: $('#new-relationship-form').serialize (),
         success: function (data) {
             if(data === 'duplicate') {
                 alert('Relationship already exists.');
@@ -174,7 +174,7 @@ InlineRelationshipsWidget.prototype._submitCreateRelationshipForm = function () 
                 $.fn.yiiGridView.update('relationships-grid');
                 var count = parseInt ($('#relationship-count').html (), 10);
                 $('#relationship-count').html (count + 1);
-                that._form$.find ('.record-name-autocomplete').val ();
+                that._form$.find ('.record-name-autocomplete').val ('');
                 $('#RelationshipModelId').val('');
                 $('#firstLabel').val('');
                 $('#secondLabel').val('');
@@ -287,7 +287,6 @@ InlineRelationshipsWidget.prototype._setUpNewRelationshipsForm = function () {
 InlineRelationshipsWidget.prototype._setUpInlineViewButtons = function () {
     var that = this;
     this.element.find ('tr').mouseover (function () {
-        console.log ('mouseover'); 
         $(this).find ('.fa-eye').show (); 
     });
     this.element.find ('tr').mouseout (function () {
@@ -295,8 +294,17 @@ InlineRelationshipsWidget.prototype._setUpInlineViewButtons = function () {
     });
 };
 
-SortableWidget.prototype.afterRefresh = function () {
+InlineRelationshipsWidget.prototype.afterRefresh = function () {
     x2.QuickRead.instantiateQuickReadLinks (this.element);
+};
+
+InlineRelationshipsWidget.prototype._setUpDetailViewToggle = function () {
+    var that = this;
+    var toggle$ = this.element.find ('.expand-detail-views');
+    toggle$.unbind ('click._setUpDetailViewToggle').
+        bind ('click._setUpDetailViewToggle', function () {
+            that.element.find ('.detail-view-toggle .fa:visible').click ();  
+        });
 };
 
 
@@ -305,7 +313,9 @@ InlineRelationshipsWidget.prototype._init = function () {
     if (this.displayMode === 'grid') this.element.find ('.ui-resizable-handle').hide ();
     this._setUpPageSizeSelection ();
     this._setUpModeSelection ();
-    this._setUpInlineViewButtons ();
+    //this._setUpInlineViewButtons ();
+    this._setUpDetailViewToggle ();
+
      
 
     if (this.hasUpdatePermissions) this._setUpNewRelationshipsForm ();

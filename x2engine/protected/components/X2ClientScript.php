@@ -736,6 +736,10 @@ class X2ClientScript extends NLSClientScript {
         $this->registerX2QuickCRUD ();
         $this->registerX2Flashes ();
 
+        Yii::app()->clientScript->registerScript('csrfTokenScript', "
+            x2.csrfToken = '".Yii::app()->request->getCsrfToken ()."';
+        ", CClientScript::POS_HEAD);
+
         $this->registerAttachments ();
         $this->registerDateFormats ();
         if (YII_DEBUG) $this->registerScriptFile($baseUrl.'/js/Timer.js');
@@ -757,6 +761,7 @@ class X2ClientScript extends NLSClientScript {
             ->registerScriptFile($baseUrl.'/js/bgrins-spectrum-2c2010c/spectrum.js')
             ->registerScriptFile($baseUrl.'/js/ColorPicker.js', CCLientScript::POS_END)
             ->registerScriptFile($baseUrl.'/js/PopupDropdownMenu.js', CCLientScript::POS_END)
+            ->registerScriptFile($baseUrl.'/js/jQueryOverrides.js', CCLientScript::POS_END)
             ->registerScriptFile($baseUrl.'/js/checklistDropdown/jquery.multiselect.js');
 
 //        if (YII_UNIT_TESTING) {

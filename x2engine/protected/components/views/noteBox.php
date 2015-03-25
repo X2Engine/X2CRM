@@ -62,13 +62,13 @@ $noteContainerFixHeight = $noteContainerHeight + 5;
 <?php
 $saveWidgetHeight = $this->controller->createUrl('/site/saveWidgetHeight');
 Yii::app()->clientScript->registerScript('updateNote', "
-	$(document).ready(updateNotes());	//update on page load
+    $(function () { updateNotes (); });	//update on page load
 	function updateNotes(){
+
 		$.ajax({
 			type: 'POST',
 			url: '".$this->controller->createUrl('/site/getNotes',array('url'=>Yii::app()->request->requestUri))."',
-			success:
-			function (data){
+			success: function (data){
 				//alert('old: '+$('#note-box').html()+'<br><br>new: '+data);
 				//if ($('#note-box').html().length < data.length) {	//only update if theres new data
 				//alert('old: '+$('#note-box').html());

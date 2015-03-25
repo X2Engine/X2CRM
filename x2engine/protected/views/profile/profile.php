@@ -67,7 +67,7 @@ if ($isMyProfile) {
         )
     );
 
-    $dashboard = $this->widget('ProfileDashboard', array(
+    $dashboard = $this->widget('ProfileDashboardManager', array(
         'model' => $model
         ));
 

@@ -568,7 +568,7 @@ Yii::app()->clientScript->registerScript(sprintf('%x', crc32(Yii::app()->name)),
             return $this->externalWebRoot.$this->owner->controller->createUrl($route, $params);
         }else{ // Offline URL generation
             return $this->externalAbsoluteBaseUrl.
-                (YII_DEBUG && YII_UNIT_TESTING ? '/index-test.php/' : '/index.php/').
+                (YII_UNIT_TESTING ? '/index-test.php/' : '/index.php/').
                 trim($route, '/').'?'.http_build_query($params, '', '&');
         }
     }
@@ -753,7 +753,7 @@ Yii::app()->clientScript->registerScript(sprintf('%x', crc32(Yii::app()->name)),
     public function getExternalAbsoluteBaseUrl(){
         if(!isset($this->_externalAbsoluteBaseUrl)){
             $eabu = $this->settings->externalBaseUri;
-            if (!YII_DEBUG || !YII_UNIT_TESTING) {
+            if (!YII_UNIT_TESTING) {
                 $this->_externalAbsoluteBaseUrl = $this->externalWebRoot.(empty($eabu) ? $this->owner->baseUrl : $eabu);
             } else { // during a unit test, owner->baseUrl is not the web root
                 $this->_externalAbsoluteBaseUrl = $this->externalWebRoot.$eabu;

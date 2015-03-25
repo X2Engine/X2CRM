@@ -272,7 +272,10 @@ class QuotesController extends x2base {
 	 */
 	public function actionPrint($id) {
         header('Content-type: text/html; charset=utf-8');
-		echo $this->getPrintQuote($id);
+        $this->layout = '//layouts/print';
+		$this->render('printQuote', array(
+			'id' => $id
+		));
 		return;
 	}
 

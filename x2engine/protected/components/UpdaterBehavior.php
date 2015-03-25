@@ -1040,7 +1040,7 @@ class UpdaterBehavior extends ResponseBehavior {
             }
             if(count($part['migrationScripts'])){
                 $this->output(Yii::t('admin', 'Running migration scripts for version {ver}...', array('{ver}' => $part['version'])));
-                $this->runMigrationScripts($part['migrationScripts'], $sqlRun, $backup);
+                $sqlRun = $this->runMigrationScripts($part['migrationScripts'], $sqlRun, $backup);
             }
         }
         return true;
@@ -2044,7 +2044,7 @@ class UpdaterBehavior extends ResponseBehavior {
      * @param type $ran List of database changes and other scripts that have
      *  already been run
      */
-    public function runMigrationScripts($scripts, &$ran, $backup){
+    public function runMigrationScripts($scripts, $ran, $backup){
         $that = $this;
         $script = '';
         $scriptExc = function($e) use(&$ran, &$script, $that, $backup){
@@ -2059,7 +2059,7 @@ class UpdaterBehavior extends ResponseBehavior {
                     );
                     if (!in_array($errno, $unrecoverable)) {
                         $that->handleSqlFailure ($script, $ran,
-                            "$errstr [$errno] : $errfile L$errline; $errcontext ", $backup, false);
+                            "$errstr [$errno] : $errfile L$errline;", $backup, false);
                     }
                 };
         set_error_handler($scriptErr);
@@ -2069,7 +2069,7 @@ class UpdaterBehavior extends ResponseBehavior {
         defined('YII_UNIT_TESTING') or define('YII_UNIT_TESTING',false);
         foreach($scripts as $script){
             $this->output(Yii::t('admin', 'Running migration script: {script}', array('{script}' => $script)));
-            if (YII_DEBUG && YII_UNIT_TESTING) {
+            if (YII_UNIT_TESTING) {
                 // To allow the same migration script to be executed twice in testing
                 require($this->sourceDir.DIRECTORY_SEPARATOR.FileUtil::rpath($script));
             } else {
@@ -2079,6 +2079,7 @@ class UpdaterBehavior extends ResponseBehavior {
         }
         restore_exception_handler();
         restore_error_handler();
+        return $ran;
     }
 
     /**

@@ -127,13 +127,11 @@ abstract class X2FlowItem extends CComponent {
             
             // value must not be empty, unless it's an optional setting
             if(!isset($option['value']) || $option['value'] === null || $option['value'] === '') {
-                if($option['value'] !== null && $option['value'] !== '' && 
-                    isset($optRule['defaultVal'])) { // use the default value 
+                if(isset($optRule['defaultVal'])) { 
+
+                    // use the default value 
                     $option['value'] = $optRule['defaultVal'];
-                } elseif(!$option['optional'] &&
-                    // non-optional option can be allowed to be '' if defaultVal is set to ''
-                    (!isset ($optRule['defaultVal']) || !isset ($option['value']) ||
-                     $optRule['defaultVal'] !== $option['value'])) {
+                } elseif(!$option['optional']) {
 
                     // if not, fail if it was required
                     if (YII_DEBUG) {

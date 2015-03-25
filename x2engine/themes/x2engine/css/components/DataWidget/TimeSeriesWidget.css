@@ -33,7 +33,7 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 /*********************************************************************************
- * Copyright (C) 2011-2014 X2Engine Inc. All Rights Reserved.
+ * Copyright (C) 2011-2015 X2Engine Inc. All Rights Reserved.
  *
  * X2Engine Inc.
  * P.O. Box 66752
@@ -52,8 +52,12 @@
  * EXPRESS OR IMPLIED, INCLUDING WITHOUT LIMITATION THE IMPLIED WARRANTIES OF
  * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, TITLE, AND NON-INFRINGEMENT.
  ********************************************************************************/
+/***************************************
+* This file is responsible for mantaining
+* general purpose mixins and classes. 
+***************************************/
 /*********************************************************************************
- * Copyright (C) 2011-2014 X2Engine Inc. All Rights Reserved.
+ * Copyright (C) 2011-2015 X2Engine Inc. All Rights Reserved.
  *
  * X2Engine Inc.
  * P.O. Box 66752
@@ -100,32 +104,43 @@
 * CSS to extend when something 
 * should look like a link
 ***************************************/
-/* line 68, ../../../../../compass/css/lib/_standards.scss */
+/* line 73, ../../../../../compass/css/lib/_standards.scss */
 .pseudo-link {
   cursor: pointer;
   color: #004baf;
   transition: color .1s;
 }
-/* line 73, ../../../../../compass/css/lib/_standards.scss */
+/* line 78, ../../../../../compass/css/lib/_standards.scss */
 .pseudo-link:hover {
   color: #006cfb;
 }
 
 /***************************************
 * CSS to extend when for elements that 
-* become opauqe on mouseover
+* become transparent on mouseover
 ***************************************/
-/* line 91, ../../../../../compass/css/lib/_standards.scss */
+/* line 96, ../../../../../compass/css/lib/_standards.scss */
 .opacity-hover {
   opacity: 0.3;
 }
-/* line 86, ../../../../../compass/css/lib/_standards.scss */
+/* line 91, ../../../../../compass/css/lib/_standards.scss */
 .opacity-hover:hover {
   opacity: 1;
 }
 
+/*********************************
+* Box Shadow Prefixer
+********************************/
+/***************************************
+* Apply the standard box shadow currently
+* used on x2-island-layout items
+***************************************/
+/*******************************************
+* Mixin for applying a fontAwesome icon
+* SEE _icons.scss FOR A BETTER IMPLEMENTATION
+******************************************/
 /*********************************************************************************
- * Copyright (C) 2011-2014 X2Engine Inc. All Rights Reserved.
+ * Copyright (C) 2011-2015 X2Engine Inc. All Rights Reserved.
  *
  * X2Engine Inc.
  * P.O. Box 66752

@@ -131,7 +131,7 @@ abstract class X2DbTestCase extends CDbTestCase {
      * sets up some special environment variables before proceeding.
      */
     public static function setUpBeforeClass(){
-        if (!YII_UNIT_TESTING) throw new CException ('YII_UNIT_TESTING must be set to true');
+        //if (!YII_UNIT_TESTING) throw new CException ('YII_UNIT_TESTING must be set to true');
         Yii::app()->cache->flush ();
         self::setUpAppEnvironment(); 
 

@@ -1407,6 +1407,7 @@ class AdminController extends Controller {
      * Export all changelog entries to CSV
      */
     public function actionExportChangelog() {
+        ini_set('memory_limit', -1);
         $csv = $this->safePath ('changelog.csv');
         $fp = fopen ($csv, 'w+');
         $meta = array_keys (Changelog::model()->attributes);
@@ -4550,7 +4551,8 @@ class AdminController extends Controller {
                     if (AuxLib::issetIsArray($_POST['Admin']) &&
                             isset($_POST['Admin']['enableColorDropdownLegend'])) {
 
-                        Yii::app()->settings->enableColorDropdownLegend = $_POST['Admin']['enableColorDropdownLegend'];
+                        Yii::app()->settings->enableColorDropdownLegend = 
+                            $_POST['Admin']['enableColorDropdownLegend'];
                         Yii::app()->settings->save();
                     }
 
@@ -4594,7 +4596,6 @@ class AdminController extends Controller {
         if (isset($_POST['Dropdowns']['id'])) {
             $id = $_POST['Dropdowns']['id'];
             $model = Dropdowns::model()->findByPk($id);
-            $str = "";
             if ($model === null) {
                 return;
             }
@@ -4605,30 +4606,13 @@ class AdminController extends Controller {
                         'application.modules.actions.views.actions._colorDropdownForm', array(
                     'model' => $model,
                     'options' => $options,
-                        ), false, true);
+                ), false, true);
             } else {
-                foreach ($options as $option) {
-                    $str.=
-                            "<li>
-                            <input type=\"text\" size=\"30\"  name=\"Dropdowns[options][]\" 
-                             value='$option' />
-                                <div class=\"\">
-                                    <a href=\"javascript:void(0)\" 
-                                     onclick=\"x2.dropdownManager.moveOptionUp(this);\">
-                                        [" . Yii::t('admin', 'Up') . "]</a>
-                                    <a href=\"javascript:void(0)\" 
-                                     onclick=\"x2.dropdownManager.moveOptionDown(this);\">
-                                        [" . Yii::t('admin', 'Down') . "]</a>
-                                    <a href=\"javascript:void(0)\" 
-                                     onclick=\"x2.dropdownManager.deleteOption(this);\">
-                                        [" . Yii::t('admin', 'Del') . "]</a>
-                                </div>
-                                <br />
-                        </li>";
-                }
-                echo $str . CHtml::activeLabel($model, 'multi', array(
-                    'class' => 'multi-checkbox-label',
-                )) . '&nbsp;' . CHtml::activeCheckBox($model, 'multi');
+                $this->renderPartial(
+                        'application.components.views._dropdownForm', array(
+                    'model' => $model,
+                    'options' => $options,
+                ), false, true);
             }
         }
     }

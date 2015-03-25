@@ -1,3 +1,14 @@
+# 5.0.5 #
+3/18/2015
+
+* General Changelog / Developer Notes:
+  * Fixed CSRF vulnerability described here: http://packetstormsecurity.com/files/130820/X2Engine-5.0.4-Platinum-Edition-Cross-Site-Request-Forgery.html
+* Tracked Bug Fixes:  
+  * [2267](http://x2software.com/index.php/bugReports/2267): X2Flow actions which require a model param should check for presence of param before attempting to access it  
+  * [2280](http://x2software.com/index.php/bugReports/2280): CDbCommand failed to execute the SQL statement: SQLSTATE[42S22]: Column not found: 1054 Unknown column 't.actionDescription' in 'order clause'  
+  * [2286](http://x2software.com/index.php/bugReports/2286): CDbCommand failed to execute the SQL statement: SQLSTATE[22001]: String data, right truncated: 1406 Data too long for column 'fileName' at row 1  
+  * [2290](http://x2software.com/index.php/bugReports/2290): Property "EmailInboxes.updatedBy" is not defined.  
+
 # 5.0.5b #
 3/10/2015
 

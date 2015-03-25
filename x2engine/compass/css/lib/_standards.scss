@@ -33,10 +33,15 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 
+/***************************************
+* This file is responsible for mantaining
+* general purpose mixins and classes. 
+***************************************/
+
 @import "colors";
 
-
-
+// Standard contrast to use for 
+// darken / lighten
 $contrast: 15%;
 
 @mixin dark-border($color) {
@@ -91,7 +96,7 @@ $contrast: 15%;
 
 /***************************************
 * CSS to extend when for elements that 
-* become opauqe on mouseover
+* become transparent on mouseover
 ***************************************/
 
 @mixin opacity-hover($default: 0.3, $hover: 1.0) {
@@ -106,12 +111,19 @@ $contrast: 15%;
 	@include opacity-hover();
 }
 
+/*********************************
+* Box Shadow Prefixer
+********************************/
 @mixin box-shadow($args...) {
 	-moz-box-shadow: $args;
 	-webkit-box-shadow: $args;
 	box-shadow: $args;
 }
 
+/***************************************
+* Apply the standard box shadow currently
+* used on x2-island-layout items
+***************************************/
 @mixin standard-box-shadow () {
 	$shadow: 0px 2px 3px rgba(black, 0.15), 0px -1px 1px rgba(black, 0.10);
 	@include box-shadow($shadow);
@@ -124,6 +136,10 @@ $contrast: 15%;
 	content: '';
 }
 
+/*******************************************
+* Mixin for applying a fontAwesome icon
+* SEE _icons.scss FOR A BETTER IMPLEMENTATION
+******************************************/
 @mixin fa($unicode, $placing: 'before') {
 	text-align: center;
 	text-decoration: none;

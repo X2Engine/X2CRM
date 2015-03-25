@@ -346,6 +346,8 @@ class FieldFormatter extends CComponent {
         $fieldName = $field->fieldName;
         if ($fieldName != 'id')
             return Yii::app()->locale->numberFormatter->formatDecimal($this->owner->$fieldName);
+        else
+            return $this->owner->$fieldName;
     }
 
     protected function renderFloat ($field, $makeLinks, $textOnly, $encode) {

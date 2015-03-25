@@ -45,6 +45,7 @@ x2.InlineEditor = (function() {
 	    	translations: {
 	    		unsavedChanges: null
     		},
+            csrfToken: null
 	    };
 
 	    auxlib.applyArgs (this, defaultArgs, argsDict);
@@ -168,7 +169,11 @@ x2.InlineEditor = (function() {
 		        url: yii.scriptUrl + '/site/ajaxSave',
 		        type: 'POST',
 				dataType: 'json',
-		        data: {attributes: attributes, modelId: that.modelId},
+		        data: {
+                    attributes: attributes,
+                    modelId: that.modelId,
+                    'YII_CSRF_TOKEN': that.csrfToken
+                },
 		        success: function(data) {
 		            $.each(data, function(index, value) {
 		                $('#' + index + '_field-field').html(value);

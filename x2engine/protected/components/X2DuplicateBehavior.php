@@ -93,7 +93,7 @@ class X2DuplicateBehavior extends CActiveRecordBehavior {
      * Mark a record as a duplicate.
      * 
      * Set all relevant fields to the proper values for marking a record as duplicate.
-     * A duplicate record is private and assigned to the admin user, and if there
+     * A duplicate record is private and assigned to 'Anyone', and if there
      * are options for "doNotCall" and "doNotEmail" they need to be turned on.
      * Alternatively, the "delete" string can be passed to delete the record instead
      * of hiding it. This functionality exists in case some future code requires
@@ -106,7 +106,7 @@ class X2DuplicateBehavior extends CActiveRecordBehavior {
                 $this->owner->visibility = 0;
             }
             if ($this->owner->hasAttribute('assignedTo')) {
-                $this->owner->assignedTo = Yii::app()->params->adminProfile->username;
+                $this->owner->assignedTo = 'Anyone';
             }
             if ($this->owner->hasAttribute('doNotCall')) {
                 $this->owner->doNotCall = 1;
@@ -180,7 +180,7 @@ class X2DuplicateBehavior extends CActiveRecordBehavior {
             $attributes['visibility'] = 0;
         }
         if ($this->owner->hasAttribute('assignedTo')) {
-            $attributes['assignedTo'] = Yii::app()->params->adminProf->username;
+            $attributes['assignedTo'] = 'Anyone';
         }
         if ($this->owner->hasAttribute('doNotCall')) {
             $attributes['doNotCall'] = 1;

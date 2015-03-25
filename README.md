@@ -1,5 +1,5 @@
-# 5.0.5b #
-3/10/2015
+# 5.0.5 #
+3/18/2015
 
 * Highlights
   * Professional Edition Changes
@@ -15,6 +15,7 @@
   * Details of related records can now be viewed from the inline relationships widget
   * New option in transactional view widgets to display actions of related records
 * General Changelog / Developer Notes:
+  * Fixed CSRF vulnerability described here: http://packetstormsecurity.com/files/130820/X2Engine-5.0.4-Platinum-Edition-Cross-Site-Request-Forgery.html
   * The response of API calls made through X2Flow's API Call Action can now be retrieved in subsequent flow actions with the token "{returnValue}" 
   * The X2Flow trigger logs table now has a maximum record count which can be configured from the new X2Flow Settings admin page. The default maximum is 1 million records
   * Fixed bug preventing data types of columns from changing when updated through the Manage Fields page
@@ -25,6 +26,10 @@
   * [2213](http://x2software.com/index.php/bugReports/2213): Class:  not found.  
   * [2215](http://x2software.com/index.php/bugReports/2215): could not generate checksum  
   * [2219](http://x2software.com/index.php/bugReports/2219): Undefined variable: inlineEdit  
+  * [2267](http://x2software.com/index.php/bugReports/2267): X2Flow actions which require a model param should check for presence of param before attempting to access it  
+  * [2280](http://x2software.com/index.php/bugReports/2280): CDbCommand failed to execute the SQL statement: SQLSTATE[42S22]: Column not found: 1054 Unknown column 't.actionDescription' in 'order clause'  
+  * [2286](http://x2software.com/index.php/bugReports/2286): CDbCommand failed to execute the SQL statement: SQLSTATE[22001]: String data, right truncated: 1406 Data too long for column 'fileName' at row 1  
+  * [2290](http://x2software.com/index.php/bugReports/2290): Property "EmailInboxes.updatedBy" is not defined.  
 
 
 # Introduction #

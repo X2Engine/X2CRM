@@ -91,6 +91,24 @@ class X2Flashes {
         self::setFlashes ($flashes);
     }
 
+    public static function renderTopFlashes ($type) {
+        $flashes = Yii::app()->user->getFlashes ();
+
+        if (isset ($flashes[$type])) {
+            $flash = $flashes[$type];
+            $type = preg_replace ('/^top-/', '', $type);
+            echo "
+                <div id='top-flashes-container-outer'>
+                    <div id='top-flashes-container' class='flash-$type'>
+                        <div id='top-flashes-message'>
+                        $flash
+                        </div>
+                    </div>
+                
+                </div>";
+        }
+    }
+
 }
 
 ?>

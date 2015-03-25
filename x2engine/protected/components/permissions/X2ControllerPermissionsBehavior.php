@@ -196,9 +196,13 @@ class X2ControllerPermissionsBehavior extends ControllerPermissionsBehavior {
                     $action = ucfirst($this->owner->getId() . ucfirst($item['linkOptions']['submit'][0]));
                     $authItem = $auth->getAuthItem($action);
                     $item['visible'] = Yii::app()->user->checkAccess($this->owner->getId() . ucfirst($item['linkOptions']['submit'][0]), $params) || is_null($authItem);
+
+                    // Add the CSRF Token to all submit links
+                    $item['linkOptions']['csrf'] = true;
                 }
             }
         }
+        
         return $array;
     }
 

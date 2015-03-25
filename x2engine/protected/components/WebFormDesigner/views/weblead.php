@@ -34,7 +34,7 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 ?>
-<div class='webform-tab' id='generate-tab' data-title='Generate Records'>
+<div class='webform-tab' id='generate-tab' data-title='<?php echo Yii::t('marketing','Generate Records'); ?>' >
     <div class='tab-content'>
         <div class="row">
             <label class='left-label' 

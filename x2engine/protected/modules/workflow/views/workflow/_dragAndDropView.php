@@ -115,7 +115,7 @@ x2.dragAndDropViewManager = new x2.DragAndDropViewManager ({
 
 <!-- used to set up the add a deal form -->
 <div id="add-a-deal-form-dialog" style="display: none;" class='form'>
-    <form>
+    <form><!-- submitted via ajax, so it doesn't need a CSRF token hidden input -->
     <div class='dialog-description'>
         <?php echo Yii::t(
             'workflow', 'Start the {workflowName} {process} for the following record:', array (

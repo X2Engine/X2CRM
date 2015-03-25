@@ -243,13 +243,15 @@ Fields.prototype.updateValueCell = function(elem) {
         valueCell.find("select").attr("multiple", multiple);
         var select$ = valueCell.find ('select');
         var name = select$.attr ('name');
-        if (multiple) {
-            if (!name.match (/\[\]$/)) {
-                select$.attr ('name', name + '[]');
-            }
-        } else {
-            if (name.match (/\[\]$/)) {
-                select$.attr ('name', name.replace (/\[\]$/, ''));
+        if (name) {
+            if (multiple) {
+                if (!name.match (/\[\]$/)) {
+                    select$.attr ('name', name + '[]');
+                }
+            } else {
+                if (name.match (/\[\]$/)) {
+                    select$.attr ('name', name.replace (/\[\]$/, ''));
+                }
             }
         }
     }

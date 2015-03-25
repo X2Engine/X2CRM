@@ -43,6 +43,7 @@
 $config = require("main.php");
 
 unset($config['theme']);
+unset($config['components']['request']);
 /*$config['components']['fixture'] = array(
 	'class' => 'system.test.CDbFixtureManager',
 );*/
