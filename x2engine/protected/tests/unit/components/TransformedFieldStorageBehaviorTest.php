@@ -45,7 +45,7 @@ Yii::import('application.modules.contacts.models.*');
 class TransformedFieldStorageBehaviorTest extends X2DbTestCase {
 
     public static function referenceFixtures(){
-        return null;
+        return array ();
     }
 
     public $fixtures = array('contacts' => 'Contacts');

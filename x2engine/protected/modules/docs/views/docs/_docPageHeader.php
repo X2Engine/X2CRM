@@ -47,9 +47,10 @@ if (!$model->isNewRecord) {
     $existingRecordMenuOptions = array(
         'view', 'permissions', 'exportToHtml',
     );
-    if ($model->checkEditPermission() && $action != 'update')
+    if ($action !== 'update' && $model->checkEditPermissions ()) {
         $existingRecordMenuOptions[] = 'edit';
-    if (Yii::app()->user->checkAccess('DocsDelete', array('createdBy' => $model->createdBy)))
+    }
+    if ($this->checkPermissions ($model, 'delete'))
         $existingRecordMenuOptions[] = 'delete';
     $menuOptions = array_merge($menuOptions, $existingRecordMenuOptions);;
 }
@@ -59,7 +60,7 @@ $this->insertMenu($menuOptions, $model, $authParams);
 <div class="page-title icon docs"><h2><span class="no-bold"><?php echo CHtml::encode($title); ?></span> <?php echo CHtml::encode($model->name); ?></h2>
 <?php
 if(!$model->isNewRecord){
-    if($model->checkEditPermission() && $action != 'update'){
+    if($model->checkEditPermissions () && $action != 'update'){
         echo X2Html::editRecordButton($model);
         // echo CHtml::link('<span></span>', array('/docs/docs/update', 'id' => $model->id), array('class' => 'x2-button x2-hint icon edit right', 'title' => Yii::t('docs', 'Edit')));
     }

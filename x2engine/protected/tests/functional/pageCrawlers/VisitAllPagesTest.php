@@ -46,22 +46,6 @@ abstract class VisitAllPagesTest extends X2WebTestCase {
 
     public $autoLoginOnlyOnce = true;
 
-    public static function setUpBeforeClass () {
-        /* x2tempstart */ 
-        // quick way of getting leads data until we extend reference fixtures to web test
-        // cases
-        Yii::app()->db->createCommand ("
-        DELETE from x2_x2leads where id in (1, 2, 3, 4, 5);
-        INSERT INTO x2_x2leads values 
-            (1, 'test', 'test_1', '', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0),
-            (2, 'test', 'test_2', '', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0),
-            (3, 'test', 'test_3', '', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0),
-            (4, 'test', 'test_4', '', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0),
-            (5, 'test', 'test_5', '', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
-        ")->execute ();
-        /* x2tempend */
-    }
-
     /**
      * visits page and checks for php errors
      * @param string $page URI of page
@@ -274,6 +258,8 @@ abstract class VisitAllPagesTest extends X2WebTestCase {
         'admin/exportModule',
         'admin/renameModules',
         'admin/convertCustomModules',
+         
+         
     );
 
 }

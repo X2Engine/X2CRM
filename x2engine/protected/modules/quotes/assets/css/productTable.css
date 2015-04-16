@@ -139,13 +139,13 @@
 * CSS to extend when something 
 * should look like a link
 ***************************************/
-/* line 73, ../../../compass/css/lib/_standards.scss */
+/* line 73, ../../../../../compass/css/lib/_standards.scss */
 .pseudo-link {
   cursor: pointer;
   color: #004baf;
   transition: color .1s;
 }
-/* line 78, ../../../compass/css/lib/_standards.scss */
+/* line 78, ../../../../../compass/css/lib/_standards.scss */
 .pseudo-link:hover {
   color: #006cfb;
 }
@@ -154,11 +154,11 @@
 * CSS to extend when for elements that 
 * become transparent on mouseover
 ***************************************/
-/* line 96, ../../../compass/css/lib/_standards.scss */
+/* line 96, ../../../../../compass/css/lib/_standards.scss */
 .opacity-hover {
   opacity: 0.3;
 }
-/* line 91, ../../../compass/css/lib/_standards.scss */
+/* line 91, ../../../../../compass/css/lib/_standards.scss */
 .opacity-hover:hover {
   opacity: 1;
 }
@@ -174,68 +174,12 @@
 * Mixin for applying a fontAwesome icon
 * SEE _icons.scss FOR A BETTER IMPLEMENTATION
 ******************************************/
-/* line 25, ../../../compass/themes/x2engine/css/comboBox.scss */
-button.x2-button.x2-combo-box-button {
-  -webkit-border-radius: 0px 4px 4px 0px;
-  -moz-border-radius: 0px 4px 4px 0px;
-  -ms-border-radius: 0px 4px 4px 0px;
-  -o-border-radius: 0px 4px 4px 0px;
-  border-radius: 0px 4px 4px 0px;
-  height: 20px;
-  width: 10%;
-  max-width: 20px;
-  padding: 0 0 0 0 !important;
-  margin: 0 0 0 0;
-  border-left: none;
-}
-
-/* line 35, ../../../compass/themes/x2engine/css/comboBox.scss */
-button.x2-button.x2-combo-box-button > img {
-  margin: 0 -3px 0 0;
-  width: 10px;
-  height: 10px;
-}
-
-/* line 40, ../../../compass/themes/x2engine/css/comboBox.scss */
-.x2-combo-box-dropdown {
-  position: absolute;
-  background: white;
-  border: 1px solid #999;
-  max-height: 135px;
-  min-width: 120px;
-  overflow-y: auto;
-  z-index: 100;
-  /* @theme background: content */
-  /* @theme color: text */
-  /* @theme border-color: border */
-}
-/* line 53, ../../../compass/themes/x2engine/css/comboBox.scss */
-.x2-combo-box-dropdown > ul {
-  list-style-type: none;
-  padding-left: 0;
-  margin: 0;
-}
-/* line 58, ../../../compass/themes/x2engine/css/comboBox.scss */
-.x2-combo-box-dropdown > ul > li {
-  line-height: 17px;
-  padding: 0 6px 0 6px;
-  cursor: default;
-  border: 1px solid transparent;
-  border-left: none;
-  border-right: none;
-}
-/* line 66, ../../../compass/themes/x2engine/css/comboBox.scss */
-.x2-combo-box-dropdown > ul > li:hover {
-  border: 1px solid #999999;
-  /* @theme border-color: border */
-  border-left: none;
-  border-right: none;
-  background: #eee;
+/* line 26, ../../../../../compass/protected/modules/quotes/assets/css/productTable.scss */
+.quotes-product-table th {
   /* @theme background: dark_content */
+  /* @theme border-color: border */
 }
-/* line 76, ../../../compass/themes/x2engine/css/comboBox.scss */
-.x2-combo-box-dropdown > ul > li:hover:first-child, .x2-combo-box-dropdown > ul > li:hover:last-child {
-  border: 1px solid transparent;
-  border-left: none;
-  border-right: none;
+/* line 31, ../../../../../compass/protected/modules/quotes/assets/css/productTable.scss */
+.quotes-product-table td {
+  /* @theme border-color: border */
 }

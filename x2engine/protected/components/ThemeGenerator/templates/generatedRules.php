@@ -35,6 +35,17 @@
 		border-color: $colors[border]
 	}
 
+	/* line 26, ../../../../../compass/protected/modules/quotes/assets/css/productTable.scss */
+	.quotes-product-table th:not(.no-theme) {
+		background: $colors[dark_content]
+		border-color: $colors[border]
+	}
+
+	/* line 31, ../../../../../compass/protected/modules/quotes/assets/css/productTable.scss */
+	.quotes-product-table td:not(.no-theme) {
+		border-color: $colors[border]
+	}
+
 	/* line 22, ../../../../../compass/protected/modules/calendar/assets/css/calendarLayout.scss */
 	table.page-title:not(.no-theme) {
 		background: $colors[highlight1]
@@ -207,6 +218,19 @@
 	#publisher > #publisher-tabs-row-1 li.ui-state-active, #publisher > #publisher-tabs-row-2 li.ui-state-active:not(.no-theme) {
 		background: $colors[content]
 		border: $colors[border]
+	}
+
+	/* line 40, ../../../compass/themes/x2engine/css/comboBox.scss */
+	.x2-combo-box-dropdown:not(.no-theme) {
+		background: $colors[content]
+		color: $colors[text]
+		border-color: $colors[border]
+	}
+
+	/* line 66, ../../../compass/themes/x2engine/css/comboBox.scss */
+	.x2-combo-box-dropdown > ul > li:hover:not(.no-theme) {
+		border-color: $colors[border]
+		background: $colors[dark_content]
 	}
 
 	/* line 229, ../../../compass/themes/x2engine/css/activityFeed.scss */

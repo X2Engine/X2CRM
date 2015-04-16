@@ -68,19 +68,24 @@ abstract class X2DbTestCase extends CDbTestCase {
     protected static $skipAllTests = false;
     
     protected static $loadFixtures = LOAD_FIXTURES;
+    protected static $loadFixturesForClassOnly = LOAD_FIXTURES_FOR_CLASS_ONLY;
 
     private static $_referenceFixtureRecords = array();
 
     private static $_referenceFixtureRows = array();
 
     public function setUp () {
+        // if loadFixturesForClassOnly was true, reenable fixture loading since we've already
+        // skipped the loading of the fixtures directory and still want to have fixtures loaded
+        // on a per test case basis
+        if (self::$loadFixturesForClassOnly)
+            $this->getFixtureManager ()->loadFixtures = true;
+
         if (static::$skipAllTests) {
             $this->markTestSkipped ();
         }
-        if (!static::$loadFixtures) {
-            $fixtures = is_array ($this->fixtures) ? $this->fixtures : array ();
-            $this->fixtures = array_merge ($fixtures, self::referenceFixtures ());
-        }
+        $fixtures = is_array ($this->fixtures) ? $this->fixtures : array ();
+        $this->fixtures = array_merge ($fixtures, static::referenceFixtures ());
         parent::setUp ();
     }
 
@@ -131,7 +136,7 @@ abstract class X2DbTestCase extends CDbTestCase {
      * sets up some special environment variables before proceeding.
      */
     public static function setUpBeforeClass(){
-        //if (!YII_UNIT_TESTING) throw new CException ('YII_UNIT_TESTING must be set to true');
+        if (!YII_UNIT_TESTING) throw new CException ('YII_UNIT_TESTING must be set to true');
         Yii::app()->cache->flush ();
         self::setUpAppEnvironment(); 
 
@@ -142,23 +147,26 @@ abstract class X2DbTestCase extends CDbTestCase {
         $fm = Yii::app()->getComponent('fixture');
         self::$_referenceFixtureRows = array();
         self::$_referenceFixtureRecords = array();
-        if(self::$loadFixtures && is_array($refFix)){
+        if(is_array($refFix)){
             Yii::import('application.components.X2Settings.*');
             $fm->load($refFix);
-            foreach($refFix as $alias => $table){
-                $tableName = is_array($table) ? $table[0] : $table;
-                self::$_referenceFixtureRows[$alias] = $fm->getRows($alias);
-                if(strpos($tableName, ':') !== 0){
-                    foreach(self::$_referenceFixtureRows[$alias] as $rowAlias => $row){
-                        $model = CActiveRecord::model($tableName);
-                        $key = $model->getTableSchema()->primaryKey;
-                        if(is_string($key))
-                            $pk = $row[$key];
-                        else{
-                            foreach($key as $k)
-                                $pk[$k] = $row[$k];
+            if(self::$loadFixtures || self::$loadFixturesForClassOnly){
+                foreach($refFix as $alias => $table){
+                    $tableName = is_array($table) ? $table[0] : $table;
+                    self::$_referenceFixtureRows[$alias] = $fm->getRows($alias);
+                    if(strpos($tableName, ':') !== 0){
+                        foreach(self::$_referenceFixtureRows[$alias] as $rowAlias => $row){
+                            $model = CActiveRecord::model($tableName);
+                            $key = $model->getTableSchema()->primaryKey;
+                            if(is_string($key))
+                                $pk = $row[$key];
+                            else{
+                                foreach($key as $k)
+                                    $pk[$k] = $row[$k];
+                            }
+                            self::$_referenceFixtureRecords[$alias][$rowAlias] = 
+                                $model->findByPk($pk);
                         }
-                        self::$_referenceFixtureRecords[$alias][$rowAlias] = $model->findByPk($pk);
                     }
                 }
             }

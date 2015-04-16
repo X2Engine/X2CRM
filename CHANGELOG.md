@@ -1,3 +1,23 @@
+# 5.0.6 #
+4/16/2015
+
+* General Changelog / Developer Notes:
+  * Contact tracking key can now be set through the REST API
+  * Added CSRF token validation to Google login
+  * Fixed bug in the REST API search action which would cause all results to be returned if _or parameter was present
+  * Fixed bug preventing X2Flow shortcodes from evaluating if present in X2Flow record attribute inputs
+  * Fixed bug in X2Flow Reassign Record flow action which caused reassignment to fail
+  * Leads conversion now displays error output if conversion fails due to field validation
+  * Permissions bug fixes:
+      * Campaigns were inaccessible if user's view permissions were set to "Only Assigned"
+      * Docs delete button wouldn't display if user's delete permissions were set to "Only Assigned"
+      * Users with "Only Assigned" delete permissions couldn't mass delete records through the grid view
+  * Reports would fail to save if a report condition contained an unchecked check box
+  * Fixed Verify Credentials feature to work with Yahoo, Outlook, Mandrill, and Sendgrid credential types
+* Tracked Bug Fixes:  
+  * [2329](http://x2software.com/index.php/bugReports/2329): Undefined index: webFormId  
+  * [2343](http://x2software.com/index.php/bugReports/2343): Custom module summary widget links incorrectly generated  
+
 # 5.0.5 #
 3/18/2015
 

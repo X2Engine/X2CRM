@@ -1130,9 +1130,11 @@ class Api2Controller extends CController {
         }
 
         // Run comparisons:
+        $searchCriteria = new CDbCriteria;
         foreach($searchAttributes as $column => $value){
-            $criteria->compare($column,$value,$partialMatch,$operator,$escape);
+            $searchCriteria->compare($column,$value,$partialMatch,$operator,$escape);
         }
+        $criteria->mergeWith ($searchCriteria);
 
         // Merge extra criteria:
         if($extraCriteria instanceof CDbCriteria) {
@@ -1554,6 +1556,11 @@ class Api2Controller extends CController {
         }
 
         $this->model->setX2Fields($fields);
+
+        if(get_class ($this->model) === 'Contacts' && isset($fields['trackingKey'])){
+            // key is read-only, won't be set by setX2Fields
+            $this->model->trackingKey = $fields['trackingKey']; 
+        }
     }
 
     /**

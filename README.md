@@ -1,35 +1,23 @@
-# 5.0.5 #
-3/18/2015
+# 5.0.6 #
+4/16/2015
 
-* Highlights
-  * Professional Edition Changes
-    * New Charts drilldown feature allows you to quickly get a list of records associated with charted data points
-    * New scatter plot charting option 
-    * New column aggregation option for time series charts
-    * Improved reports print view adds new configuration options and allows inclusion of charts
-    * New X2Flow Periodic Trigger allows flows to be triggered according to a schedule
-  * Redesigned Web Form Designer
-    * More intuitive and compact interface
-    * Improved style of default web form
-  * Record print view given configuration options and an improved look
-  * Details of related records can now be viewed from the inline relationships widget
-  * New option in transactional view widgets to display actions of related records
 * General Changelog / Developer Notes:
-  * Fixed CSRF vulnerability described here: http://packetstormsecurity.com/files/130820/X2Engine-5.0.4-Platinum-Edition-Cross-Site-Request-Forgery.html
-  * The response of API calls made through X2Flow's API Call Action can now be retrieved in subsequent flow actions with the token "{returnValue}" 
-  * The X2Flow trigger logs table now has a maximum record count which can be configured from the new X2Flow Settings admin page. The default maximum is 1 million records
-  * Fixed bug preventing data types of columns from changing when updated through the Manage Fields page
+  * Contact tracking key can now be set through the REST API
+  * Added CSRF token validation to Google login
+  * Fixed bug in the REST API search action which would cause all results to be returned if _or parameter was present
+  * Fixed bug preventing X2Flow shortcodes from evaluating if present in X2Flow record attribute inputs
+  * Fixed bug in X2Flow Reassign Record flow action which caused reassignment to fail
+  * Leads conversion now displays error output if conversion fails due to field validation
+  * Permissions bug fixes:
+      * Campaigns were inaccessible if user's view permissions were set to "Only Assigned"
+      * Docs delete button wouldn't display if user's delete permissions were set to "Only Assigned"
+      * Users with "Only Assigned" delete permissions couldn't mass delete records through the grid view
+  * Reports would fail to save if a report condition contained an unchecked check box
+  * Fixed Verify Credentials feature to work with Yahoo, Outlook, Mandrill, and Sendgrid credential types
 * Tracked Bug Fixes:  
-  * [2170](http://x2software.com/index.php/bugReports/2170): Trying to get property of non-object  
-  * [2176](http://x2software.com/index.php/bugReports/2176): Undefined index: doNotEmailLink  
-  * [2177](http://x2software.com/index.php/bugReports/2177): Trying to get property of non-object  
-  * [2213](http://x2software.com/index.php/bugReports/2213): Class:  not found.  
-  * [2215](http://x2software.com/index.php/bugReports/2215): could not generate checksum  
-  * [2219](http://x2software.com/index.php/bugReports/2219): Undefined variable: inlineEdit  
-  * [2267](http://x2software.com/index.php/bugReports/2267): X2Flow actions which require a model param should check for presence of param before attempting to access it  
-  * [2280](http://x2software.com/index.php/bugReports/2280): CDbCommand failed to execute the SQL statement: SQLSTATE[42S22]: Column not found: 1054 Unknown column 't.actionDescription' in 'order clause'  
-  * [2286](http://x2software.com/index.php/bugReports/2286): CDbCommand failed to execute the SQL statement: SQLSTATE[22001]: String data, right truncated: 1406 Data too long for column 'fileName' at row 1  
-  * [2290](http://x2software.com/index.php/bugReports/2290): Property "EmailInboxes.updatedBy" is not defined.  
+  * [2329](http://x2software.com/index.php/bugReports/2329): Undefined index: webFormId  
+  * [2343](http://x2software.com/index.php/bugReports/2343): Custom module summary widget links incorrectly generated  
+
 
 
 # Introduction #

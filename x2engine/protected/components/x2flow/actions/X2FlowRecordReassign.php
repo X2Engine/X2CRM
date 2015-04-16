@@ -65,7 +65,7 @@ class X2FlowRecordReassign extends X2FlowAction {
                     'name' => 'user',
                     'label' => 'User',
                     'type' => 'dropdown',
-                    'multiple' => 1,
+                    //'multiple' => 1,
                     'options' => array(
                         'auto' => Yii::t('studio', 'Use Lead Routing')) + 
                             X2Model::getAssignmentOptions(true, true)
@@ -85,6 +85,12 @@ class X2FlowRecordReassign extends X2FlowAction {
         }
 
         $user = $this->parseOption('user', $params);
+        if (!is_scalar ($user)) {
+            return array(
+                false,
+                Yii::t('studio', 'Invalid value for field "User"')
+            );
+        }
         if($user === 'auto'){
             if (get_class ($model) === 'Contacts') {
                 $assignedTo = $this->getNextAssignee($model);
@@ -93,8 +99,10 @@ class X2FlowRecordReassign extends X2FlowAction {
                     false, Yii::t('studio', 'Lead routing rules cannot be used with {type} records',
                         array ('{type}' => get_class ($model))));
             }
-        }elseif(CActiveRecord::model('User')->exists('username=?', array($user)) || 
-                CActiveRecord::model('Groups')->exists('id=?', array($user))){ 
+        }elseif(
+            $user === 'Anyone' ||
+            CActiveRecord::model('User')->exists('username=?', array($user)) || 
+            CActiveRecord::model('Groups')->exists('id=?', array($user))){ 
             // make sure the user exists
 
             $assignedTo = $user;

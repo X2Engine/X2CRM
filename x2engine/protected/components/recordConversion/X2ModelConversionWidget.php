@@ -69,6 +69,11 @@ class X2ModelConversionWidget extends X2Widget {
         if (!isset ($this->_JSClassParams)) {
             $title = X2Model::getModelTitle (get_class ($this->model), true);
             $targetClass = $this->targetClass;
+            $behavior = $this->model->asa ('X2ModelConversionBehavior');
+            $conversionFailed = 
+                $behavior->conversionFailed && 
+                $behavior->errorModel !== null && get_class ($behavior->errorModel) ===
+                $this->targetClass;
             $this->_JSClassParams = array_merge (parent::getJSClassParams (), array (
                 'buttonSelector' => $this->buttonSelector,
                 'translations' => array (
@@ -83,17 +88,19 @@ class X2ModelConversionWidget extends X2Widget {
                 ),
                 'targetClass' => $this->targetClass,
                 'modelId' => $this->model->id,
-                'conversionFailed' => $this->model->conversionFailed,
+                'conversionFailed' => $conversionFailed,
                 'conversionIncompatibilityWarnings' => 
                     $this->model->getConversionIncompatibilityWarnings ($this->targetClass),
-                'errorSummary' => "
-                    <div class='form'>".
-                        CHtml::errorSummary (
-                            $targetClass::model (), Yii::t('app', '{model} conversion failed.', 
-                            array (
-                                '{model}' => $title,
-                            ))).
-                    "</div>",
+                'errorSummary' => 
+                    $conversionFailed ? 
+                        "<div class='form'>".
+                            CHtml::errorSummary (
+                                $this->model->asa ('X2ModelConversionBehavior')->errorModel,
+                                Yii::t('app', '{model} conversion failed.', 
+                                array (
+                                    '{model}' => $title,
+                                ))).
+                        "</div>" : '',
 
             ));
         }

@@ -58,7 +58,7 @@ abstract class ModelPermissionsBehavior extends CActiveRecordBehavior {
      * This method probably ought to overridden, as there is no reliable way to determine the module a model "belongs" to.
      * @return integer The access level. 0=no access, 1=own records, 2=public records, 3=full access
      */
-    abstract function getAccessLevel();
+    abstract function getAccessLevel($uid=null);
 
     /**
      * Generates SQL condition to filter out records the user doesn't have

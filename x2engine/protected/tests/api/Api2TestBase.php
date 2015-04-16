@@ -42,6 +42,19 @@
  */
 abstract class Api2TestBase extends CURLDbTestCase {
 
+    public $action;
+     
+    public function urlFormat(){
+        $urlFormats = array(
+            'model' => 'api2/{modelAction}',
+            'relationships' => 'api2/{_class}/{_id}/relationships',
+            'relationships_get' => 'api2/{_class}/{_id}/relationships/{_relatedId}.json',
+            'tags' => 'api2/{_class}/{_id}/tags',
+            'tags_get' => 'api2/{_class}/{_id}/tags/{tagname}.json',
+        );
+        return $urlFormats[$this->action];
+    }
+
     public static function referenceFixtures() {
         return array(
             'user' => 'User',

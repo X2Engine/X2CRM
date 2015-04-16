@@ -131,7 +131,9 @@ class WebFormDesigner extends X2Widget {
     public function getTranslations () {
         return array (
             'formSavedMsg' => Yii::t('marketing', 'Form Saved'),
-            'nameRequiredMsg' => Yii::t('marketing', 'Name cannot be blank.')
+            'nameRequiredMsg' => Yii::t('marketing', 'Name cannot be blank.'),
+            'Label:' => Yii::t('marketing', 'Label:'),
+            'Value:' => Yii::t('marketing', 'Value:'),
         );
     }
 

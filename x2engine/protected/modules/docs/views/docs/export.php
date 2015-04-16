@@ -34,14 +34,11 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 
-$pieces = explode(", ",$model->editPermissions);
-$user = Yii::app()->user->getName();
-
 $action = $this->action->id;
 $menuOptions = array(
     'index', 'create', 'createEmail', 'createQuote', 'view', 'exportToHtml', 'permissions',
 );
-if ($model->checkEditPermission() && $action != 'update')
+if ($action != 'update' && $model->checkEditPermissions ())
     $menuOptions[] = 'edit';
 if (Yii::app()->user->checkAccess('DocsDelete', array('createdBy' => $model->createdBy)))
     $menuOptions[] = 'delete';

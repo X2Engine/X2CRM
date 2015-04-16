@@ -34,46 +34,63 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 
+Yii::import('application.tests.api.Api2TestBase');
+Yii::import('application.modules.contacts.models.*');
+Yii::import('application.modules.accounts.models.*');
 
+/**
+ * @package application.tests.api
+ */
+class Api2ControllerTest extends Api2TestBase {
 
-mb_internal_encoding('UTF-8');
-mb_regex_encoding('UTF-8');
-Yii::app()->params->profile = Profile::model()->findByPk(1);
-?>
+    public static function referenceFixtures () { 
+        return array_merge (parent::referenceFixtures (), array (
+            'contacts' => 'Contacts',
+        ));
+    }
 
-<!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="<?php echo Yii::app()->language; ?>"
- lang="<?php echo Yii::app()->language; ?>">
-<head>
-<meta charset="UTF-8" />
-<meta name="language" content="<?php echo Yii::app()->language; ?>" />
-<title><?php echo CHtml::encode($this->pageTitle); ?></title>
+    public function testSearch () {
+        $contacts = array (
+            $this->contacts ('testAnyone'),
+            $this->contacts ('testUser')
+        );
+        $this->action = 'model';
+        $params = array (
+            '{modelAction}'=>'Contacts',
+            '_or'=>1,
+            'firstName'=>$contacts[0]->firstName,
+            'lastName'=>$contacts[1]->lastName,
+        );
+        $ch = $this->getCurlHandle('GET',$params,'admin');
+        //AuxLib::debugLogR ('$ch = ');
+        //AuxLib::debugLogR (curl_getinfo ($ch));
+        $response = json_decode(curl_exec($ch),1);
+        $this->assertEquals (2, count ($response));
+        foreach ($response as $index => $record) {
+            $this->assertEquals ($contacts[$index]->id, $record['id']);
+        }
 
-<style type="text/css">
-body {
-	font-size:12px;
-	font-family: Arial, Helvetica, sans-serif;
-	width:189px;
+        $params = array (
+            '{modelAction}'=>'Contacts',
+            '_or'=>0,
+            'firstName'=>$contacts[0]->firstName,
+            'lastName'=>$contacts[1]->lastName,
+        );
+        $ch = $this->getCurlHandle('GET',$params,'admin');
+        $response = json_decode(curl_exec($ch),1);
+        $this->assertEquals (0, count ($response));
+
+        $params = array (
+            '{modelAction}'=>'Contacts',
+            'firstName'=>$contacts[0]->firstName,
+            'lastName'=>$contacts[0]->lastName,
+        );
+        $ch = $this->getCurlHandle('GET',$params,'admin');
+        $response = json_decode(curl_exec($ch),1);
+        $this->assertEquals (1, count ($response));
+        $this->assertEquals ($contacts[0]->id, $response[0]['id']);
+    }
+
 }
-</style>
-</head>
-<body>
-<?php
-if (!empty($error)) { ?>
-	<h1><?php echo Yii::t('contacts','We\'re Sorry!'); ?></h1>
-	<p><?php echo $error; ?></p>
-<?php
-} else { ?>
-	<h1 id='web-form-submit-message'><?php echo Yii::t('contacts','Thank You!'); ?></h1>
-<?php
-if ($type === 'weblead') { ?>
-	<p><?php echo Yii::t('contacts','Thank you for your interest!'); ?></p>
-<?php
-} elseif ($type === 'service') { ?>
-	<p><?php echo Yii::t('contacts','Your case number is: ') . $caseNumber; ?></p>
-<?php
-} ?>
-	<p><?php echo Yii::t('contacts','Someone will be in touch shortly.'); ?></p>
-<?php } ?>
-</body>
-</html>
+
+?>

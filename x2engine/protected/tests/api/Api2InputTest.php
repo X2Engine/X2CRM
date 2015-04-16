@@ -49,25 +49,13 @@ Yii::import('application.tests.api.Api2TestBase');
  */
 class Api2InputTest extends Api2TestBase {
 
-    public $action;
-
     public $fixtures = array(
         'contacts' => 'Contacts',
         'accounts' => 'Accounts',
         'relationships' => 'Relationships',
-        'tags' => 'Tags'
+        'tags' => 'Tags',
+        'user' => 'User',
     );
-
-    public function urlFormat(){
-        $urlFormats = array(
-            'model' => 'api2/{modelAction}',
-            'relationships' => 'api2/{_class}/{_id}/relationships',
-            'relationships_get' => 'api2/{_class}/{_id}/relationships/{_relatedId}.json',
-            'tags' => 'api2/{_class}/{_id}/tags',
-            'tags_get' => 'api2/{_class}/{_id}/tags/{tagname}.json',
-        );
-        return $urlFormats[$this->action];
-    }
 
     /**
      * Really rudimentary test: contact
@@ -79,17 +67,19 @@ class Api2InputTest extends Api2TestBase {
             'firstName' => 'Walt',
             'lastName' => 'White',
             'email' => 'walter.white@sandia.gov',
-            'visibility' => 1
+            'visibility' => 1,
+            'trackingKey' => '1234',
         );
         $ch = $this->getCurlHandle('POST',array('{modelAction}'=>'Contacts'),'admin',$contact);
         $response = json_decode(curl_exec($ch),1);
         $id = $response['id'];
         $this->assertResponseCodeIs(201, $ch);
         $this->assertTrue((bool) ($newContact = Contacts::model()->findBySql(
-                'SELECT * FROM x2_contacts '
-                . 'WHERE firstName="Walt" '
-                . 'AND lastName="White" '
-                . 'AND email="walter.white@sandia.gov"')));
+                'SELECT * FROM x2_contacts
+                WHERE firstName="Walt" 
+                AND lastName="White" 
+                AND email="walter.white@sandia.gov"
+                AND trackingKey="1234"')));
 
         // Update
         $contact['firstName'] = 'Walter';

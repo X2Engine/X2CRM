@@ -636,7 +636,6 @@ class X2Flow extends CActiveRecord {
      * @return mixed the parsed value
      */
     public static function parseValue($value, $type, &$params = null, $renderFlag=true){
-
         if (is_string ($value)){
             if (strpos ($value, '=') === 0){
                 // It's a formula. Evaluate it.

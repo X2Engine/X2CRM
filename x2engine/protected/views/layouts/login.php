@@ -37,7 +37,6 @@
 mb_internal_encoding('UTF-8');
 mb_regex_encoding('UTF-8');
 
-
 Yii::app()->params->profile = Profile::model()->findByPk(1);	// use the admin's profile since the user hasn't logged in
 $jsVersion = '?'.Yii::app()->params->buildDate;
 
@@ -53,6 +52,7 @@ if (AuxLib::getIEVer() < 9) {
 	Yii::app()->clientScript->registerScriptFile(Yii::app()->baseUrl.'/js/lib/aight/aight.js');
 }
 Yii::app()->clientScript->registerScriptFile(Yii::app()->baseUrl.'/js/lib/jquery-migrate-1.2.1.js');
+
 
 $backgroundImg = '';
 $defaultOpacity = 1;

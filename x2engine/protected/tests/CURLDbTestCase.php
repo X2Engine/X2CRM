@@ -133,10 +133,30 @@ abstract class CURLDbTestCase extends X2DbTestCase {
      * @return string
      */
 	public function url($params = array()) {
-		return strtr($this->urlFormat(), $params);
+        $tokens = array ();
+        $getParams = array ();
+        foreach ($params as $key => $val) {
+            if (preg_match ('/^{.*}$/', $key)) {
+                $tokens[$key] = $val;
+            } else {
+                $getParams[$key] = $val;
+            }
+        }
+		$url = strtr($this->urlFormat(), $tokens);
+        if (count ($getParams))
+            $url .= '?'.http_build_query ($getParams);
+        return $url;
 	}
 
 	public abstract function urlFormat();
+
+    public function responseToModels ($modelClass, array $response) {
+        $models = array ();
+        foreach ($response as $record) {
+            $models[] = X2Model::model ($modelClass)->findByAttributes ($record);
+        }
+        return $models;
+    }
 }
 
 ?>

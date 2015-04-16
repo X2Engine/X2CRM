@@ -33,12 +33,11 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 
+@import "colors";
+@import "standards";
 
 button.x2-button.x2-combo-box-button {
-    border-radius: 0px 4px 4px 0px;
-    -moz-border-radius: 0px 4px 4px 0px;
-    -webkit-border-radius: 0px 4px 4px 0px;
-    -o-border-radius: 0px 4px 4px 0px;
+    @include border-radius(0px 4px 4px 0px);
     height: 20px;
     width: 10%;
     max-width: 20px;
@@ -60,29 +59,39 @@ button.x2-button.x2-combo-box-button > img {
     min-width: 120px;
     overflow-y: auto;
     z-index: 100;
-}
-.x2-combo-box-dropdown > ul {
-    list-style-type: none;
-    padding-left: 0;
-    margin: 0;
-}
-.x2-combo-box-dropdown > ul > li {
-    line-height: 17px;
-    padding: 0 6px 0 6px;
-    cursor: default;
-    border: 1px solid transparent;
-    border-left: none;
-    border-right: none;
-}
-.x2-combo-box-dropdown > ul > li:hover {
-    border: 1px solid #999999;
-    border-left: none;
-    border-right: none;
-    background: #eee;
-    &:first-child, &:last-child {
+
+    /* @theme background: content */
+    /* @theme color: text */
+    /* @theme border-color: border */
+
+    & > ul {
+        list-style-type: none;
+        padding-left: 0;
+        margin: 0;
+    }
+    & > ul > li {
+        line-height: 17px;
+        padding: 0 6px 0 6px;
+        cursor: default;
         border: 1px solid transparent;
         border-left: none;
         border-right: none;
+
+        &:hover {
+            border: 1px solid #999999;
+            /* @theme border-color: border */
+            
+            border-left: none;
+            border-right: none;
+            background: #eee;
+
+            /* @theme background: dark_content */
+
+            &:first-child, &:last-child {
+                border: 1px solid transparent;
+                border-left: none;
+                border-right: none;
+            }
+        }
     }
 }
-

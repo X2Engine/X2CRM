@@ -280,7 +280,6 @@ if ($layoutData !== false && isset($layoutData['sections']) && count($layoutData
                                     }
                                 }
                                 unset($item);
-                                $htmlString .= '</div>';
                                 if ($inlineEdit) {
                                     $htmlString .= CHtml::link (X2Html::fa('fa-edit'), '#', array(
                                         'class' => 'edit-icon active',
@@ -295,6 +294,7 @@ if ($layoutData !== false && isset($layoutData['sections']) && count($layoutData
                                         'title' => Yii::t('app', 'Cancel changes'),
                                     ));
                                 }
+                                $htmlString .= '</div>';
                                 $htmlString .= '</div>';
                             }
                         }

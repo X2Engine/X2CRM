@@ -1525,7 +1525,8 @@ class SiteController extends x2base {
     }
 
     public function actionStoreToken() {
-        $code = file_get_contents('php://input');
+        $code = $_POST['code'];
+        
         require_once 'protected/extensions/google-api-php-client/src/Google_Client.php';
         $client = new Google_Client();
         $client->setClientId(Yii::app()->settings->googleClientId);

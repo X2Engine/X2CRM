@@ -48,7 +48,7 @@ foreach($fields as $field) {
 
 ?>
 
-<div class="row viewQuote" style="overflow: visible;" >
+<div class="row viewQuote" style="padding: 10px; overflow: visible;" >
 <?php
 $viewButton = CHtml::link(
 	'['. Yii::t('products', 'View') .']',

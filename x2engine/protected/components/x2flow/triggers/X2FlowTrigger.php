@@ -218,7 +218,7 @@ abstract class X2FlowTrigger extends X2FlowItem {
     /**
      * Checks if all all the params are ship-shape
      */
-    public function validate(&$params=array(), $flowId) {
+    public function validate(&$params=array(), $flowId=null) {
         $paramRules = $this->paramRules();
         if(!isset($paramRules['options'],$this->config['options'])) {
             return $this->afterValidate (

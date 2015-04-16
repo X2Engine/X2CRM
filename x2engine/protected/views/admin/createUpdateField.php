@@ -154,7 +154,7 @@
                     Yii::t('admin', 
                         'Changing the type of a field may result in alteration of data. For '.
                         'example, changing a field from type "{text}" to type "{varchar}" '.
-                        'shortens the fields width, potentially truncating field values.', array (
+                        'shortens the field\'s width, potentially truncating field values.', array (
                             '{text}' => Yii::t('app', 'Multiple Line Text Area'),
                             '{varchar}' => Yii::t('app', 'Single Line Text Area'),
                         )).

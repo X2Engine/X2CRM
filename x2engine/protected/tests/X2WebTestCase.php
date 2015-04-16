@@ -68,6 +68,7 @@ abstract class X2WebTestCase extends CWebTestCase {
     );
     
     protected static $loadFixtures = LOAD_FIXTURES;
+    protected static $loadFixturesForClassOnly = LOAD_FIXTURES_FOR_CLASS_ONLY;
     protected $captureScreenshotOnFailure = true;
     protected $screenshotPath = null;
     protected $screenshotUrl = null;
@@ -200,9 +201,9 @@ abstract class X2WebTestCase extends CWebTestCase {
         if (self::$skipAllTests) {
             $this->markTestSkipped ();
         }
-        if (!self::$loadFixtures) {
-            $this->fixtures = is_array ($this->fixtures) ? $this->fixtures : array ();
-        }
+
+        if (self::$loadFixturesForClassOnly)
+            $this->getFixtureManager ()->loadFixtures = true;
 
         // print out test name
         VERBOSE_MODE && println ("\n".$this->getName ());

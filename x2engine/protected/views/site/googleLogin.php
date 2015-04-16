@@ -61,8 +61,8 @@ Yii::app()->clientScript->registerCss('googleLogin', "
 }
 ", 'screen', CClientScript::POS_HEAD);
 ?>
-<script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js">
-</script>
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
 <script type="text/javascript">
     (function () {
       var po = document.createElement('script');
@@ -135,28 +135,29 @@ $this->renderPartial ('loginCompanyInfo');
 </div>
 <script type="text/javascript">
 function signInCallback(authResult) {
-  if (authResult['code']) {
-
+  if (authResult.code) {
     // Hide the sign-in button now that the user is authorized, for example:
     $('#signinButton').attr('style', 'display: none');
     $('#result').html('<div><div class="loading-icon" style="vertical-align:middle;"></div> <span><b>Logging you in...</b></span></div>');
     // Send the code to the server
+    var csrfToken = '<?php echo Yii::app()->request->getCsrfToken (); ?>';
     $.ajax({
       type: 'POST',
       url: 'storeToken',
-      contentType: 'application/octet-stream; charset=utf-8',
       success: function(result) {
         window.location=window.location;
       },
-      processData: false,
-      data: authResult['code']
+      data: {
+        code: authResult.code,
+        YII_CSRF_TOKEN: csrfToken
+      }
     });
-  } else if (authResult['error']) {
+  } else if (authResult.error) {
     // There was an error.
     // Possible error codes:
     //   "access_denied" - User denied access to your app
     //   "immediate_failed" - Could not automatially log in the user
-    // console.log('There was an error: ' + authResult['error']);
+    // console.log('There was an error: ' + authResult.error);
   }
 }
 </script>

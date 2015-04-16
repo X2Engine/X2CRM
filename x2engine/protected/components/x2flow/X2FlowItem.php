@@ -69,7 +69,7 @@ abstract class X2FlowItem extends CComponent {
     /**
      * Checks if all all the params are ship-shape
      */
-    abstract public function validate(&$params=array(), $flowId);
+    abstract public function validate(&$params=array(), $flowId=null);
 
     /**
      * Checks if all the config variables and runtime params are ship-shape
@@ -147,8 +147,37 @@ abstract class X2FlowItem extends CComponent {
                     }
                 }
             }
+            
+            if (isset ($option['type']) && isset ($option['value'])) {
+                switch ($option['type']) {
+                    case 'dropdown':
+                        list ($success, $message) = $this->validateDropdown ($option, $optRule);
+                        if (!$success) return array (false, $message);
+                        break;
+                }
+            }
         }
 
+        return array (true, '');
+    }
+
+    public function validateDropdown (&$option, $optRule) {
+        $name = $optRule['name'];
+        if ((!isset ($optRule['multiple']) || !$optRule['multiple']) && 
+            is_array ($option['value'])) {
+
+            if (count ($option['value']) === 1 &&
+                isset ($option['value'][0])) { // repair value if possible
+
+                $option['value'] = $option['value'][0];
+                return array (true, '');
+            }
+
+            return array (false, Yii::t('studio', 'Invalid option value for {optionName}. '.
+                'Multiple values specified but only one is allowed.', array (
+                    '{optionName}' => $name,
+                )));
+        }
         return array (true, '');
     }
 

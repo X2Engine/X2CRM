@@ -36,14 +36,18 @@
 
 class MassDeleteTest extends X2DbTestCase {
 
-    public $fixtures = array (
-        'contacts' => array ('Contacts', '.MassDeleteTest'),
-        'authItems' => array (':x2_auth_item', '.MassDeleteTest'),
-        'authItemChildren' => array (':x2_auth_item_child', '.MassDeleteTest'),
-        'roles' => array ('Roles', '.MassDeleteTest'),
-        'roleToUser' => array (':x2_role_to_user', '.MassDeleteTest'),
-        'authAssignment' => array (':x2_auth_assignment', '.MassDeleteTest'),
-    );
+
+    // skipped since it nukes the auth item data 
+    protected static $skipAllTests = true;
+
+//    public $fixtures = array (
+//        'contacts' => array ('Contacts', '.MassDeleteTest'),
+//        'authItems' => array (':x2_auth_item', '.MassDeleteTest'),
+//        'authItemChildren' => array (':x2_auth_item_child', '.MassDeleteTest'),
+//        'roles' => array ('Roles', '.MassDeleteTest'),
+//        'roleToUser' => array (':x2_role_to_user', '.MassDeleteTest'),
+//        'authAssignment' => array (':x2_auth_assignment', '.MassDeleteTest'),
+//    );
 
     /**
      * Ensure that a user without delete access cannot mass delete records

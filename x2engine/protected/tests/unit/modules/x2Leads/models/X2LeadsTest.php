@@ -75,6 +75,22 @@ class X2LeadsTest extends X2DbTestCase {
 
     }
 
+    public function testConvertToContact () {
+        $lead2 = $this->x2Leads ('lead2');
+        $targetModel = $lead2->convert ('Contacts');
+
+        $this->assertFalse ($targetModel->hasErrors ());
+        $this->assertTrue (!isset ($lead2->errorModel));
+
+        // lead3 is missing required fields
+        $lead3 = $this->x2Leads ('lead3');
+        $targetModel = $lead3->convert ('Contacts');
+        $this->assertTrue ($targetModel->hasErrors ('firstName'));
+        $this->assertTrue ($targetModel->hasErrors ('lastName'));
+        $this->assertTrue ($lead3->errorModel->hasErrors ('firstName'));
+        $this->assertTrue ($lead3->errorModel->hasErrors ('lastName'));
+    }   
+
 }
 
 ?>

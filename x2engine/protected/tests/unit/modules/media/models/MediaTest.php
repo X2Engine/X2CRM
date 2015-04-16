@@ -43,22 +43,22 @@ Yii::import('application.modules.media.models.Media');
  * @package application.tests.unit.modules.media.models
  */
 class MediaTest extends X2DbTestCase {
-	
-	public static function referenceFixtures(){
-		return array(
-			'media' => 'Media'
-		);
-	}
-	
-	public function getRootPath() {
-		return realpath(Yii::app()->basePath.DIRECTORY_SEPARATOR.'..');
-	}
-	
-	public function testFilesystem() {
-		$image = $this->media('bg');
-		$this->assertNotEquals(null,$image->path,'Failed asserting valid path for media item "bg"');
-		$this->assertFileExists($image->path);
-	}
+    
+    public static function referenceFixtures(){
+        return array(
+            'media' => 'Media'
+        );
+    }
+    
+    public function getRootPath() {
+        return realpath(Yii::app()->basePath.DIRECTORY_SEPARATOR.'..');
+    }
+    
+    public function testFilesystem() {
+        $image = $this->media('bg');
+        $this->assertNotEquals(null,$image->path,'Failed asserting valid path for media item "bg"');
+        $this->assertFileExists($image->path);
+    }
         
         public function testGetFilePath() {
             $image = $this->media("bg");
@@ -93,7 +93,7 @@ class MediaTest extends X2DbTestCase {
             
             unlink($dest);
         }
-	
+    
         public function testDeleteUpload() {
             $source = implode(DIRECTORY_SEPARATOR, array(Yii::app()->basePath, 'tests', 'data', 'media', 'testfile.txt'));
             $dest = implode(DIRECTORY_SEPARATOR, array(Yii::app()->basePath, '..', 'uploads', 'media', 'admin', 'testfile.txt'));
@@ -106,25 +106,36 @@ class MediaTest extends X2DbTestCase {
             $this->assertFileNotExists($dest);
         }
         
-	public function testResolveMimetype() {
-		$image = $this->media('bg');
-		$mt = $image->resolveType();
-		$this->assertStringStartsWith('image/', $mt);
-		$this->assertStringStartsWith('image/',Yii::app()->db->createCommand()->select('mimetype')->from('x2_media')->where("id=:id",array(':id'=>$image->id))->queryScalar());
-	}
-	
-	public function testResolveSize() {
-		$image = $this->media('bg');
-		$this->assertEquals(97724,$image->resolveSize());
-		$this->assertEquals(97724,Yii::app()->db->createCommand()->select('filesize')->from('x2_media')->where("id=:id",array(':id'=>$image->id))->queryScalar());
-	}
-	
-	public function testResolveDimensions() {
-		$this->assertEquals(1,extension_loaded('gd'));
-		$image = $this->media('bg');
-		$this->assertEquals(array('height'=>682,'width'=>1024),CJSON::decode($image->resolveDimensions()));
-		$this->assertEquals(array('height'=>682,'width'=>1024),CJSON::decode(Yii::app()->db->createCommand()->select('dimensions')->from('x2_media')->where("id=:id",array(':id'=>$image->id))->queryScalar()));
-	}
+    public function testResolveMimetype() {
+        $image = $this->media('bg');
+        $image->refresh (); 
+        $mt = $image->resolveType();
+        $this->assertStringStartsWith('image/', $mt);
+        $image->refresh (); 
+        $mimetype = $image->mimetype;
+        $this->assertStringStartsWith('image/',$mimetype);
+    }  
+    
+    public function testResolveSize() {
+        $image = $this->media('bg');
+        $this->assertEquals(97724,$image->resolveSize());
+        $this->assertEquals(97724,Yii::app()->db->createCommand()->select('filesize')->from('x2_media')->where("id=:id",array(':id'=>$image->id))->queryScalar());
+    }
+    
+    public function testResolveDimensions() {
+        $this->assertEquals(1,extension_loaded('gd'));
+        $image = $this->media('bg');
+        $this->assertEquals(array('height'=>682,'width'=>1024),CJSON::decode($image->resolveDimensions()));
+        $this->assertEquals(
+            array('height'=>682,'width'=>1024),
+            CJSON::decode(
+                Yii::app()->db->createCommand()
+                    ->select('dimensions')
+                    ->from('x2_media')
+                    ->where("id=:id",array(':id'=>$image->id))
+                    ->queryScalar()
+                ));
+    }
         
         public function testGetFmtDimensions() {
             $image = $this->media('bg');

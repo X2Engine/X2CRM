@@ -129,7 +129,7 @@ class TemplatesGridViewProfileWidget extends ProfileGridViewWidget {
                     'specialColumns'=>array(
                         'name'=>array(
                             'name'=>'name',
-                            'value'=>'CHtml::link($data->name,array("view","id"=>$data->id))',
+                            'value'=>'$data->link',
                             'type'=>'raw',
                         ),
                         'description'=>array(

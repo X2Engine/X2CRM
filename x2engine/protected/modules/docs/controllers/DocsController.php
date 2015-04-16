@@ -343,20 +343,18 @@ class DocsController extends x2base {
 	 */
 	public function actionUpdate($id) {
         $model = $this->loadModel($id);
-       if($model->type == null)
-        {
+        if($model->type == null) {
             $model->scenario = 'menu';
         }
         $old_title= $model->name;
         $new_title = $old_title;
 
-        if (isset($_POST['Docs']))
-        {
+        if (isset($_POST['Docs'])) {
             $new_title = $_POST['Docs']['name'];
         }
         $perm = $model->editPermissions;
         $pieces = explode(', ', $perm);
-        if (Yii::app()->user->checkAccess('DocsAdmin') || Yii::app()->user->getName() == $model->createdBy || array_search(Yii::app()->user->getName(), $pieces) !== false || Yii::app()->user->getName() == $perm) {
+        if ($model->checkEditPermissions ()) {
             if (isset($_POST['Docs'])) {
                 $model->attributes = $_POST['Docs'];
                 $model->visibility = $_POST['Docs']['visibility'];
@@ -369,7 +367,8 @@ class DocsController extends x2base {
                     $event->user = Yii::app()->user->getName();
                     $event->visibility = $model->visibility;
                     $event->save();
-                    $this->redirect(array('update', 'id' => $model->id, 'saved' => true, 'time' => time()));
+                    $this->redirect(
+                        array('update', 'id' => $model->id, 'saved' => true, 'time' => time()));
                 }
             }
 
@@ -462,7 +461,7 @@ class DocsController extends x2base {
         }
         $doc = Docs::model ()->findByPk ($id);
         if (isset ($doc)) {
-            $canEdit = $doc->checkEditPermission () ? 'true' : 'false';
+            $canEdit = $doc->checkEditPermissions () ? 'true' : 'false';
         } else {
             $canEdit = 'false';
         }
@@ -553,9 +552,7 @@ class DocsController extends x2base {
                 )),
                 'url' => array('changePermissions', 'id' => $modelId),
                 'visible' => isset($model) && (Yii::app()->params->isAdmin ||
-                            $user == $model->createdBy ||
-                            array_search($user, explode(", ",$model->editPermissions)) ||
-                            $user == $model->editPermissions)
+                            $user == $model->createdBy),
             ),
             array(
                 'name'=>'exportToHtml',

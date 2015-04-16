@@ -56,8 +56,8 @@ class X2AuthManager extends CDbAuthManager {
      * Internal "cache" of user names
      * @var type
      */
-    private $_usernames = array();
     private $_assignments = array();
+    protected $_usernames = array();
 
     /**
      * Access check function.
@@ -168,7 +168,7 @@ class X2AuthManager extends CDbAuthManager {
         return $hasAccess;
     }
 
-    private function getCacheParams(array $params) {
+    protected function getCacheParams(array $params) {
         $ret = false;
         unset($params['userId']);
         if ($params == array ()) {

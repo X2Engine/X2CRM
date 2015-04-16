@@ -944,7 +944,9 @@ class Actions extends X2Model {
         return $this->searchBase($criteria);
     }
 
-    public function searchBase($criteria, $pageSize=null, $showHidden=false){
+    public function searchBase(
+        $criteria, $pageSize=null, $showHidden=false){
+
         if ($pageSize === null) {
             $pageSize = Profile::getResultsPerPage ();
         }

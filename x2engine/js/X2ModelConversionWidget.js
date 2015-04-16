@@ -53,7 +53,8 @@ function X2ModelConversionWidget (argsDict) {
         targetClass: null,
         // conversion error summary
         errorSummary: null,
-        conversionIncompatibilityWarnings: null
+        conversionIncompatibilityWarnings: null,
+        conversionFailed: null
     };
     auxlib.applyArgs (this, defaultArgs, argsDict);
     this._button$ = $(this.buttonSelector);
@@ -75,7 +76,8 @@ X2ModelConversionWidget.prototype._convert = function () {
 
     // no incompatibilities present. convert the lead
     if (!this.conversionIncompatibilityWarnings.length) {
-        window.location = pathname + 'convert?id=' + this.modelId + '&targetClass=' + this.targetClass;
+        window.location = pathname + 'convert?id=' + this.modelId + '&targetClass=' + 
+            this.targetClass;
         return false;
     }
 

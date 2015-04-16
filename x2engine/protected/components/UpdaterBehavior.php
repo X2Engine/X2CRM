@@ -1889,7 +1889,11 @@ class UpdaterBehavior extends ResponseBehavior {
             // Use realpath to get platform-dependent path
             $absFile = realpath("{$this->webRoot}/$file");
             if((bool) $absFile){
-                unlink($absFile);
+                // Get existing file's name to ensure that we're deleting the correct file.
+                // This check is only necessary on case-insensitive file systems
+                $basename = pathinfo ($absFile, PATHINFO_BASENAME);
+                if (basename ($file) === $basename)
+                    unlink($absFile);
             }
         }
     }

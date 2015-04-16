@@ -122,56 +122,8 @@ class Docs extends X2Model {
      * @return CActiveDataProvider the data provider that can return the models based on the search/filter conditions.
      */
     public function search() {
-        // Warning: Please modify the following code to remove attributes that
-        // should not be searched.
-
         $criteria = new CDbCriteria;
-
-        // $criteria->compare('id',$this->id);
-        $criteria->compare('name', $this->name, true);
-        $criteria->compare('subject', $this->subject, true);
-        // $criteria->compare('text',$this->text,true);
-        $criteria->compare('createdBy', $this->createdBy, true);
-        $criteria->compare('createDate', $this->createDate);
-        $criteria->compare('updatedBy', $this->updatedBy, true);
-        $criteria->compare('lastUpdated', $this->lastUpdated);
-        $criteria->compare('type', $this->type);
-
-        if (!Yii::app()->params->isAdmin) {
-            $condition = 'visibility="1" OR createdBy="Anyone"  OR createdBy="' . Yii::app()->user->getName() . '" OR editPermissions LIKE "%' . Yii::app()->user->getName() . '%"';
-            /* x2temp */
-            $groupLinks = Yii::app()->db->createCommand()
-                ->select('groupId')
-                ->from('x2_group_to_user')
-                ->where('userId=' . Yii::app()->user->getId())
-                ->queryColumn();
-            if (!empty($groupLinks))
-                $condition .= ' OR createdBy IN (' . implode(',', $groupLinks) . ')';
-
-            $condition .= 'OR (visibility=2 AND createdBy IN
-                (SELECT username FROM x2_group_to_user WHERE groupId IN
-                    (SELECT groupId FROM x2_group_to_user WHERE userId=' . Yii::app()->user->getId() . ')))';
-            $criteria->addCondition($condition);
-        }
-        // $criteria->compare('editPermissions',$this->editPermissions,true);
-
-        $dateRange = X2DateUtil::partialDateRange($this->createDate);
-        if ($dateRange !== false)
-            $criteria->addCondition('createDate BETWEEN ' . $dateRange[0] . ' AND ' . $dateRange[1]);
-
-        $dateRange = X2DateUtil::partialDateRange($this->lastUpdated);
-        if ($dateRange !== false)
-            $criteria->addCondition('lastUpdated BETWEEN ' . $dateRange[0] . ' AND ' . $dateRange[1]);
-
-        return new SmartActiveDataProvider('Docs', array(
-                    'pagination' => array(
-                        'pageSize' => Profile::getResultsPerPage(),
-                    ),
-                    'sort' => array(
-                        'defaultOrder' => 'lastUpdated DESC, id DESC',
-                    ),
-                    'criteria' => $criteria,
-                ));
+        return $this->searchBase ($criteria, null, false);
     }
 
     /**
@@ -322,19 +274,26 @@ class Docs extends X2Model {
     /**
      * @return bool true if user has edit permissions, false otherwise 
      */
-    public function checkEditPermission () {
+    public function checkEditPermissionsList () {
         $perm = $this->editPermissions;
         $pieces = explode(", ",$perm);
-        if (Yii::app()->user->checkAccess('DocsUpdate') && 
-            (Yii::app()->user->checkAccess('DocsAdmin') || 
-             Yii::app()->user->getName()==$this->createdBy || 
-             array_search(Yii::app()->user->getName(),$pieces)!==false || 
-             Yii::app()->user->getName()==$perm)) {
+        if (array_search(Yii::app()->user->getName(),$pieces)!==false || 
+             Yii::app()->user->getName()==$perm) {
 
              return true;
         } else {
             return false;
         }
+    }
+
+    public function checkEditPermissions () {
+        $permission = Yii::app()->controller->asa ('PermissionsBehavior')
+            ->checkPermissions ($this, 'edit');
+        $permission &= (
+            Yii::app()->user->checkAccess('DocsAdmin') || 
+            $this->createdBy === Yii::app()->user->getName () || 
+            $this->checkEditPermissionsList ());
+        return $permission;
     }
 
     /**

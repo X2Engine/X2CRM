@@ -400,12 +400,13 @@ div.x2-layout {
     color: #aaa;
     }
     .formInputBox {
-    input {
-        margin: 0;
-        padding: 2px;
-        &[type="text"] {
-        width: 100%;
-        }
+        min-width: 100px;
+        input {
+            margin: 0;
+            padding: 2px;
+            &[type="text"] {
+            width: 100%;
+            }
     }
     textarea {
         padding: 2px;

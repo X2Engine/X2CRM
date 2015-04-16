@@ -49,9 +49,6 @@ function ConditionList (argsDict) {
         value: []
     };
     auxlib.applyArgs (this, defaultArgs, argsDict);
-   console.log ('this.value = ');
-    console.log (this.value);
-
 
     this._container$ = $(this.containerSelector);
     this._sortList$ = this._container$.children ('.x2-cond-list');

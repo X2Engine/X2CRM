@@ -34,6 +34,7 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 
+Yii::import("application.tests.mocks.X2AuthManagerMock");
 
 /**
  * Auxilliary Library for unit testing. A catch-all class for miscellaneous utility methods.
@@ -94,7 +95,7 @@ class TestingAuxLib  {
     }
 
     /**
-     * Log in with the specified credentials .
+     * Log in with the specified credentials.
      *
      * NOTE: in a non-web environment (i.e. command line, running PHPUnit)
      * this is not guaranteed to work, because Yii::app()->user is designed for
@@ -192,6 +193,24 @@ class TestingAuxLib  {
 //        return $sessionId;
 //
 //    }
+
+    public static function loadAuthManagerMock () {
+        Yii::app()->setComponent ('authManager', array ( 
+            'class' => 'X2AuthManagerMock',
+            'connectionID' => 'db',
+            'defaultRoles' => array('guest', 'authenticated', 'admin'),
+            'itemTable' => 'x2_auth_item',
+            'itemChildTable' => 'x2_auth_item_child',
+            'assignmentTable' => 'x2_auth_assignment',
+        ));
+        return Yii::app()->authManager;
+    }
+
+    public static function loadX2NonWebUser () {
+        Yii::app()->setComponent ('user', array ( 
+            'class' => 'X2NonWebUser',
+        ));
+    }
 
 }
 

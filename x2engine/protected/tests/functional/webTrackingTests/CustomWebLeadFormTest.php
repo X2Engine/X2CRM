@@ -52,14 +52,11 @@ class CustomWebLeadFormTest extends WebTrackingTestBase {
         // disables fingerprinting
         'admin' => array ('Admin', '.cookieTrackingTests'),
         'users' => array ('User', '.CustomWebLeadFormTest'),
+        'contacts' => 'Contacts',
     );
 
-    /**
-     * Assert that tracking cooldown is disabled 
-     */
-    public function testAssertDebugMode () {
-        $this->assertTrue (YII_DEBUG && WebListenerAction::DEBUG_TRACK);
-    }
+     
+
 
     /**
      * Submits the custom web lead form and ensures successful submission
@@ -81,7 +78,7 @@ class CustomWebLeadFormTest extends WebTrackingTestBase {
         $this->waitForCondition (
             "selenium.browserbot.getCurrentWindow(document.getElementById ('success'))",
             4000);
-        $this->pause (5000); // wait for database changes to enact
+        sleep (5); // wait for iframe to load
     }
 
 
@@ -92,74 +89,11 @@ class CustomWebLeadFormTest extends WebTrackingTestBase {
     public function testSubmitCustomWebLeadForm () {
         $this->deleteAllVisibleCookies ();
         $this->submitCustomWebForm ();
-        $this->assertCookie ('regexp:.*x2_key.*');
+         
         $this->assertContactCreated ();
     }
 
-    /**
-     * Test that submission of custom web form initiates cookie-based tracking
-     */
-    public function testCustomWebLeadFormTracking () {
-        $this->deleteAllVisibleCookies ();
-
-        // assert that cookie-based tracking doesn't work before form submission
-        $this->clearWebActivity ();
-        $this->openPublic('/x2WebTrackingTestPages/webTrackerTest.html');
-        $this->pause (5000); // wait for database changes to enact
-        $this->assertNoWebActivityGeneration (TEST_WEBROOT_URL_ALIAS_1);
-
-        $this->submitCustomWebForm ();
-        $this->assertCookie ('regexp:.*x2_key.*');
-
-        $this->clearWebActivity ();
-        $this->openPublic('/x2WebTrackingTestPages/webTrackerTest.html');
-        $this->pause (5000); // wait for database changes to enact
-        $this->assertWebActivityGeneration ();
-    }
-
-    /**
-     * Test that submission of custom web form does not initiate tracking if request from webtracker
-     * is made across domains.
-     */
-    public function testCustomWebLeadFormTrackingAcrossDomains () {
-        $this->deleteAllVisibleCookies ();
-
-        // assert that cookie-based tracking doesn't work before form submission
-        $this->clearWebActivity ();
-        $this->openPublic('/x2WebTrackingTestPages/webTrackerTestDifferentDomain.html');
-        $this->pause (5000); // wait for database changes to enact
-        $this->assertNoWebActivityGeneration ();
-
-        $this->submitCustomWebForm ('differentDomain');
-        $this->assertCookie ('regexp:.*x2_key.*');
-
-        $this->clearWebActivity ();
-        $this->openPublic('/x2WebTrackingTestPages/webTrackerTestDifferentDomain.html');
-        $this->pause (5000); // wait for database changes to enact
-        $this->assertNoWebActivityGeneration ();
-    }
-
-    /**
-     * Test that submission of custom web form initiates cookie-based tracking if request from 
-     * webtracker is made across subdomains.
-     */
-    public function testCustomWebLeadFormTrackingAcrossSubdomains () {
-        $this->deleteAllVisibleCookies ();
-
-        // assert that cookie-based tracking doesn't work before form submission
-        $this->clearWebActivity ();
-        $this->openPublic('/x2WebTrackingTestPages/webTrackerTestDifferentSubdomain.html');
-        $this->pause (5000); // wait for database changes to enact
-        $this->assertNoWebActivityGeneration (TEST_WEBROOT_URL_ALIAS_1);
-
-        $this->submitCustomWebForm ('differentSubdomain');
-        $this->assertCookie ('regexp:.*x2_key.*');
-
-        $this->clearWebActivity ();
-        $this->openPublic('/x2WebTrackingTestPages/webTrackerTestDifferentSubdomain.html');
-        $this->pause (5000); // wait for database changes to enact
-        $this->assertWebActivityGeneration ();
-    }
+          
 
 }
 

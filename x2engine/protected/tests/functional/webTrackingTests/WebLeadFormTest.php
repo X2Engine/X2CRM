@@ -52,12 +52,7 @@ class WebLeadFormTest extends WebTrackingTestBase {
         'webForms' => array ('WebForm', '.WebLeadFormTest'),
     );
 
-    /**
-     * Assert that tracking cooldown is disabled 
-     */
-    public function testAssertDebugMode () {
-        $this->assertTrue (YII_DEBUG && WebListenerAction::DEBUG_TRACK);
-    }
+     
 
     protected function assertLeadCreated () {
         $lead = X2Leads::model()->findByAttributes (array (
@@ -115,33 +110,15 @@ class WebLeadFormTest extends WebTrackingTestBase {
      */
     public function testSubmitWebLeadForm () {
         $this->deleteAllVisibleCookies ();
-        $this->assertNotCookie ('regexp:.*x2_key.*');
+         
 
         $this->submitWebForm ();
-        $this->pause (5000); // wait for database changes to enact and for cookie to be set
-        $this->assertCookie ('regexp:.*x2_key.*');
+        sleep (5); // wait for iframe to load and for cookie to be set
+         
         $this->assertContactCreated ();
     }
 
-    /**
-     * Test web lead form tracking by revisiting the page with the web lead form after submission
-     */
-    public function testWebLeadFormTracking () {
-        $this->deleteAllVisibleCookies ();
-        $this->assertNotCookie ('regexp:.*x2_key.*');
-
-        $this->submitWebForm ();
-        $this->pause (5000); // wait for database changes to enact and for cookie to be set
-        $this->assertCookie ('regexp:.*x2_key.*');
-        $this->assertContactCreated ();
-
-
-        $this->clearWebActivity ();
-        $this->openPublic('/x2WebTrackingTestPages/webFormTest.html');
-        $this->pause (5000); // wait for database changes to enact
-        $this->assertCookie ('regexp:.*x2_key.*');
-        $this->assertWebActivityGeneration ();
-    }
+     
 
     /**
      * Submit a web form that was created with the generate lead option checked. Assert that
@@ -152,7 +129,7 @@ class WebLeadFormTest extends WebTrackingTestBase {
         $this->clearLead ();
 
         $this->openPublic('x2WebTrackingTestPages/webFormTestGenerateLead.html');
-        if ($this->isOpera ()) $this->pause (5000);
+        if ($this->isOpera ()) sleep (5);
 
         $this->type("name=Contacts[firstName]", 'test');
         $this->type("name=Contacts[lastName]", 'test');
@@ -162,33 +139,13 @@ class WebLeadFormTest extends WebTrackingTestBase {
         $this->waitForCondition (
             "selenium.browserbot.getCurrentWindow(document.getElementsByName ('web-form-iframe').length && document.getElementsByName ('web-form-iframe')[0].contentWindow.document.getElementById ('web-form-submit-message') !== null)",
             4000);
-        $this->pause (5000); // wait for database changes to enact
+        sleep (5); // wait for iframe to load
 
         $this->assertContactCreated ();
         $this->assertLeadCreated ();
     }
 
-    public function testGenerateAccount () {
-        $this->clearContact ();
-        $this->clearAccount ();
-
-        $this->openPublic('x2WebTrackingTestPages/webFormTestGenerateAccount.html');
-        if ($this->isOpera ()) $this->pause (5000);
-
-        $this->type("name=Contacts[firstName]", 'test');
-        $this->type("name=Contacts[lastName]", 'test');
-        $this->type("name=Contacts[email]", 'test@test.com');
-        $this->type("name=Contacts[company]", 'testAccount');
-        $this->click("css=#submit");
-        // wait for iframe to load new page
-        $this->waitForCondition (
-            "selenium.browserbot.getCurrentWindow(document.getElementsByName ('web-form-iframe').length && document.getElementsByName ('web-form-iframe')[0].contentWindow.document.getElementById ('web-form-submit-message') !== null)",
-            4000);
-        $this->pause (5000); // wait for database changes to enact
-
-        $this->assertContactCreated ();
-        $this->assertAccountCreated ();
-    }
+     
 
     /**
      * Submit a web form that was created with the generate lead option unchecked. Assert that
@@ -199,7 +156,7 @@ class WebLeadFormTest extends WebTrackingTestBase {
         $this->clearLead ();
 
         $this->openPublic('x2WebTrackingTestPages/webFormTestDontGenerateLead.html');
-        if ($this->isOpera ()) $this->pause (5000);
+        if ($this->isOpera ()) sleep (5);
 
         $this->type("name=Contacts[firstName]", 'test');
         $this->type("name=Contacts[lastName]", 'test');
@@ -209,7 +166,7 @@ class WebLeadFormTest extends WebTrackingTestBase {
         $this->waitForCondition (
             "selenium.browserbot.getCurrentWindow(document.getElementsByName ('web-form-iframe').length && document.getElementsByName ('web-form-iframe')[0].contentWindow.document.getElementById ('web-form-submit-message') !== null)",
             4000);
-        $this->pause (5000); // wait for database changes to enact
+        sleep (5); // wait for iframe to load
 
         $this->assertContactCreated ();
         $this->assertLeadNotCreated ();

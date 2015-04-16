@@ -131,7 +131,6 @@ class WebFormAction extends CAction {
                 }
 
                 if(count($duplicates) > 0){ //use existing record, update background info
-                    /**/AuxLib::debugLogR ('found dup');
                     $newBgInfo = $model->backgroundInfo;
                     $model = $duplicates[0];
                     $oldBgInfo = $model->backgroundInfo;

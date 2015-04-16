@@ -37,7 +37,7 @@
 require '../protected/models/APIModel.php';
 $attributes = $_POST['Contacts'];
 $contact = new APIModel(
-    'admin','21232f297a57a5a743894a0e4a801fc3','localhost/index-test.php');
+    'admin','21232f297a57a5a743894a0e4a801fc3',rtrim ('TEST_BASE_URL_ALIAS_1', '/'));
 $fieldMap = array( // This map should be of the format 'your_fieldname'=>'x2_fieldname',
     'firstName'=>'firstName',
     'lastName'=>'lastName',

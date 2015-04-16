@@ -34,6 +34,7 @@
  *****************************************************************************************/
 
 
+
 if (typeof x2 === 'undefined') x2 = {};
 
 x2.Fields = (function () {
@@ -279,12 +280,18 @@ Fields.prototype.createInput = function(attributes, name) {
 
     switch(attributes.type) {
         case 'boolean':
-            if(typeof attributes.value === "undefined")
-                attributes.value = attributes.defaultVal;
-            if(attributes.value)
+            if(typeof attributes.value === 'undefined' && attributes.defaultVal || attributes.value)
                 safeAttributes["checked"] = "checked";
-            return $('<input type="checkbox" />').attr(safeAttributes);
-
+            var checkbox$ = $('<input type="checkbox" />').attr(safeAttributes);
+            var checkboxHidden$ = $('<input type="checkbox" />').attr(safeAttributes);
+            checkbox$.attr ('value', 1);
+            checkboxHidden$.attr ('type', 'hidden');
+            checkboxHidden$.attr ('value', 0);
+            checkboxHidden$.attr ('class', 'checkbox-hidden');
+            var container$ = $('<span>');
+            container$.append (checkboxHidden$);
+            container$.append (checkbox$);
+            return container$;
         case 'visibility':
             return this.buildDropdown(that.visibilityOptions,safeAttributes);
             

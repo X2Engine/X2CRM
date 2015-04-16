@@ -64,6 +64,12 @@ class X2ModelConversionBehavior extends CActiveRecordBehavior {
      */
     public $conversionFailed = false; 
 
+    /**
+     * @var null|X2Model if conversion fails, this property gets set to the model that was attempted
+     *  to be saved. This gets used for displaying error output.
+     */
+    public $errorModel = null; 
+
     public static function getActions () {
         return array (
             'convert' => 
@@ -193,6 +199,7 @@ class X2ModelConversionBehavior extends CActiveRecordBehavior {
             $this->owner->delete ();
             return $targetModel;
         }
+        $this->errorModel = $targetModel;
         return $targetModel;
     }
 
@@ -208,6 +215,7 @@ class X2ModelConversionBehavior extends CActiveRecordBehavior {
             $attributeNames, $targetClass::model()->attributeNames ());
         $fieldMap = $this->getFieldMap ($targetClass, true);
 
+        // look for fields which aren't in the target model
         foreach ($leadsAttrs as $name) {
             $name = isset ($fieldMap[$name]) ? $fieldMap[$name] : $name;
             // if field isn't set, there's no risk of data loss
@@ -222,6 +230,7 @@ class X2ModelConversionBehavior extends CActiveRecordBehavior {
                 );
         }
 
+        // look for type mismatches
         $sharedAttrs = array_intersect (
             $attributeNames, $targetModel->attributeNames ());
         foreach ($sharedAttrs as $name) {

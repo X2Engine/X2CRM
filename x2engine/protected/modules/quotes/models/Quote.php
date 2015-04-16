@@ -410,6 +410,10 @@ class Quote extends X2Model {
 	 * @return string
 	 */
 	public function productTable($emailTable = false) {
+        if (!YII_UNIT_TESTING)
+            Yii::app()->clientScript->registerCssFile (
+                Yii::app()->getModule('quotes')->assetsUrl.'/css/productTable.css'
+            );
 		$pad = 4;
 		// Declare styles
 		$tableStyle = 'border-collapse: collapse; width: 100%;';
@@ -440,7 +444,7 @@ class Quote extends X2Model {
 		$markup = array();
 
 		// Table opening and header
-		$markup[] = "<table style=\"$tableStyle\"><thead>";
+		$markup[] = "<table class='quotes-product-table' style=\"$tableStyle\"><thead>";
         $row = array ();
 		foreach(array(
             'Line Item' => '20%; min-width: 200px;',
@@ -662,7 +666,8 @@ class Quote extends X2Model {
 		return $this->searchBase($criteria);
 	}
 
-	public function searchBase($criteria, $pageSize=null, $showHidden = false) {
+	public function searchBase(
+        $criteria, $pageSize=null, $showHidden = false) {
 
 		$dateRange = X2DateUtil::partialDateRange($this->expectedCloseDate);
 		if ($dateRange !== false)

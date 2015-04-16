@@ -121,6 +121,10 @@ class X2PermissionsBehavior extends ModelPermissionsBehavior {
      */
     private $_isVisibleTo = array();
 
+    public function clearCache () {
+        $this->_isVisibleTo = $this->_isAssignedTo = array ();
+    }
+
     /**
      * Returns a CDbCriteria containing record-level access conditions.
      * @return CDbCriteria
@@ -131,6 +135,7 @@ class X2PermissionsBehavior extends ModelPermissionsBehavior {
         $criteria = new CDbCriteria;
         $criteria->alias = $tableAlias;
         $accessLevel = $this->getAccessLevel();
+
         $conditions = $this->getAccessConditions(
                 $accessLevel, $tableAlias, $paramsNamespace, $showHidden);
         foreach ($conditions as $arr) {
@@ -158,10 +163,11 @@ class X2PermissionsBehavior extends ModelPermissionsBehavior {
      * module a model "belongs" to.
      * @return integer The access level. 0=no access, 1=own records, 2=public records, 3=full access
      */
-    public function getAccessLevel() {
+    public function getAccessLevel($uid=null) {
         $module = ucfirst($this->owner->module);
 
-        if (Yii::app()->isInSession) { // Web request
+        if ($uid) {
+        } elseif (Yii::app()->isInSession) { // Web request
             $uid = Yii::app()->user->id;
         } else { // User session not available; doing an operation through API or console
             $uid = Yii::app()->getSuID();
@@ -259,7 +265,8 @@ class X2PermissionsBehavior extends ModelPermissionsBehavior {
      * @return String The SQL conditions
      */
     public function getAccessConditions(
-    $accessLevel, $tableAlias = 't', $paramsNamespace = 'X2PermissionsBehavior', $showHidden = false) {
+        $accessLevel, $tableAlias = 't', $paramsNamespace = 'X2PermissionsBehavior',
+        $showHidden = false) {
 
         $user = Yii::app()->getSuModel()->username;
         $userId = Yii::app()->getSuModel()->id;
@@ -330,6 +337,14 @@ class X2PermissionsBehavior extends ModelPermissionsBehavior {
                         )
                     );
                 }
+                if ($assignmentAttr && $visibilityAttr) {
+                    $ret[] = array(
+                        'condition' =>
+                        "NOT (" . $prefix . "$visibilityAttr=" . self::VISIBILITY_PRIVATE . " AND "
+                        . $prefix . "$assignmentAttr='Anyone')",
+                        'operator' => 'AND',
+                        'params' => array());
+                }
                 break;
             case self::QUERY_NONE:  // can't view anything
             default:
@@ -353,9 +368,9 @@ class X2PermissionsBehavior extends ModelPermissionsBehavior {
             return true;
 
         // User model corresponding to the specified username
-        $user = $username === Yii::app()->getSuName() ? Yii::app()->getSuModel() : User::model()->findByAttributes(array(
-                    'username' => $username
-        ));
+        $user = $username === Yii::app()->getSuName() ? 
+            Yii::app()->getSuModel() : 
+            User::model()->findByAttributes(array('username' => $username));
 
         $isAssignedTo = false;
         $assignees = explode(', ', $this->owner->getAttribute($this->assignmentAttr));
@@ -388,6 +403,19 @@ class X2PermissionsBehavior extends ModelPermissionsBehavior {
         return $isAssignedTo;
     }
 
+    private function isHidden () {
+        $assignmentAttr = $this->getAssignmentAttr();
+        $visibilityAttr = $this->getVisibilityAttr();
+        if ($assignmentAttr && $visibilityAttr) {
+            if ($this->owner->$assignmentAttr === 'Anyone' && 
+                $this->owner->$visibilityAttr == self::VISIBILITY_PRIVATE) {
+
+                return true;
+            }
+        }
+        return false;
+    }
+
     /**
      * Uses the visibility attribute and the assignment of the model to determine
      * if a given named user has permission to view it.
@@ -399,9 +427,17 @@ class X2PermissionsBehavior extends ModelPermissionsBehavior {
      *  should not be able to see the record, hence the default for this is true.
      * @return type
      */
-    public function isVisibleTo($username, $excludeAnyone = true) {
+    public function isVisibleTo($user, $excludeAnyone = true) {
+        if ($user) {
+            $username = $user->username;
+            $uid = $user->id;
+        } else {
+            $username = 'Guest';
+            $uid = null;
+        }
         if (!isset($this->_isVisibleTo[$username][$excludeAnyone])) {
-            $accessLevel = $this->getAccessLevel();
+            $accessLevel = $this->getAccessLevel($uid);
+
             $hasViewPermission = false;
             switch ($accessLevel) {
                 case self::QUERY_ALL:
@@ -409,7 +445,7 @@ class X2PermissionsBehavior extends ModelPermissionsBehavior {
                     break;
                 case self::QUERY_PUBLIC:
                     if ($this->owner->getAttribute($this->visibilityAttr) ==
-                            self::VISIBILITY_PUBLIC) {
+                        self::VISIBILITY_PUBLIC) {
 
                         $hasViewPermission = true;
                         break;
@@ -417,12 +453,22 @@ class X2PermissionsBehavior extends ModelPermissionsBehavior {
                     // Visible if marked with visibility "Users' Groups"
                     // and the current user has groups in common with
                     // assignees of the model:
-                    if ($this->owner->getAttribute($this->visibilityAttr) == self::VISIBILITY_GROUPS && (bool) $this->assignmentAttr // Assignment attribute must exist
-                            && (bool) ($groupmatesRegex = self::getGroupmatesRegex()) && preg_match('/' . $groupmatesRegex . '/', $this->owner->getAttribute($this->assignmentAttr))) {
+                    if ($this->owner->getAttribute($this->visibilityAttr) == 
+                            self::VISIBILITY_GROUPS && 
+                        (bool) $this->assignmentAttr && 
+                        (bool) ($groupmatesRegex = self::getGroupmatesRegex()) && 
+                        preg_match(
+                            '/' . $groupmatesRegex . '/', 
+                            $this->owner->getAttribute($this->assignmentAttr))) {
+
                         $hasViewPermission = true;
                         break;
                     }
                 case self::QUERY_SELF:
+                    if ($this->isHidden ()) {
+                        $hasViewPermission = false;
+                        break;
+                    }
                     // Visible if assigned to current user
                     if ($this->isAssignedTo($username, $excludeAnyone)) {
                         $hasViewPermission = true;
@@ -444,7 +490,8 @@ class X2PermissionsBehavior extends ModelPermissionsBehavior {
      * @return array array (<SQL condition string>, <array of parameters>)
      */
     public function getAssignedToCondition(
-    $includeAnyone = true, $alias = null, $username = null, $paramsNamespace = 'X2PermissionsBehavior') {
+        $includeAnyone = true, $alias = null, $username = null,
+        $paramsNamespace = 'X2PermissionsBehavior') {
 
         $username = $username === null ? Yii::app()->getSuName() : $username;
         $prefix = empty($alias) ? '' : "$alias.";

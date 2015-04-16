@@ -161,7 +161,6 @@ class X2FlowFormatter extends Formatter {
                         
                     } else { 
                         // Finally, try to parse it as a short code if nothing else worked
-
                         $shortCodeValue = self::parseShortCode($match, $params);
                         if(!is_null($shortCodeValue) && is_scalar ($shortCodeValue)){
                             $codes['{'.$match.'}'] = $shortCodeValue;

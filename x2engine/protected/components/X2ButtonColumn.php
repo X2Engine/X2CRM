@@ -45,6 +45,25 @@ class X2ButtonColumn extends CButtonColumn {
     public $updateButtonImageUrl = false; 
     public $deleteButtonImageUrl = false; 
     public $name;
+    
+    public $viewButtonUrl='
+        $data instanceof X2Model ? 
+            Yii::app()->createUrl(
+                "/".lcfirst (X2Model::getModuleName (get_class ($data)))."/view",
+                array("id"=>$data->primaryKey)) :
+            Yii::app()->controller->createUrl("view", array("id"=>$data->primaryKey))';
+    public $updateButtonUrl='
+        $data instanceof X2Model ? 
+            Yii::app()->createUrl(
+                "/".lcfirst (X2Model::getModuleName (get_class ($data)))."/update",
+                array("id"=>$data->primaryKey)) :
+            Yii::app()->controller->createUrl("update", array("id"=>$data->primaryKey))';
+    public $deleteButtonUrl='
+        $data instanceof X2Model ? 
+            Yii::app()->createUrl(
+                "/".lcfirst (X2Model::getModuleName (get_class ($data)))."/delete",
+                array("id"=>$data->primaryKey)) :
+            Yii::app()->controller->createUrl("delete", array("id"=>$data->primaryKey))';
 
     /**
 	 * Registers the client scripts for the button column.

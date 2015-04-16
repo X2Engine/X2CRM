@@ -45,9 +45,16 @@ class X2FixtureManager extends CDbFixtureManager {
      * @var bool $loadFixture
      */
     public $loadFixtures; 
+    public $loadFixturesForClassOnly; 
+
+    private $_referenceFixtures;
+    public function setReferenceFixtures ($referenceFixtures) {
+        $this->_referenceFixtures = $referenceFixtures;
+    }
 
     public function __construct () {
-        $this->loadFixtures = LOAD_FIXTURES;
+        $this->loadFixtures = LOAD_FIXTURES && !LOAD_FIXTURES_FOR_CLASS_ONLY;
+        $this->loadFixturesForClassOnly = LOAD_FIXTURES_FOR_CLASS_ONLY;
     }
 
     public function prepare () {
@@ -64,7 +71,7 @@ class X2FixtureManager extends CDbFixtureManager {
 	 */
 	public function resetTable($tableName) {
         /* x2modstart */ 
-        if (!$this->loadFixtures) return;
+        if (!$this->loadFixtures && !$this->loadFixturesForClassOnly) return;
         /* x2modend */ 
 		$initFile = $this->basePath . DIRECTORY_SEPARATOR . $tableName . $this->initScriptSuffix;
 		if (is_file($initFile)) {
@@ -104,7 +111,7 @@ class X2FixtureManager extends CDbFixtureManager {
             foreach(require($fileName) as $alias=>$row)
             {
                     /* x2modstart */ 
-                    if ($this->loadFixtures) {
+                    if ($this->loadFixtures || $this->loadFixturesForClassOnly) {
                     /* x2modend */ 
                         $builder->createInsertCommand($table,$row)->execute();
                         $primaryKey=$table->primaryKey;
@@ -172,11 +179,7 @@ class X2FixtureManager extends CDbFixtureManager {
                     }
                     if(($prefix=$this->getDbConnection()->tablePrefix)!==null)
                             $tableName=preg_replace('/{{(.*?)}}/',$prefix.'\1',$tableName);
-                    /* x2modstart */ 
-                    if ($this->loadFixtures) {
-                        $this->resetTable($tableName);
-                    }
-                    /* x2modend */ 
+                    $this->resetTable($tableName);
                     $rows=$this->loadFixture($tableName/* x2modstart */,$suffix/* x2modend */);
                     if(is_array($rows) && is_string($fixtureName))
                     {
@@ -220,15 +223,7 @@ class X2FixtureManager extends CDbFixtureManager {
                         foreach($key as $k)
                             $pk[$k]=$row[$k];
                     }
-//                    if ($model instanceof X2ListItem) {
-//                        // special case for X2ListItem since it has a pseudo-composite-primary-key
-//                        if (isset ($pk['contactId']) && $pk['contactId'] === null) {
-//                            unset ($pk['contactId']);
-//                        }
-//                        $this->_records[$name][$alias]=$model->findByAttributes($pk);
-//                    } else {
-                        $this->_records[$name][$alias]=$model->findByPk($pk);
-                    //}
+                    $this->_records[$name][$alias]=$model->findByPk($pk);
                 /* x2modstart */ 
                 } else {
                     $model = CActiveRecord::model ($this->_records[$name][$alias]);

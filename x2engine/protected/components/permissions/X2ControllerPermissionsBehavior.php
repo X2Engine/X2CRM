@@ -133,7 +133,7 @@ class X2ControllerPermissionsBehavior extends ControllerPermissionsBehavior {
 
             // Check assignment and visibility using X2PermissionsBehavior
             $view = (Yii::app()->params->isAdmin || $moduleAdmin) || 
-                $model->isVisibleTo(Yii::app()->getSuName(), false);
+                $model->isVisibleTo(Yii::app()->getSuModel(), false);
             if ($view) { // Only check edit permissions if they're allowed to view
                 $edit = (Yii::app()->params->isAdmin || $moduleAdmin) || 
                     Yii::app()->authManager->checkAccess(

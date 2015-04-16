@@ -34,46 +34,28 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 
+class RecordViewEmailTest extends X2WebTestCase {
 
+    public $fixtures = array (
+        'contacts' => 'Contacts',
+        'credentials' => 'Credentials',
+        'defaultCredentials' => ':x2_credentials_default',
+    );
 
-mb_internal_encoding('UTF-8');
-mb_regex_encoding('UTF-8');
-Yii::app()->params->profile = Profile::model()->findByPk(1);
-?>
+    public function testEmailSend () {
+        $contact = $this->contacts ('testAnyone');
+        $this->openX2 ('contacts/'.$contact->id);
+        sleep (1);
+        $this->click ("dom=document.querySelector ('.page-title .email')");
+        $this->type("name=InlineEmail[subject]", 'test');
+        $this->storeEval (
+            "window.$('#email-message').val ('test')",
+            'placeholder');
+        sleep (2);
+        $this->click ("dom=document.querySelector('#send-email-button')");
+        //sleep (4000);
+    }
 
-<!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="<?php echo Yii::app()->language; ?>"
- lang="<?php echo Yii::app()->language; ?>">
-<head>
-<meta charset="UTF-8" />
-<meta name="language" content="<?php echo Yii::app()->language; ?>" />
-<title><?php echo CHtml::encode($this->pageTitle); ?></title>
-
-<style type="text/css">
-body {
-	font-size:12px;
-	font-family: Arial, Helvetica, sans-serif;
-	width:189px;
 }
-</style>
-</head>
-<body>
-<?php
-if (!empty($error)) { ?>
-	<h1><?php echo Yii::t('contacts','We\'re Sorry!'); ?></h1>
-	<p><?php echo $error; ?></p>
-<?php
-} else { ?>
-	<h1 id='web-form-submit-message'><?php echo Yii::t('contacts','Thank You!'); ?></h1>
-<?php
-if ($type === 'weblead') { ?>
-	<p><?php echo Yii::t('contacts','Thank you for your interest!'); ?></p>
-<?php
-} elseif ($type === 'service') { ?>
-	<p><?php echo Yii::t('contacts','Your case number is: ') . $caseNumber; ?></p>
-<?php
-} ?>
-	<p><?php echo Yii::t('contacts','Someone will be in touch shortly.'); ?></p>
-<?php } ?>
-</body>
-</html>
+
+?>

@@ -110,6 +110,8 @@ abstract class WebTrackingTestBase extends X2WebTestCase {
         parent::setUpBeforeClass ();
     }
 
+     
+
     public function setUp () {
         if (self::$skipAllTests) {
             $this->markTestSkipped ();
@@ -200,7 +202,7 @@ abstract class WebTrackingTestBase extends X2WebTestCase {
         }
 
         // the waitFor condition doesn't seem to work on Opera, so just wait a fixed amount of time
-        if ($this->isOpera ()) $this->pause (5000);
+        if ($this->isOpera ()) sleep (5);
         $this->waitForCondition (
             "window.document.getElementsByName ('web-form-iframe').length && window.document.getElementsByName ('web-form-iframe')[0].contentWindow.document.readyState === 'complete'", 4000);
 
@@ -237,7 +239,7 @@ abstract class WebTrackingTestBase extends X2WebTestCase {
             'select count(*) from x2_contacts
              where email="test@test.com"')
              ->queryScalar ();
-        $this->assertTrue ($count === '0');
+        $this->assertEquals ('0', $count);
     }
 
     /**
@@ -252,7 +254,7 @@ abstract class WebTrackingTestBase extends X2WebTestCase {
             'select count(*) from x2_actions
              where type="webactivity"')
              ->queryScalar ();
-        $this->assertTrue ($count === '0');
+        $this->assertEquals ('0', $count);
     }
 
     /**
@@ -265,9 +267,10 @@ abstract class WebTrackingTestBase extends X2WebTestCase {
              where type="webactivity"')
              ->queryScalar ();
         VERBOSE_MODE && println ($newCount);
-        $this->assertTrue ($newCount === '1');
+        $this->assertEquals ('1', $newCount);
     }
 
+     
     /**
      * Visits page with web tracker on it and asserts that the contact is being tracked
      */
@@ -277,22 +280,22 @@ abstract class WebTrackingTestBase extends X2WebTestCase {
         // visit the page with the web tracker on it
         $this->openPublic('x2WebTrackingTestPages/webTrackerTest.html');
         $this->assertCookie ('regexp:.*x2_key.*');
-        $this->pause (5000); // wait for database changes to enact
+        sleep (5); // wait for iframe to load
         $this->assertWebActivityGeneration ();
     }
 
     /**
      * Visits page with the legacy web tracker on it and asserts that the contact is being tracked
      */
-    public function assertLegacyWebTrackerTracksWithCookie () {
-        $this->clearWebActivity ();
-
-        // visit the page with the web tracker on it
-        $this->openPublic('x2WebTrackingTestPages/legacyWebTrackerTest.html');
-        $this->assertCookie ('regexp:.*x2_key.*');
-        $this->pause (5000); // wait for database changes to enact
-        $this->assertWebActivityGeneration ();
-    }
+//    public function assertLegacyWebTrackerTracksWithCookie () {
+//        $this->clearWebActivity ();
+//
+//        // visit the page with the web tracker on it
+//        $this->openPublic('x2WebTrackingTestPages/legacyWebTrackerTest.html');
+//        $this->assertCookie ('regexp:.*x2_key.*');
+//        sleep (5); // wait for iframe to load
+//        $this->assertWebActivityGeneration ();
+//    }
 
     /**
      * Used in conjunction with clearWebActivity (). Ensures that a web activity action was not
@@ -316,7 +319,7 @@ abstract class WebTrackingTestBase extends X2WebTestCase {
         // visit the page with the web tracker on it
         $this->openPublic('x2WebTrackingTestPages/webTrackerTest.html');
         $this->assertCookie ('regexp:.*x2_key.*');
-        $this->pause (5000); // wait for database changes to enact
+        sleep (5); // wait for iframe to load
         $this->assertNoWebActivityGeneration ();
     }
 

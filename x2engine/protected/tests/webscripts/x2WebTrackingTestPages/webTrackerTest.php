@@ -42,7 +42,8 @@
 // set this to true if you want web tracker to make request for index-test.php
 defined('FUNCTIONAL_TEST') or define('FUNCTIONAL_TEST',true);
 
-$_SERVER['REQUEST_URI'] = '';
+$_SERVER['REQUEST_URI'] = preg_replace ('/webTrackerTest\.php/', 'webTracker.php', $_SERVER['REQUEST_URI']);
+$_SERVER['REQUEST_URI'] = preg_replace ('/x2WebTrackingTestPages\//', '', $_SERVER['REQUEST_URI']);
 
 require (__DIR__.'/../webTracker.php');
 

@@ -125,7 +125,7 @@ class DocViewerProfileWidget extends SortableWidget {
                 $docId = '';
             }
             if (isset ($doc)) {
-                $canEdit = $doc->checkEditPermission () ? 1 : 0;
+                $canEdit = $doc->checkEditPermissions () ? 1 : 0;
             } else {
                 $canEdit = 0;
             }

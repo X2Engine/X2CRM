@@ -65,7 +65,7 @@ class MassActionTest extends X2WebTestCase {
             default:
                 $this->type("name=".$modelName."[$attr]", $filterVal);
         }
-        $this->pause (100);
+        sleep (1);
         $this->waitForCondition ("!window.$('.x2-gridview-updating-anim').is (':visible')");
     }
 
@@ -75,7 +75,7 @@ class MassActionTest extends X2WebTestCase {
     public function sortBy ($modelName, $attr) {
         $headerCellId = lcfirst ($modelName) . 'gridC_' . $attr;
         $this->click ("dom=document.querySelector ('#$headerCellId .sort-link')");
-        $this->pause (100);
+        sleep (1);
         $this->waitForCondition ("!window.$('.x2-gridview-updating-anim').is (':visible')");
     }
 

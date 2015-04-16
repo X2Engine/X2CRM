@@ -135,51 +135,7 @@ class Campaign extends X2Model {
 	 */
 	public function search() {
 		$criteria=new CDbCriteria;
-		$condition = '';
-		if(!Yii::app()->user->checkAccess('MarketingAdminAccess')) {
-			$condition = 't.visibility="1" OR t.assignedTo="Anyone" OR 
-                t.assignedTo="'.Yii::app()->params->profile->username.'"';
-				/* x2temp */
-				$groupLinks = Yii::app()->db->createCommand()
-                    ->select('groupId')
-                    ->from('x2_group_to_user')
-                    ->where('userId='.Yii::app()->params->profile->user->id)->queryColumn();
-				if(!empty($groupLinks))
-					$condition .= ' OR t.assignedTo IN ('.implode(',',$groupLinks).')';
-
-				$condition .= 'OR (t.visibility=2 AND t.assignedTo IN
-					(SELECT username FROM x2_group_to_user WHERE groupId IN
-						(SELECT groupId FROM x2_group_to_user 
-                         WHERE userId='.Yii::app()->params->profile->user->id.')))';
-
-            $criteria->addCondition($condition);
-		}
 		return $this->searchBase($criteria);
-	}
-
-	/**
-	 * Returns a CDbCriteria containing record-level access conditions.
-	 * @return CDbCriteria
-	 */
-	public function getAccessCriteria() {
-		$criteria = new CDbCriteria;
-
-		$accessLevel = X2PermissionsBehavior::QUERY_NONE;
-		if(Yii::app()->user->checkAccess('MarketingAdmin'))
-			$accessLevel = X2PermissionsBehavior::QUERY_ALL;
-		elseif(Yii::app()->user->checkAccess('MarketingView'))
-			$accessLevel = X2PermissionsBehavior::QUERY_PUBLIC;
-		elseif(Yii::app()->user->checkAccess('MarketingViewPrivate'))
-			$accessLevel = X2PermissionsBehavior::QUERY_SELF;
-
-        $conditions=$this->getAccessConditions($accessLevel);
-		foreach($conditions as $arr){
-            $criteria->addCondition($arr['condition'],$arr['operator']);
-            if (is_array($arr['params']))
-                $criteria->params = array_merge($criteria->params,$arr['params']);
-        }
-
-		return $criteria;
 	}
 
     /**

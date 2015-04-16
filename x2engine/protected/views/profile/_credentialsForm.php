@@ -115,6 +115,13 @@ echo CHtml::endForm();
 
 
 $verifyCredsUrl = Yii::app()->createUrl("profile/verifyCredentials");
+
+// Instantiate modelClass to retrieve defaults
+$modelClass = new $model->modelClass;
+$defaultServer = CJSON::encode($modelClass->server);
+$defaultPort = CJSON::encode($modelClass->port);
+$defaultSecurity = CJSON::encode($modelClass->security);
+
 ?>
 
 <div id="verification-result">
@@ -153,22 +160,18 @@ $verifyCredsUrl = Yii::app()->createUrl("profile/verifyCredentials");
                 email = $('#Credentials_auth_user').val();
             var password = $("#Credentials_auth_password").val();
 
-            // server, port, and security are not specified in the form for GMail accounts
-            var server;
-            var port;
-            var security;
+            // server, port, and security are not specified in the form for provider-specific
+            // account types, such as GMail accounts
+            // Overwrite defaults if any text fields are non-empty
+            var server = <?php echo $defaultServer; ?>;
+            var port = <?php echo $defaultPort; ?>;
+            var security = <?php echo $defaultSecurity; ?>;
             if ($('#Credentials_auth_server').length)
                 server = $('#Credentials_auth_server').val();
-            else
-                server = 'smtp.gmail.com';
             if ($('#Credentials_auth_port').length)
                 port = $('#Credentials_auth_port').val();
-            else
-                port = 587;
             if ($('#Credentials_auth_security').length)
                 security = $('#Credentials_auth_security').val();
-            else
-                security = 'tls';
 
             var successMsg = "<?php echo Yii::t('app', 'Authentication successful.'); ?>";
             var failureMsg = "<?php echo Yii::t('app', 'Failed to authenticate! Please check you credentials.'); ?>";

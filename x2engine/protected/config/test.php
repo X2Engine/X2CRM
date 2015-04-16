@@ -73,7 +73,7 @@ $config['components']['log']['routes'] = array(
 	),
 	array(
 		'class' => 'CFileLogRoute',
-		'logFile' => php_sapi_name() == 'cli' ? 'test-debug.log' : 'test-web-debug.log',
+		'logFile' => 'debug.log',
         'categories' => 'application.debug'
 	)
 );

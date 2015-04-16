@@ -1,4 +1,3 @@
-<?php
 /*****************************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2015 X2Engine Inc.
@@ -33,43 +32,17 @@
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2Engine".
  *****************************************************************************************/
+@import "colors";
+@import "standards";
 
-Yii::import('application.tests.functional.components.x2flow.X2FlowFunctionalTestBase');
-Yii::import('application.modules.contacts.models.*');
+.quotes-product-table {
 
-class RecordUpdateTriggerFuntionalTest extends X2FlowFunctionalTestBase {
+	th {
+		/* @theme background: dark_content */
+		/* @theme border-color: border */
+	}
 
-    public $fixtures = array (
-        'flows' => array ('X2Flow', '.RecordUpdateTriggerFunctionalTest'),
-        'lists' => 'X2List',
-    );
-
-    public function testNoTriggerOnView () {
-        $flow = $this->flows ('flow1');
-        TriggerLog::model ()->deleteAllByAttributes (array (
-            'flowId' => $flow->id
-        ));
-		$this->openX2 ('contacts/list/id/30');
-
-        // ensure that flow isn't triggered when list is viewed
-        $this->assertEquals (0, sizeof (TriggerLog::model ()->findByAttributes (array (
-            'flowId' => $flow->id
-        ))));
-    }
-
-    public function testTriggerOnUpdate () {
-        $flow = $this->flows ('flow1');
-        TriggerLog::model ()->deleteAllByAttributes (array (
-            'flowId' => $flow->id
-        ));
-        $this->openX2 ('contacts/updateList/id/30');
-        $this->clickAndWait ('css=#save-button');
-        $log = TriggerLog::model ()->findByAttributes (array (
-            'flowId' => $flow->id
-        ));
-        $this->checkTrace (CJSON::decode ($log->triggerLog));
-
-    }
-
-
+	td {
+		/* @theme border-color: border */
+	}
 }

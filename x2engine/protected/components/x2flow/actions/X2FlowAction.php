@@ -54,7 +54,7 @@ abstract class X2FlowAction extends X2FlowItem {
      * Returns an array with two elements. The first element indicates whether an error occured,
      * the second contains a log message.
      */
-    public function validate(&$params=array(), $flowId) {
+    public function validate(&$params=array(), $flowId=null) {
         $paramRules = $this->paramRules();
         if(!isset($paramRules['options'],$this->config['options']))
             return array (false, Yii::t('admin', "Flow item validation error"));
@@ -110,14 +110,15 @@ abstract class X2FlowAction extends X2FlowItem {
                 $value = $attr['value'];
                 if(is_string($value)){
                     if(strpos($value, '=') === 0){
-                        $evald = Formatter::parseFormula($value, $params);
+                        $evald = X2FlowFormatter::parseFormula($value, $params);
                         if(!$evald[0])
                             return false;
                         $value = $evald[1];
                     } elseif($params !== null){
 
                         if(is_string($value) && isset($params['model'])){
-                            $value = Formatter::replaceVariables($value, $params['model'], $type);
+                            $value = X2FlowFormatter::replaceVariables(
+                                $value, $params['model'], $type);
                         }
                     }
                 }

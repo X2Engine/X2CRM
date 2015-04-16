@@ -37,13 +37,21 @@
 
 class X2HttpRequest extends CHttpRequest {
 
+    private $csrfValidationWhitelist = array (
+        '/^api2?\//', // allow all api requests
+    );
+
     /**
-     * Override parent method to prevent csrf token validation during api requests
+     * Override parent method to prevent csrf token validation during whitelisted requests
      */
     public function validateCsrfToken ($event) {
-        if (!preg_match ('/^api2?\//', $this->pathInfo)) {
-            return parent::validateCsrfToken ($event);
+        foreach ($this->csrfValidationWhitelist as $regex) {
+            if (preg_match ($regex, $this->pathInfo)) {
+                return;
+            }
         }
+
+        return parent::validateCsrfToken ($event);
     }
 
 

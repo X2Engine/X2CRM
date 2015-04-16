@@ -47,6 +47,20 @@ Yii::import ('application.components.permissions.*');
  * @package application.tests.unit.components.x2flow.triggers
  */
 class X2FlowTestBase extends X2DbTestCase {
+
+    public function assertNoFlowError ($arr) {
+        if (!$arr[0]) {
+            VERBOSE_MODE && print_r ($arr[1]);
+        }
+        $this->assertTrue ($arr[0]);
+        return $arr;
+    }
+
+    public function assertFlowError ($arr) {
+        $this->assertFalse ($arr[0]);
+        return $arr;
+    }
+
     /**
      * Clears all trigger logs
      */

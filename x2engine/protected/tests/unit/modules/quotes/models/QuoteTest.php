@@ -12,7 +12,7 @@ Yii::import('application.modules.quotes.models.*');
 class QuoteTest extends X2DbTestCase {
 
 	public static function referenceFixtures() {
-		return null;
+		return array ();
 	}
 
 	public $fixtures = array(
