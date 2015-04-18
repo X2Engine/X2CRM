@@ -90,12 +90,11 @@ class DocsController extends x2base {
         }
 	}
 
-	/**
-	 * Displays a particular model.
-	 * @param integer $id the ID of the model to be displayed
-	 */
-	public function actionView($id) {
-		$model = CActiveRecord::model('Docs')->findByPk($id);
+    /** 
+     * Check whether the user has permissions to see the Document.
+     * @param CActiveRecord $model of the Document to display.
+     */
+    private function checkViewPermissions($model) {
 		if(isset($model)){
 			$permissions=explode(", ",$model->editPermissions);
 			if(in_array(Yii::app()->user->getName(),$permissions))
@@ -103,12 +102,24 @@ class DocsController extends x2base {
 			else
 				$editFlag=false;
 		}
-		//echo $model->visibility;exit;
+
 		if (!isset($model) ||
 			   !(($model->visibility==1 ||
 				($model->visibility==0 && $model->createdBy==Yii::app()->user->getName())) ||
 				Yii::app()->params->isAdmin|| $editFlag))
-			$this->redirect(array('/docs/docs/index'));
+                return false;
+        return true;
+    }
+
+	/**
+	 * Displays a particular model.
+	 * @param integer $id the ID of the model to be displayed
+	 */
+	public function actionView($id) {
+		$model = CActiveRecord::model('Docs')->findByPk($id);
+        if (!$this->checkViewPermissions($model)) {
+            $this->redirect(array('/docs/docs/index'));
+        }
 
         // add doc to user's recent item list
         User::addRecentItem('d', $id, Yii::app()->user->getId());
@@ -124,6 +135,11 @@ class DocsController extends x2base {
 	 */
 	public function actionFullView($id,$json=0,$replace=0) {
 		$model = $this->loadModel($id);
+
+        if (!$this->checkViewPermissions($model)) {
+            $this->redirect(array('/docs/docs/index'));
+        }
+
         $response = array(
             'body' => $model->text,
             'subject' => $model->subject,
