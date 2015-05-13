@@ -37,7 +37,7 @@ lines compensate for that. */
 @media (max-width: 657px) {
   /* line 25, ../../../../../compass/sass/protected/modules/workflow/assets/css/responsiveDetailView.scss */
   /* line 25, ../../../../../compass/sass/protected/modules/workflow/assets/css/responsiveDetailView.scss */
-  /* line 26, ../../../../../compass/protected/modules/workflow/assets/css/responsiveDetailView.scss */
+  /* line 29, ../../../../../compass/protected/modules/workflow/assets/css/responsiveDetailView.scss */
   .responsive-menu-items {
     margin-top: 29px !important;
     margin-right: -19px !important;
@@ -45,7 +45,7 @@ lines compensate for that. */
 
   /* line 29, ../../../../../compass/sass/protected/modules/workflow/assets/css/responsiveDetailView.scss */
   /* line 30, ../../../../../compass/sass/protected/modules/workflow/assets/css/responsiveDetailView.scss */
-  /* line 32, ../../../../../compass/protected/modules/workflow/assets/css/responsiveDetailView.scss */
+  /* line 35, ../../../../../compass/protected/modules/workflow/assets/css/responsiveDetailView.scss */
   .responsive-page-title > .mobile-dropdown-button {
     margin-top: 9px !important;
   }

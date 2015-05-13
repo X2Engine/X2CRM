@@ -124,15 +124,18 @@ $columns = array(
     array(
         'name' => 'expandButton.',
         'header' => '',
-        'value' => "
-            '<span class=\'detail-view-toggle\' title=\'".
-                CHtml::encode (Yii::t('app', 'View inline record details'))."\'
-                data-id=\''.\$data->relatedModel->id.'\'
-                data-class=\''.get_class (\$data->relatedModel).'\'
-                data-name=\''.CHtml::encode (\$data->relatedModel->name).'\'>
-                <span class=\'fa fa-caret-right\'></span>
-                <span class=\'fa fa-caret-down\' style=\'display: none;\'></span>
-            </span>'",
+        'value' => "in_array (
+                get_class (\$data->relatedModel), 
+                QuickCRUDBehavior::getModelsWhichSupportQuickView ()) ?
+
+                '<span class=\'detail-view-toggle\' title=\'".
+                    CHtml::encode (Yii::t('app', 'View inline record details'))."\'
+                    data-id=\''.\$data->relatedModel->id.'\'
+                    data-class=\''.get_class (\$data->relatedModel).'\'
+                    data-name=\''.CHtml::encode (\$data->relatedModel->name).'\'>
+                    <span class=\'fa fa-caret-right\'></span>
+                    <span class=\'fa fa-caret-down\' style=\'display: none;\'></span>
+                </span>' : ''",
         'type' => 'raw',
     ),
     array(

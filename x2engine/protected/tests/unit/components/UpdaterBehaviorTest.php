@@ -51,7 +51,7 @@ class UpdaterBehaviorTest extends FileOperTestCase {
      *      operations), but not backup tests specifically (it's assumed they work when
      *      the test level is set to 2)
      */
-    const TEST_LEVEL = 0;
+    const TEST_LEVEL = 2;
 
     private $_admin;
 

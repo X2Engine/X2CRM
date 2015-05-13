@@ -259,6 +259,28 @@ class AdminController extends Controller {
 
     
 
+// Used to manually test updater file copy in Windows
+//    public static function caseSensitiveCopyTest () {
+//        $ds = DIRECTORY_SEPARATOR;
+//        $ube = new CComponent();
+//        $properties = array ();
+//        $ubconfig = array_merge(array(
+//            'class' => 'UpdaterBehavior',
+//            'isConsole' => true,
+//            'noHalt' => true,
+//        ),$properties);
+//        $ube->attachBehavior('UpdaterBehavior', $ubconfig);
+//        $source = $ube->webroot.'/protected/tests/data/UpdaterBehaviorTest/source/a.js';
+//        $target = $ube->webroot.'/protected/tests/data/UpdaterBehaviorTest/app/a.js';
+//
+//        $sourcePath = FileUtil::relpath($source, '.');
+//        $targetPath = FileUtil::relpath($target, '.');
+//        FileUtil::ccopy ($source, $target);
+//        $ube->removeFiles (array (
+//            '/protected/tests/data/UpdaterBehaviorTest/app/A.js'
+//        ));
+//    }
+
     /**
      * View the main admin menu
      */
@@ -3270,11 +3292,18 @@ class AdminController extends Controller {
         fputcsv($failedContacts, $failedHeader);
         fclose($failedContacts);
 
-        $x2attributes = array_keys(X2Model::model(str_replace(' ', '', $_SESSION['model']))->attributes);
+        // Ensure the selected model hasn't been lost
+        if (array_key_exists('model', $_SESSION))
+            $modelName = str_replace(' ', '', $_SESSION['model']);
+        else
+            $this->errorMessage (Yii::t('admin',
+                "Session information has been lost. Please retry your import."
+            ));
+        $x2attributes = array_keys(X2Model::model($modelName)->attributes);
         while("" === end($x2attributes)){
             array_pop($x2attributes);
         }
-        if ($_SESSION['model'] === 'Actions') {
+        if ($modelName === 'Actions') {
             // add Action.description to attributes so that it is automatically mapped
             $x2attributes[] = 'actionDescription';
         }
@@ -3283,7 +3312,7 @@ class AdminController extends Controller {
         $_SESSION['imported'] = 0;
         $_SESSION['failed'] = 0;
         $_SESSION['created'] = 0;
-        $_SESSION['fields'] = X2Model::model(str_replace(' ', '', $_SESSION['model']))->getFields(true);
+        $_SESSION['fields'] = X2Model::model($modelName)->getFields(true);
         $_SESSION['x2attributes'] = $x2attributes;
         $_SESSION['mapName'] = "";
         $_SESSION['importId'] = $this->getNextImportId();

@@ -32,50 +32,56 @@
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2Engine".
  *****************************************************************************************/
-/*********************************************************************************
+/***********************************************************************************
  * Copyright (C) 2011-2015 X2Engine Inc. All Rights Reserved.
  *
  * X2Engine Inc.
  * P.O. Box 66752
  * Scotts Valley, California 95067 USA
- *
  * Company website: http://www.x2engine.com
- * Community and support website: http://www.x2community.com
  *
  * X2Engine Inc. grants you a perpetual, non-exclusive, non-transferable license
- * to install and use this Software for your internal business purposes.
- * You shall not modify, distribute, license or sublicense the Software.
- * Title, ownership, and all intellectual property rights in the Software belong
- * exclusively to X2Engine.
+ * to install and use this Software for your internal business purposes only
+ * for the number of users purchased by you. Your use of this Software for
+ * additional users is not covered by this license and requires a separate
+ * license purchase for such users. You shall not distribute, license, or
+ * sublicense the Software. Title, ownership, and all intellectual property
+ * rights in the Software belong exclusively to X2Engine. You agree not to file
+ * any patent applications covering, relating to, or depicting this Software
+ * or modifications thereto, and you agree to assign any patentable inventions
+ * resulting from your use of this Software to X2Engine.
  *
  * THIS SOFTWARE IS PROVIDED "AS IS" AND WITHOUT WARRANTIES OF ANY KIND, EITHER
  * EXPRESS OR IMPLIED, INCLUDING WITHOUT LIMITATION THE IMPLIED WARRANTIES OF
  * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, TITLE, AND NON-INFRINGEMENT.
- ********************************************************************************/
+ **********************************************************************************/
 /***************************************
 * This file is responsible for mantaining
 * general purpose mixins and classes. 
 ***************************************/
-/*********************************************************************************
+/***********************************************************************************
  * Copyright (C) 2011-2015 X2Engine Inc. All Rights Reserved.
  *
  * X2Engine Inc.
  * P.O. Box 66752
  * Scotts Valley, California 95067 USA
- *
  * Company website: http://www.x2engine.com
- * Community and support website: http://www.x2community.com
  *
  * X2Engine Inc. grants you a perpetual, non-exclusive, non-transferable license
- * to install and use this Software for your internal business purposes.
- * You shall not modify, distribute, license or sublicense the Software.
- * Title, ownership, and all intellectual property rights in the Software belong
- * exclusively to X2Engine.
+ * to install and use this Software for your internal business purposes only
+ * for the number of users purchased by you. Your use of this Software for
+ * additional users is not covered by this license and requires a separate
+ * license purchase for such users. You shall not distribute, license, or
+ * sublicense the Software. Title, ownership, and all intellectual property
+ * rights in the Software belong exclusively to X2Engine. You agree not to file
+ * any patent applications covering, relating to, or depicting this Software
+ * or modifications thereto, and you agree to assign any patentable inventions
+ * resulting from your use of this Software to X2Engine.
  *
  * THIS SOFTWARE IS PROVIDED "AS IS" AND WITHOUT WARRANTIES OF ANY KIND, EITHER
  * EXPRESS OR IMPLIED, INCLUDING WITHOUT LIMITATION THE IMPLIED WARRANTIES OF
  * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, TITLE, AND NON-INFRINGEMENT.
- ********************************************************************************/
+ **********************************************************************************/
 /***********************************************************************
 * Grays 
 ***********************************************************************/
@@ -104,13 +110,13 @@
 * CSS to extend when something 
 * should look like a link
 ***************************************/
-/* line 73, ../../../compass/css/lib/_standards.scss */
+/* line 76, ../../../compass/css/lib/_standards.scss */
 .pseudo-link {
   cursor: pointer;
   color: #004baf;
   transition: color .1s;
 }
-/* line 78, ../../../compass/css/lib/_standards.scss */
+/* line 81, ../../../compass/css/lib/_standards.scss */
 .pseudo-link:hover {
   color: #006cfb;
 }
@@ -119,11 +125,11 @@
 * CSS to extend when for elements that 
 * become transparent on mouseover
 ***************************************/
-/* line 96, ../../../compass/css/lib/_standards.scss */
+/* line 99, ../../../compass/css/lib/_standards.scss */
 .opacity-hover {
   opacity: 0.3;
 }
-/* line 91, ../../../compass/css/lib/_standards.scss */
+/* line 94, ../../../compass/css/lib/_standards.scss */
 .opacity-hover:hover {
   opacity: 1;
 }
@@ -139,26 +145,29 @@
 * Mixin for applying a fontAwesome icon
 * SEE _icons.scss FOR A BETTER IMPLEMENTATION
 ******************************************/
-/*********************************************************************************
+/***********************************************************************************
  * Copyright (C) 2011-2015 X2Engine Inc. All Rights Reserved.
  *
  * X2Engine Inc.
  * P.O. Box 66752
  * Scotts Valley, California 95067 USA
- *
  * Company website: http://www.x2engine.com
- * Community and support website: http://www.x2community.com
  *
  * X2Engine Inc. grants you a perpetual, non-exclusive, non-transferable license
- * to install and use this Software for your internal business purposes.
- * You shall not modify, distribute, license or sublicense the Software.
- * Title, ownership, and all intellectual property rights in the Software belong
- * exclusively to X2Engine.
+ * to install and use this Software for your internal business purposes only
+ * for the number of users purchased by you. Your use of this Software for
+ * additional users is not covered by this license and requires a separate
+ * license purchase for such users. You shall not distribute, license, or
+ * sublicense the Software. Title, ownership, and all intellectual property
+ * rights in the Software belong exclusively to X2Engine. You agree not to file
+ * any patent applications covering, relating to, or depicting this Software
+ * or modifications thereto, and you agree to assign any patentable inventions
+ * resulting from your use of this Software to X2Engine.
  *
  * THIS SOFTWARE IS PROVIDED "AS IS" AND WITHOUT WARRANTIES OF ANY KIND, EITHER
  * EXPRESS OR IMPLIED, INCLUDING WITHOUT LIMITATION THE IMPLIED WARRANTIES OF
  * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, TITLE, AND NON-INFRINGEMENT.
- ********************************************************************************/
+ **********************************************************************************/
 /***********************************************************************
 * Grays 
 ***********************************************************************/
@@ -174,26 +183,29 @@
 /***********************************************************************
 * This section is made to correspond with the theme keys in ThemeGenerator
 ***********************************************************************/
-/*********************************************************************************
+/***********************************************************************************
  * Copyright (C) 2011-2015 X2Engine Inc. All Rights Reserved.
  *
  * X2Engine Inc.
  * P.O. Box 66752
  * Scotts Valley, California 95067 USA
- *
  * Company website: http://www.x2engine.com
- * Community and support website: http://www.x2community.com
  *
  * X2Engine Inc. grants you a perpetual, non-exclusive, non-transferable license
- * to install and use this Software for your internal business purposes.
- * You shall not modify, distribute, license or sublicense the Software.
- * Title, ownership, and all intellectual property rights in the Software belong
- * exclusively to X2Engine.
+ * to install and use this Software for your internal business purposes only
+ * for the number of users purchased by you. Your use of this Software for
+ * additional users is not covered by this license and requires a separate
+ * license purchase for such users. You shall not distribute, license, or
+ * sublicense the Software. Title, ownership, and all intellectual property
+ * rights in the Software belong exclusively to X2Engine. You agree not to file
+ * any patent applications covering, relating to, or depicting this Software
+ * or modifications thereto, and you agree to assign any patentable inventions
+ * resulting from your use of this Software to X2Engine.
  *
  * THIS SOFTWARE IS PROVIDED "AS IS" AND WITHOUT WARRANTIES OF ANY KIND, EITHER
  * EXPRESS OR IMPLIED, INCLUDING WITHOUT LIMITATION THE IMPLIED WARRANTIES OF
  * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, TITLE, AND NON-INFRINGEMENT.
- ********************************************************************************/
+ **********************************************************************************/
 /************************************************
 * This File is a pseudo-class translation of all 
 * the font-awesome classes. This way, these classes
@@ -207,7 +219,7 @@
  *  Font Awesome 4.2.0 by @davegandy - http://fontawesome.io - @fontawesome
  *  License - http://fontawesome.io/license (Font: SIL OFL 1.1, CSS: MIT License)
  */
-/* line 61, ../../../compass/css/lib/_font-awesome.scss */
+/* line 64, ../../../compass/css/lib/_font-awesome.scss */
 .action.list-view .icon:before {
   display: inline-block;
   font: normal normal normal 14px/1 FontAwesome;
@@ -217,68 +229,74 @@
 }
 
 /* makes the font 33% larger relative to the icon container */
-/* line 120, ../../../compass/css/lib/_font-awesome.scss */
+/* line 123, ../../../compass/css/lib/_font-awesome.scss */
 .action.list-view .pull-left.icon:before {
   margin-right: .3em;
 }
 
-/* line 123, ../../../compass/css/lib/_font-awesome.scss */
+/* line 126, ../../../compass/css/lib/_font-awesome.scss */
 .action.list-view .pull-right.icon:before {
   margin-left: .3em;
 }
 
 /* Font Awesome uses the Unicode Private Use Area (PUA) to ensure screen
      readers do not read off random characters that represent icons */
-/* line 1092, ../../../compass/css/lib/_font-awesome.scss */
+/* line 1095, ../../../compass/css/lib/_font-awesome.scss */
 .action.list-view .icon:before {
   content: "\f144";
 }
 
-/*********************************************************************************
+/***********************************************************************************
  * Copyright (C) 2011-2015 X2Engine Inc. All Rights Reserved.
  *
  * X2Engine Inc.
  * P.O. Box 66752
  * Scotts Valley, California 95067 USA
- *
  * Company website: http://www.x2engine.com
- * Community and support website: http://www.x2community.com
  *
  * X2Engine Inc. grants you a perpetual, non-exclusive, non-transferable license
- * to install and use this Software for your internal business purposes.
- * You shall not modify, distribute, license or sublicense the Software.
- * Title, ownership, and all intellectual property rights in the Software belong
- * exclusively to X2Engine.
+ * to install and use this Software for your internal business purposes only
+ * for the number of users purchased by you. Your use of this Software for
+ * additional users is not covered by this license and requires a separate
+ * license purchase for such users. You shall not distribute, license, or
+ * sublicense the Software. Title, ownership, and all intellectual property
+ * rights in the Software belong exclusively to X2Engine. You agree not to file
+ * any patent applications covering, relating to, or depicting this Software
+ * or modifications thereto, and you agree to assign any patentable inventions
+ * resulting from your use of this Software to X2Engine.
  *
  * THIS SOFTWARE IS PROVIDED "AS IS" AND WITHOUT WARRANTIES OF ANY KIND, EITHER
  * EXPRESS OR IMPLIED, INCLUDING WITHOUT LIMITATION THE IMPLIED WARRANTIES OF
  * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, TITLE, AND NON-INFRINGEMENT.
- ********************************************************************************/
+ **********************************************************************************/
 /************************************************
 * This file mantains several important mixins for 
 * Font Icons. The two sources of font icons are 
 * font-awesome, and x2-icons (custom icons).
 *************************************************/
-/*********************************************************************************
+/***********************************************************************************
  * Copyright (C) 2011-2015 X2Engine Inc. All Rights Reserved.
  *
  * X2Engine Inc.
  * P.O. Box 66752
  * Scotts Valley, California 95067 USA
- *
  * Company website: http://www.x2engine.com
- * Community and support website: http://www.x2community.com
  *
  * X2Engine Inc. grants you a perpetual, non-exclusive, non-transferable license
- * to install and use this Software for your internal business purposes.
- * You shall not modify, distribute, license or sublicense the Software.
- * Title, ownership, and all intellectual property rights in the Software belong
- * exclusively to X2Engine.
+ * to install and use this Software for your internal business purposes only
+ * for the number of users purchased by you. Your use of this Software for
+ * additional users is not covered by this license and requires a separate
+ * license purchase for such users. You shall not distribute, license, or
+ * sublicense the Software. Title, ownership, and all intellectual property
+ * rights in the Software belong exclusively to X2Engine. You agree not to file
+ * any patent applications covering, relating to, or depicting this Software
+ * or modifications thereto, and you agree to assign any patentable inventions
+ * resulting from your use of this Software to X2Engine.
  *
  * THIS SOFTWARE IS PROVIDED "AS IS" AND WITHOUT WARRANTIES OF ANY KIND, EITHER
  * EXPRESS OR IMPLIED, INCLUDING WITHOUT LIMITATION THE IMPLIED WARRANTIES OF
  * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, TITLE, AND NON-INFRINGEMENT.
- ********************************************************************************/
+ **********************************************************************************/
 /***********************************************************************
 * Grays 
 ***********************************************************************/
@@ -294,26 +312,29 @@
 /***********************************************************************
 * This section is made to correspond with the theme keys in ThemeGenerator
 ***********************************************************************/
-/*********************************************************************************
+/***********************************************************************************
  * Copyright (C) 2011-2015 X2Engine Inc. All Rights Reserved.
  *
  * X2Engine Inc.
  * P.O. Box 66752
  * Scotts Valley, California 95067 USA
- *
  * Company website: http://www.x2engine.com
- * Community and support website: http://www.x2community.com
  *
  * X2Engine Inc. grants you a perpetual, non-exclusive, non-transferable license
- * to install and use this Software for your internal business purposes.
- * You shall not modify, distribute, license or sublicense the Software.
- * Title, ownership, and all intellectual property rights in the Software belong
- * exclusively to X2Engine.
+ * to install and use this Software for your internal business purposes only
+ * for the number of users purchased by you. Your use of this Software for
+ * additional users is not covered by this license and requires a separate
+ * license purchase for such users. You shall not distribute, license, or
+ * sublicense the Software. Title, ownership, and all intellectual property
+ * rights in the Software belong exclusively to X2Engine. You agree not to file
+ * any patent applications covering, relating to, or depicting this Software
+ * or modifications thereto, and you agree to assign any patentable inventions
+ * resulting from your use of this Software to X2Engine.
  *
  * THIS SOFTWARE IS PROVIDED "AS IS" AND WITHOUT WARRANTIES OF ANY KIND, EITHER
  * EXPRESS OR IMPLIED, INCLUDING WITHOUT LIMITATION THE IMPLIED WARRANTIES OF
  * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, TITLE, AND NON-INFRINGEMENT.
- ********************************************************************************/
+ **********************************************************************************/
 /************************************************
 * This File is a pseudo-class translation of all 
 * the font-awesome classes. This way, these classes
@@ -327,7 +348,7 @@
  *  Font Awesome 4.2.0 by @davegandy - http://fontawesome.io - @fontawesome
  *  License - http://fontawesome.io/license (Font: SIL OFL 1.1, CSS: MIT License)
  */
-/* line 61, ../../../compass/css/lib/_font-awesome.scss */
+/* line 64, ../../../compass/css/lib/_font-awesome.scss */
 .action.list-view .icon:before {
   display: inline-block;
   font: normal normal normal 14px/1 FontAwesome;
@@ -337,19 +358,19 @@
 }
 
 /* makes the font 33% larger relative to the icon container */
-/* line 120, ../../../compass/css/lib/_font-awesome.scss */
+/* line 123, ../../../compass/css/lib/_font-awesome.scss */
 .action.list-view .pull-left.icon:before {
   margin-right: .3em;
 }
 
-/* line 123, ../../../compass/css/lib/_font-awesome.scss */
+/* line 126, ../../../compass/css/lib/_font-awesome.scss */
 .action.list-view .pull-right.icon:before {
   margin-left: .3em;
 }
 
 /* Font Awesome uses the Unicode Private Use Area (PUA) to ensure screen
      readers do not read off random characters that represent icons */
-/* line 1092, ../../../compass/css/lib/_font-awesome.scss */
+/* line 1095, ../../../compass/css/lib/_font-awesome.scss */
 .action.list-view .icon:before {
   content: "\f144";
 }
@@ -521,7 +542,7 @@
 * Class to add to a container that has a stacked icon
 * These are the icons displayed on the activity feed
 **************************************************/
-/* line 45, ../../../compass/css/lib/_icons.scss */
+/* line 48, ../../../compass/css/lib/_icons.scss */
 .stacked-icon {
   display: none;
   position: absolute;
@@ -536,7 +557,7 @@
   /* @theme background content */
   text-align: center;
 }
-/* line 64, ../../../compass/css/lib/_icons.scss */
+/* line 67, ../../../compass/css/lib/_icons.scss */
 .stacked-icon:before {
   width: 100%;
   font-size: 10px;
@@ -563,14 +584,14 @@
 *
 * These icons are currently used in activity feed and publisher 
 *******************************************************/
-/* line 33, ../../../compass/themes/x2engine/css/main.scss */
+/* line 36, ../../../compass/themes/x2engine/css/main.scss */
 body {
   margin: 0;
   padding: 0;
   font: normal 10pt Arial, Helvetica, sans-serif;
   /* background: url(background2.gif) top left repeat-x #000; */
 }
-/* line 38, ../../../compass/themes/x2engine/css/main.scss */
+/* line 41, ../../../compass/themes/x2engine/css/main.scss */
 body.login {
   position: absolute;
   height: 100%;
@@ -582,7 +603,7 @@ body.login {
 /***********************************************************************
 General Table Rules
 ***********************************************************************/
-/* line 51, ../../../compass/themes/x2engine/css/main.scss */
+/* line 54, ../../../compass/themes/x2engine/css/main.scss */
 table {
   width: 100%;
   margin-bottom: 0.5em;
@@ -591,12 +612,12 @@ table {
   vertical-align: middle;
 }
 
-/* line 59, ../../../compass/themes/x2engine/css/main.scss */
+/* line 62, ../../../compass/themes/x2engine/css/main.scss */
 th, td {
   vertical-align: middle;
 }
 
-/* line 63, ../../../compass/themes/x2engine/css/main.scss */
+/* line 66, ../../../compass/themes/x2engine/css/main.scss */
 caption, th, td {
   text-align: left;
   font-size: 12px;
@@ -623,18 +644,18 @@ caption, th, td {
 span.x2-hint:hover {
         color: #999;
 } */
-/* line 92, ../../../compass/themes/x2engine/css/main.scss */
+/* line 95, ../../../compass/themes/x2engine/css/main.scss */
 ul.filter-hint {
   list-style-type: none;
   margin: 0;
   padding: 0 0 0 10px;
 }
-/* line 96, ../../../compass/themes/x2engine/css/main.scss */
+/* line 99, ../../../compass/themes/x2engine/css/main.scss */
 ul.filter-hint li {
   margin: 0;
   padding: 0;
 }
-/* line 100, ../../../compass/themes/x2engine/css/main.scss */
+/* line 103, ../../../compass/themes/x2engine/css/main.scss */
 ul.filter-hint b {
   display: inline-block;
   width: 20px;
@@ -643,50 +664,50 @@ ul.filter-hint b {
 /* #content {
         padding: 0 45px 20px 45px;
 }     create padding for pages without column2.php layout  */
-/* line 110, ../../../compass/themes/x2engine/css/main.scss */
+/* line 113, ../../../compass/themes/x2engine/css/main.scss */
 .span-15 #content {
   padding: 0;
 }
 
-/* line 115, ../../../compass/themes/x2engine/css/main.scss */
+/* line 118, ../../../compass/themes/x2engine/css/main.scss */
 .span-20 #content {
   padding: 0;
 }
-/* line 118, ../../../compass/themes/x2engine/css/main.scss */
+/* line 121, ../../../compass/themes/x2engine/css/main.scss */
 .span-20#content-box {
   width: 780px;
 }
 
 /* blueprint doesn't create any margin for the last span */
-/* line 125, ../../../compass/themes/x2engine/css/main.scss */
+/* line 128, ../../../compass/themes/x2engine/css/main.scss */
 #dashSIDE {
   position: relative;
   height: 400px;
   margin-left: -80px;
 }
 
-/* line 131, ../../../compass/themes/x2engine/css/main.scss */
+/* line 134, ../../../compass/themes/x2engine/css/main.scss */
 #recent-items > .portlet-content {
   max-height: 203px;
   overflow: hidden;
 }
-/* line 134, ../../../compass/themes/x2engine/css/main.scss */
+/* line 137, ../../../compass/themes/x2engine/css/main.scss */
 #recent-items > .portlet-content:hover {
   overflow-y: scroll;
   overflow-x: hidden;
 }
 
-/* line 141, ../../../compass/themes/x2engine/css/main.scss */
+/* line 144, ../../../compass/themes/x2engine/css/main.scss */
 #actions .portlet-content, #recent-items .portlet-content, #top-contacts .portlet-content {
   padding: 0 0 5px 0;
 }
 
-/* line 145, ../../../compass/themes/x2engine/css/main.scss */
+/* line 148, ../../../compass/themes/x2engine/css/main.scss */
 #actions li, #recent-items li, #top-contacts li {
   margin: 0;
 }
 
-/* line 149, ../../../compass/themes/x2engine/css/main.scss */
+/* line 152, ../../../compass/themes/x2engine/css/main.scss */
 #actions a, #recent-items .portlet-content a, #top-contacts .portlet-content a, #actions li > span, #recent-items span, #top-contacts span {
   display: block;
   padding: 5px 10px;
@@ -694,33 +715,33 @@ ul.filter-hint b {
   text-decoration: none;
 }
 
-/* line 156, ../../../compass/themes/x2engine/css/main.scss */
+/* line 159, ../../../compass/themes/x2engine/css/main.scss */
 #actions a:link, #recent-items .portlet-content a:link, #top-contacts .portlet-content a:link, #actions a:visited, #recent-items .portlet-content a:visited, #top-contacts .portlet-content a:visited {
   background: transparent;
   color: black;
 }
 
-/* line 161, ../../../compass/themes/x2engine/css/main.scss */
+/* line 164, ../../../compass/themes/x2engine/css/main.scss */
 #actions .portlet-content a:hover, #recent-items .portlet-content a:hover, #top-contacts .portlet-content a:hover, #actions span, #recent-items span, #top-contacts span, #actions a:active, #recent-items .portlet-content a:active, #top-contacts .portlet-content a:active {
   background: #E9E9E9;
 }
 
-/* line 165, ../../../compass/themes/x2engine/css/main.scss */
+/* line 168, ../../../compass/themes/x2engine/css/main.scss */
 #recent-items .portlet-content a, #top-contacts .portlet-content a {
   text-decoration: none;
   font-size: 11px;
 }
 
-/* line 170, ../../../compass/themes/x2engine/css/main.scss */
+/* line 173, ../../../compass/themes/x2engine/css/main.scss */
 #recent-items .portlet-content a strong {
   font-size: 12px;
 }
 
-/* line 175, ../../../compass/themes/x2engine/css/main.scss */
+/* line 178, ../../../compass/themes/x2engine/css/main.scss */
 #top-contacts .portlet-content a strong {
   font-size: 12px;
 }
-/* line 178, ../../../compass/themes/x2engine/css/main.scss */
+/* line 181, ../../../compass/themes/x2engine/css/main.scss */
 #top-contacts .portlet-content a.delete-link {
   opacity: 0.5;
   display: block;
@@ -731,30 +752,30 @@ ul.filter-hint b {
   float: right;
   background: none;
 }
-/* line 91, ../../../compass/css/lib/_standards.scss */
+/* line 94, ../../../compass/css/lib/_standards.scss */
 #top-contacts .portlet-content a.delete-link:hover {
   opacity: 1;
 }
 
-/* line 190, ../../../compass/themes/x2engine/css/main.scss */
+/* line 193, ../../../compass/themes/x2engine/css/main.scss */
 #recent-items .portlet-content {
   word-wrap: break-word;
 }
 
 /* Widgets */
-/* line 196, ../../../compass/themes/x2engine/css/main.scss */
+/* line 199, ../../../compass/themes/x2engine/css/main.scss */
 div.blah {
   height: 850px;
 }
 
-/* line 200, ../../../compass/themes/x2engine/css/main.scss */
+/* line 203, ../../../compass/themes/x2engine/css/main.scss */
 #dashboard-grid {
   width: 1000px;
   height: 700px;
   margin-top: 40px;
 }
 
-/* line 206, ../../../compass/themes/x2engine/css/main.scss */
+/* line 209, ../../../compass/themes/x2engine/css/main.scss */
 .itemsColumn2 {
   float: left;
   width: 37.5em;
@@ -762,7 +783,7 @@ div.blah {
   padding-bottom: 1em;
 }
 
-/* line 213, ../../../compass/themes/x2engine/css/main.scss */
+/* line 216, ../../../compass/themes/x2engine/css/main.scss */
 .itemsColumn3 {
   float: left;
   width: 24.5em;
@@ -770,7 +791,7 @@ div.blah {
   padding-bottom: 1em;
 }
 
-/* line 220, ../../../compass/themes/x2engine/css/main.scss */
+/* line 223, ../../../compass/themes/x2engine/css/main.scss */
 .itemsColumn4 {
   float: left;
   width: 18.5em;
@@ -778,14 +799,14 @@ div.blah {
   padding-bottom: 1em;
 }
 
-/* line 227, ../../../compass/themes/x2engine/css/main.scss */
+/* line 230, ../../../compass/themes/x2engine/css/main.scss */
 div.portlet-minimize {
   height: 13px;
   float: right;
   font-size: 14px;
   font-weight: normal;
 }
-/* line 232, ../../../compass/themes/x2engine/css/main.scss */
+/* line 235, ../../../compass/themes/x2engine/css/main.scss */
 div.portlet-minimize a {
   text-decoration: none;
 }
@@ -793,7 +814,7 @@ div.portlet-minimize a {
 /* div.portlet-minimize .close-widget {
         background: url(../images/icons/Close_Widget.png) center center no-repeat;
 } */
-/* line 241, ../../../compass/themes/x2engine/css/main.scss */
+/* line 244, ../../../compass/themes/x2engine/css/main.scss */
 .left-widget-min-max {
   height: 5px;
   padding: 0 !important;
@@ -804,12 +825,12 @@ div.portlet-minimize a {
   cursor: pointer;
   opacity: 0.4;
 }
-/* line 252, ../../../compass/themes/x2engine/css/main.scss */
+/* line 255, ../../../compass/themes/x2engine/css/main.scss */
 .left-widget-min-max:hover {
   opacity: 0.6;
 }
 
-/* line 257, ../../../compass/themes/x2engine/css/main.scss */
+/* line 260, ../../../compass/themes/x2engine/css/main.scss */
 .portlet-minimize .expand-widget,
 .portlet-close-button,
 .activity-control-link,
@@ -817,41 +838,41 @@ div.portlet-minimize a {
   opacity: 0.6;
 }
 
-/* line 265, ../../../compass/themes/x2engine/css/main.scss */
+/* line 268, ../../../compass/themes/x2engine/css/main.scss */
 .portlet-minimize .collapse-widget {
   opacity: 0.6;
 }
-/* line 268, ../../../compass/themes/x2engine/css/main.scss */
+/* line 271, ../../../compass/themes/x2engine/css/main.scss */
 .portlet-minimize .expand-widget:hover {
   opacity: 0.9;
 }
 
-/* line 273, ../../../compass/themes/x2engine/css/main.scss */
+/* line 276, ../../../compass/themes/x2engine/css/main.scss */
 .portlet-close-button {
   margin-right: 5px;
 }
 
-/* line 277, ../../../compass/themes/x2engine/css/main.scss */
+/* line 280, ../../../compass/themes/x2engine/css/main.scss */
 .portlet-close-button > :hover, .activity-control-link > :hover, .left-widget-min-max > :hover {
   opacity: 0.9;
 }
 
-/* line 282, ../../../compass/themes/x2engine/css/main.scss */
+/* line 285, ../../../compass/themes/x2engine/css/main.scss */
 .portlet-minimize a {
   color: inherit;
 }
-/* line 287, ../../../compass/themes/x2engine/css/main.scss */
+/* line 290, ../../../compass/themes/x2engine/css/main.scss */
 .portlet-minimize .collapse-widget {
   position: relative;
   top: -3px;
   margin-right: 8px;
   /* background: url(../images/icons/Collapse_Widget.png) center center no-repeat; */
 }
-/* line 288, ../../../compass/themes/x2engine/css/main.scss */
+/* line 291, ../../../compass/themes/x2engine/css/main.scss */
 .portlet-minimize .collapse-widget:hover {
   opacity: 0.9;
 }
-/* line 296, ../../../compass/themes/x2engine/css/main.scss */
+/* line 299, ../../../compass/themes/x2engine/css/main.scss */
 .portlet-minimize .expand-widget {
   margin-right: 10px;
   /* background: url(../images/icons/Expand_Widget.png) center center no-repeat; */
@@ -860,55 +881,58 @@ div.portlet-minimize a {
 /*********************************
 * Right Widget CSS
 ********************************/
-/*********************************************************************************
+/***********************************************************************************
  * Copyright (C) 2011-2015 X2Engine Inc. All Rights Reserved.
  *
  * X2Engine Inc.
  * P.O. Box 66752
  * Scotts Valley, California 95067 USA
- *
  * Company website: http://www.x2engine.com
- * Community and support website: http://www.x2community.com
  *
  * X2Engine Inc. grants you a perpetual, non-exclusive, non-transferable license
- * to install and use this Software for your internal business purposes.
- * You shall not modify, distribute, license or sublicense the Software.
- * Title, ownership, and all intellectual property rights in the Software belong
- * exclusively to X2Engine.
+ * to install and use this Software for your internal business purposes only
+ * for the number of users purchased by you. Your use of this Software for
+ * additional users is not covered by this license and requires a separate
+ * license purchase for such users. You shall not distribute, license, or
+ * sublicense the Software. Title, ownership, and all intellectual property
+ * rights in the Software belong exclusively to X2Engine. You agree not to file
+ * any patent applications covering, relating to, or depicting this Software
+ * or modifications thereto, and you agree to assign any patentable inventions
+ * resulting from your use of this Software to X2Engine.
  *
  * THIS SOFTWARE IS PROVIDED "AS IS" AND WITHOUT WARRANTIES OF ANY KIND, EITHER
  * EXPRESS OR IMPLIED, INCLUDING WITHOUT LIMITATION THE IMPLIED WARRANTIES OF
  * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, TITLE, AND NON-INFRINGEMENT.
- ********************************************************************************/
-/* line 22, ../../../compass/themes/x2engine/css/partials/_rightWidgets.scss */
+ **********************************************************************************/
+/* line 25, ../../../compass/themes/x2engine/css/partials/_rightWidgets.scss */
 #widget_MessageBox .portlet-content {
   text-align: center;
 }
 
-/* line 26, ../../../compass/themes/x2engine/css/partials/_rightWidgets.scss */
+/* line 29, ../../../compass/themes/x2engine/css/partials/_rightWidgets.scss */
 #motd-form {
   text-align: left;
 }
 
-/* line 30, ../../../compass/themes/x2engine/css/partials/_rightWidgets.scss */
+/* line 33, ../../../compass/themes/x2engine/css/partials/_rightWidgets.scss */
 #widget_TwitterFeed .portlet-content, #widget_GoogleMaps .portlet-content {
   padding: 0 0 10px 0;
 }
 
-/* line 35, ../../../compass/themes/x2engine/css/partials/_rightWidgets.scss */
+/* line 38, ../../../compass/themes/x2engine/css/partials/_rightWidgets.scss */
 #widget_TwitterFeed .twtr-hd {
   padding: 5px 5px 0 5px;
 }
-/* line 38, ../../../compass/themes/x2engine/css/partials/_rightWidgets.scss */
+/* line 41, ../../../compass/themes/x2engine/css/partials/_rightWidgets.scss */
 #widget_TwitterFeed .twtr-ft {
   display: none;
 }
 
-/* line 43, ../../../compass/themes/x2engine/css/partials/_rightWidgets.scss */
+/* line 46, ../../../compass/themes/x2engine/css/partials/_rightWidgets.scss */
 #widget_QuickContact .portlet-content {
   padding: 3px 3px 0 3px;
 }
-/* line 44, ../../../compass/themes/x2engine/css/partials/_rightWidgets.scss */
+/* line 47, ../../../compass/themes/x2engine/css/partials/_rightWidgets.scss */
 #widget_QuickContact .portlet-content * {
   font-size: 10px;
 }
@@ -916,16 +940,16 @@ div.portlet-minimize a {
 /***********************************************************************
 * activity feed widget 
 ***********************************************************************/
-/* line 55, ../../../compass/themes/x2engine/css/partials/_rightWidgets.scss */
+/* line 58, ../../../compass/themes/x2engine/css/partials/_rightWidgets.scss */
 #widget_ChatBox > div.portlet-content {
   overflow-y: hidden;
 }
-/* line 58, ../../../compass/themes/x2engine/css/partials/_rightWidgets.scss */
+/* line 61, ../../../compass/themes/x2engine/css/partials/_rightWidgets.scss */
 #widget_ChatBox .portlet-content {
   padding: 0;
 }
 
-/* line 63, ../../../compass/themes/x2engine/css/partials/_rightWidgets.scss */
+/* line 66, ../../../compass/themes/x2engine/css/partials/_rightWidgets.scss */
 #feed-box {
   height: 200px;
   width: auto;
@@ -966,39 +990,39 @@ div.portlet-minimize a {
         width: 565px;
         height: 30px;
 }*/
-/* line 104, ../../../compass/themes/x2engine/css/partials/_rightWidgets.scss */
+/* line 107, ../../../compass/themes/x2engine/css/partials/_rightWidgets.scss */
 #widget_ChatBox input {
   float: right;
   width: 80px;
 }
 
-/* line 110, ../../../compass/themes/x2engine/css/partials/_rightWidgets.scss */
+/* line 113, ../../../compass/themes/x2engine/css/partials/_rightWidgets.scss */
 #feed-box div.message {
   margin-bottom: 10px;
   white-space: pre-wrap;
 }
-/* line 114, ../../../compass/themes/x2engine/css/partials/_rightWidgets.scss */
+/* line 117, ../../../compass/themes/x2engine/css/partials/_rightWidgets.scss */
 #feed-box a {
   text-decoration: none;
 }
-/* line 117, ../../../compass/themes/x2engine/css/partials/_rightWidgets.scss */
+/* line 120, ../../../compass/themes/x2engine/css/partials/_rightWidgets.scss */
 #feed-box span.my-username {
   color: #999;
 }
 
-/* line 122, ../../../compass/themes/x2engine/css/partials/_rightWidgets.scss */
+/* line 125, ../../../compass/themes/x2engine/css/partials/_rightWidgets.scss */
 #widget_ChatBox .chat-timestamp {
   display: none;
 }
 
-/* line 127, ../../../compass/themes/x2engine/css/partials/_rightWidgets.scss */
+/* line 130, ../../../compass/themes/x2engine/css/partials/_rightWidgets.scss */
 #chat.full-screen #feed-box {
   width: 650px;
   margin: 5px 0;
   padding: 5px;
   height: 350px;
 }
-/* line 133, ../../../compass/themes/x2engine/css/partials/_rightWidgets.scss */
+/* line 136, ../../../compass/themes/x2engine/css/partials/_rightWidgets.scss */
 #chat.full-screen input {
   float: left;
   margin: 0;
@@ -1007,11 +1031,11 @@ div.portlet-minimize a {
   padding: 12px;
 }
 
-/* line 143, ../../../compass/themes/x2engine/css/partials/_rightWidgets.scss */
+/* line 146, ../../../compass/themes/x2engine/css/partials/_rightWidgets.scss */
 #widget_ChatBox.full-screen .chat-timestamp {
   display: inline;
 }
-/* line 146, ../../../compass/themes/x2engine/css/partials/_rightWidgets.scss */
+/* line 149, ../../../compass/themes/x2engine/css/partials/_rightWidgets.scss */
 #widget_ChatBox.full-screen input {
   float: left;
   width: auto;
@@ -1023,7 +1047,7 @@ div.portlet-minimize a {
 /***********************************************************************
 * Tag Cloud 
 ***********************************************************************/
-/* line 162, ../../../compass/themes/x2engine/css/partials/_rightWidgets.scss */
+/* line 165, ../../../compass/themes/x2engine/css/partials/_rightWidgets.scss */
 #widget_TagCloud .tag, #widget_MediaBox .media-item, .x2-tag-list .tag {
   -webkit-border-radius: 4px;
   -moz-border-radius: 4px;
@@ -1038,18 +1062,18 @@ div.portlet-minimize a {
   padding: 2px;
   background-color: #f0f0f0;
 }
-/* line 171, ../../../compass/themes/x2engine/css/partials/_rightWidgets.scss */
+/* line 174, ../../../compass/themes/x2engine/css/partials/_rightWidgets.scss */
 #widget_TagCloud .tag input[type="text"], #widget_MediaBox .media-item input[type="text"], .x2-tag-list .tag input[type="text"] {
   border: 1px solid #c5c5c5;
 }
 
-/* line 176, ../../../compass/themes/x2engine/css/partials/_rightWidgets.scss */
+/* line 179, ../../../compass/themes/x2engine/css/partials/_rightWidgets.scss */
 #widget_TagCloud .tag a, #widget_MediaBox .media-item a, .x2-tag-list .tag a {
   text-decoration: none;
   color: black;
 }
 
-/* line 181, ../../../compass/themes/x2engine/css/partials/_rightWidgets.scss */
+/* line 184, ../../../compass/themes/x2engine/css/partials/_rightWidgets.scss */
 #widget_OnlineUsers .user {
   -webkit-border-radius: 4px;
   -moz-border-radius: 4px;
@@ -1063,7 +1087,7 @@ div.portlet-minimize a {
   padding: 2px;
   background-color: #f0f0f0;
 }
-/* line 182, ../../../compass/themes/x2engine/css/partials/_rightWidgets.scss */
+/* line 185, ../../../compass/themes/x2engine/css/partials/_rightWidgets.scss */
 #widget_OnlineUsers .user a {
   text-decoration: none;
   color: black;
@@ -1072,15 +1096,15 @@ div.portlet-minimize a {
 /***********************************************************************
 * Clock Widget
 ***********************************************************************/
-/* line 199, ../../../compass/themes/x2engine/css/partials/_rightWidgets.scss */
+/* line 202, ../../../compass/themes/x2engine/css/partials/_rightWidgets.scss */
 #widget_TimeZone {
   text-align: center;
 }
-/* line 201, ../../../compass/themes/x2engine/css/partials/_rightWidgets.scss */
+/* line 204, ../../../compass/themes/x2engine/css/partials/_rightWidgets.scss */
 #widget_TimeZone .portlet-content {
   overflow-y: hidden;
 }
-/* line 204, ../../../compass/themes/x2engine/css/partials/_rightWidgets.scss */
+/* line 207, ../../../compass/themes/x2engine/css/partials/_rightWidgets.scss */
 #widget_TimeZone #tzClock {
   position: relative;
   display: block;
@@ -1090,11 +1114,11 @@ div.portlet-minimize a {
   background: url(../images/clockface.png);
   list-style: none;
 }
-/* line 213, ../../../compass/themes/x2engine/css/partials/_rightWidgets.scss */
+/* line 216, ../../../compass/themes/x2engine/css/partials/_rightWidgets.scss */
 #widget_TimeZone #tzClock2 {
   display: block;
 }
-/* line 216, ../../../compass/themes/x2engine/css/partials/_rightWidgets.scss */
+/* line 219, ../../../compass/themes/x2engine/css/partials/_rightWidgets.scss */
 #widget_TimeZone li {
   position: absolute;
   width: 4px;
@@ -1102,31 +1126,31 @@ div.portlet-minimize a {
   top: 0px;
   left: 42px;
 }
-/* line 222, ../../../compass/themes/x2engine/css/partials/_rightWidgets.scss */
+/* line 225, ../../../compass/themes/x2engine/css/partials/_rightWidgets.scss */
 #widget_TimeZone li div {
   margin: 0 auto;
 }
-/* line 226, ../../../compass/themes/x2engine/css/partials/_rightWidgets.scss */
+/* line 229, ../../../compass/themes/x2engine/css/partials/_rightWidgets.scss */
 #widget_TimeZone li.sec div:first-child {
   margin-top: 12px;
   width: 1px;
   background: red;
   height: 32px;
 }
-/* line 232, ../../../compass/themes/x2engine/css/partials/_rightWidgets.scss */
+/* line 235, ../../../compass/themes/x2engine/css/partials/_rightWidgets.scss */
 #widget_TimeZone li.sec div:last-child {
   width: 3px;
   background: red;
   height: 18px;
 }
-/* line 238, ../../../compass/themes/x2engine/css/partials/_rightWidgets.scss */
+/* line 241, ../../../compass/themes/x2engine/css/partials/_rightWidgets.scss */
 #widget_TimeZone li.min div {
   width: 2px;
   margin-top: 14px;
   background: black;
   height: 30px;
 }
-/* line 244, ../../../compass/themes/x2engine/css/partials/_rightWidgets.scss */
+/* line 247, ../../../compass/themes/x2engine/css/partials/_rightWidgets.scss */
 #widget_TimeZone li.hour div {
   margin-top: 22px;
   width: 3px;
@@ -1142,12 +1166,12 @@ div.portlet-minimize a {
 /***********************************************************************
 * NoteBox
 ***********************************************************************/
-/* line 260, ../../../compass/themes/x2engine/css/partials/_rightWidgets.scss */
+/* line 263, ../../../compass/themes/x2engine/css/partials/_rightWidgets.scss */
 #widget_NoteBox .portlet-content {
   padding: 0;
   overflow: hidden;
 }
-/* line 265, ../../../compass/themes/x2engine/css/partials/_rightWidgets.scss */
+/* line 268, ../../../compass/themes/x2engine/css/partials/_rightWidgets.scss */
 #widget_NoteBox textarea {
   display: block;
   margin: 0 5px;
@@ -1162,7 +1186,7 @@ div.portlet-minimize a {
   overflow: hidden;
 }
 
-/* line 281, ../../../compass/themes/x2engine/css/partials/_rightWidgets.scss */
+/* line 284, ../../../compass/themes/x2engine/css/partials/_rightWidgets.scss */
 #note-box {
   height: 200px;
   width: auto;
@@ -1180,11 +1204,11 @@ div.portlet-minimize a {
 /***********************************************************************
 * Doc Viewer
 ***********************************************************************/
-/* line 301, ../../../compass/themes/x2engine/css/partials/_rightWidgets.scss */
+/* line 304, ../../../compass/themes/x2engine/css/partials/_rightWidgets.scss */
 #widget_DocViewer .portlet-content {
   padding: 0;
 }
-/* line 305, ../../../compass/themes/x2engine/css/partials/_rightWidgets.scss */
+/* line 308, ../../../compass/themes/x2engine/css/partials/_rightWidgets.scss */
 #widget_DocViewer textarea {
   display: block;
   margin: 0 5px;
@@ -1198,12 +1222,12 @@ div.portlet-minimize a {
   resize: none;
   overflow: hidden;
 }
-/* line 319, ../../../compass/themes/x2engine/css/partials/_rightWidgets.scss */
+/* line 322, ../../../compass/themes/x2engine/css/partials/_rightWidgets.scss */
 #widget_DocViewer input {
   width: 160px;
 }
 
-/* line 324, ../../../compass/themes/x2engine/css/partials/_rightWidgets.scss */
+/* line 327, ../../../compass/themes/x2engine/css/partials/_rightWidgets.scss */
 #docview-box {
   height: 200px;
   width: auto;
@@ -1218,12 +1242,12 @@ div.portlet-minimize a {
   border: 1px solid #ddd;
 }
 
-/* line 339, ../../../compass/themes/x2engine/css/partials/_rightWidgets.scss */
+/* line 342, ../../../compass/themes/x2engine/css/partials/_rightWidgets.scss */
 #docview-input {
   padding: 5px;
 }
 
-/* line 309, ../../../compass/themes/x2engine/css/main.scss */
+/* line 312, ../../../compass/themes/x2engine/css/main.scss */
 div.shown {
   margin-left: 10px;
   border: 1px solid black;
@@ -1235,12 +1259,12 @@ div.shown {
   background: #fff;
 }
 
-/* line 320, ../../../compass/themes/x2engine/css/main.scss */
+/* line 323, ../../../compass/themes/x2engine/css/main.scss */
 p.descrip {
   font-weight: bold;
 }
 
-/* line 324, ../../../compass/themes/x2engine/css/main.scss */
+/* line 327, ../../../compass/themes/x2engine/css/main.scss */
 #actionLS {
   padding: 5px 15px 5px 15px;
 }
@@ -1250,31 +1274,31 @@ p.descrip {
         font-family: Arial, Helvetica, sans-serif;
         font-size: 12px;
 } */
-/* line 334, ../../../compass/themes/x2engine/css/main.scss */
+/* line 337, ../../../compass/themes/x2engine/css/main.scss */
 .history {
   background: none !important;
   border: none !important;
   box-shadow: none !important;
 }
-/* line 338, ../../../compass/themes/x2engine/css/main.scss */
+/* line 341, ../../../compass/themes/x2engine/css/main.scss */
 .history #history {
   -moz-box-shadow: 0px 2px 3px rgba(0, 0, 0, 0.15), 0px -1px 1px rgba(0, 0, 0, 0.1);
   -webkit-box-shadow: 0px 2px 3px rgba(0, 0, 0, 0.15), 0px -1px 1px rgba(0, 0, 0, 0.1);
   box-shadow: 0px 2px 3px rgba(0, 0, 0, 0.15), 0px -1px 1px rgba(0, 0, 0, 0.1);
 }
-/* line 342, ../../../compass/themes/x2engine/css/main.scss */
+/* line 345, ../../../compass/themes/x2engine/css/main.scss */
 .history .text-area-wrapper {
   margin: 0;
   padding: 2px 4px;
 }
-/* line 346, ../../../compass/themes/x2engine/css/main.scss */
+/* line 349, ../../../compass/themes/x2engine/css/main.scss */
 .history #save-publisher {
   width: 70px;
   text-align: center;
   float: right;
   margin: 0;
 }
-/* line 352, ../../../compass/themes/x2engine/css/main.scss */
+/* line 355, ../../../compass/themes/x2engine/css/main.scss */
 .history .publisher-tabs {
   padding: 5px;
   margin: 5px 0 0 0;
@@ -1285,11 +1309,11 @@ p.descrip {
   -o-border-radius: 4px 4px 0 0;
   border-radius: 4px 4px 0 0;
 }
-/* line 359, ../../../compass/themes/x2engine/css/main.scss */
+/* line 362, ../../../compass/themes/x2engine/css/main.scss */
 .history .action-history-controls {
   border: none;
 }
-/* line 363, ../../../compass/themes/x2engine/css/main.scss */
+/* line 366, ../../../compass/themes/x2engine/css/main.scss */
 .history .list-view .items {
   border-left: none;
   border-right: none;
@@ -1300,7 +1324,7 @@ p.descrip {
   -o-border-radius: 0 0 4px 4px;
   border-radius: 0 0 4px 4px;
 }
-/* line 370, ../../../compass/themes/x2engine/css/main.scss */
+/* line 373, ../../../compass/themes/x2engine/css/main.scss */
 .history .action-history-controls {
   -webkit-border-radius: 4px 4px 0 0 !important;
   -moz-border-radius: 4px 4px 0 0 !important;
@@ -1310,7 +1334,7 @@ p.descrip {
   margin-bottom: -2px !important;
   border: none !important;
 }
-/* line 377, ../../../compass/themes/x2engine/css/main.scss */
+/* line 380, ../../../compass/themes/x2engine/css/main.scss */
 .history .history .pager {
   -webkit-border-radius: 0 0 4px 4px !important;
   -moz-border-radius: 0 0 4px 4px !important;
@@ -1321,17 +1345,17 @@ p.descrip {
   margin-top: -3px !important;
 }
 
-/* line 385, ../../../compass/themes/x2engine/css/main.scss */
+/* line 388, ../../../compass/themes/x2engine/css/main.scss */
 .ui-widget-content {
   /* background: none; */
 }
 
-/* line 391, ../../../compass/themes/x2engine/css/main.scss */
+/* line 394, ../../../compass/themes/x2engine/css/main.scss */
 .list-view h2, .list-view h3, .list-view h4 {
   display: inline;
   margin-bottom: 0;
 }
-/* line 395, ../../../compass/themes/x2engine/css/main.scss */
+/* line 398, ../../../compass/themes/x2engine/css/main.scss */
 .list-view .items {
   clear: both;
   background: #fff;
@@ -1342,44 +1366,44 @@ p.descrip {
   border-radius: 4px;
   border: 1px solid #ccc;
 }
-/* line 402, ../../../compass/themes/x2engine/css/main.scss */
+/* line 405, ../../../compass/themes/x2engine/css/main.scss */
 .list-view .empty {
   margin: 0 0 5px 5px;
   display: block;
 }
-/* line 406, ../../../compass/themes/x2engine/css/main.scss */
+/* line 409, ../../../compass/themes/x2engine/css/main.scss */
 .list-view .comment-age {
   color: #666;
 }
-/* line 409, ../../../compass/themes/x2engine/css/main.scss */
+/* line 412, ../../../compass/themes/x2engine/css/main.scss */
 .list-view .summary {
   color: #555;
   display: inline;
   float: right;
 }
-/* line 414, ../../../compass/themes/x2engine/css/main.scss */
+/* line 417, ../../../compass/themes/x2engine/css/main.scss */
 .list-view .view {
   clear: both;
   padding: 0;
   width: auto;
 }
-/* line 419, ../../../compass/themes/x2engine/css/main.scss */
+/* line 422, ../../../compass/themes/x2engine/css/main.scss */
 .list-view a {
   text-decoration: none;
 }
-/* line 422, ../../../compass/themes/x2engine/css/main.scss */
+/* line 425, ../../../compass/themes/x2engine/css/main.scss */
 .list-view .view.top-level {
   border-top: 1px solid #ddd;
   padding: 2px 5px 10px 5px;
 }
-/* line 425, ../../../compass/themes/x2engine/css/main.scss */
+/* line 428, ../../../compass/themes/x2engine/css/main.scss */
 .list-view .view.top-level.date-break {
   text-align: center;
   font-weight: bold;
   background-color: #eee;
   padding: 2px 5px 5px 5px;
 }
-/* line 431, ../../../compass/themes/x2engine/css/main.scss */
+/* line 434, ../../../compass/themes/x2engine/css/main.scss */
 .list-view .view.top-level .list-view {
   margin: 0 -5px;
   padding: 0;
@@ -1390,11 +1414,11 @@ p.descrip {
   -o-border-radius: 0;
   border-radius: 0;
 }
-/* line 437, ../../../compass/themes/x2engine/css/main.scss */
+/* line 440, ../../../compass/themes/x2engine/css/main.scss */
 .list-view .view.top-level form {
   margin-top: 5px;
 }
-/* line 440, ../../../compass/themes/x2engine/css/main.scss */
+/* line 443, ../../../compass/themes/x2engine/css/main.scss */
 .list-view .view.top-level .view {
   /*second level comment*/
   background: #eee;
@@ -1408,15 +1432,15 @@ p.descrip {
   -o-border-radius: 0;
   border-radius: 0;
 }
-/* line 449, ../../../compass/themes/x2engine/css/main.scss */
+/* line 452, ../../../compass/themes/x2engine/css/main.scss */
 .list-view .view.top-level:first-child {
   border-top: none;
 }
-/* line 453, ../../../compass/themes/x2engine/css/main.scss */
+/* line 456, ../../../compass/themes/x2engine/css/main.scss */
 .list-view .deleteButton {
   float: right;
 }
-/* line 456, ../../../compass/themes/x2engine/css/main.scss */
+/* line 459, ../../../compass/themes/x2engine/css/main.scss */
 .list-view .pager {
   margin: 5px 0 5px 0;
   text-align: right;
@@ -1432,43 +1456,43 @@ p.descrip {
   border-radius: 4px 4px 4px 4px;
 }
 
-/* line 468, ../../../compass/themes/x2engine/css/main.scss */
+/* line 471, ../../../compass/themes/x2engine/css/main.scss */
 .event-text-box {
   margin-left: 50px;
 }
 
-/* line 474, ../../../compass/themes/x2engine/css/main.scss */
+/* line 477, ../../../compass/themes/x2engine/css/main.scss */
 .drive-icon {
   display: inline-block;
   height: 16px;
   width: 16px;
 }
 
-/* line 480, ../../../compass/themes/x2engine/css/main.scss */
+/* line 483, ../../../compass/themes/x2engine/css/main.scss */
 div.loading-icon {
   background: url(../images/loading.gif) no-repeat;
   height: 32px;
   width: 32px;
 }
 
-/* line 487, ../../../compass/themes/x2engine/css/main.scss */
+/* line 490, ../../../compass/themes/x2engine/css/main.scss */
 .action-description, a.action-description {
   text-decoration: none;
   color: black;
 }
 
-/* line 492, ../../../compass/themes/x2engine/css/main.scss */
+/* line 495, ../../../compass/themes/x2engine/css/main.scss */
 .action.list-view .view {
   overflow: auto;
   padding-left: 40px;
   border-bottom: 1px solid #ddd;
 }
-/* line 496, ../../../compass/themes/x2engine/css/main.scss */
+/* line 499, ../../../compass/themes/x2engine/css/main.scss */
 .action.list-view .view:last-child {
   border-bottom: none;
 }
 
-/* line 501, ../../../compass/themes/x2engine/css/main.scss */
+/* line 504, ../../../compass/themes/x2engine/css/main.scss */
 .dashSubmit {
   float: right;
 }
@@ -1476,7 +1500,7 @@ div.loading-icon {
 /*********************************
 * Action List (In history panel)
 ********************************/
-/* line 509, ../../../compass/themes/x2engine/css/main.scss */
+/* line 512, ../../../compass/themes/x2engine/css/main.scss */
 .action.list-view .header {
   display: block;
   overflow: auto;
@@ -1489,26 +1513,26 @@ div.loading-icon {
   -o-border-radius: 0 4px 0 0;
   border-radius: 0 4px 0 0;
 }
-/* line 510, ../../../compass/themes/x2engine/css/main.scss */
+/* line 513, ../../../compass/themes/x2engine/css/main.scss */
 .action.list-view .header a {
   font-weight: normal;
 }
-/* line 521, ../../../compass/themes/x2engine/css/main.scss */
+/* line 524, ../../../compass/themes/x2engine/css/main.scss */
 .action.list-view .buttons {
   float: right;
 }
-/* line 524, ../../../compass/themes/x2engine/css/main.scss */
+/* line 527, ../../../compass/themes/x2engine/css/main.scss */
 .action.list-view .description {
   color: #000;
   padding: 0 0 5px 0;
 }
-/* line 528, ../../../compass/themes/x2engine/css/main.scss */
+/* line 531, ../../../compass/themes/x2engine/css/main.scss */
 .action.list-view .footer {
   color: #666;
   padding: 2px 5px;
   font-size: 11px;
 }
-/* line 533, ../../../compass/themes/x2engine/css/main.scss */
+/* line 536, ../../../compass/themes/x2engine/css/main.scss */
 .action.list-view .icon {
   display: block;
   position: relative;
@@ -1521,15 +1545,15 @@ div.loading-icon {
   color: #004baf;
   /* @theme color link */
 }
-/* line 36, ../../../compass/css/lib/_font-awesome.scss */
+/* line 39, ../../../compass/css/lib/_font-awesome.scss */
 .action.list-view .icon:before {
   text-decoration: none;
 }
-/* line 550, ../../../compass/themes/x2engine/css/main.scss */
+/* line 553, ../../../compass/themes/x2engine/css/main.scss */
 .action.list-view .icon:before {
   font-size: 30px !important;
 }
-/* line 554, ../../../compass/themes/x2engine/css/main.scss */
+/* line 557, ../../../compass/themes/x2engine/css/main.scss */
 .action.list-view .icon.action-index {
   display: block;
   float: left;
@@ -1545,11 +1569,11 @@ div.loading-icon {
   -o-border-radius: 4px 0 0 0;
   border-radius: 4px 0 0 0;
 }
-/* line 565, ../../../compass/themes/x2engine/css/main.scss */
+/* line 568, ../../../compass/themes/x2engine/css/main.scss */
 .action.list-view .icon.uncomplete-box {
   background: url(../images/icons/Blue_box.png) 0 0px no-repeat transparent;
 }
-/* line 568, ../../../compass/themes/x2engine/css/main.scss */
+/* line 571, ../../../compass/themes/x2engine/css/main.scss */
 .action.list-view .icon.checkmark-overlay {
   margin-top: -2px;
   margin-left: -1px;
@@ -1559,44 +1583,44 @@ div.loading-icon {
 /**
  * These have been replaced by icons in-layout
  */
-/* line 582, ../../../compass/themes/x2engine/css/main.scss */
+/* line 585, ../../../compass/themes/x2engine/css/main.scss */
 div.control-button.icon.complete-button {
   background: url("../images/icons/Complete.png") no-repeat center center;
   height: 17px;
   width: 22px;
 }
-/* line 587, ../../../compass/themes/x2engine/css/main.scss */
+/* line 590, ../../../compass/themes/x2engine/css/main.scss */
 div.control-button.icon.uncomplete-button {
   background: url("../images/icons/Uncomplete.png") no-repeat center center;
   height: 17px;
   width: 22px;
 }
-/* line 592, ../../../compass/themes/x2engine/css/main.scss */
+/* line 595, ../../../compass/themes/x2engine/css/main.scss */
 div.control-button.icon.edit-button {
   background: url("../images/icons/Edit.png") no-repeat center center;
   height: 17px;
   width: 22px;
 }
-/* line 597, ../../../compass/themes/x2engine/css/main.scss */
+/* line 600, ../../../compass/themes/x2engine/css/main.scss */
 div.control-button.icon.delete-button {
   background: url("../images/icons/Delete1.png") no-repeat center center;
   height: 21px;
   width: 21px;
 }
-/* line 603, ../../../compass/themes/x2engine/css/main.scss */
+/* line 606, ../../../compass/themes/x2engine/css/main.scss */
 div.control-button.sticky-button {
   background: url("../images/Unsticky1.png") no-repeat center center;
   height: 21px;
   width: 22px;
 }
-/* line 607, ../../../compass/themes/x2engine/css/main.scss */
+/* line 610, ../../../compass/themes/x2engine/css/main.scss */
 div.control-button.sticky-button.unsticky {
   background: url("../images/Sticky1.png") no-repeat center center;
   height: 21px;
   width: 22px;
 }
 
-/* line 615, ../../../compass/themes/x2engine/css/main.scss */
+/* line 618, ../../../compass/themes/x2engine/css/main.scss */
 div.sticky-icon {
   float: right;
   background: url("../images/Sticky1.png") no-repeat center center;
@@ -1606,44 +1630,44 @@ div.sticky-icon {
   margin-right: 10px;
 }
 
-/* line 625, ../../../compass/themes/x2engine/css/main.scss */
+/* line 628, ../../../compass/themes/x2engine/css/main.scss */
 .action.list-view .items span.empty {
   padding: 10px;
   display: block;
 }
 
-/* line 630, ../../../compass/themes/x2engine/css/main.scss */
+/* line 633, ../../../compass/themes/x2engine/css/main.scss */
 div.list-actions {
   float: left;
   margin-top: -4px;
 }
 
-/* line 635, ../../../compass/themes/x2engine/css/main.scss */
+/* line 638, ../../../compass/themes/x2engine/css/main.scss */
 img.attachment-img {
   margin: 5px;
   display: block;
   max-width: 250px;
 }
 
-/* line 641, ../../../compass/themes/x2engine/css/main.scss */
+/* line 644, ../../../compass/themes/x2engine/css/main.scss */
 span.event-text {
   display: block;
 }
-/* line 643, ../../../compass/themes/x2engine/css/main.scss */
+/* line 646, ../../../compass/themes/x2engine/css/main.scss */
 span.event-text img.attachment-img {
   margin: 5px;
   display: block;
   max-width: none;
 }
 
-/* line 650, ../../../compass/themes/x2engine/css/main.scss */
+/* line 653, ../../../compass/themes/x2engine/css/main.scss */
 #logo {
   margin-left: 1px;
   padding: 10px 20px;
   font-size: 200%;
 }
 
-/* line 656, ../../../compass/themes/x2engine/css/main.scss */
+/* line 659, ../../../compass/themes/x2engine/css/main.scss */
 div.date-box {
   display: inline-block;
   height: 22px;
@@ -1659,12 +1683,12 @@ div.date-box {
   text-align: center;
   vertical-align: middle;
 }
-/* line 666, ../../../compass/themes/x2engine/css/main.scss */
+/* line 669, ../../../compass/themes/x2engine/css/main.scss */
 div.date-box span {
   display: block;
   font-weight: bold;
 }
-/* line 670, ../../../compass/themes/x2engine/css/main.scss */
+/* line 673, ../../../compass/themes/x2engine/css/main.scss */
 div.date-box .month {
   background: #444;
   color: #fff;
@@ -1672,14 +1696,14 @@ div.date-box .month {
   line-height: 10px;
   text-transform: uppercase;
 }
-/* line 677, ../../../compass/themes/x2engine/css/main.scss */
+/* line 680, ../../../compass/themes/x2engine/css/main.scss */
 div.date-box .day {
   display: block;
   font-size: 12px;
   line-height: 12px;
 }
 
-/* line 684, ../../../compass/themes/x2engine/css/main.scss */
+/* line 687, ../../../compass/themes/x2engine/css/main.scss */
 .list-view div.date-box {
   height: 32px;
   width: 32px;
@@ -1694,52 +1718,52 @@ div.date-box .day {
   border-radius: 4px;
 }
 
-/* line 694, ../../../compass/themes/x2engine/css/main.scss */
+/* line 697, ../../../compass/themes/x2engine/css/main.scss */
 .action.list-view div.date-box {
   margin: 5px 5px 5px -35px;
 }
 
-/* line 698, ../../../compass/themes/x2engine/css/main.scss */
+/* line 701, ../../../compass/themes/x2engine/css/main.scss */
 .list-view div.date-box {
   background: none;
 }
-/* line 700, ../../../compass/themes/x2engine/css/main.scss */
+/* line 703, ../../../compass/themes/x2engine/css/main.scss */
 .list-view div.date-box .month {
   background: #999;
   font-size: 10px;
   line-height: 11px;
   border-bottom: 1px solid #999;
 }
-/* line 706, ../../../compass/themes/x2engine/css/main.scss */
+/* line 709, ../../../compass/themes/x2engine/css/main.scss */
 .list-view div.date-box .day {
   font-size: 14px;
   line-height: 20px;
   /* @theme color: lighter_link */
 }
-/* line 711, ../../../compass/themes/x2engine/css/main.scss */
+/* line 714, ../../../compass/themes/x2engine/css/main.scss */
 .list-view div.date-box.p-3 {
   border-color: #f25050;
 }
-/* line 714, ../../../compass/themes/x2engine/css/main.scss */
+/* line 717, ../../../compass/themes/x2engine/css/main.scss */
 .list-view div.date-box.p-2 {
   border-color: #f8ab50;
 }
-/* line 717, ../../../compass/themes/x2engine/css/main.scss */
+/* line 720, ../../../compass/themes/x2engine/css/main.scss */
 .list-view div.date-box.p-1 {
   border-color: #004baf;
   /* @theme border-color: lighter_link */
 }
-/* line 721, ../../../compass/themes/x2engine/css/main.scss */
+/* line 724, ../../../compass/themes/x2engine/css/main.scss */
 .list-view div.date-box.p-3 .month {
   background: #f25050;
   border-color: #f25050;
 }
-/* line 725, ../../../compass/themes/x2engine/css/main.scss */
+/* line 728, ../../../compass/themes/x2engine/css/main.scss */
 .list-view div.date-box.p-2 .month {
   background: #f8ab50;
   border-color: #f8ab50;
 }
-/* line 729, ../../../compass/themes/x2engine/css/main.scss */
+/* line 732, ../../../compass/themes/x2engine/css/main.scss */
 .list-view div.date-box.p-1 .month {
   background: #004baf;
   border-color: #004baf;
@@ -1751,62 +1775,62 @@ div.date-box .day {
 /*
 yii flash box
 */
-/* line 743, ../../../compass/themes/x2engine/css/main.scss */
+/* line 746, ../../../compass/themes/x2engine/css/main.scss */
 div.flash-error, div.flash-notice, div.flash-success {
   margin-bottom: 0;
   padding: .8em;
   border: 2px solid #ddd;
 }
-/* line 748, ../../../compass/themes/x2engine/css/main.scss */
+/* line 751, ../../../compass/themes/x2engine/css/main.scss */
 div.flash-error {
   background: #fbe3e4;
   color: #8a1f11;
   border: 2px solid #fbc2c4;
 }
 
-/* line 755, ../../../compass/themes/x2engine/css/main.scss */
+/* line 758, ../../../compass/themes/x2engine/css/main.scss */
 ul.flash-error {
   background: #fbe3e4;
   color: #8a1f11;
   border: 2px solid #fbc2c4;
 }
 
-/* line 762, ../../../compass/themes/x2engine/css/main.scss */
+/* line 765, ../../../compass/themes/x2engine/css/main.scss */
 div.flash-loading, div.flash-notice {
   background: #fff6bf;
   color: #514721;
   border: 2px solid #ffd324;
 }
-/* line 767, ../../../compass/themes/x2engine/css/main.scss */
+/* line 770, ../../../compass/themes/x2engine/css/main.scss */
 div.flash-success {
   background: #e6efc2;
   color: #264409;
   border: 2px solid #c6d880;
 }
-/* line 772, ../../../compass/themes/x2engine/css/main.scss */
+/* line 775, ../../../compass/themes/x2engine/css/main.scss */
 div.flash-error a {
   color: #8a1f11;
 }
-/* line 775, ../../../compass/themes/x2engine/css/main.scss */
+/* line 778, ../../../compass/themes/x2engine/css/main.scss */
 div.flash-notice a {
   color: #514721;
 }
-/* line 778, ../../../compass/themes/x2engine/css/main.scss */
+/* line 781, ../../../compass/themes/x2engine/css/main.scss */
 div.flash-success a {
   color: #264409;
 }
-/* line 781, ../../../compass/themes/x2engine/css/main.scss */
+/* line 784, ../../../compass/themes/x2engine/css/main.scss */
 div.search-form {
   margin-left: 0px;
   margin-right: 0px;
   padding: 10px;
   background: #eee;
 }
-/* line 786, ../../../compass/themes/x2engine/css/main.scss */
+/* line 789, ../../../compass/themes/x2engine/css/main.scss */
 div.search-form div.wide.form textarea {
   width: 420px;
 }
-/* line 790, ../../../compass/themes/x2engine/css/main.scss */
+/* line 793, ../../../compass/themes/x2engine/css/main.scss */
 div.contact-lists td.contact-count {
   /*background: url(../images/contact-icon.png) 5px center no-repeat;*/
   /*padding-left: 24px;*/
@@ -1819,18 +1843,18 @@ div.contact-lists td.contact-count {
 div.contact-lists th.contact-count {
         width: 100px;
 }*/
-/* line 804, ../../../compass/themes/x2engine/css/main.scss */
+/* line 807, ../../../compass/themes/x2engine/css/main.scss */
 #lists-grid tr.bold td {
   font-weight: bold;
 }
 
-/* line 808, ../../../compass/themes/x2engine/css/main.scss */
+/* line 811, ../../../compass/themes/x2engine/css/main.scss */
 #profile {
   float: left;
   width: 300px;
 }
 
-/* line 813, ../../../compass/themes/x2engine/css/main.scss */
+/* line 816, ../../../compass/themes/x2engine/css/main.scss */
 div#code-snippet {
   font-family: "Courier New", Courier, monospace;
   background: #f8f8f8;
@@ -1842,7 +1866,7 @@ div#code-snippet {
   -o-border-radius: 4px;
 }
 
-/* line 824, ../../../compass/themes/x2engine/css/main.scss */
+/* line 827, ../../../compass/themes/x2engine/css/main.scss */
 .yiiLog {
   display: block;
   z-index: 10;
@@ -1853,7 +1877,7 @@ div#code-snippet {
   overflow-y: scroll;
 }
 
-/* line 834, ../../../compass/themes/x2engine/css/main.scss */
+/* line 837, ../../../compass/themes/x2engine/css/main.scss */
 .yiiTranslationList {
   display: block;
   z-index: 10;
@@ -1868,16 +1892,16 @@ div#code-snippet {
   overflow-y: auto;
 }
 
-/* line 849, ../../../compass/themes/x2engine/css/main.scss */
+/* line 852, ../../../compass/themes/x2engine/css/main.scss */
 .yiiLog tbody {
   width: 100%;
 }
-/* line 852, ../../../compass/themes/x2engine/css/main.scss */
+/* line 855, ../../../compass/themes/x2engine/css/main.scss */
 .yiiLog pre {
   margin: 0;
 }
 
-/* line 857, ../../../compass/themes/x2engine/css/main.scss */
+/* line 860, ../../../compass/themes/x2engine/css/main.scss */
 .flowTrace {
   background: #fff;
   position: fixed;
@@ -1889,82 +1913,82 @@ div#code-snippet {
   overflow-y: scroll;
 }
 
-/* line 869, ../../../compass/themes/x2engine/css/main.scss */
+/* line 872, ../../../compass/themes/x2engine/css/main.scss */
 dt.yii-t {
   display: inline;
 }
 
-/* line 873, ../../../compass/themes/x2engine/css/main.scss */
+/* line 876, ../../../compass/themes/x2engine/css/main.scss */
 body.yii-t dt.yii-t {
   cursor: help;
   background: rgba(255, 0, 0, 0.5);
 }
 
-/* line 878, ../../../compass/themes/x2engine/css/main.scss */
+/* line 881, ../../../compass/themes/x2engine/css/main.scss */
 .email-attachment-image {
   display: inline-block;
   height: 30px;
   width: 30px;
 }
 
-/* line 884, ../../../compass/themes/x2engine/css/main.scss */
+/* line 887, ../../../compass/themes/x2engine/css/main.scss */
 .email-attachment-text {
   position: relative;
   left: 10px;
   vertical-align: 50%;
 }
 
-/* line 890, ../../../compass/themes/x2engine/css/main.scss */
+/* line 893, ../../../compass/themes/x2engine/css/main.scss */
 #media-library-widget-wrapper {
   display: inline-block;
   overflow: hidden;
   /* width: 100%; */
 }
 
-/* line 896, ../../../compass/themes/x2engine/css/main.scss */
+/* line 899, ../../../compass/themes/x2engine/css/main.scss */
 #media-library-widget-container {
   overflow: auto;
   height: 100%;
   width: 100%;
 }
 
-/* line 902, ../../../compass/themes/x2engine/css/main.scss */
+/* line 905, ../../../compass/themes/x2engine/css/main.scss */
 #widget_MediaBox .ui-resizable-s {
   height: 14px;
 }
 
-/* line 906, ../../../compass/themes/x2engine/css/main.scss */
+/* line 909, ../../../compass/themes/x2engine/css/main.scss */
 .media-hover-image {
   height: 64px;
   width: 64px;
   float: left;
 }
 
-/* line 912, ../../../compass/themes/x2engine/css/main.scss */
+/* line 915, ../../../compass/themes/x2engine/css/main.scss */
 .media-library-item {
   cursor: pointer;
 }
 
-/* line 916, ../../../compass/themes/x2engine/css/main.scss */
+/* line 919, ../../../compass/themes/x2engine/css/main.scss */
 .media-library-showhide {
   cursor: pointer;
   text-decoration: none;
   float: right;
 }
 
-/* line 922, ../../../compass/themes/x2engine/css/main.scss */
+/* line 925, ../../../compass/themes/x2engine/css/main.scss */
 .delete-tag {
   color: #06C;
   font-size: 0.7em;
   vertical-align: 15%;
   cursor: pointer;
 }
-/* line 927, ../../../compass/themes/x2engine/css/main.scss */
+/* line 930, ../../../compass/themes/x2engine/css/main.scss */
 .delete-tag:hover {
   color: #09F;
 }
 
-/* line 932, ../../../compass/themes/x2engine/css/main.scss */
+/* line 935, ../../../compass/themes/x2engine/css/main.scss */
 .tag input.x2-new-tag {
   margin: 0;
   padding: 0;
@@ -1973,32 +1997,32 @@ body.yii-t dt.yii-t {
   width: 10px;
 }
 
-/* line 940, ../../../compass/themes/x2engine/css/main.scss */
+/* line 943, ../../../compass/themes/x2engine/css/main.scss */
 td.fc-today {
   border: 1px solid black;
 }
-/* line 942, ../../../compass/themes/x2engine/css/main.scss */
+/* line 945, ../../../compass/themes/x2engine/css/main.scss */
 td.fc-today div div.fc-day-number {
   font-weight: bold;
   font-size: 16px;
 }
 
-/* line 948, ../../../compass/themes/x2engine/css/main.scss */
+/* line 951, ../../../compass/themes/x2engine/css/main.scss */
 .fc-sun.fc-day, .fc-sat.fc-day {
   background: #f2f2f2;
 }
 
-/* line 952, ../../../compass/themes/x2engine/css/main.scss */
+/* line 955, ../../../compass/themes/x2engine/css/main.scss */
 .fc-today, .fc-sun.fc-day.fc-today, .fc-sat.fc-day.fc-today {
   background: #fcf8e3;
 }
 
-/* line 956, ../../../compass/themes/x2engine/css/main.scss */
+/* line 959, ../../../compass/themes/x2engine/css/main.scss */
 .overdue {
   color: #E60000;
 }
 
-/* line 960, ../../../compass/themes/x2engine/css/main.scss */
+/* line 963, ../../../compass/themes/x2engine/css/main.scss */
 textarea.restrictX {
   max-width: 100%;
 }
@@ -2006,34 +2030,34 @@ textarea.restrictX {
 /***********************************************************************
 * tip widget 
 ***********************************************************************/
-/* line 968, ../../../compass/themes/x2engine/css/main.scss */
+/* line 971, ../../../compass/themes/x2engine/css/main.scss */
 .tip-refresh {
   float: right;
   cursor: pointer;
 }
 
-/* line 972, ../../../compass/themes/x2engine/css/main.scss */
+/* line 975, ../../../compass/themes/x2engine/css/main.scss */
 .tip-title {
   text-align: center;
   font-weight: bold;
 }
 
-/* line 976, ../../../compass/themes/x2engine/css/main.scss */
+/* line 979, ../../../compass/themes/x2engine/css/main.scss */
 .tip {
   text-align: center;
 }
 
-/* line 979, ../../../compass/themes/x2engine/css/main.scss */
+/* line 982, ../../../compass/themes/x2engine/css/main.scss */
 #tip-content {
   margin-right: 22px;
 }
 
-/* line 982, ../../../compass/themes/x2engine/css/main.scss */
+/* line 985, ../../../compass/themes/x2engine/css/main.scss */
 .tip-refresh {
   opacity: 0.4;
 }
 
-/* line 985, ../../../compass/themes/x2engine/css/main.scss */
+/* line 988, ../../../compass/themes/x2engine/css/main.scss */
 .tip-refresh:hover {
   opacity: 0.6;
 }
@@ -2041,13 +2065,13 @@ textarea.restrictX {
 /***********************************************************************
 Error Handling
 ***********************************************************************/
-/* line 993, ../../../compass/themes/x2engine/css/main.scss */
+/* line 996, ../../../compass/themes/x2engine/css/main.scss */
 input.error {
   background: #FEE;
   border-color: #C00 !important;
 }
 
-/* line 998, ../../../compass/themes/x2engine/css/main.scss */
+/* line 1001, ../../../compass/themes/x2engine/css/main.scss */
 span.error-message, div.error-message {
   color: red;
 }
@@ -2055,7 +2079,7 @@ span.error-message, div.error-message {
 /*
 Error message container
 */
-/* line 1006, ../../../compass/themes/x2engine/css/main.scss */
+/* line 1009, ../../../compass/themes/x2engine/css/main.scss */
 .error-summary-container {
   clear: both;
   background: #FEE;
@@ -2065,12 +2089,12 @@ Error message container
   margin-bottom: 1px;
   margin-top: 5px;
 }
-/* line 1014, ../../../compass/themes/x2engine/css/main.scss */
+/* line 1017, ../../../compass/themes/x2engine/css/main.scss */
 .error-summary-container p {
   margin: 0;
   padding: 5px;
 }
-/* line 1018, ../../../compass/themes/x2engine/css/main.scss */
+/* line 1021, ../../../compass/themes/x2engine/css/main.scss */
 .error-summary-container ul {
   margin: 0;
   padding: 0 0 0 20px;
@@ -2079,22 +2103,22 @@ Error message container
 /***********************************************************************
 Credentials storage manager
 ***********************************************************************/
-/* line 1028, ../../../compass/themes/x2engine/css/main.scss */
+/* line 1031, ../../../compass/themes/x2engine/css/main.scss */
 .credentials-storage {
   padding: 10px;
 }
-/* line 1030, ../../../compass/themes/x2engine/css/main.scss */
+/* line 1033, ../../../compass/themes/x2engine/css/main.scss */
 .credentials-storage .credentials-view {
   border-radius: 4px;
   border: 1px solid #999;
   padding: 10px;
   margin-bottom: 10px;
 }
-/* line 1036, ../../../compass/themes/x2engine/css/main.scss */
+/* line 1039, ../../../compass/themes/x2engine/css/main.scss */
 .credentials-storage .info-display {
   display: inline-block;
 }
-/* line 1039, ../../../compass/themes/x2engine/css/main.scss */
+/* line 1042, ../../../compass/themes/x2engine/css/main.scss */
 .credentials-storage .default-state {
   display: inline-block;
   font-size: 12px;
@@ -2105,21 +2129,21 @@ Credentials storage manager
   background-color: #EEEEEE;
   border: 1px solid #999999;
 }
-/* line 1048, ../../../compass/themes/x2engine/css/main.scss */
+/* line 1051, ../../../compass/themes/x2engine/css/main.scss */
 .credentials-storage .default-state.default-state-set {
   border-color: #C6D880;
   background-color: #E6EFC2;
 }
-/* line 1052, ../../../compass/themes/x2engine/css/main.scss */
+/* line 1055, ../../../compass/themes/x2engine/css/main.scss */
 .credentials-storage .default-state * {
   display: inline-block;
   vertical-align: middle;
 }
-/* line 1056, ../../../compass/themes/x2engine/css/main.scss */
+/* line 1059, ../../../compass/themes/x2engine/css/main.scss */
 .credentials-storage .default-state .default-apply {
   display: none;
 }
-/* line 1060, ../../../compass/themes/x2engine/css/main.scss */
+/* line 1063, ../../../compass/themes/x2engine/css/main.scss */
 .credentials-storage .credentials-view .credentials-delete {
   float: right;
   display: block;
@@ -2127,49 +2151,49 @@ Credentials storage manager
   vertical-align: top;
   margin-top: 0;
 }
-/* line 1068, ../../../compass/themes/x2engine/css/main.scss */
+/* line 1071, ../../../compass/themes/x2engine/css/main.scss */
 .credentials-storage .unencrypted {
   color: #e24b4b;
 }
-/* line 1071, ../../../compass/themes/x2engine/css/main.scss */
+/* line 1074, ../../../compass/themes/x2engine/css/main.scss */
 .credentials-storage .encrypted {
   color: #01b701;
 }
 
-/* line 1077, ../../../compass/themes/x2engine/css/main.scss */
+/* line 1080, ../../../compass/themes/x2engine/css/main.scss */
 .default-display {
   padding-top: 3px;
 }
 
-/* line 1082, ../../../compass/themes/x2engine/css/main.scss */
+/* line 1085, ../../../compass/themes/x2engine/css/main.scss */
 p.fieldhelp-above {
   color: #666;
   font-size: 12px;
   margin: -0.2px 0 0.8em;
   width: 193px;
 }
-/* line 1088, ../../../compass/themes/x2engine/css/main.scss */
+/* line 1091, ../../../compass/themes/x2engine/css/main.scss */
 p.fieldhelp-thin-small {
   color: #666;
   font-size: 11px;
   margin-bottom: 0;
   width: 193px;
 }
-/* line 1094, ../../../compass/themes/x2engine/css/main.scss */
+/* line 1097, ../../../compass/themes/x2engine/css/main.scss */
 p.fieldhelp {
   color: #666;
   font-size: 12px;
   margin: -0.3em 0 0.8em;
   width: 193px;
 }
-/* line 1099, ../../../compass/themes/x2engine/css/main.scss */
+/* line 1102, ../../../compass/themes/x2engine/css/main.scss */
 p.fieldhelp.half {
   display: inline-block;
   width: 79px;
   margin: 0;
 }
 
-/* line 1107, ../../../compass/themes/x2engine/css/main.scss */
+/* line 1110, ../../../compass/themes/x2engine/css/main.scss */
 span.x2-down-arrow {
   border-left: 4px solid transparent;
   border-right: 4px solid transparent;

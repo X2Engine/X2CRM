@@ -222,13 +222,13 @@ document.getElementById('LoginForm_username').focus (); // for when autofocus is
                 </div><!-- .row.bottom-row -->
                 <div class="row login-links">
                     <?php
-                    echo CHtml::link('<img src="'.Yii::app()->baseUrl.'/images/google_icon.png" id="google-icon" /> '.Yii::t('app', 'Sign in with Google'),
+                    echo CHtml::link('<img src="'.Yii::app()->theme->baseUrl.'/images/google_icon.png" id="google-icon" /> '.Yii::t('app', 'Sign in with Google'),
                         (@$_SERVER['HTTPS'] == 'on' ? 'https://' : 'http://') .
                         ((substr($_SERVER['HTTP_HOST'], 0, 4)=='www.')?substr($_SERVER['HTTP_HOST'], 4):$_SERVER['HTTP_HOST']) .
                         $this->createUrl('/site/googleLogin'), 
                         array('class' => 'alt-sign-in-link google-sign-in-link'));
                     echo CHtml::link(
-                        '<img src="'.Yii::app()->baseUrl.'/images/mobile.png" id="mobile-icon" /> 
+                        '<img src="'.Yii::app()->theme->baseUrl.'/images/mobile.png" id="mobile-icon" /> 
                             X2Touch Mobile',
                         Yii::app()->getBaseUrl() . '/index.php/mobile/site/login',
                         array('class'=>'x2touch-link alt-sign-in-link')); 

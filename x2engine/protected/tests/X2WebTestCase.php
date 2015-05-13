@@ -84,14 +84,15 @@ abstract class X2WebTestCase extends CWebTestCase {
     /**
      * Asserts that the correct user is logged in.
      */
-    public function assertCorrectUser() {
+    public function assertCorrectUser(array $login = null) {
+        if (!$login) $login = $this->login;
         $this->waitForCondition (
             "window.document.querySelector ('#profile-dropdown > span:first-child')", 5000);
         $user = User::model ()->findByAttributes (array (
-            'username' => $this->login['username'],
+            'username' => $login['username'],
         ));
         $alias = $user->alias;
-        if ($alias === null) $alias = $this->login['username'];
+        if ($alias === null) $alias = $login['username'];
         $this->assertElementContainsText(
             'css=#profile-dropdown > span:first-child', $alias);
     }
@@ -110,15 +111,20 @@ abstract class X2WebTestCase extends CWebTestCase {
      * 
      * Uses the current user credentials in {@link $login} to log into the web app.
      */
-    public function login() {
+    public function login(array $login = null) {
+        if (!$login) $login = $this->login;
         $this->openX2('site/login');
-        foreach ($this->login as $fld => $val)
+        foreach ($login as $fld => $val)
             $this->type("name=LoginForm[$fld]", $val);
         $this->clickAndWait("css=#signin-button");
         // Finally, make sure the login succeeded
         VERBOSE_MODE && println ('login');
         $this->waitForPageToLoad ();
-        $this->assertCorrectUser();
+        $this->assertCorrectUser($login);
+    }
+
+    public function loginAs ($username, $password) {
+        $this->login (array ('username' => $username, 'password' => $password));
     }
 
     /**
@@ -222,11 +228,45 @@ abstract class X2WebTestCase extends CWebTestCase {
         }
     }
 
+    public function clearSessions () {
+        Yii::app()->db->createCommand ("
+            delete from x2_sessions;
+        ")->execute ();
+    }
+
     public function assertJSCondition ($jsCond, $expected) {
         $this->storeEval ($jsCond, 'retVal');
         $retVal = $this->getExpression ('${retVal}');
         $this->assertEquals ($retVal, $expected);
     }
 
+    /**
+     * visits page and checks for php errors
+     * @param string $page URI of page
+     */
+    protected function assertNoPHPErrors () {
+		$this->assertElementNotPresent('css=.xdebug-error');
+		$this->assertElementNotPresent('css=#x2-php-error');
+    }
+
+    public function getHttpErrorResponse () {
+        // get the label for the action
+        $this->storeEval (
+            "window.document.querySelector ('#content > .page-title > h2') ?
+             window.document.querySelector ('#content > .page-title > h2').innerHTML : null", 
+            'responseCode');
+        return $this->getExpression ('${responseCode}');
+    }
+
+    public function assertHttpResponse ($expected) {
+        $responseCode = $this->getHttpErrorResponse ();
+        $this->assertRegexp ('/Error \d+/', $responseCode);
+        $this->assertEquals ($expected, preg_replace ('/Error /', '', $responseCode));
+    }
+
+    public function assertHttpOK () {
+        $responseCode = $this->getHttpErrorResponse ();
+        $this->assertNotRegexp ('/Error \d+/', $responseCode);
+    }
 }
 

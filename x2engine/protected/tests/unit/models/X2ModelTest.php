@@ -197,35 +197,44 @@ class X2ModelTest extends X2DbTestCase {
         $model->save();
 
         $this->assertEquals(0, Yii::app()->db->createCommand()->select('COUNT(*)')
-                        ->from('x2_actions')
-                        ->where('associationType = "contacts" AND associationId = :id', array(':id' => $model->id))
-                        ->queryScalar());
+            ->from('x2_actions')
+            ->where(
+                'associationType = "contacts" AND associationId = :id', array(':id' => $model->id))
+            ->queryScalar());
         $this->assertEquals(1, Yii::app()->db->createCommand()->select('COUNT(*)')
-                        ->from('x2_actions')
-                        ->where('associationType = "contacts" AND associationId = :id', array(':id' => $contact->id))
-                        ->queryScalar());
+            ->from('x2_actions')
+            ->where(
+                'associationType = "contacts" AND associationId = :id', 
+                array(':id' => $contact->id))
+            ->queryScalar());
 
         $mergeData = $model->mergeActions($contact, true);
 
         $this->assertEquals(1, Yii::app()->db->createCommand()->select('COUNT(*)')
-                        ->from('x2_actions')
-                        ->where('associationType = "contacts" AND associationId = :id', array(':id' => $model->id))
-                        ->queryScalar());
+            ->from('x2_actions')
+            ->where(
+                'associationType = "contacts" AND associationId = :id', array(':id' => $model->id))
+            ->queryScalar());
         $this->assertEquals(0, Yii::app()->db->createCommand()->select('COUNT(*)')
-                        ->from('x2_actions')
-                        ->where('associationType = "contacts" AND associationId = :id', array(':id' => $contact->id))
-                        ->queryScalar());
+            ->from('x2_actions')
+            ->where(
+                'associationType = "contacts" AND associationId = :id', 
+                array(':id' => $contact->id))
+            ->queryScalar());
 
         $model->unmergeActions($contact->id, $mergeData);
 
         $this->assertEquals(1, Yii::app()->db->createCommand()->select('COUNT(*)')
-                        ->from('x2_actions')
-                        ->where('associationType = "contacts" AND associationId = :id', array(':id' => $contact->id))
-                        ->queryScalar());
+            ->from('x2_actions')
+            ->where(
+                'associationType = "contacts" AND associationId = :id', 
+                array(':id' => $contact->id))
+            ->queryScalar());
         $this->assertEquals(0, Yii::app()->db->createCommand()->select('COUNT(*)')
-                        ->from('x2_actions')
-                        ->where('associationType = "contacts" AND associationId = :id', array(':id' => $model->id))
-                        ->queryScalar());
+            ->from('x2_actions')
+            ->where(
+                'associationType = "contacts" AND associationId = :id', array(':id' => $model->id))
+            ->queryScalar());
     }
 
     public function testMergeEvents() {
@@ -246,35 +255,44 @@ class X2ModelTest extends X2DbTestCase {
         $model->save();
 
         $this->assertEquals(2, Yii::app()->db->createCommand()->select('COUNT(*)')
-                        ->from('x2_events')
-                        ->where('associationType = "Contacts" AND associationId = :id', array(':id' => $model->id))
-                        ->queryScalar());
+            ->from('x2_events')
+            ->where(
+                'associationType = "Contacts" AND associationId = :id', array(':id' => $model->id))
+            ->queryScalar());
         $this->assertEquals(1, Yii::app()->db->createCommand()->select('COUNT(*)')
-                        ->from('x2_events')
-                        ->where('associationType = "Contacts" AND associationId = :id', array(':id' => $contact->id))
-                        ->queryScalar());
+            ->from('x2_events')
+            ->where(
+                'associationType = "Contacts" AND associationId = :id',
+                array(':id' => $contact->id))
+            ->queryScalar());
 
         $mergeData = $model->mergeEvents($contact, true);
 
         $this->assertEquals(0, Yii::app()->db->createCommand()->select('COUNT(*)')
-                        ->from('x2_events')
-                        ->where('associationType = "Contacts" AND associationId = :id', array(':id' => $contact->id))
-                        ->queryScalar());
+            ->from('x2_events')
+            ->where(
+                'associationType = "Contacts" AND associationId = :id',
+                array(':id' => $contact->id))
+            ->queryScalar());
         $this->assertEquals(3, Yii::app()->db->createCommand()->select('COUNT(*)')
-                        ->from('x2_events')
-                        ->where('associationType = "Contacts" AND associationId = :id', array(':id' => $model->id))
-                        ->queryScalar());
+            ->from('x2_events')
+            ->where(
+                'associationType = "Contacts" AND associationId = :id', array(':id' => $model->id))
+            ->queryScalar());
 
         $model->unmergeEvents($contact->id, $mergeData);
 
         $this->assertEquals(1, Yii::app()->db->createCommand()->select('COUNT(*)')
-                        ->from('x2_events')
-                        ->where('associationType = "Contacts" AND associationId = :id', array(':id' => $contact->id))
-                        ->queryScalar());
+            ->from('x2_events')
+            ->where(
+                'associationType = "Contacts" AND associationId = :id',
+                array(':id' => $contact->id))
+            ->queryScalar());
         $this->assertEquals(2, Yii::app()->db->createCommand()->select('COUNT(*)')
-                        ->from('x2_events')
-                        ->where('associationType = "Contacts" AND associationId = :id', array(':id' => $model->id))
-                        ->queryScalar());
+            ->from('x2_events')
+            ->where(
+                'associationType = "Contacts" AND associationId = :id', array(':id' => $model->id))
+            ->queryScalar());
     }
 
     public function testMergeNotifications() {
@@ -295,35 +313,35 @@ class X2ModelTest extends X2DbTestCase {
         $model->save();
 
         $this->assertEquals(0, Yii::app()->db->createCommand()->select('COUNT(*)')
-                        ->from('x2_notifications')
-                        ->where('modelType = "Contacts" AND modelId = :id', array(':id' => $model->id))
-                        ->queryScalar());
+            ->from('x2_notifications')
+            ->where('modelType = "Contacts" AND modelId = :id', array(':id' => $model->id))
+            ->queryScalar());
         $this->assertEquals(1, Yii::app()->db->createCommand()->select('COUNT(*)')
-                        ->from('x2_notifications')
-                        ->where('modelType = "Contacts" AND modelId = :id', array(':id' => $contact->id))
-                        ->queryScalar());
+            ->from('x2_notifications')
+            ->where('modelType = "Contacts" AND modelId = :id', array(':id' => $contact->id))
+            ->queryScalar());
 
         $mergeData = $model->mergeNotifications($contact, true);
 
         $this->assertEquals(1, Yii::app()->db->createCommand()->select('COUNT(*)')
-                        ->from('x2_notifications')
-                        ->where('modelType = "Contacts" AND modelId = :id', array(':id' => $model->id))
-                        ->queryScalar());
+            ->from('x2_notifications')
+            ->where('modelType = "Contacts" AND modelId = :id', array(':id' => $model->id))
+            ->queryScalar());
         $this->assertEquals(0, Yii::app()->db->createCommand()->select('COUNT(*)')
-                        ->from('x2_notifications')
-                        ->where('modelType = "Contacts" AND modelId = :id', array(':id' => $contact->id))
-                        ->queryScalar());
+            ->from('x2_notifications')
+            ->where('modelType = "Contacts" AND modelId = :id', array(':id' => $contact->id))
+            ->queryScalar());
 
         $model->unmergeNotifications($contact->id, $mergeData);
 
         $this->assertEquals(0, Yii::app()->db->createCommand()->select('COUNT(*)')
-                        ->from('x2_notifications')
-                        ->where('modelType = "Contacts" AND modelId = :id', array(':id' => $model->id))
-                        ->queryScalar());
+            ->from('x2_notifications')
+            ->where('modelType = "Contacts" AND modelId = :id', array(':id' => $model->id))
+            ->queryScalar());
         $this->assertEquals(1, Yii::app()->db->createCommand()->select('COUNT(*)')
-                        ->from('x2_notifications')
-                        ->where('modelType = "Contacts" AND modelId = :id', array(':id' => $contact->id))
-                        ->queryScalar());
+            ->from('x2_notifications')
+            ->where('modelType = "Contacts" AND modelId = :id', array(':id' => $contact->id))
+            ->queryScalar());
     }
 
     public function testMergeTags() {

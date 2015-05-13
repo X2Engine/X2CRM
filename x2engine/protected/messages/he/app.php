@@ -385,7 +385,6 @@ return array (
 'Developer'=>'מפתחים',
 'Yii Extension'=>'יי הארכה',
 'Powered by X2Engine'=>'מופעל על ידי X2Engine',
-'X2Engine Inc. grants you a perpetual, non-exclusive, non-transferable license 			to install and use this Software for your internal business purposes. 			You shall not modify, distribute, license or sublicense the Software. 			Title, ownership, and all intellectual property rights in the Software belong 			exclusively to X2Engine.'=>'X2Engine בע"מ מעניק לך רישיון תמידי, שאינם בלעדי, אינו ניתן להעברה להתקנה ושימוש בתוכנה זו למטרות העסקיות הפנימיות שלך. אסור לך לשנות, להפיץ, רישיון או רישיון משנה לתוכנה. כותרת, בעלות, וכל זכויות הקניין הרוחניים בתוכנה שייכת באופן בלעדי לX2Engine.',
 'THIS SOFTWARE IS PROVIDED "AS IS" AND WITHOUT WARRANTIES OF ANY KIND, EITHER 		EXPRESS OR IMPLIED, INCLUDING WITHOUT LIMITATION THE IMPLIED WARRANTIES OF 		MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, TITLE, AND NON-INFRINGEMENT.'=>'תוכנה זו מסופקת "כפי שהם" וללא אחריות מכל סוג שהוא, מפורש או משתמעת, כולל ללא הגבלת אחריות משתמעת לסחירות, התאמה למטרה מסוימת, בעלות, ואי פר.',
 'Our office in downtown Santa Cruz'=>'המשרד שלנו במרכז העיר סנטה קרוז',
 'X2Engine Inc. is headquartered in beautiful Santa Cruz, California. We really enjoy meeting customers and partners whenever possible and encourage you to visit our offices when you find yourself in the San Francisco bay area.'=>'X2Engine Inc היא שבסיסה ביפה סנטה קרוז, קליפורניה. אנחנו באמת נהנים לקוחות ושותפים לפגישה בכל הזדמנות וממליצים לך לבקר במשרדים שלנו, כאשר אתה מוצא את עצמך באזור מפרץ סן פרנסיסקו.',

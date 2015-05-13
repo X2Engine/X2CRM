@@ -121,7 +121,7 @@ Yii::app()->clientScript->registerCss('googleLogin', "
 
     <div class="row" style="margin-top:10px;text-align:center;">
         <?php
-        echo CHtml::link('<img src="'.Yii::app()->baseUrl.'/images/google_icon.png" id="google-icon" /> '.Yii::t('app', 'Sign in with Google'), (@$_SERVER['HTTPS'] == 'on' ? 'https://' : 'http://').
+        echo CHtml::link('<img src="'.Yii::app()->theme->baseUrl.'/images/google_icon.png" id="google-icon" /> '.Yii::t('app', 'Sign in with Google'), (@$_SERVER['HTTPS'] == 'on' ? 'https://' : 'http://').
                 ((substr($_SERVER['HTTP_HOST'], 0, 4) == 'www.') ? substr($_SERVER['HTTP_HOST'], 4) : $_SERVER['HTTP_HOST']).
                 $this->createUrl('/site/googleLogin'), array('class' => 'x2touch-link'));
         ?>

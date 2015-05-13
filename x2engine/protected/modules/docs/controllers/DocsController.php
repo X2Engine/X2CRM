@@ -96,6 +96,8 @@ class DocsController extends x2base {
 	 */
 	public function actionView($id) {
 		$model = CActiveRecord::model('Docs')->findByPk($id);
+        if (!$this->checkPermissions($model, 'view')) $this->denied ();
+
 		if(isset($model)){
 			$permissions=explode(", ",$model->editPermissions);
 			if(in_array(Yii::app()->user->getName(),$permissions))

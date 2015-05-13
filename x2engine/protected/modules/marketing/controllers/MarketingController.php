@@ -131,6 +131,8 @@ class MarketingController extends x2base {
     public function actionView($id){
         $model = $this->loadModel($id);
 
+        if (!$this->checkPermissions($model, 'view')) $this->denied ();
+
         if(!isset($model)){
             Yii::app()->user->setFlash(
                 'error', Yii::t('app', 'The requested page does not exist.'));

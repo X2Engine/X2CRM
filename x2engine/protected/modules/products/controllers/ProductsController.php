@@ -77,11 +77,12 @@ class ProductsController extends x2base {
      * @param integer $id the ID of the model to be displayed
      */
     public function actionView($id) {
+        $model = $this->loadModel($id);
+        if (!$this->checkPermissions($model, 'view')) $this->denied ();
 
         // add product to user's recent item list
         User::addRecentItem('r', $id, Yii::app()->user->getId()); 
 
-        $model = $this->loadModel($id);
         parent::view($model);
     }
 

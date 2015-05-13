@@ -170,6 +170,72 @@ class FileUtilTest extends FileOperTestCase {
         $this->removeTestDirs();
     }
 
+    public function testCaseInsensitiveCopyFix () {
+        $outdir = implode(
+            DIRECTORY_SEPARATOR, 
+            array(Yii::app()->basePath, 'tests', 'data', 'output', 'testCaseInsensitivityCopyFix')
+        );
+        $testFile = $outdir.DIRECTORY_SEPARATOR.'test.php';
+        $newTestFile = $outdir.DIRECTORY_SEPARATOR.'Test.php';
+        FileUtil::rrmdir($outdir);
+        $caseInsensitiveCopyFix = TestingAuxLib::setPublic (
+            'FileUtil', 'caseInsensitiveCopyFix', true);
+
+        // ensure that nothing occurs if target doesn't exist
+        $this->assertFalse (
+            $caseInsensitiveCopyFix (
+                $testFile,
+                $testFile
+            ));
+
+        system ("mkdir $outdir");
+        system ("touch $testFile");
+        $this->assertTrue (file_exists ($testFile));
+
+        // ensure that nothing occurs if filenames are identical
+        $this->assertFalse (
+            $caseInsensitiveCopyFix (
+                $testFile,
+                $testFile
+            ));
+
+        // rename attempt should be made otherwise
+        $this->assertTrue (
+            $caseInsensitiveCopyFix (
+                $newTestFile,
+                $testFile
+            ));
+        $this->assertTrue (file_exists ($newTestFile));
+        $this->assertFalse (file_exists ($testFile));
+
+        FileUtil::rrmdir($outdir);
+        system ("mkdir $outdir");
+        system ("touch $testFile");
+        $this->assertTrue (file_exists ($testFile));
+
+        // unless filenames differ by something other than basename
+        $this->assertFalse (
+            $caseInsensitiveCopyFix (
+                'a'.$outdir.DIRECTORY_SEPARATOR.'test.php',
+                $testFile
+            ));
+
+        FileUtil::rrmdir($outdir);
+        system ("mkdir $outdir");
+        system ("touch $testFile");
+
+        // ensure that file gets its basename gets changed to source's basename
+        $this->assertTrue (file_exists ($testFile));
+        $this->assertTrue (
+            $caseInsensitiveCopyFix (
+                $newTestFile,
+                $testFile
+            ));
+        $this->assertFalse (file_exists ($testFile));
+        $this->assertTrue (file_exists ($newTestFile));
+        FileUtil::rrmdir($outdir);
+    }
+
     public function testCcopyFtp(){
         $this->useFtp("testCcopy");
     }

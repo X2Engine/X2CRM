@@ -82,8 +82,8 @@ class TestingAuxLib  {
         }
         $method = new ReflectionMethod ($className, $methodName);
         $method->setAccessible (TRUE);
-        return function ($arguments=array ()) use ($method, $class) {
-            return $method->invokeArgs ($class, $arguments);
+        return function () use ($method, $class) {
+            return $method->invokeArgs ($class, func_get_args ());
         };
     }
 
@@ -145,7 +145,7 @@ class TestingAuxLib  {
      * pages that require authentication)
      * @return string PHP session id
      */
-    public function curlLogin ($username, $password) {
+    public static function curlLogin ($username, $password) {
         // login and extract session id from response header
         $data = array (
             'LoginForm[username]' => $username,
@@ -194,7 +194,13 @@ class TestingAuxLib  {
 //
 //    }
 
+    private static $_oldAuthManagerComponent;
     public static function loadAuthManagerMock () {
+        if (!isset (self::$_oldAuthManagerComponent) && 
+            Yii::app()->getComponent ('authManager') instanceof X2AuthManager) {
+
+            self::$_oldAuthManagerComponent = Yii::app()->getComponent ('authManager');
+        }
         Yii::app()->setComponent ('authManager', array ( 
             'class' => 'X2AuthManagerMock',
             'connectionID' => 'db',
@@ -206,10 +212,32 @@ class TestingAuxLib  {
         return Yii::app()->authManager;
     }
 
+    public static function restoreX2AuthManager () {
+        if (isset (self::$_oldAuthManagerComponent)) {
+            Yii::app()->setComponent ('authManager', self::$_oldAuthManagerComponent);
+        } else {
+            throw new CException ('X2AuthManager component could not be restored'); 
+        }
+    }
+
+    private static $_oldUserComponent;
     public static function loadX2NonWebUser () {
+        if (!isset (self::$_oldUserComponent) && 
+            Yii::app()->getComponent ('user') instanceof X2WebUser) {
+
+            self::$_oldUserComponent = Yii::app()->getComponent ('user');
+        }
         Yii::app()->setComponent ('user', array ( 
             'class' => 'X2NonWebUser',
         ));
+    }
+
+    public static function restoreX2WebUser () {
+        if (isset (self::$_oldUserComponent)) {
+            Yii::app()->setComponent ('user', self::$_oldUserComponent);
+        } else {
+            throw new CException ('X2WebUser component could not be restored'); 
+        }
     }
 
 }

@@ -89,7 +89,7 @@ class ExportFixtureCommand extends CConsoleCommand {
 		4 => array(
             'writeCond', 
             'overwrite (o), rename existing (r), output to stdout (s), output to file ([filename])',
-            'r',
+            's',
             '$pass=true;',
             '',
             //'$pass=in_array($arg_in, array("o","r","s"));',

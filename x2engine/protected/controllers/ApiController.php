@@ -550,11 +550,13 @@ class ApiController extends x2base {
 			$matches = array();
 			if (preg_match('/\d{10,}/', $_GET['data'], $matches)) {
 				$number = ltrim($matches[0],'1');
-				$phoneCrit = new CDbCriteria(array(
-							'condition' => "modelType='Contacts' AND number LIKE :number",
-							'params' => array(':number'=>"%$number%")
-						)
-					);
+                $phoneCrit = new CDbCriteria(array(
+                    'condition' => "modelType='Contacts' AND number LIKE :number",
+                    'params' => array(':number'=>"%$number%")
+                ));
+                $phoneCrit->join =
+                    'join x2_contacts on modelId=x2_contacts.id AND '.
+                    Contacts::model ()->getHiddenCondition ('x2_contacts');
 				$phoneNumber = PhoneNumber::model()->find($phoneCrit);
 				if(!empty($phoneNumber)){
 					$contact = X2Model::model('Contacts')->findByPk($phoneNumber->modelId);
@@ -642,7 +644,8 @@ class ApiController extends x2base {
 
 						$this->_sendResponse($failure ? 500 : 200,$message);
 					} else {
-						$this->_sendResponse(404,'Phone number record refers to a contact that no longer exists.');
+						$this->_sendResponse(
+                            404,'Phone number record refers to a contact that no longer exists.');
 					}
 				}else{
 					$this->_sendResponse(404,'No matching phone number found.');

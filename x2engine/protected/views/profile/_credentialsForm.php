@@ -113,6 +113,7 @@ if (isset ($model->auth->enableVerification) && $model->auth->enableVerification
 </div><?php
 echo CHtml::endForm();
 
+if (is_a ($model->auth, 'EmailAccount')) {
 
 $verifyCredsUrl = Yii::app()->createUrl("profile/verifyCredentials");
 
@@ -207,3 +208,7 @@ $defaultSecurity = CJSON::encode($modelClass->security);
         });
     });
 </script>
+
+<?php
+}
+?>

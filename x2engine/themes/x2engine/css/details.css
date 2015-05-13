@@ -32,7 +32,7 @@
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2Engine".
  *****************************************************************************************/
-/* line 23, ../../../compass/themes/x2engine/css/details.scss */
+/* line 26, ../../../compass/themes/x2engine/css/details.scss */
 div.record {
   border-radius: 4px;
   -moz-border-radius: 4px;
@@ -45,43 +45,43 @@ div.record {
   width: auto;
   overflow: auto;
 }
-/* line 24, ../../../compass/themes/x2engine/css/details.scss */
+/* line 27, ../../../compass/themes/x2engine/css/details.scss */
 div.record div, div.record .cell#social-media-toggle a {
   border: 1px solid #ddd;
   border-width: 0;
 }
-/* line 38, ../../../compass/themes/x2engine/css/details.scss */
+/* line 41, ../../../compass/themes/x2engine/css/details.scss */
 div.record.no-border {
   border: none;
   padding: 0;
   margin: 0;
 }
-/* line 43, ../../../compass/themes/x2engine/css/details.scss */
+/* line 46, ../../../compass/themes/x2engine/css/details.scss */
 div.record a {
   text-decoration: none;
 }
-/* line 46, ../../../compass/themes/x2engine/css/details.scss */
+/* line 49, ../../../compass/themes/x2engine/css/details.scss */
 div.record .row {
   width: auto;
   clear: both;
   overflow: auto;
 }
-/* line 51, ../../../compass/themes/x2engine/css/details.scss */
+/* line 54, ../../../compass/themes/x2engine/css/details.scss */
 div.record .cell {
   display: block;
   float: left;
   margin: 0 10px 5px 10px;
 }
-/* line 56, ../../../compass/themes/x2engine/css/details.scss */
+/* line 59, ../../../compass/themes/x2engine/css/details.scss */
 div.record hr {
   margin: 5px 0;
   width: 100%;
 }
-/* line 60, ../../../compass/themes/x2engine/css/details.scss */
+/* line 63, ../../../compass/themes/x2engine/css/details.scss */
 div.record .cell#social-media-toggle {
   float: right;
 }
-/* line 62, ../../../compass/themes/x2engine/css/details.scss */
+/* line 65, ../../../compass/themes/x2engine/css/details.scss */
 div.record .cell#social-media-toggle a {
   display: block;
   margin: 0 10px 0 0;
@@ -97,24 +97,24 @@ div.record .cell#social-media-toggle a {
   -webkit-border-radius: 4px 4px 0 0;
   -o-border-radius: 4px 4px 0 0;
 }
-/* line 78, ../../../compass/themes/x2engine/css/details.scss */
+/* line 81, ../../../compass/themes/x2engine/css/details.scss */
 div.record .row.social-media {
   background: #fff;
   border-top-width: 1px;
   padding: 0 10px 5px 10px;
   overflow: hidden;
 }
-/* line 83, ../../../compass/themes/x2engine/css/details.scss */
+/* line 86, ../../../compass/themes/x2engine/css/details.scss */
 div.record .row.social-media div {
   margin-top: 5px;
 }
-/* line 88, ../../../compass/themes/x2engine/css/details.scss */
+/* line 91, ../../../compass/themes/x2engine/css/details.scss */
 div.social-media img {
   vertical-align: text-bottom;
   height: 16px;
   width: 16px;
 }
-/* line 93, ../../../compass/themes/x2engine/css/details.scss */
+/* line 96, ../../../compass/themes/x2engine/css/details.scss */
 div.details div.header {
   border-radius: 4px 4px 0 0;
   -moz-border-radius: 4px 4px 0 0;
@@ -122,16 +122,16 @@ div.details div.header {
   -o-border-radius: 4px 4px 0 0;
 }
 
-/* line 101, ../../../compass/themes/x2engine/css/details.scss */
+/* line 104, ../../../compass/themes/x2engine/css/details.scss */
 span.required {
   color: red;
 }
 
-/* line 105, ../../../compass/themes/x2engine/css/details.scss */
+/* line 108, ../../../compass/themes/x2engine/css/details.scss */
 table {
   margin: 0;
 }
-/* line 106, ../../../compass/themes/x2engine/css/details.scss */
+/* line 109, ../../../compass/themes/x2engine/css/details.scss */
 table.details {
   clear: both;
   width: 100%;
@@ -141,74 +141,74 @@ table.details {
   -webkit-border-radius: 4px;
   -o-border-radius: 4px;
 }
-/* line 108, ../../../compass/themes/x2engine/css/details.scss */
+/* line 111, ../../../compass/themes/x2engine/css/details.scss */
 table.details td#address input {
   margin: 0 0 5px 0;
 }
-/* line 111, ../../../compass/themes/x2engine/css/details.scss */
+/* line 114, ../../../compass/themes/x2engine/css/details.scss */
 table.details td#social-media img {
   vertical-align: middle;
   margin-bottom: 3px;
   margin-right: 3px;
 }
-/* line 117, ../../../compass/themes/x2engine/css/details.scss */
+/* line 120, ../../../compass/themes/x2engine/css/details.scss */
 table.details input, table.details textarea {
   margin: 3px 0 10px 0;
   -webkit-appearance: none;
   border: 1px solid #aaa;
   font-family: Arial, Helvetica, sans-serif;
 }
-/* line 132, ../../../compass/themes/x2engine/css/details.scss */
+/* line 135, ../../../compass/themes/x2engine/css/details.scss */
 table.details tr:first-child td {
   border-top: none;
 }
-/* line 135, ../../../compass/themes/x2engine/css/details.scss */
+/* line 138, ../../../compass/themes/x2engine/css/details.scss */
 table.details tr td:first-child {
   border-left: none;
 }
-/* line 139, ../../../compass/themes/x2engine/css/details.scss */
+/* line 142, ../../../compass/themes/x2engine/css/details.scss */
 table.details tr:first-child td:first-child {
   border-radius: 4px 0 0 0;
   -moz-border-radius: 4px 0 0 0;
   -webkit-border-radius: 4px 0 0 0;
   -o-border-radius: 4px 0 0 0;
 }
-/* line 145, ../../../compass/themes/x2engine/css/details.scss */
+/* line 148, ../../../compass/themes/x2engine/css/details.scss */
 table.details tr:first-child td:last-child {
   border-radius: 0 4px 0 0;
   -moz-border-radius: 0 4px 0 0;
   -webkit-border-radius: 0 4px 0 0;
   -o-border-radius: 0 4px 0 0;
 }
-/* line 151, ../../../compass/themes/x2engine/css/details.scss */
+/* line 154, ../../../compass/themes/x2engine/css/details.scss */
 table.details tr:first-child td:only-child {
   border-radius: 4px 4px 0 0;
   -moz-border-radius: 4px 4px 0 0;
   -webkit-border-radius: 4px 4px 0 0;
   -o-border-radius: 4px 4px 0 0;
 }
-/* line 159, ../../../compass/themes/x2engine/css/details.scss */
+/* line 162, ../../../compass/themes/x2engine/css/details.scss */
 table.details tr:last-child td:first-child {
   border-radius: 0 0 0 4px;
   -moz-border-radius: 0 0 0 4px;
   -webkit-border-radius: 0 0 0 4px;
   -o-border-radius: 0 0 0 4px;
 }
-/* line 165, ../../../compass/themes/x2engine/css/details.scss */
+/* line 168, ../../../compass/themes/x2engine/css/details.scss */
 table.details tr:last-child td:last-child {
   border-radius: 0 0 4px 0;
   -moz-border-radius: 0 0 4px 0;
   -webkit-border-radius: 0 0 4px 0;
   -o-border-radius: 0 0 4px 0;
 }
-/* line 171, ../../../compass/themes/x2engine/css/details.scss */
+/* line 174, ../../../compass/themes/x2engine/css/details.scss */
 table.details tr:last-child td:only-child {
   border-radius: 0 0 4px 4px;
   -moz-border-radius: 0 0 4px 4px;
   -webkit-border-radius: 0 0 4px 4px;
   -o-border-radius: 0 0 4px 4px;
 }
-/* line 179, ../../../compass/themes/x2engine/css/details.scss */
+/* line 182, ../../../compass/themes/x2engine/css/details.scss */
 table.details th {
   padding: 5px;
   background: #fff;
@@ -223,7 +223,7 @@ table.details th {
   font-style: normal;
   font-weight: normal;
 }
-/* line 195, ../../../compass/themes/x2engine/css/details.scss */
+/* line 198, ../../../compass/themes/x2engine/css/details.scss */
 table.details td {
   padding: 5px;
   background: #fff;
@@ -238,16 +238,16 @@ table.details td {
   font-style: normal;
   font-weight: normal;
 }
-/* line 210, ../../../compass/themes/x2engine/css/details.scss */
+/* line 213, ../../../compass/themes/x2engine/css/details.scss */
 table.details td.label {
   background: white;
   text-align: right;
 }
-/* line 215, ../../../compass/themes/x2engine/css/details.scss */
+/* line 218, ../../../compass/themes/x2engine/css/details.scss */
 table.details a {
   text-decoration: none;
 }
-/* line 218, ../../../compass/themes/x2engine/css/details.scss */
+/* line 221, ../../../compass/themes/x2engine/css/details.scss */
 table.details tr:first-child td.description {
   border-radius: 4px 4px 0 0;
   -moz-border-radius: 4px 4px 0 0;
@@ -255,17 +255,17 @@ table.details tr:first-child td.description {
   -o-border-radius: 4px 4px 0 0;
   border-left-width: 1px;
 }
-/* line 225, ../../../compass/themes/x2engine/css/details.scss */
+/* line 228, ../../../compass/themes/x2engine/css/details.scss */
 table.details td.text-field {
   height: auto;
 }
-/* line 227, ../../../compass/themes/x2engine/css/details.scss */
+/* line 230, ../../../compass/themes/x2engine/css/details.scss */
 table.details td.text-field div.spacer {
   height: 40px;
   width: 0px;
   float: left;
 }
-/* line 233, ../../../compass/themes/x2engine/css/details.scss */
+/* line 236, ../../../compass/themes/x2engine/css/details.scss */
 table.details input {
   margin: 0;
 }
@@ -273,50 +273,50 @@ table.details input {
 /* no top or left borders on the TD cells */
 /* make all the TD cell corner round too because browsers are stupid */
 /* rounded corners on description cell */
-/* line 246, ../../../compass/themes/x2engine/css/details.scss */
+/* line 249, ../../../compass/themes/x2engine/css/details.scss */
 .details textarea {
   margin: 0;
 }
 
-/* line 252, ../../../compass/themes/x2engine/css/details.scss */
+/* line 255, ../../../compass/themes/x2engine/css/details.scss */
 table.details.hint {
   color: #999;
   margin: 0;
   padding: 0;
 }
-/* line 257, ../../../compass/themes/x2engine/css/details.scss */
+/* line 260, ../../../compass/themes/x2engine/css/details.scss */
 table.details.note {
   font-style: italic;
 }
-/* line 261, ../../../compass/themes/x2engine/css/details.scss */
+/* line 264, ../../../compass/themes/x2engine/css/details.scss */
 table.detailsspan.required {
   color: red;
 }
-/* line 264, ../../../compass/themes/x2engine/css/details.scss */
+/* line 267, ../../../compass/themes/x2engine/css/details.scss */
 table.detailsdiv.error label, table.detailslabel.error, table.detailsspan.error {
   color: #C00;
 }
-/* line 268, ../../../compass/themes/x2engine/css/details.scss */
+/* line 271, ../../../compass/themes/x2engine/css/details.scss */
 table.detailsdiv.error input, table.detailsdiv.error textarea, table.detailsdiv.error select {
   background: #FEE;
   border-color: #C00;
 }
-/* line 273, ../../../compass/themes/x2engine/css/details.scss */
+/* line 276, ../../../compass/themes/x2engine/css/details.scss */
 table.detailsinput.error, table.detailstextarea.error, table.detailsselect.error {
   background: #FEE;
   border-color: #C00;
 }
-/* line 278, ../../../compass/themes/x2engine/css/details.scss */
+/* line 281, ../../../compass/themes/x2engine/css/details.scss */
 table.detailsdiv.success input, table.detailsdiv.success textarea, table.detailsdiv.success select {
   background: #E6EFC2;
   border-color: #C6D880;
 }
-/* line 283, ../../../compass/themes/x2engine/css/details.scss */
+/* line 286, ../../../compass/themes/x2engine/css/details.scss */
 table.detailsinput.success, table.detailstextarea.success, table.detailsselect.success {
   background: #E6EFC2;
   border-color: #C6D880;
 }
-/* line 287, ../../../compass/themes/x2engine/css/details.scss */
+/* line 290, ../../../compass/themes/x2engine/css/details.scss */
 table.details.errorSummary {
   background: #FEE;
   border: 2px solid #C00;

@@ -53,10 +53,15 @@ class RecordLimitBehavior extends CActiveRecordBehavior {
         if (!is_numeric ($this->limit)) return;
         if ($this->getStaticModel ()->count () > $this->limit) {
             $oldestRecordId = Yii::app()->db->createCommand ()
-                ->select ('id')
+                ->select ("id")
                 ->from ($this->owner->tableName ())
-                ->order ("{$this->timestampField} ASC")
+                ->where (
+                    "{$this->timestampField}=(
+                        SELECT MIN({$this->timestampField})
+                        FROM {$this->owner->tableName ()}
+                    )")
                 ->queryScalar ();
+
             $oldest = $this->getStaticModel ()->findByPk ($oldestRecordId);
             if ($oldest) {
                 $oldest->delete ();

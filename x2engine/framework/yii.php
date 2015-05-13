@@ -28,24 +28,31 @@ class Yii extends YiiBase
 	protected static $rootPath;
 
     /**
+     * Copied from CHttpRequest. Allows us to remove getRootPath's dependency on request component
+     * This method is Copyright (c) 2008-2014 by Yii Software LLC
+     * http://www.yiiframework.com/license/  
+     */
+    private static $_scriptFile;
+    private static function getScriptFile()
+    {
+        if(self::$_scriptFile!==null)
+            return self::$_scriptFile;
+        else
+            return self::$_scriptFile=realpath($_SERVER['SCRIPT_FILENAME']);
+    }
+
+    /**
      * Precondition: Request component has already been created. If it hasn't, infinite recursion 
      * will occur when Yii::app()->getRequest () is called implicitly by self::app()->request.
      */
 	private static function getRootPath() {
-        // method doesn't exist for console apps
-        if (method_exists (Yii::app(), 'componentCreated') && 
-            !Yii::app()->componentCreated ('request')) {
-
-            throw new CException ('request component has not been created');
-        }
-
         if (YII_UNIT_TESTING) { 
             // resets root path to the webroot so that custom files can be detected
             $path = array ();
             exec ('pwd', $path);
             self::$rootPath = dirname (preg_replace ('/\/tests/', '', $path[0]));
         } elseif (!isset(self::$rootPath)) {
-			self::$rootPath = dirname(self::app()->request->scriptFile);
+            self::$rootPath = dirname(self::getScriptFile ());
 		}
 
 		return self::$rootPath;
@@ -74,9 +81,6 @@ class Yii extends YiiBase
 	 * @return String $path The original file path, or the version in /custom if it exists
 	 */
 	public static function getCustomPath($path) {
-        if (method_exists (Yii::app(), 'componentCreated') && 
-            !Yii::app()->componentCreated ('request')) return $path;
-
 		//calculate equivalent path in /custom, ie. from [root]/[path] to [root]/custom/[path]
 		$customPath = str_replace(
             self::getRootPath(),self::getRootPath().DIRECTORY_SEPARATOR.'custom',$path);
@@ -93,9 +97,6 @@ class Yii extends YiiBase
 	 * @return String $path The path to the original file or folder
 	 */
 	public static function resetCustomPath($customPath) {
-        if (method_exists (Yii::app(), 'componentCreated') && 
-            !Yii::app()->componentCreated ('request')) return $customPath;
-
 		return str_replace(
             self::getRootPath().DIRECTORY_SEPARATOR.'custom',self::getRootPath(),$customPath);
 	}

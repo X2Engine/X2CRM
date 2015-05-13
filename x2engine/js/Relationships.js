@@ -33,7 +33,6 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 
-
 /**
  * RelationshipsManager prototype 
  * Instantiates a quick create widget

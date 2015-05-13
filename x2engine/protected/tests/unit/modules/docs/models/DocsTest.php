@@ -140,6 +140,9 @@ class DocsTest extends X2DbTestCase {
         // user is docs admin
         $doc = $this->docs ('2'); 
         $this->assertTrue ((bool) $doc->checkEditPermissions ());
+
+        TestingAuxLib::restoreX2WebUser ();
+        TestingAuxLib::restoreX2AuthManager ();
     }
 
 	public function testReplaceVariables() {

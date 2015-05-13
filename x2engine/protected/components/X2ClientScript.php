@@ -201,7 +201,7 @@ class X2ClientScript extends NLSClientScript {
 
         // Declare:
         $cldScript = 
-            '(function($) {
+            ';(function($) {
                 x2.currencyInfo = '.CJSON::encode(array(
                     'prefix' => isset($curSym)? $curSym : Yii::app()->params['currency'],
                     'decimal' => $decSym,
@@ -699,6 +699,18 @@ class X2ClientScript extends NLSClientScript {
         ", CClientScript::POS_END);
     }
 
+    private function registerAuxLibTranslationsScript () {
+        $this->registerScript('registerDateFormats',"
+            auxlib.translations = ".CJSON::encode (array (
+                'Are you sure you want to delete this item?' => 
+                    Yii::t('app', 'Are you sure you want to delete this item?'), 
+                'Delete item?' => Yii::t('app', 'Delete item?'), 
+                'Cancel' => Yii::t('app','Cancel'),
+                'Confirm' => Yii::t('app', 'Confirm')
+            )).";
+        ", CClientScript::POS_END);
+    }
+
     /**
      * Performs all the necessary JavaScript/CSS initializations for most parts of the app.
      */
@@ -774,6 +786,7 @@ class X2ClientScript extends NLSClientScript {
             $this->registerScriptFile($baseUrl.'/js/jquery.mobile.custom.js');
         }
         $this->registerInitScript ();
+        $this->registerAuxLibTranslationsScript ();
 
         if(Yii::app()->session['translate'])
             $this->registerScriptFile($baseUrl.'/js/translator.js');

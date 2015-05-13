@@ -36,13 +36,13 @@
 shift detail/form layouts to single column
 */
 @media (max-width: 777px) {
-  /* line 26, ../../../compass/themes/x2engine/css/responsiveX2Forms.scss */
+  /* line 29, ../../../compass/themes/x2engine/css/responsiveX2Forms.scss */
   .formSectionRow td {
     display: block;
     width: 100% !important;
   }
 
-  /* line 30, ../../../compass/themes/x2engine/css/responsiveX2Forms.scss */
+  /* line 33, ../../../compass/themes/x2engine/css/responsiveX2Forms.scss */
   .formItem.leftLabel > .formInputBox {
     width: 200px !important;
   }

@@ -33,19 +33,19 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 @media (max-width: 829px) {
-  /* line 23, ../../../compass/themes/x2engine/css/responsiveActivityFeed.scss */
+  /* line 26, ../../../compass/themes/x2engine/css/responsiveActivityFeed.scss */
   #second-row-buttons-container {
     clear: both;
     padding-top: 8px;
   }
 }
 @media (max-width: 657px) {
-  /* line 30, ../../../compass/themes/x2engine/css/responsiveActivityFeed.scss */
+  /* line 33, ../../../compass/themes/x2engine/css/responsiveActivityFeed.scss */
   a#toggle-filters-link {
     margin-top: 0px;
   }
 
-  /* line 33, ../../../compass/themes/x2engine/css/responsiveActivityFeed.scss */
+  /* line 36, ../../../compass/themes/x2engine/css/responsiveActivityFeed.scss */
   #post-buttons > select {
     margin-bottom: 5px;
   }
@@ -53,11 +53,11 @@
 /* Inside the feed list items, shift the icon buttons below the date and hide the '|' separator 
 between the date and the icon buttons */
 @media (max-width: 400px) {
-  /* line 41, ../../../compass/themes/x2engine/css/responsiveActivityFeed.scss */
+  /* line 44, ../../../compass/themes/x2engine/css/responsiveActivityFeed.scss */
   .event-bottom-row .comment-age {
     display: block;
   }
-  /* line 43, ../../../compass/themes/x2engine/css/responsiveActivityFeed.scss */
+  /* line 46, ../../../compass/themes/x2engine/css/responsiveActivityFeed.scss */
   .event-bottom-row .comment-age + span {
     display: none;
   }

@@ -1,3 +1,20 @@
+# 5.0.7 #
+5/12/2015
+
+* General Changelog / Developer Notes:
+  * Fixed bug in the application updater tool which would cause certain files to be incorrectly deleted on case-insensitive file systems
+  * Fixed bug in flow deletion action menu link, changelog deletion button, and "Go Invisible" button related to 5.0.5 introduction of CSRF token validation
+  * Fixed bug in mass update tool which prevented value for boolean type fields from being set properly
+  * Automatic record tagging feature now ignores CSS color hex codes
+  * API VoIP action no longer retrieves phone numbers of hidden contacts
+  * X2Flow tag triggers no longer fired on record merge
+  * Added web form deletion validation dialog
+* Tracked Bug Fixes:  
+  * [2359](http://x2software.com/index.php/bugReports/2359): Undefined index: model  
+  * [2398](http://x2software.com/index.php/bugReports/2398): Property "TwitterApp.server" is not defined.  
+  * [2400](http://x2software.com/index.php/bugReports/2400): Undefined offset: 11  
+  * [2416](http://x2software.com/index.php/bugReports/2416): Autocomplete field broken in grid view mass update dialog for link type fields.  
+
 # 5.0.6 #
 4/16/2015
 

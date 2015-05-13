@@ -34,11 +34,11 @@
  *****************************************************************************************/
 /* line 23, ../../../../../compass/sass/protected/modules/quotes/assets/css/lineItemsRead.scss */
 /* line 24, ../../../../../compass/sass/protected/modules/quotes/assets/css/lineItemsRead.scss */
-/* line 25, ../../../../../compass/protected/modules/quotes/assets/css/lineItemsRead.scss */
+/* line 28, ../../../../../compass/protected/modules/quotes/assets/css/lineItemsRead.scss */
 .line-items-read .quote-table .first-cell {
   display: none;
 }
-/* line 28, ../../../../../compass/protected/modules/quotes/assets/css/lineItemsRead.scss */
+/* line 31, ../../../../../compass/protected/modules/quotes/assets/css/lineItemsRead.scss */
 .line-items-read .quote-table input {
   overflow: hidden;
   text-overflow: ellipsis;
@@ -47,96 +47,96 @@
   border: none;
   color: black;
 }
-/* line 36, ../../../../../compass/protected/modules/quotes/assets/css/lineItemsRead.scss */
+/* line 39, ../../../../../compass/protected/modules/quotes/assets/css/lineItemsRead.scss */
 .line-items-read .quote-table td {
   padding-right: 2px !important;
   padding-left: 2px !important;
 }
-/* line 41, ../../../../../compass/protected/modules/quotes/assets/css/lineItemsRead.scss */
+/* line 44, ../../../../../compass/protected/modules/quotes/assets/css/lineItemsRead.scss */
 .line-items-read .quote-table > thead > tr > th.line-item-name {
   overflow: hidden;
   text-overflow: ellipsis;
 }
-/* line 45, ../../../../../compass/protected/modules/quotes/assets/css/lineItemsRead.scss */
+/* line 48, ../../../../../compass/protected/modules/quotes/assets/css/lineItemsRead.scss */
 .line-items-read .quote-table > tbody.line-items > tr > td.x2-2nd-child {
   overflow: hidden;
   text-overflow: ellipsis;
   width: 20%;
 }
-/* line 50, ../../../../../compass/protected/modules/quotes/assets/css/lineItemsRead.scss */
+/* line 53, ../../../../../compass/protected/modules/quotes/assets/css/lineItemsRead.scss */
 .line-items-read .quote-table > thead > tr > th.line-item-name {
   width: 95%;
   font-size: 12px;
 }
-/* line 56, ../../../../../compass/protected/modules/quotes/assets/css/lineItemsRead.scss */
+/* line 59, ../../../../../compass/protected/modules/quotes/assets/css/lineItemsRead.scss */
 .line-items-read .quote-table > tbody.line-items > tr > td.x2-2nd-child input {
   width: 95%;
   font-size: 12px;
 }
-/* line 60, ../../../../../compass/protected/modules/quotes/assets/css/lineItemsRead.scss */
+/* line 63, ../../../../../compass/protected/modules/quotes/assets/css/lineItemsRead.scss */
 .line-items-read .quote-table > tbody.line-items > tr > td.x2-3rd-child {
   width: 17.5%;
 }
-/* line 62, ../../../../../compass/protected/modules/quotes/assets/css/lineItemsRead.scss */
+/* line 65, ../../../../../compass/protected/modules/quotes/assets/css/lineItemsRead.scss */
 .line-items-read .quote-table > tbody.line-items > tr > td.x2-3rd-child input {
   width: 95%;
   text-align: right;
   font-size: 12px;
 }
-/* line 68, ../../../../../compass/protected/modules/quotes/assets/css/lineItemsRead.scss */
+/* line 71, ../../../../../compass/protected/modules/quotes/assets/css/lineItemsRead.scss */
 .line-items-read .quote-table > tbody.line-items > tr > td.x2-4th-child {
   width: 15%;
 }
-/* line 70, ../../../../../compass/protected/modules/quotes/assets/css/lineItemsRead.scss */
+/* line 73, ../../../../../compass/protected/modules/quotes/assets/css/lineItemsRead.scss */
 .line-items-read .quote-table > tbody.line-items > tr > td.x2-4th-child input {
   width: 95%;
   text-align: right;
   font-size: 12px;
 }
-/* line 77, ../../../../../compass/protected/modules/quotes/assets/css/lineItemsRead.scss */
+/* line 80, ../../../../../compass/protected/modules/quotes/assets/css/lineItemsRead.scss */
 .line-items-read .quote-table > tbody.adjustments > tr > td.x2-4th-child {
   width: 15%;
 }
-/* line 79, ../../../../../compass/protected/modules/quotes/assets/css/lineItemsRead.scss */
+/* line 82, ../../../../../compass/protected/modules/quotes/assets/css/lineItemsRead.scss */
 .line-items-read .quote-table > tbody.adjustments > tr > td.x2-4th-child input {
   width: 95%;
   text-align: left;
   font-size: 12px;
 }
-/* line 85, ../../../../../compass/protected/modules/quotes/assets/css/lineItemsRead.scss */
+/* line 88, ../../../../../compass/protected/modules/quotes/assets/css/lineItemsRead.scss */
 .line-items-read .quote-table > tbody.line-items > tr > td.x2-5th-child, .line-items-read .quote-table > tbody.adjustments > tr > td.x2-5th-child {
   width: 15%;
 }
-/* line 88, ../../../../../compass/protected/modules/quotes/assets/css/lineItemsRead.scss */
+/* line 91, ../../../../../compass/protected/modules/quotes/assets/css/lineItemsRead.scss */
 .line-items-read .quote-table > tbody.line-items > tr > td.x2-5th-child input, .line-items-read .quote-table > tbody.adjustments > tr > td.x2-5th-child input {
   width: 95%;
   font-size: 12px;
   text-align: right;
 }
-/* line 93, ../../../../../compass/protected/modules/quotes/assets/css/lineItemsRead.scss */
+/* line 96, ../../../../../compass/protected/modules/quotes/assets/css/lineItemsRead.scss */
 .line-items-read .quote-table > tbody.line-items > tr > td.x2-6th-child, .line-items-read .quote-table > tbody.adjustments > tr > td.x2-6th-child {
   width: 15%;
 }
-/* line 96, ../../../../../compass/protected/modules/quotes/assets/css/lineItemsRead.scss */
+/* line 99, ../../../../../compass/protected/modules/quotes/assets/css/lineItemsRead.scss */
 .line-items-read .quote-table > tbody.line-items > tr > td.x2-6th-child input, .line-items-read .quote-table > tbody.adjustments > tr > td.x2-6th-child input {
   width: 95%;
   font-size: 12px;
 }
-/* line 100, ../../../../../compass/protected/modules/quotes/assets/css/lineItemsRead.scss */
+/* line 103, ../../../../../compass/protected/modules/quotes/assets/css/lineItemsRead.scss */
 .line-items-read .quote-table > tbody.line-items > tr > td.x2-7th-child, .line-items-read .quote-table > tbody.adjustments > tr > td.x2-7th-child {
   width: 20%;
 }
-/* line 103, ../../../../../compass/protected/modules/quotes/assets/css/lineItemsRead.scss */
+/* line 106, ../../../../../compass/protected/modules/quotes/assets/css/lineItemsRead.scss */
 .line-items-read .quote-table > tbody.line-items > tr > td.x2-7th-child input, .line-items-read .quote-table > tbody.adjustments > tr > td.x2-7th-child input {
   text-align: left;
   width: 95%;
   font-size: 12px;
 }
-/* line 110, ../../../../../compass/protected/modules/quotes/assets/css/lineItemsRead.scss */
+/* line 113, ../../../../../compass/protected/modules/quotes/assets/css/lineItemsRead.scss */
 .line-items-read .quote-table .subtotal-container, .line-items-read .quote-table .total-container {
   width: 17.5%;
 }
-/* line 114, ../../../../../compass/protected/modules/quotes/assets/css/lineItemsRead.scss */
+/* line 117, ../../../../../compass/protected/modules/quotes/assets/css/lineItemsRead.scss */
 .line-items-read .quote-table input.subtotal, .line-items-read .quote-table input.total {
   width: 95%;
   text-align: left;

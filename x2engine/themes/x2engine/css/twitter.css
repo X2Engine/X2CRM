@@ -32,34 +32,34 @@
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2Engine".
  *****************************************************************************************/
-/* line 22, ../../../compass/themes/x2engine/css/twitter.scss */
+/* line 25, ../../../compass/themes/x2engine/css/twitter.scss */
 #twitter_container {
   padding-bottom: 10px;
 }
 
-/* line 26, ../../../compass/themes/x2engine/css/twitter.scss */
+/* line 29, ../../../compass/themes/x2engine/css/twitter.scss */
 #twitter_update_list {
   height: 200px;
   padding: 5px;
   overflow: scroll-y;
   background: white;
 }
-/* line 31, ../../../compass/themes/x2engine/css/twitter.scss */
+/* line 34, ../../../compass/themes/x2engine/css/twitter.scss */
 #twitter_update_list li {
   list-style: none;
   padding: 0 0 5px 0;
   border-bottom: dotted 1px #aaa;
 }
-/* line 35, ../../../compass/themes/x2engine/css/twitter.scss */
+/* line 38, ../../../compass/themes/x2engine/css/twitter.scss */
 #twitter_update_list li:last-child {
   border-bottom: none;
 }
-/* line 38, ../../../compass/themes/x2engine/css/twitter.scss */
+/* line 41, ../../../compass/themes/x2engine/css/twitter.scss */
 #twitter_update_list li a {
   color: #06c;
   text-decoration: none;
 }
-/* line 41, ../../../compass/themes/x2engine/css/twitter.scss */
+/* line 44, ../../../compass/themes/x2engine/css/twitter.scss */
 #twitter_update_list li a:hover {
   color: #09f;
 }

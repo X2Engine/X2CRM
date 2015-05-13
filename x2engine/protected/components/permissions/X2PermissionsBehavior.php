@@ -403,6 +403,17 @@ class X2PermissionsBehavior extends ModelPermissionsBehavior {
         return $isAssignedTo;
     }
 
+    public function getHiddenCondition ($tableAlias = 't') {
+        $assignmentAttr = $this->getAssignmentAttr();
+        $visibilityAttr = $this->getVisibilityAttr();
+        if ($assignmentAttr && $visibilityAttr) {
+            return "(NOT ($tableAlias.$assignmentAttr='Anyone' AND 
+                $tableAlias.$visibilityAttr = ".self::VISIBILITY_PRIVATE."))";
+        } else {
+            return 'TRUE';
+        }
+    }
+
     private function isHidden () {
         $assignmentAttr = $this->getAssignmentAttr();
         $visibilityAttr = $this->getVisibilityAttr();
@@ -421,13 +432,9 @@ class X2PermissionsBehavior extends ModelPermissionsBehavior {
      * if a given named user has permission to view it.
      * 
      * @param string $username The username of the user for which to check visibility
-     * @param boolean $excludeAnyone Whether to avoid counting assignment "Anyone"
-     *  as assignment to the current user. The accepted behavior is that if
-     *  assignment is "Anyone" and visibility is private (0), non-admin users
-     *  should not be able to see the record, hence the default for this is true.
      * @return type
      */
-    public function isVisibleTo($user, $excludeAnyone = true) {
+    public function isVisibleTo($user) {
         if ($user) {
             $username = $user->username;
             $uid = $user->id;
@@ -435,51 +442,49 @@ class X2PermissionsBehavior extends ModelPermissionsBehavior {
             $username = 'Guest';
             $uid = null;
         }
-        if (!isset($this->_isVisibleTo[$username][$excludeAnyone])) {
+        if (!isset($this->_isVisibleTo[$username])) {
             $accessLevel = $this->getAccessLevel($uid);
 
             $hasViewPermission = false;
-            switch ($accessLevel) {
-                case self::QUERY_ALL:
-                    $hasViewPermission = true;
-                    break;
-                case self::QUERY_PUBLIC:
-                    if ($this->owner->getAttribute($this->visibilityAttr) ==
-                        self::VISIBILITY_PUBLIC) {
+            if (!$this->isHidden ()) {
+                switch ($accessLevel) {
+                    case self::QUERY_ALL:
+                        $hasViewPermission = true;
+                        break;
+                    case self::QUERY_PUBLIC:
+                        if ($this->owner->getAttribute($this->visibilityAttr) ==
+                            self::VISIBILITY_PUBLIC) {
 
-                        $hasViewPermission = true;
-                        break;
-                    }
-                    // Visible if marked with visibility "Users' Groups"
-                    // and the current user has groups in common with
-                    // assignees of the model:
-                    if ($this->owner->getAttribute($this->visibilityAttr) == 
-                            self::VISIBILITY_GROUPS && 
-                        (bool) $this->assignmentAttr && 
-                        (bool) ($groupmatesRegex = self::getGroupmatesRegex()) && 
-                        preg_match(
-                            '/' . $groupmatesRegex . '/', 
-                            $this->owner->getAttribute($this->assignmentAttr))) {
+                            $hasViewPermission = true;
+                            break;
+                        }
+                        // Visible if marked with visibility "Users' Groups"
+                        // and the current user has groups in common with
+                        // assignees of the model:
+                        if ($this->owner->getAttribute($this->visibilityAttr) == 
+                                self::VISIBILITY_GROUPS && 
+                            (bool) $this->assignmentAttr && 
+                            (bool) ($groupmatesRegex = self::getGroupmatesRegex()) && 
+                            preg_match(
+                                '/' . $groupmatesRegex . '/', 
+                                $this->owner->getAttribute($this->assignmentAttr))) {
 
-                        $hasViewPermission = true;
+                            $hasViewPermission = true;
+                            break;
+                        }
+                    case self::QUERY_SELF:
+                        // Visible if assigned to current user
+                        if ($this->isAssignedTo($username, true)) {
+                            $hasViewPermission = true;
+                            break;
+                        }
+                    case self::QUERY_NONE:
                         break;
-                    }
-                case self::QUERY_SELF:
-                    if ($this->isHidden ()) {
-                        $hasViewPermission = false;
-                        break;
-                    }
-                    // Visible if assigned to current user
-                    if ($this->isAssignedTo($username, $excludeAnyone)) {
-                        $hasViewPermission = true;
-                        break;
-                    }
-                case self::QUERY_NONE:
-                    break;
+                }
             }
-            $this->_isVisibleTo[$username][$excludeAnyone] = $hasViewPermission;
+            $this->_isVisibleTo[$username] = $hasViewPermission;
         }
-        return $this->_isVisibleTo[$username][$excludeAnyone];
+        return $this->_isVisibleTo[$username];
     }
 
     /**

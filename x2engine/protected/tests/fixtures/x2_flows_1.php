@@ -7,7 +7,7 @@ return array(
         'name' => 'flow1',
         'triggerType' => 'RecordTagAddTrigger',
         'modelClass' => 'Accounts',
-        'flow' => '{"version":"3.0.1","trigger":{"type":"RecordTagAddTrigger","options":{"modelClass":{"value":"Accounts"},"tags":{"value":"#successful"}},"modelClass":"Accounts"},"items":[{"type":"X2FlowEmail","options":{"from":{"value":"-1"},"to":{"value":""},"template":{"value":""},"subject":{"value":""},"cc":{"value":""},"bcc":{"value":""},"body":{"value":""}}}]}',
+        'flow' => '{"version":"3.0.1","trigger":{"type":"RecordTagAddTrigger","options":{"modelClass":{"value":"Accounts"},"tags":{"value":"#successful"}},"modelClass":"Accounts"},"items":[{"type":"X2FlowCreateNotif","options":{"user":{"value":"admin"},"text":{"value":"test"}}}]}',
         'createDate' => 01389906490,
         'lastUpdated' => 01389906490,
 	),

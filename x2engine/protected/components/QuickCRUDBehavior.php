@@ -57,8 +57,7 @@ class QuickCRUDBehavior extends CBehavior {
         if (!isset (self::$_modelsWhichSupportQuickView)) {
             self::$_modelsWhichSupportQuickView = array_diff (
                 array_keys (X2Model::getModelNames()), 
-                    array ('Docs', 'Groups', 'Campaign', 'Media', 'Quote',
-                        'BugReports'));
+                    array ('Docs', 'Groups', 'Campaign', 'Media', 'BugReports'));
             self::$_modelsWhichSupportQuickView[] = 'Actions';
         }
         $modelNames = self::$_modelsWhichSupportQuickView;

@@ -190,7 +190,7 @@ class Modules extends CActiveRecord {
      */
     public static function displayName($plural = true, $module = null) {
         $moduleTitle = null;
-        if (!isset($module))
+        if (is_null($module))
             $module = Yii::app()->controller->module->name;
 
         // return a cached value
@@ -299,6 +299,8 @@ class Modules extends CActiveRecord {
                 $doc->name = $this->title;
                 $doc->save ();
             }
+            // Clear cached display names
+            self::$_displayNames = array();
             return true;
         } else {
             return false;

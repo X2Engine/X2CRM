@@ -107,7 +107,8 @@ RecordViewWidgetManager.prototype._getShowWidgetContentsData = function (widgetC
     };
 
     // brittle kludge to check type of widget being updated/shown
-    if (x2[widgetClass.replace (/_$/, '')] instanceof x2.TransactionalViewWidget) {
+    var widgetClassName = widgetClass.replace (/_$/, '');
+    if (x2[widgetClassName] && x2[widgetClassName] instanceof x2.TransactionalViewWidget) {
         data.relationships = x2.TransactionalViewWidget.relationships ? 1 : 0;
     }
     return data;
@@ -135,7 +136,8 @@ RecordViewWidgetManager.prototype._setUpRecordViewTypeToggleBehavior = function 
         if (enable) {
             $('.transactional-view-widget').each (function () {
                 if (!$(this).children ().length) {  
-                    that._showWidgetContents ($(this).data ('x2-widget').getWidgetKey ());
+                    if ($(this).data ('x2-widget'))
+                        that._showWidgetContents ($(this).data ('x2-widget').getWidgetKey ());
                 } else {
                     $(this).show ();
                 }

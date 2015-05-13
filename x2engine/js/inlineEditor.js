@@ -176,6 +176,10 @@ x2.InlineEditor = (function() {
                 },
 		        success: function(data) {
 		            $.each(data, function(index, value) {
+                        if (index.match ('_email$')) {
+                            // If an email address is modified, update the InlineEmail widget
+                            that.updateInlineEmail (index);
+                        }
 		                $('#' + index + '_field-field').html(value);
 		                $('#' + index + '_field-field input[type=radio]').rating();
 		                $('#' + index + '_field-field input[type=radio]').rating('readOnly', true);
@@ -217,6 +221,17 @@ x2.InlineEditor = (function() {
 		$parent.find ('.model-attribute').show();
 	}
 	
+    /**
+     * Update the "to" address in the InlineEmail widget if present
+     * @param string HTML Element ID namespace, e.g., 'Contacts_email'
+     */
+    InlineEditor.prototype.updateInlineEmail = function (namespace) {
+        var email = $('#' + namespace + '_field-input').
+            find('input').val();
+        if (typeof x2 != 'undefined' && typeof x2.inlineEmailEditorManager != 'undefined') {
+            x2.inlineEmailEditorManager.setToField (email);
+        }
+    }
 
 	InlineEditor.prototype.setUpUnsavedBehavior  = function () {
 		var that = this;

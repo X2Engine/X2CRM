@@ -77,6 +77,7 @@ echo CHtml::link(
     Yii::t('admin','Clear Changelog'), '#', array(
         'class' => 'x2-button',
         'submit' => 'clearChangelog',
+        'csrf' => true,
         'confirm' => 'Are you sure you want to clear the changelog?',
 ));
 echo CHtml::link(

@@ -1636,6 +1636,9 @@ abstract class X2Model extends CActiveRecord {
         }
     }
 
+    /**
+     * @return null|Fields Fields instance if found, null otherwise
+     */
     public function getField($fieldName) {
         foreach (self::$_fields[$this->tableName()] as &$_field) {
             if ($_field->fieldName == $fieldName)
@@ -2988,12 +2991,12 @@ abstract class X2Model extends CActiveRecord {
             $mergeData['assignedTo'] = $model->assignedTo;
             $mergeData['visibility'] = $model->visibility;
             Yii::app()->db->createCommand()
-                    ->insert('x2_merge_log', array(
-                        'modelType' => get_class($model),
-                        'modelId' => $model->id,
-                        'mergeModelId' => $this->id,
-                        'mergeData' => json_encode($mergeData),
-                        'mergeDate' => time(),
+                ->insert('x2_merge_log', array(
+                    'modelType' => get_class($model),
+                    'modelId' => $model->id,
+                    'mergeModelId' => $this->id,
+                    'mergeData' => json_encode($mergeData),
+                    'mergeDate' => time(),
             ));
         }
     }
@@ -3031,13 +3034,17 @@ abstract class X2Model extends CActiveRecord {
             $ids = Yii::app()->db->createCommand()
                 ->select('id')
                 ->from('x2_events')
-                ->where('associationType = :type AND associationId = :id', array(':type' => get_class($model), ':id' => $model->id))
+                ->where(
+                    'associationType = :type AND associationId = :id', 
+                    array(':type' => get_class($model), ':id' => $model->id))
                 ->queryColumn();
             $ret = $ids;
         }
-        $count = X2Model::model('Events')->updateAll(array(
-            'associationId' => $this->id,
-            ), 'associationType = :type AND associationId = :id', array(':type' => get_class($model), ':id' => $model->id));
+        $count = X2Model::model('Events')->updateAll(
+            array(
+                'associationId' => $this->id,
+            ), 'associationType = :type AND associationId = :id', 
+            array(':type' => get_class($model), ':id' => $model->id));
         return $ret;
     }
 
@@ -3072,7 +3079,9 @@ abstract class X2Model extends CActiveRecord {
         if ($logMerge) {
             $ret = $model->getTags();
         }
+        $this->disableTagTriggers ();
         $this->addTags($model->getTags());
+        $this->enableTagTriggers ();
         $model->clearTags();
         return $ret;
     }
@@ -3280,9 +3289,10 @@ abstract class X2Model extends CActiveRecord {
                 $linkModelName = $field->linkType;
                 $linkModel = $linkModelName::model();
                 $tokens = array_merge(
-                        $tokens, array_map(function ($elem) use ($field) {
-                            return '{' . $field->fieldName . '.' . preg_replace('/\{|\}/', '', $elem) . '}';
-                        }, $linkModel->getInsertableAttributeTokens())
+                    $tokens, array_map(function ($elem) use ($field) {
+                        return '{' . $field->fieldName . '.' . 
+                            preg_replace('/\{|\}/', '', $elem) . '}';
+                    }, $linkModel->getInsertableAttributeTokens())
                 );
             }
         }
@@ -3303,7 +3313,9 @@ abstract class X2Model extends CActiveRecord {
      * This method is Copyright (c) 2008-2014 by Yii Software LLC
      * http://www.yiiframework.com/license/
      */
-    public function findAll($condition = '', $params = array()/* x2modstart */, $getCommand = false/* x2modend */) {
+    public function findAll(
+        $condition = '', $params = array()/* x2modstart */, $getCommand = false/* x2modend */) {
+
         Yii::trace(get_class($this) . '.findAll()', 'system.db.ar.CActiveRecord');
         $criteria = $this->getCommandBuilder()->createCriteria($condition, $params);
         return $this->query($criteria, true/* x2modstart */, $getCommand/* x2modend */);
@@ -3327,7 +3339,9 @@ abstract class X2Model extends CActiveRecord {
      * This method is Copyright (c) 2008-2014 by Yii Software LLC
      * http://www.yiiframework.com/license/
      */
-    protected function query($criteria, $all = false/* x2modstart */, $getCommand = false/* x2modend */) {
+    protected function query(
+        $criteria, $all = false/* x2modstart */, $getCommand = false/* x2modend */) {
+
         $this->beforeFind();
         $this->applyScopes($criteria);
 

@@ -374,6 +374,7 @@ $userMenuItems = array(
             'submit' => array(
                 '/site/toggleVisibility', 'visible' => !Yii::app()->params->sessionStatus,
                 'redirect' => Yii::app()->request->requestUri),
+            'csrf' => true,
             'confirm' => 'Are you sure you want to toggle your session status?',)
     ),
     array('label' => Yii::t('app', 'Logout'), 'url' => array('/site/logout'))

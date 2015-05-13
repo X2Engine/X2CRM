@@ -343,25 +343,27 @@ x2.WebFormDesigner = (function() {
     WebFormDesigner.prototype._setUpFormDeletion = function () {
         var that = this; 
         $('#delete-form').on ('click', function (evt) {
-            var formId = $('#saved-forms').val ();
-            auxlib.destroyErrorFeedbackBox ($('#saved-forms'));
-            $.ajax ({
-                url: that.deleteFormUrl,
-                type: 'GET',
-                data: {
-                    id: formId, 
-                },
-                dataType: 'json',
-                success: function (data) {
-                    if (data[0]) {
-                        $('#saved-forms').find ('[value="' + formId + '"]').remove();
-                        $('#saved-forms').change();
-                        x2.topFlashes.displayFlash(data[1], 'success');
-                    } else {
-                        x2.topFlashes.displayFlash(data[1], 'error');
-                    }
+            auxlib.confirm (function () {
+                var formId = $('#saved-forms').val ();
+                auxlib.destroyErrorFeedbackBox ($('#saved-forms'));
+                $.ajax ({
+                    url: that.deleteFormUrl,
+                    type: 'GET',
+                    data: {
+                        id: formId, 
+                    },
+                    dataType: 'json',
+                    success: function (data) {
+                        if (data[0]) {
+                            $('#saved-forms').find ('[value="' + formId + '"]').remove();
+                            $('#saved-forms').change();
+                            x2.topFlashes.displayFlash(data[1], 'success');
+                        } else {
+                            x2.topFlashes.displayFlash(data[1], 'error');
+                        }
 
-                }
+                    }
+                });
             });
         });
     };

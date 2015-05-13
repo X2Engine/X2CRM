@@ -32,50 +32,56 @@
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2Engine".
  *****************************************************************************************/
-/*********************************************************************************
+/***********************************************************************************
  * Copyright (C) 2011-2015 X2Engine Inc. All Rights Reserved.
  *
  * X2Engine Inc.
  * P.O. Box 66752
  * Scotts Valley, California 95067 USA
- *
  * Company website: http://www.x2engine.com
- * Community and support website: http://www.x2community.com
  *
  * X2Engine Inc. grants you a perpetual, non-exclusive, non-transferable license
- * to install and use this Software for your internal business purposes.
- * You shall not modify, distribute, license or sublicense the Software.
- * Title, ownership, and all intellectual property rights in the Software belong
- * exclusively to X2Engine.
+ * to install and use this Software for your internal business purposes only
+ * for the number of users purchased by you. Your use of this Software for
+ * additional users is not covered by this license and requires a separate
+ * license purchase for such users. You shall not distribute, license, or
+ * sublicense the Software. Title, ownership, and all intellectual property
+ * rights in the Software belong exclusively to X2Engine. You agree not to file
+ * any patent applications covering, relating to, or depicting this Software
+ * or modifications thereto, and you agree to assign any patentable inventions
+ * resulting from your use of this Software to X2Engine.
  *
  * THIS SOFTWARE IS PROVIDED "AS IS" AND WITHOUT WARRANTIES OF ANY KIND, EITHER
  * EXPRESS OR IMPLIED, INCLUDING WITHOUT LIMITATION THE IMPLIED WARRANTIES OF
  * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, TITLE, AND NON-INFRINGEMENT.
- ********************************************************************************/
+ **********************************************************************************/
 /***************************************
 * This file is responsible for mantaining
 * general purpose mixins and classes. 
 ***************************************/
-/*********************************************************************************
+/***********************************************************************************
  * Copyright (C) 2011-2015 X2Engine Inc. All Rights Reserved.
  *
  * X2Engine Inc.
  * P.O. Box 66752
  * Scotts Valley, California 95067 USA
- *
  * Company website: http://www.x2engine.com
- * Community and support website: http://www.x2community.com
  *
  * X2Engine Inc. grants you a perpetual, non-exclusive, non-transferable license
- * to install and use this Software for your internal business purposes.
- * You shall not modify, distribute, license or sublicense the Software.
- * Title, ownership, and all intellectual property rights in the Software belong
- * exclusively to X2Engine.
+ * to install and use this Software for your internal business purposes only
+ * for the number of users purchased by you. Your use of this Software for
+ * additional users is not covered by this license and requires a separate
+ * license purchase for such users. You shall not distribute, license, or
+ * sublicense the Software. Title, ownership, and all intellectual property
+ * rights in the Software belong exclusively to X2Engine. You agree not to file
+ * any patent applications covering, relating to, or depicting this Software
+ * or modifications thereto, and you agree to assign any patentable inventions
+ * resulting from your use of this Software to X2Engine.
  *
  * THIS SOFTWARE IS PROVIDED "AS IS" AND WITHOUT WARRANTIES OF ANY KIND, EITHER
  * EXPRESS OR IMPLIED, INCLUDING WITHOUT LIMITATION THE IMPLIED WARRANTIES OF
  * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, TITLE, AND NON-INFRINGEMENT.
- ********************************************************************************/
+ **********************************************************************************/
 /***********************************************************************
 * Grays 
 ***********************************************************************/
@@ -104,13 +110,13 @@
 * CSS to extend when something 
 * should look like a link
 ***************************************/
-/* line 73, ../../../compass/css/lib/_standards.scss */
+/* line 76, ../../../compass/css/lib/_standards.scss */
 .pseudo-link {
   cursor: pointer;
   color: #004baf;
   transition: color .1s;
 }
-/* line 78, ../../../compass/css/lib/_standards.scss */
+/* line 81, ../../../compass/css/lib/_standards.scss */
 .pseudo-link:hover {
   color: #006cfb;
 }
@@ -119,11 +125,11 @@
 * CSS to extend when for elements that 
 * become transparent on mouseover
 ***************************************/
-/* line 96, ../../../compass/css/lib/_standards.scss */
+/* line 99, ../../../compass/css/lib/_standards.scss */
 .opacity-hover {
   opacity: 0.3;
 }
-/* line 91, ../../../compass/css/lib/_standards.scss */
+/* line 94, ../../../compass/css/lib/_standards.scss */
 .opacity-hover:hover {
   opacity: 1;
 }
@@ -139,26 +145,29 @@
 * Mixin for applying a fontAwesome icon
 * SEE _icons.scss FOR A BETTER IMPLEMENTATION
 ******************************************/
-/*********************************************************************************
+/***********************************************************************************
  * Copyright (C) 2011-2015 X2Engine Inc. All Rights Reserved.
  *
  * X2Engine Inc.
  * P.O. Box 66752
  * Scotts Valley, California 95067 USA
- *
  * Company website: http://www.x2engine.com
- * Community and support website: http://www.x2community.com
  *
  * X2Engine Inc. grants you a perpetual, non-exclusive, non-transferable license
- * to install and use this Software for your internal business purposes.
- * You shall not modify, distribute, license or sublicense the Software.
- * Title, ownership, and all intellectual property rights in the Software belong
- * exclusively to X2Engine.
+ * to install and use this Software for your internal business purposes only
+ * for the number of users purchased by you. Your use of this Software for
+ * additional users is not covered by this license and requires a separate
+ * license purchase for such users. You shall not distribute, license, or
+ * sublicense the Software. Title, ownership, and all intellectual property
+ * rights in the Software belong exclusively to X2Engine. You agree not to file
+ * any patent applications covering, relating to, or depicting this Software
+ * or modifications thereto, and you agree to assign any patentable inventions
+ * resulting from your use of this Software to X2Engine.
  *
  * THIS SOFTWARE IS PROVIDED "AS IS" AND WITHOUT WARRANTIES OF ANY KIND, EITHER
  * EXPRESS OR IMPLIED, INCLUDING WITHOUT LIMITATION THE IMPLIED WARRANTIES OF
  * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, TITLE, AND NON-INFRINGEMENT.
- ********************************************************************************/
+ **********************************************************************************/
 /***********************************************************************
 * Grays 
 ***********************************************************************/
@@ -174,18 +183,18 @@
 /***********************************************************************
 * This section is made to correspond with the theme keys in ThemeGenerator
 ***********************************************************************/
-/* line 27, ../../../compass/themes/x2engine/css/printableRecord.scss */
+/* line 30, ../../../compass/themes/x2engine/css/printableRecord.scss */
 #page-title {
   margin-top: 0px;
 }
 
-/* line 30, ../../../compass/themes/x2engine/css/printableRecord.scss */
+/* line 33, ../../../compass/themes/x2engine/css/printableRecord.scss */
 #model-title {
   margin-top: 5px;
   margin-bottom: 5px;
 }
 
-/* line 35, ../../../compass/themes/x2engine/css/printableRecord.scss */
+/* line 38, ../../../compass/themes/x2engine/css/printableRecord.scss */
 .x2-layout {
   min-width: 598px;
   -webkit-border-radius: 0px 0px 0px 0px !important;
@@ -195,11 +204,11 @@
   border-radius: 0px 0px 0px 0px !important;
   max-width: 900px !important;
 }
-/* line 40, ../../../compass/themes/x2engine/css/printableRecord.scss */
+/* line 43, ../../../compass/themes/x2engine/css/printableRecord.scss */
 .x2-layout a {
   color: black !important;
 }
-/* line 44, ../../../compass/themes/x2engine/css/printableRecord.scss */
+/* line 47, ../../../compass/themes/x2engine/css/printableRecord.scss */
 .x2-layout table {
   border-spacing: 0 !important;
   width: 100% !important;
@@ -207,38 +216,38 @@
   border-right: 1px solid #D9D9D9;
   border-bottom: 1px solid #D9D9D9;
 }
-/* line 52, ../../../compass/themes/x2engine/css/printableRecord.scss */
+/* line 55, ../../../compass/themes/x2engine/css/printableRecord.scss */
 .x2-layout div.tableWrapper {
   border-left: 1px solid #D9D9D9;
   border-right: 1px solid #D9D9D9;
   border-bottom: 1px solid rgba(255, 255, 255, 0);
   border-top: none !important;
 }
-/* line 59, ../../../compass/themes/x2engine/css/printableRecord.scss */
+/* line 62, ../../../compass/themes/x2engine/css/printableRecord.scss */
 .x2-layout Item.topLabel,
 .x2-layout Item.leftLabel {
   border-bottom: none !important;
 }
-/* line 64, ../../../compass/themes/x2engine/css/printableRecord.scss */
+/* line 67, ../../../compass/themes/x2engine/css/printableRecord.scss */
 .x2-layout label {
   color: #000000 !important;
   background: none !important;
 }
-/* line 69, ../../../compass/themes/x2engine/css/printableRecord.scss */
+/* line 72, ../../../compass/themes/x2engine/css/printableRecord.scss */
 .x2-layout td div.leftLabel:last-child {
   border-bottom: 1px solid #D9D9D9;
 }
 
 /* hide min and max buttons */
-/* line 78, ../../../compass/themes/x2engine/css/printableRecord.scss */
+/* line 81, ../../../compass/themes/x2engine/css/printableRecord.scss */
 div.x2-layout {
   background: #fff !important;
 }
-/* line 81, ../../../compass/themes/x2engine/css/printableRecord.scss */
+/* line 84, ../../../compass/themes/x2engine/css/printableRecord.scss */
 div.x2-layout .formSection.showSection a.formSectionShow, div.x2-layout .formSection.showSection a.formSectionHide {
   display: none !important;
 }
-/* line 86, ../../../compass/themes/x2engine/css/printableRecord.scss */
+/* line 89, ../../../compass/themes/x2engine/css/printableRecord.scss */
 div.x2-layout .formSection:first-child, div.x2-layout .formSection:last-child {
   -webkit-border-radius: 0px 0 0 0 !important;
   -moz-border-radius: 0px 0 0 0 !important;
@@ -246,7 +255,7 @@ div.x2-layout .formSection:first-child, div.x2-layout .formSection:last-child {
   -o-border-radius: 0px 0 0 0 !important;
   border-radius: 0px 0 0 0 !important;
 }
-/* line 92, ../../../compass/themes/x2engine/css/printableRecord.scss */
+/* line 95, ../../../compass/themes/x2engine/css/printableRecord.scss */
 div.x2-layout .formSectionHeader {
   border-top: 1px solid #D9D9D9 !important;
   border-left: 1px solid #D9D9D9;
@@ -261,28 +270,28 @@ div.x2-layout .formSectionHeader {
   height: auto;
   margin-top: 15px;
 }
-/* line 103, ../../../compass/themes/x2engine/css/printableRecord.scss */
+/* line 106, ../../../compass/themes/x2engine/css/printableRecord.scss */
 div.x2-layout .formSectionHeader .sectionTitle {
   font-style: normal;
   padding: 5px;
 }
-/* line 108, ../../../compass/themes/x2engine/css/printableRecord.scss */
+/* line 111, ../../../compass/themes/x2engine/css/printableRecord.scss */
 div.x2-layout td {
   border-right: 1px solid #D9D9D9 !important;
 }
-/* line 111, ../../../compass/themes/x2engine/css/printableRecord.scss */
+/* line 114, ../../../compass/themes/x2engine/css/printableRecord.scss */
 div.x2-layout .formItem {
   border: 1px solid #D9D9D9 !important;
 }
-/* line 113, ../../../compass/themes/x2engine/css/printableRecord.scss */
+/* line 116, ../../../compass/themes/x2engine/css/printableRecord.scss */
 div.x2-layout .formItem.topLabel label {
   border-bottom: 1px solid #D9D9D9 !important;
 }
-/* line 116, ../../../compass/themes/x2engine/css/printableRecord.scss */
+/* line 119, ../../../compass/themes/x2engine/css/printableRecord.scss */
 div.x2-layout .formItem.leftLabel label {
   border-right: 1px solid #D9D9D9 !important;
 }
-/* line 119, ../../../compass/themes/x2engine/css/printableRecord.scss */
+/* line 122, ../../../compass/themes/x2engine/css/printableRecord.scss */
 div.x2-layout .formItem input[type="text"], div.x2-layout .formItem textarea {
   -webkit-border-radius: 0px 0 0 0 !important;
   -moz-border-radius: 0px 0 0 0 !important;
@@ -291,7 +300,7 @@ div.x2-layout .formItem input[type="text"], div.x2-layout .formItem textarea {
   border-radius: 0px 0 0 0 !important;
   background: #fff !important;
 }
-/* line 124, ../../../compass/themes/x2engine/css/printableRecord.scss */
+/* line 127, ../../../compass/themes/x2engine/css/printableRecord.scss */
 div.x2-layout .formInputBox {
   font-weight: normal;
 }
@@ -300,7 +309,7 @@ div.x2-layout .formInputBox {
 Override rules in x2forms.css. Remove rounded borders, make borders black and 
 backgrounds white.
 */
-/* line 134, ../../../compass/themes/x2engine/css/printableRecord.scss */
+/* line 137, ../../../compass/themes/x2engine/css/printableRecord.scss */
 input[type="text"].record-name-autocomplete {
   -webkit-border-radius: 0px 0 0 0 !important;
   -moz-border-radius: 0px 0 0 0 !important;
@@ -310,7 +319,7 @@ input[type="text"].record-name-autocomplete {
   background: #fff !important;
 }
 
-/* line 141, ../../../compass/themes/x2engine/css/printableRecord.scss */
+/* line 144, ../../../compass/themes/x2engine/css/printableRecord.scss */
 .edit-icon,
 .confirm-icon,
 .cancel-icon {

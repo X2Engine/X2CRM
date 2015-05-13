@@ -91,7 +91,7 @@ Publisher.loadFrame = function (id,type){
         var frame=
             '<iframe style=\"width:99%;height:99%\" ' +
               'src=\"' + yii.scriptUrl + '/quotes/quotes/print' +
-                '?id='+id+'\"></iframe>';
+                '?id='+id+'&inline=1\"></iframe>';
     }
     if(typeof x2.actionFrames.viewEmailDialog != 'undefined') {
         if($(x2.actionFrames.viewEmailDialog).is(':hidden')){

@@ -53,7 +53,7 @@
     <?php echo Yii::t('admin','If you decide to map the "Create Date", "Last Updated", or any other explicit date field, be sure that you have a valid date format entered so that the software can convert to a UNIX Timestamp (if it is already a UNIX Timestamp even better).  Visibility should be either "1" for Public or "0" for Private (it will default to 1 if not provided).'); ?>
 
     <br><br><?php echo Yii::t('admin','Example');?> <a class='pseudo-link' id="example-link"><?php echo X2Html::fa('fa-caret-down')?></a>
-    <div id="example-box" style="display:none;"><img src="<?php echo Yii::app()->getBaseUrl()."/images/examplecsv.png" ?>"/></div>
+    <div id="example-box" style="display:none;"><img src="<?php echo Yii::app()->theme->getBaseUrl()."/images/examplecsv.png" ?>"/></div>
     <br><br>
     </div>
     <div class="form" style="width:600px;">

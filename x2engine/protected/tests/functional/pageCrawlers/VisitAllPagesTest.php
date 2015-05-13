@@ -47,22 +47,12 @@ abstract class VisitAllPagesTest extends X2WebTestCase {
     public $autoLoginOnlyOnce = true;
 
     /**
-     * visits page and checks for php errors
-     * @param string $page URI of page
-     */
-    protected function assertNoPHPErrors ($page) {
-		$this->openX2($page);
-		$this->assertElementNotPresent('css=.xdebug-error');
-		$this->assertElementNotPresent('css=#x2-php-error');
-
-    }
-
-    /**
      * @param array $pages array of URIs 
      */
     protected function visitPages ($pages, $testXss = false) {
         foreach ($pages as $page) {
             print ('visiting page ' .$page."\n");
+		    $this->openX2($page);
             $this->assertNoPHPErrors ($page);
             if ($testXss)
                 $this->assertElementNotPresent ('css=.TESTX2INJECTION');

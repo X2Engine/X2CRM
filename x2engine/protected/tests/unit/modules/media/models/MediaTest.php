@@ -153,7 +153,7 @@ class MediaTest extends X2DbTestCase {
                 666 => 666,
             );
             foreach ($testSizes as $readable => $bytes) {
-                $this->assertEquals($bytes, $fn (array($readable)));
+                $this->assertEquals($bytes, $fn ($readable));
             }
         }
 }

@@ -37,6 +37,7 @@ if (typeof auxlib === 'undefined') auxlib = {};
 if (typeof x2 === 'undefined') x2 = {};
 
 auxlib.DEBUG = true;
+auxlib.translations = {};
 
 auxlib.error = function (message) {
     if (auxlib.DEBUG && x2.DEBUG) console.log ('Error: ' + message);
@@ -548,6 +549,13 @@ auxlib.containerLoading = function (elem$) {
 };
 
 auxlib.confirm = function (callback, translations) {
+    translations = typeof translations === 'undefined' ? {} : translations; 
+    translations = $.extend ({}, {
+        message: auxlib.translations['Are you sure you want to delete this item?'], 
+        title: auxlib.translations['Delete item?'], 
+        cancel: auxlib.translations['Cancel'], 
+        confirm: auxlib.translations['Confirm'], 
+    }, translations);
     $('<div>').html (translations.message).dialog ({ 
         title: translations.title,
         height: 140,
@@ -565,7 +573,7 @@ auxlib.confirm = function (callback, translations) {
                     $(this).dialog ('close');
                     callback ();
                 }
-            },
+            }
         ],
         close: function () {
             $(this).dialog ('destroy');

@@ -183,8 +183,9 @@ class ContactsController extends x2base {
                 User::addRecentItem('c', $id, Yii::app()->user->getId()); 
                 parent::view($contact, 'contacts');
             }
-        } else
-            $this->redirect('index');
+        } else {
+            $this->denied ();
+        }
     }
 
     /**

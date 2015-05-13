@@ -161,6 +161,8 @@ SortableWidget.refreshWidgets = function () {
     }
 };
 
+SortableWidget.prototype.afterSort = function () {};
+
 /*
 Private static methods
 */

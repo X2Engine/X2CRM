@@ -385,7 +385,6 @@ return array (
 'Developer'=>'开发人员',
 'Yii Extension'=>'Yii的扩展',
 'Powered by X2Engine'=>'X2Engine',
-'X2Engine Inc. grants you a perpetual, non-exclusive, non-transferable license 			to install and use this Software for your internal business purposes. 			You shall not modify, distribute, license or sublicense the Software. 			Title, ownership, and all intellectual property rights in the Software belong 			exclusively to X2Engine.'=>'X2Engine授予您一个永久的，非排他性的，不可转让的许可，安装和使用本软件用于您的内部业务目的。您不得修改，分发，许可或再许可的软件。标题，所有权和知识产权的软件专属于X2Engine的。',
 'THIS SOFTWARE IS PROVIDED "AS IS" AND WITHOUT WARRANTIES OF ANY KIND, EITHER 		EXPRESS OR IMPLIED, INCLUDING WITHOUT LIMITATION THE IMPLIED WARRANTIES OF 		MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, TITLE, AND NON-INFRINGEMENT.'=>'这个软件提供的“原样”，没有任何形式的担保，明示或暗示的担保，包括但不限于适销性的默示担保，特定用途的适用性，所有权，非侵权。',
 'Our office in downtown Santa Cruz'=>'我们在圣克鲁斯市中心的办公室',
 'X2Engine Inc. is headquartered in beautiful Santa Cruz, California. We really enjoy meeting customers and partners whenever possible and encourage you to visit our offices when you find yourself in the San Francisco bay area.'=>'X2Engine公司总部设在美丽的圣克鲁斯，加利福尼亚州。我们真的很享受会议客户和合作伙伴尽可能鼓励您来参观我们的办公室，当你发现自己在旧金山湾区。',

@@ -32,26 +32,29 @@
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2Engine".
  *****************************************************************************************/
-/*********************************************************************************
+/***********************************************************************************
  * Copyright (C) 2011-2015 X2Engine Inc. All Rights Reserved.
  *
  * X2Engine Inc.
  * P.O. Box 66752
  * Scotts Valley, California 95067 USA
- *
  * Company website: http://www.x2engine.com
- * Community and support website: http://www.x2community.com
  *
  * X2Engine Inc. grants you a perpetual, non-exclusive, non-transferable license
- * to install and use this Software for your internal business purposes.
- * You shall not modify, distribute, license or sublicense the Software.
- * Title, ownership, and all intellectual property rights in the Software belong
- * exclusively to X2Engine.
+ * to install and use this Software for your internal business purposes only
+ * for the number of users purchased by you. Your use of this Software for
+ * additional users is not covered by this license and requires a separate
+ * license purchase for such users. You shall not distribute, license, or
+ * sublicense the Software. Title, ownership, and all intellectual property
+ * rights in the Software belong exclusively to X2Engine. You agree not to file
+ * any patent applications covering, relating to, or depicting this Software
+ * or modifications thereto, and you agree to assign any patentable inventions
+ * resulting from your use of this Software to X2Engine.
  *
  * THIS SOFTWARE IS PROVIDED "AS IS" AND WITHOUT WARRANTIES OF ANY KIND, EITHER
  * EXPRESS OR IMPLIED, INCLUDING WITHOUT LIMITATION THE IMPLIED WARRANTIES OF
  * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, TITLE, AND NON-INFRINGEMENT.
- ********************************************************************************/
+ **********************************************************************************/
 /***********************************************************************
 * Grays 
 ***********************************************************************/
@@ -67,50 +70,56 @@
 /***********************************************************************
 * This section is made to correspond with the theme keys in ThemeGenerator
 ***********************************************************************/
-/*********************************************************************************
+/***********************************************************************************
  * Copyright (C) 2011-2015 X2Engine Inc. All Rights Reserved.
  *
  * X2Engine Inc.
  * P.O. Box 66752
  * Scotts Valley, California 95067 USA
- *
  * Company website: http://www.x2engine.com
- * Community and support website: http://www.x2community.com
  *
  * X2Engine Inc. grants you a perpetual, non-exclusive, non-transferable license
- * to install and use this Software for your internal business purposes.
- * You shall not modify, distribute, license or sublicense the Software.
- * Title, ownership, and all intellectual property rights in the Software belong
- * exclusively to X2Engine.
+ * to install and use this Software for your internal business purposes only
+ * for the number of users purchased by you. Your use of this Software for
+ * additional users is not covered by this license and requires a separate
+ * license purchase for such users. You shall not distribute, license, or
+ * sublicense the Software. Title, ownership, and all intellectual property
+ * rights in the Software belong exclusively to X2Engine. You agree not to file
+ * any patent applications covering, relating to, or depicting this Software
+ * or modifications thereto, and you agree to assign any patentable inventions
+ * resulting from your use of this Software to X2Engine.
  *
  * THIS SOFTWARE IS PROVIDED "AS IS" AND WITHOUT WARRANTIES OF ANY KIND, EITHER
  * EXPRESS OR IMPLIED, INCLUDING WITHOUT LIMITATION THE IMPLIED WARRANTIES OF
  * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, TITLE, AND NON-INFRINGEMENT.
- ********************************************************************************/
+ **********************************************************************************/
 /***************************************
 * This file is responsible for mantaining
 * general purpose mixins and classes. 
 ***************************************/
-/*********************************************************************************
+/***********************************************************************************
  * Copyright (C) 2011-2015 X2Engine Inc. All Rights Reserved.
  *
  * X2Engine Inc.
  * P.O. Box 66752
  * Scotts Valley, California 95067 USA
- *
  * Company website: http://www.x2engine.com
- * Community and support website: http://www.x2community.com
  *
  * X2Engine Inc. grants you a perpetual, non-exclusive, non-transferable license
- * to install and use this Software for your internal business purposes.
- * You shall not modify, distribute, license or sublicense the Software.
- * Title, ownership, and all intellectual property rights in the Software belong
- * exclusively to X2Engine.
+ * to install and use this Software for your internal business purposes only
+ * for the number of users purchased by you. Your use of this Software for
+ * additional users is not covered by this license and requires a separate
+ * license purchase for such users. You shall not distribute, license, or
+ * sublicense the Software. Title, ownership, and all intellectual property
+ * rights in the Software belong exclusively to X2Engine. You agree not to file
+ * any patent applications covering, relating to, or depicting this Software
+ * or modifications thereto, and you agree to assign any patentable inventions
+ * resulting from your use of this Software to X2Engine.
  *
  * THIS SOFTWARE IS PROVIDED "AS IS" AND WITHOUT WARRANTIES OF ANY KIND, EITHER
  * EXPRESS OR IMPLIED, INCLUDING WITHOUT LIMITATION THE IMPLIED WARRANTIES OF
  * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, TITLE, AND NON-INFRINGEMENT.
- ********************************************************************************/
+ **********************************************************************************/
 /***********************************************************************
 * Grays 
 ***********************************************************************/
@@ -139,13 +148,13 @@
 * CSS to extend when something 
 * should look like a link
 ***************************************/
-/* line 73, ../../../../compass/css/lib/_standards.scss */
+/* line 76, ../../../../compass/css/lib/_standards.scss */
 .pseudo-link {
   cursor: pointer;
   color: #004baf;
   transition: color .1s;
 }
-/* line 78, ../../../../compass/css/lib/_standards.scss */
+/* line 81, ../../../../compass/css/lib/_standards.scss */
 .pseudo-link:hover {
   color: #006cfb;
 }
@@ -154,11 +163,11 @@
 * CSS to extend when for elements that 
 * become transparent on mouseover
 ***************************************/
-/* line 96, ../../../../compass/css/lib/_standards.scss */
+/* line 99, ../../../../compass/css/lib/_standards.scss */
 .opacity-hover {
   opacity: 0.3;
 }
-/* line 91, ../../../../compass/css/lib/_standards.scss */
+/* line 94, ../../../../compass/css/lib/_standards.scss */
 .opacity-hover:hover {
   opacity: 1;
 }
@@ -174,26 +183,29 @@
 * Mixin for applying a fontAwesome icon
 * SEE _icons.scss FOR A BETTER IMPLEMENTATION
 ******************************************/
-/*********************************************************************************
+/***********************************************************************************
  * Copyright (C) 2011-2015 X2Engine Inc. All Rights Reserved.
  *
  * X2Engine Inc.
  * P.O. Box 66752
  * Scotts Valley, California 95067 USA
- *
  * Company website: http://www.x2engine.com
- * Community and support website: http://www.x2community.com
  *
  * X2Engine Inc. grants you a perpetual, non-exclusive, non-transferable license
- * to install and use this Software for your internal business purposes.
- * You shall not modify, distribute, license or sublicense the Software.
- * Title, ownership, and all intellectual property rights in the Software belong
- * exclusively to X2Engine.
+ * to install and use this Software for your internal business purposes only
+ * for the number of users purchased by you. Your use of this Software for
+ * additional users is not covered by this license and requires a separate
+ * license purchase for such users. You shall not distribute, license, or
+ * sublicense the Software. Title, ownership, and all intellectual property
+ * rights in the Software belong exclusively to X2Engine. You agree not to file
+ * any patent applications covering, relating to, or depicting this Software
+ * or modifications thereto, and you agree to assign any patentable inventions
+ * resulting from your use of this Software to X2Engine.
  *
  * THIS SOFTWARE IS PROVIDED "AS IS" AND WITHOUT WARRANTIES OF ANY KIND, EITHER
  * EXPRESS OR IMPLIED, INCLUDING WITHOUT LIMITATION THE IMPLIED WARRANTIES OF
  * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, TITLE, AND NON-INFRINGEMENT.
- ********************************************************************************/
+ **********************************************************************************/
 /************************************************
 * This File is a pseudo-class translation of all 
 * the font-awesome classes. This way, these classes
@@ -207,7 +219,7 @@
  *  Font Awesome 4.2.0 by @davegandy - http://fontawesome.io - @fontawesome
  *  License - http://fontawesome.io/license (Font: SIL OFL 1.1, CSS: MIT License)
  */
-/* line 61, ../../../../compass/css/lib/_font-awesome.scss */
+/* line 64, ../../../../compass/css/lib/_font-awesome.scss */
 .grid-view table.items th.asc a:after, .grid-view table.items th.desc a:after {
   display: inline-block;
   font: normal normal normal 14px/1 FontAwesome;
@@ -217,38 +229,38 @@
 }
 
 /* makes the font 33% larger relative to the icon container */
-/* line 120, ../../../../compass/css/lib/_font-awesome.scss */
+/* line 123, ../../../../compass/css/lib/_font-awesome.scss */
 .grid-view table.items th.asc a.pull-left:after, .grid-view table.items th.desc a.pull-left:after {
   margin-right: .3em;
 }
 
-/* line 123, ../../../../compass/css/lib/_font-awesome.scss */
+/* line 126, ../../../../compass/css/lib/_font-awesome.scss */
 .grid-view table.items th.asc a.pull-right:after, .grid-view table.items th.desc a.pull-right:after {
   margin-left: .3em;
 }
 
 /* Font Awesome uses the Unicode Private Use Area (PUA) to ensure screen
      readers do not read off random characters that represent icons */
-/* line 778, ../../../../compass/css/lib/_font-awesome.scss */
+/* line 781, ../../../../compass/css/lib/_font-awesome.scss */
 .grid-view table.items th.desc a:after {
   content: "\f0d7";
 }
 
-/* line 781, ../../../../compass/css/lib/_font-awesome.scss */
+/* line 784, ../../../../compass/css/lib/_font-awesome.scss */
 .grid-view table.items th.asc a:after {
   content: "\f0d8";
 }
 
-/* line 27, ../../../../compass/themes/x2engine/css/gridview/styles.scss */
+/* line 30, ../../../../compass/themes/x2engine/css/gridview/styles.scss */
 .grid-view table {
   border: none !important;
 }
-/* line 30, ../../../../compass/themes/x2engine/css/gridview/styles.scss */
+/* line 33, ../../../../compass/themes/x2engine/css/gridview/styles.scss */
 .grid-view th, .grid-view td {
   box-sizing: border-box;
 }
 
-/* line 35, ../../../../compass/themes/x2engine/css/gridview/styles.scss */
+/* line 38, ../../../../compass/themes/x2engine/css/gridview/styles.scss */
 .x2-grid-view-controls-buttons > a {
   height: 24px;
   width: 24px;
@@ -259,21 +271,21 @@
 /**
  * --------------- Column Selector Dropdown ---------------
  */
-/* line 48, ../../../../compass/themes/x2engine/css/gridview/styles.scss */
+/* line 51, ../../../../compass/themes/x2engine/css/gridview/styles.scss */
 ul.column-selector {
   max-height: 300px;
 }
-/* line 49, ../../../../compass/themes/x2engine/css/gridview/styles.scss */
+/* line 52, ../../../../compass/themes/x2engine/css/gridview/styles.scss */
 ul.column-selector.x2-dropdown-list {
   display: none;
   overflow-y: scroll;
 }
-/* line 53, ../../../../compass/themes/x2engine/css/gridview/styles.scss */
+/* line 56, ../../../../compass/themes/x2engine/css/gridview/styles.scss */
 ul.column-selector.stuck {
   position: absolute !important;
   top: 75px !important;
 }
-/* line 58, ../../../../compass/themes/x2engine/css/gridview/styles.scss */
+/* line 61, ../../../../compass/themes/x2engine/css/gridview/styles.scss */
 ul.column-selector.fixed-header {
   position: fixed;
 }
@@ -281,29 +293,29 @@ ul.column-selector.fixed-header {
 /**
  * ---------------- X2GridView Widget CSS -----------------
  */
-/* line 68, ../../../../compass/themes/x2engine/css/gridview/styles.scss */
+/* line 71, ../../../../compass/themes/x2engine/css/gridview/styles.scss */
 .grid-view .title-bar {
   display: block;
   overflow: hidden;
 }
-/* line 72, ../../../../compass/themes/x2engine/css/gridview/styles.scss */
+/* line 75, ../../../../compass/themes/x2engine/css/gridview/styles.scss */
 .grid-view .summary {
   display: inline-block;
   float: right;
   color: #555;
 }
-/* line 77, ../../../../compass/themes/x2engine/css/gridview/styles.scss */
+/* line 80, ../../../../compass/themes/x2engine/css/gridview/styles.scss */
 .grid-view .empty {
   font-style: italic;
 }
-/* line 80, ../../../../compass/themes/x2engine/css/gridview/styles.scss */
+/* line 83, ../../../../compass/themes/x2engine/css/gridview/styles.scss */
 .grid-view table {
   border: 1px solid #aaa;
   margin: 5px 0;
 }
 
 /* .grid-view h3, .grid-view h2 {float:left;margin:0 20px 0 0;} */
-/* line 88, ../../../../compass/themes/x2engine/css/gridview/styles.scss */
+/* line 91, ../../../../compass/themes/x2engine/css/gridview/styles.scss */
 .x2grid-body-container .items {
   border-bottom: 1px solid #aaa;
 }
@@ -312,14 +324,14 @@ ul.column-selector.fixed-header {
 /**
  * ------------------ X2GridView Tables -------------------
  */
-/* line 98, ../../../../compass/themes/x2engine/css/gridview/styles.scss */
+/* line 101, ../../../../compass/themes/x2engine/css/gridview/styles.scss */
 .grid-view table.items {
   table-layout: fixed;
   background: #fff;
   width: 100%;
   clear: both;
 }
-/* line 103, ../../../../compass/themes/x2engine/css/gridview/styles.scss */
+/* line 106, ../../../../compass/themes/x2engine/css/gridview/styles.scss */
 .grid-view table.items td {
   padding: 3px 5px;
   border-right: 1px solid #ccc;
@@ -329,7 +341,7 @@ ul.column-selector.fixed-header {
   white-space: nowrap;
   word-wrap: normal;
 }
-/* line 112, ../../../../compass/themes/x2engine/css/gridview/styles.scss */
+/* line 115, ../../../../compass/themes/x2engine/css/gridview/styles.scss */
 .grid-view table.items th {
   padding: 3px 5px;
   border-right: 1px solid #ccc;
@@ -339,17 +351,17 @@ ul.column-selector.fixed-header {
   white-space: nowrap;
   word-wrap: normal;
 }
-/* line 120, ../../../../compass/themes/x2engine/css/gridview/styles.scss */
+/* line 123, ../../../../compass/themes/x2engine/css/gridview/styles.scss */
 .grid-view table.items th:first-child {
   border-left: none;
   padding-left: 1px;
   text-indent: -1px;
 }
-/* line 126, ../../../../compass/themes/x2engine/css/gridview/styles.scss */
+/* line 129, ../../../../compass/themes/x2engine/css/gridview/styles.scss */
 .grid-view table.items td:last-child, .grid-view table.items th:last-child {
   border-right: none !important;
 }
-/* line 129, ../../../../compass/themes/x2engine/css/gridview/styles.scss */
+/* line 132, ../../../../compass/themes/x2engine/css/gridview/styles.scss */
 .grid-view table.items thead th {
   line-height: 25px;
   padding: 0;
@@ -369,22 +381,22 @@ ul.column-selector.fixed-header {
   background:-ms-linear-gradient(top,     #e0e0e0 0%, #ccc 100%);
   background:linear-gradient(to bottom,   #e0e0e0 0%, #ccc 100%);*/
 }
-/* line 149, ../../../../compass/themes/x2engine/css/gridview/styles.scss */
+/* line 152, ../../../../compass/themes/x2engine/css/gridview/styles.scss */
 .grid-view table.items th a {
   display: block;
   color: #333;
   font-size: 11px;
   text-decoration: none;
 }
-/* line 155, ../../../../compass/themes/x2engine/css/gridview/styles.scss */
+/* line 158, ../../../../compass/themes/x2engine/css/gridview/styles.scss */
 .grid-view table.items th:hover {
   /* background-color:#f8f8f8; */
 }
-/* line 159, ../../../../compass/themes/x2engine/css/gridview/styles.scss */
+/* line 162, ../../../../compass/themes/x2engine/css/gridview/styles.scss */
 .grid-view table.items td a {
   text-decoration: none;
 }
-/* line 161, ../../../../compass/themes/x2engine/css/gridview/styles.scss */
+/* line 164, ../../../../compass/themes/x2engine/css/gridview/styles.scss */
 .grid-view table.items td a:hover {
   text-decoration: underline;
 }
@@ -396,7 +408,7 @@ ul.column-selector.fixed-header {
 /*
  * ------------------- Rounded Borders --------------------
  */
-/* line 177, ../../../../compass/themes/x2engine/css/gridview/styles.scss */
+/* line 180, ../../../../compass/themes/x2engine/css/gridview/styles.scss */
 .gridview.boxed table.items {
   margin-top: 5px;
   border: 1px solid #ccc;
@@ -408,7 +420,7 @@ ul.column-selector.fixed-header {
 }
 
 /* rounded corner on top left TH cells in THEAD */
-/* line 188, ../../../../compass/themes/x2engine/css/gridview/styles.scss */
+/* line 191, ../../../../compass/themes/x2engine/css/gridview/styles.scss */
 .grid-view.boxed table.items th:first-child {
   -webkit-border-radius: 4px 0 0 0;
   -moz-border-radius: 4px 0 0 0;
@@ -416,7 +428,7 @@ ul.column-selector.fixed-header {
   -o-border-radius: 4px 0 0 0;
   border-radius: 4px 0 0 0;
 }
-/* line 191, ../../../../compass/themes/x2engine/css/gridview/styles.scss */
+/* line 194, ../../../../compass/themes/x2engine/css/gridview/styles.scss */
 .grid-view.boxed table.items th:last-child {
   -webkit-border-radius: 0 4px 0 0;
   -moz-border-radius: 0 4px 0 0;
@@ -424,19 +436,19 @@ ul.column-selector.fixed-header {
   -o-border-radius: 0 4px 0 0;
   border-radius: 0 4px 0 0;
 }
-/* line 196, ../../../../compass/themes/x2engine/css/gridview/styles.scss */
+/* line 199, ../../../../compass/themes/x2engine/css/gridview/styles.scss */
 .grid-view.boxed table.items tr th:first-child, .grid-view.boxed table.items tr td:first-child {
   /* border-left:none; */
 }
-/* line 199, ../../../../compass/themes/x2engine/css/gridview/styles.scss */
+/* line 202, ../../../../compass/themes/x2engine/css/gridview/styles.scss */
 .grid-view.boxed table.items tr:first-child th {
   border-top: none;
 }
-/* line 203, ../../../../compass/themes/x2engine/css/gridview/styles.scss */
+/* line 206, ../../../../compass/themes/x2engine/css/gridview/styles.scss */
 .grid-view.boxed table.items tbody tr:last-child td {
   /* border-bottom-width:1px; */
 }
-/* line 205, ../../../../compass/themes/x2engine/css/gridview/styles.scss */
+/* line 208, ../../../../compass/themes/x2engine/css/gridview/styles.scss */
 .grid-view.boxed table.items tbody tr:last-child td:first-child {
   -webkit-border-radius: 0 0 0 4px;
   -moz-border-radius: 0 0 0 4px;
@@ -444,7 +456,7 @@ ul.column-selector.fixed-header {
   -o-border-radius: 0 0 0 4px;
   border-radius: 0 0 0 4px;
 }
-/* line 208, ../../../../compass/themes/x2engine/css/gridview/styles.scss */
+/* line 211, ../../../../compass/themes/x2engine/css/gridview/styles.scss */
 .grid-view.boxed table.items tbody tr:last-child td:last-child {
   -webkit-border-radius: 0 0 4px 0;
   -moz-border-radius: 0 0 4px 0;
@@ -452,23 +464,23 @@ ul.column-selector.fixed-header {
   -o-border-radius: 0 0 4px 0;
   border-radius: 0 0 4px 0;
 }
-/* line 215, ../../../../compass/themes/x2engine/css/gridview/styles.scss */
+/* line 218, ../../../../compass/themes/x2engine/css/gridview/styles.scss */
 .grid-view table.items tr.odd {
   background: #F5F4DE;
   /* #dce7f0; */
   /* #dce7f0; */
   /* background:#f7f6f0; */
 }
-/* line 221, ../../../../compass/themes/x2engine/css/gridview/styles.scss */
+/* line 224, ../../../../compass/themes/x2engine/css/gridview/styles.scss */
 .grid-view table.items tr.unviewed td {
   background: #eef0ff;
   font-weight: bold;
 }
-/* line 225, ../../../../compass/themes/x2engine/css/gridview/styles.scss */
+/* line 228, ../../../../compass/themes/x2engine/css/gridview/styles.scss */
 .grid-view table.items tr.filters {
   background: #fff;
 }
-/* line 227, ../../../../compass/themes/x2engine/css/gridview/styles.scss */
+/* line 230, ../../../../compass/themes/x2engine/css/gridview/styles.scss */
 .grid-view table.items tr.filters td {
   padding: 0;
   border: solid #b3b3b3;
@@ -477,7 +489,7 @@ ul.column-selector.fixed-header {
   border-right-color: #b3b3b3;
   background: #d8d8d8;
 }
-/* line 235, ../../../../compass/themes/x2engine/css/gridview/styles.scss */
+/* line 238, ../../../../compass/themes/x2engine/css/gridview/styles.scss */
 .grid-view table.items tr.filters input, .grid-view table.items tr.filters select {
   width: 100%;
   box-sizing: border-box;
@@ -486,33 +498,33 @@ ul.column-selector.fixed-header {
   border: none;
   border-radius: 0;
 }
-/* line 246, ../../../../compass/themes/x2engine/css/gridview/styles.scss */
+/* line 249, ../../../../compass/themes/x2engine/css/gridview/styles.scss */
 .grid-view table.items th.asc, .grid-view table.items th.desc {
   border: 1px solid #1e71e2;
   background: #629ceb;
 }
-/* line 253, ../../../../compass/themes/x2engine/css/gridview/styles.scss */
+/* line 256, ../../../../compass/themes/x2engine/css/gridview/styles.scss */
 .grid-view table.items th.asc a, .grid-view table.items th.desc a {
   color: #fff;
   text-shadow: 0 0 2px rgba(0, 0, 0, 0.25);
 }
-/* line 45, ../../../../compass/css/lib/_font-awesome.scss */
+/* line 48, ../../../../compass/css/lib/_font-awesome.scss */
 .grid-view table.items th.asc a:after {
   text-decoration: none;
   margin-left: 10px;
 }
-/* line 45, ../../../../compass/css/lib/_font-awesome.scss */
+/* line 48, ../../../../compass/css/lib/_font-awesome.scss */
 .grid-view table.items th.desc a:after {
   text-decoration: none;
   margin-left: 10px;
 }
-/* line 272, ../../../../compass/themes/x2engine/css/gridview/styles.scss */
+/* line 275, ../../../../compass/themes/x2engine/css/gridview/styles.scss */
 .grid-view div.x2grid-header-container {
   overflow: hidden;
   position: relative;
   /* border-bottom:1px solid #666; */
 }
-/* line 277, ../../../../compass/themes/x2engine/css/gridview/styles.scss */
+/* line 280, ../../../../compass/themes/x2engine/css/gridview/styles.scss */
 .grid-view div.x2grid-body-container {
   overflow-x: auto;
   overflow-y: hidden;
@@ -520,21 +532,21 @@ ul.column-selector.fixed-header {
   /*  overflow-y:scroll;
       max-height:710px; */
 }
-/* line 285, ../../../../compass/themes/x2engine/css/gridview/styles.scss */
+/* line 288, ../../../../compass/themes/x2engine/css/gridview/styles.scss */
 .grid-view table.items.x2grid-resizable {
   border-collapse: separate;
   margin-top: 0;
   border: none;
   margin-bottom: 0;
 }
-/* line 291, ../../../../compass/themes/x2engine/css/gridview/styles.scss */
+/* line 294, ../../../../compass/themes/x2engine/css/gridview/styles.scss */
 .grid-view .x2grid-body-container table.items.x2grid-resizable {
   border-left: none;
   border-right: none;
   border-top: none;
   border-bottom: 1px solid #D5D5D5;
 }
-/* line 297, ../../../../compass/themes/x2engine/css/gridview/styles.scss */
+/* line 300, ../../../../compass/themes/x2engine/css/gridview/styles.scss */
 .grid-view table.items.x2grid-resizable tr:first-child td {
   border-top: none;
 }
@@ -570,12 +582,12 @@ ul.column-selector.fixed-header {
     border-right:1px solid #d3d3cc/* rgb(196,214,235) * /;
 } */
 /* .grid-view table.items.x2grid-resizable td div {white-space:nowrap;overflow:hidden;} */
-/* line 346, ../../../../compass/themes/x2engine/css/gridview/styles.scss */
+/* line 349, ../../../../compass/themes/x2engine/css/gridview/styles.scss */
 .x2grid-grips {
   height: 0px;
   position: relative;
 }
-/* line 349, ../../../../compass/themes/x2engine/css/gridview/styles.scss */
+/* line 352, ../../../../compass/themes/x2engine/css/gridview/styles.scss */
 .x2grid-grips div {
   position: absolute;
   top: 1px;
@@ -589,7 +601,7 @@ ul.column-selector.fixed-header {
 /**
  * ------------------ x2.gridColDragging ------------------
  */
-/* line 367, ../../../../compass/themes/x2engine/css/gridview/styles.scss */
+/* line 370, ../../../../compass/themes/x2engine/css/gridview/styles.scss */
 .grid-view table.items.x2grid-helper thead th {
   height: 25px;
   border: 1px solid #ccc;
@@ -597,15 +609,15 @@ ul.column-selector.fixed-header {
   opacity: 0.75;
   cursor: move;
 }
-/* line 374, ../../../../compass/themes/x2engine/css/gridview/styles.scss */
+/* line 377, ../../../../compass/themes/x2engine/css/gridview/styles.scss */
 .grid-view table.items.x2grid-helper a {
   cursor: move;
 }
-/* line 377, ../../../../compass/themes/x2engine/css/gridview/styles.scss */
+/* line 380, ../../../../compass/themes/x2engine/css/gridview/styles.scss */
 .grid-view table.items.x2grid-helper td {
   padding: 5px 5px;
 }
-/* line 381, ../../../../compass/themes/x2engine/css/gridview/styles.scss */
+/* line 384, ../../../../compass/themes/x2engine/css/gridview/styles.scss */
 .grid-view table.items td.spacer {
   /* padding:0 !important; */
   border-left: none !important;
@@ -615,7 +627,7 @@ ul.column-selector.fixed-header {
   -webkit-box-shadow: inset -1px 0 0 #999;
   box-shadow: inset -1px 0 0 #999;
 }
-/* line 390, ../../../../compass/themes/x2engine/css/gridview/styles.scss */
+/* line 393, ../../../../compass/themes/x2engine/css/gridview/styles.scss */
 .grid-view table.items th.spacer {
   /* padding:0 !important; */
   border-left: none !important;
@@ -625,27 +637,27 @@ ul.column-selector.fixed-header {
   -webkit-box-shadow: inset -1px 0 0 #999;
   box-shadow: inset -1px 0 0 #999;
 }
-/* line 398, ../../../../compass/themes/x2engine/css/gridview/styles.scss */
+/* line 401, ../../../../compass/themes/x2engine/css/gridview/styles.scss */
 .grid-view table.items th.spacer:first-child {
   padding-left: 0;
 }
-/* line 403, ../../../../compass/themes/x2engine/css/gridview/styles.scss */
+/* line 406, ../../../../compass/themes/x2engine/css/gridview/styles.scss */
 .grid-view .link-column img {
   border: 0;
 }
-/* line 406, ../../../../compass/themes/x2engine/css/gridview/styles.scss */
+/* line 409, ../../../../compass/themes/x2engine/css/gridview/styles.scss */
 .grid-view .button-column {
   text-align: center;
 }
-/* line 407, ../../../../compass/themes/x2engine/css/gridview/styles.scss */
+/* line 410, ../../../../compass/themes/x2engine/css/gridview/styles.scss */
 .grid-view .button-column img {
   border: 0;
 }
-/* line 412, ../../../../compass/themes/x2engine/css/gridview/styles.scss */
+/* line 415, ../../../../compass/themes/x2engine/css/gridview/styles.scss */
 .grid-view .checkbox-column {
   text-align: center;
 }
-/* line 415, ../../../../compass/themes/x2engine/css/gridview/styles.scss */
+/* line 418, ../../../../compass/themes/x2engine/css/gridview/styles.scss */
 .grid-view .pager {
   border-top: 1px solid #aaa;
   padding: 2px;
@@ -672,7 +684,7 @@ ul.column-selector.fixed-header {
 /**
  * ------------------------- Misc -------------------------
  */
-/* line 445, ../../../../compass/themes/x2engine/css/gridview/styles.scss */
+/* line 448, ../../../../compass/themes/x2engine/css/gridview/styles.scss */
 div.scrollbar-width-test {
   height: 100px;
   width: 100px;
@@ -684,7 +696,7 @@ div.scrollbar-width-test {
   /* visibility:hidden; */
 }
 
-/* line 456, ../../../../compass/themes/x2engine/css/gridview/styles.scss */
+/* line 459, ../../../../compass/themes/x2engine/css/gridview/styles.scss */
 .grid-view > .pager .yiiPager a {
   padding: 2px 8px 2px 8px;
 }
@@ -693,7 +705,7 @@ div.scrollbar-width-test {
     ul.yiiPager .selected a {
     }
 }*/
-/* line 464, ../../../../compass/themes/x2engine/css/gridview/styles.scss */
+/* line 467, ../../../../compass/themes/x2engine/css/gridview/styles.scss */
 .yiiPager li a {
   background: #fff;
 }
@@ -701,7 +713,7 @@ div.scrollbar-width-test {
 /*
 loading anim
 */
-/* line 472, ../../../../compass/themes/x2engine/css/gridview/styles.scss */
+/* line 475, ../../../../compass/themes/x2engine/css/gridview/styles.scss */
 .x2-gridview-updating-anim {
   margin: auto;
   top: 0;
@@ -713,7 +725,7 @@ loading anim
   display: none;
 }
 
-/* line 483, ../../../../compass/themes/x2engine/css/gridview/styles.scss */
+/* line 486, ../../../../compass/themes/x2engine/css/gridview/styles.scss */
 .grid-view-loading .x2-gridview-updating-anim {
   display: block !important;
 }
@@ -721,7 +733,7 @@ loading anim
 /*
 activity indicator
 */
-/* line 492, ../../../../compass/themes/x2engine/css/gridview/styles.scss */
+/* line 495, ../../../../compass/themes/x2engine/css/gridview/styles.scss */
 .grid-view .active-indicator, .grid-view .inactive-indicator {
   height: 12px;
   display: block;
@@ -730,52 +742,52 @@ activity indicator
   margin: auto;
   border-radius: 9px;
 }
-/* line 500, ../../../../compass/themes/x2engine/css/gridview/styles.scss */
+/* line 503, ../../../../compass/themes/x2engine/css/gridview/styles.scss */
 .grid-view .active-indicator {
   background: #0bc70b;
   border: 1px solid #a2a2a2;
 }
-/* line 504, ../../../../compass/themes/x2engine/css/gridview/styles.scss */
+/* line 507, ../../../../compass/themes/x2engine/css/gridview/styles.scss */
 .grid-view .inactive-indicator {
   border: 1px solid #dbdbdb;
   background: #e6e6e6;
 }
-/* line 508, ../../../../compass/themes/x2engine/css/gridview/styles.scss */
+/* line 511, ../../../../compass/themes/x2engine/css/gridview/styles.scss */
 .grid-view .x2grid-body-container.x2grid-no-pager .x2grid-resizable {
   border-bottom: none !important;
   border-radius: 0 0 3px 3px !important;
 }
-/* line 512, ../../../../compass/themes/x2engine/css/gridview/styles.scss */
+/* line 515, ../../../../compass/themes/x2engine/css/gridview/styles.scss */
 .grid-view table.items tr.filters select {
   padding: 0;
 }
-/* line 516, ../../../../compass/themes/x2engine/css/gridview/styles.scss */
+/* line 519, ../../../../compass/themes/x2engine/css/gridview/styles.scss */
 .grid-view div.page-title .x2-grid-view-controls-buttons .x2-button, .grid-view div.grid-top-bar .x2-button-group .x2-button, .grid-view div.page-title .x2-button-group .x2-button {
   margin: -3px 0px 0 0;
 }
-/* line 521, ../../../../compass/themes/x2engine/css/gridview/styles.scss */
+/* line 524, ../../../../compass/themes/x2engine/css/gridview/styles.scss */
 .grid-view div.grid-top-bar > a.x2-button, .grid-view div.page-title > a.x2-button {
   margin: -3px 5px 0 0;
 }
-/* line 525, ../../../../compass/themes/x2engine/css/gridview/styles.scss */
+/* line 528, ../../../../compass/themes/x2engine/css/gridview/styles.scss */
 .grid-view .x2-button {
   padding: 0 5px;
 }
-/* line 529, ../../../../compass/themes/x2engine/css/gridview/styles.scss */
+/* line 532, ../../../../compass/themes/x2engine/css/gridview/styles.scss */
 .grid-view div.grid-top-bar .x2-grid-view-controls-buttons, .grid-view div.page-title .x2-grid-view-controls-buttons, .grid-view div.grid-top-bar .x2-button-group, .grid-view div.page-title .x2-button-group {
   display: inline-block;
   margin: 0 5px 0 0;
 }
-/* line 535, ../../../../compass/themes/x2engine/css/gridview/styles.scss */
+/* line 538, ../../../../compass/themes/x2engine/css/gridview/styles.scss */
 .grid-view .mass-action-more-button {
   margin: -3px 5px 0 0;
   vertical-align: middle;
 }
-/* line 539, ../../../../compass/themes/x2engine/css/gridview/styles.scss */
+/* line 542, ../../../../compass/themes/x2engine/css/gridview/styles.scss */
 .grid-view ::-webkit-scrollbar-track:horizontal {
   border-top: none;
 }
-/* line 542, ../../../../compass/themes/x2engine/css/gridview/styles.scss */
+/* line 545, ../../../../compass/themes/x2engine/css/gridview/styles.scss */
 .grid-view .x2-bar {
   width: 23px;
   background-color: #e9e9e9;
@@ -790,25 +802,25 @@ Remove extra border when pager isn't shown
 /***********************************************************************
 * multiselect 
 ***********************************************************************/
-/* line 560, ../../../../compass/themes/x2engine/css/gridview/styles.scss */
+/* line 563, ../../../../compass/themes/x2engine/css/gridview/styles.scss */
 .x2-datacolumn-multiselect + button {
   width: 100% !important;
   border: none !important;
   padding: 0 !important;
 }
 
-/* line 567, ../../../../compass/themes/x2engine/css/gridview/styles.scss */
+/* line 570, ../../../../compass/themes/x2engine/css/gridview/styles.scss */
 .x2-gridview .x2grid-header-container .items {
   margin-top: -1px;
   margin-bottom: 0;
   border-bottom: none;
 }
-/* line 573, ../../../../compass/themes/x2engine/css/gridview/styles.scss */
+/* line 576, ../../../../compass/themes/x2engine/css/gridview/styles.scss */
 .x2-gridview .x2grid-body-container .items {
   margin: 0;
   margin-top: -1px;
 }
-/* line 579, ../../../../compass/themes/x2engine/css/gridview/styles.scss */
+/* line 582, ../../../../compass/themes/x2engine/css/gridview/styles.scss */
 .x2-gridview table.items > tbody > tr > td.button-column.hide-edit-delete-buttons .update, .x2-gridview table.items > tbody > tr > td.button-column.hide-edit-delete-buttons .delete {
   visibility: hidden;
 }
@@ -816,12 +828,12 @@ Remove extra border when pager isn't shown
 /***********************************************************************
 * email client icons  
 ***********************************************************************/
-/* line 589, ../../../../compass/themes/x2engine/css/gridview/styles.scss */
+/* line 592, ../../../../compass/themes/x2engine/css/gridview/styles.scss */
 #email-list .mailbox-controls .mailbox-back-button {
   display: inline-block;
   margin-top: 6px;
 }
-/* line 592, ../../../../compass/themes/x2engine/css/gridview/styles.scss */
+/* line 595, ../../../../compass/themes/x2engine/css/gridview/styles.scss */
 #email-list .mailbox-controls .mailbox-back-button > span {
   background: url("../../images/icons/back.png");
   height: 24px;
@@ -831,7 +843,7 @@ Remove extra border when pager isn't shown
   background-repeat: no-repeat;
 }
 
-/* line 603, ../../../../compass/themes/x2engine/css/gridview/styles.scss */
+/* line 606, ../../../../compass/themes/x2engine/css/gridview/styles.scss */
 .sortable-widget-container .x2grid-header-container {
   border-top: 1px solid #cfcfcf;
 }

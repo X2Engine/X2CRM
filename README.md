@@ -1,22 +1,19 @@
-# 5.0.6 #
-4/16/2015
+# 5.0.7 #
+5/12/2015
 
 * General Changelog / Developer Notes:
-  * Contact tracking key can now be set through the REST API
-  * Added CSRF token validation to Google login
-  * Fixed bug in the REST API search action which would cause all results to be returned if _or parameter was present
-  * Fixed bug preventing X2Flow shortcodes from evaluating if present in X2Flow record attribute inputs
-  * Fixed bug in X2Flow Reassign Record flow action which caused reassignment to fail
-  * Leads conversion now displays error output if conversion fails due to field validation
-  * Permissions bug fixes:
-      * Campaigns were inaccessible if user's view permissions were set to "Only Assigned"
-      * Docs delete button wouldn't display if user's delete permissions were set to "Only Assigned"
-      * Users with "Only Assigned" delete permissions couldn't mass delete records through the grid view
-  * Reports would fail to save if a report condition contained an unchecked check box
-  * Fixed Verify Credentials feature to work with Yahoo, Outlook, Mandrill, and Sendgrid credential types
+  * Fixed bug in the application updater tool which would cause certain files to be incorrectly deleted on case-insensitive file systems
+  * Fixed bug in flow deletion action menu link, changelog deletion button, and "Go Invisible" button related to 5.0.5 introduction of CSRF token validation
+  * Fixed bug in mass update tool which prevented value for boolean type fields from being set properly
+  * Automatic record tagging feature now ignores CSS color hex codes
+  * API VoIP action no longer retrieves phone numbers of hidden contacts
+  * X2Flow tag triggers no longer fired on record merge
+  * Added web form deletion validation dialog
 * Tracked Bug Fixes:  
-  * [2329](http://x2software.com/index.php/bugReports/2329): Undefined index: webFormId  
-  * [2343](http://x2software.com/index.php/bugReports/2343): Custom module summary widget links incorrectly generated  
+  * [2359](http://x2software.com/index.php/bugReports/2359): Undefined index: model  
+  * [2398](http://x2software.com/index.php/bugReports/2398): Property "TwitterApp.server" is not defined.  
+  * [2400](http://x2software.com/index.php/bugReports/2400): Undefined offset: 11  
+  * [2416](http://x2software.com/index.php/bugReports/2416): Autocomplete field broken in grid view mass update dialog for link type fields.  
 
 
 

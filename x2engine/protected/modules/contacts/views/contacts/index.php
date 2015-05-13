@@ -88,10 +88,10 @@ $('#content').on('mouseup','#contacts-grid a',function(e) {
 
 <div class="search-form" style="display:none">
     <?php
-    $this->renderPartial('_search', array(
-        'model' => $model,
-        'users' => User::getNames(),
-    ));
+//    $this->renderPartial('_search', array(
+//        'model' => $model,
+//        'users' => User::getNames(),
+//    ));
     ?>
 </div><!-- search-form -->
 <form>

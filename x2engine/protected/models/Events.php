@@ -74,6 +74,11 @@ class Events extends CActiveRecord {
         );
     }
 
+    /**
+     * Parse an associationType field and resolve the model name
+     * @param string $model Model type to resolve
+     * @return string Model's name
+     */
     public static function parseModelName($model) {
         $customModule = Modules::model()->findByAttributes(array(
             'custom' => 1,
@@ -89,6 +94,8 @@ class Events extends CActiveRecord {
                     $model .= 's'; break;
                 case 'Quote':
                     $model .= 's'; break;
+                case 'Opportunity':
+                    $model = str_replace('y', 'ies', $model); break;
             }
             $requestedModel = $model;
             $model = Modules::displayName(false, ucfirst($model));

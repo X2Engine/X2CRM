@@ -44,6 +44,7 @@ class EventsTest extends X2DbTestCase {
     
     public $fixtures=array(
         'event'=>'Events',
+        'modules'=>'Modules',
     );
 
     public static function referenceFixtures(){
@@ -164,6 +165,42 @@ class EventsTest extends X2DbTestCase {
         $this->assertArrayHasKey('events',$events5);
         $this->assertEmpty($events5['events']);
         
+    }
+
+    /**
+     * Ensure that a model name can be properly parsed and resolved
+     */
+    public function testParseModelName() {
+        $models = array(
+            'Product' => 'product',
+            'Opportunity' => 'opportunity',
+            'Campaign' => 'campaign',
+            
+            'Contacts' => 'contact',
+            'Accounts' => 'account',
+            'Marketing' => 'marketing',
+            'Quote' => 'quote',
+            'Non Existant Module' => null,
+        );
+        // First ensure parseModelName works as expected for default modules
+        foreach ($models as $model => $expected) {
+            $this->assertEquals ($expected, Events::parseModelName ($model));
+        }
+
+        // Now ensure renamed modules can be properly resolved
+        foreach ($models as $model => $expected) {
+            
+            // Correct pluralization inconsistancies
+            if ($model === 'Opportunity') $model = 'Opportunities';
+            if ($model === 'Product' || $model === 'Quote') $model .= 's';
+            $dummyTitle = $model . time();
+            $module = Modules::model()->findByAttributes (array(
+                'name' => strtolower($model)
+            ));
+            if ($module && $module->retitle ($dummyTitle)) {
+                $this->assertEquals (strtolower($dummyTitle), Events::parseModelName ($model));
+            }
+        }
     }
 }
 

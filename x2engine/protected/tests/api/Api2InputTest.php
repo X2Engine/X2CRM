@@ -58,6 +58,45 @@ class Api2InputTest extends Api2TestBase {
     );
 
     /**
+     * Test can be reinstated if API support for upserting is added
+     */
+//    public function testUpdate () {
+//        $this->action = 'model';
+//        // create with PUT
+//        $emailNotFound = 'emailNotFound@example.com';
+//        $contact = array(
+//            'firstName' => 'notFound',
+//            'lastName' => 'notFound',
+//            'visibility' => 1,
+//            'trackingKey' => '1234',
+//        );
+//        $ch = $this->getCurlHandle(
+//            'PUT',
+//            array('{modelAction}'=>"Contacts/by:email={$emailNotFound}.json"),
+//            'admin',$contact);
+//        $response = json_decode(curl_exec($ch),1);
+//        print_r ($response);
+//        $id = $response['id'];
+//        $this->assertResponseCodeIs(200, $ch);
+//        $this->assertTrue((bool) ($newContact = Contacts::model()->findBySql(
+//                "SELECT * FROM x2_contacts
+//                WHERE email='$emailNotFound'")));
+//
+//        // update with PUT
+//        $contact['firstName'] = 'found';
+//        $ch = $this->getCurlHandle(
+//            'PUT',
+//            array('{modelAction}'=>"Contacts/{$id}.json"),
+//            'admin',$contact);
+//        $response = json_decode(curl_exec($ch),1);
+//        $this->assertResponseCodeIs(200, $ch);
+//        $this->assertTrue((bool) ($newContact = Contacts::model()->findBySql(
+//                "SELECT * FROM x2_contacts
+//                WHERE id=$id AND firstName='found' AND
+//                AND email='$emailNotFound'")));
+//    }
+
+    /**
      * Really rudimentary test: contact
      */
     public function testContacts() {

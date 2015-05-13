@@ -181,7 +181,7 @@ class X2FlowTestBase extends X2DbTestCase {
         $_triggerDepth->setAccessible (TRUE);
         $_triggerDepth->setValue (1);
         $fn = TestingAuxLib::setPublic ('X2Flow', 'executeFlow');
-        $returnVal = $fn (array (&$flow, &$params));
+        $returnVal = $fn ($flow, $params);
         $_triggerDepth->setValue (0);
         return $returnVal;
     }

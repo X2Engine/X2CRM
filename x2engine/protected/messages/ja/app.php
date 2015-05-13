@@ -385,7 +385,6 @@ return array (
 'Developer'=>'開発者',
 'Yii Extension'=>'Yiiのエクステンション',
 'Powered by X2Engine'=>'X2Engineによって供給',
-'X2Engine Inc. grants you a perpetual, non-exclusive, non-transferable license 			to install and use this Software for your internal business purposes. 			You shall not modify, distribute, license or sublicense the Software. 			Title, ownership, and all intellectual property rights in the Software belong 			exclusively to X2Engine.'=>'X2Engine株式会社は、あなたの社内業務目的のために本ソフトウェアをインストールして使用するための永久、非独占的、譲渡不能のライセンスを付与します。あなたは、本ソフトウェアを変更、配布、ライセンスまたはサブライセンスしてはならない。タイトル、所有権、および本ソフトウェアのすべての知的財産権はX2Engineに排他的に帰属します。',
 'THIS SOFTWARE IS PROVIDED "AS IS" AND WITHOUT WARRANTIES OF ANY KIND, EITHER 		EXPRESS OR IMPLIED, INCLUDING WITHOUT LIMITATION THE IMPLIED WARRANTIES OF 		MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, TITLE, AND NON-INFRINGEMENT.'=>'本ソフトウェアは黙示商品性の保証、特定目的への適合性、タイトル、非侵害を含むがこれらに限らず、明示のどちらかを、 "AS IS" ANDいかなる保証も提供された、または暗黙的に指定されます。',
 'Our office in downtown Santa Cruz'=>'ダウンタウンサンタクルスにおける当社のオフィス',
 'X2Engine Inc. is headquartered in beautiful Santa Cruz, California. We really enjoy meeting customers and partners whenever possible and encourage you to visit our offices when you find yourself in the San Francisco bay area.'=>'X2Engine株式会社は、美しいサンタクルーズ、カリフォルニア州に本社を置いています。私たちは本当に、会議のお客様およびパートナー可能な限りを楽しむあなたは、サンフランシスコのベイエリアに自分自身を見つけるときに、私たちのオフィスを訪問することをお勧めします。',

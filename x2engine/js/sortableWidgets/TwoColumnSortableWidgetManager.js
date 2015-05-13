@@ -195,7 +195,8 @@ TwoColumnSortableWidgetManager.prototype._setUpSortability = function () {
                 (currContainer === $(that._widgetsBoxSelector)[0] ? 1 : 2);
             var widget = SortableWidget.getWidgetFromWidgetContainer (ui.item);
             widget.setProperty ('containerNumber', containerNumber);
-            widget.refresh ();
+            widget.afterSort ();
+            //widget.refresh ();
         },
         handle: this._widgetHandleSelector
     });

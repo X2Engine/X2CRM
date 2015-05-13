@@ -7,6 +7,7 @@ return array(
         'username' => 'testUser1',
         'userAlias' => 'testUser1',
         'emailAddress' => 'user1@user.com',
+		'password' => '5f4dcc3b5aa765d61d8327deb882cf99', // "password"
         'status' => 1
     ),
     'user2' => array (
@@ -14,6 +15,7 @@ return array(
         'username' => 'testUser2',
         'userAlias' => 'testUser2',
         'emailAddress' => 'user2@user.com',
+		'password' => '5f4dcc3b5aa765d61d8327deb882cf99', // "password"
         'status' => 1
     ),
     'user3' => array (
@@ -21,6 +23,7 @@ return array(
         'username' => 'testUser3',
         'userAlias' => 'testUser3',
         'emailAddress' => 'user3@user.com',
+		'password' => '5f4dcc3b5aa765d61d8327deb882cf99', // "password"
         'status' => 1
     ),
     'user4' => array (
@@ -28,6 +31,7 @@ return array(
         'username' => 'testUser4',
         'userAlias' => 'testUser4',
         'emailAddress' => 'user4@user.com',
+		'password' => '5f4dcc3b5aa765d61d8327deb882cf99', // "password"
         'status' => 1
     )
 );

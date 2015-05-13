@@ -1157,18 +1157,24 @@ abstract class x2base extends X2Controller {
     /**
      * Calls renderInput for model and input type with given names and returns the result.
      */
-    public function actionGetX2ModelInput ($modelName, $inputName) {
-        if (!isset ($modelName) || !isset ($inputName)) {
-            echo '';
+    public function actionGetX2ModelInput ($modelName, $fieldName) {
+        if (!isset ($modelName) || !isset ($fieldName)) {
+            throw new CHttpException (400, 'modelName or fieldName not set');
             return;
         }
         $model = X2Model::model ($modelName);
         if (!$model) {
-            echo '';
+            throw new CHttpException (400, 'Invalid model name');
             return;
         }
-        if ($inputName == 'associationName') {
-            echo CHtml::activeDropDownList(
+        $field = $model->getField ($fieldName);
+        if (!$model) {
+            throw new CHttpException (400, 'Invalid field name');
+            return;
+        }
+        $input = '';
+        if ($fieldName == 'associationName') {
+            $input .= CHtml::activeDropDownList(
                 $model, 'associationType', 
                 array_merge(
                     array(
@@ -1178,54 +1184,59 @@ abstract class x2base extends X2Controller {
                 ), 
                 array(
                 'ajax' => array(
-                    'type' => 'POST', //request type
-                    'url' => CController::createUrl('/actions/actions/parseType'), //url to call.
-                    //Style: CController::createUrl('currentController/methodToCall')
+                    'type' => 'POST', 
+                    'url' => CController::createUrl('/actions/actions/parseType'), 
                     'update' => '#', //selector to update
                     'data' => 'js:$(this).serialize()',
                     'success' => 'function(data){
-                                        if(data){
-                                            $("#auto_select").autocomplete("option","source",data);
-                                            $("#auto_select").val("");
-                                            $("#auto_complete").show();
-                                        }else{
-                                            $("#auto_complete").hide();
-                                        }
-                                    }'
+                        if(data){
+                            $("#auto_select").autocomplete("option","source",data);
+                            $("#auto_select").val("");
+                            $("#auto_complete").show();
+                        }else{
+                            $("#auto_complete").hide();
+                        }
+                    }'
                 )
             ));
-            echo "<div id='auto_complete' style='display: none'>";
-            $this->widget('zii.widgets.jui.CJuiAutoComplete', array(
-                        'name' => 'auto_select',
-                        'value' => $model->associationName,
-                        'source' => ($model->associationType !== 'Calendar' ? 
-                            $this->createUrl(X2Model::model($modelName)->autoCompleteSource) : ''),
-                        'options' => array(
-                            'minLength' => '2',
-                            'select' => 'js:function( event, ui ) {
-                            $("#'.CHtml::activeId($model, 'associationId').'").val(ui.item.id);
-                            $(this).val(ui.item.value);
-                            return false;
-                        }',
-                        ),
-            ));
-            echo "</div>";
+            $input .= "<div id='auto_complete' style='display: none'>";
+            $input .= $this->widget('zii.widgets.jui.CJuiAutoComplete', array(
+                'name' => 'auto_select',
+                'value' => $model->associationName,
+                'source' => ($model->associationType !== 'Calendar' ? 
+                    $this->createUrl(X2Model::model($modelName)->autoCompleteSource) : ''),
+                'options' => array(
+                    'minLength' => '2',
+                    'select' => 'js:function( event, ui ) {
+                        $("#'.CHtml::activeId($model, 'associationId').'").val(ui.item.id);
+                        $(this).val(ui.item.value);
+                        return false;
+                    }',
+                ),
+            ), true);
+            $input .= "</div>";
         } else {
-            $input = $model->renderInput ($inputName);
-            echo $input;
+            $input .= $model->renderInput ($fieldName);
         }
 
         // force loading of scripts normally rendered in view
-        echo '<br /><br /><script id="x2-model-render-input-scripts">'."\n";
+        $input .= '<br /><br /><script id="x2-model-render-input-scripts">'."\n";
         if (isset (Yii::app()->clientScript->scripts[CClientScript::POS_READY])) {
             foreach(
                 Yii::app()->clientScript->scripts[CClientScript::POS_READY] as $id => $script) {
 
                 if(strpos($id,'logo')===false)
-                echo "$script\n";
+                $input .= "$script\n";
             }
         }
-        echo "</script>";
+        $input .= "</script>";
+        $response = array (
+            'input' => $input,
+            'field' => array (
+                'type' => $field->type
+            )
+        );
+        echo CJSON::encode ($response);
     }
 
     /**

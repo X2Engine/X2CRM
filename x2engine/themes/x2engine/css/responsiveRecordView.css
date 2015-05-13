@@ -32,41 +32,41 @@
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2Engine".
  *****************************************************************************************/
-/* line 22, ../../../compass/themes/x2engine/css/responsiveRecordView.scss */
+/* line 25, ../../../compass/themes/x2engine/css/responsiveRecordView.scss */
 #content {
   margin-top: -1px !important;
 }
 
 @media (max-width: 657px) {
   /* shift down action menu to make room for fixed header */
-  /* line 28, ../../../compass/themes/x2engine/css/responsiveRecordView.scss */
+  /* line 31, ../../../compass/themes/x2engine/css/responsiveRecordView.scss */
   .sidebar-left:first-child {
     margin-top: 40px;
   }
 
-  /* line 31, ../../../compass/themes/x2engine/css/responsiveRecordView.scss */
+  /* line 34, ../../../compass/themes/x2engine/css/responsiveRecordView.scss */
   body.show-right-bar .page-title-fixed-inner .page-title {
     position: relative;
     right: 316px;
   }
 }
 @media (max-width: 699px) {
-  /* line 38, ../../../compass/themes/x2engine/css/responsiveRecordView.scss */
+  /* line 41, ../../../compass/themes/x2engine/css/responsiveRecordView.scss */
   .page-title .summary {
     display: none !important;
   }
 }
 @media (max-width: 641px) {
   /* hide title bar buttons that there isn't room for */
-  /* line 46, ../../../compass/themes/x2engine/css/responsiveRecordView.scss */
+  /* line 49, ../../../compass/themes/x2engine/css/responsiveRecordView.scss */
   .page-title > .x2-button {
     display: none !important;
   }
-  /* line 49, ../../../compass/themes/x2engine/css/responsiveRecordView.scss */
+  /* line 52, ../../../compass/themes/x2engine/css/responsiveRecordView.scss */
   .page-title .vcrPager {
     margin-left: 0;
   }
-  /* line 52, ../../../compass/themes/x2engine/css/responsiveRecordView.scss */
+  /* line 55, ../../../compass/themes/x2engine/css/responsiveRecordView.scss */
   .page-title h2 {
     maring-right: 0;
   }

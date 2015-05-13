@@ -58,6 +58,8 @@ class QuotesController extends x2base {
 	public function actionView($id){
 		$type = 'quotes';
 		$model = $this->getModel($id);
+        if (!$this->checkPermissions($model, 'view')) $this->denied ();
+
 		$quoteProducts = $model->lineItems;
 
         // add quote to user's recent item list
@@ -270,9 +272,13 @@ class QuotesController extends x2base {
 	/**
 	 * Print a quote using a template or the legacy print view.
 	 */
-	public function actionPrint($id) {
+	public function actionPrint($id,$inline=false) {
         header('Content-type: text/html; charset=utf-8');
-        $this->layout = '//layouts/print';
+        if (!$inline) { 
+            $this->layout = '//layouts/print';
+        } else {
+            $this->layout = false;
+        }
 		$this->render('printQuote', array(
 			'id' => $id
 		));

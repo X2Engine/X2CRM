@@ -187,10 +187,39 @@ class FileUtil {
                         return @ftp_put(self::$_ftpStream, self::ftpStripChroot($target), $source, FTP_BINARY);
                     case 'php':
                     default:
-                        return @copy($source, $target) !== false;
+                        $retVal = @copy($source, $target) !== false;
+                        self::caseInsensitiveCopyFix ($source, $target);
+                        return $retVal;
                 }
             }
         }
+    }
+
+    /**
+     * To be called after copying a file. If it's the case that source and target basenames differ 
+     * by case, target will be renamed so that its basename matches the source's. Allows case
+     * of source filename to be preserved in case insensitive file systems.
+     * @return bool false if rename wasn't called, true otherwise (value used for testing purposes)
+     */
+    private static function caseInsensitiveCopyFix ($source, $target) {
+        // get path to file corresponding to target, so that we can get the actual basename
+        $target = realpath ($target); 
+        if (!$target) return false;
+
+        $targetBasename = basename ($target);
+        $sourceBasename = basename ($source);
+        if ($targetBasename === $sourceBasename) 
+            // source and target have the same case so renaming won't be necessary
+            return false;
+
+        // replace target basename with source basename
+        $newTargetName = preg_replace (
+            '/'.preg_quote ($targetBasename).'$/', $sourceBasename, $target); 
+        if ($newTargetName !== $target) {
+            @rename ($target, $newTargetName);
+            return true;
+        }
+        return false;
     }
 
     /**

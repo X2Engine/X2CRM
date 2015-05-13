@@ -33,13 +33,13 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 /* line 22, ../../../../../compass/sass/protected/modules/workflow/assets/css/view.scss */
-/* line 23, ../../../../../compass/protected/modules/workflow/assets/css/view.scss */
+/* line 26, ../../../../../compass/protected/modules/workflow/assets/css/view.scss */
 #per-stage-view-container-first {
   overflow-x: scroll;
 }
 
 /* line 26, ../../../../../compass/sass/protected/modules/workflow/assets/css/view.scss */
-/* line 29, ../../../../../compass/protected/modules/workflow/assets/css/view.scss */
+/* line 32, ../../../../../compass/protected/modules/workflow/assets/css/view.scss */
 #title-bar-workflow-select {
   height: 26px;
   max-width: 250px;
@@ -49,21 +49,21 @@
 }
 
 /* line 34, ../../../../../compass/sass/protected/modules/workflow/assets/css/view.scss */
-/* line 39, ../../../../../compass/protected/modules/workflow/assets/css/view.scss */
+/* line 42, ../../../../../compass/protected/modules/workflow/assets/css/view.scss */
 #workflow-model-type-filter + button {
   margin-top: 2px;
 }
 
 /* line 39, ../../../../../compass/sass/protected/modules/workflow/assets/css/view.scss */
-/* line 46, ../../../../../compass/protected/modules/workflow/assets/css/view.scss */
+/* line 49, ../../../../../compass/protected/modules/workflow/assets/css/view.scss */
 #stage-data-summary > h3, #stage-data-summary > span {
   display: inline-block;
 }
-/* line 49, ../../../../../compass/protected/modules/workflow/assets/css/view.scss */
+/* line 52, ../../../../../compass/protected/modules/workflow/assets/css/view.scss */
 #stage-data-summary > h3 {
   margin-right: 8px;
 }
-/* line 52, ../../../../../compass/protected/modules/workflow/assets/css/view.scss */
+/* line 55, ../../../../../compass/protected/modules/workflow/assets/css/view.scss */
 #stage-data-summary > span {
   margin-right: 6px;
 }
@@ -71,7 +71,7 @@
 /* line 42, ../../../../../compass/sass/protected/modules/workflow/assets/css/view.scss */
 /* line 45, ../../../../../compass/sass/protected/modules/workflow/assets/css/view.scss */
 /* line 50, ../../../../../compass/sass/protected/modules/workflow/assets/css/view.scss */
-/* line 63, ../../../../../compass/protected/modules/workflow/assets/css/view.scss */
+/* line 66, ../../../../../compass/protected/modules/workflow/assets/css/view.scss */
 #data-summary-box {
   box-sizing: border-box;
   width: 100%;
@@ -82,7 +82,7 @@
 }
 
 /* line 59, ../../../../../compass/sass/protected/modules/workflow/assets/css/view.scss */
-/* line 74, ../../../../../compass/protected/modules/workflow/assets/css/view.scss */
+/* line 77, ../../../../../compass/protected/modules/workflow/assets/css/view.scss */
 .row-no-title {
   margin-top: 15px;
   margin-bottom: 4px;
@@ -92,26 +92,26 @@
 * funnel 
 ***********************************************************************/
 /* line 68, ../../../../../compass/sass/protected/modules/workflow/assets/css/view.scss */
-/* line 84, ../../../../../compass/protected/modules/workflow/assets/css/view.scss */
+/* line 87, ../../../../../compass/protected/modules/workflow/assets/css/view.scss */
 .funnel-stage-count {
   cursor: pointer;
 }
 
 /* line 72, ../../../../../compass/sass/protected/modules/workflow/assets/css/view.scss */
-/* line 90, ../../../../../compass/protected/modules/workflow/assets/css/view.scss */
+/* line 93, ../../../../../compass/protected/modules/workflow/assets/css/view.scss */
 .stage-name-link, .funnel-stage-value {
   font-weight: bold;
   font-size: 16px;
 }
 
 /* line 77, ../../../../../compass/sass/protected/modules/workflow/assets/css/view.scss */
-/* line 97, ../../../../../compass/protected/modules/workflow/assets/css/view.scss */
+/* line 100, ../../../../../compass/protected/modules/workflow/assets/css/view.scss */
 .funnel-total-records, .funnel-total-value {
   font-size: 18px;
 }
 
 /* line 81, ../../../../../compass/sass/protected/modules/workflow/assets/css/view.scss */
-/* line 103, ../../../../../compass/protected/modules/workflow/assets/css/view.scss */
+/* line 106, ../../../../../compass/protected/modules/workflow/assets/css/view.scss */
 #funnel-container {
   position: relative;
   width: 248px;
@@ -126,12 +126,12 @@
 * ui switch buttons 
 ***********************************************************************/
 /* line 95, ../../../../../compass/sass/protected/modules/workflow/assets/css/view.scss */
-/* line 118, ../../../../../compass/protected/modules/workflow/assets/css/view.scss */
+/* line 121, ../../../../../compass/protected/modules/workflow/assets/css/view.scss */
 #per-stage-view-button {
   height: 26px;
   box-sizing: border-box;
 }
-/* line 121, ../../../../../compass/protected/modules/workflow/assets/css/view.scss */
+/* line 124, ../../../../../compass/protected/modules/workflow/assets/css/view.scss */
 #per-stage-view-button > div {
   width: 19px;
   height: 2px;
@@ -144,12 +144,12 @@
 
 /* line 96, ../../../../../compass/sass/protected/modules/workflow/assets/css/view.scss */
 /* line 109, ../../../../../compass/sass/protected/modules/workflow/assets/css/view.scss */
-/* line 136, ../../../../../compass/protected/modules/workflow/assets/css/view.scss */
+/* line 139, ../../../../../compass/protected/modules/workflow/assets/css/view.scss */
 #drag-and-drop-view-button {
   height: 26px;
   box-sizing: border-box;
 }
-/* line 139, ../../../../../compass/protected/modules/workflow/assets/css/view.scss */
+/* line 142, ../../../../../compass/protected/modules/workflow/assets/css/view.scss */
 #drag-and-drop-view-button > div {
   display: inline-block;
   width: 2px;
@@ -161,20 +161,20 @@
 
 /* line 112, ../../../../../compass/sass/protected/modules/workflow/assets/css/view.scss */
 /* line 122, ../../../../../compass/sass/protected/modules/workflow/assets/css/view.scss */
-/* line 153, ../../../../../compass/protected/modules/workflow/assets/css/view.scss */
+/* line 156, ../../../../../compass/protected/modules/workflow/assets/css/view.scss */
 #content {
   background: none !important;
   border: none !important;
 }
 
 /* line 127, ../../../../../compass/sass/protected/modules/workflow/assets/css/view.scss */
-/* line 160, ../../../../../compass/protected/modules/workflow/assets/css/view.scss */
+/* line 163, ../../../../../compass/protected/modules/workflow/assets/css/view.scss */
 #content-container-inner {
   border: none !important;
 }
 
 /* line 131, ../../../../../compass/sass/protected/modules/workflow/assets/css/view.scss */
-/* line 166, ../../../../../compass/protected/modules/workflow/assets/css/view.scss */
+/* line 169, ../../../../../compass/protected/modules/workflow/assets/css/view.scss */
 #process-status-container {
   width: 440px;
   margin-left: 6px;
@@ -183,29 +183,29 @@
 }
 
 /* line 138, ../../../../../compass/sass/protected/modules/workflow/assets/css/view.scss */
-/* line 175, ../../../../../compass/protected/modules/workflow/assets/css/view.scss */
+/* line 178, ../../../../../compass/protected/modules/workflow/assets/css/view.scss */
 #drag-and-drop-view-button {
   margin-left: -4px;
 }
 
 /* line 144, ../../../../../compass/sass/protected/modules/workflow/assets/css/view.scss */
-/* line 181, ../../../../../compass/protected/modules/workflow/assets/css/view.scss */
+/* line 184, ../../../../../compass/protected/modules/workflow/assets/css/view.scss */
 .grid-view table.items {
   margin-top: 0 !important;
 }
 
 /* line 148, ../../../../../compass/sass/protected/modules/workflow/assets/css/view.scss */
-/* line 187, ../../../../../compass/protected/modules/workflow/assets/css/view.scss */
+/* line 190, ../../../../../compass/protected/modules/workflow/assets/css/view.scss */
 #process-status-container {
   margin-bottom: 0 !important;
 }
 
 /* line 152, ../../../../../compass/sass/protected/modules/workflow/assets/css/view.scss */
-/* line 193, ../../../../../compass/protected/modules/workflow/assets/css/view.scss */
+/* line 196, ../../../../../compass/protected/modules/workflow/assets/css/view.scss */
 .grid-view .x2-layout-island {
   margin-top: 4px;
 }
-/* line 195, ../../../../../compass/protected/modules/workflow/assets/css/view.scss */
+/* line 198, ../../../../../compass/protected/modules/workflow/assets/css/view.scss */
 .grid-view .x2-layout-island > h2 {
   margin-top: 6px;
   margin-left: 6px;
@@ -213,7 +213,7 @@
 
 /* line 154, ../../../../../compass/sass/protected/modules/workflow/assets/css/view.scss */
 /* line 160, ../../../../../compass/sass/protected/modules/workflow/assets/css/view.scss */
-/* line 205, ../../../../../compass/protected/modules/workflow/assets/css/view.scss */
+/* line 208, ../../../../../compass/protected/modules/workflow/assets/css/view.scss */
 .grid-container {
   margin-top: 5px;
 }
@@ -222,7 +222,7 @@
 * funnel 
 ***********************************************************************/
 /* line 168, ../../../../../compass/sass/protected/modules/workflow/assets/css/view.scss */
-/* line 214, ../../../../../compass/protected/modules/workflow/assets/css/view.scss */
+/* line 217, ../../../../../compass/protected/modules/workflow/assets/css/view.scss */
 .stage-name-link {
   max-width: 200px;
   min-width: 125px;

@@ -47,6 +47,16 @@ class TagBehavior extends CActiveRecordBehavior {
      */
     protected $_tags = null;
 
+    private $flowTriggersEnabled = true; 
+
+    public function enableTagTriggers () {
+        $this->flowTriggersEnabled = true;
+    }
+
+    public function disableTagTriggers () {
+        $this->flowTriggersEnabled = false;
+    }
+
     /**
      * Responds to {@link CModel::onAfterSave} event.
      *
@@ -83,7 +93,7 @@ class TagBehavior extends CActiveRecordBehavior {
         }
         $this->_tags = $newTags + $oldTags; // update tag cache
 
-        if (!empty($newTags)) {
+        if (!empty($newTags) && $this->flowTriggersEnabled) {
             X2Flow::trigger('RecordTagAddTrigger', array(
                 'model' => $this->getOwner(),
                 'tags' => $newTags,
@@ -108,20 +118,53 @@ class TagBehavior extends CActiveRecordBehavior {
      */
     public function scanForTags() {
         $tags = array();
-        foreach ($this->getOwner()->getFields(true) as $fieldName => $field) {
-            $profile = Yii::app()->params->profile;
-            if (!(isset($profile) && $profile->disableAutomaticRecordTagging) &&
-                    ($field->type === 'varchar' || $field->type === 'text')) {
-                $matches = array();
-                if (preg_match_all('/(?:^|\s|\.)(#\w+[-\w]+\w+|#\w+)(?:$|[^\'"])/u', $this->getOwner()->$fieldName, $matches)) {  // extract the tags
-                    foreach ($matches[1] as $match) {
-                        if (!in_array($match, $tags))
-                            $tags[] = $match;
-                    }
-                }
-            }
+
+        $profile = Yii::app()->params->profile;
+        if (isset($profile) && $profile->disableAutomaticRecordTagging) {
+            return array();
         }
+
+        // Type of fields to search in 
+        $fieldTypes = array (
+            'varchar',
+            'text'
+        );
+
+        foreach ($this->getOwner()->getFields(true) as $fieldName => $field) {
+            if (!in_array($field->type, $fieldTypes)) {
+                continue;
+            }
+
+            $text = $this->owner->$fieldName;
+
+            $matches = $this->matchTags ($text);
+            $tags = array_merge($matches[1], $tags);
+        }
+        $tags = array_unique($tags);
         return $tags;
+    }
+
+    // Finds all tag matches
+    public function matchTags($text) {
+
+        // Array of excludes such as style tags, href attributes, etc
+        $excludes = array(
+            '/<style[^<]*<\/style>/',
+            '/style="[^"]*"/',
+            '/style=\'[^\']*\'/',
+        );
+
+        foreach ($excludes as $exp) {
+            $text = preg_replace($exp, '', $text);
+        }
+
+        // Primary expression to filter out tags
+        $exp = '/(?:^|\s|\.)(#\w+[-\w]+\w+|#\w+)(?:$|[^\'"])/u';
+
+        $matches = array();
+        preg_match_all($exp, $text, $matches);
+
+        return $matches;
     }
 
     /**
@@ -188,10 +231,11 @@ class TagBehavior extends CActiveRecordBehavior {
                 }
             }
         }
-        X2Flow::trigger('RecordTagAddTrigger', array(
-            'model' => $this->getOwner(),
-            'tags' => $addedTags,
-        ));
+        if ($this->flowTriggersEnabled)
+            X2Flow::trigger('RecordTagAddTrigger', array(
+                'model' => $this->getOwner(),
+                'tags' => $addedTags,
+            ));
 
         return $result;
     }
@@ -225,10 +269,11 @@ class TagBehavior extends CActiveRecordBehavior {
                 $result = true;
             }
         }
-        X2Flow::trigger('RecordTagRemoveTrigger', array(
-            'model' => $this->getOwner(),
-            'tags' => $removedTags,
-        ));
+        if ($this->flowTriggersEnabled)
+            X2Flow::trigger('RecordTagRemoveTrigger', array(
+                'model' => $this->getOwner(),
+                'tags' => $removedTags,
+            ));
 
         return $result;
     }

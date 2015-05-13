@@ -188,10 +188,12 @@ Yii::app()->clientScript->registerScript('loadJqueryVersion',"$('#jqueryVersion'
 
 		<?php else: ?>
 			<b>X2Engine Inc. grants you a perpetual, non-exclusive, non-transferable license
-			to install and use this Software for your internal business purposes.
-			You shall not modify, distribute, license or sublicense the Software.
-			Title, ownership, and all intellectual property rights in the Software belong
-			exclusively to X2Engine.<br><br>
+            to install and use this Software for your internal business purposes only
+            for the number of users purchased by you. Your use of this Software for
+            additional users is not covered by this license and requires a separate
+            license purchase for such users. You shall not distribute, license, or
+            sublicense the Software. Title, ownership, and all intellectual property
+            rights in the Software belong exclusively to X2Engine.<br><br>
 		<?php endif; ?>
 		THIS SOFTWARE IS PROVIDED "AS IS" AND WITHOUT WARRANTIES OF ANY KIND, EITHER
 		EXPRESS OR IMPLIED, INCLUDING WITHOUT LIMITATION THE IMPLIED WARRANTIES OF

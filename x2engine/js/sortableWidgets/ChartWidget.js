@@ -66,6 +66,10 @@ Private static methods
 Public instance methods
 */
 
+ChartWidget.prototype.afterSort = function () {
+    this.refresh ();
+};
+
 ChartWidget.prototype.refresh = function () {
     var that = this;
     x2[this.chartType + that.widgetUID].chart.replot ();

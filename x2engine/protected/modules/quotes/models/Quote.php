@@ -669,18 +669,6 @@ class Quote extends X2Model {
 	public function searchBase(
         $criteria, $pageSize=null, $showHidden = false) {
 
-		$dateRange = X2DateUtil::partialDateRange($this->expectedCloseDate);
-		if ($dateRange !== false)
-			$criteria->addCondition('expectedCloseDate BETWEEN ' . $dateRange[0] . ' AND ' . $dateRange[1]);
-
-		$dateRange = X2DateUtil::partialDateRange($this->createDate);
-		if ($dateRange !== false)
-			$criteria->addCondition('createDate BETWEEN ' . $dateRange[0] . ' AND ' . $dateRange[1]);
-
-		$dateRange = X2DateUtil::partialDateRange($this->lastUpdated);
-		if ($dateRange !== false)
-			$criteria->addCondition('lastUpdated BETWEEN ' . $dateRange[0] . ' AND ' . $dateRange[1]);
-
 		return parent::searchBase($criteria, $pageSize, $showHidden);
 	}
 

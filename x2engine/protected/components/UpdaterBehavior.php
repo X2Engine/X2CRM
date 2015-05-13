@@ -746,7 +746,8 @@ class UpdaterBehavior extends ResponseBehavior {
      * Wrapper for {@link FileUtil::ccopy} for updates that can operate
      * recursively without requiring a list of files.
      *
-     * @param string $path Path relative to the web root to be copied
+     * @param string $path Path relative to the web root to be copied 
+     *  (this is the target, unless dir is null, in which case it's the source)
      * @param string $file The path to copy (assumed relative to the webroot)
      * @param string $dir The name of the backup directory; "." means top-level directory
      */

@@ -103,8 +103,9 @@ class X2ControllerPermissionsBehavior extends ControllerPermissionsBehavior {
         } elseif (Yii::app()->user->isGuest) {
             Yii::app()->user->returnUrl = Yii::app()->request->url;
             $this->owner->redirect($this->owner->createUrl('/site/login'));
-        } else
+        } else {
             $this->owner->denied();
+        }
     }
 
     /**
@@ -133,7 +134,7 @@ class X2ControllerPermissionsBehavior extends ControllerPermissionsBehavior {
 
             // Check assignment and visibility using X2PermissionsBehavior
             $view = (Yii::app()->params->isAdmin || $moduleAdmin) || 
-                $model->isVisibleTo(Yii::app()->getSuModel(), false);
+                $model->isVisibleTo(Yii::app()->getSuModel());
             if ($view) { // Only check edit permissions if they're allowed to view
                 $edit = (Yii::app()->params->isAdmin || $moduleAdmin) || 
                     Yii::app()->authManager->checkAccess(

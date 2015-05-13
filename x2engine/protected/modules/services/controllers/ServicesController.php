@@ -100,6 +100,7 @@ class ServicesController extends x2base {
      */
     public function actionView($id){
         $model = $this->loadModel($id);
+        if (!$this->checkPermissions($model, 'view')) $this->denied ();
 
         // add service case to user's recent item list
         User::addRecentItem('s', $id, Yii::app()->user->getId()); 
