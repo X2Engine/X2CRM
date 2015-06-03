@@ -39,6 +39,8 @@ class X2HttpRequest extends CHttpRequest {
 
     private $csrfValidationWhitelist = array (
         '/^api2?\//', // allow all api requests
+        '/^contacts\/weblead$/', // allow web form requests
+        '/^services\/webForm$/', // allow web form requests
     );
 
     /**

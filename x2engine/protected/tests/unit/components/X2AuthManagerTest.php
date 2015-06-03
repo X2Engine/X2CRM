@@ -42,7 +42,7 @@ class X2AuthManagerTest extends X2DbTestCase {
 
     public function testCaching () {
         $timer = new TimerUtil;
-        TestingAuxLib::suLogin ('testUser');
+        TestingAuxLib::suLogin ('testuser');
         Yii::app()->authCache->clear ();
         $this->assertEquals (0, count (Yii::app()->authCache->loadAuthCache (2)));
         $contact = $this->contacts ('testUser');

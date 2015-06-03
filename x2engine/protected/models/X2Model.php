@@ -90,6 +90,17 @@ abstract class X2Model extends CActiveRecord {
      */
     public $disablePersistentGridSettings = false;
 
+    /**
+     * Temporary hack to allow importer to skip certain validation rules. This is used in place of
+     * scenario because the scenario property isn't used correctly in many places throughout the
+     * codebase. Scenario is meant to be used to filter validation rules 
+     * (http://www.yiiframework.com/doc/api/1.1/CModel#scenario-detail), and not otherwise. So,
+     * for now, changing the scenario can mean introducing unintended side-effects not related
+     * to validation. Eventually, all non-validation uses of scenario should be refactored.
+     * @var string $subScenario  
+     */
+    public $subScenario = '';
+
     protected $_oldAttributes = array();
 
     /**
@@ -1084,10 +1095,10 @@ abstract class X2Model extends CActiveRecord {
      * @return array validation rules for model attributes.
      */
     public function rules() {
-        return self::modelRules(self::$_fields[$this->tableName()]);
+        return self::modelRules(self::$_fields[$this->tableName()], $this);
     }
 
-    public static function modelRules(&$fields) {
+    public static function modelRules(&$fields, $model) {
         $fieldTypes = array(
             'required',
             'email',
@@ -1116,7 +1127,12 @@ abstract class X2Model extends CActiveRecord {
             if ($_field->required) {
                 $fieldRules['required'][] = $_field->fieldName;
             }
-            if ($_field->uniqueConstraint) {
+            /* x2tempstart */  
+            // see note above subScenario property
+            if (!(property_exists ($model, 'subScenario') &&
+                  $model->subScenario === 'importOverwrite' && $_field->fieldName === 'id') &&
+                $_field->uniqueConstraint) {
+            /* x2tempend */ 
                 $fieldRules['unique'][] = $_field->fieldName;
             }
 

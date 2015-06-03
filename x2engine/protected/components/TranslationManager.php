@@ -457,30 +457,13 @@ function removeLine(object) {
 		<td colspan="3" id="translationPane"><div id="iframeBox"><!--<iframe id="googleTranslate" scrolling="no" name="googleTranslate" src="http://translate.google.com/"></iframe>--></div></td>
 	</tr>
 </table>
-<?php echo X2Html::csrfToken (); ?>
-</form>
-<div class="rounded" id="footer">
-	<div id="footer-logos">
-		<?php
-		$imghtml = CHtml::image(Yii::app()->theme->baseUrl.'/images/x2footer.png','');
-		echo CHtml::link($imghtml,array('/site/page','view'=>'about')); // Yii::app()->request->baseURL.'/index.php');
-		?>
-	</div>
-	Copyright &copy; <?php echo date('Y').' '.CHtml::link('X2Engine Inc.','http://www.x2engine.com');?>
-	<?php echo Yii::t('app','Rights reserved.'); ?>
-	<?php
-	$baseUrl = Yii::app()->getBaseUrl();
-	echo Yii::t('app','The Program is provided AS IS, without warranty.<br>Licensed under {GPL}.',
-	array(
-		'{GPL}'=>CHtml::link('GNU Affero GPL License',$baseUrl.'/LICENSE.txt'),
-		'{GPLv3long}'=>CHtml::link(Yii::t('app','GNU General Public License version 3'),$baseUrl.'/GPL-3.0 License.txt')
-	));?>
-	<?php echo Yii::t('app','Generated in {time} seconds',array('{time}'=>round(Yii::getLogger()->getExecutionTime(),3))); ?>
-</div>
-<?php
+<?php 
+echo X2Html::csrfToken (); 
+$this->renderPartial('//layouts/footer');
+
 }
 
-$langCodeUrl = 'http://en.wikipedia.org/wiki/List_of_ISO_639-1_codes';
+//$langCodeUrl = 'http://en.wikipedia.org/wiki/List_of_ISO_639-1_codes';
 ?>
 
 </div>

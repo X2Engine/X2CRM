@@ -114,8 +114,8 @@ class User extends CActiveRecord {
         return array(
             array('status', 'required'),
             array('password', 'required', 'on' => 'insert'),
-            array('firstName, lastName, username', 'required'),
-            array('userAlias', 'required'),
+            array('firstName, lastName, username', 'required', 'except' => 'invite'),
+            array('userAlias', 'required', 'except' => 'invite'),
             array('status, lastLogin, login', 'numerical', 'integerOnly' => true),
             array('firstName, username, userAlias, title, updatedBy', 'length', 'max' => 20),
             array('lastName, department, officePhone, cellPhone, homePhone', 'length', 'max' => 40),
@@ -540,14 +540,14 @@ class User extends CActiveRecord {
             }else{
                 if(isset($userCache[$user])){
                     $model = $userCache[$user];
-                    $linkText = $useFullName ? $model->fullName : $user;
+                    $linkText = $useFullName ? $model->fullName : $model->getAlias ();
                     //$userLink = $makeLinks ? CHtml::link($linkText, array('/profile/view', 'id' => $model->id)) : $linkText;
                     $userLink = $makeLinks ? CHtml::link($linkText, Yii::app()->controller->createAbsoluteUrl('/profile/view', array('id' => $model->id)),array('style'=>'text-decoration:none;')) : $linkText;
                     $links[] = $userLink;
                 }else{
                     $model = X2Model::model('User')->findByAttributes(array('username' => $user));
                     if(isset($model)){
-                        $linkText = $useFullName ? $model->fullName : $user;
+                        $linkText = $useFullName ? $model->fullName : $model->getAlias ();
                         //$userLink = $makeLinks ? CHtml::link($linkText, array('/profile/view', 'id' => $model->id)) : $linkText;
                         $userLink = $makeLinks ? CHtml::link($linkText, Yii::app()->controller->createAbsoluteUrl('/profile/view', array('id' => $model->id)),array('style'=>'text-decoration:none;')) : $linkText;
                         $userCache[$user] = $model;

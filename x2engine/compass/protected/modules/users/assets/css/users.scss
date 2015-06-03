@@ -1,0 +1,24 @@
+#container {
+    text-align: center;
+    width: 20%;
+    position: absolute;
+    margin: 0 auto;
+    height: 600px;
+    left: 0px;
+    right: 0px;
+    top: 0px;
+    bottom: 0px;
+}
+div.form .row.buttons input {
+    float: none !important;
+}
+#login-box-outer {
+    min-width: 380px !important;
+}
+div.wide.form .buttons, div.wide.form .hint, div.wide.form .errorMessage {
+    padding-left: 0px !important;
+}
+.x2-button {
+    text-align: center !important;
+    margin: 0 auto !important;
+}

@@ -1,0 +1,118 @@
+<?php
+
+return array(
+    array(
+        'id'=>10,
+        'type'=>'feed',
+        'subtype'=>'Social Post',
+        'level'=>null,
+        'visibility'=>0,
+        'text'=>'Test social post.',
+        'associationType'=>null,
+        'associationId'=>0,
+        'user'=>'testuser3',
+        'timestamp'=>1359483516,
+        'lastUpdated'=>1359483530,
+        'important'=>0
+    ),
+    array(
+        'id'=>1,
+        'type'=>'feed',
+        'subtype'=>'Social Post',
+        'level'=>null,
+        'visibility'=>0,
+        'text'=>'Test social post.',
+        'associationType'=>null,
+        'associationId'=>0,
+        'user'=>'admin',
+        'timestamp'=>1359483516,
+        'lastUpdated'=>1359483530,
+        'important'=>0
+    ),
+    array(
+        'id'=>2,
+        'type'=>'feed',
+        'subtype'=>null,
+        'level'=>null,
+        'visibility'=>0,
+        'text'=>'Test social post.',
+        'associationType'=>'Events',
+        'associationId'=>1,
+        'user'=>'testuser2',
+        'timestamp'=>1359483530,
+        'lastUpdated'=>1359483530,
+        'important'=>0
+    ),
+    array(
+        'id'=>3,
+        'type'=>'feed',
+        'subtype'=>null,
+        'level'=>null,
+        'visibility'=>1,
+        'text'=>'Test social post.',
+        'associationType'=>'Events',
+        'associationId'=>1,
+        'user'=>'testuser2',
+        'timestamp'=>1359483530,
+        'lastUpdated'=>1359483530,
+        'important'=>0
+    ),
+    array(
+        'id'=>4,
+        'type'=>'feed',
+        'subtype'=>'Social Post',
+        'level'=>null,
+        'visibility'=>1,
+        'text'=>'New social post.',
+        'associationType'=>null,
+        'associationId'=>0,
+        'user'=>'admin',
+        'timestamp'=>1359484627,
+        'lastUpdated'=>1359484627,
+        'important'=>0
+    ),
+    array(
+        'id'=>7,
+        'type'=>'record_create',
+        'subtype'=>null,
+        'level'=>null,
+        'visibility'=>0,
+        'text'=>null,
+        'associationType'=>'Actions',
+        'associationId'=>2,
+        'user'=>'testuser',
+        'timestamp'=>1359485240,
+        'lastUpdated'=>1359485240,
+        'important'=>0
+    ),
+    array(
+        'id'=>9,
+        'type'=>'feed',
+        'subtype'=>'Social Post',
+        'level'=>null,
+        'visibility'=>1,
+        'text'=>'Interrupting social post.',
+        'associationType'=>null,
+        'associationId'=>0,
+        'user'=>'testuser',
+        'timestamp'=>1359485241,
+        'lastUpdated'=>1359485241,
+        'important'=>0
+    ),
+    array(
+        'id'=>8,
+        'type'=>'feed',
+        'subtype'=>null,
+        'level'=>null,
+        'visibility'=>1,
+        'text'=>null,
+        'associationType'=>'Actions',
+        'associationId'=>2,
+        'user'=>'testuser',
+        'timestamp'=>1359485280,
+        'lastUpdated'=>1359485240,
+        'important'=>0
+    ),
+);
+
+?>

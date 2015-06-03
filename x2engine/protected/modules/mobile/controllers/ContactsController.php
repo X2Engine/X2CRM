@@ -134,10 +134,8 @@ class ContactsController extends MobileController{
 			$model->attributes=$_POST['Contacts'];
 			$firstName=true;
 			$lastName=true;
-			if($model->firstName == $attributeLabels['firstName'])
-				$firstName=false;
-			if($model->lastName == $attributeLabels['lastName'])
-				$lastName=false;
+			if($model->firstName === '') $firstName=false;
+			if($model->lastName === '') $lastName=false;
 
 			if($firstName && $lastName){
 				$dataProvider=new CActiveDataProvider('Contacts', array(
@@ -158,9 +156,13 @@ class ContactsController extends MobileController{
 						'condition'=>"lastName='$model->lastName'"
 				)));
 			}else{
-				$this->redirect($this->createUrl('/mobile/site/home'));
+                // If both fields are blank
+				//$this->redirect($this->createUrl('/mobile/site/home'));
+                $model->addError('lastName', 'Please fill out at least one search field.');
+			    $this->render('search',array(
+				    'model'=>$model,
+			    ));
 			}
-			
 			$this->render('viewAll',array(
 				'dataProvider'=>$dataProvider,
 			));

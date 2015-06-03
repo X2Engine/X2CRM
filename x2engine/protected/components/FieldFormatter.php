@@ -45,6 +45,14 @@ class FieldFormatter extends CComponent {
      */
     public $owner; 
 
+    private $_validFieldTypes;
+    public function getValidFieldTypes () {
+        if (!isset ($this->_validFieldTypes)) {
+            $this->_validFieldTypes = array_keys (Fields::getFieldTypes ());
+        }
+        return $this->_validFieldTypes;
+    }
+
     public function renderAttribute(
         $fieldName, $makeLinks = true, $textOnly = true, $encode = true) {
 
@@ -64,12 +72,29 @@ class FieldFormatter extends CComponent {
                 return $this->render($this->owner->$fieldName, $encode);
         }
 
-        $renderFn = 'render'.ucfirst ($field->type);
-        if (method_exists ($this, $renderFn)) {
-            return $this->$renderFn ($field, $makeLinks, $textOnly, $encode);
+        $renderByNameFn = 'render'.ucfirst ($field->fieldName);
+        $renderByTypeFn = 'render'.ucfirst ($field->type);
+        // first check for field-specific renderer. Exclude field names that match an existing
+        // type 
+        if (method_exists ($this, $renderByNameFn) && 
+            !in_array ($field->fieldName, $this->getValidFieldTypes ())) {
+
+            return $this->$renderByNameFn ($field, $makeLinks, $textOnly, $encode);
+        } elseif (method_exists ($this, $renderByTypeFn)) {
+            return $this->$renderByTypeFn ($field, $makeLinks, $textOnly, $encode);
         } else {
             return $this->render ($this->owner->$fieldName, $encode);
         }
+    }
+
+    /**
+     * Used to render user alias, instead of username 
+     */
+    protected function renderUpdatedBy ($field, $makeLinks, $textOnly, $encode) {
+        $fieldName = $field->fieldName;
+        $val = $this->owner->$fieldName;
+        $val = empty ($val) ? $val : User::getUserLinks ($val, false, false);
+        return $encode ? CHtml::encode($val) : $val;
     }
 
     protected function render ($val, $encode) {

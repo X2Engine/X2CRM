@@ -44,6 +44,8 @@ Yii::import ('application.components.x2flow.triggers.*');
 Yii::import ('application.components.permissions.*');
 
 /**
+ * Base class for X2Flow unit tests. These methods should probably be moved to a static utility
+ * class so that they can be used by non-descendants
  * @package application.tests.unit.components.x2flow.triggers
  */
 class X2FlowTestBase extends X2DbTestCase {
@@ -63,31 +65,19 @@ class X2FlowTestBase extends X2DbTestCase {
 
     /**
      * Clears all trigger logs
+     * @deprecated Use X2FlowTestingAuxLib::clearLogs instead
      */
     public function clearLogs () {
-        Yii::app()->db->createCommand ('delete from x2_trigger_logs where 1=1')
-            ->execute ();
-        $count = Yii::app()->db->createCommand (
-            'select count(*) from x2_trigger_logs
-             where 1=1')
-             ->queryScalar ();
-        $this->assertTrue ($count === '0');
+        return X2FlowTestingAuxLib::clearLogs ();
     }
 
     /**
      * Returns trace of log for specified flow 
      * @return null|array
+     * @deprecated Use X2FlowTestingAuxLib::getTraceByFlowId instead
      */
     public function getTraceByFlowId ($flowId) {
-        $log = TriggerLog::model()->findByAttributes (array (
-            'flowId' => $flowId,
-        ));
-        if ($log) {
-            $decodedLog = CJSON::decode ($log->triggerLog);
-            return $decodedLog[1];
-        } else {
-            return $log;
-        }
+        return X2FlowTestingAuxLib::getTraceByFlowId ($flowId);
     }
 
     /**
@@ -109,23 +99,10 @@ class X2FlowTestBase extends X2DbTestCase {
      * Checks each entry in triggerLog looking for errors
      * @param array $trace One of the return value of executeFlow ()
      * @return bool false if an error was found in the log, true otherwise
+     * @deprecated Use X2FlowTestingAuxLib::checkTrace instead
      */
     public function checkTrace ($trace) {
-        if (!$trace[0]) return false;
-        $trace = $trace[1];
-        while (true) {
-            $complete = true;
-            foreach ($trace as $action) {
-                if ($action[0] === 'X2FlowSwitch') {
-                    $trace = $action[2];
-                    $complete = false;
-                    break;
-                }
-                if (!$action[1][0]) return false;
-            }
-            if ($complete) break;
-        }
-        return true;
+        return X2FlowTestingAuxLib::checkTrace ($trace);
     }
 
     /**

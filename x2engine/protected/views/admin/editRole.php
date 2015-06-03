@@ -63,9 +63,16 @@ foreach($list as $role){
                 'url'=>CController::createUrl('/admin/getRole', array('mode'=>'edit')), //url to call.
                 //Style: CController::createUrl('currentController/methodToCall')
                 'update'=>'#roleForm', //selector to update
-                'complete'=>"function(){
+                'complete'=>"function(data){
+                    var data = data.responseText;
                     $('.multiselect').multiselect();
-                }"
+                    if (data === '') {
+                        $('#roleEdit-form').find ('[type=\"submit\"]').
+                            attr ('disabled', 'disabled'); 
+                    } else {
+                        $('#roleEdit-form').find ('[type=\"submit\"]').removeAttr ('disabled'); 
+                    }
+                }",
                 //'data'=>'js:"modelType="+$("'.CHtml::activeId($model,'modelType').'").val()'
                 //leave out the data key to pass all form values through
                 ))); ?>
@@ -77,7 +84,14 @@ foreach($list as $role){
         </div>
         <br />
 	<div class="row buttons">
-		<?php echo CHtml::submitButton($model->isNewRecord ? Yii::t('app','Save'):Yii::t('app','Save'),array('class'=>'x2-button')); ?>
+		<?php 
+        echo CHtml::submitButton(
+            $model->isNewRecord ?  Yii::t('app','Save'):Yii::t('app','Save'),
+            array(
+                'class'=>'x2-button',
+                'disabled'=>'disabled',
+            )); 
+        ?>
 	</div>
 <?php $this->endWidget(); ?>
 </div>

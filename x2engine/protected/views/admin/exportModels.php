@@ -45,6 +45,11 @@
     <?php echo isset($listName)?Yii::t('admin','You are currently exporting: ')."<b>$listName</b>":''; ?>
     </div>
     <br>
+    <?php
+    if (is_null($listId)) {
+        echo CHtml::label(Yii::t('admin', 'Include Hidden Records?'), 'includeHidden');
+        echo CHtml::checkbox('includeHidden', false);
+    } ?>
     <?php echo CHtml::button(Yii::t('app','Export'),array('class'=>'x2-button','id'=>'export-button')); ?>
     <div id="status-text" style="color:green">
 
@@ -59,11 +64,13 @@ $('#export-button').on('click',function(){
     exportModelData(0);
 });
 function exportModelData(page){
+    var includeHidden = $("#includeHidden").is(':checked');
     if($('#export-status').length==0){
        $('#status-text').append("<div id='export-status'><?php echo Yii::t('admin','Exporting <b>{model}</b> data...', array('{model}'=>$model)); ?><br></div>");
     }
+    $('#export-button').hide();
     $.ajax({
-        url:'exportModelRecords?page='+page+'&model=<?php echo $model; ?>',
+        url:'exportModelRecords?page='+page+'&model=<?php echo $model; ?>&includeHidden=' + includeHidden,
         success:function(data){
             if(data>0){
                 $('#export-status').html(((data)*100)+" <?php echo Yii::t('admin','records from <b>{model}</b> successfully exported.', array('{model}'=>$model));?><br>");

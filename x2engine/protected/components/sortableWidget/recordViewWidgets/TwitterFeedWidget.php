@@ -265,7 +265,7 @@ class TwitterFeedWidget extends SortableWidget {
                         @".CHtml::encode ($entity['screen_name'])."</a>";
                     break;
                 default: 
-                    continue;
+                    continue 2;
             }
             $text = mb_substr ($text, 0, $entity['indices'][0], 'UTF-8').$link.
                 mb_substr ($text, $entity['indices'][1] + 1, null, 'UTF-8');

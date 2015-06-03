@@ -148,6 +148,8 @@ class X2Color {
             return '';
 
         $color = self::hex2rgb2($color);
+        if (!$color)
+            return '';
 
         if ($smartMode) {
             $hsb = self::rgbtohsb($color);

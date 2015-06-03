@@ -73,9 +73,15 @@ if(!empty($status)) {
 		$email = '';
 		$subject = '';
 	}
-	echo '<div class="form">';
-	foreach($status as &$status_msg) echo $status_msg." \n";
-	echo '</div>';
+    ?>
+	<div class="form">
+	    <div class='errorSummary'>
+        <?php
+            if (isset ($status['message'])) echo $status['message'];
+        ?>
+	    </div>
+	</div>
+    <?php
 }
 // echo var_dump($errors);
 ?>

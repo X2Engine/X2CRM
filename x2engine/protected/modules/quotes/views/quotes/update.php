@@ -42,20 +42,22 @@ $this->insertMenu($menuOptions, $model, $authParams);
 
 $title = CHtml::tag(
     'h2',array('class' =>'quotes-section-title'), 
-    $model->type === 'invoice' ? 
+    ($model->type === 'invoice' ? 
         Yii::t('quotes', 'Update Invoice:') : 
         Yii::t('quotes','Update {quote}:', array(
             '{quote}' => Modules::displayName(false),
-        ))).CHtml::encode ($model->getName ());
-echo $quick ? $title:CHtml::tag('div',array('class'=>'page-title icon quotes'),$title);
-
-if(!$quick){ ?>
-<a class="x2-button right" href="javascript:void(0);" 
-    onclick="$('#quote-save-button').click();"><?php echo Yii::t('app','Update'); ?></a>
-</div>
-<?php 
-} 
-
+        ))).'&nbsp;'.CHtml::encode ($model->getName ()));
+if ($quick) {
+    echo $title;
+} else {
+    echo CHtml::openTag('div',array('class'=>'page-title icon quotes'));
+    echo $title;
+    ?>
+    <a class="x2-button right" href="javascript:void(0);" 
+        onclick="$('#quote-save-button').click();"><?php echo Yii::t('app','Update'); ?></a>
+    <?php
+    echo CHtml::closeTag ('div');
+}
 
 $form=$this->beginWidget('CActiveForm', array(
    'id'=>'quotes-form',
@@ -135,7 +137,7 @@ echo $this->renderPartial('_lineItems',
 
 echo $this->renderPartial('_sharedView', array (
     'quick' => $quick,
-    'action' => 'Create',
+    'action' => 'Update',
     'model' => $model,
     'form' => $form,
 ));

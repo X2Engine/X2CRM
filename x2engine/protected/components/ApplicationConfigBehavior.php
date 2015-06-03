@@ -252,6 +252,7 @@ class ApplicationConfigBehavior extends CBehavior {
 
         if(!$noSession){
             if($this->owner->request->getPathInfo() == 'notifications/get'){ // skip all the loading if this is a chat/notification update
+                Yii::import('application.components.util.AuxLib');
                 Yii::import('application.models.Roles');
                 Yii::import('application.components.X2AuthManager');
                 Yii::import('application.components.X2Html');

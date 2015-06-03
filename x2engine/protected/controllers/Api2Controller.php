@@ -291,7 +291,17 @@ class Api2Controller extends CController {
                     $attributes = array_intersect(array_keys($this->jpost),
                             $this->staticModel->attributeNames());
                     if($this->model->validate($attributes)) {
+
+                        if ($this->model->asa('X2FlowTriggerBehavior') &&
+                                $this->model->asa('X2FlowTriggerBehavior')->enabled) {
+                            $this->model->enableUpdateTrigger();
+                        }
                         $saved = $this->model->update($attributes);
+                        if ($this->model->asa('X2FlowTriggerBehavior') &&
+                                $this->model->asa('X2FlowTriggerBehavior')->enabled) {
+
+                            $this->model->disableUpdateTrigger();
+                        }
                     }
                 }
 

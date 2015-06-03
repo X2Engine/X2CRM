@@ -190,6 +190,7 @@ class SmartActiveDataProvider extends CActiveDataProvider {
         // using the same criteria, calculate and save the checksum of the ids 
 		$this->model->setDbCriteria($baseCriteria!==null ? clone $baseCriteria : null);
         if ($this->calculateChecksum) {
+            ini_set ('memory_limit', -1);
             $critClone = clone $criteria;
             $critClone->limit = -1;
             $critClone->offset = -1;

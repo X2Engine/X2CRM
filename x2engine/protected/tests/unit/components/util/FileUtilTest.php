@@ -170,6 +170,42 @@ class FileUtilTest extends FileOperTestCase {
         $this->removeTestDirs();
     }
 
+    public function testCcopy2 () {
+        $this->setupTestDirs();
+        $target = $this->baseDir.FileUtil::rpath("/subdir1/testFile");
+        $destPath = implode(DIRECTORY_SEPARATOR, array('sub', 'directory', 'structure'));
+
+        $destDiffName = implode(
+            DIRECTORY_SEPARATOR, array($this->baseDir, 'subdir2', $destPath, 'notTestFile'));
+        $destSameName = implode(
+            DIRECTORY_SEPARATOR, array($this->baseDir, 'subdir2', $destPath, 'testFile'));
+        $destSameNameDiffCase = implode(
+            DIRECTORY_SEPARATOR, array($this->baseDir, 'subdir2', $destPath, 'TESTfILE'));
+
+        FileUtil::ccopy($target, $destDiffName);
+        // ensure that file can be copied even though source and destination basenames differ
+        $this->assertFileExists($destDiffName);
+
+        FileUtil::ccopy($target, $destSameName);
+        $this->assertFileExists($destSameName);
+
+        FileUtil::ccopy($target, $destSameNameDiffCase);
+        // ensure that file can be copied even though source and destination basenames differ
+        $this->assertFileExists($destSameNameDiffCase);
+
+        // cleanup
+        $this->assertTrue (unlink($destDiffName));
+        $this->assertTrue (unlink($destSameName));
+        $this->assertTrue (unlink($destSameNameDiffCase));
+        $destPath = explode('/', $destPath);
+        while(!empty($destPath)){
+            rmdir($this->baseDir.FileUtil::rpath('/subdir2/'.implode('/', $destPath)));
+            array_pop($destPath);
+        }
+
+        $this->removeTestDirs();
+    }
+
     public function testCaseInsensitiveCopyFix () {
         $outdir = implode(
             DIRECTORY_SEPARATOR, 
@@ -199,40 +235,14 @@ class FileUtilTest extends FileOperTestCase {
                 $testFile
             ));
 
-        // rename attempt should be made otherwise
-        $this->assertTrue (
-            $caseInsensitiveCopyFix (
-                $newTestFile,
-                $testFile
-            ));
-        $this->assertTrue (file_exists ($newTestFile));
-        $this->assertFalse (file_exists ($testFile));
-
-        FileUtil::rrmdir($outdir);
-        system ("mkdir $outdir");
-        system ("touch $testFile");
-        $this->assertTrue (file_exists ($testFile));
-
-        // unless filenames differ by something other than basename
+        // ensure that nothing occurs if filenames differ
         $this->assertFalse (
             $caseInsensitiveCopyFix (
-                'a'.$outdir.DIRECTORY_SEPARATOR.'test.php',
-                $testFile
+                $testFile,
+                $newTestFile
             ));
 
         FileUtil::rrmdir($outdir);
-        system ("mkdir $outdir");
-        system ("touch $testFile");
-
-        // ensure that file gets its basename gets changed to source's basename
-        $this->assertTrue (file_exists ($testFile));
-        $this->assertTrue (
-            $caseInsensitiveCopyFix (
-                $newTestFile,
-                $testFile
-            ));
-        $this->assertFalse (file_exists ($testFile));
-        $this->assertTrue (file_exists ($newTestFile));
         FileUtil::rrmdir($outdir);
     }
 

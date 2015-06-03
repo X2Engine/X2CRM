@@ -1,0 +1,33 @@
+/* line 1, ../../../../../compass/protected/modules/users/assets/css/users.scss */
+#container {
+  text-align: center;
+  width: 20%;
+  position: absolute;
+  margin: 0 auto;
+  height: 600px;
+  left: 0px;
+  right: 0px;
+  top: 0px;
+  bottom: 0px;
+}
+
+/* line 12, ../../../../../compass/protected/modules/users/assets/css/users.scss */
+div.form .row.buttons input {
+  float: none !important;
+}
+
+/* line 15, ../../../../../compass/protected/modules/users/assets/css/users.scss */
+#login-box-outer {
+  min-width: 380px !important;
+}
+
+/* line 18, ../../../../../compass/protected/modules/users/assets/css/users.scss */
+div.wide.form .buttons, div.wide.form .hint, div.wide.form .errorMessage {
+  padding-left: 0px !important;
+}
+
+/* line 21, ../../../../../compass/protected/modules/users/assets/css/users.scss */
+.x2-button {
+  text-align: center !important;
+  margin: 0 auto !important;
+}

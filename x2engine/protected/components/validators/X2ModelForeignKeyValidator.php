@@ -36,6 +36,9 @@
 
 class X2ModelForeignKeyValidator extends X2Validator {
     protected function validateValue (CModel $object, $value, $attribute) {
+        // exception added for case where validator is added to AmorphousModel
+        if (!($object instanceof X2Model)) return;
+        
         $field = $object->getField ($attribute);
         $linkType = $field->linkType;
         $model = X2Model::model ($linkType);

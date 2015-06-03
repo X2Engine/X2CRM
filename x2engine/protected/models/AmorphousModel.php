@@ -108,7 +108,7 @@ class AmorphousModel extends CModel {
      * @return array
      */
     public function rules(){
-        $rules = X2Model::modelRules($this->_mockFields);
+        $rules = X2Model::modelRules($this->_mockFields, $this);
         foreach(array_keys($rules) as $ind) {
             if(in_array($rules[$ind][1],array('required','unique','application.components.ValidLinkValidator')))
                 unset($rules[$ind]);

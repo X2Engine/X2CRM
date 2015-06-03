@@ -93,7 +93,9 @@ $form = $this->beginWidget('CActiveForm', array(
                 'tabindex'=>100 + $i,
                 'onfocus'=>'x2.forms.toggleText(this);',
                 'onblur'=>'x2.forms.toggleText(this);',
-                'title'=>$model->getAttributeLabel($key)
+                'title'=>$model->getAttributeLabel($key),
+                'value'=>'',
+                'placeholder'=>$val
             )); 
             echo $form->error($model,$key);
             if (!$noErrors && !$form->error($model, $key))

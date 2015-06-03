@@ -44,10 +44,7 @@ class ProfileTest extends X2WebTestCase {
     public static function setUpBeforeClass () {
         // ensure that a directory with the same name isn't already in the web root
         exec ('ls ../controllers', $output);
-        if (!YII_UNIT_TESTING) {  
-            // YII_UNIT_TESTING must be true for profileTest routing rule to be added
-            self::$skipAllTests = true;
-        } else if (in_array ('ProfileTestController.php', $output)) {
+        if (in_array ('ProfileTestController.php', $output)) {
             VERBOSE_MODE && println ('Warning: tests are being aborted because file '.
                 '"ProfileTestController" already exists in the protected/controllers');
             self::$skipAllTests = true;

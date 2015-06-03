@@ -219,6 +219,25 @@ class CampaignMailingBehavior extends EmailDeliveryBehavior {
             throw $e;
         }
 
+        // Replacement in body
+        $emailBody = Docs::replaceVariables($emailBody, $contact, array (
+            '{trackingKey}' => $uniqueId, // Use the campaign key, not the general contact key
+        ));
+
+        // transform links after attribute replacement but before signature and unsubscribe link 
+        // insertion
+        if ($campaign->enableRedirectLinks) {
+            // Replace links with tracking links
+            $url = Yii::app()->controller->createAbsoluteUrl (
+                'click', array ('uid' => $uniqueId, 'type' => 'click'));
+            $emailBody = preg_replace_callback (
+                '/(<a[^>]*href=")([^"]*)("[^>]*>)/', 
+                function (array $matches) use ($url) {
+                    return $matches[1].$url.'&url='.urlencode ($matches[2]).''.
+                        $matches[3];
+                }, $emailBody);
+        }
+
         // Insert unsubscribe link placeholder in the email body if there is
         // none already:
         if(!preg_match('/\{_unsub\}/', $campaign->content)){
@@ -232,46 +251,29 @@ class CampaignMailingBehavior extends EmailDeliveryBehavior {
             }
         }
 
-        if ($campaign->enableRedirectLinks) {
-            // Replace links with tracking links
-            $url = Yii::app()->controller->createAbsoluteUrl (
-                'click', array ('uid' => $uniqueId, 'type' => 'click'));
-            $emailBody = preg_replace_callback (
-                '/(<a[^>]*href=")([^"]*)("[^>]*>)/', 
-                function (array $matches) use ($url) {
-                    return $matches[1].$url.'&url='.urlencode ($matches[2]).''.
-                        $matches[3];
-                }, $emailBody);
-        }
-
         // Insert unsubscribe link(s):
         $unsubUrl = Yii::app()->createExternalUrl('/marketing/marketing/click', array(
             'uid' => $uniqueId,
             'type' => 'unsub',
             'email' => $email
-                ));
+        ));
         $emailBody = preg_replace(
             '/\{_unsub\}/', '<a href="'.$unsubUrl.'">'.Yii::t('marketing', 'unsubscribe').'</a>',
             $emailBody);
 
-        // Replace attribute variables:
-        $replacementParams = array(
-            '{trackingKey}' => $uniqueId, // Use the campaign key, not the general contact key
-        );
         // Get the assignee of the campaign, for signature replacement.
         $user = User::model()->findByAttributes(array('username' => $campaign->assignedTo));
-        if($user instanceof User) {
-            $replacementParams['{signature}'] = $user->profile->signature;
-        } else {
-            $replacementParams['{signature}'] = '';
-        }
-        // Replacement in body
-        $emailBody = Docs::replaceVariables($emailBody, $contact, $replacementParams);
+        $emailBody = Docs::replaceVariables($emailBody, null, array (
+            '{signature}' => ($user instanceof User) ? 
+                Docs::replaceVariables ($user->profile->signature, $contact) : '',
+        ));
+
         // Replacement in subject
         $subject = Docs::replaceVariables($campaign->subject, $contact);
 
         // Add the transparent tracking image:
-        $trackingImage = '<img src="'.Yii::app()->createExternalUrl('/marketing/marketing/click', array('uid' => $uniqueId, 'type' => 'open')).'"/>';
+        $trackingImage = '<img src="'.Yii::app()->createExternalUrl(
+            '/marketing/marketing/click', array('uid' => $uniqueId, 'type' => 'open')).'"/>';
         if(strpos($emailBody,'</body>')!==false) {
             $emailBody = str_replace('</body>',$trackingImage.'</body>',$emailBody);
         } else {

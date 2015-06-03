@@ -39,6 +39,8 @@ Yii::import('application.modules.actions.models.*');
 Yii::import('application.modules.contacts.models.*');
 Yii::import('application.modules.docs.models.*');
 Yii::import('application.modules.marketing.models.*');
+Yii::import('application.modules.marketing.controllers.*');
+Yii::import('application.modules.marketing.*');
 Yii::import('application.modules.marketing.components.*');
 
 /**
@@ -50,7 +52,7 @@ class CampaignMailingBehaviorTest extends X2DbTestCase {
 
     public static function referenceFixtures() {
         return array(
-            'campaign' => 'Campaign',
+            'campaign' => array ('Campaign', '.CampaignMailingBehaviorTest'),
             'lists' => 'X2List',
             'credentials' => 'Credentials',
             'users' => 'User',
@@ -102,9 +104,24 @@ class CampaignMailingBehaviorTest extends X2DbTestCase {
         $this->assertEquals(null,$cmb->listItem->uniqueId);
     }
 
+    public function testRedirectLinkGeneration () {
+        Yii::app()->controller = new MarketingController (
+            'campaign', new MarketingModule ('campaign', null));
+        $_SERVER['SERVER_NAME'] = 'localhost';
+        $cmb = $this->instantiate();
+        $contact = $this->contacts('testUser_unsent');
+        $campaign = $this->campaign('redirectLinkGeneration');
+        $url = preg_replace ('/^[^"]*"([^"]*)".*$/', '$1', $campaign->content);
+        list($subject,$message,$uniqueId) = $cmb->prepareEmail(
+            $this->campaign('redirectLinkGeneration'),
+            $contact,$this->listItem('testUser_unsent')->emailAddress);
+        $this->assertRegExp ('/'.preg_quote (urlencode ($url)).'/', $message);
+
+    }
+
     public function testPrepareEmail() {
         if(!Yii::app()->contEd('pro')) {
-                $this->markTestSkipped();
+            $this->markTestSkipped();
         }
 
         $cmb = $this->instantiate();
@@ -114,24 +131,41 @@ class CampaignMailingBehaviorTest extends X2DbTestCase {
         // Set URL/URI to verify proper link generation:
         $admin->externalBaseUrl = 'http://examplecrm.com';
         $admin->externalBaseUri = '/X2Engine';
-        list($subject,$message,$uniqueId) = $cmb->prepareEmail($this->campaign('testUser'),$contact,$this->listItem('testUser_unsent')->emailAddress);
+        list($subject,$message,$uniqueId) = $cmb->prepareEmail(
+            $this->campaign('testUser'),$contact,$this->listItem('testUser_unsent')->emailAddress);
         $email = $cmb->recipient->email;
         
         $this->assertEquals($recipientAddress,$email);
-        $this->assertEquals(str_replace('{firstName}',$contact->firstName,$this->campaign('testUser')->subject),$subject);
+        $this->assertEquals(
+            str_replace('{firstName}',$contact->firstName,$this->campaign('testUser')->subject),
+            $subject);
         // Find the contact's name and tracking key:
         $replaceVars = array(
             '{firstName}' => $contact->firstName,
             '{signature}' => $this->users('testUser')->profile->signature,
             '{trackingKey}' => $uniqueId
         );
-        $this->assertRegExp('/'.preg_quote(strtr($this->campaign('testUser')->content,$replaceVars),'/').'/',$message,'Variable replacement didn\'t take place');
+        $this->assertRegExp(
+            '/'.preg_quote(strtr($this->campaign('testUser')->content,$replaceVars),'/').'/',
+            $message,'Variable replacement didn\'t take place');
         // Find the tracking image:
-        $this->assertRegExp('/'.preg_quote('<img src="'.$admin->externalBaseUrl.$admin->externalBaseUri.'/index.php/marketing/marketing/click?uid='.$uniqueId,'/').'/',$message,'Tracking image not inserted');
+        $this->assertRegExp(
+            '/'.preg_quote(
+                '<img src="'.$admin->externalBaseUrl.$admin->externalBaseUri.
+                    '/index.php/marketing/marketing/click?uid='.$uniqueId,'/').'/',
+            $message,'Tracking image not inserted');
         // Find the unsubscribe link:
-        $this->assertRegExp('/'.preg_quote('To stop receiving these messages, click here: <a href="http://examplecrm.com/X2Engine/index.php/marketing/marketing/click?uid='.$uniqueId.'&type=unsub&email='.rawurlencode($recipientAddress).'">unsubscribe</a>','/').'/',$message,'Unsubscribe link not inserted');
+        $this->assertRegExp(
+            '/'.preg_quote(
+                'To stop receiving these messages, click here: '.
+                    '<a href="http://examplecrm.com/X2Engine/index.php/marketing/marketing/click?'.
+                    'uid='.$uniqueId.'&type=unsub&email='.rawurlencode($recipientAddress).'">'.
+                    'unsubscribe</a>','/').'/',
+            $message,'Unsubscribe link not inserted');
         // Find the tracking key:
-        $this->assertRegExp('/'.preg_quote('visit http://example.com/?x2_key=','/').$uniqueId.'/',$message,'Tracking key not inserted!');
+        $this->assertRegExp(
+            '/'.preg_quote('visit http://example.com/?x2_key=','/').$uniqueId.'/',
+            $message,'Tracking key not inserted!');
     }
 
 
@@ -151,7 +185,8 @@ class CampaignMailingBehaviorTest extends X2DbTestCase {
     }
 
     public function testDeliverableItems() {
-        $listItems = CampaignMailingBehavior::deliverableItems($this->lists('launchedEmailCampaign')->id);
+        $listItems = CampaignMailingBehavior::deliverableItems(
+            $this->lists('launchedEmailCampaign')->id);
         $this->assertEquals(array(
             array(
                 'id' => '252',
@@ -184,7 +219,8 @@ class CampaignMailingBehaviorTest extends X2DbTestCase {
         Yii::app()->settings->emailStartTime = time();
         Yii::app()->settings->emailInterval = 1000;
         $can = $cmb->mailIsStillDeliverable();
-//        print_r($cmb->status); // This should be human-readable and make sense (it's the waiting message)
+        // This should be human-readable and make sense (it's the waiting message)
+        //        print_r($cmb->status); 
         $this->assertFalse($can);
         $this->assertEquals(CampaignMailingBehavior::STATE_BULKLIMIT,$cmb->stateChangeType);
         $cmb->stateChange = false;

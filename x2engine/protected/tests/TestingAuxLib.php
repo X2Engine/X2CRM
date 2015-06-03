@@ -132,8 +132,9 @@ class TestingAuxLib  {
      */
     public static function suLogin($username) {
         $user = User::model()->findByAlias($username);
-        if(!($user instanceof User))
-            return false;
+        if(!($user instanceof User)) {
+            throw new CException ('failed to login as '.$username);
+        }
         $profile = $user->profile;
         Yii::app()->setSuModel($user);
         Yii::app()->params->profile = $profile;

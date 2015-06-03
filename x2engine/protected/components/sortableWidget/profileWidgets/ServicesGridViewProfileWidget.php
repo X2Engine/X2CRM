@@ -121,7 +121,7 @@ class ServicesGridViewProfileWidget extends ProfileGridViewWidget {
                             'name'=>'account',
                             'header'=>Yii::t('contacts', 'Account'),
                             'type'=>'raw',
-                            'value'=>'$data->contactIdModel? (isset($data->contactIdModel->companyModel) ? $data->contactIdModel->companyModel->getLink() : "") : ""'
+			                'value'=>'isset ($data->contactIdModel) ? ($data->contactIdModel ? (isset($data->contactIdModel->companyModel) ? $data->contactIdModel->companyModel->getLink() : "") : "") : ""'
                         ),
                         'status'=>array(
                             'name'=>'status',

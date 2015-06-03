@@ -177,7 +177,7 @@ class FormLayout extends CActiveRecord {
     /**
      * Helper method to unset all defaultView or defaultForm flags
      * @param string $type Form type, either 'view' or 'form', or both if argument is omitted
-     * @param string Model type to unset flags
+     * @param string Model type to unset flags for
      */
     public static function clearDefaultFormLayouts($type = null, $model = null, $scenario = null) {
         // Construct attributes to select form layouts

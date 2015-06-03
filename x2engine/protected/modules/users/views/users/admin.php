@@ -160,7 +160,8 @@ $this->widget('X2GridViewGeneric', array(
                 'class' => 'x2-button',
                 'submit' => 'deleteTemporary',
                 'confirm' => Yii::t('users', 'Are you sure you want to delete these {users}?', array(
-                    '{users}'=>Modules::displayName()))
+                    '{users}'=>Modules::displayName())),
+                'csrf' => true
         )); ?>
     </div>
 <?php } ?>

@@ -43,6 +43,7 @@ class RecordViewEmailTest extends X2WebTestCase {
     );
 
     public function testEmailSend () {
+        $this->markTestIncomplete ();
         $contact = $this->contacts ('testAnyone');
         $this->openX2 ('contacts/'.$contact->id);
         sleep (1);

@@ -76,6 +76,7 @@ InlineEmailEditorManager.prototype.executeCallbacks = function () {
 
 InlineEmailEditorManager.prototype.handleInlineEmailActionResponse = function (data) {
     $('#email-sending-icon').hide();
+
     if(data.error) {
         if(data.modelHasErrors) {
             // Error-highlight the fields that have errors:

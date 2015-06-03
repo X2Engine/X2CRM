@@ -57,7 +57,7 @@ class NotificationsController extends CController {
     }
 
     /**
-     * Obtain all current notifications for the current web user.
+     * Obtain all current notifications/events for the current web user.
      */
     public function actionGet() {
 
@@ -81,24 +81,33 @@ class NotificationsController extends CController {
         $notifications = $this->getNotifications($_GET['lastNotifId']);
         $notifCount = 0;
         if(count($notifications))
-            $notifCount = X2Model::model('Notification')->countByAttributes(array('user'=>Yii::app()->user->name),'createDate < '.time());
+            $notifCount = X2Model::model('Notification')
+                ->countByAttributes(array('user'=>Yii::app()->user->name),'createDate < '.time());
 
         $chatMessages = array();
         $lastEventId = 0;
         $lastTimestamp=0;
-        if(isset($_GET['lastEventId']) && is_numeric($_GET['lastEventId'])){    // if the client specifies the last message ID received,
-            $lastEventId = $_GET['lastEventId'];                                // only send newer messages
+        // if the client specifies the last message ID received,
+        if(isset($_GET['lastEventId']) && is_numeric($_GET['lastEventId'])){   
+            // only send newer messages
+            $lastEventId = $_GET['lastEventId'];                                
         }
         if(isset($_GET['lastTimestamp']) && is_numeric($_GET['lastTimestamp'])){
             $lastTimestamp=$_GET['lastTimestamp'];
         }
         if($lastEventId==0){
-            $limit=20;
+            // get page of newest events
+            $retVal = Events::getFilteredEventsDataProvider (
+                null, true, null, isset ($_SESSSION['filters']));
+            $dataProvider = $retVal['dataProvider'];
+            $events = $dataProvider->getData ();
         }else{
+            // get new events
             $limit=null;
+            $result=Events::getEvents($lastEventId,$lastTimestamp,$limit);
+            $events=$result['events'];
         }
-        $result=Events::getEvents($lastEventId,$lastTimestamp,null,null,$limit);
-        $events=$result['events'];
+
         $i=count($events)-1;
         for($i; $i>-1; --$i) {
             if(isset($events[$i])){

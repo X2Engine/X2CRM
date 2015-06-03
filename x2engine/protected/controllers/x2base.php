@@ -36,7 +36,6 @@
  *****************************************************************************************/
 
 /**
- *
  * Base controller for all application controllers with CRUD operations
  *
  * @package application.controllers
@@ -58,7 +57,9 @@ abstract class x2base extends X2Controller {
      */
     public $layout = '//layouts/column3';
 
-    // If true, then the content will not have a backdrop
+    /**
+     * @var bool $noBackdrop If true, then the content will not have a backdrop
+     */
     public $noBackdrop = false;
     
     /**
@@ -726,31 +727,6 @@ abstract class x2base extends X2Controller {
         $this->render('admin', array('model' => $model));
     }
 
-    public function createX2Grid($options=array()){
-        if(empty($options)){
-            $options=array(
-                'id'=>'',
-                'title'=>'',
-                'buttons'=>array(),
-                'template'=>'<div class="page-title">{title}{buttons}{filterHint}{summary}</div>{items}{pager}',
-                'dataProvder'=>null,
-                'filter'=>null,
-                'modelName'=>$this->modelClass,
-                'viewName'=>'',
-                'defaultGvSettings'=>array(
-                    'gvCheckbox' => 30,
-                    'name' => 125,
-                    'createDate' => 78,
-                    'gvControls' => 73,
-                ),
-                'specialColumns'=>array(),
-                'enableControls'=>true,
-                'fullscreen'=>true,
-            );
-        }
-        $this->widget('X2GridView', $options);
-    }
-
     /**
      * Search for a term.  Defined in X2Base so that all Controllers can use, but
      * it makes a call to the SearchController.
@@ -758,20 +734,6 @@ abstract class x2base extends X2Controller {
     public function actionSearch() {
         $term = $_GET['term'];
         $this->redirect(Yii::app()->controller->createAbsoluteUrl('/search/search',array('term'=>$term)));
-    }
-
-    /**
-     * DUMMY METHOD: left to avoid breaking old custom modules (now done in X2ChangeLogBehavior)
-     */
-    protected function updateChangelog($model, $changes) {
-        return $model;
-    }
-
-    /**
-     * DUMMY METHOD: left to avoid breaking old custom modules (now done in X2ChangeLogBehavior)
-     */
-    protected function calculateChanges($old, $new, &$model = null) {
-        return array();
     }
 
     /**
@@ -1421,6 +1383,22 @@ abstract class x2base extends X2Controller {
             return;
         }
         throw new CHttpException (403);
+    }
+
+    /**
+     * DUMMY METHOD: left to avoid breaking old custom modules (now done in X2ChangeLogBehavior)
+     * @deprecated
+     */
+    protected function updateChangelog($model, $changes) {
+        return $model;
+    }
+
+    /**
+     * DUMMY METHOD: left to avoid breaking old custom modules (now done in X2ChangeLogBehavior)
+     * @deprecated
+     */
+    protected function calculateChanges($old, $new, &$model = null) {
+        return array();
     }
 
 }

@@ -52,6 +52,11 @@ class AdminController extends Controller {
     public $layout = '//layouts/column1';
 
     /**
+     * @var bool $noBackdrop If true, then the content will not have a backdrop
+     */
+    public $noBackdrop = false;
+
+    /**
      * Behavior classes used by AdminController
      * @var array
      */
@@ -924,81 +929,84 @@ class AdminController extends Controller {
         if (isset($_POST['Roles'])) {
             $id = $_POST['Roles']['name'];
             $timeout = isset($_POST['Roles']['timeout']) ? $_POST['Roles']['timeout'] : null;
-            $model = Roles::model()->findByAttributes(array('name' => $id));
-            $id = $model->id;
-            if (!isset($_POST['viewPermissions']))
-                $viewPermissions = array();
-            else
-                $viewPermissions = $_POST['viewPermissions'];
-            if (!isset($_POST['editPermissions']))
-                $editPermissions = array();
-            else
-                $editPermissions = $_POST['editPermissions'];
-            if (isset($_POST['users']))
-                $users = $_POST['users'];
-            else
-                $users = array();
-            $model->users = "";
-            if ($timeout !== null) {
-                $model->timeout = $timeout * 60; // Timeout is specified in minutes
-            } else {
-                $model->timeout = null;
-            }
-            if ($model->save()) {
+            $role = Roles::model()->findByAttributes(array('name' => $id));
+            if ($role) {
+                $model = $role;
+                $id = $model->id;
+                if (!isset($_POST['viewPermissions']))
+                    $viewPermissions = array();
+                else
+                    $viewPermissions = $_POST['viewPermissions'];
+                if (!isset($_POST['editPermissions']))
+                    $editPermissions = array();
+                else
+                    $editPermissions = $_POST['editPermissions'];
+                if (isset($_POST['users']))
+                    $users = $_POST['users'];
+                else
+                    $users = array();
+                $model->users = "";
+                if ($timeout !== null) {
+                    $model->timeout = $timeout * 60; // Timeout is specified in minutes
+                } else {
+                    $model->timeout = null;
+                }
+                if ($model->save()) {
 
-                $userRoles = RoleToUser::model()->findAllByAttributes(array('roleId' => $model->id));
-                foreach ($userRoles as $role) {
-                    $role->delete();
-                }
-                $permissions = RoleToPermission::model()->findAllByAttributes(array('roleId' => $model->id));
-                foreach ($permissions as $permission) {
-                    $permission->delete();
-                }
-                foreach ($users as $user) {
-                    $userRecord = User::model()->findByAttributes(array('username' => $user));
-                    $role = new RoleToUser;
-                    $role->roleId = $model->id;
-                    if (!is_numeric($user)) {
+                    $userRoles = RoleToUser::model()->findAllByAttributes(array('roleId' => $model->id));
+                    foreach ($userRoles as $role) {
+                        $role->delete();
+                    }
+                    $permissions = RoleToPermission::model()->findAllByAttributes(array('roleId' => $model->id));
+                    foreach ($permissions as $permission) {
+                        $permission->delete();
+                    }
+                    foreach ($users as $user) {
                         $userRecord = User::model()->findByAttributes(array('username' => $user));
-                        $role->userId = $userRecord->id;
-                        $role->type = 'user';
-                    }/* x2temp */ else {
-                        $role->userId = $user;
-                        $role->type = 'group';
-                    }/* end x2temp */
-                    $role->save();
+                        $role = new RoleToUser;
+                        $role->roleId = $model->id;
+                        if (!is_numeric($user)) {
+                            $userRecord = User::model()->findByAttributes(array('username' => $user));
+                            $role->userId = $userRecord->id;
+                            $role->type = 'user';
+                        }/* x2temp */ else {
+                            $role->userId = $user;
+                            $role->type = 'group';
+                        }/* end x2temp */
+                        $role->save();
+                    }
+                    $fields = Fields::model()->findAll();
+                    $temp = array();
+                    foreach ($fields as $field) {
+                        $temp[] = $field->id;
+                    }
+                    $both = array_intersect($viewPermissions, $editPermissions);
+                    $view = array_diff($viewPermissions, $editPermissions);
+                    $neither = array_diff($temp, $viewPermissions);
+                    foreach ($both as $field) {
+                        $rolePerm = new RoleToPermission;
+                        $rolePerm->roleId = $model->id;
+                        $rolePerm->fieldId = $field;
+                        $rolePerm->permission = 2;
+                        $rolePerm->save();
+                    }
+                    foreach ($view as $field) {
+                        $rolePerm = new RoleToPermission;
+                        $rolePerm->roleId = $model->id;
+                        $rolePerm->fieldId = $field;
+                        $rolePerm->permission = 1;
+                        $rolePerm->save();
+                    }
+                    foreach ($neither as $field) {
+                        $rolePerm = new RoleToPermission;
+                        $rolePerm->roleId = $model->id;
+                        $rolePerm->fieldId = $field;
+                        $rolePerm->permission = 0;
+                        $rolePerm->save();
+                    }
                 }
-                $fields = Fields::model()->findAll();
-                $temp = array();
-                foreach ($fields as $field) {
-                    $temp[] = $field->id;
-                }
-                $both = array_intersect($viewPermissions, $editPermissions);
-                $view = array_diff($viewPermissions, $editPermissions);
-                $neither = array_diff($temp, $viewPermissions);
-                foreach ($both as $field) {
-                    $rolePerm = new RoleToPermission;
-                    $rolePerm->roleId = $model->id;
-                    $rolePerm->fieldId = $field;
-                    $rolePerm->permission = 2;
-                    $rolePerm->save();
-                }
-                foreach ($view as $field) {
-                    $rolePerm = new RoleToPermission;
-                    $rolePerm->roleId = $model->id;
-                    $rolePerm->fieldId = $field;
-                    $rolePerm->permission = 1;
-                    $rolePerm->save();
-                }
-                foreach ($neither as $field) {
-                    $rolePerm = new RoleToPermission;
-                    $rolePerm->roleId = $model->id;
-                    $rolePerm->fieldId = $field;
-                    $rolePerm->permission = 0;
-                    $rolePerm->save();
-                }
+                $this->redirect('manageRoles');
             }
-            $this->redirect('manageRoles');
         }
 
         $this->render('editRole', array(
@@ -1142,11 +1150,11 @@ class AdminController extends Controller {
     public function actionGetRole() {
         if (isset($_POST['Roles'])) {
             $id = $_POST['Roles']['name'];
-            if (is_null($id)) {
+            $role = Roles::model()->findByAttributes(array('name' => $id));
+            if (!$role) {
                 echo "";
                 exit;
             }
-            $role = Roles::model()->findByAttributes(array('name' => $id));
             $id = $role->id;
             $roles = RoleToUser::model()->findAllByAttributes(array('roleId' => $id));
             $users = array();
@@ -2941,8 +2949,16 @@ class AdminController extends Controller {
             $modulePath .= $modulePath;
             if (is_null($listId) || $model != 'Contacts') {
                 $file = "records_export.csv";
-                $listName = CHtml::link(Yii::t('admin', 'All {model}', array('{model}' => $model)), array($modulePath . '/index'), array('style' => 'text-decoration:none;'));
-                $_SESSION['exportModelCriteria'] = array('with' => array()); // Forcefully disable eager loading so it doesn't go super-slow)
+                $listName = CHtml::link(
+                    Yii::t('admin', 'All {model}', array(
+                        '{model}' => $model)),
+                    array($modulePath . '/index'),
+                    array('style' => 'text-decoration:none;')
+                );
+
+                // Forcefully disable eager loading so it doesn't go super-slow)
+                $_SESSION['exportModelCriteria'] = new CDbCriteria();
+                $_SESSION['exportModelCriteria']->with = array();
             } else {
                 $list = X2List::load($listId);
                 $_SESSION['exportModelCriteria'] = $list->queryCriteria();
@@ -3000,9 +3016,19 @@ class AdminController extends Controller {
     public function actionExportModelRecords($page, $model) {
         X2Model::$autoPopulateFields = false;
         $file = $this->safePath($_SESSION['modelExportFile']);
-        $fields = X2Model::model(str_replace(' ', '', $model))->getFields();
+        $staticModel = X2Model::model(str_replace(' ', '', $model));
+        $fields = $staticModel->getFields();
         $fp = fopen($file, 'a+');
+
         // Load data provider based on export criteria
+        $excludeHidden = !isset($_GET['includeHidden']) || $_GET['includeHidden'] === 'false';
+        if ($page == 0 && $excludeHidden && isset($_SESSION['exportModelCriteria']) &&
+            ($_SESSION['exportModelCriteria'] instanceof CDbCriteria)) {
+
+            // Save hidden condition in criteria to
+            $hiddenConditions = $staticModel->getHiddenCondition();
+            $_SESSION['exportModelCriteria']->addCondition ($hiddenConditions);
+        }
         $dp = new CActiveDataProvider($model, array(
             'criteria' => isset($_SESSION['exportModelCriteria']) ? $_SESSION['exportModelCriteria'] : array(),
             'pagination' => array(
@@ -3668,6 +3694,9 @@ class AdminController extends Controller {
                     if ($_SESSION['skipActivityFeed'] === 1)
                         $lookup->createEvent = false;
                     $lookup->name = $importAttribute;
+                    if ($className === 'Contacts' || $modelName === 'X2Leads') {
+                        $this->fixupImportedContactName ($lookup);
+                    }
                     if ($lookup->hasAttribute('visibility'))
                         $lookup->visibility = 1;
                     if ($lookup->hasAttribute('description'))
@@ -3713,24 +3742,30 @@ class AdminController extends Controller {
     }
 
     /**
+     * Helper method to help out the user in the special case where a Contact's full name
+     * is set, but first and last name aren't, or vice versa.
+     * @param $model
+     */
+    protected function fixupImportedContactName (&$model) {
+        if (!empty($model->name) && (empty($model->firstName) && empty($model->lastName))) {
+            $names = preg_split('/ /', $model->name);
+            if (count($names) === 2) {
+                $model->firstName = $names[0];
+                $model->lastName = $names[1];
+            }
+        } else if (empty($model->name) && (!empty($model->firstName) && !empty($model->lastName)))
+            $model->name = $model->firstName ." ". $model->lastName;
+    }
+
+    /**
      * This method is used after importing a records attributes to perform extra tasks, such as
      * assigning lead routing, setting visibility, and reconstructing Action associations.
      * @param string $modelName Name of the model being imported
      * @param X2Model $model Current moel to import
      */
     protected function fixupImportedAttributes($modelName, X2Model &$model) {
-        if ($modelName === 'Contacts' || $modelName === 'X2Leads') {
-            // Help out the user in the special case where a Contact's full name
-            // is set, but first and last name aren't, or vice versa.
-            if (!empty($model->name) && (empty($model->firstName) && empty($model->lastName))) {
-                $names = preg_split('/ /', $model->name);
-                if (count($names) === 2) {
-                    $model->firstName = $names[0];
-                    $model->lastName = $names[1];
-                }
-            } else if (empty($model->name) && (!empty($model->firstName) && !empty($model->lastName)))
-                $model->name = $model->firstName ." ". $model->lastName;
-        }
+        if ($modelName === 'Contacts' || $modelName === 'X2Leads')
+            $this->fixupImportedContactName ($model);
 
         if ($modelName === 'Actions' && isset($model->associationType))
             $this->reconstructImportedActionAssoc($model);
@@ -4740,9 +4775,6 @@ class AdminController extends Controller {
             $fp = fopen($file, 'a+');
             $tempModel = X2Model::model($model);
             $meta = array_keys($tempModel->attributes);
-            if ($model == 'Actions') {
-                $meta[] = 'actionDescription';
-            }
             $meta[] = $model;
             if ($page == 0)
                 fputcsv($fp, $meta); // If we're on the first page for this model, need to add metadata.
@@ -4769,9 +4801,6 @@ class AdminController extends Controller {
                 }
                 $tempAttributes = $tempModel->attributes;
                 $tempAttributes = array_merge($tempAttributes, $record->attributes);
-                if ($model == 'Actions') {
-                    $tempAttributes['actionDescription'] = $record->actionDescription;
-                }
                 if ($model == 'Profile') {
                     $tempAttributes['theme'] = json_encode($record->theme);
                 }
@@ -4918,23 +4947,35 @@ class AdminController extends Controller {
      * This particular function merely renders the upload page.
      */
     public function actionImport() {
-        if (isset($_FILES['data'])) {
-            $overwrite = $_POST['overwrite'];
-            $_SESSION['overwrite'] = $overwrite;
-            $_SESSION['counts'] = array();
-            $_SESSION['overwriten'] = array();
-            $_SESSION['overwriteFailure'] = array();
-            $_SESSION['model'] = "";
-            $_SESSION['failed'] = 0;
-            $temp = CUploadedFile::getInstanceByName('data');
-            $temp->saveAs($this->safePath());
-            // If we have post data, render the import processing page
-            $this->render('processImport', array(
-                'overwrite' => $overwrite,
-            ));
-        } else {
-            $this->render('import');
+        $formModel = new GlobalImportFormModel;
+
+        if (isset ($_POST['GlobalImportFormModel']) && isset ($_FILES['GlobalImportFormModel'])) {
+            $formModel->setAttributes ($_POST['GlobalImportFormModel']);
+            $formModel->data = CUploadedFile::getInstance ($formModel, 'data');
+
+            if ($formModel->validate ()) {
+                $_SESSION['overwrite'] = $formModel->overwrite;
+                $_SESSION['counts'] = array();
+                $_SESSION['overwriten'] = array();
+                $_SESSION['overwriteFailure'] = array();
+                $_SESSION['model'] = "";
+                $_SESSION['failed'] = 0;
+
+                if ($formModel->data->saveAs($this->safePath())) {
+                    // If we have post data, render the import processing page
+                    $this->render('processImport', array(
+                        'overwrite' => $formModel->overwrite,
+                    ));
+                    Yii::app()->end ();
+                } else {
+                    $formModel->addError ('data', Yii::t('admin', 'File could not be uploaded'));
+                }
+            }
         }
+
+        $this->render('import', array (
+            'formModel' => $formModel
+        ));
     }
 
     /**
@@ -5262,8 +5303,10 @@ class AdminController extends Controller {
                         $metaData = $_SESSION['metaData'];
                     } else {
                         $attributes = array_combine($metaData, $arr);
-                        if ($modelType == "Actions" && (isset($attributes['type']) && $attributes['type'] == 'workflow')) {
-                            // In the event that we're importing workflow, we need a special scenario.
+                        if ($modelType == "Actions" && (isset($attributes['type']) && 
+                            $attributes['type'] == 'workflow')) {
+                            // In the event that we're importing workflow, we need a special 
+                            // scenario.
                             $model = new Actions('workflow');
                         } else {
                             $model = new $modelType;
@@ -5300,6 +5343,12 @@ class AdminController extends Controller {
                             // Users & Profile normally require special validation, set a scenario for import
                             $model->setScenario('import');
                         }
+                        if ($_SESSION['overwrite'] == 1 && 
+                            property_exists ($model, 'subScenario')) {
+
+                            $model->subScenario = 'importOverwrite';
+                        }
+
                         // If an ID was provided, check if there's already a model with that ID
                         $lookup = X2Model::model($modelType)->findByPk($model->id);
                         $lookupFlag = isset($lookup);
@@ -5354,20 +5403,25 @@ class AdminController extends Controller {
                                     $importLink->save();
                                 }
                                 if ($modelType === "Fields") {
-                                    // If we're creating a field, we must also recreate the respective table index
+                                    // If we're creating a field, we must also recreate the 
+                                    // respective table index
                                     if (isset($model->keyType))
                                         $model->createIndex($model->keyType === "UNI");
                                 } else if ($modelType === "FormLayout") {
-                                    /**
-                                     * Ensure default form settings are maintained. If overwrite is set, the most
-                                     * recently imported layout will be set to default, otherwise the default flags
-                                     * for the newly imported layout will be cleared.
-                                     */
+                                    /*
+                                    Ensure default form settings are maintained. If overwrite 
+                                    is set, the most recently imported layout will be set to 
+                                    default, otherwise the default flags for the newly imported 
+                                    layout will be cleared.
+                                    */
                                     if ($_SESSION['overwrite']) {
                                         if ($model->defaultView)
-                                            FormLayout::clearDefaultFormLayouts ('view', $modelName);
+                                            FormLayout::clearDefaultFormLayouts (
+                                                'view', $model->model);
                                         if ($model->defaultForm)
-                                            FormLayout::clearDefaultFormLayouts ('form', $modelName);
+                                            FormLayout::clearDefaultFormLayouts (
+                                                'form', $model->model);
+                                        $model->save ();
                                     } else {
                                         $model->defaultView = false;
                                         $model->defaultForm = false;
@@ -5388,6 +5442,8 @@ class AdminController extends Controller {
                             }
                         } else {
                             // Put the failed lead into the failed import CSV
+                            //AuxLib::debugLogR ('failed to import '.get_class ($model));
+                            //AuxLib::debugLogR ($model->getErrors ());
                             $failedImport = fopen($this->safePath('failedImport.csv'), 'a+');
                             $lastFailed = $_SESSION['lastFailed'];
                             if ($lastFailed != $modelType) {

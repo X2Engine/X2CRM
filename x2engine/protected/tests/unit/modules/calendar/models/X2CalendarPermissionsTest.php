@@ -47,6 +47,7 @@ class X2CalendarPermissionsTest extends X2DbTestCase {
      * Ensure that list of viewable calendars correctly reflects calendar permissions records
      */
     public function testGetViewableUserCalendarNames () {
+        TestingAuxLib::loadX2NonWebUser ();
         TestingAuxLib::suLogin ('admin');        
         $viewable = array_keys (X2CalendarPermissions::getViewableUserCalendarNames ());
         $this->assertEquals (array_merge (
@@ -57,7 +58,7 @@ class X2CalendarPermissionsTest extends X2DbTestCase {
             ArrayUtil::sort ($viewable));
 
         $user = $this->users ('testUser');
-        TestingAuxLib::suLogin ('testUser');        
+        TestingAuxLib::suLogin ('testuser');        
         $viewable = array_keys (X2CalendarPermissions::getViewableUserCalendarNames ());
         $grantedUsers = array_unique (array_merge (
             array ('Anyone', 'testuser'), Yii::app()->db->createCommand ("
@@ -74,6 +75,7 @@ class X2CalendarPermissionsTest extends X2DbTestCase {
             ")->queryColumn (array (':userId' => $user->id))));
         $this->assertEquals (ArrayUtil::sort ($grantedUsers), 
             ArrayUtil::sort ($viewable));
+        TestingAuxLib::restoreX2WebUser ();
     }
 
 }

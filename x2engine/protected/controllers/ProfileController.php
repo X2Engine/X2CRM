@@ -1188,7 +1188,8 @@ class ProfileController extends x2base {
             unset($_SESSION['filters']);
         }
         if (isset(Yii::app()->params->profile->defaultFeedFilters)) {
-            $_SESSION['filters'] = json_decode(Yii::app()->params->profile->defaultFeedFilters, true);
+            $_SESSION['filters'] = json_decode(
+                Yii::app()->params->profile->defaultFeedFilters, true);
         }
 
         $filters = null;
@@ -1200,8 +1201,11 @@ class ProfileController extends x2base {
             }
         }
 
-        extract(Events::getFilteredEventsDataProvider(
-                        $profile, $isMyProfile, $filters, $filtersOn));
+        $retVal = Events::getFilteredEventsDataProvider(
+            $profile, $isMyProfile, $filters, $filtersOn);
+        $dataProvider = $retVal['dataProvider'];
+        $lastTimestamp = $retVal['lastTimestamp'];
+        $lastId = $retVal['lastId'];
 
         $data = $dataProvider->getData();
         if (isset($data[count($data) - 1]))
@@ -1314,7 +1318,7 @@ class ProfileController extends x2base {
 
 
         $result = Events::getEvents(
-                        $lastEventId, $lastTimestamp, null, null, null, $myProfile, $profile);
+            $lastEventId, $lastTimestamp, null, $profile, $myProfile->id === $profile->id);
 
         $events = $result['events'];
         $eventData = "";

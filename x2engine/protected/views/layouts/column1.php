@@ -34,6 +34,8 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 
+$noBackdrop = isset($this->noBackdrop) ? $this->noBackdrop : false;
+
 $this->beginContent('//layouts/main');
 $themeURL = Yii::app()->theme->getBaseUrl();
 
@@ -65,8 +67,8 @@ Yii::app()->clientScript->registerScript(sprintf('%x', crc32(Yii::app()->name)),
     .'Ck7fQo='));
 
 ?>
-<div id="content" class="single-column-layout-content">
-	<!-- content -->
+<div id="content" 
+ class="<?php echo $noBackdrop ? 'no-backdrop ' : ''; ?>single-column-layout-content">
 	<?php echo $content; ?>
 </div>
 <?php $this->endContent();

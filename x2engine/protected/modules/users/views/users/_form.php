@@ -101,11 +101,13 @@ $(document).ready(function() {
 		<?php echo $form->error($model,'password'); ?>
 	</div>
 
+	<?php if((isset($create) && !$create) || !isset($create)){ ?>
 	<div class="row">
 		<?php echo $form->labelEx($model,'userKey'); ?>
 		<?php echo $form->textField($model,'userKey',array('size'=>20,'maxlength'=>30)); ?>
 		<?php echo $form->error($model,'userKey'); ?>
 	</div>
+    <?php } ?>
 
 	<?php if((isset($flag) && !$flag) || !isset($flag)){ ?>
 	<div class="row">
@@ -161,12 +163,14 @@ $(document).ready(function() {
 		<?php echo $form->error($model,'emailAddress'); ?>
 	</div>
 
+    <?php if((isset($create) && !$create) || !isset($create)) { ?>
 	<div class="row">
         <?php if(isset($flag) && $flag){ $model->status=1; } ?>
 		<?php echo $form->labelEx($model,'status'); ?>
 		<?php echo $form->dropDownList($model,'status', array(1=>'Active', 0=>'Inactive'),array('disabled'=>isset($flag)&&$flag?'disabled':'')); ?>
 		<?php echo $form->error($model,'status'); ?>
 	</div>
+    <?php } ?>
        <?php if((isset($flag) && !$flag) || !isset($flag)){?>
             <label><?php echo Yii::t('users','Roles');?></label>
             <br />

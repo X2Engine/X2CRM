@@ -202,15 +202,26 @@ class FileUtil {
      * @return bool false if rename wasn't called, true otherwise (value used for testing purposes)
      */
     private static function caseInsensitiveCopyFix ($source, $target) {
-        // get path to file corresponding to target, so that we can get the actual basename
+        $sourceBasename = basename ($source);
+        $targetBasename = basename ($target);
+        // if basename of source and target params aren't the same, it means that case was changed
+        // explicitly
+        if ($sourceBasename !== $targetBasename) return false;
+
+        // get path to file corresponding to target, so that we can get the basename of the actual
+        // file
         $target = realpath ($target); 
         if (!$target) return false;
 
         $targetBasename = basename ($target);
-        $sourceBasename = basename ($source);
-        if ($targetBasename === $sourceBasename) 
-            // source and target have the same case so renaming won't be necessary
+
+        // source and target have the same case so renaming won't be necessary
+        if ($targetBasename === $sourceBasename ||
+            // or source and target base name differ by something other than case
+            strtolower ($targetBasename) !== strtolower ($sourceBasename)) {
+
             return false;
+        }
 
         // replace target basename with source basename
         $newTargetName = preg_replace (

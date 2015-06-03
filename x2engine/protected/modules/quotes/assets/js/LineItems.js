@@ -1055,10 +1055,6 @@ LineItems.prototype.setupEditingBehavior = function () {
         handle: ".handle",
         start: function (event, ui) {
             $(that._productMenuSelector).hide ();
-            if ($(ui.item).hasClass ("line-item")) {
-                var widget = $(ui.item).find ("input.product-name").autocomplete ("widget");
-                if (widget) $(widget).hide ();
-            }
         },
         stop: function (evt, ui) { that.resetLineNums (evt, ui); },
         //helper: function (evt, sortedElem) { that.preserveRowWidth (evt, sortedElem); }

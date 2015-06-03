@@ -62,7 +62,7 @@ Yii::app()->clientScript->registerCss("AvatarCss", "
     font-weight: bold;
     font-size: 12px;
 
-    border-radius: 0 0 4px 4px;
+    border-radius: 0 0 8px 8px;
     border-top: none;
     border: 2px solid rgb(204, 200, 200);
     
@@ -71,6 +71,7 @@ Yii::app()->clientScript->registerCss("AvatarCss", "
 
     opacity:0.7;
     top: 60px;
+    left: 2px;
 }
 
 #photo-upload-overlay:hover {

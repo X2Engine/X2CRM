@@ -160,6 +160,7 @@ class UsersController extends x2base {
     }
 
     public function actionCreateAccount(){
+        Yii::import('application.components.ThemeGenerator.LoginThemeHelper');
         $this->layout='//layouts/login';
         if(isset($_GET['key'])){
             $key=$_GET['key'];

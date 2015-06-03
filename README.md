@@ -1,19 +1,20 @@
-# 5.0.7 #
-5/12/2015
+# 5.0.8 #
+6/2/2015
 
 * General Changelog / Developer Notes:
-  * Fixed bug in the application updater tool which would cause certain files to be incorrectly deleted on case-insensitive file systems
-  * Fixed bug in flow deletion action menu link, changelog deletion button, and "Go Invisible" button related to 5.0.5 introduction of CSRF token validation
-  * Fixed bug in mass update tool which prevented value for boolean type fields from being set properly
-  * Automatic record tagging feature now ignores CSS color hex codes
-  * API VoIP action no longer retrieves phone numbers of hidden contacts
-  * X2Flow tag triggers no longer fired on record merge
-  * Added web form deletion validation dialog
+  * Fixed issue which caused incorrect naming of uploaded media files
+  * New exporter option to include merged duplicate records in export, disabled by default
+  * Numerous bug fixes to global import/export tool
+  * name field of related contacts created on record import will now be generated automatically from firstName and lastName fields
+  * Flows now triggered when records are updated via the REST API
+  * Fixed bug in X2Flow Designer which would cause flow action configuration menus to load incorrectly when quickly switching between them
+  * Fixed REST API bug which would cause pagination to be disabled if max page size was set to 0
+  * Placeholder values no longer submitted with X2Touch forms
+  * Fixed bug in email client which prevented email conversation from being automatically appended to new email when replying
 * Tracked Bug Fixes:  
-  * [2359](http://x2software.com/index.php/bugReports/2359): Undefined index: model  
-  * [2398](http://x2software.com/index.php/bugReports/2398): Property "TwitterApp.server" is not defined.  
-  * [2400](http://x2software.com/index.php/bugReports/2400): Undefined offset: 11  
-  * [2416](http://x2software.com/index.php/bugReports/2416): Autocomplete field broken in grid view mass update dialog for link type fields.  
+  * [2422](http://x2software.com/index.php/bugReports/2422): User invitation redirects to login screen  
+  * [2458](http://x2software.com/index.php/bugReports/2458): Undefined offset: 0  
+  * [2530](http://x2software.com/index.php/bugReports/2530): Undefined property "Services.contactIdModel".  
 
 
 

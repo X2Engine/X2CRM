@@ -146,7 +146,7 @@ class RecordViewWidgetManager extends TwoColumnSortableWidgetManager {
                 'InlineTagsWidget',
                 'WorkflowStageDetailsWidget',
                 'ActionHistoryChartWidget',
-                'ImageGalleryWidget',
+                 
                 'EmailsWidget',
                 'QuotesWidget',
             ))) ||
