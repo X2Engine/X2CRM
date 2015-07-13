@@ -142,7 +142,9 @@ class Modules extends CActiveRecord {
     public static function getExportableModules() {
         $modules = Modules::model()->findAll();
         $moduleList = array();
-        $skipModules = array('Calendar', 'Charts', 'Groups', 'Reports', 'Media', 'Users', 'Workflow');
+        $skipModules = array(
+            'Calendar', 'Charts', 'Groups', 'Reports', 'Media', 'Users', 'Workflow', 
+            'EmailInboxes');
         foreach($modules as $module){
             $name = ucfirst($module->name);
             if (in_array($name, $skipModules)) {
@@ -150,7 +152,9 @@ class Modules extends CActiveRecord {
             }
             if($name != 'Document'){
                 $controllerName = $name.'Controller';
-                if(file_exists('protected/modules/'.$module->name.'/controllers/'.$controllerName.'.php')){
+                if(file_exists(
+                    'protected/modules/'.$module->name.'/controllers/'.$controllerName.'.php')){
+
                     Yii::import("application.modules.$module->name.controllers.$controllerName");
                     $controller = new $controllerName($controllerName);
                     $model = $controller->modelClass;
@@ -223,6 +227,8 @@ class Modules extends CActiveRecord {
                     $moduleTitle = preg_replace('/y$/', 'ies', $moduleTitle);
                 } else if (preg_match('/ss$/', $moduleTitle)) {
                     $moduleTitle .= 'es';
+                } else if (in_array ($moduleTitle, array ('Service'))) {
+                    $moduleTitle .= 's';
                 }
             }
         }

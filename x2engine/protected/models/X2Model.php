@@ -385,10 +385,11 @@ abstract class X2Model extends CActiveRecord {
                 $modules = X2Model::model('Modules')->findAll ($criteria);
             }
             foreach ($modules as $module) {
-                if ($modelName = X2Model::getModelName($module->name))
+                if ($modelName = X2Model::getModelName($module->name)) {
                     $modelNames[$modelName] = Yii::t('app', $module->title);
-                else // Custom module most likely
-                    $modelNames[ucfirst($module->name)] = self::getModelTitle($modelName);
+                } else { // Shouldn't happen since getModelName uses class_exists
+                    $modelNames[ucfirst($module->name)] = Yii::t('app', $module->title);
+                }
             }
             asort ($modelNames);
             if ($criteria !== null) {
@@ -421,7 +422,7 @@ abstract class X2Model extends CActiveRecord {
             foreach ($modules as $module) {
                 if ($modelName = X2Model::getModelName($module->name))
                     $modelNames [] = $modelName;
-                else // Custom module most likely
+                else // Shouldn't happen since getModelName uses class_exists
                     $modelNames [] = ucfirst($module->name);
             }
             self::$_moduleModelNames = $modelNames;
@@ -476,7 +477,7 @@ abstract class X2Model extends CActiveRecord {
         return $associationTypes;
     }
 
-    public function getDisplayName ($plural=true) {
+    public function getDisplayName ($plural=true, $ofModule=true) {
         $moduleName = X2Model::getModuleName (get_class ($this));
         return Modules::displayName ($plural, $moduleName);
     }
@@ -1391,9 +1392,11 @@ abstract class X2Model extends CActiveRecord {
                 ->queryColumn();
 
         if ($assoc === true) {
-            return array_combine($modelTypes, array_map(function($term) {
-                return Yii::t('app', X2Model::getModelTitle($term));
+            $modelTypes = array_combine($modelTypes, array_map(function($type) {
+                return X2Model::model ($type)->getDisplayName (true, false);
             }, $modelTypes));
+            asort ($modelTypes);
+            return $modelTypes;
         }
         $modelTypes = array_map(function($term) {
             return Yii::t('app', $term);
@@ -1799,19 +1802,19 @@ abstract class X2Model extends CActiveRecord {
                 $model->$fieldName = Formatter::formatDate($model->$fieldName, 'medium');
                 Yii::import('application.extensions.CJuiDateTimePicker.CJuiDateTimePicker');
                 $input = Yii::app()->controller->widget('CJuiDateTimePicker', array(
-                            'model' => $model, //Model object
-                            'attribute' => $fieldName, //attribute name
-                            'mode' => 'date', //use "time","date" or "datetime" (default)
-                            'options' => array(// jquery options
-                                'dateFormat' => Formatter::formatDatePicker(),
-                                'changeMonth' => true,
-                                'changeYear' => true,
-                            ),
-                            'htmlOptions' => array_merge(array(
-                                'title' => $field->attributeLabel,
-                                    ), $htmlOptions),
-                            'language' => (Yii::app()->language == 'en') ? '' : Yii::app()->getLanguage(),
-                                ), true);
+                    'model' => $model, //Model object
+                    'attribute' => $fieldName, //attribute name
+                    'mode' => 'date', //use "time","date" or "datetime" (default)
+                    'options' => array(// jquery options
+                        'dateFormat' => Formatter::formatDatePicker(),
+                        'changeMonth' => true,
+                        'changeYear' => true,
+                    ),
+                    'htmlOptions' => array_merge(array(
+                        'title' => $field->attributeLabel,
+                            ), $htmlOptions),
+                    'language' => (Yii::app()->language == 'en') ? '' : Yii::app()->getLanguage(),
+                        ), true);
                 $model->$fieldName = $oldDateVal;
                 return $input;
             case 'dateTime':
@@ -3406,6 +3409,9 @@ abstract class X2Model extends CActiveRecord {
                 continue;
 
             $fieldName = $field->fieldName;
+            if ($this instanceof Actions && $fieldName === 'actionDescription') {
+                $fieldName = 'ActionText.text';
+            }
             $attributes = $field->getAttributes ();
             if ($parentAttribute !== null) {
                 $fieldName = $parentAttribute.$separator.$fieldName;

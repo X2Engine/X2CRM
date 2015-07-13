@@ -284,7 +284,7 @@ class ContactsController extends x2base {
         list($fullNameCol,$fullNameParam) = Formatter::fullNameSelect(
             'firstName', 'lastName', 'value');
         // This is necessary because the query won't work if one simply compares
-        // the ad-hoc column "value" as "value LIKE :qterm".
+        // the alias "value" as "value LIKE :qterm".
         list($fullNameCol2, $fullNameParam2) = Formatter::fullNameSelect('firstName', 'lastName');
         $sql = 'SELECT id, city, state, country, email, assignedTo, ' . $fullNameCol . '
             FROM x2_contacts t 
@@ -323,10 +323,15 @@ class ContactsController extends x2base {
         }
         // Optional search parameter for autocomplete
         $qterm = isset($_GET['term']) ? $_GET['term'] . '%' : '';
+        $static = isset($_GET['static']) && $_GET['static'];
         $result = Yii::app()->db->createCommand()
                 ->select('id,name as value')
                 ->from('x2_lists')
-                ->where('modelName="Contacts" AND type!="campaign" AND name LIKE :qterm' . $condition, array(':qterm' => $qterm))
+                ->where(
+                    ($static ? 'type="static" AND ' : '').
+                    'modelName="Contacts" AND type!="campaign" 
+                    AND name LIKE :qterm' . $condition, 
+                    array(':qterm' => $qterm))
                 ->order('name ASC')
                 ->queryAll();
         echo CJSON::encode($result);
@@ -493,7 +498,7 @@ class ContactsController extends x2base {
                     Contacts::model()->deleteAll($criteria);
                 }
             }
-            echo $model->id;
+            echo CHtml::encode ($model->id);
         }
     }
 
@@ -507,7 +512,7 @@ class ContactsController extends x2base {
             $action = $_POST['action'];
             $oldId = $_POST['id'];
             if ($ref == 'create' && is_null($action) || $action == 'null') {
-                echo $oldId;
+                echo CHtml::encode ($oldId);
                 return;
             } elseif ($ref == 'create') {
                 $oldRecord = X2Model::model('Contacts')->findByPk($oldId);
@@ -530,11 +535,9 @@ class ContactsController extends x2base {
                         $notif->modelType = 'Contacts';
                         $notif->modelId = $oldId;
                         $notif->save();
-                        echo $_POST['id'];
                         return;
                     } elseif ($action == 'deleteThis') {
                         $oldRecord->delete();
-                        echo $_POST['id'];
                         return;
                     }
                 }
@@ -548,7 +551,7 @@ class ContactsController extends x2base {
                 $newRecord->save();
                 if ($action === '') {
                     $newRecord->delete();
-                    echo $oldId;
+                    echo CHtml::encode ($oldId);
                     return;
                 } else {
                     if (isset($oldRecord)) {
@@ -577,7 +580,7 @@ class ContactsController extends x2base {
                         }
                     }
 
-                    echo $newId;
+                    echo CHtml::encode ($newId);
                 }
             }
         }

@@ -54,7 +54,14 @@ $this->widget('zii.widgets.grid.CGridView', array(
             'header' => Yii::t('admin','Tag'),
             'name' => 'tag',
             'type' => 'raw',
-            'value' => "CHtml::link(\$data->tag,array('/search/search','term'=>'#'.ltrim(\$data->tag,'#')), array('class'=>'x2-link x2-tag'))"
+            'value' => "CHtml::link(
+                \$data->tag, 
+                array(
+                    '/search/search',
+                    'term'=>'#'.CHtml::encode (ltrim(\$data->tag,'#'))
+                ), 
+                array('class'=>'x2-link x2-tag')
+            )"
         ),
         array(
             'header' => Yii::t('admin','# of Records'),
@@ -64,7 +71,7 @@ $this->widget('zii.widgets.grid.CGridView', array(
         array(
             'header' => Yii::t('admin','Delete Tag'),
             'type' => 'raw',
-            'value' => "CHtml::link(Yii::t('admin','Delete Tag'),'#',array('class'=>'x2-button', 'csrf'=>true,'submit'=>'deleteTag?tag='.\substr(\$data->tag,1),'confirm'=>Yii::t('admin','Are you sure you want to delete this tag?')))"
+            'value' => "CHtml::link(Yii::t('admin','Delete Tag'),'#',array('class'=>'x2-button', 'csrf'=>true,'submit'=>'deleteTag?tag='.urlencode (\substr(\$data->tag,1)),'confirm'=>Yii::t('admin','Are you sure you want to delete this tag?')))"
         ),
     ),
 ));

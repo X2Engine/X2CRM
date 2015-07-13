@@ -90,7 +90,8 @@ class X2FlowRecordComment extends X2FlowAction {
                 true,
                 Yii::t('studio', 'View created action: ').$model->getLink());
         }else{
-            return array(false, array_shift($model->getErrors()));
+            $errors = $model->getErrors ();
+            return array(false, array_shift($errors));
         }
     }
 

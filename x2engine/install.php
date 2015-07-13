@@ -473,11 +473,7 @@ $timezones = array(
                                     echo "		<option value=\"$code\"$selected>$languageName</option>\n"; // list all available languages
                                 }
                             }
-
-                            // flag images are public domain from http://www.famfamfam.com/lab/icons/flags
-                            $flagUrl = file_exists("images/flags/$lang.png") ? "images/flags/$lang.png" : "images/flags/us.png";
-
-                            echo '</select> <img src="'.$flagUrl.'">';
+                            echo '</select>';
                             ?></div>
 
                     <div class="row"><label for="currency"><?php echo installer_t('Currency'); ?></label>

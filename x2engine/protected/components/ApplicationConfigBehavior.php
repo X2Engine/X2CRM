@@ -181,6 +181,7 @@ class ApplicationConfigBehavior extends CBehavior {
                 x2 = {};
             }
             x2.DEBUG = '.(YII_DEBUG ? 'true' : 'false').';
+            x2.UNIT_TESTING = '.(YII_UNIT_TESTING ? 'true' : 'false').';
             x2.notifUpdateInterval = '.$this->settings->chatPollTime.';
             x2.isAndroid = '.(IS_ANDROID ? 'true' : 'false').';
             x2.isIPad = '.(IS_IPAD ? 'true' : 'false').';

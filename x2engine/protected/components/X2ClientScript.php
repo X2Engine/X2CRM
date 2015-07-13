@@ -711,6 +711,51 @@ class X2ClientScript extends NLSClientScript {
         ", CClientScript::POS_END);
     }
 
+    private function registerTestingScripts () {
+        if (YII_UNIT_TESTING) {
+//            $this->registerScriptFile (
+//                $baseUrl.'/js/qunit/qunit-1.15.0.js', CClientScript::POS_HEAD);
+//            $this->registerCssFile ($baseUrl.'/js/qunit/qunit-1.15.0.css');
+            Yii::app()->clientScript->registerScript('unitTestingErrorHandler',"
+            ;(function () {
+                if (typeof x2 === 'undefined') return;
+                if (x2.UNIT_TESTING) {
+                    var oldErrorHandler = window.onerror;
+                    window.onerror = function (errorMessage, url, lineNumber) {
+                        $('body').attr (
+                            'x2-js-error', 'Javascript Error: ' + url + ': ' + lineNumber + ': ' +
+                                errorMessage);
+
+                        if (oldErrorHandler) return oldErrorHandler (errorMessage, url, lineNumber);
+                        return false;
+                    };
+                }
+            }) ();
+            ", self::POS_HEAD);
+        }
+    }
+
+    private function registerDebuggingScripts () {
+        if (YII_DEBUG) {
+            Yii::app()->clientScript->registerScript('debuggingErrorHandler',"
+            ;(function () {
+                if (typeof x2 === 'undefined') return;
+                if (x2.DEBUG) {
+                    var oldErrorHandler = window.onerror;
+                    window.onerror = function (errorMessage, url, lineNumber) {
+//                        alert (
+//                            'JavaScript Error: ' + url + ': ' + lineNumber + ': ' + errorMessage +
+//                            '.\\nTo turn these messages off, set YII_DEBUG to false.');
+                        if (oldErrorHandler) return oldErrorHandler (errorMessage, url, lineNumber);
+                        return false;
+                    };
+                }
+            }) ();
+            ", self::POS_HEAD);
+        }
+    }
+
+
     /**
      * Performs all the necessary JavaScript/CSS initializations for most parts of the app.
      */
@@ -776,11 +821,8 @@ class X2ClientScript extends NLSClientScript {
             ->registerScriptFile($baseUrl.'/js/jQueryOverrides.js', CCLientScript::POS_END)
             ->registerScriptFile($baseUrl.'/js/checklistDropdown/jquery.multiselect.js');
 
-//        if (YII_UNIT_TESTING) {
-//            $this->registerScriptFile (
-//                $baseUrl.'/js/qunit/qunit-1.15.0.js', CClientScript::POS_HEAD);
-//            $this->registerCssFile ($baseUrl.'/js/qunit/qunit-1.15.0.css');
-//        }
+        $this->registerTestingScripts ();
+        $this->registerDebuggingScripts ();
 
         if(IS_IPAD){
             $this->registerScriptFile($baseUrl.'/js/jquery.mobile.custom.js');

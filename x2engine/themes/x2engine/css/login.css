@@ -32,56 +32,78 @@
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2Engine".
  *****************************************************************************************/
-/***********************************************************************************
- * Copyright (C) 2011-2015 X2Engine Inc. All Rights Reserved.
- *
- * X2Engine Inc.
- * P.O. Box 66752
- * Scotts Valley, California 95067 USA
- * Company website: http://www.x2engine.com
- *
- * X2Engine Inc. grants you a perpetual, non-exclusive, non-transferable license
- * to install and use this Software for your internal business purposes only
- * for the number of users purchased by you. Your use of this Software for
- * additional users is not covered by this license and requires a separate
- * license purchase for such users. You shall not distribute, license, or
- * sublicense the Software. Title, ownership, and all intellectual property
- * rights in the Software belong exclusively to X2Engine. You agree not to file
- * any patent applications covering, relating to, or depicting this Software
- * or modifications thereto, and you agree to assign any patentable inventions
- * resulting from your use of this Software to X2Engine.
- *
- * THIS SOFTWARE IS PROVIDED "AS IS" AND WITHOUT WARRANTIES OF ANY KIND, EITHER
- * EXPRESS OR IMPLIED, INCLUDING WITHOUT LIMITATION THE IMPLIED WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, TITLE, AND NON-INFRINGEMENT.
- **********************************************************************************/
+/*****************************************************************************************
+ * X2Engine Open Source Edition is a customer relationship management program developed by
+ * X2Engine, Inc. Copyright (C) 2011-2015 X2Engine Inc.
+ * 
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU Affero General Public License version 3 as published by the
+ * Free Software Foundation with the addition of the following permission added
+ * to Section 15 as permitted in Section 7(a): FOR ANY PART OF THE COVERED WORK
+ * IN WHICH THE COPYRIGHT IS OWNED BY X2ENGINE, X2ENGINE DISCLAIMS THE WARRANTY
+ * OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
+ * 
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.  See the GNU Affero General Public License for more
+ * details.
+ * 
+ * You should have received a copy of the GNU Affero General Public License along with
+ * this program; if not, see http://www.gnu.org/licenses or write to the Free
+ * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301 USA.
+ * 
+ * You can contact X2Engine, Inc. P.O. Box 66752, Scotts Valley,
+ * California 95067, USA. or at email address contact@x2engine.com.
+ * 
+ * The interactive user interfaces in modified source and object code versions
+ * of this program must display Appropriate Legal Notices, as required under
+ * Section 5 of the GNU Affero General Public License version 3.
+ * 
+ * In accordance with Section 7(b) of the GNU Affero General Public License version 3,
+ * these Appropriate Legal Notices must retain the display of the "Powered by
+ * X2Engine" logo. If the display of the logo is not reasonably feasible for
+ * technical reasons, the Appropriate Legal Notices must display the words
+ * "Powered by X2Engine".
+ *****************************************************************************************/
 /***************************************
 * This file is responsible for mantaining
 * general purpose mixins and classes. 
 ***************************************/
-/***********************************************************************************
- * Copyright (C) 2011-2015 X2Engine Inc. All Rights Reserved.
- *
- * X2Engine Inc.
- * P.O. Box 66752
- * Scotts Valley, California 95067 USA
- * Company website: http://www.x2engine.com
- *
- * X2Engine Inc. grants you a perpetual, non-exclusive, non-transferable license
- * to install and use this Software for your internal business purposes only
- * for the number of users purchased by you. Your use of this Software for
- * additional users is not covered by this license and requires a separate
- * license purchase for such users. You shall not distribute, license, or
- * sublicense the Software. Title, ownership, and all intellectual property
- * rights in the Software belong exclusively to X2Engine. You agree not to file
- * any patent applications covering, relating to, or depicting this Software
- * or modifications thereto, and you agree to assign any patentable inventions
- * resulting from your use of this Software to X2Engine.
- *
- * THIS SOFTWARE IS PROVIDED "AS IS" AND WITHOUT WARRANTIES OF ANY KIND, EITHER
- * EXPRESS OR IMPLIED, INCLUDING WITHOUT LIMITATION THE IMPLIED WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, TITLE, AND NON-INFRINGEMENT.
- **********************************************************************************/
+/*****************************************************************************************
+ * X2Engine Open Source Edition is a customer relationship management program developed by
+ * X2Engine, Inc. Copyright (C) 2011-2015 X2Engine Inc.
+ * 
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU Affero General Public License version 3 as published by the
+ * Free Software Foundation with the addition of the following permission added
+ * to Section 15 as permitted in Section 7(a): FOR ANY PART OF THE COVERED WORK
+ * IN WHICH THE COPYRIGHT IS OWNED BY X2ENGINE, X2ENGINE DISCLAIMS THE WARRANTY
+ * OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
+ * 
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.  See the GNU Affero General Public License for more
+ * details.
+ * 
+ * You should have received a copy of the GNU Affero General Public License along with
+ * this program; if not, see http://www.gnu.org/licenses or write to the Free
+ * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301 USA.
+ * 
+ * You can contact X2Engine, Inc. P.O. Box 66752, Scotts Valley,
+ * California 95067, USA. or at email address contact@x2engine.com.
+ * 
+ * The interactive user interfaces in modified source and object code versions
+ * of this program must display Appropriate Legal Notices, as required under
+ * Section 5 of the GNU Affero General Public License version 3.
+ * 
+ * In accordance with Section 7(b) of the GNU Affero General Public License version 3,
+ * these Appropriate Legal Notices must retain the display of the "Powered by
+ * X2Engine" logo. If the display of the logo is not reasonably feasible for
+ * technical reasons, the Appropriate Legal Notices must display the words
+ * "Powered by X2Engine".
+ *****************************************************************************************/
 /***********************************************************************
 * Grays 
 ***********************************************************************/
@@ -110,13 +132,13 @@
 * CSS to extend when something 
 * should look like a link
 ***************************************/
-/* line 76, ../../../compass/css/lib/_standards.scss */
+/* line 87, ../../../compass/css/lib/_standards.scss */
 .pseudo-link {
   cursor: pointer;
   color: #004baf;
   transition: color .1s;
 }
-/* line 81, ../../../compass/css/lib/_standards.scss */
+/* line 92, ../../../compass/css/lib/_standards.scss */
 .pseudo-link:hover {
   color: #006cfb;
 }
@@ -125,11 +147,11 @@
 * CSS to extend when for elements that 
 * become transparent on mouseover
 ***************************************/
-/* line 99, ../../../compass/css/lib/_standards.scss */
+/* line 110, ../../../compass/css/lib/_standards.scss */
 .opacity-hover {
   opacity: 0.3;
 }
-/* line 94, ../../../compass/css/lib/_standards.scss */
+/* line 105, ../../../compass/css/lib/_standards.scss */
 .opacity-hover:hover {
   opacity: 1;
 }
@@ -145,27 +167,27 @@
 * Mixin for applying a fontAwesome icon
 * SEE _icons.scss FOR A BETTER IMPLEMENTATION
 ******************************************/
-/* line 27, ../../../compass/themes/x2engine/css/login.scss */
+/* line 38, ../../../compass/themes/x2engine/css/login.scss */
 #app-title {
   color: #686868;
   margin: 0;
   margin-bottom: 3px;
 }
 
-/* line 33, ../../../compass/themes/x2engine/css/login.scss */
+/* line 44, ../../../compass/themes/x2engine/css/login.scss */
 #app-description {
   margin: auto;
   margin-bottom: 15px;
 }
 
-/* line 38, ../../../compass/themes/x2engine/css/login.scss */
+/* line 49, ../../../compass/themes/x2engine/css/login.scss */
 .partner-logo-cell {
   margin: auto;
   height: 71px;
   width: 80px;
 }
 
-/* line 44, ../../../compass/themes/x2engine/css/login.scss */
+/* line 55, ../../../compass/themes/x2engine/css/login.scss */
 #login-x2engine {
   text-align: center;
   width: 382px;
@@ -178,7 +200,7 @@
   text-decoration: none;
 }
 
-/* line 56, ../../../compass/themes/x2engine/css/login.scss */
+/* line 67, ../../../compass/themes/x2engine/css/login.scss */
 #login-x2engine-partner-content {
   text-align: center;
   width: 382px;
@@ -192,26 +214,26 @@
   margin-top: 19px;
 }
 
-/* line 69, ../../../compass/themes/x2engine/css/login.scss */
+/* line 80, ../../../compass/themes/x2engine/css/login.scss */
 #x2-info, #x2-partner-info {
   width: 382px;
   margin-top: 12px;
 }
 
-/* line 74, ../../../compass/themes/x2engine/css/login.scss */
+/* line 85, ../../../compass/themes/x2engine/css/login.scss */
 #partner-login-info-how-to {
   padding-top: 8px;
   padding-bottom: 8px;
   clear: both;
 }
 
-/* line 80, ../../../compass/themes/x2engine/css/login.scss */
+/* line 91, ../../../compass/themes/x2engine/css/login.scss */
 #partner-login-logo {
   height: 71px;
   width: 80px;
 }
 
-/* line 85, ../../../compass/themes/x2engine/css/login.scss */
+/* line 96, ../../../compass/themes/x2engine/css/login.scss */
 .avatar-upload {
   -webkit-border-radius: 8px;
   -moz-border-radius: 8px;
@@ -219,7 +241,7 @@
   border-radius: 8px;
 }
 
-/* line 92, ../../../compass/themes/x2engine/css/login.scss */
+/* line 103, ../../../compass/themes/x2engine/css/login.scss */
 #full-name {
   color: #686868;
   font-weight: bold;
@@ -227,63 +249,74 @@
   margin-bottom: 8px;
 }
 
-/* line 99, ../../../compass/themes/x2engine/css/login.scss */
+/* line 110, ../../../compass/themes/x2engine/css/login.scss */
 #login-page.welcome-back-page {
   width: 382px !important;
 }
-/* line 101, ../../../compass/themes/x2engine/css/login.scss */
+/* line 112, ../../../compass/themes/x2engine/css/login.scss */
 #login-page.welcome-back-page #login-logo {
   margin-top: 11px;
 }
 
-/* line 106, ../../../compass/themes/x2engine/css/login.scss */
+/* line 117, ../../../compass/themes/x2engine/css/login.scss */
 #login-version {
   /*height: 27px;*/
   margin-top: 10px;
   font-size: 9px;
   line-height: 14px;
 }
-/* line 111, ../../../compass/themes/x2engine/css/login.scss */
+/* line 122, ../../../compass/themes/x2engine/css/login.scss */
 #login-version span {
   opacity: 0.5;
   display: inline-block;
 }
 
-/* line 117, ../../../compass/themes/x2engine/css/login.scss */
+/* line 128, ../../../compass/themes/x2engine/css/login.scss */
 .company-logo-cell {
   margin: auto;
   height: 43px;
   width: 60px;
 }
 
-/* line 123, ../../../compass/themes/x2engine/css/login.scss */
+/* line 134, ../../../compass/themes/x2engine/css/login.scss */
 #login-page.welcome-back-page .form-cell {
   /*height: 154px;*/
 }
 
-/***********************************************************************************
- * Copyright (C) 2011-2015 X2Engine Inc. All Rights Reserved.
- *
- * X2Engine Inc.
- * P.O. Box 66752
- * Scotts Valley, California 95067 USA
- * Company website: http://www.x2engine.com
- *
- * X2Engine Inc. grants you a perpetual, non-exclusive, non-transferable license
- * to install and use this Software for your internal business purposes only
- * for the number of users purchased by you. Your use of this Software for
- * additional users is not covered by this license and requires a separate
- * license purchase for such users. You shall not distribute, license, or
- * sublicense the Software. Title, ownership, and all intellectual property
- * rights in the Software belong exclusively to X2Engine. You agree not to file
- * any patent applications covering, relating to, or depicting this Software
- * or modifications thereto, and you agree to assign any patentable inventions
- * resulting from your use of this Software to X2Engine.
- *
- * THIS SOFTWARE IS PROVIDED "AS IS" AND WITHOUT WARRANTIES OF ANY KIND, EITHER
- * EXPRESS OR IMPLIED, INCLUDING WITHOUT LIMITATION THE IMPLIED WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, TITLE, AND NON-INFRINGEMENT.
- **********************************************************************************/
+/*****************************************************************************************
+ * X2Engine Open Source Edition is a customer relationship management program developed by
+ * X2Engine, Inc. Copyright (C) 2011-2015 X2Engine Inc.
+ * 
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU Affero General Public License version 3 as published by the
+ * Free Software Foundation with the addition of the following permission added
+ * to Section 15 as permitted in Section 7(a): FOR ANY PART OF THE COVERED WORK
+ * IN WHICH THE COPYRIGHT IS OWNED BY X2ENGINE, X2ENGINE DISCLAIMS THE WARRANTY
+ * OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
+ * 
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.  See the GNU Affero General Public License for more
+ * details.
+ * 
+ * You should have received a copy of the GNU Affero General Public License along with
+ * this program; if not, see http://www.gnu.org/licenses or write to the Free
+ * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301 USA.
+ * 
+ * You can contact X2Engine, Inc. P.O. Box 66752, Scotts Valley,
+ * California 95067, USA. or at email address contact@x2engine.com.
+ * 
+ * The interactive user interfaces in modified source and object code versions
+ * of this program must display Appropriate Legal Notices, as required under
+ * Section 5 of the GNU Affero General Public License version 3.
+ * 
+ * In accordance with Section 7(b) of the GNU Affero General Public License version 3,
+ * these Appropriate Legal Notices must retain the display of the "Powered by
+ * X2Engine" logo. If the display of the logo is not reasonably feasible for
+ * technical reasons, the Appropriate Legal Notices must display the words
+ * "Powered by X2Engine".
+ *****************************************************************************************/
 /***********************************************************************
 * Grays 
 ***********************************************************************/
@@ -299,45 +332,45 @@
 /***********************************************************************
 * This section is made to correspond with the theme keys in ThemeGenerator
 ***********************************************************************/
-/* line 127, ../../../compass/themes/x2engine/css/login.scss */
+/* line 138, ../../../compass/themes/x2engine/css/login.scss */
 .avatar-cell {
   margin: auto;
   margin-bottom: 20px;
   text-align: center;
 }
-/* line 132, ../../../compass/themes/x2engine/css/login.scss */
+/* line 143, ../../../compass/themes/x2engine/css/login.scss */
 .avatar-cell .default-avatar {
   color: #D9D9D9;
   text-shadow: 0px -1px 1px rgba(0, 0, 0, 0.3), 0px 1px 1px rgba(255, 255, 255, 0.3);
   /* @theme color dark_content */
 }
 
-/* line 140, ../../../compass/themes/x2engine/css/login.scss */
+/* line 151, ../../../compass/themes/x2engine/css/login.scss */
 .image-alignment-helper {
   display: inline-block;
   height: 100%;
   vertical-align: middle;
 }
 
-/* line 146, ../../../compass/themes/x2engine/css/login.scss */
+/* line 157, ../../../compass/themes/x2engine/css/login.scss */
 #avatar-image {
   vertical-align: middle;
 }
 
-/* line 150, ../../../compass/themes/x2engine/css/login.scss */
+/* line 161, ../../../compass/themes/x2engine/css/login.scss */
 #login-title-container {
   text-align: center;
   margin: auto;
   margin-top: 16px;
   margin-bottom: 12px;
 }
-/* line 155, ../../../compass/themes/x2engine/css/login.scss */
+/* line 166, ../../../compass/themes/x2engine/css/login.scss */
 #login-title-container h1 {
   font-size: 27px;
   -webkit-font-smoothing: antialiased;
 }
 
-/* line 161, ../../../compass/themes/x2engine/css/login.scss */
+/* line 172, ../../../compass/themes/x2engine/css/login.scss */
 #login-page {
   border: 1px solid #cecece;
   -moz-box-shadow: 0 1px 1px rgba(0, 0, 0, 0.35);
@@ -364,12 +397,12 @@
   border-radius: 6px;
 }
 
-/* line 183, ../../../compass/themes/x2engine/css/login.scss */
+/* line 194, ../../../compass/themes/x2engine/css/login.scss */
 #login-box {
   text-align: center;
 }
 
-/* line 187, ../../../compass/themes/x2engine/css/login.scss */
+/* line 198, ../../../compass/themes/x2engine/css/login.scss */
 #login-box-outer {
   z-index: 10000;
   /*top: 197px;*/
@@ -379,7 +412,7 @@
   margin: auto;
 }
 
-/* line 196, ../../../compass/themes/x2engine/css/login.scss */
+/* line 207, ../../../compass/themes/x2engine/css/login.scss */
 #password-reset-form-outer {
   z-index: 10000;
   /*top: 197px;*/
@@ -390,12 +423,12 @@
   position: relative;
   margin-top: 20%;
 }
-/* line 203, ../../../compass/themes/x2engine/css/login.scss */
+/* line 214, ../../../compass/themes/x2engine/css/login.scss */
 #password-reset-form-outer > .container {
   padding: 35px 24px 57px 24px;
 }
 
-/* line 210, ../../../compass/themes/x2engine/css/login.scss */
+/* line 221, ../../../compass/themes/x2engine/css/login.scss */
 #login-box-outer {
   position: absolute;
   left: 0;
@@ -403,7 +436,7 @@
   bottom: 0;
 }
 
-/* line 217, ../../../compass/themes/x2engine/css/login.scss */
+/* line 228, ../../../compass/themes/x2engine/css/login.scss */
 #login-form {
   /* background: #f0f0f0; */
   /* Old browsers */
@@ -437,34 +470,34 @@
   /* border:1px solid #ddd; */
   /* border-color:rgba(0,0,0,0.2); */
 }
-/* line 249, ../../../compass/themes/x2engine/css/login.scss */
+/* line 260, ../../../compass/themes/x2engine/css/login.scss */
 #login-form .cell.right {
   float: right;
   margin-right: 0;
   width: auto;
 }
-/* line 254, ../../../compass/themes/x2engine/css/login.scss */
+/* line 265, ../../../compass/themes/x2engine/css/login.scss */
 #login-form .row {
   overflow: visible;
 }
-/* line 257, ../../../compass/themes/x2engine/css/login.scss */
+/* line 268, ../../../compass/themes/x2engine/css/login.scss */
 #login-form label {
   font-weight: bold;
   font-size: 12px;
   color: #777;
 }
-/* line 262, ../../../compass/themes/x2engine/css/login.scss */
+/* line 273, ../../../compass/themes/x2engine/css/login.scss */
 #login-form input:focus {
   border-color: #aaa;
 }
-/* line 265, ../../../compass/themes/x2engine/css/login.scss */
+/* line 276, ../../../compass/themes/x2engine/css/login.scss */
 #login-form #google-icon {
   height: 16px;
   width: 16px;
   vertical-align: top;
   margin-top: -1px;
 }
-/* line 271, ../../../compass/themes/x2engine/css/login.scss */
+/* line 282, ../../../compass/themes/x2engine/css/login.scss */
 #login-form #mobile-icon {
   height: 18px;
   width: 18px;
@@ -500,7 +533,7 @@
 #LoginForm_username.login-input-focus + #LoginForm_password {
         border-top: none;
 }*/
-/* line 308, ../../../compass/themes/x2engine/css/login.scss */
+/* line 319, ../../../compass/themes/x2engine/css/login.scss */
 #LoginForm_username, #LoginForm_password, #LoginForm_verifyCode {
   width: 254px;
   height: 35px;
@@ -512,7 +545,7 @@
   box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.25);
 }
 
-/* line 319, ../../../compass/themes/x2engine/css/login.scss */
+/* line 330, ../../../compass/themes/x2engine/css/login.scss */
 #LoginForm_rememberMe {
   /*margin-left:10px; 
   margin-top:10px; */
@@ -528,7 +561,7 @@
   *overflow: hidden;
 }
 
-/* line 334, ../../../compass/themes/x2engine/css/login.scss */
+/* line 345, ../../../compass/themes/x2engine/css/login.scss */
 #signin-button {
   height: 38px;
   line-height: 15px;
@@ -544,13 +577,13 @@
   border-color: #203079;
   /*filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#417dcd', endColorstr='#3d70b4',GradientType=0 ); /* IE6-8 */
 }
-/* line 348, ../../../compass/themes/x2engine/css/login.scss */
+/* line 359, ../../../compass/themes/x2engine/css/login.scss */
 #signin-button:hover {
   background: #406089;
   filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#488fe2', endColorstr='#4380cc',GradientType=0 );
   /* IE6-9 */
 }
-/* line 353, ../../../compass/themes/x2engine/css/login.scss */
+/* line 364, ../../../compass/themes/x2engine/css/login.scss */
 #signin-button:active {
   -moz-box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.25);
   -webkit-box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.25);
@@ -560,28 +593,28 @@
   /* IE6-9 */
 }
 
-/* line 364, ../../../compass/themes/x2engine/css/login.scss */
+/* line 375, ../../../compass/themes/x2engine/css/login.scss */
 #login-form .login-links {
   padding: 0 36px;
   height: 25px;
 }
-/* line 365, ../../../compass/themes/x2engine/css/login.scss */
+/* line 376, ../../../compass/themes/x2engine/css/login.scss */
 #login-form .login-links a {
   opacity: 0.5;
 }
-/* line 367, ../../../compass/themes/x2engine/css/login.scss */
+/* line 378, ../../../compass/themes/x2engine/css/login.scss */
 #login-form .login-links a:hover {
   opacity: 1;
 }
-/* line 375, ../../../compass/themes/x2engine/css/login.scss */
+/* line 386, ../../../compass/themes/x2engine/css/login.scss */
 #login-form a.google-sign-in-link {
   float: left;
 }
-/* line 378, ../../../compass/themes/x2engine/css/login.scss */
+/* line 389, ../../../compass/themes/x2engine/css/login.scss */
 #login-form a.help-link, #login-form a.x2touch-link {
   float: right;
 }
-/* line 381, ../../../compass/themes/x2engine/css/login.scss */
+/* line 392, ../../../compass/themes/x2engine/css/login.scss */
 #login-form a.alt-sign-in-link {
   display: inline-block;
   font-size: 10px;
@@ -589,7 +622,7 @@
   color: #666;
 }
 
-/* line 390, ../../../compass/themes/x2engine/css/login.scss */
+/* line 401, ../../../compass/themes/x2engine/css/login.scss */
 #login-version span {
   display: inline-block;
   font-size: 10px;
@@ -597,47 +630,47 @@
   color: #666;
 }
 
-/* line 398, ../../../compass/themes/x2engine/css/login.scss */
+/* line 409, ../../../compass/themes/x2engine/css/login.scss */
 #login-form a.alt-sign-in-link:hover {
   text-decoration: underline;
 }
-/* line 401, ../../../compass/themes/x2engine/css/login.scss */
+/* line 412, ../../../compass/themes/x2engine/css/login.scss */
 #login-form a.alt-sign-in-link img {
   vertical-align: top;
 }
 
-/* line 406, ../../../compass/themes/x2engine/css/login.scss */
+/* line 417, ../../../compass/themes/x2engine/css/login.scss */
 #login-x2engine {
   display: none;
   margin-top: 118px;
   height: 81px;
 }
-/* line 410, ../../../compass/themes/x2engine/css/login.scss */
+/* line 421, ../../../compass/themes/x2engine/css/login.scss */
 #login-x2engine.with-partner-branding {
   margin-top: 10px;
 }
-/* line 413, ../../../compass/themes/x2engine/css/login.scss */
+/* line 424, ../../../compass/themes/x2engine/css/login.scss */
 #login-x2engine a {
   color: #999;
   margin-top: 0;
 }
-/* line 416, ../../../compass/themes/x2engine/css/login.scss */
+/* line 427, ../../../compass/themes/x2engine/css/login.scss */
 #login-x2engine a:hover {
   text-decoration: underline;
 }
 
-/* line 422, ../../../compass/themes/x2engine/css/login.scss */
+/* line 433, ../../../compass/themes/x2engine/css/login.scss */
 .form-cell {
   margin: 0;
   width: 225px;
 }
 
-/* line 427, ../../../compass/themes/x2engine/css/login.scss */
+/* line 438, ../../../compass/themes/x2engine/css/login.scss */
 .captha-row, .login-button-row {
   margin-top: 5px;
 }
 
-/* line 431, ../../../compass/themes/x2engine/css/login.scss */
+/* line 442, ../../../compass/themes/x2engine/css/login.scss */
 .bottom-row {
   width: 265px !important;
   height: 30px;
@@ -645,46 +678,46 @@
   margin-top: 9px;
 }
 
-/* line 438, ../../../compass/themes/x2engine/css/login.scss */
+/* line 449, ../../../compass/themes/x2engine/css/login.scss */
 .remember-me-cell {
   /* float: none; */
   text-align: left;
   margin: auto;
 }
 
-/* line 444, ../../../compass/themes/x2engine/css/login.scss */
+/* line 455, ../../../compass/themes/x2engine/css/login.scss */
 #login-form-inputs-container {
   width: 100%;
   text-align: center;
 }
 
-/* line 449, ../../../compass/themes/x2engine/css/login.scss */
+/* line 460, ../../../compass/themes/x2engine/css/login.scss */
 .login-links.right {
   float: right;
   text-align: center;
 }
 
-/* line 454, ../../../compass/themes/x2engine/css/login.scss */
+/* line 465, ../../../compass/themes/x2engine/css/login.scss */
 #captcha-container {
   text-align: center;
   margin-bottom: 5px;
 }
 
-/* line 459, ../../../compass/themes/x2engine/css/login.scss */
+/* line 470, ../../../compass/themes/x2engine/css/login.scss */
 #captcha-image {
   display: block;
   cursor: pointer;
   margin: auto;
 }
 
-/* line 465, ../../../compass/themes/x2engine/css/login.scss */
+/* line 476, ../../../compass/themes/x2engine/css/login.scss */
 #signin-button-container {
   width: 100%;
   height: 50px;
   text-align: center;
 }
 
-/* line 471, ../../../compass/themes/x2engine/css/login.scss */
+/* line 482, ../../../compass/themes/x2engine/css/login.scss */
 #signin-button {
   margin: auto;
   text-align: center;
@@ -694,18 +727,18 @@
   -webkit-font-smoothing: antialiased;
 }
 
-/* line 480, ../../../compass/themes/x2engine/css/login.scss */
+/* line 491, ../../../compass/themes/x2engine/css/login.scss */
 #LoginForm_rememberMe {
   display: inline-block;
   margin-right: 3px;
 }
 
-/* line 485, ../../../compass/themes/x2engine/css/login.scss */
+/* line 496, ../../../compass/themes/x2engine/css/login.scss */
 [for="LoginForm_rememberMe"] {
   display: inline-block !important;
 }
 
-/* line 489, ../../../compass/themes/x2engine/css/login.scss */
+/* line 500, ../../../compass/themes/x2engine/css/login.scss */
 #signin-button img {
   margin-right: 5px;
   margin-top: -2px;
@@ -713,7 +746,7 @@
   height: 16px;
 }
 
-/* line 496, ../../../compass/themes/x2engine/css/login.scss */
+/* line 507, ../../../compass/themes/x2engine/css/login.scss */
 #body-tag .background {
   position: fixed;
   top: 0px;
@@ -724,13 +757,13 @@
   background: #203758;
   background: radial-gradient(#233d5f, #06090f);
 }
-/* line 506, ../../../compass/themes/x2engine/css/login.scss */
+/* line 517, ../../../compass/themes/x2engine/css/login.scss */
 #body-tag .background .stripe-container {
   width: 650px;
   height: 100%;
   margin: auto;
 }
-/* line 512, ../../../compass/themes/x2engine/css/login.scss */
+/* line 523, ../../../compass/themes/x2engine/css/login.scss */
 #body-tag .background .stripe {
   /*background: #C7C7C7;*/
   background: white;
@@ -738,7 +771,7 @@
   width: 275px;
   height: 100%;
 }
-/* line 518, ../../../compass/themes/x2engine/css/login.scss */
+/* line 529, ../../../compass/themes/x2engine/css/login.scss */
 #body-tag .background .stripe.small {
   width: 8px;
   margin: 0px 8px;
@@ -747,7 +780,7 @@
 /*
 racing stripe
 */
-/* line 529, ../../../compass/themes/x2engine/css/login.scss */
+/* line 540, ../../../compass/themes/x2engine/css/login.scss */
 body {
   /*    background: url('../images/stripes_background.png') !important;
           background-position: center -550px !important;
@@ -755,7 +788,7 @@ body {
   */
 }
 
-/* line 536, ../../../compass/themes/x2engine/css/login.scss */
+/* line 547, ../../../compass/themes/x2engine/css/login.scss */
 #dark-theme-button {
   /*    position: absolute;
           bottom:10px;
@@ -767,16 +800,16 @@ body {
   text-decoration: none;
 }
 
-/* line 547, ../../../compass/themes/x2engine/css/login.scss */
+/* line 558, ../../../compass/themes/x2engine/css/login.scss */
 #body-tag a:hover {
   opacity: 0.85;
 }
 
-/* line 551, ../../../compass/themes/x2engine/css/login.scss */
+/* line 562, ../../../compass/themes/x2engine/css/login.scss */
 .row.theme-selection {
   margin-top: 5px;
 }
-/* line 553, ../../../compass/themes/x2engine/css/login.scss */
+/* line 564, ../../../compass/themes/x2engine/css/login.scss */
 .row.theme-selection span {
   background: red;
   float: left;
@@ -795,35 +828,35 @@ body {
   border-radius: 2px;
   cursor: pointer;
 }
-/* line 570, ../../../compass/themes/x2engine/css/login.scss */
+/* line 581, ../../../compass/themes/x2engine/css/login.scss */
 .row.theme-selection span.switch {
   background: none;
   float: right;
 }
-/* line 573, ../../../compass/themes/x2engine/css/login.scss */
+/* line 584, ../../../compass/themes/x2engine/css/login.scss */
 .row.theme-selection span.switch a {
   text-decoration: none;
   font-size: 20px;
 }
-/* line 578, ../../../compass/themes/x2engine/css/login.scss */
+/* line 589, ../../../compass/themes/x2engine/css/login.scss */
 .row.theme-selection span:hover {
   opacity: 0.9;
 }
 
-/* line 584, ../../../compass/themes/x2engine/css/login.scss */
+/* line 595, ../../../compass/themes/x2engine/css/login.scss */
 .x2-blue:hover {
   opacity: 0.95;
 }
 
 @media (max-width: 657px) {
-  /* line 589, ../../../compass/themes/x2engine/css/login.scss */
+  /* line 600, ../../../compass/themes/x2engine/css/login.scss */
   #login-box-outer {
     top: 0 !important;
     bottom: 0;
     height: 87%;
   }
 
-  /* line 594, ../../../compass/themes/x2engine/css/login.scss */
+  /* line 605, ../../../compass/themes/x2engine/css/login.scss */
   body {
     background-position: center -650px !important;
   }

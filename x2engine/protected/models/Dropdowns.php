@@ -52,6 +52,13 @@ class Dropdowns extends CActiveRecord {
         return parent::model($className);
     }
 
+    public static function getSocialSubtypes () {
+        $dropdown = Dropdowns::model()->findByPk(113);
+        if (!$dropdown) return array ();
+        return json_decode (
+            $dropdown->options,true);
+    }
+
     /**
      * @return string the associated database table name
      */

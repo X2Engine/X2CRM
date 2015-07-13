@@ -33,13 +33,13 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 @media (max-width: 657px) {
-  /* line 26, ../../../compass/themes/x2engine/css/responsiveUIElements.scss */
+  /* line 37, ../../../compass/themes/x2engine/css/responsiveUIElements.scss */
   .x2-button, select.x2-select {
     margin-bottom: 5px;
   }
 }
 @media (max-width: 527px) {
-  /* line 33, ../../../compass/themes/x2engine/css/responsiveUIElements.scss */
+  /* line 44, ../../../compass/themes/x2engine/css/responsiveUIElements.scss */
   .ui-multiselect .selected, .ui-multiselect .available {
     width: auto !important;
     min-width: 170px !important;

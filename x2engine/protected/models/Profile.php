@@ -997,24 +997,6 @@ class Profile extends CActiveRecord {
                     'minimize' => false,
                 ),
             ),
-            'center' => array(
-                'RecordViewChart' => array(
-                    'title' => 'Record View Chart',
-                    'minimize' => false,
-                ),
-                'InlineTags' => array(
-                    'title' => 'Tags',
-                    'minimize' => false,
-                ),
-                'WorkflowStageDetails' => array(
-                    'title' => 'Process',
-                    'minimize' => false,
-                ),
-                'InlineRelationships' => array(
-                    'title' => 'Relationships',
-                    'minimize' => false,
-                ),
-            ),
             'right' => array(
                 'SmallCalendar' => array(
                     'title' => 'Small Calendar',
@@ -1073,13 +1055,13 @@ class Profile extends CActiveRecord {
                     'minimize' => false,
                 ),
             ),
-            'hidden' => array(),
-            'hiddenRight' => array(), // x2temp, should be merged into 'hidden' when widgets can be placed anywhere
+            'hiddenRight' => array(),
         );
         if(Yii::app()->contEd('pro')){
             if(file_exists('protected/config/proWidgets.php')){
                 foreach(include('protected/config/proWidgets.php') as $loc=>$data){
-                    $layout[$loc] = array_merge($layout[$loc],$data);
+                    if (isset ($layout[$loc]))
+                        $layout[$loc] = array_merge($layout[$loc],$data);
                 }
             }
         }
@@ -1092,21 +1074,28 @@ class Profile extends CActiveRecord {
      * elements specified in initLayout ().
      */
     private function addRemoveLayoutElements($position, &$layout, $initLayout){
-
         $changed = false;
+        if (!isset ($layout[$position])) {
+            $changed = true;
+            $layout[$position] = array ();
+        }
+        if (!isset ($layout['hiddenRight'])) {
+            $changed = true;
+            $layout['hiddenRight'] = array ();
+        }
 
-        $layoutWidgets = array_merge($layout[$position], $layout['hidden']);
-        if ($position === 'center') {
-            $initLayoutWidgets = array_merge($initLayout[$position], $initLayout['hidden']);
+        if ($position === 'right') {
+            $initLayoutWidgets = array_merge($initLayout[$position], $initLayout['hiddenRight']);
+            $layoutWidgets = array_merge($layout[$position], $layout['hiddenRight']);
         } else {
             $initLayoutWidgets = $initLayout[$position];
+            $layoutWidgets = $layout[$position];
         }
 
         // add new widgets
         $arrayDiff =
                 array_diff(array_keys($initLayoutWidgets), array_keys($layoutWidgets));
         foreach($arrayDiff as $elem){
-            //$layout[$position][$elem] = $initLayout[$position][$elem];
             $layout[$position] = array($elem => $initLayout[$position][$elem]) + $layout[$position]; // unshift key-value pair
             $changed = true;
         }
@@ -1118,28 +1107,31 @@ class Profile extends CActiveRecord {
             if(in_array ($elem, array_keys ($layout[$position]))) {
                 unset($layout[$position][$elem]);
                 $changed = true;
-            } else if($position === 'center' && in_array ($elem, array_keys ($layout['hidden']))) {
-                unset($layout['hidden'][$elem]);
+            } else if($position === 'right' && 
+                in_array ($elem, array_keys ($layout['hiddenRight']))) {
+
+                unset($layout['hiddenRight'][$elem]);
                 $changed = true;
             }
         }
-
 
         // ensure that widget properties are the same as those in the default layout
         foreach($layout[$position] as $name=>$arr){
-            if (in_array ($name, array_keys ($initLayout[$position])) &&
-                $initLayout[$position][$name]['title'] !== $arr['title']) {
+            if (in_array ($name, array_keys ($initLayoutWidgets)) &&
+                $initLayoutWidgets[$name]['title'] !== $arr['title']) {
 
-                $layout[$position][$name]['title'] = $initLayout[$position][$name]['title'];
+                $layout[$position][$name]['title'] = $initLayoutWidgets[$name]['title'];
                 $changed = true;
             }
         }
-        if ($position === 'center') {
-            foreach($layout['hidden'] as $name=>$arr){
-                if (in_array ($name, array_keys ($initLayout[$position])) &&
-                    $initLayout[$position][$name]['title'] !== $arr['title']) {
 
-                    $layout['hidden'][$name]['title'] = $initLayout[$position][$name]['title'];
+        if ($position === 'right') {
+            foreach($layout['hiddenRight'] as $name=>$arr){
+                if (in_array ($name, array_keys ($initLayoutWidgets)) &&
+                    $initLayoutWidgets[$name]['title'] !== $arr['title']) {
+
+                    $layout['hiddenRight'][$name]['title'] = 
+                        $initLayoutWidgets[$name]['title'];
                     $changed = true;
                 }
             }
@@ -1167,7 +1159,7 @@ class Profile extends CActiveRecord {
             $this->update(array('layout'));
         }else{
             $layout = json_decode($layout, true); // json to associative array
-            $this->addRemoveLayoutElements('center', $layout, $initLayout);
+            if (!is_array ($layout)) $layout = array ();
             $this->addRemoveLayoutElements('left', $layout, $initLayout);
             $this->addRemoveLayoutElements('right', $layout, $initLayout);
         }

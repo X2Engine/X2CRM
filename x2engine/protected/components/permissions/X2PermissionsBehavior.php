@@ -431,7 +431,7 @@ class X2PermissionsBehavior extends ModelPermissionsBehavior {
      * Uses the visibility attribute and the assignment of the model to determine
      * if a given named user has permission to view it.
      * 
-     * @param string $username The username of the user for which to check visibility
+     * @param User $user The user for which visibility is to be checked
      * @return type
      */
     public function isVisibleTo($user) {
@@ -446,6 +446,7 @@ class X2PermissionsBehavior extends ModelPermissionsBehavior {
             $accessLevel = $this->getAccessLevel($uid);
 
             $hasViewPermission = false;
+
             if (!$this->isHidden ()) {
                 switch ($accessLevel) {
                     case self::QUERY_ALL:

@@ -71,6 +71,8 @@ abstract class MassAction extends CComponent {
 
     public function renderDialog ($gridId, $modelName) {}
 
+    public function beforeExecute () {}
+
     /**
      * Instantiates mass action classes
      * @return array  

@@ -35,6 +35,7 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 
+Yii::app()->clientScript->registerCssFile (Yii::app()->theme->baseUrl.'/css/importexport.css');
 ?>
 <div class="page-title icon contacts"><h2><?php echo Yii::t('contacts','Export {model}', array('{model}'=>Modules::displayName(true, $model))); ?></h2></div>
 <div class="form">
@@ -51,7 +52,7 @@
         echo CHtml::checkbox('includeHidden', false);
     } ?>
     <?php echo CHtml::button(Yii::t('app','Export'),array('class'=>'x2-button','id'=>'export-button')); ?>
-    <div id="status-text" style="color:green">
+    <div id="status-text">
 
     </div>
 

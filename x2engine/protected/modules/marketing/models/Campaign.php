@@ -67,7 +67,11 @@ class Campaign extends X2Model {
 				'class'=>'application.components.ERememberFiltersBehavior',
 				'defaults'=>array(),
 				'defaultStickOnClear'=>false
-			)
+			),
+            'tags' => array(
+                'class' => 'TagBehavior',
+                'disableTagScanning' => true,
+            ),
 		));
 	}
 
@@ -147,5 +151,13 @@ class Campaign extends X2Model {
         $originalContent = isset($data['content'])?$data['content']:null;
         parent::setX2Fields($data, $filter, $bypassPermissions);
         $this->content = $originalContent;
+    }
+
+    public function getDisplayName ($plural=true, $ofModule=true) {
+        if (!$ofModule) {
+            return Yii::t('app', 'Campaign'.($plural ? 's' : ''));
+        } else {
+            return parent::getDisplayName ($plural, $ofModule);
+        }
     }
 }

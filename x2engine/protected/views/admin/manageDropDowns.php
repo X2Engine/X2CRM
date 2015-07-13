@@ -192,8 +192,10 @@ $this->widget('zii.widgets.grid.CGridView', array(
 </div>
 <div id="deleteDropdown" style="display:none;">
 <?php
+
+$customDropdowns = Dropdowns::model()->findAll('id>=1000');
 $this->renderPartial('deleteDropdown', array(
-    'dropdowns' => $dropdowns,
+    'dropdowns' => $customDropdowns,
 ));
 ?>
 </div>

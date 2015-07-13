@@ -112,16 +112,13 @@ class MarketingController extends x2base {
      * @return string A JSON array of strings
      */
     public function actionGetItems($modelType){
+        $term = $_GET['term'].'%';
          
-            $sql = 'SELECT id, name as value FROM x2_campaigns WHERE name LIKE :qterm ORDER BY name ASC';
+            X2LinkableBehavior::getItems ($term);
          
-        $command = Yii::app()->db->createCommand($sql);
-        $qterm = '%'.$_GET['term'].'%';
-        $command->bindParam(":qterm", $qterm, PDO::PARAM_STR);
-        $result = $command->queryAll();
-        echo CJSON::encode($result);
-        exit;
     }
+    
+
 
     /**
      * Displays a particular model.

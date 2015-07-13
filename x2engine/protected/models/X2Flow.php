@@ -312,7 +312,8 @@ class X2Flow extends CActiveRecord {
         $triggerInfo = array (
             'triggerName' => Yii::t('studio', X2FlowItem::getTitle ($triggerName))
         );
-        if (isset ($params['model']) && is_subclass_of($params['model'],'X2Model')) {
+        if (isset ($params['model']) && is_subclass_of($params['model'],'X2Model') &&
+            $params['model']->asa ('X2LinkableBehavior')) {
             $triggerInfo['modelLink'] =
                 Yii::t('studio', 'View record: ').$params['model']->getLink ();
         }

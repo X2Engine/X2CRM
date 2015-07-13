@@ -39,7 +39,7 @@ include("protected/modules/templates/templatesConfig.php");
 $this->actionMenu = $this->formatMenu(array(
 	array('label'=>Yii::t('module','{X} List',array('{X}'=>Modules::itemDisplayName())), 'url'=>array('index')),
 	array('label'=>Yii::t('module','Create {X}',array('{X}'=>Modules::itemDisplayName()))),
-));
+), array ('X2Model' => $model));
 ?>
 <div class="page-title"><h2><?php echo Yii::t('module','Create New {X}',array('{X}'=>Modules::itemDisplayName())); ?></h2></div>
 

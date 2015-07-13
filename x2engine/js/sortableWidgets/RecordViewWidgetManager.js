@@ -174,7 +174,7 @@ RecordViewWidgetManager.prototype._deactivate = function () {
 };
 
 RecordViewWidgetManager.prototype._init = function () {
-    this._hiddenWidgetsMenuSelector = '#x2-hidden-widgets-menu';
+    this._hiddenWidgetsMenuSelector = '#x2-hidden-recordView-widgets-menu';
     this._hiddenWidgetsMenuItemSelector = 
         '.x2-hidden-widgets-menu-item.' + this.widgetType + '-widget';
     this._setUpRecordViewTypeToggleBehavior ();

@@ -65,7 +65,7 @@ $this->widget('MenuList', array(
         'subtype',1,
         array_map(
             function ($item) { return Yii::t('app', $item); },
-            json_decode(Dropdowns::model()->findByPk(113)->options,true)
+            Dropdowns::getSocialSubtypes ()
         ),
         array ('data-mini'=>'true', 'id'=>'feed-post-subtype')
     );

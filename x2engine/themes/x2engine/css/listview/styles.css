@@ -32,17 +32,17 @@
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2Engine".
  *****************************************************************************************/
-/* line 25, ../../../../compass/themes/x2engine/css/listview/styles.scss */
+/* line 36, ../../../../compass/themes/x2engine/css/listview/styles.scss */
 .list-view-loading {
   background: url(loading.gif) no-repeat;
 }
 
-/* line 30, ../../../../compass/themes/x2engine/css/listview/styles.scss */
+/* line 41, ../../../../compass/themes/x2engine/css/listview/styles.scss */
 .list-view .summary, .list-view .sorter {
   margin: 0 0 5px 0;
   text-align: right;
 }
-/* line 34, ../../../../compass/themes/x2engine/css/listview/styles.scss */
+/* line 45, ../../../../compass/themes/x2engine/css/listview/styles.scss */
 .list-view .pager {
   margin: 5px 0 5px 0;
   text-align: right;
@@ -56,11 +56,11 @@
   -webkit-border-radius: 4px 4px 4px 4px;
   -o-border-radius: 4px 4px 4px 4px;
 }
-/* line 47, ../../../../compass/themes/x2engine/css/listview/styles.scss */
+/* line 58, ../../../../compass/themes/x2engine/css/listview/styles.scss */
 .list-view .sorter {
   font-size: 0.9em;
 }
-/* line 49, ../../../../compass/themes/x2engine/css/listview/styles.scss */
+/* line 60, ../../../../compass/themes/x2engine/css/listview/styles.scss */
 .list-view .sorter ul {
   display: inline;
   list-style-image: none;
@@ -69,18 +69,18 @@
   margin: 0;
   padding: 0;
 }
-/* line 57, ../../../../compass/themes/x2engine/css/listview/styles.scss */
+/* line 68, ../../../../compass/themes/x2engine/css/listview/styles.scss */
 .list-view .sorter li {
   display: inline;
   margin: 0 0 0 5px;
   padding: 0;
 }
-/* line 63, ../../../../compass/themes/x2engine/css/listview/styles.scss */
+/* line 74, ../../../../compass/themes/x2engine/css/listview/styles.scss */
 .list-view .sorter a.asc {
   background: url(up.gif) right center no-repeat;
   padding-right: 10px;
 }
-/* line 67, ../../../../compass/themes/x2engine/css/listview/styles.scss */
+/* line 78, ../../../../compass/themes/x2engine/css/listview/styles.scss */
 .list-view .sorter a.desc {
   background: url(down.gif) right center no-repeat;
   padding-right: 10px;

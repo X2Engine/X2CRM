@@ -77,7 +77,7 @@ $this->actionMenu = $this->formatMenu(array(
         ),
     ),
     RecordViewLayoutManager::getEditLayoutActionMenuListItem (),
-));
+), array ('X2Model' => $model));
 
 $modelType = json_encode("Templates");
 $modelId = json_encode($model->id);

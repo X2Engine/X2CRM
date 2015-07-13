@@ -37,6 +37,7 @@
 
 Yii::import('application.modules.marketing.models.*');
 Yii::import('application.modules.docs.models.*');
+Yii::import('application.components.util.StringUtil', true);
 
 /**
  * Behavior class for email delivery in email marketing campaigns.
@@ -183,17 +184,24 @@ class CampaignMailingBehavior extends EmailDeliveryBehavior {
      * @param Campaign $campaign Campaign of the current email being sent
      * @param Contacts $contact Contact to whom the email is being sent
      * @param type $email
+     * @param bool $replaceBreaks used for unit testing
+     * @param bool $replaceUnsubToken used for unit testing
      * @return type
      * @throws Exception
      */
-    public static function prepareEmail (Campaign $campaign, Contacts $contact) {
+    public static function prepareEmail (
+        Campaign $campaign, Contacts $contact, $replaceBreaks=true, $replaceUnsubToken=true) {
+
         $email = $contact->email;
         $now = time();
         $uniqueId = md5 (uniqid (mt_rand (), true));
 
         // Add some newlines to prevent hitting 998 line length limit in
         // phpmailer and rfc2821
-        $emailBody = preg_replace('/<br>/', "<br>\n", $campaign->content);
+        if ($replaceBreaks)
+            $emailBody = StringUtil::pregReplace('/<br>/', "<br>\n", $campaign->content);
+        else
+            $emailBody = $campaign->content;
 
         // Add links to attachments
         try{
@@ -227,10 +235,11 @@ class CampaignMailingBehavior extends EmailDeliveryBehavior {
         // transform links after attribute replacement but before signature and unsubscribe link 
         // insertion
         if ($campaign->enableRedirectLinks) {
+
             // Replace links with tracking links
             $url = Yii::app()->controller->createAbsoluteUrl (
                 'click', array ('uid' => $uniqueId, 'type' => 'click'));
-            $emailBody = preg_replace_callback (
+            $emailBody = StringUtil::pregReplaceCallback (
                 '/(<a[^>]*href=")([^"]*)("[^>]*>)/', 
                 function (array $matches) use ($url) {
                     return $matches[1].$url.'&url='.urlencode ($matches[2]).''.
@@ -257,9 +266,13 @@ class CampaignMailingBehavior extends EmailDeliveryBehavior {
             'type' => 'unsub',
             'email' => $email
         ));
-        $emailBody = preg_replace(
-            '/\{_unsub\}/', '<a href="'.$unsubUrl.'">'.Yii::t('marketing', 'unsubscribe').'</a>',
-            $emailBody);
+        $unsubLinkText = Yii::app()->settings->getDoNotEmailLinkText();
+        if ($replaceUnsubToken) {
+            $emailBody = StringUtil::pregReplace (
+                '/\{_unsub\}/', 
+                '<a href="'.$unsubUrl.'">'.Yii::t('marketing', $unsubLinkText).'</a>',
+                $emailBody);
+        }
 
         // Get the assignee of the campaign, for signature replacement.
         $user = User::model()->findByAttributes(array('username' => $campaign->assignedTo));
@@ -545,8 +558,24 @@ class CampaignMailingBehavior extends EmailDeliveryBehavior {
             return;
         }
         $addresses = array(array('',$this->recipient->email));
-        list($subject,$message,$uniqueId) = self::prepareEmail($this->campaign,$this->recipient);
-        $this->deliverEmail($addresses, $subject, $message);
+        $deliver = true;
+        try {
+            list($subject,$message,$uniqueId) = self::prepareEmail(
+                $this->campaign,$this->recipient);
+        } catch (StringUtilException $e) {
+            $this->fullStop = true;
+            $this->status['code'] = 500;
+            $this->status['exception'] = $e;
+            if ($e->getCode () === StringUtilException::PREG_REPLACE_CALLBACK_ERROR) {
+                $this->status['message'] = Yii::t('app', 'Email redirect link insertion failed');
+            } else {
+                $this->status['message'] = Yii::t('app', 'Failed to prepare email contents');
+            }
+            $deliver = false;
+        }
+
+        if ($deliver)
+            $this->deliverEmail($addresses, $subject, $message);
         if($this->status['code'] == 200) {
             // Successfully sent email. Mark as sent.
             $this->markEmailSent($uniqueId);
@@ -559,12 +588,12 @@ class CampaignMailingBehavior extends EmailDeliveryBehavior {
                 '{address}'=>$this->recipient->email,
                 '{message}'=>$this->status['exception']->getMessage()
             ));
+
             if($this->status['exception']->getCode() != PHPMailer::STOP_CRITICAL){
                 $this->undeliverable = true;
-                $this->markEmailSent(null);
+                $this->markEmailSent(null, false);
             }else{
                 $this->fullStop = true;
-                $this->markEmailSent(null,false);
             }
         } else if($this->status['exception'] instanceof phpmailerException && $this->status['exception']->getCode() == PHPMailer::STOP_CRITICAL) {
         } else {

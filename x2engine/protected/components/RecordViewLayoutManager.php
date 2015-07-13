@@ -112,7 +112,7 @@ class RecordViewLayoutManager extends X2Widget {
                             array (
                                 'class' => 'transactional-view-checkbox',
                             )).CHtml::label (
-                                Yii::t('app', 'Transactional View'), 'transactionalView'),
+                                Yii::t('app', 'List View'), 'transactionalView'),
                     ),
                 ),
             );

@@ -115,7 +115,7 @@ $visibility=array(
     '1'=>'Public',
     '0'=>'Private',
 );
-$socialSubtypes=json_decode(Dropdowns::model()->findByPk(113)->options,true);
+$socialSubtypes = Dropdowns::getSocialSubtypes ();
 $users=User::getNames();
 $eventTypeList=Yii::app()->db->createCommand()
         ->select('type')

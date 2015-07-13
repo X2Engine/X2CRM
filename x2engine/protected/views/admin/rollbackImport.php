@@ -96,7 +96,7 @@ $this->widget('zii.widgets.grid.CGridView', array(
 <div class="form" style="width:600px;">
     <?php echo Yii::t('admin','To begin the rollback, click the button below and wait for the completion message.'); ?>
     <br><br>
-    <?php echo Yii::t('admin','Import ID: '); ?><strong><?php echo $_GET['importId'];?></strong>
+    <?php echo Yii::t('admin','Import ID: '); ?><strong><?php echo CHtml::encode ($importId);?></strong>
     <br>
     <?php echo Yii::t('admin','Records to be Deleted: '); ?><strong><?php echo $count; ?></strong>
     <br><br>
@@ -109,7 +109,7 @@ $this->widget('zii.widgets.grid.CGridView', array(
 ?>
 <script>
     var models=JSON.parse('<?php echo json_encode($typeArray);?>');
-    var importId=<?php echo isset($_GET['importId'])?$_GET['importId']:0 ?>;
+    var importId=<?php echo isset($importId)? addslashes ($importId):0 ?>;
     var stages=new Array('tags','relationships','actions','records','import');
     $('#rollback-link').click(function(e){
         e.preventDefault();

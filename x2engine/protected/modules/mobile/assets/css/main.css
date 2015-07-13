@@ -37,7 +37,7 @@ login page
 */
 /* line 27, ../../../../../compass/sass/protected/modules/mobile/assets/css/main.scss */
 /* line 27, ../../../../../compass/sass/protected/modules/mobile/assets/css/main.scss */
-/* line 31, ../../../../../compass/protected/modules/mobile/assets/css/main.scss */
+/* line 42, ../../../../../compass/protected/modules/mobile/assets/css/main.scss */
 .remember-me-checkbox-container .ui-btn-text {
   font-size: 10px;
   vertical-align: middle;
@@ -50,7 +50,7 @@ general css rules
 */
 /* line 40, ../../../../../compass/sass/protected/modules/mobile/assets/css/main.scss */
 /* line 43, ../../../../../compass/sass/protected/modules/mobile/assets/css/main.scss */
-/* line 49, ../../../../../compass/protected/modules/mobile/assets/css/main.scss */
+/* line 60, ../../../../../compass/protected/modules/mobile/assets/css/main.scss */
 .x2-mobile-narrow-input {
   color: #ADADAD;
   width: 280px;
@@ -58,7 +58,7 @@ general css rules
 
 /* line 45, ../../../../../compass/sass/protected/modules/mobile/assets/css/main.scss */
 /* line 50, ../../../../../compass/sass/protected/modules/mobile/assets/css/main.scss */
-/* line 57, ../../../../../compass/protected/modules/mobile/assets/css/main.scss */
+/* line 68, ../../../../../compass/protected/modules/mobile/assets/css/main.scss */
 .x2-mobile-narrow-input-row .ui-input-text {
   margin-bottom: 4px;
   margin-top: 0px;
@@ -68,17 +68,17 @@ general css rules
 
 /* line 53, ../../../../../compass/sass/protected/modules/mobile/assets/css/main.scss */
 /* line 60, ../../../../../compass/sass/protected/modules/mobile/assets/css/main.scss */
-/* line 68, ../../../../../compass/protected/modules/mobile/assets/css/main.scss */
+/* line 79, ../../../../../compass/protected/modules/mobile/assets/css/main.scss */
 div.ui-input-text.error {
   border-color: #C00;
   background: #FEE;
 }
-/* line 72, ../../../../../compass/protected/modules/mobile/assets/css/main.scss */
+/* line 83, ../../../../../compass/protected/modules/mobile/assets/css/main.scss */
 div.input-error-container {
   float: left;
   margin-right: 4px;
 }
-/* line 76, ../../../../../compass/protected/modules/mobile/assets/css/main.scss */
+/* line 87, ../../../../../compass/protected/modules/mobile/assets/css/main.scss */
 div.err-msg-placeholder {
   height: 20px;
 }
@@ -92,18 +92,18 @@ activity
 */
 /* line 71, ../../../../../compass/sass/protected/modules/mobile/assets/css/main.scss */
 /* line 83, ../../../../../compass/sass/protected/modules/mobile/assets/css/main.scss */
-/* line 94, ../../../../../compass/protected/modules/mobile/assets/css/main.scss */
+/* line 105, ../../../../../compass/protected/modules/mobile/assets/css/main.scss */
 #feed-box div.message {
   margin-bottom: 10px;
   white-space: pre-wrap;
 }
-/* line 98, ../../../../../compass/protected/modules/mobile/assets/css/main.scss */
+/* line 109, ../../../../../compass/protected/modules/mobile/assets/css/main.scss */
 #feed-box a {
   /* links disabled until mobile versions of linked pages are added */
   color: #4b4b4b;
   text-decoration: none;
 }
-/* line 103, ../../../../../compass/protected/modules/mobile/assets/css/main.scss */
+/* line 114, ../../../../../compass/protected/modules/mobile/assets/css/main.scss */
 #feed-box span.my-username {
   color: #999;
 }
@@ -114,14 +114,14 @@ activity
 /* line 80, ../../../../../compass/sass/protected/modules/mobile/assets/css/main.scss */
 /* line 85, ../../../../../compass/sass/protected/modules/mobile/assets/css/main.scss */
 /* line 103, ../../../../../compass/sass/protected/modules/mobile/assets/css/main.scss */
-/* line 117, ../../../../../compass/protected/modules/mobile/assets/css/main.scss */
+/* line 128, ../../../../../compass/protected/modules/mobile/assets/css/main.scss */
 #feed-post-publisher {
   margin-bottom: 10px;
 }
 
 /* line 89, ../../../../../compass/sass/protected/modules/mobile/assets/css/main.scss */
 /* line 109, ../../../../../compass/sass/protected/modules/mobile/assets/css/main.scss */
-/* line 124, ../../../../../compass/protected/modules/mobile/assets/css/main.scss */
+/* line 135, ../../../../../compass/protected/modules/mobile/assets/css/main.scss */
 #attachments {
   margin: 18px -2px;
   border: 1px solid #b8b8b8;
@@ -131,7 +131,7 @@ activity
 
 /* line 96, ../../../../../compass/sass/protected/modules/mobile/assets/css/main.scss */
 /* line 118, ../../../../../compass/sass/protected/modules/mobile/assets/css/main.scss */
-/* line 134, ../../../../../compass/protected/modules/mobile/assets/css/main.scss */
+/* line 145, ../../../../../compass/protected/modules/mobile/assets/css/main.scss */
 #logo-container {
   text-align: center;
 }

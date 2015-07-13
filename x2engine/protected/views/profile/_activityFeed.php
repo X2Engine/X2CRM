@@ -163,7 +163,8 @@ $this->renderPartial ('_feedFilters');
         }
         echo $form->dropDownList($feed,'subtype',
             array_map(
-                'translateOptions',json_decode(Dropdowns::model()->findByPk(113)->options,true)),
+                'translateOptions',
+                Dropdowns::getSocialSubtypes ()),
             array ('class' => 'x2-select'));
         ?>
         <div id='second-row-buttons-container'>

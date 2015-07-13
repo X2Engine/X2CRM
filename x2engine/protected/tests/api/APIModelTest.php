@@ -30,7 +30,8 @@ class APIModelTest extends CURLDbTestCase {
 	}
 
 	public function newModel() {
-		return new APIModel('testuser','5f4dcc3b5aa765d61d8327deb882cf99',rtrim(TEST_BASE_URL,'/'));
+        $user = $this->users ('testUser');
+		return new APIModel($user->username,$user->userKey,rtrim(TEST_BASE_URL,'/'));
 	}
 
 	public function testInternalMethods() {
@@ -51,14 +52,23 @@ class APIModelTest extends CURLDbTestCase {
 		// Test adding:
 //		ob_start();
 		$realModel = $this->contacts('testAnyone');
-		$response = $model->addTags('Contacts',$realModel->id,$tags);
+		$response = $model->addTags ('Contacts',$realModel->id,$tags);
 		$tagTable = CActiveRecord::model('Tags')->tableName();
-		$tagsOnServer = Yii::app()->db->createCommand()->select('tag')->from($tagTable)->where('itemId=:itemId AND type=:itemType',array(':itemId'=>$realModel->id,':itemType'=>get_class($realModel)))->queryColumn();
+		$tagsOnServer = Yii::app()->db->createCommand()
+            ->select('tag')
+            ->from($tagTable)
+            ->where(
+                'itemId=:itemId AND type=:itemType',
+                array(':itemId'=>$realModel->id,':itemType'=>get_class($realModel))
+            )->queryColumn();
+        
 //		var_dump($tags);
 //		var_dump($tagsOnServer);
 //		print_r(json_decode($response,1));
+
 		$tagsNotAdded = array_diff($tags,$tagsOnServer);
 		$this->assertEmpty($tagsNotAdded,'Failed asserting that tags were saved on the server.');
+
 		// Test getting:
 		$tagsFromServer = $model->getTags('Contacts',$this->contacts('testAnyone')->id);
 //		ob_end_clean();

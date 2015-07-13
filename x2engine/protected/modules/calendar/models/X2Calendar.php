@@ -373,7 +373,7 @@ class X2Calendar extends CActiveRecord
 		));
 	}
 
-    public function getDisplayName ($plural=true) {
+    public function getDisplayName ($plural=true, $ofModule=true) {
         return Yii::t('calendar', 'Calendar');
     }
 	

@@ -216,12 +216,12 @@ class Groups extends X2Model {
 		return $userGroups[$userId];
 	}
 
-        /**
+    /**
      * Gets a list of names of all users having a group in common with a user.
      *
      * @param integer $userId User's ID
      * @param boolean $cache Whether to cache or not
-     * @return array
+     * @return array 
      */
     public static function getGroupmates($userId,$cache=true) {
        	if($cache === true && ($groupmates = Yii::app()->cache->get('user_groupmates')) !== false){

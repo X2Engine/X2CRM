@@ -152,8 +152,8 @@ class X2List extends X2Model {
         return '/contacts/contacts/list';
     }
 
-    public function getDisplayName ($plural=true) {
-        return Yii::t('contacts', '{contact} List|{contact} Lists', array(
+    public function getDisplayName ($plural=true, $ofModule=true) {
+        return Yii::t('contacts', '{contact} Lists|{contact} List', array(
             (int) $plural,
             '{contact}' => Modules::displayName(false, 'Contacts'),
         ));

@@ -32,29 +32,40 @@
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2Engine".
  *****************************************************************************************/
-/***********************************************************************************
- * Copyright (C) 2011-2015 X2Engine Inc. All Rights Reserved.
- *
- * X2Engine Inc.
- * P.O. Box 66752
- * Scotts Valley, California 95067 USA
- * Company website: http://www.x2engine.com
- *
- * X2Engine Inc. grants you a perpetual, non-exclusive, non-transferable license
- * to install and use this Software for your internal business purposes only
- * for the number of users purchased by you. Your use of this Software for
- * additional users is not covered by this license and requires a separate
- * license purchase for such users. You shall not distribute, license, or
- * sublicense the Software. Title, ownership, and all intellectual property
- * rights in the Software belong exclusively to X2Engine. You agree not to file
- * any patent applications covering, relating to, or depicting this Software
- * or modifications thereto, and you agree to assign any patentable inventions
- * resulting from your use of this Software to X2Engine.
- *
- * THIS SOFTWARE IS PROVIDED "AS IS" AND WITHOUT WARRANTIES OF ANY KIND, EITHER
- * EXPRESS OR IMPLIED, INCLUDING WITHOUT LIMITATION THE IMPLIED WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, TITLE, AND NON-INFRINGEMENT.
- **********************************************************************************/
+/*****************************************************************************************
+ * X2Engine Open Source Edition is a customer relationship management program developed by
+ * X2Engine, Inc. Copyright (C) 2011-2015 X2Engine Inc.
+ * 
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU Affero General Public License version 3 as published by the
+ * Free Software Foundation with the addition of the following permission added
+ * to Section 15 as permitted in Section 7(a): FOR ANY PART OF THE COVERED WORK
+ * IN WHICH THE COPYRIGHT IS OWNED BY X2ENGINE, X2ENGINE DISCLAIMS THE WARRANTY
+ * OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
+ * 
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.  See the GNU Affero General Public License for more
+ * details.
+ * 
+ * You should have received a copy of the GNU Affero General Public License along with
+ * this program; if not, see http://www.gnu.org/licenses or write to the Free
+ * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301 USA.
+ * 
+ * You can contact X2Engine, Inc. P.O. Box 66752, Scotts Valley,
+ * California 95067, USA. or at email address contact@x2engine.com.
+ * 
+ * The interactive user interfaces in modified source and object code versions
+ * of this program must display Appropriate Legal Notices, as required under
+ * Section 5 of the GNU Affero General Public License version 3.
+ * 
+ * In accordance with Section 7(b) of the GNU Affero General Public License version 3,
+ * these Appropriate Legal Notices must retain the display of the "Powered by
+ * X2Engine" logo. If the display of the logo is not reasonably feasible for
+ * technical reasons, the Appropriate Legal Notices must display the words
+ * "Powered by X2Engine".
+ *****************************************************************************************/
 /***********************************************************************
 * Grays 
 ***********************************************************************/
@@ -70,56 +81,78 @@
 /***********************************************************************
 * This section is made to correspond with the theme keys in ThemeGenerator
 ***********************************************************************/
-/***********************************************************************************
- * Copyright (C) 2011-2015 X2Engine Inc. All Rights Reserved.
- *
- * X2Engine Inc.
- * P.O. Box 66752
- * Scotts Valley, California 95067 USA
- * Company website: http://www.x2engine.com
- *
- * X2Engine Inc. grants you a perpetual, non-exclusive, non-transferable license
- * to install and use this Software for your internal business purposes only
- * for the number of users purchased by you. Your use of this Software for
- * additional users is not covered by this license and requires a separate
- * license purchase for such users. You shall not distribute, license, or
- * sublicense the Software. Title, ownership, and all intellectual property
- * rights in the Software belong exclusively to X2Engine. You agree not to file
- * any patent applications covering, relating to, or depicting this Software
- * or modifications thereto, and you agree to assign any patentable inventions
- * resulting from your use of this Software to X2Engine.
- *
- * THIS SOFTWARE IS PROVIDED "AS IS" AND WITHOUT WARRANTIES OF ANY KIND, EITHER
- * EXPRESS OR IMPLIED, INCLUDING WITHOUT LIMITATION THE IMPLIED WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, TITLE, AND NON-INFRINGEMENT.
- **********************************************************************************/
+/*****************************************************************************************
+ * X2Engine Open Source Edition is a customer relationship management program developed by
+ * X2Engine, Inc. Copyright (C) 2011-2015 X2Engine Inc.
+ * 
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU Affero General Public License version 3 as published by the
+ * Free Software Foundation with the addition of the following permission added
+ * to Section 15 as permitted in Section 7(a): FOR ANY PART OF THE COVERED WORK
+ * IN WHICH THE COPYRIGHT IS OWNED BY X2ENGINE, X2ENGINE DISCLAIMS THE WARRANTY
+ * OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
+ * 
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.  See the GNU Affero General Public License for more
+ * details.
+ * 
+ * You should have received a copy of the GNU Affero General Public License along with
+ * this program; if not, see http://www.gnu.org/licenses or write to the Free
+ * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301 USA.
+ * 
+ * You can contact X2Engine, Inc. P.O. Box 66752, Scotts Valley,
+ * California 95067, USA. or at email address contact@x2engine.com.
+ * 
+ * The interactive user interfaces in modified source and object code versions
+ * of this program must display Appropriate Legal Notices, as required under
+ * Section 5 of the GNU Affero General Public License version 3.
+ * 
+ * In accordance with Section 7(b) of the GNU Affero General Public License version 3,
+ * these Appropriate Legal Notices must retain the display of the "Powered by
+ * X2Engine" logo. If the display of the logo is not reasonably feasible for
+ * technical reasons, the Appropriate Legal Notices must display the words
+ * "Powered by X2Engine".
+ *****************************************************************************************/
 /***************************************
 * This file is responsible for mantaining
 * general purpose mixins and classes. 
 ***************************************/
-/***********************************************************************************
- * Copyright (C) 2011-2015 X2Engine Inc. All Rights Reserved.
- *
- * X2Engine Inc.
- * P.O. Box 66752
- * Scotts Valley, California 95067 USA
- * Company website: http://www.x2engine.com
- *
- * X2Engine Inc. grants you a perpetual, non-exclusive, non-transferable license
- * to install and use this Software for your internal business purposes only
- * for the number of users purchased by you. Your use of this Software for
- * additional users is not covered by this license and requires a separate
- * license purchase for such users. You shall not distribute, license, or
- * sublicense the Software. Title, ownership, and all intellectual property
- * rights in the Software belong exclusively to X2Engine. You agree not to file
- * any patent applications covering, relating to, or depicting this Software
- * or modifications thereto, and you agree to assign any patentable inventions
- * resulting from your use of this Software to X2Engine.
- *
- * THIS SOFTWARE IS PROVIDED "AS IS" AND WITHOUT WARRANTIES OF ANY KIND, EITHER
- * EXPRESS OR IMPLIED, INCLUDING WITHOUT LIMITATION THE IMPLIED WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, TITLE, AND NON-INFRINGEMENT.
- **********************************************************************************/
+/*****************************************************************************************
+ * X2Engine Open Source Edition is a customer relationship management program developed by
+ * X2Engine, Inc. Copyright (C) 2011-2015 X2Engine Inc.
+ * 
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU Affero General Public License version 3 as published by the
+ * Free Software Foundation with the addition of the following permission added
+ * to Section 15 as permitted in Section 7(a): FOR ANY PART OF THE COVERED WORK
+ * IN WHICH THE COPYRIGHT IS OWNED BY X2ENGINE, X2ENGINE DISCLAIMS THE WARRANTY
+ * OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
+ * 
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.  See the GNU Affero General Public License for more
+ * details.
+ * 
+ * You should have received a copy of the GNU Affero General Public License along with
+ * this program; if not, see http://www.gnu.org/licenses or write to the Free
+ * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301 USA.
+ * 
+ * You can contact X2Engine, Inc. P.O. Box 66752, Scotts Valley,
+ * California 95067, USA. or at email address contact@x2engine.com.
+ * 
+ * The interactive user interfaces in modified source and object code versions
+ * of this program must display Appropriate Legal Notices, as required under
+ * Section 5 of the GNU Affero General Public License version 3.
+ * 
+ * In accordance with Section 7(b) of the GNU Affero General Public License version 3,
+ * these Appropriate Legal Notices must retain the display of the "Powered by
+ * X2Engine" logo. If the display of the logo is not reasonably feasible for
+ * technical reasons, the Appropriate Legal Notices must display the words
+ * "Powered by X2Engine".
+ *****************************************************************************************/
 /***********************************************************************
 * Grays 
 ***********************************************************************/
@@ -148,13 +181,13 @@
 * CSS to extend when something 
 * should look like a link
 ***************************************/
-/* line 76, ../../../compass/css/lib/_standards.scss */
+/* line 87, ../../../compass/css/lib/_standards.scss */
 .pseudo-link {
   cursor: pointer;
   color: #004baf;
   transition: color .1s;
 }
-/* line 81, ../../../compass/css/lib/_standards.scss */
+/* line 92, ../../../compass/css/lib/_standards.scss */
 .pseudo-link:hover {
   color: #006cfb;
 }
@@ -163,11 +196,11 @@
 * CSS to extend when for elements that 
 * become transparent on mouseover
 ***************************************/
-/* line 99, ../../../compass/css/lib/_standards.scss */
+/* line 110, ../../../compass/css/lib/_standards.scss */
 .opacity-hover {
   opacity: 0.3;
 }
-/* line 94, ../../../compass/css/lib/_standards.scss */
+/* line 105, ../../../compass/css/lib/_standards.scss */
 .opacity-hover:hover {
   opacity: 1;
 }
@@ -183,57 +216,79 @@
 * Mixin for applying a fontAwesome icon
 * SEE _icons.scss FOR A BETTER IMPLEMENTATION
 ******************************************/
-/***********************************************************************************
- * Copyright (C) 2011-2015 X2Engine Inc. All Rights Reserved.
- *
- * X2Engine Inc.
- * P.O. Box 66752
- * Scotts Valley, California 95067 USA
- * Company website: http://www.x2engine.com
- *
- * X2Engine Inc. grants you a perpetual, non-exclusive, non-transferable license
- * to install and use this Software for your internal business purposes only
- * for the number of users purchased by you. Your use of this Software for
- * additional users is not covered by this license and requires a separate
- * license purchase for such users. You shall not distribute, license, or
- * sublicense the Software. Title, ownership, and all intellectual property
- * rights in the Software belong exclusively to X2Engine. You agree not to file
- * any patent applications covering, relating to, or depicting this Software
- * or modifications thereto, and you agree to assign any patentable inventions
- * resulting from your use of this Software to X2Engine.
- *
- * THIS SOFTWARE IS PROVIDED "AS IS" AND WITHOUT WARRANTIES OF ANY KIND, EITHER
- * EXPRESS OR IMPLIED, INCLUDING WITHOUT LIMITATION THE IMPLIED WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, TITLE, AND NON-INFRINGEMENT.
- **********************************************************************************/
+/*****************************************************************************************
+ * X2Engine Open Source Edition is a customer relationship management program developed by
+ * X2Engine, Inc. Copyright (C) 2011-2015 X2Engine Inc.
+ * 
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU Affero General Public License version 3 as published by the
+ * Free Software Foundation with the addition of the following permission added
+ * to Section 15 as permitted in Section 7(a): FOR ANY PART OF THE COVERED WORK
+ * IN WHICH THE COPYRIGHT IS OWNED BY X2ENGINE, X2ENGINE DISCLAIMS THE WARRANTY
+ * OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
+ * 
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.  See the GNU Affero General Public License for more
+ * details.
+ * 
+ * You should have received a copy of the GNU Affero General Public License along with
+ * this program; if not, see http://www.gnu.org/licenses or write to the Free
+ * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301 USA.
+ * 
+ * You can contact X2Engine, Inc. P.O. Box 66752, Scotts Valley,
+ * California 95067, USA. or at email address contact@x2engine.com.
+ * 
+ * The interactive user interfaces in modified source and object code versions
+ * of this program must display Appropriate Legal Notices, as required under
+ * Section 5 of the GNU Affero General Public License version 3.
+ * 
+ * In accordance with Section 7(b) of the GNU Affero General Public License version 3,
+ * these Appropriate Legal Notices must retain the display of the "Powered by
+ * X2Engine" logo. If the display of the logo is not reasonably feasible for
+ * technical reasons, the Appropriate Legal Notices must display the words
+ * "Powered by X2Engine".
+ *****************************************************************************************/
 /************************************************
 * This file mantains several important mixins for 
 * Font Icons. The two sources of font icons are 
 * font-awesome, and x2-icons (custom icons).
 *************************************************/
-/***********************************************************************************
- * Copyright (C) 2011-2015 X2Engine Inc. All Rights Reserved.
- *
- * X2Engine Inc.
- * P.O. Box 66752
- * Scotts Valley, California 95067 USA
- * Company website: http://www.x2engine.com
- *
- * X2Engine Inc. grants you a perpetual, non-exclusive, non-transferable license
- * to install and use this Software for your internal business purposes only
- * for the number of users purchased by you. Your use of this Software for
- * additional users is not covered by this license and requires a separate
- * license purchase for such users. You shall not distribute, license, or
- * sublicense the Software. Title, ownership, and all intellectual property
- * rights in the Software belong exclusively to X2Engine. You agree not to file
- * any patent applications covering, relating to, or depicting this Software
- * or modifications thereto, and you agree to assign any patentable inventions
- * resulting from your use of this Software to X2Engine.
- *
- * THIS SOFTWARE IS PROVIDED "AS IS" AND WITHOUT WARRANTIES OF ANY KIND, EITHER
- * EXPRESS OR IMPLIED, INCLUDING WITHOUT LIMITATION THE IMPLIED WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, TITLE, AND NON-INFRINGEMENT.
- **********************************************************************************/
+/*****************************************************************************************
+ * X2Engine Open Source Edition is a customer relationship management program developed by
+ * X2Engine, Inc. Copyright (C) 2011-2015 X2Engine Inc.
+ * 
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU Affero General Public License version 3 as published by the
+ * Free Software Foundation with the addition of the following permission added
+ * to Section 15 as permitted in Section 7(a): FOR ANY PART OF THE COVERED WORK
+ * IN WHICH THE COPYRIGHT IS OWNED BY X2ENGINE, X2ENGINE DISCLAIMS THE WARRANTY
+ * OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
+ * 
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.  See the GNU Affero General Public License for more
+ * details.
+ * 
+ * You should have received a copy of the GNU Affero General Public License along with
+ * this program; if not, see http://www.gnu.org/licenses or write to the Free
+ * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301 USA.
+ * 
+ * You can contact X2Engine, Inc. P.O. Box 66752, Scotts Valley,
+ * California 95067, USA. or at email address contact@x2engine.com.
+ * 
+ * The interactive user interfaces in modified source and object code versions
+ * of this program must display Appropriate Legal Notices, as required under
+ * Section 5 of the GNU Affero General Public License version 3.
+ * 
+ * In accordance with Section 7(b) of the GNU Affero General Public License version 3,
+ * these Appropriate Legal Notices must retain the display of the "Powered by
+ * X2Engine" logo. If the display of the logo is not reasonably feasible for
+ * technical reasons, the Appropriate Legal Notices must display the words
+ * "Powered by X2Engine".
+ *****************************************************************************************/
 /***********************************************************************
 * Grays 
 ***********************************************************************/
@@ -249,29 +304,40 @@
 /***********************************************************************
 * This section is made to correspond with the theme keys in ThemeGenerator
 ***********************************************************************/
-/***********************************************************************************
- * Copyright (C) 2011-2015 X2Engine Inc. All Rights Reserved.
- *
- * X2Engine Inc.
- * P.O. Box 66752
- * Scotts Valley, California 95067 USA
- * Company website: http://www.x2engine.com
- *
- * X2Engine Inc. grants you a perpetual, non-exclusive, non-transferable license
- * to install and use this Software for your internal business purposes only
- * for the number of users purchased by you. Your use of this Software for
- * additional users is not covered by this license and requires a separate
- * license purchase for such users. You shall not distribute, license, or
- * sublicense the Software. Title, ownership, and all intellectual property
- * rights in the Software belong exclusively to X2Engine. You agree not to file
- * any patent applications covering, relating to, or depicting this Software
- * or modifications thereto, and you agree to assign any patentable inventions
- * resulting from your use of this Software to X2Engine.
- *
- * THIS SOFTWARE IS PROVIDED "AS IS" AND WITHOUT WARRANTIES OF ANY KIND, EITHER
- * EXPRESS OR IMPLIED, INCLUDING WITHOUT LIMITATION THE IMPLIED WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, TITLE, AND NON-INFRINGEMENT.
- **********************************************************************************/
+/*****************************************************************************************
+ * X2Engine Open Source Edition is a customer relationship management program developed by
+ * X2Engine, Inc. Copyright (C) 2011-2015 X2Engine Inc.
+ * 
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU Affero General Public License version 3 as published by the
+ * Free Software Foundation with the addition of the following permission added
+ * to Section 15 as permitted in Section 7(a): FOR ANY PART OF THE COVERED WORK
+ * IN WHICH THE COPYRIGHT IS OWNED BY X2ENGINE, X2ENGINE DISCLAIMS THE WARRANTY
+ * OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
+ * 
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.  See the GNU Affero General Public License for more
+ * details.
+ * 
+ * You should have received a copy of the GNU Affero General Public License along with
+ * this program; if not, see http://www.gnu.org/licenses or write to the Free
+ * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301 USA.
+ * 
+ * You can contact X2Engine, Inc. P.O. Box 66752, Scotts Valley,
+ * California 95067, USA. or at email address contact@x2engine.com.
+ * 
+ * The interactive user interfaces in modified source and object code versions
+ * of this program must display Appropriate Legal Notices, as required under
+ * Section 5 of the GNU Affero General Public License version 3.
+ * 
+ * In accordance with Section 7(b) of the GNU Affero General Public License version 3,
+ * these Appropriate Legal Notices must retain the display of the "Powered by
+ * X2Engine" logo. If the display of the logo is not reasonably feasible for
+ * technical reasons, the Appropriate Legal Notices must display the words
+ * "Powered by X2Engine".
+ *****************************************************************************************/
 /************************************************
 * This File is a pseudo-class translation of all 
 * the font-awesome classes. This way, these classes
@@ -285,7 +351,7 @@
  *  Font Awesome 4.2.0 by @davegandy - http://fontawesome.io - @fontawesome
  *  License - http://fontawesome.io/license (Font: SIL OFL 1.1, CSS: MIT License)
  */
-/* line 64, ../../../compass/css/lib/_font-awesome.scss */
+/* line 75, ../../../compass/css/lib/_font-awesome.scss */
 #activity-feed-container .img-box.action_complete:before, #activity-feed-container .img-box.action_complete .stacked-icon:before, #activity-feed-container .img-box.action_reminder:before, #activity-feed-container .img-box.calendar_event:before, #activity-feed-container .img-box.generic_calendar_event:before, #activity-feed-container .img-box.doc_update:before, #activity-feed-container .img-box.email_from:before, #activity-feed-container .img-box.email_clicked:before, #activity-feed-container .img-box.email_sent:before, #activity-feed-container .img-box.email_sent .stacked-icon:before, #activity-feed-container .img-box.email_sent_quote:before, #activity-feed-container .img-box.email_sent_quote .stacked-icon:before, #activity-feed-container .img-box.email_sent_invoice:before, #activity-feed-container .img-box.email_sent_invoice .stacked-icon:before, #activity-feed-container .img-box.invoice_emailed:before, #activity-feed-container .img-box.media:before, #activity-feed-container .img-box.notif:before, #activity-feed-container .img-box.voip_call:before, #activity-feed-container .img-box.quote_emailed:before, #activity-feed-container .img-box.record_create:before, #activity-feed-container .img-box.record_deleted:before, #activity-feed-container .img-box.web_activity:before, #activity-feed-container .img-box.weblead_create:before, #activity-feed-container .img-box.weblead_create .stacked-icon:before, #activity-feed-container .img-box.case_escalated .stacked-icon:before, #activity-feed-container .img-box.workflow_revert .stacked-icon:before, #activity-feed-container .img-box.workflow_complete .stacked-icon:before, #activity-feed-container .img-box.workflow_start .stacked-icon:before, #activity-feed-container .img-box.record_create .stacked-icon:before, #activity-feed-container .img-box.record_create.Campaign-create:before, #activity-feed-container .img-box.record_create.Actions-create:before, #activity-feed-container .img-box.record_create.Accounts-create:before, #activity-feed-container .img-box.record_create.Opportunity-create:before, #activity-feed-container .img-box.record_create.X2Leads-create:before, #activity-feed-container .img-box.record_create.Docs-create:before, #activity-feed-container .img-box.record_create.Groups-create:before, #activity-feed-container .img-box.record_create.BugReports-create:before, #activity-feed-container .img-box.record_create.Charts-create:before, #activity-feed-container .img-box.record_create.Reports-create:before {
   display: inline-block;
   font: normal normal normal 14px/1 FontAwesome;
@@ -295,134 +361,134 @@
 }
 
 /* makes the font 33% larger relative to the icon container */
-/* line 123, ../../../compass/css/lib/_font-awesome.scss */
+/* line 134, ../../../compass/css/lib/_font-awesome.scss */
 #activity-feed-container .pull-left.img-box.action_complete:before, #activity-feed-container .img-box.action_complete .pull-left.stacked-icon:before, #activity-feed-container .pull-left.img-box.action_reminder:before, #activity-feed-container .pull-left.img-box.calendar_event:before, #activity-feed-container .pull-left.img-box.generic_calendar_event:before, #activity-feed-container .pull-left.img-box.doc_update:before, #activity-feed-container .pull-left.img-box.email_from:before, #activity-feed-container .pull-left.img-box.email_clicked:before, #activity-feed-container .pull-left.img-box.email_sent:before, #activity-feed-container .img-box.email_sent .pull-left.stacked-icon:before, #activity-feed-container .pull-left.img-box.email_sent_quote:before, #activity-feed-container .img-box.email_sent_quote .pull-left.stacked-icon:before, #activity-feed-container .pull-left.img-box.email_sent_invoice:before, #activity-feed-container .img-box.email_sent_invoice .pull-left.stacked-icon:before, #activity-feed-container .pull-left.img-box.invoice_emailed:before, #activity-feed-container .pull-left.img-box.media:before, #activity-feed-container .pull-left.img-box.notif:before, #activity-feed-container .pull-left.img-box.voip_call:before, #activity-feed-container .pull-left.img-box.quote_emailed:before, #activity-feed-container .pull-left.img-box.record_create:before, #activity-feed-container .pull-left.img-box.record_deleted:before, #activity-feed-container .pull-left.img-box.web_activity:before, #activity-feed-container .pull-left.img-box.weblead_create:before, #activity-feed-container .img-box.weblead_create .pull-left.stacked-icon:before, #activity-feed-container .img-box.case_escalated .pull-left.stacked-icon:before, #activity-feed-container .img-box.workflow_revert .pull-left.stacked-icon:before, #activity-feed-container .img-box.workflow_complete .pull-left.stacked-icon:before, #activity-feed-container .img-box.workflow_start .pull-left.stacked-icon:before, #activity-feed-container .img-box.record_create .pull-left.stacked-icon:before {
   margin-right: .3em;
 }
 
-/* line 126, ../../../compass/css/lib/_font-awesome.scss */
+/* line 137, ../../../compass/css/lib/_font-awesome.scss */
 #activity-feed-container .pull-right.img-box.action_complete:before, #activity-feed-container .img-box.action_complete .pull-right.stacked-icon:before, #activity-feed-container .pull-right.img-box.action_reminder:before, #activity-feed-container .pull-right.img-box.calendar_event:before, #activity-feed-container .pull-right.img-box.generic_calendar_event:before, #activity-feed-container .pull-right.img-box.doc_update:before, #activity-feed-container .pull-right.img-box.email_from:before, #activity-feed-container .pull-right.img-box.email_clicked:before, #activity-feed-container .pull-right.img-box.email_sent:before, #activity-feed-container .img-box.email_sent .pull-right.stacked-icon:before, #activity-feed-container .pull-right.img-box.email_sent_quote:before, #activity-feed-container .img-box.email_sent_quote .pull-right.stacked-icon:before, #activity-feed-container .pull-right.img-box.email_sent_invoice:before, #activity-feed-container .img-box.email_sent_invoice .pull-right.stacked-icon:before, #activity-feed-container .pull-right.img-box.invoice_emailed:before, #activity-feed-container .pull-right.img-box.media:before, #activity-feed-container .pull-right.img-box.notif:before, #activity-feed-container .pull-right.img-box.voip_call:before, #activity-feed-container .pull-right.img-box.quote_emailed:before, #activity-feed-container .pull-right.img-box.record_create:before, #activity-feed-container .pull-right.img-box.record_deleted:before, #activity-feed-container .pull-right.img-box.web_activity:before, #activity-feed-container .pull-right.img-box.weblead_create:before, #activity-feed-container .img-box.weblead_create .pull-right.stacked-icon:before, #activity-feed-container .img-box.case_escalated .pull-right.stacked-icon:before, #activity-feed-container .img-box.workflow_revert .pull-right.stacked-icon:before, #activity-feed-container .img-box.workflow_complete .pull-right.stacked-icon:before, #activity-feed-container .img-box.workflow_start .pull-right.stacked-icon:before, #activity-feed-container .img-box.record_create .pull-right.stacked-icon:before {
   margin-left: .3em;
 }
 
 /* Font Awesome uses the Unicode Private Use Area (PUA) to ensure screen
      readers do not read off random characters that represent icons */
-/* line 207, ../../../compass/css/lib/_font-awesome.scss */
+/* line 218, ../../../compass/css/lib/_font-awesome.scss */
 #activity-feed-container .img-box.weblead_create .stacked-icon:before, #activity-feed-container .img-box.record_create.X2Leads-create:before {
   content: "\f005";
 }
 
-/* line 228, ../../../compass/css/lib/_font-awesome.scss */
+/* line 239, ../../../compass/css/lib/_font-awesome.scss */
 #activity-feed-container .img-box.action_complete .stacked-icon:before, #activity-feed-container .img-box.workflow_complete .stacked-icon:before {
   content: "\f00c";
 }
 
-/* line 473, ../../../compass/css/lib/_font-awesome.scss */
+/* line 484, ../../../compass/css/lib/_font-awesome.scss */
 #activity-feed-container .img-box.email_sent .stacked-icon:before, #activity-feed-container .img-box.email_sent_quote .stacked-icon:before, #activity-feed-container .img-box.email_sent_invoice .stacked-icon:before, #activity-feed-container .img-box.workflow_start .stacked-icon:before {
   content: "\f061";
 }
 
-/* line 476, ../../../compass/css/lib/_font-awesome.scss */
+/* line 487, ../../../compass/css/lib/_font-awesome.scss */
 #activity-feed-container .img-box.case_escalated .stacked-icon:before {
   content: "\f062";
 }
 
-/* line 492, ../../../compass/css/lib/_font-awesome.scss */
+/* line 503, ../../../compass/css/lib/_font-awesome.scss */
 #activity-feed-container .img-box.record_create .stacked-icon:before {
   content: "\f067";
 }
 
-/* line 501, ../../../compass/css/lib/_font-awesome.scss */
+/* line 512, ../../../compass/css/lib/_font-awesome.scss */
 #activity-feed-container .img-box.action_reminder:before {
   content: "\f06a";
 }
 
-/* line 532, ../../../compass/css/lib/_font-awesome.scss */
+/* line 543, ../../../compass/css/lib/_font-awesome.scss */
 #activity-feed-container .img-box.notif:before {
   content: "\f075";
 }
 
-/* line 550, ../../../compass/css/lib/_font-awesome.scss */
+/* line 561, ../../../compass/css/lib/_font-awesome.scss */
 #activity-feed-container .img-box.record_create:before {
   content: "\f07b";
 }
 
-/* line 562, ../../../compass/css/lib/_font-awesome.scss */
+/* line 573, ../../../compass/css/lib/_font-awesome.scss */
 #activity-feed-container .img-box.record_create.Charts-create:before {
   content: "\f080";
 }
 
-/* line 624, ../../../compass/css/lib/_font-awesome.scss */
+/* line 635, ../../../compass/css/lib/_font-awesome.scss */
 #activity-feed-container .img-box.voip_call:before {
   content: "\f095";
 }
 
-/* line 657, ../../../compass/css/lib/_font-awesome.scss */
+/* line 668, ../../../compass/css/lib/_font-awesome.scss */
 #activity-feed-container .img-box.record_create.Campaign-create:before {
   content: "\f0a1";
 }
 
-/* line 690, ../../../compass/css/lib/_font-awesome.scss */
+/* line 701, ../../../compass/css/lib/_font-awesome.scss */
 #activity-feed-container .img-box.web_activity:before, #activity-feed-container .img-box.weblead_create:before {
   content: "\f0ac";
 }
 
-/* line 708, ../../../compass/css/lib/_font-awesome.scss */
+/* line 719, ../../../compass/css/lib/_font-awesome.scss */
 #activity-feed-container .img-box.record_create.Groups-create:before {
   content: "\f0c0";
 }
 
-/* line 808, ../../../compass/css/lib/_font-awesome.scss */
+/* line 819, ../../../compass/css/lib/_font-awesome.scss */
 #activity-feed-container .img-box.email_from:before, #activity-feed-container .img-box.email_clicked:before, #activity-feed-container .img-box.email_sent:before, #activity-feed-container .img-box.email_sent_quote:before, #activity-feed-container .img-box.email_sent_invoice:before, #activity-feed-container .img-box.invoice_emailed:before, #activity-feed-container .img-box.quote_emailed:before {
   content: "\f0e0";
 }
 
-/* line 814, ../../../compass/css/lib/_font-awesome.scss */
+/* line 825, ../../../compass/css/lib/_font-awesome.scss */
 #activity-feed-container .img-box.workflow_revert .stacked-icon:before {
   content: "\f0e2";
 }
 
-/* line 876, ../../../compass/css/lib/_font-awesome.scss */
+/* line 887, ../../../compass/css/lib/_font-awesome.scss */
 #activity-feed-container .img-box.record_create.Reports-create:before {
   content: "\f0f6";
 }
 
-/* line 1047, ../../../compass/css/lib/_font-awesome.scss */
+/* line 1058, ../../../compass/css/lib/_font-awesome.scss */
 #activity-feed-container .img-box.generic_calendar_event:before {
   content: "\f133";
 }
 
-/* line 1083, ../../../compass/css/lib/_font-awesome.scss */
+/* line 1094, ../../../compass/css/lib/_font-awesome.scss */
 #activity-feed-container .img-box.record_create.Opportunity-create:before {
   content: "\f140";
 }
 
-/* line 1095, ../../../compass/css/lib/_font-awesome.scss */
+/* line 1106, ../../../compass/css/lib/_font-awesome.scss */
 #activity-feed-container .img-box.action_complete:before, #activity-feed-container .img-box.record_create.Actions-create:before {
   content: "\f144";
 }
 
-/* line 1177, ../../../compass/css/lib/_font-awesome.scss */
+/* line 1188, ../../../compass/css/lib/_font-awesome.scss */
 #activity-feed-container .img-box.doc_update:before, #activity-feed-container .img-box.record_create.Docs-create:before {
   content: "\f15c";
 }
 
-/* line 1300, ../../../compass/css/lib/_font-awesome.scss */
+/* line 1311, ../../../compass/css/lib/_font-awesome.scss */
 #activity-feed-container .img-box.record_create.BugReports-create:before {
   content: "\f188";
 }
 
-/* line 1410, ../../../compass/css/lib/_font-awesome.scss */
+/* line 1421, ../../../compass/css/lib/_font-awesome.scss */
 #activity-feed-container .img-box.record_create.Accounts-create:before {
   content: "\f1ad";
 }
 
-/* line 1478, ../../../compass/css/lib/_font-awesome.scss */
+/* line 1489, ../../../compass/css/lib/_font-awesome.scss */
 #activity-feed-container .img-box.media:before {
   content: "\f1c5";
 }
 
-/* line 1637, ../../../compass/css/lib/_font-awesome.scss */
+/* line 1648, ../../../compass/css/lib/_font-awesome.scss */
 #activity-feed-container .img-box.record_deleted:before {
   content: "\f1f8";
 }
@@ -606,7 +672,7 @@
 * Class to add to a container that has a stacked icon
 * These are the icons displayed on the activity feed
 **************************************************/
-/* line 48, ../../../compass/css/lib/_icons.scss */
+/* line 59, ../../../compass/css/lib/_icons.scss */
 .stacked-icon {
   display: none;
   position: absolute;
@@ -621,7 +687,7 @@
   /* @theme background content */
   text-align: center;
 }
-/* line 67, ../../../compass/css/lib/_icons.scss */
+/* line 78, ../../../compass/css/lib/_icons.scss */
 .stacked-icon:before {
   width: 100%;
   font-size: 10px;
@@ -651,7 +717,7 @@
 /***********************************************************************
 * image attachments
 ***********************************************************************/
-/* line 33, ../../../compass/themes/x2engine/css/activityFeed.scss */
+/* line 44, ../../../compass/themes/x2engine/css/activityFeed.scss */
 #activity-feed-container {
   -webkit-border-radius: 4px !important;
   -moz-border-radius: 4px !important;
@@ -685,19 +751,19 @@
   * Activity Feed Icon Styling
   ********************************/
 }
-/* line 36, ../../../compass/themes/x2engine/css/activityFeed.scss */
+/* line 47, ../../../compass/themes/x2engine/css/activityFeed.scss */
 #activity-feed-container .attachment-img {
   height: 100px;
 }
-/* line 40, ../../../compass/themes/x2engine/css/activityFeed.scss */
+/* line 51, ../../../compass/themes/x2engine/css/activityFeed.scss */
 #activity-feed-container div.page-title .x2-button.right {
   margin: 5px 5px 5px 0px;
 }
-/* line 49, ../../../compass/themes/x2engine/css/activityFeed.scss */
+/* line 60, ../../../compass/themes/x2engine/css/activityFeed.scss */
 #activity-feed-container #attachment-form .focus-mini-module {
   box-shadow: none;
 }
-/* line 52, ../../../compass/themes/x2engine/css/activityFeed.scss */
+/* line 63, ../../../compass/themes/x2engine/css/activityFeed.scss */
 #activity-feed-container #attachment-form .form {
   -moz-border-radius: 0px;
   -o-border-radius: 0px;
@@ -708,46 +774,46 @@
   border-right: none;
   margin-bottom: 0;
 }
-/* line 68, ../../../compass/themes/x2engine/css/activityFeed.scss */
+/* line 79, ../../../compass/themes/x2engine/css/activityFeed.scss */
 #activity-feed-container .sp-replacer {
   padding: 0px !important;
   margin-left: 4px !important;
   position: relative;
   top: -2px;
 }
-/* line 75, ../../../compass/themes/x2engine/css/activityFeed.scss */
+/* line 86, ../../../compass/themes/x2engine/css/activityFeed.scss */
 #activity-feed-container .sp-dd {
   height: 13px !important;
 }
-/* line 79, ../../../compass/themes/x2engine/css/activityFeed.scss */
+/* line 90, ../../../compass/themes/x2engine/css/activityFeed.scss */
 #activity-feed-container .sp-preview {
   width: 20px !important;
   height: 17px !important;
   margin-right: 5px !important;
 }
-/* line 89, ../../../compass/themes/x2engine/css/activityFeed.scss */
+/* line 100, ../../../compass/themes/x2engine/css/activityFeed.scss */
 #activity-feed-container #broadcast-dialog-user-select {
   width: 460px;
   height: 200px;
 }
-/* line 94, ../../../compass/themes/x2engine/css/activityFeed.scss */
+/* line 105, ../../../compass/themes/x2engine/css/activityFeed.scss */
 #activity-feed-container .dialog-explanation {
   margin-bottom: 8px;
   margin-top: 7px;
 }
-/* line 100, ../../../compass/themes/x2engine/css/activityFeed.scss */
+/* line 111, ../../../compass/themes/x2engine/css/activityFeed.scss */
 #activity-feed-container #broadcast-dialog label {
   margin-bottom: 4px;
 }
-/* line 103, ../../../compass/themes/x2engine/css/activityFeed.scss */
+/* line 114, ../../../compass/themes/x2engine/css/activityFeed.scss */
 #activity-feed-container #broadcast-dialog .sp-replacer {
   margin-top: 6px;
 }
-/* line 112, ../../../compass/themes/x2engine/css/activityFeed.scss */
+/* line 123, ../../../compass/themes/x2engine/css/activityFeed.scss */
 #activity-feed-container #cke_Events_text {
   margin-bottom: 6px !important;
 }
-/* line 118, ../../../compass/themes/x2engine/css/activityFeed.scss */
+/* line 129, ../../../compass/themes/x2engine/css/activityFeed.scss */
 #activity-feed-container .cke_bottom {
   background: none !important;
   border-top: none !important;
@@ -757,11 +823,11 @@
   padding: 0 0 0 0 !important;
   margin: 0 0 0 0 !important;
 }
-/* line 130, ../../../compass/themes/x2engine/css/activityFeed.scss */
+/* line 141, ../../../compass/themes/x2engine/css/activityFeed.scss */
 #activity-feed-container .cke_resizer_ltr {
   margin-right: 2px !important;
 }
-/* line 138, ../../../compass/themes/x2engine/css/activityFeed.scss */
+/* line 149, ../../../compass/themes/x2engine/css/activityFeed.scss */
 #activity-feed-container .avatar-image {
   /*border: 3px solid #f8f8f8;*/
   border: 1px;
@@ -771,11 +837,11 @@
   -o-border-radius: 4px;
   border-radius: 4px;
 }
-/* line 144, ../../../compass/themes/x2engine/css/activityFeed.scss */
+/* line 155, ../../../compass/themes/x2engine/css/activityFeed.scss */
 #activity-feed-container .social-tabs a {
   text-decoration: none;
 }
-/* line 148, ../../../compass/themes/x2engine/css/activityFeed.scss */
+/* line 159, ../../../compass/themes/x2engine/css/activityFeed.scss */
 #activity-feed-container .comment-textbox {
   -webkit-appearance: none;
   height: 22px;
@@ -793,53 +859,53 @@
   border-radius: 3px;
   background: white;
 }
-/* line 162, ../../../compass/themes/x2engine/css/activityFeed.scss */
+/* line 173, ../../../compass/themes/x2engine/css/activityFeed.scss */
 #activity-feed-container .comment-box .items {
   margin-left: 15px;
   border: none;
 }
-/* line 170, ../../../compass/themes/x2engine/css/activityFeed.scss */
+/* line 181, ../../../compass/themes/x2engine/css/activityFeed.scss */
 #activity-feed-container .comment-box .items > .view:first-child {
   border-radius: 2px 0px 0px 0px;
 }
-/* line 174, ../../../compass/themes/x2engine/css/activityFeed.scss */
+/* line 185, ../../../compass/themes/x2engine/css/activityFeed.scss */
 #activity-feed-container .comment-box .items > .view:last-child {
   border-radius: 0px 0px 2px 0px;
 }
-/* line 180, ../../../compass/themes/x2engine/css/activityFeed.scss */
+/* line 191, ../../../compass/themes/x2engine/css/activityFeed.scss */
 #activity-feed-container .important {
   background-color: #FFFFC2;
 }
-/* line 184, ../../../compass/themes/x2engine/css/activityFeed.scss */
+/* line 195, ../../../compass/themes/x2engine/css/activityFeed.scss */
 #activity-feed-container #activity-feed .pager {
   visibility: hidden;
 }
-/* line 188, ../../../compass/themes/x2engine/css/activityFeed.scss */
+/* line 199, ../../../compass/themes/x2engine/css/activityFeed.scss */
 #activity-feed-container .yiiPager {
   display: none;
 }
-/* line 192, ../../../compass/themes/x2engine/css/activityFeed.scss */
+/* line 203, ../../../compass/themes/x2engine/css/activityFeed.scss */
 #activity-feed-container .activity-feed div.like-history-box {
   padding-top: 6px;
 }
-/* line 197, ../../../compass/themes/x2engine/css/activityFeed.scss */
+/* line 208, ../../../compass/themes/x2engine/css/activityFeed.scss */
 #activity-feed-container #sticky-feed .important-action {
   background: #FFFFC2;
 }
-/* line 202, ../../../compass/themes/x2engine/css/activityFeed.scss */
+/* line 213, ../../../compass/themes/x2engine/css/activityFeed.scss */
 #activity-feed-container #activity-feed.list-view .view.top-level.activity-feed {
   padding: 5px;
   overflow: auto;
 }
-/* line 205, ../../../compass/themes/x2engine/css/activityFeed.scss */
+/* line 216, ../../../compass/themes/x2engine/css/activityFeed.scss */
 #activity-feed-container #activity-feed.list-view .view.top-level.activity-feed.important-action {
   background: #FFFFC2;
 }
-/* line 212, ../../../compass/themes/x2engine/css/activityFeed.scss */
+/* line 223, ../../../compass/themes/x2engine/css/activityFeed.scss */
 #activity-feed-container #sticky-feed .top-level.activity-feed {
   overflow: auto;
 }
-/* line 216, ../../../compass/themes/x2engine/css/activityFeed.scss */
+/* line 227, ../../../compass/themes/x2engine/css/activityFeed.scss */
 #activity-feed-container .items {
   -webkit-border-radius: 0px !important;
   -moz-border-radius: 0px !important;
@@ -850,15 +916,15 @@
   border-left: none !important;
   border-right: none !important;
 }
-/* line 226, ../../../compass/themes/x2engine/css/activityFeed.scss */
+/* line 237, ../../../compass/themes/x2engine/css/activityFeed.scss */
 #activity-feed-container .expandable-details-override {
   display: inline !important;
 }
-/* line 230, ../../../compass/themes/x2engine/css/activityFeed.scss */
+/* line 241, ../../../compass/themes/x2engine/css/activityFeed.scss */
 #activity-feed-container .event-bottom-row {
   margin-top: -5px;
 }
-/* line 232, ../../../compass/themes/x2engine/css/activityFeed.scss */
+/* line 243, ../../../compass/themes/x2engine/css/activityFeed.scss */
 #activity-feed-container .event-bottom-row .comment-age {
   display: inline-block;
   margin-top: 8px;
@@ -867,16 +933,16 @@
   /* @theme color link */
   opacity: 0.8;
 }
-/* line 94, ../../../compass/css/lib/_standards.scss */
+/* line 105, ../../../compass/css/lib/_standards.scss */
 #activity-feed-container .event-bottom-row .comment-age:hover {
   opacity: 1;
 }
-/* line 240, ../../../compass/themes/x2engine/css/activityFeed.scss */
+/* line 251, ../../../compass/themes/x2engine/css/activityFeed.scss */
 #activity-feed-container .event-bottom-row .event-icon-button-container {
   display: inline-block;
   margin-top: -7px;
 }
-/* line 246, ../../../compass/themes/x2engine/css/activityFeed.scss */
+/* line 257, ../../../compass/themes/x2engine/css/activityFeed.scss */
 #activity-feed-container div#post-form {
   margin-bottom: 0 !important;
   border-top: none;
@@ -885,59 +951,59 @@
   border-bottom: 1px solid #eee;
   border-radius: 0;
 }
-/* line 255, ../../../compass/themes/x2engine/css/activityFeed.scss */
+/* line 266, ../../../compass/themes/x2engine/css/activityFeed.scss */
 #activity-feed-container .event-icon-button-container > * {
   height: 20px;
   opacity: 0.9;
   display: inline-block;
 }
-/* line 263, ../../../compass/themes/x2engine/css/activityFeed.scss */
+/* line 274, ../../../compass/themes/x2engine/css/activityFeed.scss */
 #activity-feed-container .important-link.x2-hint, #activity-feed-container .sticky-link.x2-hint {
   color: #c5c5c5;
 }
-/* line 268, ../../../compass/themes/x2engine/css/activityFeed.scss */
+/* line 279, ../../../compass/themes/x2engine/css/activityFeed.scss */
 #activity-feed-container .deleteButton {
   opacity: 0.5;
 }
-/* line 94, ../../../compass/css/lib/_standards.scss */
+/* line 105, ../../../compass/css/lib/_standards.scss */
 #activity-feed-container .deleteButton:hover {
   opacity: 1;
 }
-/* line 276, ../../../compass/themes/x2engine/css/activityFeed.scss */
+/* line 287, ../../../compass/themes/x2engine/css/activityFeed.scss */
 #activity-feed-container .feed-comment-icon, #activity-feed-container .broadcast-icon, #activity-feed-container .like-icon, #activity-feed-container .sticky-icon, #activity-feed-container .feed-make-important-icon, #activity-feed-container .like-count, #activity-feed-container .unsticky-icon, #activity-feed-container .unlike-icon, #activity-feed-container .feed-make-unimportant-icon {
   margin-left: 10px;
 }
-/* line 280, ../../../compass/themes/x2engine/css/activityFeed.scss */
+/* line 291, ../../../compass/themes/x2engine/css/activityFeed.scss */
 #activity-feed-container .feed-comment-icon, #activity-feed-container .broadcast-icon, #activity-feed-container .like-icon, #activity-feed-container .sticky-icon, #activity-feed-container .feed-make-important-icon, #activity-feed-container .like-count {
   opacity: 0.6;
   cursor: pointer;
   color: #454545;
 }
-/* line 286, ../../../compass/themes/x2engine/css/activityFeed.scss */
+/* line 297, ../../../compass/themes/x2engine/css/activityFeed.scss */
 #activity-feed-container .feed-comment-icon:hover, #activity-feed-container .broadcast-icon:hover, #activity-feed-container .like-icon:hover, #activity-feed-container .sticky-icon:hover, #activity-feed-container .feed-make-important-icon:hover, #activity-feed-container .like-count:hover {
   opacity: 0.8;
 }
-/* line 291, ../../../compass/themes/x2engine/css/activityFeed.scss */
+/* line 302, ../../../compass/themes/x2engine/css/activityFeed.scss */
 #activity-feed-container .unsticky-icon, #activity-feed-container .unlike-icon, #activity-feed-container .feed-make-unimportant-icon {
   opacity: 1.0;
   cursor: pointer;
 }
-/* line 296, ../../../compass/themes/x2engine/css/activityFeed.scss */
+/* line 307, ../../../compass/themes/x2engine/css/activityFeed.scss */
 #activity-feed-container .unsticky-icon:hover, #activity-feed-container .unlike-icon:hover, #activity-feed-container .feed-make-unimportant-icon:hover {
   opacity: 0.9;
 }
-/* line 309, ../../../compass/themes/x2engine/css/activityFeed.scss */
+/* line 320, ../../../compass/themes/x2engine/css/activityFeed.scss */
 #activity-feed-container .like-count {
   opacity: 0.6;
   padding-left: 3px;
   color: #004baf;
   margin-left: 0px;
 }
-/* line 317, ../../../compass/themes/x2engine/css/activityFeed.scss */
+/* line 328, ../../../compass/themes/x2engine/css/activityFeed.scss */
 #activity-feed-container .unlike-button[style*="none"] + .like-count {
   color: #454545;
 }
-/* line 321, ../../../compass/themes/x2engine/css/activityFeed.scss */
+/* line 332, ../../../compass/themes/x2engine/css/activityFeed.scss */
 #activity-feed-container #activity-feed-settings-button {
   cursor: pointer;
   float: right;
@@ -945,16 +1011,16 @@
   margin-right: 5px;
   opacity: 0.7;
 }
-/* line 327, ../../../compass/themes/x2engine/css/activityFeed.scss */
+/* line 338, ../../../compass/themes/x2engine/css/activityFeed.scss */
 #activity-feed-container #activity-feed-settings-button:hover {
   opacity: 1;
 }
-/* line 332, ../../../compass/themes/x2engine/css/activityFeed.scss */
+/* line 343, ../../../compass/themes/x2engine/css/activityFeed.scss */
 #activity-feed-container #second-row-buttons-container {
   display: block;
   margin-top: 7px;
 }
-/* line 340, ../../../compass/themes/x2engine/css/activityFeed.scss */
+/* line 351, ../../../compass/themes/x2engine/css/activityFeed.scss */
 #activity-feed-container .img-box {
   display: block;
   float: left;
@@ -968,591 +1034,591 @@
   height: 45px;
   padding-bottom: 5px;
 }
-/* line 356, ../../../compass/themes/x2engine/css/activityFeed.scss */
+/* line 367, ../../../compass/themes/x2engine/css/activityFeed.scss */
 #activity-feed-container .img-box:before {
   font-size: 30px !important;
 }
-/* line 39, ../../../compass/css/lib/_font-awesome.scss */
+/* line 50, ../../../compass/css/lib/_font-awesome.scss */
 #activity-feed-container .img-box.action_complete:before {
   text-decoration: none;
 }
-/* line 80, ../../../compass/css/lib/_icons.scss */
+/* line 91, ../../../compass/css/lib/_icons.scss */
 #activity-feed-container .img-box.action_complete .stacked-icon:before {
   top: 0px;
   left: 0px;
 }
-/* line 81, ../../../compass/css/lib/_icons.scss */
+/* line 92, ../../../compass/css/lib/_icons.scss */
 #activity-feed-container .img-box.action_complete .img-box.record_create .stacked-icon:before, #activity-feed-container .img-box.record_create .img-box.action_complete .stacked-icon:before {
   top: 1.0px;
   left: 0px;
 }
-/* line 82, ../../../compass/css/lib/_icons.scss */
+/* line 93, ../../../compass/css/lib/_icons.scss */
 #activity-feed-container .img-box.action_complete .stacked-icon:before {
   top: 1px;
   left: 0px;
 }
-/* line 84, ../../../compass/css/lib/_icons.scss */
+/* line 95, ../../../compass/css/lib/_icons.scss */
 #activity-feed-container .img-box.action_complete .img-box.email_sent .stacked-icon:before, #activity-feed-container .img-box.email_sent .img-box.action_complete .stacked-icon:before, #activity-feed-container .img-box.action_complete .img-box.email_sent_quote .stacked-icon:before, #activity-feed-container .img-box.email_sent_quote .img-box.action_complete .stacked-icon:before, #activity-feed-container .img-box.action_complete .img-box.email_sent_invoice .stacked-icon:before, #activity-feed-container .img-box.email_sent_invoice .img-box.action_complete .stacked-icon:before, #activity-feed-container .img-box.action_complete .img-box.workflow_start .stacked-icon:before, #activity-feed-container .img-box.workflow_start .img-box.action_complete .stacked-icon:before {
   top: 0.5px;
   left: 1px;
 }
-/* line 85, ../../../compass/css/lib/_icons.scss */
+/* line 96, ../../../compass/css/lib/_icons.scss */
 #activity-feed-container .img-box.action_complete .img-box.weblead_create .stacked-icon:before, #activity-feed-container .img-box.weblead_create .img-box.action_complete .stacked-icon:before {
   top: 1px;
   left: 0px;
 }
-/* line 86, ../../../compass/css/lib/_icons.scss */
+/* line 97, ../../../compass/css/lib/_icons.scss */
 #activity-feed-container .img-box.action_complete .img-box.workflow_revert .stacked-icon:before, #activity-feed-container .img-box.workflow_revert .img-box.action_complete .stacked-icon:before {
   top: 1px;
 }
-/* line 89, ../../../compass/css/lib/_icons.scss */
+/* line 100, ../../../compass/css/lib/_icons.scss */
 #activity-feed-container .img-box.action_complete .stacked-icon {
   display: inline-block;
 }
-/* line 39, ../../../compass/css/lib/_font-awesome.scss */
+/* line 50, ../../../compass/css/lib/_font-awesome.scss */
 #activity-feed-container .img-box.action_complete .stacked-icon:before {
   text-decoration: none;
 }
-/* line 94, ../../../compass/css/lib/_icons.scss */
+/* line 105, ../../../compass/css/lib/_icons.scss */
 #activity-feed-container .img-box.action_complete .stacked-icon:before {
   position: absolute;
   font-size: 10px;
 }
-/* line 39, ../../../compass/css/lib/_font-awesome.scss */
+/* line 50, ../../../compass/css/lib/_font-awesome.scss */
 #activity-feed-container .img-box.action_reminder:before {
   text-decoration: none;
 }
-/* line 39, ../../../compass/css/lib/_font-awesome.scss */
+/* line 50, ../../../compass/css/lib/_font-awesome.scss */
 #activity-feed-container .img-box.calendar_event:before {
   text-decoration: none;
 }
-/* line 39, ../../../compass/css/lib/_font-awesome.scss */
+/* line 50, ../../../compass/css/lib/_font-awesome.scss */
 #activity-feed-container .img-box.generic_calendar_event:before {
   text-decoration: none;
 }
-/* line 39, ../../../compass/css/lib/_font-awesome.scss */
+/* line 50, ../../../compass/css/lib/_font-awesome.scss */
 #activity-feed-container .img-box.doc_update:before {
   text-decoration: none;
 }
-/* line 39, ../../../compass/css/lib/_font-awesome.scss */
+/* line 50, ../../../compass/css/lib/_font-awesome.scss */
 #activity-feed-container .img-box.email_from:before {
   text-decoration: none;
 }
-/* line 39, ../../../compass/css/lib/_font-awesome.scss */
+/* line 50, ../../../compass/css/lib/_font-awesome.scss */
 #activity-feed-container .img-box.email_clicked:before {
   text-decoration: none;
 }
-/* line 39, ../../../compass/css/lib/_font-awesome.scss */
+/* line 50, ../../../compass/css/lib/_font-awesome.scss */
 #activity-feed-container .img-box.email_sent:before {
   text-decoration: none;
 }
-/* line 80, ../../../compass/css/lib/_icons.scss */
+/* line 91, ../../../compass/css/lib/_icons.scss */
 #activity-feed-container .img-box.email_sent .stacked-icon:before {
   top: 0px;
   left: 0px;
 }
-/* line 81, ../../../compass/css/lib/_icons.scss */
+/* line 92, ../../../compass/css/lib/_icons.scss */
 #activity-feed-container .img-box.email_sent .img-box.record_create .stacked-icon:before, #activity-feed-container .img-box.record_create .img-box.email_sent .stacked-icon:before {
   top: 1.0px;
   left: 0px;
 }
-/* line 82, ../../../compass/css/lib/_icons.scss */
+/* line 93, ../../../compass/css/lib/_icons.scss */
 #activity-feed-container .img-box.email_sent .img-box.action_complete .stacked-icon:before, #activity-feed-container .img-box.action_complete .img-box.email_sent .stacked-icon:before, #activity-feed-container .img-box.email_sent .img-box.workflow_complete .stacked-icon:before, #activity-feed-container .img-box.workflow_complete .img-box.email_sent .stacked-icon:before {
   top: 1px;
   left: 0px;
 }
-/* line 84, ../../../compass/css/lib/_icons.scss */
+/* line 95, ../../../compass/css/lib/_icons.scss */
 #activity-feed-container .img-box.email_sent .stacked-icon:before {
   top: 0.5px;
   left: 1px;
 }
-/* line 85, ../../../compass/css/lib/_icons.scss */
+/* line 96, ../../../compass/css/lib/_icons.scss */
 #activity-feed-container .img-box.email_sent .img-box.weblead_create .stacked-icon:before, #activity-feed-container .img-box.weblead_create .img-box.email_sent .stacked-icon:before {
   top: 1px;
   left: 0px;
 }
-/* line 86, ../../../compass/css/lib/_icons.scss */
+/* line 97, ../../../compass/css/lib/_icons.scss */
 #activity-feed-container .img-box.email_sent .img-box.workflow_revert .stacked-icon:before, #activity-feed-container .img-box.workflow_revert .img-box.email_sent .stacked-icon:before {
   top: 1px;
 }
-/* line 89, ../../../compass/css/lib/_icons.scss */
+/* line 100, ../../../compass/css/lib/_icons.scss */
 #activity-feed-container .img-box.email_sent .stacked-icon {
   display: inline-block;
 }
-/* line 39, ../../../compass/css/lib/_font-awesome.scss */
+/* line 50, ../../../compass/css/lib/_font-awesome.scss */
 #activity-feed-container .img-box.email_sent .stacked-icon:before {
   text-decoration: none;
 }
-/* line 94, ../../../compass/css/lib/_icons.scss */
+/* line 105, ../../../compass/css/lib/_icons.scss */
 #activity-feed-container .img-box.email_sent .stacked-icon:before {
   position: absolute;
   font-size: 10px;
 }
-/* line 39, ../../../compass/css/lib/_font-awesome.scss */
+/* line 50, ../../../compass/css/lib/_font-awesome.scss */
 #activity-feed-container .img-box.email_sent_quote:before {
   text-decoration: none;
 }
-/* line 80, ../../../compass/css/lib/_icons.scss */
+/* line 91, ../../../compass/css/lib/_icons.scss */
 #activity-feed-container .img-box.email_sent_quote .stacked-icon:before {
   top: 0px;
   left: 0px;
 }
-/* line 81, ../../../compass/css/lib/_icons.scss */
+/* line 92, ../../../compass/css/lib/_icons.scss */
 #activity-feed-container .img-box.email_sent_quote .img-box.record_create .stacked-icon:before, #activity-feed-container .img-box.record_create .img-box.email_sent_quote .stacked-icon:before {
   top: 1.0px;
   left: 0px;
 }
-/* line 82, ../../../compass/css/lib/_icons.scss */
+/* line 93, ../../../compass/css/lib/_icons.scss */
 #activity-feed-container .img-box.email_sent_quote .img-box.action_complete .stacked-icon:before, #activity-feed-container .img-box.action_complete .img-box.email_sent_quote .stacked-icon:before, #activity-feed-container .img-box.email_sent_quote .img-box.workflow_complete .stacked-icon:before, #activity-feed-container .img-box.workflow_complete .img-box.email_sent_quote .stacked-icon:before {
   top: 1px;
   left: 0px;
 }
-/* line 84, ../../../compass/css/lib/_icons.scss */
+/* line 95, ../../../compass/css/lib/_icons.scss */
 #activity-feed-container .img-box.email_sent_quote .stacked-icon:before {
   top: 0.5px;
   left: 1px;
 }
-/* line 85, ../../../compass/css/lib/_icons.scss */
+/* line 96, ../../../compass/css/lib/_icons.scss */
 #activity-feed-container .img-box.email_sent_quote .img-box.weblead_create .stacked-icon:before, #activity-feed-container .img-box.weblead_create .img-box.email_sent_quote .stacked-icon:before {
   top: 1px;
   left: 0px;
 }
-/* line 86, ../../../compass/css/lib/_icons.scss */
+/* line 97, ../../../compass/css/lib/_icons.scss */
 #activity-feed-container .img-box.email_sent_quote .img-box.workflow_revert .stacked-icon:before, #activity-feed-container .img-box.workflow_revert .img-box.email_sent_quote .stacked-icon:before {
   top: 1px;
 }
-/* line 89, ../../../compass/css/lib/_icons.scss */
+/* line 100, ../../../compass/css/lib/_icons.scss */
 #activity-feed-container .img-box.email_sent_quote .stacked-icon {
   display: inline-block;
 }
-/* line 39, ../../../compass/css/lib/_font-awesome.scss */
+/* line 50, ../../../compass/css/lib/_font-awesome.scss */
 #activity-feed-container .img-box.email_sent_quote .stacked-icon:before {
   text-decoration: none;
 }
-/* line 94, ../../../compass/css/lib/_icons.scss */
+/* line 105, ../../../compass/css/lib/_icons.scss */
 #activity-feed-container .img-box.email_sent_quote .stacked-icon:before {
   position: absolute;
   font-size: 10px;
 }
-/* line 39, ../../../compass/css/lib/_font-awesome.scss */
+/* line 50, ../../../compass/css/lib/_font-awesome.scss */
 #activity-feed-container .img-box.email_sent_invoice:before {
   text-decoration: none;
 }
-/* line 80, ../../../compass/css/lib/_icons.scss */
+/* line 91, ../../../compass/css/lib/_icons.scss */
 #activity-feed-container .img-box.email_sent_invoice .stacked-icon:before {
   top: 0px;
   left: 0px;
 }
-/* line 81, ../../../compass/css/lib/_icons.scss */
+/* line 92, ../../../compass/css/lib/_icons.scss */
 #activity-feed-container .img-box.email_sent_invoice .img-box.record_create .stacked-icon:before, #activity-feed-container .img-box.record_create .img-box.email_sent_invoice .stacked-icon:before {
   top: 1.0px;
   left: 0px;
 }
-/* line 82, ../../../compass/css/lib/_icons.scss */
+/* line 93, ../../../compass/css/lib/_icons.scss */
 #activity-feed-container .img-box.email_sent_invoice .img-box.action_complete .stacked-icon:before, #activity-feed-container .img-box.action_complete .img-box.email_sent_invoice .stacked-icon:before, #activity-feed-container .img-box.email_sent_invoice .img-box.workflow_complete .stacked-icon:before, #activity-feed-container .img-box.workflow_complete .img-box.email_sent_invoice .stacked-icon:before {
   top: 1px;
   left: 0px;
 }
-/* line 84, ../../../compass/css/lib/_icons.scss */
+/* line 95, ../../../compass/css/lib/_icons.scss */
 #activity-feed-container .img-box.email_sent_invoice .stacked-icon:before {
   top: 0.5px;
   left: 1px;
 }
-/* line 85, ../../../compass/css/lib/_icons.scss */
+/* line 96, ../../../compass/css/lib/_icons.scss */
 #activity-feed-container .img-box.email_sent_invoice .img-box.weblead_create .stacked-icon:before, #activity-feed-container .img-box.weblead_create .img-box.email_sent_invoice .stacked-icon:before {
   top: 1px;
   left: 0px;
 }
-/* line 86, ../../../compass/css/lib/_icons.scss */
+/* line 97, ../../../compass/css/lib/_icons.scss */
 #activity-feed-container .img-box.email_sent_invoice .img-box.workflow_revert .stacked-icon:before, #activity-feed-container .img-box.workflow_revert .img-box.email_sent_invoice .stacked-icon:before {
   top: 1px;
 }
-/* line 89, ../../../compass/css/lib/_icons.scss */
+/* line 100, ../../../compass/css/lib/_icons.scss */
 #activity-feed-container .img-box.email_sent_invoice .stacked-icon {
   display: inline-block;
 }
-/* line 39, ../../../compass/css/lib/_font-awesome.scss */
+/* line 50, ../../../compass/css/lib/_font-awesome.scss */
 #activity-feed-container .img-box.email_sent_invoice .stacked-icon:before {
   text-decoration: none;
 }
-/* line 94, ../../../compass/css/lib/_icons.scss */
+/* line 105, ../../../compass/css/lib/_icons.scss */
 #activity-feed-container .img-box.email_sent_invoice .stacked-icon:before {
   position: absolute;
   font-size: 10px;
 }
-/* line 39, ../../../compass/css/lib/_font-awesome.scss */
+/* line 50, ../../../compass/css/lib/_font-awesome.scss */
 #activity-feed-container .img-box.invoice_emailed:before {
   text-decoration: none;
 }
-/* line 39, ../../../compass/css/lib/_font-awesome.scss */
+/* line 50, ../../../compass/css/lib/_font-awesome.scss */
 #activity-feed-container .img-box.media:before {
   text-decoration: none;
 }
-/* line 39, ../../../compass/css/lib/_font-awesome.scss */
+/* line 50, ../../../compass/css/lib/_font-awesome.scss */
 #activity-feed-container .img-box.notif:before {
   text-decoration: none;
 }
-/* line 39, ../../../compass/css/lib/_font-awesome.scss */
+/* line 50, ../../../compass/css/lib/_font-awesome.scss */
 #activity-feed-container .img-box.voip_call:before {
   text-decoration: none;
 }
-/* line 39, ../../../compass/css/lib/_font-awesome.scss */
+/* line 50, ../../../compass/css/lib/_font-awesome.scss */
 #activity-feed-container .img-box.quote_emailed:before {
   text-decoration: none;
 }
-/* line 39, ../../../compass/css/lib/_font-awesome.scss */
+/* line 50, ../../../compass/css/lib/_font-awesome.scss */
 #activity-feed-container .img-box.record_create:before {
   text-decoration: none;
 }
-/* line 39, ../../../compass/css/lib/_font-awesome.scss */
+/* line 50, ../../../compass/css/lib/_font-awesome.scss */
 #activity-feed-container .img-box.record_deleted:before {
   text-decoration: none;
 }
-/* line 39, ../../../compass/css/lib/_font-awesome.scss */
+/* line 50, ../../../compass/css/lib/_font-awesome.scss */
 #activity-feed-container .img-box.web_activity:before {
   text-decoration: none;
 }
-/* line 39, ../../../compass/css/lib/_font-awesome.scss */
+/* line 50, ../../../compass/css/lib/_font-awesome.scss */
 #activity-feed-container .img-box.weblead_create:before {
   text-decoration: none;
 }
-/* line 80, ../../../compass/css/lib/_icons.scss */
+/* line 91, ../../../compass/css/lib/_icons.scss */
 #activity-feed-container .img-box.weblead_create .stacked-icon:before {
   top: 0px;
   left: 0px;
 }
-/* line 81, ../../../compass/css/lib/_icons.scss */
+/* line 92, ../../../compass/css/lib/_icons.scss */
 #activity-feed-container .img-box.weblead_create .img-box.record_create .stacked-icon:before, #activity-feed-container .img-box.record_create .img-box.weblead_create .stacked-icon:before {
   top: 1.0px;
   left: 0px;
 }
-/* line 82, ../../../compass/css/lib/_icons.scss */
+/* line 93, ../../../compass/css/lib/_icons.scss */
 #activity-feed-container .img-box.weblead_create .img-box.action_complete .stacked-icon:before, #activity-feed-container .img-box.action_complete .img-box.weblead_create .stacked-icon:before, #activity-feed-container .img-box.weblead_create .img-box.workflow_complete .stacked-icon:before, #activity-feed-container .img-box.workflow_complete .img-box.weblead_create .stacked-icon:before {
   top: 1px;
   left: 0px;
 }
-/* line 84, ../../../compass/css/lib/_icons.scss */
+/* line 95, ../../../compass/css/lib/_icons.scss */
 #activity-feed-container .img-box.weblead_create .img-box.email_sent .stacked-icon:before, #activity-feed-container .img-box.email_sent .img-box.weblead_create .stacked-icon:before, #activity-feed-container .img-box.weblead_create .img-box.email_sent_quote .stacked-icon:before, #activity-feed-container .img-box.email_sent_quote .img-box.weblead_create .stacked-icon:before, #activity-feed-container .img-box.weblead_create .img-box.email_sent_invoice .stacked-icon:before, #activity-feed-container .img-box.email_sent_invoice .img-box.weblead_create .stacked-icon:before, #activity-feed-container .img-box.weblead_create .img-box.workflow_start .stacked-icon:before, #activity-feed-container .img-box.workflow_start .img-box.weblead_create .stacked-icon:before {
   top: 0.5px;
   left: 1px;
 }
-/* line 85, ../../../compass/css/lib/_icons.scss */
+/* line 96, ../../../compass/css/lib/_icons.scss */
 #activity-feed-container .img-box.weblead_create .stacked-icon:before {
   top: 1px;
   left: 0px;
 }
-/* line 86, ../../../compass/css/lib/_icons.scss */
+/* line 97, ../../../compass/css/lib/_icons.scss */
 #activity-feed-container .img-box.weblead_create .img-box.workflow_revert .stacked-icon:before, #activity-feed-container .img-box.workflow_revert .img-box.weblead_create .stacked-icon:before {
   top: 1px;
 }
-/* line 89, ../../../compass/css/lib/_icons.scss */
+/* line 100, ../../../compass/css/lib/_icons.scss */
 #activity-feed-container .img-box.weblead_create .stacked-icon {
   display: inline-block;
 }
-/* line 39, ../../../compass/css/lib/_font-awesome.scss */
+/* line 50, ../../../compass/css/lib/_font-awesome.scss */
 #activity-feed-container .img-box.weblead_create .stacked-icon:before {
   text-decoration: none;
 }
-/* line 94, ../../../compass/css/lib/_icons.scss */
+/* line 105, ../../../compass/css/lib/_icons.scss */
 #activity-feed-container .img-box.weblead_create .stacked-icon:before {
   position: absolute;
   font-size: 10px;
 }
-/* line 36, ../../../compass/css/lib/_icons.scss */
+/* line 47, ../../../compass/css/lib/_icons.scss */
 #activity-feed-container .img-box.log_time:before {
   text-decoration: none;
 }
-/* line 36, ../../../compass/css/lib/_icons.scss */
+/* line 47, ../../../compass/css/lib/_icons.scss */
 #activity-feed-container .img-box.case_escalated:before {
   text-decoration: none;
 }
-/* line 80, ../../../compass/css/lib/_icons.scss */
+/* line 91, ../../../compass/css/lib/_icons.scss */
 #activity-feed-container .img-box.case_escalated .stacked-icon:before {
   top: 0px;
   left: 0px;
 }
-/* line 81, ../../../compass/css/lib/_icons.scss */
+/* line 92, ../../../compass/css/lib/_icons.scss */
 #activity-feed-container .img-box.case_escalated .img-box.record_create .stacked-icon:before, #activity-feed-container .img-box.record_create .img-box.case_escalated .stacked-icon:before {
   top: 1.0px;
   left: 0px;
 }
-/* line 82, ../../../compass/css/lib/_icons.scss */
+/* line 93, ../../../compass/css/lib/_icons.scss */
 #activity-feed-container .img-box.case_escalated .img-box.action_complete .stacked-icon:before, #activity-feed-container .img-box.action_complete .img-box.case_escalated .stacked-icon:before, #activity-feed-container .img-box.case_escalated .img-box.workflow_complete .stacked-icon:before, #activity-feed-container .img-box.workflow_complete .img-box.case_escalated .stacked-icon:before {
   top: 1px;
   left: 0px;
 }
-/* line 84, ../../../compass/css/lib/_icons.scss */
+/* line 95, ../../../compass/css/lib/_icons.scss */
 #activity-feed-container .img-box.case_escalated .img-box.email_sent .stacked-icon:before, #activity-feed-container .img-box.email_sent .img-box.case_escalated .stacked-icon:before, #activity-feed-container .img-box.case_escalated .img-box.email_sent_quote .stacked-icon:before, #activity-feed-container .img-box.email_sent_quote .img-box.case_escalated .stacked-icon:before, #activity-feed-container .img-box.case_escalated .img-box.email_sent_invoice .stacked-icon:before, #activity-feed-container .img-box.email_sent_invoice .img-box.case_escalated .stacked-icon:before, #activity-feed-container .img-box.case_escalated .img-box.workflow_start .stacked-icon:before, #activity-feed-container .img-box.workflow_start .img-box.case_escalated .stacked-icon:before {
   top: 0.5px;
   left: 1px;
 }
-/* line 85, ../../../compass/css/lib/_icons.scss */
+/* line 96, ../../../compass/css/lib/_icons.scss */
 #activity-feed-container .img-box.case_escalated .img-box.weblead_create .stacked-icon:before, #activity-feed-container .img-box.weblead_create .img-box.case_escalated .stacked-icon:before {
   top: 1px;
   left: 0px;
 }
-/* line 86, ../../../compass/css/lib/_icons.scss */
+/* line 97, ../../../compass/css/lib/_icons.scss */
 #activity-feed-container .img-box.case_escalated .img-box.workflow_revert .stacked-icon:before, #activity-feed-container .img-box.workflow_revert .img-box.case_escalated .stacked-icon:before {
   top: 1px;
 }
-/* line 89, ../../../compass/css/lib/_icons.scss */
+/* line 100, ../../../compass/css/lib/_icons.scss */
 #activity-feed-container .img-box.case_escalated .stacked-icon {
   display: inline-block;
 }
-/* line 39, ../../../compass/css/lib/_font-awesome.scss */
+/* line 50, ../../../compass/css/lib/_font-awesome.scss */
 #activity-feed-container .img-box.case_escalated .stacked-icon:before {
   text-decoration: none;
 }
-/* line 94, ../../../compass/css/lib/_icons.scss */
+/* line 105, ../../../compass/css/lib/_icons.scss */
 #activity-feed-container .img-box.case_escalated .stacked-icon:before {
   position: absolute;
   font-size: 10px;
 }
-/* line 36, ../../../compass/css/lib/_icons.scss */
+/* line 47, ../../../compass/css/lib/_icons.scss */
 #activity-feed-container .img-box.email_opened:before {
   text-decoration: none;
 }
-/* line 36, ../../../compass/css/lib/_icons.scss */
+/* line 47, ../../../compass/css/lib/_icons.scss */
 #activity-feed-container .img-box.email_opened_quote:before {
   text-decoration: none;
 }
-/* line 36, ../../../compass/css/lib/_icons.scss */
+/* line 47, ../../../compass/css/lib/_icons.scss */
 #activity-feed-container .img-box.email_opened_invoice:before {
   text-decoration: none;
 }
-/* line 36, ../../../compass/css/lib/_icons.scss */
+/* line 47, ../../../compass/css/lib/_icons.scss */
 #activity-feed-container .img-box.workflow_revert:before {
   text-decoration: none;
 }
-/* line 80, ../../../compass/css/lib/_icons.scss */
+/* line 91, ../../../compass/css/lib/_icons.scss */
 #activity-feed-container .img-box.workflow_revert .stacked-icon:before {
   top: 0px;
   left: 0px;
 }
-/* line 81, ../../../compass/css/lib/_icons.scss */
+/* line 92, ../../../compass/css/lib/_icons.scss */
 #activity-feed-container .img-box.workflow_revert .img-box.record_create .stacked-icon:before, #activity-feed-container .img-box.record_create .img-box.workflow_revert .stacked-icon:before {
   top: 1.0px;
   left: 0px;
 }
-/* line 82, ../../../compass/css/lib/_icons.scss */
+/* line 93, ../../../compass/css/lib/_icons.scss */
 #activity-feed-container .img-box.workflow_revert .img-box.action_complete .stacked-icon:before, #activity-feed-container .img-box.action_complete .img-box.workflow_revert .stacked-icon:before, #activity-feed-container .img-box.workflow_revert .img-box.workflow_complete .stacked-icon:before, #activity-feed-container .img-box.workflow_complete .img-box.workflow_revert .stacked-icon:before {
   top: 1px;
   left: 0px;
 }
-/* line 84, ../../../compass/css/lib/_icons.scss */
+/* line 95, ../../../compass/css/lib/_icons.scss */
 #activity-feed-container .img-box.workflow_revert .img-box.email_sent .stacked-icon:before, #activity-feed-container .img-box.email_sent .img-box.workflow_revert .stacked-icon:before, #activity-feed-container .img-box.workflow_revert .img-box.email_sent_quote .stacked-icon:before, #activity-feed-container .img-box.email_sent_quote .img-box.workflow_revert .stacked-icon:before, #activity-feed-container .img-box.workflow_revert .img-box.email_sent_invoice .stacked-icon:before, #activity-feed-container .img-box.email_sent_invoice .img-box.workflow_revert .stacked-icon:before, #activity-feed-container .img-box.workflow_revert .img-box.workflow_start .stacked-icon:before, #activity-feed-container .img-box.workflow_start .img-box.workflow_revert .stacked-icon:before {
   top: 0.5px;
   left: 1px;
 }
-/* line 85, ../../../compass/css/lib/_icons.scss */
+/* line 96, ../../../compass/css/lib/_icons.scss */
 #activity-feed-container .img-box.workflow_revert .img-box.weblead_create .stacked-icon:before, #activity-feed-container .img-box.weblead_create .img-box.workflow_revert .stacked-icon:before {
   top: 1px;
   left: 0px;
 }
-/* line 86, ../../../compass/css/lib/_icons.scss */
+/* line 97, ../../../compass/css/lib/_icons.scss */
 #activity-feed-container .img-box.workflow_revert .stacked-icon:before {
   top: 1px;
 }
-/* line 89, ../../../compass/css/lib/_icons.scss */
+/* line 100, ../../../compass/css/lib/_icons.scss */
 #activity-feed-container .img-box.workflow_revert .stacked-icon {
   display: inline-block;
 }
-/* line 39, ../../../compass/css/lib/_font-awesome.scss */
+/* line 50, ../../../compass/css/lib/_font-awesome.scss */
 #activity-feed-container .img-box.workflow_revert .stacked-icon:before {
   text-decoration: none;
 }
-/* line 94, ../../../compass/css/lib/_icons.scss */
+/* line 105, ../../../compass/css/lib/_icons.scss */
 #activity-feed-container .img-box.workflow_revert .stacked-icon:before {
   position: absolute;
   font-size: 10px;
 }
-/* line 36, ../../../compass/css/lib/_icons.scss */
+/* line 47, ../../../compass/css/lib/_icons.scss */
 #activity-feed-container .img-box.workflow_complete:before {
   text-decoration: none;
 }
-/* line 80, ../../../compass/css/lib/_icons.scss */
+/* line 91, ../../../compass/css/lib/_icons.scss */
 #activity-feed-container .img-box.workflow_complete .stacked-icon:before {
   top: 0px;
   left: 0px;
 }
-/* line 81, ../../../compass/css/lib/_icons.scss */
+/* line 92, ../../../compass/css/lib/_icons.scss */
 #activity-feed-container .img-box.workflow_complete .img-box.record_create .stacked-icon:before, #activity-feed-container .img-box.record_create .img-box.workflow_complete .stacked-icon:before {
   top: 1.0px;
   left: 0px;
 }
-/* line 82, ../../../compass/css/lib/_icons.scss */
+/* line 93, ../../../compass/css/lib/_icons.scss */
 #activity-feed-container .img-box.workflow_complete .stacked-icon:before {
   top: 1px;
   left: 0px;
 }
-/* line 84, ../../../compass/css/lib/_icons.scss */
+/* line 95, ../../../compass/css/lib/_icons.scss */
 #activity-feed-container .img-box.workflow_complete .img-box.email_sent .stacked-icon:before, #activity-feed-container .img-box.email_sent .img-box.workflow_complete .stacked-icon:before, #activity-feed-container .img-box.workflow_complete .img-box.email_sent_quote .stacked-icon:before, #activity-feed-container .img-box.email_sent_quote .img-box.workflow_complete .stacked-icon:before, #activity-feed-container .img-box.workflow_complete .img-box.email_sent_invoice .stacked-icon:before, #activity-feed-container .img-box.email_sent_invoice .img-box.workflow_complete .stacked-icon:before, #activity-feed-container .img-box.workflow_complete .img-box.workflow_start .stacked-icon:before, #activity-feed-container .img-box.workflow_start .img-box.workflow_complete .stacked-icon:before {
   top: 0.5px;
   left: 1px;
 }
-/* line 85, ../../../compass/css/lib/_icons.scss */
+/* line 96, ../../../compass/css/lib/_icons.scss */
 #activity-feed-container .img-box.workflow_complete .img-box.weblead_create .stacked-icon:before, #activity-feed-container .img-box.weblead_create .img-box.workflow_complete .stacked-icon:before {
   top: 1px;
   left: 0px;
 }
-/* line 86, ../../../compass/css/lib/_icons.scss */
+/* line 97, ../../../compass/css/lib/_icons.scss */
 #activity-feed-container .img-box.workflow_complete .img-box.workflow_revert .stacked-icon:before, #activity-feed-container .img-box.workflow_revert .img-box.workflow_complete .stacked-icon:before {
   top: 1px;
 }
-/* line 89, ../../../compass/css/lib/_icons.scss */
+/* line 100, ../../../compass/css/lib/_icons.scss */
 #activity-feed-container .img-box.workflow_complete .stacked-icon {
   display: inline-block;
 }
-/* line 39, ../../../compass/css/lib/_font-awesome.scss */
+/* line 50, ../../../compass/css/lib/_font-awesome.scss */
 #activity-feed-container .img-box.workflow_complete .stacked-icon:before {
   text-decoration: none;
 }
-/* line 94, ../../../compass/css/lib/_icons.scss */
+/* line 105, ../../../compass/css/lib/_icons.scss */
 #activity-feed-container .img-box.workflow_complete .stacked-icon:before {
   position: absolute;
   font-size: 10px;
 }
-/* line 36, ../../../compass/css/lib/_icons.scss */
+/* line 47, ../../../compass/css/lib/_icons.scss */
 #activity-feed-container .img-box.workflow_start:before {
   text-decoration: none;
 }
-/* line 80, ../../../compass/css/lib/_icons.scss */
+/* line 91, ../../../compass/css/lib/_icons.scss */
 #activity-feed-container .img-box.workflow_start .stacked-icon:before {
   top: 0px;
   left: 0px;
 }
-/* line 81, ../../../compass/css/lib/_icons.scss */
+/* line 92, ../../../compass/css/lib/_icons.scss */
 #activity-feed-container .img-box.workflow_start .img-box.record_create .stacked-icon:before, #activity-feed-container .img-box.record_create .img-box.workflow_start .stacked-icon:before {
   top: 1.0px;
   left: 0px;
 }
-/* line 82, ../../../compass/css/lib/_icons.scss */
+/* line 93, ../../../compass/css/lib/_icons.scss */
 #activity-feed-container .img-box.workflow_start .img-box.action_complete .stacked-icon:before, #activity-feed-container .img-box.action_complete .img-box.workflow_start .stacked-icon:before, #activity-feed-container .img-box.workflow_start .img-box.workflow_complete .stacked-icon:before, #activity-feed-container .img-box.workflow_complete .img-box.workflow_start .stacked-icon:before {
   top: 1px;
   left: 0px;
 }
-/* line 84, ../../../compass/css/lib/_icons.scss */
+/* line 95, ../../../compass/css/lib/_icons.scss */
 #activity-feed-container .img-box.workflow_start .stacked-icon:before {
   top: 0.5px;
   left: 1px;
 }
-/* line 85, ../../../compass/css/lib/_icons.scss */
+/* line 96, ../../../compass/css/lib/_icons.scss */
 #activity-feed-container .img-box.workflow_start .img-box.weblead_create .stacked-icon:before, #activity-feed-container .img-box.weblead_create .img-box.workflow_start .stacked-icon:before {
   top: 1px;
   left: 0px;
 }
-/* line 86, ../../../compass/css/lib/_icons.scss */
+/* line 97, ../../../compass/css/lib/_icons.scss */
 #activity-feed-container .img-box.workflow_start .img-box.workflow_revert .stacked-icon:before, #activity-feed-container .img-box.workflow_revert .img-box.workflow_start .stacked-icon:before {
   top: 1px;
 }
-/* line 89, ../../../compass/css/lib/_icons.scss */
+/* line 100, ../../../compass/css/lib/_icons.scss */
 #activity-feed-container .img-box.workflow_start .stacked-icon {
   display: inline-block;
 }
-/* line 39, ../../../compass/css/lib/_font-awesome.scss */
+/* line 50, ../../../compass/css/lib/_font-awesome.scss */
 #activity-feed-container .img-box.workflow_start .stacked-icon:before {
   text-decoration: none;
 }
-/* line 94, ../../../compass/css/lib/_icons.scss */
+/* line 105, ../../../compass/css/lib/_icons.scss */
 #activity-feed-container .img-box.workflow_start .stacked-icon:before {
   position: absolute;
   font-size: 10px;
 }
-/* line 80, ../../../compass/css/lib/_icons.scss */
+/* line 91, ../../../compass/css/lib/_icons.scss */
 #activity-feed-container .img-box.record_create .stacked-icon:before {
   top: 0px;
   left: 0px;
 }
-/* line 81, ../../../compass/css/lib/_icons.scss */
+/* line 92, ../../../compass/css/lib/_icons.scss */
 #activity-feed-container .img-box.record_create .stacked-icon:before {
   top: 1.0px;
   left: 0px;
 }
-/* line 82, ../../../compass/css/lib/_icons.scss */
+/* line 93, ../../../compass/css/lib/_icons.scss */
 #activity-feed-container .img-box.record_create .img-box.action_complete .stacked-icon:before, #activity-feed-container .img-box.action_complete .img-box.record_create .stacked-icon:before, #activity-feed-container .img-box.record_create .img-box.workflow_complete .stacked-icon:before, #activity-feed-container .img-box.workflow_complete .img-box.record_create .stacked-icon:before {
   top: 1px;
   left: 0px;
 }
-/* line 84, ../../../compass/css/lib/_icons.scss */
+/* line 95, ../../../compass/css/lib/_icons.scss */
 #activity-feed-container .img-box.record_create .img-box.email_sent .stacked-icon:before, #activity-feed-container .img-box.email_sent .img-box.record_create .stacked-icon:before, #activity-feed-container .img-box.record_create .img-box.email_sent_quote .stacked-icon:before, #activity-feed-container .img-box.email_sent_quote .img-box.record_create .stacked-icon:before, #activity-feed-container .img-box.record_create .img-box.email_sent_invoice .stacked-icon:before, #activity-feed-container .img-box.email_sent_invoice .img-box.record_create .stacked-icon:before, #activity-feed-container .img-box.record_create .img-box.workflow_start .stacked-icon:before, #activity-feed-container .img-box.workflow_start .img-box.record_create .stacked-icon:before {
   top: 0.5px;
   left: 1px;
 }
-/* line 85, ../../../compass/css/lib/_icons.scss */
+/* line 96, ../../../compass/css/lib/_icons.scss */
 #activity-feed-container .img-box.record_create .img-box.weblead_create .stacked-icon:before, #activity-feed-container .img-box.weblead_create .img-box.record_create .stacked-icon:before {
   top: 1px;
   left: 0px;
 }
-/* line 86, ../../../compass/css/lib/_icons.scss */
+/* line 97, ../../../compass/css/lib/_icons.scss */
 #activity-feed-container .img-box.record_create .img-box.workflow_revert .stacked-icon:before, #activity-feed-container .img-box.workflow_revert .img-box.record_create .stacked-icon:before {
   top: 1px;
 }
-/* line 89, ../../../compass/css/lib/_icons.scss */
+/* line 100, ../../../compass/css/lib/_icons.scss */
 #activity-feed-container .img-box.record_create .stacked-icon {
   display: inline-block;
 }
-/* line 39, ../../../compass/css/lib/_font-awesome.scss */
+/* line 50, ../../../compass/css/lib/_font-awesome.scss */
 #activity-feed-container .img-box.record_create .stacked-icon:before {
   text-decoration: none;
 }
-/* line 94, ../../../compass/css/lib/_icons.scss */
+/* line 105, ../../../compass/css/lib/_icons.scss */
 #activity-feed-container .img-box.record_create .stacked-icon:before {
   position: absolute;
   font-size: 10px;
 }
-/* line 39, ../../../compass/css/lib/_font-awesome.scss */
+/* line 50, ../../../compass/css/lib/_font-awesome.scss */
 #activity-feed-container .img-box.record_create.Campaign-create:before {
   text-decoration: none;
 }
-/* line 39, ../../../compass/css/lib/_font-awesome.scss */
+/* line 50, ../../../compass/css/lib/_font-awesome.scss */
 #activity-feed-container .img-box.record_create.Actions-create:before {
   text-decoration: none;
 }
-/* line 39, ../../../compass/css/lib/_font-awesome.scss */
+/* line 50, ../../../compass/css/lib/_font-awesome.scss */
 #activity-feed-container .img-box.record_create.Accounts-create:before {
   text-decoration: none;
 }
-/* line 39, ../../../compass/css/lib/_font-awesome.scss */
+/* line 50, ../../../compass/css/lib/_font-awesome.scss */
 #activity-feed-container .img-box.record_create.Opportunity-create:before {
   text-decoration: none;
 }
-/* line 39, ../../../compass/css/lib/_font-awesome.scss */
+/* line 50, ../../../compass/css/lib/_font-awesome.scss */
 #activity-feed-container .img-box.record_create.X2Leads-create:before {
   text-decoration: none;
 }
-/* line 39, ../../../compass/css/lib/_font-awesome.scss */
+/* line 50, ../../../compass/css/lib/_font-awesome.scss */
 #activity-feed-container .img-box.record_create.Docs-create:before {
   text-decoration: none;
 }
-/* line 39, ../../../compass/css/lib/_font-awesome.scss */
+/* line 50, ../../../compass/css/lib/_font-awesome.scss */
 #activity-feed-container .img-box.record_create.Groups-create:before {
   text-decoration: none;
 }
-/* line 39, ../../../compass/css/lib/_font-awesome.scss */
+/* line 50, ../../../compass/css/lib/_font-awesome.scss */
 #activity-feed-container .img-box.record_create.BugReports-create:before {
   text-decoration: none;
 }
-/* line 39, ../../../compass/css/lib/_font-awesome.scss */
+/* line 50, ../../../compass/css/lib/_font-awesome.scss */
 #activity-feed-container .img-box.record_create.Charts-create:before {
   text-decoration: none;
 }
-/* line 39, ../../../compass/css/lib/_font-awesome.scss */
+/* line 50, ../../../compass/css/lib/_font-awesome.scss */
 #activity-feed-container .img-box.record_create.Reports-create:before {
   text-decoration: none;
 }
-/* line 36, ../../../compass/css/lib/_icons.scss */
+/* line 47, ../../../compass/css/lib/_icons.scss */
 #activity-feed-container .img-box.record_create.Quote-create:before {
   text-decoration: none;
 }
-/* line 36, ../../../compass/css/lib/_icons.scss */
+/* line 47, ../../../compass/css/lib/_icons.scss */
 #activity-feed-container .img-box.record_create.Product-create:before {
   text-decoration: none;
 }
-/* line 36, ../../../compass/css/lib/_icons.scss */
+/* line 47, ../../../compass/css/lib/_icons.scss */
 #activity-feed-container .img-box.record_create.Services-create:before {
   text-decoration: none;
 }
-/* line 36, ../../../compass/css/lib/_icons.scss */
+/* line 47, ../../../compass/css/lib/_icons.scss */
 #activity-feed-container .img-box.record_create.Contacts-create:before {
   text-decoration: none;
 }

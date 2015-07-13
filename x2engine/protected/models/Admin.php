@@ -279,4 +279,11 @@ class Admin extends CActiveRecord {
     }
 
     
+    
+    public function getDoNotEmailLinkText(){
+        if(!empty($this->doNotEmailLinkText)){
+            return $this->doNotEmailLinkText;
+        }
+        return self::getDoNotEmailLinkDefaultText ();
+    }
 }

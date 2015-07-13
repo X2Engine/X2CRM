@@ -35,15 +35,11 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 
+Yii::app()->clientScript->registerCssFile (Yii::app()->theme->baseUrl.'/css/importexport.css');
 ?>
 <script>
 var record=0;
 </script>
-<style>
-    .clean-link{
-        text-decoration:none;
-    }
-</style>
 <?php
     if (isset($model))
         unset($_SESSION['model']);
@@ -233,14 +229,14 @@ if ($maxExecTime <= 30) {
     }
 ?>
 </div>
-<div id="prep-status-box" style="color:green">
+<div id="prep-status-box">
 
 </div>
 <br />
-<div id="status-box" style="color:green">
+<div id="status-box">
 
 </div>
-<div id="failures-box" style="color:red">
+<div id="failures-box">
 
 </div>
 <div id="continue-box" style="display:none;">

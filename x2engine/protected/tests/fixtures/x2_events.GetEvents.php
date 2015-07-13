@@ -1,6 +1,34 @@
 <?php
 
 return array(
+    array( // author and assignee differ. author and assignee are groupmates
+        'id'=>11,
+        'type'=>'feed',
+        'subtype'=>'Social Post',
+        'level'=>null,
+        'visibility'=>0,
+        'text'=>'Test social post.',
+        'associationType'=>'User',
+        'associationId'=>3,
+        'user'=>'testuser3',
+        'timestamp'=>1359483516,
+        'lastUpdated'=>1359483530,
+        'important'=>0
+    ),
+    array( // author and assignee differ. author and assignee aren't groupmates
+        'id'=>12,
+        'type'=>'feed',
+        'subtype'=>'Social Post',
+        'level'=>null,
+        'visibility'=>0,
+        'text'=>'Test social post.',
+        'associationType'=>'User',
+        'associationId'=>3,
+        'user'=>'admin',
+        'timestamp'=>1359483516,
+        'lastUpdated'=>1359483530,
+        'important'=>0
+    ),
     array(
         'id'=>10,
         'type'=>'feed',

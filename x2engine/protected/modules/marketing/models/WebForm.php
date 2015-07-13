@@ -97,7 +97,7 @@ class WebForm extends CActiveRecord {
 		parent::afterFind();
 	}
 
-    public function getDisplayName ($plural=true) {
+    public function getDisplayName ($plural=true, $ofModule=true) {
         return Yii::t('marketing', 'Web Form');
     }
 

@@ -2,6 +2,7 @@
 return array (
 // Account Attributes
 'Revenue'=>'הכנסה',
+// test account comment
 'Symbol'=>'סמל',
 'Employees'=>'עובדים',
 'Additional Information'=>'מידע נוסף',
@@ -32,7 +33,7 @@ return array (
 'Create a new Account associated with this Account.'=>'צור חשבון חדש משויך לחשבון זה.',
 'Accounts Report'=>'דווח על חשבונות',
 'Campaign Form'=>'טופס קמפיין',
-'This form will allow you to generate a campaign to mail related Contacts of the Accounts displayed in the report below. Select "Primary Contacts" to only email Contacts which are set as the Primary Contact for an Account. Select "All" to email all related Contacts on each Account.'=>'טופס זה יאפשר לך ליצור קמפיין לשלוח אנשי קשר הקשורים לחשבונות המוצגים בדוח שלהלן. בחר &quot;מגעים ראשוניים&quot; רק לאנשי קשר בדוא&quot;ל אשר מוגדרים כאיש הקשר הראשי לחשבון. בחר באפשרות &quot;הכל&quot; כדי לשלוח את כל אנשי הקשר הקשורים בכל חשבון.',
+'This form will allow you to generate a campaign to mail related Contacts of the Accounts displayed in the report below. Select "Primary Contacts" to only email Contacts which are set as the Primary Contact for an Account. Select "All" to email all related Contacts on each Account.'=>'טופס זה יאפשר לך ליצור קמפיין לשלוח אנשי קשר הקשורים לחשבונות המוצגים בדוח שלהלן. בחר "מגעים ראשוניים" רק לאנשי קשר בדוא"ל אשר מוגדרים כאיש הקשר הראשי לחשבון. בחר באפשרות "הכל" כדי לשלוח את כל אנשי הקשר הקשורים בכל חשבון.',
 'Primary Contact'=>'איש קשר ראשי',
 'Import Accounts'=>'חשבונות יבוא',
 'Export Accounts'=>'חשבונות יצוא',

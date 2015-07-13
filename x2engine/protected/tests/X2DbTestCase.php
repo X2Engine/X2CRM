@@ -184,6 +184,13 @@ abstract class X2DbTestCase extends CDbTestCase {
         self::tearDownAppEnvironment();
     }
 
+    public function tearDown () {
+        // try to replace mocks with original components in case mocks were set during test case
+        TestingAuxLib::restoreX2WebUser ();
+        TestingAuxLib::restoreX2AuthManager ();
+        return parent::tearDown ();
+    }
+
     /**
      * Assert thet the model can be saved without error and, if errors are present, print
      * out the corresponding error messages.

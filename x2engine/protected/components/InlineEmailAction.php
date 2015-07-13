@@ -166,6 +166,7 @@ class InlineEmailAction extends CAction {
 			// Populate response data:
 			$modelHasErrors = $model->hasErrors();
 			$failed = $failed || $modelHasErrors;
+            $model->attachments = array (); // prevent response json encoding failures
 			$response = array(
 				'scenario' => $scenario,
 				'sendStatus' => $sendStatus,

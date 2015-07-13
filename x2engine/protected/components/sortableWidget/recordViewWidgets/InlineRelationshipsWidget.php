@@ -229,6 +229,7 @@ class InlineRelationshipsWidget extends GridViewWidget {
     public function getViewFileParams () {
         if (!isset ($this->_viewFileParams)) {
             $linkableModels = X2Model::getModelTypesWhichSupportRelationships(true);
+            asort ($linkableModels);
              
 
             // used to instantiate html dropdown

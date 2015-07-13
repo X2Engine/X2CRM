@@ -55,11 +55,17 @@ class EventsTest extends X2DbTestCase {
         );
     }
 
+    public function tearDown () {
+        Yii::app()->settings->historyPrivacy = null;
+        return parent::tearDown ();
+    }
+
     public function testGetFilteredEventsDataProvider () {
         TestingAuxLib::loadX2NonWebUser ();
-        TestingAuxLib::suLogin ('testuser');
+        $testUser = $this->users ('testUser');
+        TestingAuxLib::suLogin ($testUser->username);
         Yii::app()->settings->historyPrivacy = null;
-        $profile = Profile::model()->findByAttributes(array('username' => 'testuser'));
+        $profile = Profile::model()->findByAttributes(array('username' => $testUser->username));
         $retVal = Events::getFilteredEventsDataProvider ($profile, true, null, false);
         $dataProvider = $retVal['dataProvider'];
         $events = $dataProvider->getData ();
@@ -70,9 +76,10 @@ class EventsTest extends X2DbTestCase {
             Yii::app()->db->createCommand ("
                 select id
                 from x2_events
-                where user='testuser' or visibility
+                where user='testuser' or visibility or (
+                    associationType='User' and associationId=:userId)
                 order by timestamp desc, id desc
-            ")->queryColumn (),
+            ")->queryColumn (array (':userId' => $testUser->id)),
             array_map (
                 function ($event) { return $event->id; }, 
                 $expectedEvents['events']
@@ -90,7 +97,6 @@ class EventsTest extends X2DbTestCase {
                 $events
             )
         );
-        TestingAuxLib::restoreX2WebUser ();
     }
 
     public function testGetEventsPublicProfile(){
@@ -113,7 +119,6 @@ class EventsTest extends X2DbTestCase {
             ),
             array_map (function ($event) { return $event->id; }, $events['events']));
 
-        TestingAuxLib::restoreX2WebUser ();
     }
     
     public function testGetEvents(){
@@ -130,7 +135,6 @@ class EventsTest extends X2DbTestCase {
                 ->queryColumn (),
             array_map(function ($event) { return $event->id; }, $events['events'])
         ); 
-        TestingAuxLib::restoreX2WebUser ();
     }
 
     public function testGetAccessCriteria () {
@@ -177,7 +181,9 @@ class EventsTest extends X2DbTestCase {
             array_map (function ($event) { return $event->id; }, 
                 Events::model ()->findAll ($accessCriteria)),
             array_map (function ($event) { return $event->id; }, 
-            Events::model ()->findAll ('user="testuser2" or visibility')));
+            Events::model ()->findAll ('
+                user="testuser2" or visibility or (associationType="User" and associationId=3)
+            ')));
 
         // non-admin private profile, user history
         TestingAuxLib::suLogin ('testuser2');
@@ -187,7 +193,9 @@ class EventsTest extends X2DbTestCase {
             array_map (function ($event) { return $event->id; }, 
                 Events::model ()->findAll ($accessCriteria)),
             array_map (function ($event) { return $event->id; }, 
-            Events::model ()->findAll ('user="testuser2"')));
+            Events::model ()->findAll ('
+                user="testuser2" or (associationType="User" and associationId=3)
+            ')));
 
         // non-admin private profile, group history
         // assumes that testuser2 and testuser3 are groupmates
@@ -197,10 +205,53 @@ class EventsTest extends X2DbTestCase {
             array_map (function ($event) { return $event->id; }, 
                 Events::model ()->findAll ($accessCriteria)),
             array_map (function ($event) { return $event->id; }, 
-            Events::model ()->findAll ('user="testuser2" or user="testuser3"')));
+            Events::model ()->findAll ('
+                user="testuser2" or user="testuser3" or
+                (associationType="User" and (associationId=2 or associationId=3))
+            ')));
+
+    }
+
+    /**
+     * Attempts to ensure that isVisibleTo and getAccessCriteria check the same permissions
+     */
+    public function testPermissionsCheckEquivalence () {
+        TestingAuxLib::loadX2NonWebUser ();
+        TestingAuxLib::suLogin ('testuser2');
+        $allEvents = Events::model ()->findAll ();
+        $that = $this; 
+
+        $checkEquivalence = function ($events) use ($allEvents, $that) {
+            $ids = array_map (function ($event) { return $event->id; }, $events);
+            $that->assertTrue (count ($events) > 1);
+            foreach ($events as $event) {
+                $that->assertTrue ($event->isVisibleTo (Yii::app()->params->profile->user));
+            }
+            $found = false;
+            foreach ($allEvents as $event) {
+                if (!in_array ($event->id, $ids)) {
+                    $found = true;
+                    $that->assertFalse ($event->isVisibleTo (Yii::app()->params->profile->user));
+                }
+            }
+            $that->assertTrue ($found);
+        };
 
         Yii::app()->settings->historyPrivacy = null;
-        TestingAuxLib::restoreX2WebUser ();
+        $accessCriteria = Events::model ()->getAccessCriteria ();
+        $events = Events::model ()->findAll ($accessCriteria);
+        $checkEquivalence ($events);
+
+        Yii::app()->settings->historyPrivacy = 'group';
+        $accessCriteria = Events::model ()->getAccessCriteria ();
+        $events = Events::model ()->findAll ($accessCriteria);
+        $checkEquivalence ($events);
+
+        Yii::app()->settings->historyPrivacy = 'user';
+        $accessCriteria = Events::model ()->getAccessCriteria ();
+        $events = Events::model ()->findAll ($accessCriteria);
+        $checkEquivalence ($events);
+
     }
 
     /**

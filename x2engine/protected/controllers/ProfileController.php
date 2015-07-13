@@ -713,8 +713,10 @@ class ProfileController extends x2base {
         if (isset($_POST['Events']) && $_POST['Events']['text'] != Yii::t('app', 'Enter text here...')) {
             $post->text = $_POST['Events']['text'];
             $post->visibility = $_POST['Events']['visibility'];
-            if (isset($_POST['Events']['associationId']))
+            if (isset($_POST['Events']['associationId'])) {
                 $post->associationId = $_POST['Events']['associationId'];
+                $post->associationType = 'User';
+            }
             //$soc->attributes = $_POST['Social'];
             //die(var_dump($_POST['Social']));
             $post->user = Yii::app()->user->getName();
@@ -1310,6 +1312,14 @@ class ProfileController extends x2base {
     }
 
     public function actionGetEvents($lastEventId, $lastTimestamp, $myProfileId, $profileId) {
+        // validate params
+        if (!ctype_digit ($lastEventId) ||
+            !ctype_digit ($lastTimestamp) ||
+            !ctype_digit ($myProfileId) ||
+            !ctype_digit ($profileId)) {
+
+            throw new CHttpException (400, Yii::t('app', 'Invalid parameter'));
+        }
 
         $myProfile = Profile::model()->findByPk($myProfileId);
         $profile = Profile::model()->findByPk($profileId);
@@ -1599,8 +1609,10 @@ class ProfileController extends x2base {
         if (isset($_POST['text']) && $_POST['text'] != "") {
             $post->text = $_POST['text'];
             $post->visibility = $_POST['visibility'];
-            if (isset($_POST['associationId']))
+            if (isset($_POST['associationId'])) {
                 $post->associationId = $_POST['associationId'];
+                $post->associationType = 'User';
+            }
             //$soc->attributes = $_POST['Social'];
             //die(var_dump($_POST['Social']));
             $post->user = Yii::app()->user->getName();
@@ -1609,7 +1621,9 @@ class ProfileController extends x2base {
             $post->lastUpdated = time();
             $post->timestamp = time();
             if ($post->save()) {
-                if (!empty($post->associationId) && $post->associationId != Yii::app()->user->getId()) {
+                if (!empty($post->associationId) && 
+                    $post->associationId != Yii::app()->user->getId() &&
+                    $post->isVisibleTo (User::model ()->findByPk ($post->associationId))) {
 
                     $notif = new Notification;
 

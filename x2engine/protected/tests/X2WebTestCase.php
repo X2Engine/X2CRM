@@ -76,6 +76,10 @@ abstract class X2WebTestCase extends CWebTestCase {
 
     public $firstLogin = true;
 
+    public static function getTestHost () {
+        return preg_replace ('/^https?:\/\/([^\/]+)\/.*$/', '$1', TEST_WEBROOT_URL);
+    }
+
     public function waitForPageToLoad () {
         $this->waitForCondition (
             "window.document.readyState === 'complete'", 5000);
@@ -177,9 +181,7 @@ abstract class X2WebTestCase extends CWebTestCase {
         try {
             $this->assertCorrectUser();
         } catch (PHPUnit_Framework_AssertionFailedError $e) {
-            /**
-             * The browser is logged in but not as the correct user.
-             */
+            // The browser is logged in but not as the correct user.
             $this->logout();
             $this->login();
             $this->firstLogin = false;
@@ -241,12 +243,22 @@ abstract class X2WebTestCase extends CWebTestCase {
     }
 
     /**
-     * visits page and checks for php errors
+     * Visits page and checks for PHP/JS errors
      * @param string $page URI of page
      */
-    protected function assertNoPHPErrors () {
+    protected function assertNoErrors () {
 		$this->assertElementNotPresent('css=.xdebug-error');
 		$this->assertElementNotPresent('css=#x2-php-error');
+        $this->storeEval (
+            "window.document.body.attributes['x2-js-error'] ? 'true' : 'false'", 
+            'hasJsErrorAttr');
+        $hasJsErrorAttr = $this->getExpression ('${hasJsErrorAttr}');
+        if ($hasJsErrorAttr === 'true') {
+            $this->storeAttribute ('dom=document.body@x2-js-error', 'errorMessage');
+            $errorMessage = $this->getExpression ('${errorMessage}');
+            println ($errorMessage);
+            $this->assertTrue (false, $errorMessage);
+        } 
     }
 
     public function getHttpErrorResponse () {

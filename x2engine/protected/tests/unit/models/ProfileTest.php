@@ -36,7 +36,6 @@
  *****************************************************************************************/
 
 /**
- * 
  * @package
  * @author Demitri Morgan <demitri@x2engine.com>
  */
@@ -56,6 +55,152 @@ class ProfileTest extends X2DbTestCase {
         // Test that non-existing layout widgets are removed:
         $profile->setAttribute('layout',json_encode(array('left'=>array('FooWidget'=>array('nothing to see here')),'center'=>array(),'right'=>array(),'hidden'=>array(),'hiddenRight'=>array())));
         $this->assertEquals($emptyLayout,$profile->getLayout());
+    }
+
+    public function testAddRemoveLayoutElements () {
+        $profile = $this->profile('testProfile');
+        $fn = TestingAuxLib::setPublic ($profile, 'addRemoveLayoutElements');
+        $defaultLayout = $profile->initLayout ();
+
+        // attempt to construct default layout from empty layout
+        $profile->layout = json_encode (array ());
+        $profile->update ('layout');
+        $layout = json_decode ($profile->layout, true);
+        $this->assertNotEquals (json_decode ($profile->layout), $defaultLayout);
+        $fn ('left', $layout, $defaultLayout);
+        $profile->refresh ();
+        $layout = json_decode ($profile->layout, true);
+        $fn ('right', $layout, $defaultLayout);
+        $profile->refresh ();
+        $this->assertEquals ($defaultLayout, json_decode ($profile->layout, true));
+
+        // ensure that invalid hidden right widgets get removed
+        $profile->layout = json_encode (array (
+            'hiddenRight' => array (
+                'InvalidRightWidget' => array(
+                    'title' => 'Invalid Right Widget',
+                    'minimize' => false,
+                ),
+            )
+        ));
+        $profile->update ('layout');
+        $layout = json_decode ($profile->layout, true);
+        $this->assertNotEquals (json_decode ($profile->layout), $defaultLayout);
+        $fn ('left', $layout, $defaultLayout);
+        $profile->refresh ();
+        $layout = json_decode ($profile->layout, true);
+        $fn ('right', $layout, $defaultLayout);
+        $profile->refresh ();
+        $this->assertEquals ($defaultLayout, json_decode ($profile->layout, true));
+
+        // ensure that invalid left widgets get removed
+        $profile->layout = json_encode (array (
+            'left' => array (
+                'Invalid' => array(
+                    'title' => 'Invalid',
+                    'minimize' => false,
+                ),
+            )
+        ));
+        $profile->update ('layout');
+        $layout = json_decode ($profile->layout, true);
+        $this->assertNotEquals (json_decode ($profile->layout), $defaultLayout);
+        $fn ('left', $layout, $defaultLayout);
+        $profile->refresh ();
+        $layout = json_decode ($profile->layout, true);
+        $fn ('right', $layout, $defaultLayout);
+        $profile->refresh ();
+        $this->assertEquals ($defaultLayout, json_decode ($profile->layout, true));
+
+        // ensure that invalid right widgets get removed
+        $profile->layout = json_encode (array (
+            'right' => array (
+                'Invalid' => array(
+                    'title' => 'Invalid',
+                    'minimize' => false,
+                ),
+            )
+        ));
+        $profile->update ('layout');
+        $layout = json_decode ($profile->layout, true);
+        $this->assertNotEquals (json_decode ($profile->layout), $defaultLayout);
+        $fn ('left', $layout, $defaultLayout);
+        $profile->refresh ();
+        $layout = json_decode ($profile->layout, true);
+        $fn ('right', $layout, $defaultLayout);
+        $profile->refresh ();
+        $this->assertEquals ($defaultLayout, json_decode ($profile->layout, true));
+
+        // ensure that right widgets get retitled while preserving other settings
+        $helpfulTipsConfig = $defaultLayout['right']['HelpfulTips'];
+        $this->assertFalse ($helpfulTipsConfig['minimize']); // make sure we're changing state
+        $newHelpfulTipsConfig = array(
+            'title' => 'Not Helpful Tips',
+            'minimize' => true,
+        );
+        $profile->layout = json_encode (array (
+            'right' => array (
+                'HelpfulTips' => $newHelpfulTipsConfig,
+            )
+        ));
+        $profile->update ('layout');
+        $layout = json_decode ($profile->layout, true);
+        $this->assertNotEquals (json_decode ($profile->layout), $defaultLayout);
+        $fn ('left', $layout, $defaultLayout);
+        $profile->refresh ();
+        $layout = json_decode ($profile->layout, true);
+        $fn ('right', $layout, $defaultLayout);
+        $profile->refresh ();
+        $expected = $defaultLayout;
+        $newHelpfulTipsConfig['title'] = $helpfulTipsConfig['title'];
+        $expected['right']['HelpfulTips'] = $newHelpfulTipsConfig;
+        $this->assertEquals ($expected, json_decode ($profile->layout, true));
+
+        // ensure that hidden right widgets remain hidden
+        $helpfulTipsConfig = $defaultLayout['right']['HelpfulTips'];
+        $profile->layout = json_encode (array (
+            'hiddenRight' => array (
+                'HelpfulTips' => $helpfulTipsConfig,
+            )
+        ));
+        $profile->update ('layout');
+        $layout = json_decode ($profile->layout, true);
+        $this->assertNotEquals (json_decode ($profile->layout), $defaultLayout);
+        $fn ('left', $layout, $defaultLayout);
+        $profile->refresh ();
+        $layout = json_decode ($profile->layout, true);
+        $fn ('right', $layout, $defaultLayout);
+        $profile->refresh ();
+        $expected = $defaultLayout;
+        unset ($expected['right']['HelpfulTips']);
+        $expected['hiddenRight']['HelpfulTips'] = $helpfulTipsConfig;
+        $this->assertEquals ($expected, json_decode ($profile->layout, true));
+
+        // ensure that hidden right widgets get retitled while preserving other settings
+        $helpfulTipsConfig = $defaultLayout['right']['HelpfulTips'];
+        $this->assertFalse ($helpfulTipsConfig['minimize']); // make sure we're changing state
+        $newHelpfulTipsConfig = array(
+            'title' => 'Not Helpful Tips',
+            'minimize' => true,
+        );
+        $profile->layout = json_encode (array (
+            'hiddenRight' => array (
+                'HelpfulTips' => $newHelpfulTipsConfig,
+            )
+        ));
+        $profile->update ('layout');
+        $layout = json_decode ($profile->layout, true);
+        $this->assertNotEquals (json_decode ($profile->layout), $defaultLayout);
+        $fn ('left', $layout, $defaultLayout);
+        $profile->refresh ();
+        $layout = json_decode ($profile->layout, true);
+        $fn ('right', $layout, $defaultLayout);
+        $profile->refresh ();
+        $expected = $defaultLayout;
+        $newHelpfulTipsConfig['title'] = $helpfulTipsConfig['title'];
+        unset ($expected['right']['HelpfulTips']);
+        $expected['hiddenRight']['HelpfulTips'] = $newHelpfulTipsConfig;
+        $this->assertEquals ($expected, json_decode ($profile->layout, true));
     }
 }
 

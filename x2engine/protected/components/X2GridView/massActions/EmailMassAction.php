@@ -54,6 +54,11 @@ abstract class EmailMassAction extends MassAction {
         return $mailbox;
     }
 
+    public function beforeExecute () {
+        if (!(Yii::app()->controller instanceof EmailInboxesController)) {
+            throw new CHttpException (400, Yii::t('app', 'Invalid controller') );
+        }
+    }
 }
 
 ?>

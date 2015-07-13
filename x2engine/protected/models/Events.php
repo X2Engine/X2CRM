@@ -82,6 +82,9 @@ class Events extends CActiveRecord {
      * @return string Model's name
      */
     public static function parseModelName($model) {
+         
+
+
         $customModule = Modules::model()->findByAttributes(array(
             'custom' => 1,
             'name' => $model,
@@ -139,11 +142,16 @@ class Events extends CActiveRecord {
             case 'record_create':
                 $actionFlag = false;
                 if (class_exists($this->associationType)) {
-                    if (count(X2Model::model($this->associationType)->findAllByPk($this->associationId)) > 0) {
+                    if (count(X2Model::model($this->associationType)
+                        ->findAllByPk($this->associationId)) > 0) {
+
                         if ($this->associationType == 'Actions') {
                             $action = X2Model::model('Actions')->findByPk($this->associationId);
-                            if (isset($action) && (strcasecmp($action->associationType, 'contacts') === 0 || in_array($action->type, array('call', 'note', 'time')))) {
-                                // Special considerations for publisher-created actions, i.e. call, note, time, and anything associated with a contact
+                            if (isset($action) && 
+                                (strcasecmp($action->associationType, 'contacts') === 0 || 
+                                 in_array($action->type, array('call', 'note', 'time')))) {
+                                // Special considerations for publisher-created actions, i.e. call,
+                                // note, time, and anything associated with a contact
                                 $actionFlag = true;
                                 // Retrieve the assigned user from the related action
                                 $relatedAction = Actions::model()->findByPk ($this->associationId);
@@ -152,7 +160,8 @@ class Events extends CActiveRecord {
                             }
                         }
                         if ($actionFlag) {
-                            $authorText = empty($authorText) ? Yii::t('app', 'Someone') : $authorText;
+                            $authorText = empty($authorText) ? 
+                                Yii::t('app', 'Someone') : $authorText;
                             switch ($action->type) {
                                 case 'call':
                                     $text = Yii::t('app', '{authorText} logged a call ({duration}) with {modelLink}: "{logAbbrev}"', array(
@@ -207,15 +216,22 @@ class Events extends CActiveRecord {
                             }
                         } else {
                             if (!empty($authorText)) {
+                                $modelLink = X2Model::getModelLink (
+                                    $this->associationId, $this->associationType, $requireAbsoluteUrl);
                                 if (isset($action) && $this->user !== $action->assignedTo) {
                                     // Include the assignee if this is for an action assigned to someone other than the creator
                                     $translateText = "created a new {modelName} for {assignee}, {modelLink}";
-                                } else {
+                                } elseif (
+                                     
+                                    $modelLink !== '') {
+
                                     $translateText = "created a new {modelName}, {modelLink}";
+                                } else {
+                                    $translateText = "created a new {modelName}";
                                 }
                                 $text = $authorText . Yii::t('app', $translateText, array(
                                     '{modelName}' => Events::parseModelName($this->associationType),
-                                    '{modelLink}' => X2Model::getModelLink($this->associationId, $this->associationType, $requireAbsoluteUrl),
+                                    '{modelLink}' => $modelLink,
                                     '{assignee}' => isset($action) ? User::getUserLinks ($action->assignedTo) : null,
                                 ));
                             } else {
@@ -658,6 +674,43 @@ class Events extends CActiveRecord {
     }
 
     /**
+     * @param User $user
+     * @return bool true if event is visible to user, false otherwiser 
+     */
+    public function isVisibleTo ($user) {
+        if (Yii::app()->params->isAdmin) return true;
+        if (!$user) return false;
+
+        $assignedUser = null;
+        if ($this->associationType === 'User') {
+            $assignedUser = User::model ()->findByPk ($this->associationId);
+        }
+        switch (Yii::app()->settings->historyPrivacy) { 
+            case 'group':
+                if (in_array ($this->user, Groups::getGroupmates ($user->id)) ||
+                    ($this->associationType === 'User' && 
+                     $assignedUser &&
+                     in_array ($assignedUser->username, Groups::getGroupmates ($user->id)))) {
+
+                    return true;
+                }
+                // fall through
+            case 'user':
+                if ($this->user === $user->username ||
+                    ($this->associationType === 'User' && 
+                     ($this->associationId === $user->id))) {
+
+                    return true;
+                }
+                break;
+            default: // default history privacy (public or assigned)
+                return ($this->user === $user->username || $this->visibility ||
+                    $this->associationType === 'User' && $this->associationId === $user->id);
+        }
+        return false;
+    }
+
+    /**
      * @param Profile $profile Profile to filter events by. Used for profile feeds other than
      *  the current user's
      * @return CDbCriteria Events access criteria based on history privacy admin setting
@@ -669,18 +722,33 @@ class Events extends CActiveRecord {
         $criteria->addCondition ('TRUE');
         if (!Yii::app()->params->isAdmin) {
             $criteria->params[':getAccessCriteria_username'] = Yii::app()->user->getName ();
+            $criteria->params[':getAccessCriteria_userId'] = Yii::app()->user->getId ();
+            $userCondition = '
+                user=:getAccessCriteria_username OR
+                associationType="User" AND associationId=:getAccessCriteria_userId
+            ';
             if (Yii::app()->settings->historyPrivacy == 'user') {
-                $criteria->addCondition ('user=:getAccessCriteria_username');
+                $criteria->addCondition ($userCondition);
             } elseif (Yii::app()->settings->historyPrivacy == 'group') {
-                $criteria->addCondition (
-                    'user IN (' .
-                        'SELECT DISTINCT b.username ' .
-                        'FROM x2_group_to_user a JOIN x2_group_to_user b ' .
-                        'ON a.groupId=b.groupId ' .
-                        'WHERE a.username=:getAccessCriteria_username' .
-                    ') OR (user = :getAccessCriteria_username)');
+                $criteria->addCondition ("
+                    $userCondition OR
+                    user IN (
+                        SELECT DISTINCT b.username 
+                        FROM x2_group_to_user a JOIN x2_group_to_user b 
+                        ON a.groupId=b.groupId 
+                        WHERE a.username=:getAccessCriteria_username
+                    ) OR (
+                        associationType='User' AND associationId in (
+                            SELECT DISTINCT b.id
+                            FROM x2_group_to_user a JOIN x2_group_to_user b
+                            ON a.groupId=b.groupId
+                            WHERE a.userId=:getAccessCriteria_userId
+                        )
+                    )");
             } else { // default history privacy (public or assigned)
-                $criteria->addCondition ("(user=:getAccessCriteria_username OR visibility=1)");
+                $criteria->addCondition ("
+                    $userCondition OR visibility=1
+                ");
             }
         }
 

@@ -38,8 +38,13 @@ class X2GridViewFieldFormatter extends FieldFormatter {
 
     protected function renderText ($field, $makeLinks, $textOnly, $encode) {
         $fieldName = $field->fieldName;
-        $value = preg_replace("/(\<br ?\/?\>)|\n/"," ",$this->owner->$fieldName);
-        return Yii::app()->controller->convertUrls($this->render ($value, $encode));
+        $value = $this->owner->$fieldName;
+        if (is_string ($value)) {
+            $value = preg_replace("/(\<br ?\/?\>)|\n/"," ",$value);
+            return Yii::app()->controller->convertUrls($this->render ($value, $encode));
+        } else {
+            return '';
+        }
     }
 
 }

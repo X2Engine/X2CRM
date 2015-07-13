@@ -141,7 +141,7 @@ class AdminControllerTest extends X2WebTestCase {
      * properly uploaded
      * @param string $model Name of the model to import
      */
-    protected function prepareImport($model, $csvName) {
+    protected function prepareImport($model, $csvName, $verifyUpload = true) {
         $this->openX2 ('/admin/importModels?model='.ucfirst($model));
         $csv = implode(DIRECTORY_SEPARATOR, array(
             Yii::app()->basePath,
@@ -152,7 +152,16 @@ class AdminControllerTest extends X2WebTestCase {
         ));
         $this->type ('data', $csv);
         $this->clickAndWait ("dom=document.querySelector ('input[type=\"submit\"]')");
-        $this->assertCsvUploaded ($csv);
+        if ($verifyUpload)
+            $this->assertCsvUploaded ($csv);
+    }
+
+    /**
+     * Navigate to the export page and begin export
+     * @param string $model Name of the model to export
+     */
+    protected function prepareExport($model) {
+        $this->openX2 ('/admin/exportModels?model='.ucfirst($model));
     }
 
     /**
@@ -163,6 +172,19 @@ class AdminControllerTest extends X2WebTestCase {
         $this->click ("css=#process-link");
         $this->waitForTextPresent ("Import Complete");
         $this->assertAlert ("Import Complete!");
+    }
+
+    /**
+     * Click the 'process' link to begin the import, and assert ui functions
+     * as expected
+     */
+    protected function beginExport($includeHidden = false) {
+        if ($includeHidden) {
+            $this->click ("css=#includeHidden");
+        }
+        $this->click ("css=#export-button");
+        $this->waitForTextPresent ("data successfully exported.");
+        $this->assertAlert ("Export Complete!");
     }
 
     /**
@@ -308,6 +330,71 @@ class AdminControllerTest extends X2WebTestCase {
         }
     }
 
+    /**
+     * Verify that the importer can handle line endings from various operating systems.
+     * The specified CSV has lines ending in: \r\n, \n, \r, and \r\n, respectively.
+     */
+    public function testImportLineEndings() {
+        $csvFile = 'lineendings-contacts.csv';
+        // Skip verification of uploaded CSV since it will be modified
+        $this->prepareImport ('Contacts', $csvFile, false);
+        $expected = $this->stashModels ('Contacts');
+        $this->assertGreaterThan (0, count($expected),
+            'Failed to load fixture! Models were expected');
+        $this->beginImport();
+        $this->assertNoValidationErrorsPresent();
+        $this->assertModelsWereImported ($expected, 'Contacts');
+    }
+
+    /**
+     * Ensure that visibility is handled properly on import, regardless of whether the
+     * field contains digits or strings
+     */
+    public function testImportVisibility() {
+        $csvFile = 'contacts-visibility.csv';
+        $this->prepareImport ('Contacts', $csvFile);
+        $expected = $this->stashModels ('Contacts');
+        $this->assertGreaterThan (0, count($expected),
+            'Failed to load fixture! Models were expected');
+        $this->beginImport();
+        $this->assertNoValidationErrorsPresent();
+        $this->assertModelsWereImported ($expected, 'Contacts');
+    }
+
+    /**
+     * Ensure that hidden records are included/excluded when requested
+     */
+    public function testExportHiddenRecords() {
+        $exportCsv = implode(DIRECTORY_SEPARATOR, array(
+            Yii::app()->basePath,
+            'data',
+            'records_export.csv'
+        ));
+
+        // Without hidden records, should export 3 models
+        $this->prepareExport ('contacts');
+        $this->beginExport (false);
+        $this->assertEquals (3, count(file($exportCsv)));
+
+        // With hidden records, should export 4 models instead
+        $this->prepareExport ('contacts');
+        $this->beginExport (true);
+        $this->assertEquals (4, count(file($exportCsv)));
+    }
+
+    /**
+     * Verify that models can be exported properly
+     */
+    public function testRecordsExport() {
+        // TODO get actions tested
+        $csvs = array_diff($this->csvs, array('actions'));
+        foreach ($csvs as $modelName) {
+            $this->prepareExport ($modelName);
+            $this->beginExport(true);
+            $this->assertCsvExported ($modelName);
+        }
+    }
+
     /********************************************************************
      * Assert methods
      ********************************************************************/
@@ -384,7 +471,7 @@ class AdminControllerTest extends X2WebTestCase {
      * Assert that the CSV exists and the file contents are equal
      * @param string $csv Path to the uploaded csv
      */
-    protected function assertCsvUploaded($csv) {
+    protected function assertCsvUploaded ($csv) {
         $uploadedPath = implode(DIRECTORY_SEPARATOR, array(
             Yii::app()->basePath,
             'data',
@@ -392,6 +479,31 @@ class AdminControllerTest extends X2WebTestCase {
         ));
         $this->assertFileExists ($uploadedPath);
         $this->assertFileEquals ($csv, $uploadedPath);
+    }
+
+    /**
+     * Assert that the CSV exists and the file contents are equal
+     * @param string $csv Path to the uploaded csv
+     */
+    protected function assertCsvExported ($csv) {
+        $exportPath = implode(DIRECTORY_SEPARATOR, array(
+            Yii::app()->basePath,
+            'data',
+            'records_export.csv'
+        ));
+        $csvFile = implode(DIRECTORY_SEPARATOR, array(
+            Yii::app()->basePath,
+            'tests',
+            'data',
+            'csvs',
+            $csv.".csv"
+        ));
+        $this->assertFileExists ($exportPath);
+        $expectedLength = count(file($csvFile));
+        $exportedLength = count(file($exportPath));
+        $this->assertEquals ($expectedLength, $exportedLength);
+        // TODO achieve consistency in fields
+        //$this->assertFileEquals ($csvFile, $exportPath);
     }
 
     /**

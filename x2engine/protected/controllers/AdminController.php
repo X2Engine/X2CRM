@@ -1817,6 +1817,12 @@ class AdminController extends Controller {
 
         if (isset($_POST['Fields']) && $save) {
             $model->attributes = $_POST['Fields'];
+            if (!isset ($_POST['Fields']['linkType'])) {
+                // This can be removed if we ever make the linkType attribute more structured
+                // (i.e. field type-specific link type validation rules)
+                $model->linkType = null;
+            }
+
             // Set the default value
             if (isset($_POST['AmorphousModel'])) {
                 $aModel = $_POST['AmorphousModel'];
@@ -2245,6 +2251,8 @@ class AdminController extends Controller {
      * an optional "updateFlag" parameter can be passed, in which case the custom
      * module will have its file contents re-generated to be at the latest version
      * of the template files.
+     * TODO: clean up backupFlag code. backupFlag checks no longer necessary since conversion now
+     * aborts when backup fails.
      */
     public function actionConvertCustomModules() {
         $status = array();
@@ -2281,8 +2289,13 @@ class AdminController extends Controller {
                         ));
                     } else {
                         $backupFlag = false;
-                        $status[$moduleName]['messages'][] = Yii::t('admin',
-                            'Backup failed. Unable to write to backup directory.');
+                        $status[$moduleName]['error'] = Yii::t('admin',
+                            'Backup failed. Unable to write to backup directory. '.
+                            'Aborting module conversion.');
+                        $this->render('convertCustomModules', array(
+                            'status' => $status,
+                        ));
+                        Yii::app()->end ();
                     }
                     if (file_exists ($modulePath.'/controllers/DefaultController.php')) {
                         // Controller needs to be updated to the new format
@@ -3025,7 +3038,7 @@ class AdminController extends Controller {
         if ($page == 0 && $excludeHidden && isset($_SESSION['exportModelCriteria']) &&
             ($_SESSION['exportModelCriteria'] instanceof CDbCriteria)) {
 
-            // Save hidden condition in criteria to
+            // Save hidden condition in criteria
             $hiddenConditions = $staticModel->getHiddenCondition();
             $_SESSION['exportModelCriteria']->addCondition ($hiddenConditions);
         }
@@ -3058,7 +3071,19 @@ class AdminController extends Controller {
                     if (!empty($name))
                         $record->$fieldName = $name;
                 }elseif ($fieldName == 'visibility') {
-                    $record->$fieldName = $record->$fieldName == 1 ? 'Public' : 'Private';
+                    switch ($record->$fieldName) {
+                        case 0:
+                            $record->$fieldName = 'Private';
+                            break;
+                        case 1:
+                            $record->$fieldName = 'Public';
+                            break;
+                        case 2:
+                            $record->$fieldName = 'User\'s Groups';
+                            break;
+                        default:
+                            $record->$fieldName = 'Private';
+                    }
                 }
             }
             // Enforce metadata to ensure accuracy of column order, then export.
@@ -3066,9 +3091,13 @@ class AdminController extends Controller {
             $recordAttributes = $record->attributes;
             if ($model === 'Actions') {
                 // Export descriptions with Actions
-                $recordAttributes = array_merge($recordAttributes, array(
-                    'actionDescription' => $record->actionDescription
-                ));
+                $actionText = $record->actionText;
+                if ($actionText) {
+                    $actionDescription = $actionText->text;
+                    $recordAttributes = array_merge($recordAttributes, array(
+                        'actionDescription' => $actionDescription
+                    ));
+                }
             }
             $tempAttributes = array_intersect_key($recordAttributes, $combinedMeta);
             $tempAttributes = array_merge($combinedMeta, $tempAttributes);
@@ -3210,6 +3239,7 @@ class AdminController extends Controller {
             if (file_exists($filePath)) {
                 $fp = fopen($filePath, 'r+');
                 $_SESSION['csvLength'] = $this->calculateCsvLength($filePath);
+                $this->fixCsvLineEndings($filePath);
             } else {
                 throw new Exception('There was an error saving the models file.');
             }
@@ -3279,6 +3309,16 @@ class AdminController extends Controller {
         $lines = file($csvfile, FILE_SKIP_EMPTY_LINES);
         $lineCount = count($lines) - 1;
         return $lineCount;
+    }
+
+    /**
+     * Remove any lone \r characters
+     * @param string $csvfile Path to CSV file
+     */
+    protected function fixCsvLineEndings($csvFile) {
+        $text = file_get_contents ($csvFile);
+        $replacement = preg_replace ('/\r([^\n])/m', "\r\n\\1", $text);
+        file_put_contents ($csvFile, $replacement);
     }
 
     /**
@@ -3512,6 +3552,7 @@ class AdminController extends Controller {
         if(isset($_POST['count']) && file_exists($path = $this->safePath('data.csv')) &&
                 isset($_POST['model'])){
 
+            ini_set ('auto_detect_line_endings', 1); // Account for Mac based CSVs if possible
             $importedIds = array();
             $modelName = ucfirst($_POST['model']);
             $count = $_POST['count']; // Number of records to import
@@ -3644,6 +3685,21 @@ class AdminController extends Controller {
 
                 }
                 break;
+            case "visibility":
+                switch ($importAttribute) {
+                    case 'Private':
+                        $model->$fieldName = 0;
+                        break;
+                    case 'Public':
+                        $model->$fieldName = 1;
+                        break;
+                    case 'User\'s Groups':
+                        $model->$fieldName = 2;
+                        break;
+                    default:
+                        $model->$fieldName = $importAttribute;
+                }
+                break;
             default:
                 $model->$fieldName = $importAttribute;
         }
@@ -3770,14 +3826,9 @@ class AdminController extends Controller {
         if ($modelName === 'Actions' && isset($model->associationType))
             $this->reconstructImportedActionAssoc($model);
 
-        if ($model->hasAttribute('visibility')) {
-            // Nobody every remembers to set visibility... set it for them
-            if(empty($model->visibility) && ($model->visibility !== 0 && $model->visibility !== "0")
-                    || $model->visibility == 'Public') {
-                $model->visibility = 1;
-            } elseif($model->visibility == 'Private')
-                $model->visibility = 0;
-        }
+        // Set visibility to Public by default if unset by import
+        if ($model->hasAttribute('visibility') && is_null($model->visibility))
+            $model->visibility = 1;
         // If date fields were provided, do not create new values for them
         if (!empty($model->createDate) || !empty($model->lastUpdated) ||
                 !empty($model->lastActivity)) {
@@ -4582,7 +4633,7 @@ class AdminController extends Controller {
      * Delete a custom dropdown
      */
     public function actionDeleteDropdown() {
-        $dropdowns = Dropdowns::model()->findAll();
+        $dropdowns = Dropdowns::model()->findAll('id>=1000');
 
         if (isset($_POST['dropdown'])) {
             if ($_POST['dropdown'] != Actions::COLORS_DROPDOWN_ID) {
@@ -4603,9 +4654,13 @@ class AdminController extends Controller {
     public function actionEditDropdown() {
         $model = new Dropdowns;
 
-        if (isset($_POST['Dropdowns'])) {
+        // TODO: validate dropdown select client-side
+        if (isset($_POST['Dropdowns']['id']) && ctype_digit ($_POST['Dropdowns']['id'])) {
             $model = Dropdowns::model()->findByPk(
                     $_POST['Dropdowns']['id']);
+            if (!isset ($model)) {
+                throw new CHttpException (404, Yii::t('app', 'Dropdown could not be found'));
+            }
             if ($model->id == Actions::COLORS_DROPDOWN_ID) {
                 if (AuxLib::issetIsArray($_POST['Dropdowns']['values']) &&
                         AuxLib::issetIsArray($_POST['Dropdowns']['labels']) &&
@@ -4872,7 +4927,7 @@ class AdminController extends Controller {
      */
     public function actionRollbackImport() {
         // If an import ID is passed, load specific information about this import
-        if (isset($_GET['importId'])) {
+        if (isset($_GET['importId']) && ctype_digit ($_GET['importId'])) {
             $importId = $_GET['importId'];
             $types = Yii::app()->db->createCommand()
                     ->select('modelType')
@@ -4895,6 +4950,7 @@ class AdminController extends Controller {
                 'typeArray' => $typeArray,
                 'dataProvider' => null,
                 'count' => $count,
+                'importId' => $importId,
             ));
         } else {
             // Otherwise, load a list of imports to choose from

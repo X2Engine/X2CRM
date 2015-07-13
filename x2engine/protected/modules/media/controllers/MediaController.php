@@ -52,6 +52,12 @@ class MediaController extends x2base {
         ));
     }
 
+    public function checkPermissions (&$model, $action=null) {
+        return Yii::app()->params->isAdmin || 
+            (!$model->private || $model->uploadedBy === Yii::app()->user->name) && 
+            $this->asa ('PermissionsBehavior')->checkPermissions ($model, $action);
+    }
+
     /**
      * @var string the default layout for the views. Defaults to '//layouts/column2', meaning
      * using two-column layout. See 'protected/views/layouts/column2.php'.
@@ -62,12 +68,14 @@ class MediaController extends x2base {
      * @param integer $id the ID of the model to be displayed
      */
     public function actionView($id){
+        $model = $this->loadModel($id);
+        if (!$this->checkPermissions ($model, 'view')) $this->denied ();
 
         // add media object to user's recent item list
         User::addRecentItem('m', $id, Yii::app()->user->getId()); 
 
         $this->render('view', array(
-            'model' => $this->loadModel($id),
+            'model' => $model,
         ));
     }
 
@@ -76,6 +84,8 @@ class MediaController extends x2base {
      */
     public function actionDownload($id){
         $model = $this->loadModel($id);
+        if (!$this->checkPermissions ($model, 'view')) $this->denied ();
+
         $filePath = $model->getPath();
         if ($filePath != null)
             $file = Yii::app()->file->set($filePath);
@@ -271,6 +281,7 @@ class MediaController extends x2base {
      */
     public function actionUpdate($id){
         $model = $this->loadModel($id);
+        if (!$this->checkPermissions ($model, 'edit')) $this->denied ();
 
         if(isset($_POST['Media'])){
             // save media info
@@ -304,6 +315,7 @@ class MediaController extends x2base {
         if(Yii::app()->request->isPostRequest){
             // we only allow deletion via POST request
             $model = $this->loadModel($id);
+            if (!$this->checkPermissions ($model, 'delete')) $this->denied ();
             $model->delete();
 
             // if AJAX request (triggered by deletion via admin grid view), we should not redirect the browser
@@ -481,16 +493,19 @@ class MediaController extends x2base {
     public function actionGetItems(){
         $model = X2Model::model ($this->modelClass);
         if (isset ($model)) {
+            list ($accessCond, $params) = $model->getAccessSQLCondition ();
             $tableName = $model->tableName ();
             $sql = 
                 'SELECT id, fileName as value
                  FROM '.$tableName.' 
-                 WHERE associationType!="theme" and fileName LIKE :qterm 
+                 WHERE associationType!="theme" and fileName LIKE :qterm AND '.$accessCond.' AND
+                    (uploadedBy=:username OR private=0 OR private=NULL)
                  ORDER BY fileName ASC';
             $command = Yii::app()->db->createCommand($sql);
             $qterm = $_GET['term'].'%';
-            $command->bindParam(":qterm", $qterm, PDO::PARAM_STR);
-            $result = $command->queryAll();
+            $params[':qterm'] = $qterm;
+            $params[':username'] = Yii::app()->user->getName ();
+            $result = $command->queryAll(true, $params);
             echo CJSON::encode($result);
         }
         Yii::app()->end();

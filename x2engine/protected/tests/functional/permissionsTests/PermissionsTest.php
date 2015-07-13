@@ -140,27 +140,27 @@ class PermissionsTest extends X2WebTestCase {
         Contacts::model ()->asa ('permissions')->clearCache ();
 
         $this->openX2 ('contacts/'.$contactGroupmate->id);
-        $this->assertNoPHPErrors ();
+        $this->assertNoErrors ();
         $this->assertHttpResponse (403);
 
         $this->openX2 ('contacts/'.$contactGroup->id);
-        $this->assertNoPHPErrors ();
+        $this->assertNoErrors ();
         $this->assertHttpOK ();
 
         $this->openX2 ('contacts/'.$contactAnyone->id);
-        $this->assertNoPHPErrors ();
+        $this->assertNoErrors ();
         $this->assertHttpResponse (403);
 
         $this->openX2 ('contacts/'.$contactUserPrivate->id);
-        $this->assertNoPHPErrors ();
+        $this->assertNoErrors ();
         $this->assertHttpOK ();
 
         $this->openX2 ('contacts/'.$contactOtherPrivate->id);
-        $this->assertNoPHPErrors ();
+        $this->assertNoErrors ();
         $this->assertHttpResponse (403);
 
         $this->openX2 ('contacts/'.$contactInvisible->id);
-        $this->assertNoPHPErrors ();
+        $this->assertNoErrors ();
         $this->assertHttpResponse (403);
 
         $this->rmAuthItemChild ('ContactsPrivateReadOnlyAccess');
@@ -170,27 +170,27 @@ class PermissionsTest extends X2WebTestCase {
         Contacts::model ()->asa ('permissions')->clearCache ();
 
         $this->openX2 ('contacts/'.$contactGroupmate->id);
-        $this->assertNoPHPErrors ();
+        $this->assertNoErrors ();
         $this->assertHttpOK ();
 
         $this->openX2 ('contacts/'.$contactGroup->id);
-        $this->assertNoPHPErrors ();
+        $this->assertNoErrors ();
         $this->assertHttpOK ();
 
         $this->openX2 ('contacts/'.$contactAnyone->id);
-        $this->assertNoPHPErrors ();
+        $this->assertNoErrors ();
         $this->assertHttpOK ();
 
         $this->openX2 ('contacts/'.$contactUserPrivate->id);
-        $this->assertNoPHPErrors ();
+        $this->assertNoErrors ();
         $this->assertHttpOK ();
 
         $this->openX2 ('contacts/'.$contactOtherPrivate->id);
-        $this->assertNoPHPErrors ();
+        $this->assertNoErrors ();
         $this->assertHttpResponse (403);
 
         $this->openX2 ('contacts/'.$contactInvisible->id);
-        $this->assertNoPHPErrors ();
+        $this->assertNoErrors ();
         $this->assertHttpResponse (403);
 
         $this->rmAuthItemChild ('ContactsReadOnlyAccess');
@@ -199,27 +199,27 @@ class PermissionsTest extends X2WebTestCase {
         Contacts::model ()->asa ('permissions')->clearCache ();
 
         $this->openX2 ('contacts/'.$contactGroupmate->id);
-        $this->assertNoPHPErrors ();
+        $this->assertNoErrors ();
         $this->assertHttpResponse (403);
 
         $this->openX2 ('contacts/'.$contactGroup->id);
-        $this->assertNoPHPErrors ();
+        $this->assertNoErrors ();
         $this->assertHttpResponse (403);
 
         $this->openX2 ('contacts/'.$contactAnyone->id);
-        $this->assertNoPHPErrors ();
+        $this->assertNoErrors ();
         $this->assertHttpResponse (403);
 
         $this->openX2 ('contacts/'.$contactUserPrivate->id);
-        $this->assertNoPHPErrors ();
+        $this->assertNoErrors ();
         $this->assertHttpResponse (403);
 
         $this->openX2 ('contacts/'.$contactOtherPrivate->id);
-        $this->assertNoPHPErrors ();
+        $this->assertNoErrors ();
         $this->assertHttpResponse (403);
 
         $this->openX2 ('contacts/'.$contactInvisible->id);
-        $this->assertNoPHPErrors ();
+        $this->assertNoErrors ();
         $this->assertHttpResponse (403);
 
         // admin access
@@ -231,27 +231,27 @@ class PermissionsTest extends X2WebTestCase {
         Contacts::model ()->asa ('permissions')->clearCache ();
 
         $this->openX2 ('contacts/'.$contactGroupmate->id);
-        $this->assertNoPHPErrors ();
+        $this->assertNoErrors ();
         $this->assertHttpOK ();
 
         $this->openX2 ('contacts/'.$contactGroup->id);
-        $this->assertNoPHPErrors ();
+        $this->assertNoErrors ();
         $this->assertHttpOK ();
 
         $this->openX2 ('contacts/'.$contactAnyone->id);
-        $this->assertNoPHPErrors ();
+        $this->assertNoErrors ();
         $this->assertHttpOK ();
 
         $this->openX2 ('contacts/'.$contactUserPrivate->id);
-        $this->assertNoPHPErrors ();
+        $this->assertNoErrors ();
         $this->assertHttpOK ();
 
         $this->openX2 ('contacts/'.$contactOtherPrivate->id);
-        $this->assertNoPHPErrors ();
+        $this->assertNoErrors ();
         $this->assertHttpOK ();
 
         $this->openX2 ('contacts/'.$contactInvisible->id);
-        $this->assertNoPHPErrors ();
+        $this->assertNoErrors ();
         $this->assertHttpOK ();
     }
 }

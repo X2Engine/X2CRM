@@ -131,8 +131,9 @@ class QuotesController extends x2base {
         foreach ($quote->lineItems as $item) {
             $copy = new QuoteProduct;
             foreach($item->attributes as $name => $value)
-                if ($name !== 'id' && $name !== 'listId')
+                if ($name !== 'id' && $name !== 'listId') {
                     $copy->$name = $value;
+                }
             $lineItems[] = $copy;
         }
         return $lineItems;
@@ -147,13 +148,13 @@ class QuotesController extends x2base {
 	 */
 	public function actionCreate($quick=false,$duplicate = false){
 		$model = new Quote;
-		if($duplicate) {
+		if($duplicate && !isset ($_POST['Quote'])) {
 			$copiedModel = Quote::model()->findByPk($duplicate);
 			if(!empty($copiedModel)) {
 				foreach($copiedModel->attributes as $name => $value)
 					if($name != 'id')
 						$model->$name = $value;
-				$model->lineItems = $this->duplicateLineItems($copiedModel);
+				$model->setLineItems ($this->duplicateLineItems($copiedModel), false, true);
 			}
 		}
 
@@ -215,6 +216,7 @@ class QuotesController extends x2base {
 			'quick' => $quick,
 
 		);
+
 		if(!$quick)
 			$this->render('create', $viewData);
 		else {
@@ -257,6 +259,7 @@ class QuotesController extends x2base {
 			'orders' => $quoteProducts,
 			'quick'=>$quick,
 		);
+
 		if(!$quick)
 			$this->render('update', $viewData);
 		else {

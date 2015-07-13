@@ -135,7 +135,9 @@ class Docs extends X2Model {
      * @param bool $encode Encode replacement values if true; use renderAttribute otherwise.
      * @return string
      */
-    public static function replaceVariables($str,$model,$vars = array(),$encode = false,$renderFlag=true) {
+    public static function replaceVariables(
+        $str,$model,$vars = array(),$encode = false,$renderFlag=true) {
+
         if($encode) {
             foreach(array_keys($vars) as $key)
                 $vars[$key] = CHtml::encode($vars[$key]);

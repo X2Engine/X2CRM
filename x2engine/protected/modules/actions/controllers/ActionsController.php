@@ -1143,20 +1143,8 @@ class ActionsController extends x2base {
     }
 
 
-    public function actionGetItems(){
-        $model = X2Model::model ($this->modelClass);
-        if (isset ($model)) {
-            $tableName = $model->tableName ();
-            $sql = 
-                'SELECT id, subject as value
-                 FROM '.$tableName.' WHERE subject LIKE :qterm ORDER BY subject ASC';
-            $command = Yii::app()->db->createCommand($sql);
-            $qterm = $_GET['term'].'%';
-            $command->bindParam(":qterm", $qterm, PDO::PARAM_STR);
-            $result = $command->queryAll();
-            echo CJSON::encode($result);
-        }
-        Yii::app()->end();
+    public function actionGetItems($term){
+        X2LinkableBehavior::getItems ($term, 'subject');
     }
 
     

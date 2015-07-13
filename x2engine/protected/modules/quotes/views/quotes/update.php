@@ -130,7 +130,6 @@ echo $this->renderPartial('_lineItems',
 		'model'=>$model,
 		'products'=>$products,
 		'readOnly'=>false,
-		'form'=>$form,
         'namespacePrefix' => 'quotes'
 	)
 );

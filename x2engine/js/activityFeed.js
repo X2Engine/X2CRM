@@ -1151,6 +1151,7 @@ ActivityFeed.prototype.updateEventList = function  () {
                 'myProfileId':x2.activityFeed.myProfileId
             },
             success:function(data){
+                if (data === 'failure') return;
                 lastEventId=data[0];
                 if(data[1]){
                     var text=data[1];

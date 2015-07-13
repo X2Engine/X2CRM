@@ -58,10 +58,47 @@ class X2FlowCreateEvent extends X2FlowAction {
                     'type' => 'dropdown', 
                     'options' => $eventTypes
                 ),
-                array('name' => 'text', 'label' => Yii::t('studio', 'Text'), 'type' => 'text'),
-                array('name' => 'user', 'optional' => 1, 'label' => 'User (optional)', 'type' => 'dropdown', 'options' => array('' => '----------', 'auto' => 'Auto') + X2Model::getAssignmentOptions(false, false)),
                 array(
-                    'name' => 'createNotif', 'label' => Yii::t('studio', 'Create Notification?'),
+                    'name' => 'text',
+                    'label' => Yii::t('studio', 'Text'),
+                    'type' => 'text'
+                ),
+                array(
+                    'name' => 'visibility',
+                    'label' => Yii::t('studio', 'Visibility'),
+                    'type' => 'dropdown',
+                    'options' => array (
+                        1 => Yii::t('events','Public'),
+                        0 => Yii::t('events','Private'),
+                    ),
+                    'defaultVal' => 1
+                ),
+                array(
+                    'name' => 'feed',
+                    'optional' => 1,
+                    'label' => 'User (optional)',
+                    'type' => 'dropdown', 
+                    'options' => array(
+                        '' => '----------',
+                        'auto' => 'Auto'
+                        ) + X2Model::getAssignmentOptions(false, false)),
+                array(
+                    'name' => 'user',
+                    'optional' => 1,
+                    'label' => 'Author',
+                    'type' => 'dropdown', 
+                    'options' => array(
+                        'admin' => 'admin',
+                        'auto' => Yii::t('studio', 'Auto'),
+                        ) + array_diff_key (
+                            X2Model::getAssignmentOptions(false, false),
+                            array ('admin' => '')
+                        ),
+                    'defaultVal' => 'admin',
+                ),
+                array(
+                    'name' => 'createNotif', 
+                    'label' => Yii::t('studio', 'Create Notification?'),
                     'type' => 'boolean',
                     'defaultVal' => true
                 ),
@@ -75,53 +112,81 @@ class X2FlowCreateEvent extends X2FlowAction {
         $event = new Events;
         $notif = new Notification;
 
-        $user = $this->parseOption('user', $params);
+        $user = $this->parseOption('feed', $params);
+        $author = $this->parseOption('user', $params);
 
         $type = $this->parseOption('type', $params);
+        $visibility = $this->parseOption('visibility', $params);
 
-        if($type === 'auto'){
-            if(!isset($params['model']))
-                return array (false, '');
-            $notif->modelType = get_class($params['model']);
-            $notif->modelId = $params['model']->id;
-            $notif->type = $this->getNotifType();
+// Unfinsihed automatic event type detection feature
+//        if($type === 'auto'){
+//            if(!isset($params['model']))
+//                return array (false, '');
+//            $notif->modelType = get_class($params['model']);
+//            $notif->modelId = $params['model']->id;
+//            $notif->type = $this->getNotifType();
+//
+//            $event->associationType = get_class($params['model']);
+//            $event->associationId = $params['model']->id;
+//            $event->type = $this->getEventType();
+//            if($params['model']->hasAttribute('visibility'))
+//                $event->visibility = $params['model']->visibility;
+//            // $event->user = $this->parseOption('user',$params);
+//        } else{
+        $text = $this->parseOption('text', $params);
 
-            $event->associationType = get_class($params['model']);
-            $event->associationId = $params['model']->id;
-            $event->type = $this->getEventType();
-            if($params['model']->hasAttribute('visibility'))
-                $event->visibility = $params['model']->visibility;
-            // $event->user = $this->parseOption('user',$params);
-        } else{
-            $text = $this->parseOption('text', $params);
+        $notif->type = 'custom';
+        $notif->text = $text;
 
-            $notif->type = 'custom';
-            $notif->text = $text;
+        $event->type = 'feed';
+        $event->subtype = $type;
+        $event->text = $text;
+        $event->visibility = $visibility;
 
-            $event->type = 'feed';
-            $event->subtype = $type;
-            $event->text = $text;
-            if($user == 'auto' && isset($params['model']) && 
+        if ($author == 'auto' && isset($params['model']) && 
+            $params['model']->hasAttribute('assignedTo') && 
+            !empty($params['model']->assignedTo)) {
+
+            $event->user = $params['model']->assignedTo;
+        } else {
+            $event->user = $author;
+        }
+
+        if (!empty ($user)) {
+            if ($user == 'auto' && isset($params['model']) && 
                 $params['model']->hasAttribute('assignedTo') && 
-                !empty($params['model']->assignedTo)){
+                !empty($params['model']->assignedTo)) {
 
-                $event->user = $params['model']->assignedTo;
-            }elseif(!empty($user)){
-                $event->user = $user;
-            }else{
-                $event->user = 'admin';
+                $associatedUser = $params['model']->assignedTo;
+            } else {
+                $associatedUser = $user;
+            }
+            $associatedUser = User::model ()->findByAttributes (array (
+                'username' => $associatedUser
+            ));
+            if ($associatedUser) {
+                $event->associationType = 'User';
+                $event->associationId = $associatedUser->id;
+                $notif->modelType = 'Profile';
+                $notif->modelId = $event->associationId;
+                $notif->type = 'social_post';
+                $notif->createdBy = $event->user;
+                $notif->user = $associatedUser->username;
             }
         }
+
         if(!$this->parseOption('createNotif', $params)) {
             if (!$notif->save()) {
-                return array(false, array_shift($notif->getErrors()));
+                $errors = $notif->getErrors ();
+                return array(false, array_shift($errors));
             }
         }
 
         if ($event->save()) {
             return array (true, "");
         } else {
-            return array(false, array_shift($event->getErrors()));
+            $errors = $event->getErrors ();
+            return array(false, array_shift($errors));
         }
 
     }

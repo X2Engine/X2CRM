@@ -119,7 +119,8 @@ return array (
 ';
 
 	foreach(array_keys($messages) as $langPack) {
-		$file = fopen($messagePath.'/'.$langPack.'/'.$_POST['file'],'w');	// open all files to be rewritten
+        // open all files to be rewritten
+		$file = fopen($messagePath.'/'.$langPack.'/'.$_POST['file'],'w');	
 
 		fwrite($file,$fileHeader);
 
@@ -141,7 +142,11 @@ return array (
 						fwrite($file,"'".addcslashes(decodeQuotes($line),'\'')."'=>'',\n");
 				} else{
                     if(isset($_POST['data'][$langPack][$index])){
-                        fwrite($file,"'".addcslashes(decodeQuotes($line),'\'')."'=>'". addcslashes(decodeQuotes($_POST['data'][$langPack][$index]),'\'') ."',\n");
+                        fwrite(
+                            $file,
+                            "'".addcslashes(decodeQuotes($line),'\'')."'=>'". 
+                                addcslashes(decodeQuotes($_POST['data'][$langPack][$index]),'\'') .
+                                "',\n");
                     }else{
                         fwrite($file,"'".addcslashes(decodeQuotes($line),'\'')."'=>'". '' ."',\n");
                     }
@@ -315,7 +320,7 @@ function removeLine(object) {
 			$active = ($fileName == $targetFile);
 			?>
 			<tr<?php if($active) echo ' class="active"'; ?>>
-				<td><?php echo $active? $fileName : '<a href="translationManager?file='.$fileName.'">'.$fileName.'</a>'; ?></td>
+				<td><?php echo $active ? CHtml::encode ($fileName) : '<a href="translationManager?file='.CHtml::encode ($fileName).'">'.CHtml::encode ($fileName).'</a>'; ?></td>
 				<td><?php echo $lines; ?></td>
 			</tr>
 			<?php
@@ -380,7 +385,10 @@ function removeLine(object) {
 <div class="content-container">
 <div class="content">
 <form method="POST" action="<?php echo Yii::app()->controller->createAbsoluteUrl('/admin/translationManager',array('file'=>$targetFile)); ?>" id="translationForm">
-<input type="hidden" name="file" value="<?php echo $_GET['file']; ?>">
+<?php
+echo X2Html::csrfToken ();
+?>
+<input type="hidden" name="file" value="<?php echo CHtml::encode ($_GET['file']); ?>">
 <table class="rounded" style="table-layout:fixed;">
 	<tr>
 		<th width="50%" height="15" style="height:16px;">Message</th>

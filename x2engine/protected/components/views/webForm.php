@@ -41,7 +41,6 @@ Parameters:
 */
 
 
-
 mb_internal_encoding('UTF-8');
 mb_regex_encoding('UTF-8');
 Yii::app()->params->profile = Profile::model()->findByPk(1);
@@ -162,48 +161,42 @@ html {
       bottom edge of the frame. Now it is based on 325px height for weblead,
       and 100px for weblist */
 
-    if (!empty($_GET['iframeHeight'])) {
-        $height = $_GET['iframeHeight'];
-        unset($_GET['iframeHeight']);
+    if (isset ($iframeHeight)) {
+        $height = $iframeHeight;
     } else {
         $height = $type == 'weblist' ? 125 : 325;
     }
-    if (!empty($_GET['bs'])) {
-        $border = intval(preg_replace('/[^0-9]/', '', $_GET['bs']));
-    } else if (!empty($_GET['bc'])) {
+    if (isset ($bs)) {
+        $border = intval(preg_replace('/[^0-9]/', '', $bs));
+    } else if (isset ($bc)) {
         $border = 0;
     } else $border = 0;
     $padding = 36;
     $height = $height - $padding - (2 * $border);
 
     echo 'border: '. $border .'px solid ';
-    if (!empty($_GET['bc'])) echo $_GET['bc'];
+    if (isset ($bc)) echo addslashes ($bc);
     echo ";\n";
 
-    unset($_GET['bs']);
-    unset($_GET['bc']);
     ?>
 
     -moz-border-radius: 3px;
     -webkit-border-radius: 3px;
     border-radius: 3px;
-    padding-bottom: <?php echo $padding ."px;\n"?>
-    height: <?php echo $height ."px;\n"?>
+    padding-bottom: <?php echo addslashes ($padding) ."px;\n"?>
+    height: <?php echo addslashes ($height) ."px;\n"?>
 }
 body {
     <?php
-    if (!empty($_GET['fg'])) {
-        echo 'color: '. $_GET['fg'] .";\n";
+    if (isset ($fg)) {
+        echo 'color: '. addslashes ($fg) .";\n";
     }
-    unset($_GET['fg']);
-    if (!empty($_GET['bgc'])) echo 'background-color: '. $_GET['bgc'] .";\n";
-    unset($_GET['bgc']);
-    if (!empty($_GET['font'])) {
-        echo 'font-family: '. FontPickerInput::getFontCss($_GET['font']) .";\n";
+    if (isset ($bgc)) echo 'background-color: '. addslashes ($bgc) .";\n";
+    if (isset ($font)) {
+        echo 'font-family: '. addslashes (FontPickerInput::getFontCss($font)) .";\n";
     } else {
         echo "font-family: Arial, Helvetica, sans-serif;\n";
     }
-    unset($_GET['font']);
     ?>
     font-size:12px;
 }
@@ -228,8 +221,7 @@ input[type="text"] {
     border-radius: 2px;
     line-height: 1.5em;
 }
-br + input[type="text"],
-input[type="hidden"] + input[type="text"] {
+input[type="text"] {
     width: 100%;
 }
 #contact-header{
@@ -273,7 +265,6 @@ $form = $this->beginWidget('CActiveForm', array(
     'id'=>$type,
     'enableAjaxValidation'=>false,
     'htmlOptions'=>array(
-        'onSubmit'=> (($useDefaults) ? 'return validate();' : ''),
     ),
 ));
 
@@ -307,9 +298,9 @@ function renderFields ($fieldList, $type, $form, $model, $contactFields=null) {
             echo $form->error($model, $field['fieldName']);
 
             if($type === 'service' && in_array($field['fieldName'], $contactFields)){ ?>
-                <input type="text" name="Services[<?php echo $field['fieldName']; ?>]"
+                <input type="text" name="Services[<?php echo CHtml::encode ($field['fieldName']); ?>]"
                 value="<?php echo isset($_POST['Services'][$field['fieldName']]) ?
-                $_POST['Services'][$field['fieldName']] : ''; ?>" />
+                CHtml::encode ($_POST['Services'][$field['fieldName']]) : ''; ?>" />
             <?php
             } else {
                 
@@ -345,62 +336,15 @@ $this->endWidget();
 ?>
 
 <script>
-
-var defaultFields = <?php echo CJSON::encode ($fieldTypes); ?>;
-
-/*
-Sets input to empty string unless it contains the default value
-*/
-function clearText(field){
-    if (typeof field !== "undefined" && $(field).prop ('defaultValue') === $(field).val ())
-        $(field).val ("");
-}
-
-/*
-Add error styling if field input is invalid.
-Returns: false if field input is invalid, true otherwise
-*/
-function validateField(field) {
-    var input = $('#<?php echo $type; ?>').find (
-        '[name="<?php echo $modelName; ?>[' + field + ']"]');
-
-    if (!$(input).val () || // field is empty
-        $(input).val ().match (/^\s+$/) || // field contains only whitespace
-        (field == "email" && // invalid email format
-         $(input).val ().match(/[a-zA-Z0-9._%-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}/) == null)) {
-
-        // add error styling
-        $(input).css ({"border-color": "#c00"});
-        $(input).css ({"background-color": "#fee"});
-        return false;
-    } else {
-
-        // remove error styling
-        $(input).css ({"border-color": ""});
-        $(input).css ({"background-color": ""});
-        return true;
-    }
-}
-
-/*
-Clear and validate all default input fields
-*/
-function validate() {
-
-    clearText ($('#<?php echo $type; ?>').find (
-        '[name="<?php echo $modelName; ?>[backgroundInfo]"]'));
-
-    var valid = true;
-    for (var i in defaultFields) {
-        if (defaultFields[i] === null) continue;
-        if (!validateField(defaultFields[i])) {
-            valid = false;
-        }
-    }
-    return valid;
-}
+(function () {
+    // prevent duplicate submissions
+    $('form').submit (function () {
+        $(this).find ('#submit').attr ('disabled', 'disabled');
+    });
+}) ();
 
 <?php
+
 
 ?>
 </script>

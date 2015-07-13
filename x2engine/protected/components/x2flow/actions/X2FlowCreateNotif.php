@@ -93,7 +93,8 @@ class X2FlowCreateNotif extends X2FlowAction {
         if ($notif->save()) {
             return array (true, "");
         } else {
-            return array(false, array_shift($notif->getErrors()));
+            $errors = $notif->getErrors ();
+            return array(false, array_shift($errors));
         }
 
     }

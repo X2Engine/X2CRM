@@ -42,7 +42,7 @@ $this->actionMenu = $this->formatMenu(array(
 	array('label'=>Yii::t('module','View {X}',array('{X}'=>Modules::itemDisplayName())), 'url'=>array('view', 'id'=>$model->id)),
 	array('label'=>Yii::t('module','Edit {X}',array('{X}'=>Modules::itemDisplayName()))),
 	array('label'=>Yii::t('module','Delete {X}',array('{X}'=>Modules::itemDisplayName())), 'url'=>'#', 'linkOptions'=>array('submit'=>array('delete','id'=>$model->id),'confirm'=>Yii::t('app','Are you sure you want to delete this item?'))),
-));
+), array ('X2Model' => $model));
 ?>
 <div class="page-title"><h2><?php echo Yii::t('module','Update {X}',array('{X}'=>Modules::itemDisplayName())); ?> <?php echo $model->name; ?></h2></div>
 

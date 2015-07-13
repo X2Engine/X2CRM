@@ -133,8 +133,7 @@ class EventsChartProfileWidget extends ChartWidget {
             $widgetClass = get_called_class ();
             $chartData = $this->getInitialChartData ();
             $userNames = User::getNames ();
-            $socialSubtypes = json_decode (
-                Dropdowns::model()->findByPk(113)->options,true);
+            $socialSubtypes = Dropdowns::getSocialSubtypes ();
             $visibilityFilters = array (
                 '1'=>'Public',
                 '0'=>'Private',
@@ -188,8 +187,7 @@ class EventsChartProfileWidget extends ChartWidget {
                 parent::getViewFileParams (),
                 array (
                     'userNames' => User::getNames (),
-                    'socialSubtypes' => json_decode (
-			            Dropdowns::model()->findByPk(113)->options,true),
+                    'socialSubtypes' => Dropdowns::getSocialSubtypes (),
                     'visibilityFilters' => array (
                         '1'=>'Public',
                         '0'=>'Private',

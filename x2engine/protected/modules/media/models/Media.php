@@ -148,13 +148,9 @@ class Media extends X2Model {
 
         $criteria = new CDbCriteria;
         $username = Yii::app()->user->name;
-        $criteria->addCondition("uploadedBy='$username' OR private=0 OR private=null");
+        if (!Yii::app()->params->isAdmin)
+            $criteria->addCondition("uploadedBy='$username' OR private=0 OR private=null");
         $criteria->addCondition("associationType != 'theme'");
-        return $this->searchBase($criteria);
-    }
-
-    public function searchAdmin(){
-        $criteria = new CDbCriteria;
         return $this->searchBase($criteria);
     }
 

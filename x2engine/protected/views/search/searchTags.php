@@ -56,12 +56,12 @@ $this->widget('zii.widgets.grid.CGridView', array(
 		array(
 			'name' => Yii::t('app','Record'),
 			'type' => 'raw',
-			'value' => 'X2Model::getModelLink($data->itemId,$data->type)', 
+			'value' => 'X2Model::getModelLink($data["itemId"],$data["type"])', 
 		),
 		array(
 			'name' => Yii::t('app','Record Type'),
 			'type' => 'raw',
-			'value' => '$data->type', 
+			'value' => '$data["type"]', 
 		),
 	),
 ));

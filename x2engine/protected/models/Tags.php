@@ -72,14 +72,27 @@ class Tags extends CActiveRecord {
         // NOTE: you should only define rules for those attributes that
         // will receive user inputs.
         return array(
+            array ('tag', 'validateTag'),
             array('type, itemId, taggedBy, tag', 'required'),
             array('itemId, timestamp', 'numerical', 'integerOnly'=>true),
             array('type, taggedBy', 'length', 'max'=>50),
             array('tag, itemName', 'length', 'max'=>250),
+            array(
+                'tag', 
+                'application.extensions.unique-attributes-validator.UniqueAttributesValidator', 
+                'with'=>'tag,type,itemId'
+            ),
             // The following rule is used by search().
             // Please remove those attributes that should not be searched.
             array('id, type, itemId, taggedBy, tag, timestamp, itemName', 'safe', 'on'=>'search'),
         );
+    }
+
+    /**
+     * Normalizes tag format before all other forms of tag validation
+     */
+    public function validateTag ($attr) {
+        $this->$attr = self::normalizeTag ($this->$attr);
     }
 
     /**
@@ -97,16 +110,6 @@ class Tags extends CActiveRecord {
         );
     }
 
-    /**
-     * Strip out all instances of the delimeter in the tag
-     */
-    public function beforeSave() {
-        if(strpos($this->tag,self::DELIM) !== false) {
-            $this->tag = strtr($this->tag,array(self::DELIM => ''));
-        }
-        return true;
-    }
-    
     /*
      * Returns a list of all existing tags, without the # at the beginning
      */
@@ -124,10 +127,17 @@ class Tags extends CActiveRecord {
         return $tags;
     }
 
-    public static function getTagLinks($model,$id,$limit = 0) {
-    
+    /**
+     * Return a list of tag links associated with a specified model
+     * @param $model Model type, e.g., "Contacts"
+     * @param $id Model ID
+     * @param $limit Number of tags to return, or -1 to disable
+     * @return string HTML containing links to each tag
+     */
+    public static function getTagLinks($model,$id,$limit = -1) {
+        // Disable limit in CDbCriteria with a value less than 0
         if(!is_numeric($limit) || empty($limit))
-            $limit = null;
+            $limit = -1;
     
         $tags = Tags::model()->findAllByAttributes(
             array('type'=>$model,'itemId'=>$id),
@@ -137,9 +147,10 @@ class Tags extends CActiveRecord {
         
         $links = array();
         foreach($tags as &$tag) {
-            $links[] = CHtml::link(CHtml::encode($tag->tag),array('/search/search','term'=>CHtml::encode($tag->tag)));
+            $links[] = CHtml::link(
+                CHtml::encode($tag->tag),array('/search/search','term'=>CHtml::encode($tag->tag)));
         }
-        if(!empty($limit) && $tagCount > $limit)
+        if($limit !== -1 && $tagCount > $limit)
             $links[] = '...';
             
         return implode(' ',$links);
@@ -191,6 +202,9 @@ class Tags extends CActiveRecord {
 
     public static function normalizeTag ($tag, $suppressHash=false) {
         $tag = trim($tag);      
+        if (strpos ($tag, self::DELIM) !== false) {
+            $tag = strtr($tag,array(self::DELIM => ''));
+        }
         if(substr($tag,0,1) !== '#' && !$suppressHash) // make sure they have the hash
             $tag = '#'.$tag;
         if (substr ($tag, 0, 1) === '#' && $suppressHash) {

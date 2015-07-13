@@ -142,31 +142,6 @@ function removeChartWidget () {
     }*/
 };
 
-$.fn.hideWidget = function() {
-    $(this).each(function() {
-        var widget = $(this);
-
-        // slice of the "x2widget_" from the id to get widget name
-        var widgetName = $(this).attr('id').slice(9); 
-
-        // console.log ('widgetName = ' + widgetName);
-        $.post(yii.scriptUrl+'/site/hideWidget', {name: widgetName}, function(response) {
-            widget.slideUp(function() {
-                widget.remove();
-                if (widgetName === 'RecordViewChart') removeChartWidget ();
-                $('#x2-hidden-widgets-menu').replaceWith(response);
-        //        $('.x2-widget-menu-item').draggable({revert: 'invalid', helper:'clone', revertDuration:200, appendTo:'#x2-hidden-widgets-menu',iframeFix:true});
-                $('.x2-hidden-widgets-menu-item').click(function() {
-                    return handleWidgetMenuItemClick($(this));
-                });
-                $('.x2-hidden-widgets-menu-item.widget-right').click(function() {
-                    return handleWidgetRightMenuItemClick($(this));
-                });
-            });
-        });
-    });
-};
-
 // adds a widget to the right side widget bar
 function handleWidgetRightMenuItemClick(menuItem) {
     $.post(yii.scriptUrl+'/site/showWidget', {
@@ -192,7 +167,10 @@ $.fn.hideWidgetRight = function() {
         var widgetName = $(this).attr('id').slice(7); 
         $.post(
             yii.scriptUrl+'/site/hideWidget', 
-            {name: widgetName}, 
+            {
+                name: widgetName,
+                position: 'right'
+            }, 
             function(response) {
 
                 widget.slideUp(function() {

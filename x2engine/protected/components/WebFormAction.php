@@ -45,6 +45,7 @@ class WebFormAction extends CAction {
         $_GET = array_intersect_key($_GET, array_flip($whitelist));
         //restrict param values, alphanumeric, # for color vals, comma for tag list, . for decimals
         $_GET = preg_replace('/[^a-zA-Z0-9#,.]/', '', $_GET);
+        return $_GET;
     }
 
     private static function addTags ($model) {
@@ -111,9 +112,8 @@ class WebFormAction extends CAction {
 
             if (empty ($model->visibility)) $model->visibility = 1;
 
-            $model->validate ();
+            $model->validate (null, false);
             if(!$model->hasErrors()){
-
                 $duplicates = array ();
                 if(!empty($model->email)){
 
@@ -265,11 +265,14 @@ class WebFormAction extends CAction {
             }
         } 
 
-        self::sanitizeGetParams ();
+        $sanitizedGetParams = self::sanitizeGetParams ();
 
         
             $this->controller->renderPartial(
-                'application.components.views.webForm', array('type' => 'weblead'));
+                'application.components.views.webForm', 
+                array_merge (array(
+                    'type' => 'weblead'
+                ), $sanitizedGetParams));
         
 
     }
@@ -493,12 +496,14 @@ class WebFormAction extends CAction {
             }
         }
 
-        self::sanitizeGetParams ();
+        $sanitizedGetParams = self::sanitizeGetParams ();
 
         
             $this->controller->renderPartial (
                 'application.components.views.webForm',
-                array('model' => $model, 'type' => 'service'));
+                array_merge (array(
+                    'model' => $model, 'type' => 'service'
+                ), $sanitizedGetParams));
         
     }
 

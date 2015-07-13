@@ -49,10 +49,18 @@ class X2FlowRecordListAdd extends X2FlowAction {
 			'info' => Yii::t('studio',$this->info),
 			'modelRequired' => 'Contacts',
 			'options' => array(
-				array('name'=>'listId','label'=>Yii::t('studio','List'),'type'=>'link','linkType'=>'X2List','linkSource'=>Yii::app()->controller->createUrl(
-					CActiveRecord::model('X2List')->autoCompleteSource
-				)),
-			));
+				array(
+                    'name'=>'listId',
+                    'label'=>Yii::t('studio', 'List'),
+                    'type'=>'link',
+                    'linkType'=>'X2List',
+                    'linkSource'=>Yii::app()->controller->createUrl(
+					    CActiveRecord::model('X2List')->autoCompleteSource, array (
+                            'static' => 1
+                        )
+                    )
+				)
+            ));
 	}
 
 	public function execute(&$params) {
@@ -63,6 +71,7 @@ class X2FlowRecordListAdd extends X2FlowAction {
             $list = CActiveRecord::model('X2List')->findByAttributes(
                 array('name'=>$listIdentifier));
         }
+
 		if($list !== null && $list->modelName === get_class($params['model'])) {
 			if ($list->addIds($params['model']->id)) {
                 return array (true, "");

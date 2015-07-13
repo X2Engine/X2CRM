@@ -49,7 +49,11 @@ class X2FlowEmail extends BaseX2FlowEmail {
         $parentRules['options'] = array_merge (
             $parentRules['options'],
             array (
-                array('name'=>'to','label'=>Yii::t('studio','To:'),'type'=>'email'),
+                array(
+                    'name'=>'to',
+                    'label'=>Yii::t( 'studio','To:'),
+                    'type'=>'email'
+                ),
                 array(
                     'name' => 'template',
                     'label' => Yii::t('studio', 'Template'),
@@ -89,6 +93,10 @@ class X2FlowEmail extends BaseX2FlowEmail {
 
 	public function execute(&$params) {
 		$eml = new InlineEmail;
+
+        // make subject optional in order to support legacy flows  
+        $eml->requireSubjectOnCustom = false;
+
 		$options = &$this->config['options'];
 		$eml->to = $this->parseOption('to', $params);
         
@@ -115,13 +123,18 @@ class X2FlowEmail extends BaseX2FlowEmail {
 		if(isset($options['body']['value']) && !empty($options['body']['value'])) {	
             $eml->scenario = 'custom';
 			$eml->message = InlineEmail::emptyBody($this->parseOption('body',$params));
-			$eml->prepareBody();
+			$prepared = $eml->prepareBody();
 			// $eml->insertSignature(array('<br /><br /><span style="font-family:Arial,Helvetica,sans-serif; font-size:0.8em">','</span>'));
 		} elseif(!empty($options['template']['value'])) {
 			$eml->scenario = 'template';
 			$eml->template = $this->parseOption('template',$params);
-			$eml->prepareBody();
+			$prepared = $eml->prepareBody();
 		}
+
+        if (!$prepared) { // InlineEmail failed validation
+            $errors = $eml->getErrors ();
+            return array (false, array_shift ($errors));
+        }
 
         list ($success, $message) = $this->checkDoNotEmailFields ($eml);
         if (!$success) {

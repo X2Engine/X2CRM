@@ -692,7 +692,7 @@ class User extends CActiveRecord {
         return $this->_fullName;
     }
 
-    public function getDisplayName ($plural=true) {
+    public function getDisplayName ($plural=true, $ofModule=true) {
         return Yii::t('users', '{user}', array(
             '{user}' => Modules::displayName($plural, 'Users'),
         ));

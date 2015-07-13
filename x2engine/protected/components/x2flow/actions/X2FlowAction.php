@@ -118,7 +118,7 @@ abstract class X2FlowAction extends X2FlowItem {
 
                         if(is_string($value) && isset($params['model'])){
                             $value = X2FlowFormatter::replaceVariables(
-                                $value, $params['model'], $type);
+                                $value, $params, $type);
                         }
                     }
                 }

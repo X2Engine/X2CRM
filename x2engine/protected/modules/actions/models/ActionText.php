@@ -66,13 +66,29 @@ class ActionText extends CActiveRecord
         );
 	}
 
+    public function getField ($attr) {
+        if ($attr === 'text') {
+            $action = Actions::model ();
+            $action->actionDescription = $this->$attr;
+            return $action->getField ('actionDescription');
+        }
+    }
+
+    public function renderAttribute ($attr, $makeLinks=true, $textOnly=true, $encode=true) {
+        if ($attr === 'text') {
+            $action = Actions::model ();
+            $action->actionDescription = $this->$attr;
+            return $action->renderAttribute ('actionDescription', $makeLinks, $textOnly, $encode);
+        }
+    }
+
 	/**
 	 * @return array customized attribute labels (name=>label)
 	 */
 	public function attributeLabels() {
 		return array(
 			'actionId' => Yii::t('actions','Action ID'),
-			'text' => Yii::t('actions','Action Text'),
+			'text' => Yii::t('actions','Description'),
 		);
 	}
 

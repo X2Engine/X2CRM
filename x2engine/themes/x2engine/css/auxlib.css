@@ -32,13 +32,13 @@
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2Engine".
  *****************************************************************************************/
-/* line 25, ../../../compass/themes/x2engine/css/auxlib.scss */
+/* line 36, ../../../compass/themes/x2engine/css/auxlib.scss */
 .auxlib-error-box-msg {
   color: red;
   margin-left: 4px;
 }
 
-/* line 30, ../../../compass/themes/x2engine/css/auxlib.scss */
+/* line 41, ../../../compass/themes/x2engine/css/auxlib.scss */
 .feedback-container, .auxlib-error-msg-container {
   margin-top: 0px;
   text-align: left;
@@ -47,7 +47,7 @@
   margin-left: 4px;
 }
 
-/* line 38, ../../../compass/themes/x2engine/css/auxlib.scss */
+/* line 49, ../../../compass/themes/x2engine/css/auxlib.scss */
 .feedback-container span, .auxlib-error-msg-container {
   margin-bottom: 0;
   padding: 0 0 0 0;

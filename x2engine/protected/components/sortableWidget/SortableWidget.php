@@ -279,7 +279,7 @@ abstract class SortableWidget extends X2Widget {
 
                 foreach ($customModules as $module) {
                     $modelName = ucfirst ($module->name);
-                    if (class_exists ($modelName)) {
+                    if ($module->name !== 'document' && class_exists ($modelName)) {
                         // prefix widget class name with custom module model name and a delimiter
                         $cache[$widgetType][$modelName.'::TemplatesGridViewProfileWidget'] =
                             Yii::t(

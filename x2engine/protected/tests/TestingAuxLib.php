@@ -216,9 +216,7 @@ class TestingAuxLib  {
     public static function restoreX2AuthManager () {
         if (isset (self::$_oldAuthManagerComponent)) {
             Yii::app()->setComponent ('authManager', self::$_oldAuthManagerComponent);
-        } else {
-            throw new CException ('X2AuthManager component could not be restored'); 
-        }
+        } 
     }
 
     private static $_oldUserComponent;
@@ -236,9 +234,7 @@ class TestingAuxLib  {
     public static function restoreX2WebUser () {
         if (isset (self::$_oldUserComponent)) {
             Yii::app()->setComponent ('user', self::$_oldUserComponent);
-        } else {
-            throw new CException ('X2WebUser component could not be restored'); 
-        }
+        } 
     }
 
 }

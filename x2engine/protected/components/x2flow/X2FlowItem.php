@@ -154,10 +154,25 @@ abstract class X2FlowItem extends CComponent {
                         list ($success, $message) = $this->validateDropdown ($option, $optRule);
                         if (!$success) return array (false, $message);
                         break;
+                    case 'email':
+                        list ($success, $message) = $this->validateEmail ($option, $optRule);
+                        if (!$success) return array (false, $message);
+                        break;
                 }
             }
         }
 
+        return array (true, '');
+    }
+
+    public function validateEmail ($option, $optRule) {
+        if (isset ($option['value'])) {
+            try {
+                EmailDeliveryBehavior::addressHeaderToArray ($option['value']);
+            } catch (CException $e) {
+                return array (false, $e->getMessage ());
+            }
+        }
         return array (true, '');
     }
 

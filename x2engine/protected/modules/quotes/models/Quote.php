@@ -185,7 +185,12 @@ class Quote extends X2Model {
 	 * @return array Array of QuoteProduct instances representing the item set after changes.
 	 * @throws CException
 	 */
-	public function setLineItems(array $items, $save = false) {
+	public function setLineItems(array $items, $save = false, $skipProcessing=false) {
+        if ($skipProcessing) {
+            $this->_lineItems = $items;
+            return;
+        }
+
 		$this->_deleteLineItems = array();
 		if (count($items) === 0) {
 			QuoteProduct::model()->deleteAllByAttributes(array('quoteId' => $this->id));
@@ -209,10 +214,11 @@ class Quote extends X2Model {
 		$itemSet = array();
 		$existingItems = array();
 		foreach ($this->lineItems as $item) {
-            // Save the line item if it is new, eg, during duplication.
-            // We will be needing the ID
-            if ($item->isNewRecord)
+            if ($item->isNewRecord) {
+                // this line might not be needed anymore. Used to be used for record duplication,
+                // but now now skipProcessing is used instead, bypassing this line.
                 $item->save();
+            }
 			$existingItems[$item->id] = $item;
 			$existingItemIds[] = (int) $item->id;
 		}
@@ -274,9 +280,9 @@ class Quote extends X2Model {
 
 		foreach($this->_lineItems as $lineItem) {
 			$lineItem->quoteId = $this->id;
-                        $product = X2Model::model('Products')->findByAttributes(array('name'=>$lineItem->name));
-                        if (isset($product))
-                            $lineItem->productId = $product->id;
+            $product = X2Model::model('Products')->findByAttributes(array('name'=>$lineItem->name));
+            if (isset($product))
+                $lineItem->productId = $product->id;
             if(empty($lineItem->currency))
 				$lineItem->currency = $defaultCurrency;
 			if($lineItem->isPercentAdjustment) {

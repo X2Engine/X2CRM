@@ -217,7 +217,34 @@ class EmailDeliveryBehavior extends CBehavior {
             return $this->status = $this->getDebugStatus();
         }
 
-        $phpMail = $this->mailer;
+        try {
+            $phpMail = $this->mailer;
+        }catch (phpmailerException $e){
+            // escalate error to force campaigns to halt
+            $escalated = new phpmailerException (
+                $e->getMessage (), PHPMailer::STOP_CRITICAL);
+            $this->status['code'] = '500';
+            $this->status['exception'] = $escalated;
+            $this->status['message'] = $e->getMessage ();
+            return $this->status;
+        }
+
+        // attempt smpt connect before attempting to send so that we can escalate exception 
+        // severity if connection fails. Ideally we would be able to detect exactly the type of
+        // exception that PHPMailer throws but unfortunately the only way at the time of this
+        // writing would be to use its translated exception messages (brittle).
+        if ($this->credentials) {
+            try {
+                $phpMail->smtpConnect ();
+            } catch (phpmailerException $e) {
+                $escalated = new phpmailerException (
+                    $e->getMessage (), PHPMailer::STOP_CRITICAL);
+                $this->status['code'] = '500';
+                $this->status['exception'] = $escalated;
+                $this->status['message'] = $phpMail->ErrorInfo." ".$e->getFile()." L".$e->getLine();
+                return $this->status;
+            }
+        }
 
         try{
             $this->addEmailAddresses($phpMail, $addresses);
@@ -360,7 +387,7 @@ class EmailDeliveryBehavior extends CBehavior {
     public function getMailer(){
         if(!isset($this->_mailer)){
             require_once(
-                realpath(Yii::app()->basePath.'/components/phpMailer/class.phpmailer.php'));
+                realpath(Yii::app()->basePath.'/components/phpMailer/PHPMailerAutoload.php'));
 
             // the true param means it will throw exceptions on errors, which we need to catch
             $phpMail = new PHPMailer(true); 
@@ -467,8 +494,8 @@ class EmailDeliveryBehavior extends CBehavior {
     }
 
     public function testUserCredentials($email, $password, $server, $port, $security) {
-        require_once(realpath(Yii::app()->basePath.'/components/phpMailer/class.phpmailer.php'));
-        require_once(realpath(Yii::app()->basePath.'/components/phpMailer/class.smtp.php'));
+        require_once(
+            realpath(Yii::app()->basePath.'/components/phpMailer/PHPMailerAutoload.php'));
         $phpMail = new PHPMailer(true);
 
         $phpMail->isSMTP();

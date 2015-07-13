@@ -309,15 +309,8 @@ class ServicesController extends x2base {
         $this->render('index', array('model' => $model));
     }
 
-    public function actionGetItems(){
-        // We need to select the id both as 'id' and 'value' in order to correctly populate the association form.
-        $sql = 'SELECT id, id as value FROM x2_services WHERE id LIKE :qterm ORDER BY id ASC';
-        $command = Yii::app()->db->createCommand($sql);
-        $qterm = $_GET['term'].'%';
-        $command->bindParam(":qterm", $qterm, PDO::PARAM_STR);
-        $result = $command->queryAll();
-        echo CJSON::encode($result);
-        exit;
+    public function actionGetItems($term){
+        X2LinkableBehavior::getItems ($term, 'id', 'id');
     }
 
     /**

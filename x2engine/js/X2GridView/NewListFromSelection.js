@@ -90,7 +90,7 @@ NewListFromSelection.prototype.getExecuteParams = function () {
  */
 NewListFromSelection.prototype.convertToAddToList = function (listId, dialogState) {
     var that = this;
-    var addToList = this.massActionsManager.massActionObjects['addToList'];
+    var addToList = this.massActionsManager.massActionObjects['MassAddToList'];
     var newListName = this.dialogElem$.find ('.new-list-name');
     var listName = $(newListName).val ();
     addToList.addListOption (listId, listName);

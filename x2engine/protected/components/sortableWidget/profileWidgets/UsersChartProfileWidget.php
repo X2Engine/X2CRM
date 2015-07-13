@@ -136,8 +136,7 @@ class UsersChartProfileWidget extends ChartWidget {
             $chartData = $this->getInitialChartData ();
             $userNames = User::getNames ();
             $eventTypes = array ('all'=>Yii::t('app', 'All Events')) + Events::$eventLabels;
-            $socialSubtypes = json_decode (
-                Dropdowns::model()->findByPk(113)->options,true);
+            $socialSubtypes = Dropdowns::getSocialSubtypes ();
             $visibilityFilters = array (
                 '1'=>'Public',
                 '0'=>'Private',
@@ -198,8 +197,7 @@ class UsersChartProfileWidget extends ChartWidget {
                         $this->chartType),
                     'eventTypes' =>
                         array ('all'=>Yii::t('app', 'All Events')) + Events::$eventLabels,
-                    'socialSubtypes' => json_decode (
-			            Dropdowns::model()->findByPk(113)->options,true),
+                    'socialSubtypes' => Dropdowns::getSocialSubtypes (),
                     'visibilityFilters' => array (
                         '1'=>'Public',
                         '0'=>'Private',

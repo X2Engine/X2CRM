@@ -1,3 +1,29 @@
+# 5.0.9 #
+7/13/2015
+* General Changelog / Developer Notes:
+  * Important security updates
+  * "Post to Activity Feed" flow action changes:
+    * New "User" option determines the owner of the feed to which the post will be added. This allows for the creation of social posts.
+    * New post "Visibility" option
+  * Fixed bug which prevented  "My Actions" widget from remaining hidden after clicking the close button
+  * Fixed bug which prevented products and quotes details from displaying in the Inline Relationships Widget
+  * Web lead form submit button now disabled after form submission, preventing duplicate submissions
+  * SMTP authentication failure now halts campaign
+  * Invalid email addresses in X2Flow action menus now trigger validation warnings upon saving or triggering flows
+  * Fixed Email module bug which caused forwarded email attachments to be corrupted
+  * Fixed Reports bug which prevented column sort order from being saved
+  * Fixed Reports bug which caused an error to occur upon report generation if the column "Action Description" of the Actions module was selected
+  * Date function attributes and attributes of related records now display properly in emailed, exported, and printed reports
+  * Fixed custom module bug which prevented users with "Assigned Only" access from updating and deleting custom module records to which they were assigned
+  * The "Transactional View" has been renamed "List View"
+  * Updated PHPMailer to version 5.2.10
+* Tracked Bug Fixes:  
+  * [2458](http://x2software.com/index.php/bugReports/2458): Undefined offset: 0  
+  * [2611](http://x2software.com/index.php/bugReports/2611): Trying to get property of non-object  
+  * [2653](http://x2software.com/index.php/bugReports/2653): Trying to get property of non-object  
+  * [2656](http://x2software.com/index.php/bugReports/2656): Undefined offset: 0  
+  * [2672](http://x2software.com/index.php/bugReports/2672): Undefined offset: 2  
+
 # 5.0.8 #
 6/2/2015
 

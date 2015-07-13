@@ -1593,12 +1593,12 @@ class SiteController extends x2base {
                 return;
             }
             $model = X2Model::model($_POST['Type'])->findByPk($_POST['Id']);
-            echo $model->addTags($_POST['Tag']);
-            exit;
-            if ($model !== null && $model->addTags($_POST['Tag'])) {
-                echo 'true';
-                return;
+
+            if ($model === null || !Yii::app()->controller->checkPermissions ($model, 'view')) {
+                $this->denied ();
             }
+            echo $model->addTags($_POST['Tag']);
+            Yii::app()->end ();
         }
         echo 'false';
     }
@@ -1946,35 +1946,19 @@ class SiteController extends x2base {
     }
 
     /**
-     *  Remove a widget from the page and put it in the widgets menu
+     *  Remove a right widget from the page and put it in the hidden widgets menu
      */
     public function actionHideWidget() {
-        if (isset($_POST['name'])) {
+        if (isset($_POST['name']) && isset ($_POST['position'])) {
             $name = $_POST['name'];
+            $position = $_POST['position'];
 
             $layout = Yii::app()->params->profile->getLayout();
+            if (isset ($layout[$position][$name])) {
 
-            // the widget could be in any of the blocks in the page, so check all of them
-            foreach ($layout as $b => &$block) {
-                if (isset($block[$name])) {
-                    if ($b == 'right') {
-                        $layout['hiddenRight'][$name] = $block[$name];
-                    } else {
-                        $layout['hidden'][$name] = $block[$name];
-                    }
-                    unset($block[$name]);
-                    Yii::app()->params->profile->saveLayout($layout);
-                    break;
-                }
-            }
-
-            // make a list of hidden widgets, using <li>, to send back to the browser
-            $list = "";
-            foreach ($layout['hidden'] as $name => $widget) {
-                $list .= "<li><span class=\"x2-widget-menu-item\" id=\"$name\">{$widget['title']}</span></li>";
-            }
-            foreach ($layout['hiddenRight'] as $name => $widget) {
-                $list .= "<li><span class=\"x2-widget-menu-item right\" id=\"$name\">{$widget['title']}</span></li>";
+                $layout['hiddenRight'][$name] = $layout[$position][$name];
+                unset ($layout[$position][$name]);
+                Yii::app()->params->profile->saveLayout($layout);
             }
 
             echo Yii::app()->params->profile->getWidgetMenu();
@@ -2010,24 +1994,6 @@ class SiteController extends x2base {
                         //    Yii::app()->clientScript->scriptMap['*.js'] = false;
                         //    $this->renderPartial('application.components.views.centerWidget', array('widget'=>$widget, 'name'=>$name, 'modelType'=>$modelType, 'modelId'=>$modelId), false, true);
 
-                        break;
-                    }
-                }
-            } else {
-
-                foreach ($layout['hidden'] as $key => $widget) {
-                    if ($key == $name) {
-                        $widget['minimize'] = false; // un-minimize widgets when we show them
-                        $layout[$block][$key] = $widget;
-                        unset($layout['hidden'][$key]);
-                        Yii::app()->params->profile->saveLayout($layout);
-                        Yii::app()->clientScript->scriptMap['*.js'] = false;
-                        $this->renderPartial('application.components.views.centerWidget', array(
-                            'widget' => $widget,
-                            'name' => $name,
-                            'modelType' => $modelType,
-                            'moduleName' => $moduleName,
-                            'modelId' => $modelId), false, true);
                         break;
                     }
                 }

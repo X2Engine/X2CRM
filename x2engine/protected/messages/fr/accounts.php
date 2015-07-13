@@ -2,6 +2,7 @@
 return array (
 // Account Attributes
 'Revenue'=>'Revenu',
+// test account comment
 'Symbol'=>'Symbole',
 'Employees'=>'Employés',
 'Additional Information'=>'Informations Complémentaires',
@@ -32,7 +33,7 @@ return array (
 'Create a new Account associated with this Account.'=>'Créer un nouveau compte associé à ce compte.',
 'Accounts Report'=>'Rapport des comptes',
 'Campaign Form'=>'Formulaire de campagne',
-'This form will allow you to generate a campaign to mail related Contacts of the Accounts displayed in the report below. Select "Primary Contacts" to only email Contacts which are set as the Primary Contact for an Account. Select "All" to email all related Contacts on each Account.'=>'Ce formulaire vous permet de générer une campagne visant à envoyer Contacts liés à des comptes affichés dans le rapport ci-dessous. Sélectionnez &quot;Contacts primaires» aux seuls contacts e-mail qui figurent comme premier contact pour un compte. Sélectionnez &quot;All&quot; à l&#39;email tous les contacts associés à chaque compte.',
+'This form will allow you to generate a campaign to mail related Contacts of the Accounts displayed in the report below. Select "Primary Contacts" to only email Contacts which are set as the Primary Contact for an Account. Select "All" to email all related Contacts on each Account.'=>'Ce formulaire vous permet de générer une campagne visant à envoyer Contacts liés à des comptes affichés dans le rapport ci-dessous. Sélectionnez "Contacts primaires» aux seuls contacts e-mail qui figurent comme premier contact pour un compte. Sélectionnez "All" à l&#39;email tous les contacts associés à chaque compte.',
 'Primary Contact'=>'Contact primaire',
 'Import Accounts'=>'Comptes importation',
 'Export Accounts'=>'Comptes à l&#39;exportation',

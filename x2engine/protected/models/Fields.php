@@ -70,6 +70,8 @@ class Fields extends CActiveRecord {
 
     private $_myTableName;
 
+    private $_typeChanged = false;
+
     /**
      * PHP types corresponding to field types in X2Engine.
      *
@@ -107,6 +109,13 @@ class Fields extends CActiveRecord {
                 ),
                 false);
         }   
+    }
+
+    public function setAttributes ($values, $safeOnly=true) {
+        if (isset ($values['type']) && $this->type !== $values['type']) {
+            $this->_typeChanged = true;
+        }
+        return parent::setAttributes ($values, $safeOnly);
     }
 
     /**
@@ -161,6 +170,15 @@ class Fields extends CActiveRecord {
                     ':default' => $this->defaultValue
                 )
             )->queryScalar();
+    }
+
+    public static function getLinkTypes () {
+        return Yii::app()->db->createCommand ("
+            SELECT distinct(modelName)
+            FROM x2_fields
+            WHERE fieldName='nameId'
+            ORDER by modelName ASC
+        ")->queryColumn ();
     }
 
     /**
@@ -594,7 +612,7 @@ class Fields extends CActiveRecord {
      */
     public function beforeSave () {
         $valid = parent::beforeSave ();
-        if ($valid) {
+        if ($valid && $this->_typeChanged) {
             $table = Yii::app()->db->schema->tables[$this->myTableName];
             $existing = array_key_exists($this->fieldName, $table->columns) && 
                 $table->columns[$this->fieldName] instanceof CDbColumnSchema;

@@ -63,10 +63,10 @@ class ImportExportBehavior extends CBehavior {
      */
     public function safePath($filename = 'data.csv'){
         return implode(DIRECTORY_SEPARATOR, array(
-                    Yii::app()->basePath,
-                    'data',
-                    $filename
-                ));
+            Yii::app()->basePath,
+            'data',
+            $filename
+        ));
     }
 
 }

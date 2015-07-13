@@ -2,6 +2,7 @@
 return array (
 // Account Attributes
 'Revenue'=>'收入',
+// test account comment
 'Symbol'=>'符号',
 'Employees'=>'雇员',
 'Additional Information'=>'其他信息',

@@ -107,5 +107,42 @@ Have a nice day!</body>
         'sendAs' => '-1',
     ),
 
+    'unsubToken' => array(
+        'id' => '6',
+        'masterId' => NULL,
+        'name' => 'Test Email Campaign',
+        'nameId' => 'Test Email Campaign_6',
+        'assignedTo' => 'admin',
+        'listId' => 'Campaign Testing_16',
+        'active' => '1',
+        'description' => '',
+        'type' => 'Email',
+        'cost' => NULL,
+        'template' => '0',
+        'subject' => 'This is a test',
+        'content' => '<html>
+<head>
+        <title></title>
+</head>
+<body>Hello {name},<br />
+<br />
+This is a test.<br />
+<br />
+Have a nice day!
+{_unsub}
+</body>
+</html>
+',
+        'createdBy' => 'admin',
+        'complete' => '0',
+        'visibility' => '1',
+        'createDate' => '1387560038',
+        'launchDate' => '1387560057',
+        'lastUpdated' => '1387560063',
+        'lastActivity' => '1387560063',
+        'updatedBy' => 'admin',
+        'sendAs' => '-1',
+    ),
+
 );
 ?>

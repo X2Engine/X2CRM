@@ -54,9 +54,11 @@ class X2FlowRecordListRemove extends X2FlowAction {
                     'label'=>Yii::t('studio','List'),
                     'type'=>'link',
                     'linkType'=>'X2List',
-                    'linkSource'=>Yii::app()->createUrl(
-					    CActiveRecord::model('X2List')->autoCompleteSource
-				    )
+                    'linkSource'=>Yii::app()->controller->createUrl(
+					    CActiveRecord::model('X2List')->autoCompleteSource, array (
+                            'static' => 1
+                        )
+                    )
                 ),
 			));
 	}

@@ -153,6 +153,12 @@ class InlineEmail extends CFormModel {
     public $preview = false;
     public $stageEmail = false;
 
+    /**
+     * @var bool $requireSubjectOnCustom Allows subject requirement to be bypassed.   
+     * TODO: remove this once scenario code is refactored
+     */
+    public $requireSubjectOnCustom = true; 
+
 
      
 
@@ -212,8 +218,8 @@ class InlineEmail extends CFormModel {
      * @return array
      */
     public function rules(){
-        return array(
-            array('to, subject', 'required', 'on' => 'custom'),
+        $rules = array(
+            array('to', 'required', 'on' => 'custom'),
             // array('modelName,modelId', 'required', 'on' => 'template'),
             array('message', 'required', 'on' => 'custom'),
             array('to,cc,bcc', 'parseMailingList'),
@@ -221,6 +227,10 @@ class InlineEmail extends CFormModel {
             array('to, cc, credId, bcc, message, template, modelId, modelName, subject', 'safe'),
              
         );
+        if ($this->requireSubjectOnCustom) {
+            $rules[] = array('subject', 'required', 'on' => 'custom');
+        }
+        return $rules;
     }
 
     public function relations () {

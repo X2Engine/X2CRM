@@ -58,8 +58,8 @@ VALUES
 ('bg','AnaNuevo.jpg'),
 ('bg','DavenportCA.jpg'),
 ('bg','WaddellBeach.jpg'),
-('bg','Mushrooms.jpg');
-('bg','pigeon_point.jpg'),
+('bg','Mushrooms.jpg'),
+('bg','pigeon_point.jpg');
 /*&*/
 INSERT INTO x2_media
 (id, associationType, fileName)

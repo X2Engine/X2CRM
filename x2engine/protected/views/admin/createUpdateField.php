@@ -55,9 +55,13 @@
         <em><?php echo Yii::t('app', 'Fields with <span class="required">*</span> are required.'); ?></em><hr>
         <?php if($new){ ?>
             <div class="row">
-                <?php echo $form->labelEx($model, 'modelName'); ?>
-                <?php echo $form->dropDownList($model, 'modelName', X2Model::getModelNames()); ?>
-                <?php echo $form->error($model, 'modelName'); ?>
+                <?php 
+                $modelNames = X2Model::getModelNames();
+                echo $form->labelEx($model, 'modelName'); 
+                echo $form->dropDownList(
+                    $model, 'modelName', $modelNames);
+                echo $form->error($model, 'modelName'); 
+                ?>
             </div>
 
             <div class="row">
@@ -197,17 +201,17 @@
                         ));
                         break;
                     case "link":
-                        $query = Yii::app()->db->createCommand()
-                                ->select('modelName')
-                                ->from('x2_fields')
-                                ->group('modelName')
-                                ->queryAll();
-                        $arr = array();
-                        foreach($query as $array){
-                            if($array['modelName'] != 'Calendar')
-                                $arr[$array['modelName']] = $array['modelName'];
+                        $linkTypes = Fields::getLinkTypes ();
+                        $options = array ();
+                        foreach ($linkTypes as $type) {
+                            $options[$type] = X2Model::model ($type)->getDisplayName (true, false);
                         }
-                        echo CHtml::activeDropDownList($model, 'linkType', $arr);
+                        asort ($options);
+                        echo CHtml::activeDropdownList(
+                            $model, 
+                            'linkType', 
+                            $options
+                        );
                         break;
                     case "custom":
                         ?><div class="row"><div class="cell"><?php

@@ -188,16 +188,31 @@ class X2LinkableBehavior extends CActiveRecordBehavior {
      * Get autocomplete options 
      * @param string $term
      */
-    public static function getItems($term) {
-        $model = X2Model::model(Yii::app()->controller->modelClass);
+    public static function getItems($term, $valueAttr='name', $nameAttr='id', $modelClass=null) {
+        if (!$modelClass)
+            $modelClass = Yii::app()->controller->modelClass;
+        $model = X2Model::model($modelClass);
+
         if (isset($model)) {
+            $modelClass::checkThrowAttrError (array ($valueAttr, $nameAttr));
             $tableName = $model->tableName();
-            $sql = 'SELECT id, name as value 
-                 FROM ' . $tableName . ' WHERE name LIKE :qterm ORDER BY name ASC';
-            $command = Yii::app()->db->createCommand($sql);
             $qterm = $term . '%';
-            $command->bindParam(":qterm", $qterm, PDO::PARAM_STR);
-            $result = $command->queryAll();
+            $params = array (
+                ':qterm' => $qterm,
+            );
+            $sql = "
+                SELECT $nameAttr as id, $valueAttr as value 
+                FROM " . $tableName . " as t
+                WHERE $valueAttr LIKE :qterm";
+            if ($model->asa ('permissions')) {
+                list ($accessCond, $permissionsParams) = $model->getAccessSQLCondition ();
+                $sql .= ' AND '.$accessCond;
+                $params = array_merge ($params, $permissionsParams);
+            }
+                
+            $sql .= "ORDER BY $valueAttr ASC";
+            $command = Yii::app()->db->createCommand($sql);
+            $result = $command->queryAll(true, $params);
             echo CJSON::encode($result);
         }
         Yii::app()->end();
@@ -207,8 +222,8 @@ class X2LinkableBehavior extends CActiveRecordBehavior {
      * Improved version of getItems which enables use of empty search string, pagination, and
      * configurable option values/names.
      * @param string $prefix name prefix of items to retrieve
-     * @param int $page page number of results to retrieve
-     * @param int $limit max number of results to retrieve
+     * @param int $page page number of results to retrieve (ignored if limit is -1)
+     * @param int $limit max number of results to retrieve (-1 to disable limit)
      * @param string|array $valueAttr attribute(s) used to popuplate the option values. If an 
      *  array is passed, value will composed of values of each of the attributes specified, joined
      *  by commas
@@ -229,16 +244,25 @@ class X2LinkableBehavior extends CActiveRecordBehavior {
         if ($prefix !== '') {
             $params[':prefix'] = $prefix . '%';
         }
-        $offset = abs ((int) $offset);
-        $limit = abs ((int) $limit);
+        if ($limit !== -1) {
+            $offset = abs ((int) $offset);
+            $limit = abs ((int) $limit);
+            $limitClause = "LIMIT $offset, $limit";
+        } 
+
+        if ($model->asa ('permissions')) {
+            list ($accessCond, $permissionsParams) = $model->getAccessSQLCondition ();
+            $params = array_merge ($params, $permissionsParams);
+        }
+
         $command = Yii::app()->db->createCommand ("
             SELECT " . implode (',', $valueAttr) . ", $nameAttr as __name
-            FROM $table
+            FROM $table as t
             WHERE " . ($prefix === '' ? 
                '1=1' : ($nameAttr . ' LIKE :prefix')
-            ) . "
+            ) . (isset ($accessCond) ? " AND $accessCond" : '') . "
             ORDER BY __name
-            LIMIT $offset, $limit
+            ". (isset ($limitClause) ? $limitClause : '') ."
         ");
         $rows = $command->queryAll (true, $params);
 

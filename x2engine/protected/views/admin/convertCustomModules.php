@@ -39,6 +39,7 @@
     <?php
     if(isset($status) && !empty($status)){
         echo Yii::t('admin', 'Status of Module Conversion')."<br><br>";
+        $hasError = false;
         foreach($status as $module => $data){
             if(empty($data['error'])){
                 echo "<div style='color:green'>";
@@ -52,6 +53,7 @@
                 echo "</ul>";
                 echo "</div>";
             }else{
+                $hasError = true;
                 echo "<div style='color:red'>";
                 echo Yii::t('admin', "Status for: {title}", array(
                     '{title}' => '<b>'.$data['title'].'</b>'
@@ -62,7 +64,7 @@
                 echo "</div>";
             }
         }
-        echo Yii::t('admin', 'All module conversions complete.');
+        if (!$hasError) echo Yii::t('admin', 'All module conversions complete.');
     }else{
         ?>
         <?php echo Yii::t('admin', 'This tool is designed to convert all old custom modules to the latest version.'); ?><br><br>

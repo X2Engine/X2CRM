@@ -134,22 +134,19 @@ $escapedName = preg_replace('/[@\.]/','',$username);
             ->queryAll();
 
         $admin = Yii::app()->params->isAdmin;
-        ?>
 
-        <?php foreach($users as $user){ ?>
-            <?php //$userMediaItems = X2Model::model('Media')->findAllByAttributes(array('uploadedBy'=>$user->username)); ?>
-            <?php
+        foreach($users as $user){ 
+            //$userMediaItems = X2Model::model('Media')->findAllByAttributes(array('uploadedBy'=>$user->username)); 
             $userMediaItems = Yii::app()->db->createCommand()
                     ->select('id, uploadedBy, fileName, description, private, drive, name')
                     ->where('uploadedBy=:username AND associationType="none"', array(':username' => $user['username']))
                     ->from('x2_media')
                     ->queryAll();
-            ?>
-            <?php if($userMediaItems){ // user has any media items? ?>
-                <?php $toggleUserMediaVisibleUrl = Yii::app()->controller->createUrl('/media/media/toggleUserMediaVisible')."?user={$user['username']}"; ?>
-                <?php $visible = !in_array($user['username'], $hideUsers); ?>
-                <?php if(!$visible) $minimizeUserMedia .= "$('#{$user['username']}-media').hide();\n"; ?>
-                <?php $minimizeLink = CHtml::ajaxLink(
+            if($userMediaItems){ // user has any media items? 
+                $toggleUserMediaVisibleUrl = Yii::app()->controller->createUrl('/media/media/toggleUserMediaVisible')."?user={$user['username']}"; 
+                $visible = !in_array($user['username'], $hideUsers);
+                if(!$visible) $minimizeUserMedia .= "$('#{$user['username']}-media').hide();\n"; 
+                $minimizeLink = CHtml::ajaxLink(
                     X2Html::fa ($visible ? 'fa-caret-down' : 'fa-caret-left'), 
                     $toggleUserMediaVisibleUrl, 
                     array(

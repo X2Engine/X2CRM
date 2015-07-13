@@ -32,29 +32,40 @@
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2Engine".
  *****************************************************************************************/
-/***********************************************************************************
- * Copyright (C) 2011-2015 X2Engine Inc. All Rights Reserved.
- *
- * X2Engine Inc.
- * P.O. Box 66752
- * Scotts Valley, California 95067 USA
- * Company website: http://www.x2engine.com
- *
- * X2Engine Inc. grants you a perpetual, non-exclusive, non-transferable license
- * to install and use this Software for your internal business purposes only
- * for the number of users purchased by you. Your use of this Software for
- * additional users is not covered by this license and requires a separate
- * license purchase for such users. You shall not distribute, license, or
- * sublicense the Software. Title, ownership, and all intellectual property
- * rights in the Software belong exclusively to X2Engine. You agree not to file
- * any patent applications covering, relating to, or depicting this Software
- * or modifications thereto, and you agree to assign any patentable inventions
- * resulting from your use of this Software to X2Engine.
- *
- * THIS SOFTWARE IS PROVIDED "AS IS" AND WITHOUT WARRANTIES OF ANY KIND, EITHER
- * EXPRESS OR IMPLIED, INCLUDING WITHOUT LIMITATION THE IMPLIED WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, TITLE, AND NON-INFRINGEMENT.
- **********************************************************************************/
+/*****************************************************************************************
+ * X2Engine Open Source Edition is a customer relationship management program developed by
+ * X2Engine, Inc. Copyright (C) 2011-2015 X2Engine Inc.
+ * 
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU Affero General Public License version 3 as published by the
+ * Free Software Foundation with the addition of the following permission added
+ * to Section 15 as permitted in Section 7(a): FOR ANY PART OF THE COVERED WORK
+ * IN WHICH THE COPYRIGHT IS OWNED BY X2ENGINE, X2ENGINE DISCLAIMS THE WARRANTY
+ * OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
+ * 
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.  See the GNU Affero General Public License for more
+ * details.
+ * 
+ * You should have received a copy of the GNU Affero General Public License along with
+ * this program; if not, see http://www.gnu.org/licenses or write to the Free
+ * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301 USA.
+ * 
+ * You can contact X2Engine, Inc. P.O. Box 66752, Scotts Valley,
+ * California 95067, USA. or at email address contact@x2engine.com.
+ * 
+ * The interactive user interfaces in modified source and object code versions
+ * of this program must display Appropriate Legal Notices, as required under
+ * Section 5 of the GNU Affero General Public License version 3.
+ * 
+ * In accordance with Section 7(b) of the GNU Affero General Public License version 3,
+ * these Appropriate Legal Notices must retain the display of the "Powered by
+ * X2Engine" logo. If the display of the logo is not reasonably feasible for
+ * technical reasons, the Appropriate Legal Notices must display the words
+ * "Powered by X2Engine".
+ *****************************************************************************************/
 /***********************************************************************
 * Grays 
 ***********************************************************************/
@@ -70,7 +81,7 @@
 /***********************************************************************
 * This section is made to correspond with the theme keys in ThemeGenerator
 ***********************************************************************/
-/* line 29, ../../../../../../compass/themes/x2engine/css/components/sortableWidget/views/twitterFeedWidget.scss */
+/* line 40, ../../../../../../compass/themes/x2engine/css/components/sortableWidget/views/twitterFeedWidget.scss */
 #twitter-widget-top-bar-logo {
   background-image: url(../../../../images/twitterIcons/Twitter_logo_blue.png);
   display: block;
@@ -84,29 +95,29 @@
   left: 5px;
 }
 
-/* line 42, ../../../../../../compass/themes/x2engine/css/components/sortableWidget/views/twitterFeedWidget.scss */
+/* line 53, ../../../../../../compass/themes/x2engine/css/components/sortableWidget/views/twitterFeedWidget.scss */
 #screen-name-selector {
   margin: 1px 0px 4px 5px;
   border: 1px solid #ddd;
 }
 
-/* line 51, ../../../../../../compass/themes/x2engine/css/components/sortableWidget/views/twitterFeedWidget.scss */
+/* line 62, ../../../../../../compass/themes/x2engine/css/components/sortableWidget/views/twitterFeedWidget.scss */
 .twitter-timeline-container-outer .twitter-timeline-container .load-more-tweets-button {
   margin: 0;
   width: 100%;
   border: none;
   border-radius: 0;
 }
-/* line 58, ../../../../../../compass/themes/x2engine/css/components/sortableWidget/views/twitterFeedWidget.scss */
+/* line 69, ../../../../../../compass/themes/x2engine/css/components/sortableWidget/views/twitterFeedWidget.scss */
 .twitter-timeline-container-outer .twitter-timeline-container .twitter-feed-list-view .items {
   border: none !important;
 }
-/* line 63, ../../../../../../compass/themes/x2engine/css/components/sortableWidget/views/twitterFeedWidget.scss */
+/* line 74, ../../../../../../compass/themes/x2engine/css/components/sortableWidget/views/twitterFeedWidget.scss */
 .twitter-timeline-container-outer .tweet-box {
   padding: 6px 12px;
   background: #f6f6f6;
 }
-/* line 66, ../../../../../../compass/themes/x2engine/css/components/sortableWidget/views/twitterFeedWidget.scss */
+/* line 77, ../../../../../../compass/themes/x2engine/css/components/sortableWidget/views/twitterFeedWidget.scss */
 .twitter-timeline-container-outer .tweet-box .new-tweet-button {
   text-decoration: none;
   color: gray;
@@ -116,106 +127,106 @@
   border: 1px solid #d5d5d5;
   background: white;
 }
-/* line 74, ../../../../../../compass/themes/x2engine/css/components/sortableWidget/views/twitterFeedWidget.scss */
+/* line 85, ../../../../../../compass/themes/x2engine/css/components/sortableWidget/views/twitterFeedWidget.scss */
 .twitter-timeline-container-outer .tweet-box .new-tweet-button:hover {
   border: 1px solid #c5c5c5;
 }
 
-/* line 81, ../../../../../../compass/themes/x2engine/css/components/sortableWidget/views/twitterFeedWidget.scss */
+/* line 92, ../../../../../../compass/themes/x2engine/css/components/sortableWidget/views/twitterFeedWidget.scss */
 .tweet-container {
   padding: 14px;
   padding-bottom: 24px;
   border-bottom: 1px solid #e1e1e1;
 }
-/* line 82, ../../../../../../compass/themes/x2engine/css/components/sortableWidget/views/twitterFeedWidget.scss */
+/* line 93, ../../../../../../compass/themes/x2engine/css/components/sortableWidget/views/twitterFeedWidget.scss */
 .tweet-container .tweet-container-inner {
   /*max-width: 495px;*/
 }
-/* line 88, ../../../../../../compass/themes/x2engine/css/components/sortableWidget/views/twitterFeedWidget.scss */
+/* line 99, ../../../../../../compass/themes/x2engine/css/components/sortableWidget/views/twitterFeedWidget.scss */
 .tweet-container .x2-col:first-child {
   width: 58px;
 }
-/* line 90, ../../../../../../compass/themes/x2engine/css/components/sortableWidget/views/twitterFeedWidget.scss */
+/* line 101, ../../../../../../compass/themes/x2engine/css/components/sortableWidget/views/twitterFeedWidget.scss */
 .tweet-container .x2-col:first-child + .x2-col {
   overflow: hidden;
   width: auto;
   float: none !important;
 }
-/* line 94, ../../../../../../compass/themes/x2engine/css/components/sortableWidget/views/twitterFeedWidget.scss */
+/* line 105, ../../../../../../compass/themes/x2engine/css/components/sortableWidget/views/twitterFeedWidget.scss */
 .tweet-container .x2-col:first-child + .x2-col .x2-row:first-child {
   margin-bottom: 2px;
 }
-/* line 100, ../../../../../../compass/themes/x2engine/css/components/sortableWidget/views/twitterFeedWidget.scss */
+/* line 111, ../../../../../../compass/themes/x2engine/css/components/sortableWidget/views/twitterFeedWidget.scss */
 .tweet-container .button-row .buttons-container {
   visibility: hidden;
   float: right;
 }
-/* line 103, ../../../../../../compass/themes/x2engine/css/components/sortableWidget/views/twitterFeedWidget.scss */
+/* line 114, ../../../../../../compass/themes/x2engine/css/components/sortableWidget/views/twitterFeedWidget.scss */
 .tweet-container .button-row .buttons-container a {
   display: inline-block;
   height: 15px;
   background-repeat: no-repeat;
   cursor: pointer;
 }
-/* line 109, ../../../../../../compass/themes/x2engine/css/components/sortableWidget/views/twitterFeedWidget.scss */
+/* line 120, ../../../../../../compass/themes/x2engine/css/components/sortableWidget/views/twitterFeedWidget.scss */
 .tweet-container .button-row .buttons-container .reply-button {
   width: 15px;
   background-image: url(../../../../images/twitterIcons/reply.png);
 }
-/* line 112, ../../../../../../compass/themes/x2engine/css/components/sortableWidget/views/twitterFeedWidget.scss */
+/* line 123, ../../../../../../compass/themes/x2engine/css/components/sortableWidget/views/twitterFeedWidget.scss */
 .tweet-container .button-row .buttons-container .reply-button:hover {
   background-image: url(../../../../images/twitterIcons/reply_hover.png);
 }
-/* line 116, ../../../../../../compass/themes/x2engine/css/components/sortableWidget/views/twitterFeedWidget.scss */
+/* line 127, ../../../../../../compass/themes/x2engine/css/components/sortableWidget/views/twitterFeedWidget.scss */
 .tweet-container .button-row .buttons-container .retweet-button {
   width: 19px;
   background-image: url(../../../../images/twitterIcons/retweet.png);
 }
-/* line 119, ../../../../../../compass/themes/x2engine/css/components/sortableWidget/views/twitterFeedWidget.scss */
+/* line 130, ../../../../../../compass/themes/x2engine/css/components/sortableWidget/views/twitterFeedWidget.scss */
 .tweet-container .button-row .buttons-container .retweet-button:hover {
   background-image: url(../../../../images/twitterIcons/retweet_hover.png);
 }
-/* line 123, ../../../../../../compass/themes/x2engine/css/components/sortableWidget/views/twitterFeedWidget.scss */
+/* line 134, ../../../../../../compass/themes/x2engine/css/components/sortableWidget/views/twitterFeedWidget.scss */
 .tweet-container .button-row .buttons-container .favorite-button {
   width: 15px;
   background-image: url(../../../../images/twitterIcons/favorite.png);
 }
-/* line 126, ../../../../../../compass/themes/x2engine/css/components/sortableWidget/views/twitterFeedWidget.scss */
+/* line 137, ../../../../../../compass/themes/x2engine/css/components/sortableWidget/views/twitterFeedWidget.scss */
 .tweet-container .button-row .buttons-container .favorite-button:hover {
   background-image: url(../../../../images/twitterIcons/favorite_hover.png);
 }
-/* line 133, ../../../../../../compass/themes/x2engine/css/components/sortableWidget/views/twitterFeedWidget.scss */
+/* line 144, ../../../../../../compass/themes/x2engine/css/components/sortableWidget/views/twitterFeedWidget.scss */
 .tweet-container:hover .buttons-container {
   visibility: visible;
 }
-/* line 137, ../../../../../../compass/themes/x2engine/css/components/sortableWidget/views/twitterFeedWidget.scss */
+/* line 148, ../../../../../../compass/themes/x2engine/css/components/sortableWidget/views/twitterFeedWidget.scss */
 .tweet-container .tweet-timestamp {
   float: right;
 }
-/* line 139, ../../../../../../compass/themes/x2engine/css/components/sortableWidget/views/twitterFeedWidget.scss */
+/* line 150, ../../../../../../compass/themes/x2engine/css/components/sortableWidget/views/twitterFeedWidget.scss */
 .tweet-container .tweet-timestamp > a {
   color: gray;
 }
-/* line 143, ../../../../../../compass/themes/x2engine/css/components/sortableWidget/views/twitterFeedWidget.scss */
+/* line 154, ../../../../../../compass/themes/x2engine/css/components/sortableWidget/views/twitterFeedWidget.scss */
 .tweet-container .author-name {
   text-decoration: none;
   font-weight: bold;
   color: black;
 }
-/* line 147, ../../../../../../compass/themes/x2engine/css/components/sortableWidget/views/twitterFeedWidget.scss */
+/* line 158, ../../../../../../compass/themes/x2engine/css/components/sortableWidget/views/twitterFeedWidget.scss */
 .tweet-container .author-name:hover {
   text-decoration: underline;
 }
-/* line 151, ../../../../../../compass/themes/x2engine/css/components/sortableWidget/views/twitterFeedWidget.scss */
+/* line 162, ../../../../../../compass/themes/x2engine/css/components/sortableWidget/views/twitterFeedWidget.scss */
 .tweet-container .author-username {
   text-decoration: none;
   color: gray;
 }
-/* line 155, ../../../../../../compass/themes/x2engine/css/components/sortableWidget/views/twitterFeedWidget.scss */
+/* line 166, ../../../../../../compass/themes/x2engine/css/components/sortableWidget/views/twitterFeedWidget.scss */
 .tweet-container .retweeted-by-text-container {
   color: gray;
 }
-/* line 156, ../../../../../../compass/themes/x2engine/css/components/sortableWidget/views/twitterFeedWidget.scss */
+/* line 167, ../../../../../../compass/themes/x2engine/css/components/sortableWidget/views/twitterFeedWidget.scss */
 .tweet-container .retweeted-by-text-container > span.retweet-icon-small {
   display: inline-block;
   width: 19px;
@@ -225,7 +236,7 @@
   background-image: url(../../../../images/twitterIcons/retweet.png);
   margin-right: 4px;
 }
-/* line 166, ../../../../../../compass/themes/x2engine/css/components/sortableWidget/views/twitterFeedWidget.scss */
+/* line 177, ../../../../../../compass/themes/x2engine/css/components/sortableWidget/views/twitterFeedWidget.scss */
 .tweet-container .retweeted-by-text-container a {
   text-decoration: none;
   color: gray;

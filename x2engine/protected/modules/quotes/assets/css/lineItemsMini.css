@@ -39,39 +39,39 @@
  */
 /* line 30, ../../../../../compass/sass/protected/modules/quotes/assets/css/lineItemsMini.scss */
 /* line 30, ../../../../../compass/sass/protected/modules/quotes/assets/css/lineItemsMini.scss */
-/* line 34, ../../../../../compass/protected/modules/quotes/assets/css/lineItemsMini.scss */
+/* line 45, ../../../../../compass/protected/modules/quotes/assets/css/lineItemsMini.scss */
 .line-items-mini th.lineitem-description, .line-items-mini th.lineitem-adjustments {
   display: none;
 }
-/* line 39, ../../../../../compass/protected/modules/quotes/assets/css/lineItemsMini.scss */
+/* line 50, ../../../../../compass/protected/modules/quotes/assets/css/lineItemsMini.scss */
 .line-items-mini tr.line-item .x2-5th-child, .line-items-mini tr.line-item .x2-6th-child {
   display: none;
 }
-/* line 43, ../../../../../compass/protected/modules/quotes/assets/css/lineItemsMini.scss */
+/* line 54, ../../../../../compass/protected/modules/quotes/assets/css/lineItemsMini.scss */
 .line-items-mini .add-adjustment-button {
   display: none !important;
 }
-/* line 46, ../../../../../compass/protected/modules/quotes/assets/css/lineItemsMini.scss */
+/* line 57, ../../../../../compass/protected/modules/quotes/assets/css/lineItemsMini.scss */
 .line-items-mini .add-line-item-button {
   margin-top: 5px;
 }
-/* line 49, ../../../../../compass/protected/modules/quotes/assets/css/lineItemsMini.scss */
+/* line 60, ../../../../../compass/protected/modules/quotes/assets/css/lineItemsMini.scss */
 .line-items-mini #quote-total-section td {
   border-bottom: none !important;
 }
-/* line 53, ../../../../../compass/protected/modules/quotes/assets/css/lineItemsMini.scss */
+/* line 64, ../../../../../compass/protected/modules/quotes/assets/css/lineItemsMini.scss */
 .line-items-mini.line-items-read td {
   border-right: 1px solid #ccc;
 }
-/* line 55, ../../../../../compass/protected/modules/quotes/assets/css/lineItemsMini.scss */
+/* line 66, ../../../../../compass/protected/modules/quotes/assets/css/lineItemsMini.scss */
 .line-items-mini.line-items-read td.x2-7th-child {
   border-right: none;
 }
-/* line 59, ../../../../../compass/protected/modules/quotes/assets/css/lineItemsMini.scss */
+/* line 70, ../../../../../compass/protected/modules/quotes/assets/css/lineItemsMini.scss */
 .line-items-mini.line-items-read #quote-total-section td.input-cell {
   border-right: none;
 }
-/* line 62, ../../../../../compass/protected/modules/quotes/assets/css/lineItemsMini.scss */
+/* line 73, ../../../../../compass/protected/modules/quotes/assets/css/lineItemsMini.scss */
 .line-items-mini.line-items-read table {
   border-radius: 4px;
   margin-top: 14px;
@@ -99,7 +99,7 @@ Fixes dropdown button display issue in FF
 */
 /* line 71, ../../../../../compass/sass/protected/modules/quotes/assets/css/lineItemsMini.scss */
 /* line 88, ../../../../../compass/sass/protected/modules/quotes/assets/css/lineItemsMini.scss */
-/* line 101, ../../../../../compass/protected/modules/quotes/assets/css/lineItemsMini.scss */
+/* line 112, ../../../../../compass/protected/modules/quotes/assets/css/lineItemsMini.scss */
 .line-items-write .quote-table > thead > tr > th.line-item-name, .line-items-write .quote-table > tbody.line-items > tr > td.x2-2nd-child input {
   padding-right: 2px;
   width: 79% !important;

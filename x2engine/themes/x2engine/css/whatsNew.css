@@ -35,11 +35,11 @@
 /*
 override attachments widget style
 */
-/* line 30, ../../../compass/themes/x2engine/css/whatsNew.scss */
+/* line 41, ../../../compass/themes/x2engine/css/whatsNew.scss */
 #attachment-form .focus-mini-module {
   box-shadow: none;
 }
-/* line 33, ../../../compass/themes/x2engine/css/whatsNew.scss */
+/* line 44, ../../../compass/themes/x2engine/css/whatsNew.scss */
 #attachment-form .form {
   -moz-border-radius: 0px;
   -o-border-radius: 0px;
@@ -54,7 +54,7 @@ override attachments widget style
 /* 
 override spectrum color picker css 
 */
-/* line 49, ../../../compass/themes/x2engine/css/whatsNew.scss */
+/* line 60, ../../../compass/themes/x2engine/css/whatsNew.scss */
 .sp-replacer {
   padding: 0px !important;
   margin-left: 4px !important;
@@ -62,12 +62,12 @@ override spectrum color picker css
   top: -2px;
 }
 
-/* line 56, ../../../compass/themes/x2engine/css/whatsNew.scss */
+/* line 67, ../../../compass/themes/x2engine/css/whatsNew.scss */
 .sp-dd {
   height: 13px !important;
 }
 
-/* line 60, ../../../compass/themes/x2engine/css/whatsNew.scss */
+/* line 71, ../../../compass/themes/x2engine/css/whatsNew.scss */
 .sp-preview {
   width: 20px !important;
   height: 17px !important;
@@ -77,23 +77,23 @@ override spectrum color picker css
 /*
 Broadcast Dialog
 */
-/* line 70, ../../../compass/themes/x2engine/css/whatsNew.scss */
+/* line 81, ../../../compass/themes/x2engine/css/whatsNew.scss */
 #broadcast-dialog-user-select {
   width: 460px;
   height: 200px;
 }
 
-/* line 75, ../../../compass/themes/x2engine/css/whatsNew.scss */
+/* line 86, ../../../compass/themes/x2engine/css/whatsNew.scss */
 .dialog-explanation {
   margin-bottom: 8px;
   margin-top: 7px;
 }
 
-/* line 81, ../../../compass/themes/x2engine/css/whatsNew.scss */
+/* line 92, ../../../compass/themes/x2engine/css/whatsNew.scss */
 #broadcast-dialog label {
   margin-bottom: 4px;
 }
-/* line 84, ../../../compass/themes/x2engine/css/whatsNew.scss */
+/* line 95, ../../../compass/themes/x2engine/css/whatsNew.scss */
 #broadcast-dialog .sp-replacer {
   margin-top: 6px;
 }
@@ -101,13 +101,13 @@ Broadcast Dialog
 /*
 ckeditor
 */
-/* line 93, ../../../compass/themes/x2engine/css/whatsNew.scss */
+/* line 104, ../../../compass/themes/x2engine/css/whatsNew.scss */
 #cke_Events_text {
   margin-bottom: 6px !important;
 }
 
 /* collapse bottom bar */
-/* line 99, ../../../compass/themes/x2engine/css/whatsNew.scss */
+/* line 110, ../../../compass/themes/x2engine/css/whatsNew.scss */
 .cke_bottom {
   background: none !important;
   border-top: none !important;
@@ -119,7 +119,7 @@ ckeditor
 }
 
 /* move resizing handle */
-/* line 111, ../../../compass/themes/x2engine/css/whatsNew.scss */
+/* line 122, ../../../compass/themes/x2engine/css/whatsNew.scss */
 .cke_resizer_ltr {
   margin-right: 2px !important;
 }
@@ -127,12 +127,12 @@ ckeditor
 /*
 Charts
 */
-/* line 119, ../../../compass/themes/x2engine/css/whatsNew.scss */
+/* line 130, ../../../compass/themes/x2engine/css/whatsNew.scss */
 #activity-feed-chart-container {
   background: #eee;
 }
 
-/* line 123, ../../../compass/themes/x2engine/css/whatsNew.scss */
+/* line 134, ../../../compass/themes/x2engine/css/whatsNew.scss */
 div.chart-container {
   border-top: 1px solid #ddd !important;
   -moz-border-radius: 0px !important;
@@ -141,12 +141,12 @@ div.chart-container {
   border-radius: 0px !important;
 }
 
-/* line 131, ../../../compass/themes/x2engine/css/whatsNew.scss */
+/* line 142, ../../../compass/themes/x2engine/css/whatsNew.scss */
 #chart-type-selector {
   margin: 4px 0px 4px 5px;
 }
 
-/* line 135, ../../../compass/themes/x2engine/css/whatsNew.scss */
+/* line 146, ../../../compass/themes/x2engine/css/whatsNew.scss */
 #page-title-container.page-title-container-chart-shown {
   background: #eee !important;
 }
@@ -154,7 +154,7 @@ div.chart-container {
 /*
 Miscellaneous
 */
-/* line 143, ../../../compass/themes/x2engine/css/whatsNew.scss */
+/* line 154, ../../../compass/themes/x2engine/css/whatsNew.scss */
 .avatar-image {
   /*border: 3px solid #f8f8f8;*/
   border: 1px;
@@ -164,12 +164,12 @@ Miscellaneous
   border-radius: 4px;
 }
 
-/* line 152, ../../../compass/themes/x2engine/css/whatsNew.scss */
+/* line 163, ../../../compass/themes/x2engine/css/whatsNew.scss */
 G .social-tabs a {
   text-decoration: none;
 }
 
-/* line 156, ../../../compass/themes/x2engine/css/whatsNew.scss */
+/* line 167, ../../../compass/themes/x2engine/css/whatsNew.scss */
 .comment-textbox {
   -webkit-appearance: none;
   height: 22px;
@@ -187,55 +187,55 @@ G .social-tabs a {
   background: white;
 }
 
-/* line 173, ../../../compass/themes/x2engine/css/whatsNew.scss */
+/* line 184, ../../../compass/themes/x2engine/css/whatsNew.scss */
 .comment-box .items {
   margin-left: 15px;
 }
 
-/* line 177, ../../../compass/themes/x2engine/css/whatsNew.scss */
+/* line 188, ../../../compass/themes/x2engine/css/whatsNew.scss */
 .important {
   background-color: #FFFFC2;
 }
 
-/* line 181, ../../../compass/themes/x2engine/css/whatsNew.scss */
+/* line 192, ../../../compass/themes/x2engine/css/whatsNew.scss */
 .pager {
   visibility: hidden;
 }
 
-/* line 185, ../../../compass/themes/x2engine/css/whatsNew.scss */
+/* line 196, ../../../compass/themes/x2engine/css/whatsNew.scss */
 .yiiPager {
   display: none;
 }
 
-/* line 189, ../../../compass/themes/x2engine/css/whatsNew.scss */
+/* line 200, ../../../compass/themes/x2engine/css/whatsNew.scss */
 .activity-feed div.like-history-box {
   padding-top: 6px;
 }
 
-/* line 193, ../../../compass/themes/x2engine/css/whatsNew.scss */
+/* line 204, ../../../compass/themes/x2engine/css/whatsNew.scss */
 #activity-feed.list-view .view.top-level.activity-feed {
   padding: 5px;
   overflow: auto;
 }
 
-/* line 199, ../../../compass/themes/x2engine/css/whatsNew.scss */
+/* line 210, ../../../compass/themes/x2engine/css/whatsNew.scss */
 div#filter-controls div.portlet-content, div#full-controls-button-container {
   text-align: center;
 }
 
-/* line 204, ../../../compass/themes/x2engine/css/whatsNew.scss */
+/* line 215, ../../../compass/themes/x2engine/css/whatsNew.scss */
 a#toggle-filters-link {
   margin-top: -8px;
   margin-bottom: 4px;
 }
 
 /* make sticky feed posts broadcast bg color take fill entire space */
-/* line 211, ../../../compass/themes/x2engine/css/whatsNew.scss */
+/* line 222, ../../../compass/themes/x2engine/css/whatsNew.scss */
 #sticky-feed .top-level.activity-feed {
   overflow: auto;
 }
 
-/* line 215, ../../../compass/themes/x2engine/css/whatsNew.scss */
+/* line 226, ../../../compass/themes/x2engine/css/whatsNew.scss */
 .items {
   -moz-border-radius: 0px !important;
   -o-border-radius: 0px !important;
@@ -248,12 +248,12 @@ a#toggle-filters-link {
 
 /* Used to prevent issue with jquery expandable plugin. Allows expandable text
 to float around the truncated text. */
-/* line 228, ../../../compass/themes/x2engine/css/whatsNew.scss */
+/* line 239, ../../../compass/themes/x2engine/css/whatsNew.scss */
 .expandable-details-override {
   display: inline !important;
 }
 
-/* line 232, ../../../compass/themes/x2engine/css/whatsNew.scss */
+/* line 243, ../../../compass/themes/x2engine/css/whatsNew.scss */
 .event-bottom-row {
   margin-top: 2px;
 }

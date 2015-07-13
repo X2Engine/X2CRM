@@ -51,20 +51,87 @@ abstract class VisitAllPagesTest extends X2WebTestCase {
      */
     protected function visitPages ($pages, $testXss = false) {
         foreach ($pages as $page) {
-            print ('visiting page ' .$page."\n");
+            /**/print ('visiting page ' .$page."\n");
 		    $this->openX2($page);
-            $this->assertNoPHPErrors ($page);
+            $this->assertNoErrors ($page);
             if ($testXss)
                 $this->assertElementNotPresent ('css=.TESTX2INJECTION');
         }
     }
 
-	public function testPages () {
-        $this->visitPages ( $this->allPages );
-	}
+    public function testContactsPages () {
+        $this->visitPages ($this->getPages ('^contacts'));
+    }
+
+    public function testAccountsPages () {
+        $this->visitPages ($this->getPages ('^accounts'));
+    }
+
+    public function testMartketingPages () {
+        $this->visitPages ($this->getPages ('^(marketing|weblist)'));
+    }
+
+    public function testX2LeadsPages () {
+        $this->visitPages ($this->getPages ('^x2Leads'));
+    }
+
+    public function testOpportunitiesPages () {
+        $this->visitPages ($this->getPages ('^opportunities'));
+    }
+
+    public function testServicesPages () {
+        $this->visitPages ($this->getPages ('^services'));
+    }
+
+    public function testActionsPages () {
+        $this->visitPages ($this->getPages ('^actions'));
+    }
+
+    public function testCalendarPages () {
+        $this->visitPages ($this->getPages ('^calendar'));
+    }
+
+    public function testDocsPages () {
+        $this->visitPages ($this->getPages ('^docs'));
+    }
+
+    public function testProductsPages () {
+        $this->visitPages ($this->getPages ('^products'));
+    }
+
+    public function testQuotesPages () {
+        $this->visitPages ($this->getPages ('^quotes'));
+    }
+
+     
+
+    public function testMediaPages () {
+        $this->visitPages ($this->getPages ('^media'));
+    }
+
+    public function testGroupsPages () {
+        $this->visitPages ($this->getPages ('^groups'));
+    }
+
+    public function testBugReportsPages () {
+        $this->visitPages ($this->getPages ('^bugReports'));
+    }
+
+    public function testSitePages () {
+        $this->visitPages ($this->getPages ('^site'));
+    }
+
+    public function testProfilePages () {
+        $this->visitPages ($this->getPages ('^profile'));
+    }
+
+    public function getPages ($pattern) {
+        return array_filter ($this->allPages, function ($page) use ($pattern) {
+            return preg_match ('/'.$pattern.'/', $page);
+        });
+    }
 
     public $allPages = array(
-        // contacts
         'contacts/index',
         'contacts/id/1195',
         'contacts/update/id/1195',
@@ -73,14 +140,14 @@ abstract class VisitAllPagesTest extends X2WebTestCase {
         'contacts/lists',
         'contacts/myContacts',
         'contacts/createList',
-        // accounts
+
         'accounts/index',
         'accounts/update/id/1',
         'accounts/1',
         'accounts/create',
         'accounts/shareAccount/id/1',
          
-        // marketing
+
         'marketing/index',
         'marketing/create',
         'marketing/5',
@@ -90,25 +157,25 @@ abstract class VisitAllPagesTest extends X2WebTestCase {
         'weblist/update?id=18',
         'marketing/webleadForm',
          
-        // leads
+
         'x2Leads/index',
         'x2Leads/create',
         'x2Leads/1',
         'x2Leads/update/id/1',
         'x2Leads/delete/id/1',
-        // opportunities
+
         'opportunities/index',
         'opportunities/51',
         'opportunities/create',
         'opportunities/51',
         'opportunities/update/id/51',
-        // services
+
         'services/index',
         'services/3',
         'services/create',
         'services/update/id/3',
         'services/createWebForm',
-        // actions
+
         'actions/index',
         'actions/create',
         'actions/1',
@@ -116,12 +183,12 @@ abstract class VisitAllPagesTest extends X2WebTestCase {
         'actions/shareAction/id/1',
         'actions/viewGroup',
         'actions/viewAll',
-        // calendar
+
         'calendar/index',
         'calendar/myCalendarPermissions',
         'calendar/userCalendarPermissions',
         'calendar/userCalendarPermissions/id/1',
-        // docs
+
         'docs/index',
         'docs/create',
         'docs/createEmail',
@@ -130,50 +197,53 @@ abstract class VisitAllPagesTest extends X2WebTestCase {
         'docs/update/id/1',
         'docs/changePermissions/id/1',
         'docs/exportToHtml/id/1',
-        // workflow
+
         'workflow/index',
         'workflow/create',
         'workflow/1?perStageWorkflowView=true',
         'workflow/1?perStageWorkflowView=false',
         'workflow/update/id/1',
-        // products
+
         'products/index',
         'products/1',
         'products/create',
         'products/update/id/1',
-        //'site/printRecord/1?modelClass=Product&pageTitle=Product%3A+Semiconductor',
-        // quotes
+
         'quotes/index',
         'quotes/indexInvoice',
         'quotes/1',
         'quotes/convertToInvoice/id/1',
         'quotes/create',
         'quotes/update/id/1',
+
          
+
         // charts
         //'charts/leadVolume',
         //'charts/marketing',
         //'charts/pipeline',
         //'charts/sales',
-        // media
+
         'media/index',
         'media/1',
         'media/upload',
         'media/update/id/1',
-        // groups
+
         'groups/index',
         'groups/1',
         'groups/update/id/1',
         'groups/create',
-        // bug reports
+
         'bugReports/index',
         'bugReports/create',
-        // site
+
         'site/viewNotifications',
         'site/page?view=iconreference',
         'site/page?view=about',
         'site/bugReport',
-        // profile
+        'site/printRecord/70?modelClass=Services&pageTitle=Service+Case%3A+70',
+        //'site/printRecord/1?modelClass=Product&pageTitle=Product%3A+Semiconductor',
+
         'profile/profiles',
         'profile/activity',
         'profile/1',
@@ -182,7 +252,6 @@ abstract class VisitAllPagesTest extends X2WebTestCase {
         'profile/settings/1',
         'profile/changePassword/1',
         'profile/manageCredentials'
-
     );
 
     public $adminPages = array(
@@ -192,62 +261,62 @@ abstract class VisitAllPagesTest extends X2WebTestCase {
         'users/update/id/1',
         'users/inviteUsers',
         'users/create',
-        // admin
-        'admin/index',
-        'admin/editRoleAccess',
-        'admin/manageRoles',
-        'admin/manageSessions',
-        'admin/setLeadRouting',
-        'admin/roundRobinRules',
-        'admin/workflowSettings',
-        'admin/addCriteria',
-        'admin/setServiceRouting',
-        'studio/flowIndex',
-        'studio/importFlow',
-        'admin/appSettings',
-        'admin/updaterSettings',
-        'admin/manageModules',
-        'admin/createPage',
-        'admin/googleIntegration',
-        'admin/toggleDefaultLogo',
-        'admin/uploadLogo',
-        'admin/updater',
+
         'admin/activitySettings',
-        'admin/publicInfo',
-        'admin/lockApp',
-        'admin/manageActionPublisherTabs',
-        'admin/x2CronSettings',
+        'admin/addCriteria',
+        'admin/appSettings',
         'admin/changeApplicationName',
-        'admin/setDefaultTheme',
-        'admin/emailSetup',
+        'admin/convertCustomModules',
+        'admin/createModule',
+        'admin/createPage',
+        'admin/deleteModule',
+        'admin/editor',
+        'admin/editRoleAccess',
         'admin/emailDropboxSettings',
+        'admin/emailSetup',
+        'admin/export',
+        'admin/exportModels',
+        'admin/exportModels?model=Actions',
+        'admin/exportModule',
+         
+        'admin/googleIntegration',
+        'admin/import',
         'admin/importModels',
-        'admin/importModels?model=X2Leads',
+        'admin/importModels?model=Accounts',
         'admin/importModels?model=Actions',
+        'admin/importModels?model=Contacts',
         'admin/importModels?model=Product',
         'admin/importModels?model=Quotes',
         'admin/importModels?model=Services',
-        'admin/importModels?model=Contacts',
-        'admin/importModels?model=Accounts',
-        'admin/exportModels',
-        'admin/exportModels?model=Actions',
-        'admin/export',
-        'admin/import',
-        'admin/rollbackImport',
-        'admin/viewChangelog',
-        'admin/index?translateMode=1',
-        'admin/translationManager',
-        'admin/manageTags',
-        'admin/userViewLog',
-        'admin/createModule',
-        'admin/manageFields',
-        'admin/manageDropDowns',
-        'admin/editor',
-        'admin/deleteModule',
+        'admin/importModels?model=X2Leads',
         'admin/importModule',
-        'admin/exportModule',
+        'admin/index',
+        'admin/index?translateMode=1',
+        'admin/lockApp',
+        'admin/manageActionPublisherTabs',
+        'admin/manageDropDowns',
+        'admin/manageFields',
+        'admin/manageModules',
+        'admin/manageRoles',
+        'admin/manageSessions',
+        'admin/manageTags',
+         
+        'admin/publicInfo',
         'admin/renameModules',
-        'admin/convertCustomModules',
+        'admin/rollbackImport',
+        'admin/roundRobinRules',
+        'admin/setDefaultTheme',
+        'admin/setLeadRouting',
+        'admin/setServiceRouting',
+        'admin/toggleDefaultLogo',
+        'admin/translationManager',
+        'admin/updater',
+        'admin/updaterSettings',
+        'admin/uploadLogo',
+        'admin/userViewLog',
+        'admin/viewChangelog',
+        'admin/workflowSettings',
+        'admin/x2CronSettings',
          
          
     );

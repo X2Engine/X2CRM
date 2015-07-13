@@ -32,7 +32,7 @@
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2Engine".
  *****************************************************************************************/
-/* line 25, ../../../../../compass/protected/modules/calendar/assets/css/calendarLayout.scss */
+/* line 36, ../../../../../compass/protected/modules/calendar/assets/css/calendarLayout.scss */
 table.page-title {
   background: #CECECE !important;
   /* @theme background: highlight1 */
@@ -41,23 +41,23 @@ table.page-title {
   height: 19px;
   box-sizing: border-box;
 }
-/* line 34, ../../../../../compass/protected/modules/calendar/assets/css/calendarLayout.scss */
+/* line 45, ../../../../../compass/protected/modules/calendar/assets/css/calendarLayout.scss */
 table.page-title tbody {
   display: block !important;
   width: 100%;
 }
-/* line 38, ../../../../../compass/protected/modules/calendar/assets/css/calendarLayout.scss */
+/* line 49, ../../../../../compass/protected/modules/calendar/assets/css/calendarLayout.scss */
 table.page-title tr {
   display: block !important;
   width: 100%;
 }
-/* line 42, ../../../../../compass/protected/modules/calendar/assets/css/calendarLayout.scss */
+/* line 53, ../../../../../compass/protected/modules/calendar/assets/css/calendarLayout.scss */
 table.page-title .fc-header-left {
   float: left !important;
   display: block !important;
   height: 10px;
 }
-/* line 47, ../../../../../compass/protected/modules/calendar/assets/css/calendarLayout.scss */
+/* line 58, ../../../../../compass/protected/modules/calendar/assets/css/calendarLayout.scss */
 table.page-title .fc-header-right {
   float: right !important;
   display: block !important;

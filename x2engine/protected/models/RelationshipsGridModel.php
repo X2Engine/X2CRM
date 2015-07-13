@@ -126,7 +126,8 @@ class RelationshipsGridModel extends CModel {
                 echo $this->getLabel ();
                 break;
             case 'createDate':
-                echo X2Html::dynamicDate ($this->relatedModel->createDate);
+                echo isset ($this->relatedModel->createDate) ? 
+                    X2Html::dynamicDate ($this->relatedModel->createDate) : '';
                 break;
         }
     }

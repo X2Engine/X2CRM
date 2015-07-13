@@ -393,18 +393,30 @@ class SearchController extends x2base {
             }else{
                 Yii::app()->user->setState('vcr-list', $term);
                 $_COOKIE['vcr-list'] = $term;
-                $criteria = new CDbCriteria();
-                $criteria->addCondition ('tag=:tag');
-                $criteria->params = array (':tag' => $term);
-                $results = new CActiveDataProvider('Tags', array(
-                            'criteria' => $criteria,
-                            'pagination' => array(
-                                'pageSize' => Profile::getResultsPerPage(),
-                            ),
-                            'sort' => array(
-                                'defaultOrder' => 'timestamp DESC',
-                            )
-                        ));
+                $tagQuery = "
+                    SELECT * 
+                    FROM x2_tags
+                    WHERE tag=:tag
+                    group BY tag, type, itemId";
+                $params = array (':tag' => $term);
+
+                // group by type and itemId to prevent display of duplicate tags
+                $sql = Yii::app()->db->createCommand ($tagQuery);
+                $totalItemCount = Yii::app()->db->createCommand ("
+                    SELECT count(*)
+                    FROM ($tagQuery) as t1;
+                ")->queryScalar ($params);
+
+                $results = new CSqlDataProvider ($sql, array (
+                    'totalItemCount' => $totalItemCount,
+                    'sort' => array(
+                        'defaultOrder' => 'timestamp DESC',
+                    ),
+                    'pagination' => array(
+                        'pageSize' => Profile::getResultsPerPage(),
+                    ),
+                    'params' => $params,
+                ));
                 $this->render('searchTags', array(
                     'tags' => $results,
                     'term' => $term,

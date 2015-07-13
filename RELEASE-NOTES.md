@@ -1,3 +1,14 @@
+# 5.0.9 #
+7/13/2015
+
+* Email addresses in To, Cc, and Bcc lists in X2Flow email actions now validate
+  when flows are saved or triggered. Invalid email addresses in any of these
+  fields will prevent the flow from being saved (displaying a warning in the
+  UI). For existing flows, X2Flow Email actions with invalid email addresses
+  will be skipped (with a validation error message written to the trigger log).
+* The old "User" option of the "Post to Activity Feed" flow action has been
+  relabelled "Author".
+
 # 4.2b #
 8/7/2014
 

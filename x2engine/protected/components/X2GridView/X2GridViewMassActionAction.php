@@ -111,6 +111,7 @@ class X2GridViewMassActionAction extends CAction {
             $massActionInstance->superExecute ($uid, $totalItemCount, $idChecksum);
         } else {
             $gvSelection = $_POST['gvSelection'];
+            $massActionInstance->beforeExecute ();
             $massActionInstance->execute ($gvSelection);
             $massActionInstance::echoFlashes ();
         }

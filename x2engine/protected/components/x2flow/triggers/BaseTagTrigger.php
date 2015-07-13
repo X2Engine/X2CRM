@@ -76,10 +76,18 @@ abstract class BaseTagTrigger extends X2FlowTrigger {
             if(count(array_intersect($params['tags'], $tags)) > 0){
                 return $this->checkConditions($params);
             }else{
-                return array(false, Yii::t('studio','No tags on the record matched those in the tag trigger criteria.'));
+                return array(
+                    false, 
+                    Yii::t(
+                        'studio',
+                        'No tags on the record matched those in the tag trigger criteria.'));
             }
         }else{ // config is invalid or record has no tags (tags are not optional)
-            return array(false, empty($tags) ? Yii::t('studio','No tags in the trigger criteria!') : Yii::t('studio','Tags parameter missing!'));
+            return array(
+                false, 
+                empty($tags) ? 
+                    Yii::t('studio','No tags in the trigger criteria!') : 
+                    Yii::t('studio','Tags parameter missing!'));
         }
     }
 }

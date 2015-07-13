@@ -239,7 +239,7 @@ class X2GridView extends X2GridViewBase {
             $newColumn['id'] = $this->namespacePrefix.'C_'.'tags';
             $newColumn['header'] = Yii::t('app','Tags');
             $newColumn['headerHtmlOptions'] = array('style'=>'width:'.$width.'px;');
-            $newColumn['value'] = 'Tags::getTagLinks("'.$this->modelName.'",$data->id,2)';
+            $newColumn['value'] = 'Tags::getTagLinks("'.$this->modelName.'",$data->id)';
             $newColumn['type'] = 'raw';
             $newColumn['filter'] = CHtml::textField(
                 'tagField',isset($_GET['tagField'])? $_GET['tagField'] : '');

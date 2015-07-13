@@ -96,7 +96,13 @@ class X2ControllerPermissionsBehavior extends ControllerPermissionsBehavior {
 
         // Return true if the user is explicitly allowed to do it, or if there is no permission 
         // item, or if they are an admin
-        if (Yii::app()->params->isAdmin || !($authItem instanceof CAuthItem) || 
+        if (Yii::app()->params->isAdmin || 
+            // access for missing permission item only granted for authenticated users and for
+            // API requests (since API controllers have their own layer of authentication)
+            ((!Yii::app()->user->isGuest ||
+              Yii::app()->controller instanceof ApiController ||
+              Yii::app()->controller instanceof Api2Controller) &&
+             !($authItem instanceof CAuthItem)) || 
             Yii::app()->user->checkAccess($actionAccess, $params)) {
 
             return true;
@@ -117,6 +123,7 @@ class X2ControllerPermissionsBehavior extends ControllerPermissionsBehavior {
      * @return boolean
      */
     public function checkPermissions(&$model, $action = null) {
+        if (Yii::app()->params->isAdmin) return true;
 
         $view = false;
         $edit = false;
