@@ -86,7 +86,7 @@ return array (
 'Subject:'=>'Onderwerp:',
 'Message:'=>'Bericht:',
 'Error: Could not send email.'=>'Fout: Kon email niet versturen',
-'Email Sent!'=>'Email Verstuurd',
+'Email Sent!'=>'Email Verstuurd',mo
 'Attachments'=>'Toebehoren',
 'Note: you have entered text into the email that will be lost. Are you sure you want to continue?'=>'Opmerking: u tekst in de e-mail die verloren hebt ingevoerd. Weet u zeker dat u wilt doorgaan?',
 'From:'=>'Van:',
@@ -289,7 +289,7 @@ return array (
 'Unlike Post'=>'In tegenstelling Bericht',
 // Event Text
 'created a new {actionLink} associated with the contact {contactLink}'=>'een nieuwe {actionLink} die bij het contact {contactLink}',
-'created a new {modelName}, {modelLink}'=>'een nieuwe {modelname}, {modelLink}',
+'created a new {modelName}, {modelLink}'=>'een nieuwe {modelName}, {modelLink}',
 'created a new {modelName}, {deletionText}. It has been deleted.'=>'een nieuwe {modelName}, {deletionText}. Het is verwijderd.',
 'created a new {modelName}, but it could not be found.'=>'een nieuwe {modelName}, maar het kon niet worden gevonden.',
 'A new web lead has come in: {modelLink}'=>'Een nieuw web lead is gekomen in: {modelLink}',
