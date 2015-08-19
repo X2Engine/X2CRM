@@ -24,4 +24,6 @@ return array (
 'Import Products'=>'Εισαγωγή Προϊόντα',
 'Export Products'=>'Εξαγωγή Προϊόντα',
 'NameId'=>'NameId',
+'Create New {module}'=>'Δημιουργία νέου {module}',
+'Update {module}'=>'Ενημέρωση {module}',
 );

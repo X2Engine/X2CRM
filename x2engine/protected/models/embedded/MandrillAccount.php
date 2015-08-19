@@ -69,12 +69,7 @@ class MandrillAccount extends EmailAccount {
     public function renderInput ($attr) {
         switch($attr){
             case 'password':
-                echo CHtml::activePasswordField($this, $attr, $this->htmlOptions($attr));
-                echo CHtml::label(Yii::t('app', 'Visible?'), 'visible', array('style' => 'display: inline'));
-                echo CHtml::checkBox('visible', false, array(
-                    'id' => 'password-visible',
-                    'onchange' => 'js: x2.credManager.swapPasswordVisibility("#Credentials_auth_password")',
-                ));
+                echo X2Html::x2ActivePasswordField ($this, $attr, $this->htmlOptions ($attr), true);
                 break;
             default:
                 parent::renderInput ($attr);

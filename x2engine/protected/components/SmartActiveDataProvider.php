@@ -49,7 +49,7 @@ class SmartActiveDataProvider extends CActiveDataProvider {
      * @var bool $calculateChecksum If true, id checksum will be calculated when data is fetched.
      *  This also disables the ability to refresh the data provider 
      */
-    public $calculateChecksum; 
+    public $calculateChecksum = false; 
 
     /**
      * @var string $_idChecksum checksum of ids joined by commas 

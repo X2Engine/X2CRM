@@ -41,6 +41,23 @@
  */
 class AdminTest extends X2DbTestCase {
 
+    private static $_appFileUtilState = array ();
+    private static $_adminState = array ();
+
+    public static function setUpBeforeClass () {
+        self::$_appFileUtilState['alwaysCurl'] = AppFileUtil::$alwaysCurl;
+        self::$_appFileUtilState['neverCurl'] = AppFileUtil::$neverCurl;
+        self::$_adminState['unique_id'] = Yii::app()->settings->unique_id;
+        return parent::setUpBeforeClass ();
+    }
+
+    public static function tearDownAfterClass () {
+        AppFileUtil::$alwaysCurl = self::$_appFileUtilState['alwaysCurl'];
+        AppFileUtil::$neverCurl = self::$_appFileUtilState['neverCurl'];
+        Yii::app()->settings->unique_id = self::$_adminState['unique_id'];
+        Yii::app()->settings->save ();
+        return parent::tearDownAfterClass ();
+    }
 
     public function testCountEmail() {
         $admin = Yii::app()->settings;
@@ -75,6 +92,8 @@ class AdminTest extends X2DbTestCase {
         // Two more will exceed the limit
         $this->assertTrue($admin->emailCountWillExceedLimit(2));
     }
+
+     
 }
 
 ?>

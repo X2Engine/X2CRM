@@ -64,8 +64,12 @@ class X2Flashes {
     /**
      * @return bool true if flashes have been added, false otherwise 
      */
-    public static function hasFlashes () {
-        return array_reduce (array_values (self::getFlashes ()), function ($a, $b) { 
+    public static function hasFlashes ($type=null) {
+        $flashes = self::getFlashes ();
+        if ($type) {
+            $flashes = array ($type => $flashes[$type]);
+        }
+        return array_reduce (array_values ($flashes), function ($a, $b) { 
             return $a + sizeof ($b); }) !== 0;
     }
 
@@ -89,6 +93,23 @@ class X2Flashes {
         $flashes = self::getFlashes ();
         $flashes[$key][] = $message;
         self::setFlashes ($flashes);
+    }
+
+
+    /**
+     * Returns html for error, success, and notice flashes. 
+     */
+    public static function renderFlashes ($type) {
+        $flashes = self::getFlashes ();
+
+        if (isset ($flashes[$type])) {
+            $flashes = $flashes[$type];
+            foreach ($flashes as $flash) {
+                echo "<div class='flash-$type'>";
+                echo $flash;
+                echo "</div>";
+            }
+        }
     }
 
     public static function renderTopFlashes ($type) {

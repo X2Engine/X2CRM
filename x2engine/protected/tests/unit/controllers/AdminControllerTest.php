@@ -37,7 +37,7 @@
 Yii::import ('application.controllers.AdminController');
 
 class AdminControllerTest extends X2TestCase {
-
+    
     public function testFindMissingPermissions () {
         // satisfy CAssetManager so it doesn't complain when we call findMissingPermissions
         $path = TestingAuxLib::printExec ('cd ../../ && pwd');

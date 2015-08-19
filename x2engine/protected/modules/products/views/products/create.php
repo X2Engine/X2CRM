@@ -53,4 +53,8 @@ if(!isset($model->currency) || $model->currency == '') {
 }
 ?>
 
-<?php echo $this->renderPartial('application.components.views._form', array('model'=>$model,'users'=>$users,'modelName'=>'Product')); ?>
+<?php 
+$this->widget ('FormView', array(
+	'model' => $model
+));
+//echo $this->renderPartial('application.components.views.@FORMVIEW', array('model'=>$model,'users'=>$users,'modelName'=>'Product')); ?>

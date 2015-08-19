@@ -47,16 +47,16 @@ class PasswordResetFormTest extends X2DbTestCase {
         'resets' => 'PasswordReset'
     );
 
-
+    
     public function testSave() {
         $user = $this->user('testUser');
         $form = new PasswordResetForm($user);
-        $form->password = 'a really bad password';
-        $expectmd5 = md5('a really bad password');
+        $password = 'a really bad password';
+        $form->password = $password;
         $form->confirm = $form->password;
         $form->save();
         $user->refresh();
-        $this->assertEquals($expectmd5,$user->password);
+        $this->assertTrue(PasswordUtil::validatePassword($password, $user->password));
         $this->assertEquals(0,PasswordReset::model()->countByAttributes(array('userId'=>$user->id)));
 
         // Test validation as well, as a "bonus", since there needn't be any

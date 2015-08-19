@@ -38,4 +38,9 @@ return array (
 'Import Accounts'=>'수입 계정',
 'Export Accounts'=>'수출 계정',
 'Bug Report Attributes'=>'버그 리포트 속성',
+'Share {opportunity}'=>'공유 {opportunity}',
+'{account}'=>'{account}',
+'{module} Report'=>'{module} 보고서',
+'This form will allow you to generate a campaign to mail related {contacts} of the {accounts} displayed in the report below. Select "Primary {contacts}" to only email {contacts} which are set as the Primary {contact} for an {account}. Select "All" to email all related {contacts} on each {account}.'=>'이 양식은 관련 메일 캠페인을 생성 할 수 {contacts} 의 {accounts} 아래의 보고서에 표시합니다. &quot;차 선택 {contacts} 전용 이메일을 &quot; {contacts} 기본으로 설정되어 {contact} 에 대한 {account} . &quot;모든&quot;모든 관련 이메일을 선택 {contacts} 각 {account} .',
+'Primary {module}'=>'기본 {module}',
 );

@@ -61,6 +61,7 @@ class InlineTagsWidget extends SortableWidget {
                 array (
                     'label' => 'Tags',
                     'hidden' => false,
+                    'containerNumber' => 2,
                 )
             );
         }

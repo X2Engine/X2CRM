@@ -36,7 +36,7 @@
 
 
 /**
-* This page renders the theme selector and th appropriate javascript
+* This page renders the theme selector and the appropriate javascript
 */
 
 Yii::app()->clientScript->registerCssFile(Yii::app()->baseUrl.'/themes/x2engine/css/profile/themeSelector.css');
@@ -49,6 +49,7 @@ $params = CJSON::encode(array(
 	'defaults' => array(ThemeGenerator::$defaultLight, ThemeGenerator::$defaultDark),
 	'active' => $selected,
 	'user' => $user,
+	'isAdmin' => Yii::app()->params->isAdmin ? 1 : 0,
 	'translations' => array(
 		'createNew' => Yii::t('profile', 'Create a new theme to edit'),
 	)
@@ -64,10 +65,11 @@ $(function () {
 
 ", CClientScript::POS_END);
 
+echo "<input type='hidden' name='regenerate-theme' value='1'>";
 
 echo "<div class='theme-picker' id='theme-picker'>";
 
-$settings = ThemeGenerator::$settingsList;
+$settings = ThemeGenerator::getSettingsList ();
 
 $themes = $myThemes->data;
 foreach($themes as $theme){
@@ -77,18 +79,13 @@ foreach($themes as $theme){
 	}
 
 	$fileName = $theme->fileName;
-	if (strlen($fileName) > 15) {
-		$fileName = substr($fileName, 0, 15).'...';
-	}
-
-
 	$uploadedBy = $theme->uploadedBy;
 
 	echo CHtml::openTag ('div', array(
 		'class'=>"scheme-container",
 		'name'=> $fileName,
-		)
-	);
+		'data-id'=> $theme->id,
+    ));
 		echo CHtml::openTag ('div', array( 
 			'class'=> 'scheme-container-inner', 
 			'style' => "
@@ -98,7 +95,9 @@ foreach($themes as $theme){
 		);
 
 		echo "<div id='name' > $fileName </div> ";
-		if ($fileName == ThemeGenerator::$defaultLight || $fileName == ThemeGenerator::$defaultDark) {
+		if ($fileName == ThemeGenerator::$defaultLight || 
+            $fileName == ThemeGenerator::$defaultDark) {
+
 			$uploadedByName = '';
 		} else {
 			$uploadedByName = $uploadedBy;
@@ -107,10 +106,14 @@ foreach($themes as $theme){
 		echo "<div class='clear'></div>";
 
 			foreach($scheme as $key => $color){
-				if (!in_array($key, $settings))
-					continue;
+				if (!in_array($key, $settings) || 
+                    preg_match ('/_override$/', $key) && !$color) {
 
-				$display = in_array($key, array ('text', 'content')) ? 'display: none;' : '';
+					continue;
+                }
+
+				$display = in_array($key, array ('text', 'content')) ||
+                    preg_match ('/_override$/', $key) ? 'display: none;' : '';
 
 				echo CHtml::tag ('div', array(
 					'class'=>"scheme-color", 

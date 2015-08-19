@@ -83,7 +83,10 @@ if ($maxExecTime <= 30) {
 </div><br /></div>
 <div id="import-container" class='form'>
 <div id="super-import-map-box">
-<h2><a href='#' class='clean-link' onclick="$('#import-map-box').toggle();">[-] </a><span class="import-hide"><?php echo Yii::t('admin', 'Import Map'); ?></span></h2>
+<h2><span class="import-hide">
+    <?php echo Yii::t('admin', 'Import Map').
+        X2Html::minimizeButton (array(), '#import-map-box', false, true);
+?></span></h2>
 <div id="import-map-box" class="import-hide form" style="width:600px">
     <div id="form-error-box" style="color:red">
 
@@ -92,8 +95,7 @@ if ($maxExecTime <= 30) {
 
 <div id='mapping-overrides'>
 <?php echo Yii::t('admin','Below is a list of our fields, the fields you provided, and a few sample records that you are importing. ');?>
-<?php echo Yii::t('admin','Selecting "DO NOT MAP" will ignore the field and use the settings chosen above. Selecting "CREATE NEW FIELD" will generate a new text field within X2 and map your field to it. ') ?>
-<?php echo Yii::t('admin','This override takes precedence over the selector above.') ?>
+<?php echo Yii::t('admin','Selecting "DO NOT MAP" will ignore the field. Selecting "CREATE NEW FIELD" will generate a new text field within X2 and map your field to it. Selecting "APPLY TAGS" will treat the attribute as a list of tags and apply each tag to the imported record.') ?>
 <br /><br />
 <table id="import-map" >
     <tr>
@@ -107,7 +109,7 @@ if ($maxExecTime <= 30) {
         echo "<td style='width:33%'>$attribute</td>";
         echo "<td style='width:33%'>".CHtml::dropDownList($attribute,
                 isset($importMap[$attribute])?$importMap[$attribute]:'',
-                array_merge(array(''=>Yii::t('admin','DO NOT MAP'),'createNew'=>Yii::t('admin','CREATE NEW FIELD')),X2Model::model($model)->attributeLabels()),
+                array_merge(array(''=>Yii::t('admin','DO NOT MAP'),'createNew'=>Yii::t('admin','CREATE NEW FIELD'), 'applyTags'=>Yii::t('admin','APPLY TAGS')),X2Model::model($model)->attributeLabels()),
                 array('class'=>'import-attribute')
                 )."</td>";
         echo "<td style='width:33%'>";
@@ -132,7 +134,7 @@ if ($maxExecTime <= 30) {
                 ." be generated in the form '{source} to X2Engine {version}' to identify the data sources for which the import map was intended."), false);
     echo CHtml::textField("mapping-name", "", array('id'=>'mapping-name', 'placeholder'=>Yii::t('admin', 'Import Source')))."&nbsp;";
     echo CHtml::link(Yii::t('admin', 'Export Mapping'), '#', array('id'=>'export-map', 'class'=>'x2-button'));
-    echo CHtml::link(Yii::t('acmin', 'Download Mapping'), '#', array('id'=>'download-map', 'class'=>'x2-button', 'style'=>'display:none'));
+    echo CHtml::link(Yii::t('admin', 'Download Mapping'), '#', array('id'=>'download-map', 'class'=>'x2-button', 'style'=>'display:none'));
 
 ?>
 </div>
@@ -145,6 +147,9 @@ if ($maxExecTime <= 30) {
         <div class="cell"><?php echo X2Html::hint(Yii::t('admin',"This will attempt to create a record for any field that links to another record type (e.g. Account)"),false); ?></div>
         <div class="cell"><?php echo CHtml::checkBox('create-records-box','checked');?></div>
     </div>
+    <?php
+     
+    ?>
     <div class="row">
         <div class="cell"><strong><?php echo Yii::t('marketing','Tags'); ?></strong></div>
         <div class="cell"><?php echo X2Html::hint(Yii::t('admin',"These tags will be applied to any record created by the import. Example: web,newlead,urgent."),false); ?></div>
@@ -220,10 +225,10 @@ if ($maxExecTime <= 30) {
 <h3 id="import-status" style="display:none;"><?php echo Yii::t('admin','Import Status'); ?></h3>
 <div id="import-progress-bar" style="display:none;">
 <?php
-    if (array_key_exists('csvLength', $_SESSION)) {
+    if ($csvLength !== null) {
         $this->widget('X2ProgressBar', array(
             'uid' => 'x2import',
-            'max' => $_SESSION['csvLength'],
+            'max' => $csvLength,
             'label' => '',
         ));
     }
@@ -268,6 +273,7 @@ if ($maxExecTime <= 30) {
     $('#fill-fields-box').change(function(){
         $('#fields').toggle();
     });
+     
     $('#log-comment-box').change(function(){
        $('#comment-form').toggle();
     });
@@ -285,11 +291,12 @@ if ($maxExecTime <= 30) {
         var routing=0;
         var skipActivityFeed=0;
         var batchSize = $('#batch-size').val();
+         
         $('.import-attribute').each(function(){
             attributes.push ($(this).val());
             keys.push ($(this).attr('name'));
         });
-        if($('#fill-fields-box').attr('checked')=='checked'){
+        if($('#fill-fields-box').is(':checked')){
             $('.forced-attribute').each(function(){
             forcedAttributes.push($(this).val());
             });
@@ -297,15 +304,20 @@ if ($maxExecTime <= 30) {
                 forcedValues.push($(this).val());
             });
         }
-        if($('#log-comment-box').attr('checked')=='checked'){
+        if($('#log-comment-box').is(':checked')){
             comment=$("#comment").val();
         }
-        if($('#lead-routing-box').attr('checked')=='checked'){
+        if($('#lead-routing-box').is(':checked')){
             routing=1;
         }
-        if($('#activity-feed-box').attr('checked')=='checked'){
+        if($('#activity-feed-box').is(':checked')){
             skipActivityFeed=1;
         }
+        var createRecords = '';
+        if ($('#create-records-box').is(':checked')) {
+            createRecords = 'checked';
+        }
+         
 
         function showPreparationResult (success, msg) {
             if (success) {
@@ -329,17 +341,18 @@ if ($maxExecTime <= 30) {
                 keys:keys,
                 forcedAttributes:forcedAttributes,
                 forcedValues:forcedValues,
-                createRecords:$('#create-records-box').attr('checked')=='checked'?'checked':'',
-                tags:$('#tags').val(),
+                createRecords:createRecords,
+                tags:$('input[type=text]#tags').val(),
                 comment:comment,
                 routing:routing,
                 skipActivityFeed:skipActivityFeed,
                 model:"<?php echo $model; ?>",
-                preselectedMap: (<?php echo ($preselectedMap)? 'true' : 'false'; ?> && !modifiedPresetMap)
+                preselectedMap: (<?php echo ($preselectedMap)? 'true' : 'false'; ?> && !modifiedPresetMap) 
             },
             success:function(data){
                 data=JSON.parse(data);
                 var resp = data[0];
+                 
                 switch (resp) {
                     case '0':
                         var str="<?php echo Yii::t('admin', "Import setup completed successfully...<br />Beginning import."); ?>";
@@ -388,6 +401,9 @@ if ($maxExecTime <= 30) {
             data:{
                 count:count,
                 model:"<?php echo $model; ?>"
+            },
+            error: function (data) {
+                alert (data.responseText);
             },
             success:function(data){
                 data=JSON.parse(data);
@@ -504,7 +520,8 @@ if ($maxExecTime <= 30) {
         });
     });
 
-    $('#export-map').click(function() {
+    $('#export-map').click(function(e) {
+        e.preventDefault();
         var keys = new Array();
         var attributes = new Array();
         $('.import-attribute').each(function(){
@@ -523,20 +540,27 @@ if ($maxExecTime <= 30) {
                 attributes: attributes,
                 keys: keys
             },
-            success: function() {
-                $('#download-map').show();
-            },
-            error: function() {
-                var str="<?php echo Yii::t('admin', "Preparing the import map failed.  Aborting."); ?>";
-                $('#prep-status-box').css({'color':'red'});
-                $('#prep-status-box').html(str);
+            success: function(data) {
+                data = JSON.parse(data);
+                console.log (data);
+                if (data[0] == '0') {
+                    var filename = data['map_filename'];
+                    $('#download-map').attr ('data-map_filename', filename);
+                    $('#download-map').show();
+                } else {
+                    var str="<?php echo Yii::t('admin', "Preparing the import map failed. Aborting."); ?>";
+                    $('#prep-status-box').css({'color':'red'});
+                    $('#prep-status-box').html(str);
+                }
             }
         });
     });
 
     $('#download-map').click(function(e) {
         e.preventDefault();
-        window.location.href = '<?php echo $this->createUrl('admin/downloadData', array('file'=>'importMapping.json')) ?>';
+        var downloadUrl = '<?php echo $this->createUrl('admin/downloadData'); ?>';
+        var filename = $('#download-map').attr ('data-map_filename');
+        window.location.href = downloadUrl + '?file=' + filename;
     });
 
     $('#editPresetMap').click(function(e) {

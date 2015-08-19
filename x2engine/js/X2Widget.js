@@ -57,6 +57,7 @@ function Widget (argsDict) {
 }
 
 Widget.dataKey = 'x2-widget';
+Widget.NAMESPACE_KEY = null;
 
 Widget.prototype.resolveIds = function (selector) {
     return selector.replace (/#/, '#' + this.namespace);

@@ -41,4 +41,12 @@ return array (
 'Dimensions:'=>'寸法：',
 'MIME Info:'=>'MIME情報：',
 'Google Drive:'=>'グーグルドライブ：',
+'View Full Size'=>'フルサイズを見ます',
+'All {media}'=>'すべての{media}',
+'Drop files here to upload'=>'アップロードするファイルをここにドロップ',
+'select files'=>'ファイルを選択',
+'Image Width'=>'画像の幅',
+'Image Height'=>'画像の高さ',
+'Delete Selected Image'=>'選択した画像を削除します。',
+'Access Key'=>'アクセスキー',
 );

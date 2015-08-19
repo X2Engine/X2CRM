@@ -122,7 +122,7 @@ textarea.x2-textarea {
 	color: $colors[text]
 }
 
-input[type='text']:not(.error),
+body.not-mobile-body input[type='text']:not(.error),
 select,
 select option,
 .x2-select,
@@ -174,12 +174,15 @@ select:hover {
 
 .ui-button, 
 .page-title .x2-minimal-button,
-.x2-button {
+.x2-button, 
+.ui-dialog .ui-dialog-buttonpane button 
+{
     background: $colors[highlight1]
     color: $colors[smart_text]
     border-color: $colors[light_highlight1];
 }
 
+.ui-dialog .ui-dialog-buttonpane button:hover,
 .x2-button:hover {
 	background: $colors[light_highlight1]
 	color: $colors[smart_text]
@@ -221,7 +224,7 @@ select:hover {
 }
 
 .qtip-content h2 {
-	color: inherit !important;;
+	color: inherit !important;
 }
 
 .delete-tag {
@@ -229,8 +232,19 @@ select:hover {
 }
 
 a.x2-icon-button span, 
+#activity-feed-settings-button,
 #feed-filters-button span{
 	color: $colors[smart_text]
+}
+
+#activity-feed-settings-button,
+#feed-filters-button span{
+    opacity: 0.7;
+}
+
+#activity-feed-settings-button:hover,
+#feed-filters-button span:hover{
+    opacity: 1;
 }
 
 .responsive-menu-items a span, 

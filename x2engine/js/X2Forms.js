@@ -60,37 +60,49 @@ Private static methods
 Public instance methods
 */
 
+X2Forms.prototype.hint = function (text) {
+    var span$ = $('<span>', {
+        'class': 'x2-hint x2-question-mark fa fa-question-circle',
+        'title': text
+    });
+    span$.qtip (this._getQtipConfig ());
+    return span$;
+};
+
+X2Forms.prototype._getQtipConfig = function () {
+    return {
+        events: {
+            show: function (event, api) {
+                var tooltip = api.elements.tooltip;
+                var windowWidth = $(window).width ();
+                var elemWidth = $(api.elements.target).width ();
+                var elemLeft = $(api.elements.target).offset ().left;
+                var tooltipWidth = $(api.elements.tooltip).width ();
+
+                if (elemLeft + elemWidth + tooltipWidth > windowWidth) {
+
+                    // flip tooltip if it would go off screen
+                    api.set ({
+                        'position.my': 'top right',
+                        'position.at': 'bottom right'
+                    });
+                } else {
+                    api.set ({
+                        'position.my': 'top left',
+                        'position.at': 'bottom right'
+                    });
+                }
+            }
+        }
+    };
+};
+
 /**
  * Set up x2 helper tooltips
  */
 X2Forms.prototype.setUpQTips = function () {
     if (typeof $().qtip !== 'undefined') {
-        $('.x2-hint').qtip({
-            events: {
-                show: function (event, api) {
-                    var tooltip = api.elements.tooltip;
-                    var windowWidth = $(window).width ();
-                    var elemWidth = $(api.elements.target).width ();
-                    var elemLeft = $(api.elements.target).offset ().left;
-                    var tooltipWidth = $(api.elements.tooltip).width ();
-
-                    if (elemLeft + elemWidth + tooltipWidth > windowWidth) {
-
-                        // flip tooltip if it would go off screen
-                        api.set ({
-                            'position.my': 'top right',
-                            'position.at': 'bottom right'
-                        });
-                    } else {
-                        api.set ({
-                            'position.my': 'top left',
-                            'position.at': 'bottom right'
-                        });
-                    }
-                }
-            }
-
-        });
+        $('.x2-hint').qtip(this._getQtipConfig ());
         $('.x2-info').qtip(); // no format qtip (.x2-hint turns text blue)
     }
 };
@@ -196,7 +208,6 @@ X2Forms.prototype.clearForm = function (container, preserveDefaults) {
     if (preserveDefaults) {
         $(container).find ('textarea, input, select').each (function () {
             var defaultVal = $(this).attr ('data-default') || $(this)[0].defaultValue;
-
             if (typeof defaultVal === 'undefined') {
                 $(this).val (''); 
             } else {
@@ -628,30 +639,59 @@ X2Forms.prototype.initX2FileInput = function() {
 
 };
 
+X2Forms.prototype.getThrobber = function () {
+    var throbber$ = $('<div>', {
+        'class': 'x2-loading-icon load8 input-loading-icon x2-loader',
+        'style': 'float: left; position: absolute;'
+    });
+    throbber$.append ($('<div>', {
+        'class': 'loader',
+        'style': 'margin: auto;'
+    }));
+    return throbber$;
+};
+
+X2Forms.prototype.inputLoadingRight = function (elem, disable) {
+    options = typeof options === 'undefined' ? {} : options; 
+    disable = typeof disable === 'undefined' ? true : disable; 
+    throbber$ = this.getThrobber ();
+    throbber$.width ($(elem).width ());
+    $(elem).before (throbber$);
+    throbber$.position ({
+        my: 'center center',
+        at: 'right+30 center-14',
+        of: $(elem)
+    });
+    if (disable) $(elem).attr ({'disabled': 'disabled'});
+    throbber$.children ().attr (options);
+    return throbber$;
+};
+
+X2Forms.prototype.inputLoadingRightStop = function (elem) {
+    $(elem).prev ('.x2-loading-icon').remove ();
+    $(elem).css ({'visibility': ''});
+    $(elem).removeAttr ('disabled');
+};
+
 /**
  * Hide input and place a loading gif in its place 
  * @param object the input element
  */
-X2Forms.prototype.inputLoading = function (elem, position) {
+X2Forms.prototype.inputLoading = function (elem, position, options) {
     position = typeof position === 'undefined' ? true : position; 
-    var throbber$ = $('<div>', {
-        'class': 'x2-loading-icon load8 input-loading-icon x2-loader',
-        'style': 'float: left; position:absolute;',
-    });
-    throbber$.append ($('<div>', {
-        'class': 'loader',
-        'style': 'margin: auto;',
-    }));
+    options = typeof options === 'undefined' ? {} : options; 
+    throbber$ = this.getThrobber ();
     throbber$.width ($(elem).width ());
     $(elem).before (throbber$);
     if (position) {
         $(elem).prev ().position ({
-            my: 'center',
+            my: 'center center-10',
             at: 'center',
             of: $(elem)
         });
     } 
     $(elem).css ({'visibility': 'hidden'});
+    throbber$.children ().attr (options);
     return throbber$;
 };
 
@@ -660,7 +700,7 @@ X2Forms.prototype.inputLoading = function (elem, position) {
  * @param object the input element
  */
 X2Forms.prototype.inputLoadingStop = function (elem) {
-    $(elem).prev ().remove ();
+    $(elem).prev ('.x2-loading-icon').remove ();
     $(elem).css ({'visibility': ''});
 };
 
@@ -772,6 +812,17 @@ X2Forms.prototype.setUpRichTextareas = function () {
     });
 };
 
+X2Forms.prototype.setUpCodeEditors = function () {
+    $('.x2-code-editor').each (function () {
+        if (typeof CodeMirror !== 'undefined') {
+            CodeMirror.fromTextArea ($(this)[0], {
+                mode: 'css',
+                showCursorWhenSelecting: true
+            });
+        }
+    });
+};
+
 X2Forms.prototype.setUpCollapsibles = function () {
     $('.x2-collapsible-outer > .x2-collapse-handle').unbind ('click.setUpCollapibles').
         bind ('click.setUpCollapibles', function () {
@@ -804,6 +855,21 @@ X2Forms.prototype.enableButton = function (button$) {
     button$.removeClass ('x2-disabled-button');
 };
 
+X2Forms.prototype.setUpAttachments = function (){
+    $('body').on('click', '.attachment-input .remove', function() {
+        $(this).parent().remove();
+    });
+}
+
+X2Forms.prototype.flattenSerializedArray = function (form$) {
+    var data = form$.serializeArray ();
+    var flattened = {};
+    for (var i in data) {
+        flattened[data[i].name] = data[i].value;
+    }
+    return flattened;
+};
+
 X2Forms.prototype._init = function () {
     var that = this;
     $(function () { 
@@ -812,7 +878,9 @@ X2Forms.prototype._init = function () {
         that.initializeMultiselectDropdowns ();
         that.initializeMultiselects ();
         that.setUpRichTextareas ();
+        that.setUpCodeEditors ();
         that.setUpCollapsibles ();
+        that.setUpAttachments ();
     });
 };
 

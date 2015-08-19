@@ -39,7 +39,7 @@
  */
 class EmailsWidget extends TransactionalViewWidget {
 
-    public static $position = 3; 
+     
 
     protected $labelIconClass = 'fa-envelope'; 
     protected $historyType = 'email';

@@ -108,10 +108,10 @@ class TempFile extends CActiveRecord {
 		foreach($oldTempFiles as $oldTempFile) {
 		    $oldFolder = $oldTempFile->folder;
 		    $oldName = $oldTempFile->name;
-		    if(file_exists('uploads/media/temp/'. $oldFolder .'/'. $oldName))
-		    	unlink('uploads/media/temp/'. $oldFolder .'/'. $oldName); // delete file
-		    if(file_exists('uploads/media/temp/'. $oldFolder))
-		    	rmdir('uploads/media/temp/'. $oldFolder); // delete folder
+		    if(file_exists('uploads/protected/media/temp/'. $oldFolder .'/'. $oldName))
+		    	unlink('uploads/protected/media/temp/'. $oldFolder .'/'. $oldName); // delete file
+		    if(file_exists('uploads/protected/media/temp/'. $oldFolder))
+		    	rmdir('uploads/protected/media/temp/'. $oldFolder); // delete folder
 		    $oldTempFile->delete(); // delete database entry tracking temp file
 		}
 		
@@ -119,7 +119,7 @@ class TempFile extends CActiveRecord {
 		$folder = substr(md5(rand()), 0, 10);
 
 		// try to create temp folder
-		if(!@mkdir('uploads/media/temp/'. $folder, 0777, true))
+		if(!@mkdir('uploads/protected/media/temp/'. $folder, 0777, true))
 			return false; // couldn't create temp folder
 		
 		$tempFile = new TempFile; // track temp file in database
@@ -137,6 +137,24 @@ class TempFile extends CActiveRecord {
 	 *	Get the full path including the file name
 	 */
 	public function fullpath() {
-		return 'uploads/media/temp/'. $this->folder .'/'. $this->name;
+		return 'uploads/protected/media/temp/'. $this->folder .'/'. $this->name;
 	}
+
+    public function convertToMedia (array $attributes=array ()) {
+        $username = Yii::app()->user->getName();
+        $name = $this->name;
+        $tempFilename = 'uploads/protected/media/temp/'.$this->folder.'/'.$this->name;
+        if (FileUtil::ccopy($tempFilename, "uploads/protected/media/$username/$name")) {
+            $model = new Media;
+            $model->name = $model->fileName = $name;
+            $model->uploadedBy = $username;
+            $model->createDate = time ();
+            $model->lastUpdated = time ();
+            $model->resolveType ();
+            $model->resolveSize ();
+            $model->setAttributes ($attributes, false);
+            if ($model->save ()) return $model;
+        }
+        return false;
+    }
 }

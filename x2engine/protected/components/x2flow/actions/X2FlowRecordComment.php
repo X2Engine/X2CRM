@@ -47,7 +47,7 @@ class X2FlowRecordComment extends X2FlowAction {
     public function paramRules(){
         $assignmentOptions = array('{assignedTo}' => '{'.Yii::t('studio', 'Owner of Record').'}') + 
             X2Model::getAssignmentOptions(false, true);
-        return array(
+        return array_merge (parent::paramRules (), array (
             'title' => Yii::t('studio', $this->title),
             'modelRequired' => 1,
             'options' => array(
@@ -62,7 +62,7 @@ class X2FlowRecordComment extends X2FlowAction {
                     'type' => 'text'
                 ),
             )
-        );
+        ));
     }
 
     public function execute(&$params){

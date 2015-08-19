@@ -35,6 +35,10 @@
  *****************************************************************************************/
 
 //$this->pageTitle = Yii::app()->settings->appName . ' - Login';
+Yii::app()->clientScript->registerCssFile(
+    Yii::app()->controller->module->assetsUrl.'/css/main.css');
+Yii::app()->clientScript->registerCssFile(Yii::app()->theme->baseUrl.'/css/x2IconsStandalone.css');
+
 $hasProfile = false;
 if(isset($_COOKIE['LoginForm'])) {
     $model->setAttributes($_COOKIE['LoginForm']);
@@ -55,8 +59,8 @@ if(isset($_COOKIE['LoginForm'])) {
 
 ?>
 
-<div class='background-stripe'>
-</div>
+<!--<div class='background-stripe'>-->
+<!--</div>-->
 
 <div class="form">
     <?php
@@ -69,12 +73,10 @@ if(isset($_COOKIE['LoginForm'])) {
                 ),    
             )
         );
+    echo X2Html::logo ('mobile', array (
+        'id' => 'login-form-logo',
+    ));
     ?>
-    <div class='x2-icon'>
-        <img src='<?php echo Yii::app()->baseUrl . '/images/x2engine_silver.png'?>' />
-        <!--<div>X2</div>-->
-        <!--<div>touch</div>-->
-    </div>
     <div data-role="fieldcontain">
         <!--?php echo $form->label($model, 'username', array()); ?-->
         <?php 

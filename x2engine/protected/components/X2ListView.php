@@ -52,7 +52,7 @@ class X2ListView extends CListView {
         }
 
         if($this->itemView === null)
-            throw new CException(Yii::t('zii', 'The property "itemView" cannot be empty.'));
+            throw new CException(Yii::t('app', 'The property "itemView" cannot be empty.'));
         parent::init();
 
         if(!isset($this->htmlOptions['class']))

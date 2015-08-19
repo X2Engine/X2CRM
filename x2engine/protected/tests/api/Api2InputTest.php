@@ -185,7 +185,7 @@ class Api2InputTest extends Api2TestBase {
         );
         $ch = $this->getCurlHandle('POST',array('{modelAction}'=>'Contacts/'.$this->contacts('testFormula')->id.'/Actions'),'admin',$action);
         $response = curl_exec($ch);
-        $this->assertResponseCodeIs(201, $ch,VERBOSE_MODE?$response:'');
+        $this->assertResponseCodeIs(201, $ch,X2_VERBOSE_MODE?$response:'');
         $response = json_decode($response,1);
         $this->assertEquals($action['actionDescription'],$response['actionDescription']);
         $this->assertEquals($action['type'],$response['type']);
@@ -231,13 +231,13 @@ class Api2InputTest extends Api2TestBase {
         $response = curl_exec($ch);
         $this->assertResponseCodeIs(201, $ch);
 
-        // Create it again just to test that validation works (don't set w/same ID)
+        // Validation should fail due to duplicate record
         $ch = $this->getCurlHandle('POST',array(
             '{_class}'=>'Contacts',
             '{_id}' => $this->contacts('testFormula')->id
         ),'admin',$oldRelationship);
         $response = json_decode(curl_exec($ch),1);
-        $this->assertResponseCodeIs(201, $ch);
+        $this->assertResponseCodeIs(422, $ch);
 
         // Create it once more but with a nonexistent ID to test that validation works
         $oldRelationship['secondId'] = 2424242;

@@ -52,7 +52,8 @@
     <br><br>
     <?php echo Yii::t('admin','If you decide to map the "Create Date", "Last Updated", or any other explicit date field, be sure that you have a valid date format entered so that the software can convert to a UNIX Timestamp (if it is already a UNIX Timestamp even better).  Visibility should be either "1" for Public or "0" for Private (it will default to 1 if not provided).'); ?>
 
-    <br><br><?php echo Yii::t('admin','Example');?> <a class='pseudo-link' id="example-link"><?php echo X2Html::fa('fa-caret-down')?></a>
+    <br><br><?php echo Yii::t('admin','Example').
+        X2Html::minimizeButton (array('class' => 'pseudo-link'), '#example-box') ;?></a>
     <div id="example-box" style="display:none;"><img src="<?php echo Yii::app()->theme->getBaseUrl()."/images/examplecsv.png" ?>"/></div>
     <br><br>
     </div>
@@ -64,7 +65,8 @@
     echo CHtml::fileField('data', '', array('id'=>'data'))."<br>";
     echo CHtml::hiddenField('model', $model);
     echo "<i>".Yii::t('app','Allowed filetypes: .csv')."</i><br><br>";
-    echo "<h3>".Yii::t('admin', 'Import Map')." <a class='pseudo-link' id='toggle-map-upload'>".X2Html::fa('fa-caret-down')."</a></h3>";
+    echo "<h3>".Yii::t('admin', 'Import Map').
+        X2Html::minimizeButton (array('class' => 'pseudo-link'), '#upload-map')."</h3>";
     echo "<div id='upload-map' style='display:none;'>";
     echo Yii::t('admin', "You may select a predefined map here, or upload your own.")."<br />";
     $availImportMaps = $this->availableImportMaps($model);
@@ -94,12 +96,6 @@
 
 </div>
 <script>
-    $('#example-link').click(function(){
-       $('#example-box').slideToggle(); 
-    });
-    $('#toggle-map-upload').click(function() {
-        $('#upload-map').slideToggle();
-    });
     $('#x2maps').change(function() {
         // Reset the file upload if a radio button is selected
         $('#mapping').val("");

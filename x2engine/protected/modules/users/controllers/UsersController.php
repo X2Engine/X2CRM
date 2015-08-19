@@ -108,9 +108,9 @@ class UsersController extends x2base {
         $unhashedPassword = '';
         if(isset($_POST['User'])) {
             $model->attributes=$_POST['User'];
-            //$this->updateChangelog($model);
+            //Temporarily maintain unhashed in case of validation error
             $unhashedPassword = $model->password;
-            $model->password = md5($model->password);
+            $model->password = PasswordUtil::createHash($model->password);
             $model->userKey=substr(str_shuffle(str_repeat(
                 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789', 32)), 0, 32);
             $profile=new Profile;
@@ -173,7 +173,7 @@ class UsersController extends x2base {
                         $model->attributes=$_POST['User'];
                         $model->status=1;
                         //$this->updateChangelog($model);
-                        $model->password = md5($model->password);
+                        $model->password = PasswordUtil::createHash($model->password);
                         $model->userKey=substr(str_shuffle(str_repeat('ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789', 32)), 0, 32);
                         $profile=new Profile;
                         $profile->fullName=$model->firstName." ".$model->lastName;
@@ -241,7 +241,7 @@ class UsersController extends x2base {
             $model->attributes=$_POST['User'];
 
             if($model->password!="")
-                $model->password = md5($model->password);
+                $model->password = PasswordUtil::createHash($model->password);
             else
                 $model->password=$temp;
             if(empty($model->userKey)){

@@ -37,7 +37,7 @@
 
 Yii::app()->clientScript->registerScript('x2ConditionListViewJS'.$this->id,"
 
-(function () {
+;(function () {
     var condList = new x2.ConditionList ({
         containerSelector: '#$this->id',
         name: '$this->name',

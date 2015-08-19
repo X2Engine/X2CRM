@@ -163,7 +163,9 @@
                             '{varchar}' => Yii::t('app', 'Single Line Text Area'),
                         )).
                     '</span><br>';
-            echo $form->dropDownList($model, 'type', Fields::getFieldTypes('title'), array(
+            $fieldTypes = Fields::getFieldTypes('title');
+            echo $form->dropDownList(
+                $model, 'type', ArrayUtil::asorti ($fieldTypes), array(
                 'id' => 'fieldType',
                 'class' => ($new ? 'new' : 'existing')
             ));
@@ -238,7 +240,7 @@
                         echo CHtml::activeTextArea($model,'data',array(
                             'id' => 'custom-field-template'
                         ));
-                        echo '<br />'.Yii::t('admin','The template defines how the field will be displayed in X2Engine. The type defines how to interpret the template. If the type is Formula, it will be interpreted as an X2Flow formula.');
+                        echo '<br />'.Yii::t('admin','The template defines how the field will be displayed in X2Engine. The type defines how to interpret the template. If the type is Formula, it will be interpreted as an X2Workflow formula.');
                         echo '<br /><br />';
                         break;
                     
@@ -301,6 +303,14 @@
             echo '<br />';
             echo Yii::t('admin', 'This adds an index to the field, which can improve sorting performance. Please note, however, that you cannot add a unique index to a field in a model that has duplicate entries.');
              ?>
+        </div>
+        <br />
+        <div class="row">
+            <?php echo $form->labelEx($model,'description');
+            echo $form->textArea($model,'description'); 
+            echo '<br />';
+            echo Yii::t('admin', 'Add a description of this field to help users fill out forms.');
+            ?>
         </div>
         <br />
 

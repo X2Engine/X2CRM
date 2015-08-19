@@ -47,6 +47,8 @@ class EventsTest extends X2DbTestCase {
         'event'=> array ('Events', '.GetEvents'),
         'modules'=>'Modules',
         'users'=>'User',
+        'groups'=>'Groups',
+        'group_to_user'=>'GroupToUser',
     );
 
     public static function referenceFixtures(){

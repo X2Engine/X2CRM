@@ -40,6 +40,9 @@
 
 @import "colors";
 
+$gridViewCellHeight: 24px;
+$layoutIslandSeparation: 5px;
+
 // Standard contrast to use for 
 // darken / lighten
 $contrast: 15%;
@@ -47,6 +50,42 @@ $contrast: 15%;
 @mixin dark-border($color) {
 	border: 1px solid darken($color, $contrast);
 }
+
+@mixin linear-gradient($start, $end) {
+    background: mix($start, $end);
+    background: -moz-linear-gradient(top, $start, $end);
+    background: -webkit-linear-gradient(top, $start, $end);
+    background: -o-linear-gradient(top, $start, $end);
+    background: -ms-linear-gradient(top, $start, $end);
+    background: linear-gradient(top, $start, $end);
+}
+
+@mixin titleBarIconButton {
+    color: $titleBarIconButtonColor;
+    /* @theme color: smart_text */ 
+    opacity: 0.7;
+    &:hover {
+        opacity: 1;
+    }
+}
+
+/***********************************************************************
+* Responsive design
+***********************************************************************/
+
+$mobileThreshold: 657px;
+@mixin underThreshold($threshold) {
+    @media (max-width: $threshold) {
+        @content
+    }
+}
+
+@mixin overThreshold($threshold) {
+    @media (min-width: $threshold + 1px) {
+        @content
+    }
+}
+
 
 /***************************************
 * Mixin for border radius 
@@ -109,15 +148,6 @@ $contrast: 15%;
 
 .opacity-hover {
 	@include opacity-hover();
-}
-
-/*********************************
-* Box Shadow Prefixer
-********************************/
-@mixin box-shadow($args...) {
-	-moz-box-shadow: $args;
-	-webkit-box-shadow: $args;
-	box-shadow: $args;
 }
 
 /***************************************

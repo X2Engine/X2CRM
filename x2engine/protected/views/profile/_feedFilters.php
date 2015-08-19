@@ -33,69 +33,8 @@
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2Engine".
  *****************************************************************************************/
-Yii::app()->clientScript->registerCss('feedFiltersCSs',"
-#feed-filters .x2-multiselect-dropdown-menu {
-    margin-right: 3px;
-    margin-bottom: 4px;
-}
 
-
-#feed-filters-button {
-    color: inherit;
-    text-decoration: none;
-    opacity: 0.5;
-    margin-right: 9px;
-    margin-top: 3px;
-}
-#feed-filters-button > span {
-    display: block;
-}
-#feed-filters-button:hover {
-    opacity: 0.7;
-}
-
-a#toggle-filters-link {
-    margin-bottom: 4px;
-}
-
-
-#full-controls-button-container {
-    margin-top: 5px;
-}
-
-#full-controls-button-container > a {
-    margin-right: 3px;
-}
-
-#full-controls,
-#simple-controls {
-    padding-left: 5px;
-}
-
-#execute-feed-filters-button {
-    margin-left: 11px;
-    height: 18px;
-    line-height: 18px;
-}
-
-#filter-default {
-    margin-top: 6px;
-    margin-left: 8px;
-}
-
-#feed-filters .x2-button-group {
-    margin-top: 8px;
-}
-
-#filter-controls > .portlet-content {
-    padding: 5px 0px !important;
-}
-
-#filter-controls > .portlet-content > .x2-button-group {
-    margin-bottom: 5px;
-}
-
-");
+Yii::app()->clientScript->registerCssFile(Yii::app()->theme->baseUrl.'/css/views/profile/feedFilters.css');
 ?>
 <div id='feed-filters' style='display: none;'>
 <?php

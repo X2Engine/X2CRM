@@ -61,8 +61,12 @@
 <?php //echo X2Html::divider(); ?>
 
 <?php 
-$this->renderPartial('application.components.views._detailView', 
-	array('model' => $model, 'modelName' => $modelClass)); 
+$this->widget ('DetailView', array(
+    'model' => $model,
+    'modelName' => $modelClass
+));
+
+//$this->renderPartial('application.components.views.@DETAILVIEW', array('model' => $model, 'modelName' => $modelClass));
 ?>
 
 <script>

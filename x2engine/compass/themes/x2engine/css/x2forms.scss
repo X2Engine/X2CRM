@@ -33,33 +33,18 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 @import "standards";
+@import "colors";
+@import "fonts";
+
+@include Montserrat;
 
 h2 .x2-button {
     margin: 0 0 0 5px;
 }
 
-/*form {
-    input[readonly="readonly"] {
-        background: rgb(236, 236, 236);
-        color: rgb(102, 102, 102);
-    }
-}*/
-
-div.x2-layout {
-    width: auto;
-    margin-bottom: 5px;
-    overflow: hidden;
-    // border: 1px solid #ccc;
-    background: #fafafa;
-
-    @include border-radius();
-    /*  -moz-box-shadow:    0 1px 6px rgba(0,0,0,0.5);
-    -webkit-box-shadow:   0 1px 6px rgba(0,0,0,0.5);
-    box-shadow:       0 1px 6px rgba(0,0,0,0.5); */
+.page-title + form > .x2-layout {
+    border-radius: 0;
 }
-
-/* #main-column.half-width {border-right:1px solid #aaa;margin-right:-1px;} */
-/* .history.half-width {box-sizing:border-box;border-left:1px solid #aaa;} */
 
 #main-column {
     margin-top: 5px;
@@ -72,7 +57,6 @@ div.x2-layout {
 
 .history {
     padding: 0 5px;
-
     &.x2-layout-island.sortable-widget-container {
         background: none !important;
     }
@@ -80,411 +64,422 @@ div.x2-layout {
 
 #main-column > div.page-title-fixed-outer {
     margin: 0 0 5px 0;
-    /* padding-right:7px; */
 }
 
-div {
-    &.x2-layout {
+.x2-layout {
+    width: auto;
+    margin-bottom: 5px;
+    overflow: hidden;
+    background: #fafafa;
+    @include border-radius;
+
     a {
         text-decoration: none;
         &:hover {
             text-decoration: underline;
         }
     }
-    .formSection {
-        /* background:#fff; */
-        overflow: hidden;
-        /* disable */
-        /*border-top:1px solid #333;*/
-        &:first-child {
-        border-top: none;
+
+    .formSectionRow {
+        /* @theme background: content */
+
+        .formItem .label {
+            /* @theme border-color: border */
         }
     }
+
+
+    // Border stuff
+    .formSectionRow .formSectionColumn .formItem .label{
+        border-left: 1px solid $gray;
+    }
+
+    .formSectionRow .formSectionColumn:first-child .formItem .label{
+        border-left: none;
+    }
+
+    .formSectionRow .formItem:first-child .label {
+        border-top: none;
+    }
+
+    .formSectionRow .formItem:last-child .label {
+        border-bottom: 1px solid $gray;
+    }
+
+    .formSectionRow .formItem.topLabel .label {
+        border-right: none;
+    }
+
+    .formSectionRow .formItem.topLabel:last-child .label {
+        border-right: 1px solid $gray;
+    }
+
+    .formSection {
+        background: lighten($lightGray,10%);
+
+        .formSectionShow, 
+        .formSectionHide {
+            display: inline-block;
+            margin-left: 2px;
+            margin-top: 2px;
+            opacity: 0.6;
+            height: 15px;
+        }
+        .formSectionShow {
+            display: inline-block;
+        }
+
+        .formSectionHide {
+            display: none;
+        }
+    
+        &.showSection {
+            .formSectionShow {
+                display: none !important;
+            }
+            .formSectionHide {
+                display: inline-block !important;
+            }
+
+        }
+
+        .formSectionColumn {
+            position: relative;
+            border-collapse: collapse;
+        }
+    }
+    
     .tableWrapper {
-        /*margin-left:16px;*/
         width: auto;
-        /*border-left:1px solid #aaa;*/
-        border-top: 1px solid #ccc;
-        margin-bottom: -1px;
-        margin-right: -1px;
+
+        .table {
+            display: table;
+        }
+
         &.noTitle {
-        border-top: none;
+            border-top: none;
+        }
+
+        .grid-view table.items {
+            clear: none;
+            margin-top: 0;
+            border: none;
         }
     }
-    .formSection {
-        &:first-child {
-            @include border-radius(3px 0 0 0)
-        }
-        &:last-child {
-            @include border-radius(0 0 0 3px)
-        }
-    }
+
     .formSectionHeader {
-        /*float:left;*/
         display: block;
-        /*background: black;*/
-        height: 16px;
-        border-top: 1px solid #ccc;
-        // @include border-radius(4px 4px 0 0);
-    }
-    .formSection:first-child .formSectionHeader {
-        border-top: none;
-    }
-    .showSection .formSectionHeader {
-        display: block;
-        /*width:15px;*/
-    }
-    .formSectionHeader a {
+        background: lighten($lightGray, 5%);
+    
+        border-bottom: 1px solid darken($lightGray, 5%);
+        border-top: 1px solid lighten($lightGray, 3%);
 
-        .fa {
-            width: 15px;
+        /* @theme background: content */
+        /* @theme color: text */
+        /* @theme border-color: border */
+
+        padding-top: 2px;
+        padding-bottom: 2px;
+
+        a {
+            width: 20px;
+            display: none;
+            font-style: normal;
+            text-decoration: none;
+            text-align: center;
         }
-
-        display: none;
-        float: left;
-        /* margin-right:1px; */
-        /*width:16px;*/
-        font-size: 12px;
-        font-style: normal;
-        text-decoration: none;
-        text-align: center;
-        /* margin-bottom:-5px; */
     }
+
     .sectionTitle {
-        /*filter: progid:DXImageTransform.Microsoft.Matrix(sizingMethod='auto expand',M11=0.0, M12=1.0, M21=-1.0, M22=0.0); /* IE6, IE7 */
-        margin-left: 2px;
         display: inline-block;
-        white-space: nowrap;
-        padding-right: 5px;
-        color: #000;
-        font-weight: normal;
-        font-style: italic;
-        font-size: 11px;
-    }
-    }
-    padding-right: 0;
-}
 
-/* Form Sections */
-
-/* div.x2-layout .formSection hr {height:1px;margin:-1px 0 0 0;position:relative;background-color:#999;border-color:#999;} */
-
-.x2-layout .collapsible .sectionTitle {
-    padding-right: 0;
-}
-
-div.x2-layout .showSection .sectionTitle {
-    height: 15px;
-    /*-webkit-transform-origin: top left;
-    -moz-transform-origin:    top left;
-    -o-transform-origin:    top left;
-    -ms-transform-origin:   top left;
-    transform-origin:     top left;*/
-    /*-webkit-transform:  rotate(270deg) translate(-100%,0);
-    -moz-transform:   rotate(270deg) translate(-100%,0);
-    -o-transform:   rotate(270deg) translate(-100%,0);
-    -ms-transform:    rotate(270deg) translate(-100%,0);
-    transform:      rotate(270deg) translate(-100%,0);*/
-}
-
-.lt-ie9 div.x2-layout .showSection .sectionTitle {
-    filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=3);
-}
-
-div.x2-layout {
-    .formSection {
-    a {
-        &.formSectionShow, &.formSectionHide {
-        display: block;
         margin-left: 2px;
-        margin-top: 2px;
-        opacity: 0.6;
-        height: 2px;
-        }
-        &.formSectionShow img {
-        height: 9px;
-        }
-        &.formSectionHide img {
-        height: 7px;
-        }
-        &.formSectionShow {
-        display: block;
-        margin-left: 2px;
-        }
-        &.formSectionHide {
-        display: none;
-        margin-left: 2px;
-        }
+        padding-left: 4px;
+
+        font-family: Montserrat;
+        font-weight: normal !important;
     }
-    &.showSection a {
-        &.formSectionShow {
-        display: none !important;
-        float: left;
-        margin-left: 2px;
-        }
-        &.formSectionHide {
-        display: block !important;
-        float: left;
-        margin-left: 2px;
-        }
+
+    &.form-view .formItem:nth-child(odd) {
+        background: lighten($lightGray,10%);
+        /* @theme background: content */
     }
-    table {
-        position: relative;
-        /* margin:-1px 0 0 0; */
-        /*  border:1px solid #999;
-        border-width:1px 0 0 0; */
-        border-collapse: separate;
-    }
-    &:last-child table {
-        margin-bottom: -1px;
-    }
-    }
-    td {
-    overflow: hidden;
-    /* disable */
-    margin: 0;
-    padding: 0;
-    vertical-align: top;
-    border-right: 1px solid #ccc;
-    /* border-bottom:1px solid #999; */
-    /* background:#eee; */
-    &:last-child {
-        border-right: none !important;
-    }
-    }
+
     .formItem {
-    /* set field width in this element */
-    /* position:relative; */
-    float: left;
-    /* white-space:nowrap; */
-    overflow: hidden;
-    /* disable */
-    margin-left: -1px;
-    margin-right: -1000px;
-    /* css voodoo: row extends all the way across */
-    padding-right: 1000px;
-    /* and doesnt' mess up the flow */
-    border: 1px solid #ccc;
-    border-width: 0 0 1px 1px;
-    &.multiLine {
+        word-break: break-word;
+        /* set field width in this element */
         overflow: hidden;
-    }
-    &.checkBox {
-        width: auto;
-    }
-    }
-    &.form-view .formItem {
-    border-width: 0 0 0;
-    }
-    .formItem {
-    label {
-        display: block;
-        font-size: 10px;
-        color: #666;
-        background: #eee;
-    }
-    &.noLabel label, &.inlineLabel label {
-        display: none;
-    }
-    &.topLabel label {
-        padding: 2px;
-        margin-right: -1002px;
-        /* css voodoo: label extends all the way across */
-        padding-right: 1000px;
-        /* and doesnt' mess up the flow */
-        border-bottom: 1px solid #ccc;
-    }
-    &.leftLabel label {
-        float: left;
-        padding: 3px 5px;
-        /* height:20px; */
-        padding-bottom: 2003px;
-        /* equal height columns hack */
-        margin-bottom: -2000px;
-        /* disable */
-        text-align: right;
-        width: 70px;
-        /* 69 */
-        vertical-align: middle;
-        /* border:1px solid #ccc;
-        border-right:none; */
-        border-right: 1px solid #ccc;
-    }
-    &.multiLine.leftLabel label {
-        padding-bottom: 2003px;
-        margin-bottom: -2000px;
-    }
-    label.groupLabel {
-        background: none;
-        display: inline;
-        margin-left: 5px;
-    }
-    }
-    input[type='checkbox'] {
-    height: 11px;
-    }
-    .formInputBox {
-    float: left;
-    /* disable */
-    /* width:auto; */
-    /* margin-left:80px; */
-    margin-right: 1px;
-    padding: 3px;
-    /* padding:0 10px 0 0; */
-    padding-bottom: 503px;
-    /* equal height columns hack */
-    margin-bottom: -500px;
-    /* disable */
-    /* margin-bottom:3px; */
-    font-weight: bold;
-    input, &.textBox {
-        font-weight: normal;
-    }
-    .checkboxWrapper {
-        display: inline-block;
-        vertical-align: middle;
-        height: 18px;
-        padding: 4px 0 0 4px;
-        /* height: 20px;
-        padding: 6px 6px 0 6px;
-        background: white;
-        border: 1px solid #CCC;
-        border-radius: 0 3px 3px 0; */
-    }
-    }
-    .formItem {
-    input[type="text"], textarea {
-        -webkit-appearance: none;
-        height: 22px;
-        width: 100% !important;
-        box-sizing: border-box;
-        /* disable */
-        -webkit-box-sizing: border-box;
-        -moz-box-sizing: border-box;
-        /* box-shadow: inset 0 1px 2px 0 rgba(0, 0, 0, 0.15); */
-        border: 1px solid #aaa;
-        /* border:1px solid #ccc; */
-        font-size: 12px;
-        font-family: Arial, Helvetica, sans-serif;
-        -moz-border-radius: 3px;
-        -o-border-radius: 3px;
-        -webkit-border-radius: 3px;
-        border-radius: 3px;
-        /*  -moz-border-radius:   0 3px 3px 0;
-        -o-border-radius:   0 3px 3px 0;
-        -webkit-border-radius:  0 3px 3px 0;
-        border-radius:      0 3px 3px 0; */
-        background: #fff;
-    }
-    }
-}
+        /* @theme background: content */
 
-/* div.x2-layout.form-view .formSectionHeader {border-top:1px solid #999;} */
+        &:nth-child(odd) {
+            background: lighten($lightGray,100%);
+            /* @theme background: content */
+        }
 
-input[type="text"].record-name-autocomplete {
-    -webkit-appearance: none;
-    height: 22px;
-    width: 100% !important;
-    box-sizing: border-box;
-    -webkit-box-sizing: border-box;
-    -moz-box-sizing: border-box;
-    border: 1px solid #aaa;
-    font-size: 12px;
-    font-family: Arial, Helvetica, sans-serif;
-    @include border-radius(3px);
-    background: #fff;
-}
+        &:nth-child(even) {
+            background: lighten($lightGray,10%);
+            /* @theme background: content */
+        }
 
-div.x2-layout {
+        &.multiLine {
+            overflow: hidden;
+        }
+        &.checkBox {
+            width: auto;
+        }
+
+        .label {
+            font-size: 75%;
+
+            box-sizing: border-box;
+
+            background: lighten($lightGray,10%);
+            border: 1px solid $gray;
+
+            /* @theme background: light_content */
+            /* @theme color: text */
+            /* @theme border-color: border */
+            
+            vertical-align: middle;
+        }
+
+        .attribute {
+            /* @theme color: text */
+        }
+
+        &.noLabel .label, 
+        &.inlineLabel .label {
+            opacity: 0;
+        }
+
+        &.topLabel {
+            .attribute {
+                background: white;
+
+                /* @theme background: content */
+            }
+            .label {
+                padding: 4px;
+                border-bottom: 1px solid #ccc;
+            }
+        }
+
+        &.leftLabel .label {
+            box-sizing: border-box;
+            
+            padding: 3px;
+
+            width: 70px;
+
+            text-align: right;
+        }
+
+        &.multiLine.leftLabel label {
+        }
+
+        label.groupLabel {
+            background: none;
+            display: inline;
+            margin-left: 5px;
+        }
+
+        input[type=text], 
+        textarea {
+            box-sizing: border-box;
+
+            min-height: 22px;
+            border: 1px solid $lightGray;
+
+            font-size: 12px;
+            @include border-radius(3px);
+        }
+
+        input[type=text] {
+            min-width: 200px;
+        }
+    
+        textarea {
+            width: 100%;
+            padding: 2px;
+            min-height: 3em;
+
+            /* @theme background: content */
+            /* @theme color: text */
+        }
+
+        .field-checked {
+            color: $highlightGreen;
+        }
+
+        .field-unchecked {
+            color: $deleteRed;
+        }
+    }
+
+    /* Form Sections */
+
+    .collapsible .sectionTitle {
+        padding-right: 0;
+    }
+
     .formItem .placeholder {
-    color: #aaa;
+        color: #aaa;
     }
+
+    .extra-column {
+        vertical-align: middle;
+
+        .x2-hint {
+            width: 15px;
+            height: 15px;
+            line-height: 15px;
+
+            color: white;
+            background: $darkBlue;
+
+            border-radius: 3px;
+
+            text-align: center;
+            font-weight: bold;
+
+            @include opacity-hover(0.8);
+
+            &:before {
+                font-family: Montserrat;
+                content: "?";
+            }
+
+        }
+    }
+
+    .textarea .formInputBox {
+        width: 90%;
+    }
+
     .formInputBox {
+        box-sizing: border-box;
+        
+        display: inline-block;
         min-width: 100px;
+        padding: 3px;
+
+        font-weight: bold;
         input {
             margin: 0;
             padding: 2px;
-            &[type="text"] {
-            width: 100%;
-            }
+        }
+
+        input.input-percentage {
+            background: white url(../images/formEditor/percentage.gif) no-repeat 95%;
+        }
+
+        input, &.textBox {
+            font-weight: normal;
+        }
+
+        .checkboxWrapper {
+            display: inline-block;
+            vertical-align: middle;
+            height: 14px;
+            padding: 4px 0 0 4px;
+        }
     }
-    textarea {
-        padding: 2px;
+    
+    .error {
+        &div,
+        &label,
+        &span {
+            color: #C00;
+        }
+
+        &input, 
+        &textarea,
+        &select {
+            background: #FEE !important;
+            border-color: #C00 !important;
+        }
     }
-    select {
-        width: 100%;
-    }
-    input.input-percentage {
-        background: white url(../images/formEditor/percentage.gif) no-repeat 95%;
-    }
-    }
-    .tableWrapper .grid-view table.items {
-    clear: none;
-    margin-top: 0;
-    border: none;
-    }
-    div.error label, label.error, span.error {
-    color: #C00;
-    }
-    div.error {
-    input, textarea, select {
-        background: #FEE !important;
-        border-color: #C00 !important;
-    }
-    }
-    input.error, textarea.error, select.error {
-    background: #FEE !important;
-    border-color: #C00 !important;
-    }
+
+
     .errorSummary {
-    background: #FEE;
-    border: 2px solid #C00;
-    font-size: 0.9em;
-    padding: 5px;
-    margin-bottom: 1px;
-    }
-    .errorMessage {
-    color: red;
-    font-size: 0.9em;
-    }
-    .errorSummary {
-    p {
-        margin: 0;
+        background: #FEE;
+        border: 2px solid #C00;
+        font-size: 0.9em;
         padding: 5px;
+        margin-bottom: 1px;
+
+        p {
+            margin: 0;
+            padding: 5px;
+        }
+        ul {
+            margin: 0;
+            padding: 0 0 0 20px;
+        }
     }
-    ul {
+
+    .errorMessage {
+        color: red;
+        font-size: 0.9em;
+    }
+
+    .formSectionColumn {
+        display: inline-table;
+
+        border-collapse: collapse;
+
         margin: 0;
-        padding: 0 0 0 20px;
+        padding: 0;
+
+        vertical-align: top;
+        &:last-child {
+            border-right: none !important;
+        }
     }
+
+
+    &.form-view .formItem {
+        border-width: 0 0 0;
     }
-    &.editMode {
-        @include standard-box-shadow();
+
+    input[type='checkbox'] {
+        height: 11px;
+    }
+
+}
+
+.x2-layout.editMode {
+    @include standard-box-shadow;
+
     td {
         border: 1px dashed #f00;
         border-width: 1px 1px 1px 0;
     }
+
     .formSectionHeader {
         width: 100%;
-        background: #fff;
+
         float: none;
         a {
-        display: inline;
-        float: right;
-        width: auto;
-        margin: 0 5px;
+            display: inline;
+            float: right;
+            width: auto;
+            margin: 0 5px;
+        }
+
+        a.formSectionHide {
+            display: none;
+        }
+
+        .formSectionShow, .formSectionHide {
+            float: left;
         }
     }
+
     .showSection .formSectionHeader a.formSectionShow {
         display: none;
     }
-    .formSectionHeader {
-        a.formSectionHide {
-        display: none;
-        }
-        .formSectionShow, .formSectionHide {
-        float: left;
-        }
-    }
+
     .showSection .sectionTitle {
         -webkit-transform: none;
         -moz-transform: none;
@@ -492,13 +487,99 @@ div.x2-layout {
         -ms-transform: none;
         transform: none;
     }
+
+    .formTabOrder {
+        display: none;
+        top: 0;
+        right: 0;
+        position: absolute;
+        z-index: 10;
+        height: 15px;
+        width: 24px;
+        background: #990000;
+        font-size: 11px;
+        text-align: center;
+        color: #fff;
+        @include border-radius (0 1px 0 4px);
+    }
+
+    .formItem {
+        margin: 0;
+        padding: 0;
+
+
+        &.selected {
+            background: #90bede;
+            label, input, textarea {
+                border-color: #64879f;
+                background: #90bede;
+            }
+        }
+
+        &.ui-sortable-helper {
+            margin-right: 0;
+            padding-right: 5px;
+            border: 1px solid #ccc;
+            @include border-radius (4px);
+        }
+
+        &.topLabel label {
+            padding: 2px;
+            margin: 0;
+            display: block;
+        }
+
+        &.inlineLabel label,
+        &.noLabel label {
+            display: none;
+        }
+    }
+
+    .formItemPlaceholder {
+        float: left;
+        margin: 2px 3px;
+        width: 3px;
+        height: 24px;
+        background: #66f0ff;
+    }
+
+    .formSectionPlaceholder {
+        width: auto;
+        height: 3px;
+        background: #66f0ff;
+    }
+
+    .formSortable {
+        min-height: 30px;
+        width: 100%;
+        overflow: auto;
+        height: 100%;
+    }
+
+    .formInputBox {
+        margin: 0;
+        padding: 3px;
+        margin-bottom: 0;
+    }
+
+    .formSectionRow td{
+        box-sizing: border-box;
     }
 }
 
-/* div.form div.success input,div.form div.success textarea,div.form div.success select,div.form input.success,div.form textarea.success,div.form select.success {
-    background:#E6EFC2;
-    border-color:#C6D880;
-} */
+.lt-ie9 div.x2-layout .showSection .sectionTitle {
+    filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=3);
+}
+
+input[type="text"].record-name-autocomplete {
+    -webkit-appearance: none;
+
+    height: 22px;
+    box-sizing: border-box;
+
+    font-size: 12px;
+    @include border-radius(3px);
+}
 
 /* Editor CSS Begins Here */
 
@@ -506,79 +587,6 @@ div.x2-layout {
     filter: none;
 }
 
-div.x2-layout.editMode {
-    .formTabOrder {
-    display: none;
-    top: 0;
-    right: 0;
-    position: absolute;
-    z-index: 10;
-    height: 15px;
-    width: 24px;
-    background: #990000;
-    font-size: 11px;
-    text-align: center;
-    color: #fff;
-    -moz-border-radius: 0 1px 0 4px;
-    -o-border-radius: 0 1px 0 4px;
-    -webkit-border-radius: 0 1px 0 4px;
-    border-radius: 0 1px 0 4px;
-    }
-    .formItem {
-    &.selected {
-        background: #90bede;
-        label, input, textarea {
-        border-color: #64879f;
-        background: #90bede;
-        }
-    }
-    &.ui-sortable-helper {
-        margin-right: 0;
-        padding-right: 5px;
-        border: 1px solid #ccc;
-        -moz-border-radius: 4px;
-        -o-border-radius: 4px;
-        -webkit-border-radius: 4px;
-        border-radius: 4px;
-    }
-    }
-    .formItemPlaceholder {
-    float: left;
-    margin: 2px 3px;
-    width: 3px;
-    height: 24px;
-    background: #66f0ff;
-    }
-    .formSectionPlaceholder {
-    width: auto;
-    height: 3px;
-    background: #66f0ff;
-    }
-    .formSortable {
-    min-height: 30px;
-    overflow: auto;
-    }
-    .formItem {
-    margin: 0;
-    padding: 0;
-    margin-right: 0;
-    padding-right: 0px;
-    label.topLabel {
-        padding: 2px;
-        margin: 0;
-    }
-    }
-    label.leftLabel {
-    /* margin:0;
-    padding:3px 5px;
-    margin-bottom:0; */
-    }
-    .formInputBox {
-    margin: 0;
-    padding: 3px;
-    margin-bottom: 0;
-    }
-}
 
 #formEditorControls, #fieldListTitle, .fieldListTitle {
     font-size: 12px;
@@ -586,6 +594,8 @@ div.x2-layout.editMode {
     padding: 5px 5px;
     // border-bottom: 1px solid #666;
     background: #eee;
+
+    /* @theme background: highlight1 */
     @include border-radius(4px 4px 0 0);
 }
 
@@ -598,33 +608,33 @@ div.x2-layout.editMode {
     // @include box-shadow(0 0 10px 0 rgba(black, 0.75));
 }
 
-div.x2-layout.editMode #formEditorControls {
+.x2-layout.editMode #formEditorControls {
     margin-bottom: 0;
 }
 
 #formEditorControls {
     a.x2-button {
-    margin-bottom: 0;
+        margin-bottom: 0;
     }
     .formItemOptions {
-    float: right;
-    margin: 0 5px 0 0;
-    display: none;
-    input {
-        width: 13px;
-        height: 13px;
-        padding: 0;
-        margin: 0 10px 0 3px;
-        vertical-align: bottom;
-        position: relative;
-        top: -3px;
-        *overflow: hidden;
-    }
-    select {
-        font-size: 11px;
-        margin: 0;
-        padding: 0;
-    }
+        float: right;
+        margin: 0 5px 0 0;
+        display: none;
+        input {
+            width: 13px;
+            height: 13px;
+            padding: 0;
+            margin: 0 10px 0 3px;
+            vertical-align: bottom;
+            position: relative;
+            top: -3px;
+            *overflow: hidden;
+        }
+        select {
+            font-size: 11px;
+            margin: 0;
+            padding: 0;
+        }
     }
 }
 
@@ -645,27 +655,27 @@ div.x2-layout.editMode #formEditorControls {
     padding: 5px;
     overflow-y: scroll;
     .formItem {
-    float: none;
-    margin: 0 2px 2px 0;
-    padding: 4px;
-    border: 1px solid #ccc;
-    -moz-border-radius: 4px;
-    -o-border-radius: 4px;
-    -webkit-border-radius: 4px;
-    border-radius: 4px;
-    background: #fafafa;
+        float: none;
+        margin: 0 2px 2px 0;
+        padding: 4px;
+        border: 1px solid #ccc;
+        -moz-border-radius: 4px;
+        -o-border-radius: 4px;
+        -webkit-border-radius: 4px;
+        border-radius: 4px;
+        background: #fafafa;
     }
     .formItemPlaceholder, .formInputBox {
-    display: none;
+        display: none;
     }
     label {
-    color: #000;
-    padding: 1px 5px 1px 20px;
-    font-size: 12px;
-    font-weight: normal;
-    &.emailIcon {
-        background: url(../images/formEditor/email_icon.gif) 2px 0px no-repeat transparent;
-    }
+        color: #000;
+        padding: 1px 5px 1px 20px;
+        font-size: 12px;
+        font-weight: normal;
+        &.emailIcon {
+            background: url(../images/formEditor/email_icon.gif) 2px 0px no-repeat transparent;
+        }
     }
 }
 
@@ -711,7 +721,7 @@ ul.fieldlist li label.emailIcon {
 
 .quick-create-button {
     &:hover {
-    color: #699c1c;
+        color: #699c1c;
     }
     font-size: 24px;
     font-weight: bold;
@@ -741,13 +751,13 @@ span.mock-x2-form-label {
 
 div.cron-job {
     label.cron-checkitem {
-    display: inline-block;
-    &.big {
-        font-size: 1.3em;
-    }
+        display: inline-block;
+        &.big {
+            font-size: 1.3em;
+        }
     }
     input.cron-enabled {
-    display: inline-block;
+        display: inline-block;
     }
 }
 
@@ -775,9 +785,9 @@ div.half-width {
 .history.half-width {
     padding: 0;
     > {
-    div, form {
-        margin: 0 0px 5px 0;
-    }
+        div, form {
+            margin: 0 0px 5px 0;
+        }
     }
 }
 
@@ -797,7 +807,7 @@ div.half-width > div.form {
 
 #main-column.half-width > {
     div, form {
-    margin: 0 5px 5px 0px;
+        margin: 0 5px 5px 0px;
     }
 }
 
@@ -814,26 +824,26 @@ div.half-width > div.form {
         padding: 0;
         > {
             div, form {
-            margin: 0 0px 5px 0;
+                margin: 0 0px 5px 0;
             }
         }
     }
     #main-column > {
-    div {
-        &.page-title-fixed-outer {
-        padding-right: 10px;
+        div {
+            &.page-title-fixed-outer {
+                padding-right: 10px;
+            }
+            &.page-title {
+                margin-left: 0;
+            }
+            &.form {
+                background: #fff;
+            }
+            margin: 0 5px 5px 0px;
         }
-        &.page-title {
-        margin-left: 0;
+        form {
+            margin: 0 5px 5px 0px;
         }
-        &.form {
-        background: #fff;
-        }
-        margin: 0 5px 5px 0px;
-    }
-    form {
-        margin: 0 5px 5px 0px;
-    }
     }
 }
 
@@ -849,7 +859,7 @@ div.half-width > div.form {
         }
         .history {
             padding: 0;
-                > {
+            > {
                 div, form {
                     margin: 0 0px 5px 0;
                 }
@@ -857,19 +867,19 @@ div.half-width > div.form {
         }
         #main-column > {
             div {
-            &.page-title-fixed-outer {
-                padding-right: 10px;
-            }
-            &.page-title {
-                margin-left: 0;
-            }
-            &.form {
-                background: #fff;
-            }
-            margin: 0 5px 5px 0px;
+                &.page-title-fixed-outer {
+                    padding-right: 10px;
+                }
+                &.page-title {
+                    margin-left: 0;
+                }
+                &.form {
+                    background: #fff;
+                }
+                margin: 0 5px 5px 0px;
             }
             form {
-            margin: 0 5px 5px 0px;
+                margin: 0 5px 5px 0px;
             }
         }
     }
@@ -878,3 +888,18 @@ div.half-width > div.form {
 #upload_iframe {
     position: absolute;
 }
+
+
+div,label,span {
+    &.x2-error {
+            color: #C00;
+    }
+}
+
+input, textarea, select {
+    &.x2-error {
+        background: #FEE !important;
+        border-color: #C00 !important;
+    }
+}
+

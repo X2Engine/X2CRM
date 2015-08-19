@@ -38,4 +38,9 @@ return array (
 'Import Accounts'=>'חשבונות יבוא',
 'Export Accounts'=>'חשבונות יצוא',
 'Bug Report Attributes'=>'דווח על באג תכונות',
+'Share {opportunity}'=>'שתף {opportunity}',
+'{account}'=>'{account}',
+'{module} Report'=>'{module} דיווח',
+'This form will allow you to generate a campaign to mail related {contacts} of the {accounts} displayed in the report below. Select "Primary {contacts}" to only email {contacts} which are set as the Primary {contact} for an {account}. Select "All" to email all related {contacts} on each {account}.'=>'טופס זה יאפשר לך ליצור קמפיין לשלוח קשור {contacts} של {accounts} מוצג בדוח להלן. בחר &quot;יסודי {contacts} לדוא&quot;ל בלבד {contacts} שנקבעים כיסודי {contact} {account} בחר באפשרות &quot;כל&quot; לדוא&quot;ל כל קשור {contacts} בכל {account}',
+'Primary {module}'=>'עיקרי {module}',
 );

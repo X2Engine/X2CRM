@@ -502,8 +502,21 @@ class CalendarController extends x2base {
         if($action->allDay)
             $event['allDay'] = $action->allDay;
 
-        if($action->color)
+        if($action->color) {
             $event['color'] = $action->color;
+        } else {
+            $event['color'] = '#6389de';
+            // old default color
+            //$event['color'] = '#3a87ad';
+        }
+
+        static $brightnesses = array ();
+        if (!isset ($brightnesses[$event['color']])) {
+            $brightnesses[$event['color']] = X2Color::getColorBrightness ($event['color']);
+        }
+        if ($brightnesses[$event['color']] < 115) {
+            $event['textColor'] = 'white';
+        }
 
         if($action->type == 'event'){
             if($action->completeDate)

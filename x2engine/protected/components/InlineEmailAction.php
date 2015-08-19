@@ -77,15 +77,13 @@ class InlineEmailAction extends CAction {
 			$scenario = 'template';
 		}
 		$model->setScenario($scenario);
-
 		$attachments = array();
 
 		if(isset($_POST['InlineEmail'])){
 			// This could indicate either a template change or a form submission.
 			$model->attributes = $_POST['InlineEmail'];
 
-			// Prepare attachments that may have been uploaded on-the-fly (?)
-			$mediaLibraryUsed = false; // is there an attachment from the media library?
+			// Prepare attachments that may have been uploaded on-the-fly
 			if(isset(
                 $_POST['AttachmentFiles'],
                 $_POST['AttachmentFiles']['id'],
@@ -98,22 +96,23 @@ class InlineEmailAction extends CAction {
 					$type = $types[$i];
                     switch ($type) {
                         case 'temp': // attachment is a temp file
-                            $tempFile = TempFile::model()->findByPk($ids[$i]);
+                            $file = TempFile::model()->findByPk($ids[$i]);
                             $attachments[] = array(
-                                'filename' => $tempFile->name,
-                                'folder' => $tempFile->folder,
+                                'filename' => $file->name,
+                                'folder' => $file->folder,
                                 'type' => $type, 
-                                'id' => $tempFile->id
+                                'id' => $file->id,
+                                'model' => $file,
                             );
                             break;
                         case 'media': // attachment is from media library
-                            $mediaLibraryUsed = true;
-                            $media = Media::model()->findByPk($ids[$i]);
+                            $file = Media::model()->findByPk($ids[$i]);
                             $attachments[] = array(
-                                'filename' => $media->fileName,
-                                'folder' => $media->uploadedBy,
+                                'filename' => $file->fileName,
+                                'folder' => $file->uploadedBy,
                                 'type' => $type,
-                                'id' => $media->id
+                                'id' => $file->id,
+                                'model' => $file,
                             );
                             break;
                          
@@ -176,7 +175,10 @@ class InlineEmailAction extends CAction {
 				'modelErrorHtml' => CHtml::errorSummary(
                     $model,Yii::t('app', "Please fix the following errors:"),
                     null,
-                    array('style'=>'margin-bottom: 5px;')),
+                    array(
+                        'style'=>'margin-bottom: 5px;',
+                        'class'=>''
+                    )),
 			);
 			if($scenario == 'template') {
 				// There's a chance the inline email form is switching gears into

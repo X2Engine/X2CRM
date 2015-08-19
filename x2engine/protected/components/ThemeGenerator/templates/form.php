@@ -1,18 +1,11 @@
 
 <?php return "
 
-.form,
-#actions-frameUpdate-form,
-.form-view {
+body.not-mobile-body .form,
+#actions-frameUpdate-form {
 	background: $colors[content];
 	color: $colors[text]
 	border-color: $colors[lighter_content]
-}
-
-.form-view div,
-.form-view label,
-.form-view td {
-	border-color: $colors[lighter_content];
 }
 
 .sectionTitle {
@@ -20,13 +13,10 @@
 }
 
 
-.form-view div,
-.form-view label,
-.form-view textarea,
-.form label,
-.form input:not([type=\"submit\"]):not([type=\"button\"]),
-.form .row,
-.form textarea {
+body.not-mobile-body .form label,
+body.not-mobile-body .form input:not([type=\"submit\"]):not([type=\"button\"]),
+body.not-mobile-body .form .row,
+body.not-mobile-body .form textarea {
 	background: $colors[content];
 	color: $colors[text];
 	border-color: $colors[border]
@@ -66,29 +56,41 @@ em {
 	color: $colors[text];
 }
 
-#action-list.list-view .items ,
-#action-list.list-view .view {
+.x2-list-view.list-view .items ,
+.x2-list-view.list-view .view {
 	background: $colors[content];
 	color: $colors[text];
 	border-color: $colors[light_content];
 }
 
-#action-list.list-view .description {
+.x2-list-view.list-view .description {
 	color: $colors[text];
 
 }
 
-#action-list.list-view .footer {
+.x2-list-view.list-view .footer {
 	color: $colors[light_text];
 
 }
 
-.no-border {
-	background: none !important;;
+.x2-list-view.list-view .items .highlight ,
+.x2-list-view.list-view .view.highlight {
+	background: $colors[highlight2]
+	color: $colors[smart_text2]
+	border-color: $colors[lighter_highlight2]
 }
 
-.form2 {
-	background: none !important;
+.x2-list-view.list-view .view.highlight:hover{
+	background: $colors[light_highlight2]
+	border-color: $colors[lighter_highlight2]
+}
+
+.x2-list-view.list-view .view.highlight.clicked {
+}
+
+
+.no-border {
+	background: none !important;;
 }
 
 form .formInputBox textarea{

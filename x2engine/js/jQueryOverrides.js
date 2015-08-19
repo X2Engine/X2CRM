@@ -45,16 +45,16 @@
      * Released under the MIT license
      * http://jquery.org/license
      */
-    $.ajax = function (url, object) {
+    $.ajax = function (url, options) {
 
-		// If url is an object, simulate pre-1.5 signature
-		if ( typeof url === "object" ) {
-			options = url;
-			url = undefined;
-		}
+        // If url is an object, simulate pre-1.5 signature
+        if ( typeof url === "object" ) {
+            options = url;
+            url = undefined;
+        }
 
-		// Force options to be an object
-		options = options || {};
+        // Force options to be an object
+        options = options || {};
 
         if (options.type === 'POST' || options.type === 'post') {
             if (typeof options.data === 'undefined') {

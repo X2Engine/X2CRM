@@ -34,6 +34,8 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 
+@import "colors";
+
 $recordViewSingleColumnThreshold: 1406px;
 $recordViewSingleColumnThresholdNoWidgets: 1129px;
 
@@ -68,9 +70,9 @@ $recordViewSingleColumnThresholdNoWidgets: 1129px;
     box-shadow: 0px 2px 6px 0.5px #7B7B7B;
     border-radius: 4px 4px 0 0;
     .email-title-bar {
-        background: rgb(177, 177, 177);
+        background: $dialogTitleBarColor;
         .widget-title {
-            color: white;
+            color: $blackTextColor;
         }
     }
 }
@@ -122,4 +124,10 @@ body.show-widgets {
 
 #RecordViewWidgetManagerwidgets-container-inner {
     min-height: 300px;
+}
+
+#content.record-view-single-column {
+    #RecordViewWidgetManagerwidgets-container-inner {
+        min-height: auto;
+    }
 }

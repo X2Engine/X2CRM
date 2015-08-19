@@ -194,6 +194,9 @@ $this->widget('zii.widgets.grid.CGridView', array(
 <?php
 
 $customDropdowns = Dropdowns::model()->findAll('id>=1000');
+usort ($customDropdowns, function ($a, $b) {
+    return strcmp ($a->name, $b->name);
+});
 $this->renderPartial('deleteDropdown', array(
     'dropdowns' => $customDropdowns,
 ));

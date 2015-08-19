@@ -80,9 +80,16 @@ $debugLogRoutes = array(
         'maxLogFiles' => 10,
         'maxFileSize' => 128,
     ),
+	array(
+		'class' => 'CFileLogRoute',
+		'logFile' => 'trace.log',
+        'levels' => 'trace',
+        'maxLogFiles' => 10,
+        'maxFileSize' => 128,
+	),
 );
 
-if (YII_DEBUG_TOOLBAR) {
+if (YII_DEBUG && YII_DEBUG_TOOLBAR) {
     $debugLogRoutes[] = array (
         'class' => 'ext.yii-debug-toolbar.YiiDebugToolbarRoute',
         'ipFilters' => array('*'),
@@ -139,6 +146,7 @@ $config = array(
         // uncomment the following to enable URLs in path-format
 
         'urlManager' => array(
+            'class' => 'X2UrlManager',
             'urlFormat' => 'path',
             'urlRuleClass' => 'X2UrlRule',
             'showScriptName' => !isset($_SERVER['HTTP_MOD_REWRITE']),
@@ -247,8 +255,8 @@ $config = array(
             'username' => $user,
             'password' => $pass,
             'charset' => 'utf8',
-            'enableProfiling'=>true,
-            'enableParamLogging' => true,
+            'enableProfiling' => YII_DEBUG,
+            'enableParamLogging' => YII_DEBUG,
             'schemaCachingDuration' => 84600
         ),
         'authManager' => array(
@@ -312,10 +320,11 @@ $config = array(
         'userCache' => array(),
         'isAdmin' => false,
         'sessionStatus' => 0,
-        'logo' => "uploads/logos/yourlogohere.png",
+        'logo' => "uploads/protected/logos/yourlogohere.png",
         'webRoot' => __DIR__.DIRECTORY_SEPARATOR.'..',
         'trueWebRoot' => substr(__DIR__, 0, -17),
         'registeredWidgets' => array(
+             
             'OnlineUsers' => 'Active Users',
             'TimeZone' => 'Clock',
             'ChatBox' => 'Activity Feed',
@@ -329,7 +338,6 @@ $config = array(
             'MediaBox' => 'Files',
             'DocViewer' => 'Doc Viewer',
             'TopSites' => 'Top Sites',
-            'HelpfulTips' => 'Helpful Tips'
         ),
         'currency' => '',
         'version' => $version,

@@ -32,9 +32,9 @@
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2Engine".
  *****************************************************************************************/
+
 if(typeof x2 == 'undefined')
     x2 = {};
-
 
 x2.InlineEmailEditorManager = (function () {
 
@@ -51,7 +51,8 @@ function InlineEmailEditorManager (argsDict) {
         rmTmpUploadUrl: '',
         reinstantiateEditorWhenShown: true,
         disableTemplates: false,
-        enableResizability: true
+        enableResizability: true,
+        type: ''
         //originalContentHeight: 300,
         //originalContentWidth: 713
     };
@@ -86,9 +87,8 @@ InlineEmailEditorManager.prototype.handleInlineEmailActionResponse = function (d
                     $('input[name="InlineEmail['+attr+']"]').addClass('error');
                 }
             }
-        } else {
-            $('#inline-email-errors').addClass('errorSummary');
-        }
+        } 
+        $('#inline-email-errors').addClass('errorSummary');
         $('#inline-email-errors').html(data.modelHasErrors ? data.modelErrorHtml : data.message).
             show();
         return false;
@@ -114,8 +114,12 @@ InlineEmailEditorManager.prototype.handleInlineEmailActionResponse = function (d
 InlineEmailEditorManager.prototype.clearForm = function () {
     $('.error').removeClass('error');
     $('#inline-email-errors').html('').hide();
-    $('#email-template').val(0);            
+    $('#email-template').val(0);
     $('input[name="InlineEmail[subject]"]').val('');
+    if (this.type === 'testCampaignEmail') {
+        $('#InlineEmail_modelId').val ('');
+        $('#InlineEmail_recordName').val ('');
+    }
     this.element.find ('.upload-file-container').remove ();
 };
 
@@ -443,6 +447,7 @@ InlineEmailEditorManager.prototype._setUpCloseFunctionality = function () {
     var that = this;
     this.element.find ('.cancel-send-button').click (function () {
         that.toggleEmailForm ();
+        that.clearForm ()
     });
 };
 
@@ -542,21 +547,13 @@ InlineEmailEditorManager.prototype._init = function () {
         that._setUpDraggability ();
         that._setUpButtonBehavior ();
         that._ckeFixes ();
+        that._initializeEmailEditor ();
     });
 
 };
 
-return InlineEmailEditorManager;
-
-}) ();
-
-
-x2.inlineEmailEditor = {};
-x2.inlineEmailEditor.isSetUp = false;
-
-$(function() {
-
-
+InlineEmailEditorManager.prototype._initializeEmailEditor = function () {
+    var that = this;
     function setupInlineEmailEditorAndroid () {
         x2.emailEditor.setupEmailAttachments('email-attachments');
     }
@@ -565,7 +562,7 @@ $(function() {
      * Initializes CKEditor in the email form, and the datetimepicker for the "send later" dropdown.
      */
     $(document).on('setupInlineEmailEditor',function(){
-        if (!x2.inlineEmailEditorManager.reinstantiateEditorWhenShown && 
+        if (!that.reinstantiateEditorWhenShown && 
             window.inlineEmailEditor) return;
 
         if(window.inlineEmailEditor)
@@ -586,7 +583,7 @@ $(function() {
                        function exists) */
                     inlineEmailEditorCallback(); 
                 }
-                x2.inlineEmailEditorManager.executeCallbacks ();
+                that.executeCallbacks ();
                 x2.inlineEmailEditor.isSetUp = true;
             });
         
@@ -629,9 +626,16 @@ $(function() {
         }
     });
 
-    
-    setupInlineEmailForm();
-});
+    this._setUpInlineEmailForm ();
+};
+
+return InlineEmailEditorManager;
+
+}) ();
+
+
+x2.inlineEmailEditor = {};
+x2.inlineEmailEditor.isSetUp = false;
 
 /**
  * Temporary (until refactor) wrapper around InlineEmailEditorManager method 
@@ -640,10 +644,6 @@ function toggleEmailForm(mode) {
     if (!x2.inlineEmailEditor.isSetUp && !x2.isAndroid) return;
 
     x2.inlineEmailEditorManager.toggleEmailForm ();
-}
-
-function setupInlineEmailForm() {
-    x2.inlineEmailEditorManager._setUpInlineEmailForm ();
 }
 
 function inlineEmailSwitchConfirm() {

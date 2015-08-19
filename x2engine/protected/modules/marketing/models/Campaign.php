@@ -153,6 +153,13 @@ class Campaign extends X2Model {
         $this->content = $originalContent;
     }
 
+    public static function getValidContactLists () {
+    	$lists = X2Model::model('ContactList')->findAllByAttributes (array(), 
+    		"type!='campaign'"
+    	);
+    	return $lists;
+    }
+
     public function getDisplayName ($plural=true, $ofModule=true) {
         if (!$ofModule) {
             return Yii::t('app', 'Campaign'.($plural ? 's' : ''));

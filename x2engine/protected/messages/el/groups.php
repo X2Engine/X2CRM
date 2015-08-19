@@ -9,4 +9,10 @@ return array (
 'Group:'=>'Ομάδα:',
 'Users:'=>'Χρήστες:',
 'Edit Group'=>'Επεξεργασία ομάδας',
+'Create {group}'=>'Δημιουργήστε {group}',
+'{group}:'=>'{group}',
+'{users}:'=>'{users}',
+'{group} List'=>'{group} Λίστα',
+'Edit {group}'=>'Επεξεργασία {group}',
+'Delete {group}'=>'Διαγραφή {group}',
 );

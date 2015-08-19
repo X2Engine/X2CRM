@@ -118,7 +118,7 @@ if(isset($id)) {
 	echo CHtml::hiddenField('user-id', $id); // save user id for POST
 	?>
 	
-	<div class="page-title"><h2><?php echo Yii::t('calendar', 'View Permission'); ?></h2></div>
+	<div class="calendar page-title"><h2><?php echo Yii::t('calendar', 'View Permission'); ?></h2></div>
 	<div class="form">
         <?php echo Yii::t('calendar', "These {users} can view {fullname}'s {calendar}.", array (
             '{users}' => lcfirst($modTitles['users']),
@@ -134,7 +134,7 @@ if(isset($id)) {
 		?>
 		<br>
 	</div>
-	<div class="page-title rounded-top"><h2><?php echo Yii::t('calendar', 'Edit Permission'); ?></h2></div>
+	<div class="calendar page-title rounded-top"><h2><?php echo Yii::t('calendar', 'Edit Permission'); ?></h2></div>
 	<div class="form">
         <?php echo Yii::t('calendar', "These {users} can edit {fullname}'s {calendar}.", array (
             '{users}' => lcfirst($modTitles['users']),
@@ -163,7 +163,7 @@ $this->endWidget();
 	<?php
 } else {
 	?>
-    <div class="page-title"><h2>
+    <div class="calendar page-title"><h2>
         <?php echo Yii::t('calendar', '{user} {calendar} Permissions', array(
             '{calendar}' => $modTitles['calendar'],
             '{user}' => $modTitles['user'],

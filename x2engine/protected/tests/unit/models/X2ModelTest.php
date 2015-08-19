@@ -59,6 +59,20 @@ class X2ModelTest extends X2DbTestCase {
 
     private $_nameFields;
 
+    public static function setUpBeforeClass () {
+        $leadSourceDropdown = Dropdowns::model ()->findByPk (103);
+        $leadSourceDropdown->multi = 0;
+        if (!$leadSourceDropdown->save ()) throw new CException ('failed to restore dropdown');
+        return parent::setUpBeforeClass ();
+    }
+
+    public static function tearDownAfterClass () {
+        $leadSourceDropdown = Dropdowns::model ()->findByPk (103);
+        $leadSourceDropdown->multi = 0;
+        $leadSourceDropdown->save ();
+        return parent::tearDownAfterClass ();
+    }
+
     public function nameFields() {
         if (!isset($this->_nameFields)) {
             $this->_nameFields = array();
@@ -124,6 +138,23 @@ class X2ModelTest extends X2DbTestCase {
         $this->assertTrue((bool) $c);
         $this->assertEquals($this->contact('testAnyone')->id, $c->id);
     }
+    
+    public function testFindByAttributes(){
+        $c = Contacts::model()->findByAttributes(array('email'=>$this->contact('launchedEmailCampaign1')->email));
+        $this->assertTrue((bool) $c);
+        $this->assertEquals($this->contact('launchedEmailCampaign1')->id, $c->id);
+        
+        $c->markAsDuplicate();
+        $c->refresh();
+        $this->assertEquals($this->contact('launchedEmailCampaign1')->id, $c->id);
+        
+        $c2 = Contacts::model()->findByAttributes(array('email'=>$this->contact('launchedEmailCampaign1')->email));
+        $this->assertTrue((bool) $c2);
+        $this->assertEquals($this->contact('launchedEmailCampaign3')->id, $c2->id);
+        
+        $c3 = Contacts::model()->findByAttributes(array('id'=>$this->contact('launchedEmailCampaign1')->id));
+        $this->assertFalse((bool) $c3);
+    }
 
     /**
      * A cursory test of the auto-ref update for the link-type fields refactor.
@@ -172,271 +203,48 @@ class X2ModelTest extends X2DbTestCase {
         $this->assertEquals(Fields::nameId($contact2->name, $contact2->id), $contact2->nameId);
     }
 
-    /*
-     * The following tests are all related to the "mergeRelatedRecords" function
-     * which merges the all related record types (Actions, Events, Tags, etc.)
-     * on two X2Model instances. The the undo merge is also tested in each
-     * unit test. 
-     */
+    public function testCompareAttribute () {
+        $contact1 = $this->contact ('testAnyone'); 
+        $contact2 = $this->contact ('testUser'); 
+        $contact1->leadSource = 'Google';
+        $this->assertSaves ($contact1);
+        $contact2->leadSource = 'Facebook';
+        $this->assertSaves ($contact2);
 
-    public function testMergeActions() {
-        $contact = $this->contact('testAnyone');
-        $action = new Actions;
-        $action->actionDescription = "TEST";
-        $action->visibility = 1;
-        $action->associationType = "contacts";
-        $action->associationId = $contact->id;
-        $action->save();
+        $criteria = new CDbCriteria;
+        $searchModel = new Contacts;
+        $searchModel->leadSource = 'Google';
+        $compareAttribute = TestingAuxLib::setPublic ($searchModel, 'compareAttribute');
+        $compareAttribute ($criteria, $searchModel->getField ('leadSource'));
+        $contacts = Contacts::model()->findAll ($criteria);
+        $this->assertModelArrayEquality (array ($contact1), $contacts);
 
-        $model = new Contacts;
-        foreach ($contact->attributes as $key => $val) {
-            if ($key != 'id' && $key != 'nameId') {
-                $model->$key = $val;
-            }
-        }
-        $model->save();
+        $criteria = new CDbCriteria;
+        $searchModel = new Contacts;
+        $searchModel->leadSource = 'Facebook';
+        $compareAttribute = TestingAuxLib::setPublic ($searchModel, 'compareAttribute');
+        $compareAttribute ($criteria, $searchModel->getField ('leadSource'));
+        $contacts = Contacts::model()->findAll ($criteria);
+        $this->assertModelArrayEquality (array ($contact2), $contacts);
 
-        $this->assertEquals(0, Yii::app()->db->createCommand()->select('COUNT(*)')
-            ->from('x2_actions')
-            ->where(
-                'associationType = "contacts" AND associationId = :id', array(':id' => $model->id))
-            ->queryScalar());
-        $this->assertEquals(1, Yii::app()->db->createCommand()->select('COUNT(*)')
-            ->from('x2_actions')
-            ->where(
-                'associationType = "contacts" AND associationId = :id', 
-                array(':id' => $contact->id))
-            ->queryScalar());
+        $contact1->leadSource = CJSON::encode (array ('Google', 'Facebook'));
+        $this->assertSaves ($contact1);
 
-        $mergeData = $model->mergeActions($contact, true);
+        $criteria = new CDbCriteria;
+        $searchModel = new Contacts;
+        $searchModel->leadSource = array ('Google');
+        $compareAttribute = TestingAuxLib::setPublic ($searchModel, 'compareAttribute');
+        $compareAttribute ($criteria, $searchModel->getField ('leadSource'));
+        $contacts = Contacts::model()->findAll ($criteria);
+        $this->assertModelArrayEquality (array ($contact1), $contacts);
 
-        $this->assertEquals(1, Yii::app()->db->createCommand()->select('COUNT(*)')
-            ->from('x2_actions')
-            ->where(
-                'associationType = "contacts" AND associationId = :id', array(':id' => $model->id))
-            ->queryScalar());
-        $this->assertEquals(0, Yii::app()->db->createCommand()->select('COUNT(*)')
-            ->from('x2_actions')
-            ->where(
-                'associationType = "contacts" AND associationId = :id', 
-                array(':id' => $contact->id))
-            ->queryScalar());
-
-        $model->unmergeActions($contact->id, $mergeData);
-
-        $this->assertEquals(1, Yii::app()->db->createCommand()->select('COUNT(*)')
-            ->from('x2_actions')
-            ->where(
-                'associationType = "contacts" AND associationId = :id', 
-                array(':id' => $contact->id))
-            ->queryScalar());
-        $this->assertEquals(0, Yii::app()->db->createCommand()->select('COUNT(*)')
-            ->from('x2_actions')
-            ->where(
-                'associationType = "contacts" AND associationId = :id', array(':id' => $model->id))
-            ->queryScalar());
-    }
-
-    public function testMergeEvents() {
-        $contact = $this->contact('testAnyone');
-
-        $event = new Events;
-        $event->type = 'record_updated';
-        $event->associationType = 'Contacts';
-        $event->associationId = $contact->id;
-        $event->save();
-
-        $model = new Contacts;
-        foreach ($contact->attributes as $key => $val) {
-            if ($key != 'id' && $key != 'nameId') {
-                $model->$key = $val;
-            }
-        }
-        $model->save();
-
-        $this->assertEquals(2, Yii::app()->db->createCommand()->select('COUNT(*)')
-            ->from('x2_events')
-            ->where(
-                'associationType = "Contacts" AND associationId = :id', array(':id' => $model->id))
-            ->queryScalar());
-        $this->assertEquals(1, Yii::app()->db->createCommand()->select('COUNT(*)')
-            ->from('x2_events')
-            ->where(
-                'associationType = "Contacts" AND associationId = :id',
-                array(':id' => $contact->id))
-            ->queryScalar());
-
-        $mergeData = $model->mergeEvents($contact, true);
-
-        $this->assertEquals(0, Yii::app()->db->createCommand()->select('COUNT(*)')
-            ->from('x2_events')
-            ->where(
-                'associationType = "Contacts" AND associationId = :id',
-                array(':id' => $contact->id))
-            ->queryScalar());
-        $this->assertEquals(3, Yii::app()->db->createCommand()->select('COUNT(*)')
-            ->from('x2_events')
-            ->where(
-                'associationType = "Contacts" AND associationId = :id', array(':id' => $model->id))
-            ->queryScalar());
-
-        $model->unmergeEvents($contact->id, $mergeData);
-
-        $this->assertEquals(1, Yii::app()->db->createCommand()->select('COUNT(*)')
-            ->from('x2_events')
-            ->where(
-                'associationType = "Contacts" AND associationId = :id',
-                array(':id' => $contact->id))
-            ->queryScalar());
-        $this->assertEquals(2, Yii::app()->db->createCommand()->select('COUNT(*)')
-            ->from('x2_events')
-            ->where(
-                'associationType = "Contacts" AND associationId = :id', array(':id' => $model->id))
-            ->queryScalar());
-    }
-
-    public function testMergeNotifications() {
-        $contact = $this->contact('testAnyone');
-
-        $notif = new Notification;
-        $notif->modelType = 'Contacts';
-        $notif->modelId = $contact->id;
-        $notif->type = 'weblead';
-        $notif->save();
-
-        $model = new Contacts;
-        foreach ($contact->attributes as $key => $val) {
-            if ($key != 'id' && $key != 'nameId') {
-                $model->$key = $val;
-            }
-        }
-        $model->save();
-
-        $this->assertEquals(0, Yii::app()->db->createCommand()->select('COUNT(*)')
-            ->from('x2_notifications')
-            ->where('modelType = "Contacts" AND modelId = :id', array(':id' => $model->id))
-            ->queryScalar());
-        $this->assertEquals(1, Yii::app()->db->createCommand()->select('COUNT(*)')
-            ->from('x2_notifications')
-            ->where('modelType = "Contacts" AND modelId = :id', array(':id' => $contact->id))
-            ->queryScalar());
-
-        $mergeData = $model->mergeNotifications($contact, true);
-
-        $this->assertEquals(1, Yii::app()->db->createCommand()->select('COUNT(*)')
-            ->from('x2_notifications')
-            ->where('modelType = "Contacts" AND modelId = :id', array(':id' => $model->id))
-            ->queryScalar());
-        $this->assertEquals(0, Yii::app()->db->createCommand()->select('COUNT(*)')
-            ->from('x2_notifications')
-            ->where('modelType = "Contacts" AND modelId = :id', array(':id' => $contact->id))
-            ->queryScalar());
-
-        $model->unmergeNotifications($contact->id, $mergeData);
-
-        $this->assertEquals(0, Yii::app()->db->createCommand()->select('COUNT(*)')
-            ->from('x2_notifications')
-            ->where('modelType = "Contacts" AND modelId = :id', array(':id' => $model->id))
-            ->queryScalar());
-        $this->assertEquals(1, Yii::app()->db->createCommand()->select('COUNT(*)')
-            ->from('x2_notifications')
-            ->where('modelType = "Contacts" AND modelId = :id', array(':id' => $contact->id))
-            ->queryScalar());
-    }
-
-    public function testMergeTags() {
-        $contact = $this->contact('testAnyone');
-
-        $contact->addTags(array('test'));
-
-        $model = new Contacts;
-        foreach ($contact->attributes as $key => $val) {
-            if ($key != 'id' && $key != 'nameId') {
-                $model->$key = $val;
-            }
-        }
-        $model->save();
-        $this->assertEquals(0, count($model->getTags(true)));
-        $this->assertEquals(1, count($contact->getTags(true)));
-
-        $mergeData = $model->mergeTags($contact, true);
-
-        $this->assertEquals(1, count($model->getTags(true)));
-        $this->assertEquals(0, count($contact->getTags(true)));
-
-        $model->unmergeTags($contact->id, $mergeData);
-
-        $this->assertEquals(0, count($model->getTags(true)));
-        $this->assertEquals(1, count($contact->getTags(true)));
-    }
-
-    public function testMergeRelationships() {
-        $contact = $this->contact('testAnyone');
-        $otherContact = $this->contact('testUser');
-        $thirdContact = $this->contact('testUser_unsent');
-
-        $rel = new Relationships;
-        $rel->firstType = $rel->secondType = 'Contacts';
-        $rel->firstId = $contact->id;
-        $rel->secondId = $otherContact->id;
-        $rel->save();
-        $rel = new Relationships;
-        $rel->firstType = $rel->secondType = 'Contacts';
-        $rel->secondId = $contact->id;
-        $rel->firstId = $thirdContact->id;
-        $rel->save();
-
-        $model = new Contacts;
-        foreach ($contact->attributes as $key => $val) {
-            if ($key != 'id' && $key != 'nameId') {
-                $model->$key = $val;
-            }
-        }
-        $model->save();
-
-        $this->assertEquals(1, count($model->getRelatedX2Models(true)));
-        $this->assertEquals(2, count($contact->getRelatedX2Models(true)));
-
-        $mergeData = $model->mergeRelationships($contact, true);
-
-        $this->assertEquals(0, count($contact->getRelatedX2Models(true)));
-        $this->assertEquals(3, count($model->getRelatedX2Models(true)));
-
-        $model->unmergeRelationships($contact->id, $mergeData);
-
-        $this->assertEquals(2, count($contact->getRelatedX2Models(true)));
-        $this->assertEquals(1, count($model->getRelatedX2Models(true)));
-    }
-
-    public function testMergeLinkFields() {
-        $contact = $this->contact('testAnyone');
-        $account = $this->account('testQuote');
-
-        $account->primaryContact = $contact->nameId;
-        $account->save();
-
-        $model = new Contacts;
-        foreach ($contact->attributes as $key => $val) {
-            if ($key != 'id' && $key != 'nameId') {
-                $model->$key = $val;
-            }
-        }
-        $model->save();
-
-        $this->assertEquals($contact->nameId, $account->primaryContact);
-        $this->assertNotEquals($contact->nameId, $model->nameId);
-
-        $mergeData = $model->mergeLinkFields($contact, true);
-        $account = X2Model::model('Accounts')->findByPk($account->id);
-
-        $this->assertEquals($model->nameId, $account->primaryContact);
-        $this->assertNotEquals($contact->nameId, $model->nameId);
-
-        $model->unmergeLinkFields($contact->id, $mergeData);
-        $account = X2Model::model('Accounts')->findByPk($account->id);
-
-        $this->assertEquals($contact->nameId, $account->primaryContact);
-        $this->assertNotEquals($contact->nameId, $model->nameId);
+        $criteria = new CDbCriteria;
+        $searchModel = new Contacts;
+        $searchModel->leadSource = array ('Facebook');
+        $compareAttribute = TestingAuxLib::setPublic ($searchModel, 'compareAttribute');
+        $compareAttribute ($criteria, $searchModel->getField ('leadSource'));
+        $contacts = Contacts::model()->findAll ($criteria);
+        $this->assertModelArrayEquality (array ($contact1, $contact2), $contacts);
     }
 
 }

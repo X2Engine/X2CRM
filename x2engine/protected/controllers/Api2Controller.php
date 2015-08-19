@@ -792,9 +792,13 @@ class Api2Controller extends CController {
      */
     public function filterAuthenticate($filterChain) {
         // Check for the availability of authentication:
+        if(!isset($_SERVER['PHP_AUTH_USER'], $_SERVER['PHP_AUTH_PW']) && isset($_SERVER['HTTP_AUTHORIZATION'])){
+            list($_SERVER['PHP_AUTH_USER'], $_SERVER['PHP_AUTH_PW']) 
+                    = explode(':' , base64_decode(substr($_SERVER['HTTP_AUTHORIZATION'], 6)));
+        }
         foreach(array('user','pw') as $field) {
             $srvKey = 'PHP_AUTH_'.strtoupper($field);
-            if(!isset($_SERVER[$srvKey])) {
+            if(!isset($_SERVER[$srvKey]) || empty($_SERVER[$srvKey])) {
                 $this->authFail("Missing user credentials: $field");
                 return;
             }
@@ -802,7 +806,7 @@ class Api2Controller extends CController {
         }
         $userModel = User::model()->findByAlias($user);
         // Invalid/not found
-        if(!($userModel instanceof User) || $userModel->userKey!==$pw)
+        if(!($userModel instanceof User) || !PasswordUtil::slowEquals($userModel->userKey, $pw))
             $this->authFail("Invalid user credentials.");
         elseif(trim($userModel->userKey)==null) // Null user key = disabled
             $this->authFail("API access has been disabled for the specified user.");

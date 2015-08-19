@@ -50,10 +50,10 @@ class X2FlowCreateNotif extends X2FlowAction {
         $notifTypes = array('auto' => 'Auto', 'custom' => 'Custom');
         $assignmentOptions = array(
             '{assignedTo}' => '{'.Yii::t('studio', 'Owner of Record').'}',
-            //'{user.username}' => '{'.Yii::t('studio', 'Current User').'}'
+            '{user.username}' => '{'.Yii::t('studio', 'Current User').'}'
         ) + X2Model::getAssignmentOptions (false, false); // '{assignedTo}', no groups, no 'anyone'
 
-        return array(
+        return array_merge (parent::paramRules (), array (
             'title' => Yii::t('studio', $this->title),
             // 'info' => Yii::t('studio',$this->info),
             'options' => array(
@@ -69,7 +69,7 @@ class X2FlowCreateNotif extends X2FlowAction {
                     'label' => Yii::t('studio', 'Message'), 
                     'optional' => 1
                 ),
-            ));
+            )));
     }
 
     public function execute(&$params){

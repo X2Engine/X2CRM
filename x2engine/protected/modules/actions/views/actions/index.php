@@ -92,7 +92,7 @@ $this->widget('zii.widgets.CListView', array(
 			'id'=>'action-list',
 			'dataProvider'=>$dataProvider,
 			'itemView'=>'application.modules.actions.views.actions._viewIndex',
-			'htmlOptions'=>array('class'=>'action list-view','style'=>'width:100%'),
+			'htmlOptions'=>array('class'=>'action x2-list-view list-view','style'=>'width:100%'),
             'viewData'=>$params,
 			'template'=>'{items}{pager}',
             'afterAjaxUpdate'=>'js:function(){

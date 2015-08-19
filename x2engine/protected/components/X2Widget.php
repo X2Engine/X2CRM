@@ -42,6 +42,8 @@
  */
 abstract class X2Widget extends CWidget {
 
+    const NAMESPACE_KEY = '_x2widget_namespace';
+
     protected $_module;
 
     protected $_packages;
@@ -66,10 +68,12 @@ abstract class X2Widget extends CWidget {
 	 * @param CBaseController $owner owner/creator of this widget. It could be either a widget or a 
      *  controller.
 	 */
-	public function __construct($owner=null)
-	{
+	public function __construct ($owner=null) {
+        if ($this->namespace === '' && isset ($_POST[X2Widget::NAMESPACE_KEY])) {
+            $this->namespace = $_POST[X2Widget::NAMESPACE_KEY];
+        }
         parent::__construct ($owner);
-        $this->attachBehaviors($this->behaviors());
+        $this->attachBehaviors ($this->behaviors ());
 	}
 
     public function behaviors () {
@@ -89,8 +93,8 @@ abstract class X2Widget extends CWidget {
         if (!isset ($this->_JSClassParams)) {
             $this->_JSClassParams = array (
                 'element' => $this->element,
-                'namespace' => $this->namespace,
                 'translations' => $this->getTranslations (),
+                'namespace' => $this->namespace,
             );
         }
         return $this->_JSClassParams;
@@ -119,6 +123,10 @@ abstract class X2Widget extends CWidget {
                         CJSON::encode ($this->getJSClassParams ()).
                     ");".
             ($onReady ? "});" : ""), CClientScript::POS_END);
+
+        Yii::app()->clientScript->registerScript('X2WidgetSetup',"
+        x2.Widget.NAMESPACE_KEY = '".self::NAMESPACE_KEY."';
+        ", CClientScript::POS_READY);
     }
 
     public function registerPackages () {
@@ -162,12 +170,12 @@ abstract class X2Widget extends CWidget {
      * 
      * @param function $function
      */
-    public static function ajaxRender ($function) {
-        Yii::app()->controller->renderPartial (
+    public static function ajaxRender ($function, $return=false) {
+        return Yii::app()->controller->renderPartial (
             'application.components.views._ajaxWidgetContents',
             array (
                 'run' => $function
-            ), false, true);
+            ), $return, true);
     }
 
     /**

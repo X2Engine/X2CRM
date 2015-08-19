@@ -197,7 +197,7 @@ class ERememberFiltersBehavior extends CActiveRecordBehavior {
             //
             // if sort order is explicitly set to empty string, remove it
             $sortKey = $this->getId () . '_sort';
-            if (in_array ($sortKey, array_keys ($_GET)) && 
+            if (in_array ($sortKey, array_keys ($_GET)) && isset ($_GET[$sortKey]) &&
                 $_GET[$sortKey] === '') {
 
                 unset ($_GET[$sortKey]);

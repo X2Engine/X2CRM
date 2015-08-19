@@ -35,6 +35,7 @@
 
 @import "standards";
 @import "colors";
+@import "x2-icons";
 @import "icons";
 
 label {
@@ -50,6 +51,10 @@ label {
         position: relative;
         top: -3px;
     }
+}
+
+#web-form-new-button {
+    margin-top: 3px;
 }
 
 #generate-lead-form {
@@ -183,7 +188,7 @@ div.web-form-fields {
         border: 1px solid #B9B9B9;
         background: #F6F6F6;
         color: #666;
-        @include box-shadow(0 1px 0 white, inset 0 1px 1px rgba(0, 0, 0, 0.17));
+        @include box-shadow(0 1px 0 white inset 0 1px 1px rgba(0, 0, 0, 0.17));
 
         @include border-radius(3px 0px 0px 3px);
         &:focus {

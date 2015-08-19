@@ -34,173 +34,81 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 
+$downloadLink = $model->drive ? 
+    CHtml::link( 
+        X2Html::fa('external-link').Yii::t('media', 'View in Google Drive'),
+            "https://drive.google.com/file/d/".$model->fileName,
+            array(
+                'class'=>'x2-button download-media x2-blue', 
+                'target'=>'_blank'
+    )) :
+    CHtml::link (
+        X2Html::fa('download').Yii::t('media', 'Download File'),
+        array(
+            'download',
+            'id' =>$model->id
+        ), array(
+            'class'=>'x2-button download-media x2-blue'
+    ));
+$imageLink = $model->getImage(true);
+
+Yii::app()->clientScript->registerCssFile($this->module->assetsUrl.'/css/view.css');
+
+$this->noBackdrop = true;
 $layoutManager = $this->widget ('RecordViewLayoutManager', array ('staticLayout' => false));
-
-$menuOptions = array(
-    'index', 'upload', 'view', 'edit', 'delete', 'editLayout',
-);
-$this->insertMenu($menuOptions, $model);
-
+$imageExists = $model->fileExists() && $model->isImage();
 ?>
-<div class="page-title icon media"><h2><span class="no-bold"><?php echo Yii::t('media','File: '); ?></span> <?php echo $model->renderAttribute (($model->drive || !empty($model->name))? "name" : "fileName"); ?></h2>
-<?php
-echo X2Html::editRecordbutton($model);
-?>
-</div>
 
-<div id="main-column" <?php echo $layoutManager->columnWidthStyleAttr (1); ?>>
-<?php
 
-$parts = explode('.',$model->fileName);			// split filename on '.'
-
-$file = Yii::app()->file->set('uploads/'.$model->fileName);
-
-$file_ext = strtolower($file->getExtension());	// extension is the last part
-
-$legal_extensions = array('jpg','gif','png','bmp','jpeg','jpe');
-
-$fileView = '';
-
-if(file_exists("uploads/media/{$model->uploadedBy}/{$model->fileName}")) {
-	$file = Yii::app()->file->set("uploads/media/{$model->uploadedBy}/{$model->fileName}");
-	$file_ext = strtolower($file->getExtension());	// extension is the last part
-	$fileURL = Yii::app()->request->baseUrl.'/uploads/media/'. $model->uploadedBy . '/'.urlencode($model->fileName);
-	if(in_array($file_ext,$legal_extensions))
-		$fileView .= CHtml::link(CHtml::image($fileURL,'',array('class'=>'attachment-img', 'style'=>'display: block; margin-left: auto; margin-right: auto; padding: 5px')),$fileURL);
-
-} else if (file_exists("uploads/{$model->fileName}")) {
-	$fileURL = Yii::app()->request->baseUrl.'/uploads/'.urlencode($model->fileName);
-	if(in_array($file_ext,$legal_extensions))
-		$fileView .= CHtml::link(CHtml::image($fileURL,'',array('class'=>'attachment-img', 'style'=>'display: block; margin-left: auto; margin-right: auto; padding: 5px')),$fileURL);
-}
-
-if(!empty($fileView)) { ?>
-    <div style="float: left; margin-right: 5px;">
-        <div class="formItem" style="line-height: 200px; border: 1px solid #CCC; background: #FAFAFA; display: table-cell; -moz-border-radius: 4px; -o-border-radius: 4px; -webkit-border-radius: 4px; border-radius: 4px;">
-            <?php echo $fileView; ?>
-        </div>
-        <?php echo CHtml::link(Yii::t('media', 'Download File'),array('download','id'=>$model->id),array('class'=>'x2-button', 'style'=>'margin-top: 5px;')); ?>
-    </div>
+<div class="page-title icon media">
+    <h2>
+        <span class="no-bold"><?php echo Yii::t('media','File: '); ?></span>
+        <?php 
+            echo $model->renderAttribute (($model->drive || !empty($model->name)) ? 
+                "name" : "fileName"); 
+        ?>
+    </h2>
 <?php 
-} 
+echo X2Html::editRecordbutton($model); 
 ?>
-<div class="x2-layout form-view" style="margin-bottom: 0;">
-    <div class="formSection showSection">
-        <div class="tableWrapper noTitle">
-            <table>
-                <tbody>
-                    <tr class="formSectionRow">
-                        <td style="width: 300px">
-                            <div class="formItem leftLabel">
-                                <label><?php echo Yii::t('media', 'Association Type'); ?></label>
-                                <div class="formInputBox" style="width: 200px; height: auto;">
-                                    <?php if($model->associationType) { ?>
-                                        <?php echo ($model->associationType == 'bg'? Yii::t('media', 'Background') : CHtml::encode(ucfirst($model->associationType))); ?>
-                                    <?php } ?>
-                                </div>
-                            </div>
-
-                        </td>
-                    </tr>
-
-                    <tr class="formSectionRow">
-                        <td style="width: 300px">
-                            <div class="formItem leftLabel">
-                                <label><?php echo Yii::t('media', 'Association Name'); ?></label>
-                                <div class="formInputBox" style="width: 200px; height: auto;">
-                                    <?php if($model->associationType && $model->associationType != 'bg') { ?>
-                                        <?php
-                                            if(!empty($model->associationId) && is_numeric($model->associationId) && $modelName=X2Model::getModelName($model->associationType)) {
-                                                $linkModel = X2Model::model($modelName)->findByPk($model->associationId);
-                                                if(isset($linkModel)){
-                                                    echo CHtml::link(CHtml::encode($linkModel->name), array('/'.$model->associationType.'/'.$model->associationId));
-                                                }else
-                                                    echo '';
-                                            } else {
-                                                echo '';
-                                            }
-                                        ?>
-                                    <?php } ?>
-                                </div>
-                            </div>
-
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-    </div>
-
-    <div class="formSection showSection">
-        <div class="tableWrapper">
-            <table>
-                <tbody>
-                    <tr class="formSectionRow">
-                        <td style="width: 300px">
-                            <div class="formItem leftLabel">
-                                <label><?php echo Yii::t('media', 'Private'); ?></label>
-                                <div class="formInputBox" style="width: 200px; height: auto;">
-                                    <?php echo CHtml::checkbox('private', $model->private, array( 'onclick'=>"return false", 'onkeydown'=>"return false")); ?>
-                                </div>
-                            </div>
-
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-    </div>
-
-    <div class="formSection showSection">
-        <div class="tableWrapper">
-            <table>
-                <tbody>
-                    <tr class="formSectionRow">
-                        <td style="width: 300px">
-                            <div class="formItem leftLabel">
-                                <label><?php echo Yii::t('media', 'Google Drive'); ?></label>
-                                <div class="formInputBox" style="width: 200px; height: auto;">
-                                    <?php echo CHtml::checkbox('drive', $model->drive, array( 'onclick'=>"return false", 'onkeydown'=>"return false")); ?>
-                                </div>
-                            </div>
-
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-    </div>
-
-    <div class="formSection showSection">
-        <div class="tableWrapper">
-            <table>
-                <tbody>
-                    <tr class="formSectionRow">
-                        <td style="width: 300px">
-                            <div class="formItem leftLabel">
-                                <label><?php echo Yii::t('media', 'Description'); ?></label>
-                                <div class="formInputBox" style="height: auto;">
-                                    <?php echo CHtml::encode($model->description); ?>
-                                </div>
-                            </div>
-
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-    </div>
 </div>
-<?php
-if(!$model->drive && empty($fileView)){
-    echo CHtml::link(Yii::t('media', 'Download File'),array('download','id'=>$model->id),array('class'=>'x2-button', 'style'=>'margin-top: 5px; margin-left: 5px; margin-bottom: 10px'));
-}elseif(empty($fileView)){
-    echo CHtml::link(Yii::t('media', 'View in Google Drive'),"https://drive.google.com/file/d/".$model->fileName,array('class'=>'x2-button', 'style'=>'margin-top: 5px;','target'=>'_blank'));
-}?>
 
-
+<div class='<?php echo $imageExists ? 'x2-layout-island ' : ''; ?>tray media-tray'>
+    <?php if($imageExists) { ?>
+    <div class='column'>
+    <?php 
+    }
+        $assoc = X2Model::getAssociationModel($model->associationType, $model->associationId);
+        $this->widget('DetailView', array(
+            'model'   => $model,
+            'scenario'=> 'Default',
+            'specialFields' => array(
+                'associationId' => $assoc ? $assoc->link : ''
+            ),
+            'htmlOptions' => array ('class' => $imageLink ? 'x2-layout-island' : '')
+        ));
+        echo $downloadLink;
+        ?>
+    <?php if($imageExists) { ?>
+    </div>
+    <div class='column'>
+        <div class="media-image">
+            <div class='full-size-screen'>
+                <?php
+                echo X2Html::fa('expand').' ';
+                echo Yii::t('media', 'View Full Size');
+                ?>
+            </div>
+            <?php echo $imageLink ?>
+        </div>
+    </div>
+    <?php
+    }
+    ?>
+    <div class='clear'></div>
 </div>
-<?php
+
+<?php 
 $this->widget('X2WidgetList', array(
     'layoutManager' => $layoutManager,
     'block' => 'center',
@@ -208,8 +116,4 @@ $this->widget('X2WidgetList', array(
     'modelType' => 'media'
 ));
 ?>
-<style>
-.half-width {
-    clear: none !important;
-}
-</style>
+

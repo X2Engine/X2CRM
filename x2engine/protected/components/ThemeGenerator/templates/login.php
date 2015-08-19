@@ -27,5 +27,21 @@
 		color: $colors[text]
 	}
 
+    #mobile-signin-button {
+        background: $colors[highlight1]
+        color: $colors[smart_text]
+        border-color: $colors[light_highlight1];
+    }
+
+    #mobile-signin-button:hover {
+        background: $colors[light_highlight1]
+        color: $colors[smart_text]
+        border-color: $colors[lighter_highlight1];
+    }
+
+    #login-form-logo {
+        color: $colors[text]
+    }
+
 
 "; ?>

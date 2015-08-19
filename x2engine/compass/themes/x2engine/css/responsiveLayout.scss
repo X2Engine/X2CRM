@@ -33,6 +33,8 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 
+@import "standards";
+
 /*
 Step between full title bar and mobile title bar. Search bar minimizes and expands to make
 room for user menu links
@@ -91,13 +93,13 @@ room for user menu links
 }
 
 /* used for hiding/showing responsive page title menu items */
-@media (min-width: 658px) {
+@include overThreshold ($mobileThreshold) {
   div.responsive-page-title > h2 {
     display: inline-block !important;
   }
 }
 
-@media (max-width: 657px) {
+@include underThreshold ($mobileThreshold) {
   #page {
     min-width: 0px !important;
   }

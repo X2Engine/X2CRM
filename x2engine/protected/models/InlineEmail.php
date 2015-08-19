@@ -331,14 +331,45 @@ class InlineEmail extends CFormModel {
                 $header .= '<br />';
             }
 
-            // Attachments info (include links to media items if
+            // Attachments info
             if(!empty($this->attachments)){
                 $header .= '<br /><hr />';
                 $header .= CHtml::tag('strong', array(), Yii::t('media', 'Attachments:'))."<br />";
+                $i = 0;
                 foreach($this->attachments as $attachment){
-                    $header .= CHtml::tag(
-                        'span', array('class' => 'email-attachment-text'),
-                        $attachment['filename']).'<br />';
+                    if ($i++) $header .= '<br />';
+
+                    if ($attachment['type'] === 'temp') {
+                        // attempt to convert temporary file to media record
+
+                        if ($this->modelId && $this->modelName) {
+                            $associationId = $this->modelId;
+                            $associationType = X2Model::getAssociationType ($this->modelName);
+                        } elseif ($contact = reset($recipientContacts)) {
+
+                            $associationId = $contact->id;
+                            $associationType = 'contacts';
+                        }
+                        if (isset ($associationId) && 
+                            ($media = $attachment['model']->convertToMedia (array (
+                                'associationType' => $associationType,
+                                'associationId' => $associationId,
+                                )))) {
+
+                            $attachment['type'] = 'media';
+                            $attachment['id'] = $media->id;
+                        }
+                    }
+
+                    if ($attachment['type'] === 'media' && 
+                        ($media = Media::model ()->findByPk ($attachment['id']))) {
+                        
+                        $header .= $media->getLink ().'&nbsp;|&nbsp;'.$media->getDownloadLink ();
+                    } else {
+                        $header .= CHtml::tag(
+                            'span', array('class' => 'email-attachment-text'),
+                            $attachment['filename']).'<br />';
+                    }
                 }
             }
 
@@ -795,8 +826,10 @@ class InlineEmail extends CFormModel {
     public function send($createEvent = true){
         $this->insertTrackingImage();
         $this->status = $this->deliver();
-        if($this->status['code'] == '200')
+        if($this->status['code'] == '200') {
             $this->recordEmailSent($createEvent); // Save all the actions and events
+            $this->clearTemporaryFiles ($this->attachments);
+        }
         return $this->status;
     }
 

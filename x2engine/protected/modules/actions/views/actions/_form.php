@@ -44,6 +44,9 @@ Yii::app()->clientScript->registerCss('actionsFormCss',"
     }
 ");
 
+Yii::app()->clientScript->registerCssFile(
+    Yii::app()->controller->module->assetsUrl.'/css/actionForms.css');
+
 
 $themeUrl = Yii::app()->theme->getBaseUrl();
 $backdating = !(Yii::app()->user->checkAccess('ActionsAdmin') || 
@@ -55,16 +58,21 @@ $backdating = !(Yii::app()->user->checkAccess('ActionsAdmin') ||
         'id' => 'actions-newCreate-form',
         'namespace' => isset ($namespace) ? $namespace : '',
         'enableAjaxValidation' => false,
+        'htmlOptions' => array (
+            'class' => 'action-form',
+        )
     ));
     echo $form->errorSummary($actionModel);
     ?>
     <div class="row">
-        <b><?php echo $form->labelEx($actionModel, 'subject'); ?></b>
         <?php 
-        echo $form->textField($actionModel, 'subject', array('class' => 'x2-xxwide-input')); 
+        echo $form->labelEx($actionModel, 'subject');
+        echo $actionModel->renderInput ('subject', array('class' => 'x2-xxwide-input')); 
         ?>
         <div class="row">
-            <b><?php echo $form->labelEx($actionModel, 'actionDescription'); ?></b>
+            <?php 
+            echo $form->labelEx($actionModel, 'actionDescription'); 
+            ?>
             <div>
                 <?php 
                 echo $actionModel->renderInput ('actionDescription',
@@ -139,60 +147,45 @@ $backdating = !(Yii::app()->user->checkAccess('ActionsAdmin') ||
                     <?php 
                     echo $form->hiddenField($actionModel, 'associationId');
                     if(!$actionModel->isTimedType) {
-                        if($actionModel->type == 'event')
-                            echo $form->label($actionModel, 'startDate');
-                        else
-                            echo $form->label($actionModel, 'dueDate');
-                    if(is_numeric($actionModel->dueDate))
-                        $actionModel->dueDate = Formatter::formatDateTime(
-                            $actionModel->dueDate); //format date from DATETIME
-
-                    echo X2Html::activeDatePicker ($actionModel, 'dueDate', 
-                        $form->resolveHtmlOptions ($actionModel, 'dueDate', array(
-                            // fix datepicker so it's always on top
-                            'onClick' => "$('#ui-datepicker-div').css('z-index', '20');"
-                        )), 'datetime', array (
-                            'dateFormat' => Formatter::formatDatePicker ('medium'),
-                            'timeFormat' => Formatter::formatTimePicker (),
-                            'ampm' => Formatter::formatAMPM (),
-                        ));
-                    echo $form->error($actionModel, 'dueDate'); 
-                    ?>
-                    <?php
-                    if($actionModel->type == 'event'){
-                        echo $form->label($actionModel, 'endDate');
-                        if($actionModel->isNewRecord)
-                            if(isset($this->controller)) // inline action?
-                                //default to tomorow for new actions
-                                $actionModel->completeDate = Formatter::formatDateEndOfDay(time()); 
+                            if($actionModel->type == 'event')
+                                echo $form->label($actionModel, 'startDate');
                             else
-                                //default to tomorow for new actions
-                                $actionModel->completeDate = Formatter::formatDateEndOfDay(time()); 
-                        else
-                            //format date from DATETIME
-                            $actionModel->completeDate = Formatter::formatDateTime( 
-                                $actionModel->completeDate); 
-                        echo X2Html::activeDatePicker ($actionModel, 'completeDate', 
-                            $form->resolveHtmlOptions ($actionModel, 'completeDate', array(
-                                // fix datepicker so it's always on top
-                                'onClick' => "$('#ui-datepicker-div').css('z-index', '20');"
-                            )), 'datetime', array (
-                                'dateFormat' => Formatter::formatDatePicker ('medium'),
-                                'timeFormat' => Formatter::formatTimePicker (),
-                                'ampm' => Formatter::formatAMPM (),
-                            ));
-                        echo $form->error($actionModel, 'completeDate');
-                        echo $form->label($actionModel, 'allDay');
-                        echo $form->checkBox($actionModel, 'allDay');
-                    }
+                                echo $form->label($actionModel, 'dueDate');
+                        if(is_numeric($actionModel->dueDate))
+                            $actionModel->dueDate = Formatter::formatDateTime(
+                                $actionModel->dueDate); //format date from DATETIME
+
+                        $actionModel->dueDate = Formatter::formatDateTime($actionModel->dueDate);
+                        echo $actionModel->renderInput ('dueDate');
+                        echo $form->error($actionModel, 'dueDate'); 
+
+                        if($actionModel->type == 'event'){
+                            echo $form->label($actionModel, 'endDate');
+                            if($actionModel->isNewRecord)
+                                if(isset($this->controller)) // inline action?
+                                    //default to tomorow for new actions
+                                    $actionModel->completeDate = 
+                                        Formatter::formatDateEndOfDay(time()); 
+                                else
+                                    //default to tomorow for new actions
+                                    $actionModel->completeDate = 
+                                        Formatter::formatDateEndOfDay(time()); 
+                            else
+                                //format date from DATETIME
+                                $actionModel->completeDate = Formatter::formatDateTime( 
+                                    $actionModel->completeDate); 
+                            echo $actionModel->renderInput ('completeDate');
+                            echo $form->error($actionModel, 'completeDate');
+                            echo $form->label($actionModel, 'allDay');
+                            echo $form->checkBox($actionModel, 'allDay');
+                        }
                     }
                     ?>
                 </div>
                 <div class="cell">
                     <?php 
                     echo $form->label($actionModel, 'priority');
-                    echo $form->dropDownList(
-                        $actionModel, 'priority', Actions::getPriorityLabels());
+                    echo $actionModel->renderInput ('priority'); 
                     if($actionModel->type == 'event'){
                         echo $form->label($actionModel, 'color');
                         echo $actionModel->renderInput('color');
@@ -211,21 +204,7 @@ $backdating = !(Yii::app()->user->checkAccess('ActionsAdmin') ||
                 <div class="cell">
                     <?php 
                     echo $form->label($actionModel, 'visibility');
-                    $visibility = array(
-                        1 => Yii::t('actions', 'Public'), 0 => Yii::t('actions', 'Private'));
-                    echo $form->dropDownList($actionModel, 'visibility', $visibility); 
-                    ?>
-                </div>
-                <div class="cell buttons" style="float:right;">
-                    <?php 
-                    echo CHtml::htmlButton(
-                        $actionModel->isNewRecord ? Yii::t('app', 'Save') : Yii::t('app', 'Save'),
-                        array(
-                            'type' => 'submit',
-                            'class' => 'x2-button',
-                            'id' => 'save-button1',
-                            'name' => 'submit'
-                        )); 
+                    echo $actionModel->renderInput ('visibility');
                     ?>
                 </div>
             </div>
@@ -249,33 +228,7 @@ $backdating = !(Yii::app()->user->checkAccess('ActionsAdmin') ||
         <div id="action-reminders">
             <br>
             <?php 
-            echo $form->checkBox($actionModel, 'reminder'); 
-            echo Yii::t(
-                'actions',
-                'Create a notification reminder for {user} {time} before this {action} is due',
-                array(
-                    '{user}' => CHtml::dropDownList(
-                        'notificationUsers', 
-                        !empty($notifType) ? $notifType : 'assigned', 
-                        array(
-                            'me' => Yii::t('actions', 'me'),
-                            'assigned' => Yii::t('actions', 'the assigned user'),
-                            'both' => Yii::t('actions', 'me and the assigned user'),
-                        )
-                    ),
-                    '{time}' => CHtml::dropDownList(
-                        'notificationTime', !empty($notifTime) ? $notifTime : 15, array(
-                            1 => Yii::t('actions','1 minute'),
-                            5 => Yii::t('actions','5 minutes'),
-                            10 => Yii::t('actions','10 minutes'),
-                            15 => Yii::t('actions','15 minutes'),
-                            30 => Yii::t('actions','30 minutes'),
-                            60 => Yii::t('actions','1 hour'),
-                            1440 => Yii::t('actions','1 day'),
-                            10080 => Yii::t('actions','1 week')
-                        )),
-                    '{action}' => lcfirst(Modules::displayName(false)),
-                ));
+            echo $actionModel->renderInput ('reminder');
             ?>
         </div>
     </div>
@@ -299,32 +252,14 @@ $backdating = !(Yii::app()->user->checkAccess('ActionsAdmin') ||
                 <?php 
                 echo $form->labelEx($actionModel, 'createDate'); 
                 $actionModel->createDate = Formatter::formatDateTime($actionModel->createDate);
-                echo X2Html::activeDatePicker ($actionModel, 'createDate',
-                    $form->resolveHtmlOptions ($actionModel, 'createDate', array(
-                        // fix datepicker so it's always on top
-                        'onClick' => "$('#ui-datepicker-div').css('z-index', '20');"
-                    )), 'datetime', array (
-                        'dateFormat' => Formatter::formatDatePicker ('medium'),
-                        'timeFormat' => Formatter::formatTimePicker (),
-                        'ampm' => Formatter::formatAMPM (),
-                        'changeMonth' => false,
-                    ));
+                echo $actionModel->renderInput ('createDate');
                 ?>
             </div><!-- .cell -->
             <div class="cell">
                 <?php echo $form->labelEx($actionModel, 'lastUpdated'); ?>
                 <?php
                 $actionModel->lastUpdated = Formatter::formatDateTime($actionModel->lastUpdated);
-                echo X2Html::activeDatePicker ($actionModel, 'lastUpdated', 
-                    $form->resolveHtmlOptions ($actionModel, 'lastUpdated', array(
-                        // fix datepicker so it's always on top
-                        'onClick' => "$('#ui-datepicker-div').css('z-index', '20');"
-                    )), 'datetime', array (
-                        'dateFormat' => Formatter::formatDatePicker ('medium'),
-                        'timeFormat' => Formatter::formatTimePicker (),
-                        'ampm' => Formatter::formatAMPM (),
-                        'changeMonth' => false,
-                    ));
+                echo $actionModel->renderInput ('lastUpdated');
                 ?>
             </div><!-- .cell -->
             <?php if($actionModel->isTimedType) { ?>
@@ -332,16 +267,7 @@ $backdating = !(Yii::app()->user->checkAccess('ActionsAdmin') ||
                 <?php 
                 echo $form->labelEx($actionModel, 'startDate');
                 $actionModel->dueDate = Formatter::formatDateTime($actionModel->dueDate);
-                echo X2Html::activeDatePicker ($actionModel, 'dueDate', 
-                    $form->resolveHtmlOptions ($actionModel, 'dueDate', array(
-                        // fix datepicker so it's always on top
-                        'onClick' => "$('#ui-datepicker-div').css('z-index', '20');"
-                    )), 'datetime', array (
-                        'dateFormat' => Formatter::formatDatePicker ('medium'),
-                        'timeFormat' => Formatter::formatTimePicker (),
-                        'ampm' => Formatter::formatAMPM (),
-                        'changeMonth' => false,
-                    ));
+                echo $actionModel->renderInput ('dueDate');
                 ?>
             </div>
             <?php 
@@ -353,16 +279,7 @@ $backdating = !(Yii::app()->user->checkAccess('ActionsAdmin') ||
                         $actionModel, $actionModel->isTimedType ? 'endDate' : 'completeDate');
                     $actionModel->completeDate = Formatter::formatDateTime(
                         $actionModel->completeDate);
-                    echo X2Html::activeDatePicker ($actionModel, 'completeDate',
-                        $form->resolveHtmlOptions ($actionModel, 'completeDate', array(
-                            // fix datepicker so it's always on top
-                            'onClick' => "$('#ui-datepicker-div').css('z-index', '20');"
-                        )), 'datetime', array (
-                            'dateFormat' => Formatter::formatDatePicker ('medium'),
-                            'timeFormat' => Formatter::formatTimePicker (),
-                            'ampm' => Formatter::formatAMPM (),
-                            'changeMonth' => false,
-                        ));
+                    echo $actionModel->renderInput ('completeDate');
                     ?>
                 </div>
             <?php 
@@ -381,6 +298,18 @@ if(!$backdating &&
     ));
 } 
 ?>
+</div>
+<div class="cell buttons" style="float:right;">
+    <?php 
+    echo CHtml::htmlButton(
+        $actionModel->isNewRecord ? Yii::t('app', 'Save') : Yii::t('app', 'Save'),
+        array(
+            'type' => 'submit',
+            'class' => 'x2-button',
+            'id' => 'save-button1',
+            'name' => 'submit'
+        )); 
+    ?>
 </div>
 <?php 
 $this->endWidget(); 

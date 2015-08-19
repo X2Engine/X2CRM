@@ -114,7 +114,12 @@ $(function() {
 </div>
 </div>
 <div id="main-column" class="half-width">
-<?php $this->renderPartial('application.components.views._detailView',array('model'=>$model, 'modelName'=>'templates')); ?>
+<?php 
+    $this->widget ('DetailView', array(
+        'model' => $model
+    ));
+
+//$this->renderPartial('application.components.views.@DETAILVIEW',array('model'=>$model, 'modelName'=>'templates')); ?>
 
 <?php
 

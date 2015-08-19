@@ -52,6 +52,7 @@ Yii::import('application.components.sortableWidget.dataWidgets.*');
  * The class called <widget class name> must have a static method called 
  * getJSONPropertiesStructure () which returns the structure of the JSON field.
  * 
+ * @deprecated use WidgetLayout instead
  * @package application.components
  */
 class WidgetLayoutJSONFieldsBehavior extends NormalizedJSONFieldsBehavior {
@@ -112,25 +113,16 @@ class WidgetLayoutJSONFieldsBehavior extends NormalizedJSONFieldsBehavior {
                     return preg_match ('/\.php$/', $file);
                 }));
 
-                $ordered = array ();
-
                 // get JSON structure from widget class property
                 $unordered = array ();
 			    foreach($widgetClasses as $widgetName) {
                     if (method_exists ($widgetName, 'getJSONPropertiesStructure')) {
                         $unordered[$widgetName] = 
                             $widgetName::getJSONPropertiesStructure ();
-                        if ($widgetName::$position !== null) {
-                            $ordered[$widgetName] = $widgetName::$position;
-                        }
                     } 
                 }
-                asort ($ordered);
                 $orderedFields = array ();
-                foreach ($ordered as $widgetName => $position) {
-                    $orderedFields[$widgetName] = $unordered[$widgetName];
-                }
-                foreach (array_diff ($widgetClasses, array_keys ($ordered)) as $widgetName) {
+                foreach ($widgetClasses as $widgetName) {
                     $orderedFields[$widgetName] = $unordered[$widgetName];
                 }
                 $this->_fields[$attr] = $orderedFields;

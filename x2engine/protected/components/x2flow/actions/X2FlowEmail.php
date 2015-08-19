@@ -129,7 +129,9 @@ class X2FlowEmail extends BaseX2FlowEmail {
 			$eml->scenario = 'template';
 			$eml->template = $this->parseOption('template',$params);
 			$prepared = $eml->prepareBody();
-		}
+		} else {
+            $prepared = true; // no email body
+        }
 
         if (!$prepared) { // InlineEmail failed validation
             $errors = $eml->getErrors ();

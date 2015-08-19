@@ -98,8 +98,10 @@ $(function() {
         'enableAjaxValidation' => false,
         'action' => array('saveChanges', 'id' => $model->id),
     ));
-    $this->renderPartial(
-            'application.components.views._detailView', array('model' => $model, 'form' => $form, 'modelName' => 'services'));
+    $this->widget ('DetailView', array(
+        'model' => $model
+    ));
+ //   $this->renderPartial('application.components.views.@DETAILVIEW', array('model' => $model, 'form' => $form, 'modelName' => 'services'));
     ?>
 
     <?php $childCases = Services::model()->findAllByAttributes(array('parentCase' => $model->id)); ?>
@@ -159,10 +161,15 @@ $(function() {
 
     ?>
 
-    <?php $this->widget('Attachments', array('associationType' => 'services', 'associationId' => $model->id, 'startHidden' => true)); ?>
+    <?php 
+    // $this->widget('Attachments', array('associationType' => 'services', 'associationId' => $model->id, 'startHidden' => true)); 
 
-    <?php
+    $this->widget('ModelFileUploader', array(
+        'associationType' => 'services', 
+        'associationId' => $model->id, 
+    ));
     ?>
+
     <div id="quote-form-wrapper">
         <?php
         $this->widget('InlineQuotes', array(

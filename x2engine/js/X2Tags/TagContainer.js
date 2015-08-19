@@ -171,16 +171,16 @@ TagContainer.prototype._removeTag = function (parent) {
 
     var that = this;    
     parent.animate({opacity: 0}, function() {
-                parent.css('width', parent.width () + 'px');
-                parent.empty();
-                parent.animate({width: 'toggle'}, function() {
-                    $(this).remove();
-                    x2.DEBUG && console.log ('animate remove');
-                    x2.DEBUG && console.log ($(that.containerSelector).find ('.tag'));
-                    if ($(that.containerSelector).find ('.tag').length === 0)
-                        $(that.containerSelector).find ('.tag-container-placeholder').show ();
-                });
+        parent.css('width', parent.width () + 'px');
+        parent.empty();
+        parent.animate({width: 'toggle'}, function() {
+            $(this).remove();
+            x2.DEBUG && console.log ('animate remove');
+            x2.DEBUG && console.log ($(that.containerSelector).find ('.tag'));
+            if ($(that.containerSelector).find ('.tag').length === 0)
+                $(that.containerSelector).find ('.tag-container-placeholder').show ();
         });
+    });
 }
 
 TagContainer.prototype._afterRemoveHandler = function (tag, parent) {

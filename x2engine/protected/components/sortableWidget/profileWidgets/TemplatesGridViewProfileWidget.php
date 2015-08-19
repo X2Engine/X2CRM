@@ -64,10 +64,12 @@ class TemplatesGridViewProfileWidget extends ProfileGridViewWidget {
         if (!isset ($this->_model)) {
             $modelType = self::getJSONProperty (
                 $this->profile, 'modelType', $this->widgetType, $this->widgetUID);
-            $this->_model = new $modelType ('search',
-                $this->widgetKey,
-                $this->getWidgetProperty ('dbPersistentGridSettings'));
-            $this->afterGetModel ();
+            if (class_exists ($modelType)) {
+                $this->_model = new $modelType ('search',
+                    $this->widgetKey,
+                    $this->getWidgetProperty ('dbPersistentGridSettings'));
+                $this->afterGetModel ();
+            }
         }
         return $this->_model;
     }

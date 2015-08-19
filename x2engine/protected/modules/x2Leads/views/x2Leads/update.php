@@ -50,4 +50,8 @@ $this->insertMenu($menuOptions, $model, $authParams);
 	<h2><span class="no-bold"><?php echo Yii::t('module','Update'); ?>:</span> <?php echo CHtml::encode($model->name); ?></h2>
 	<a class="x2-button highlight right" href="javascript:void(0);" onclick="$('#save-button').click();"><?php echo Yii::t('app','Save'); ?></a>
 </div>
-<?php echo $this->renderPartial('application.components.views._form', array('model'=>$model, 'modelName'=>'X2Leads')); ?>
+<?php 
+$this->widget ('FormView', array(
+	'model' => $model
+));
+//echo $this->renderPartial('application.components.views.@FORMVIEW', array('model'=>$model, 'modelName'=>'X2Leads')); ?>

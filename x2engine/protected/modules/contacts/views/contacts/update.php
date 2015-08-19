@@ -40,30 +40,17 @@ $menuOptions = array(
     'all', 'lists', 'create', 'view', 'edit', 'save', 'share', 'delete', 'quick',
 );
 $this->insertMenu($menuOptions, $model, $authParams);
+?>
 
-?>
-<?php
-	if (!IS_ANDROID && !IS_IPAD) {
-		echo '
-<div class="page-title-placeholder"></div>
-<div class="page-title-fixed-outer">
-	<div class="page-title-fixed-inner">
-		';
-	}
-?>
 		<div class="page-title icon contacts">
 			<h2><span class="no-bold"><?php echo Yii::t('app','Update:'); ?></span> <?php echo CHtml::encode($model->name); ?></h2>
 			<?php echo CHtml::link(Yii::t('app','Save'),'#',array('class'=>'x2-button highlight right','onclick'=>'$("#save-button").click();return false;')); ?>
 		</div>
-<?php
-	if (!IS_ANDROID && !IS_IPAD) {
-		echo '
-	</div>
-</div>
-		';
-	}
+<?php //echo $this->renderPartial('application.components.views.@FORMVIEW', array('model'=>$model, 'users'=>$users,'modelName'=>'contacts')); 
+	$this->widget('FormView', array(
+		'model' => $model, 
+	));
 ?>
-<?php echo $this->renderPartial('application.components.views._form', array('model'=>$model, 'users'=>$users,'modelName'=>'contacts')); ?>
 <?php
 //$createAccountUrl = $this->createUrl('/accounts/accounts/create');
 /*Yii::app()->clientScript->registerScript('create-account', "

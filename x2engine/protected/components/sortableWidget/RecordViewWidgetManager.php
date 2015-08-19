@@ -48,9 +48,9 @@ class RecordViewWidgetManager extends TwoColumnSortableWidgetManager {
      */
     public $JSClass = 'RecordViewWidgetManager'; 
 
-    public $widgetLayoutName = 'recordViewWidgetLayout';
-
     public $namespace = 'RecordViewWidgetManager';
+
+    public $widgetType = 'recordView';
 
     /**
      * @var array (<widget name> => <array of parameters to pass to widget) 
@@ -96,6 +96,7 @@ class RecordViewWidgetManager extends TwoColumnSortableWidgetManager {
                 'modelId' => $this->model->id,
                 'modelType' => get_class ($this->model),
                 'cssSelectorPrefix' => $this->namespace,
+                'widgetType' => $this->widgetType
             ));
         }
         return $this->_JSClassParams;
@@ -103,10 +104,11 @@ class RecordViewWidgetManager extends TwoColumnSortableWidgetManager {
 
 	public function displayWidgets ($containerNumber){
         $widgetLayoutName = $this->widgetLayoutName;
-		$layout = Yii::app()->params->profile->$widgetLayoutName;
+		$layout = 
+            Yii::app()->params->profile->$widgetLayoutName;
 
 		foreach ($layout as $widgetClass => $settings) {
-            if ($this->isExcluded ($widgetClass)) continue;
+            if (self::isExcluded ($widgetClass, get_class ($this->model))) continue;
 
 		    if ($settings['containerNumber'] == $containerNumber) {
 
@@ -120,7 +122,7 @@ class RecordViewWidgetManager extends TwoColumnSortableWidgetManager {
                     'widgetManager' => $this,
                 ), $options);
 		        SortableWidget::instantiateWidget (
-                    $widgetClass, Yii::app()->params->profile, 'recordView', $options);
+                    $widgetClass, Yii::app()->params->profile, $this->widgetType, $options);
 		    }
 		}
 	}
@@ -139,17 +141,19 @@ class RecordViewWidgetManager extends TwoColumnSortableWidgetManager {
             ($onReady ? "});" : ""), CClientScript::POS_END);
     }
 
-    private function isExcluded ($name) {
-        $modelType = get_class ($this->model);
 
-        if ($modelType === 'Media' && (in_array ($name, array (
+    public static function isExcluded ($name, $modelType) {
+        if ($modelType === 'Topics' && 
+            !in_array ($name, array ('InlineTagsWidget', 'InlineRelationshipsWidget')) ||
+            ($modelType === 'Docs' ||
+            $modelType === 'Media' && (in_array ($name, array (
                 'InlineTagsWidget',
                 'WorkflowStageDetailsWidget',
                 'ActionHistoryChartWidget',
                  
                 'EmailsWidget',
                 'QuotesWidget',
-            ))) ||
+            )))) ||
             $modelType === 'Actions' && $name !== 'InlineTagsWidget' ||
             $modelType !== 'Campaign' && $name === 'CampaignChartWidget' ||
             ($modelType == 'BugReports' && $name!='WorkflowStageDetailsWidget') ||

@@ -49,54 +49,27 @@ Yii::import('X2GridViewBase');
  *  whichever module that it is being used in.
  * @package application.components
  */
-class X2GridView extends X2GridViewBase {
-    public $modelName;
+class X2GridView extends X2ActiveGridView {
     public $viewName;
     public $fieldFormatter = 'X2GridViewFieldFormatter';
-    public $columnOverrides = array ();
 
     /**
      * @var string $dataColumnClass
      */
     public $dataColumnClass = 'X2DataColumn'; 
 
-    /**
-     * @var bool $enableTags if true, tags column can be added/removed by user. Don't enable this
-     *  without adding support for tag filtering.
-     */
-    public $enableTags = false;
-
     public $allFields = array ();
-    public $specialColumns = array ();
-    public $massActions = array (
-        );
 
     protected $_fieldModels;
     protected $_isAdmin;
-    protected $specialColumnNames = array();
 
     public function __construct($owner = null){
         X2Model::$autoPopulateFields = false;
         parent::__construct($owner);
     }
 
-    protected function addSpecialFieldNames () {
-        // load names from $specialColumns into $specialColumnNames
-        foreach($this->specialColumns as $columnName => &$columnData) {
-            if(isset($columnData['header'])) {
-                $this->specialColumnNames[$columnName] = $columnData['header'];
-            } else {
-                $this->specialColumnNames[$columnName] = $this->getSpecialColumnName ($columnName);
-            }
-        }
+     
 
-        if(!empty($this->specialColumnNames))
-            $this->allFieldNames = array_merge ($this->allFieldNames, $this->specialColumnNames);
-
-        // add tags column if specified
-        if($this->enableTags)
-            $this->allFieldNames['tags'] = Yii::t('app','Tags');
-    }
 
     protected function addFieldNames () {
         $this->addSpecialFieldNames ();
@@ -113,15 +86,6 @@ class X2GridView extends X2GridViewBase {
             $this->_model = X2Model::model ($this->modelName);
         }
         return $this->_model;
-    }
-
-    public function setFormatter ($data) {
-        if (isset ($this->fieldFormatter) && 
-            method_exists ($data, 'setFormatter')) {
-
-            $data->formatter = $this->fieldFormatter;
-        }
-        return $data;
     }
 
     protected function handleFields () {
@@ -153,65 +117,6 @@ class X2GridView extends X2GridViewBase {
             if((!isset($fieldPermissions[$field->id]) || $fieldPermissions[$field->id] > 0))
                 $this->allFields[$field->fieldName] = $field;
         }
-    }
-
-    protected function getSpecialColumnName ($columnName) {
-        return  X2Model::model($this->modelName)->getAttributeLabel($columnName);
-
-    }
-
-    protected function createSpecialColumn ($columnName, $width) {
-        $newColumn = $this->specialColumns[$columnName];
-        $newColumn['id'] = $this->namespacePrefix.'C_'.$columnName;
-        $newColumn['headerHtmlOptions'] = array('style'=>'width:'.$this->formatWidth ($width).';');
-        if (!isset ($newColumn['name']) && !isset ($newColumn['value'])) {
-            $newColumn['name'] = $columnName;
-        }
-        return $newColumn;
-    }
-
-    protected function generateColumns () {
-        $columns = array ();
-        foreach($this->gvSettings as $columnName => $width) {
-            if($columnName == 'gvControls' && !$this->enableControls){
-                continue;
-            }
-
-            $col = $this->addNewColumn ($columnName, $this->formatWidth ($width));
-            if (sizeof ($col))
-                $columns[] = $col;
-        }
-        $this->columns = $columns;
-    }
-
-    /**
-     * @param int $width 
-     * @param string $columnName 
-     * @return array the new column
-     */
-    protected function addNewColumn ($columnName, $width) {
-        $newColumn = array ();
-        if(array_key_exists($columnName,$this->specialColumnNames)) {
-            $newColumn = $this->createSpecialColumn ($columnName, $width);
-        } else if($columnName == 'gvControls') {
-            $newColumn = $this->getGvControlsColumn ($width);
-            if(!$this->isAdmin)
-                $newColumn['template'] = '{view}{update}';
-        } else if ($columnName == 'gvCheckbox') {
-            $newColumn = $this->getGvCheckboxColumn ($width);
-        } else {
-            $newColumn = $this->createDefaultStyleColumn ($columnName, $width);
-        }
-        if ($newColumn === array ()) return $newColumn;
-        $newColumn['htmlOptions'] = X2Html::mergeHtmlOptions (
-            isset ($newColumn['htmlOptions']) ? 
-                $newColumn['htmlOptions'] : array (), array ('width' => $width));
-
-        if (isset ($this->columnOverrides[$columnName])) {
-            $newColumn = array_merge ($newColumn, $this->columnOverrides[$columnName]);
-        }
-
-        return $newColumn;
     }
 
     protected function createDefaultStyleColumn ($columnName, $width) {
@@ -263,44 +168,14 @@ class X2GridView extends X2GridViewBase {
     }
 
     public function init () {
+        $this->calculateChecksum = filter_input (INPUT_GET, 'calculateGridViewChecksum');
         $this->handleFields ();
-        if ($this->enableSelectAllOnAllPages) $this->dataProvider->calculateChecksum = true;
-        parent::init ();
-    }
+        if ($this->enableSelectAllOnAllPages && 
+            $this->calculateChecksum) {
 
-    public function setSummaryText () {
-        if ($this instanceof X2GridViewForSortableWidgets ||
-            $this instanceof X2GridViewLessForSortableWidgets) {
-            $this->setSummaryTextForSortableWidgets ();
-            return;
+            $this->dataProvider->calculateChecksum = true;
         }
-
-        /* add a dropdown to the summary text that let's user set how many rows to show on each 
-           page */
-        $this->summaryText = Yii::t('app', '<span class="grid-view-summary-text">
-            <b>{start}&ndash;{end}</b> of <b>{count}</b></span>').
-            '<div class="form no-border" style="display:inline;"> '.
-            CHtml::dropDownList(
-                'resultsPerPage', 
-                Profile::getResultsPerPage(),
-                Profile::getPossibleResultsPerPage(), 
-                array(
-                    'class' => 'x2-minimal-select',
-                    'onchange' => '$.ajax ({
-                        data: {
-                            results: $(this).val ()
-                        },
-                        url: "'.$this->controller->createUrl('/profile/setResultsPerPage').'",
-                        complete: function (response) {
-                            $.fn.yiiGridView.update("'.$this->id.'", {'.
-                                (isset($this->modelName) ?
-                                    'data: {'.$this->modelName.'_page: 1},' : '') .
-                                    'complete: function () {}'.
-                            '});
-                        }
-                    });'
-                )). 
-            '</div>';
+        parent::init ();
     }
 
     public function setModuleName($value) {

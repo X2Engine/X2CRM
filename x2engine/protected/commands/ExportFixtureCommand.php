@@ -45,6 +45,8 @@ Yii::import('application.components.util.*');
  */
 class ExportFixtureCommand extends CConsoleCommand {
 
+    private $_mode; 
+
 	/**
 	 * @var array Specification for the command line arguments.
 	 * 
@@ -116,11 +118,12 @@ class ExportFixtureCommand extends CConsoleCommand {
 	 * Export the contents of a table in the live database as a fixture or init script.
 	 * 
 	 * Usage:
-	 * <tt>./yiic exportfixture [table name] [f|i] [range] [columns] [o|r]</tt>
+	 * <tt>./yiic exportfixture interactive [table name] [f|i] [range] [columns] [o|r]</tt>
 	 * 
 	 * @param array $args 
 	 */
-	public function run($args) {
+	public function actionInteractive($args) {
+        $this->_mode = 'interactive';
 		$this->fixtureDir = Yii::app()->basePath . '/tests/fixtures';
 		foreach ($this->args as $pos => $spec) {
 			$valid = false;
@@ -145,6 +148,15 @@ class ExportFixtureCommand extends CConsoleCommand {
 			echo $this->getHelp();
 			Yii::app()->end();
 		}
+        $this->actionExport ($tableName, $type, $range, $columns, $writeCond);
+    }
+
+    /**
+     * Non-interactive fixture export with option to specify aliases as command line args
+     */
+    public function actionExport (
+        $tableName, $type='f', $range=1, $columns='*', $writeCond='s', array $aliases=array ()) {
+
 		$fileName = $tableName . ($type == 'i' ? '.init' : '') . '.php';
 		$filePath = $this->fixtureDir . '/' . $tableName . ($type == 'i' ? '.init' : '') . '.php';
 
@@ -176,7 +188,7 @@ class ExportFixtureCommand extends CConsoleCommand {
 		}
 
 		$aliasPrompt = false;
-		if ($type == 'f') {
+		if ($type == 'f' && $this->_mode==='interactive') {
 			$aliasPrompt = $this->confirm('Prompt for row aliases?');
 		}
 
@@ -186,11 +198,14 @@ class ExportFixtureCommand extends CConsoleCommand {
             ->where($range)
             ->queryAll();
 		$fileCont = "<?php\nreturn array(\n";
-		$aliases = array();
 		foreach ($records as $index => $record) {
 			$alias = null;
 			if ($type == 'f') {
-				$alias = $index;
+                if (!$aliasPrompt && isset ($aliases[$index])) {
+				    $alias = $aliases[$index];
+                } else {
+				    $alias = $index;
+                }
 				if ($aliasPrompt) {
 					var_dump($record);
 					$alias = $this->prompt("Alias for this record (enter for \"$index\"):");
@@ -222,9 +237,9 @@ class ExportFixtureCommand extends CConsoleCommand {
 		echo "\nExport complete.\n";
 	}
 
-	public function getHelp() {
-		return "\n***Usage:***\n\tyiic exportfixture [tableName] [type (f|i)] [range] [columns] [writeCond (o|r|s)]\n\n";
-	}
+//	public function getHelp() {
+//		return "\n***Usage:***\n\tyiic exportfixture [tableName] [type (f|i)] [range] [columns] [writeCond (o|r|s)]\n\n";
+//	}
 
 }
 

@@ -51,8 +51,6 @@ function PublisherCallTab (argsDict) {
     auxlib.applyArgs (this, defaultArgs, argsDict);
 
 	x2.PublisherTimeTab.call (this, argsDict);	
-
-    this._init ();
 }
 
 PublisherCallTab.prototype = auxlib.create (x2.PublisherTimeTab.prototype);
@@ -73,15 +71,6 @@ Public instance methods
 /*
 Private instance methods
 */
-
-PublisherCallTab.prototype._init = function () {
-    var that = this;
-    x2.PublisherTimeTab.prototype._init.call (this);
-
-    $(this.resolveIds ('#quickNote2')).change (function () {
-        $(that._elemSelector + ' .action-description').val ($(this).val ());
-    });
-};
 
 return PublisherCallTab;
 

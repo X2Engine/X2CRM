@@ -142,10 +142,10 @@ li.special.leadrouting-indicator {
     }
     > li > {
         a, span {
-            color: #F5F5F5;
+            color: white;
             line-height: 32px;
             height: 32px;
-            text-shadow: rgba(0, 0, 0, 0.5) 0 1px 4px;
+            text-shadow: rgba(0, 0, 0, 0.25) 0 1px 4px;
             /* temp */
             line-height: 25px;
             height: 25px;
@@ -175,9 +175,7 @@ li.special.leadrouting-indicator {
 
 #header.defaultBg .main-menu > li {
     &:hover, &.active {
-        /* temp */
-        background: #8F8F8F;
-        background: #3068b2;
+        background: lighten($appBlue, 7.5%);
         /* background:rgba(255,255,255,0.15); */
     }
 }
@@ -188,8 +186,8 @@ li.special.leadrouting-indicator {
 
 #main-menu-bar {
     #x2-logo {
-        font-size: 40px;
-        top: -6px;
+        font-size: 32px;
+        top: -3px;
         position: relative;
         left: 0px;
         /* @theme color smart_text */

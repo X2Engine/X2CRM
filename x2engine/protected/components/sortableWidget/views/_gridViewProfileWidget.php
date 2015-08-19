@@ -34,4 +34,8 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 
-$this->widget('X2GridViewForSortableWidgets', $gridViewConfig); 
+$grid = $this->widget('X2GridViewForSortableWidgets', $gridViewConfig); 
+$jsInstance = $this->getJSInstanceName ();
+$grid->addToAfterAjaxUpdate ("
+    x2.$jsInstance.afterGridRefresh ();
+");

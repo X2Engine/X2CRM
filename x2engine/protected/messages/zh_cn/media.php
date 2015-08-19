@@ -41,4 +41,12 @@ return array (
 'Dimensions:'=>'尺寸：',
 'MIME Info:'=>'MIME信息：',
 'Google Drive:'=>'谷歌驱动器：',
+'View Full Size'=>'查看全尺寸',
+'All {media}'=>'所有{media}',
+'Drop files here to upload'=>'文件拖放此处进行上传',
+'select files'=>'选择文件',
+'Image Width'=>'图像宽度',
+'Image Height'=>'图像高度',
+'Delete Selected Image'=>'删除选定的图像',
+'Access Key'=>'访问键',
 );

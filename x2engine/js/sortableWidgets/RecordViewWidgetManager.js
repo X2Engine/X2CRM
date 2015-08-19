@@ -72,14 +72,6 @@ Private static methods
 Public instance methods
 */
 
-/**
- * Overrides parent method. In addition to parent behavior, check if widget layout should be 
- * changed 
- */
-RecordViewWidgetManager.prototype.addWidgetToHiddenWidgetsMenu = function (widgetSelector) {
-    SortableWidgetManager.prototype.addWidgetToHiddenWidgetsMenu.call (this, widgetSelector);
-};
-
 /*
 Private instance methods
 */
@@ -108,7 +100,9 @@ RecordViewWidgetManager.prototype._getShowWidgetContentsData = function (widgetC
 
     // brittle kludge to check type of widget being updated/shown
     var widgetClassName = widgetClass.replace (/_$/, '');
-    if (x2[widgetClassName] && x2[widgetClassName] instanceof x2.TransactionalViewWidget) {
+    if (x2.TransactionalViewWidget &&
+        x2[widgetClassName] && 
+        x2[widgetClassName] instanceof x2.TransactionalViewWidget) {
         data.relationships = x2.TransactionalViewWidget.relationships ? 1 : 0;
     }
     return data;

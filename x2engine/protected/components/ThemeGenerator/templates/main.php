@@ -1,9 +1,9 @@
 
 <?php return "
 
-ul.main-menu > li > a, ul.main-menu > li > span {
+ul.main-menu > li > a, ul.main-menu > li > span, #your-logo.icon-x2-logo-square {
     color: $colors[smart_text]
-    text-shadow: none !important;;
+    text-shadow: none !important;
 }
 
 div.page-title, 
@@ -26,14 +26,22 @@ div.page-title {
     border-color: $colors[border]
 }
 
-#page-container {
+body {
     background: $colors[background] 
     background: radial-gradient( $colors[background_hex], $colors[darker_background_hex] ) !important;
 }
 
-
 a {
     color: $colors[link]
+}
+
+#more-menu > *, #profile-dropdown > * {
+    color: $colors[link]
+    color: $colors[smart_text]
+}
+
+a.text-link, a.text-link:hover {
+    color: $colors[text]
 }
 
 a:hover {
@@ -81,7 +89,7 @@ span.tag {
     border-color: $colors[lighter_content]
 }
 
-#footer{
+body.not-mobile-body #footer{
     background: $colors[light_content];
     color: $colors[text]
 }

@@ -180,7 +180,7 @@ abstract class FileOperTestCase extends X2TestCase {
 		$this->_testTime = null;
 	}
 
-    protected function tearDown() {
+    public function tearDown() {
         parent::tearDown();
         $this->removeTestDirs();
     }

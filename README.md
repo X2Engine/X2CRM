@@ -1,40 +1,58 @@
-# 5.0.9 #
-7/13/2015
+# 5.2 #
+8/19/2015
+
+* Highlights
+  * Platinum Edition Changes
+    * New auto-merge admin tool automatically merges duplicate records
+  * Professional Edition Changes
+    * New Execute Workflow sidebar widget enables execution of individual workflows created in the X2Workflow Studio Designer
+    * New Email Inbox Profile Dashboard widget
+    * New grid view mass actions:
+      * Mass convert leads
+      * Mass publish comments, actions, calls, and logged time
+      * Mass create relationships
+    * New importer option to update existing records on import
+  * New Topics module offers an integrated discussion board
+    * Create topic discussion threads
+    * Relate topics to Contact and Account records
+    * Tag/pin topics
+  * New Profile Dashboard widgets:
+    * Docs Summary
+    * New Web Leads
+  * New mass dedupe admin tool simplifies duplicate record management
+  * Tags can now be exported
+  * Docs can now be grouped inside nestable folders
+  * New drag and drop media upload options and simplified email image attachment
+  * New Web Activity record view widget
+  * New interactive tips system provides step-by-step feature introductions 
+  * Application-wide UI improvements to record view layouts
+  * New Module-specific theming options
+  * New Edit Global CSS admin page
+  * Themes selected on the preferences page now apply to the login screen and to X2Touch
+  * New preferences option to apply background image to login screen
+  * Admin index organizational improvements 
 * General Changelog / Developer Notes:
-  * Important security updates
-  * "Post to Activity Feed" flow action changes:
-    * New "User" option determines the owner of the feed to which the post will be added. This allows for the creation of social posts.
-    * New post "Visibility" option
-  * Fixed bug which prevented  "My Actions" widget from remaining hidden after clicking the close button
-  * Fixed bug which prevented products and quotes details from displaying in the Inline Relationships Widget
-  * Web lead form submit button now disabled after form submission, preventing duplicate submissions
-  * SMTP authentication failure now halts campaign
-  * Invalid email addresses in X2Flow action menus now trigger validation warnings upon saving or triggering flows
-  * Fixed Email module bug which caused forwarded email attachments to be corrupted
-  * Fixed Reports bug which prevented column sort order from being saved
-  * Fixed Reports bug which caused an error to occur upon report generation if the column "Action Description" of the Actions module was selected
-  * Date function attributes and attributes of related records now display properly in emailed, exported, and printed reports
-  * Fixed custom module bug which prevented users with "Assigned Only" access from updating and deleting custom module records to which they were assigned
-  * The "Transactional View" has been renamed "List View"
-  * Updated PHPMailer to version 5.2.10
+  * "X2Flow" has been renamed "X2Workflow"
+  * Contact "Record Aliases" have been renamed "Social Profiles"
 * Tracked Bug Fixes:  
-  * [2458](http://x2software.com/index.php/bugReports/2458): Undefined offset: 0  
-  * [2611](http://x2software.com/index.php/bugReports/2611): Trying to get property of non-object  
-  * [2653](http://x2software.com/index.php/bugReports/2653): Trying to get property of non-object  
-  * [2656](http://x2software.com/index.php/bugReports/2656): Undefined offset: 0  
-  * [2672](http://x2software.com/index.php/bugReports/2672): Undefined offset: 2  
+  * [2631](http://x2software.com/index.php/bugReports/2631): Invalid address:   
+  * [2731](http://x2software.com/index.php/bugReports/2731): import mapping name  
+  * [2769](http://x2software.com/index.php/bugReports/2769): Undefined index:   
+  * [2778](http://x2software.com/index.php/bugReports/2778): AdminController and its behaviors do not have a method or closure named "fixupImportedModuleDropdowns". 
+  * [2862](http://x2software.com/index.php/bugReports/2862): Invalid argument supplied for foreach()  
+  * [2872](http://x2software.com/index.php/bugReports/2872): fopen(/public_html/protected/data/records_export.csv): failed to open stream: Permission denied  
 
 
 
 # Introduction #
-Welcome to  X2Engine!
-X2Engine is a next-generation,  open source social sales application for small and 
-medium sized businesses.  X2Engine  was designed to  streamline  contact and sales 
+Welcome to X2CRM!
+X2CRM is a next-generation,  open source social sales application for small and 
+medium sized businesses.  X2CRM  was designed to  streamline  contact and sales 
 actions into  one  compact blog-style user interface.  Add to this contact  and
 colleague social feeds  and  sales  representatives  become  smarter  and  more
 effective resulting in increased sales and higher customer satisfaction.
 
-X2Engine is  unique  in the  crowded  Customer Relationship Management (CRM) field 
+X2CRM is  unique  in the  crowded  Customer Relationship Management (CRM) field 
 with its compact blog-style user interface. Interactive and collaborative tools 
 which  users are already  familiar  with from  social networking  sites such as  
 tagging,  pictures,  docs,  web pages,  group chat, discussions boards and rich 
@@ -44,10 +62,10 @@ leveraging the combined  social intelligence of peers enabling them to add more
 value to their customer interactions resulting in higher close rates. 
 
 # Documentation and Support #
-* [Community Forums](http://x2community.com/)
-* [Wiki](http://wiki.x2engine.com)
-* [Class Reference](http://doc.x2engine.com/)
-* [Live Demo Server](http://demo.x2engine.com/)
+* [Community Forums](http://community.x2crm.com/)
+* [Wiki](http://wiki.x2crm.com)
+* [Class Reference](http://doc.x2crm.com/)
+* [Live Demo Server](http://demo.x2crm.com/)
 
 # System Requirements #
 * A web server that can execute PHP
@@ -55,37 +73,37 @@ value to their customer interactions resulting in higher close rates.
   which the user of the connection has full permissions rights (i.e. SELECT, 
   DROP, CREATE and UPDATE)
 * PHP 5.3 or later
-* PHP must be run as the same system user that owns the directory where X2Engine 
+* PHP must be run as the same system user that owns the directory where X2CRM 
   will be installed
 * The server must have internet access for automatic updates
 * The server must be publicly accessible for web lead capture, service requests 
   and email tracking to work
 
-X2Engine comes with a requirements check script, 
+X2CRM comes with a requirements check script, 
 [requirements.php](https://x2planet.com/installs/requirements.php) (also can be 
 found in x2engine/protected/components/views), which can be uploaded by itself 
 to your server. Simply visit the script in your browser to see if your server 
-will run X2Engine.
+will run X2CRM.
 
 # Installation #
-1. Upload X2Engine to the web directory of your choice. Be sure to set your FTP 
+1. Upload X2CRM to the web directory of your choice. Be sure to set your FTP 
    client to use binary mode.
-2. Create a new MySQL database for X2Engine to use
+2. Create a new MySQL database for X2CRM to use
 3. Browse to the x2engine folder and you will be redirected to the installer.
 4. Fill out the form, click install, and that's it!
-5. You are now ready to use X2Engine.  If you chose to install Dummy Data,  you 
+5. You are now ready to use X2CRM.  If you chose to install Dummy Data,  you 
    will have numerous sample records (i.e. about 1100 contacts) to play with.
 
 # Languages #
 Most of the  included language packs were produced by  copy/paste  from  Google 
 Translate.  If you have any  corrections,  suggestions or custom 
-language packs, please feel free to post them on www.x2community.com
+language packs, please feel free to post them on [community.x2crm.com](http://community.x2crm.com)
 
 We greatly appreciate your input for internationalization!
 
 
 # Tips and Tricks #
-X2Engine  is designed to be intuitive,  but we have included a few tips and tricks 
+X2CRM  is designed to be intuitive,  but we have included a few tips and tricks 
 to get you started!
 * To change the background color,  menu color,  language  or any other setting, 
   click on Profile in the top right and select 'Settings'.

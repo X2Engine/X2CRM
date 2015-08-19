@@ -70,7 +70,7 @@ class ProfileController extends x2base {
                     'setDefaultCredentials', 'activity', 'ajaxSaveDefaultEmailTemplate',
                     'deleteActivityReport', 'createActivityReport', 'manageEmailReports',
                     'toggleEmailReport', 'deleteEmailReport', 'sendTestActivityReport',
-                    'createProfileWidget','deleteSortableWidget','deleteTheme','previewTheme'),
+                    'createProfileWidget','deleteSortableWidget','deleteTheme','previewTheme', 'resetTours', 'disableTours'),
                 'users' => array('@'),
             ),
             array('deny', // deny all users
@@ -185,8 +185,6 @@ class ProfileController extends x2base {
         Profile::setMiscLayoutSetting($_POST['settingName'], $_POST['settingVal']);
     }
 
-    /**
-     */
     public function actionLoadTheme($themeId) {
         $theme = Yii::app()->db->createCommand()
                 ->select('description')
@@ -244,16 +242,18 @@ class ProfileController extends x2base {
     /**
      * Overwrite an existing theme that the user uploaded.
      */
-    public function actionSaveTheme($themeAttributes) {
+    public function actionSaveTheme() {
+        if (!isset ($_POST['themeAttributes'])) 
+            throw new CHttpException (400, Yii::t('app', 'Bad request.'));
+        $themeAttributes = $_POST['themeAttributes'];
         $themeAttributesArr = CJSON::decode($themeAttributes);
         if (!in_array('themeName', array_keys($themeAttributesArr)))
             return;
 
         if( !$this->canEditTheme( $themeAttributesArr['themeName'] ) ) {
-            echo t('profile', 'Cannot edit theme');
+            echo Yii::t('profile', 'Cannot edit theme');
             return;
         }
-
 
         $themeModel = X2Model::model('Media')->findByAttributes(array(
             'uploadedBy' => Yii::app()->user->name,
@@ -321,17 +321,29 @@ class ProfileController extends x2base {
         if (isset($_POST['Profile']) || isset($_POST['preferences'])) {
             if (isset($_POST['Profile'])) {
                 $model->attributes = $_POST['Profile'];
-
-                if ($model->save()) {
-                    //$this->redirect(array('view','id'=>$model->id));
+                if(isset($_POST['preferences']['loginSound'])){
+                    $pieces = explode(',',$_POST['preferences']['loginSound']);
+                    $model->setLoginSound($pieces[0]);
                 }
+                if(isset($_POST['preferences']['notificationSound'])){
+                    $pieces = explode(',',$_POST['preferences']['notificationSound']);
+                    $model->setNotificationSound($pieces[0]);
+                }
+                $model->save();
             }
-            if (isset($_POST['preferences'])) {
-                $model->theme = ThemeGenerator::generatePalette($_POST['preferences']);
-                if ( $model->save() ) {
-                    Yii::import('application.components.ThemeGenerator.LoginThemeHelper');
-                    LoginThemeHelper::saveProfileTheme($_POST['preferences']['themeName']);
-                }
+            
+            if (isset($_POST['preferences']['themeName'])) { 
+                ThemeGenerator::clearCache();
+                Yii::import('application.components.ThemeGenerator.LoginThemeHelper');
+                LoginThemeHelper::saveProfileTheme($_POST['preferences']['themeName']);
+                $model->theme = array_merge(
+                    array_diff_key (
+                        $model->theme, array_flip (ThemeGenerator::getProfileKeys ())),
+                    ThemeGenerator::loadDefault (
+                        $_POST['preferences']['themeName'], false), 
+                    array_diff_key (
+                        $_POST['preferences'], array_flip (ThemeGenerator::getProfileKeys ())));
+                $model->save ();
             }
             $this->refresh();
         }
@@ -348,7 +360,10 @@ class ProfileController extends x2base {
         $menuItems = array('' => Yii::t('app', 'Activity Feed')) + $menuItems;
 
         $languageDirs = scandir('./protected/messages'); // scan for installed language folders
-
+        if(is_dir('./custom/protected/messages')){
+            $languageDirs += scandir('./custom/protected/messages');
+        }
+        sort($languageDirs);
         $languages = array('en' => 'English');
 
         foreach ($languageDirs as $code) {  // look for langauges name
@@ -588,19 +603,20 @@ class ProfileController extends x2base {
      * @param integer $id ID of the user to be updated.
      */
     public function actionChangePassword($id) {
-        if ($id == Yii::app()->user->getId()) {
+        if ($id === Yii::app()->user->getId()) {
             $user = User::model()->findByPk($id);
-            if (isset($_POST['oldPassword']) && isset($_POST['newPassword']) && isset($_POST['newPassword2'])) {
+            if (isset($_POST['oldPassword'], $_POST['newPassword'], $_POST['newPassword2'])) {
 
                 $oldPass = $_POST['oldPassword'];
                 $newPass = $_POST['newPassword'];
                 $newPass2 = $_POST['newPassword2'];
-                if ((crypt($oldPass, '$5$rounds=32678$' . $user->password) == '$5$rounds=32678$' . $user->password) || md5($oldPass) == $user->password) {
-                    if ($newPass == $newPass2) {
-                        $user->password = md5($newPass);
+                if (PasswordUtil::validatePassword($oldPass, $user->password)) {
+                    if ($newPass === $newPass2) {
+                        $user->password = PasswordUtil::createHash($newPass);
                         // Ensure an alias is set so that validation succeeds
-                        if (empty($user->userAlias))
+                        if (empty($user->userAlias)){
                             $user->userAlias = $user->username;
+                        }
                         $user->save();
 
                         $this->redirect($this->createUrl('/profile/view', array('id' => $id)));
@@ -633,9 +649,9 @@ class ProfileController extends x2base {
                     $temp = CUploadedFile::getInstanceByName('photo');
                     $name = $this->generatePictureName();
                     $ext = $temp->getExtensionName();
-                    $temp->saveAs('uploads/' . $name . '.' . $ext);
+                    $temp->saveAs('uploads/protected/' . $name . '.' . $ext);
 
-                    $prof->avatar = 'uploads/' . $name . '.' . $ext;
+                    $prof->avatar = 'uploads/protected/' . $name . '.' . $ext;
                     $prof->save();
                 } else {
                     Yii::app()->user->setFlash('error', Yii::t('app', "File is too large!"));
@@ -667,7 +683,7 @@ class ProfileController extends x2base {
             }
 
             if ($image->delete()) {
-                unlink('uploads/' . $image->fileName); // delete file
+                unlink('uploads/protected/' . $image->fileName); // delete file
                 echo 'success';
             }
         }
@@ -682,7 +698,7 @@ class ProfileController extends x2base {
             $profile->update(array($sound->associationType));
         }
         if ($sound->delete()) {
-            unlink('uploads/media/' . $sound->uploadedBy . '/' . $sound->fileName); // delete file
+            unlink('uploads/protected/media/' . $sound->uploadedBy . '/' . $sound->fileName); // delete file
             echo 'success';
         }
         return true;
@@ -786,7 +802,11 @@ class ProfileController extends x2base {
      */
     private function getLanguageName($code, $languageDirs) { // lookup language name for the language code provided
         if (in_array($code, $languageDirs)) { // is the language pack here?
-            $appMessageFile = "protected/messages/$code/app.php";
+            if(file_exists("custom/protected/messages/$code/app.php")){
+                $appMessageFile = "custom/protected/messages/$code/app.php";
+            }else{
+                $appMessageFile = "protected/messages/$code/app.php";
+            }
             if (file_exists($appMessageFile)) { // attempt to load 'app' messages in
                 $appMessages = include($appMessageFile);     // the chosen language
                 if (is_array($appMessages) and isset($appMessages['languageName']) && $appMessages['languageName'] != 'Template')
@@ -1079,8 +1099,9 @@ class ProfileController extends x2base {
             echo 'failure';
             return;
         }
-        if (isset($_POST['widgetType']) === 'recordView' && (!isset ($_POST['modelId']) ||
-            !isset ($_POST['modelType']))) {
+        if (isset($_POST['widgetType']) && 
+            SortableWidget::getParentType ($_POST['widgetType']) === 'recordView' && 
+            (!isset ($_POST['modelId']) || !isset ($_POST['modelType']))) {
 
             echo 'failure';
             return;
@@ -1092,7 +1113,7 @@ class ProfileController extends x2base {
 
         if ($profile && class_exists($widgetClass)) {
             if ($widgetClass::setJSONProperty($profile, 'hidden', 0, $widgetType, $widgetUID)) {
-                if ($widgetType === 'recordView') {
+                if (SortableWidget::getParentType ($widgetType) === 'recordView') {
                     $model = X2Model::getModelOfTypeWithId (
                         $_POST['modelType'], $_POST['modelId']);
                     if ($model !== null) {
@@ -1149,7 +1170,9 @@ class ProfileController extends x2base {
      *  'failure' if the request action fails, 'success' otherwise
      */
     public function actionSetWidgetSetting() {
-        if (!isset($_POST['widgetClass']) || !isset($_POST['key']) || !isset($_POST['value']) ||
+        if (!isset($_POST['widgetClass']) || 
+            ((!isset ($_POST['props']) || !is_array ($_POST['props'])) && 
+             (!isset($_POST['key']) || !isset($_POST['value']))) ||
             !isset($_POST['widgetType']) || !isset($_POST['widgetUID'])) {
 
             throw new CHttpException (404, 'Bad Request');
@@ -1157,20 +1180,35 @@ class ProfileController extends x2base {
 
         $profile = self::getModelFromPost();
         $widgetClass = $_POST['widgetClass'];
-        $key = $_POST['key'];
-        $value = $_POST['value'];
         $widgetType = $_POST['widgetType'];
         $widgetUID = $_POST['widgetUID'];
+        $failed = false;
         if (class_exists($widgetClass) &&
             method_exists($widgetClass, 'setJSONProperty')) {
 
-            if ($widgetClass::setJSONProperty($profile, $key, $value, $widgetType, $widgetUID)) {
-                echo 'success';
-                return;
-            }
+            if (isset ($_POST['props'])) {
+                foreach ($_POST['props'] as $key => $value) {
+                    if (!$widgetClass::setJSONProperty(
+                        $profile, $key, $value, $widgetType, $widgetUID)) {
+                        
+                        $failed = true;
+                        break;
+                    }
+                }
+            } else {
+                $key = $_POST['key'];
+                $value = $_POST['value'];
 
+                if (!$widgetClass::setJSONProperty(
+                    $profile, $key, $value, $widgetType, $widgetUID)) {
+
+                    $failed = true;
+                }
+            }
+        } else {
+            $failed = true;
         }
-        echo 'failure';
+        echo $failed ? 'failure' : 'success';
     }
 
     private function getActivityFeedViewParams($id, $publicProfile) {
@@ -1264,9 +1302,11 @@ class ProfileController extends x2base {
      */
     public function actionView($id, $publicProfile = false) {
         if (isset($_GET['ajax'])) { // ajax request from grid view widget
-            $_POST['widgetClass'] = $_GET['ajax'];
-            $_POST['widgetType'] = $_GET['widgetType'];
-            if ($_GET['widgetType'] === 'recordView') {
+            if (!isset ($_POST['widgetClass']) && !isset ($_POST['widgetType'])) {
+                $_POST['widgetClass'] = $_GET['ajax'];
+                $_POST['widgetType'] = $_GET['widgetType'];
+            }
+            if (SortableWidget::getParentType ($_POST['widgetType']) === 'recordView') {
                 $_POST['modelId'] = $_GET['modelId'];
                 $_POST['modelType'] = $_GET['modelType'];
             }
@@ -1275,7 +1315,7 @@ class ProfileController extends x2base {
         }
         if (isset($_GET['widgetClass']) && // record view widget update request
             isset($_GET['widgetType']) &&
-            $_GET['widgetType'] === 'recordView' &&
+            SortableWidget::getParentType ($_GET['widgetType']) === 'recordView' &&
             isset ($_GET['modelId']) &&
             isset ($_GET['modelType'])) {
 
@@ -1837,5 +1877,30 @@ class ProfileController extends x2base {
         
         $this->prepareMenu ($this->actionMenu, true);
     }
+
+    /**
+     * Action to reset all tip and show them again
+     */
+    public function actionResetTours() {
+        Tours::model()->updateAll (array(
+            'seen' => null,
+        ), 'profileId=:profileId', array(
+            'profileId' => Yii::app()->params->profile->id
+        ));
+
+        echo 'success';
+    }
+
+
+    /**
+     * Action to reset all tip and show them again
+     */
+    public function actionDisableTours () {
+        $profile = Yii::app()->params->profile;
+        $profile->showTours = false;
+        $profile->save();
+        echo 'success';
+    }
+
 
 }

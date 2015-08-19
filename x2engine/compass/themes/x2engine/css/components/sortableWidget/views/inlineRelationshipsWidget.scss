@@ -53,8 +53,11 @@
         margin: 0;
     }
 
-    .detail-view-toggle {
+    td:first-child {
         cursor: pointer;
+    }
+
+    .detail-view-toggle {
         span {
             display: inline-block;
             width: 12px;
@@ -79,7 +82,7 @@
                 border-bottom: none;
             }
         }
-        td {
+        & > td {
             padding: 0;
             white-space: normal;
         }
@@ -88,9 +91,17 @@
         }
         .detail-view {
             margin-bottom: 0;
-            .fa-caret-down {
+            .fa-caret-down,
+            .fa-caret-right {
                 display: none;
             }
+            .formSectionShow + .sectionTitle {
+                position: relative;
+                left: -22px;
+            }
+        }
+        .tableWrapper {
+            display: block !important;
         }
     }
 }
@@ -200,6 +211,9 @@
     }
     * {
         display: inline-block;
+    }
+    link {
+        display: none;
     }
     input[type="text"] {
         width: 192px;

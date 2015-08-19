@@ -71,8 +71,9 @@
  * @license http://www.yiiframework.com/license/
  */
 
- @import "icons";
- @import "standards";
+@import "x2-icons";
+@import "icons";
+@import "standards";
 
 
 #form-box {
@@ -104,8 +105,13 @@
     font-weight: bold;
 }
 
+.form .CodeMirror {
+    border: 1px solid $lightGray;
+    margin-bottom: 5px;
+}
+
 div {
-    &.form, &.wide.form {
+    &.form, &.wide.form, &.form2 {
         -moz-border-radius: 4px;
         -o-border-radius: 4px;
         -webkit-border-radius: 4px;
@@ -123,13 +129,15 @@ div {
     }
 }
 
-#content > div.form {
-    -moz-border-radius: 0;
-    -o-border-radius: 0;
-    -webkit-border-radius: 0;
-    border-radius: 0;
-    border-width: 0 0 1px 0;
-    margin: 0;
+#content {
+    & > div.form {
+        -moz-border-radius: 0;
+        -o-border-radius: 0;
+        -webkit-border-radius: 0;
+        border-radius: 0;
+        border-width: 0 0 1px 0;
+        margin: 0;
+    }
 }
 
 div {
@@ -141,7 +149,18 @@ div {
         -webkit-box-shadow: none;
         box-shadow: none;
     }
-    &.form {
+    &.form, &.form2 {
+        label + [type="checkbox"] {
+            position: relative;
+            top: -2px;
+            left: 2px;
+            & + .x2-hint {
+                margin-left: 3px;
+            }
+        }
+        label + span.x2-hint {
+            margin-left: 3px;
+        }
         &.hidden {
             display: none;
         }
@@ -172,7 +191,7 @@ div {
     border: 1px solid #d3d3d3;
 }
 
-div.form {
+body.not-mobile-body div.form, .form2 {
     select {
         border: 1px solid #d3d3d3;
         /*background: #e9e9e9;*/
@@ -182,12 +201,13 @@ div.form {
             background: white;
         }
     }
-    input, textarea, select {
+    input:not(.highlight), textarea, select {
         margin: 3px 0 5px 0;
         -moz-border-radius: 3px;
         -o-border-radius: 3px;
         -webkit-border-radius: 3px;
         border-radius: 3px;
+        /* @theme background: content */
     }
 }
 
@@ -203,7 +223,7 @@ div.form {
     -webkit-appearance:none;
 }*/
 
-div.form {
+div.form, .form2 {
     input {
         &[type="checkbox"] {
             -webkit-appearance: checkbox;
@@ -229,7 +249,7 @@ label.left + .x2-hint {
     margin-left: 3px;
 }
 
-div.form {
+div.form, .form2 {
     input {
         &[type="button"], &[type="submit"] {
             -webkit-appearance: button;
@@ -251,7 +271,7 @@ table.details td.label {
     font-weight: bold;
 }
 
-div.form {
+div.form, .form2 {
     label {
         display: block;
         font-size: 11px;
@@ -333,26 +353,29 @@ div.form {
 } */
 
 div.form, .form2 {
-        .errorSummary {
-            background: #FEE;
-            border: 2px solid #C00;
-            font-size: 0.9em;
-            padding: 7px 7px 12px 24px;
+    .errorSummary {
+        background: #FEE;
+        border: 2px solid #C00;
+        font-size: 0.9em;
+        padding: 7px 7px 12px 24px;
+    }
+    .error-text {
+        color: red;
+    }
+    .errorMessage {
+        color: red;
+        font-size: 0.9em;
+    }
+    .errorSummary {
+        p {
+            margin: 0;
+            padding: 5px;
         }
-        .errorMessage {
-            color: red;
-            font-size: 0.9em;
+        ul {
+            margin: 0;
+            padding: 0 0 0 20px;
         }
-        .errorSummary {
-            p {
-                margin: 0;
-                padding: 5px;
-            }
-            ul {
-                margin: 0;
-                padding: 0 0 0 20px;
-            }
-        }
+    }
 }
 
 div {
@@ -410,13 +433,34 @@ div.form .background-row {
 
         }
 
+        &#admin-ui-settings {
+            @include fa-icon('desktop', 'before');
+            @include fa-icon('paint-brush', 'after');
+            &::after {
+                float: left;
+                width: 0;
+                font-size: 23px !important;
+                position: relative;
+                left: 29px;
+                top: -6px;
+            }
+        }
+        &#admin-import-export {
+            @include fa-icon('download');
+        }
+        &#admin-lead-capture {
+            @include fa-icon('check-square-o');
+        }
+        &#admin-doc-and-videos {
+            @include fa-icon('book');
+        }
         &#admin-email {
             @include fa-icon('envelope-o');
         }
         &#admin-settings {
             @include fa-icon('gears');
         }
-        &#admin-studio {
+        &#admin-x2studio {
             @include fa-icon('pencil');
         }
         &#admin-support {
@@ -430,6 +474,9 @@ div.form .background-row {
         }
         &#admin-workflow {
             @include fa-icon('refresh');
+        }
+        &#admin-security {
+            @include fa-icon('shield');
         }
     }
 }
@@ -464,7 +511,7 @@ div {
             border: none;
         }
     }
-    &.form {
+    &.form, &.form2 {
         input, textarea, button {
             font-size: 12px;
             font-family: Arial, Helvetica, sans-serif;
@@ -479,7 +526,7 @@ div {
     padding: 2px 4px;
 }
 
-div.form {
+div.form, .form2 {
     input.x2-button, button.x2-button {
         padding: 5px 20px;
     }
@@ -503,7 +550,7 @@ div {
     &.wide.form .row {
         clear: both;
     }
-    &.form {
+    &.form, &.form2 {
         .row.buttons {
             input, button, select, a.x2-button {
                 float: left;
@@ -642,36 +689,43 @@ html {
 ***********************************************************************/
 
 .form2 {
-        background: white;
-        input.left-input {
-                display: inline-block;
-        }
-        input + .right-label {
-                margin-left: 2px;
-                position: relative;
-                top: -2px;
-                display: inline-block;
-        }
-        label.left-label + input {
-                margin-left: 2px;
-        }
+    background: white;
+    /* @theme background: content */
+    textarea, label {
+        /* @theme color: text */
+    }
+}
 
-        label + .x2-hint {
-                margin-left: 4px;
-        }
-        label {
-            font-size: 11px;
-            color: #222;
-            font-weight: bold;
-        }
-        input[type="text"] {
-                padding: 2px 4px;
-                -moz-border-radius: 3px;
-                -o-border-radius: 3px;
-                -webkit-border-radius: 3px;
-                border-radius: 3px;
-                border: 1px solid #d3d3d3;
-        }
+.form2, .all-form-input-style {
+    input.left-input {
+            display: inline-block;
+    }
+    input + .right-label {
+        margin-left: 2px;
+        position: relative;
+        top: -2px;
+        display: inline-block;
+    }
+    label.left-label + input {
+            margin-left: 2px;
+    }
+
+    label + .x2-hint {
+            margin-left: 4px;
+    }
+    label {
+        font-size: 11px;
+        color: #222;
+        font-weight: bold;
+    }
+    input[type="text"] {
+            padding: 2px 4px;
+            -moz-border-radius: 3px;
+            -o-border-radius: 3px;
+            -webkit-border-radius: 3px;
+            border-radius: 3px;
+            border: 1px solid #d3d3d3;
+    }
 }
 
 
@@ -679,12 +733,14 @@ html {
 * Inline Editing
 ********************************/
 .inline-edit {
-
-    .edit-icon, 
-    .cancel-icon, 
-    .confirm-icon {
+    
+    .inline-edit-icons {
         float: right;
-        margin-top: 2px;
+        vertical-align: middle;
+        
+        position: relative;
+        top: 3px;
+
         font-size: 14px;
         transition: all 0.1s;
     }
@@ -696,9 +752,8 @@ html {
 
     .edit-icon {
         display: none;
-        position: relative;
         width: 0;
-        right: 25px;
+        margin-right: 3px;
 
         &.active {
             opacity: 0.0;

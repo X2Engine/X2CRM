@@ -32,20 +32,287 @@
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2Engine".
  *****************************************************************************************/
-/* narrow header */
+/*****************************************************************************************
+ * X2Engine Open Source Edition is a customer relationship management program developed by
+ * X2Engine, Inc. Copyright (C) 2011-2015 X2Engine Inc.
+ * 
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU Affero General Public License version 3 as published by the
+ * Free Software Foundation with the addition of the following permission added
+ * to Section 15 as permitted in Section 7(a): FOR ANY PART OF THE COVERED WORK
+ * IN WHICH THE COPYRIGHT IS OWNED BY X2ENGINE, X2ENGINE DISCLAIMS THE WARRANTY
+ * OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
+ * 
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.  See the GNU Affero General Public License for more
+ * details.
+ * 
+ * You should have received a copy of the GNU Affero General Public License along with
+ * this program; if not, see http://www.gnu.org/licenses or write to the Free
+ * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301 USA.
+ * 
+ * You can contact X2Engine, Inc. P.O. Box 66752, Scotts Valley,
+ * California 95067, USA. or at email address contact@x2engine.com.
+ * 
+ * The interactive user interfaces in modified source and object code versions
+ * of this program must display Appropriate Legal Notices, as required under
+ * Section 5 of the GNU Affero General Public License version 3.
+ * 
+ * In accordance with Section 7(b) of the GNU Affero General Public License version 3,
+ * these Appropriate Legal Notices must retain the display of the "Powered by
+ * X2Engine" logo. If the display of the logo is not reasonably feasible for
+ * technical reasons, the Appropriate Legal Notices must display the words
+ * "Powered by X2Engine".
+ *****************************************************************************************/
+/***************************************
+* This file is responsible for mantaining
+* general purpose mixins and classes. 
+***************************************/
+/*****************************************************************************************
+ * X2Engine Open Source Edition is a customer relationship management program developed by
+ * X2Engine, Inc. Copyright (C) 2011-2015 X2Engine Inc.
+ * 
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU Affero General Public License version 3 as published by the
+ * Free Software Foundation with the addition of the following permission added
+ * to Section 15 as permitted in Section 7(a): FOR ANY PART OF THE COVERED WORK
+ * IN WHICH THE COPYRIGHT IS OWNED BY X2ENGINE, X2ENGINE DISCLAIMS THE WARRANTY
+ * OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
+ * 
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.  See the GNU Affero General Public License for more
+ * details.
+ * 
+ * You should have received a copy of the GNU Affero General Public License along with
+ * this program; if not, see http://www.gnu.org/licenses or write to the Free
+ * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301 USA.
+ * 
+ * You can contact X2Engine, Inc. P.O. Box 66752, Scotts Valley,
+ * California 95067, USA. or at email address contact@x2engine.com.
+ * 
+ * The interactive user interfaces in modified source and object code versions
+ * of this program must display Appropriate Legal Notices, as required under
+ * Section 5 of the GNU Affero General Public License version 3.
+ * 
+ * In accordance with Section 7(b) of the GNU Affero General Public License version 3,
+ * these Appropriate Legal Notices must retain the display of the "Powered by
+ * X2Engine" logo. If the display of the logo is not reasonably feasible for
+ * technical reasons, the Appropriate Legal Notices must display the words
+ * "Powered by X2Engine".
+ *****************************************************************************************/
+/***********************************************************************
+* Grays 
+***********************************************************************/
+/***********************************************************************
+* Blues
+***********************************************************************/
+/***********************************************************************
+* Reds 
+***********************************************************************/
+/***********************************************************************
+* Greens 
+***********************************************************************/
+/***********************************************************************
+* This section is made to correspond with the theme keys in ThemeGenerator
+***********************************************************************/
+/***********************************************************************
+* Responsive design
+***********************************************************************/
+/***************************************
+* Mixin for border radius 
+***************************************/
+/***************************************
+* Mixin for box shadow
+***************************************/
+/***************************************
+* Mixin for text field placeholder text
+***************************************/
+/***************************************
+* CSS to extend when something 
+* should look like a link
+***************************************/
 @import url(http://fonts.googleapis.com/css?family=Lato:900);
-/* line 37, ../../../../../compass/protected/modules/mobile/assets/css/jqueryMobileCssOverrides.scss */
+/* line 126, ../../../../../compass/css/lib/_standards.scss */
+.pseudo-link {
+  cursor: pointer;
+  color: #004baf;
+  transition: color .1s;
+}
+/* line 131, ../../../../../compass/css/lib/_standards.scss */
+.pseudo-link:hover {
+  color: #006cfb;
+}
+
+/***************************************
+* CSS to extend when for elements that 
+* become transparent on mouseover
+***************************************/
+/* line 149, ../../../../../compass/css/lib/_standards.scss */
+.opacity-hover {
+  opacity: 0.3;
+}
+/* line 144, ../../../../../compass/css/lib/_standards.scss */
+.opacity-hover:hover {
+  opacity: 1;
+}
+
+/***************************************
+* Apply the standard box shadow currently
+* used on x2-island-layout items
+***************************************/
+/*******************************************
+* Mixin for applying a fontAwesome icon
+* SEE _icons.scss FOR A BETTER IMPLEMENTATION
+******************************************/
+/*****************************************************************************************
+ * X2Engine Open Source Edition is a customer relationship management program developed by
+ * X2Engine, Inc. Copyright (C) 2011-2015 X2Engine Inc.
+ * 
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU Affero General Public License version 3 as published by the
+ * Free Software Foundation with the addition of the following permission added
+ * to Section 15 as permitted in Section 7(a): FOR ANY PART OF THE COVERED WORK
+ * IN WHICH THE COPYRIGHT IS OWNED BY X2ENGINE, X2ENGINE DISCLAIMS THE WARRANTY
+ * OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
+ * 
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.  See the GNU Affero General Public License for more
+ * details.
+ * 
+ * You should have received a copy of the GNU Affero General Public License along with
+ * this program; if not, see http://www.gnu.org/licenses or write to the Free
+ * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301 USA.
+ * 
+ * You can contact X2Engine, Inc. P.O. Box 66752, Scotts Valley,
+ * California 95067, USA. or at email address contact@x2engine.com.
+ * 
+ * The interactive user interfaces in modified source and object code versions
+ * of this program must display Appropriate Legal Notices, as required under
+ * Section 5 of the GNU Affero General Public License version 3.
+ * 
+ * In accordance with Section 7(b) of the GNU Affero General Public License version 3,
+ * these Appropriate Legal Notices must retain the display of the "Powered by
+ * X2Engine" logo. If the display of the logo is not reasonably feasible for
+ * technical reasons, the Appropriate Legal Notices must display the words
+ * "Powered by X2Engine".
+ *****************************************************************************************/
+/***********************************************************************
+* Grays 
+***********************************************************************/
+/***********************************************************************
+* Blues
+***********************************************************************/
+/***********************************************************************
+* Reds 
+***********************************************************************/
+/***********************************************************************
+* Greens 
+***********************************************************************/
+/***********************************************************************
+* This section is made to correspond with the theme keys in ThemeGenerator
+***********************************************************************/
+/*****************************************************************************************
+ * X2Engine Open Source Edition is a customer relationship management program developed by
+ * X2Engine, Inc. Copyright (C) 2011-2015 X2Engine Inc.
+ * 
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU Affero General Public License version 3 as published by the
+ * Free Software Foundation with the addition of the following permission added
+ * to Section 15 as permitted in Section 7(a): FOR ANY PART OF THE COVERED WORK
+ * IN WHICH THE COPYRIGHT IS OWNED BY X2ENGINE, X2ENGINE DISCLAIMS THE WARRANTY
+ * OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
+ * 
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.  See the GNU Affero General Public License for more
+ * details.
+ * 
+ * You should have received a copy of the GNU Affero General Public License along with
+ * this program; if not, see http://www.gnu.org/licenses or write to the Free
+ * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301 USA.
+ * 
+ * You can contact X2Engine, Inc. P.O. Box 66752, Scotts Valley,
+ * California 95067, USA. or at email address contact@x2engine.com.
+ * 
+ * The interactive user interfaces in modified source and object code versions
+ * of this program must display Appropriate Legal Notices, as required under
+ * Section 5 of the GNU Affero General Public License version 3.
+ * 
+ * In accordance with Section 7(b) of the GNU Affero General Public License version 3,
+ * these Appropriate Legal Notices must retain the display of the "Powered by
+ * X2Engine" logo. If the display of the logo is not reasonably feasible for
+ * technical reasons, the Appropriate Legal Notices must display the words
+ * "Powered by X2Engine".
+ *****************************************************************************************/
+/*****************************************************************************************
+ * X2Engine Open Source Edition is a customer relationship management program developed by
+ * X2Engine, Inc. Copyright (C) 2011-2015 X2Engine Inc.
+ * 
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU Affero General Public License version 3 as published by the
+ * Free Software Foundation with the addition of the following permission added
+ * to Section 15 as permitted in Section 7(a): FOR ANY PART OF THE COVERED WORK
+ * IN WHICH THE COPYRIGHT IS OWNED BY X2ENGINE, X2ENGINE DISCLAIMS THE WARRANTY
+ * OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
+ * 
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.  See the GNU Affero General Public License for more
+ * details.
+ * 
+ * You should have received a copy of the GNU Affero General Public License along with
+ * this program; if not, see http://www.gnu.org/licenses or write to the Free
+ * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301 USA.
+ * 
+ * You can contact X2Engine, Inc. P.O. Box 66752, Scotts Valley,
+ * California 95067, USA. or at email address contact@x2engine.com.
+ * 
+ * The interactive user interfaces in modified source and object code versions
+ * of this program must display Appropriate Legal Notices, as required under
+ * Section 5 of the GNU Affero General Public License version 3.
+ * 
+ * In accordance with Section 7(b) of the GNU Affero General Public License version 3,
+ * these Appropriate Legal Notices must retain the display of the "Powered by
+ * X2Engine" logo. If the display of the logo is not reasonably feasible for
+ * technical reasons, the Appropriate Legal Notices must display the words
+ * "Powered by X2Engine".
+ *****************************************************************************************/
+/***********************************************************************
+* Grays 
+***********************************************************************/
+/***********************************************************************
+* Blues
+***********************************************************************/
+/***********************************************************************
+* Reds 
+***********************************************************************/
+/***********************************************************************
+* Greens 
+***********************************************************************/
+/***********************************************************************
+* This section is made to correspond with the theme keys in ThemeGenerator
+***********************************************************************/
+/* narrow header */
+/* line 42, ../../../../../compass/protected/modules/mobile/assets/css/jqueryMobileCssOverrides.scss */
 .ui-content {
   padding-bottom: 35px !important;
 }
 
-/* line 41, ../../../../../compass/protected/modules/mobile/assets/css/jqueryMobileCssOverrides.scss */
+/* line 46, ../../../../../compass/protected/modules/mobile/assets/css/jqueryMobileCssOverrides.scss */
 .ui-header {
   font-size: 12px !important;
 }
 
 /* style text in footer */
-/* line 47, ../../../../../compass/protected/modules/mobile/assets/css/jqueryMobileCssOverrides.scss */
+/* line 52, ../../../../../compass/protected/modules/mobile/assets/css/jqueryMobileCssOverrides.scss */
 .ui-footer {
   text-shadow: none !important;
   font-weight: normal !important;
@@ -58,23 +325,23 @@
   bottom: 0px;
   width: 100%;
 }
-/* line 59, ../../../../../compass/protected/modules/mobile/assets/css/jqueryMobileCssOverrides.scss */
+/* line 64, ../../../../../compass/protected/modules/mobile/assets/css/jqueryMobileCssOverrides.scss */
 .ui-footer > p {
   float: left;
 }
-/* line 63, ../../../../../compass/protected/modules/mobile/assets/css/jqueryMobileCssOverrides.scss */
+/* line 68, ../../../../../compass/protected/modules/mobile/assets/css/jqueryMobileCssOverrides.scss */
 .ui-footer #logo-container {
   float: right;
   margin-right: 8px;
 }
-/* line 68, ../../../../../compass/protected/modules/mobile/assets/css/jqueryMobileCssOverrides.scss */
+/* line 73, ../../../../../compass/protected/modules/mobile/assets/css/jqueryMobileCssOverrides.scss */
 .ui-footer .ui-link {
   font-weight: normal !important;
 }
 
 /* style links in footer */
 /* remove text shadow from footer text */
-/* line 79, ../../../../../compass/protected/modules/mobile/assets/css/jqueryMobileCssOverrides.scss */
+/* line 84, ../../../../../compass/protected/modules/mobile/assets/css/jqueryMobileCssOverrides.scss */
 .ui-loader {
   background: #5C5C5C !important;
   color: #fff;
@@ -88,55 +355,58 @@
   background: linear-gradient(to bottom, #5c5c5c 0%, #1c1c1c 100%) !important;
 }
 
-/* line 92, ../../../../../compass/protected/modules/mobile/assets/css/jqueryMobileCssOverrides.scss */
-#site-login, .ui-page, .ui-body-a {
+/* line 97, ../../../../../compass/protected/modules/mobile/assets/css/jqueryMobileCssOverrides.scss */
+#site-login, .ui-page, .ui-body-a:not(.ui-loader) {
   color: white;
-  background: radial-gradient(#233d5f, #06090f);
+  background: radial-gradient(#3e5c9e, #304779);
+  /* @theme background: background */
   text-shadow: none;
 }
 
-/* line 104, ../../../../../compass/protected/modules/mobile/assets/css/jqueryMobileCssOverrides.scss */
+/* line 111, ../../../../../compass/protected/modules/mobile/assets/css/jqueryMobileCssOverrides.scss */
 .ui-input-text {
   width: 100% !important;
   box-sizing: border-box;
+  background: none !important;
 }
-/* line 108, ../../../../../compass/protected/modules/mobile/assets/css/jqueryMobileCssOverrides.scss */
+/* line 115, ../../../../../compass/protected/modules/mobile/assets/css/jqueryMobileCssOverrides.scss */
 .ui-input-text input {
   height: 38px !important;
   box-shadow: none !important;
+  background: none !important;
 }
 
-/* line 115, ../../../../../compass/protected/modules/mobile/assets/css/jqueryMobileCssOverrides.scss */
+/* line 123, ../../../../../compass/protected/modules/mobile/assets/css/jqueryMobileCssOverrides.scss */
 .ui-field-contain {
   border: none;
   padding-top: 0px;
   padding-bottom: 10px;
 }
-/* line 116, ../../../../../compass/protected/modules/mobile/assets/css/jqueryMobileCssOverrides.scss */
+/* line 124, ../../../../../compass/protected/modules/mobile/assets/css/jqueryMobileCssOverrides.scss */
 .ui-field-contain:first-child {
   margin-top: 180px;
 }
 
-/* line 124, ../../../../../compass/protected/modules/mobile/assets/css/jqueryMobileCssOverrides.scss */
+/* line 132, ../../../../../compass/protected/modules/mobile/assets/css/jqueryMobileCssOverrides.scss */
 .login-row {
   width: 100%;
   margin-top: 10px !important;
 }
-/* line 128, ../../../../../compass/protected/modules/mobile/assets/css/jqueryMobileCssOverrides.scss */
+/* line 136, ../../../../../compass/protected/modules/mobile/assets/css/jqueryMobileCssOverrides.scss */
 .login-row td {
   padding: 0px;
   width: 50%;
 }
-/* line 132, ../../../../../compass/protected/modules/mobile/assets/css/jqueryMobileCssOverrides.scss */
+/* line 140, ../../../../../compass/protected/modules/mobile/assets/css/jqueryMobileCssOverrides.scss */
 .login-row td:first-child {
   padding-right: 5px;
 }
-/* line 135, ../../../../../compass/protected/modules/mobile/assets/css/jqueryMobileCssOverrides.scss */
+/* line 143, ../../../../../compass/protected/modules/mobile/assets/css/jqueryMobileCssOverrides.scss */
 .login-row td:last-child {
   padding-left: 5px;
 }
 
-/* line 141, ../../../../../compass/protected/modules/mobile/assets/css/jqueryMobileCssOverrides.scss */
+/* line 149, ../../../../../compass/protected/modules/mobile/assets/css/jqueryMobileCssOverrides.scss */
 .remember-me-checkbox-container, .full-site {
   display: inline-block;
   box-sizing: border-box !important;
@@ -146,15 +416,15 @@
   margin-bottom: 15px !important;
   height: 23px !important;
 }
-/* line 151, ../../../../../compass/protected/modules/mobile/assets/css/jqueryMobileCssOverrides.scss */
+/* line 159, ../../../../../compass/protected/modules/mobile/assets/css/jqueryMobileCssOverrides.scss */
 .remember-me-checkbox-container .ui-checkbox, .full-site .ui-checkbox {
   height: 30px !important;
 }
-/* line 153, ../../../../../compass/protected/modules/mobile/assets/css/jqueryMobileCssOverrides.scss */
+/* line 161, ../../../../../compass/protected/modules/mobile/assets/css/jqueryMobileCssOverrides.scss */
 .remember-me-checkbox-container .ui-checkbox label, .full-site .ui-checkbox label {
   margin: 0px !important;
 }
-/* line 158, ../../../../../compass/protected/modules/mobile/assets/css/jqueryMobileCssOverrides.scss */
+/* line 166, ../../../../../compass/protected/modules/mobile/assets/css/jqueryMobileCssOverrides.scss */
 .remember-me-checkbox-container .ui-btn-inner, .full-site .ui-btn-inner {
   font-size: 10px;
   box-sizing: border-box !important;
@@ -163,29 +433,29 @@
   text-decoration: none !important;
   color: white !important;
 }
-/* line 167, ../../../../../compass/protected/modules/mobile/assets/css/jqueryMobileCssOverrides.scss */
+/* line 175, ../../../../../compass/protected/modules/mobile/assets/css/jqueryMobileCssOverrides.scss */
 .remember-me-checkbox-container input, .full-site input {
   display: none;
 }
 
-/* line 174, ../../../../../compass/protected/modules/mobile/assets/css/jqueryMobileCssOverrides.scss */
+/* line 182, ../../../../../compass/protected/modules/mobile/assets/css/jqueryMobileCssOverrides.scss */
 .errorMessage {
   text-shadow: none;
 }
 
-/* line 178, ../../../../../compass/protected/modules/mobile/assets/css/jqueryMobileCssOverrides.scss */
+/* line 186, ../../../../../compass/protected/modules/mobile/assets/css/jqueryMobileCssOverrides.scss */
 .ui-btn-up-a {
-  background: rgba(255, 255, 255, 0.1) !important;
+  background: rgba(128, 128, 128, 0.1) !important;
   border: none !important;
 }
 
-/* line 183, ../../../../../compass/protected/modules/mobile/assets/css/jqueryMobileCssOverrides.scss */
+/* line 191, ../../../../../compass/protected/modules/mobile/assets/css/jqueryMobileCssOverrides.scss */
 .ui-btn-hover-a {
   border: none !important;
-  background: rgba(255, 255, 255, 0.2);
+  background: rgba(128, 128, 128, 0.2);
 }
 
-/* line 189, ../../../../../compass/protected/modules/mobile/assets/css/jqueryMobileCssOverrides.scss */
+/* line 197, ../../../../../compass/protected/modules/mobile/assets/css/jqueryMobileCssOverrides.scss */
 .x2-icon {
   opacity: 0.7;
   text-shadow: 1px 4px 6px #233d5f, 0 0 0 #233d5f, 1px 4px 6px #233d5f;
@@ -196,12 +466,12 @@
   padding: 20% 0px;
   line-height: 70%;
 }
-/* line 199, ../../../../../compass/protected/modules/mobile/assets/css/jqueryMobileCssOverrides.scss */
+/* line 207, ../../../../../compass/protected/modules/mobile/assets/css/jqueryMobileCssOverrides.scss */
 .x2-icon div:last-child {
   font-size: 50%;
 }
 
-/* line 206, ../../../../../compass/protected/modules/mobile/assets/css/jqueryMobileCssOverrides.scss */
+/* line 214, ../../../../../compass/protected/modules/mobile/assets/css/jqueryMobileCssOverrides.scss */
 .background-stripe {
   background-origin: content-box;
   position: fixed;
@@ -211,7 +481,7 @@
   background: rgba(255, 255, 255, 0.1);
   right: 32px;
 }
-/* line 221, ../../../../../compass/protected/modules/mobile/assets/css/jqueryMobileCssOverrides.scss */
+/* line 229, ../../../../../compass/protected/modules/mobile/assets/css/jqueryMobileCssOverrides.scss */
 .background-stripe::after {
   background: rgba(255, 255, 255, 0.1);
   content: '';

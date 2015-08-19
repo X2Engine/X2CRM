@@ -211,14 +211,14 @@ class RecordViewLayoutManager extends X2Widget {
     public function responsiveCss ($parentSelector) {
         return "
             $parentSelector .formSectionRow td {
-                display: block;
-                width: 100% !important;
+                // display: block;
+                // width: 100% !important;
             }
             $parentSelector .formSectionRow td > div{
-                width: 100% !important;
+                // width: 100% !important;
             }
             $parentSelector .formItem.leftLabel > .formInputBox {
-                width: 200px !important;
+                // width: 200px !important;
             }";
     }
 

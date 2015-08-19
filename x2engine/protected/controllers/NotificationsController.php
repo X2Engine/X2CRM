@@ -68,12 +68,6 @@ class NotificationsController extends CController {
             ));
             Yii::app()->end();
         }
-        
-        Yii::import('application.models.Events');
-        Yii::import('application.components.Formatter');
-        Yii::import('application.components.FieldFormatter');
-        Yii::import('application.controllers.x2base');
-        Yii::import('application.controllers.X2Controller');
 
         if(!isset($_GET['lastNotifId']))    // if the client doesn't specify the last
             $_GET['lastNotifId'] = 0;        // message ID received, send everything
@@ -136,18 +130,6 @@ class NotificationsController extends CController {
      * Looks up notifications using the specified offset and limit
      */
     public function getNotifications($lastId=0,$getNext=false) {
-
-        // import all the models
-        Yii::import('application.models.Social');
-        Yii::import('application.models.Profile');
-        Yii::import('application.models.Events');
-        Yii::import('application.models.Notification');
-        Yii::import('application.models.Fields');
-        Yii::import('application.components.X2WebUser');
-        foreach(scandir('protected/modules') as $module){
-            if(file_exists('protected/modules/'.$module.'/register.php'))
-                Yii::import('application.modules.'.$module.'.models.*');
-        }
 
         $notifications = array();
 

@@ -132,15 +132,15 @@ class ProfileTest extends X2DbTestCase {
         $this->assertEquals ($defaultLayout, json_decode ($profile->layout, true));
 
         // ensure that right widgets get retitled while preserving other settings
-        $helpfulTipsConfig = $defaultLayout['right']['HelpfulTips'];
+        $helpfulTipsConfig = $defaultLayout['right']['TimeZone'];
         $this->assertFalse ($helpfulTipsConfig['minimize']); // make sure we're changing state
         $newHelpfulTipsConfig = array(
-            'title' => 'Not Helpful Tips',
+            'title' => 'Not Clock',
             'minimize' => true,
         );
         $profile->layout = json_encode (array (
             'right' => array (
-                'HelpfulTips' => $newHelpfulTipsConfig,
+                'TimeZone' => $newHelpfulTipsConfig,
             )
         ));
         $profile->update ('layout');
@@ -153,14 +153,14 @@ class ProfileTest extends X2DbTestCase {
         $profile->refresh ();
         $expected = $defaultLayout;
         $newHelpfulTipsConfig['title'] = $helpfulTipsConfig['title'];
-        $expected['right']['HelpfulTips'] = $newHelpfulTipsConfig;
+        $expected['right']['TimeZone'] = $newHelpfulTipsConfig;
         $this->assertEquals ($expected, json_decode ($profile->layout, true));
 
         // ensure that hidden right widgets remain hidden
-        $helpfulTipsConfig = $defaultLayout['right']['HelpfulTips'];
+        $helpfulTipsConfig = $defaultLayout['right']['TimeZone'];
         $profile->layout = json_encode (array (
             'hiddenRight' => array (
-                'HelpfulTips' => $helpfulTipsConfig,
+                'TimeZone' => $helpfulTipsConfig,
             )
         ));
         $profile->update ('layout');
@@ -172,20 +172,20 @@ class ProfileTest extends X2DbTestCase {
         $fn ('right', $layout, $defaultLayout);
         $profile->refresh ();
         $expected = $defaultLayout;
-        unset ($expected['right']['HelpfulTips']);
-        $expected['hiddenRight']['HelpfulTips'] = $helpfulTipsConfig;
+        unset ($expected['right']['TimeZone']);
+        $expected['hiddenRight']['TimeZone'] = $helpfulTipsConfig;
         $this->assertEquals ($expected, json_decode ($profile->layout, true));
 
         // ensure that hidden right widgets get retitled while preserving other settings
-        $helpfulTipsConfig = $defaultLayout['right']['HelpfulTips'];
+        $helpfulTipsConfig = $defaultLayout['right']['TimeZone'];
         $this->assertFalse ($helpfulTipsConfig['minimize']); // make sure we're changing state
         $newHelpfulTipsConfig = array(
-            'title' => 'Not Helpful Tips',
+            'title' => 'Not Clock',
             'minimize' => true,
         );
         $profile->layout = json_encode (array (
             'hiddenRight' => array (
-                'HelpfulTips' => $newHelpfulTipsConfig,
+                'TimeZone' => $newHelpfulTipsConfig,
             )
         ));
         $profile->update ('layout');
@@ -198,8 +198,8 @@ class ProfileTest extends X2DbTestCase {
         $profile->refresh ();
         $expected = $defaultLayout;
         $newHelpfulTipsConfig['title'] = $helpfulTipsConfig['title'];
-        unset ($expected['right']['HelpfulTips']);
-        $expected['hiddenRight']['HelpfulTips'] = $newHelpfulTipsConfig;
+        unset ($expected['right']['TimeZone']);
+        $expected['hiddenRight']['TimeZone'] = $newHelpfulTipsConfig;
         $this->assertEquals ($expected, json_decode ($profile->layout, true));
     }
 }

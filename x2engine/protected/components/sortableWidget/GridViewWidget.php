@@ -84,7 +84,8 @@ abstract class GridViewWidget extends SortableWidget {
                 parent::getJSONPropertiesStructure (),
                 array (
                     'resultsPerPage' => 10, 
-                    'showHeader' => true, 
+                    'showHeader' => false, 
+                    'hideFullHeader' => false, 
                 )
             );
         }
@@ -138,6 +139,8 @@ abstract class GridViewWidget extends SortableWidget {
                 'ajaxUrl' => Yii::app()->controller->createUrl ($updateRoute, $updateParams),
                 'showHeader' => CPropertyValue::ensureBoolean (
                     $this->getWidgetProperty('showHeader')),
+                'hideFullHeader' => CPropertyValue::ensureBoolean (
+                    $this->getWidgetProperty('hideFullHeader')),
             );
         }
         return $this->_gridViewConfig;

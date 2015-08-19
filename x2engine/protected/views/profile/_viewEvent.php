@@ -41,7 +41,7 @@ if (class_exists($data->associationType)) {
             return;
         }
         if ($associatedModel instanceof Actions) {
-            $modelName = X2Model::getModelName ($associatedModel->associationType, true);
+            $modelName = X2Model::getModelName($associatedModel->associationType, true);
             if ($modelName) {
                 if (count(X2Model::model($modelName)->findAllByPk($associatedModel->associationId)) > 0) {
                     $actionModel = X2Model::model($modelName)->findByPk($associatedModel->associationId);
@@ -54,8 +54,8 @@ if (class_exists($data->associationType)) {
     }
 }
 Yii::app()->params->isAdmin = Yii::app()->user->checkAccess('AdminIndex');
-$avatar = Yii::app()->db->createCommand()
-        ->select('avatar')
+$profId = Yii::app()->db->createCommand()
+        ->select('id')
         ->from('x2_profile')
         ->where('username=:user', array(':user' => $data->user))
         ->queryScalar();
@@ -113,18 +113,18 @@ if ($data->sticky) {
         $_SESSION['stickyFlag'] = true;
         echo "<div class='view top-level date-break sticky-section-headert'>- Sticky -</div>";
     }
-}else{
-    if(!isset($noDateBreak) || !$noDateBreak){
-        if(isset($_SESSION['lastDate']) && $_SESSION['lastDate'] !== date("M j", $data->timestamp)){
-            echo 
-                "<div class='view top-level date-break".($_SESSION['firstFlag'] ? " first" : "")."'
-                  id='"."date-break-".($data->timestamp)."'>
-                    - ".(date("M j", time()) == date("M j", $data->timestamp) ? 
-                        Yii::t('app', "Today") : 
-                        Yii::app()->locale->dateFormatter->format(
-                            'EEEE', $data->timestamp).', '.
-                        Yii::app()->locale->dateFormatter->formatDateTime(
-                            $data->timestamp, 'long', null))." -
+} else {
+    if (!isset($noDateBreak) || !$noDateBreak) {
+        if (isset($_SESSION['lastDate']) && $_SESSION['lastDate'] !== date("M j", $data->timestamp)) {
+            echo
+            "<div class='view top-level date-break" . ($_SESSION['firstFlag'] ? " first" : "") . "'
+                  id='" . "date-break-" . ($data->timestamp) . "'>
+                    - " . (date("M j", time()) == date("M j", $data->timestamp) ?
+                    Yii::t('app', "Today") :
+                    Yii::app()->locale->dateFormatter->format(
+                            'EEEE', $data->timestamp) . ', ' .
+                    Yii::app()->locale->dateFormatter->formatDateTime(
+                            $data->timestamp, 'long', null)) . " -
                 </div>";
             $_SESSION['lastDate'] = date("M j", $data->timestamp);
             $_SESSION['firstFlag'] = false;
@@ -168,17 +168,9 @@ $important = $data->important ? 'important-action' : '';
             echo X2DateUtil::actionDate($data->timestamp, 1);
         }
         ?>
-        <?php //  echo ($data->type!='feed')?CHtml::image($imgUrl,'',array('title'=>$data->parseType($data->type))):""; ?>
         <?php
-        if ($data->type == 'feed') { 
-            // add css class to uploaded avatar images to round corners
-            $CSSClass = $avatar == 'uploads/default.png' ? 'default-avatar-image' : 'avatar-image';
-
-            if(!empty($avatar) && file_exists($avatar)) {
-                echo CHtml::image(Yii::app()->request->baseUrl . "/" . $avatar, '', array('class' => $CSSClass, 'height' => 35, 'width' => 35));
-            } else {
-                Profile::renderFullSizeAvatar(0, 35);
-            }
+        if ($data->type == 'feed') {
+            Profile::renderFullSizeAvatar($profId, 35);
         }
         ?>
         <div class='stacked-icon'></div>
@@ -187,8 +179,7 @@ $important = $data->important ? 'important-action' : '';
         <div class="deleteButton">
             <?php
             if (($data->type == 'feed') && ($data->user == Yii::app()->user->getName() || Yii::app()->params->isAdmin)) {
-                echo CHtml::link('', array('/profile/updatePost', 'id' => $data->id, 'profileId' => $profileId), 
-                    array('class'=>'fa fa-edit')) . " ";
+                echo CHtml::link('', array('/profile/updatePost', 'id' => $data->id, 'profileId' => $profileId), array('class' => 'fa fa-edit')) . " ";
             }
             if ((($data->user == Yii::app()->user->getName() || $data->associationId == Yii::app()->user->getId()) && ($data->type == 'feed')) || Yii::app()->params->isAdmin)
                 echo CHtml::link('', '#', array('class' => 'fa fa-close delete-link', 'id' => $data->id . '-delete'));
@@ -203,10 +194,10 @@ $important = $data->important ? 'important-action' : '';
             <span class="comment-age x2-hint" id="<?php echo $data->id . "-" . $data->timestamp; ?>" 
                   style="<?php echo $style; ?>"
                   title="<?php echo Formatter::formatFeedTimestamp($data->timestamp); ?>">
-                  <?php echo Formatter::formatFeedTimestamp($data->timestamp); ?>
+                      <?php echo Formatter::formatFeedTimestamp($data->timestamp); ?>
             </span> 
             <span>
-                
+
             </span>
             <span class='event-icon-button-container'>
                 <?php
@@ -215,13 +206,13 @@ $important = $data->important ? 'important-action' : '';
                                 'span', array(
                             'class' => 'feed-comment-icon fa fa-comment-o active-icon',
                             'title' => Yii::t('profile', 'Comment on this post')
-                        ), ' ') .
+                                ), ' ') .
                         '<span title="' . CHtml::encode(Yii::t('profile', 'View comments')) . '"
                            id="' . $data->id . '-comment-count" class="comment-count" 
-                           val="'.$commentCount.'">'.
-                           ($commentCount > 0 ? "<b>" . $commentCount . "</b>" : $commentCount) .
+                           val="' . $commentCount . '">' .
+                        ($commentCount > 0 ? "<b>" . $commentCount . "</b>" : $commentCount) .
                         '</span>', '#', array(
-                            'class' => 'comment-link', 'id' => $data->id . '-link'));
+                    'class' => 'comment-link', 'id' => $data->id . '-link'));
                 ?>
                 <?php
                 echo CHtml::link(
@@ -230,13 +221,13 @@ $important = $data->important ? 'important-action' : '';
                             'class' => 'feed-comment-icon fa fa-comment inactive-icon',
                             'title' => Yii::t('profile', 'Hide comments'),
                             'style' => 'font-weight: bold;'
-                        ), ' '), '#', array(
+                                ), ' '), '#', array(
                     'class' => 'comment-hide-link', 'id' => $data->id . '-hide-link',
                     'style' => 'display:none;'
                         )
                 );
                 ?>
-                
+
                 <?php
                 $important = ($data->important == 1);
                 //echo CHtml::link(Yii::t('app','Broadcast Event'),'#',array('class'=>'important-link x2-hint','id'=>$data->id.'-important-link','style'=>($important?'display:none;':''),'title'=>Yii::t('app','Broadcasting an event will make it visible to any user viewing your events on the activity feed--regardless of type filters.')));
@@ -244,7 +235,7 @@ $important = $data->important ? 'important-action' : '';
                 echo CHtml::link(
                         CHtml::tag('span', array(
                             'class' => 'feed-make-important-icon fa fa-exclamation-circle active-icon',
-                        ), ' '), '#', array(
+                                ), ' '), '#', array(
                     'class' => 'important-link x2-hint', 'id' => $data->id . '-important-link',
                     'style' => ($important ? 'display:none;' : ''), 'title' => Yii::t('app', 'Designating an event as important will make it visible to any user viewing ' .
                             'your events on the activity feed--regardless of type filters.')
@@ -254,7 +245,7 @@ $important = $data->important ? 'important-action' : '';
                         CHtml::tag('span', array(
                             'class' => 'feed-make-unimportant-icon fa fa-exclamation-circle inactive-icon',
                             'title' => CHtml::encode(Yii::t('profile', 'Make unimportant'))
-                        ), ' '), '#', array(
+                                ), ' '), '#', array(
                     'class' => 'unimportant-link', 'id' => $data->id . '-unimportant-link',
                     'style' => ($important ? '' : 'display:none;')
                         )
@@ -268,7 +259,7 @@ $important = $data->important ? 'important-action' : '';
                     echo CHtml::link(
                             CHtml::tag('span', array(
                                 'class' => 'sticky-icon fa fa-thumb-tack active-icon',
-                            ), ' '), '#', array(
+                                    ), ' '), '#', array(
                         'class' => 'sticky-link x2-hint', 'id' => $data->id . '-sticky-link',
                         'style' => ($sticky ? 'display:none;' : ''),
                         'title' => Yii::t('app', 'Making an event sticky will cause it to always ' .
@@ -276,10 +267,10 @@ $important = $data->important ? 'important-action' : '';
                             )
                     );
                     echo CHtml::link(
-                            CHtml::tag( 'span', array(
+                            CHtml::tag('span', array(
                                 'class' => 'unsticky-icon fa fa-thumb-tack inactive-icon',
                                 'title' => Yii::t('profile', 'Undo Sticky')
-                            ), ' '), '#', array(
+                                    ), ' '), '#', array(
                         'class' => 'unsticky-link', 'id' => $data->id . '-unsticky-link',
                         'style' => ($sticky ? '' : 'display:none;')
                             )
@@ -290,26 +281,24 @@ $important = $data->important ? 'important-action' : '';
                 $likeDisplay = $likedPost ? 'display:none' : '';
                 $unlikeDisplay = !$likedPost ? 'display:none' : '';
                 // echo " | ";
-                echo CHtml::tag( 'span',
-                        array(
-                            'id' => $data->id . '-like-button',
-                            'class' => 'like-button',
-                            'style' => $likeDisplay
-                        ),
-                        X2Html::fa('fa-thumbs-up', array(
+                echo CHtml::tag('span', array(
+                    'id' => $data->id . '-like-button',
+                    'class' => 'like-button',
+                    'style' => $likeDisplay
+                        ), X2Html::fa('fa-thumbs-up', array(
                             'class' => 'like-icon active-icon',
                             'title' => CHtml::encode(Yii::t('app', 'Like this post')),
                         ))
                 );
                 echo CHtml::link(
-                        CHtml::tag( 'span', array(
+                        CHtml::tag('span', array(
                             'class' => 'unlike-icon fa fa-thumbs-up inactive-icon',
                             'title' => CHtml::encode(Yii::t('app', 'Unlike this post')),
-                        ), ' '), '#', array(
+                                ), ' '), '#', array(
                     'id' => $data->id . '-unlike-button',
                     'class' => 'unlike-button',
                     'style' => $unlikeDisplay
-                    )
+                        )
                 );
                 echo CHtml::link(
                         $likeCount, '#', array(
@@ -322,7 +311,7 @@ $important = $data->important ? 'important-action' : '';
                         CHtml::tag('span', array(
                             'class' => 'broadcast-icon fa fa-bullhorn active-icon',
                             'title' => CHtml::encode(Yii::t('app', 'Broadcast this post')),
-                        ), ' '), '#', array(
+                                ), ' '), '#', array(
                     'id' => $data->id . '-broadcast-button',
                     'class' => 'broadcast-button',
                         )
@@ -330,7 +319,7 @@ $important = $data->important ? 'important-action' : '';
                 ?>
             </span>
         </div>
-        <?php ?>
+                <?php ?>
     </div>
     <div id="<?php echo $data->id ?>-like-history-box" class="like-history-box" 
          style="display:none;clear:both;">
@@ -339,55 +328,55 @@ $important = $data->important ? 'important-action' : '';
     <div id="<?php echo $data->id ?>-comment-box" class="comment-box" 
          style="display:none;clear:both;">
         <div id="<?php echo $data->id ?>-comments" ></div>
-        <?php
-        echo "<div style='margin-left:10px;margin-top:5px;'>" .
-        CHtml::link(
-                '<span class="fa fa-plus"></span>&nbsp;'.
-                Yii::t('app', "Add Comment"), '#', array(
-                    'onclick' => 
-                        '$(this).toggle();
+<?php
+echo "<div style='margin-left:10px;margin-top:5px;'>" .
+ CHtml::link(
+        '<span class="fa fa-plus"></span>&nbsp;' .
+        Yii::t('app', "Add Comment"), '#', array(
+    'onclick' =>
+    '$(this).toggle();
                          $("#' . $data->id . '-comment-form").show();
                          return false;'
-                )
-        ) . "</div>";
-        echo "<div style='margin-left:10px;display:none;' id='" . $data->id . "-comment-form'>";
-        echo CHtml::beginForm(
-                '', 'get', array(
-            'id' => 'addReply-' . $data->id,
-                // 'onsubmit'=>'commentSubmit('.$data->id.');return false;'
-        ));
-        echo CHtml::textArea($data->id . '-comment', '', array('class' => 'comment-textbox x2-textarea'));
-        echo CHtml::submitButton(
-                Yii::t('app', 'Submit'), array('class' => 'x2-button comment-submit'));
-        echo CHtml::endForm();
+        )
+) . "</div>";
+echo "<div style='margin-left:10px;display:none;' id='" . $data->id . "-comment-form'>";
+echo CHtml::beginForm(
+        '', 'get', array(
+    'id' => 'addReply-' . $data->id,
+        // 'onsubmit'=>'commentSubmit('.$data->id.');return false;'
+));
+echo CHtml::textArea($data->id . '-comment', '', array('class' => 'comment-textbox x2-textarea'));
+echo CHtml::submitButton(
+        Yii::t('app', 'Submit'), array('class' => 'x2-button comment-submit'));
+echo CHtml::endForm();
 
-        echo "</div>";
-        ?>
+echo "</div>";
+?>
     </div>
 </div>
-<?php
-if ($data->important && !empty($data->linkColor)) {
-    Yii::app()->clientScript->registerScript($data->id . '-link-colors', "
+        <?php
+        if ($data->important && !empty($data->linkColor)) {
+            Yii::app()->clientScript->registerScript($data->id . '-link-colors', "
     $('#{$data->id}-feed-box a').css('color','" . str_replace('%23', '#', $data->linkColor) . "');
 ");
-}
-/*
-  <div class="view">
-  <div class="deleteButton">
-  <?php echo CHtml::link('[x]',array('deleteNote','id'=>$data->id)); //,array('class'=>'x2-button') ?>
-  <?php //echo CHtml::link("<img src='".Yii::app()->request->baseUrl."/images/deleteButton.png' />",array("deleteNote","id"=>$data->id)); ?>
-  </div>
+        }
+        /*
+          <div class="view">
+          <div class="deleteButton">
+          <?php echo CHtml::link('[x]',array('deleteNote','id'=>$data->id)); //,array('class'=>'x2-button') ?>
+          <?php //echo CHtml::link("<img src='".Yii::app()->request->baseUrl."/images/deleteButton.png' />",array("deleteNote","id"=>$data->id)); ?>
+          </div>
 
-  <b><?php echo CHtml::encode($data->getAttributeLabel('createdBy')); ?>:</b>
-  <?php echo CHtml::encode($data->createdBy); ?>
-  <br />
+          <b><?php echo CHtml::encode($data->getAttributeLabel('createdBy')); ?>:</b>
+          <?php echo CHtml::encode($data->createdBy); ?>
+          <br />
 
-  <b><?php echo CHtml::encode($data->getAttributeLabel('createDate')); ?>:</b>
-  <?php echo CHtml::encode($data->createDate); ?>
-  <br /><br />
-  <b><?php echo CHtml::encode($data->getAttributeLabel('note')); ?>:</b>
-  <?php echo CHtml::encode($data->note); ?>
-  <br />
-  </div>
- */
-?>
+          <b><?php echo CHtml::encode($data->getAttributeLabel('createDate')); ?>:</b>
+          <?php echo CHtml::encode($data->createDate); ?>
+          <br /><br />
+          <b><?php echo CHtml::encode($data->getAttributeLabel('note')); ?>:</b>
+          <?php echo CHtml::encode($data->note); ?>
+          <br />
+          </div>
+         */
+        ?>

@@ -44,7 +44,7 @@ class X2FlowRecordListRemove extends X2FlowAction {
 	public $info = 'Remove this record from a static list.';
 
 	public function paramRules() {
-		return array(
+		return array_merge (parent::paramRules (), array (
 			'title' => Yii::t('studio',$this->title),
 			'info' => Yii::t('studio',$this->info),
 			'modelRequired' => 'Contacts',
@@ -60,7 +60,7 @@ class X2FlowRecordListRemove extends X2FlowAction {
                         )
                     )
                 ),
-			));
+			)));
 	}
 
 	public function execute(&$params) {

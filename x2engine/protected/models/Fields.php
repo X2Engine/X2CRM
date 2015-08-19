@@ -56,6 +56,8 @@ class Fields extends CActiveRecord {
      */
     const NAMEID_DELIM = '_';
 
+    const MULTI_ASSIGNMENT_DELIM = ', ';
+
     const RATING_MIN = 1;
 
     const RATING_MAX = 5;
@@ -143,6 +145,7 @@ class Fields extends CActiveRecord {
             array('custom, modified, readOnly, searchable, required, uniqueConstraint', 'boolean'),
             array('fieldName','uniqueFieldName'),
             array('linkType','length','max'=>250),
+            array('description','length','max'=>500),
             array('type','length','max'=>20),
             array('keyType','in','range' => array('MUL','UNI','PRI','FIX','FOR'), 'allowEmpty'=>true),
             array('keyType','requiredUnique'),
@@ -1012,6 +1015,19 @@ class Fields extends CActiveRecord {
                $this->$attribute = self::getPurifier()->purify($this->$attribute);
             }
         }
+    }
+
+    /**
+     * Retrieve associated dropdown, if it exists
+     * @return null|Dropdowns
+     */
+    private $_dropdown;
+    public function getDropdown () {
+        if ($this->type !== 'dropdown') return null;
+        if (!isset ($this->_dropdown)) {
+            $this->_dropdown = Dropdowns::model ()->findByPk ($this->linkType);
+        }
+        return $this->_dropdown;
     }
 
 }

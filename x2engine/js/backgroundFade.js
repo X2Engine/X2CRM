@@ -75,8 +75,7 @@ $(function() {
 	}); */
 	
 	var isHidden = false;
-	var hideTargets = $("#page").children().not("#header").add("#footer");
-	
+	var hideTargets = $("#page").children().not("#header").add("#footer").add ('.qtip');
 	
 	$(document).click(function(e) {
 		if(isHidden) {

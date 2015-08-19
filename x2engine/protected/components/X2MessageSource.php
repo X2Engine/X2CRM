@@ -64,7 +64,7 @@ class X2MessageSource extends CMessageSource {
         parent::init();
         if($this->basePath === null)
             $this->basePath = Yii::getPathOfAlias('application.messages');
-    }
+        }
 
     /**
      * Translates the specified message.
@@ -131,9 +131,13 @@ class X2MessageSource extends CMessageSource {
                     $class = new ReflectionClass($extensionClass);
                     $this->_files[$category][$language] = dirname($class->getFileName()).DIRECTORY_SEPARATOR.'messages'.DIRECTORY_SEPARATOR.$language.DIRECTORY_SEPARATOR.$extensionCategory.'.php';
                 }
+            } else {
+                if(file_exists('custom'.DIRECTORY_SEPARATOR.'protected'.DIRECTORY_SEPARATOR.'messages'.DIRECTORY_SEPARATOR.$language.DIRECTORY_SEPARATOR.$category.'.php')){
+                    $this->_files[$category][$language] = 'custom'.DIRECTORY_SEPARATOR.'protected'.DIRECTORY_SEPARATOR.'messages'.DIRECTORY_SEPARATOR.$language.DIRECTORY_SEPARATOR.$category.'.php';
+                }else{
+                    $this->_files[$category][$language] = $this->basePath.DIRECTORY_SEPARATOR.$language.DIRECTORY_SEPARATOR.$category.'.php';
+                }
             }
-            else
-                $this->_files[$category][$language] = $this->basePath.DIRECTORY_SEPARATOR.$language.DIRECTORY_SEPARATOR.$category.'.php';
         }
         return $this->_files[$category][$language];
     }
@@ -146,7 +150,7 @@ class X2MessageSource extends CMessageSource {
      */
     protected function loadMessages($category, $language){
         $messageFile = $this->getMessageFile($category, $language);
-
+        
         if($this->cachingDuration > 0 && $this->cacheID !== false && ($cache = Yii::app()->getComponent($this->cacheID)) !== null){
             $key = self::CACHE_KEY_PREFIX.$messageFile;
             if(($data = $cache->get($key)) !== false)

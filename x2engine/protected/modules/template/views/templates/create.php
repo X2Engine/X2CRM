@@ -41,6 +41,10 @@ $this->actionMenu = $this->formatMenu(array(
 	array('label'=>Yii::t('module','Create {X}',array('{X}'=>Modules::itemDisplayName()))),
 ), array ('X2Model' => $model));
 ?>
-<div class="page-title"><h2><?php echo Yii::t('module','Create New {X}',array('{X}'=>Modules::itemDisplayName())); ?></h2></div>
+<div class="page-title templates"><h2><?php echo Yii::t('module','Create New {X}',array('{X}'=>Modules::itemDisplayName())); ?></h2></div>
 
-<?php echo $this->renderPartial('application.components.views._form', array('model'=>$model,'users'=>$users,'modelName'=>'templates')); ?>
+<?php 
+$this->widget ('FormView', array(
+	'model' => $model
+));
+//echo $this->renderPartial('application.components.views.@FORMVIEW', array('model'=>$model,'users'=>$users,'modelName'=>'templates')); ?>

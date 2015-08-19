@@ -43,12 +43,10 @@ class ProfilesGridViewProfileWidget extends ProfileGridViewWidget {
 
     public $canBeDeleted = true;
 
-    public $viewFile = '_gridViewLessProfileWidget';
+    public $viewFile = '_activeGridViewProfileWidget';
 
     public $relabelingEnabled = true;
 
-    public $template = '<div class="submenu-title-bar widget-title-bar">{widgetLabel}{closeButton}{minimizeButton}{settingsMenu}</div>{widgetContents}';
-    
     private static $_JSONPropertiesStructure;
 
     protected $_viewFileParams;
@@ -111,7 +109,7 @@ class ProfilesGridViewProfileWidget extends ProfileGridViewWidget {
                         '<div class="page-title"><h2 class="grid-widget-title-bar-dummy-element">'.
                         '</h2>{buttons}{filterHint}'.
                         '{summary}{topPager}</div>{items}{pager}',
-                    'modelAttrColumnNames'=>array (
+                    'includedFields'=>array (
                         'tagLine', 'username', 'officePhone', 'cellPhone', 'emailAddress', 
                         'googleId', 'isActive', 'leadRoutingAvailability',
                     ),

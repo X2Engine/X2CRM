@@ -64,7 +64,7 @@ $protocol = (!empty ($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https
 		if (in_array($form->config['unique_id'],array(Null,'none'))) {
 			echo '<span class="registration-sub-text">'.$form->message['registrationSubtext'] . '</span>';
 			$form->textFields($mandatoryFields);
-			echo '<br>'.$form->message['registrationPostText'].': <a href="http://www.x2engine.com/contact/">x2engine.com</a><br><br>';
+			echo '<br>'.$form->message['registrationPostText'].': <a href="http://www.x2crm.com/contact-us/">x2crm.com</a><br><br>';
 		} else {
 			echo $form->message['registrationSuccess'] . '<br><br>';
 			$form->hiddenFields($mandatoryFields);

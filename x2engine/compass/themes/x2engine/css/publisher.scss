@@ -33,6 +33,7 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 
+@import "x2-icons";
 @import "icons";
 
 #history {
@@ -43,6 +44,13 @@
 }
 
 #publisher {
+    & > .form2 {
+        background: $background; 
+        /* @theme background: content */
+        textarea, label, .action-duration-display, .reminder-config {
+            /* @theme color: text */
+        }
+    }
     > {
         .ui-tabs-nav {
             /*display: inline-block;*/

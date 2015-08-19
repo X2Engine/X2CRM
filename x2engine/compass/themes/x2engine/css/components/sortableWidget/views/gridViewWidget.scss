@@ -52,8 +52,8 @@
     }
 
     .grid-view .page-title{
-        background: $gray;
-        border-bottom: 1px solid $gray;
+        background: $defaultTitleBar;
+        border-bottom: none;
         min-height: 34px;
         height: auto;
 

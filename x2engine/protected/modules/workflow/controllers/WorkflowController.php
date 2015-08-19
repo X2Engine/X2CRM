@@ -906,7 +906,7 @@ class WorkflowController extends x2base {
                     'modelName' => 'Opportunity',
                     'viewName' => 'workflowViewOpportunities',
                     'gvSettingsName' => 'opportunityStageMembers',
-                    'title' => Yii::t('opportunitites','Opportunities'),
+                    'title' => Yii::t('opportunities','Opportunities'),
                     'specialColumns'=>array(
                         'name' => array(
                             'header'=>X2Model::model('Opportunity')->getAttributeLabel('name'),

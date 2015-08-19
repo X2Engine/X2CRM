@@ -41,6 +41,11 @@
 class MultiTypeAutocomplete extends X2Widget {
 
     /**
+     * @var CActiveRecord $model
+     */
+    public $model; 
+
+    /**
      * @var array $options 
      */
     public $options; 
@@ -51,16 +56,50 @@ class MultiTypeAutocomplete extends X2Widget {
     public $selectName = ''; 
 
     /**
+     * @var string $autocompleteName
+     */
+    public $autocompleteName; 
+
+    /**
      * @var string $hiddenInputName
      */
     public $hiddenInputName = ''; 
 
     /**
+     * @var string $hiddenInputValue
+     */
+    public $hiddenInputValue = ''; 
+
+    /**
      * @var string $value
      */
-    public $value = 'Contacts'; 
+    public $selectValue = 'Contacts'; 
+
+    /**
+     * @var X2Model $autocompleteValue
+     */
+    public $autocompleteValue; 
+
+    /**
+     * @var string $label
+     */
+    public $label; 
+
+    public $staticOptions = array ();
+
+    /**
+     * @var array $htmlOptions
+     */
+    public $htmlOptions = array (); 
 
     public function run () {
+        $this->htmlOptions = X2Html::mergeHtmlOptions ($this->htmlOptions, array (
+            'id' => $this->namespace."-multi-type-autocomplete-container"
+        ));
+        if (isset ($this->model)) {
+            $selectAttr = $this->selectName;
+            $this->selectValue = $this->model->$selectAttr;
+        }
         $this->render ('_multiTypeAutocomplete');
     }
 

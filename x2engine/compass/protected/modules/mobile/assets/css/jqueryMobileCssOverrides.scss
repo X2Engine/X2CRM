@@ -32,6 +32,11 @@
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2Engine".
  *****************************************************************************************/
+
+@import "standards";
+@import "colors";
+@import "login-shared";
+
 /* narrow header */
 
 .ui-content {
@@ -89,9 +94,10 @@
 	background: linear-gradient(to bottom, #5c5c5c 0%, #1c1c1c 100%) !important;
 }
 
-#site-login, .ui-page, .ui-body-a { 
+#site-login, .ui-page, .ui-body-a:not(.ui-loader) { 
     color: white;
-    background: radial-gradient(#233d5f, #06090f);
+    background: radial-gradient($defaultBgColor, darken($defaultBgColor, 10%));
+    /* @theme background: background */
     text-shadow: none;
 	.ui-content[role="main"] {
 		// padding: -0px 10% !important;
@@ -101,105 +107,107 @@
     }
 
 }
-        .ui-input-text {
-            width: 100% !important;
-            box-sizing: border-box;
 
-            input {
-                height: 38px !important;
-                box-shadow: none !important;
-                // width: 100% !important;
-            }
-        }        
+.ui-input-text {
+    width: 100% !important;
+    box-sizing: border-box;
+    background: none !important;
+    input {
+        height: 38px !important;
+        box-shadow: none !important;
+        background: none !important;
+        // width: 100% !important;
+    }
+}        
 
-        .ui-field-contain {
-            &:first-child {
-                margin-top: 180px;
-            }
-            border: none;
-            padding-top: 0px;
-            padding-bottom: 10px;
+.ui-field-contain {
+    &:first-child {
+        margin-top: 180px;
+    }
+    border: none;
+    padding-top: 0px;
+    padding-bottom: 10px;
+}
+
+.login-row {
+    width: 100%;
+    margin-top: 10px !important;
+
+    td {
+        padding: 0px;
+        width: 50%;
+
+        &:first-child {
+            padding-right: 5px;
         }
-
-        .login-row {
-            width: 100%;
-            margin-top: 10px !important;
-
-            td {
-                padding: 0px;
-                width: 50%;
-
-                &:first-child {
-                    padding-right: 5px;
-                }
-                &:last-child {
-                    padding-left: 5px;
-                }
-            }
+        &:last-child {
+            padding-left: 5px;
         }
+    }
+}
 
-        .remember-me-checkbox-container, .full-site {
-            display: inline-block;
-            box-sizing: border-box !important;
-            padding: 0px !important;
-            // pad: 15px !important;
-            width: 100%;
-            margin-top: 15px !important;
-            margin-bottom: 15px !important;
-            height: 23px !important;
+.remember-me-checkbox-container, .full-site {
+    display: inline-block;
+    box-sizing: border-box !important;
+    padding: 0px !important;
+    // pad: 15px !important;
+    width: 100%;
+    margin-top: 15px !important;
+    margin-bottom: 15px !important;
+    height: 23px !important;
 
-            .ui-checkbox {
-                height: 30px !important;
-                label {
-                    margin: 0px !important;
-                }
-            }
-
-            .ui-btn-inner {
-                font-size: 10px;
-                box-sizing: border-box !important;
-                padding: 5px 0px;
-                padding-left: 10px;
-                text-decoration: none !important;
-                color: white !important;
-            }
-
-            input {
-                display: none;
-            }
+    .ui-checkbox {
+        height: 30px !important;
+        label {
+            margin: 0px !important;
         }
+    }
+
+    .ui-btn-inner {
+        font-size: 10px;
+        box-sizing: border-box !important;
+        padding: 5px 0px;
+        padding-left: 10px;
+        text-decoration: none !important;
+        color: white !important;
+    }
+
+    input {
+        display: none;
+    }
+}
 
 
 
-        .errorMessage {
-            text-shadow: none;
-        }
+.errorMessage {
+    text-shadow: none;
+}
 
-        .ui-btn-up-a {
-            background: rgba(white, 0.1) !important;
-            border: none !important;
-        }
+.ui-btn-up-a {
+    background: rgba(gray, 0.1) !important;
+    border: none !important;
+}
 
-        .ui-btn-hover-a {
-            border: none !important;
-            background: rgba(white, 0.2);
-        }
+.ui-btn-hover-a {
+    border: none !important;
+    background: rgba(gray, 0.2);
+}
 
 
-        .x2-icon {
-            opacity: 0.7;
-            text-shadow: 1px 4px 6px #233d5f, 0 0 0 #233d5f, 1px 4px 6px #233d5f;
-            // font-family: Lato, Arial;
-            font-weight: bold;
-            font-size: 60px;
-            width: 100%;
-            text-align: center;
-            padding: 20% 0px;
-            line-height: 70%;
-            div:last-child{
-                font-size: 50%;
-            }
-        }
+.x2-icon {
+    opacity: 0.7;
+    text-shadow: 1px 4px 6px #233d5f, 0 0 0 #233d5f, 1px 4px 6px #233d5f;
+    // font-family: Lato, Arial;
+    font-weight: bold;
+    font-size: 60px;
+    width: 100%;
+    text-align: center;
+    padding: 20% 0px;
+    line-height: 70%;
+    div:last-child{
+        font-size: 50%;
+    }
+}
 
 @import url(http://fonts.googleapis.com/css?family=Lato:900);
 

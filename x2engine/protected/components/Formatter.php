@@ -942,6 +942,13 @@ class Formatter {
         return $return_string;
     }
 
+    public static function isFormula ($val) {
+        return preg_match ('/^=/', $val);
+    }
+
+    public static function isShortcode ($val) {
+        return preg_match ('/^\{.*\}$/', $val);
+    }
 
 }
 

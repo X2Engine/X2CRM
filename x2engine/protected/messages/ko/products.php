@@ -24,4 +24,6 @@ return array (
 'Import Products'=>'수입 제품',
 'Export Products'=>'수출 제품',
 'NameId'=>'NameId',
+'Create New {module}'=>'새로 만들기 {module}',
+'Update {module}'=>'업데이트 {module}',
 );

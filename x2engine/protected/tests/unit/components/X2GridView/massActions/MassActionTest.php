@@ -50,7 +50,15 @@ class MassActionTest extends X2DbTestCase {
         'contacts' => array ('Contacts', '.MassDeleteTest'),
         'tags' => array ('Tags', '.MassActionTest'),
     );
-
+    
+    /**
+     * This test exists to make PHPUnit not complain when other tests are
+     * stripped by the build script
+     */
+    public function testNothing(){
+        $this->assertTrue(true);
+    }
+    
      
 
 }

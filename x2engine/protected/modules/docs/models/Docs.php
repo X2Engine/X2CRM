@@ -111,6 +111,7 @@ class Docs extends X2Model {
             $this->type = '';
         switch ($this->type) {
             case 'email':
+            case 'quote':
                 return Yii::t('docs', 'Template');
             default:
                 return Yii::t('docs', 'Document');
@@ -143,57 +144,19 @@ class Docs extends X2Model {
                 $vars[$key] = CHtml::encode($vars[$key]);
         }
         $str = strtr($str,$vars);    // replace any manually set variables
-
-        if($model instanceof X2Model) {
-            if(get_class($model) !== 'Quote') {
-                $str = Formatter::replaceVariables($str, $model, '', $renderFlag, false);
-            } else {
-                // Specialized, separate method for quotes that can use details from
-                // either accounts or quotes.
-                // There may still be some stray quotes with 2+ contacts on it, so
-                // explode and pick the first to be on the safe side. The most
-                // common use case by far is to have only one contact on the quote.
-                $accountId = $model->accountName;
-                $staticModels = array('Contact' => Contacts::model(), 'Account' => Accounts::model(), 'Quote' => Quote::model());
-                $models = array(
-                    'Contact' => $model->contact,
-                    'Account' => empty($accountId) ? null : $staticModels['Account']
-                        ->findByAttributes(array('nameId' => $accountId)),
-                    'Quote' => $model
-                );
-                $attributes = array();
-                foreach($models as $name => $modelObj) {
-                    $moduleRef = Modules::displayName(false, $name."s");
-                    if(empty($modelObj)) {
-                        // Model will be blank
-                        foreach ($staticModels[$name]->fields as $field) {
-                            $attributes['{' . $moduleRef . '.' . $field->fieldName . '}'] = '';
-                        }
-                    } else {
-                        // Insert attributes
-                        foreach($modelObj->attributes as $fieldName => $value) {
-                            if ($renderFlag) {
-                                $attributes['{' . $moduleRef. '.' . $fieldName . '}'] =
-                                    $modelObj->renderAttribute(
-                                        $fieldName, false, true, $encode);
-                            } else {
-                                $attributes['{' . $moduleRef. '.' . $fieldName . '}'] =
-                                    $modelObj->getAttribute ($fieldName);
-                            }
-                        }
-                    }
-                }
+        if ($model instanceof X2Model) {
+            if (get_class($model) === 'Quote') {
                 $quoteTitle = Modules::displayName(false, "Quotes");
                 $quoteParams = array(
-                    '{'.$quoteTitle.'.lineItems}' => $model->productTable(true),
-                    '{'.$quoteTitle.'.dateNow}' => date("F d, Y", time()),
-                    '{'.$quoteTitle.'.quoteOrInvoice}' => Yii::t('quotes',
-                                $model->type=='invoice' ? 'Invoice' : $quoteTitle),
+                    '{lineItems}' => $model->productTable(true),
+                    '{dateNow}' => date("F d, Y", time()),
+                    '{quoteOrInvoice}' => Yii::t('quotes',
+                            $model->type == 'invoice' ? 'Invoice' : $quoteTitle),
                 );
-                // Run the replacement:
-                $str = strtr($str,array_merge($attributes,$quoteParams));
-                return $str;
+                $str = strtr($str, $quoteParams);
             }
+            $str = Formatter::replaceVariables($str, $model, '', $renderFlag,
+                            false);
         }
         return $str;
     }
@@ -273,29 +236,10 @@ class Docs extends X2Model {
         return $templateLinks;
     }
 
-    /**
-     * @return bool true if user has edit permissions, false otherwise 
-     */
-    public function checkEditPermissionsList () {
-        $perm = $this->editPermissions;
-        $pieces = explode(", ",$perm);
-        if (array_search(Yii::app()->user->getName(),$pieces)!==false || 
-             Yii::app()->user->getName()==$perm) {
-
-             return true;
-        } else {
-            return false;
-        }
-    }
-
-    public function checkEditPermissions () {
-        $permission = Yii::app()->controller->asa ('PermissionsBehavior')
-            ->checkPermissions ($this, 'edit');
-        $permission &= (
-            Yii::app()->user->checkAccess('DocsAdmin') || 
-            $this->createdBy === Yii::app()->user->getName () || 
-            $this->checkEditPermissionsList ());
-        return $permission;
+    public static function getEmailTemplates2() {
+        return self::model()->findAllByAttributes(array(
+            'type' => 'email',
+        ));
     }
 
     /**

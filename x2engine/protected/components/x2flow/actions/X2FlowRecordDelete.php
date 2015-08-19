@@ -44,12 +44,12 @@ class X2FlowRecordDelete extends X2FlowAction {
 	public $info = 'Permanently delete this record.';
 	
 	public function paramRules() {
-		return array(
+		return array_merge (parent::paramRules (), array (
 			'title' => Yii::t('studio',$this->title),
 			'info' => Yii::t('studio',$this->info),
 			'modelRequired' => 1,
 			'options' => array()
-		);
+		));
 	}
 	
 	public function execute(&$params) {

@@ -42,23 +42,56 @@ class X2FlowTestingAuxLib {
      * @return bool false if an error was found in the log, true otherwise
      */
     public static function checkTrace ($trace) {
-        if (!$trace[0]) return false;
-        $trace = $trace[1];
-        while (true) {
-            $complete = true;
-            foreach ($trace as $action) {
-                if ($action[0] === 'X2FlowSwitch') {
-                    $trace = $action[2];
-                    $complete = false;
-                    break;
-                }
-                if (!$action[1][0]) return false;
+        // account for alternate trace format produced by TriggerLog::appendTriggerLog
+        if (!is_array ($trace[0])) $trace = array ($trace);
+        foreach ($trace as $tree) {
+            if (!$tree[0]) {
+                return false;
             }
-            if ($complete) break;
+            $tree = $tree[1];
+            while (true) {
+                $complete = true;
+                foreach ($tree as $action) {
+                    if ($action[0] === 'X2FlowSwitch') {
+                        $tree = $action[2];
+                        $complete = false;
+                        break;
+                    }
+                    if (!$action[1][0]) return false;
+                }
+                if ($complete) break;
+            }
         }
         return true;
     }
 
+
+    /**
+     * Find flow action in flow and return it
+     * @param string|int $id identifier for flow action
+     * @return array|false
+     */
+    public static function findFlowItem (array $flow, $id) {
+        return self::_findFlowItem ($flow['items'], $id);
+    }
+
+    private static function _findFlowItem ($items, $id) {
+        foreach ($items as $item) {
+            if ($item['id'] === $id || $item['type'] === $id) {
+                return $item;
+            } elseif ($item['type'] === 'X2FlowSwitch') {
+                if (isset ($item['trueBranch'])) {
+                    $ret = self::_findFlowItem ($item['trueBranch'], $id); 
+                    if ($ret) return $ret;
+                }
+                if (isset ($item['falseBranch'])) {
+                    $ret = self::_findFlowItem ($item['falseBranch'], $id); 
+                    if ($ret) return $ret;
+                }
+            }
+        }
+        return false;
+    }
 
     /**
      * Returns trace of log for specified flow 
@@ -70,7 +103,8 @@ class X2FlowTestingAuxLib {
         ));
         if ($log) {
             $decodedLog = CJSON::decode ($log->triggerLog);
-            return $decodedLog[1];
+            $log = array_slice ($decodedLog, 1);
+            return $log;
         } else {
             return $log;
         }

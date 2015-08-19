@@ -36,9 +36,8 @@
 ?>
 
 <?php
-Yii::app()->clientScript->registerScriptFile(Yii::app()->getBaseUrl().'/js/ckeditor/ckeditor.js');
-Yii::app()->clientScript->registerScriptFile(Yii::app()->getBaseUrl().'/js/ckeditor/adapters/jquery.js');
-Yii::app()->clientScript->registerScriptFile(Yii::app()->request->baseUrl . '/js/emailEditor.js');
+
+Yii::app()->clientScript->registerPackage('emailEditor');
 Yii::app()->clientScript->registerCss("ckeditorStyling", "
 #cke_Events_text {
   margin-bottom: 6px !important;

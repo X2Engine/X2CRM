@@ -59,4 +59,7 @@ return array (
 'Import Services'=>'Εισαγωγή Υπηρεσίες',
 'Export Services'=>'Εξαγωγή Υπηρεσίες',
 'Case Name'=>'Υπόθεση Όνομα',
+'Import {services}'=>'Εισαγωγή {services}',
+'Export {services}'=>'Εξαγωγή {services}',
+'Thank you for contacting our Technical Support team. This is to verify we have received your request for Case# {casenumber}. One of our Technical Analysts will contact you shortly.'=>'Σας ευχαριστούμε που επικοινωνήσατε ομάδας Τεχνικής Υποστήριξης. Αυτό γίνεται για να ελέγξει έχουμε λάβει το αίτημά σας για την υπόθεση # {casenumber} Ένας από τους τεχνικούς αναλυτές μας θα επικοινωνήσει μαζί σας σύντομα.',
 );

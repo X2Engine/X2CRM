@@ -8,6 +8,7 @@
  */
 return array(
 	'uploads/media',
+        'uploads/protected/media',
 	'uploads/0714fed11e4f2971e6d3bb99e245117c.jpeg',
 	'uploads/1297537df6d9468fb8f1493c3939b19d.jpeg',
 	'uploads/1c61ba32a19876926cb7243806f43b82.jpeg',

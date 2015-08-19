@@ -47,7 +47,7 @@ Yii::app()->clientScript->registerCss('calendarResponsiveCss',"
 }
 
 #calendar,
-#publisher-form {
+#publisher {
     max-width: ".$halfWidthThreshold."px;
 }
 
@@ -62,13 +62,16 @@ Yii::app()->clientScript->registerCss('calendarResponsiveCss',"
 #calendar.half-width {
     float: left;
     width: 70%;
+    margin-right: 5px;
 }
 
-#publisher-form.half-width {
+#publisher-outer.half-width {
     overflow: hidden;
-    margin-top: -15px;
+    width: auto;
+    float: none;
+    padding: 0 1px 0 1px;
 }
-#publisher-form.half-width > #publisher {
+#publisher-outer.half-width > #publisher {
     padding-left: 8px;
 }
 
@@ -85,71 +88,6 @@ Yii::app()->clientScript->registerScriptFile($this->module->assetsUrl . '/js/cal
     CClientScript::POS_END);
 Yii::app()->clientScript->registerScriptFile(Yii::app()->getBaseUrl ().'/js/X2Dialog.js');
 
-
-Yii::app()->clientScript->registerCss('calendarIndexCss',"
-
-#publisher-tabs-row-1 {
-    border-right: 1px solid rgb(204, 204, 204); 
-}
-
-
-.ui-dialog {
-    height: auto !important;
-}
-
-.ui-dialog .ui-dialog-content {
-    height: auto !important;
-}
-
-.fc-first.fc-last {
-    background: white;
-}
-
-#content {
-    background: none !important;
-    border: none !important;
-}
-#main-column {
-    margin-top: 0 !important;
-}
-
-#publisher .ui-tabs-anchor {
-    font-weight: bold;
-    color: rgb(88, 88, 88);
-}
-
-.calendarViewEventDialog .ui-dialog-buttonpane button {
-    padding: 0 2px 0 2px !important;
-    margin: 4px 0 4px 4px !important;
-    font-size: 9pt !important;
-}
-
-/* make publisher tab look like ordinary section title */
-
-#publisher.ui-tabs .ui-tabs-nav {
-    background: none;
-    padding: 0px;
-    display: block;
-    margin-right: 1px !important;
-}
-
-#publisher li.ui-tabs-active {
-    width: 100%;
-    margin-right: 6px;
-    display: block;
-    border-bottom: none;
-    margin: auto;
-    margin-bottom: -2px;
-}
-
-#publisher > .form {
-   border-radius: 0px 0px 4px 4px;
-   -moz-border-radius: 0px 0px 4px 4px;
-   -webkit-border-radius: 0px 0px 4px 4px;
-   -o-border-radius: 0px 0px 4px 4px;
-}
-
-");
 
 // register jquery timepicker css and js
 // (used inside js dialog because CJuiDateTimePicker is a php library that won't work inside a js dialog)
@@ -520,7 +458,8 @@ $(function() {
                     }
 
                     boxButtons.unshift({  //prepend button
-                        text: '<?php echo CHtml::encode (Yii::t('calendar', 'View')); ?> '+associationType,
+                        text: '<?php echo CHtml::encode (Yii::t('calendar', 'View')); ?> '+ 
+                            associationType,
                         click: function() {
                             window.location = event.associationUrl;
                         }
@@ -807,8 +746,8 @@ $(function() {
 
     $(function () {
     x2.layoutManager.setUpCalendarTitleBarResponsiveness ();
-    x2.layoutManager.setHalfWidthSelector ('#calendar, #publisher-form');
-    x2.layoutManager.setHalfWidthThreshold (<?php echo $halfWidthThreshold; ?>);
+    //x2.layoutManager.setHalfWidthSelector ('#calendar, #publisher-outer');
+    //x2.layoutManager.setHalfWidthThreshold (<?php echo $halfWidthThreshold; ?>);
     $('#calendar .day-number-link').attr ('title', '<?php echo Yii::t('app', 'Show Day View'); ?>');
     $(window).resize ();
 });
@@ -819,15 +758,15 @@ $(function() {
 
 </div>
 
-<br />
-
+<div id="publisher-outer">
 <?php
 
 $this->widget('Publisher', array(
     'associationType' => 'calendar',
     'tabs' => array (
-        new PublisherEventTab ()
+        new PublisherCalendarEventTab ()
     ),
     'selectedTab' => 'new-event'
 ));
 ?>
+</div>

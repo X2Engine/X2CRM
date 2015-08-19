@@ -41,7 +41,6 @@
 
 @import "colors";
 @import "font-awesome";
-@import "x2-icons";
 
 @mixin x2-icon($name, $placing: 'before'){
   &:#{$placing} {

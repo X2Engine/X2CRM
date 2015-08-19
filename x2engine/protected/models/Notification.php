@@ -251,8 +251,15 @@ class Notification extends CActiveRecord {
 				return Yii::t('app','{user} replied on {link}',array('{user}'=>User::getUserLinks($this->createdBy),'{link}'=>$record->getLink()));
 
 			case 'voip_call':
-				return Yii::t('app','Incoming call from <b>{phone}</b> ({record})',array('{record}'=>$record->getLink(),'{phone}'=>$this->value));
-
+                return Yii::t(
+                    'app',
+                    'Incoming call from <b>{phone}</b> ({record}) {time}',
+                    array(
+                        '{record}'=>$record->getLink(),
+                        '{phone}'=>$this->value,
+                        '{time}'=>Formatter::formatDateDynamic ($this->createDate)
+                    )   
+                );  
 			case 'weblead':
 				return Yii::t('app','New web lead: {link}.',array('{link}'=>$record->getLink()));
 

@@ -48,7 +48,7 @@ class X2FlowCreateEvent extends X2FlowAction {
         // $eventTypes = array('auto'=>Yii::t('app','Auto')) + Dropdowns::getItems(113,'app');
         $eventTypes = Dropdowns::getItems(113, 'studio');
 
-        return array(
+        return array_merge (parent::paramRules (), array (
             'title' => Yii::t('studio', $this->title),
             'info' => Yii::t('studio', $this->info),
             'options' => array(
@@ -68,8 +68,8 @@ class X2FlowCreateEvent extends X2FlowAction {
                     'label' => Yii::t('studio', 'Visibility'),
                     'type' => 'dropdown',
                     'options' => array (
-                        1 => Yii::t('events','Public'),
-                        0 => Yii::t('events','Private'),
+                        1 => Yii::t('admin','Public'),
+                        0 => Yii::t('admin','Private'),
                     ),
                     'defaultVal' => 1
                 ),
@@ -103,7 +103,7 @@ class X2FlowCreateEvent extends X2FlowAction {
                     'defaultVal' => true
                 ),
             )
-        );
+        ));
     }
 
     public function execute(&$params){

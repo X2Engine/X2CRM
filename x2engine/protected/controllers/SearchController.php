@@ -224,7 +224,7 @@ class SearchController extends x2base {
         $term = isset($_GET['term']) ? $_GET['term'] : "";
         if (empty($term)) {
             $dataProvider = new CArrayDataProvider(array());
-            Yii::app()->user->setFlash ('error', Yii::t('search', "Search term cannot be empty."));
+            Yii::app()->user->setFlash ('error', Yii::t('app', "Search term cannot be empty."));
             $this->render('search', array(
                 'dataProvider' => $dataProvider,
             ));

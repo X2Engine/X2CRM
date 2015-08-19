@@ -33,6 +33,9 @@
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2Engine".
  *****************************************************************************************/
+
+// TODO: move this out of iframe to simplify dependency registration
+
 Yii::import('application.extensions.CJuiDateTimePicker.CJuiDateTimePicker');
 $jsVersion = '?'.Yii::app()->params->buildDate;
 $themeUrl = Yii::app()->theme->getBaseUrl();
@@ -69,6 +72,8 @@ $language = (Yii::app()->language == 'en') ? '' : Yii::app()->getLanguage();
         <script type="text/javascript" src="<?php echo Yii::app()->clientScript->coreScriptUrl.'/jui/js/jquery-ui-i18n.min.js'; ?>"></script>
         <script type="text/javascript" src="<?php echo Yii::app()->getBaseUrl().'/js/jquery-ui-timepicker-addon.js'; ?>"></script>
         <script type="text/javascript" src="<?php echo Yii::app()->getBaseUrl().'/js/qtip/jquery.qtip.min.js'; ?>"></script>
+        <script type="text/javascript" src="<?php echo Yii::app()->getBaseUrl().'/js/ComboBox.js'; ?>"></script>
+        <script><?php echo Yii::app()->getJSGlobalsSetupScript (); ?></script>
         <?php
         $mmPath = Yii::getPathOfAlias('application.extensions.moneymask.assets');
         $aMmPath = Yii::app()->getAssetManager()->publish($mmPath);
@@ -361,10 +366,15 @@ $language = (Yii::app()->language == 'en') ? '' : Yii::app()->getLanguage();
                     <?php echo '<div class="page-title"><h3>'.Yii::t('actions', 'Associated Record').'</h3></div>'; ?>
                     <?php
                     if($model->associationType == 'contacts'){
-                        $this->renderPartial('application.modules.contacts.views.contacts._detailViewMini', array(
+                        $this->widget ('DetailView', array(
                             'model' => X2Model::model('Contacts')->findByPk($model->associationId),
-                            'actionModel' => $model,
+                            'scenario' => 'Inline',
+                            'nameLink' => true
                         ));
+                        // $this->renderPartial('application.modules.contacts.views.contacts._@DETAILVIEWMini', array(
+                            // 'model' => X2Model::model('Contacts')->findByPk($model->associationId),
+                            // 'actionModel' => $model,
+                        // ));
                     }else{
                         echo ucwords(
                             Events::parseModelName(X2Model::getModelName($model->associationType))).

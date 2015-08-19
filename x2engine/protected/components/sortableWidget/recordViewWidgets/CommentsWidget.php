@@ -39,7 +39,7 @@
  */
 class CommentsWidget extends TransactionalViewWidget {
 
-    public static $position = 2; 
+     
 
     protected $labelIconClass = 'fa-comment'; 
     protected $historyType = 'note';

@@ -33,9 +33,6 @@
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2Engine".
  *****************************************************************************************/
-?>
-
-<?php
 
 // get field names
 $fields=Fields::model()->findAllByAttributes(array('modelName'=>'Quote'));
@@ -48,7 +45,7 @@ foreach($fields as $field) {
 
 ?>
 
-<div class="row viewQuote" style="padding: 10px; overflow: visible;" >
+<div class="row viewQuote" style="overflow: visible;" >
 <?php
 $viewButton = CHtml::link(
 	'['. Yii::t('products', 'View') .']',
@@ -119,7 +116,8 @@ if($quote->type != 'invoice') {
 ?>
 
 <?php /*** Begin Quote Details ***/ ?>
-<div id="quote-detail-<?php echo $quote->id; ?>">
+<div id="quote-detail-<?php echo $quote->id; ?>" class='quote-detail-container'>
+<div class='quote-detail-container-inner'>
 
 <table class="quote-detail-table">
 	<tbody>
@@ -190,6 +188,7 @@ echo $quote->productTable();
 
 ?>
 
+</div>
 </div>
 
 <br />

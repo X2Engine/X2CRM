@@ -157,12 +157,12 @@ INSERT INTO `x2_profile` VALUES (1,'Chloe Greigo','admin','831-555-5555',NULL,'8
             'migrations/pending/1418870085-migrate-layouts.php';
         $return_var;
         $output = array ();
-        if (VERBOSE_MODE) 
-            VERBOSE_MODE && print_r (exec ($command, $return_var, $output));
+        if (X2_VERBOSE_MODE) 
+            X2_VERBOSE_MODE && print_r (exec ($command, $return_var, $output));
         else 
             exec ($command, $return_var, $output);
-        VERBOSE_MODE && print_r ($return_var);
-        VERBOSE_MODE && print_r ($output);
+        X2_VERBOSE_MODE && print_r ($return_var);
+        X2_VERBOSE_MODE && print_r ($output);
 
         $layouts = array ('recordViewWidgetLayout', 'profileWidgetLayout');
         if ($edition === 'pla') $layouts[] = 'dataWidgetLayout';

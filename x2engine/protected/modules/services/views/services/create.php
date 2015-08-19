@@ -42,7 +42,11 @@ $this->insertMenu($menuOptions);
 ?>
 <div class="page-title icon services"><h2><?php echo Yii::t('services','Create Case'); ?></h2></div>
 
-<?php echo $this->renderPartial('application.components.views._form', array('model'=>$model, 'users'=>$users,'modelName'=>'services')); ?>
+<?php 
+$this->widget ('FormView', array(
+	'model' => $model
+));
+//echo $this->renderPartial('application.components.views.@FORMVIEW', array('model'=>$model, 'users'=>$users,'modelName'=>'services')); ?>
 
 <?php
 $createContactUrl = $this->createUrl('/contacts/contacts/create');

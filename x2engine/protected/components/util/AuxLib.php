@@ -118,7 +118,7 @@ class AuxLib {
 
         // declare nested namespaces one at a time if they don't already exist, starting at the root
         $passVarsToClientScript = "
-            (function () {
+            ;(function () {
                 if (typeof ".$rootNamespace." === 'undefined') ".$rootNamespace." = {};
                 var namespaces = ".CJSON::encode ($namespaces).";
                 var prevNameSpace = ".$rootNamespace.";
@@ -327,4 +327,11 @@ class AuxLib {
         return (strpos ($user_agent, "Mac") !== false);
     }
 
+    // Returns if the current request was made with ajax
+    public static function isAjax () {
+        return (!empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest');
+
+    }
+    
+    
 }

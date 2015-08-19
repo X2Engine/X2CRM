@@ -48,7 +48,6 @@ class AccountsGridViewProfileWidget extends ProfileGridViewWidget {
     public $relabelingEnabled = true;
 
     public $template = '<div class="submenu-title-bar widget-title-bar">{widgetLabel}{closeButton}{minimizeButton}{settingsMenu}</div>{widgetContents}';
-
     
     private static $_JSONPropertiesStructure;
 

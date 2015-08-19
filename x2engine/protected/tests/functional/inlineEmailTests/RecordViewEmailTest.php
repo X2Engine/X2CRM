@@ -34,6 +34,10 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 
+/**
+ * Tests inline email form 
+ */
+
 class RecordViewEmailTest extends X2WebTestCase {
 
     public $fixtures = array (
@@ -42,8 +46,21 @@ class RecordViewEmailTest extends X2WebTestCase {
         'defaultCredentials' => ':x2_credentials_default',
     );
 
+    public function tearDown () {
+        TestingAuxLib::setConstant ('X2_DEBUG_EMAIL', 'false');
+        return parent::tearDown ();
+    }
+
+    public function assertEmailSuccess () {
+        $this->waitForElementPresent ('css=#top-flashes-message');
+        $this->assertNotVisible ('css=#inline-email-errors');
+    }
+
+    /**
+     * Send a test email with email debug mode on and try to ensure that no errors occurred 
+     */
     public function testEmailSend () {
-        $this->markTestIncomplete ();
+        TestingAuxLib::setConstant ('X2_DEBUG_EMAIL', 'true');
         $contact = $this->contacts ('testAnyone');
         $this->openX2 ('contacts/'.$contact->id);
         sleep (1);
@@ -54,7 +71,32 @@ class RecordViewEmailTest extends X2WebTestCase {
             'placeholder');
         sleep (2);
         $this->click ("dom=document.querySelector('#send-email-button')");
-        //sleep (4000);
+        $this->assertEmailSuccess ();
+    }
+
+    /**
+     * Send an actual email using local credentials and then assert that the email was received
+     * by using imap_search
+     */
+    public function testLiveEmail () {
+        TestingAuxLib::setConstant ('X2_DEBUG_EMAIL', 'false');
+        $contact = $this->contacts ('testAnyone');
+        $liveDeliveryTestCreds = $this->credentials ('liveDeliveryTest');
+        $this->openX2 ('contacts/'.$contact->id);
+        sleep (1);
+        $this->click ("dom=document.querySelector ('.page-title .email')");
+        $subject = 'functional test email '.time ();
+        $this->select ("css=#InlineEmail_credId", 'value='.$liveDeliveryTestCreds->id);
+        $this->type("name=InlineEmail[subject]", $subject);
+        $this->type("name=InlineEmail[to]", $liveDeliveryTestCreds->auth->email);
+        $this->storeEval (
+            "window.$('#email-message').val ('test')",
+            'placeholder');
+        sleep (2);
+        $this->click ("dom=document.querySelector('#send-email-button')");
+        sleep (2);
+        $this->assertEmailSuccess ();
+        TestingAuxLib::assertEmailReceived ($this, $liveDeliveryTestCreds, $subject, 3);
     }
 
 }

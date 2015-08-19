@@ -41,7 +41,13 @@ abstract class WidgetLayout extends JSONEmbeddedModel {
      */
     protected $alias; 
 
-	protected $_fields;
+    protected $_fields;
+
+    public $whitelist;
+
+    protected function widgetOrder () {
+        return array ();
+    }
 
     /**
      * Ensures that each subarray in $currentFields corresponds to a JSON properties structure
@@ -90,13 +96,16 @@ abstract class WidgetLayout extends JSONEmbeddedModel {
 			$this->_fields = array();
 
             // get expected fields from contents of widget directory
+            $that = $this;
             $widgetClasses = array_map (function ($file) {
                 return preg_replace ('/\.php$/', '', $file);
-            }, array_filter (scandir(Yii::getPathOfAlias($this->alias)), function ($file) {
-                return preg_match ('/\.php$/', $file);
-            }));
+            }, array_filter (
+                scandir(Yii::getPathOfAlias($this->alias)), function ($file) use ($that){
 
-            $ordered = array ();
+                return preg_match ('/\.php$/', $file) && 
+                    (!$that->whitelist ||
+                    in_array (preg_replace ('/.php$/', '', $file), $that->whitelist));
+            }));
 
             // get JSON structure from widget class property
             $unordered = array ();
@@ -104,17 +113,16 @@ abstract class WidgetLayout extends JSONEmbeddedModel {
                 if (method_exists ($widgetName, 'getJSONPropertiesStructure')) {
                     $unordered[$widgetName] = 
                         $widgetName::getJSONPropertiesStructure ();
-                    if ($widgetName::$position !== null) {
-                        $ordered[$widgetName] = $widgetName::$position;
-                    }
                 } 
             }
-            asort ($ordered);
             $orderedFields = array ();
-            foreach ($ordered as $widgetName => $position) {
-                $orderedFields[$widgetName] = $unordered[$widgetName];
+            if ($this->widgetOrder ()) {
+                $widgetOrder = $this->widgetOrder ();
+                foreach ($widgetOrder as $widgetName) {
+                    $orderedFields[$widgetName] = $unordered[$widgetName];
+                }
             }
-            foreach (array_diff ($widgetClasses, array_keys ($ordered)) as $widgetName) {
+            foreach (array_diff ($widgetClasses, array_keys ($orderedFields)) as $widgetName) {
                 $orderedFields[$widgetName] = $unordered[$widgetName];
             }
             $this->_fields = $orderedFields;

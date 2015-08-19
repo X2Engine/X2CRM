@@ -54,7 +54,7 @@ INSERT INTO x2_dropdowns (`id`, `name`, `options`) VALUES
 (120,   'Action Timers',    '{\"Research\":\"Research\",\"Meeting\":\"Meeting\",\"Email\":\"Email\"}'),
 (121,   'Event Subtypes',    '{\"Meeting\":\"Meeting\",\"Appointment\":\"Appointment\",\"Call\":\"Call\"}'),
 (122,   'Event Statuses',    '{\"Confirmed\":\"Confirmed\",\"Cancelled\":\"Cancelled\"}'),
-(123,   'Event Colors',    '{"#008000":"Green","#3366CC":"Blue","#FF0000":"Red","#FFA500":"Orange","#000000":"Black"}'),
+(123,   "Event Colors",    '{"#6389de":"Blue","#a9c1fd":"Light Blue","#5de1e5":"Turquoise","#82e7c2":"Light Green","#6bc664":"Green","#fddb68":"Yellow","#ffbc80":"Orange","#ff978c":"Pink","#e74046":"Red","#d9adfb":"Purple","#dedddd":"Gray"}'),
 (124,   'Priority',    '{"1":"Low","2":"Medium","3":"High"}');
 /*&*/
 INSERT INTO x2_dropdowns (`id`, `name`, `options`, `parent`, `parentVal`) VALUES

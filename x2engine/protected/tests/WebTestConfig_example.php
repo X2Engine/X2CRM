@@ -16,4 +16,7 @@ defined ('TEST_WEBROOT_URL_ALIAS_3') or define('TEST_WEBROOT_URL_ALIAS_3','');
 // Used to send test emails during InlineEmail test
 defined('TEST_EMAIL_TO') or define('TEST_EMAIL_TO','');
 
+defined('VALID_LICENSE_KEY_PRO') or define('VALID_LICENSE_KEY_PRO','');
+defined('VALID_LICENSE_KEY_PLA') or define('VALID_LICENSE_KEY_PLA','');
+
 ?>

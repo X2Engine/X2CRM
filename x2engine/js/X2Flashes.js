@@ -53,7 +53,7 @@ function X2Flashes (argsDict) {
     };
 
     auxlib.applyArgs (this, defaultArgs, argsDict);
-    this.$container = null;
+    this.container$ = null;
     this._successFlashFadeTimeout = null;
 
     this._init ();
@@ -85,8 +85,9 @@ Private instance methods
  * @param string key the type of flash ('notice' | 'error' | 'success')
  * @param array of strings flashes flash messages which will be displayed
  */
-X2Flashes.prototype._displayKeyFlashes = function (key, flashes) {
+X2Flashes.prototype._displayKeyFlashes = function (key, flashes, rawHtml) {
     var that = this;
+    rawHtml = typeof rawHtml === 'undefined' ? false : rawHtml; 
     that.DEBUG && console.log ('x2.massActions._displayKeyFlashes');
     that.DEBUG && console.log ('flashes = ');
     that.DEBUG && console.log (flashes);
@@ -99,13 +100,14 @@ X2Flashes.prototype._displayKeyFlashes = function (key, flashes) {
     that.DEBUG && console.log ($flashContainer);
 
 
-    if (flashNum > 3) { // show header and make flash list expandable
+    if (flashNum > 3 || flashes['header']) { // show header and make flash list expandable
 
         // add list header
         $flashContainer.append (
             $('<p>', {
                 'class': 'flash-list-header left',
-                text: that.translations[key + 'FlashList'] + ' ' + flashNum + ' ' +
+                text: flashes['header'] ? flashes['header'] :
+                    that.translations[key + 'FlashList'] + ' ' + flashNum + ' ' +
                     that.translations[key + 'ItemName']
             }),
             $('<img>', {
@@ -147,15 +149,20 @@ X2Flashes.prototype._displayKeyFlashes = function (key, flashes) {
     });
     $flashContainer.append ($flashList);
     for (var i in flashes) {
+        if (!i.match (/^\d+$/)) continue;
         that.DEBUG && console.log ('x2.massActions._displayKeyFlashes: i = ' + i);
-        $flashContainer.find ('.x2-flashes-list').append ($('<li>', {
-            text: flashes[i]
-        }));
+        var attrs = {};
+        if (rawHtml) attrs.html = flashes[i];
+        else attrs.text = flashes[i];
+        $flashContainer.find ('.x2-flashes-list').append ($('<li>', attrs));
     }
 
-    if (key === 'success') { // other types of flash containers have close buttons
+    if (key === 'success' && flashes['fade'] !== '0') { 
+        // other types of flash containers have close buttons
+
         //if (that._successFlashFadeTimeout) window.clearTimeout (that._successFlashFadeTimeout);
-        /*that._successFlashFadeTimeout = */setTimeout (
+        /*that._successFlashFadeTimeout = */
+        setTimeout (
             function () { 
                 $flashContainer.fadeOut (3000, function () {
                     $flashContainer.remove ();
@@ -169,7 +176,7 @@ X2Flashes.prototype._displayKeyFlashes = function (key, flashes) {
  * @param string key the type of flash
  * @param object parent the jQuery object for the flashes container associated with key
  */
-X2Flashes.prototype._appendFlashSectionContainer = function (key, parent) {
+X2Flashes.prototype._appendFlashSectionContainer = function (key, parent, flashes) {
     var that = this; 
     var $flashContainer = 
         $('<div>', {
@@ -179,7 +186,7 @@ X2Flashes.prototype._appendFlashSectionContainer = function (key, parent) {
     $(parent).append ($flashContainer);
 
     // add close button, not needed for success flash container since it fades out
-    if (key === 'notice' || key === 'error') {
+    if (key === 'notice' || key === 'error' || flashes['fade'] === '0') {
         $flashContainer.append (
             $('<img>', {
                 //id: key + '-container-close-button',
@@ -205,36 +212,35 @@ X2Flashes.prototype._appendFlashSectionContainer = function (key, parent) {
  * @param dictionary flashes keys are the type of flash ('success', 'notice', 'error'), values
  *  are arrays of messages
  */
-X2Flashes.prototype.displayFlashes = function (flashes) {
+X2Flashes.prototype.displayFlashes = function (flashes, rawHtml) {
     var that = this; 
     that.DEBUG && console.log ('x2.massActions._displayFlashes: flashes = ');
     that.DEBUG && console.log (flashes);
     if (!flashes['success'] && !flashes['notice'] && !flashes['error']) return;
+    rawHtml = typeof rawHtml === 'undefined' ? false : rawHtml; 
 
-    this.$container.show ();
+    this.container$.show ();
     // remove previous flashes container
     /*if ($('#x2-gridview-flashes-container').length) {
         $('#x2-gridview-flashes-container').remove ();
     }*/
 
     // fill container with flashes
-    if (flashes['success'] && flashes['success'].length > 0) {
-        that._appendFlashSectionContainer ('success', this.$container);
-        var successFlashes = flashes['success'];
-        that._displayKeyFlashes ('success', successFlashes);
+    var types = ['success', 'notice', 'error'];
+    for (var i in types) {
+        var type = types[i];
+        var flashesOfType = flashes[type];
+        if (flashes[type] && (flashesOfType.length > 0 || auxlib.keys (flashesOfType).length > 0)) {
+            that._appendFlashSectionContainer (type, this.container$, flashesOfType);
+            that._displayKeyFlashes (type, flashesOfType, rawHtml);
+        }
     }
-    if (flashes['notice'] && flashes['notice'].length > 0) {
-        that._appendFlashSectionContainer ('notice', this.$container);
-        var noticeFlashes = flashes['notice'];
-        that._displayKeyFlashes ('notice', noticeFlashes);
-    }
-    if (flashes['error'] && flashes['error'].length > 0) {
-        that._appendFlashSectionContainer ('error', this.$container);
-        var errorFlashes = flashes['error'];
-        that._displayKeyFlashes ('error', errorFlashes);
-    }
-    $('#content-container').css ('margin-bottom', this.$container.height ());
+    $('#content-container').css ('margin-bottom', this.container$.height ());
 
+};
+
+X2Flashes.prototype.clearFlashes = function () {
+    this.container$.children ().remove ();
 };
 
 /**
@@ -243,9 +249,9 @@ X2Flashes.prototype.displayFlashes = function (flashes) {
 X2Flashes.prototype._checkFlashesSticky = function () {
     var that = this; 
 
-    if (this.$container.position ().top > 
+    if (this.container$.position ().top + $(window).scrollTop () > 
         $('#content-container').position ().top + $('#content-container').height ()) {
-         this.$container.removeClass ('fixed-flashes-container');
+         this.container$.removeClass ('fixed-flashes-container');
         $('#content-container').css ('margin-bottom', '');
         $(window).unbind ('scroll._checkFlashesSticky').
             bind ('scroll._checkFlashesSticky', function () { 
@@ -259,11 +265,11 @@ X2Flashes.prototype._checkFlashesSticky = function () {
 X2Flashes.prototype._checkFlashesUnsticky = function () {
     var that = this; 
 
-    if (this.$container.offset ().top - $(window).scrollTop () >
-        ($(window).height () - 5) - this.$container.height ()) {
+    if (this.container$.offset ().top - $(window).scrollTop () >
+        ($(window).height () - 5) - this.container$.height ()) {
 
-        this.$container.addClass ('fixed-flashes-container');
-        $('#content-container').css ('margin-bottom', this.$container.height ());
+        this.container$.addClass ('fixed-flashes-container');
+        $('#content-container').css ('margin-bottom', this.container$.height ());
         $(window).unbind ('scroll._checkFlashesUnsticky').
             bind ('scroll._checkFlashesUnsticky', function () { that._checkFlashesSticky (); });
     } else {
@@ -279,21 +285,21 @@ X2Flashes.prototype._init = function () {
     var that = this; 
 
     // build new flashes container
-    this.$container = $('<div>', { 
+    this.container$ = $('<div>', { 
         id: this.containerId,
         'class': 'flashes-container'
     });
-    $('#content-container').append (this.$container);
+    $('#content-container').append (this.container$);
     
     $('#content-container').attr (
-        'style', 'padding-bottom: ' + this.$container.height () + 'px;');
-    this.$container.width ($('#content-container').width () - 10);
+        'style', 'padding-bottom: ' + this.container$.height () + 'px;');
+    this.container$.width ($('#content-container').width () - 10);
     $(window).unbind ('resize.contentContainer').bind ('resize.contentContainer', function () {
-        that.$container.width ($('#content-container').width () - 10);
+        that.container$.width ($('#content-container').width () - 10);
     });
 
-    that.DEBUG && console.log ('this.$container.positoin ().top = ');
-    that.DEBUG && console.log (this.$container.position ().top);
+    that.DEBUG && console.log ('this.container$.positoin ().top = ');
+    that.DEBUG && console.log (this.container$.position ().top);
 
     if (!that._checkFlashesUnsticky ()) {
         $(window).unbind ('scroll._X2Flashes', that._checkFlashesUnsticky).

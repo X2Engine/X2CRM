@@ -44,46 +44,49 @@ $.widget("x2.InlineRelationshipsGridView", $.x2.gvSettings, {
      * Set up behavior of detail view toggles 
      */
     _setUpDetailViewCollapsibles: function () {
-        var expand$ = this.element.find ('.detail-view-toggle .fa-caret-right');
-        var collapse$ = this.element.find ('.detail-view-toggle .fa-caret-down');
 
-        // expand section containing record detail view
-        expand$.unbind ('click._setUpDetailViewCollapsibles').
+        var toggleContainers$ = $();
+        this.element.find ('.detail-view-toggle').each (function () {
+            toggleContainers$ = toggleContainers$.add ($(this).closest ('td'));
+        });
+
+        toggleContainers$.unbind ('click._setUpDetailViewCollapsibles').
             bind ('click._setUpDetailViewCollapsibles', function () {
             
-                var row$ = $(this).closest ('tr');
-                if (row$.next ().hasClass ('relationships-grid-details-container')) {
-                    row$.next ().slideDown ();
+                if ($(this).find ('.fa-caret-right').is (':visible')) {
+                    var button$ = $(this).find ('.fa-caret-right');
+                    var row$ = button$.closest ('tr');
+                    if (row$.next ().hasClass ('relationships-grid-details-container')) {
+                        row$.next ().slideDown ();
+                    } else {
+                        var detailsContainer$ = $('<tr>', { 
+                            'class': 'relationships-grid-details-container' 
+                        });
+                        var detailsContainerInner$ = $('<td>', {
+                            colspan: 7
+                        });
+                        detailsContainer$.append (detailsContainerInner$);
+                        row$.after (detailsContainer$);
+
+                        new x2.QuickRead ({ 
+                            modelName: button$.parent ().attr ('data-name'),
+                            modelId: button$.parent ().attr ('data-id'),
+                            modelType: button$.parent ().attr ('data-class'),
+                            mode: 'custom',
+                            afterRequest: function (response) {
+                                detailsContainerInner$.append (response);
+                            }
+                        });
+                    }
+
+                    button$.hide ();
+                    button$.next ().show ();
                 } else {
-                    var detailsContainer$ = $('<tr>', { 
-                        'class': 'relationships-grid-details-container' 
-                    });
-                    var detailsContainerInner$ = $('<td>', {
-                        colspan: 7
-                    });
-                    detailsContainer$.append (detailsContainerInner$);
-                    row$.after (detailsContainer$);
-
-                    new x2.QuickRead ({ 
-                        modelName: $(this).parent ().attr ('data-name'),
-                        modelId: $(this).parent ().attr ('data-id'),
-                        modelType: $(this).parent ().attr ('data-class'),
-                        mode: 'custom',
-                        afterRequest: function (response) {
-                            detailsContainerInner$.append (response);
-                        }
-                    });
+                    var button$ = $(this).find ('.fa-caret-down');
+                    button$.closest ('tr').next ().slideUp ();
+                    button$.hide ();
+                    button$.prev ().show ();
                 }
-
-                $(this).hide ();
-                $(this).next ().show ();
-            });
-        collapse$.unbind ('click._setUpDetailViewCollapsibles').
-            bind ('click._setUpDetailViewCollapsibles', function () {
-
-                $(this).closest ('tr').next ().slideUp ();
-                $(this).hide ();
-                $(this).prev ().show ();
             });
     }
 });

@@ -68,7 +68,7 @@ class X2Color {
             return false;
         }
         $yiq = self::rgb2yiq ($rgb);
-        return $yiq;
+        return $yiq[0];
     }
 
 	// convert HEX color to RGB values

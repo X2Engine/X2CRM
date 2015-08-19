@@ -34,187 +34,23 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 
+Yii::app()->clientScript->registerPackage ('X2CSS');
 Yii::app()->clientScript->registerScriptFile(
         Yii::app()->getBaseUrl().'/js/profileSettings.js', CClientScript::POS_END);
 
-Yii::app()->clientScript->registerCss("profileSettings", "
+Yii::app()->clientScript->registerCssFile(Yii::app()->theme->baseUrl.'/css/profileSettings.css');
 
-    
-#theme-attributes select, #theme-attributes button,
-#prefs-create-theme-hint {
-    display: inline-block;
-}
-
-/*
-prevents FF checkbox border cutoff
-*/
-#profile-settings input[type='checkbox'] {
-    margin-left: 2px !important;
-}
-
-.preferences-section {
-    border-bottom: 1px solid #C2C2C2 !important;
-}
-
-.tag{
-    -moz-border-radius:4px;
-    -o-border-radius:4px;
-    -webkit-border-radius:4px;
-    border-radius:4px;
-    border-style:solid;
-    border-width:1px;
-    border-color:gray;
-    margin:2px 2px;
-    display:block;
-    float:left;
-    padding:2px;
-    background-color:#f0f0f0;
-}
-.tag a {
-    text-decoration:none;
-    color:black;
-}
-
-#settings-form .prefs-hint {
-    height: 28px;
-    color:#06c;
-    margin-right: 4px;
-}
-
-/* override spectrum color picker css */
-.sp-replacer {
-    padding: 0px !important;
-}
-.sp-dd {
-    height: 13px !important;
-}
-.sp-preview
-{
-    width:20px !important;
-    height: 17px !important;
-    margin-right: 5px !important;
-}
-
-/* modify standard form style, remove rounded borders */
-#settings-form .form {
-    margin: 0 0 0 0;
-    border-radius: 0;
-    -webkit-border-radius: 0;
-}
-
-#settings-form .color-picker-input {
-    margin-right: 6px;
-}
-
-#settings-form #theme-attributes-body .row {
-    margin-top: 5px;
-    margin-bottom: 5px;
-    overflow: hidden;
-}
-
-/* temporary change to allow small buttons, this should exist across the app */
-#settings-form .x2-small-button  {
-    padding: 0 4px 0 4px !important;
-    margin: 2px 4px 0 0;
-    /*float:left;*/
-}
-
-#settings-form .x2-button-group .x2-small-button  {
-    padding: 0 4px 0 4px !important;
-    float:left;
-    margin-right: 0px;
-}
-
-
-/* prevents side-by-side borders between touching forms */
-#profile-settings {
-    border-top: 0;
-}
-
-/* prevents side-by-side borders between touching forms */
-#profile-settings,
-#theme-attributes,
-#prefs-tags {
-    border-bottom: 0;
-}
-
-#theme-attributes,
-.upload-box {
-    border-top: 1px solid #C2C2C2 !important;
-}
-
-/* sub-menu maximize/minimize arrows */
-#theme-attributes .minimize-arrows,
-#prefs-tags .minimize-arrows {
-    margin-top: 15px;
-    width: 20px;
-    height: 20px;
-    text-align: center;
-}
-
-/* spacing in the create a theme sub menu */
-.theme-name-input-container {
-    margin-top: 9px;
-    margin-bottom: 0px;
-}
-
-/* validation in the create a theme sub menu */
-#create-theme-box input.error
-{
-    background: #FEE;
-    border-color: #C00 !important;
-}
-
-/* spacing in the create a theme sub menu */
-#create-theme-box input {
-    margin-top: 0px;
-}
-
-/* spacing in the create a theme sub menu */
-#new-theme-name {
-    width: 170px;
-    margin-left: 4px;
-    margin-bottom: 4px;
-}
-
-select#themeName,
-select#backgroundImg,
-select#loginSounds,
-select#themeName,
-select#notificationSounds {
-    /*margin-right: 4px;*/
-}
-
-#save-changes {
-    margin-bottom: 5px;
-}
-
-#prefs-save-theme-button,
-#prefs-create-theme-button,
-#upload-theme-button,
-#export-theme-button,
-#upload-background-img-button,
-#upload-login-sound-button,
-#upload-notification-sound-button {
-    margin-top: 2px;
-}
-
-.no-theme-editor {
-    display: none;
-}
-
-.no-theme-editor + #prefs-tags {
-    border-top: 1px solid #C2C2C2;
-}
-
-
-");
+Tours::tips (array(
+    array(
+        'content' => 'You can disable tips like this by unchecking this box.',
+        'target' =>  '#Profile_showTours'
+    )
+));
 
 $preferences = $model->theme;
 $miscLayoutSettings = $model->miscLayoutSettings;
 
 $passVariablesToClientScript = "
-    x2.profileSettings = {};
     x2.profileSettings.checkerImagePath = '".
         Yii::app()->theme->getBaseUrl()."/images/checkers.gif';
     x2.profileSettings.createThemeHint = '".
@@ -227,7 +63,8 @@ $passVariablesToClientScript = "
         themeImportDialogTitle: '".Yii::t('profile', 'Import a Theme')."',
         close: '".Yii::t('app', 'close')."',
     };
-    x2.profileSettings.uploadedByAttrs = {};";
+    x2.profileSettings.uploadedByAttrs = {};
+";
 
 // pass array of predefined theme uploadedBy attributes to client
 foreach($myThemes->data as $theme){
@@ -236,7 +73,7 @@ foreach($myThemes->data as $theme){
 }
 
 Yii::app()->clientScript->registerScript(
-        'passVariablesToClientScript', $passVariablesToClientScript, CClientScript::POS_BEGIN);
+    'passVariablesToClientScript', $passVariablesToClientScript, CClientScript::POS_END);
 
 // If the user was redirected from /site/upload and the "useId" parameter is 
 // available, set the background to that so they get instant feedback
@@ -246,8 +83,7 @@ if(isset($_GET['bgId'])) {
         Yii::app()->clientScript->registerScript(
             'setBackgroundToUploaded',
             '$("select#backgroundImg").val('
-                .json_encode(
-                    'media/'.Yii::app()->user->name.'/'.$media->fileName).').trigger("change");'
+                .$media->id.').trigger("change");'
             ,CClientScript::POS_READY);
     }
 }
@@ -275,9 +111,9 @@ $form = $this->beginWidget('X2ActiveForm', array(
             <?php
             echo $form->labelEx(
                     $model, 'disablePhoneLinks', array('style' => 'display:inline;'));
+            echo X2Html::hint2 (
+                Yii::t('app', 'Prevent phone number fields from being formatted as links.'));
             ?>
-            <span class='x2-hint' title='<?php 
-             echo Yii::t('app', 'Prevent phone number fields from being formatted as links.'); ?>'>[?]</span>
         </div>
     </div>
     <div class="row">
@@ -288,9 +124,9 @@ $form = $this->beginWidget('X2ActiveForm', array(
                     array('onchange' => 'js:x2.profileSettings.highlightSave();'));
             echo '&nbsp;'.$form->labelEx(
                     $model, 'disableAutomaticRecordTagging', array('style' => 'display:inline;'));
+            echo X2Html::hint2 (
+                Yii::t('app', 'Prevent tags from being automatically generated when hashtags are detected in record fields.')); 
             ?>
-            <span class='x2-hint' title='<?php 
-             echo Yii::t('app', 'Prevent tags from being automatically generated when hashtags are detected in record fields.'); ?>'>[?]</span>
         </div>
     </div>
     <?php if(Yii::app()->contEd('pro')) { ?>
@@ -361,6 +197,18 @@ $form = $this->beginWidget('X2ActiveForm', array(
             ?>
         </div>
     </div>
+    <div class="row">
+        <div class="cell" style="margin: 8px 0px">
+            <label style='display:inline-block'>Show Tips:</label>
+            <?php echo X2Html::activeCheckBox ($model, 'showTours', array(
+                'style' =>'margin: 0px; vertical-align: middle',
+                'type' =>'checkbox'
+             )); ?> 
+        </div>
+    </div>
+    <div class="row">
+        <span title='<?php echo Yii::t('app','Tips around the app will only be seen once. To see them again press this button.') ?>' id='reset-tips-button' class='x2-hint x2-button' style='color: inherit'><?php echo Yii::t('app', 'Reset Tips') ?></span>
+    </div>
 </div>
 <div id="theme-attributes" class='form preferences-section<?php 
     echo ''; 
@@ -377,7 +225,8 @@ $form = $this->beginWidget('X2ActiveForm', array(
     <div id="theme-attributes-body" class="row prefs-body" <?php echo
         ($miscLayoutSettings['themeSectionExpanded'] == false ? 'style="display: none;"' : ''); ?>>
         <div class="row" id='theme-mgmt-buttons'>
-            <input type="hidden" id="themeName" class="theme-attr x2-select" name="preferences[themeName]" />
+            <input type="hidden" id="themeName" class="theme-attr x2-select" 
+             name="preferences[themeName]" />
 
             <div class='x2-button-group'>
                 <button type='button' class='x2-button x2-small-button'
@@ -408,7 +257,27 @@ $form = $this->beginWidget('X2ActiveForm', array(
         </div>
 
         <?php 
+            ThemeGenerator::renderThemeColorSelector ('', '', '', array (
+                'id' => 'theme-color-selector-template',
+                'style' => 'display: none;',
+            ), true);
             ThemeGenerator::renderSettings();
+            ?>
+            <div id='module-theme-override' 
+             <?php echo $preferences['themeName'] === 'Default' || !$preferences['themeName'] ? 
+                'style="display: none;"' : ''; ?>>
+                <?php
+                echo Modules::dropDownList ('', '', array (
+                    'class' => 'x2-select',
+                ));
+                ?>
+                <button id='add-module-override-button' class='x2-button x2-small-button'>
+                <?php
+                    echo CHtml::encode (Yii::t('app', 'Add Module Color')) 
+                ?>
+                </button>
+            </div>
+            <?php
         ?>
         <div class="row">
             <label for="backgroundTiling">
@@ -440,11 +309,9 @@ $form = $this->beginWidget('X2ActiveForm', array(
                 <option value=""> <?php echo Yii::t('app', 'None'); ?> </option>
                 <?php foreach ($myBackgrounds->data as $background) { ?>
                     <option value="<?php
-                        echo $background->uploadedBy == null ?
-                            $background->fileName :
-                            ('media/'.$background->uploadedBy.'/'.$background->fileName); ?>"
+                        echo $background->id; ?>"
                         <?php
-                        if($background->fileName == $preferences['backgroundImg']){
+                        if($background->id == $preferences['backgroundImg']){
                             echo "selected='selected'";
                         } ?>>
                         <?php echo $background->fileName; ?>
@@ -455,6 +322,21 @@ $form = $this->beginWidget('X2ActiveForm', array(
                     id='upload-background-img-button'>
                         <?php echo Yii::t('profile', 'Upload Background Image'); ?>
             </button>
+            <br>
+            <?php
+            echo CHtml::checkBox (
+                'preferences[enableLoginBgImage]', 
+                in_array ($preferences['enableLoginBgImage'], array ("0", "1"), true) ?
+                    $preferences['enableLoginBgImage'] : true, array (
+                    'class' => 'theme-attr',
+                    'uncheckValue' => "0",
+                ));
+            echo CHtml::label (
+                Yii::t('profile', 'Apply to login screen?'), 
+                'preferences[enableLoginBgImage]', array (
+                    'class' => 'right-label'
+                ));
+            ?>
         </div>
         <div class="row">
             <label for="loginSounds">
@@ -469,7 +351,7 @@ $form = $this->beginWidget('X2ActiveForm', array(
                     ?>"
                             id="sound-<?php echo $loginSound->id; ?>"
                             <?php
-                            if($loginSound->fileName == $model->loginSound){
+                            if($loginSound->id == $model->loginSound){
                                 echo "selected='selected'";
                             }
                             ?>>
@@ -495,7 +377,7 @@ $form = $this->beginWidget('X2ActiveForm', array(
                             $notificationSound->uploadedBy; ?>"
                      id="sound-<?php echo $notificationSound->id; ?>"
                      <?php
-                     if($notificationSound->fileName == $model->notificationSound){
+                     if($notificationSound->id == $model->notificationSound){
                          echo "selected='selected'";
                      }
                      ?>><?php echo $notificationSound->fileName; ?></option>

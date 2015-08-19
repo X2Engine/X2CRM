@@ -152,9 +152,7 @@ class FormLayout extends CActiveRecord {
 							if(isset($col['items'])) {
 								foreach($col['items'] as &$item) {
 
-                                    if(isset($item['name'],$item['labelType'],$item['readOnly'],
-                                        $item['height'],$item['width'])) {
-
+                                    if(isset($item['name'],$item['labelType'],$item['readOnly'])) {
                                         $fieldName = preg_replace('/^formItem_/u','',$item['name']);
 
                                         if(in_array (

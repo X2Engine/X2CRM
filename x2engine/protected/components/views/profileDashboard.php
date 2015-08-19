@@ -69,7 +69,7 @@ echo $this->model->getHiddenProfileWidgetMenu ();
 <div id='create-profile-widget-dialog' class='form' style='display: none;'>
     <label for='' class='left-label'><?php echo Yii::t('app', 'Widget Type: '); ?></label>
     <?php
-    $widgetSubtypeOptions = SortableWidget::getWidgetSubtypeOptions ('profile');
+    $widgetSubtypeOptions = SortableWidget::getCreatableWidgetOptions ('profile');
     asort ($widgetSubtypeOptions);
     
     

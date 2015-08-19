@@ -165,9 +165,12 @@ abstract class x2base extends X2Controller {
         if (!is_subclass_of ($model, 'X2Model'))
             throw new CException (Yii::t ('app', '$model is not a subclass of X2Model'));
 
-        return $this->renderPartial(
-            'application.components.views._detailView', 
-            array('model' => $model, 'modelName' => get_class ($model)), true, true); 
+        return $this->widget ('DetailView', array(
+            'model' => $model
+        ), true, true);
+        // return $this->renderPartial(
+            // 'application.components.views.@DETAILVIEW', 
+            // array('model' => $model, 'modelName' => get_class ($model)), true, true); 
     }
 
     /**
@@ -1214,7 +1217,7 @@ abstract class x2base extends X2Controller {
                 return $item['name'];
             }, $menuItems);
         }
-        $curAction = $this->action->id;
+        $currAction = $this->action->id;
         for ($i = count($menuItems) - 1; $i >= 0; $i--) {
             // Iterate over the items from the end to avoid consistency issues
             // while items are being removed
@@ -1225,8 +1228,8 @@ abstract class x2base extends X2Controller {
                 unset($menuItems[$i]);
             }
             // Hide links to requested items
-            else if ((is_array($item['url']) && in_array($curAction, $item['url']))
-                    || $item['url'] === $curAction) {
+            else if ((is_array($item['url']) && in_array($currAction, $item['url']))
+                    || $item['url'] === $currAction) {
                 unset($menuItems[$i]['url']);
             }
         }
@@ -1371,15 +1374,21 @@ abstract class x2base extends X2Controller {
             echo Yii::t('app', 'Quick view not supported');
         }
         if ($this->checkPermissions($model, 'view')) {
-            $this->renderPartial(
-                'application.components.views._detailView', 
-                array(
-                    'model' => $model,
-                    'modelName' => get_class ($model),
-                    'scenario'=>'Inline',
-                    'nameLink' => true,
-                )
+            $this->widget ('DetailView', array_merge( array(
+                'model' => $model,
+                'scenario' => 'Inline',
+                'nameLink' => true
+            ))
             , false, true);
+            // $this->renderPartial(
+                // 'application.components.views.@DETAILVIEW', 
+            //     array_merge( array(
+            //         'model' => $model,
+            //         'modelName' => get_class ($model),
+            //         'scenario'=>'Inline',
+            //         'nameLink' => true,
+            //     ), $options)
+            // , false, true);
             return;
         }
         throw new CHttpException (403);

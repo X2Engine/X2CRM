@@ -31,6 +31,7 @@ $iniModules = array(
 	'workflow',
 	'gauges',
 	'services',
+        'topics',
     'bugReports',
     'emailInboxes',
 );

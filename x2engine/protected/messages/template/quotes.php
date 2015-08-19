@@ -26,7 +26,6 @@ return array (
 'Print Invoice'=>'',
 
 'Share Quote'=>'',
-'Print'=>'',
 'Print Quote'=>'',
 
 // Quotes Titles
@@ -46,8 +45,6 @@ return array (
 'Quotes/Invoices'=>'',
 'Add Line Item'=>'',
 'Add Adjustment'=>'',
-'Dates'=>'',
-'Move'=>'',
 'Update Quote'=>'',
 'Quotes Stage'=>'',
 'Presented'=>'',
@@ -66,4 +63,15 @@ return array (
 'This quote is locked.'=>'',
 'Import Quotes'=>'',
 'Export Quotes'=>'',
+'Could not save {quote} due to line item errors:'=>'',
+'Update {quote}:'=>'',
+'{product} Name'=>'',
+'{quote}'=>'',
+'To create a template for {quotes} and invoices, go to the {docs} module and select "Create {quote}".'=>'',
+'{quote}:'=>'',
+'Print {quote}'=>'',
+'{quote}: '=>'',
+'{quote} or Invoice'=>'',
+'{quotes}/Invoices'=>'',
+'Update {quote}: {name}'=>'',
 );

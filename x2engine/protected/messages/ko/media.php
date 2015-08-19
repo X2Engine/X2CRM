@@ -40,4 +40,12 @@ return array (
 'Dimensions:'=>'차원 :',
 'MIME Info:'=>'MIME 정보 :',
 'Google Drive:'=>'구글 드라이브 :',
+'View Full Size'=>'전체 크기보기',
+'All {media}'=>'모든 {media}',
+'Drop files here to upload'=>'업로드 여기에 파일을 드롭',
+'select files'=>'파일을 선택',
+'Image Width'=>'이미지 폭',
+'Image Height'=>'이미지 높이',
+'Delete Selected Image'=>'선택한 이미지를 삭제',
+'Access Key'=>'액세스 키',
 );

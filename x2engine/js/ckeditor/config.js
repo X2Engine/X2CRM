@@ -19,31 +19,17 @@ CKEDITOR.editorConfig = function(config)
 	config.resize_enabled = true;
 	config.removePlugins = 'autogrow,showblocks,elementspath,liststyle,tabletools,contextmenu';
 	
-	config.extraPlugins = 'insertattributes,confighelper';
+	config.extraPlugins = 'insertattributes,confighelper,mediaSelector';
     config.disableNativeSpellChecker = false; // allow use of browser's native spellchecker
 	config.resize_dir = 'vertical';
     config.toolbarCanCollapse = true;
 	
 	config.toolbar_Full = [
-		// {name: 'document',items: ['Source','-','Save','NewPage','DocProps','Preview','Print','-','Templates']},
-		// {name: 'clipboard',items: ['Cut','Copy','Paste','PasteText','PasteFromWord','-','Undo','Redo']},
-		// {name: 'editing',items: ['Find','Replace','-','SelectAll','-','SpellChecker','Scayt']},
-		// {name: 'forms',items: ['Form','Checkbox','Radio','TextField','Textarea','Select','Button','ImageButton','HiddenField']},
-		// '/',
-		// {name: 'basicstyles',items: ['Bold','Italic','Underline','Strike','Subscript','Superscript','-','RemoveFormat']},
-		// {name: 'paragraph',items: ['NumberedList','BulletedList','-','Outdent','Indent','-','Blockquote','CreateDiv','-','JustifyLeft','JustifyCenter','JustifyRight','JustifyBlock','-','BidiLtr','BidiRtl']},
-		// {name: 'links',items: ['Link','Unlink','Anchor']},
-		// {name: 'insert',items: ['Image','Flash','Table','HorizontalRule','Smiley','SpecialChar','PageBreak','Iframe']},
-		// '/',
-		// {name: 'styles',items: ['Styles','Format','Font','FontSize']},
-		// {name: 'colors',items: ['TextColor','BGColor']},
-		// {name: 'tools',items: ['Maximize','ShowBlocks','-','About']}
-	// ];
 		{name: 'document',items: ['Save','DocProps','Preview','Print','-','Source']},
+		{name: 'mediaSelector',items:['mediaSelector']},
 		{name: 'clipboard',items: ['Cut','Copy','Paste','PasteText','PasteFromWord','-','Undo','Redo']},
-		// {name: 'forms',items: ['Form','Checkbox','Radio','TextField','Textarea','Select','Button','HiddenField']},
 		{name: 'links',items: ['Link','Unlink','Anchor']},
-		{name: 'insert',items: ['Image','Table','HorizontalRule','SpecialChar']},
+		{name: 'insert',items: ['Table','HorizontalRule','SpecialChar']},
 		'/',
 		{name: 'basicstyles',items: ['Bold','Italic','Underline','Strike','Subscript','Superscript','-','RemoveFormat']},
 		{name: 'styles',items: ['Font','FontSize']},
@@ -54,10 +40,10 @@ CKEDITOR.editorConfig = function(config)
 	config.toolbar_MyEmailToolbar = [
 		{name: 'document',items: ['Source']},
 		{name: 'insertAttributes',items:['Attribute']},
+		{name: 'mediaSelector',items:['mediaSelector']},
 		{name: 'clipboard',items: ['Cut','Copy','Paste','PasteText','PasteFromWord','-','Undo','Redo']},
-		// {name: 'forms',items: ['Form','Checkbox','Radio','TextField','Textarea','Select','Button','HiddenField']},
 		{name: 'links',items: ['Link','Unlink','Anchor']},
-		{name: 'insert',items: ['Image','Table','HorizontalRule','SpecialChar']},
+		{name: 'insert',items: ['Table','HorizontalRule','SpecialChar']},
 		{name: 'colors',items: ['TextColor','BGColor']},
 		'/',
 		{name: 'basicstyles',items: ['Bold','Italic','Underline','Strike','Subscript','Superscript','-','RemoveFormat']},
@@ -67,10 +53,11 @@ CKEDITOR.editorConfig = function(config)
     // same as toolbar_MyEmailToolbar but with source button removed
 	config.toolbar_MyTargetedContentToolbar = [
 		{name: 'insertAttributes',items:['Attribute']},
+		{name: 'mediaSelector',items:['mediaSelector']},
 		{name: 'clipboard',items: ['Cut','Copy','Paste','PasteText','PasteFromWord','-','Undo','Redo']},
 		// {name: 'forms',items: ['Form','Checkbox','Radio','TextField','Textarea','Select','Button','HiddenField']},
 		{name: 'links',items: ['Link','Unlink','Anchor']},
-		{name: 'insert',items: ['Image','Table','HorizontalRule','SpecialChar']},
+		{name: 'insert',items: ['Table','HorizontalRule','SpecialChar']},
 		{name: 'colors',items: ['TextColor','BGColor']},
 		'/',
 		{name: 'basicstyles',items: ['Bold','Italic','Underline','Strike','Subscript','Superscript','-','RemoveFormat']},

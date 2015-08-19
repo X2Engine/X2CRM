@@ -511,9 +511,9 @@ class UpdaterBehaviorTest extends FileOperTestCase {
         $ube->checkSums = array_intersect_key($ube->checkSums,array('manifest.json'=>$ube->checkSums['manifest.json']));
         
         try{
-            ob_start();
+            $this->obStart();
             $ube->enactChanges(true);
-            ob_end_clean();
+            $this->obEndClean();
         }catch(Exception $e){
             $this->assertEquals(UpdaterBehavior::ERR_DATABASE, $e->getCode(),"Wrong error code thrown in an exception thrown by enactChanges. The message was: ".$e->getMessage());
         }
@@ -525,9 +525,9 @@ class UpdaterBehaviorTest extends FileOperTestCase {
         file_put_contents($lockFile, $now);
         $exc = false;
         try {
-            ob_start();
+            $this->obStart();
             $ube->enactChanges(true);
-            ob_end_clean();
+            $this->obEndClean();
         } catch (Exception $e) {
             $this->assertEquals(UpdaterBehavior::ERR_ISLOCKED,$e->getCode(),"enactChanges didn't throw an exception with the appropriate code. Message: ".$e->getMessage());
             $exc = true;
@@ -540,9 +540,9 @@ class UpdaterBehaviorTest extends FileOperTestCase {
         array_pop($manifest['data'][0]['sqlList']);
         $ube->manifest = $manifest;
 
-        ob_start();
+        $this->obStart();
         $ube->enactChanges(true);
-        ob_end_clean();
+        $this->obEndClean();
         $this->assertChangesApplied($ube);
         $this->assertFileNotExists($lockFile, "Failed asserting that the lock file was deleted after a successful update.");
         $this->resetAfterChanges($ube);
@@ -559,9 +559,9 @@ class UpdaterBehaviorTest extends FileOperTestCase {
         $admin = $this->getAdmin();
         $edition = $admin->edition;
         $unique_id = $admin->unique_id;
-        ob_start();
+        $this->obStart();
         $ube->enactChanges(true);
-        ob_end_clean();
+        $this->obEndClean();
         $this->assertChangesApplied($ube);
         $this->resetAfterChanges($ube);
         // Reset edition/unique_id:
@@ -1379,10 +1379,10 @@ class UpdaterBehaviorTest extends FileOperTestCase {
         $migdir = implode(DIRECTORY_SEPARATOR,array_merge(array($ube->sourceDir),$nodes));
         $script = 'protected/tests/data/updatemigration/touch.php';
         copy($ube->webRoot.DIRECTORY_SEPARATOR.FileUtil::rpath($script),$ube->sourceDir.DIRECTORY_SEPARATOR.FileUtil::rpath($script));
-        ob_start();
+        $this->obStart();
         $scripts = array($script);
         $ran = $ube->runMigrationScripts($scripts,$ran,false);
-        ob_end_clean();
+        $this->obEndClean();
         $this->assertEquals(1,count($ran));
         $this->assertFileExists($testfile = $ube->webRoot.DIRECTORY_SEPARATOR.'testfile');
         unlink($testfile);
@@ -1417,26 +1417,26 @@ class UpdaterBehaviorTest extends FileOperTestCase {
         $scripts = array($exceptionScript);
         $ran = array();
 
-        ob_start();
+        $this->obStart();
         try {
             $ube->runMigrationScripts($scripts, $ran, true);
-            ob_end_clean();
         } catch(Exception $e) {
-            ob_end_clean();
             $this->assertEquals (42000, $e->getCode(), 'Incorrect exception raised. This test '.
                 'expects a PDO syntax error');
             $ube->restoreDatabaseBackup();
         }
+        $this->obEndClean();
         // Should have reverted
         $this->assertTableNotExists ('some_new_table');
 
         // Ensure that backups can be restored when an error is raised
         $ran = array();
         $scripts = array($errorScript);
-        ob_start();
+        $this->obStart();
         $ube->runMigrationScripts($scripts, $ran, true);
         // Retrieve error code from output
-        $output = ob_get_clean();
+        $output = ob_get_contents();
+        $this->obEndClean();
         preg_match ('/\[(\d+)\]/', $output, $matches);
         $this->assertArrayHasKey (1, $matches);
         $this->assertEquals (8, $matches[1], 'Incorrect error occured. This test '.
@@ -1447,12 +1447,12 @@ class UpdaterBehaviorTest extends FileOperTestCase {
         // Ensure that the database is in an 'unexpected' state when no recovery is performed
         $ran = array();
         $scripts = array($exceptionScript);
-        ob_start();
+        $this->obStart();
         try {
             $ube->runMigrationScripts($scripts,$ran, false);
-            ob_end_clean();
+            $this->obEndClean();
         } catch(Exception $e) {
-            ob_end_clean();
+            $this->obEndClean();
             $this->assertEquals (42000, $e->getCode(), 'Incorrect exception raised. This test '.
                 'expects a PDO syntax error');
         }

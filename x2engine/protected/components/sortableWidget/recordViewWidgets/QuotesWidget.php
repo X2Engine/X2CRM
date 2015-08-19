@@ -40,7 +40,7 @@
 class QuotesWidget extends TransactionalViewWidget {
     protected $historyType = 'quotes';
 
-    public static $position = 4; 
+     
     public $sortableWidgetJSClass = 'QuotesWidget';
 
     public function getCreateButtonTitle () {

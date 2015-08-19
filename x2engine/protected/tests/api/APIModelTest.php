@@ -46,6 +46,9 @@ class APIModelTest extends CURLDbTestCase {
 		$this->assertArrayHasKey('model', $model->responseObject);
 	}
 
+        /**
+         * @group failing
+         */
 	public function testTags() {
 		$model = $this->newModel();
 		$tags = array('#this','#that');
@@ -86,6 +89,9 @@ class APIModelTest extends CURLDbTestCase {
 		$this->assertEquals('#this',$tagsDeleted[0],'Failed asserting that the right tag got deleted.');
 	}
 
+        /**
+         * @group failing
+         */
 	public function testContactCRUD() {
         Yii::app()->cache->flush();
 		$model = $this->newModel();

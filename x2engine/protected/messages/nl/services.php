@@ -59,4 +59,7 @@ return array (
 'Import Services'=>'Import Services',
 'Export Services'=>'Export Services',
 'Case Name'=>'Zaak Naam',
+'Import {services}'=>'Import {services}',
+'Export {services}'=>'Export {services}',
+'Thank you for contacting our Technical Support team. This is to verify we have received your request for Case# {casenumber}. One of our Technical Analysts will contact you shortly.'=>'Bedankt dat u contact met onze technische ondersteuning team. Dit is om te controleren of we hebben uw aanvraag voor Case # ontvangen {casenumber} Een van onze technische analisten zal binnenkort contact met u op.',
 );

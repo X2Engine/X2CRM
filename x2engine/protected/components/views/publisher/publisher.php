@@ -34,13 +34,9 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 
-$form = $this->beginWidget('X2ActiveForm', array('id' => 'publisher-form')); 
-
-$publisherCreated = true;
-
 $that = $this; 
 $echoTabRow = function ($tabs, $rowNum=1) use ($that) {
-    ?><ul id='<?php echo $that->resolveId ('publisher-tabs-row-'.$rowNum); ?>' 
+    ?><ul id='<?php echo 'publisher-tabs-row-'.$rowNum; ?>' 
        style='display: none;'>
             <?php 
             // Publisher tabs
@@ -55,7 +51,7 @@ $echoTabRow = function ($tabs, $rowNum=1) use ($that) {
 
 ?>
 
-<div id="<?php echo $this->resolveId ('publisher'); ?>" 
+<div id="<?php echo 'publisher'; ?>" 
  <?php echo (sizeof ($tabs) > 4 ? 'class="multi-row-tabs-publisher"' : ''); ?>>
     <?php
     $tabsTmp = $tabs;
@@ -71,42 +67,16 @@ $echoTabRow = function ($tabs, $rowNum=1) use ($that) {
     }
     ?>
     <div class='clearfix sortable-widget-handle'></div>
-    <div class="form x2-layout-island">
+    <div class="form2 x2-layout-island">
     <?php
     // Publisher tab content 
     foreach ($tabs as $tab) {
         $tab->renderTab (array (
-            'form' => $form,
             'model' => $model,
             'associationType' => $associationType,
         ));
     }
-    if(Yii::app()->user->isGuest){ 
     ?>
-        <div class="row">
-            <?php
-            $this->widget('CCaptcha', array(
-                'captchaAction' => '/actions/actions/captcha',
-                'buttonOptions' => array(
-                    'style' => 'display:block;',
-                ),
-            ));
-            ?>
-            <?php echo $form->textField($model, 'verifyCode'); ?>
-        </div>
-    <?php 
-    } 
-    echo CHtml::hiddenField('SelectedTab', ''); // currently selected tab  
-    if ($associationType !== 'calendar') {
-        echo $form->hiddenField($model, 'associationType'); 
-        echo $form->hiddenField($model, 'associationId'); 
-    }
-    ?>
-    <div class='row'>
-        <input type='submit' value='Save' id='<?php echo $this->resolveId ('save-publisher'); ?>' 
-         class='x2-button'>
-    </div>
     </div>
 </div>
 
-<?php $this->endWidget(); ?>

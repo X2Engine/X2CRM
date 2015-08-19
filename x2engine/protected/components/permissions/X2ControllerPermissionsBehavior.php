@@ -127,16 +127,15 @@ class X2ControllerPermissionsBehavior extends ControllerPermissionsBehavior {
 
         $view = false;
         $edit = false;
+        $delete = false;
         $module = $model instanceof X2Model ? 
             Yii::app()->getModule($model->module) : Yii::app()->controller->module;
-
         if (isset($module)) {
             $moduleAdmin = Yii::app()->user->checkAccess(ucfirst($module->name) . 'Admin');
         } else {
             $moduleAdmin = false;
         }
-
-        if ($model instanceof X2Model && $model->asa('permissions') != null && 
+        if ($model->asa('permissions') != null && 
             $module instanceof CModule) {
 
             // Check assignment and visibility using X2PermissionsBehavior
@@ -150,22 +149,29 @@ class X2ControllerPermissionsBehavior extends ControllerPermissionsBehavior {
                         array('X2Model' => $model)
                     );
             }
+            if($view){//It's conceivable that a user might be able to delete without being able to edit
+                $delete = (Yii::app()->params->isAdmin || $moduleAdmin) ||
+                    Yii::app()->authManager->checkAccess(
+                        ucfirst($module->name) . 'Delete',
+                        Yii::app()->getSuID(),
+                        array('X2Model' => $model)
+                    );
+            }
         } else {
             // No special permissions checks are available
             $view = true;
             $edit = true;
+            $delete = true;
         }
 
-        //$edit = $view && $edit; // edit permission required view permission
-
         if (!isset($action)) // hash of all permissions if none is specified
-            return array('view' => $view, 'edit' => $edit, 'delete' => $edit);
+            return array('view' => $view, 'edit' => $edit, 'delete' => $delete);
         elseif ($action == 'view')
             return $view;
         elseif ($action == 'edit')
             return $edit;
         elseif ($action == 'delete')
-            return $edit;
+            return $delete;
         else
             return false;
     }
@@ -202,6 +208,7 @@ class X2ControllerPermissionsBehavior extends ControllerPermissionsBehavior {
             } else {
                 if (isset($item['linkOptions']['submit'])) {
                     $action = ucfirst($this->owner->getId() . ucfirst($item['linkOptions']['submit'][0]));
+                    
                     $authItem = $auth->getAuthItem($action);
                     $item['visible'] = Yii::app()->user->checkAccess($this->owner->getId() . ucfirst($item['linkOptions']['submit'][0]), $params) || is_null($authItem);
 

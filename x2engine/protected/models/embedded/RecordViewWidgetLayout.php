@@ -40,6 +40,28 @@
 
 class RecordViewWidgetLayout extends WidgetLayout {
     protected $alias = 'application.components.sortableWidget.recordViewWidgets';
+
+    protected function widgetOrder () {
+        return array (
+             
+            'InlineRelationshipsWidget',
+             
+            'PublisherWidget',
+            'InlineTagsWidget',
+             
+            'WorkflowStageDetailsWidget',
+            'TwitterFeedWidget',
+            'ActionsWidget',
+            'CallsWidget',
+            'CommentsWidget',
+            'EmailsWidget',
+            'EventsWidget',
+            'LoggedTimeWidget',
+             
+            'QuotesWidget',
+            'WebActivityWidget',
+        );
+    }
 }
 
 ?>

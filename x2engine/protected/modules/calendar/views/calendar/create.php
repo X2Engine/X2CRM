@@ -75,13 +75,19 @@ $users = User::getNames();
 unset($users['Anyone']);
 unset($users['admin']);
 	
-echo $this->renderPartial('application.components.views._form', 
-	array(
-		'model'=>$model,
-		'form'=>$form,
-		'users'=>$users,
-		'modelName'=>'calendar',
-		'isQuickCreate'=>true, // let us create the CActiveForm in this file
+
+$this->widget ('FormView', array(
+	'model' => $model,
+	'form' => $form,
+	'suppressQuickCreate' => true
+));
+//echo $this->renderPartial('application.components.views.@FORMVIEW', 
+	// array(
+		// 'model'=>$model,
+		// 'form'=>$form,
+		// 'users'=>$users,
+		// 'modelName'=>'calendar',
+		// 'isQuickCreate'=>true, // let us create the CActiveForm in this file
 	)
 );
 ?>

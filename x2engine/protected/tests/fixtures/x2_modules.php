@@ -230,5 +230,20 @@ return array(
         'title' => 'Legacy Module',
         'custom' => 1,
     ),
+    'topics' => array (
+        'id' => '22',
+        'name' => 'topics',
+        'title' => 'Topics',
+        'visible' => '1',
+        'menuPosition' => '20',
+        'searchable' => '1',
+        'toggleable' => '1',
+        'adminOnly' => '0',
+        'editable' => '0',
+        'custom' => '0',
+        'enableRecordAliasing' => '0',
+        'itemName' => NULL,
+        'pseudoModule' => '0',
+    ),
 );
 ?>

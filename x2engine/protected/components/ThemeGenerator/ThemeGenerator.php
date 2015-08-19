@@ -78,11 +78,17 @@
  *      color: $colors[smart_text2]
  *   }
  * 
- * To use  key that doesnt have the !important tag added, append _hex to the key
+ * To use key that doesnt have the !important tag added, append _hex to the key
  *   $colors[text_hex], $colors[darker_hex]
  *
+ * @see ThemeBuildCommand for how to build themes out of theme tags.
  */
 class ThemeGenerator {
+
+    /**
+     * @var string Path to the folder of templates.
+     */
+    const TEMPLATE_PATH = 'components/ThemeGenerator/templates';
 
     /**
     * @var name of default light theme
@@ -97,6 +103,7 @@ class ThemeGenerator {
     /**
      * @var array list of the profile setting keys and their descriptions
      * This list is used in the Profile Model to set up the the theme behavior
+     * @deprecated use getProfileKeys instead
      */
     public static $settingsList = array(
         'background',
@@ -105,59 +112,32 @@ class ThemeGenerator {
         'link',
         'highlight1',
         'highlight2',
-        );
+    );
 
-    /**
-     * @var string Path to the folder of templates.
-     */
-    const TEMPLATE_PATH = 'components/ThemeGenerator/templates';
-
-    /**
-     * Loads and processes the tempates with an array of keys
-     * @return string $rendered css files
-     */
-    public static function loadTemplates($colors){
-        $css = '';
-
-        $dir = new DirectoryIterator( 
-            Yii::app()->basePath.DIRECTORY_SEPARATOR.self::TEMPLATE_PATH );
-        foreach ($dir as $fileinfo) {
-            if (preg_match ('/\.php$/', $fileinfo)) {
-                $css .= include $fileinfo->getPathname();
-            }
-        }
-        return $css;
+    private static function getCacheKey () {
+        return get_called_class ().'_theme_'.Yii::app()->user->getName ();
     }
 
-    /**
-     * Adds !important; to each set value. If a color is not set in the profile, 
-     * simply adds a semicolon to prevent errors
-     * @param $value string a hash code for a color (with the hash)
-     * @return string returns the formatted color string
-     */
-    public static function formatColor($value){
-        if (!preg_match('/#/', $value) && !preg_match('/rgb/', $value)) {
-            return $value;
-        }
+    public static function getSettingsList () {
+        return array_merge (
+            self::getProfileKeys (false, true, false));
+    }
 
-        if(!isset($value) || !$value){
-            $value = ';';
-        } else {
-            $value = "$value !important;";
-        }
-
-        return $value;
+    public static function clearCache () {
+        Yii::app()->cache->set (self::getCacheKey (), false, 0);
     }
 
     /**
      * Populates the array with different color option
      * @return array array filled with formatted css color strings
      */
-    public static function generatePalette($preferences){
-        $colors = $preferences;
+    public static function generatePalette($preferences, $refresh=false){
+        $computedTheme = Yii::app()->cache->get (self::getCacheKey ());
+        if (!Yii::app()->user->isGuest && $computedTheme && !$refresh) {
+            return $computedTheme;
+        }
 
-        // Flag to indicate this array is generated
-        $colors['generated'] = true;
+        $colors = $preferences;
 
         //Keys for smart text
         $colors['smart_text'] = '';
@@ -167,25 +147,40 @@ class ThemeGenerator {
             $colors['background']='';
         }
 
-        foreach(self::$settingsList as $key){
+        $settings = self::getSettingsList ();
+        foreach($settings as $key){
 
-            $value = isset( $colors[$key]) ? 
-                $colors[$key] : '';
+            if (!isset ($colors[$key])) $colors[$key] = '';
+            $value = $colors[$key];
             
             if (!preg_match("/#/", $value) && $value){
                 $colors[$key] = '#'.$value;
             }
 
-            $colors['darker_'.$key] = X2Color::brightness($value, -0.1, false);
-            $colors['dark_'.$key] = X2Color::brightness($value, -0.05, false);
-            
-            $colors['brighter_'.$key] = X2Color::brightness($value, 0.1, false);
-            $colors['bright_'.$key] = X2Color::brightness($value, 0.05, false);
-    
-            $colors['lighter_'.$key] = X2Color::brightness($value, 0.1, true);
-            $colors['light_'.$key] = X2Color::brightness($value, 0.05, true);
+            if (!preg_match ('/_override$/', $key)) {
+                $colors['darker_'.$key] = X2Color::brightness($value, -0.1, false);
+                $colors['dark_'.$key] = X2Color::brightness($value, -0.05, false);
+                
+                $colors['brighter_'.$key] = X2Color::brightness($value, 0.1, false);
+                $colors['bright_'.$key] = X2Color::brightness($value, 0.05, false);
+        
 
-            $colors['opaque_'.$key] = X2Color::opaque($value, 0.2);
+                $colors['opaque_'.$key] = X2Color::opaque($value, 0.2);
+            }
+            $colors['light_'.$key] = X2Color::brightness($value, 0.05, true);
+            $colors['lighter_'.$key] = X2Color::brightness($value, 0.1, true);
+        }
+
+        // generate smart text for module overrides
+        foreach (array_filter ($settings, function ($key) { 
+            return preg_match ('/^background_.*_override$/', $key);
+        }) as $key) {
+            if (isset ($colors[$key]) && $colors[$key]) {
+                $colors[preg_replace ('/^background_/', 'smart_text_', $key)] = X2Color::smartText (
+                    $colors[$key], $colors['text'] ? '' : '#000000');
+            } else {
+                $colors[preg_replace ('/^background_/', 'smart_text_', $key)] = '';
+            }
         }
 
         # settings for most borders in the app
@@ -203,6 +198,7 @@ class ThemeGenerator {
             $colors['smart_text2'] = X2Color::smartText($colors['highlight2'], $colors['text']);
         }
 
+        Yii::app()->cache->set (self::getCacheKey (), $colors, 0);
         return $colors;
     }
 
@@ -224,55 +220,20 @@ class ThemeGenerator {
     }
 
     /**
-     * Loads a formatted color array into the templates and returns the generated CSS
-     * @param array $colors Array of formatted colors
-     * @return string string of total generated CSS 
-     */
-    public static function getCss($colors) {
-        if (!$colors['themeName'] || $colors['themeName'] == self::$defaultLight){
-            return "";
-        }
-
-        $colors = self::formatColorArray($colors);
-        $css = self::loadTemplates($colors);
-        return $css;
-    }
-
-    /**
      * Computes the theme and registers it with Yii
      * @param array $colors If set, will render CSS with these colors
      * Otherwise, it uses colors from the users profile
      */
-    public static function render($colors = null) {
-        if (!$colors) {
-            $profile = Yii::app()->params->profile;
-
-            // If no profile render the default theme
-            if (!$profile) {
-                self::renderTheme(self::$defaultLight);
-                return;
-            }
-
-            $colors = $profile->getTheme();
-
-            // If the theme isnt generated, Generate it and save
-            if (!array_key_exists('generated', $colors) || !$colors['generated']) {
-                $colors = self::generatePalette($colors);
-                $profile->theme = $colors;
-                $profile->save();
-            }
-
-        }
-
-        $css = self::getCss($colors);
-        Yii::app()->clientScript->registerCSS('ProfileGeneratedCSS', $css, 'screen', CClientScript::POS_HEAD);
+    public static function render() {
+        self::renderThemeWithColors ();
     }
 
     /**
      * Loads a theme for the login page
      * @param string $themeName string of the theme to render
+     * @param bool $computed whether or not to include computed theme color values
      */
-    public static function loadDefault($themeName) {
+    public static function loadDefault($themeName, $computed=true) {
         //In case default light was deleted
         if ($themeName == self::$defaultLight) {
             return array('themeName'=>self::$defaultLight);
@@ -286,7 +247,7 @@ class ThemeGenerator {
             )
         );
 
-        if( !$media ) {
+        if (!$media) {
             $media = X2Model::model('Media')->findByAttributes(
                 array(
                     'associationType' => 'theme',
@@ -299,8 +260,12 @@ class ThemeGenerator {
             }
         }
 
-        $json = CJSON::decode( $media->description );
-        $colors = ThemeGenerator::generatePalette($json);
+        $theme = CJSON::decode ($media->description);
+        if ($computed) {
+            $colors = ThemeGenerator::generatePalette($theme, true);
+        } else {
+            $colors = $theme;
+        }
         return $colors;
     }
 
@@ -311,10 +276,27 @@ class ThemeGenerator {
     public static function renderTheme($themeName=null) {
         if ($themeName) {
             $colors = self::loadDefault($themeName);
-            self::render($colors);
+            self::renderThemeWithColors($colors);
         } else {
             self::render();
         }
+    }
+
+    public static function renderThemeColorSelector (
+        $label, $key, $value, $htmlOptions=array (), $disabled=false) {
+
+        $htmlOptions = X2Html::mergeHtmlOptions (array (
+            'class' => 'row theme-color-selector',
+        ), $htmlOptions);
+        echo X2Html::openTag ('div', $htmlOptions);
+        echo "
+                <label>
+                    ".CHtml::encode ($label)."
+                </label>
+                <input type='text' name='preferences[$key]' id='preferences_$key' value='$value'
+                 class='color-picker-input theme-attr' ".($disabled ? 'disabled="disabled"': '')."> 
+                </input>
+              </div>";
     }
 
     /**
@@ -322,26 +304,18 @@ class ThemeGenerator {
      * TODO: Move to a class for rendering the theme settings. 
      */
     public static function renderSettings(){
-        $colors = Yii::app()->params->profile->getTheme();
-
+        $colors = self::generatePalette (Yii::app()->params->profile->getTheme());
         $translations = self::getTranslations();
+        $settings = self::getSettingsList ();
 
         $i = 0;
-        foreach(self::$settingsList as $key){
-            $setting = $translations[$key];
+        foreach($settings as $key){
+            if (preg_match ('/_override$/', $key) && (!isset ($colors[$key]) || !$colors[$key])) {
+                continue;
+            }
+            $setting = isset ($translations[$key]) ? $translations[$key] : '';
             $value = isset($colors[$key]) ? $colors[$key] : '' ;
-            echo "<div class='row' style='display:inline-block; margin-right:15px;'>
-                    <label for='pageHeaderBgColor'>
-                        $setting
-                    </label>
-                    <input  type='text'
-                           name='preferences[$key]'
-                           id='preferences_$key'
-                           value='$value'
-                           class='color-picker-input theme-attr'> 
-                    </input>
-                  </div>";
-
+            self::renderThemeColorSelector ($setting, $key, $value);
             if (++$i % 3 == 0)
                 echo '</br>';
         }
@@ -350,10 +324,10 @@ class ThemeGenerator {
     }
 
     /**
-     * Retrieves translations of field Names
+     * Retrieves translated labels of field names
      */
     public static function getTranslations() {
-        return array(
+        $translations = array(
             'background' => Yii::t('profile', 'Background'),
             'content' => Yii::t('profile', 'Content'),
             'text' => Yii::t('profile', 'Text'),
@@ -361,6 +335,14 @@ class ThemeGenerator {
             'highlight1' => Yii::t('profile', 'Windows and Buttons'),
             'highlight2' => Yii::t('profile', 'Highlight')
         );
+        $moduleOverrideKeys = self::getModuleOverrideKeys (true);
+        foreach ($moduleOverrideKeys as $key) {
+            if (preg_match ('/^background_/', $key )) {
+                $translations[$key] = Modules::displayName (
+                    true, preg_replace ('/background_([^_]*)_override$/', '$1', $key));
+            }
+        }
+        return $translations;
     }
 
     /**
@@ -379,68 +361,271 @@ class ThemeGenerator {
         return ($theme && $theme != self::$defaultLight);
     }
 
-
     /**
      * List of keys for the profile JSON fields behaviors
      */
-    public static function getProfileKeys() {
-        return array(
-            'themeName',
-            'background',
-            'content',
-            'text',
-            'link',
-            'highlight1',
-            'highlight2',
-            'smart_text',
-            'smart_text2',
-            'darker_background',
-            'dark_background',
-            'brighter_background',
-            'bright_background',
-            'lighter_background',
-            'light_background',
-            'opaque_background',
-            'darker_content',
-            'dark_content',
-            'brighter_content',
-            'bright_content',
-            'lighter_content',
-            'light_content',
-            'opaque_content',
-            'darker_text',
-            'dark_text',
-            'brighter_text',
-            'bright_text',
-            'lighter_text',
-            'light_text',
-            'opaque_text',
-            'darker_link',
-            'dark_link',
-            'brighter_link',
-            'bright_link',
-            'lighter_link',
-            'light_link',
-            'opaque_link',
-            'darker_highlight1',
-            'dark_highlight1',
-            'brighter_highlight1',
-            'bright_highlight1',
-            'lighter_highlight1',
-            'light_highlight1',
-            'opaque_highlight1',
-            'darker_highlight2',
-            'dark_highlight2',
-            'brighter_highlight2',
-            'bright_highlight2',
-            'lighter_highlight2',
-            'light_highlight2',
-            'opaque_highlight2',
-            'border',
-            'generated'
-        );
+    private static $_profileKeys;
+    public static function getProfileKeys(
+        $internal=true, $base=true, $computed=true) {
+
+        if (!isset (self::$_profileKeys)) {
+            $profileKeys = array(
+                'internal' => array (
+                    // Internal Usage Keys (Do not use in CSS)
+                    'themeName', 
+                ),
+
+                /***********************
+                 *  Base Color Keys 
+                 ***********************/
+
+                 'base' => array (
+                
+                    // The color of the background. Used in only one place
+                    'background',
+
+                     // Very common color in a theme. Background of all trays and content windows 
+                     // in the app. Equates to White in the default theme.
+                    'content',
+
+                    // Text. Assumed to be in high contrast with 'content'
+                    'text',
+
+                    // Normal links. (<a> tags).
+                    'link',
+
+                    // Window headers, main menu bar, and buttons. 
+                    'highlight1',
+
+                    // Special Higlight color. Equates to highlightGreen color for
+                    // the default theme. Good for highlighting save buttons. 
+                    'highlight2',
+
+                ),
+
+                /***********************
+                 *  Modifier Color Keys
+                 ***********************/
+
+                 'computed' => array (
+                    // Text that will be in high contrast with highlight1. If the normal 'text' key
+                    // does not have enough contrast, it will be inversed. 
+                    'smart_text',
+
+                    // See 'smart_text.' Same Idea but for highlight2
+                    'smart_text2',
+
+                    // Border color. Looks good with content colored elements. 
+                    'border',
+
+                    // Darker Keys will be 10% darker than what it is modifying
+                    'darker_background',
+                    'darker_content',
+                    'darker_text',
+                    'darker_link',
+                    'darker_highlight1',
+                    'darker_highlight2',
+
+                    // Dark Keys will be 5% Darker than what it is modifying
+                    'dark_background',
+                    'dark_content',
+                    'dark_text',
+                    'dark_link',
+                    'dark_highlight1',
+                    'dark_highlight2',
+
+                    // Bright keys will be 5% Lighter than what it is modifying
+                    'bright_background',
+                    'bright_content',
+                    'bright_text',
+                    'bright_link',
+                    'bright_highlight1',
+                    'bright_highlight2',
+
+                    // Brighter keys will be 10% lighter than what it is modifying
+                    'brighter_background',
+                    'brighter_content',
+                    'brighter_text',
+                    'brighter_link',
+                    'brighter_highlight1',
+                    'brighter_highlight2',
+
+                    // Apologies for the confusing names (brighter vs lighter)
+                    // Light keys will be 5% lighter or 5% darker based on the theme
+                    'light_background',
+                    'light_content',
+                    'light_text',
+                    'light_link',
+                    'light_highlight1',
+                    'light_highlight2',
+
+                    // Lighter Keys will be 10% lighter or 10% darker based on the theme
+                    'lighter_background',
+                    'lighter_content',
+                    'lighter_text',
+                    'lighter_link',
+                    'lighter_highlight1',
+                    'lighter_highlight2',
+                        
+                    // Opaque will be a a version of the color with 20% opaqueness i.e. 
+                    // rgba(color, 0.2);
+                    'opaque_background',
+                    'opaque_content',
+                    'opaque_text',
+                    'opaque_link',
+                    'opaque_highlight1',
+                    'opaque_highlight2',
+                ),
+            );
+
+            $moduleOverrideKeys = self::getModuleOverrideKeys ();
+            foreach ($moduleOverrideKeys as $type => $keys) {
+                $profileKeys[$type] = array_merge ($profileKeys[$type], $keys);
+            }
+
+            self::$_profileKeys = $profileKeys;
+        }
+        $profileKeys = self::$_profileKeys;
+
+        $requestedKeys = array ();
+        if ($internal) $requestedKeys = array_merge ($requestedKeys, $profileKeys['internal']);
+        if ($base) $requestedKeys = array_merge ($requestedKeys, $profileKeys['base']);
+        if ($computed) $requestedKeys = array_merge ($requestedKeys, $profileKeys['computed']);
+
+        return $requestedKeys;
     }
 
+    private static $_moduleOverrideKeys;
+    private static function getModuleOverrideKeys ($flatten=false) {
+        if (!isset (self::$_moduleOverrideKeys)) {
+            $moduleNames = Modules::getModuleNames ();
+            self::$_moduleOverrideKeys = 
+                array (
+                    'base' => array_map (function ($name) {
+                        return 'background_'.$name.'_override';
+                    }, $moduleNames)
+                );
+            self::$_moduleOverrideKeys['computed'] = 
+                array_merge (
+                    array_map (function ($name) {
+                        return 'smart_text_'.$name.'_override';
+                    }, $moduleNames),
+                    array_map (function ($name) {
+                        return 'light_background_'.$name.'_override';
+                    }, $moduleNames),
+                    array_map (function ($name) {
+                        return 'lighter_background_'.$name.'_override';
+                    }, $moduleNames)
+                );
+        }
+        $moduleOverrideKeys = self::$_moduleOverrideKeys;
+        if ($flatten) {
+            $flattened = array ();
+            foreach ($moduleOverrideKeys as $type => $keys) { 
+                $flattened = array_merge ($flattened, $keys);
+            }
+            return $flattened;
+        }
+        return $moduleOverrideKeys;
+    }
+
+    /**
+     * Loads and processes the tempates with an array of keys
+     * @return string $rendered css files
+     */
+    private static function loadTemplates($colors){
+        $colors = self::validateColors ($colors);
+
+        $css = '';
+        $dir = new DirectoryIterator( 
+            Yii::app()->basePath.DIRECTORY_SEPARATOR.self::TEMPLATE_PATH );
+        foreach ($dir as $fileinfo) {
+
+            if (preg_match ('/generatedModuleOverrides.php$/', $fileinfo)) {
+               $customModuleNames = Modules::getModuleNames (true);
+               foreach ($customModuleNames as $module) {
+                   $css .= include $fileinfo->getPathname();
+               }
+            } elseif (preg_match ('/\.php$/', $fileinfo)) {
+                $css .= include $fileinfo->getPathname();
+            }
+        }
+
+        return $css;
+    }
+
+    /**
+     * Ensure that colors array has keys for all theme colors 
+     */
+    private static function validateColors (array $colors) {
+        $expected = self::getProfileKeys (false, true, true);
+        foreach ($expected as $key) {
+            if (!isset ($colors[$key])) $colors[$key] = '';
+            if (!isset ($colors[$key.'_hex'])) $colors[$key.'_hex'] = '';
+        }
+        return $colors;
+    }
+
+    /**
+     * Loads a formatted color array into the templates and returns the generated CSS
+     * @param array $colors Array of formatted colors
+     * @return string string of total generated CSS 
+     */
+    private static function getCss($colors) {
+        if (!$colors['themeName'] || $colors['themeName'] == self::$defaultLight){
+            return "";
+        }
+
+        $colors = self::formatColorArray($colors);
+        $css = self::loadTemplates($colors);
+        return $css;
+    }
+
+    /**
+     * Private helper method to reduce the number of places where the colors array is specified.
+     * Allows simpler verification of colors array correctness.
+     */
+    private static function renderThemeWithColors ($colors=null) {
+        if (!$colors) {
+            $profile = Yii::app()->params->profile;
+
+            // If no profile render the default theme
+            if (!$profile) {
+                self::renderTheme(self::$defaultLight);
+                return;
+            }
+
+            $colors = $profile->getTheme();
+            $colors = self::generatePalette($colors);
+        }
+
+
+        $css = self::getCss($colors);
+
+        Yii::app()->clientScript->registerCSS(
+            'ProfileGeneratedCSS', $css);
+    }
+
+    /**
+     * Adds !important; to each set value. If a color is not set in the profile, 
+     * simply adds a semicolon to prevent errors
+     * @param $value string a hash code for a color (with the hash)
+     * @return string returns the formatted color string
+     */
+    private static function formatColor($value){
+        if (!$value) $value = ';';
+        if (!preg_match('/#/', $value) && !preg_match('/rgb/', $value)) {
+            return $value;
+        }
+
+        if(!isset($value) || !$value){
+            $value = ';';
+        } else {
+            $value = "$value !important;";
+        }
+
+        return $value;
+    }
 
 }
 

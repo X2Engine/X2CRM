@@ -44,7 +44,7 @@ Yii::import('application.components.sortableWidget.profileWidgets.*');
 /**
  * @package application.tests.unit.components
  */
-class WidgetLayoutJSONFieldsBehaviorTest extends CActiveRecordBehaviorTestCase {
+class WidgetLayoutJSONFieldsBehaviorTest extends X2TestCase {
 
     /**
      * Ensure that fields array is populated from files in components/sortableWidget/profileWidgets 

@@ -46,8 +46,6 @@ Parameters:
 Yii::app()->clientScript->registerScriptFile (
     Yii::app()->getBaseUrl().'/js/X2GridView/X2GridViewMassActionsManager.js', CClientScript::POS_END);
 
-
-
 $massActionLabels = array (
     'completeAction' => Yii::t ('app', 'Complete selected {actions}', array(
         '{actions}' => strtolower(Modules::displayName(true, 'Actions'))
@@ -61,246 +59,8 @@ $massActionLabels = array (
     
 );
 
-AuxLib::registerTranslationsScript ('massActions', array (
-    'deleteprogressBarDialogTitle' => 'Mass Deletion in Progress',
-    'updateFieldprogressBarDialogTitle' => 'Mass Update in Progress',
-    'progressBarDialogTitle' => 'Mass Action in Progress',
-    'deleted' => 'deleted',
-    'tagged' => 'tagged',
-    'added' => 'added',
-    'updated' => 'updated',
-    'removed' => 'removed',
-    'doubleConfirmDialogTitle' => 'Confirm Deletion',
-    'addedItems' => 'Added items to list',
-    'addToList' => 'Add selected to list',
-    'removeFromList' => 'Remove selected from list',
-    'newList' => 'Create new list from selected',
-    'add' => 'Add to list',
-    'remove' => 'Remove from list',
-    'noticeFlashList' => 'Mass action exectuted with',
-    'errorFlashList' => 'Mass action exectuted with',
-    'noticeItemName' => 'warnings',
-    'errorItemName' => 'errors',
-    'successItemName' => 'Close',
-    'blankListNameError' => 'Cannot be left blank',
-    'passwordError' => 'Password cannot be left blank',
-    'close' => 'Close',
-    'cancel' => 'Cancel',
-    'create' => 'Create',
-    'pause' => 'Pause',
-    'stop' => 'Stop',
-    'resume' => 'Resume',
-    'complete' => 'Complete',
-    'tag' => 'Tag',
-    'update' => 'Update',
-    'tagSelected' => 'Tag selected',
-    'deleteSelected' => 'Delete selected',
-    'delete' => 'Delete',
-    'updateField' => 'Update fields of selected',
-    'emptyTagError' => 'At least one tag must be included',
-));
-
-Yii::app()->clientScript->registerCss ('massActionsCss', "
-
-.x2-gridview-mass-action-outer {
-    position: relative;
-}
-
-@media (max-width: 820px) and (min-width: 658px) {
-    .grid-view.fullscreen .x2-gridview-top-pager {
-        display: none;
-    }
-}
-
-
-/*
-Check all records in data provider feature
-*/
-.grid-view .select-all-records-on-all-pages-strip-container {
-    margin-right: -1px;
-}
-.grid-view .x2-gridview-fixed-top-bar-outer .select-all-records-on-all-pages-strip-container {
-    margin-right: 6px;
-    margin-left: 3px;
-}
-
-.grid-view .select-all-records-on-all-pages-strip-container {
-    text-align: center;
-    border-right: 1px solid rgb(207, 207, 207);
-    border-bottom: 1px solid rgb(199, 199, 199);
-    position: relative;
-    z-index: 1;
-}
-
-.grid-view .select-all-records-on-all-pages-strip-container .select-all-notice,
-.grid-view .select-all-records-on-all-pages-strip-container .all-selected-notice {
-    padding: 4px;
-}
-
-.grid-view .select-all-records-on-all-pages-strip-container .select-all-notice {
-    background: rgb(255, 255, 185);
-}
-
-.grid-view .select-all-records-on-all-pages-strip-container .all-selected-notice {
-    background: rgb(203, 255, 201);
-}
-
-body.no-widgets .grid-view .x2-gridview-fixed-top-bar-outer .select-all-records-on-all-pages-strip-container {
-    margin-right: 0;
-}
-
-.x2-mobile-layout .select-all-records-on-all-pages-strip-container {
-    margin-left: 0;
-    margin-right: -1px;
-}
-
-.grid-view .container-clone {
-    visibility: hidden;
-}
-
-.x2-mobile-layout .x2grid-body-container .container-clone,
-.x2grid-body-container.x2-gridview-body-without-fixed-header .container-clone {
-    display: none !important;
-}
-
-/*
-Flashes container
-*/
-
-.super-mass-action-feedback-box {
-    margin: 5px 0;
-    border: 1px solid rgb(176, 176, 176);
-    background: rgb(250, 250, 250);
-    box-shadow: inset 1px 1px rgb(219, 219, 219);
-    padding: 4px;
-    height: 76px;
-    overflow-y: scroll;
-}
-
-.super-mass-action-feedback-box .success-flash {
-    color: green;
-}
-.super-mass-action-feedback-box .error-flash {
-    color: red;
-}
-
-
-
-#x2-gridview-flashes-container.fixed-flashes-container {
-    position: fixed;
-    opacity: 0.9;
-    bottom: 5px;
-}
-
-#x2-gridview-flashes-container {
-    margin-top: 5px;
-    margin-right: 5px;
-}
-
-#x2-gridview-flashes-container > div {
-    margin-top: 5px;
-    margin-left: 4px;
-}
-
-#x2-gridview-flashes-container .flash-list-header {
-    margin-bottom: 4px;
-}
-
-#x2-gridview-flashes-container .x2-gridview-flashes-list {
-    clear: both;
-    margin-bottom: 5px;
-}
-
-#x2-gridview-flashes-container .flash-list-left-arrow,
-#x2-gridview-flashes-container .flash-list-down-arrow {
-    margin-left: 6px;
-    margin-top: 3px;
-}
-
-
-
-/*
-buttons 
-*/
-
-.mass-action-more-button-container .x2-down-arrow {
-    margin-left: 30px;
-    margin-top: 11px;
-}
-
-.mass-action-more-button-container .more-button-arrow {
-    height: 5px;
-}
-
-.mass-action-more-button-container .more-button-label {
-    display: inline !important;
-    float: left;
-    margin-right:5px;
-}
-
-.mass-action-more-button-container {
-    margin: 0 5px 0 0;
-    display: inline-block;
-}
-
-.mass-action-more-button-container button {
-    display: inline;
-    height: 26px;
-}
-
-
-
-
-/*
-more drop down list
-*/
-
-.x2-gridview-mass-action-buttons .more-drop-down-list.stuck {
-    position: absolute !important;
-    /*top: 74px !important;*/
-}
-
-.x2-gridview-mass-action-buttons .more-drop-down-list {
-    position: absolute;
-    top: 67px;
-    z-index: 99;
-    list-style-type: none;
-    background: #fff;
-    border: 1px solid #999;
-    -moz-box-shadow: 0 0 15px 0 rgba(0,0,0,0.5);
-    -webkit-box-shadow: 0 0 15px 0 rgba(0,0,0,0.5);
-    box-shadow: 0 0 15px 0 rgba(0,0,0,0.5);
-    padding: 5px 0px 5px 0px;
-    clip: rect(0px,1000px,1000px,-10px);
-}
-
-.x2-gridview-mass-action-buttons .more-drop-down-list li {
-    line-height: 17px;
-    padding: 0 10px 0 10px;
-    cursor: default;
-    color: black;
-}
-.x2-gridview-mass-action-buttons .more-drop-down-list li:hover {
-    background: #eee;
-}
-
-/*
-general mass actions styling
-*/
-
-#mass-action-dialog-loading-anim {
-    margin-right: 30px;
-}
-
-.x2-gridview-mass-action-buttons .dialog-help-text {
-    margin-bottom: 5px;
-}
-
-.x2-gridview-mass-action-buttons {
-    margin: 0 5px 0 0;
-    display: inline-block;
-}
-");
+Yii::app()->clientScript->registerCssFile(
+    Yii::app()->theme->baseUrl.'/css/components/views/massActions.css');
 
 Yii::app()->clientScript->registerResponsiveCss ('massActionsCssResponsive', "
 
@@ -411,12 +171,29 @@ Yii::app()->clientScript->registerScript($namespacePrefix.'massActionsInitScript
                 'resume' => Yii::t('app', 'Resume'),
                 'complete' => Yii::t('app', 'Complete'),
                 'tag' => Yii::t('app', 'Tag'),
+                'untag' => Yii::t('app', 'Remove tag'),
                 'update' => Yii::t('app', 'Update'),
                 'tagSelected' => Yii::t('app', 'Tag selected'),
+                'untagSelected' => Yii::t('app', 'Remove tags from selected'),
                 'deleteSelected' => Yii::t('app', 'Delete selected'),
                 'delete' => Yii::t('app', 'Delete'),
                 'updateField' => Yii::t('app', 'Update fields of selected'),
                 'emptyTagError' => Yii::t('app', 'At least one tag must be included'),
+                'emptyUntagError' => Yii::t('app', 'At least one tag must be specified'),
+                'add' => Yii::t('app', 'Add'),
+                'MassPublishActionDialogTitle' => Yii::t('app', 'Add Action'),
+                'MassPublishActionGoButton' => Yii::t('app', 'Add'),
+                'MassPublishNoteDialogTitle' => Yii::t('app', 'Add Note'),
+                'MassPublishNoteGoButton' => Yii::t('app', 'Add'),
+                'MassPublishCallDialogTitle' => Yii::t('app', 'Log Call'),
+                'MassPublishCallGoButton' => Yii::t('app', 'Log'),
+                'MassPublishTimeDialogTitle' => Yii::t('app', 'Log Time'),
+                'MassPublishTimeGoButton' => Yii::t('app', 'Log'),
+                'MassConvertRecordDialogTitle' => Yii::t('app', 'Convert Records'),
+                'MassConvertRecordGoButton' => Yii::t('app', 'Convert'),
+                'MassConvertRecordGoButtonForce' => Yii::t('app', 'Convert Anyway'),
+                'MassAddRelationshipDialogTitle' => Yii::t('app', 'Add Relationships'),
+                'MassAddRelationshipGoButton' => Yii::t('app', 'Add Relationships'),
             )).",
             expandWidgetSrc: '".Yii::app()->getTheme()->getBaseUrl().
                 '/images/icons/Expand_Widget.png'."',
@@ -443,7 +220,7 @@ Yii::app()->clientScript->registerScript($namespacePrefix.'massActionsInitScript
 
 <span class='x2-gridview-mass-action-outer'>
 
-<div id='<?php echo $gridId; ?>-mass-action-buttons' class='x2-gridview-mass-action-buttons'>
+<div id='<?php echo $gridId; ?>-mass-action-buttons' class='x2-gridview-mass-action-buttons' style='display: none;'>
     <?php
     // TODO: check if buttons are present before rendering button set
     $massActionButtons = true;
@@ -475,6 +252,7 @@ Yii::app()->clientScript->registerScript($namespacePrefix.'massActionsInitScript
         <ul style='display: none;'
          class="more-drop-down-list<?php echo ($fixedHeader ? ' fixed-header' : ''); ?>"> 
         <?php
+        usort ($massActionObjs, array ('X2GridViewBase', 'massActionLabelComparison'));
         foreach ($massActionObjs as $obj) {
             $obj->renderListItem ();
         }

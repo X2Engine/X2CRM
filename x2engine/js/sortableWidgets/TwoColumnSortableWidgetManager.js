@@ -155,7 +155,6 @@ TwoColumnSortableWidgetManager.prototype._deactivate = function (thisWidget) {
  */
 TwoColumnSortableWidgetManager.prototype._setUpSortability = function () {
     var that = this;
-    that.DEBUG && console.log ('SortableWidgetManager: _setUpSortability');
     this._startedSortUpdate = false;
     $(this._widgetsBoxSelector + ',' + this._widgetsBoxSelector2).sortable ({
         items: that._widgetContainerSelector,

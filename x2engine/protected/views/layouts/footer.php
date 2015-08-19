@@ -38,12 +38,13 @@
 
     <!-- 
     Powered by X2Engine -->
-	<b>X2Engine <?php echo Yii::app()->params->version; ?>
+	<b>X2CRM <?php echo Yii::app()->params->version; ?>
 	<?php echo Yii::app()->editionLabel; ?></b> |
-    <?php echo CHtml::link('X2Touch',array('/x2touch')); ?> | 
+	<a href="http://www.x2crm.com/">Powered by X2Engine</a> |  
 	<?php echo CHtml::link(Yii::t('app','About'),array('/site/page','view'=>'about')); ?> | 
-	
-	<a href="http://www.x2engine.com/">Powered by X2Engine</a>. <br>Copyright &copy; 2011-<?php echo date('Y'); ?> X2Engine Inc.
+    <?php echo CHtml::link('X2Touch',array('/x2touch')); ?> 
+    <br>
+    Copyright &copy; 2011-<?php echo date('Y'); ?> X2Engine Inc.
 	<?php if(Yii::app()->edition==='opensource') { ?>
 		Released as free software without warranties under the <a href="<?php echo Yii::app()->getBaseUrl(); ?>/LICENSE.txt" title="GNU Affero General Public License version 3">GNU Affero GPL v3</a>.
 	<?php } ?>

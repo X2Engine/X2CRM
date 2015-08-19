@@ -47,9 +47,6 @@ function DocViewerProfileWidget (argsDict) {
         getItemsUrl: '', // used to populate autocomplete
         getDocUrl: '', // url to request a doc
         docId: '', // the id of the doc currently being viewed
-        editDocUrl: '', // url to edit a doc
-        canEdit: false, // has permission to edit current doc
-        checkEditPermissionUrl: ''
     };
     auxlib.applyArgs (this, defaultArgs, argsDict);
 
@@ -127,7 +124,6 @@ DocViewerProfileWidget.prototype._setUpSelectADocBehavior = function () {
                             that.docId = selectedDocId;
                             that.changeLabel (selectedDocLabel);
                             that.element.find ('.default-text-container').remove ();
-                            that._checkEditPermission ();
                         } else {
                             auxlib.createErrorFeedbackBox ({
                                 prevElem: $(that._selectADocDialog).find ('.selected-doc'),
@@ -176,27 +172,10 @@ DocViewerProfileWidget.prototype._setUpSelectADocBehavior = function () {
     });
 };
 
-DocViewerProfileWidget.prototype._setUpEditBehavior = function () {
-    var that = this; 
-    $(this.element).find ('.widget-edit-button').unbind ('click.widgetEdit');
-    $(this.element).find ('.widget-edit-button').bind ('click.widgetEdit', function (evt) {
-        evt.preventDefault ();
-        window.location = that.editDocUrl + '?id=' + that.docId;
-        return false;
-    });
-};
-
 /**
  * Detects presence of UI elements (and sets properties accordingly), calls their setup methods
  */
 DocViewerProfileWidget.prototype._callUIElementSetupMethods = function () {
-    if ($(this.element).find ('.widget-edit-button').length) {
-        this._setUpEditBehavior ();
-        this._editBehaviorEnabled = true;
-    } else {
-        this._editBehaviorEnabled = false;
-    }
-
     SortableWidget.prototype._callUIElementSetupMethods.call (this);
 };
 
@@ -212,11 +191,7 @@ DocViewerProfileWidget.prototype._setUpTitleBarBehavior = function () {
         $(this.element).mouseover (function () {
             that._cursorInWidget = true;
             $(that.element).find ('.submenu-title-bar .x2-icon-button').each (function () {
-                if ($(this).hasClass ('widget-edit-button') && !that.canEdit) {
-                    return true;
-                } else {
-                    $(this).show ();
-                }
+                $(this).show ();
             });
         });
         $(this.element).mouseleave (function () {
@@ -232,38 +207,11 @@ DocViewerProfileWidget.prototype._setUpTitleBarBehavior = function () {
     }
 };
 
-DocViewerProfileWidget.prototype._hideShowEditButton = function () {
-    if (this.canEdit && this._cursorInWidget)
-        this._editButton.show ();
-    else
-        this._editButton.hide ();
-};
-
-DocViewerProfileWidget.prototype._checkEditPermission = function () {
-    var that = this; 
-    $.ajax ({
-        method: 'GET',
-        url: this.checkEditPermissionUrl,
-        data: {
-            id: this.docId
-        },
-        success: function (data) {
-            if (data === 'true') {
-                that.canEdit = true;
-            } else {
-                that.canEdit = false;
-            }
-            that._hideShowEditButton ();
-        }
-    });
-};
-
 DocViewerProfileWidget.prototype._init = function () {
     SortableWidget.prototype._init.call (this);
     this._selectADocButtonSelector = this.elementSelector + ' .select-a-document-button';
     this._selectADocButton = $(this._selectADocButtonSelector);
     this._selectADocDialog = $('#select-a-document-dialog-' + this.widgetUID);
-    this._editButton = $(this.element).find ('.widget-edit-button');
     this._iframeElem = this.contentContainer.find ('iframe');
     this._iframeSrc = '';
     this._setUpSelectADocBehavior ();

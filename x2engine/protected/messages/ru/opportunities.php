@@ -107,4 +107,10 @@ return array (
 'Relationships for Contact: '=>'Отношения для связи:',
 'Import Opportunities'=>'Импорт Возможности',
 'Export Opportunities'=>'Экспортные возможности',
+'Create {opportunity}'=>'Создать {opportunity}',
+'{opportunity}:'=>'{opportunity}',
+'{opportunities} List'=>'{opportunities} Список',
+'Edit {opportunity}'=>'Редактировать {opportunity}',
+'Import {opportunities}'=>'Импорт {opportunities}',
+'Export {opportunities}'=>'Экспорт {opportunities}',
 );

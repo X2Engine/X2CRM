@@ -618,9 +618,18 @@ class X2List extends X2Model {
                     ),
                     'sort' => array(
                         //messing with attributes may cause columns to become unsortable
-                        'attributes' => array('name', 'email', 'phone', 'address', 'opened'
+                        'attributes' => array(
+                            'name', 
+                            'email', 
+                            'phone', 
+                            'address', 
+                            'sent',
+                            'opened',
+                            'clicked',
+                            'unsubscribed',
+                            'doNotEmail',
                         ),
-                        'defaultOrder' => 'opened DESC',
+                        'defaultOrder' => 'opened DESC, sent DESC, name DESC',
                     ),
                 ));
     }

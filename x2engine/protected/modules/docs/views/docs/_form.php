@@ -35,9 +35,7 @@
  *****************************************************************************************/
 
 // editor javascript files
-Yii::app()->clientScript->registerScriptFile(Yii::app()->getBaseUrl().'/js/ckeditor/ckeditor.js');
-Yii::app()->clientScript->registerScriptFile(Yii::app()->getBaseUrl().'/js/ckeditor/adapters/jquery.js');
-Yii::app()->clientScript->registerScriptFile(Yii::app()->getBaseUrl().'/js/emailEditor.js');
+Yii::app()->clientScript->registerPackage ('emailEditor');
 
 Yii::app()->clientScript->registerCss('docFormCss',"
 
@@ -77,47 +75,48 @@ $autosaveUrl = $this->createUrl('autosave').'?id='.$model->id;
 $js = '';
 
 if($model->type==='email' || $model->type ==='quote') {
-	$attributes = array();
-	if($model->type === 'email')
-		foreach(X2Model::model('Contacts')->getAttributeLabels() as $fieldName => $label)
-			$attributes[$label] = '{'.$fieldName.'}';
-	else {
-		$accountAttributes = array();
-		$contactAttributes = array();
-		$quoteAttributes = array();
+    $attributes = array();
+    if($model->type === 'email') {
+        foreach(X2Model::model('Contacts')->getAttributeLabels() as $fieldName => $label){
+            $attributes[$label] = '{'.$fieldName.'}';
+        }
+    } else {
+        $accountAttributes = array();
+        $contactAttributes = array();
+        $quoteAttributes = array();
         foreach(Contacts::model()->getAttributeLabels() as $fieldName => $label) {
             AuxLib::debugLog ('Iterating over contact attributes '.$fieldName.'=>'.$label);
             $index = Yii::t('contacts',"{contact}", array(
                 '{contact}' => $modTitles['contact'],
             )).": $label";
-            $contactAttributes[$index] = "{".$modTitles['contact'].".$fieldName}";
+            $contactAttributes[$index] = "{associatedContacts.$fieldName}";
         }
         foreach(Accounts::model()->getAttributeLabels() as $fieldName => $label) {
             AuxLib::debugLog ('Iterating over account attributes '.$fieldName.'=>'.$label);
             $index = Yii::t('accounts',"{account}", array(
                 '{account}' => $modTitles['account'],
             )).": $label";
-            $accountAttributes[$index] = "{".$modTitles['account'].".$fieldName}";
+            $accountAttributes[$index] = "{accountName.$fieldName}";
         }
 
         $Quote = Yii::t('quotes', "{quote}: ", array('{quote}' => $modTitles['quote']));
-        $quoteAttributes[$Quote.Yii::t('quotes',"Item Table")] = '{'.$modTitles['quote'].'.lineItems}';
-        $quoteAttributes[$Quote.Yii::t('quotes',"Date printed/emailed")] = '{'.$modTitles['quote'].'.dateNow}';
-        $quoteAttributes[$Quote.Yii::t('quotes','{quote} or Invoice', array('{quote}'=>$modTitles['quote']))] = '{'.$modTitles['quote'].'.quoteOrInvoice}';
+        $quoteAttributes[$Quote.Yii::t('quotes',"Item Table")] = '{lineItems}';
+        $quoteAttributes[$Quote.Yii::t('quotes',"Date printed/emailed")] = '{dateNow}';
+        $quoteAttributes[$Quote.Yii::t('quotes','{quote} or Invoice', array('{quote}'=>$modTitles['quote']))] = '{quoteOrInvoice}';
         foreach(Quote::model()->getAttributeLabels() as $fieldName => $label) {
             $index = $Quote."$label";
-            $quoteAttributes[$index] = "{".$modTitles['quote'].".$fieldName}";
+            $quoteAttributes[$index] = "{".$fieldName."}";
         }
-	}
-	if($model->type === 'email') {
-		$js = 'x2.insertableAttributes = '.CJSON::encode(array(Yii::t('contacts','{contact} Attributes', array('{contact}'=>$modTitles['contact']))=>$attributes)).';';
-	} else {
-		$js = 'x2.insertableAttributes = '.CJSON::encode(array(
-			Yii::t('docs','{contact} Attributes', array('{contact}'=>$modTitles['contact'])) => $contactAttributes,
-			Yii::t('docs','{account} Attributes', array('{account}'=>$modTitles['account'])) => $accountAttributes,
-			Yii::t('docs','{quote} Attributes', array('{quote}'=>$modTitles['quote'])) => $quoteAttributes
-		)).';';
-	}
+    }
+    if($model->type === 'email') {
+        $js = 'x2.insertableAttributes = '.CJSON::encode(array(Yii::t('contacts','{contact} Attributes', array('{contact}'=>$modTitles['contact']))=>$attributes)).';';
+    } else {
+        $js = 'x2.insertableAttributes = '.CJSON::encode(array(
+                Yii::t('docs','{contact} Attributes', array('{contact}'=>$modTitles['contact'])) => $contactAttributes,
+                Yii::t('docs','{account} Attributes', array('{account}'=>$modTitles['account'])) => $accountAttributes,
+                Yii::t('docs','{quote} Attributes', array('{quote}'=>$modTitles['quote'])) => $quoteAttributes
+        )).';';
+    }
 }
 
 if($model->type === 'email'){ 
@@ -137,7 +136,7 @@ foreach ($associationTypeOptions as $modelName=>$label) {
 
 Yii::app()->clientScript->registerScript('createEmailTemplateJS',"
 
-(function () {
+;(function () {
 
 var insertableAttributes = ".CJSON::encode ($insertableAttributes).";
 
@@ -226,7 +225,7 @@ $form = $this->beginWidget('CActiveForm', array(
 		</div>
 		<div class="cell">
 			<?php echo $form->label($model,'visibility'); ?>
-			<?php echo $form->dropDownList($model,'visibility',array(1=>Yii::t('app','Public'),0=>Yii::t('app','Private'))); ?>
+			<?php echo $form->dropDownList($model,'visibility',array(1=>Yii::t('app','Public'),0=>Yii::t('app','Private'), 2=>Yii::t('app',"User's Groups"))); ?>
 			<?php echo $form->error($model,'visibility'); ?>
 		</div>
 		<div class="cell right" id='create-button-container'>
@@ -280,11 +279,6 @@ $form = $this->beginWidget('CActiveForm', array(
 	</div><?php  ?>
 	<div class="row" style="margin-top:5px;">
 		<?php
-		if($model->isNewRecord && isset($users) && !in_array($model->type,array('email','quote'))){
-			echo $form->label($model,'editPermissions');
-			echo $form->dropDownList($model,'editPermissions',$users,array('multiple'=>'multiple','size'=>'5'));
-			echo $form->error($model,'editPermissions');
-		}
 		if($model->type == 'email'){
 ?>
 		<div class="row">

@@ -270,12 +270,17 @@ $form = $this->beginWidget('CActiveForm', array(
 
 function renderFields ($fieldList, $type, $form, $model, $contactFields=null) {
     foreach($fieldList as $field) {
+        $fieldName = $field['fieldName'];
         if(!isset($field['type']) || $field['type']==='normal'){
             if(isset($field['label']) && $field['label'] != '') {
                 $label = '<label>' . $field['label'] . '</label>';
             } else {
                 if($type === 'service' && in_array($field['fieldName'], $contactFields)){
-                    $label = Contacts::model()->getAttributeLabel($field['fieldName']);
+                    $contact = clone Contacts::model ();
+                    if ($model->hasErrors ($fieldName)) {
+                        $contact->addError ($fieldName, $model->getError ($fieldName));
+                    }
+                    $label = $form->labelEx ($contact, $fieldName);
                 }else{
                     $label = $form->labelEx($model,$field['fieldName']);
                 }
@@ -285,23 +290,24 @@ function renderFields ($fieldList, $type, $form, $model, $contactFields=null) {
             $starred = strpos($label, '*') !== false;
             ?>
             <div class="row">
-                    <?php
-                    echo $label;
-                    echo ($field['required'] && !$starred ? 
-                        '<span class="asterisk"> *</span>' : '');
-                    ?>
                 <?php
-            if($field['position'] == 'top') { ?>
-                <br />
-            <?php
-            }
+                echo $label;
+                echo ($field['required'] && !$starred ? 
+                    '<span class="asterisk"> *</span>' : '');
+                if($field['position'] == 'top') { ?>
+                    <br />
+                <?php
+                }
             echo $form->error($model, $field['fieldName']);
 
-            if($type === 'service' && in_array($field['fieldName'], $contactFields)){ ?>
-                <input type="text" name="Services[<?php echo CHtml::encode ($field['fieldName']); ?>]"
-                value="<?php echo isset($_POST['Services'][$field['fieldName']]) ?
-                CHtml::encode ($_POST['Services'][$field['fieldName']]) : ''; ?>" />
-            <?php
+            if($type === 'service' && in_array($field['fieldName'], $contactFields)){ 
+                echo CHtml::tag ('input', array (
+                    'type' => 'text',
+                    'name' => 'Services['.$field['fieldName'].']',
+                    'class' => $model->hasErrors ($field['fieldName']) ? 'error' : '',
+                    'value' => isset ($_POST['Services'][$field['fieldName']]) ?
+                        $_POST['Services'][$field['fieldName']] : '',
+                ));
             } else {
                 
                     echo $model->renderInput($field['fieldName']);

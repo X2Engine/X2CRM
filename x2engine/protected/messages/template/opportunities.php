@@ -28,4 +28,10 @@ return array (
 'Relationships for Contact: '=>'',
 'Import Opportunities'=>'',
 'Export Opportunities'=>'',
+'Create {opportunity}'=>'',
+'{opportunity}:'=>'',
+'{opportunities} List'=>'',
+'Edit {opportunity}'=>'',
+'Import {opportunities}'=>'',
+'Export {opportunities}'=>'',
 );

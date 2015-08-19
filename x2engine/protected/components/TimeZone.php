@@ -55,9 +55,21 @@ class TimeZone extends X2Widget {
 
     public function run() {
         $tzOffset = null;
-        
+
         if($this->localTime) {    // local mode, no offset needed
             $tzOffset = 0;
+
+            $tz = Yii::app()->params->profile->timeZone;
+            try {
+                $dateTimeZone = new DateTimeZone($tz);
+            } catch (Exception $e) {
+                $dateTimeZone = null;
+            }
+            $localTime = new DateTime();
+            if(@date_timezone_set($localTime,$dateTimeZone)) {
+                $tzOffset = $localTime->getOffset();
+                
+            } 
         } else {
             if(!isset($this->model))
                 return;
@@ -81,12 +93,14 @@ class TimeZone extends X2Widget {
             if(@date_timezone_set($contactTime,$dateTimeZone)) {
                 $tzOffset = $contactTime->getOffset();
                 
-                if(empty($this->model->timezone)) {            // if we just looked this timezone up,
-                    $this->model->timezone = $tz;            // save it
+                if(empty($this->model->timezone)) { // if we just looked this timezone up,
+                    $this->model->timezone = $tz; // save it
                     $this->model->update(array('timezone'));
                 }
-            } elseif(!empty($this->model->timezone)) {        // if the messed up timezone was previously saved,
-                $this->model->timezone = '';                // clear it
+            } elseif(!empty($this->model->timezone)) { 
+                // if the messed up timezone was previously saved, clear it
+
+                $this->model->timezone = ''; 
                 $this->model->update(array('timezone'));
             }
         }
@@ -94,7 +108,7 @@ class TimeZone extends X2Widget {
         if($tzOffset !== null) {
             $offsetJs = '';
             
-            if(!$this->localTime) {
+            if($this->localTime) {
                 
                 $offset = $tzOffset;
                     
@@ -111,18 +125,20 @@ class TimeZone extends X2Widget {
                 if($offsetM > 0)
                     $tzString .= ':'.$offsetM;
                 
-                Yii::app()->clientScript->registerScript('timezoneClock','x2.tzOffset = '.($tzOffset*1000).'; x2.tzUtcOffset = " ('.addslashes($tzString).')";',CClientScript::POS_BEGIN);
-
-
-
+                Yii::app()->clientScript->registerScript(
+                    'timezoneClock',
+                    'x2.tzOffset = '.($tzOffset*1000).'; 
+                     x2.tzUtcOffset = " ('.addslashes($tzString).')";',
+                    CClientScript::POS_BEGIN);
                 
-                echo Yii::t('app','Current time in').'<br><b>'.$address.'</b>';
+                //echo Yii::t('app','Current time in').'<br><b>'.$address.'</b>';
             }
             $clockType = Profile::getWidgetSetting('TimeZone','clockType');
 
-            Yii::app()->clientScript->registerScriptFile(Yii::app()->getBaseUrl().'/js/clockWidget.js');
-
-            Yii::app()->clientScript->registerCssFile(Yii::app()->theme->baseUrl.'/css/components/clockWidget.css');
+            Yii::app()->clientScript->registerScriptFile(
+                Yii::app()->getBaseUrl().'/js/clockWidget.js');
+            Yii::app()->clientScript->registerCssFile(
+                Yii::app()->theme->baseUrl.'/css/components/clockWidget.css');
 
             $this->render('timeZone', array('widgetSettings' => $clockType));
 

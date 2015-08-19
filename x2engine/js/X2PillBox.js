@@ -257,7 +257,7 @@ PillBox.prototype._getLabelOfVal = function (val, options) {
         
         return options[val];
     }
-    var label = null;
+    var label = val;
     for (var i in options) {
         var opt = options[i];
         if (Object.prototype.toString.call (opt) === '[object Object]') {

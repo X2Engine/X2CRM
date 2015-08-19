@@ -83,6 +83,12 @@ abstract class ProfileGridViewWidget extends GridViewWidget {
         return self::$_JSONPropertiesStructure;
     }
 
+    public function getTemplate () {
+        $model = $this->getModel ();
+        $moduleName = strtolower (X2Model::getModuleName (get_class ($model)));
+        return "<div class='submenu-title-bar widget-title-bar $moduleName'>{widgetLabel}{closeButton}{minimizeButton}{settingsMenu}</div>{widgetContents}";
+    }
+
     /**
      * @return array the config array passed to widget ()
      */
@@ -90,11 +96,22 @@ abstract class ProfileGridViewWidget extends GridViewWidget {
         if (!isset ($this->_gridViewConfig)) {
             $this->_gridViewConfig = array_merge (parent::getGridViewConfig (), array (
                 'sortableWidget' => $this,
-                'id'=>get_called_class ().'_'.$this->widgetUID,
+                'id'=>$this->getWidgetKey (),
                 'enableScrollOnPageChange' => false,
                 'buttons'=>array('advancedSearch','clearFilters','columnSelector','autoResize'),
                 'template'=>
-                    '<div class="page-title"><h2 class="grid-widget-title-bar-dummy-element">'.
+                    CHtml::openTag ('div', X2Html::mergeHtmlOptions (array (
+                        'class' => 'page-title'
+                    ), array (
+                        'style' =>  
+                            !CPropertyValue::ensureBoolean (
+                                $this->getWidgetProperty('showHeader')) &&
+                            !CPropertyValue::ensureBoolean (
+                                $this->getWidgetProperty('hideFullHeader')) ?
+                                'display: none;' : ''
+
+                    ))).
+                    '<h2 class="grid-widget-title-bar-dummy-element">'.
                     '</h2>{buttons}{filterHint}'.
                     
                     '{summary}{topPager}<div class="clear"></div></div>{items}{pager}',

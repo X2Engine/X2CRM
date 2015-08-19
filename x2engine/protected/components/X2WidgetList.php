@@ -45,6 +45,24 @@ class X2WidgetList extends X2Widget {
 
     public $layoutManager;
 
+    public $widgetType;
+
+    private $_params;
+    public function getParams () {
+        if (!isset ($this->_params)) {
+            $this->_params = array (
+                'model' => $this->model,
+                'layoutManager' => $this->layoutManager,
+                'widgetParamsByWidgetName' => $this->widgetParamsByWidgetName,
+            );
+        }
+        return $this->_params;
+    }
+
+    public function setParams ($params) {
+        $this->_params = array_merge ($this->params, $params);
+    }
+
     private $_profile;
 
     public function getProfile () {
@@ -57,11 +75,7 @@ class X2WidgetList extends X2Widget {
     public $widgetParamsByWidgetName = array ();
 
     public function run(){
-        Yii::app()->controller->widget ('RecordViewWidgetManager', array (
-            'model' => $this->model,
-            'layoutManager' => $this->layoutManager,
-            'widgetParamsByWidgetName' => $this->widgetParamsByWidgetName,
-        ));
+        Yii::app()->controller->widget ('RecordViewWidgetManager', $this->params);
     }
 
     /***********************************************************************

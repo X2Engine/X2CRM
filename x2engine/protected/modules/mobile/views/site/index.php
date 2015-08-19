@@ -37,7 +37,6 @@
  $this->pageTitle=Yii::app()->settings->appName; ?>
 <script type="text/javascript">
 $('#aboutPage').live('pagecreate',function(event){
-    alert("FISH");
   $.mobile.changePage("<?php echo $this->createUrl('/mobile/site/login'); ?>");
 });</script>
 <div id="aboutPage" data-role="page"><h1>Welcome to <i><?php echo CHtml::encode(Yii::app()->settings->appName); ?></i></h1></div>

@@ -63,75 +63,82 @@ $form=$this->beginWidget('CActiveForm', array(
    'id'=>'quotes-form',
    'enableAjaxValidation'=>false,
 ));
-	
-echo $this->renderPartial('application.components.views._form', 
-	array(
-		'model'=>$model,
-		'form'=>$form,
-		'users'=>$users,
-		'modelName'=>'Quote',
-		'isQuickCreate'=>true, // let us create the CActiveForm in this file
-		'scenario' => $quick ? 'Inline' : 'Default',
-	)
-);
+    
+
+$this->widget ('FormView', array(
+    'model' => $model,
+    'form' => $form,
+    'scenario' => $quick ? 'Inline' : 'Default',
+));
+//echo $this->renderPartial('application.components.views.@FORMVIEW', 
+//  array(
+//      'model'=>$model,
+//      'form'=>$form,
+//      'users'=>$users,
+//      'modelName'=>'Quote',
+//      'isQuickCreate'=>true, // let us create the CActiveForm in this file
+//      'scenario' => $quick ? 'Inline' : 'Default',
+//  )
+// );
 
 if($model->type == 'invoice') { ?>
-	<div class="x2-layout form-view" style="margin-bottom: 0;">
-	
-	    <div class="formSection showSection">
-	    	<div class="formSectionHeader">
-	    		<span class="sectionTitle" title="Invoice"><?php 
+    <div class="x2-layout form-view" style="margin-bottom: 0;">
+    
+        <div class="formSection showSection">
+            <div class="formSectionHeader">
+                <span class="sectionTitle" title="Invoice"><?php 
                     echo Yii::t('quotes', 'Invoice'); ?></span>
-	    	</div>
-	    	<div class="tableWrapper">
-	    		<table>
-	    			<tbody>
-	    				<tr class="formSectionRow">
-	    					<td style="width: 300px">
-	    						<div class="formItem leftLabel">
-	    							<label><?php echo Yii::t('media', 'Invoice Status'); ?></label>
-	    							<div class="formInputBox" style="width: 150px; height: auto;">
-	    								<?php echo $model->renderInput('invoiceStatus'); ?>
-	    							</div>
-	    						</div>
-	    						<div class="formItem leftLabel">
-	    							<label><?php echo Yii::t('media', 'Invoice Created'); ?></label>
-	    							<div class="formInputBox" style="width: 150px; height: auto;">
-	    								<?php echo $model->renderInput('invoiceCreateDate'); ?>
-	    							</div>
-	    						</div>
-	    					</td>
-	    					<td style="width: 300px">
-	    						<div class="formItem leftLabel">
-	    							<label><?php echo Yii::t('media', 'Invoice Issued'); ?></label>
-	    							<div class="formInputBox" style="width: 150px; height: auto;">
-	    								<?php echo $model->renderInput('invoiceIssuedDate'); ?>
-	    							</div>
-	    						</div>
-	    						<div class="formItem leftLabel">
-	    							<label><?php echo Yii::t('media', 'Invoice Paid'); ?></label>
-	    							<div class="formInputBox" style="width: 150px; height: auto;">
-	    								<?php echo $model->renderInput('invoicePayedDate'); ?>
-	    							</div>
-	    						</div>
-	    					</td>
-	    				</tr>
-	    			</tbody>
-	    		</table>
-	    	</div>
-	    </div>
-	    
-	</div>
-	<br />
+            </div>
+            <div class="tableWrapper">
+                <table>
+                    <tbody>
+                        <tr class="formSectionRow">
+                            <td style="width: 300px">
+                                <div class="formItem leftLabel">
+                                    <label><?php echo Yii::t('media', 'Invoice Status'); ?></label>
+                                    <div class="formInputBox" style="width: 150px; height: auto;">
+                                        <?php echo $model->renderInput('invoiceStatus'); ?>
+                                    </div>
+                                </div>
+                                <div class="formItem leftLabel">
+                                    <label><?php echo Yii::t('media', 'Invoice Created'); ?></label>
+                                    <div class="formInputBox" style="width: 150px; height: auto;">
+                                        <?php echo $model->renderInput('invoiceCreateDate'); ?>
+                                    </div>
+                                </div>
+                            </td>
+                            <td style="width: 300px">
+                                <div class="formItem leftLabel">
+                                    <label><?php echo Yii::t('media', 'Invoice Issued'); ?></label>
+                                    <div class="formInputBox" style="width: 150px; height: auto;">
+                                        <?php echo $model->renderInput('invoiceIssuedDate'); ?>
+                                    </div>
+                                </div>
+                                <div class="formItem leftLabel">
+                                    <label><?php echo Yii::t('media', 'Invoice Paid'); ?></label>
+                                    <div class="formInputBox" style="width: 150px; height: auto;">
+                                        <?php echo $model->renderInput('invoicePayedDate'); ?>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+    </div>
+    <br />
 <?php }
 
 echo $this->renderPartial('_lineItems',
-	array(
-		'model'=>$model,
-		'products'=>$products,
-		'readOnly'=>false,
+    array(
+        'model'=>$model,
+        'products'=>$products,
+        'readOnly'=>false,
+        'form'=>$form,
         'namespacePrefix' => 'quotes'
-	)
+    )
 );
 
 echo $this->renderPartial('_sharedView', array (

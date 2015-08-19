@@ -28,4 +28,10 @@ return array (
 'Relationships for Contact: '=>'연락 관계 :',
 'Import Opportunities'=>'수입 기회',
 'Export Opportunities'=>'수출 기회',
+'Create {opportunity}'=>'만들기 {opportunity}',
+'{opportunity}:'=>'{opportunity} :',
+'{opportunities} List'=>'{opportunities} 목록',
+'Edit {opportunity}'=>'편집 {opportunity}',
+'Import {opportunities}'=>'가져 오기 {opportunities}',
+'Export {opportunities}'=>'수출 {opportunities}',
 );

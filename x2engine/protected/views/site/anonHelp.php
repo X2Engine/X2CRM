@@ -34,13 +34,16 @@
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2Engine".
  *****************************************************************************************/
+
+LoginThemeHelper::init();
+
 ?>
 
 <div id="password-reset-form-outer">
     <div class="container" id="login-page">
         <div id="login-box">
             <?php echo CHtml::link(Yii::t('users',"Can't remember your username or password?"),array('/site/resetPassword')); ?><br /><br />
-            <?php echo CHtml::link(Yii::t('users',"Need general guidance in how to use this software?"),'http://www.x2engine.com/reference_guide/'); ?>
+            <?php echo CHtml::link(Yii::t('users',"Need general guidance in how to use this software?"),'http://www.x2crm.com/reference_guide/'); ?>
         </div><!-- #login-box -->
     </div><!-- #login-page -->
 </div><!-- #password-reset-form-outer -->

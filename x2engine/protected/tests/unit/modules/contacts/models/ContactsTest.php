@@ -47,6 +47,14 @@ class ContactsTest extends X2DbTestCase {
         );
     }
     
+    /**
+     * This test exists to make PHPUnit not complain when other tests are
+     * stripped by the build script
+     */
+    public function testNothing(){
+        $this->assertTrue(true);
+    }
+    
 
 
 }

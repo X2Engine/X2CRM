@@ -67,8 +67,8 @@ abstract class X2WebTestCase extends CWebTestCase {
         'password' => 'admin',
     );
     
-    protected static $loadFixtures = LOAD_FIXTURES;
-    protected static $loadFixturesForClassOnly = LOAD_FIXTURES_FOR_CLASS_ONLY;
+    protected static $loadFixtures = X2_LOAD_FIXTURES;
+    protected static $loadFixturesForClassOnly = X2_LOAD_FIXTURES_FOR_CLASS_ONLY;
     protected $captureScreenshotOnFailure = true;
     protected $screenshotPath = null;
     protected $screenshotUrl = null;
@@ -122,7 +122,7 @@ abstract class X2WebTestCase extends CWebTestCase {
             $this->type("name=LoginForm[$fld]", $val);
         $this->clickAndWait("css=#signin-button");
         // Finally, make sure the login succeeded
-        VERBOSE_MODE && println ('login');
+        X2_VERBOSE_MODE && println ('login');
         $this->waitForPageToLoad ();
         $this->assertCorrectUser($login);
     }
@@ -153,7 +153,7 @@ abstract class X2WebTestCase extends CWebTestCase {
      * @param string $r_uri
      */
     public function openPublic($r_uri) {
-        VERBOSE_MODE && print ('openPublic: '.TEST_WEBROOT_URL . $r_uri."\n");
+        X2_VERBOSE_MODE && print ('openPublic: '.TEST_WEBROOT_URL . $r_uri."\n");
         return $this->open(TEST_WEBROOT_URL . $r_uri);
     }
 
@@ -198,14 +198,31 @@ abstract class X2WebTestCase extends CWebTestCase {
         $theTestClass = new ReflectionClass(get_called_class());
         $this->localSeleneseDir = dirname($theTestClass->getFileName());
     }
+    
+    public static function setUpBeforeClass() {
+        if (!YII_UNIT_TESTING) throw new CException ('YII_UNIT_TESTING must be set to true');
+        $testClass = get_called_class();
+        if(X2_TEST_DEBUG_LEVEL > 0){
+            println($testClass);
+        }
+        parent::setUpBeforeClass();
+    }
+    
+    public static function tearDownAfterClass() {
+        if(X2_TEST_DEBUG_LEVEL > 0){
+            println("");
+        }
+        parent::tearDownAfterClass();
+    }
 
+    private $_oldSession;
     /**
      * Sets up before each test method runs.
      * 
      * This mainly sets the base URL for the test application, and sets the 
      * Selenese path to make it easier to locate/use Selenese HTML scripts.
      */
-    protected function setUp() {
+    public function setUp() {
         if (self::$skipAllTests) {
             $this->markTestSkipped ();
         }
@@ -213,10 +230,14 @@ abstract class X2WebTestCase extends CWebTestCase {
         if (self::$loadFixturesForClassOnly)
             $this->getFixtureManager ()->loadFixtures = true;
 
-        // print out test name
-        VERBOSE_MODE && println ("\n".$this->getName ());
+        if(X2_TEST_DEBUG_LEVEL > 1){
+            println(' '.$this->getName());
+        }
 
         X2DbTestCase::setUpAppEnvironment (true);
+        if(isset($_SESSION)){
+            $this->_oldSession = $_SESSION;
+        }
         parent::setUp();
         $this->setSeleneseDir();
         // Set the screenshot path to one visible from the web.
@@ -228,6 +249,13 @@ abstract class X2WebTestCase extends CWebTestCase {
             $this->openX2('/site/login');
             $this->session();
         }
+    }
+    
+    public function tearDown() {
+        if(isset($this->_oldSession)){
+            $_SESSION = $this->_oldSession;
+        }
+        parent::tearDown();
     }
 
     public function clearSessions () {

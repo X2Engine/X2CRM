@@ -80,7 +80,8 @@ class Tags extends CActiveRecord {
             array(
                 'tag', 
                 'application.extensions.unique-attributes-validator.UniqueAttributesValidator', 
-                'with'=>'tag,type,itemId'
+                'with'=>'tag,type,itemId',
+                'binary'=>true,
             ),
             // The following rule is used by search().
             // Please remove those attributes that should not be searched.

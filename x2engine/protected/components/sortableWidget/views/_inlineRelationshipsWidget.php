@@ -207,6 +207,8 @@ $this->widget('InlineRelationshipsGridView', array(
     'possibleResultsPerPage' => array(5, 10, 20, 30, 40, 50, 75, 100),
     'enableGridResizing' => false,
     'showHeader' => CPropertyValue::ensureBoolean ($this->getWidgetProperty('showHeader')),
+    'hideFullHeader' => CPropertyValue::ensureBoolean (
+        $this->getWidgetProperty('hideFullHeader')),
     'resultsPerPage' => $this->getWidgetProperty ('resultsPerPage'),
     'sortableWidget' => $this,
     'defaultGvSettings' => array (
@@ -254,7 +256,7 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->getBaseUrl().'/js/Relat
 
     <div class='row'>
         <?php 
-        echo CHtml::label(Yii::t('apps','Link Type:'), 'RelationshipModelName');
+        echo CHtml::label(Yii::t('app','Link Type:'), 'RelationshipModelName');
         echo CHtml::dropDownList (
             'RelationshipModelName', 'Contacts', $linkableModelsOptions, 
             array (
@@ -274,7 +276,7 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->getBaseUrl().'/js/Relat
 
     <div class='row'>
         <?php
-        echo CHtml::label( Yii::t('apps','Name:'), 'RelationshipName');
+        echo CHtml::label( Yii::t('app','Name:'), 'RelationshipName');
         echo "<div id='inline-relationships-autocomplete-container'>";
         X2Model::renderModelAutocomplete ('Contacts');
         echo CHtml::hiddenField ('RelationshipModelId');
@@ -291,14 +293,14 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->getBaseUrl().'/js/Relat
 
 
         echo X2Html::textField ('firstLabel', '' ,array(
-            'title' => Yii::t('apps','Create a different label for ').$model->name));
+            'title' => Yii::t('app','Create a different label for ').$model->name));
         echo X2Html::hiddenField ('mutual','true');
         echo X2Html::link (
             '', '', 
             array(
                 'id'=>'RelationshipLabelButton',
                 'class' => 'pseudo-link fa fa-long-arrow-right',
-                'title' => Yii::t('apps','Create a different label for ').$model->name
+                'title' => Yii::t('app','Create a different label for ').$model->name
             ));
         ?>
     </div>

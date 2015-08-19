@@ -66,7 +66,7 @@ class UserTest extends X2DbTestCase {
 
     public function testAfterDelete () {
         $user = User::model ()->findByPk ('2');
-        if(VERBOSE_MODE){
+        if(X2_VERBOSE_MODE){
             /**/print ('id of user to delete: ');
             /**/print ($user->id);
         }
@@ -86,7 +86,7 @@ class UserTest extends X2DbTestCase {
                 GroupToUser::model ()->findAllByAttributes (array ('userId' => $user->id))) > 0);
         $this->assertTrue ($user->delete ());
 
-        VERBOSE_MODE && print ('looking for groupToUser records with userId = '.$user->id);
+        X2_VERBOSE_MODE && print ('looking for groupToUser records with userId = '.$user->id);
         GroupToUser::model ()->refresh ();
 
         // assert that group to user records were deleted
@@ -188,7 +188,7 @@ class UserTest extends X2DbTestCase {
         $newUser->validate (array ('userAlias'));
         $this->assertFalse($newUser->hasErrors('username'));
         if ($newUser->hasErrors ()) {
-            VERBOSE_MODE && print_r ($newUser->getErrors ());
+            X2_VERBOSE_MODE && print_r ($newUser->getErrors ());
         }
     }
 

@@ -577,8 +577,12 @@ class CClientScript extends CApplicationComponent
 			$package=$this->packages[$name];
 		else
 		{
-			if($this->corePackages===null)
+			if($this->corePackages===null) {
 				$this->corePackages=require(YII_PATH.'/web/js/packages.php');
+				$this->corePackages = array_merge( $this->corePackages, 
+					require('protected/data/packages.php')
+				);
+			}
 			if(isset($this->corePackages[$name]))
 				$package=$this->corePackages[$name];
 		}

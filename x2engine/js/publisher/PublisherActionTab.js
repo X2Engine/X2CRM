@@ -63,38 +63,12 @@ Private static methods
 Public instance methods
 */
 
-/**
- * Hide the reminder container after submission
- */
-PublisherActionTab.prototype.reset = function () {
-    x2.PublisherTab.prototype.reset.call (this);
-    $(this.resolveIds ('#action-reminder-inputs')).slideUp ();
-};
-
-
 /*
 Private instance methods
 */
 
-/**
- * Set up reminder subsection dropdown container
- */
-PublisherActionTab.prototype._setUpActionReminders = function () {
-    var that = this;
-    $(this.resolveIds ('#Actions_reminder')).change (function () {
-        if ($(this).is (':checked') ) {
-            $(that.resolveIds ('#action-reminder-inputs')).slideDown ();
-        } else {
-            $(that.resolveIds ('#action-reminder-inputs')).slideUp ();
-        }
-        return false;
-    });
-};
-
 PublisherActionTab.prototype._init = function () {
     var that = this;
-
-    this._setUpActionReminders ();
     x2.PublisherTab.prototype._init.call (this);
 };
 

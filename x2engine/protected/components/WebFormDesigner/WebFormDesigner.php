@@ -35,14 +35,35 @@
  *****************************************************************************************/
 
 Yii::import('application.components.WebFormDesigner.views.*');
+
+/**
+ * Parent Widget class to handle the 3 different Webforms
+ */
 class WebFormDesigner extends X2Widget {
 
+    /**
+     * Name of web form 
+     * 'list', 'service', 'weblead'
+     * @var string
+     */
     public $type;
+
     
+
+    /**
+     * @var string
+     */
     public $url;
 
+    /**
+     * @var string
+     */
     public $saveUrl; 
 
+    /**
+     * Name of the JS Class
+     * @var [type]
+     */
     public $protoName;
 
     public $forms; 
@@ -53,6 +74,10 @@ class WebFormDesigner extends X2Widget {
 
     public $viewFile = 'application.components.WebFormDesigner.views._createWebForm2';
 
+    /**
+     * List of Default Fields
+     * @var array
+     */
     public $defaultList = array();
 
     
@@ -114,6 +139,10 @@ class WebFormDesigner extends X2Widget {
         return $this->_JSClassParams;
     }
 
+    /**
+     * Builds the dropdown for saved webforms
+     * @return html constructed HTML
+     */
     public function getDropDown () {
         array_unshift($this->formAttrs, array('id'=>'0', 'name'=>'------------'));
 
@@ -127,7 +156,9 @@ class WebFormDesigner extends X2Widget {
         return $html;
     }
 
-
+    /**
+     * @see X2Widget::getTranslations
+     */
     public function getTranslations () {
         return array (
             'formSavedMsg' => Yii::t('marketing', 'Form Saved'),
@@ -137,10 +168,13 @@ class WebFormDesigner extends X2Widget {
         );
     }
 
+    /**
+     * Each web form has a unique view file that is rendered based on its type
+     */
     public function renderSpecific() {
         $this->render('application.components.WebFormDesigner.views.'.$this->type);
     }
-
+    
     public function getDescription() {
         return '';
     }

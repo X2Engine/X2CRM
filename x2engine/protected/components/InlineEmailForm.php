@@ -51,7 +51,22 @@
  */
 class InlineEmailForm extends X2Widget {
 
+    /**
+     * @var string $type
+     */
+    public $type = 'inlineEmail'; 
+
     public $attributes;
+
+    /**
+     * @var string|null $action inline email form action
+     */
+    public $action; 
+
+    /**
+     * @var bool $enableResizability
+     */
+    public $enableResizability = true; 
 
     public $template = null;
 
@@ -111,6 +126,18 @@ class InlineEmailForm extends X2Widget {
         return $this->_packages;
     }
 
+    private $_moduleName;
+    public function getModuleName () {
+        if (!isset ($this->_moduleName)) {
+            $this->_moduleName = Yii::app()->controller->module->name;
+        }
+        return $this->_moduleName;
+    }
+
+    public function setModuleName ($moduleName) {
+        $this->_moduleName = $moduleName;
+    }
+
     public function init(){
         $this->disableTemplates = $this->disableTemplates ||
             in_array ($this->associationType, 
@@ -123,7 +150,7 @@ class InlineEmailForm extends X2Widget {
         }
 
         if (!$this->associationType) {
-            $this->associationType = X2Model::getModelName (Yii::app()->controller->module->name);
+            $this->associationType = X2Model::getModelName ($this->getModuleName ());
         }
 
         // Bring in attributes set in the configuration:
@@ -132,7 +159,7 @@ class InlineEmailForm extends X2Widget {
         if (empty ($this->template)) {
             // check for a default template
             $defaultTemplateId = Yii::app()->params->profile->getDefaultEmailTemplate (
-                Yii::app()->controller->module->name);
+                $this->getModuleName ());
 
             // if there's a default set for this module
             if ($defaultTemplateId !== null) {
@@ -170,11 +197,8 @@ class InlineEmailForm extends X2Widget {
         $this->registerJSClassInstantiation ();
 
         // Load resources:
-        Yii::app()->clientScript->registerScriptFile(
-            Yii::app()->getBaseUrl().'/js/ckeditor/ckeditor.js');
-        Yii::app()->clientScript->registerScriptFile(
-            Yii::app()->getBaseUrl().'/js/ckeditor/adapters/jquery.js');
-        Yii::app()->clientScript->registerScriptFile(Yii::app()->getBaseUrl().'/js/emailEditor.js');
+        Yii::app()->clientScript->registerPackage ('emailEditor');
+
         if(!empty($this->insertableAttributes)){
             Yii::app()->clientScript->registerScript('setInsertableAttributes', 
             'x2.insertableAttributes = '.CJSON::encode($this->insertableAttributes).';', 
@@ -195,23 +219,31 @@ class InlineEmailForm extends X2Widget {
         parent::init();
     }
 
-    public function registerJSClassInstantiation () {
-        Yii::app()->clientScript->registerScript('InlineEmailFormJS',"
-        x2.inlineEmailEditorManager = new x2.{$this->JSClass} ({
-            translations: ".CJSON::encode (array (
+
+    public function getJSClassParams () {
+        return array (
+            'translations' => array (
                 'defaultTemplateDialogTitle' => 
                     Yii::t('app', 'Set a Default Email Template'),
                 'Cancel' => Yii::t('app', 'Cancel'),
                 'Save' => Yii::t('app', 'Save'),
                 'New Message' => Yii::t('app', 'New Message'),
-            )).",
-            disableTemplates: ".CJSON::encode ($this->disableTemplates).",
-            saveDefaultTemplateUrl: '".
+            ),
+            'disableTemplates' => $this->disableTemplates,
+            'saveDefaultTemplateUrl' => 
                 Yii::app()->controller->createUrl (
-                    '/profile/profile/ajaxSaveDefaultEmailTemplate')."',
-            tmpUploadUrl: '".Yii::app()->createUrl('/site/tmpUpload')."', 
-            rmTmpUploadUrl: '".Yii::app()->createUrl('/site/removeTmpUpload')."'
-        });
+                    '/profile/profile/ajaxSaveDefaultEmailTemplate'),
+            'tmpUploadUrl' => Yii::app()->createUrl('/site/tmpUpload'), 
+            'rmTmpUploadUrl' => Yii::app()->createUrl('/site/removeTmpUpload'),
+            'type' => $this->type,
+            'enableResizability' => $this->enableResizability
+        );
+    }
+
+    public function registerJSClassInstantiation () {
+        Yii::app()->clientScript->registerScript('InlineEmailFormJS',"
+        x2.inlineEmailEditorManager = new x2.{$this->JSClass} (".
+            CJSON::encode ($this->getJSClassParams ()).");
         ", CClientScript::POS_END);
     }
 

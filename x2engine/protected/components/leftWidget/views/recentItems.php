@@ -40,6 +40,8 @@ $themeURL = Yii::app()->theme->getBaseUrl();
 
 $count = 0;
 foreach($recentItems as $item) {
+    if (!isset (User::$recentItemTypes[$item['type']])) continue;
+    $recordType = User::$recentItemTypes[$item['type']];
 	if(++$count > 10)
 		break;
 	echo '<li>';
@@ -51,81 +53,38 @@ foreach($recentItems as $item) {
 
             $link = '<strong>'.Yii::t('app','Due').': '.date("Y-m-d",$item['model']->dueDate).
                 '</strong><br />'.Media::attachmentActionText($description);
-            //$link = '<strong>'.$item['model']->dueDate.'</strong><br />'.$item['model']->actionDescription;
+            //$link = '<strong>'.$item['model']->dueDate.'</strong><br />'.
+            //  $item['model']->actionDescription;
             echo CHtml::link($link,'#',
                 array('class'=>'action-frame-link','data-action-id'=>$item['model']->id));
             break;
         case 'c': // contact
-            $link = '<strong>'.CHtml::encode($item['model']->name).'</strong><br />'.CHtml::encode(X2Model::getPhoneNumber('phone', 'Contacts', $item['model']->id));
-            echo CHtml::link($link,array('/contacts/contacts/view','id'=>$item['model']->id));
-            break;
-        case 'a': // account
-            $link = '<strong>'.Yii::t('app', '{Account}', array(
-                    '{Account}'=>Modules::displayName(false, 'Accounts')
-                )).':<br/>'.CHtml::encode($item['model']->name).'</strong><br />'.
-                CHtml::encode($item['model']->phone);
-            echo CHtml::link($link,array('/accounts/accounts/view','id'=>$item['model']->id));
-            break;
-        case 'p': // campaign
-            $link = '<strong>'.Yii::t('app', 'Campaign').':<br/>'.CHtml::encode($item['model']->name).'</strong>';
-            echo CHtml::link($link,array('/marketing/marketing/view','id'=>$item['model']->id));
-            break;
-        case 'o': // opportunity
-            $link = '<strong>'.Yii::t('app', '{Opportunity}', array(
-                    '{Opportunity}' => Modules::displayName(false, 'Opportunities')
-                )).':<br/>'.CHtml::encode($item['model']->name).'</strong>';
-            echo CHtml::link($link,array('/opportunities/opportunities/view','id'=>$item['model']->id));
-            break;
-        case 'w': // workflow
-            $link = '<strong>'.Yii::t('app', '{Process}', array(
-                    '{Process}' => Modules::displayName(false, 'Workflow')
-                )).':<br/>'.CHtml::encode($item['model']->name).'</strong>';
-            echo CHtml::link($link,array('/workflow/workflow/view','id'=>$item['model']->id));
+            $link = '<strong>'.CHtml::encode($item['model']->name).'</strong><br />'.
+                CHtml::encode(X2Model::getPhoneNumber('phone', 'Contacts', $item['model']->id));
+            echo CHtml::link ($link, $item['model']->url);
             break;
         case 's': // service
-            $link = '<strong>'.Yii::t('app', 'Service Case').' '.CHtml::encode($item['model']->name).'</strong>';
-            echo CHtml::link($link,array('/services/services/view','id'=>$item['model']->id));
-            break;
-        case 'd': // document
-            $link = '<strong>'.Yii::t('app', '{Doc}', array(
-                    '{Doc}' => Modules::displayName(false, 'Docs')
-                )).':<br/>'.CHtml::encode($item['model']->name).'</strong>';
-            echo CHtml::link($link,array('/docs/docs/view','id'=>$item['model']->id));
-            break;
-        case 'l': // media object
-            $link = '<strong>'.Yii::t('app', '{Lead}', array(
-                    '{Lead}' => Modules::displayName(false, 'X2Leads')
-                )).':<br/>'.CHtml::encode($item['model']->name).'</strong>';
-            echo CHtml::link($link,array('/x2Leads/x2Leads/view','id'=>$item['model']->id));
+            $link = '<strong>'.Yii::t('app', 'Service Case').' '.
+                CHtml::encode($item['model']->name).'</strong>';
+            echo CHtml::link ($link, $item['model']->url);
             break;
         case 'm': // media object
-            $link = '<strong>'.Yii::t('app', 'File').':<br/>'.CHtml::encode($item['model']->fileName).'</strong>';
-            echo CHtml::link($link,array('/media/media/view','id'=>$item['model']->id));
+            $link = '<strong>'.Yii::t('app', 'File').':<br/>'.
+                CHtml::encode($item['model']->fileName).'</strong>';
+            echo CHtml::link ($link, $item['model']->asa ('X2LinkableBehavior')->url);
             break;
-        case 'r': // product
-            $link = '<strong>'.Yii::t('app', '{Product}', array(
-                    '{Product}' => Modules::displayName(false, 'Products')
+         
+        case 'p': // campaign
+            $link = '<strong>'.Yii::t('app', 'Campaign', array(
                 )).':<br/>'.CHtml::encode($item['model']->name).'</strong>';
-            echo CHtml::link($link,array('/products/products/view','id'=>$item['model']->id));
-            break;
-        case 'q': // product
-            $link = '<strong>'.Yii::t('app', '{Quote}', array(
-                    '{Quote}' => Modules::displayName(false, 'Quotes')
-                )).':<br/>'.CHtml::encode($item['model']->name).'</strong>';
-            echo CHtml::link($link,array('/quotes/quotes/view','id'=>$item['model']->id));
-            break;
-        case 'g': // group
-            $link = '<strong>'.Yii::t('app', '{Group}', array(
-                    '{Group}' => Modules::displayName(false, 'Groups')
-                )).':<br/>'.CHtml::encode($item['model']->name).'</strong>';
-            echo CHtml::link($link,array('/groups/groups/view','id'=>$item['model']->id));
-            break;
-        case 'f': // x2flow
-            $link = '<strong>'.Yii::t('app', 'Flow').':<br/>'.CHtml::encode($item['model']->name).'</strong>';
-            echo CHtml::link($link,array('/studio/flowDesigner','id'=>$item['model']->id));
+            echo CHtml::link ($link, $item['model']->url);
             break;
         default:
-            echo ('Error: recentItems.php: invalid item type');
+            $link = '<strong>'.Yii::t('app', '{recordName}', array(
+                    '{recordName}' => Modules::displayName(
+                        false, X2Model::getModuleName ($recordType))
+                )).':<br/>'.CHtml::encode($item['model']->name).'</strong>';
+            echo CHtml::link ($link, $item['model']->url);
 	}
 	echo "</li>\n";
 }

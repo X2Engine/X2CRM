@@ -139,21 +139,21 @@ class X2LinkableBehavior extends CActiveRecordBehavior {
         }
 
 		$url = $this->url;
-	        if($this->owner instanceof Contacts){
-        	    return CHtml::link(
-                    '<span>'.X2Html::encode($name).'</span>',
-                    $url,
-                    array_merge (array(
-                        'class'=>'contact-name'
-                    ), $htmlOptions)
-                );
-	        }else{
-        	    return CHtml::link(
-                    '<span>'.X2Html::encode($name).'</span>',
-                    $url,
-                    $htmlOptions
-                );
-	        }
+        if($this->owner instanceof Contacts){
+            return CHtml::link(
+                '<span>'.X2Html::encode($name).'</span>',
+                $url,
+                array_merge (array(
+                    'class'=>'contact-name'
+                ), $htmlOptions)
+            );
+        }else{
+            return CHtml::link(
+                '<span>'.X2Html::encode($name).'</span>',
+                $url,
+                $htmlOptions
+            );
+        }
 	}
 
 	/**

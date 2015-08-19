@@ -44,4 +44,10 @@ return array (
 'Group:'=>'Группа:',
 'Users:'=>'Пользователей:',
 'Edit Group'=>'Редактировать группу',
+'Create {group}'=>'Создать {group}',
+'{group}:'=>'{group}',
+'{users}:'=>'{users}',
+'{group} List'=>'{group} Список',
+'Edit {group}'=>'Редактировать {group}',
+'Delete {group}'=>'Удалить {group}',
 );

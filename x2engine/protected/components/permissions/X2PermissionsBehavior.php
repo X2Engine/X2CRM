@@ -46,6 +46,7 @@ Yii::import('application.components.util.AuxLib');
  * @property string $visibilityAttr Name of the attribute to use for visibility setting
  * @package application.components.permissions
  * @author Jake Houser <jake@x2engine.com>, Demitri Morgan <demitri@x2engine.com>
+ * TODO: replace hard-coded references to ", " delimeter with Fields::MULTI_ASSIGNMENT_DELIM
  */
 class X2PermissionsBehavior extends ModelPermissionsBehavior {
 
@@ -143,7 +144,7 @@ class X2PermissionsBehavior extends ModelPermissionsBehavior {
             if (!empty($arr['params']))
                 $criteria->params = array_merge($criteria->params, $arr['params']);
         }
-
+        
         return $criteria;
     }
 

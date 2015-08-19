@@ -119,6 +119,9 @@
 /***********************************************************************
 * This section is made to correspond with the theme keys in ThemeGenerator
 ***********************************************************************/
+/***********************************************************************
+* Responsive design
+***********************************************************************/
 /***************************************
 * Mixin for border radius 
 ***************************************/
@@ -132,13 +135,13 @@
 * CSS to extend when something 
 * should look like a link
 ***************************************/
-/* line 87, ../../../compass/css/lib/_standards.scss */
+/* line 126, ../../../compass/css/lib/_standards.scss */
 .pseudo-link {
   cursor: pointer;
   color: #004baf;
   transition: color .1s;
 }
-/* line 92, ../../../compass/css/lib/_standards.scss */
+/* line 131, ../../../compass/css/lib/_standards.scss */
 .pseudo-link:hover {
   color: #006cfb;
 }
@@ -147,18 +150,15 @@
 * CSS to extend when for elements that 
 * become transparent on mouseover
 ***************************************/
-/* line 110, ../../../compass/css/lib/_standards.scss */
+/* line 149, ../../../compass/css/lib/_standards.scss */
 .opacity-hover {
   opacity: 0.3;
 }
-/* line 105, ../../../compass/css/lib/_standards.scss */
+/* line 144, ../../../compass/css/lib/_standards.scss */
 .opacity-hover:hover {
   opacity: 1;
 }
 
-/*********************************
-* Box Shadow Prefixer
-********************************/
 /***************************************
 * Apply the standard box shadow currently
 * used on x2-island-layout items
@@ -167,19 +167,139 @@
 * Mixin for applying a fontAwesome icon
 * SEE _icons.scss FOR A BETTER IMPLEMENTATION
 ******************************************/
-/* line 37, ../../../compass/themes/x2engine/css/x2forms.scss */
+/*****************************************************************************************
+ * X2Engine Open Source Edition is a customer relationship management program developed by
+ * X2Engine, Inc. Copyright (C) 2011-2015 X2Engine Inc.
+ * 
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU Affero General Public License version 3 as published by the
+ * Free Software Foundation with the addition of the following permission added
+ * to Section 15 as permitted in Section 7(a): FOR ANY PART OF THE COVERED WORK
+ * IN WHICH THE COPYRIGHT IS OWNED BY X2ENGINE, X2ENGINE DISCLAIMS THE WARRANTY
+ * OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
+ * 
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.  See the GNU Affero General Public License for more
+ * details.
+ * 
+ * You should have received a copy of the GNU Affero General Public License along with
+ * this program; if not, see http://www.gnu.org/licenses or write to the Free
+ * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301 USA.
+ * 
+ * You can contact X2Engine, Inc. P.O. Box 66752, Scotts Valley,
+ * California 95067, USA. or at email address contact@x2engine.com.
+ * 
+ * The interactive user interfaces in modified source and object code versions
+ * of this program must display Appropriate Legal Notices, as required under
+ * Section 5 of the GNU Affero General Public License version 3.
+ * 
+ * In accordance with Section 7(b) of the GNU Affero General Public License version 3,
+ * these Appropriate Legal Notices must retain the display of the "Powered by
+ * X2Engine" logo. If the display of the logo is not reasonably feasible for
+ * technical reasons, the Appropriate Legal Notices must display the words
+ * "Powered by X2Engine".
+ *****************************************************************************************/
+/***********************************************************************
+* Grays 
+***********************************************************************/
+/***********************************************************************
+* Blues
+***********************************************************************/
+/***********************************************************************
+* Reds 
+***********************************************************************/
+/***********************************************************************
+* Greens 
+***********************************************************************/
+/***********************************************************************
+* This section is made to correspond with the theme keys in ThemeGenerator
+***********************************************************************/
+/*****************************************************************************************
+ * X2Engine Open Source Edition is a customer relationship management program developed by
+ * X2Engine, Inc. Copyright (C) 2011-2015 X2Engine Inc.
+ * 
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU Affero General Public License version 3 as published by the
+ * Free Software Foundation with the addition of the following permission added
+ * to Section 15 as permitted in Section 7(a): FOR ANY PART OF THE COVERED WORK
+ * IN WHICH THE COPYRIGHT IS OWNED BY X2ENGINE, X2ENGINE DISCLAIMS THE WARRANTY
+ * OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
+ * 
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.  See the GNU Affero General Public License for more
+ * details.
+ * 
+ * You should have received a copy of the GNU Affero General Public License along with
+ * this program; if not, see http://www.gnu.org/licenses or write to the Free
+ * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301 USA.
+ * 
+ * You can contact X2Engine, Inc. P.O. Box 66752, Scotts Valley,
+ * California 95067, USA. or at email address contact@x2engine.com.
+ * 
+ * The interactive user interfaces in modified source and object code versions
+ * of this program must display Appropriate Legal Notices, as required under
+ * Section 5 of the GNU Affero General Public License version 3.
+ * 
+ * In accordance with Section 7(b) of the GNU Affero General Public License version 3,
+ * these Appropriate Legal Notices must retain the display of the "Powered by
+ * X2Engine" logo. If the display of the logo is not reasonably feasible for
+ * technical reasons, the Appropriate Legal Notices must display the words
+ * "Powered by X2Engine".
+ *****************************************************************************************/
+/***************************************************
+* This file is where new fonts should be included,
+* with a mixin to include special fonts on a per-font 
+* basis
+****************************************************/
+@font-face {
+  font-family: Montserrat;
+  font-weight: bold;
+  src: url("../../../css/lib/fonts/Montserrat-Bold.ttf");
+}
+@font-face {
+  font-family: Montserrat;
+  font-weight: normal;
+  src: url("../../../css/lib/fonts/Montserrat-Regular.ttf");
+}
+/* line 41, ../../../compass/themes/x2engine/css/x2forms.scss */
 h2 .x2-button {
   margin: 0 0 0 5px;
 }
 
-/*form {
-    input[readonly="readonly"] {
-        background: rgb(236, 236, 236);
-        color: rgb(102, 102, 102);
-    }
-}*/
-/* line 48, ../../../compass/themes/x2engine/css/x2forms.scss */
-div.x2-layout {
+/* line 45, ../../../compass/themes/x2engine/css/x2forms.scss */
+.page-title + form > .x2-layout {
+  border-radius: 0;
+}
+
+/* line 49, ../../../compass/themes/x2engine/css/x2forms.scss */
+#main-column {
+  margin-top: 5px;
+}
+/* line 52, ../../../compass/themes/x2engine/css/x2forms.scss */
+#main-column > div, #main-column > form {
+  margin: 0 0px 5px 0px;
+}
+
+/* line 58, ../../../compass/themes/x2engine/css/x2forms.scss */
+.history {
+  padding: 0 5px;
+}
+/* line 60, ../../../compass/themes/x2engine/css/x2forms.scss */
+.history.x2-layout-island.sortable-widget-container {
+  background: none !important;
+}
+
+/* line 65, ../../../compass/themes/x2engine/css/x2forms.scss */
+#main-column > div.page-title-fixed-outer {
+  margin: 0 0 5px 0;
+}
+
+/* line 69, ../../../compass/themes/x2engine/css/x2forms.scss */
+.x2-layout {
   width: auto;
   margin-bottom: 5px;
   overflow: hidden;
@@ -189,513 +309,398 @@ div.x2-layout {
   -ms-border-radius: 2px;
   -o-border-radius: 2px;
   border-radius: 2px;
-  /*  -moz-box-shadow:    0 1px 6px rgba(0,0,0,0.5);
-  -webkit-box-shadow:   0 1px 6px rgba(0,0,0,0.5);
-  box-shadow:       0 1px 6px rgba(0,0,0,0.5); */
-}
-
-/* #main-column.half-width {border-right:1px solid #aaa;margin-right:-1px;} */
-/* .history.half-width {box-sizing:border-box;border-left:1px solid #aaa;} */
-/* line 64, ../../../compass/themes/x2engine/css/x2forms.scss */
-#main-column {
-  margin-top: 5px;
-}
-/* line 67, ../../../compass/themes/x2engine/css/x2forms.scss */
-#main-column > div, #main-column > form {
-  margin: 0 0px 5px 0px;
-}
-
-/* line 73, ../../../compass/themes/x2engine/css/x2forms.scss */
-.history {
-  padding: 0 5px;
+  /* Form Sections */
 }
 /* line 76, ../../../compass/themes/x2engine/css/x2forms.scss */
-.history.x2-layout-island.sortable-widget-container {
-  background: none !important;
-}
-
-/* line 81, ../../../compass/themes/x2engine/css/x2forms.scss */
-#main-column > div.page-title-fixed-outer {
-  margin: 0 0 5px 0;
-  /* padding-right:7px; */
-}
-
-/* line 86, ../../../compass/themes/x2engine/css/x2forms.scss */
-div {
-  padding-right: 0;
-}
-/* line 88, ../../../compass/themes/x2engine/css/x2forms.scss */
-div.x2-layout a {
+.x2-layout a {
   text-decoration: none;
 }
-/* line 90, ../../../compass/themes/x2engine/css/x2forms.scss */
-div.x2-layout a:hover {
+/* line 78, ../../../compass/themes/x2engine/css/x2forms.scss */
+.x2-layout a:hover {
   text-decoration: underline;
 }
-/* line 94, ../../../compass/themes/x2engine/css/x2forms.scss */
-div.x2-layout .formSection {
-  /* background:#fff; */
-  overflow: hidden;
-  /* disable */
-  /*border-top:1px solid #333;*/
+/* line 83, ../../../compass/themes/x2engine/css/x2forms.scss */
+.x2-layout .formSectionRow {
+  /* @theme background: content */
 }
-/* line 99, ../../../compass/themes/x2engine/css/x2forms.scss */
-div.x2-layout .formSection:first-child {
+/* line 86, ../../../compass/themes/x2engine/css/x2forms.scss */
+.x2-layout .formSectionRow .formItem .label {
+  /* @theme border-color: border */
+}
+/* line 93, ../../../compass/themes/x2engine/css/x2forms.scss */
+.x2-layout .formSectionRow .formSectionColumn .formItem .label {
+  border-left: 1px solid #c5c5c5;
+}
+/* line 97, ../../../compass/themes/x2engine/css/x2forms.scss */
+.x2-layout .formSectionRow .formSectionColumn:first-child .formItem .label {
+  border-left: none;
+}
+/* line 101, ../../../compass/themes/x2engine/css/x2forms.scss */
+.x2-layout .formSectionRow .formItem:first-child .label {
   border-top: none;
 }
-/* line 103, ../../../compass/themes/x2engine/css/x2forms.scss */
-div.x2-layout .tableWrapper {
-  /*margin-left:16px;*/
-  width: auto;
-  /*border-left:1px solid #aaa;*/
-  border-top: 1px solid #ccc;
-  margin-bottom: -1px;
-  margin-right: -1px;
+/* line 105, ../../../compass/themes/x2engine/css/x2forms.scss */
+.x2-layout .formSectionRow .formItem:last-child .label {
+  border-bottom: 1px solid #c5c5c5;
 }
-/* line 110, ../../../compass/themes/x2engine/css/x2forms.scss */
-div.x2-layout .tableWrapper.noTitle {
-  border-top: none;
+/* line 109, ../../../compass/themes/x2engine/css/x2forms.scss */
+.x2-layout .formSectionRow .formItem.topLabel .label {
+  border-right: none;
 }
-/* line 115, ../../../compass/themes/x2engine/css/x2forms.scss */
-div.x2-layout .formSection:first-child {
-  -webkit-border-radius: 3px 0 0 0;
-  -moz-border-radius: 3px 0 0 0;
-  -ms-border-radius: 3px 0 0 0;
-  -o-border-radius: 3px 0 0 0;
-  border-radius: 3px 0 0 0;
+/* line 113, ../../../compass/themes/x2engine/css/x2forms.scss */
+.x2-layout .formSectionRow .formItem.topLabel:last-child .label {
+  border-right: 1px solid #c5c5c5;
 }
-/* line 118, ../../../compass/themes/x2engine/css/x2forms.scss */
-div.x2-layout .formSection:last-child {
-  -webkit-border-radius: 0 0 0 3px;
-  -moz-border-radius: 0 0 0 3px;
-  -ms-border-radius: 0 0 0 3px;
-  -o-border-radius: 0 0 0 3px;
-  border-radius: 0 0 0 3px;
+/* line 117, ../../../compass/themes/x2engine/css/x2forms.scss */
+.x2-layout .formSection {
+  background: #f3f3f3;
 }
-/* line 122, ../../../compass/themes/x2engine/css/x2forms.scss */
-div.x2-layout .formSectionHeader {
-  /*float:left;*/
-  display: block;
-  /*background: black;*/
-  height: 16px;
-  border-top: 1px solid #ccc;
-}
-/* line 130, ../../../compass/themes/x2engine/css/x2forms.scss */
-div.x2-layout .formSection:first-child .formSectionHeader {
-  border-top: none;
-}
-/* line 133, ../../../compass/themes/x2engine/css/x2forms.scss */
-div.x2-layout .showSection .formSectionHeader {
-  display: block;
-  /*width:15px;*/
-}
-/* line 137, ../../../compass/themes/x2engine/css/x2forms.scss */
-div.x2-layout .formSectionHeader a {
-  display: none;
-  float: left;
-  /* margin-right:1px; */
-  /*width:16px;*/
-  font-size: 12px;
-  font-style: normal;
-  text-decoration: none;
-  text-align: center;
-  /* margin-bottom:-5px; */
-}
-/* line 139, ../../../compass/themes/x2engine/css/x2forms.scss */
-div.x2-layout .formSectionHeader a .fa {
-  width: 15px;
-}
-/* line 153, ../../../compass/themes/x2engine/css/x2forms.scss */
-div.x2-layout .sectionTitle {
-  /*filter: progid:DXImageTransform.Microsoft.Matrix(sizingMethod='auto expand',M11=0.0, M12=1.0, M21=-1.0, M22=0.0); /* IE6, IE7 */
-  margin-left: 2px;
+/* line 120, ../../../compass/themes/x2engine/css/x2forms.scss */
+.x2-layout .formSection .formSectionShow,
+.x2-layout .formSection .formSectionHide {
   display: inline-block;
-  white-space: nowrap;
-  padding-right: 5px;
-  color: #000;
-  font-weight: normal;
-  font-style: italic;
-  font-size: 11px;
-}
-
-/* Form Sections */
-/* div.x2-layout .formSection hr {height:1px;margin:-1px 0 0 0;position:relative;background-color:#999;border-color:#999;} */
-/* line 172, ../../../compass/themes/x2engine/css/x2forms.scss */
-.x2-layout .collapsible .sectionTitle {
-  padding-right: 0;
-}
-
-/* line 176, ../../../compass/themes/x2engine/css/x2forms.scss */
-div.x2-layout .showSection .sectionTitle {
-  height: 15px;
-  /*-webkit-transform-origin: top left;
-  -moz-transform-origin:    top left;
-  -o-transform-origin:    top left;
-  -ms-transform-origin:   top left;
-  transform-origin:     top left;*/
-  /*-webkit-transform:  rotate(270deg) translate(-100%,0);
-  -moz-transform:   rotate(270deg) translate(-100%,0);
-  -o-transform:   rotate(270deg) translate(-100%,0);
-  -ms-transform:    rotate(270deg) translate(-100%,0);
-  transform:      rotate(270deg) translate(-100%,0);*/
-}
-
-/* line 190, ../../../compass/themes/x2engine/css/x2forms.scss */
-.lt-ie9 div.x2-layout .showSection .sectionTitle {
-  filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=3);
-}
-
-/* line 197, ../../../compass/themes/x2engine/css/x2forms.scss */
-div.x2-layout .formSection a.formSectionShow, div.x2-layout .formSection a.formSectionHide {
-  display: block;
   margin-left: 2px;
   margin-top: 2px;
   opacity: 0.6;
-  height: 2px;
+  height: 15px;
 }
-/* line 204, ../../../compass/themes/x2engine/css/x2forms.scss */
-div.x2-layout .formSection a.formSectionShow img {
-  height: 9px;
+/* line 128, ../../../compass/themes/x2engine/css/x2forms.scss */
+.x2-layout .formSection .formSectionShow {
+  display: inline-block;
 }
-/* line 207, ../../../compass/themes/x2engine/css/x2forms.scss */
-div.x2-layout .formSection a.formSectionHide img {
-  height: 7px;
-}
-/* line 210, ../../../compass/themes/x2engine/css/x2forms.scss */
-div.x2-layout .formSection a.formSectionShow {
-  display: block;
-  margin-left: 2px;
-}
-/* line 214, ../../../compass/themes/x2engine/css/x2forms.scss */
-div.x2-layout .formSection a.formSectionHide {
+/* line 132, ../../../compass/themes/x2engine/css/x2forms.scss */
+.x2-layout .formSection .formSectionHide {
   display: none;
-  margin-left: 2px;
 }
-/* line 220, ../../../compass/themes/x2engine/css/x2forms.scss */
-div.x2-layout .formSection.showSection a.formSectionShow {
+/* line 137, ../../../compass/themes/x2engine/css/x2forms.scss */
+.x2-layout .formSection.showSection .formSectionShow {
   display: none !important;
-  float: left;
-  margin-left: 2px;
 }
-/* line 225, ../../../compass/themes/x2engine/css/x2forms.scss */
-div.x2-layout .formSection.showSection a.formSectionHide {
-  display: block !important;
-  float: left;
-  margin-left: 2px;
+/* line 140, ../../../compass/themes/x2engine/css/x2forms.scss */
+.x2-layout .formSection.showSection .formSectionHide {
+  display: inline-block !important;
 }
-/* line 231, ../../../compass/themes/x2engine/css/x2forms.scss */
-div.x2-layout .formSection table {
+/* line 146, ../../../compass/themes/x2engine/css/x2forms.scss */
+.x2-layout .formSection .formSectionColumn {
   position: relative;
-  /* margin:-1px 0 0 0; */
-  /*  border:1px solid #999;
-  border-width:1px 0 0 0; */
-  border-collapse: separate;
+  border-collapse: collapse;
 }
-/* line 238, ../../../compass/themes/x2engine/css/x2forms.scss */
-div.x2-layout .formSection:last-child table {
-  margin-bottom: -1px;
-}
-/* line 242, ../../../compass/themes/x2engine/css/x2forms.scss */
-div.x2-layout td {
-  overflow: hidden;
-  /* disable */
-  margin: 0;
-  padding: 0;
-  vertical-align: top;
-  border-right: 1px solid #ccc;
-  /* border-bottom:1px solid #999; */
-  /* background:#eee; */
-}
-/* line 251, ../../../compass/themes/x2engine/css/x2forms.scss */
-div.x2-layout td:last-child {
-  border-right: none !important;
-}
-/* line 255, ../../../compass/themes/x2engine/css/x2forms.scss */
-div.x2-layout .formItem {
-  /* set field width in this element */
-  /* position:relative; */
-  float: left;
-  /* white-space:nowrap; */
-  overflow: hidden;
-  /* disable */
-  margin-left: -1px;
-  margin-right: -1000px;
-  /* css voodoo: row extends all the way across */
-  padding-right: 1000px;
-  /* and doesnt' mess up the flow */
-  border: 1px solid #ccc;
-  border-width: 0 0 1px 1px;
-}
-/* line 269, ../../../compass/themes/x2engine/css/x2forms.scss */
-div.x2-layout .formItem.multiLine {
-  overflow: hidden;
-}
-/* line 272, ../../../compass/themes/x2engine/css/x2forms.scss */
-div.x2-layout .formItem.checkBox {
+/* line 152, ../../../compass/themes/x2engine/css/x2forms.scss */
+.x2-layout .tableWrapper {
   width: auto;
 }
-/* line 276, ../../../compass/themes/x2engine/css/x2forms.scss */
-div.x2-layout.form-view .formItem {
-  border-width: 0 0 0;
+/* line 155, ../../../compass/themes/x2engine/css/x2forms.scss */
+.x2-layout .tableWrapper .table {
+  display: table;
 }
-/* line 280, ../../../compass/themes/x2engine/css/x2forms.scss */
-div.x2-layout .formItem label {
+/* line 159, ../../../compass/themes/x2engine/css/x2forms.scss */
+.x2-layout .tableWrapper.noTitle {
+  border-top: none;
+}
+/* line 163, ../../../compass/themes/x2engine/css/x2forms.scss */
+.x2-layout .tableWrapper .grid-view table.items {
+  clear: none;
+  margin-top: 0;
+  border: none;
+}
+/* line 170, ../../../compass/themes/x2engine/css/x2forms.scss */
+.x2-layout .formSectionHeader {
   display: block;
-  font-size: 10px;
-  color: #666;
-  background: #eee;
+  background: #e6e6e6;
+  border-bottom: 1px solid #cccccc;
+  border-top: 1px solid #e1e1e1;
+  /* @theme background: content */
+  /* @theme color: text */
+  /* @theme border-color: border */
+  padding-top: 2px;
+  padding-bottom: 2px;
 }
-/* line 286, ../../../compass/themes/x2engine/css/x2forms.scss */
-div.x2-layout .formItem.noLabel label, div.x2-layout .formItem.inlineLabel label {
+/* line 184, ../../../compass/themes/x2engine/css/x2forms.scss */
+.x2-layout .formSectionHeader a {
+  width: 20px;
   display: none;
+  font-style: normal;
+  text-decoration: none;
+  text-align: center;
 }
-/* line 289, ../../../compass/themes/x2engine/css/x2forms.scss */
-div.x2-layout .formItem.topLabel label {
-  padding: 2px;
-  margin-right: -1002px;
-  /* css voodoo: label extends all the way across */
-  padding-right: 1000px;
-  /* and doesnt' mess up the flow */
+/* line 193, ../../../compass/themes/x2engine/css/x2forms.scss */
+.x2-layout .sectionTitle {
+  display: inline-block;
+  margin-left: 2px;
+  padding-left: 4px;
+  font-family: Montserrat;
+  font-weight: normal !important;
+}
+/* line 203, ../../../compass/themes/x2engine/css/x2forms.scss */
+.x2-layout.form-view .formItem:nth-child(odd) {
+  background: #f3f3f3;
+  /* @theme background: content */
+}
+/* line 208, ../../../compass/themes/x2engine/css/x2forms.scss */
+.x2-layout .formItem {
+  word-break: break-word;
+  /* set field width in this element */
+  overflow: hidden;
+  /* @theme background: content */
+}
+/* line 214, ../../../compass/themes/x2engine/css/x2forms.scss */
+.x2-layout .formItem:nth-child(odd) {
+  background: white;
+  /* @theme background: content */
+}
+/* line 219, ../../../compass/themes/x2engine/css/x2forms.scss */
+.x2-layout .formItem:nth-child(even) {
+  background: #f3f3f3;
+  /* @theme background: content */
+}
+/* line 224, ../../../compass/themes/x2engine/css/x2forms.scss */
+.x2-layout .formItem.multiLine {
+  overflow: hidden;
+}
+/* line 227, ../../../compass/themes/x2engine/css/x2forms.scss */
+.x2-layout .formItem.checkBox {
+  width: auto;
+}
+/* line 231, ../../../compass/themes/x2engine/css/x2forms.scss */
+.x2-layout .formItem .label {
+  font-size: 75%;
+  box-sizing: border-box;
+  background: #f3f3f3;
+  border: 1px solid #c5c5c5;
+  /* @theme background: light_content */
+  /* @theme color: text */
+  /* @theme border-color: border */
+  vertical-align: middle;
+}
+/* line 246, ../../../compass/themes/x2engine/css/x2forms.scss */
+.x2-layout .formItem .attribute {
+  /* @theme color: text */
+}
+/* line 250, ../../../compass/themes/x2engine/css/x2forms.scss */
+.x2-layout .formItem.noLabel .label, .x2-layout .formItem.inlineLabel .label {
+  opacity: 0;
+}
+/* line 256, ../../../compass/themes/x2engine/css/x2forms.scss */
+.x2-layout .formItem.topLabel .attribute {
+  background: white;
+  /* @theme background: content */
+}
+/* line 261, ../../../compass/themes/x2engine/css/x2forms.scss */
+.x2-layout .formItem.topLabel .label {
+  padding: 4px;
   border-bottom: 1px solid #ccc;
 }
-/* line 297, ../../../compass/themes/x2engine/css/x2forms.scss */
-div.x2-layout .formItem.leftLabel label {
-  float: left;
-  padding: 3px 5px;
-  /* height:20px; */
-  padding-bottom: 2003px;
-  /* equal height columns hack */
-  margin-bottom: -2000px;
-  /* disable */
-  text-align: right;
+/* line 267, ../../../compass/themes/x2engine/css/x2forms.scss */
+.x2-layout .formItem.leftLabel .label {
+  box-sizing: border-box;
+  padding: 3px;
   width: 70px;
-  /* 69 */
-  vertical-align: middle;
-  /* border:1px solid #ccc;
-  border-right:none; */
-  border-right: 1px solid #ccc;
+  text-align: right;
 }
-/* line 313, ../../../compass/themes/x2engine/css/x2forms.scss */
-div.x2-layout .formItem.multiLine.leftLabel label {
-  padding-bottom: 2003px;
-  margin-bottom: -2000px;
-}
-/* line 317, ../../../compass/themes/x2engine/css/x2forms.scss */
-div.x2-layout .formItem label.groupLabel {
+/* line 280, ../../../compass/themes/x2engine/css/x2forms.scss */
+.x2-layout .formItem label.groupLabel {
   background: none;
   display: inline;
   margin-left: 5px;
 }
-/* line 323, ../../../compass/themes/x2engine/css/x2forms.scss */
-div.x2-layout input[type='checkbox'] {
-  height: 11px;
-}
-/* line 326, ../../../compass/themes/x2engine/css/x2forms.scss */
-div.x2-layout .formInputBox {
-  float: left;
-  /* disable */
-  /* width:auto; */
-  /* margin-left:80px; */
-  margin-right: 1px;
-  padding: 3px;
-  /* padding:0 10px 0 0; */
-  padding-bottom: 503px;
-  /* equal height columns hack */
-  margin-bottom: -500px;
-  /* disable */
-  /* margin-bottom:3px; */
-  font-weight: bold;
-}
-/* line 340, ../../../compass/themes/x2engine/css/x2forms.scss */
-div.x2-layout .formInputBox input, div.x2-layout .formInputBox.textBox {
-  font-weight: normal;
-}
-/* line 343, ../../../compass/themes/x2engine/css/x2forms.scss */
-div.x2-layout .formInputBox .checkboxWrapper {
-  display: inline-block;
-  vertical-align: middle;
-  height: 18px;
-  padding: 4px 0 0 4px;
-  /* height: 20px;
-  padding: 6px 6px 0 6px;
-  background: white;
-  border: 1px solid #CCC;
-  border-radius: 0 3px 3px 0; */
-}
-/* line 356, ../../../compass/themes/x2engine/css/x2forms.scss */
-div.x2-layout .formItem input[type="text"], div.x2-layout .formItem textarea {
-  -webkit-appearance: none;
-  height: 22px;
-  width: 100% !important;
+/* line 286, ../../../compass/themes/x2engine/css/x2forms.scss */
+.x2-layout .formItem input[type=text],
+.x2-layout .formItem textarea {
   box-sizing: border-box;
-  /* disable */
-  -webkit-box-sizing: border-box;
-  -moz-box-sizing: border-box;
-  /* box-shadow: inset 0 1px 2px 0 rgba(0, 0, 0, 0.15); */
-  border: 1px solid #aaa;
-  /* border:1px solid #ccc; */
+  min-height: 22px;
+  border: 1px solid #D9D9D9;
   font-size: 12px;
-  font-family: Arial, Helvetica, sans-serif;
-  -moz-border-radius: 3px;
-  -o-border-radius: 3px;
-  -webkit-border-radius: 3px;
-  border-radius: 3px;
-  /*  -moz-border-radius:   0 3px 3px 0;
-  -o-border-radius:   0 3px 3px 0;
-  -webkit-border-radius:  0 3px 3px 0;
-  border-radius:      0 3px 3px 0; */
-  background: #fff;
-}
-
-/* div.x2-layout.form-view .formSectionHeader {border-top:1px solid #999;} */
-/* line 384, ../../../compass/themes/x2engine/css/x2forms.scss */
-input[type="text"].record-name-autocomplete {
-  -webkit-appearance: none;
-  height: 22px;
-  width: 100% !important;
-  box-sizing: border-box;
-  -webkit-box-sizing: border-box;
-  -moz-box-sizing: border-box;
-  border: 1px solid #aaa;
-  font-size: 12px;
-  font-family: Arial, Helvetica, sans-serif;
   -webkit-border-radius: 3px;
   -moz-border-radius: 3px;
   -ms-border-radius: 3px;
   -o-border-radius: 3px;
   border-radius: 3px;
-  background: #fff;
 }
-
-/* line 399, ../../../compass/themes/x2engine/css/x2forms.scss */
-div.x2-layout .formItem .placeholder {
+/* line 297, ../../../compass/themes/x2engine/css/x2forms.scss */
+.x2-layout .formItem input[type=text] {
+  min-width: 200px;
+}
+/* line 301, ../../../compass/themes/x2engine/css/x2forms.scss */
+.x2-layout .formItem textarea {
+  width: 100%;
+  padding: 2px;
+  min-height: 3em;
+  /* @theme background: content */
+  /* @theme color: text */
+}
+/* line 310, ../../../compass/themes/x2engine/css/x2forms.scss */
+.x2-layout .formItem .field-checked {
+  color: #01b701;
+}
+/* line 314, ../../../compass/themes/x2engine/css/x2forms.scss */
+.x2-layout .formItem .field-unchecked {
+  color: #e24b4b;
+}
+/* line 321, ../../../compass/themes/x2engine/css/x2forms.scss */
+.x2-layout .collapsible .sectionTitle {
+  padding-right: 0;
+}
+/* line 325, ../../../compass/themes/x2engine/css/x2forms.scss */
+.x2-layout .formItem .placeholder {
   color: #aaa;
 }
-/* line 402, ../../../compass/themes/x2engine/css/x2forms.scss */
-div.x2-layout .formInputBox {
-  min-width: 100px;
+/* line 329, ../../../compass/themes/x2engine/css/x2forms.scss */
+.x2-layout .extra-column {
+  vertical-align: middle;
 }
-/* line 404, ../../../compass/themes/x2engine/css/x2forms.scss */
-div.x2-layout .formInputBox input {
+/* line 332, ../../../compass/themes/x2engine/css/x2forms.scss */
+.x2-layout .extra-column .x2-hint {
+  width: 15px;
+  height: 15px;
+  line-height: 15px;
+  color: white;
+  background: #004baf;
+  border-radius: 3px;
+  text-align: center;
+  font-weight: bold;
+  opacity: 0.8;
+}
+/* line 144, ../../../compass/css/lib/_standards.scss */
+.x2-layout .extra-column .x2-hint:hover {
+  opacity: 1;
+}
+/* line 347, ../../../compass/themes/x2engine/css/x2forms.scss */
+.x2-layout .extra-column .x2-hint:before {
+  font-family: Montserrat;
+  content: "?";
+}
+/* line 355, ../../../compass/themes/x2engine/css/x2forms.scss */
+.x2-layout .textarea .formInputBox {
+  width: 90%;
+}
+/* line 359, ../../../compass/themes/x2engine/css/x2forms.scss */
+.x2-layout .formInputBox {
+  box-sizing: border-box;
+  display: inline-block;
+  min-width: 100px;
+  padding: 3px;
+  font-weight: bold;
+}
+/* line 367, ../../../compass/themes/x2engine/css/x2forms.scss */
+.x2-layout .formInputBox input {
   margin: 0;
   padding: 2px;
 }
-/* line 407, ../../../compass/themes/x2engine/css/x2forms.scss */
-div.x2-layout .formInputBox input[type="text"] {
-  width: 100%;
-}
-/* line 411, ../../../compass/themes/x2engine/css/x2forms.scss */
-div.x2-layout .formInputBox textarea {
-  padding: 2px;
-}
-/* line 414, ../../../compass/themes/x2engine/css/x2forms.scss */
-div.x2-layout .formInputBox select {
-  width: 100%;
-}
-/* line 417, ../../../compass/themes/x2engine/css/x2forms.scss */
-div.x2-layout .formInputBox input.input-percentage {
+/* line 372, ../../../compass/themes/x2engine/css/x2forms.scss */
+.x2-layout .formInputBox input.input-percentage {
   background: white url(../images/formEditor/percentage.gif) no-repeat 95%;
 }
-/* line 421, ../../../compass/themes/x2engine/css/x2forms.scss */
-div.x2-layout .tableWrapper .grid-view table.items {
-  clear: none;
-  margin-top: 0;
-  border: none;
+/* line 376, ../../../compass/themes/x2engine/css/x2forms.scss */
+.x2-layout .formInputBox input, .x2-layout .formInputBox.textBox {
+  font-weight: normal;
 }
-/* line 426, ../../../compass/themes/x2engine/css/x2forms.scss */
-div.x2-layout div.error label, div.x2-layout label.error, div.x2-layout span.error {
+/* line 380, ../../../compass/themes/x2engine/css/x2forms.scss */
+.x2-layout .formInputBox .checkboxWrapper {
+  display: inline-block;
+  vertical-align: middle;
+  height: 14px;
+  padding: 4px 0 0 4px;
+}
+/* line 389, ../../../compass/themes/x2engine/css/x2forms.scss */
+.x2-layout .errordiv, .x2-layout .errorlabel, .x2-layout .errorspan {
   color: #C00;
 }
-/* line 430, ../../../compass/themes/x2engine/css/x2forms.scss */
-div.x2-layout div.error input, div.x2-layout div.error textarea, div.x2-layout div.error select {
+/* line 395, ../../../compass/themes/x2engine/css/x2forms.scss */
+.x2-layout .errorinput, .x2-layout .errortextarea, .x2-layout .errorselect {
   background: #FEE !important;
   border-color: #C00 !important;
 }
-/* line 435, ../../../compass/themes/x2engine/css/x2forms.scss */
-div.x2-layout input.error, div.x2-layout textarea.error, div.x2-layout select.error {
-  background: #FEE !important;
-  border-color: #C00 !important;
-}
-/* line 439, ../../../compass/themes/x2engine/css/x2forms.scss */
-div.x2-layout .errorSummary {
+/* line 404, ../../../compass/themes/x2engine/css/x2forms.scss */
+.x2-layout .errorSummary {
   background: #FEE;
   border: 2px solid #C00;
   font-size: 0.9em;
   padding: 5px;
   margin-bottom: 1px;
 }
-/* line 446, ../../../compass/themes/x2engine/css/x2forms.scss */
-div.x2-layout .errorMessage {
-  color: red;
-  font-size: 0.9em;
-}
-/* line 451, ../../../compass/themes/x2engine/css/x2forms.scss */
-div.x2-layout .errorSummary p {
+/* line 411, ../../../compass/themes/x2engine/css/x2forms.scss */
+.x2-layout .errorSummary p {
   margin: 0;
   padding: 5px;
 }
-/* line 455, ../../../compass/themes/x2engine/css/x2forms.scss */
-div.x2-layout .errorSummary ul {
+/* line 415, ../../../compass/themes/x2engine/css/x2forms.scss */
+.x2-layout .errorSummary ul {
   margin: 0;
   padding: 0 0 0 20px;
 }
-/* line 460, ../../../compass/themes/x2engine/css/x2forms.scss */
-div.x2-layout.editMode {
-  -moz-box-shadow: 0px 2px 3px rgba(0, 0, 0, 0.15), 0px -1px 1px rgba(0, 0, 0, 0.1);
+/* line 421, ../../../compass/themes/x2engine/css/x2forms.scss */
+.x2-layout .errorMessage {
+  color: red;
+  font-size: 0.9em;
+}
+/* line 426, ../../../compass/themes/x2engine/css/x2forms.scss */
+.x2-layout .formSectionColumn {
+  display: inline-table;
+  border-collapse: collapse;
+  margin: 0;
+  padding: 0;
+  vertical-align: top;
+}
+/* line 435, ../../../compass/themes/x2engine/css/x2forms.scss */
+.x2-layout .formSectionColumn:last-child {
+  border-right: none !important;
+}
+/* line 441, ../../../compass/themes/x2engine/css/x2forms.scss */
+.x2-layout.form-view .formItem {
+  border-width: 0 0 0;
+}
+/* line 445, ../../../compass/themes/x2engine/css/x2forms.scss */
+.x2-layout input[type='checkbox'] {
+  height: 11px;
+}
+
+/* line 451, ../../../compass/themes/x2engine/css/x2forms.scss */
+.x2-layout.editMode {
   -webkit-box-shadow: 0px 2px 3px rgba(0, 0, 0, 0.15), 0px -1px 1px rgba(0, 0, 0, 0.1);
+  -moz-box-shadow: 0px 2px 3px rgba(0, 0, 0, 0.15), 0px -1px 1px rgba(0, 0, 0, 0.1);
+  -ms-box-shadow: 0px 2px 3px rgba(0, 0, 0, 0.15), 0px -1px 1px rgba(0, 0, 0, 0.1);
+  -o-box-shadow: 0px 2px 3px rgba(0, 0, 0, 0.15), 0px -1px 1px rgba(0, 0, 0, 0.1);
   box-shadow: 0px 2px 3px rgba(0, 0, 0, 0.15), 0px -1px 1px rgba(0, 0, 0, 0.1);
 }
-/* line 462, ../../../compass/themes/x2engine/css/x2forms.scss */
-div.x2-layout.editMode td {
+/* line 454, ../../../compass/themes/x2engine/css/x2forms.scss */
+.x2-layout.editMode td {
   border: 1px dashed #f00;
   border-width: 1px 1px 1px 0;
 }
-/* line 466, ../../../compass/themes/x2engine/css/x2forms.scss */
-div.x2-layout.editMode .formSectionHeader {
+/* line 459, ../../../compass/themes/x2engine/css/x2forms.scss */
+.x2-layout.editMode .formSectionHeader {
   width: 100%;
-  background: #fff;
   float: none;
 }
-/* line 470, ../../../compass/themes/x2engine/css/x2forms.scss */
-div.x2-layout.editMode .formSectionHeader a {
+/* line 463, ../../../compass/themes/x2engine/css/x2forms.scss */
+.x2-layout.editMode .formSectionHeader a {
   display: inline;
   float: right;
   width: auto;
   margin: 0 5px;
 }
-/* line 477, ../../../compass/themes/x2engine/css/x2forms.scss */
-div.x2-layout.editMode .showSection .formSectionHeader a.formSectionShow {
+/* line 470, ../../../compass/themes/x2engine/css/x2forms.scss */
+.x2-layout.editMode .formSectionHeader a.formSectionHide {
   display: none;
 }
-/* line 481, ../../../compass/themes/x2engine/css/x2forms.scss */
-div.x2-layout.editMode .formSectionHeader a.formSectionHide {
-  display: none;
-}
-/* line 484, ../../../compass/themes/x2engine/css/x2forms.scss */
-div.x2-layout.editMode .formSectionHeader .formSectionShow, div.x2-layout.editMode .formSectionHeader .formSectionHide {
+/* line 474, ../../../compass/themes/x2engine/css/x2forms.scss */
+.x2-layout.editMode .formSectionHeader .formSectionShow, .x2-layout.editMode .formSectionHeader .formSectionHide {
   float: left;
 }
-/* line 488, ../../../compass/themes/x2engine/css/x2forms.scss */
-div.x2-layout.editMode .showSection .sectionTitle {
+/* line 479, ../../../compass/themes/x2engine/css/x2forms.scss */
+.x2-layout.editMode .showSection .formSectionHeader a.formSectionShow {
+  display: none;
+}
+/* line 483, ../../../compass/themes/x2engine/css/x2forms.scss */
+.x2-layout.editMode .showSection .sectionTitle {
   -webkit-transform: none;
   -moz-transform: none;
   -o-transform: none;
   -ms-transform: none;
   transform: none;
 }
-
-/* div.form div.success input,div.form div.success textarea,div.form div.success select,div.form input.success,div.form textarea.success,div.form select.success {
-    background:#E6EFC2;
-    border-color:#C6D880;
-} */
-/* Editor CSS Begins Here */
-/* line 505, ../../../compass/themes/x2engine/css/x2forms.scss */
-.lt-ie9 div.x2-layout.editMode .showSection .sectionTitle {
-  filter: none;
-}
-
-/* line 510, ../../../compass/themes/x2engine/css/x2forms.scss */
-div.x2-layout.editMode .formTabOrder {
+/* line 491, ../../../compass/themes/x2engine/css/x2forms.scss */
+.x2-layout.editMode .formTabOrder {
   display: none;
   top: 0;
   right: 0;
@@ -707,80 +712,110 @@ div.x2-layout.editMode .formTabOrder {
   font-size: 11px;
   text-align: center;
   color: #fff;
-  -moz-border-radius: 0 1px 0 4px;
-  -o-border-radius: 0 1px 0 4px;
   -webkit-border-radius: 0 1px 0 4px;
+  -moz-border-radius: 0 1px 0 4px;
+  -ms-border-radius: 0 1px 0 4px;
+  -o-border-radius: 0 1px 0 4px;
   border-radius: 0 1px 0 4px;
 }
-/* line 528, ../../../compass/themes/x2engine/css/x2forms.scss */
-div.x2-layout.editMode .formItem.selected {
+/* line 506, ../../../compass/themes/x2engine/css/x2forms.scss */
+.x2-layout.editMode .formItem {
+  margin: 0;
+  padding: 0;
+}
+/* line 511, ../../../compass/themes/x2engine/css/x2forms.scss */
+.x2-layout.editMode .formItem.selected {
   background: #90bede;
 }
-/* line 530, ../../../compass/themes/x2engine/css/x2forms.scss */
-div.x2-layout.editMode .formItem.selected label, div.x2-layout.editMode .formItem.selected input, div.x2-layout.editMode .formItem.selected textarea {
+/* line 513, ../../../compass/themes/x2engine/css/x2forms.scss */
+.x2-layout.editMode .formItem.selected label, .x2-layout.editMode .formItem.selected input, .x2-layout.editMode .formItem.selected textarea {
   border-color: #64879f;
   background: #90bede;
 }
-/* line 535, ../../../compass/themes/x2engine/css/x2forms.scss */
-div.x2-layout.editMode .formItem.ui-sortable-helper {
+/* line 519, ../../../compass/themes/x2engine/css/x2forms.scss */
+.x2-layout.editMode .formItem.ui-sortable-helper {
   margin-right: 0;
   padding-right: 5px;
   border: 1px solid #ccc;
-  -moz-border-radius: 4px;
-  -o-border-radius: 4px;
   -webkit-border-radius: 4px;
+  -moz-border-radius: 4px;
+  -ms-border-radius: 4px;
+  -o-border-radius: 4px;
   border-radius: 4px;
 }
-/* line 545, ../../../compass/themes/x2engine/css/x2forms.scss */
-div.x2-layout.editMode .formItemPlaceholder {
+/* line 526, ../../../compass/themes/x2engine/css/x2forms.scss */
+.x2-layout.editMode .formItem.topLabel label {
+  padding: 2px;
+  margin: 0;
+  display: block;
+}
+/* line 532, ../../../compass/themes/x2engine/css/x2forms.scss */
+.x2-layout.editMode .formItem.inlineLabel label, .x2-layout.editMode .formItem.noLabel label {
+  display: none;
+}
+/* line 538, ../../../compass/themes/x2engine/css/x2forms.scss */
+.x2-layout.editMode .formItemPlaceholder {
   float: left;
   margin: 2px 3px;
   width: 3px;
   height: 24px;
   background: #66f0ff;
 }
-/* line 552, ../../../compass/themes/x2engine/css/x2forms.scss */
-div.x2-layout.editMode .formSectionPlaceholder {
+/* line 546, ../../../compass/themes/x2engine/css/x2forms.scss */
+.x2-layout.editMode .formSectionPlaceholder {
   width: auto;
   height: 3px;
   background: #66f0ff;
 }
-/* line 557, ../../../compass/themes/x2engine/css/x2forms.scss */
-div.x2-layout.editMode .formSortable {
+/* line 552, ../../../compass/themes/x2engine/css/x2forms.scss */
+.x2-layout.editMode .formSortable {
   min-height: 30px;
+  width: 100%;
   overflow: auto;
+  height: 100%;
 }
-/* line 561, ../../../compass/themes/x2engine/css/x2forms.scss */
-div.x2-layout.editMode .formItem {
-  margin: 0;
-  padding: 0;
-  margin-right: 0;
-  padding-right: 0px;
-}
-/* line 566, ../../../compass/themes/x2engine/css/x2forms.scss */
-div.x2-layout.editMode .formItem label.topLabel {
-  padding: 2px;
-  margin: 0;
-}
-/* line 571, ../../../compass/themes/x2engine/css/x2forms.scss */
-div.x2-layout.editMode label.leftLabel {
-  /* margin:0;
-  padding:3px 5px;
-  margin-bottom:0; */
-}
-/* line 576, ../../../compass/themes/x2engine/css/x2forms.scss */
-div.x2-layout.editMode .formInputBox {
+/* line 559, ../../../compass/themes/x2engine/css/x2forms.scss */
+.x2-layout.editMode .formInputBox {
   margin: 0;
   padding: 3px;
   margin-bottom: 0;
 }
+/* line 565, ../../../compass/themes/x2engine/css/x2forms.scss */
+.x2-layout.editMode .formSectionRow td {
+  box-sizing: border-box;
+}
 
-/* line 583, ../../../compass/themes/x2engine/css/x2forms.scss */
+/* line 570, ../../../compass/themes/x2engine/css/x2forms.scss */
+.lt-ie9 div.x2-layout .showSection .sectionTitle {
+  filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=3);
+}
+
+/* line 574, ../../../compass/themes/x2engine/css/x2forms.scss */
+input[type="text"].record-name-autocomplete {
+  -webkit-appearance: none;
+  height: 22px;
+  box-sizing: border-box;
+  font-size: 12px;
+  -webkit-border-radius: 3px;
+  -moz-border-radius: 3px;
+  -ms-border-radius: 3px;
+  -o-border-radius: 3px;
+  border-radius: 3px;
+}
+
+/* Editor CSS Begins Here */
+/* line 586, ../../../compass/themes/x2engine/css/x2forms.scss */
+.lt-ie9 div.x2-layout.editMode .showSection .sectionTitle {
+  filter: none;
+}
+
+/* line 591, ../../../compass/themes/x2engine/css/x2forms.scss */
 #formEditorControls, #fieldListTitle, .fieldListTitle {
   font-size: 12px;
   display: block;
   padding: 5px 5px;
   background: #eee;
+  /* @theme background: highlight1 */
   -webkit-border-radius: 4px 4px 0 0;
   -moz-border-radius: 4px 4px 0 0;
   -ms-border-radius: 4px 4px 0 0;
@@ -788,7 +823,7 @@ div.x2-layout.editMode .formInputBox {
   border-radius: 4px 4px 0 0;
 }
 
-/* line 592, ../../../compass/themes/x2engine/css/x2forms.scss */
+/* line 602, ../../../compass/themes/x2engine/css/x2forms.scss */
 #formEditorControls {
   /* display:none; */
   position: relative;
@@ -797,22 +832,22 @@ div.x2-layout.editMode .formInputBox {
   margin-bottom: -1px;
 }
 
-/* line 601, ../../../compass/themes/x2engine/css/x2forms.scss */
-div.x2-layout.editMode #formEditorControls {
+/* line 611, ../../../compass/themes/x2engine/css/x2forms.scss */
+.x2-layout.editMode #formEditorControls {
   margin-bottom: 0;
 }
 
-/* line 606, ../../../compass/themes/x2engine/css/x2forms.scss */
+/* line 616, ../../../compass/themes/x2engine/css/x2forms.scss */
 #formEditorControls a.x2-button {
   margin-bottom: 0;
 }
-/* line 609, ../../../compass/themes/x2engine/css/x2forms.scss */
+/* line 619, ../../../compass/themes/x2engine/css/x2forms.scss */
 #formEditorControls .formItemOptions {
   float: right;
   margin: 0 5px 0 0;
   display: none;
 }
-/* line 613, ../../../compass/themes/x2engine/css/x2forms.scss */
+/* line 623, ../../../compass/themes/x2engine/css/x2forms.scss */
 #formEditorControls .formItemOptions input {
   width: 13px;
   height: 13px;
@@ -823,14 +858,14 @@ div.x2-layout.editMode #formEditorControls {
   top: -3px;
   *overflow: hidden;
 }
-/* line 623, ../../../compass/themes/x2engine/css/x2forms.scss */
+/* line 633, ../../../compass/themes/x2engine/css/x2forms.scss */
 #formEditorControls .formItemOptions select {
   font-size: 11px;
   margin: 0;
   padding: 0;
 }
 
-/* line 631, ../../../compass/themes/x2engine/css/x2forms.scss */
+/* line 641, ../../../compass/themes/x2engine/css/x2forms.scss */
 #fieldListBox {
   margin: 0 0 10px 0;
   float: right;
@@ -843,13 +878,13 @@ div.x2-layout.editMode #formEditorControls {
   border-radius: 4px;
 }
 
-/* line 643, ../../../compass/themes/x2engine/css/x2forms.scss */
+/* line 653, ../../../compass/themes/x2engine/css/x2forms.scss */
 #editorFieldList {
   height: 400px;
   padding: 5px;
   overflow-y: scroll;
 }
-/* line 647, ../../../compass/themes/x2engine/css/x2forms.scss */
+/* line 657, ../../../compass/themes/x2engine/css/x2forms.scss */
 #editorFieldList .formItem {
   float: none;
   margin: 0 2px 2px 0;
@@ -861,70 +896,70 @@ div.x2-layout.editMode #formEditorControls {
   border-radius: 4px;
   background: #fafafa;
 }
-/* line 658, ../../../compass/themes/x2engine/css/x2forms.scss */
+/* line 668, ../../../compass/themes/x2engine/css/x2forms.scss */
 #editorFieldList .formItemPlaceholder, #editorFieldList .formInputBox {
   display: none;
 }
-/* line 661, ../../../compass/themes/x2engine/css/x2forms.scss */
+/* line 671, ../../../compass/themes/x2engine/css/x2forms.scss */
 #editorFieldList label {
   color: #000;
   padding: 1px 5px 1px 20px;
   font-size: 12px;
   font-weight: normal;
 }
-/* line 666, ../../../compass/themes/x2engine/css/x2forms.scss */
+/* line 676, ../../../compass/themes/x2engine/css/x2forms.scss */
 #editorFieldList label.emailIcon {
   background: url(../images/formEditor/email_icon.gif) 2px 0px no-repeat transparent;
 }
 
 /* Individual form field box  */
-/* line 674, ../../../compass/themes/x2engine/css/x2forms.scss */
+/* line 684, ../../../compass/themes/x2engine/css/x2forms.scss */
 ul.fieldlist li label.emailIcon {
   background: url(../images/formEditor/email_icon.gif) 2px 0px no-repeat transparent;
 }
 
-/* line 678, ../../../compass/themes/x2engine/css/x2forms.scss */
+/* line 688, ../../../compass/themes/x2engine/css/x2forms.scss */
 #editorFieldList label.phoneIcon, ul.fieldlist li label.phoneIcon {
   background: url(../images/formEditor/phone_icon.gif) 2px 0px no-repeat transparent;
 }
 
-/* line 682, ../../../compass/themes/x2engine/css/x2forms.scss */
+/* line 692, ../../../compass/themes/x2engine/css/x2forms.scss */
 #editorFieldList label.booleanIcon, ul.fieldlist li label.booleanIcon {
   background: url(../images/formEditor/boolean_icon.gif) 2px 0px no-repeat transparent;
 }
 
-/* line 686, ../../../compass/themes/x2engine/css/x2forms.scss */
+/* line 696, ../../../compass/themes/x2engine/css/x2forms.scss */
 #editorFieldList label.dropdownIcon, ul.fieldlist li label.dropdownIcon {
   background: url(../images/formEditor/dropdown_icon.gif) 2px 0px no-repeat transparent;
 }
 
-/* line 690, ../../../compass/themes/x2engine/css/x2forms.scss */
+/* line 700, ../../../compass/themes/x2engine/css/x2forms.scss */
 #editorFieldList label.dateIcon, ul.fieldlist li label.dateIcon {
   background: url(../images/formEditor/date_icon.gif) 2px 0px no-repeat transparent;
 }
 
-/* line 694, ../../../compass/themes/x2engine/css/x2forms.scss */
+/* line 704, ../../../compass/themes/x2engine/css/x2forms.scss */
 #editorFieldList label.textIcon, ul.fieldlist li label.textIcon {
   background: url(../images/formEditor/text_icon.gif) 2px 0px no-repeat transparent;
 }
 
-/* line 698, ../../../compass/themes/x2engine/css/x2forms.scss */
+/* line 708, ../../../compass/themes/x2engine/css/x2forms.scss */
 #editorFieldList label.varcharIcon, ul.fieldlist li label.varcharIcon {
   background: url(../images/formEditor/varchar_icon.gif) 2px 0px no-repeat transparent;
 }
 
-/* line 702, ../../../compass/themes/x2engine/css/x2forms.scss */
+/* line 712, ../../../compass/themes/x2engine/css/x2forms.scss */
 #editorFieldList label.percentageIcon, ul.fieldlist li label.percentageIcon {
   background: url(../images/formEditor/percentage_icon.gif) 2px 0px no-repeat transparent;
 }
 
 /* Tab Order Mode */
-/* line 708, ../../../compass/themes/x2engine/css/x2forms.scss */
+/* line 718, ../../../compass/themes/x2engine/css/x2forms.scss */
 #formEditor.tabOrderMode .formTabOrder {
   display: block;
 }
 
-/* line 712, ../../../compass/themes/x2engine/css/x2forms.scss */
+/* line 722, ../../../compass/themes/x2engine/css/x2forms.scss */
 .quick-create-button {
   font-size: 24px;
   font-weight: bold;
@@ -933,13 +968,13 @@ ul.fieldlist li label.emailIcon {
   display: inline-block;
   cursor: pointer;
 }
-/* line 713, ../../../compass/themes/x2engine/css/x2forms.scss */
+/* line 723, ../../../compass/themes/x2engine/css/x2forms.scss */
 .quick-create-button:hover {
   color: #699c1c;
 }
 
 /* Custom CSS for Jquery UI Autocomplete */
-/* line 726, ../../../compass/themes/x2engine/css/x2forms.scss */
+/* line 736, ../../../compass/themes/x2engine/css/x2forms.scss */
 .ui-autocomplete {
   max-height: 200px;
   overflow-y: auto;
@@ -947,7 +982,7 @@ ul.fieldlist li label.emailIcon {
 }
 
 /* Headers for sections within admin pages when the header is not a form input label: */
-/* line 734, ../../../compass/themes/x2engine/css/x2forms.scss */
+/* line 744, ../../../compass/themes/x2engine/css/x2forms.scss */
 span.mock-x2-form-label {
   display: block;
   font-size: 11px;
@@ -955,20 +990,20 @@ span.mock-x2-form-label {
 }
 
 /* Cron-related form items: */
-/* line 743, ../../../compass/themes/x2engine/css/x2forms.scss */
+/* line 753, ../../../compass/themes/x2engine/css/x2forms.scss */
 div.cron-job label.cron-checkitem {
   display: inline-block;
 }
-/* line 745, ../../../compass/themes/x2engine/css/x2forms.scss */
+/* line 755, ../../../compass/themes/x2engine/css/x2forms.scss */
 div.cron-job label.cron-checkitem.big {
   font-size: 1.3em;
 }
-/* line 749, ../../../compass/themes/x2engine/css/x2forms.scss */
+/* line 759, ../../../compass/themes/x2engine/css/x2forms.scss */
 div.cron-job input.cron-enabled {
   display: inline-block;
 }
 
-/* line 754, ../../../compass/themes/x2engine/css/x2forms.scss */
+/* line 764, ../../../compass/themes/x2engine/css/x2forms.scss */
 .x2-forms-error-msg {
   color: red;
 }
@@ -979,129 +1014,140 @@ div.cron-job input.cron-enabled {
 *   -once for browsers which don't support media queries
 *   -two more times for the cases where the right widgets are shown/hidden
 ***********************************************************************/
-/* line 765, ../../../compass/themes/x2engine/css/x2forms.scss */
+/* line 775, ../../../compass/themes/x2engine/css/x2forms.scss */
 .history.half-width {
   width: 35%;
   margin-top: 5px;
 }
 
-/* line 770, ../../../compass/themes/x2engine/css/x2forms.scss */
+/* line 780, ../../../compass/themes/x2engine/css/x2forms.scss */
 div.half-width {
   float: left;
 }
 
-/* line 775, ../../../compass/themes/x2engine/css/x2forms.scss */
+/* line 785, ../../../compass/themes/x2engine/css/x2forms.scss */
 .history.half-width {
   padding: 0;
 }
-/* line 778, ../../../compass/themes/x2engine/css/x2forms.scss */
+/* line 788, ../../../compass/themes/x2engine/css/x2forms.scss */
 .history.half-width > div, .history.half-width > form {
   margin: 0 0px 5px 0;
 }
 
-/* line 784, ../../../compass/themes/x2engine/css/x2forms.scss */
+/* line 794, ../../../compass/themes/x2engine/css/x2forms.scss */
 #main-column.half-width > div.page-title-fixed-outer {
   padding-right: 10px;
 }
 
 /* .history.half-width > div, .history.half-width > form {padding-right:10px;margin-right:-10px;} */
-/* line 790, ../../../compass/themes/x2engine/css/x2forms.scss */
+/* line 800, ../../../compass/themes/x2engine/css/x2forms.scss */
 div.half-width > div.page-title, #main-column > div.page-title {
   margin-left: 0;
 }
 
-/* line 794, ../../../compass/themes/x2engine/css/x2forms.scss */
+/* line 804, ../../../compass/themes/x2engine/css/x2forms.scss */
 div.half-width > div.form {
   background: #fff;
 }
 
-/* line 799, ../../../compass/themes/x2engine/css/x2forms.scss */
+/* line 809, ../../../compass/themes/x2engine/css/x2forms.scss */
 #main-column.half-width > div, #main-column.half-width > form {
   margin: 0 5px 5px 0px;
 }
 
 @media (min-width: 1403px) {
-  /* line 805, ../../../compass/themes/x2engine/css/x2forms.scss */
+  /* line 815, ../../../compass/themes/x2engine/css/x2forms.scss */
   .history {
     margin-top: 5px;
   }
 
-  /* line 809, ../../../compass/themes/x2engine/css/x2forms.scss */
+  /* line 819, ../../../compass/themes/x2engine/css/x2forms.scss */
   #main-column {
     width: 65%;
     float: left;
   }
 
-  /* line 813, ../../../compass/themes/x2engine/css/x2forms.scss */
+  /* line 823, ../../../compass/themes/x2engine/css/x2forms.scss */
   .history {
     padding: 0;
   }
-  /* line 816, ../../../compass/themes/x2engine/css/x2forms.scss */
+  /* line 826, ../../../compass/themes/x2engine/css/x2forms.scss */
   .history > div, .history > form {
     margin: 0 0px 5px 0;
   }
 
-  /* line 822, ../../../compass/themes/x2engine/css/x2forms.scss */
+  /* line 832, ../../../compass/themes/x2engine/css/x2forms.scss */
   #main-column > div {
     margin: 0 5px 5px 0px;
   }
-  /* line 823, ../../../compass/themes/x2engine/css/x2forms.scss */
+  /* line 833, ../../../compass/themes/x2engine/css/x2forms.scss */
   #main-column > div.page-title-fixed-outer {
     padding-right: 10px;
   }
-  /* line 826, ../../../compass/themes/x2engine/css/x2forms.scss */
+  /* line 836, ../../../compass/themes/x2engine/css/x2forms.scss */
   #main-column > div.page-title {
     margin-left: 0;
   }
-  /* line 829, ../../../compass/themes/x2engine/css/x2forms.scss */
+  /* line 839, ../../../compass/themes/x2engine/css/x2forms.scss */
   #main-column > div.form {
     background: #fff;
   }
-  /* line 834, ../../../compass/themes/x2engine/css/x2forms.scss */
+  /* line 844, ../../../compass/themes/x2engine/css/x2forms.scss */
   #main-column > form {
     margin: 0 5px 5px 0px;
   }
 }
 @media (min-width: 1122px) {
-  /* line 842, ../../../compass/themes/x2engine/css/x2forms.scss */
+  /* line 852, ../../../compass/themes/x2engine/css/x2forms.scss */
   .no-widgets .history {
     margin-top: 5px;
   }
-  /* line 846, ../../../compass/themes/x2engine/css/x2forms.scss */
+  /* line 856, ../../../compass/themes/x2engine/css/x2forms.scss */
   .no-widgets #main-column {
     width: 65%;
     float: left;
   }
-  /* line 850, ../../../compass/themes/x2engine/css/x2forms.scss */
+  /* line 860, ../../../compass/themes/x2engine/css/x2forms.scss */
   .no-widgets .history {
     padding: 0;
   }
-  /* line 853, ../../../compass/themes/x2engine/css/x2forms.scss */
+  /* line 863, ../../../compass/themes/x2engine/css/x2forms.scss */
   .no-widgets .history > div, .no-widgets .history > form {
     margin: 0 0px 5px 0;
   }
-  /* line 859, ../../../compass/themes/x2engine/css/x2forms.scss */
+  /* line 869, ../../../compass/themes/x2engine/css/x2forms.scss */
   .no-widgets #main-column > div {
     margin: 0 5px 5px 0px;
   }
-  /* line 860, ../../../compass/themes/x2engine/css/x2forms.scss */
+  /* line 870, ../../../compass/themes/x2engine/css/x2forms.scss */
   .no-widgets #main-column > div.page-title-fixed-outer {
     padding-right: 10px;
   }
-  /* line 863, ../../../compass/themes/x2engine/css/x2forms.scss */
+  /* line 873, ../../../compass/themes/x2engine/css/x2forms.scss */
   .no-widgets #main-column > div.page-title {
     margin-left: 0;
   }
-  /* line 866, ../../../compass/themes/x2engine/css/x2forms.scss */
+  /* line 876, ../../../compass/themes/x2engine/css/x2forms.scss */
   .no-widgets #main-column > div.form {
     background: #fff;
   }
-  /* line 871, ../../../compass/themes/x2engine/css/x2forms.scss */
+  /* line 881, ../../../compass/themes/x2engine/css/x2forms.scss */
   .no-widgets #main-column > form {
     margin: 0 5px 5px 0px;
   }
 }
-/* line 878, ../../../compass/themes/x2engine/css/x2forms.scss */
+/* line 888, ../../../compass/themes/x2engine/css/x2forms.scss */
 #upload_iframe {
   position: absolute;
+}
+
+/* line 894, ../../../compass/themes/x2engine/css/x2forms.scss */
+div.x2-error, label.x2-error, span.x2-error {
+  color: #C00;
+}
+
+/* line 900, ../../../compass/themes/x2engine/css/x2forms.scss */
+input.x2-error, textarea.x2-error, select.x2-error {
+  background: #FEE !important;
+  border-color: #C00 !important;
 }

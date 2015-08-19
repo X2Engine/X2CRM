@@ -203,6 +203,28 @@ class ArrayUtil {
     }
 
     /**
+     * Case-insensitive, no side-effects version of asort
+     * @param array $array the array to sort
+     * @param bool $sideEffects If true, this function sorts the array reference. Otherwise, 
+     *  the array is copied before sorting
+     * @return the sorted array
+     */
+    public static function asorti(array &$array, $sideEffects=false) {
+        if ($sideEffects) {
+            uasort ($array, function ($a, $b) {
+                return strcasecmp ($a, $b);
+            });
+            return $array;
+        } else {
+            $newArray = $array;
+            uasort ($newArray, function ($a, $b) {
+                return strcasecmp ($a, $b);
+            });
+            return $newArray;
+        }
+    }
+
+    /**
      * Side effect free version of array_pop
      */
     public static function pop (array $array) {
@@ -243,6 +265,12 @@ class ArrayUtil {
 
     public static function setAndTrue ($array, $val) {
         return isset ($array[$val]) && $array[$val];
+    }
+
+    public static function setEquals ($array1, $array2) {
+        $array1 = self::sort ($array1);
+        $array2 = self::sort ($array2);
+        return $array1 === $array2;
     }
 
 }

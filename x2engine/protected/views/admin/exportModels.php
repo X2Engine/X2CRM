@@ -46,12 +46,25 @@ Yii::app()->clientScript->registerCssFile (Yii::app()->theme->baseUrl.'/css/impo
     <?php echo isset($listName)?Yii::t('admin','You are currently exporting: ')."<b>$listName</b>":''; ?>
     </div>
     <br>
-    <?php
-    if (is_null($listId)) {
-        echo CHtml::label(Yii::t('admin', 'Include Hidden Records?'), 'includeHidden');
-        echo CHtml::checkbox('includeHidden', false);
-    } ?>
+    <div class="exportOption">
+        <?php 
+        if (Yii::app()->params->isAdmin) {
+            echo CHtml::label(Yii::t('admin', 'Include Hidden Records?'), 'includeHidden');
+            echo CHtml::checkbox('includeHidden', false); 
+            echo X2Html::hint2 (Yii::t('admin', 'Include records that were hidden by the duplicate checker.'));
+        }
+        ?>
+    </div>
+
+    <div class="exportOption">
+        <?php 
+        echo CHtml::label(Yii::t('admin', 'Include Tags?'), 'includeTags');
+        echo CHtml::checkbox('includeTags', false); 
+        ?>
+    </div>
+
     <?php echo CHtml::button(Yii::t('app','Export'),array('class'=>'x2-button','id'=>'export-button')); ?>
+
     <div id="status-text">
 
     </div>
@@ -62,16 +75,33 @@ Yii::app()->clientScript->registerCssFile (Yii::app()->theme->baseUrl.'/css/impo
     </div>
     <script>
 $('#export-button').on('click',function(){
-    exportModelData(0);
+    prepareModelExport();
 });
+function prepareModelExport(){
+    var includeTags = $("#includeTags").is (':checked');
+    $.ajax({
+        url:'prepareModelExport?model=<?php echo $model; ?>&includeTags='+includeTags,
+        success:function(data) {
+            exportModelData(0);
+        },
+        error: function(data) {
+            var resp = JSON.parse(data['responseText']);
+            $('#status-text').html (resp['message'])
+                .addClass ('flash-error')
+                .css ('color', 'red')
+                .show();
+        }
+    });
+}
 function exportModelData(page){
-    var includeHidden = $("#includeHidden").is(':checked');
+    var includeHidden = $("#includeHidden").is (':checked');
+    var includeTags = $("#includeTags").is (':checked');
     if($('#export-status').length==0){
        $('#status-text').append("<div id='export-status'><?php echo Yii::t('admin','Exporting <b>{model}</b> data...', array('{model}'=>$model)); ?><br></div>");
     }
     $('#export-button').hide();
     $.ajax({
-        url:'exportModelRecords?page='+page+'&model=<?php echo $model; ?>&includeHidden=' + includeHidden,
+        url:'exportModelRecords?page='+page+'&model=<?php echo $model; ?>&includeHidden='+includeHidden+'&includeTags='+includeTags,
         success:function(data){
             if(data>0){
                 $('#export-status').html(((data)*100)+" <?php echo Yii::t('admin','records from <b>{model}</b> successfully exported.', array('{model}'=>$model));?><br>");

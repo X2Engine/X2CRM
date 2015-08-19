@@ -45,7 +45,7 @@ Yii::import('application.components.sortableWidget.SortableWidget');
  * This is the model class for table "x2_profile".
  * @package application.models
  */
-class Profile extends CActiveRecord {
+class Profile extends X2ActiveRecord {
 
     /**
      * username of guest profile record 
@@ -106,7 +106,8 @@ class Profile extends CActiveRecord {
     public function behaviors(){
         // Skip loading theme settins if this request isn't associated with a session, eg API
         $theme = (Yii::app()->params->noSession ? array() :
-            ThemeGenerator::getProfileKeys());
+            ThemeGenerator::getProfileKeys(true, true, false));
+
         return array(
             'X2LinkableBehavior' => array(
                 'class' => 'X2LinkableBehavior',
@@ -127,7 +128,8 @@ class Profile extends CActiveRecord {
                         'pageHeaderTextColor', 'activityFeedWidgetBgColor',
                         'activityFeedWidgetTextColor', 'backgroundImg', 'backgroundTiling',
                         'pageOpacity', 'themeName', 'private', 'owner', 'loginSound',
-                        'notificationSound', 'gridViewRowColorOdd', 'gridViewRowColorEven')),
+                        'notificationSound', 'gridViewRowColorOdd', 'gridViewRowColorEven',
+                        'enableLoginBgImage')),
                 ),
             ),
             'JSONFieldsDefaultValuesBehavior' => array(
@@ -142,7 +144,7 @@ class Profile extends CActiveRecord {
                         'perStageWorkflowView'=>true, // selected workflow view interface
                         'columnWidth'=>50, // selected workflow view interface
                         'recordViewColumnWidth'=>65, 
-                        'enableTransactionalView'=>true, 
+                        'enableTransactionalView'=>false, 
                         'enableJournalView'=>true, 
                         'viewModeActionSubmenuOpen'=>true, 
                     ),
@@ -160,35 +162,35 @@ class Profile extends CActiveRecord {
      */
     protected function afterSave () {
         parent::afterSave ();
-        if ($this->_profileWidgetLayout) $this->_profileWidgetLayout->save ();
-        if ($this->_recordViewWidgetLayout) $this->_recordViewWidgetLayout->save ();
-         
+        foreach ($this->_widgetLayouts as $name => $settings) {
+            if ($settings) $settings->save ();
+        }
     }
 
-    private $_profileWidgetLayout; 
     public function getProfileWidgetLayout () {
-        if (!isset ($this->_profileWidgetLayout)) {
-            $this->_profileWidgetLayout = $this->getWidgetLayout ('ProfileWidgetLayout');
-        }
-        return $this->_profileWidgetLayout->settings->attributes;
+        return $this->getWidgetLayout ('ProfileWidgetLayout')->settings->attributes;
     }
 
     public function setProfileWidgetLayout ($layout) {
-        $this->_profileWidgetLayout->settings->attributes = $layout;
+        $this->getWidgetLayout ('ProfileWidgetLayout')->settings->attributes = $layout;
+    }
+
+    public function getTopicsWidgetLayout () {
+        return $this->getWidgetLayout ('TopicsWidgetLayout')->settings->attributes;
+    }
+
+    public function setTopicsWidgetLayout ($layout) {
+        $this->getWidgetLayout ('TopicsWidgetLayout')->settings->attributes = $layout;
     }
 
      
 
-    private $_recordViewWidgetLayout; 
     public function getRecordViewWidgetLayout () {
-        if (!isset ($this->_recordViewWidgetLayout)) {
-            $this->_recordViewWidgetLayout = $this->getWidgetLayout ('RecordViewWidgetLayout');
-        }
-        return $this->_recordViewWidgetLayout->settings->attributes;
+        return $this->getWidgetLayout ('RecordViewWidgetLayout')->settings->attributes;
     }
 
     public function setRecordViewWidgetLayout ($layout) {
-        $this->_recordViewWidgetLayout->settings->attributes = $layout;
+        $this->getWidgetLayout ('RecordViewWidgetLayout')->settings->attributes = $layout;
     }
 
 
@@ -201,7 +203,7 @@ class Profile extends CActiveRecord {
         return array(
             array('fullName, username, status', 'required'),
             array('status, lastUpdated, disableNotifPopup, allowPost, disableAutomaticRecordTagging, disablePhoneLinks, resultsPerPage', 'numerical', 'integerOnly' => true),
-            array('enableFullWidth,showSocialMedia,showDetailView,disableTimeInTitle', 'boolean'), //,showWorkflow
+            array('enableFullWidth,showSocialMedia,showDetailView,disableTimeInTitle,showTours', 'boolean'), //,showWorkflow
             array('emailUseSignature', 'length', 'max' => 10),
             array('startPage', 'length', 'max' => 30),
             array('googleId', 'unique'),
@@ -557,7 +559,6 @@ class Profile extends CActiveRecord {
 
         $widgetNames = ($model->widgetOrder == '') ? array() : explode(":", $model->widgetOrder);
         $visibility = ($model->widgets == '') ? array() : explode(":", $model->widgets);
-
         $widgetList = array();
         $updateRecord = false;
 
@@ -569,7 +570,8 @@ class Profile extends CActiveRecord {
                 $updateRecord = true;
             }else{
                 $widgetList[$widgetNames[$i]] = array(
-                    'id' => 'widget_'.$widgetNames[$i], 'visibility' => $visibility[$i],
+                    'id' => 'widget_'.$widgetNames[$i], 
+                    'visibility' => isset ($visibility[$i]) ? $visibility[$i] : 1,
                     'params' => array());
             }
         }
@@ -974,7 +976,7 @@ class Profile extends CActiveRecord {
                 ),
                 'ActionTimer' => array(
                     'title' => 'Action Timer',
-                    'minimize' => false,
+                    'minimize' => true,
                 ),
                 'UserCalendars' => array(
                     'title' => 'User Calendars',
@@ -1002,10 +1004,6 @@ class Profile extends CActiveRecord {
                     'title' => 'Small Calendar',
                     'minimize' => false,
                 ),
-                'ActionMenu' => array(
-                    'title' => 'My Actions',
-                    'minimize' => false,
-                ),
                 'ChatBox' => array(
                     'title' => 'Activity Feed',
                     'minimize' => false,
@@ -1026,20 +1024,26 @@ class Profile extends CActiveRecord {
                     'title' => 'Calendar',
                     'minimize' => false,
                 ),
-                'MessageBox' => array(
-                    'title' => 'Message Board',
-                    'minimize' => false,
-                ),
                 'QuickContact' => array(
                     'title' => 'Quick Contact',
                     'minimize' => false,
                 ),
-                'NoteBox' => array(
-                    'title' => 'Note Pad',
-                    'minimize' => false,
-                ),
                 'MediaBox' => array(
                     'title' => 'Files',
+                    'minimize' => false,
+                ),
+            ),
+            'hiddenRight' => array(
+                'ActionMenu' => array(
+                    'title' => 'My Actions',
+                    'minimize' => false,
+                ),
+                'MessageBox' => array(
+                    'title' => 'Message Board',
+                    'minimize' => false,
+                ),
+                'NoteBox' => array(
+                    'title' => 'Note Pad',
                     'minimize' => false,
                 ),
                 'DocViewer' => array(
@@ -1050,12 +1054,7 @@ class Profile extends CActiveRecord {
                     'title' => 'Top Sites',
                     'minimize' => false,
                 ),
-                'HelpfulTips' => array(
-                    'title' => 'Helpful Tips',
-                    'minimize' => false,
-                ),
             ),
-            'hiddenRight' => array(),
         );
         if(Yii::app()->contEd('pro')){
             if(file_exists('protected/config/proWidgets.php')){
@@ -1087,16 +1086,28 @@ class Profile extends CActiveRecord {
         if ($position === 'right') {
             $initLayoutWidgets = array_merge($initLayout[$position], $initLayout['hiddenRight']);
             $layoutWidgets = array_merge($layout[$position], $layout['hiddenRight']);
+            $initLayoutWidgetsHidden = $initLayout['hiddenRight'];
+            $hiddenPostion = 'hiddenRight';
         } else {
             $initLayoutWidgets = $initLayout[$position];
+            $initLayoutWidgetsHidden = array ();
+            $hiddenPostion = $position;
             $layoutWidgets = $layout[$position];
         }
 
         // add new widgets
         $arrayDiff =
                 array_diff(array_keys($initLayoutWidgets), array_keys($layoutWidgets));
+
         foreach($arrayDiff as $elem){
-            $layout[$position] = array($elem => $initLayout[$position][$elem]) + $layout[$position]; // unshift key-value pair
+            if (isset ($initLayoutWidgetsHidden[$elem])) {
+                $insertAt = $hiddenPostion;
+            } else {
+                $insertAt = $position;
+            }
+            // unshift key-value pair
+            $layout[$insertAt] = array(
+                $elem => $initLayoutWidgets[$elem]) + $layout[$insertAt];
             $changed = true;
         }
 
@@ -1160,6 +1171,7 @@ class Profile extends CActiveRecord {
         }else{
             $layout = json_decode($layout, true); // json to associative array
             if (!is_array ($layout)) $layout = array ();
+
             $this->addRemoveLayoutElements('left', $layout, $initLayout);
             $this->addRemoveLayoutElements('right', $layout, $initLayout);
         }
@@ -1172,18 +1184,23 @@ class Profile extends CActiveRecord {
 
         $hiddenProfileWidgetsMenu = '';
         $hiddenProfile = false;
+        $hiddenWidgets = array ();
         foreach($profileWidgetLayout as $name => $widgetSettings){
             $hidden = $widgetSettings['hidden'];
             $softDeleted = $widgetSettings['softDeleted'];
             if ($hidden && !$softDeleted) {
-                $hiddenProfileWidgetsMenu .= 
-                    '<li>
-                        <span class="x2-hidden-widgets-menu-item profile-widget" id="'.$name.'">'.
-                            CHtml::encode ($widgetSettings['label']).
-                        '</span>
-                    </li>';
+                $hiddenWidgets[$name] = Yii::t('app',$widgetSettings['label']);
                 $hiddenProfile = true;
             }
+        }
+        $hiddenWidgets = ArrayUtil::asorti ($hiddenWidgets);
+        foreach ($hiddenWidgets as $name => $label) {
+            $hiddenProfileWidgetsMenu .= 
+                '<li>
+                    <span class="x2-hidden-widgets-menu-item profile-widget" id="'.$name.'">'.
+                        CHtml::encode ($label).
+                    '</span>
+                </li>';
         }
         $menu = '<div id="x2-hidden-profile-widgets-menu-container" style="display:none;">';
         $menu .= '<ul id="x2-hidden-profile-widgets-menu" class="x2-hidden-widgets-menu-section">';
@@ -1202,14 +1219,17 @@ class Profile extends CActiveRecord {
      */
     public function getWidgetMenu(){
         $layout = $this->getLayout();
-        $recordViewWidgetLayout = $this->recordViewWidgetLayout;
+        $widgetType = Yii::app()->controller instanceof TopicsController ?
+            'topics' : 'recordView';
+        $layoutName = $widgetType.'WidgetLayout';
+        $recordViewWidgetLayout = $this->$layoutName;
 
         $hiddenRecordViewWidgetMenu = '';
         foreach ($recordViewWidgetLayout as $widgetClass => $settings) {
             if ($settings['hidden']) {
                 $hiddenRecordViewWidgetMenu .=
                     '<li>
-                        <span class="x2-hidden-widgets-menu-item recordView-widget" 
+                        <span class="x2-hidden-widgets-menu-item '.$widgetType.'-widget" 
                           id="'.$widgetClass.'">'.
                             CHtml::encode ($settings['label']).
                         '</span>
@@ -1268,9 +1288,7 @@ class Profile extends CActiveRecord {
 
             $imgSize[0] = round($imgSize[0] * $scaleFactor);
             $imgSize[1] = round($imgSize[1] * $scaleFactor);
-            echo '<img id="avatar-image" width="'.$imgSize[0].'" height="'.$imgSize[1].
-                '" class="avatar-upload" '.
-                'src="'.Yii::app()->request->baseUrl.'/'.$model->avatar.'" />';
+            echo Profile::renderAvatarImage($id, $imgSize[0], $imgSize[1]);
         } else {
             echo X2Html::x2icon ('profile-large', array(
                 'class' => 'avatar-image default-avatar',
@@ -1292,14 +1310,21 @@ class Profile extends CActiveRecord {
             array('id' => $id, 'editable' => $id == $userId)
         );
     }
-
+    
+    public static function renderAvatarImage($id, $width, $height){
+        $model = Profile::model ()->findByPk ($id);
+        $file = Yii::app()->file->set($model->avatar);
+        if ($file->exists) {
+            return '<img id="avatar-image" class="avatar-upload" width="'.$width.'" height="'.$height.'"'
+            . 'src="data:image/x-icon;base64,'.base64_encode($file->getContents()).'">';
+        }
+    }
 
     public function getLastLogin () {
         return $this->user['lastLogin'];
     }
 
      
-
 
     /**
      * Return theme after checking for an enforced default 
@@ -1308,6 +1333,14 @@ class Profile extends CActiveRecord {
         $admin = Yii::app()->settings;
          
         return $this->theme;
+    }
+    
+    public function setLoginSound($soundId){
+        $this->theme = array_merge($this->theme, array('loginSound'=>$soundId));
+    }
+    
+    public function setNotificationSound($soundId){
+        $this->theme = array_merge($this->theme, array('notificationSound'=>$soundId));
     }
 
     /**
@@ -1350,21 +1383,30 @@ class Profile extends CActiveRecord {
      * @param string $name name of settings class
      * @return Settings 
      */
-    private function getWidgetLayout ($name) {
-        $attributes = array ( 
-            'recordType' => 'Profile',
-            'recordId' => $this->id,
-            'isDefault' => 1,
-            'embeddedModelName' => $name,
-        );
-        $model = Settings::model ()->findByAttributes ($attributes);
-        if (!$model) {
-            $model = new Settings;
-            $model->setAttributes ($attributes, false);
-            $model->unpackAll ();
-            $model->save ();
+    private $_widgetLayouts = array (
+        'ProfileWidgetLayout' => null,
+         
+        'RecordViewWidgetLayout' => null,
+        'TopicsWidgetLayout' => null,
+    );
+    public function getWidgetLayout ($name) {
+        if (!$this->_widgetLayouts[$name]) {
+            $attributes = array ( 
+                'recordType' => 'Profile',
+                'recordId' => $this->id,
+                'isDefault' => 1,
+                'embeddedModelName' => $name,
+            );
+            $model = Settings::model ()->findByAttributes ($attributes);
+            if (!$model) {
+                $model = new Settings;
+                $model->setAttributes ($attributes, false);
+                $model->unpackAll ();
+                $model->save ();
+            }
+            $this->_widgetLayouts[$name] = $model;
         }
-        return $model;
+        return $this->_widgetLayouts[$name];
     }
 
 }

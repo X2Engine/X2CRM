@@ -137,7 +137,7 @@ class X2ClientScript extends NLSClientScript {
      *
      * Useful for loading UI elements via AJAX that require registering scripts.
      */
-    public function echoScripts(){
+    public function echoScripts($captureScripts = false){
         $cs = $this;
         $scripts = '';
         $endScripts = '';
@@ -167,7 +167,9 @@ class X2ClientScript extends NLSClientScript {
                     $scripts .= "$script\n";
             }
         }
-
+        if($captureScripts){
+            return $scripts.$endScripts.';';
+        }
         echo $scripts.$endScripts.';';
     }
 
@@ -189,6 +191,53 @@ class X2ClientScript extends NLSClientScript {
             Yii::app()->clientScript->registerPackage ($packageName);
         }
         Yii::app()->clientScript->packages = $oldPackages;
+    }
+
+    /**
+     * Modified Function from CClientScript 
+     * to add custom packages
+     * @see CClientScript::registerCoreScript
+     */
+    public function registerCoreScript($name)
+    {
+        if(isset($this->coreScripts[$name]))
+            return $this;
+        if(isset($this->packages[$name]))
+            $package=$this->packages[$name];
+        else
+        {
+            if($this->corePackages===null) {
+                $this->corePackages=require(YII_PATH.'/web/js/packages.php');
+                /* x2modstart */
+                $this->corePackages = array_merge(
+                    $this->corePackages, 
+                    require(implode (DIRECTORY_SEPARATOR, array (
+                        Yii::app()->basePath,
+                        'data/packages.php'
+                    ))));
+                /* x2modend */
+            }
+            if(isset($this->corePackages[$name]))
+                $package=$this->corePackages[$name];
+        }
+        if(isset($package))
+        {
+            if(!empty($package['depends']))
+            {
+                foreach($package['depends'] as $p)
+                    $this->registerCoreScript($p);
+            }
+            $this->coreScripts[$name]=$package;
+            $this->hasScripts=true;
+            $params=func_get_args();
+            $this->recordCachingAction('clientScript','registerCoreScript',$params);
+        }
+        elseif(YII_DEBUG)
+            throw new CException('There is no CClientScript package: '.$name);
+        else
+            Yii::log('There is no CClientScript package: '.$name,CLogger::LEVEL_WARNING,'system.web.CClientScript');
+
+        return $this;
     }
 
     public function getCurrencyConfigScript () {
@@ -316,36 +365,61 @@ class X2ClientScript extends NLSClientScript {
 			$html.=CHtml::metaTag($meta['content'],null,null,$meta)."\n";
 		foreach($this->linkTags as $link)
 			$html.=CHtml::linkTag(null,null,null,null,$link)."\n";
-		foreach($this->cssFiles as $url=>$media)
-			$html.=CHtml::cssFile($url,$media)."\n";
         /* x2modstart */ 
         if (Auxlib::getIEVer () < 10) { 
+            // group registered css files using import statements
+            $mergedCss = '';
+            $mediaType = null;
+            foreach ($this->cssFiles as $url => $media) {
+                if ($mediaType === null) { 
+                    $mediaType = $media;
+                }
+                $text = '@import url("'.$url.'");';
+                if ($media !== $mediaType) {
+                    $html .= CHtml::css($mergedCss,$mediaType)."\n";
+                    $mergedCss = '';
+                    $mediaType = $media;
+                } 
+                $mergedCss .= "\n".$text;
+            }
+            if ($mergedCss)
+                $html .= CHtml::css($mergedCss,$mediaType)."\n";
+        } else {
+            foreach($this->cssFiles as $url=>$media)
+                $html.=CHtml::cssFile($url,$media)."\n";
+        }
+        if (Auxlib::getIEVer () < 10) { 
             // merge inline css
-            $mergedCss = array ();
+            $mergedCss = '';
             $mediaType = null;
             foreach ($this->css as $css) {
                 $text = $css[0];
+                $media = $css[1];
                 if (is_array ($text) && isset ($text['text'])) {
                     $text = $text['text'];
                 }
+                if ($mediaType === null) { 
+                    $mediaType = $media;
+                }
 
                 if (preg_match ('/@import/', $text)) {
-                    $html .= CHtml::css($text,$css[1])."\n";
+                    if ($mergedCss)
+                        $html .= CHtml::css($mergedCss,$mediaType)."\n";
+                    $mergedCss = '';
+                    $mediaType = null;
+                    $html .= CHtml::css($text,$media)."\n";
                     continue;
                 }
-                if ($mediaType === null) { 
-                    $mediaType = $css[1];
+
+                if ($media !== $mediaType) {
+                    $html .= CHtml::css($mergedCss,$mediaType)."\n";
+                    $mergedCss = '';
+                    $mediaType = $media;
                 }
-                if ($css[1] === $mediaType) {
-                    if (!isset ($mergedCss[$mediaType])) {
-                        $mergedCss[$mediaType] = '';
-                    }
-                    $mergedCss[$mediaType] .= "\n".$text;
-                }
+                $mergedCss .= "\n".$text;
             }
-            foreach ($mergedCss as $type => $css) {
-                $html.=CHtml::css($css,$type)."\n";
-            }
+            if ($mergedCss)
+                $html .= CHtml::css($mergedCss,$mediaType)."\n";
         } else {
             foreach($this->css as $css) {
                 $text = $css[0];
@@ -359,6 +433,13 @@ class X2ClientScript extends NLSClientScript {
                 $html.=CHtml::css($text, $media)."\n";
             }
         }
+
+        // prevent global css from being applied if this is an admin or guest request
+        if (!(Yii::app()->controller instanceof AdminController) && !Yii::app()->user->isGuest) {
+            $globalCssUrl = GlobalCSSFormModel::getGlobalCssUrl ();
+            $html.=CHtml::cssFile($globalCssUrl.$this->getCacheBusterSuffix ($globalCssUrl))."\n";
+        }
+
         /* x2modend */ 
 		if($this->enableJavaScript)
 		{
@@ -560,7 +641,6 @@ class X2ClientScript extends NLSClientScript {
             'form.css',
             'publisher.css',
             'sortableWidgets.css',
-            '../../../js/bgrins-spectrum-2c2010c/spectrum.css',
             '../../../js/qtip/jquery.qtip.min.css',
             '../../../js/checklistDropdown/jquery.multiselect.css',
             'rating/jquery.rating.css',
@@ -568,6 +648,7 @@ class X2ClientScript extends NLSClientScript {
             'bootstrap/bootstrap.css',
             'css-loaders/load8.css',
         );
+
          
             $cssFiles[] = 'recordView.css';
 
@@ -594,9 +675,9 @@ class X2ClientScript extends NLSClientScript {
         $this->registerScriptFile($this->baseUrl.'/js/TopFlashes.js', CClientScript::POS_END);
         $this->registerScriptFile($this->baseUrl.'/js/X2Flashes.js', CClientScript::POS_END);
         $this->registerScript ('registerX2Flashes', "
-        (function () {
+        ;(function () {
             x2.flashes = new x2.Flashes ({
-                containerSelector: 'x2-flashes-container',
+                containerId: 'x2-flashes-container',
                 expandWidgetSrc: '".Yii::app()->getTheme()->getBaseUrl().
                     '/images/icons/Expand_Widget.png'."',
                 collapseWidgetSrc: '".Yii::app()->getTheme()->getBaseUrl().
@@ -612,7 +693,7 @@ class X2ClientScript extends NLSClientScript {
                     )),
                     'noticeItemName' => Yii::t('app', 'warnings'),
                     'errorItemName' => Yii::t('app', 'errors'),
-                    'successItemName' => Yii::t('app', 'Close'),
+                    'successItemName' => Yii::t('app', 'successes'),
                     'close' => Yii::t('app', 'Close'),
                 ))."
             });
@@ -726,7 +807,8 @@ class X2ClientScript extends NLSClientScript {
                             'x2-js-error', 'Javascript Error: ' + url + ': ' + lineNumber + ': ' +
                                 errorMessage);
 
-                        if (oldErrorHandler) return oldErrorHandler (errorMessage, url, lineNumber);
+                        if (oldErrorHandler) 
+                            return oldErrorHandler (errorMessage, url, lineNumber);
                         return false;
                     };
                 }
@@ -776,7 +858,9 @@ class X2ClientScript extends NLSClientScript {
         // jQuery and jQuery UI libraries
         $this->registerCoreScript('jquery')
            ->registerCoreScript('jquery.ui')
-           ->registerCoreScript('jquery.migrate');
+           ->registerCoreScript('jquery.migrate')
+           ->registerCoreScript('bbq')
+           ;
 
        $this->registerPackages($this->getDefaultPackages());
 
@@ -801,6 +885,8 @@ class X2ClientScript extends NLSClientScript {
         $this->registerDateFormats ();
         if (YII_DEBUG) $this->registerScriptFile($baseUrl.'/js/Timer.js');
 
+        Yii::app()->clientScript->registerPackage('spectrum');
+
         // custom scripts
         $this->registerScriptFile($baseUrl.'/js/json2.js')
             ->registerScriptFile($baseUrl.'/js/webtoolkit.sha256.js')
@@ -815,7 +901,6 @@ class X2ClientScript extends NLSClientScript {
             ->registerScriptFile($baseUrl.'/js/widgets.js')
             ->registerScriptFile($baseUrl.'/js/qtip/jquery.qtip.min.js')
             ->registerScriptFile($baseUrl.'/js/ActionFrames.js')
-            ->registerScriptFile($baseUrl.'/js/bgrins-spectrum-2c2010c/spectrum.js')
             ->registerScriptFile($baseUrl.'/js/ColorPicker.js', CCLientScript::POS_END)
             ->registerScriptFile($baseUrl.'/js/PopupDropdownMenu.js', CCLientScript::POS_END)
             ->registerScriptFile($baseUrl.'/js/jQueryOverrides.js', CCLientScript::POS_END)
@@ -868,8 +953,8 @@ class X2ClientScript extends NLSClientScript {
                 x2.notifications = new x2.Notifs ({
                     disablePopup: ".($profile->disableNotifPopup ? 'true' : 'false').",
                     translations: {
-                        clearAll:
-                            '".addslashes(Yii::t('app', 'Permanently delete all notifications?'))."'
+                        clearAll: '".addslashes(
+                            Yii::t('app', 'Permanently delete all notifications?'))."'
                     }
                 });
             ", CClientScript::POS_READY);
@@ -962,7 +1047,7 @@ class X2ClientScript extends NLSClientScript {
 
     private function registerInitScript () {
         Yii::app()->clientScript->registerScript ('X2ClientScriptInitScript',"
-            (function () {
+            ;(function () {
                 var actionFramesName = 'actionFrames';
                 x2[actionFramesName] = new x2.ActionFrames ({ 
                     instanceName: actionFramesName,

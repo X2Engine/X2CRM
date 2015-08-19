@@ -43,6 +43,16 @@ class ProfileWidgetLayout extends WidgetLayout {
 
      
 
+    protected function widgetOrder () {
+        return array (
+            'NewWebLeadsGridViewProfileWidget',
+            'ContactsGridViewProfileWidget',
+            'AccountsGridViewProfileWidget',
+            'ProfilesGridViewProfileWidget',
+        );
+    }
+
+
 }
 
 ?>

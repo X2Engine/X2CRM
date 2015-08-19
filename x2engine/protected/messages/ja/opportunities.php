@@ -32,4 +32,10 @@ return array (
 'Relationships for Contact: '=>'お問い合わせのための関係：',
 'Import Opportunities'=>'輸入機会',
 'Export Opportunities'=>'輸出機会',
+'Create {opportunity}'=>'作成{opportunity}',
+'{opportunity}:'=>'{opportunity} ：',
+'{opportunities} List'=>'{opportunities}一覧',
+'Edit {opportunity}'=>'編集{opportunity}',
+'Import {opportunities}'=>'インポート{opportunities}',
+'Export {opportunities}'=>'エクスポート{opportunities}',
 );

@@ -32,4 +32,10 @@ return array (
 'Relationships for Contact: '=>'Σχέσεις για Επικοινωνία:',
 'Import Opportunities'=>'Εισαγωγή Ευκαιρίες',
 'Export Opportunities'=>'Ευκαιρίες εξαγωγών',
+'Create {opportunity}'=>'Δημιουργήστε {opportunity}',
+'{opportunity}:'=>'{opportunity}',
+'{opportunities} List'=>'{opportunities} Λίστα',
+'Edit {opportunity}'=>'Επεξεργασία {opportunity}',
+'Import {opportunities}'=>'Εισαγωγή {opportunities}',
+'Export {opportunities}'=>'Εξαγωγή {opportunities}',
 );

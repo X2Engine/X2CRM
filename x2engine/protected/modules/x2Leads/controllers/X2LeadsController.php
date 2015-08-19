@@ -151,9 +151,8 @@ class X2LeadsController extends x2base {
             if(!empty($model->associatedContacts))
                 $model->associatedContacts=implode(', ',$model->associatedContacts);
 
-            // $this->update($model,$temp);
-            $model->save();
-            $this->redirect(array('view','id'=>$model->id));
+            if ($model->save())
+                $this->redirect(array('view','id'=>$model->id));
         }
         /* Set assignedTo back into an array only before re-rendering the input box with assignees 
            selected */
@@ -269,12 +268,7 @@ class X2LeadsController extends x2base {
                     'submit'=>array('delete','id'=>$modelId),
                     'confirm'=>'Are you sure you want to delete this item?')
             ),
-            array(
-                'name'=>'attach',
-                'label'=>Yii::t('app','Attach A File/Photo'),
-                'url'=>'#',
-                'linkOptions'=>array('onclick'=>'toggleAttachmentForm(); return false;')
-            ),
+            ModelFileUploader::menuLink(),
             array(
                 'name'=>'quotes',
                 'label' => Yii::t('quotes', 'Quotes/Invoices'),

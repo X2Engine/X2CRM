@@ -82,7 +82,7 @@ $serviceModule = Modules::model()->findByAttributes(array('name' => 'services'))
 
 $menuOptions = array(
     'all', 'lists', 'create', 'view', 'edit', 'share', 'delete',
-    'email', 'attach', 'quotes', 'print', 'editLayout',
+    'email', 'attach', 'quotes', 'print', 'editLayout', 'addRecordAlias',
 );
 $menuOptions[] = ($subscribed ? 'unsubscribe' : 'subscribe');
 if ($opportunityModule->visible && $accountModule->visible)
@@ -106,7 +106,7 @@ $(function() {
 // subscribe or unsubscribe from this contact
 function subscribe(link) {
     $('body').data('subscribed', !$('body').data('subscribed')); // subscribe or unsubscribe
-    $.post('subscribe', {ContactId: '{$model->id}', Checked: $('body').data('subscribed')}); // tell server to subscribe / unsubscribe
+    $.post('".$this->createUrl('/contacts/contacts/subscribe')."', {ContactId: '{$model->id}', Checked: $('body').data('subscribed')}); // tell server to subscribe / unsubscribe
     if( $('body').data('subscribed') )
         link.html($('body').data('unsubscribeText'));
     else
@@ -120,20 +120,17 @@ function subscribe(link) {
 $layout = Yii::app()->params->profile->getLayout();
 $themeUrl = Yii::app()->theme->getBaseUrl();
 ?>
-<?php
-if(true) {//!IS_ANDROID && !IS_IPAD){
-    echo '
 <div class="page-title-placeholder"></div>
 <div class="page-title-fixed-outer">
-    <div class="page-title-fixed-inner">';
-}
-?>
-<div class="page-title">
+    <div class="page-title-fixed-inner">
+<div class="page-title icon contacts">
+	 <h2><?php echo CHtml::encode($model->name); ?></h2>
+
     <?php 
+    $this->renderPartial('_vcrControls', array('model' => $model)); 
     $this->widget('RecordAliasesWidget', array(
         'model' => $model
     ));
-    $this->renderPartial('_vcrControls', array('model' => $model)); 
     if(Yii::app()->user->checkAccess('ContactsUpdate', $authParams)){
         if(!empty($model->company) && is_numeric($model->company)) {
             echo CHtml::link(
@@ -170,20 +167,17 @@ if(true) {//!IS_ANDROID && !IS_IPAD){
     echo X2Html::inlineEditButtons();
     ?>
 </div>
-<?php
-if(true){ //!IS_ANDROID && !IS_IPAD){
-    echo '
     </div>
 </div>
-        ';
-}
-?>
 <div id="main-column" <?php echo $layoutManager->columnWidthStyleAttr (1); ?>>
     <div id='contacts-detail-view'> 
     <?php 
-    $this->renderPartial(
-        'application.components.views._detailView', 
-        array('model' => $model, 'modelName' => 'contacts')); 
+    // $this->renderPartial(
+        // 'application.components.views.@DETAILVIEW', 
+    $this->widget('DetailView', array(
+        'model' => $model, 
+        'modelName' => 'contacts'
+    ));
     ?>
     </div>
     <?php
@@ -243,11 +237,11 @@ if(true){ //!IS_ANDROID && !IS_IPAD){
     $leadStatus = $model->leadstatus;
 //*** End Create Related models ***/
 
-    $this->widget(
-        'Attachments', array(
+    $this->widget ('ModelFileUploader', array(
             'associationType' => 'contacts',
-            'associationId' => $model->id,
-            'startHidden' => true)); ?>
+            'associationId' => $model->id
+        )); ?>
+
     <div id="quote-form-wrapper">
         <?php
         $this->widget('InlineQuotes', array(

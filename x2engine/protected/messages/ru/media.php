@@ -87,4 +87,12 @@ return array (
 'Google Drive:'=>'Google Drive:',
 'File was not sent to server.'=>'Файл не был отправлен на сервер.',
 'MIME Info'=>'MIME информация',
+'View Full Size'=>'Смотреть полный размер',
+'All {media}'=>'Все {media}',
+'Drop files here to upload'=>'Оставьте файлы сюда, чтобы загрузить',
+'select files'=>'выберите файлы',
+'Image Width'=>'Ширина изображения',
+'Image Height'=>'Высота изображения',
+'Delete Selected Image'=>'Удалить выбранное изображение',
+'Access Key'=>'Ключ доступа',
 );

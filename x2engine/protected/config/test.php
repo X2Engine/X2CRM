@@ -41,6 +41,8 @@
 // CWebApplication properties can be configured here.
 $config = require(dirname(__FILE__) . DIRECTORY_SEPARATOR . 'main.php');
 
+require_once(dirname(__FILE__).'/../tests/testconstants.php');
+
 require_once(dirname(__FILE__) . DIRECTORY_SEPARATOR . 'X2Config-test.php');
 
 $config['components']['db'] = array(
@@ -49,8 +51,8 @@ $config['components']['db'] = array(
 	'username' => $user,
 	'password' => $pass,
 	'charset' => 'utf8',
-	//'enableProfiling'=>true,
-	//'enableParamLogging' => true,
+	'enableProfiling' => YII_DEBUG,
+	'enableParamLogging' => YII_DEBUG,
 	'schemaCachingDuration' => 84600
 );
 $config['components']['fixture'] = array(
@@ -58,7 +60,25 @@ $config['components']['fixture'] = array(
 	'initScriptSuffix' => '.init.php'
 );
 $config['import'] = array_merge($config['import'], array('application.tests.*', 'application.components.*', 'application.models.*'));
-$config['components']['log']['routes'] = array(
+
+$debugLogRoutes = array(
+	array(
+		'class' => 'CFileLogRoute',
+		'logFile' => 'debug.log',
+        'categories' => 'application.debug',
+        'maxLogFiles' => 10,
+        'maxFileSize' => 128,
+	),
+	array(
+		'class' => 'CFileLogRoute',
+		'logFile' => 'trace.log',
+        'levels' => 'trace',
+        'maxLogFiles' => 10,
+        'maxFileSize' => 128,
+	),
+);
+
+$config['components']['log']['routes'] = array_merge (array(
 	array(
 		'class' => 'CFileLogRoute',
 		'logFile' => php_sapi_name() == 'cli' ? 'system-test.log' : 'system-test-web.log',
@@ -71,12 +91,8 @@ $config['components']['log']['routes'] = array(
         'levels' => 'error,warning,trace,info',
         'categories' => 'application.*'
 	),
-	array(
-		'class' => 'CFileLogRoute',
-		'logFile' => 'debug.log',
-        'categories' => 'application.debug'
-	)
-);
+), YII_DEBUG ? $debugLogRoutes : array ());
+
 $config['params']['automatedTesting'] = true;
 
 $custom = dirname(__FILE__).'/../../custom/protected/config/test.php';

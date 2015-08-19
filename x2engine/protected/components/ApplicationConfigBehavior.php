@@ -90,6 +90,7 @@ class ApplicationConfigBehavior extends CBehavior {
     private $_edition;
     private $_externalAbsoluteBaseUrl;
     private $_externalWebRoot;
+    private $_externalWebDomain;
 
     /**
      * Signifies whether the CryptUtil method has been initialized already
@@ -135,8 +136,12 @@ class ApplicationConfigBehavior extends CBehavior {
      */
     public function events(){
         return array_merge(parent::events(), array(
-                    'onBeginRequest' => 'beginRequest',
-                ));
+            'onBeginRequest' => 'beginRequest',
+        ));
+    }
+
+    public function getUpdateServer() {
+        return X2_UPDATE_BETA ? 'http://beta.x2planet.com' : 'https://x2planet.com';
     }
 
     /**
@@ -150,41 +155,36 @@ class ApplicationConfigBehavior extends CBehavior {
      */
     public function getJSGlobalsSetupScript ($profile=null) {
         if ($profile) {
-            $where = 'fileName = :notifSound';
-            $params = array (':notifSound' => $profile->notificationSound);
-            $uploadedBy = $this->owner->db->createCommand()
-                ->select('uploadedBy')->from('x2_media')->where($where, $params)->queryRow();
-            if(!empty($uploadedBy['uploadedBy'])){
-                $notificationSound = $this->owner->baseUrl.'/uploads/media/'.
-                    $uploadedBy['uploadedBy'].'/'.$profile->notificationSound;
-            }else{
-                $notificationSound = $this->owner->baseUrl.'/uploads/'.
-                    $profile->notificationSound;
+            $notificationSound = '';
+            if(!empty($profile->notificationSound)){
+                $notificationSound = $this->owner->baseUrl.$this->owner->request->scriptUrl.'/media/media/getFile/'.$profile->notificationSound;
             }
         }
         return '
-            if (typeof yii === "undefined") {
-                var	yii = {
-                    baseUrl: "'.$this->owner->baseUrl.'",
-                    scriptUrl: "'.$this->owner->request->scriptUrl.'",
-                    themeBaseUrl: "'.$this->owner->theme->baseUrl.'",
-                    language: "'.
-                        ($this->owner->language == 'en' ? '' : $this->owner->getLanguage()).'",
-                    datePickerFormat: "'.Formatter::formatDatePicker('medium').'",
-                    timePickerFormat: "'.Formatter::formatTimePicker().'"
-                    '.($profile ? '
-                        , profile: '.CJSON::encode($profile->getAttributes()).',
-                          notificationSoundPath: "'.$notificationSound.'"' : '').
-               '};
-            }
-            if (typeof x2 === "undefined") {
-                x2 = {};
-            }
-            x2.DEBUG = '.(YII_DEBUG ? 'true' : 'false').';
-            x2.UNIT_TESTING = '.(YII_UNIT_TESTING ? 'true' : 'false').';
-            x2.notifUpdateInterval = '.$this->settings->chatPollTime.';
-            x2.isAndroid = '.(IS_ANDROID ? 'true' : 'false').';
-            x2.isIPad = '.(IS_IPAD ? 'true' : 'false').';
+            ;(function () {
+                if (typeof yii === "undefined") {
+                    yii = {
+                        baseUrl: "'.$this->owner->baseUrl.'",
+                        scriptUrl: "'.$this->owner->request->scriptUrl.'",
+                        themeBaseUrl: "'.$this->owner->theme->baseUrl.'",
+                        language: "'.
+                            ($this->owner->language == 'en' ? '' : $this->owner->getLanguage()).'",
+                        datePickerFormat: "'.Formatter::formatDatePicker('medium').'",
+                        timePickerFormat: "'.Formatter::formatTimePicker().'"
+                        '.($profile ? '
+                            , profile: '.CJSON::encode($profile->getAttributes()).',
+                              notificationSoundPath: "'.$notificationSound.'"' : '').
+                   '};
+                }
+                if (typeof x2 === "undefined") {
+                    x2 = {};
+                }
+                x2.DEBUG = '.(YII_DEBUG ? 'true' : 'false').';
+                x2.UNIT_TESTING = '.(YII_UNIT_TESTING ? 'true' : 'false').';
+                x2.notifUpdateInterval = '.$this->settings->chatPollTime.';
+                x2.isAndroid = '.(IS_ANDROID ? 'true' : 'false').';
+                x2.isIPad = '.(IS_IPAD ? 'true' : 'false').';
+            }) ();
         ';
     }
 
@@ -231,7 +231,6 @@ class ApplicationConfigBehavior extends CBehavior {
      * without having to extend {@link Yii} and override its methods.
      */
     public function beginRequest(){
-        
         // About the "noSession" property/variable:
         //
         // This variable, if true, indicates that the application is running in
@@ -253,6 +252,12 @@ class ApplicationConfigBehavior extends CBehavior {
 
         if(!$noSession){
             if($this->owner->request->getPathInfo() == 'notifications/get'){ // skip all the loading if this is a chat/notification update
+                Yii::import('application.models.Events');
+                Yii::import('application.components.X2UrlManager');
+                Yii::import('application.components.Formatter');
+                Yii::import('application.components.FieldFormatter');
+                Yii::import('application.controllers.x2base');
+                Yii::import('application.controllers.X2Controller');
                 Yii::import('application.components.util.AuxLib');
                 Yii::import('application.models.Roles');
                 Yii::import('application.components.X2AuthManager');
@@ -264,13 +269,22 @@ class ApplicationConfigBehavior extends CBehavior {
                  
                 Yii::import('application.components.X2Settings.*');
                 Yii::import('application.components.X2MessageSource');
-                Yii::import('application.components.Formatter');
                 Yii::import('application.components.X2Html');
                 Yii::import('application.components.JSONEmbeddedModelFieldsBehavior');
+                Yii::import('application.components.X2MergeableBehavior');
                 Yii::import('application.components.TransformedFieldStorageBehavior');
                 Yii::import('application.components.EncryptedFieldsBehavior');
                 Yii::import('application.components.permissions.*');
                 Yii::import('application.models.Modules');
+                // import all the models
+                Yii::import('application.models.Social');
+                Yii::import('application.models.Profile');
+                Yii::import('application.models.Notification');
+                Yii::import('application.models.Fields');
+                foreach(scandir('protected/modules') as $module){
+                    if(file_exists('protected/modules/'.$module.'/register.php'))
+                        Yii::import('application.modules.'.$module.'.models.*');
+                }
                 if(!$this->owner->user->getIsGuest())
                     $profData = $this->owner->db->createCommand()
                         ->select('timeZone, language')
@@ -292,6 +306,7 @@ class ApplicationConfigBehavior extends CBehavior {
                     $language = 'en';
                 date_default_timezone_set($timezone);
                 $this->owner->language = $language;
+                Yii::import('application.models.X2ActiveRecord');
                 Yii::import('application.models.X2Model');
                 Yii::import('application.models.Dropdowns');
                 Yii::import('application.models.Admin');
@@ -305,6 +320,7 @@ class ApplicationConfigBehavior extends CBehavior {
                 return;
             }
         }else{
+            Yii::import('application.models.X2ActiveRecord');
             Yii::import('application.models.Profile');
             Yii::import('application.components.sortableWidget.*');
             Yii::import('application.components.X2Settings.*');
@@ -430,13 +446,13 @@ class ApplicationConfigBehavior extends CBehavior {
         $this->owner->params->supportedCurrencySymbols = $curSyms; // Code to symbol
 
         // Set language
-        if(!empty($this->owner->params->profile->language))
+        if(!empty($this->owner->params->profile->language) && $notGuest)
             $this->owner->language = $this->owner->params->profile->language;
         else if(isset($adminProf))
             $this->owner->language = $adminProf->language;
 
         // Set timezone
-        if(!empty($this->owner->params->profile->timeZone))
+        if(!empty($this->owner->params->profile->timeZone) && $notGuest)
             date_default_timezone_set($this->owner->params->profile->timeZone);
         elseif(!empty($adminProf->timeZone))
             date_default_timezone_set($adminProf->timeZone);
@@ -566,8 +582,20 @@ Yii::app()->clientScript->registerScript(sprintf('%x', crc32(Yii::app()->name)),
      * @param array $params Query parameters
      */
     public function createExternalUrl($route, $params = array()){
-        if($this->owner->controller instanceof CController){ // Standard in-web-request URL generation
-            return $this->externalWebRoot.$this->owner->controller->createUrl($route, $params);
+        if($this->owner->controller instanceof CController){ 
+            // Standard in-web-request URL generation
+
+            if ($route === '') {
+                $route = $this->owner->controller->getId() . '/' . 
+                    $this->owner->controller->getAction()->getId();
+            } elseif (strpos($route, '/') === false) {
+                $route = $this->owner->controller->getId() . '/' . $route;
+            }
+            if ($route[0] !== '/' && ($module = $this->owner->controller->getModule()) !== null) {
+                $route = $module->getId() . '/' . $route;
+            }
+            return $this->externalAbsoluteBaseUrl . 
+                $this->owner->getUrlManager()->createUrlWithoutBase($route, $params);
         }else{ // Offline URL generation
             return $this->externalAbsoluteBaseUrl.
                 (YII_UNIT_TESTING ? '/index-test.php/' : '/index.php/').
@@ -694,7 +722,7 @@ Yii::app()->clientScript->registerScript(sprintf('%x', crc32(Yii::app()->name)),
     }
 
     public function getEditionLabels($addPrefix = false) {
-        $prefix = $addPrefix?'X2Engine ':'';
+        $prefix = $addPrefix?'X2CRM ':'';
         return array(
             'opensource' => $prefix.'Open Source Edition',
             'pro' => $prefix.'Professional Edition',
@@ -707,23 +735,7 @@ Yii::app()->clientScript->registerScript(sprintf('%x', crc32(Yii::app()->name)),
      */
     public function getFavIconUrl () {
         $baseUrl = Yii::app()->clientScript->baseUrl;
-        $faviconUrl;
-        switch (Yii::app()->edition) {
-            case 'opensource':
-                $faviconUrl = $baseUrl.'/images/faviconOpensource.ico';
-                break;
-            case 'pro':
-                $faviconUrl = $baseUrl.'/images/faviconPro.ico';
-                break;
-            case 'pla':
-                $faviconUrl = $baseUrl.'/images/faviconPla.ico';
-                break;
-            default:
-                if (YII_DEBUG) {
-                    throw new CException (Yii::t('Error: getFavIconLink: default on switch'));
-                }
-        }
-        return $faviconUrl;
+        return $baseUrl.'/images/favicon.ico';
     }
 
     /**
@@ -732,36 +744,21 @@ Yii::app()->clientScript->registerScript(sprintf('%x', crc32(Yii::app()->name)),
     public function getLoginLogoUrl () {
         $baseUrl = Yii::app()->clientScript->baseUrl;
         return $baseUrl.'/images/x2engine.png';
-
-        // $loginLogoUrl;
-        // switch (Yii::app()->edition) {
-        //     case 'opensource':
-        //         $loginLogoUrl = $baseUrl.'/images/x2engineLoginLogoOpensource.png';
-        //         break;
-        //     case 'pro':
-        //         $loginLogoUrl = $baseUrl.'/images/x2engineLoginLogoPro.png';
-        //         break;
-        //     case 'pla':
-        //         $loginLogoUrl = $baseUrl.'/images/x2engineLoginLogoPla.png';
-        //         break;
-        //     default:
-        //         if (YII_DEBUG) {
-        //             throw new CException (Yii::t('Error: getFavIconLink: default on switch'));
-        //         }
-        // }
-        // return $loginLogoUrl;
     }
 
     public function getExternalAbsoluteBaseUrl(){
-        if(!isset($this->_externalAbsoluteBaseUrl)){
-            $eabu = $this->settings->externalBaseUri;
-            if (!YII_UNIT_TESTING) {
-                $this->_externalAbsoluteBaseUrl = $this->externalWebRoot.(empty($eabu) ? $this->owner->baseUrl : $eabu);
-            } else { // during a unit test, owner->baseUrl is not the web root
-                $this->_externalAbsoluteBaseUrl = $this->externalWebRoot.$eabu;
-            }
+        if(!isset($this->_externalAbsoluteBaseUrl) || YII_UNIT_TESTING){
+            $this->_externalAbsoluteBaseUrl = $this->externalWebDomain . $this->externalWebRoot;
         }
         return $this->_externalAbsoluteBaseUrl;
+    }
+    
+    public function getExternalWebRoot() {
+        if (!isset($this->_externalWebRoot) || YII_UNIT_TESTING) {
+            $eabu = $this->settings->externalBaseUri;
+            $this->_externalWebRoot = $eabu ? $eabu : $this->owner->baseUrl;
+        }
+        return $this->_externalWebRoot;
     }
 
     /**
@@ -769,12 +766,12 @@ Yii::app()->clientScript->registerScript(sprintf('%x', crc32(Yii::app()->name)),
      *
      * @return type
      */
-    public function getExternalWebRoot(){
-        if(!isset($this->_externalWebRoot)){
+    public function getExternalWebDomain() {
+        if (!isset($this->_externalWebDomain) || YII_UNIT_TESTING) {
             $eabu = $this->settings->externalBaseUrl;
-            $this->_externalWebRoot = $eabu ? $eabu : $this->owner->request->getHostInfo();
+            $this->_externalWebDomain = $eabu ? $eabu : $this->owner->request->getHostInfo();
         }
-        return $this->_externalWebRoot;
+        return $this->_externalWebDomain;
     }
 
     /**
@@ -944,8 +941,10 @@ Yii::app()->clientScript->registerScript(sprintf('%x', crc32(Yii::app()->name)),
         Yii::import('application.controllers.X2Controller');
         Yii::import('application.controllers.x2base');
         Yii::import('application.components.*');
+        Yii::import('application.components.formatters.*');
         Yii::import('application.components.X2GridView.*');
         Yii::import('application.components.X2Settings.*');
+        Yii::import('application.components.publisher.*');
         Yii::import('application.components.recordConversion.*');
         Yii::import('application.components.validators.*');
         Yii::import('application.components.sortableWidget.*');

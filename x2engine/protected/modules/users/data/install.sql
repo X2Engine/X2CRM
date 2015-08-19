@@ -48,4 +48,4 @@ CREATE TABLE x2_password_reset (
 INSERT INTO `x2_modules`
 (`name`,            title,            visible,     menuPosition,    searchable,    editable,    adminOnly,    custom,    toggleable)
 VALUES
-("users",            "Users",            1,            17,                0,            0,            1,            0,        0);
+("users",            "Users",            1,            18,                0,            0,            1,            0,        0);

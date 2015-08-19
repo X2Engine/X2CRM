@@ -89,7 +89,7 @@ class CommonControllerBehavior extends CBehavior {
                 $id = 1;
 
             // Last-ditch effort:
-            if (isset($_GET['id'])) {
+            if (empty($id) && isset($_GET['id'])) {
                 $id = $_GET['id'];
             }
 
@@ -102,10 +102,10 @@ class CommonControllerBehavior extends CBehavior {
                     throw new CHttpException(401, Yii::t('app', 'Invalid request; no record ID specified.'));
                 }
             }
-
+            
             // Look up model; ID specified
             $this->_model = CActiveRecord::model($this->resolvedModelClass)->findByPk((int) $id);
-
+            
             // Model record couldn't be retrieved, so throw a 404:
             if ($this->_model === null && $throw)
                 throw new CHttpException(404, Yii::t('app', 'The requested page does not exist.'));

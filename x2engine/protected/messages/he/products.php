@@ -24,4 +24,6 @@ return array (
 'Import Products'=>'מוצרי יבוא',
 'Export Products'=>'מוצרי יצוא',
 'NameId'=>'NameId',
+'Create New {module}'=>'צור חדש {module}',
+'Update {module}'=>'עדכון {module}',
 );

@@ -120,9 +120,6 @@ class ContactsGridViewProfileWidget extends ProfileGridViewWidget {
                             'type'=>'raw',
                         ),
                     ),
-                    'massActions'=>array(
-                        'MassAddToList', 'NewListFromSelection',
-                    ),
                     'enableTags'=>true,
                 )
             );

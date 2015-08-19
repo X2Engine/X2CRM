@@ -38,14 +38,20 @@ abstract class TwoColumnSortableWidgetManager extends SortableWidgetManager {
 
     public $layoutManager;
 
+    public $widgetType = '';
+
+    public $columnCount = 2;
+
     /**
      * @var string $JSClass
      */
     public $JSClass = 'TwoColumnSortableWidgetManager'; 
 
-    public $widgetLayoutName = '';
-
     public $connectedContainerClass = 'connected-sortable-widget-container';
+
+    public function getWidgetLayoutName () {
+        return $this->widgetType.'WidgetLayout';
+    }
 
     /**
      * Magic getter. Returns this widget's packages. 
@@ -97,7 +103,11 @@ abstract class TwoColumnSortableWidgetManager extends SortableWidgetManager {
 	}
 
     public function run () {
-        $this->render ('_twoColumnSortableWidgetLayout');
+        if ($this->columnCount === 2) {
+            $this->render ('_twoColumnSortableWidgetLayout');
+        } else {
+            $this->render ('_singleColumnSortableWidgetLayout');
+        }
     }
 
 }

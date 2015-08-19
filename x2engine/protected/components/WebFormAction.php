@@ -354,6 +354,7 @@ class WebFormAction extends CAction {
                 $model->description = CHtml::encode($description);
 
             
+            $model->validate (null, false);
 
             if(!$model->hasErrors()){
 

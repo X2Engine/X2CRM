@@ -38,6 +38,7 @@
 class TestingAuxLibTest extends X2DbTestCase {
 
     public $fixtures = array (
+        'media' => 'Media',
         'authItems' => array (':x2_auth_item', '.MassDeleteTest'),
         'authItemChildren' => array (':x2_auth_item_child', '.MassDeleteTest'),
         'users' => 'User',
@@ -80,6 +81,59 @@ class TestingAuxLibTest extends X2DbTestCase {
         //print_r ($result);
         $this->assertTrue ((bool) preg_match ('/Change Personal Settings/', $result));
     }
+
+//    public function testControllerMock () {
+//        TestingAuxLib::loadControllerMock ('localhost', '/index-test.php');
+//        $uniqueId = '12345';
+//        $email = 'test@example.com';
+//        $media = $this->media ('bg');
+//        $oldPcreSettings = array (
+//            'pcre.backtrack_limit' => ini_get('pcre.backtrack_limit'),
+//            'pcre.recursion_limit' => ini_get('pcre.recursion_limit')
+//        );
+//        ini_set('pcre.backtrack_limit', '10');
+//        ini_set('pcre.recursion_limit', '10');
+//        println (CHtml::link ($media->fileName, $media->fullUrl));
+//        println ($media->getPath ());
+//        println (Yii::app()->controller->createAbsoluteUrl (
+//            'click', array ('uid' => $uniqueId, 'type' => 'click')));
+//        println (Yii::app()->createExternalUrl('/marketing/marketing/click', array(
+//            'uid' => $uniqueId,
+//            'type' => 'unsub',
+//            'email' => $email
+//        )));
+//        println (Yii::app()->createExternalUrl(
+//            '/marketing/marketing/click', array('uid' => $uniqueId, 'type' => 'open')));
+//        foreach ($oldPcreSettings as $setting => $val) {
+//            ini_set ($setting, $val);
+//        }
+//    }
+
+//    public function testControllerMock2 () {
+//        $media = $this->media ('bg');
+//        $uniqueId = '12345';
+//        $email = 'test@example.com';
+//        TestingAuxLib::loadControllerMock ('examplecrm.com', '/X2Engine/index-test.php');
+//        $admin = Yii::app()->settings;
+//        $admin->doNotEmailLinkText = 'unsubscribe';
+//        $admin->externalBaseUrl = 'http://examplecrm.com';
+//        $admin->externalBaseUri = '/X2Engine';
+//        println (CHtml::link ($media->fileName, $media->fullUrl));
+//        println ($media->getPath ());
+//        println (Yii::app()->controller->createAbsoluteUrl (
+//            'click', array ('uid' => $uniqueId, 'type' => 'click')));
+//        println (Yii::app()->createExternalUrl('/marketing/marketing/click', array(
+//            'uid' => $uniqueId,
+//            'type' => 'unsub',
+//            'email' => $email
+//        )));
+//        println (Yii::app()->createExternalUrl(
+//            '/marketing/marketing/click', array('uid' => $uniqueId, 'type' => 'open')));
+//    }
+
+//    public function testSetConstant () {
+//        TestingAuxLib::setConstant ('X2_DEBUG_EMAIL', 'true');
+//    }
 }
 
 ?>

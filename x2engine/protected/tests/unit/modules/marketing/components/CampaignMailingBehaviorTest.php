@@ -51,6 +51,7 @@ Yii::import('application.components.util.StringUtil', true);
  */
 class CampaignMailingBehaviorTest extends X2DbTestCase {
 
+
     public static function referenceFixtures() {
         return array(
             'campaign' => array ('Campaign', '.CampaignMailingBehaviorTest'),
@@ -88,7 +89,7 @@ class CampaignMailingBehaviorTest extends X2DbTestCase {
     private static function restoreIniSettings () {
         foreach (self::$_savedIniSettings as $setting => $val) { 
             if ($val !== null) { 
-                ini_set ($setting, $val);
+                assert (ini_set ($setting, $val) !== false);
             }
         }
     }
@@ -132,9 +133,7 @@ class CampaignMailingBehaviorTest extends X2DbTestCase {
     }
 
     public function testRedirectLinkGeneration () {
-        Yii::app()->controller = new MarketingController (
-            'campaign', new MarketingModule ('campaign', null));
-        $_SERVER['SERVER_NAME'] = 'localhost';
+        TestingAuxLib::loadControllerMock ('localhost', '/index-test.php');
         $cmb = $this->instantiate();
         $contact = $this->contacts('testUser_unsent');
         $campaign = $this->campaign('redirectLinkGeneration');
@@ -146,74 +145,9 @@ class CampaignMailingBehaviorTest extends X2DbTestCase {
 
     }
 
-    /**
-     * Cause preg_replace_callback to fail and ensure that exception is thrown
-     */
-    public function testRedirectLinkGenerationException () {
-        $this->setExpectedException (
-            'StringUtilException', '',
-            StringUtilException::PREG_REPLACE_CALLBACK_ERROR);
-
-        // set this high enough to cause a redirect link replacement error, but not a CUrlRule error
-        ini_set('pcre.backtrack_limit', '10');
-        ini_set('pcre.recursion_limit', '10');
-
-        Yii::app()->controller = new MarketingController (
-            'campaign', new MarketingModule ('campaign', null));
-        $_SERVER['SERVER_NAME'] = 'localhost';
-        $cmb = $this->instantiate();
-        $contact = $this->contacts('testUser_unsent');
-        list($subject,$message,$uniqueId) = $cmb->prepareEmail(
-            $this->campaign('redirectLinkGeneration'), $contact, false);
-    }
-
-    /**
-     * Cause line break replacement to fail and ensure that exception is thrown
-     */
-    public function testLineBreakReplacementErrorTest () {
-        $this->setExpectedException (
-            'StringUtilException', '',
-            StringUtilException::PREG_REPLACE_ERROR);
-
-        ini_set('pcre.backtrack_limit', '0');
-        ini_set('pcre.recursion_limit', '0');
-
-        Yii::app()->controller = new MarketingController (
-            'campaign', new MarketingModule ('campaign', null));
-        $_SERVER['SERVER_NAME'] = 'localhost';
-        $cmb = $this->instantiate();
-        $contact = $this->contacts('testUser_unsent');
-        list($subject,$message,$uniqueId) = $cmb->prepareEmail(
-            $this->campaign('redirectLinkGeneration'), $contact);
-    }
-
-    /**
-     * Cause line break replacement to fail and ensure that exception is thrown
-     */
-    public function testUnsubTokenReplacementErrorTest () {
-        // error can't be triggered using current method of reducing the backtrack_limit and 
-        // recursion_limit since there's a call to createExternalUrl directly preceeding the
-        // code which does the token replacement
-        $this->markTestSkipped ();
-
-        $this->setExpectedException (
-            'StringUtilException', '',
-            StringUtilException::PREG_REPLACE_ERROR);
-
-        ini_set('pcre.backtrack_limit', '0');
-        ini_set('pcre.recursion_limit', '0');
-
-        Yii::app()->controller = new MarketingController (
-            'campaign', new MarketingModule ('campaign', null));
-        $_SERVER['SERVER_NAME'] = 'localhost';
-        $cmb = $this->instantiate();
-        $contact = $this->contacts('testUser_unsent');
-        list($subject,$message,$uniqueId) = $cmb->prepareEmail(
-            $this->campaign('testUser'), $contact, false);
-    }
-
     public function testUnsubTokenReplacement () {
         $admin = Yii::app()->settings;
+        TestingAuxLib::loadControllerMock ('examplecrm.com', '/X2Engine/index-test.php');
         $admin->externalBaseUrl = 'http://examplecrm.com';
         $admin->externalBaseUri = '/X2Engine';
         $cmb = $this->instantiate();
@@ -221,13 +155,12 @@ class CampaignMailingBehaviorTest extends X2DbTestCase {
         $campaign = $this->campaign('unsubToken');
         list($subject,$message,$uniqueId) = $cmb->prepareEmail($campaign,$contact);
 
-        // Insert unsubscribe link(s):
         $unsubUrl = Yii::app()->createExternalUrl('/marketing/marketing/click', array(
             'uid' => $uniqueId,
             'type' => 'unsub',
             'email' => $contact->email
         ));
-        $unsubLinkText = Yii::app()->settings->doNotEmailLinkText;
+        $unsubLinkText = Yii::app()->settings->getDoNotEmailLinkText ();
         $expectedLink = 
             '<a href="'.$unsubUrl.'">'.Yii::t('marketing', $unsubLinkText).'</a>';
 
@@ -235,59 +168,26 @@ class CampaignMailingBehaviorTest extends X2DbTestCase {
             '/'.preg_quote($expectedLink, '/').'/', $message, 'Unsubscribe link not inserted');
     }
 
-    public function testPrepareEmail() {
-        if(!Yii::app()->contEd('pro')) {
-            $this->markTestSkipped();
-        }
+    /**
+     * Cause preg_replace_callback to fail and ensure that exception is thrown
+     */
+    public function testRedirectLinkGenerationException () {
+        $this->setExpectedException (
+            'StringUtilException', '',
+            StringUtilException::PREG_REPLACE_CALLBACK_ERROR);
+        TestingAuxLib::loadControllerMock ('localhost', '/index-test.php');
 
-        // get app config behavior to generate generate links correctly
-        Yii::app()->controller = null; 
-
+        // set this high enough to cause a redirect link replacement error, but not a CUrlRule error
+        ini_set('pcre.backtrack_limit', '10');
+        ini_set('pcre.recursion_limit', '10');
+        
         $cmb = $this->instantiate();
         $contact = $this->contacts('testUser_unsent');
-        $recipientAddress = $contact->email;
-        $admin = Yii::app()->settings;
-        $admin->doNotEmailLinkText = 'unsubscribe';
-        // Set URL/URI to verify proper link generation:
-        $admin->externalBaseUrl = 'http://examplecrm.com';
-        $admin->externalBaseUri = '/X2Engine';
         list($subject,$message,$uniqueId) = $cmb->prepareEmail(
-            $this->campaign('testUser'),$contact);
-        $email = $cmb->recipient->email;
-        
-        $this->assertEquals($recipientAddress,$email);
-        $this->assertEquals(
-            str_replace('{firstName}',$contact->firstName,$this->campaign('testUser')->subject),
-            $subject);
-        // Find the contact's name and tracking key:
-        $replaceVars = array(
-            '{firstName}' => $contact->firstName,
-            '{signature}' => $this->users('testUser')->profile->signature,
-            '{trackingKey}' => $uniqueId
-        );
-        $this->assertRegExp(
-            '/'.preg_quote(strtr($this->campaign('testUser')->content,$replaceVars),'/').'/',
-            $message,'Variable replacement didn\'t take place');
-        // Find the tracking image:
-        $this->assertRegExp(
-            '/'.preg_quote(
-                '<img src="'.$admin->externalBaseUrl.$admin->externalBaseUri.
-                    '/index-test.php/marketing/marketing/click?uid='.$uniqueId,'/').'/',
-            $message,'Tracking image not inserted');
-        // Find the unsubscribe link:
-        $this->assertRegExp(
-            '/'.preg_quote(
-                'To stop receiving these messages, click here: '.
-                '<a href="http://examplecrm.com/X2Engine/index-test.php/marketing/marketing/click?'.
-                'uid='.$uniqueId.'&type=unsub&email='.rawurlencode($recipientAddress).'">'.
-                'unsubscribe</a>','/').'/',
-            $message,'Unsubscribe link not inserted');
-        // Find the tracking key:
-        $this->assertRegExp(
-            '/'.preg_quote('visit http://example.com/?x2_key=','/').$uniqueId.'/',
-            $message,'Tracking key not inserted!');
+            $this->campaign('redirectLinkGeneration'), $contact, false);
     }
 
+     
 
     public function testRecordEmailSent() {
         $contact = $this->contacts('testUser');
@@ -402,6 +302,49 @@ class CampaignMailingBehaviorTest extends X2DbTestCase {
         $can = $cmb->mailIsStillDeliverable();
         $this->assertTrue($can);
     }
+
+    /**
+     * Cause line break replacement to fail and ensure that exception is thrown
+     */
+    public function testLineBreakReplacementError () {
+        $this->setExpectedException (
+            'StringUtilException', '',
+            StringUtilException::PREG_REPLACE_ERROR);
+
+        ini_set('pcre.backtrack_limit', '0');
+        ini_set('pcre.recursion_limit', '0');
+
+        TestingAuxLib::loadControllerMock ('localhost', '/index-test.php');
+        $cmb = $this->instantiate();
+        $contact = $this->contacts('testUser_unsent');
+        list($subject,$message,$uniqueId) = $cmb->prepareEmail(
+            $this->campaign('redirectLinkGeneration'), $contact);
+    }
+
+    /**
+     * Cause line break replacement to fail and ensure that exception is thrown
+     */
+    public function testUnsubTokenReplacementError () {
+        // error can't be triggered using current method of reducing the backtrack_limit and 
+        // recursion_limit since there's a call to createExternalUrl directly preceeding the
+        // code which does the token replacement
+        $this->markTestSkipped ();
+
+        $this->setExpectedException (
+            'StringUtilException', '',
+            StringUtilException::PREG_REPLACE_ERROR);
+
+        ini_set('pcre.backtrack_limit', '0');
+        ini_set('pcre.recursion_limit', '0');
+
+        TestingAuxLib::loadControllerMock ('localhost', '/index-test.php');
+        $cmb = $this->instantiate();
+        $contact = $this->contacts('testUser_unsent');
+        list($subject,$message,$uniqueId) = $cmb->prepareEmail(
+            $this->campaign('testUser'), $contact, false);
+    }
+
+
 }
 
 ?>

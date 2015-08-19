@@ -42,13 +42,28 @@ Yii::import('application.components.util.*');
  * @package application.commands
  * @author Demitri Morgan <demitri@x2engine.com>
  */
-class CryptSetupCommand {
+class CryptSetupCommand extends CConsoleCommand {
+
+    private function setConfigPermissions($value){
+        $mode = is_int($value) ? octdec($value) : octdec((int) "100$value");
+        foreach(array('encryption.key', 'encryption.iv') as $file){
+            $path = implode(DIRECTORY_SEPARATOR,array(Yii::app()->basePath,"config",$file));
+            if(file_exists($path))
+                chmod($path, $mode);
+        }
+    }
 
     public function run($args){
 
-        $encryption = new EncryptUtil('protected/config/encryption.key', 'protected/config/encryption.iv');
-        if($encryption->saveNew())
+        $encryption = new EncryptUtil('config/encryption.key', 'config/encryption.iv');
+        try {
+            $encryption->saveNew();
+            $this->setConfigPermissions (100600);
             echo "\nSuccessfully saved new encryption key/iv\n";
+        } catch (Exception $e) {
+            throw new CException(Yii::t('admin', "Failed to create a secure encryption key. The error message was: {message}", array('{message}' => $e->getMessage())));
+
+        }
     }
 
 }

@@ -38,7 +38,7 @@ $action = $this->action->id;
 $menuOptions = array(
     'index', 'create', 'createEmail', 'createQuote', 'view', 'exportToHtml', 'permissions',
 );
-if ($action != 'update' && $model->checkEditPermissions ())
+if ($action !== 'update' && $this->checkPermissions($model,'edit'))
     $menuOptions[] = 'edit';
 if (Yii::app()->user->checkAccess('DocsDelete', array('createdBy' => $model->createdBy)))
     $menuOptions[] = 'delete';

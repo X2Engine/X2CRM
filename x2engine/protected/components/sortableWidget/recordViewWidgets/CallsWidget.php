@@ -39,7 +39,7 @@
  */
 class CallsWidget extends TransactionalViewWidget {
 
-    public static $position = -1; 
+     
 
     protected $labelIconClass = 'fa-phone'; 
     protected $historyType = 'call';
@@ -67,12 +67,12 @@ class CallsWidget extends TransactionalViewWidget {
             $this->_gridViewConfig = array_merge (
                 parent::getGridViewConfig (),
                 array (
-                    'defaultGvSettings' => array (
-                        'actionDescription' => '35%',
-                        'assignedTo' => '21%',
-                        'duration' => 79,
-                        'createDate' => 60,
-                    ),
+                    'defaultGvSettings' => $this->buildDefaultGvSettings (array (
+                        'actionDescription',
+                        'assignedTo',
+                        'duration',
+                        'createDate',
+                    ), array (array (1, 2))),
                     'columnOverrides' => array (
                         'assignedTo' => array (
                             'header' => Yii::t('app', 'Completed By'),
@@ -94,6 +94,16 @@ class CallsWidget extends TransactionalViewWidget {
                     ),
                 )
             );
+            if (Yii::app()->params->profile->historyShowRels) {
+                $this->_gridViewConfig['defaultGvSettings'] = $this->buildDefaultGvSettings (
+                    array (
+                        'actionDescription',
+                        'assignedTo',
+                        'associationName',
+                        'duration',
+                        'createDate',
+                    ));
+            }
         }
         return $this->_gridViewConfig;
     }

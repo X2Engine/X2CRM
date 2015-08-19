@@ -42,7 +42,10 @@ $digital24 = Yii::t('app', 'Digital 24h');
 ?>
 
 <script type='text/javascript'>
-var setting = '<?php echo $widgetSettings ?>';
+;(function () {
+x2 = typeof x2 === 'undefined' ? {} : x2; 
+x2.clockWidget = {};
+x2.clockWidget.setting = '<?php echo $widgetSettings ?>';
 
 $(function() { 
 // Options: analog, digital, digital24
@@ -59,32 +62,33 @@ $(function() {
 	// Add the gear icon menu
 	// var imgUrl= '<?php echo $imgUrl ?>';
 
-	// Create the Confi menu
+	// Create the Config menu
 	if( $("#widget_TimeZone").find('.gear-img-container').length == 0 ) {
 		var dropdown = $("#widget_TimeZone").addConfigMenu({
-				analog: '<?php echo $analog ?>',
-				digital: '<?php echo $digital ?>',
-				digital24: '<?php echo $digital24 ?>'
-			}, callback);
+            analog: '<?php echo CHtml::encode ($analog); ?>',
+            digital: '<?php echo CHtml::encode ($digital); ?>',
+            digital24: '<?php echo CHtml::encode ($digital24); ?>'
+        }, callback);
 
 		// // Set the currently blue option to true
-		dropdown.find("div[value='"+setting+"']").addClass('option-active');
+		dropdown.find("div[value='"+x2.clockWidget.setting+"']").addClass('option-active');
 	}
 
 	// Make the ajax call to save the setting in the profile
 	function switchSetting(id){
-		setting = id;
+		x2.clockWidget.setting = id;
 		$.ajax({
 			url: "<?php echo Yii::app()->createUrl('/site/widgetSetting') ?>",
-			data: { widget: 'TimeZone',
-					setting: 'clockType',
-					value: id
-				  }
+			data: { 
+                widget: 'TimeZone',
+                setting: 'clockType',
+                value: id
+            }
 		}); 
 	}
 	
 
 });
 
-
+}) ();
 </script>

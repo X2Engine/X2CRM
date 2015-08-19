@@ -68,9 +68,9 @@ abstract class X2GridViewBase extends CGridView {
     public $title;
     public $gridViewJSClass = 'gvSettings';
     public $ajax = false;
-    public $massActions = array ();
     public $evenPercentageWidthColumns = false;
     public $showHeader = true;
+    public $hideFullHeader = false;
     public $possibleResultsPerPage = array (10, 20, 30, 40, 50, 75, 100);
     public $hideSummary = false;
 
@@ -84,6 +84,8 @@ abstract class X2GridViewBase extends CGridView {
      *  all records in the dataprovider.
      */
     public $enableSelectAllOnAllPages = false;
+
+    public $calculateChecksum = false;
 
     /**
      * @var string $gvControlsTemplate
@@ -144,6 +146,14 @@ abstract class X2GridViewBase extends CGridView {
     abstract protected function setSummaryText ();
 
     abstract protected function generateColumns ();
+    
+    /**
+     * Used instead of a closure because closure definition was causing errors, possibly related 
+     * to APC cache size settings.
+     */
+    public static function massActionLabelComparison ($a, $b) {
+        return strcmp ($a->getLabel (), $b->getLabel ());
+    }
 
     public function setResultsPerPage ($resultsPerPage) {
         $this->_resultsPerPage = $resultsPerPage;
@@ -432,12 +442,16 @@ abstract class X2GridViewBase extends CGridView {
         to save the grid view settings. It is necessary because it allows the grid view to render 
         properly even before the new grid view settings have been saved to the database.
         */
-        if(isset($_GET[$this->namespacePrefix.'gvSettings']) && isset ($this->gvSettingsName)) {
-            $this->gvSettings = json_decode($_GET[$this->namespacePrefix.'gvSettings'],true);
-            if ($this->enableDbPersistentGvSettings)
-                Profile::setGridviewSettings($this->gvSettings, $this->gvSettingsName);
-        } else if ($this->enableDbPersistentGvSettings) {
-            $this->gvSettings = Profile::getGridviewSettings($this->gvSettingsName);
+        if ($this->enableGvSettings) {
+            if(isset($_GET[$this->namespacePrefix.'gvSettings']) && 
+                isset ($this->gvSettingsName)) {
+
+                $this->gvSettings = json_decode($_GET[$this->namespacePrefix.'gvSettings'],true);
+                if ($this->enableDbPersistentGvSettings)
+                    Profile::setGridviewSettings($this->gvSettings, $this->gvSettingsName);
+            } else if ($this->enableDbPersistentGvSettings) {
+                $this->gvSettings = Profile::getGridviewSettings($this->gvSettingsName);
+            }
         }
         // Use the hard-coded defaults (note: gvSettings has column name keys:
         if($this->gvSettings == null)
@@ -642,6 +656,18 @@ Yii::app()->clientScript->registerScript(sprintf('%x', crc32(Yii::app()->name)),
             )
         );
     }
+
+    protected $_massActions; 
+    public function getMassActions () {
+        if (!isset ($this->_massActions)) {
+            $this->_massActions = array ();
+        }
+        return $this->_massActions;
+    }
+
+    public function setMassActions ($massActions) {
+        $this->_massActions = $massActions;
+    }
     
     /**
      * Display mass actions ui buttons in top bar and set up related JS
@@ -651,17 +677,26 @@ Yii::app()->clientScript->registerScript(sprintf('%x', crc32(Yii::app()->name)),
 
         $actionAccess = ucfirst(Yii::app()->controller->getId()). 'Delete';
         $authItem = $auth->getAuthItem($actionAccess);
+        
+        if(!Yii::app()->params->isAdmin && !is_null($authItem) && 
+            !Yii::app()->user->checkAccess($actionAccess)){
 
-        if(!is_null($authItem) && !Yii::app()->user->checkAccess($actionAccess)){
-            if(in_array('delete',$this->massActions))
-                unset($this->massActions[array_search('delete',$this->massActions)]);
+            if(in_array('MassDelete',$this->massActions)) {
+                $massActions = $this->massActions;
+                unset($massActions[array_search('MassDelete',$this->massActions)]);
+                // reindex so it's still a valid JSON array
+                $massActions = array_values ($massActions);
+                $this->massActions = $massActions;
+            }
         }
 
-        if ($this->enableSelectAllOnAllPages) {
+        if ($this->enableSelectAllOnAllPages && $this->calculateChecksum) {
             $idChecksum = $this->dataProvider->getIdChecksum ();
+        } else {
+            $idChecksum = null;
         }
 
-        $massActionObjs = MassAction::getMassActionObjects ($this->massActions);
+        $massActionObjs = MassAction::getMassActionObjects ($this->massActions, $this);
 
         $this->controller->renderPartial (
             'application.components.views._x2GridViewMassActionButtons', array (
@@ -692,24 +727,21 @@ Yii::app()->clientScript->registerScript(sprintf('%x', crc32(Yii::app()->name)),
         if($this->dataProvider->getItemCount() > 0 || $this->showTableOnEmpty) {
             $pagerDisplayed = $this->dataProvider->getPagination()->getPageCount () > 1;
 
-            if($this->enableGvSettings) {
-                if ($this->fixedHeader) echo '</div>';
-                $this->renderContentBeforeHeader ();
-                echo '<div class="x2grid-header-container">';
-            }
+            if ($this->fixedHeader) echo '</div>';
+            $this->renderContentBeforeHeader ();
+            echo '<div class="x2grid-header-container">';
 
             echo '<table class="',$this->itemsCssClass,'"'.
-                    ($this->showHeader ? '' : "style='display: none;'").'>';
+                    (($this->showHeader || !$this->hideFullHeader) ? 
+                        '' : "style='display: none;'").'>';
             $this->renderTableHeader();
 
-            if($this->enableGvSettings) {
-                echo '</table></div>';
-                if ($this->fixedHeader) echo '</div></div>';
-                echo '<div class="x2grid-body-container'.
-                    (!$pagerDisplayed ? ' x2grid-no-pager' : '').'"><table class="'.
-                    $this->itemsCssClass.
-                    ($this->fixedHeader ? ' x2-gridview-body-with-fixed-header' : '')."\">\n";
-            }
+            echo '</table></div>';
+            if ($this->fixedHeader) echo '</div></div>';
+            echo '<div class="x2grid-body-container'.
+                (!$pagerDisplayed ? ' x2grid-no-pager' : '').'"><table class="'.
+                $this->itemsCssClass.
+                ($this->fixedHeader ? ' x2-gridview-body-with-fixed-header' : '')."\">\n";
 
             ob_start();
             $this->renderTableBody();
@@ -718,8 +750,7 @@ Yii::app()->clientScript->registerScript(sprintf('%x', crc32(Yii::app()->name)),
             echo $body; // TFOOT must appear before TBODY according to the standard.
             echo '</table>';
 
-            if($this->enableGvSettings)
-                echo '</div>';
+            echo '</div>';
         } else {
             $this->renderEmptyText();
         }
@@ -805,10 +836,8 @@ Yii::app()->clientScript->registerScript(sprintf('%x', crc32(Yii::app()->name)),
 
         /* x2modstart */ 
         // Adds script essential to modifying the gridview (and saving its configuration).
-        if($this->enableGvSettings) {
-            Yii::app()->clientScript->registerScriptFile(Yii::app()->getBaseUrl().
-                '/js/X2GridView/x2gridview.js', CCLientScript::POS_END);
-        }
+        Yii::app()->clientScript->registerScriptFile(Yii::app()->getBaseUrl().
+            '/js/X2GridView/x2gridview.js', CCLientScript::POS_END);
         /* x2modend */ 
 	}
 
@@ -831,7 +860,7 @@ Yii::app()->clientScript->registerScript(sprintf('%x', crc32(Yii::app()->name)),
             }
         ");
         $afterUpdateJSString = "
-            (function () {
+            ;(function () {
             var grid = $('#".$this->id."');
             $('#".$this->namespacePrefix."-mobile-dropdown').unbind ('click.mobileDropdownScript')
                 .bind ('click.mobileDropdownScript', function () {
@@ -919,7 +948,13 @@ Yii::app()->clientScript->registerScript(sprintf('%x', crc32(Yii::app()->name)),
     public function renderTableHeader() {
         if(!$this->hideHeader) {
 
-            /* x2modstart */ 
+            $filterOptions = array ();
+            if (!$this->hideFullHeader && !$this->showHeader) {
+                $filterOptions = array (
+                    'style' => 'display: none;'
+                );
+            }
+
             $sortDirections = $this->getSortDirections ();
             foreach($this->columns as $column) {
                 // determine sort state for this column (adapted from CSort::link())
@@ -933,11 +968,10 @@ Yii::app()->clientScript->registerScript(sprintf('%x', crc32(Yii::app()->name)),
                     }
                 }
             }
-            /* x2modend */ 
             echo "<thead>\n";
 
             if($this->filterPosition===self::FILTER_POS_HEADER)
-                $this->renderFilter();
+                $this->renderFilterWithOptions ($filterOptions);
 
             echo "<tr>\n";
             foreach($this->columns as $column) {
@@ -946,7 +980,7 @@ Yii::app()->clientScript->registerScript(sprintf('%x', crc32(Yii::app()->name)),
             echo "</tr>\n";
 
             if($this->filterPosition===self::FILTER_POS_BODY)
-                $this->renderFilter();
+                $this->renderFilterWithOptions($filterOptions);
 
             echo "</thead>\n";
         } else if($this->filter!==null &&
@@ -954,8 +988,29 @@ Yii::app()->clientScript->registerScript(sprintf('%x', crc32(Yii::app()->name)),
              $this->filterPosition===self::FILTER_POS_BODY)) {
 
             echo "<thead>\n";
-            $this->renderFilter();
+            $this->renderFilterWithOptions();
             echo "</thead>\n";
+        }
+    }
+
+    /**
+     * Like renderFilter, but with html attribute options
+     * This method is Copyright (c) 2008-2014 by Yii Software LLC
+     * http://www.yiiframework.com/license/ 
+     */
+    public function renderFilterWithOptions (
+        /* x2modstart */array $htmlOptions = array ()/* x2modend */) {
+
+        if($this->filter!==null)
+        {
+            /* x2modstart */ 
+            echo CHtml::openTag ('tr', X2Html::mergeHtmlOptions (array (
+                'class' => $this->filterCssClass,
+            ), $htmlOptions))."\n";
+            /* x2modend */ 
+            foreach($this->columns as $column)
+                $column->renderFilterCell();
+            echo "</tr>\n";
         }
     }
 

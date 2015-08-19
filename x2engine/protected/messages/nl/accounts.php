@@ -38,4 +38,9 @@ return array (
 'Import Accounts'=>'Import Accounts',
 'Export Accounts'=>'Export Accounts',
 'Bug Report Attributes'=>'Bug Report attributen',
+'Share {opportunity}'=>'Delen {opportunity}',
+'{account}'=>'{account}',
+'{module} Report'=>'{module} Report',
+'This form will allow you to generate a campaign to mail related {contacts} of the {accounts} displayed in the report below. Select "Primary {contacts}" to only email {contacts} which are set as the Primary {contact} for an {account}. Select "All" to email all related {contacts} on each {account}.'=>'Dit formulier kunt u een campagne gerelateerde mail genereren {contacts} van de {accounts} weergegeven in de onderstaande rapport. Selecteer &quot;Primaire {contacts} om alleen e-mail {contacts} die zijn ingesteld als de primaire {contact} een {account} Selecteer &quot;All&quot; om e-mail Alle gerelateerde {contacts} op elke {account}',
+'Primary {module}'=>'Primaire {module}',
 );

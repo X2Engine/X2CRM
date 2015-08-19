@@ -99,7 +99,10 @@ $themeUrl = Yii::app()->theme->getBaseUrl();
         'action' => array('saveChanges', 'id' => $model->id),
     ));
 
-    $this->renderPartial('application.components.views._detailView', array('model' => $model, 'modelName' => 'X2Leads'));
+    $this->widget ('DetailView', array(
+        'model' => $model
+    ));
+//    $this->renderPartial('application.components.views.@DETAILVIEW', array('model' => $model, 'modelName' => 'X2Leads'));
     $this->endWidget();
 
     $this->widget('InlineEmailForm', array(
@@ -124,12 +127,10 @@ $themeUrl = Yii::app()->theme->getBaseUrl();
     </div>
 
 <?php
-$this->widget(
-        'Attachments', array(
-    'associationType' => 'x2Leads', 'associationId' => $model->id,
-    'startHidden' => true
-        )
-);
+$this->widget ('ModelFileUploader', array(
+    'associationType' => 'x2Leads',
+    'associationId' => $model->id,
+));
 ?>
 </div>
 

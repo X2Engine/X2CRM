@@ -49,7 +49,7 @@ class X2FlowRecordTag extends X2FlowAction {
 			'remove' => Yii::t('studio','Remove'),
 			'clear' => Yii::t('studio','Clear All'),
 		);
-		return array(
+		return array_merge (parent::paramRules (), array (
 			'title' => Yii::t('studio',$this->title),
 			'info' => Yii::t('studio',$this->info),
 			'modelRequired' => 1,
@@ -61,7 +61,7 @@ class X2FlowRecordTag extends X2FlowAction {
                     'optional'=>true
                 ),
 				array('name'=>'action','label'=>Yii::t('studio','Action'),'type'=>'dropdown','options'=>$tagActions),
-			));
+			)));
 	}
 
 	public function execute(&$params) {

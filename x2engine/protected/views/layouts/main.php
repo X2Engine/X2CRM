@@ -163,7 +163,19 @@ if($isGuest){
 }
 
 $modules = Modules::model()->findAll(
-    array('condition' => 'visible="1"', 'order' => 'menuPosition ASC'));
+    array('condition' => 'visible="1"'));
+usort ($modules, function ($a, $b) {
+    $aPos = $a->menuPosition === null ? INF : ((int) $a->menuPosition);
+    $bPos = $b->menuPosition === null ? INF : ((int) $b->menuPosition);
+    if ($aPos < $bPos) {
+        return -1;
+    } elseif ($aPos > $bPos) {
+        return 1;
+    } else {
+        return 0;
+    }
+});
+
 $standardMenuItems = array();
 foreach($modules as $moduleItem){
     if(($isAdmin || $moduleItem->adminOnly == 0) && $moduleItem->name != 'users'){
@@ -281,8 +293,7 @@ $searchbarHtml = CHtml::beginForm(array('/search/search'), 'get')
         )).'</form>';
 
 if(!empty($profile->avatar) && file_exists($profile->avatar)) {
-    $src = Yii::app()->request->baseUrl.'/'.$profile->avatar;
-    $avatar = CHtml::image( $src, '', array('height' => 25, 'width' => 25));
+    $avatar = Profile::renderAvatarImage($profile->id, 25, 25);
 } else {
     $avatar = X2Html::defaultAvatar (25);
 }
@@ -314,9 +325,7 @@ $userMenu = array(
         ),
     ),
     array(
-        'label' => Yii::t('app', '{users}', array(
-            '{users}' => Modules::displayName(true, "Users"),
-        )), 
+        'label' => Yii::t('app', 'Users'), 
         'url' => array('/users/users/admin'),
         'visible' => $isAdmin,
         'itemOptions' => array (
@@ -325,9 +334,7 @@ $userMenu = array(
         ),
     ),
     array(
-        'label' => Yii::t('app', '{users}', array(
-            '{users}' => Modules::displayName(true, "Users"),
-        )), 
+        'label' => Yii::t('app', 'Users'), 
         'url' => array('/profile/profiles'),
         'visible' => !$isAdmin,
         'itemOptions' => array (
@@ -357,14 +364,13 @@ $userMenuItems = array(
             'view' => 'iconreference')),
     array(
         'label' => Yii::t('help', 'Help'),
-        'url' => 'http://www.x2engine.com/reference_guide',
+        'url' => 
+         
+            'http://www.x2crm.com/reference_guide',
         'linkOptions' => array('target' => '_blank')),
     array(
         'label' => Yii::t('app', 'Report A Bug'),
         'url' => array('/site/bugReport')),
-    array(
-        'label' => Yii::t('app', 'About X2Engine'),
-        'url' => array('/site/page', 'view' => 'about')),
     array(
         'label' => Yii::t('app', '---'),
         'itemOptions' => array('class' => 'divider')),
@@ -430,42 +436,8 @@ if (RESPONSIVE_LAYOUT) {
 }
 ?>
 </head>
-<body style="<?php
-    $noBorders = false;
-    if ($preferences != null && $preferences['backgroundColor'])
-        echo 'background-color:#'.$preferences['backgroundColor'].';';
-
-    if ($preferences != null && $preferences['backgroundImg']) {
-
-        if(file_exists('uploads/'.$preferences['backgroundImg'])) {
-            echo 'background-image:url('.$baseUrl.'/uploads/'.$preferences['backgroundImg'].');';
-        } else {
-            echo 'background-image:url('.$baseUrl.'/uploads/media/'.Yii::app()->user->getName().
-                '/'.$preferences['backgroundImg'].');';
-        }
-
-        switch($bgTiling = $preferences['backgroundTiling']) {
-            case 'repeat-x':
-            case 'repeat-y':
-            case 'repeat':
-                echo 'background-repeat:'.$bgTiling.';';
-                break;
-            case 'center':
-                echo 'background-repeat:no-repeat;background-position:center center;';
-                break;
-            case 'stretch':
-            default:
-                echo 'background-attachment:fixed;background-size:cover;';
-                $noBorders = true;
-        }
-    }
-?>" class="enable-search-bar-modes <?php 
-    if($noBorders) echo 'no-borders'; 
-    if($fullscreen) echo ' no-widgets'; else echo ' show-widgets';
-    if(!RESPONSIVE_LAYOUT) echo ' disable-mobile-layout'; 
-?>">
-
 <?php
+echo X2Html::openBodyTag ($preferences);
 //if (YII_DEBUG && YII_UNIT_TESTING) {
 //    echo "<div id='qunit'></div>";
 //}
@@ -485,9 +457,6 @@ if (RESPONSIVE_LAYOUT) {
             <div id="main-menu-bar">
                 <div id='show-left-menu-button'>
                     <i class='fa fa-bars'></i>
-                    <!-- <div class='x2-bar'></div> -->
-                    <!-- <div class='x2-bar'></div> -->
-                    <!-- <div class='x2-bar'></div> -->
                 </div>
                 <a href="<?php echo $isGuest
                         ? $this->createUrl('/site/login')
@@ -496,25 +465,26 @@ if (RESPONSIVE_LAYOUT) {
                         )); ?>"
                  id='search-bar-title' class='special'>
                 <?php
-                $custom = Yii::app()->params->logo !== 'uploads/logos/yourlogohere.png';
+                $custom = Yii::app()->params->logo !== 'uploads/protected/logos/yourlogohere.png';
                 if ($custom) {
-                    echo CHtml::image(
-                        Yii::app()->request->baseUrl.'/'.Yii::app()->params->logo, Yii::app()->settings->appName,
-                        array (
-                            'id' => 'your-logo',
-                            'class' => 'custom-logo'
-                        ));
-                } else if (Auxlib::isIE()) {
-                    echo CHtml::image(
-                        Yii::app()->request->baseUrl.'/images/x2-logo-square.png', Yii::app()->settings->appName,
-                        array (
-                            'id' => 'your-logo',
-                            'class' => 'custom-logo'
-                        ));
-                } else {
-                    echo CHtml::tag('span', array('id'=> 'x2-logo', 'class'=>'icon-x2-logo-square'), ' ');
-                }
-
+                    $media = Media::model ()->findByAttributes (array (
+                        'associationType' => 'logo'
+                    ));
+                    if ($media) {
+                        echo CHtml::image(
+                            $media->getPublicUrl (),
+                            Yii::app()->settings->appName,
+                            array (
+                                'id' => 'your-logo',
+                                'class' => 'custom-logo'
+                            ));
+                    }
+                } else { 
+                    echo X2Html::logo ('menu', array (
+                        'id' => 'your-logo',
+                        'class' => 'default-logo',
+                    ));
+                } 
                 ?>
                 </a>
                 <div id='top-menus-container'>
@@ -581,24 +551,12 @@ if (RESPONSIVE_LAYOUT) {
     $this->renderPartial('//layouts/footer');
     if(Yii::app()->session['translate'])
         echo '<div class="yiiTranslationList"><b>Other translated messages</b><br></div>';
-
     if($preferences != null &&
        ($preferences['loginSound'] || $preferences['notificationSound']) &&
        isset($_SESSION['playLoginSound']) && $_SESSION['playLoginSound']){
 
         $_SESSION['playLoginSound'] = false;
-        $where = 'fileName=:loginSound';
-        $uploadedBy = Yii::app()->db->createCommand()
-            ->select('uploadedBy')
-            ->from('x2_media')
-            ->where($where, array (':loginSound'=> $preferences['loginSound']))
-            ->queryRow();
-        if(!empty($uploadedBy['uploadedBy'])){
-            $loginSound = Yii::app()->baseUrl.'/uploads/media/'.$uploadedBy['uploadedBy'].'/'.
-                $preferences['loginSound'];
-        }else{
-            $loginSound = Yii::app()->baseUrl.'/uploads/'.$preferences['loginSound'];
-        }
+        $loginSound = Yii::app()->controller->createUrl('/media/media/getFile',array('id'=>$preferences['loginSound']));
         echo "";
         Yii::app()->clientScript->registerScript('playLoginSound', '
             $("#loginSound").attr("src","'.$loginSound.'");

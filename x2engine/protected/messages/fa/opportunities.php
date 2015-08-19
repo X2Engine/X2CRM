@@ -32,4 +32,10 @@ return array (
 'Relationships for Contact: '=>'روابط برای تماس با ما:',
 'Import Opportunities'=>'فرصت های واردات',
 'Export Opportunities'=>'فرصت های صادرات',
+'Create {opportunity}'=>'درست {opportunity}',
+'{opportunity}:'=>'{opportunity}',
+'{opportunities} List'=>'{opportunities} فهرست',
+'Edit {opportunity}'=>'ویرایش {opportunity}',
+'Import {opportunities}'=>'واردات {opportunities}',
+'Export {opportunities}'=>'صادرات {opportunities}',
 );

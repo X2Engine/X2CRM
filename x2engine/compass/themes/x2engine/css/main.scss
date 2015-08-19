@@ -39,6 +39,7 @@
 
 // Font awesome Pseudo classes
 @import "font-awesome";
+@import "x2-icons";
 
 // Icon mixins and font
 @import "icons";
@@ -261,10 +262,10 @@ div.portlet-minimize {
     width: 15px;
     display: inline-block;
     cursor: pointer;
-    opacity: 0.4;
+    opacity: 0.7;
 
     &:hover {
-        opacity: 0.6;
+        opacity: 1;
     }
 }
 
@@ -272,15 +273,16 @@ div.portlet-minimize {
 .portlet-close-button,
 .activity-control-link, 
 .left-widget-min-max{
-    opacity: 0.6;
+    opacity: 0.7;
 }
 
 .portlet-minimize {
     .collapse-widget {
-        opacity: 0.6;
+        opacity: 0.7;
     }
+    .portlet-close-button:hover,
     .expand-widget:hover {
-        opacity: 0.9;
+        opacity: 0.7;
     }
 }
 
@@ -289,7 +291,7 @@ div.portlet-minimize {
 }
 
 .portlet-close-button > :hover, .activity-control-link > :hover, .left-widget-min-max > :hover {
-    opacity: 0.9;
+    opacity: 1;
 }
 
 .portlet-minimize {
@@ -647,9 +649,9 @@ div.list-actions {
 }
 
 img.attachment-img {
-    margin: 5px;
-    display: block;
-    max-width: 250px;
+    // margin: 5px;
+    // display: block;
+    // max-width: 250px;
 }
 
 span.event-text {
@@ -782,6 +784,11 @@ div {
         background: #e6efc2;
         color: #264409;
         border: 2px solid #c6d880;
+    }
+    &.flash-tip {
+        background: $babyBlue;
+        color: $nearBlack;
+        border: 2px solid $darkBabyBlue;
     }
     &.flash-error a {
         color: #8a1f11;
@@ -949,22 +956,6 @@ body.yii-t dt.yii-t {
     border: none;
     background: #F0F0F0;
     width: 10px;
-}
-
-td.fc-today {
-    border: 1px solid black;
-    div div.fc-day-number {
-        font-weight: bold;
-        font-size: 16px;
-    }
-}
-
-.fc-sun.fc-day, .fc-sat.fc-day {
-    background: #f2f2f2;
-}
-
-.fc-today, .fc-sun.fc-day.fc-today, .fc-sat.fc-day.fc-today {
-    background: #fcf8e3;
 }
 
 .overdue {

@@ -87,11 +87,15 @@ class TestingAuxLib  {
         };
     }
 
-    public static function setPrivateProperty ($className, $propertyName, $value) {
+    public static function setPrivateProperty ($className, $propertyName, $value, $instance=null) {
         $relectionClass = new ReflectionClass ($className);
         $reflectionProperty = $relectionClass->getProperty ($propertyName);
         $reflectionProperty->setAccessible (true);
-        $reflectionProperty->setValue ($propertyName, $value);
+        if (!$instance) {
+            $reflectionProperty->setValue ($value);
+        } else {
+            $reflectionProperty->setValue ($instance, $value);
+        }
     }
 
     /**
@@ -172,7 +176,7 @@ class TestingAuxLib  {
         $output = array (); 
         $retVar;
         $retVal = exec ($command, $output, $retVar);
-        VERBOSE_MODE && print_r ($output);
+        X2_VERBOSE_MODE && print_r ($output);
         return $output;
     }   
 
@@ -235,6 +239,78 @@ class TestingAuxLib  {
         if (isset (self::$_oldUserComponent)) {
             Yii::app()->setComponent ('user', self::$_oldUserComponent);
         } 
+    }
+
+    private static $_oldController;
+    private static $_oldServerVals;
+
+    /**
+     * Load controller mock, as well as related mocks and $_SERVER values which might be needed 
+     * in cases where a controller is needed.
+     */
+    public static function loadControllerMock (
+        $serverName='localhost', $scriptName='/index-test.php') {
+
+        self::$_oldController = Yii::app ()->controller;
+        self::$_oldServerVals = $_SERVER;
+        $_SERVER['SCRIPT_FILENAME'] = realpath ('../../index-test.php'); 
+        $_SERVER['DOCUMENT_ROOT'] = realpath ('../..'); 
+        $_SERVER['SERVER_NAME'] = $serverName; 
+        $_SERVER['SCRIPT_NAME'] = $scriptName; 
+        $_SERVER['REQUEST_URI'] = '/index.php/controllerMock/actionMock'; 
+        foreach(array('IS_IPAD','RESPONSIVE_LAYOUT') as $layoutConst) {
+            defined($layoutConst) or define($layoutConst,false);
+        }
+        Yii::app()->controller = new ControllerMock (
+            'moduleMock', new ModuleMock ('moduleMock', null));
+        Yii::app()->controller->action = new ActionMock (Yii::app()->controller, 'actionMock');
+        // clear the url property caches so they will get regenerated using the
+        // properties of $_SERVER
+        self::setPrivateProperty (
+            'CHttpRequest', '_scriptUrl', null, Yii::app()->request);
+        self::setPrivateProperty (
+            'CUrlManager', '_baseUrl', null, Yii::app()->getUrlManager ());
+    }
+
+    public static function restoreController () {
+        if(isset(self::$_oldController)){
+            Yii::app()->controller = self::$_oldController;
+        }
+        if(isset(self::$_oldServerVals)){
+            $_SERVER = self::$_oldServerVals;
+        }
+    }
+
+    public static function setConstant ($constName, $val) {
+        $testConstantsFile = 'testconstants.php';
+        $contents = file_get_contents ($testConstantsFile);
+        $contents = preg_replace ('/('.$constName.'\',[ ]*)[^)]+/', '\1'.$val, $contents);
+        file_put_contents ($testConstantsFile, $contents);
+    }
+
+    /**
+     * Uses imap to assert that an email with the specified subject is present in the specified
+     * mailbox
+     * @param CTestCase $owner
+     * @param Credentials $credentials
+     * @param string $subject unique email subject
+     * @param int $tries number of imap request attempts
+     */
+    public function assertEmailReceived ($owner, Credentials $credentials, $subject, $tries = 1) {
+        Yii::import ('application.tests.components.EmailTestingUtil');
+        $emailTestUtil = new EmailTestingUtil;
+        $emailTestUtil->credentials = $credentials;
+        $owner->assertTrue ($emailTestUtil->open ());
+        $stream = $emailTestUtil->getStream ();
+        $searchString = 'SUBJECT "'.$subject.'"';
+        for ($i = 0; $i < $tries; $i++) {
+            $uids = imap_search ($stream, $searchString, SE_UID);
+            if ($uids) break;
+            sleep (3);
+        }
+        $owner->assertTrue (is_array ($uids));
+        $owner->assertEquals (1, count ($uids));
+        $emailTestUtil->close ();
     }
 
 }

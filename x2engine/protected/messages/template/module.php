@@ -3,7 +3,6 @@ return array (
 'Data fields'=>'',
 'Module Title'=>'',
 'The name for your new module'=>'',
-'Item Name'=>'',
 '(Optional) What to call individual records, e.g. "Create new X"'=>'',
 'DB Table Name'=>'',
 'Optional (alphanumeric only, must start with a letter)'=>'',
@@ -34,4 +33,5 @@ return array (
 'Import {X}'=>'',
 'Export {X}'=>'',
 '{modelName} Attributes'=>'',
+'Edit {X}'=>'',
 );

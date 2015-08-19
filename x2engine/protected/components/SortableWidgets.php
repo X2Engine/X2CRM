@@ -123,6 +123,7 @@ class SortableWidgets extends CJuiWidget {
         }
         $profile = yii::app()->params->profile;
         foreach($this->portlets as $class => $properties){
+            if (!class_exists ($class)) continue;
             
             // show widget if it isn't hidden
             if(!in_array($class, array_keys($layout['hiddenRight']))){ 

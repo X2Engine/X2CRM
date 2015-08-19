@@ -31,6 +31,41 @@ class Modules extends CActiveRecord {
 		return parent::model($className);
 	}
 
+    public static function getModuleNames ($custom=null) {
+        static $cache;
+        if (!isset ($cache)) {
+            $cache = Yii::app()->db->createCommand ()
+                ->select ('name, custom')
+                ->from ('x2_modules')
+                ->queryAll ();
+        }
+        if ($custom) {
+            $records = array_filter ($cache, function ($record) {
+                return (int) $record['custom'] === 1;
+            });
+        } else {
+            $records = $cache;
+        }
+        return array_map (function ($record) {
+            return $record['name'];
+        }, $records);
+    }
+
+    public static function getDropdownOptions () {
+        $moduleNames = self::getModuleNames ();
+        $options = array ();
+        foreach ($moduleNames as $name) {
+            $options[$name] = self::displayName (true, $name);
+        }
+        asort ($options);
+        return $options;
+    }
+
+    public static function dropDownList ($name, $selected='', $htmlOptions=array ()) {
+        return CHtml::dropDownList (
+            $name, $selected, self::getDropdownOptions (), $htmlOptions);
+    }
+
     /**
      * @return string the associated database table name
      */
@@ -143,8 +178,8 @@ class Modules extends CActiveRecord {
         $modules = Modules::model()->findAll();
         $moduleList = array();
         $skipModules = array(
-            'Calendar', 'Charts', 'Groups', 'Reports', 'Media', 'Users', 'Workflow', 
-            'EmailInboxes');
+            'Calendar', 'Charts', 'Groups', 'Reports', 'Media', 'Users', 'Workflow');
+        
         foreach($modules as $module){
             $name = ucfirst($module->name);
             if (in_array($name, $skipModules)) {
@@ -192,13 +227,13 @@ class Modules extends CActiveRecord {
      * @param string Module to retrieve name for
      * @return string|false Current module title, false if none could be found
      */
-    public static function displayName($plural = true, $module = null) {
+    public static function displayName($plural = true, $module = null, $refresh = false) {
         $moduleTitle = null;
         if (is_null($module))
             $module = Yii::app()->controller->module->name;
 
         // return a cached value
-        if (isset(self::$_displayNames[$module][$plural]))
+        if (!$refresh && isset(self::$_displayNames[$module][$plural]))
             return self::$_displayNames[$module][$plural];
 
         $moduleTitle = Yii::app()->db->createCommand()
@@ -213,7 +248,7 @@ class Modules extends CActiveRecord {
 
         if (Yii::app()->locale->id === 'en') {
             // Handle silly English pluralization
-            if (!$plural) {
+            if ($plural === false) {
                 if (preg_match('/ies$/', $moduleTitle)) {
                     $moduleTitle = preg_replace('/ies$/', 'y', $moduleTitle);
                 } else if (preg_match('/ses$/', $moduleTitle)) {
@@ -221,6 +256,16 @@ class Modules extends CActiveRecord {
                 } else if ($moduleTitle !== 'Process') {
                     // Otherwise chop the trailing s
                     $moduleTitle = trim($moduleTitle, 's');
+                }
+            } elseif ($plural === 'optional') {
+                if (preg_match('/y$/', $moduleTitle)) {
+                    $moduleTitle = preg_replace('/y$/', '(ies)', $moduleTitle);
+                } else if (preg_match('/ss$/', $moduleTitle)) {
+                    $moduleTitle .= '(es)';
+                } else if (in_array ($moduleTitle, array ('Service'))) {
+                    $moduleTitle .= '(s)';
+                } elseif (preg_match ('/s$/', $moduleTitle)) {
+                    $moduleTitle = preg_replace('/s$/', '(s)', $moduleTitle);
                 }
             } else {
                 if (preg_match('/y$/', $moduleTitle)) {
@@ -231,6 +276,8 @@ class Modules extends CActiveRecord {
                     $moduleTitle .= 's';
                 }
             }
+        }else{
+            $moduleTitle = Yii::t('app', $moduleTitle);
         }
         self::$_displayNames[$module][$plural] = $moduleTitle;
         return $moduleTitle;
@@ -312,4 +359,5 @@ class Modules extends CActiveRecord {
             return false;
         }
     }
+
 }

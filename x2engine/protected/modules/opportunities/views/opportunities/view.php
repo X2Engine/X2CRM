@@ -96,8 +96,10 @@ $this->beginWidget('CActiveForm', array(
     'enableAjaxValidation'=>false,
     'action'=>array('saveChanges','id'=>$model->id),
 ));
-
-$this->renderPartial('application.components.views._detailView',array('model'=>$model,'modelName'=>'Opportunity'));
+$this->widget('DetailView', array(
+    'model'   => $model,
+));
+// $this->renderPartial('application.components.views.@DETAILVIEW',array('model'=>$model,'modelName'=>'Opportunity'));
 $this->endWidget();
 
 $this->widget('InlineEmailForm', array(
@@ -142,11 +144,18 @@ if((bool) $model->contactName){ // if associated contact exists, setup inline em
     }
 }
 
+// $this->widget(
+//     'Attachments',
+//     array(
+//         'associationType'=>'opportunities','associationId'=>$model->id,
+//         'startHidden'=>true
+//     )
+// ); 
 $this->widget(
-    'Attachments',
+    'ModelFileUploader',
     array(
-        'associationType'=>'opportunities','associationId'=>$model->id,
-        'startHidden'=>true
+        'associationType'=>'opportunities',
+        'associationId'=>$model->id,
     )
 ); 
 

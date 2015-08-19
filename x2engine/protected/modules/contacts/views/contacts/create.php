@@ -50,12 +50,8 @@ $this->insertMenu($menuOptions);
 </div>
 <?php 
 
-echo $this->renderPartial(
-    'application.components.views._form', 
-    array(
-        'model'=>$model,
-        'users'=>$users,
-        'modelName'=>'contacts',
+    $this->widget ('FormView', array(
+        'model' => $model,
         'defaultsByRelatedModelType' => array (
             'Accounts' => array (
                 'phone' => 'js: $("div.formInputBox #Contacts_phone").val();',
@@ -63,7 +59,22 @@ echo $this->renderPartial(
                 'assignedTo' => 'js: $("#Contacts_assignedTo_assignedToDropdown").val();'
             )
         )
-    )); 
+    ));
+
+// echo $this->renderPartial(
+//    'application.components.views.@FORMVIEW', 
+//     array(
+//         'model'=>$model,
+//         'users'=>$users,
+//         'modelName'=>'contacts',
+//         'defaultsByRelatedModelType' => array (
+//             'Accounts' => array (
+//                 'phone' => 'js: $("div.formInputBox #Contacts_phone").val();',
+//                 'website' => 'js: $("div.formInputBox #Contacts_website").val();',
+//                 'assignedTo' => 'js: $("#Contacts_assignedTo_assignedToDropdown").val();'
+//             )
+//         )
+//     )); 
 
 if(isset($_POST['x2ajax'])) {
     echo "<script>\n";

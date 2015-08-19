@@ -238,6 +238,10 @@ auxlib.onClickOutside = (function () {
     };
 }) ();
 
+auxlib.rebind = function (elem$, eventName, callback) {
+    elem$.unbind (eventName).bind (eventName, callback);
+};
+
 auxlib.makeDialogClosableWithOutsideClick = function (dialogElem) {
     $("body").on ('click', function (evt) {
         if ($(dialogElem).closest (".ui-dialog").length &&
@@ -532,20 +536,50 @@ auxlib.pageLoadingStop = function () {
         auxlib.throbber$.remove ();
 };
 
-auxlib.containerLoading = function (elem$) {
+auxlib.containerLoadingStop = function (elem$) {
+    elem$.find ('.x2-loading-icon').remove ();
+    auxlib.containerOverlayRemove (elem$);
+};
+
+auxlib.containerLoading = function (elem$, attr, overlay) {
+    attr = typeof attr === 'undefined' ? {} : attr; 
+    overlay = typeof overlay === 'undefined' ? false : overlay; 
     var throbber$ = $('<div>', {
         'class': 'x2-loading-icon load8 x2-loader',
-    });
+    }).attr (attr);
     throbber$.append ($('<div>', {
         'class': 'loader'
     }));
     elem$.append (throbber$);
+
     throbber$.position ({
         my: 'center center',
         at: 'center center',
         of: elem$
     });
+    if (overlay) {
+        auxlib.containerOverlay ();
+    }
     return throbber$;
+};
+
+auxlib.containerOverlay = function (elem$) {
+    var overlay$ = $('<div>', {
+        'class': 'x2-loading-overlay',
+        'style': 'position: absolute;'
+    });
+    overlay$.height (elem$.height ());
+    overlay$.width (elem$.width ());
+    elem$.after (overlay$);
+    overlay$.position ({
+        my: 'center center', 
+        at: 'center center', 
+        of: elem$
+    })
+};
+
+auxlib.containerOverlayRemove = function (elem$) {
+    elem$.next ('.x2-loading-overlay').remove ();
 };
 
 auxlib.confirm = function (callback, translations) {

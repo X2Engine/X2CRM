@@ -152,7 +152,7 @@ x2.EmailProgressControl = (function() {
                 proceed = confirm(that.translations['confirm']);
 
             if(proceed) {
-                if(that.emailProgressControl.paused) {
+                if(that.paused) {
                     $(element).parents("form").submit();
                 } else {
                     that.afterSend = function() {

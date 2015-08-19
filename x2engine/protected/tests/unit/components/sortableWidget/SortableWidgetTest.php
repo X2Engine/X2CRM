@@ -71,7 +71,7 @@ class SortableWidgetTest extends X2DbTestCase {
 
         $widgetLayoutAfter = $profile->profileWidgetLayout;
         $createdWidgetAttr = array_diff_key ($widgetLayoutAfter, $widgetLayoutBefore);
-        VERBOSE_MODE && print_r ($createdWidgetAttr);
+        X2_VERBOSE_MODE && print_r ($createdWidgetAttr);
         // ensure that widget settings were saved correctly
         $keys = array_keys ($createdWidgetAttr);
         $this->assertEquals ($widgetSubtype.'_'.$uid, array_pop ($keys));
@@ -149,6 +149,81 @@ class SortableWidgetTest extends X2DbTestCase {
         $this->assertFalse ($widgetSettings['softDeleted']);
         $this->assertEquals (
             array_keys ($widgetLayoutBefore), array_keys ($widgetLayoutAfter));
+    }
+
+    public function testPropertyGetters () {
+        TestingAuxLib::loadControllerMock ();
+        $profile = $this->profiles ('adminProfile');
+        $widgetLayout = $profile->profileWidgetLayout;
+        $widgetClass = 'ContactsGridViewProfileWidget';
+        $widgetProps = $widgetLayout[$widgetClass];
+        $this->assertEquals (
+            $widgetProps, $widgetClass::getJSONProperties ($profile, 'profile', ''));
+        $this->assertEquals (
+            $widgetProps['label'], 
+            $widgetClass::getJSONProperty ($profile, 'label', 'profile', ''));
+
+        $this->obStart ();
+        $instance = self::createWidget ($widgetClass.'_', $profile);
+        $this->obEndClean ();
+
+        $this->assertEquals ($widgetProps, $instance->getWidgetProperties ());
+        $this->assertEquals ($widgetProps['label'], $instance->getWidgetProperty ('label'));
+    }
+
+    public function testPropertySetters () {
+        TestingAuxLib::loadControllerMock ();
+        $profile = $this->profiles ('adminProfile');
+        $widgetLayout = $profile->profileWidgetLayout;
+        $widgetClass = 'ContactsGridViewProfileWidget';
+        $widgetProps = $widgetLayout[$widgetClass];
+        $newWidgetProps = $widgetProps;
+        $newWidgetProps['label'] = 'newLabel';
+        $widgetClass::setJSONProperties ($profile, $newWidgetProps, 'profile', '');
+        $profile->refresh ();
+        $widgetLayout = $profile->profileWidgetLayout;
+        $widgetProps = $widgetLayout[$widgetClass];
+        $this->assertEquals ($newWidgetProps, $widgetProps);
+
+        $widgetClass::setJSONProperty ($profile, 'label', 'newLabel2', 'profile', '');
+        $newWidgetProps['label'] = 'newLabel2';
+        $profile->refresh ();
+        $widgetLayout = $profile->profileWidgetLayout;
+        $widgetProps = $widgetLayout[$widgetClass];
+        $this->assertEquals ($newWidgetProps, $widgetProps);
+
+        $this->obStart ();
+        $instance = self::createWidget ($widgetClass.'_', $profile);
+        $this->obEndClean ();
+
+        $instance->setWidgetProperty ('label', 'newLabel3');
+        $newWidgetProps['label'] = 'newLabel3';
+        $profile->refresh ();
+        $widgetLayout = $profile->profileWidgetLayout;
+        $widgetProps = $widgetLayout[$widgetClass];
+        $this->assertEquals ($newWidgetProps, $widgetProps);
+
+        $instance->setWidgetProperties (array ('label' => 'newLabel4'));
+        $newWidgetProps['label'] = 'newLabel4';
+        $profile->refresh ();
+        $widgetLayout = $profile->profileWidgetLayout;
+        $widgetProps = $widgetLayout[$widgetClass];
+        $this->assertEquals ($newWidgetProps, $widgetProps);
+    }
+
+    protected static function createWidget (
+        $layoutKey, $profile, $widgetType='profile', $options=array ()) {
+
+        list($widgetClass, $widgetUID) = SortableWidget::parseWidgetLayoutKey ($layoutKey);
+        return Yii::app()->controller->createWidget(
+            'application.components.sortableWidget.'.$widgetClass, array_merge(
+                array(
+                    'widgetUID' => $widgetUID,
+                    'profile' => $profile,
+                    'widgetType' => $widgetType,
+                )
+        , $options));
+
     }
 
 }

@@ -119,6 +119,9 @@
 /***********************************************************************
 * This section is made to correspond with the theme keys in ThemeGenerator
 ***********************************************************************/
+/***********************************************************************
+* Responsive design
+***********************************************************************/
 /***************************************
 * Mixin for border radius 
 ***************************************/
@@ -132,13 +135,13 @@
 * CSS to extend when something 
 * should look like a link
 ***************************************/
-/* line 87, ../../../compass/css/lib/_standards.scss */
+/* line 126, ../../../compass/css/lib/_standards.scss */
 .pseudo-link {
   cursor: pointer;
   color: #004baf;
   transition: color .1s;
 }
-/* line 92, ../../../compass/css/lib/_standards.scss */
+/* line 131, ../../../compass/css/lib/_standards.scss */
 .pseudo-link:hover {
   color: #006cfb;
 }
@@ -147,18 +150,15 @@
 * CSS to extend when for elements that 
 * become transparent on mouseover
 ***************************************/
-/* line 110, ../../../compass/css/lib/_standards.scss */
+/* line 149, ../../../compass/css/lib/_standards.scss */
 .opacity-hover {
   opacity: 0.3;
 }
-/* line 105, ../../../compass/css/lib/_standards.scss */
+/* line 144, ../../../compass/css/lib/_standards.scss */
 .opacity-hover:hover {
   opacity: 1;
 }
 
-/*********************************
-* Box Shadow Prefixer
-********************************/
 /***************************************
 * Apply the standard box shadow currently
 * used on x2-island-layout items
@@ -258,12 +258,12 @@
 @font-face {
   font-family: Montserrat;
   font-weight: bold;
-  src: url("/css/lib/fonts/Montserrat-Bold.ttf");
+  src: url("../../../css/lib/fonts/Montserrat-Bold.ttf");
 }
 @font-face {
   font-family: Montserrat;
   font-weight: normal;
-  src: url("/css/lib/fonts/Montserrat-Regular.ttf");
+  src: url("../../../css/lib/fonts/Montserrat-Regular.ttf");
 }
 /* line 42, ../../../compass/themes/x2engine/css/printPage.scss */
 body {
@@ -297,15 +297,19 @@ h1, h2, h3, h4, h5, th {
   min-height: 11in;
   background: white;
   padding: 0.5in;
-  -moz-box-shadow: 0px 2px 3px rgba(0, 0, 0, 0.15), 0px -1px 1px rgba(0, 0, 0, 0.1);
   -webkit-box-shadow: 0px 2px 3px rgba(0, 0, 0, 0.15), 0px -1px 1px rgba(0, 0, 0, 0.1);
+  -moz-box-shadow: 0px 2px 3px rgba(0, 0, 0, 0.15), 0px -1px 1px rgba(0, 0, 0, 0.1);
+  -ms-box-shadow: 0px 2px 3px rgba(0, 0, 0, 0.15), 0px -1px 1px rgba(0, 0, 0, 0.1);
+  -o-box-shadow: 0px 2px 3px rgba(0, 0, 0, 0.15), 0px -1px 1px rgba(0, 0, 0, 0.1);
   box-shadow: 0px 2px 3px rgba(0, 0, 0, 0.15), 0px -1px 1px rgba(0, 0, 0, 0.1);
 }
 
 /* line 76, ../../../compass/themes/x2engine/css/printPage.scss */
 #config-panel {
-  -moz-box-shadow: 0px 2px 3px rgba(0, 0, 0, 0.15), 0px -1px 1px rgba(0, 0, 0, 0.1);
   -webkit-box-shadow: 0px 2px 3px rgba(0, 0, 0, 0.15), 0px -1px 1px rgba(0, 0, 0, 0.1);
+  -moz-box-shadow: 0px 2px 3px rgba(0, 0, 0, 0.15), 0px -1px 1px rgba(0, 0, 0, 0.1);
+  -ms-box-shadow: 0px 2px 3px rgba(0, 0, 0, 0.15), 0px -1px 1px rgba(0, 0, 0, 0.1);
+  -o-box-shadow: 0px 2px 3px rgba(0, 0, 0, 0.15), 0px -1px 1px rgba(0, 0, 0, 0.1);
   box-shadow: 0px 2px 3px rgba(0, 0, 0, 0.15), 0px -1px 1px rgba(0, 0, 0, 0.1);
   box-sizing: border-box;
   position: absolute;

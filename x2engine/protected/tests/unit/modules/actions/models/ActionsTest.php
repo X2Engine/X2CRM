@@ -119,11 +119,11 @@ class ActionsTest extends CDbTestCase {
         // this should return profile for username and all profiles in group, without duplicates
         $profileUsernames = array_map (function ($a) { return $a->username; }, $profiles);
 
-        VERBOSE_MODE && print ('sizeof ($profiles) = ');
-        VERBOSE_MODE && print (sizeof ($profiles)."\n");
+        X2_VERBOSE_MODE && print ('sizeof ($profiles) = ');
+        X2_VERBOSE_MODE && print (sizeof ($profiles)."\n");
 
-        VERBOSE_MODE && print ('$profileUsernames  = ');
-        VERBOSE_MODE && print_r ($profileUsernames);
+        X2_VERBOSE_MODE && print ('$profileUsernames  = ');
+        X2_VERBOSE_MODE && print_r ($profileUsernames);
 
         $this->assertTrue (sizeof ($profiles) === 2);
         $this->assertTrue (in_array ('testuser', $profileUsernames));
@@ -140,11 +140,11 @@ class ActionsTest extends CDbTestCase {
         // this should return profile for username and all profiles in group, without duplicates
         $profileUsernames = array_map (function ($a) { return $a->username; }, $profiles);
 
-        VERBOSE_MODE && print ('sizeof ($profiles) = ');
-        VERBOSE_MODE && print (sizeof ($profiles)."\n");
+        X2_VERBOSE_MODE && print ('sizeof ($profiles) = ');
+        X2_VERBOSE_MODE && print (sizeof ($profiles)."\n");
 
-        VERBOSE_MODE && print ('$profileUsernames  = ');
-        VERBOSE_MODE && print_r ($profileUsernames);
+        X2_VERBOSE_MODE && print ('$profileUsernames  = ');
+        X2_VERBOSE_MODE && print_r ($profileUsernames);
 
         $this->assertTrue (sizeof ($profiles) === 2);
         $this->assertTrue (in_array ('testuser', $profileUsernames));
@@ -157,8 +157,8 @@ class ActionsTest extends CDbTestCase {
         $action = $this->actions('action3');
         $assignees = $action->getAssignees (true);
 
-        VERBOSE_MODE && print ('sizeof ($assignees) = ');
-        VERBOSE_MODE && print (sizeof ($assignees)."\n");
+        X2_VERBOSE_MODE && print ('sizeof ($assignees) = ');
+        X2_VERBOSE_MODE && print (sizeof ($assignees)."\n");
 
         $this->assertTrue (sizeof ($assignees) === 2);
         $this->assertTrue (in_array ('testuser', $assignees));
@@ -178,8 +178,8 @@ class ActionsTest extends CDbTestCase {
         */
         $assignees = $action->getAssignees (true);
 
-        VERBOSE_MODE && print ('sizeof ($assignees) = ');
-        VERBOSE_MODE && print (sizeof ($assignees)."\n");
+        X2_VERBOSE_MODE && print ('sizeof ($assignees) = ');
+        X2_VERBOSE_MODE && print (sizeof ($assignees)."\n");
 
         $this->assertTrue (sizeof ($assignees) === 2);
         $this->assertTrue (in_array ('testuser', $assignees));
@@ -192,7 +192,7 @@ class ActionsTest extends CDbTestCase {
         $action = $this->actions('action6');
 
         $notifs = $action->createNotifications ('assigned');
-        VERBOSE_MODE && print (sizeof ($notifs));
+        X2_VERBOSE_MODE && print (sizeof ($notifs));
         $this->assertTrue (sizeof ($notifs) === 2);
         $notifAssignees = array_map (function ($a) { return $a->user; }, $notifs);
         $this->assertTrue (in_array ('admin', $notifAssignees));
@@ -201,7 +201,7 @@ class ActionsTest extends CDbTestCase {
         $notifs = $action->createNotifications ('me');
         $this->assertTrue (sizeof ($notifs) === 1);
         $notifAssignees = array_map (function ($a) { return $a->user; }, $notifs);
-        VERBOSE_MODE && print_r ($notifAssignees);
+        X2_VERBOSE_MODE && print_r ($notifAssignees);
         $this->assertTrue (in_array ('Guest', $notifAssignees));
 
         $notifs = $action->createNotifications ('both');
@@ -214,14 +214,14 @@ class ActionsTest extends CDbTestCase {
 
     public function testChangeCompleteState () {
         TestingAuxLib::suLogin ('admin');
-        VERBOSE_MODE && print (Yii::app()->user->name ."\n");
-        VERBOSE_MODE && print ((int) Yii::app()->params->isAdmin);
-        VERBOSE_MODE && print ("\n");
+        X2_VERBOSE_MODE && print (Yii::app()->user->name ."\n");
+        X2_VERBOSE_MODE && print ((int) Yii::app()->params->isAdmin);
+        X2_VERBOSE_MODE && print ("\n");
         $action = $this->actions('action6');
         $completedNum = Actions::changeCompleteState ('complete', array ($action->id));
         $this->assertEquals (1, $completedNum);
         $action = Actions::model()->findByPk ($action->id);
-        VERBOSE_MODE && print ($action->complete."\n");
+        X2_VERBOSE_MODE && print ($action->complete."\n");
         $this->assertTrue ($action->complete === 'Yes');
         Actions::changeCompleteState ('uncomplete', array ($action->id));
         $action = Actions::model()->findByPk ($action->id);

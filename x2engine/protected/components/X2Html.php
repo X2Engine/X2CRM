@@ -36,6 +36,61 @@
 
 class X2Html extends CHtml {
 
+    public static function openBodyTag (array $preferences, array $htmlOptions = array ()) {
+        $cs = Yii::app()->clientScript;
+        $baseUrl = $cs->baseUrl;
+        $fullscreen = $cs->fullscreen;
+        $style = '';
+        $classes = 'enable-search-bar-modes';
+        $noBorders = false;
+        if ($preferences != null && $preferences['backgroundColor'])
+            $style .= 'background-color:#'.$preferences['backgroundColor'].';';
+
+        if ($preferences != null && $preferences['backgroundImg']) {
+            if (Yii::app()->user->isGuest) {
+                $media = Media::model ()->findByAttributes (array (
+                    'id' => $preferences['backgroundImg']
+                ));
+                if ($media) {
+                    $mediaUrl = $media->getPublicUrl ();
+                }
+            } else {
+                $mediaUrl = $baseUrl.Yii::app()->request->scriptUrl.'/media/getFile/'.
+                    $preferences['backgroundImg'];
+            }
+             
+            if (isset ($mediaUrl)) {
+                $style .= 'background-image:url('.$mediaUrl.');';
+                $classes .= ' custom-background-image';
+            }
+
+            switch($bgTiling = $preferences['backgroundTiling']) {
+                case 'repeat-x':
+                case 'repeat-y':
+                case 'repeat':
+                    $style .= 'background-repeat:'.$bgTiling.';';
+                    break;
+                case 'center':
+                    $style .=  'background-repeat:no-repeat;background-position:center center;';
+                    break;
+                case 'stretch':
+                default:
+                    $style .=  'background-attachment:fixed;background-size:cover;';
+                    $noBorders = true;
+            }
+        }
+        if($noBorders) $classes .= ' no-borders'; 
+        if($fullscreen) $classes .= ' no-widgets'; else $classes .=  ' show-widgets';
+        if(!RESPONSIVE_LAYOUT) $classes .=  ' disable-mobile-layout'; 
+        $classes .= ' not-mobile-body';
+
+        $htmlOptions = self::mergeHtmlOptions (array (
+            'class' => $classes,
+            'style' => $style
+        ), $htmlOptions);
+        return self::openTag ('body', $htmlOptions);
+    }
+
     public static function renderPhoneLink ($phoneNumber) {
         // spaces can't be used as visual separators (see http://tools.ietf.org/html/rfc3966)
         $formattedNumber = preg_replace ('/ /', '', $phoneNumber);
@@ -170,8 +225,13 @@ class X2Html extends CHtml {
      * Renders main content page title 
      * @param string $pageTitle 
      */
-    public static function renderPageTitle ($pageTitle) {
-        echo '<div class="page-title"><h2>'.$pageTitle.'</h2></div>';
+    public static function renderPageTitle ($pageTitle, array $htmlOptions=array ()) {
+        if (isset ($htmlOptions['class'])) {
+            $htmlOptions['class'] .= ' page-title';
+        } else {
+            $htmlOptions['class'] = 'page-title';
+        }
+        echo self::tag('div', $htmlOptions, self::tag ('h2', array (), $pageTitle));
     }
 
     /**
@@ -341,14 +401,26 @@ class X2Html extends CHtml {
 		return $content;
 	}
 
+    public static function activeMultiTypeAutocomplete (
+        CModel $model, $typeAttribute, $idAttribute, $options) {
+
+        return Yii::app()->controller->widget ('MultiTypeAutocomplete', array (
+            'model' => $model,
+            'selectName' => $typeAttribute,
+            'hiddenInputName' => $idAttribute,
+            'options' => $options
+        ), true);
+
+    }
+
     /**
-     * @param CModel $type 
+     * @param CModel $model 
      * @param string $attribute 
      * @param array (optional) $htmlOptions 
      * @return string
      */
     public static function activeDatePicker (
-        CModel $type, $attribute, array $htmlOptions = array (), $mode='date', 
+        CModel $model, $attribute, array $htmlOptions = array (), $mode='date', 
         array $options = array ()) {
 
         $options = array_merge (array(
@@ -360,9 +432,11 @@ class X2Html extends CHtml {
         ob_start ();
         ob_implicit_flush(false);
         Yii::import ('application.extensions.CJuiDateTimePicker.CJuiDateTimePicker');
-        $renderWidget = function () use ($type, $attribute, $htmlOptions, $mode, $options) {  
+
+        $model->$attribute = Formatter::formatDateTime ($model->$attribute);
+        $renderWidget = function () use ($model, $attribute, $htmlOptions, $mode, $options) {  
             Yii::app()->controller->widget('CJuiDateTimePicker', array(
-                'model' => $type, 
+                'model' => $model, 
                 'attribute' => $attribute, 
                 'mode' => $mode, 
                 'options' => $options,
@@ -429,7 +503,7 @@ class X2Html extends CHtml {
 
     /**
      * Create an font awesome icon tag
-     * @param string $iconClass fa- prepended name of icon such as 'fa-edit' or 'fa-copy'
+     * @param string $iconClass Name of icon such as 'fa-edit' or 'copy' (with or without fa)
      * @param array $htmlOptions extra options to be passed to the tag
      * @param string $optional content to be passed inside of the tag (not recommended)
      * @return string generated html content
@@ -437,6 +511,11 @@ class X2Html extends CHtml {
     public static function fa($iconClass, $htmlOptions = array(), $content=' ', $tag='i') {
         if (!isset($htmlOptions['class'])) {
             $htmlOptions['class'] = '';
+        }
+
+        // Prepend with fa- if not there
+        if (!preg_match('/^fa-/', $iconClass)) {
+            $iconClass = 'fa-'.$iconClass;
         }
         
         $htmlOptions['class'] .= " fa $iconClass";
@@ -469,7 +548,8 @@ class X2Html extends CHtml {
             'class' => 'ie-banner'
         );
 
-        $message = 'This feature does not support your version of Internet Explorer';
+        $message = Yii::t('app', 
+            'This feature does not support your version of Internet Explorer');
         
         if ($echo) {
             echo self::tag ('h2', $htmlOptions, Yii::t('app', $message));
@@ -505,6 +585,9 @@ class X2Html extends CHtml {
         )); 
     }
 
+    /**
+     * Deprecated. Inline buttons are in the form now. 
+     */
     public static function inlineEditButtons() {
         $html = '';
         $html .= CHtml::link( 
@@ -548,12 +631,7 @@ class X2Html extends CHtml {
     public static function activeRichTextArea (
         CModel $model, $attribute, array $htmlOptions=array ()) {
 
-		Yii::app()->clientScript->registerScriptFile(
-            Yii::app()->getBaseUrl().'/js/emailEditor.js', CClientScript::POS_END);
-		Yii::app()->clientScript->registerScriptFile(
-            Yii::app()->getBaseUrl().'/js/ckeditor/ckeditor.js', CClientScript::POS_END);
-		Yii::app()->clientScript->registerScriptFile(
-            Yii::app()->getBaseUrl().'/js/ckeditor/adapters/jquery.js', CClientScript::POS_END);
+        Yii::app()->clientScript->registerPackage('emailEditor');
 
         if (isset ($htmlOptions['class'])) {
             $htmlOptions['class'] .= ' x2-rich-textarea';
@@ -568,6 +646,19 @@ class X2Html extends CHtml {
             $htmlOptions['height'] = '125px';
         }
 
+        return CHtml::activeTextArea ($model, $attribute, $htmlOptions);
+    }
+
+    public static function activeCodeEditor (
+        CModel $model, $attribute, array $htmlOptions = array ()) {
+
+        if (isset ($htmlOptions['class'])) {
+            $htmlOptions['class'] .= ' x2-code-editor';
+        } else {
+            $htmlOptions['class'] = 'x2-code-editor';
+        }
+
+        Yii::app()->clientScript->registerPackage('CodeMirrorJS');
         return CHtml::activeTextArea ($model, $attribute, $htmlOptions);
     }
 
@@ -614,10 +705,18 @@ class X2Html extends CHtml {
         '</span>';
     }
 
+    /**
+     * Echos a divider useful for custom forms. Example usage in webform creator
+     * @param  string $width  width of divider
+     * @param  string $margin Margin on either side of element
+     */
     public static function divider($width='100%', $margin='15px') {
         return "<div class='x2-divider' style='width:100%;max-width:$width; margin-top: $margin; margin-bottom: $margin'></div>";
     }
 
+    /**
+     * Echos the default avatar for a profile
+     */
     public static function defaultAvatar ($size='') {
         return self::x2icon ('profile-large', array(
             'style' => "font-size: ${size}px;",
@@ -625,10 +724,66 @@ class X2Html extends CHtml {
         ));
     }
 
+    /**
+     * Returns an input with the CSRF Token
+     */
     public static function csrfToken(){
         return self::hiddenField('YII_CSRF_TOKEN', Yii::app()->request->csrfToken);
     }
 
+    public static function logo ($type, array $htmlOptions = array ()) {
+        assert (in_array ($type, array ('mobile', 'menu', 'login_white', 'login_black', 'about')));
+
+        $logoName = $type.'_logo';
+        $html = '';
+        if (in_array ($type, array ('menu')) && Auxlib::isIE8() ||
+            in_array ($type, array ('login_white', 'login_black', 'mobile')) && Auxlib::isIE()) {
+            $htmlOptions = self::mergeHtmlOptions (array (
+                'class' => $logoName,
+            ), $htmlOptions);
+            $filename = $logoName.'.png';
+            $html .= CHtml::image(
+                Yii::app()->request->baseUrl.'/images/'.$filename, 
+                Yii::app()->settings->appName,
+                $htmlOptions);
+        } else {
+            $htmlOptions = self::mergeHtmlOptions (array (
+                'class' => 'icon-x2-logo-square '.$logoName,
+            ), $htmlOptions);
+            $html .= CHtml::tag('span', $htmlOptions, ' ');
+        }
+        return $html;
+    }
+
+    public static function x2ActivePasswordField (
+        CModel $model, $attr, array $htmlOptions=array (), $enableVisibilityToggle=false) {
+
+        static $counter = 0;
+
+        $html = '';
+        if ($enableVisibilityToggle) {
+            $id = isset ($htmlOptions['id']) ? 
+                $htmlOptions['id'] : 'X2Html_'.__FUNCTION__.'_'.$counter++;
+                $htmlOptions['id'] = $id;
+        }
+        $html .= CHtml::activePasswordField($model, $attr, $htmlOptions);
+        if ($enableVisibilityToggle) {
+            $html .= '<div class="password-visibility-toggle" 
+                title="'.CHtml::encode (Yii::t('app', 'Toggle password visibility')).'">';
+            $html .= self::fa ('eye');
+            $html .= self::fa ('eye-slash', array ('style' => 'display:none;'));
+            $html .= '</div>';
+            Yii::app()->clientScript->registerScript('activePasswordField'.$id,"
+            ;(function () {
+                $('#$id').siblings ('.password-visibility-toggle').on ('click', function (elem) {
+                    $(this).children ().toggle ();
+                    var input$ = $('#$id');
+                    input$.attr ('type', input$.attr ('type') === 'password' ? 'text' : 'password');
+                });
+            }) ();
+            ");
+        }
+        return $html;
+    }
+
 }
-
-

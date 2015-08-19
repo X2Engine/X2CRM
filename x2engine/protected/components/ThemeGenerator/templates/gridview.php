@@ -65,11 +65,13 @@ tr.odd td, tr.even td, td input {
     border-color: $colors[opaque_text];
 }
 
-.asc, .desc,
-.asc a, .desc a {
+.grid-view .asc, .grid-view .desc,
+.grid-view .asc a, .grid-view .desc a {
+    /* temporarily removed until more subtle higlight option is available 
     background: $colors[highlight2]
     color: $colors[smart_text2]
-    text-shadow: none !important;
+    text-shadow: none !important;*/
+    border: none;
 }
 
 .sortable-widget-container div.page-title .x2-minimal-select,

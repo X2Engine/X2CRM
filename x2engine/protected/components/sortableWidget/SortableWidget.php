@@ -49,13 +49,9 @@ abstract class SortableWidget extends X2Widget {
         'application.components.sortableWidget.recordViewWidgets';
      
 
-    /**
-     * @var null|int $position If set, WidgetLayoutJSONFieldsBehavior will use this to order
-     *  the widget relative to other widgets in the layout
-     */
-    public static $position = null; 
-
     public static $createByDefault = true;
+
+    public static $canBeCreated = true;
 
     /**
      * @var string The type of widget that this is (profile). This value is used to detect the 
@@ -190,11 +186,19 @@ abstract class SortableWidget extends X2Widget {
 
     private $_widgetLabel;
 
-    private $_widgetProperties = array ();
+    private $_widgetProperties;
 
-    /***********************************************************************
-    * Public Static Methods
-    ***********************************************************************/
+    /**
+     * Used for situations where widget type should resolve to parent type (e.g for 
+     * module-specific record view layouts)
+     */
+    public static function getParentType ($widgetType) {
+        if (!in_array ($widgetType, array ('data', 'recordView', 'profile'))) {
+            return 'recordView';
+        } else {
+            return $widgetType;
+        }
+    }
 
     /**
      * Returns path alias of directory that contains widgets of the specified type
@@ -205,6 +209,7 @@ abstract class SortableWidget extends X2Widget {
             case 'profile':
                 $pathAlias = self::PROFILE_WIDGET_PATH_ALIAS;
                 break;
+            case 'topics':
             case 'recordView':
                 $pathAlias = self::RECORD_VIEW_WIDGET_PATH_ALIAS;
                 break;
@@ -223,7 +228,7 @@ abstract class SortableWidget extends X2Widget {
     public static function getWidgetSubtypes ($widgetType) {
         static $cache = array ();
 
-        if (!in_array ($widgetType, array ('profile', 'recordView'
+        if (!in_array ($widgetType, array ('profile', 'topics', 'recordView'
             ))) {
 
             throw new CException ('invalid widget type');
@@ -258,6 +263,20 @@ abstract class SortableWidget extends X2Widget {
         }
     }
 
+    public static function getCreatableWidgetOptions ($widgetType) {
+        $widgetSubtypes = self::getWidgetSubtypeOptions ($widgetType);
+        $filtered = array ();
+        foreach ($widgetSubtypes as $type => $label) {
+            if (preg_match ('/TemplatesGridViewProfileWidget$/', $type)) {
+                $className = 'TemplatesGridViewProfileWidget';
+            } else {
+                $className = $type;
+            }
+            if (class_exists ($className) && $className::$canBeCreated) $filtered[$type] = $label;
+        }    
+        return $filtered;
+    }    
+
     /**
      * @var string $widgetType
      * @return array associative array with widget class names as keys and widget labels as values
@@ -265,12 +284,14 @@ abstract class SortableWidget extends X2Widget {
     public static function getWidgetSubtypeOptions ($widgetType) {
         static $cache = array ();
         if (!isset ($cache[$widgetType])) {
+            $widgetSubtypes = self::getWidgetSubtypes ($widgetType);
+
             $cache[$widgetType] = array_combine (
-                self::getWidgetSubtypes ($widgetType),
+                $widgetSubtypes,
                 array_map (function ($widgetType) {
                     $jsonPropertiesStruct = $widgetType::getJSONPropertiesStructure ();
                     return $jsonPropertiesStruct['label'];
-                }, self::getWidgetSubtypes ($widgetType))
+                }, $widgetSubtypes)
             );
 
             // add custom module summary pseudo-subtypes
@@ -348,7 +369,7 @@ abstract class SortableWidget extends X2Widget {
 
             return;
         }
-        Yii::app()->controller->widget(
+        return Yii::app()->controller->widget(
             'application.components.sortableWidget.'.$widgetClass, array_merge(
                 array(
                     'widgetUID' => $widgetUID,
@@ -507,9 +528,23 @@ abstract class SortableWidget extends X2Widget {
      * @param string $key The name of the JSON property
      * @param string $value The value the the JSON property will be set to
      * @param string $widgetType The type of widget that this is (profile)
-     * @returns boolean True for update success, false otherwise
+     * @return boolean True for update success, false otherwise
+     * @deprecated use setJSONProperties instead
      */
     public static function setJSONProperty ($profile, $key, $value, $widgetType, $widgetUID) {
+        return self::setJSONProperties (
+            $profile, array ($key => $value), $widgetType, $widgetUID);
+    }
+
+    /**
+     * Sets the values of a properties, for the current widget class, of the widget layout JSON 
+     * object.
+     * @param object $profile The profile model
+     * @param array $props
+     * @param string $widgetType The type of widget that this is (profile)
+     * @return boolean True for update success, false otherwise
+     */
+    public static function setJSONProperties ($profile, array $props, $widgetType, $widgetUID) {
         $widgetLayoutName = $widgetType . 'WidgetLayout';
         $widgetClass = get_called_class ();
 
@@ -519,14 +554,19 @@ abstract class SortableWidget extends X2Widget {
             $widgetKey = $widgetClass;
 
         $layout = $profile->$widgetLayoutName;
-
-        if (isset ($layout[$widgetKey])) {
-            if (in_array ($key, array_keys ($layout[$widgetKey]))) {
-                $layout[$widgetKey][$key] = $value;
-                $profile->$widgetLayoutName = $layout;
-                if ($profile->update ()) {
-                    return true;
+        $update = false;
+        foreach ($props as $key => $value) {
+            if (isset ($layout[$widgetKey])) {
+                if (in_array ($key, array_keys ($layout[$widgetKey]))) {
+                    $layout[$widgetKey][$key] = $value;
+                    $update = true;
                 }
+            }
+        }
+        if ($update) {
+            $profile->$widgetLayoutName = $layout;
+            if ($profile->update ()) {
+                return true;
             }
         }
         return false;
@@ -538,7 +578,7 @@ abstract class SortableWidget extends X2Widget {
      * @param object $profile The profile model
      * @param string $key The name of the JSON property
      * @param string $widgetType The type of widget that this is (profile)
-     * @returns mixed null if the property cannot be retrieved, other the value of the property
+     * @return mixed null if the property cannot be retrieved, other the value of the property
      */
     public static function getJSONProperty ($profile, $key, $widgetType, $widgetUID) {
         $properties = self::getJSONProperties($profile, $widgetType, $widgetUID);
@@ -572,7 +612,7 @@ abstract class SortableWidget extends X2Widget {
      * @param object $profile The profile model
      * @param string $key The name of the JSON property
      * @param string $widgetType The type of widget that this is (profile)
-     * @returns mixed null if the property cannot be retrieved, other the value of the property
+     * @return mixed null if the property cannot be retrieved, other the value of the property
      */
     public static function getJSONProperties ($profile, $widgetType, $widgetUID) {
         $widgetClass = get_called_class ();
@@ -584,17 +624,12 @@ abstract class SortableWidget extends X2Widget {
             $widgetKey = $widgetClass;
 
         $layout = $profile->$widgetLayoutName;
+
         if (isset ($layout[$widgetKey])) {
             return $layout[$widgetKey];
         }
         return null;
     }
-
-
-
-    /***********************************************************************
-    * Non-public Static Methods 
-    ***********************************************************************/
 
     /**
      * Used by renderWidgetContents to sort template elements
@@ -602,11 +637,6 @@ abstract class SortableWidget extends X2Widget {
     private static function compareOffset ($a, $b) {
         return $a[1] > $b[1];
     }
-
-
-    /***********************************************************************
-    * Public Instance Methods 
-    ***********************************************************************/
 
     /**
      * @return string key which uniquely identifies this widget 
@@ -620,11 +650,38 @@ abstract class SortableWidget extends X2Widget {
      * @param string $key The name of the JSON property
      */
     public function getWidgetProperty ($key) {
+        if (!isset ($this->_widgetProperties)) {
+            $this->getWidgetProperties ();
+        }
         if (!isset ($this->_widgetProperties[$key])) {
-            $this->_widgetProperties[$key] = 
-                self::getJSONProperty ($this->profile, $key, $this->widgetType, $this->widgetUID);
+            return null;
         }
         return $this->_widgetProperties[$key];
+    }
+
+    public function getWidgetProperties () {
+        if (!isset ($this->_widgetProperties)) {
+            $this->_widgetProperties = self::getJSONProperties (
+                $this->profile, $this->widgetType, $this->widgetUID);
+        }
+        return $this->_widgetProperties;
+    }
+
+    /**
+     * Non-static wrapper around setJSONProperties which caches the property value for 
+     * getWidgetProperty ()
+     * @param array $props
+     */
+    public function setWidgetProperties (array $props) {
+        if (self::setJSONProperties (
+            $this->profile, $props, $this->widgetType, $this->widgetUID)) {
+
+            foreach ($props as $key => $value) {
+                $this->_widgetProperties[$key] = $value;
+            }
+            return true;
+        }
+        return false;
     }
 
     /**
@@ -634,8 +691,8 @@ abstract class SortableWidget extends X2Widget {
      * @param string $value 
      */
     public function setWidgetProperty ($key, $value) {
-        if (self::setJSONProperty (
-            $this->profile, $key, $value, $this->widgetType, $this->widgetUID)) {
+        if (self::setJSONProperties (
+            $this->profile, array ($key => $value), $this->widgetType, $this->widgetUID)) {
 
             $this->_widgetProperties[$key] = $value;
             return true;
@@ -647,18 +704,18 @@ abstract class SortableWidget extends X2Widget {
      * @return string widget label 
      */
     public function getWidgetLabel () {
-        if (!isset ($this->_widgetLabel)) {
-            $this->_widgetLabel = self::getJSONProperty (
-                $this->profile, 'label', $this->widgetType, $this->widgetUID); 
-        }
-        return $this->_widgetLabel;
+        return Yii::t('app',$this->getWidgetProperty ('label'));
     }
 
     public function getSharedViewFile () {
         if (!isset ($this->_sharedViewFile)) {
-            $this->_sharedViewFile = $this->widgetType . 'Widget';
+            $this->_sharedViewFile = self::getParentType ($this->widgetType) . 'Widget';
         }
         return $this->_sharedViewFile;
+    }
+
+    public function setSharedViewFile ($sharedViewFile) {
+        $this->_sharedViewFile = $sharedViewFile;
     }
 
     /**
@@ -701,16 +758,20 @@ abstract class SortableWidget extends X2Widget {
         $this->packages = array_merge ($this->packages, $package);
     }
 
+    public function getJSInstanceName () {
+        $widgetClass = get_called_class ();
+        return $widgetClass.$this->widgetUID;
+    }
+
     /**
      * Magic getter. Returns this widget's setup script.
      * @return string JS string which gets registered when widget content gets rendered
      */
     public function getSetupScript () {
         if (!isset ($this->_setupScript)) {
-            $widgetClass = get_called_class ();
             $this->_setupScript = "
                 $(function () {
-                    x2.".$widgetClass.$this->widgetUID." = new $this->sortableWidgetJSClass (".
+                    x2.".$this->getJSInstanceName ()." = new $this->sortableWidgetJSClass (".
                         CJSON::encode ($this->getJSSortableWidgetParams ()).
                     ");
                 });
@@ -767,6 +828,7 @@ abstract class SortableWidget extends X2Widget {
         // don't render hidden widgets to prevent page load slow down
         $hidden = self::getJSONProperty (
             $this->profile, 'hidden', $this->widgetType, $this->widgetUID);
+
         if ($hidden !== null && $hidden) return;
 
         $this->registerCss ();
@@ -774,9 +836,15 @@ abstract class SortableWidget extends X2Widget {
         // extract html strings and template strings from template
         $itemMatches = array ();
         $htmlMatches = array ();
-        preg_match_all ("/(?:^([^{]+)\{)|(?:\}([^{]+)\{)|(?:\}([^{]+)$)/", $this->template, 
+        // TODO: rename template property _template and add getTemplate method to base class
+        if (method_exists ($this, 'getTemplate')) {
+            $template = $this->getTemplate ();
+        } else {
+            $template = $this->template;
+        }
+        preg_match_all ("/(?:^([^{]+)\{)|(?:\}([^{]+)\{)|(?:\}([^{]+)$)/", $template, 
             $htmlMatches, PREG_PATTERN_ORDER | PREG_OFFSET_CAPTURE);
-        preg_match_all ("/{([^}]+)}/", $this->template, $itemMatches,
+        preg_match_all ("/{([^}]+)}/", $template, $itemMatches,
             PREG_PATTERN_ORDER | PREG_OFFSET_CAPTURE);
 
         $templateHTML = array ();
@@ -1020,70 +1088,7 @@ abstract class SortableWidget extends X2Widget {
      */
     protected function getSharedCss () {
         if (!isset ($this->_sharedCss)) {
-            $this->_sharedCss = array (
-                'sortableWidgetSharedCss' => "
-                    .widget-settings-button.x2-icon-button {
-                        opacity: 0.45;
-                    }
-                    .widget-settings-button.x2-icon-button:hover {
-                        opacity: 0.75;
-                    }
-
-                    .sortable-widget-container {
-                        margin-bottom: 10px;
-                    }
-
-                    .widget-title-bar {
-                        padding:1px;
-                        border-radius:            3px 3px 0px 0px;
-                        -moz-border-radius:        3px 3px 0px 0px;
-                        -webkit-border-radius:    3px 3px 0px 0px;
-                        -o-border-radius:        3px 3px 0px 0px ;
-                        height: 22px;
-                    }
-                    
-                    .widget-title {
-                        display:block;
-                        font-size:11pt;
-                        font-weight:bold;
-                        line-height:22px;
-                        color:#333;
-                        cursor:default;
-                        margin-left: 10px;
-                        float: left;
-                    }
-
-                    .widget-title-bar a {
-                        color: inherit;
-                    }
-                    
-                    .widget-close-button {
-                        margin-right: 4px;
-                        margin-top: 3px;
-                        float: right;
-                    }
-                    
-                    .widget-minimize-button {
-                        margin-right: 7px;
-                        margin-top: 4px;
-                        float: right;
-                        width: 13px;
-                    }
-
-                    .widget-settings-button {
-                        margin-right: 10px;
-                        margin-top: 3px;
-                        float: right;
-                    }
-
-                    .widget-resize-helper {
-                        width: 100%;
-                        height: 5px;
-                        margin-top: -5px;
-                        display: block;
-                    }
-
-                    ");
+            $this->_sharedCss = array ();
         }
         return $this->_sharedCss;
     }

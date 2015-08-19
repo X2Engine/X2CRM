@@ -37,9 +37,39 @@
 class X2ActiveForm extends CActiveForm {
 
     /**
+     * @var string $id
+     */
+    public $id = 'x2-form'; 
+
+    /**
+     * @var bool $instantiateJSClass
+     */
+    public $instantiateJSClass = true;
+
+    /**
+     * @var string $JSClass 
+     */
+    public $JSClass = 'X2Form'; 
+
+    /**
+     * @var CFormModel $formModel
+     */
+    public $formModel; 
+
+    /**
      * @var string $namespace
      */
     public $namespace = '';  
+
+    protected $_packages;
+
+    public function __construct ($owner=null) {
+        // TODO: refactor dependency to X2Widget into a behavior that manages namespacing
+        if ($this->namespace === '' && isset ($_POST[X2Widget::NAMESPACE_KEY])) {
+            $this->namespace = $_POST[X2Widget::NAMESPACE_KEY];
+        }
+        parent::__construct ($owner);
+    }
 
     public function resolveIds ($selector) {
         return preg_replace ('/#/', '#'.$this->namespace, $selector);
@@ -47,6 +77,39 @@ class X2ActiveForm extends CActiveForm {
 
     public function resolveId ($id) {
         return $this->namespace.$id;
+    }
+
+    /**
+     * @param array 
+     */
+    public function getJSClassConstructorArgs () {
+        return array (
+            'formSelector' => '#'.$this->id,
+            'submitUrl' => $this->action ? $this->action : '',
+            'formModelName' => get_class ($this->formModel),
+            'translations' => array (),
+            'namespace' => $this->namespace,
+        );
+    }
+
+    public function getPackages () {
+        if (!isset ($this->_packages)) {
+            $this->_packages = array(
+                'X2FormJS' => array(
+                    'baseUrl' => Yii::app()->baseUrl,
+                    'js' => array(
+                        'js/X2Form.js',
+                    ),
+                    'depends' => array ('auxlib'),
+                ),
+            );
+        }
+        return $this->_packages;
+    }
+
+    public function multiTypeAutocomplete ($model, $typeAttribute, $idAttribute, $options) {
+        return X2Html::activeMultiTypeAutocomplete ($model, $typeAttribute, $idAttribute, $options);
+
     }
 
     /**
@@ -61,15 +124,42 @@ class X2ActiveForm extends CActiveForm {
         return X2Html::activeRichTextArea ($model, $attribute, $htmlOptions);
     }
 
-    public function init () {
-        $this->id = $this->resolveId ($this->id);
-        parent::init ();
+    public function codeEditor (CModel $model, $attribute, array $htmlOptions = array ()) {
+        return X2Html::activeCodeEditor ($model, $attribute, $htmlOptions);
     }
 
     public function resolveHtmlOptions (CModel $model, $attribute, array $htmlOptions = array ()) {
         CHtml::resolveNameID ($model, $attribute, $htmlOptions);
         $htmlOptions['id'] = $this->resolveId ($htmlOptions['id']);
         return $htmlOptions;
+    }
+
+    public function registerPackages () {
+        Yii::app()->clientScript->registerPackages ($this->getPackages (), true);
+    }
+
+    protected function registerJSClassInstantiationScript () {
+        Yii::app()->clientScript->registerScript(
+            $this->getId ().'registerJSClassInstantiationScript', "
+        
+        ;(function () {     
+            x2.".lcfirst($this->JSClass)." = new x2.$this->JSClass (".
+                CJSON::encode ($this->getJSClassConstructorArgs ()).
+            ");
+        }) ();
+        ", CClientScript::POS_END);
+    }
+
+    public function init () {
+        $this->id = $this->resolveId ($this->id);
+
+        if ($this->instantiateJSClass) {
+            $this->registerPackages (); 
+            $this->registerJSClassInstantiationScript ();
+        }
+
+        parent::init ();
+        echo CHtml::hiddenField (X2Widget::NAMESPACE_KEY, $this->namespace);
     }
 
 }

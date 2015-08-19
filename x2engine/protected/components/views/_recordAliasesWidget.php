@@ -50,11 +50,12 @@ $(function () {
         baseUrl: yii.scriptUrl + 
             '/".Yii::app()->controller->module->name."/".Yii::app()->controller->module->name."',
         translations: ".CJSON::encode (array (
-            'dialogTitle' => Yii::t('app', 'Create Alias'),
+            'dialogTitle' => Yii::t('app', 'Create Social Profile'),
             'cancel' => Yii::t('app', 'Cancel'),
             'create' => Yii::t('app', 'Create'),
-            'confirmDeletion' => Yii::t('app', 'Are you sure you want to delete this alias?'),
-            'confirmDeletionTitle' => Yii::t('app', 'Delete alias?'),
+            'confirmDeletion' => Yii::t(
+                'app', 'Are you sure you want to delete this social profile?'),
+            'confirmDeletionTitle' => Yii::t('app', 'Delete social profile?'),
             'OK' => Yii::t('app', 'OK'),
             'skypeQtipLoadingText' => Yii::t('app', 'Loading...'),
         )).",
@@ -65,16 +66,15 @@ $(function () {
 ", CClientScript::POS_END);
 
 if (!$this->formOnly) {
+echo CHtml::tag(
+    'button', 
+    array(
+        'id' => 'view-aliases-button',
+        'class' => 'x2-button right view-aliases-button icon',
+        'title' => Yii::t('app', 'Add social profile'),
+    ), '');
 ?>
-<span class='<?php echo CHtml::encode (strtolower (get_class ($this->model))); ?> icon'></span>
 <div class='record-aliases-dropdown-container'>
-    <h2 class='record-name'>
-    <?php
-        echo $this->model->name;
-    ?>
-    </h2>
-    <button title="<?php echo CHtml::encode (Yii::t('app', 'View aliases')) ?>" 
-     class='view-aliases-button fa fa-caret-square-o-down'></button>
     <ul class='alias-dropdown x2-dropdown-list' style='display: none;'>
         <span>
         <?php
@@ -90,7 +90,7 @@ if (!$this->formOnly) {
             ?>
             </span>
             <span class='delete-alias-button fa fa-times' 
-             title="<?php echo CHtml::encode (Yii::t('app', 'Delete alias')); ?>"></span>
+             title="<?php echo CHtml::encode (Yii::t('app', 'Delete social profile')); ?>"></span>
             <?php
         ?></li>     
         <?php
@@ -100,12 +100,12 @@ if (!$this->formOnly) {
             <span class='record-alias'>
             </span>
             <span class='delete-alias-button fa fa-times' 
-             title="<?php echo CHtml::encode (Yii::t('app', 'Delete alias')); ?>"></span>
+             title="<?php echo CHtml::encode (Yii::t('app', 'Delete social profile')); ?>"></span>
             <?php
         ?></li>     
         </span>
         <li class='new-alias-button x2-button'><?php 
-            echo CHtml::encode (Yii::t('app', 'Add new alias')) 
+            echo CHtml::encode (Yii::t('app', 'Add social profile')) 
         ?></li>     
     </ul>
     <?php
@@ -122,7 +122,7 @@ if (!$this->formOnly) {
         echo $form->hiddenField ($aliasModel, 'recordId');
         echo $form->label ($aliasModel, 'alias', array (
             'class' => 'left-label',
-            'label' => CHtml::encode (Yii::t('app', 'Alias:')),
+            'label' => CHtml::encode (Yii::t('app', 'Social Profile:')),
         ));
         echo $form->TextField ($aliasModel, 'alias');
         $i = 0;

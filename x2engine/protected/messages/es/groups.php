@@ -9,4 +9,10 @@ return array (
 'Group:'=>'Grupo:',
 'Users:'=>'Usuarios:',
 'Edit Group'=>'Editar grupo',
+'Create {group}'=>'Crear {group}',
+'{group}:'=>'{group}',
+'{users}:'=>'{users}',
+'{group} List'=>'{group} Lista',
+'Edit {group}'=>'Editar {group}',
+'Delete {group}'=>'Eliminar {group}',
 );

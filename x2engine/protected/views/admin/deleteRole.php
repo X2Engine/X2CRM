@@ -40,8 +40,9 @@
     <form name="deleteRoles" action="deleteRole" method="POST">
         <br />
         <select name="role">
-            <?php foreach($roles as $key => $value)
-                echo "<option value='$key'>$value</option>"; ?>
+            <?php 
+            foreach($roles as $row)
+                echo "<option value='{$row['id']}'>".CHtml::encode ($row['name'])."</option>"; ?>
         </select>
         <br /><br />
         <input class="x2-button" type="submit" value="<?php echo Yii::t('admin', 'Delete'); ?>" />

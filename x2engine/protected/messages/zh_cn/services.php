@@ -59,4 +59,7 @@ return array (
 'Import Services'=>'进口服务',
 'Export Services'=>'出口服务',
 'Case Name'=>'案例名称',
+'Import {services}'=>'进口{services}',
+'Export {services}'=>'出口{services}',
+'Thank you for contacting our Technical Support team. This is to verify we have received your request for Case# {casenumber}. One of our Technical Analysts will contact you shortly.'=>'感谢您联系我们的技术支持团队。这是为了确认我们已收到您的案例{casenumber}我们的一位技术分析师将尽快与您联系。',
 );

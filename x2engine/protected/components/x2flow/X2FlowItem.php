@@ -50,22 +50,27 @@ abstract class X2FlowItem extends CComponent {
      * $var string the text label for this action
      */
     public $label = '';
+
     /**
      * $var string the description of this action
      */
     public $info = '';
+
     /**
      * $var array the config parameters for this action
      */
     public $config = '';
+
     /**
-     * $var bool Distinguishes whether cron is required for running the action properly.
+     * $var bool distinguishes whether cron is required for running the action properly
      */
     public $requiresCron = false;
+
     /**
      * @return array the param rules.
      */
     abstract public function paramRules();
+
     /**
      * Checks if all all the params are ship-shape
      */
@@ -74,9 +79,9 @@ abstract class X2FlowItem extends CComponent {
     /**
      * Checks if all the config variables and runtime params are ship-shape
      * Ignores param requirements if $params isn't provided
-     * @param bool $showWarnings If true, validation will include checks for warnings
+     * @param bool $staticValidation If true, validation will include checks for warnings
      */
-    public function validateOptions(&$paramRules,$params=null,$showWarnings=false) {
+    public function validateOptions(&$paramRules,$params=null,$staticValidation=false) {
         $configOptions = &$this->config['options'];
 
         // loop through options defined in paramRules() and make sure they're all set in $config
@@ -166,7 +171,9 @@ abstract class X2FlowItem extends CComponent {
     }
 
     public function validateEmail ($option, $optRule) {
-        if (isset ($option['value'])) {
+        if (isset ($option['value']) && 
+            !Formatter::isFormula ($option['value']) &&
+            !Formatter::isShortcode ($option['value'])) {
             try {
                 EmailDeliveryBehavior::addressHeaderToArray ($option['value']);
             } catch (CException $e) {
@@ -178,8 +185,10 @@ abstract class X2FlowItem extends CComponent {
 
     public function validateDropdown (&$option, $optRule) {
         $name = $optRule['name'];
-        if ((!isset ($optRule['multiple']) || !$optRule['multiple']) && 
-            is_array ($option['value'])) {
+        if (!((isset ($option['operator']) && 
+               in_array ($option['operator'], array ('list', 'notList', 'between'))) || 
+              (isset ($optRule['multiple']) && $optRule['multiple'])) && 
+             is_array ($option['value'])) {
 
             if (count ($option['value']) === 1 &&
                 isset ($option['value'][0])) { // repair value if possible

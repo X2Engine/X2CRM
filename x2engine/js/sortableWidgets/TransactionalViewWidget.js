@@ -124,20 +124,46 @@ TransactionalViewWidget.prototype._setUpCreateButtonBehavior = function () {
     this._createButton$.unbind ('click._setUpCreateButtonBehavior').
         bind ('click._setUpCreateButtonBehavior', function () {
 
+        var formModelName = that.actionType.charAt (0).toUpperCase () + that.actionType.slice (1) +
+            'FormModel';
         new x2.QuickCreate ({
             modelType: 'Actions',
-            data: {
-                actionType: that.actionType,
-                secondModelName: that.modelName,
-                secondModelId: that.modelId
-            },
+            data: [
+                {
+                    name: 'actionType', 
+                    value: formModelName
+                },
+                {
+                    name: 'modelId',
+                    value: that.modelId 
+                },
+                {
+                    name: 'modelName',
+                    value: that.modelName 
+                },
+                {
+                    name: 'YII_CSRF_TOKEN',
+                    value: x2.csrfToken
+                },
+                {
+                    name: 'x2ajax',
+                    value: 1
+                },
+                {
+                    name: x2.Widget.NAMESPACE_KEY,
+                    value: formModelName + 'TransactionalWidget'
+                }
+            ],
+                 
             dialogAttributes: {
                 title: that.translations.dialogTitle
             },
             enableFlash: false,
             success: function () {
-                //that._refreshGrid ();
-                //x2.actionHistory.update ();
+                if (typeof x2.publisher !== 'undefined') { 
+                    x2.publisher.updates (true);
+                    TransactionalViewWidget.refreshByActionType (that.actionType);
+                }
             }
         });
     });

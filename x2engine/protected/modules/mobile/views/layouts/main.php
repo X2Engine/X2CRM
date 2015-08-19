@@ -34,6 +34,8 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 
+Yii::import ('application.modules.mobile.components.ThemeGenerator.*');
+
 $isGuest = Yii::app()->user->isGuest;
 $cs = Yii::app()->clientScript;
 $cs->scriptMap = array();
@@ -61,7 +63,12 @@ $cs->registerScript ('X2ClientScript.registerAttachments',"
     });
 ", CClientScript::POS_END);
 
-
+if (Yii::app()->user->isGuest) {
+    MobileLoginThemeHelper::init();
+    MobileLoginThemeHelper::render();
+} else {
+    ThemeGenerator::render();
+}
 
 
 ?><!DOCTYPE html>
@@ -75,7 +82,7 @@ $cs->registerScript ('X2ClientScript.registerAttachments',"
 <link rel="shortcut icon" href="<?php echo Yii::app()->getBaseUrl(); ?>/images/favicon.ico" type="image/x-icon" />
 <title><?php echo CHtml::encode($this->pageTitle); ?></title>
 </head>
-<body> 
+<body class='mobile-body'> 
 <div id="container"> 
 	<div id="<?php echo $this->pageId; ?>" data-role="page" data-url="<?php echo $this->dataUrl; ?>/" data-theme="a">
 		<!--div data-role="header" data-theme="a">
@@ -86,10 +93,20 @@ $cs->registerScript ('X2ClientScript.registerAttachments',"
 			echo $content;
 			?>
 		</div>
-		<div data-role="footer" data-theme="a">
-			<p>&nbsp;&nbsp;&copy; <?php echo date('Y') . ' ' . CHtml::link('X2Engine Inc.', 'http://www.x2engine.com')." ";
-				echo Yii::t('app', 'Rights Reserved.'); ?>
-				<?php //echo CHtml::link(Yii::t('mobile', 'Go to Full Site'),Yii::app()->getBaseUrl().'/index.php/site/index?mobile=false',array('rel'=>'external', 'onClick'=>'setMobileBrowserFalse()')); ?>
+		<div id='footer' data-role="footer" data-theme="a">
+			<p>&nbsp;&nbsp;&copy;<?php 
+                echo date('Y') . ' ' . CHtml::link('X2Engine Inc.', 'http://www.x2engine.com')." ";
+				echo Yii::t('app', 'Rights Reserved.'); 
+                echo '&nbsp;';
+				echo CHtml::link(
+                    Yii::t('mobile', 'Go to Full Site'),
+                    Yii::app()->getBaseUrl().'/index.php/site/index?mobile=false',
+                    array(
+                        'rel'=>'external',
+                        'onClick'=>'setMobileBrowserFalse()',
+                        'class'=>'full-site-link',
+                    )); 
+                ?>
 			</p>
             <div id='logo-container'>
             <?php

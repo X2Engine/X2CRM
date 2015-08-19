@@ -413,12 +413,7 @@ class ServicesController extends x2base {
                 'url'=>'#',
                 'linkOptions'=>array('onclick'=>'toggleEmailForm(); return false;')
             ),
-            array(
-                'name'=>'attach',
-                'label'=>Yii::t('app','Attach a File/Photo'),
-                'url'=>'#',
-                'linkOptions'=>array('onclick'=>'toggleAttachmentForm(); return false;')
-            ),
+            ModelFileUploader::menuLink(),
             array(
                 'name'=>'quotes',
                 'label' => Yii::t('quotes', '{quotes}/Invoices', array(

@@ -257,13 +257,17 @@ RelationshipsManager.prototype._setUpOpenDialogBehavior = function () {
         .bind ('click', function() {
 
         if (that._dialogInactive) {
-            $.post(
-                that.createRecordUrl, {
+            $.ajax({
+                type: 'post',
+                url: that.createRecordUrl, 
+                data: {
                     x2ajax: true
                 }, 
-                function(response) {
+                dataType: 'json',
+                success: function(response) {
+                    var page = response.page;
 
-                    that._dialog.append(response);
+                    that._dialog.append(page);
                     that._dialog.dialog('open');
                     /* indicate that a create-action page has been appended, don't do it until 
                        the old one is submitted or cleared. */
@@ -278,7 +282,8 @@ RelationshipsManager.prototype._setUpOpenDialogBehavior = function () {
                         return that._handleFormSubmission (form);
                     });
                     that._setDefaults ();
-                });
+                }
+            });
         } else {
             that._dialog.dialog('open');
         }

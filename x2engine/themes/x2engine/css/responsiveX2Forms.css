@@ -37,13 +37,11 @@ shift detail/form layouts to single column
 */
 @media (max-width: 777px) {
   /* line 40, ../../../compass/themes/x2engine/css/responsiveX2Forms.scss */
-  .formSectionRow td {
-    display: block;
+  .formSectionColumn {
     width: 100% !important;
   }
-
-  /* line 44, ../../../compass/themes/x2engine/css/responsiveX2Forms.scss */
-  .formItem.leftLabel > .formInputBox {
-    width: 200px !important;
+  /* line 42, ../../../compass/themes/x2engine/css/responsiveX2Forms.scss */
+  .formSectionColumn td.label {
+    border-left: none !important;
   }
 }

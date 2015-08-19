@@ -49,15 +49,20 @@ function PublisherTab (argsDict) {
     argsDict = typeof argsDict === 'undefined' ? {} : argsDict;
     var defaultArgs = {
         translations: {},
-        id: null, // id of element containing tab contents
+        tabId: null, // id of element containing tab contents
     };
 
     auxlib.applyArgs (this, defaultArgs, argsDict);
 
     x2.Widget.call (this, argsDict);
 
-    this._elemSelector = this.resolveIds ('#' + this.id);
+    this._elemSelector = '#' + this.tabId;
     this.publisher = null;
+    this._formDefaults = {
+        assignedTo: null,
+        associationType: null,
+        associationId: null
+    };
     this._init ();
 }
 
@@ -75,39 +80,8 @@ Private static methods
 Public instance methods
 */
 
-PublisherTab.prototype.submit = function (publisher, form) {
-    var that = this;
-
-    x2.forms.clearErrorMessages ($(form));
-
-    // submit tab contents
-    $.ajax ({
-        url: publisher.publisherCreateUrl,
-        type: 'POST',
-        data: form.serialize (),
-        dataType: 'json',
-        success: function (data) {
-            if (typeof data['redirect'] !== 'undefined') {
-
-                window.location = data['redirect']
-                return;
-            }
-            if (typeof data['error'] !== 'undefined') {
-                $(form).find ('.form').append (x2.forms.errorSummary ('', data));
-                $(that._elemSelector).find ('[name="Actions\\[associationName\\]"]').
-                    addClass ('error');
-                $(form).find ('input.hightlight').removeClass ('highlight');
-            } else {
-                publisher.updates();
-                publisher.reset();
-                if ($(that._elemSelector).closest ('.ui-dialog').length) {
-                    // if tab is in a transactional widget dialog
-                    $(that._elemSelector).closest ('.ui-dialog').remove ();
-                }
-            }
-        }
-    });
-
+PublisherTab.prototype.getFormObj = function () {
+    return x2.X2Form.getInstance ($(this._elemSelector).find ('form'));
 };
 
 /**
@@ -115,84 +89,51 @@ PublisherTab.prototype.submit = function (publisher, form) {
  */
 PublisherTab.prototype.reset = function () {
     var that = this;
-    x2.forms.clearForm (this._element, true);
+    var formObj = this.getFormObj ();
+    formObj.findElemByAttr ('associationType').val (this._formDefaults.associationType);
+    formObj.findElemByAttr ('associationId').val (this._formDefaults.associationId);
+    formObj.findElemByAttr ('assignedTo').val (this._formDefaults.assignedTo);
 };
 
-/**
- * Disables tab's form inputs 
- */
-PublisherTab.prototype.disable = function () {
+PublisherTab.prototype._saveDefaults = function () {
+    var formObj = this.getFormObj ();
+    this._formDefaults.associationType = formObj.findElemByAttr ('associationType').val ();
+    this._formDefaults.associationId = formObj.findElemByAttr ('associationId').val ();
+    this._formDefaults.assignedTo = formObj.findElemByAttr ('assignedTo').val ();
+};
+
+PublisherTab.prototype._setUpAjaxSuccessHandler = function () {
     var that = this;
-    x2.forms.disableEnableFormSubsection (this._element, true);
-};
+    that._form$ = that._element.find ('form');
 
-/**
- * Enables tab's form inputs 
- */
-PublisherTab.prototype.enable = function () {
-    var that = this;
-    that.DEBUG && console.log ('enable');
-    x2.forms.disableEnableFormSubsection (this._element, false);
-};
-
-/**
- * Blurs tab
- */
-PublisherTab.prototype.blur = function () {
-    $(this._elemSelector).find ('.action-description').animate({"height":22},300);
-};
-
-/**
- * Focus tab 
- */
-PublisherTab.prototype.focus = function () {
-};
-
-
-/**
- * @param Bool True if form input is valid, false otherwise
- */
-PublisherTab.prototype.validate = function () {
-    x2.forms.clearErrorMessages (this._element);
-    var actionDescription$ = this._element.find ('.action-description');
-
-    if (actionDescription$.hasClass ('x2-required') && actionDescription$.val () === '') {
-
-        actionDescription$.parent ().addClass ('error');
-        x2.forms.errorSummaryAppend (this._element, this.translations['beforeSubmit']);
-        return false;
-    } else {
-        return true;
-    }
+    x2.X2Form.getInstance (that._form$).onAjaxSuccess = function (data) {
+        that._form$.replaceWith (data.page);
+        that._setUpAjaxSuccessHandler ();
+        if (!$(that._elemSelector).find ('.error').length) {
+            that.publisher.reset();
+            that.publisher.updates();
+            if ($(that._elemSelector).closest ('.ui-dialog').length) {
+                // if tab is in a transactional widget dialog
+                $(that._elemSelector).closest ('.ui-dialog').remove ();
+            }
+        }
+    };
 };
 
 PublisherTab.prototype.run = function () {
     var that = this;
-
     that._element = $(that._elemSelector);
-    x2.forms.setDefaults (that._element);
-    that._setUpActionDescriptionBehavior ();
+    this._setUpAjaxSuccessHandler ();
 };
 
 /*
 Private instance methods
 */
 
-/**
- * Expand action description textarea on click
- */
-PublisherTab.prototype._setUpActionDescriptionBehavior = function () {
-    var that = this;
-    that.DEBUG && console.log ('_setUpActionDescriptionBehavior');
-    this._element.find ('.action-description').click (function () {
-        that.DEBUG && console.log ('_setUpActionDescriptionBehavior.click'); 
-        $(this).height (80);
-    });
-};
-
 PublisherTab.prototype._init = function () {
     var that = this;
     $(function () {
+        that._saveDefaults ();
         that.run ();
     });
 };

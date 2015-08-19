@@ -54,7 +54,7 @@ class X2TranslationBehavior extends CBehavior {
      * will be matched by this pattern.
      */
 
-    const REGEX = '/(?:(?<installer>installer_tr?)\s*|Yii::\s*t\s*)\(\s*(?(installer)|(?:(?<openquote1>")|\')(?<module>\w+)(?(openquote1)"|\')\s*,)\s*(?:(?<openquote2>")|\')(?<message>(?:(?(openquote2)\\\\"|\\\\\')|(?(openquote2)\'|")|\w|\s|[\(\)\{\}_\.\-\,\!\?\/;:])+)(?(openquote2)"|\')/';
+    const REGEX = '/(?:(?<installer>installer_tr?)\s*|Yii::\s*t\s*)\(\s*(?(installer)|(?:(?<openquote1>")|\')(?<module>\w+)(?(openquote1)"|\')\s*,)\s*(?<message>(?:((?<openquote2>")|\')(?:(?(openquote2)\\\\"|\\\\\')|(?(openquote2)\'|")|\w|\s|[\(\)\{\}_\.\-\,\*\#\|\!\?\/;:])+(?(openquote2)"|\')((\.\n\s*)|(\n\s*\.\s*))?)+)/';
 
     /**
      * @var array An array of redundant translations that are built up during the
@@ -62,28 +62,20 @@ class X2TranslationBehavior extends CBehavior {
      */
     public $intersect = array();
 
-    /**
-     * @var array An array of aggregate data about the translation process to be displayed
-     * to the user at the end.
-     */
-    public $statistics = array(
-        'newMessages' => 0, // New messages added to the translation files
-        'addedToCommon' => 0, // Messages consolidated into common.php
-        'messagesRemoved' => 0, // Mesasges removed as part of the consolidation process
-        'untranslated' => 0, // How many messages needed to be translated
-        'characterCount' => 0, // Number of characters to be translated via Google Translate
-        'languageStats' => array(
-        // Stats about translations for individual languages are stored here.
-        ),
-        'errors'=>array(
-
-        ),
-    );
+    
+    public $newMessages = 0;
+    public $addedToCommon = 0;
+    public $messagesRemoved = 0;
+    public $untranslated = 0;
+    public $characterCount = 0;
+    public $languageStats = array();
+    public $errors = array();
+    public $limitReached = false;
 
     /**
      * @var array A list of all untranslated messages in the software.
      */
-    public $untranslated = array();
+    public $untranslatedMessages = array();
 
     /**
      * Add missing translations to files, first step of automation.
@@ -124,11 +116,11 @@ class X2TranslationBehavior extends CBehavior {
                         $this->addToCommon($message); // Add the message to common.php
                     }
                     if($first != 'common.php'){ // Only remove messages from the original files if the file isn't common.php
-                        $this->statistics['messagesRemoved']++;
+                        $this->messagesRemoved++;
                         $this->removeMessage($first, $message);
                     }
                     if($second != 'common.php'){
-                        $this->statistics['messagesRemoved']++;
+                        $this->messagesRemoved++;
                         $this->removeMessage($second, $message);
                     }
                 }
@@ -152,7 +144,7 @@ class X2TranslationBehavior extends CBehavior {
         $limit = 1000; // Don't do more than 1000 messages at a time, Google charges by the character and we don't want to get caught in a loop.
         $translations = array(); // Store translated messages to only do 1 file write per file.
         foreach($untranslated as $lang => $langData){
-            $this->statistics['languageStats'][$lang] = 0; // Start tracking stats for this langage.
+            $this->languageStats[$lang] = 0; // Start tracking stats for this langage.
             foreach($langData as $fileName => $file){
                 foreach($file as $index){
                     if($limit > 0){ // Haven't hit 1000 messages yet.
@@ -160,9 +152,10 @@ class X2TranslationBehavior extends CBehavior {
                         $index = str_replace("'", "\\'", $index); // Make message safe for insertion
                         $message = $this->translateMessage($index, $lang); // Translate message for the specified language
                         $translations[$index] = $message; // Store the translation (and original message) to be written to the file later.
-                        $this->statistics['languageStats'][$lang]++;
+                        $this->languageStats[$lang]++;
                     }else{ // We hit our limit of 1000 messages.
                         $this->replaceTranslations($lang, $fileName, $translations); // Replace translations for what we have now, we'll manually refresh to get more.
+                        $this->limitReached = true;
                         break 3; // Break out of all the loops to save time
                     }
                 }
@@ -251,29 +244,29 @@ class X2TranslationBehavior extends CBehavior {
      */
     public function addMessages($file, $messageList){
         $messageList = array_keys($messageList);
-        $languages = scandir('protected/messages/');
+        $languages = scandir('messages/');
         foreach($languages as $lang){
             if($lang != '.' && $lang != '..'){ // Don't include the current or parent directory.
-                if(file_exists("protected/messages/$lang/$file.php")){
-                    $messages = array_merge(array_keys(require "protected/messages/$lang/$file.php"), array_keys(require "protected/messages/$lang/common.php")); // Get all of the messages already in the appropriate language as well as common.php
+                if(file_exists("messages/$lang/$file.php")){
+                    $messages = array_merge(array_keys(require "messages/$lang/$file.php"), array_keys(require "messages/$lang/common.php")); // Get all of the messages already in the appropriate language as well as common.php
                     $messages = array_map(function($data){
                                 return str_replace("'", "\\'", $data); // Make all strings safe for insertion--more importantly to match the provided message list to check for equivalency.
                             }, $messages);
                     $diff = array_diff($messageList, $messages); // Create a diff array of messages not already in the provided language file or common.php
                     if(!empty($diff)){
-                        $contents = file_get_contents("protected/messages/$lang/$file.php"); // Grab the array of messages from the translation file.
+                        $contents = file_get_contents("messages/$lang/$file.php"); // Grab the array of messages from the translation file.
                         foreach($diff as $message){
                             if($lang == 'template'){
-                                $this->statistics['newMessages']++; // Only count statistics once, even if adding to every file.
+                                $this->newMessages++; // Only count statistics once, even if adding to every file.
                             }
                             $contents = preg_replace('/^\);/m', "'$message'=>'',\n);", $contents); // Replace the ending of the array in the file with one of the diff messages.
                         }
-                        file_put_contents("protected/messages/$lang/$file.php", $contents); // Put the array back in the translation file.
+                        file_put_contents("messages/$lang/$file.php", $contents); // Put the array back in the translation file.
                     }
                 }else{
-                    if(!isset($this->statistics['errors']['missingFiles']))
-                        $this->statistics['errors']['missingFiles']=array();
-                    $this->statistics['errors']['missingFiles'][$file]=$file;
+                    if(!isset($this->errors['missingFiles']))
+                        $this->errors['missingFiles']=array();
+                    $this->errors['missingFiles'][$file]="messages/$lang/$file.php";
                 }
             }
         }
@@ -297,9 +290,10 @@ class X2TranslationBehavior extends CBehavior {
         foreach($matches['installer'] as $index => $groupText)
             if($groupText != '')
                 $matches['module'][$index] = 'install';
-
+            
         $messages = array_fill_keys(array_unique($matches['module']), array());
         foreach($matches['message'] as $index => $message){
+            $message = $this->parseRegexMatch($message);
             $message = str_replace("\\'", "'", $message);
             $message = str_replace("'", "\\'", $message);
             $messages[$matches['module'][$index]][$message] = '';
@@ -308,6 +302,17 @@ class X2TranslationBehavior extends CBehavior {
             unset($messages['yii']);
         }
         return $messages;
+    }
+    
+    public function parseRegexMatch($message) {
+        $ret = preg_replace("/(\'|\")((\.(\r\n?|\n)\s*)|((\r\n?|\n)\s*\.\s*))(\'|\")/", '', $message);
+        if (strpos($ret, '"') === 0 || strpos($ret, "'") === 0) {
+            $ret = substr($ret, 1);
+        }
+        if (strpos(strrev($ret), '"') === 0 || strpos(strrev($ret), "'") === 0) {
+            $ret = substr($ret, 0, -1);
+        }
+        return $ret;
     }
 
     /**
@@ -355,7 +360,7 @@ class X2TranslationBehavior extends CBehavior {
             if(!$object->isDir()){ // Make sure it's actually a file if we're going to try to parse it.
                 $relPath = str_replace("$basePath/", '', $name); // Get the relative path to it.
                 if(!$this->excludePath($relPath)){ // Make sure the file is not in one of the excluded diectories.
-                    $fileList[] = $relPath;
+                    $fileList[] = $name;
                 }
             }
         }
@@ -372,11 +377,11 @@ class X2TranslationBehavior extends CBehavior {
      */
     public function buildRedundancyList(){
         $this->intersect = array();
-        $files = scandir('protected/messages/template'); // Only need to check template, not all languages. All languages should mirror template.
+        $files = scandir('messages/template'); // Only need to check template, not all languages. All languages should mirror template.
         $languageList = array();
         foreach($files as $file){
             if($file != '.' && $file != '..'){
-                $languageList[$file] = array_keys(include("protected/messages/template/$file")); // Get the messages from each file in the template folder.
+                $languageList[$file] = array_keys(include("messages/template/$file")); // Get the messages from each file in the template folder.
             }
         }
         $keys = array_keys($languageList);
@@ -400,24 +405,24 @@ class X2TranslationBehavior extends CBehavior {
      * @param string $message The message to be added to common.php
      */
     public function addToCommon($message){
-        $languages = scandir('protected/messages/');
+        $languages = scandir('messages/');
         foreach($languages as $lang){
             if($lang != '.' && $lang != '..'){
-                if(!file_exists('protected/messages/'.$lang.'/'.'common.php')){ // For some reason common.php doesn't exist for this language.
-                    $fp = fopen('protected/messages/'.$lang.'/'.'common.php', 'w+'); // Create the file and set up an empty array to build into.
+                if(!file_exists('messages/'.$lang.'/'.'common.php')){ // For some reason common.php doesn't exist for this language.
+                    $fp = fopen('messages/'.$lang.'/'.'common.php', 'w+'); // Create the file and set up an empty array to build into.
                     fwrite($fp, "<?php
 return array(
 );");
                     fclose($fp);
                 }
-                $contents = file_get_contents('protected/messages/'.$lang.'/'.'common.php'); // Get the contents of the common file.
+                $contents = file_get_contents('messages/'.$lang.'/'.'common.php'); // Get the contents of the common file.
                 $pattern = preg_quote("'".$message."'=>'',", '/'); // Prepare a regex to search for the provided message.
                 if(!preg_match('/'.$pattern.'/', $contents)){ // We don't find the message in common.php
                     if($lang == 'template'){
-                        $this->statistics['addedToCommon']++; // Only add to our statistics once.
+                        $this->addedToCommon++; // Only add to our statistics once.
                     }
                     $contents = preg_replace('/^\);/m', "'$message'=>'',\n);", $contents); // Replace the end of the array declaration with an extra index for the provided message.
-                    file_put_contents('protected/messages/'.$lang.'/'.'common.php', $contents);
+                    file_put_contents('messages/'.$lang.'/'.'common.php', $contents);
                 }
             }
         }
@@ -434,13 +439,13 @@ return array(
      * @param string $message The message to be removed
      */
     public function removeMessage($file, $message){
-        $languages = scandir('protected/messages/'); // Load all languages.
+        $languages = scandir('messages/'); // Load all languages.
         foreach($languages as $lang){
             if($lang != '.' && $lang != '..'){
                 $pattern = preg_quote("'".$message."'=>'',\n", '/'); // Prepare regex for search.
-                $contents = file_get_contents('protected/messages/'.$lang.'/'.$file);
+                $contents = file_get_contents('messages/'.$lang.'/'.$file);
                 $contents = preg_replace('/'.$pattern.'/', '', $contents); // Replace any instances of the message with an empty string.
-                file_put_contents('protected/messages/'.$lang.'/'.$file, $contents); // Write to the file.
+                file_put_contents('messages/'.$lang.'/'.$file, $contents); // Write to the file.
             }
         }
     }
@@ -455,34 +460,34 @@ return array(
      * @return array A list of all messages which have missing translations.
      */
     public function getUntranslatedText(){
-        if(empty($this->untranslated)){
-            $languages = scandir('protected/messages');
+        if(empty($this->untranslatedMessages)){
+            $languages = scandir('messages');
             foreach($languages as $lang){
                 if(!in_array($lang, array('template', '.', '..'))){ // Ignore current, parent, and template (all template translations are blank) directories.
-                    $this->untranslated[$lang] = array();
-                    $files = scandir('protected/messages/'.$lang); // Get all the files for the current language.
+                    $this->untranslatedMessages[$lang] = array();
+                    $files = scandir('messages/'.$lang); // Get all the files for the current language.
                     foreach($files as $file){
                         if($file != '.' && $file != '..'){
-                            $this->untranslated[$lang][$file] = array();
-                            $translations = (include('protected/messages/'.$lang.'/'.$file)); // Include the translations.
+                            $this->untranslatedMessages[$lang][$file] = array();
+                            $translations = (include('messages/'.$lang.'/'.$file)); // Include the translations.
                             foreach($translations as $index => $message){
-                                if(empty($message)){
-                                    $this->untranslated[$lang][$file][] = $index; // If the translated version is empty, add the message index to our unranslated array.
-                                    $this->statistics['untranslated']++;
+                                if(!empty($index) && empty($message)){
+                                    $this->untranslatedMessages[$lang][$file][] = $index; // If the translated version is empty, add the message index to our unranslated array.
+                                    $this->untranslated++;
                                 }
                             }
-                            if(empty($this->untranslated[$lang][$file])){
-                                unset($this->untranslated[$lang][$file]); // If we don't find any untranslated messages, don't both returning that file.
+                            if(empty($this->untranslatedMessages[$lang][$file])){
+                                unset($this->untranslatedMessages[$lang][$file]); // If we don't find any untranslated messages, don't both returning that file.
                             }
                         }
                     }
-                    if(empty($this->untranslated[$lang])){
-                        unset($this->untranslated[$lang]); // The whole language is translated, no need to return it either.
+                    if(empty($this->untranslatedMessages[$lang])){
+                        unset($this->untranslatedMessages[$lang]); // The whole language is translated, no need to return it either.
                     }
                 }
             }
         }
-        return $this->untranslated;
+        return $this->untranslatedMessages;
     }
 
     /**
@@ -498,11 +503,11 @@ return array(
      */
     public function translateMessage($message, $lang){
 
-        $key = require 'protected/config/googleApiKey.php'; // Git Ignored file containing the Google API key to store. Ours is not included with public release for security reasons...
+        $key = require 'config/googleApiKey.php'; // Git Ignored file containing the Google API key to store. Ours is not included with public release for security reasons...
         $message = preg_replace_callback('/\{(.*?)\}/', function($matches){
                     return '<span class="notranslate">'.$matches[0].'</span>'; // Replace every instance of text between braces like {text} with <span class="notranslate">{text}</span>. This will make Google Translate ignore that text.
                 }, $message);
-        $this->statistics['characterCount']+=mb_strlen($message, 'UTF-8');
+        $this->characterCount+=mb_strlen($message, 'UTF-8');
         if(strpos($message, ' ') !== false){
             $message = urlencode($message); // URL encode the message so we can make a GET request.
         }
@@ -536,14 +541,14 @@ return array(
      * @param array $translations An array of translations with the English message as the index and the translated version as the value.
      */
     public function replaceTranslations($lang, $file, $translations){
-        $contents = file_get_contents('protected/messages/'.$lang.'/'.$file); // Grab the translation array.
+        $contents = file_get_contents('messages/'.$lang.'/'.$file); // Grab the translation array.
         foreach($translations as $index => $message){
             $pattern = preg_quote("'".$index."'=>''", '/'); // Prepare the index for regex search.
             if(preg_match('/'.$pattern.'/', $contents)){ // We found the index in the translation file!
                 $contents = preg_replace('/'.$pattern.'/', '\''.$index.'\'=>\''.$message.'\'', $contents); // Replace the index with index=>translated in the file.
             }
         }
-        file_put_contents('protected/messages/'.$lang.'/'.$file, $contents); // Write the changes back into the translation file and save.
+        file_put_contents('messages/'.$lang.'/'.$file, $contents); // Write the changes back into the translation file and save.
     }
 
 }

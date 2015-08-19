@@ -116,7 +116,7 @@ class X2AuthManager extends CDbAuthManager {
                     }
                 }
             }
-        } 
+        }
 
         if (!isset($this->_access[$userId]))
             $this->_access[$userId] = array();
@@ -152,7 +152,7 @@ class X2AuthManager extends CDbAuthManager {
                 $this->_usernames[$userId] = 'Guest';
         }
 
-
+        
         // Get whether the user has access:
         $hasAccess = parent::checkAccessRecursive($itemName, $userId, $params, $assignments);
 
@@ -176,12 +176,13 @@ class X2AuthManager extends CDbAuthManager {
         if ($params == array ()) {
             return array ();
         } elseif (isset($params['X2Model']) && count ($params) === 1 && 
-            $params['X2Model'] instanceof X2Model) {
+            $params['X2Model']->asa('permissions') != null) {
 
             $ret = array ();
             $ret['modelType'] = get_class($params['X2Model']);
-            if($params['X2Model']->hasAttribute('assignedTo')){
-                $ret['assignedTo'] = $params['X2Model']->assignedTo;
+            $assignmentAttr = $params['X2Model']->getAssignmentAttr();
+            if($assignmentAttr){
+                $ret[$assignmentAttr] = $params['X2Model']->$assignmentAttr;
             }
         } else {
             $simpleParamFlag = true;
@@ -255,7 +256,7 @@ class X2AuthManager extends CDbAuthManager {
      * @return boolean
      */
     public function checkAssignment($params) {
-        return isset($params['X2Model']) && $params['X2Model'] instanceof X2Model && $params['X2Model']->isAssignedTo($this->_usernames[$params['userId']], true);
+        return isset($params['X2Model']) && $params['X2Model']->asa('permissions') && $params['X2Model']->isAssignedTo($this->_usernames[$params['userId']], true);
     }
 
     /**
@@ -265,7 +266,7 @@ class X2AuthManager extends CDbAuthManager {
      * @return boolean
      */
     public function checkVisibility($params) {
-        return isset($params['X2Model']) && $params['X2Model'] instanceof X2Model && $params['X2Model']->isVisibleTo($this->_usernames[$params['userId']]);
+        return isset($params['X2Model']) && $params['X2Model']->asa('permissions') && $params['X2Model']->isVisibleTo($this->_usernames[$params['userId']]);
     }
 
     /**

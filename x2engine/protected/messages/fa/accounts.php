@@ -38,4 +38,9 @@ return array (
 'Import Accounts'=>'حساب های واردات',
 'Export Accounts'=>'حساب های صادرات',
 'Bug Report Attributes'=>'صفات گزارش اشکالات',
+'Share {opportunity}'=>'به اشتراک {opportunity}',
+'{account}'=>'{account}',
+'{module} Report'=>'{module} گزارش',
+'This form will allow you to generate a campaign to mail related {contacts} of the {accounts} displayed in the report below. Select "Primary {contacts}" to only email {contacts} which are set as the Primary {contact} for an {account}. Select "All" to email all related {contacts} on each {account}.'=>'این فرم به شما اجازه تولید یک کمپین برای اعلام مرتبط {contacts} از {accounts} در گزارش زیر نمایش داده میشود. &quot;اولیه را انتخاب کنید {contacts} به تنها ایمیل {contacts} که به عنوان اولیه مجموعه {contact} برای {account} انتخاب کنید &quot;همه&quot; به ایمیل مرتبط All {contacts} در هر {account}',
+'Primary {module}'=>'اولیه {module}',
 );

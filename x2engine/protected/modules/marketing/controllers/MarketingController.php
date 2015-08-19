@@ -45,9 +45,9 @@ class MarketingController extends x2base {
 
     public function behaviors(){
         return array_merge(parent::behaviors(), array(
-                    'CampaignMailingBehavior' => array('class' => 'application.modules.marketing.components.CampaignMailingBehavior'),
-                    'ResponseBehavior' => array('class' => 'application.components.ResponseBehavior', 'isConsole' => false,'errorCode'=>200),
-                ));
+            'CampaignMailingBehavior' => array('class' => 'application.modules.marketing.components.CampaignMailingBehavior'),
+            'ResponseBehavior' => array('class' => 'application.components.ResponseBehavior', 'isConsole' => false,'errorCode'=>200),
+        ));
     }
 
     public function accessRules(){
@@ -80,7 +80,7 @@ class MarketingController extends x2base {
                 'class' => 'CreateWebFormAction',
             ),
             'inlineEmail' => array(
-                'class' => 'InlineEmailAction',
+                'class' => 'application.modules.marketing.components.actions.TestEmailAction',
             ),
         ));
     }
@@ -127,8 +127,12 @@ class MarketingController extends x2base {
      */
     public function actionView($id){
         $model = $this->loadModel($id);
-
         if (!$this->checkPermissions($model, 'view')) $this->denied ();
+
+        if (isset($_GET['ajax']) && $_GET['ajax'] == 'campaign-grid') {
+            $this->renderPartial('campaignGrid', array('model' => $model));
+            return;
+        }
 
         if(!isset($model)){
             Yii::app()->user->setFlash(
@@ -144,7 +148,7 @@ class MarketingController extends x2base {
         // add campaign to user's recent item list
         User::addRecentItem('p', $id, Yii::app()->user->getId()); 
 
-        $this->view($model, 'marketing', array('contactList' => $model->list));
+        $this->view($model, 'marketing');
     }
 
     /**
@@ -461,7 +465,7 @@ class MarketingController extends x2base {
         $campaign->save();
         $message = $campaign->active ? Yii::t('marketing', 'Campaign resumed') : Yii::t('marketing', 'Campaign paused');
         Yii::app()->user->setFlash('notice', Yii::t('app', $message));
-        $this->redirect(array('view', 'id' => $id, 'launch' => true));
+        $this->redirect(array('view', 'id' => $id, 'launch' => $campaign->active));
     }
 
     /**
@@ -853,7 +857,7 @@ class MarketingController extends x2base {
         
             array(
                 'name'=>'x2flow',
-                'label' => Yii::t('app', 'X2Flow'),
+                'label' => Yii::t('app', 'X2Workflow'),
                 'url' => array('/studio/flowIndex'),
                 'visible' => (Yii::app()->contEd('pro'))
             ),

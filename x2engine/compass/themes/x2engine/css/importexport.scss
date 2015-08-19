@@ -43,6 +43,11 @@
     width: 80px;
 }
 
+.exportOption > label {
+    float: left;
+    min-width: 80px;
+}
+
 #form-error-box, #failures-box { color: red; }
 
 #status-text, #status-box, #prep-status-box { color: green; }

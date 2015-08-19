@@ -50,6 +50,7 @@ class BugReportsController extends x2base {
      * @param integer $id the ID of the model to be displayed
      */
     public function actionView($id) {
+        User::addRecentItem ('BugReports', $id);
         $type='BugReports';
         $model=$this->loadModel($id);
         if($this->checkPermissions($model,'view')) {

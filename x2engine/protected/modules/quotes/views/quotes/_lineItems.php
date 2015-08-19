@@ -47,7 +47,7 @@ view data:
 */
 
 $module = isset ($module) ? $module : $this->module;
-$actionsTab = isset ($actionsTab) ? $actionsTab : false;
+$mini = isset ($mini) ? $mini : false;
 
 $currency = Yii::app()->params->currency;
 if (isset ($model)) {
@@ -87,6 +87,12 @@ if (!$readOnly) {
             $module->assetsUrl . '/css/lineItemsMain.css',
             $module->assetsUrl . '/css/lineItemsRead.css',
         ), false);
+}
+
+if ($mini) {
+    Yii::app()->clientScript->registerCssFile(
+        $module->assetsUrl.'/css/lineItemsMini.css');
+
 }
 
 Yii::app()->clientScript->registerScriptFile (  
@@ -168,7 +174,8 @@ x2.<?php echo $namespacePrefix; ?>lineItems = new x2.LineItems ({
     productLines: productLines,
     adjustmentLines: adjustmentLines,
     namespacePrefix: '<?php echo $namespacePrefix; ?>',
-    getItemsUrl: '<?php echo Yii::app()->createUrl ('/products/products/getItems2'); ?>'
+    getItemsUrl: '<?php echo Yii::app()->createUrl ('/products/products/getItems2'); ?>',
+    modelName: '<?php echo isset ($modelName) ? $modelName : ''; ?>'
 });
 
 }) ();
@@ -182,7 +189,7 @@ x2.<?php echo $namespacePrefix; ?>lineItems = new x2.LineItems ({
 //}
 ?>
 
-<div id="<?php echo $namespacePrefix ?>-line-items-table" class='line-items-table<?php echo $actionsTab ? ' line-items-mini' : ''; echo $readOnly ? ' line-items-read' : ' line-items-write'; ?>'>
+<div id="<?php echo $namespacePrefix ?>-line-items-table" class='line-items-table<?php echo $mini ? ' line-items-mini' : ''; echo $readOnly ? ' line-items-read' : ' line-items-write'; ?>'>
 
 <?php
 //if (YII_DEBUG && YII_UNIT_TESTING) {
@@ -219,7 +226,7 @@ x2.<?php echo $namespacePrefix; ?>lineItems = new x2.LineItems ({
     </tbody>
     <tr class='subtotal-row'>
         <td class='first-cell'> </td>
-        <td colspan='<?php echo $actionsTab ? 2 : 4; ?>'> </td>
+        <td colspan='<?php echo $mini ? 2 : 4; ?>'> </td>
         <td class="text-field"><span style="font-weight:bold"> Subtotal: </span></td>
         <td class="subtotal-container input-cell">
             <input type="text" readonly='readonly' onfocus='this.blur();'
@@ -234,7 +241,7 @@ x2.<?php echo $namespacePrefix; ?>lineItems = new x2.LineItems ({
     <tbody id='quote-total-section'>
     <tr>
         <td class='first-cell'> </td>
-        <td colspan='<?php echo $actionsTab ? 2 : 4; ?>'> </td>
+        <td colspan='<?php echo $mini ? 2 : 4; ?>'> </td>
         <td class='text-field'><span style="font-weight:bold"> Total: </span></td>
         <td class="total-container input-cell">
             <input type="text" readonly='readonly' onfocus='this.blur();' style="font-weight:bold" 

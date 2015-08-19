@@ -121,7 +121,7 @@ return array(
         'zipcode' => null,
         'country' => null,
         'visibility' => '0',
-        'assignedTo' => 'Anyone',
+        'assignedTo' => 'admin',
         'backgroundInfo' => null,
         'twitter' => null,
         'linkedin' => null,

@@ -34,4 +34,5 @@ return array (
 'Import {X}'=>'가져 오기 {X}',
 'Export {X}'=>'수출 {X}',
 '{modelName} Attributes'=>'{modelName} 속성',
+'Edit {X}'=>'편집 {X}',
 );

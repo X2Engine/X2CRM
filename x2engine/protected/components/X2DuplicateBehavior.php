@@ -68,10 +68,10 @@ class X2DuplicateBehavior extends CActiveRecordBehavior {
      * @param boolean $getAll Whether to return all records or just 5
      * @return CActiveDataProvider
      */
-    public function getDuplicates($getAll = false) {
-        $criteria = $this->getDuplicateCheckCriteria();
+    public function getDuplicates($getAll = false, $strict = false) {
+        $criteria = $this->getDuplicateCheckCriteria(false, 't', $strict);
         if ($getAll && !empty($criteria->limit)) {
-            $criteria = $this->getDuplicateCheckCriteria(true);
+            $criteria = $this->getDuplicateCheckCriteria(true, 't', $strict);
         }
         if (!$getAll) {
             $criteria->limit = X2DuplicateBehavior::DUPLICATE_LIMIT;
@@ -198,7 +198,7 @@ class X2DuplicateBehavior extends CActiveRecordBehavior {
         $criteria = $this->getDuplicateCheckCriteria(false, null);
         $this->owner->deleteAll($criteria);
     }
-
+    
     /**
      * Private helper function to get the duplicate criteria.
      * 
@@ -207,7 +207,7 @@ class X2DuplicateBehavior extends CActiveRecordBehavior {
      * @return CDbCriteria
      */
     private $_duplicateCheckCriteria = array ();
-    private function getDuplicateCheckCriteria($refresh = false, $alias='t') {
+    private function getDuplicateCheckCriteria($refresh = false, $alias='t', $strict = false) {
         if (!$refresh && isset($this->_duplicateCheckCriteria[$alias])) {
             return $this->_duplicateCheckCriteria[$alias];
         }
@@ -215,7 +215,7 @@ class X2DuplicateBehavior extends CActiveRecordBehavior {
         $criteria = new CDbCriteria();
         foreach ($dupeFields as $fieldName) {
             if (!empty($this->owner->$fieldName)) {
-                $criteria->compare($fieldName, $this->owner->$fieldName, false, "OR");
+                $criteria->compare($fieldName, $this->owner->$fieldName, false, $strict?"AND":"OR");
             }
         }
         if (empty($criteria->condition)) {

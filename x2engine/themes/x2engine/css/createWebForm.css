@@ -119,6 +119,9 @@
 /***********************************************************************
 * This section is made to correspond with the theme keys in ThemeGenerator
 ***********************************************************************/
+/***********************************************************************
+* Responsive design
+***********************************************************************/
 /***************************************
 * Mixin for border radius 
 ***************************************/
@@ -132,13 +135,13 @@
 * CSS to extend when something 
 * should look like a link
 ***************************************/
-/* line 87, ../../../compass/css/lib/_standards.scss */
+/* line 126, ../../../compass/css/lib/_standards.scss */
 .pseudo-link {
   cursor: pointer;
   color: #004baf;
   transition: color .1s;
 }
-/* line 92, ../../../compass/css/lib/_standards.scss */
+/* line 131, ../../../compass/css/lib/_standards.scss */
 .pseudo-link:hover {
   color: #006cfb;
 }
@@ -147,18 +150,15 @@
 * CSS to extend when for elements that 
 * become transparent on mouseover
 ***************************************/
-/* line 110, ../../../compass/css/lib/_standards.scss */
+/* line 149, ../../../compass/css/lib/_standards.scss */
 .opacity-hover {
   opacity: 0.3;
 }
-/* line 105, ../../../compass/css/lib/_standards.scss */
+/* line 144, ../../../compass/css/lib/_standards.scss */
 .opacity-hover:hover {
   opacity: 1;
 }
 
-/*********************************
-* Box Shadow Prefixer
-********************************/
 /***************************************
 * Apply the standard box shadow currently
 * used on x2-island-layout items
@@ -216,6 +216,115 @@
 /***********************************************************************
 * This section is made to correspond with the theme keys in ThemeGenerator
 ***********************************************************************/
+/*
+  Icon Font: x2-icons
+*/
+@font-face {
+  font-family: "x2-icons";
+  src: url("./x2Icons/x2-icons.eot");
+  src: url("./x2Icons/x2-icons.eot?#iefix") format("embedded-opentype"), url("./x2Icons/x2-icons.woff") format("woff"), url("./x2Icons/x2-icons.ttf") format("truetype"), url("./x2Icons/x2-icons.svg#x2-icons") format("svg");
+  font-weight: normal;
+  font-style: normal;
+}
+@media screen and (-webkit-min-device-pixel-ratio: 0) {
+  @font-face {
+    font-family: "x2-icons";
+    src: url("./x2Icons/x2-icons.svg#x2-icons") format("svg");
+  }
+}
+/* line 23, ../../../compass/css/lib/_x2-icons.scss */
+[data-icon]:before {
+  content: attr(data-icon);
+}
+
+/* line 25, ../../../compass/css/lib/_x2-icons.scss */
+[data-icon]:before,
+.icon-activity:before,
+.icon-contact:before,
+.icon-funnel:before,
+.icon-open-envelope:before,
+.icon-package:before,
+.icon-profile:before,
+.icon-profile-large:before,
+.icon-quotes:before,
+.icon-service:before,
+.icon-stopwatch:before,
+.icon-x2-logo:before,
+.icon-x2-logo-square:before {
+  display: inline-block;
+  font-family: "x2-icons";
+  font-style: normal;
+  font-weight: normal;
+  font-variant: normal;
+  line-height: 1;
+  text-decoration: inherit;
+  text-rendering: optimizeLegibility;
+  text-transform: none;
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-font-smoothing: antialiased;
+  font-smoothing: antialiased;
+}
+
+/* line 52, ../../../compass/css/lib/_x2-icons.scss */
+.icon-activity:before {
+  content: "\f113";
+}
+
+/* line 53, ../../../compass/css/lib/_x2-icons.scss */
+.icon-contact:before {
+  content: "\f10c";
+}
+
+/* line 54, ../../../compass/css/lib/_x2-icons.scss */
+.icon-funnel:before {
+  content: "\f109";
+}
+
+/* line 55, ../../../compass/css/lib/_x2-icons.scss */
+.icon-open-envelope:before {
+  content: "\f10a";
+}
+
+/* line 56, ../../../compass/css/lib/_x2-icons.scss */
+.icon-package:before {
+  content: "\f112";
+}
+
+/* line 57, ../../../compass/css/lib/_x2-icons.scss */
+.icon-profile:before {
+  content: "\f11e";
+}
+
+/* line 58, ../../../compass/css/lib/_x2-icons.scss */
+.icon-profile-large:before {
+  content: "\f11f";
+}
+
+/* line 59, ../../../compass/css/lib/_x2-icons.scss */
+.icon-quotes:before {
+  content: "\f11c";
+}
+
+/* line 60, ../../../compass/css/lib/_x2-icons.scss */
+.icon-service:before {
+  content: "\f111";
+}
+
+/* line 61, ../../../compass/css/lib/_x2-icons.scss */
+.icon-stopwatch:before {
+  content: "\f114";
+}
+
+/* line 62, ../../../compass/css/lib/_x2-icons.scss */
+.icon-x2-logo:before {
+  content: "\f117";
+}
+
+/* line 63, ../../../compass/css/lib/_x2-icons.scss */
+.icon-x2-logo-square:before {
+  content: "\f116";
+}
+
 /*****************************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2015 X2Engine Inc.
@@ -383,174 +492,11 @@
   content: "\f0d9";
 }
 
-/*
-  Icon Font: x2-icons
-*/
-@font-face {
-  font-family: "x2-icons";
-  src: url("./x2-icons/x2-icons_22944e718c0be651c88d1109fe469031.eot");
-  src: url("./x2-icons/x2-icons_22944e718c0be651c88d1109fe469031.eot?#iefix") format("embedded-opentype"), url("./x2-icons/x2-icons_22944e718c0be651c88d1109fe469031.woff") format("woff"), url("./x2-icons/x2-icons_22944e718c0be651c88d1109fe469031.ttf") format("truetype"), url("./x2-icons/x2-icons_22944e718c0be651c88d1109fe469031.svg#x2-icons") format("svg");
-  font-weight: normal;
-  font-style: normal;
-}
-@media screen and (-webkit-min-device-pixel-ratio: 0) {
-  @font-face {
-    font-family: "x2-icons";
-    src: url("./x2-icons/x2-icons_22944e718c0be651c88d1109fe469031.svg#x2-icons") format("svg");
-  }
-}
-/* line 23, ../../../compass/css/lib/_x2-icons.scss */
-[data-icon]:before {
-  content: attr(data-icon);
-}
-
-/* line 25, ../../../compass/css/lib/_x2-icons.scss */
-[data-icon]:before,
-.icon-activity:before,
-.icon-contact:before,
-.icon-envelope-arrow:before,
-.icon-funnel:before,
-.icon-funnel-arrow:before,
-.icon-funnel-check:before,
-.icon-funnel3:before,
-.icon-funnel4:before,
-.icon-old-open-envelope:before,
-.icon-old-open-envelope-o:before,
-.icon-open-envelope:before,
-.icon-package:before,
-.icon-profile:before,
-.icon-profile-large:before,
-.icon-quotes:before,
-.icon-service:before,
-.icon-stopwatch:before,
-.icon-x2-logo:before,
-.icon-x2-logo-square:before,
-.icon-x2-logo-square-small:before,
-.icon-x2engine:before {
-  display: inline-block;
-  font-family: "x2-icons";
-  font-style: normal;
-  font-weight: normal;
-  font-variant: normal;
-  line-height: 1;
-  text-decoration: inherit;
-  text-rendering: optimizeLegibility;
-  text-transform: none;
-  -moz-osx-font-smoothing: grayscale;
-  -webkit-font-smoothing: antialiased;
-  font-smoothing: antialiased;
-}
-
-/* line 61, ../../../compass/css/lib/_x2-icons.scss */
-.icon-activity:before {
-  content: "\f113";
-}
-
-/* line 62, ../../../compass/css/lib/_x2-icons.scss */
-.icon-contact:before {
-  content: "\f10c";
-}
-
-/* line 63, ../../../compass/css/lib/_x2-icons.scss */
-.icon-envelope-arrow:before {
-  content: "\f10d";
-}
-
-/* line 64, ../../../compass/css/lib/_x2-icons.scss */
-.icon-funnel:before {
-  content: "\f109";
-}
-
-/* line 65, ../../../compass/css/lib/_x2-icons.scss */
-.icon-funnel-arrow:before {
-  content: "\f10e";
-}
-
-/* line 66, ../../../compass/css/lib/_x2-icons.scss */
-.icon-funnel-check:before {
-  content: "\f10f";
-}
-
-/* line 67, ../../../compass/css/lib/_x2-icons.scss */
-.icon-funnel3:before {
-  content: "\f119";
-}
-
-/* line 68, ../../../compass/css/lib/_x2-icons.scss */
-.icon-funnel4:before {
-  content: "\f11b";
-}
-
-/* line 69, ../../../compass/css/lib/_x2-icons.scss */
-.icon-old-open-envelope:before {
-  content: "\f120";
-}
-
-/* line 70, ../../../compass/css/lib/_x2-icons.scss */
-.icon-old-open-envelope-o:before {
-  content: "\f121";
-}
-
-/* line 71, ../../../compass/css/lib/_x2-icons.scss */
-.icon-open-envelope:before {
-  content: "\f10a";
-}
-
-/* line 72, ../../../compass/css/lib/_x2-icons.scss */
-.icon-package:before {
-  content: "\f112";
-}
-
-/* line 73, ../../../compass/css/lib/_x2-icons.scss */
-.icon-profile:before {
-  content: "\f11e";
-}
-
-/* line 74, ../../../compass/css/lib/_x2-icons.scss */
-.icon-profile-large:before {
-  content: "\f11f";
-}
-
-/* line 75, ../../../compass/css/lib/_x2-icons.scss */
-.icon-quotes:before {
-  content: "\f11c";
-}
-
-/* line 76, ../../../compass/css/lib/_x2-icons.scss */
-.icon-service:before {
-  content: "\f111";
-}
-
-/* line 77, ../../../compass/css/lib/_x2-icons.scss */
-.icon-stopwatch:before {
-  content: "\f114";
-}
-
-/* line 78, ../../../compass/css/lib/_x2-icons.scss */
-.icon-x2-logo:before {
-  content: "\f117";
-}
-
-/* line 79, ../../../compass/css/lib/_x2-icons.scss */
-.icon-x2-logo-square:before {
-  content: "\f116";
-}
-
-/* line 80, ../../../compass/css/lib/_x2-icons.scss */
-.icon-x2-logo-square-small:before {
-  content: "\f118";
-}
-
-/* line 81, ../../../compass/css/lib/_x2-icons.scss */
-.icon-x2engine:before {
-  content: "\f104";
-}
-
 /**************************************************
 * Class to add to a container that has a stacked icon
 * These are the icons displayed on the activity feed
 **************************************************/
-/* line 59, ../../../compass/css/lib/_icons.scss */
+/* line 58, ../../../compass/css/lib/_icons.scss */
 .stacked-icon {
   display: none;
   position: absolute;
@@ -565,7 +511,7 @@
   /* @theme background content */
   text-align: center;
 }
-/* line 78, ../../../compass/css/lib/_icons.scss */
+/* line 77, ../../../compass/css/lib/_icons.scss */
 .stacked-icon:before {
   width: 100%;
   font-size: 10px;
@@ -592,48 +538,53 @@
 *
 * These icons are currently used in activity feed and publisher 
 *******************************************************/
-/* line 41, ../../../compass/themes/x2engine/css/createWebForm.scss */
+/* line 42, ../../../compass/themes/x2engine/css/createWebForm.scss */
 label[for='generateLead'], label[for='generateAccount'] {
   font-size: 15px !important;
   color: #555;
 }
-/* line 45, ../../../compass/themes/x2engine/css/createWebForm.scss */
+/* line 46, ../../../compass/themes/x2engine/css/createWebForm.scss */
 label[for='generateLead'] + input, label[for='generateAccount'] + input {
   margin-top: 11px !important;
   margin-bottom: -11px !important;
 }
-/* line 49, ../../../compass/themes/x2engine/css/createWebForm.scss */
+/* line 50, ../../../compass/themes/x2engine/css/createWebForm.scss */
 label[for='generateLead'] + input + span, label[for='generateAccount'] + input + span {
   position: relative;
   top: -3px;
 }
 
-/* line 55, ../../../compass/themes/x2engine/css/createWebForm.scss */
+/* line 56, ../../../compass/themes/x2engine/css/createWebForm.scss */
+#web-form-new-button {
+  margin-top: 3px;
+}
+
+/* line 60, ../../../compass/themes/x2engine/css/createWebForm.scss */
 #generate-lead-form {
   margin-top: 10px;
 }
 
 /* override spectrum color picker css */
-/* line 62, ../../../compass/themes/x2engine/css/createWebForm.scss */
+/* line 67, ../../../compass/themes/x2engine/css/createWebForm.scss */
 div#web-form .sp-replacer {
   padding: 0px !important;
 }
-/* line 65, ../../../compass/themes/x2engine/css/createWebForm.scss */
+/* line 70, ../../../compass/themes/x2engine/css/createWebForm.scss */
 div#web-form .sp-dd {
   height: 13px !important;
 }
-/* line 68, ../../../compass/themes/x2engine/css/createWebForm.scss */
+/* line 73, ../../../compass/themes/x2engine/css/createWebForm.scss */
 div#web-form .sp-preview {
   width: 20px !important;
   height: 17px !important;
   margin-right: 5px !important;
 }
-/* line 74, ../../../compass/themes/x2engine/css/createWebForm.scss */
+/* line 79, ../../../compass/themes/x2engine/css/createWebForm.scss */
 div#web-form #web-form-inner {
   display: none;
 }
 
-/* line 79, ../../../compass/themes/x2engine/css/createWebForm.scss */
+/* line 84, ../../../compass/themes/x2engine/css/createWebForm.scss */
 #sortable1, #sortable2 {
   list-style-type: none;
   margin: 0;
@@ -642,7 +593,7 @@ div#web-form #web-form-inner {
   min-height: 300px;
 }
 
-/* line 87, ../../../compass/themes/x2engine/css/createWebForm.scss */
+/* line 92, ../../../compass/themes/x2engine/css/createWebForm.scss */
 #sortable1 li, #sortable2 li {
   margin: 0 5px 5px 5px;
   padding: 5px;
@@ -656,18 +607,18 @@ div#web-form #web-form-inner {
   color: black;
 }
 
-/* line 97, ../../../compass/themes/x2engine/css/createWebForm.scss */
+/* line 102, ../../../compass/themes/x2engine/css/createWebForm.scss */
 #sortable1 li label, #sortable2 li label {
   padding: 1px 5px 1px 20px;
 }
 
-/* line 101, ../../../compass/themes/x2engine/css/createWebForm.scss */
+/* line 106, ../../../compass/themes/x2engine/css/createWebForm.scss */
 .ui-state-highlight {
   height: 1.5em;
   line-height: 1.2em;
 }
 
-/* line 106, ../../../compass/themes/x2engine/css/createWebForm.scss */
+/* line 111, ../../../compass/themes/x2engine/css/createWebForm.scss */
 div.web-form-fields {
   margin-bottom: 5px;
   background: #F0F0F0;
@@ -686,25 +637,25 @@ div.web-form-fields {
   border-radius: 4px;
   overflow-y: scroll;
 }
-/* line 107, ../../../compass/themes/x2engine/css/createWebForm.scss */
+/* line 112, ../../../compass/themes/x2engine/css/createWebForm.scss */
 div.web-form-fields.fields-container {
   margin-bottom: 8px;
 }
 
-/* line 125, ../../../compass/themes/x2engine/css/createWebForm.scss */
+/* line 130, ../../../compass/themes/x2engine/css/createWebForm.scss */
 .fieldlist li {
   border-box: box-sizing;
   position: relative;
   border: 1px solid rgba(255, 255, 255, 0);
   transition: border 0.1s;
 }
-/* line 130, ../../../compass/themes/x2engine/css/createWebForm.scss */
+/* line 135, ../../../compass/themes/x2engine/css/createWebForm.scss */
 .fieldlist li:hover {
   transition: border 0s;
   border: 1px solid #629ceb;
   /* @theme border-color highlight2 */
 }
-/* line 138, ../../../compass/themes/x2engine/css/createWebForm.scss */
+/* line 143, ../../../compass/themes/x2engine/css/createWebForm.scss */
 .fieldlist .field-expander {
   position: absolute;
   top: 0px;
@@ -720,29 +671,29 @@ div.web-form-fields.fields-container {
 .fieldlist .field-expander.closed:before {
   text-decoration: none;
 }
-/* line 153, ../../../compass/themes/x2engine/css/createWebForm.scss */
+/* line 158, ../../../compass/themes/x2engine/css/createWebForm.scss */
 .fieldlist#sortable1 .field-expander {
   display: none;
 }
-/* line 157, ../../../compass/themes/x2engine/css/createWebForm.scss */
+/* line 162, ../../../compass/themes/x2engine/css/createWebForm.scss */
 .fieldlist#sortable2 .field-expander {
   display: inline-block;
 }
-/* line 161, ../../../compass/themes/x2engine/css/createWebForm.scss */
+/* line 166, ../../../compass/themes/x2engine/css/createWebForm.scss */
 .fieldlist .field-settings {
   display: none;
 }
-/* line 165, ../../../compass/themes/x2engine/css/createWebForm.scss */
+/* line 170, ../../../compass/themes/x2engine/css/createWebForm.scss */
 .fieldlist#sortable1 .field-settings {
   display: none !important;
 }
 
-/* line 171, ../../../compass/themes/x2engine/css/createWebForm.scss */
+/* line 176, ../../../compass/themes/x2engine/css/createWebForm.scss */
 #embed-row {
   height: 25px;
   margin-bottom: 10px;
 }
-/* line 176, ../../../compass/themes/x2engine/css/createWebForm.scss */
+/* line 181, ../../../compass/themes/x2engine/css/createWebForm.scss */
 #embed-row #embedcode {
   box-sizing: border-box;
   width: 150px;
@@ -751,30 +702,32 @@ div.web-form-fields.fields-container {
   border: 1px solid #B9B9B9;
   background: #F6F6F6;
   color: #666;
-  -moz-box-shadow: 0 1px 0 white, inset 0 1px 1px rgba(0, 0, 0, 0.17);
-  -webkit-box-shadow: 0 1px 0 white, inset 0 1px 1px rgba(0, 0, 0, 0.17);
-  box-shadow: 0 1px 0 white, inset 0 1px 1px rgba(0, 0, 0, 0.17);
+  -webkit-box-shadow: 0 1px 0 white inset 0 1px 1px rgba(0, 0, 0, 0.17);
+  -moz-box-shadow: 0 1px 0 white inset 0 1px 1px rgba(0, 0, 0, 0.17);
+  -ms-box-shadow: 0 1px 0 white inset 0 1px 1px rgba(0, 0, 0, 0.17);
+  -o-box-shadow: 0 1px 0 white inset 0 1px 1px rgba(0, 0, 0, 0.17);
+  box-shadow: 0 1px 0 white inset 0 1px 1px rgba(0, 0, 0, 0.17);
   -webkit-border-radius: 3px 0px 0px 3px;
   -moz-border-radius: 3px 0px 0px 3px;
   -ms-border-radius: 3px 0px 0px 3px;
   -o-border-radius: 3px 0px 0px 3px;
   border-radius: 3px 0px 0px 3px;
 }
-/* line 189, ../../../compass/themes/x2engine/css/createWebForm.scss */
+/* line 194, ../../../compass/themes/x2engine/css/createWebForm.scss */
 #embed-row #embedcode:focus {
   border-color: #4496E7;
   color: #444;
   background: white;
   outline: 0;
 }
-/* line 197, ../../../compass/themes/x2engine/css/createWebForm.scss */
+/* line 202, ../../../compass/themes/x2engine/css/createWebForm.scss */
 #embed-row #generate {
   box-sizing: border-box;
   height: 100%;
   margin-top: 0px;
   margin-bottom: 0px;
 }
-/* line 204, ../../../compass/themes/x2engine/css/createWebForm.scss */
+/* line 209, ../../../compass/themes/x2engine/css/createWebForm.scss */
 #embed-row #clipboard {
   box-sizing: border-box;
   height: 100%;
@@ -786,60 +739,60 @@ div.web-form-fields.fields-container {
   -o-border-radius: 0px 3px 3px 0px;
   border-radius: 0px 3px 3px 0px;
 }
-/* line 214, ../../../compass/themes/x2engine/css/createWebForm.scss */
+/* line 219, ../../../compass/themes/x2engine/css/createWebForm.scss */
 #embed-row #copy-help {
   display: inline-block;
   margin-left: 5px;
 }
 
-/* line 220, ../../../compass/themes/x2engine/css/createWebForm.scss */
+/* line 225, ../../../compass/themes/x2engine/css/createWebForm.scss */
 .CodeMirror {
   border: 1px solid #D9D9D9;
   height: 10em;
   margin-bottom: 5px;
 }
 
-/* line 226, ../../../compass/themes/x2engine/css/createWebForm.scss */
+/* line 231, ../../../compass/themes/x2engine/css/createWebForm.scss */
 #webform-buttons,
 #saved-forms {
   min-width: 200px;
 }
 
-/* line 231, ../../../compass/themes/x2engine/css/createWebForm.scss */
+/* line 236, ../../../compass/themes/x2engine/css/createWebForm.scss */
 #webform-buttons {
   margin-left: 0px;
   margin-right: 0px;
 }
 
-/* line 239, ../../../compass/themes/x2engine/css/createWebForm.scss */
+/* line 244, ../../../compass/themes/x2engine/css/createWebForm.scss */
 #save-field input,
 #new-field input {
   box-sizing: border-box;
   height: 25px;
 }
-/* line 244, ../../../compass/themes/x2engine/css/createWebForm.scss */
+/* line 249, ../../../compass/themes/x2engine/css/createWebForm.scss */
 #save-field input:first-of-type,
 #new-field input:first-of-type {
   border-radius: 2px 0px 0px 2px;
   margin-right: 0px;
   border-right: 0px;
 }
-/* line 250, ../../../compass/themes/x2engine/css/createWebForm.scss */
+/* line 255, ../../../compass/themes/x2engine/css/createWebForm.scss */
 #save-field input:last-child,
 #new-field input:last-child {
   border-radius: 0px 2px 2px 0px;
 }
-/* line 254, ../../../compass/themes/x2engine/css/createWebForm.scss */
+/* line 259, ../../../compass/themes/x2engine/css/createWebForm.scss */
 #save-field .x2-button,
 #new-field .x2-button {
   line-height: 25px;
 }
 
-/* line 260, ../../../compass/themes/x2engine/css/createWebForm.scss */
+/* line 265, ../../../compass/themes/x2engine/css/createWebForm.scss */
 .webform-tab {
   padding: 30px;
 }
-/* line 263, ../../../compass/themes/x2engine/css/createWebForm.scss */
+/* line 268, ../../../compass/themes/x2engine/css/createWebForm.scss */
 .webform-tab .tab-content {
   box-sizing: border-box;
   min-height: 200px;
@@ -851,17 +804,17 @@ div.web-form-fields.fields-container {
   /* @theme background: content */
   /* @theme border-color: border */
 }
-/* line 278, ../../../compass/themes/x2engine/css/createWebForm.scss */
+/* line 283, ../../../compass/themes/x2engine/css/createWebForm.scss */
 .webform-tab .tab-content h4 {
   margin-top: 0px;
 }
-/* line 281, ../../../compass/themes/x2engine/css/createWebForm.scss */
+/* line 286, ../../../compass/themes/x2engine/css/createWebForm.scss */
 .webform-tab .tab-content textarea {
   width: 100%;
   box-sizing: border-box;
 }
 
-/* line 289, ../../../compass/themes/x2engine/css/createWebForm.scss */
+/* line 294, ../../../compass/themes/x2engine/css/createWebForm.scss */
 #iframe_example {
   -webkit-border-radius: 3px;
   -moz-border-radius: 3px;
@@ -873,22 +826,22 @@ div.web-form-fields.fields-container {
   height: 385px;
   width: 200px;
 }
-/* line 296, ../../../compass/themes/x2engine/css/createWebForm.scss */
+/* line 301, ../../../compass/themes/x2engine/css/createWebForm.scss */
 #iframe_example.weblist {
   height: 100px;
 }
 
-/* line 301, ../../../compass/themes/x2engine/css/createWebForm.scss */
+/* line 306, ../../../compass/themes/x2engine/css/createWebForm.scss */
 input#font, select#font {
   width: 193px;
 }
 
-/* line 305, ../../../compass/themes/x2engine/css/createWebForm.scss */
+/* line 310, ../../../compass/themes/x2engine/css/createWebForm.scss */
 input.half {
   width: 69px;
 }
 
-/* line 309, ../../../compass/themes/x2engine/css/createWebForm.scss */
+/* line 314, ../../../compass/themes/x2engine/css/createWebForm.scss */
 .ui-resizable-helper {
   border: 1px solid black;
   -webkit-border-radius: 7px;
@@ -900,61 +853,61 @@ input.half {
   /*  background-color: red; */
 }
 
-/* line 316, ../../../compass/themes/x2engine/css/createWebForm.scss */
+/* line 321, ../../../compass/themes/x2engine/css/createWebForm.scss */
 #save {
   margin-top: 1px;
 }
 
-/* line 327, ../../../compass/themes/x2engine/css/createWebForm.scss */
+/* line 332, ../../../compass/themes/x2engine/css/createWebForm.scss */
 #web-form-name, #saved-forms {
   margin-right: 4px;
 }
 
-/* line 331, ../../../compass/themes/x2engine/css/createWebForm.scss */
+/* line 336, ../../../compass/themes/x2engine/css/createWebForm.scss */
 .save-html-feedback {
   margin-top: 9px !important;
 }
 
-/* line 336, ../../../compass/themes/x2engine/css/createWebForm.scss */
+/* line 341, ../../../compass/themes/x2engine/css/createWebForm.scss */
 #custom-html-input-container > h4 {
   margin-right: 4px;
   display: inline;
 }
-/* line 340, ../../../compass/themes/x2engine/css/createWebForm.scss */
+/* line 345, ../../../compass/themes/x2engine/css/createWebForm.scss */
 #custom-html-input-container .fieldhelp {
   margin-top: 2px;
 }
 
-/* line 345, ../../../compass/themes/x2engine/css/createWebForm.scss */
+/* line 350, ../../../compass/themes/x2engine/css/createWebForm.scss */
 #custom-html-hint {
   position: relative;
   top: -2px;
 }
 
-/* line 350, ../../../compass/themes/x2engine/css/createWebForm.scss */
+/* line 355, ../../../compass/themes/x2engine/css/createWebForm.scss */
 .errorMessage {
   clear: both;
 }
 
-/* line 354, ../../../compass/themes/x2engine/css/createWebForm.scss */
+/* line 359, ../../../compass/themes/x2engine/css/createWebForm.scss */
 .feedback-container, .auxlib-error-box-msg {
   line-height: 30px;
   margin-left: 5px;
   display: inline;
 }
 
-/* line 360, ../../../compass/themes/x2engine/css/createWebForm.scss */
+/* line 365, ../../../compass/themes/x2engine/css/createWebForm.scss */
 #custom-css {
   height: 75px;
 }
 
 @media (max-width: 657px) {
-  /* line 365, ../../../compass/themes/x2engine/css/createWebForm.scss */
+  /* line 370, ../../../compass/themes/x2engine/css/createWebForm.scss */
   #web-form .row {
     overflow-x: hidden;
   }
 
-  /* line 368, ../../../compass/themes/x2engine/css/createWebForm.scss */
+  /* line 373, ../../../compass/themes/x2engine/css/createWebForm.scss */
   #custom-css {
     width: 250px;
   }

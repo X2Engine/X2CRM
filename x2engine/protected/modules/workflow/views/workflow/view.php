@@ -331,16 +331,12 @@ $this->actionMenu[$unsetUrlIndex]['url'] = '#';
         <a href='#' id='per-stage-view-button' 
          title='<?php echo Yii::t('workflow', 'Funnel View'); ?>'
          class='x2-button<?php echo ($perStageWorkflowView ? ' disabled-link' : ''); ?>'>
-         <div></div>
-         <div></div>
-         <div></div>
+         <?php echo X2Html::x2icon('funnel'); ?>
         </a>
         <a href='#' id='drag-and-drop-view-button' 
          title='<?php echo Yii::t('workflow', 'Pipeline View'); ?>'
          class='x2-button<?php echo ($perStageWorkflowView ? '': ' disabled-link'); ?>'>
-         <div></div>
-         <div></div>
-         <div></div>
+         <?php echo X2Html::fa('long-arrow-right'); ?>
         </a>
     </div>
 

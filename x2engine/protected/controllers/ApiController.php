@@ -61,6 +61,9 @@ class ApiController extends x2base {
 
 	public function behaviors() {
 		return array_merge(parent::behaviors(),array(
+            'LeadRoutingBehavior' => array(
+                'class' => 'LeadRoutingBehavior'
+            ),
 			'responds' => array(
 				'class' => 'application.components.ResponseBehavior',
 				'isConsole' => false,
@@ -164,9 +167,14 @@ class ApiController extends x2base {
         $model = $this->getModel(true);
         $model->setX2Fields($_POST);
 
-        if($this->modelClass === 'Contacts' && isset($_POST['trackingKey'])){
-            // key is read-only, won't be set by setX2Fields
-            $model->trackingKey = $_POST['trackingKey']; 
+        if($this->modelClass === 'Contacts') {
+            if (isset($_POST['trackingKey'])){
+                // key is read-only, won't be set by setX2Fields
+                $model->trackingKey = $_POST['trackingKey']; 
+            }
+            if (isset($_POST['_leadRouting']) && $_POST['_leadRouting']) {
+                $model->assignedTo = $this->getNextAssignee ();
+            }
         }
 
         $setUserFields = false;

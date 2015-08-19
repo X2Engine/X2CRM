@@ -34,30 +34,42 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 
-$namespacedId = $this->namespace."-multi-type-autocomplete-container";
+$namespacedId = $this->htmlOptions['id'];
 
 Yii::app()->clientScript->registerScript('multiTypeAutocompleteJS'.$this->namespace,"
 
 $(function () {
     var container$ = $('#".$namespacedId."');
+    var excludeList = ".CJSON::encode ($this->staticOptions).";
 
     container$.find ('select').change (function () {
+        var autocomplete$ = container$.find ('.record-name-autocomplete');
         var modelType = container$.find ('select').val ();
+        if ($.inArray (modelType, excludeList) >= 0) {
+            container$.find ('input').css ('visibility', 'hidden')
+            return;
+        }
         var throbber$ = x2.forms.inputLoading (container$.find ('.record-name-autocomplete'));
         $.ajax ({
             type: 'GET',
-            url: 'ajaxGetModelAutocomplete',
+            url: '".Yii::app()->controller->createUrl ('ajaxGetModelAutocomplete')."',
             data: {
                 modelType: modelType
             },
             success: function (data) {
-                // remove span element used by jQuery widget
-                container$.find ('input').
-                    first ().next ('span').remove ();
+                if (data === 'failure') {
+                    autocomplete$.attr ('disabled', 'disabled');
+                    autocomplete$.siblings ('label').hide ();
+                } else {
+                    autocomplete$.siblings ('label').show ();
+                    // remove span element used by jQuery widget
+                    container$.find ('input').
+                        first ().next ('span').remove ();
 
-                // replace old autocomplete with the new one
-                container$.find ('input').first ().replaceWith (data); 
-     
+                    // replace old autocomplete with the new one
+                    container$.find ('input').first ().replaceWith (data); 
+         
+                }
                 // remove the loading gif
                 throbber$.remove ();
             }
@@ -67,19 +79,64 @@ $(function () {
 
 ", CClientScript::POS_END);
 
-?>
-<div id="<?php echo $namespacedId ?>" 
- class="multi-type-autocomplete-container form2">
-<?php
-    echo CHtml::dropDownList (
-        $this->selectName, $this->value, $this->options, 
-        array (
-            'class' => 'x2-select type-select',
-        ));
+echo CHtml::openTag ('div', X2Html::mergeHtmlOptions (array (
+    'class' => "multi-type-autocomplete-container",
+    'id' => $namespacedId,
+), $this->htmlOptions));
+    if (isset ($this->model)) {
+        echo CHtml::activeDropDownList (
+            $this->model, $this->selectName, $this->options, 
+            array (
+                'class' => '',
+            ));
+    } else {
+        echo CHtml::dropDownList (
+            $this->selectName, $this->selectValue, $this->options, 
+            array (
+                'class' => 'x2-select type-select',
+            ));
+    }
 
-    X2Model::renderModelAutocomplete ($this->value, false, array ());
-    echo CHtml::hiddenField ($this->hiddenInputName, '', array (
-        'class' => 'hidden-id',
-    ));
+    $htmlOptions = array ();
+    if (isset ($this->model)) {
+        echo CHtml::activeLabel ($this->model, $this->autocompleteName, array (
+            'style' => $this->selectValue === 'calendar' ? 'display: none;' : ''
+        ));
+    }
+
+    if (isset ($this->autocompleteName)) 
+        $htmlOptions['name'] = isset ($this->model) ? 
+            CHtml::resolveName ($this->model, $this->autocompleteName) : 
+            $this->autocompleteName;
+    if ($this->selectValue === 'calendar') {
+        $htmlOptions['disabled'] = 'disabled';
+        $htmlOptions['style'] = 'display: none;';
+        $this->selectValue = 'Contacts';
+    }
+
+
+    if (!in_array ($this->selectValue, $this->staticOptions)) {
+        X2Model::renderModelAutocomplete (
+            $this->selectValue, false, $htmlOptions, 
+            $this->autocompleteValue);
+    } else {
+        ?>
+        <input class="record-name-autocomplete" type="hidden"></input>
+        <?php
+    }
+    if (isset ($this->model)) {
+        echo CHtml::activeHiddenField (
+            $this->model,
+            $this->hiddenInputName, 
+            array (
+                'class' => 'hidden-id',
+            ));
+    } else {
+        echo CHtml::hiddenField (
+            $this->hiddenInputName, 
+            $this->hiddenInputValue, array (
+                'class' => 'hidden-id',
+            ));
+    }
+echo CHtml::closeTag ('div');
 ?>
-</div>

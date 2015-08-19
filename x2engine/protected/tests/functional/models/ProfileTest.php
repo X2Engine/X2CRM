@@ -45,7 +45,7 @@ class ProfileTest extends X2WebTestCase {
         // ensure that a directory with the same name isn't already in the web root
         exec ('ls ../controllers', $output);
         if (in_array ('ProfileTestController.php', $output)) {
-            VERBOSE_MODE && println ('Warning: tests are being aborted because file '.
+            X2_VERBOSE_MODE && println ('Warning: tests are being aborted because file '.
                 '"ProfileTestController" already exists in the protected/controllers');
             self::$skipAllTests = true;
         } else {

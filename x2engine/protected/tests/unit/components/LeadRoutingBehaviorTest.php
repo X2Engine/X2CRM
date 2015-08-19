@@ -190,7 +190,7 @@ class LeadRoutingBehaviorTest extends X2DbTestCase {
         );
         $leadRouting = new LeadRoutingBehavior ();
         $username = $leadRouting->customRoundRobin (); 
-        if(VERBOSE_MODE) print ("Getting assignee: username = $username\n");
+        if(X2_VERBOSE_MODE) print ("Getting assignee: username = $username\n");
         $this->assertTrue ($username === 'Anyone');
 
         Yii::app()->settings->onlineOnly = 0;
@@ -200,7 +200,7 @@ class LeadRoutingBehaviorTest extends X2DbTestCase {
         );
         $leadRouting = new LeadRoutingBehavior ();
         $username = $leadRouting->customRoundRobin (); 
-        if(VERBOSE_MODE) print ("Getting assignee: username = $username\n");
+        if(X2_VERBOSE_MODE) print ("Getting assignee: username = $username\n");
         $this->assertTrue ($username === 'testUser1');
     }
 
@@ -214,7 +214,7 @@ class LeadRoutingBehaviorTest extends X2DbTestCase {
         );
         $leadRouting = new LeadRoutingBehavior ();
         $username = $leadRouting->customRoundRobin (); 
-        if(VERBOSE_MODE) print ("Getting assignee: username = $username\n");
+        if(X2_VERBOSE_MODE) print ("Getting assignee: username = $username\n");
         $this->assertTrue ($username === 'testUser1');
 
         $_POST['Contacts'] = array (
@@ -222,7 +222,7 @@ class LeadRoutingBehaviorTest extends X2DbTestCase {
             'lastName' => 'contact2'
         );
         $username = $leadRouting->customRoundRobin (); 
-        if(VERBOSE_MODE) print ("Getting assignee: username = $username\n");
+        if(X2_VERBOSE_MODE) print ("Getting assignee: username = $username\n");
         $this->assertTrue ($username === 'testUser2');
 
         $_POST['Contacts'] = array (
@@ -230,7 +230,7 @@ class LeadRoutingBehaviorTest extends X2DbTestCase {
             'lastName' => 'contact3'
         );
         $username = $leadRouting->customRoundRobin (); 
-        if(VERBOSE_MODE) print ("Getting assignee: username = $username\n");
+        if(X2_VERBOSE_MODE) print ("Getting assignee: username = $username\n");
         $this->assertTrue ($username === 'Anyone');
 
         $_POST['Contacts'] = array (

@@ -383,6 +383,7 @@ class ContactsController extends x2base {
         $body = trim($body);
 
         $errors = array();
+        $hasError = false;
         $status = array();
         $email = array();
         if (isset($_POST['email'], $_POST['body'])) {
@@ -398,12 +399,17 @@ class ContactsController extends x2base {
 
             $emailFrom = Credentials::model()->getDefaultUserAccount(Credentials::$sysUseId['systemNotificationEmail'], 'email');
             if ($emailFrom == Credentials::LEGACY_ID)
-                $emailFrom = array(
-                    'name' => Yii::app()->params->profile->fullName,
-                    'address' => Yii::app()->params->profile->emailAddress
-                );
+                if (!Yii::app()->params->profile->emailAddress) {
+                    Yii::app()->user->setFlash ('error', Yii::t('app', 'Email could not be sent: user profile does not have an email address.'));
+                    $hasError = true;
+                } else {
+                    $emailFrom = array(
+                        'name' => Yii::app()->params->profile->fullName,
+                        'address' => Yii::app()->params->profile->emailAddress
+                    );
+                }
 
-            if (empty($errors))
+            if (empty($errors) && !$hasError)
                 $status = $this->sendUserEmail($email, $subject, $body, null, $emailFrom);
 
             if (array_search('200', $status)) {
@@ -670,72 +676,27 @@ class ContactsController extends x2base {
             $oldAttributes = $model->attributes;
 
             $model->setX2Fields($_POST['Contacts']);
-            /* if ($model->dupeCheck != '1') {
-              $model->dupeCheck = 1;
-              $criteria = new CDbCriteria();
-              $criteriaFlag = false;
-              if (!empty($model->firstName) && !empty($model->lastName)) {
-              $criteria->compare('CONCAT(firstName," ",lastName)', $model->firstName . " " . $model->lastName, false, "OR");
-              $criteriaFlag = true;
-              }
-              if (!empty($model->email)) {
-              $criteria->compare('email', $model->email, false, "OR");
-              $criteriaFlag = true;
-              }
-              $criteria->compare('id', "<>" . $model->id, false, "AND");
-              if (!Yii::app()->user->checkAccess('ContactsAdminAccess')) {
-              $condition = 'visibility="1" OR (assignedTo="Anyone" AND visibility!="0")  OR assignedTo="' . Yii::app()->user->getName() . '"';
-              $groupLinks = Yii::app()->db->createCommand()->select('groupId')->from('x2_group_to_user')->where('userId=' . Yii::app()->user->getId())->queryColumn();
-              if (!empty($groupLinks))
-              $condition .= ' OR assignedTo IN (' . implode(',', $groupLinks) . ')';
-
-              $condition .= 'OR (visibility=2 AND assignedTo IN
-              (SELECT username FROM x2_group_to_user WHERE groupId IN
-              (SELECT groupId FROM x2_group_to_user WHERE userId=' . Yii::app()->user->getId() . ')))';
-              $criteria->addCondition($condition);
-              }
-              $count = X2Model::model('Contacts')->count($criteria);
-              if (!empty($criteria) && $criteriaFlag) {
-              $duplicates = X2Model::model('Contacts')->findAll($criteria);
-              if (count($duplicates) > 0) {
-              $this->render('duplicateCheck', array(
-              'newRecord' => $model,
-              'duplicates' => $duplicates,
-              'ref' => 'update',
-              'count' => $count,
-              ));
-              $renderFlag = false;
-              } else {
-              // $this->update($model, $oldAttributes, 0);
-              if ($model->save())
-              $this->redirect(array('view', 'id' => $model->id));
-              }
-              } else {
-              // $this->update($model, $oldAttributes, 0);
-              if ($model->save())
-              $this->redirect(array('view', 'id' => $model->id));
-              }
-              } else { */
-            // $this->update($model, $oldAttributes, 0);
             if ($model->save())
                 $this->redirect(array('view', 'id' => $model->id));
-            /* } */
         }
         if ($renderFlag) {
             if (isset($_POST['x2ajax'])) {
                 Yii::app()->clientScript->scriptMap['*.js'] = false;
                 Yii::app()->clientScript->scriptMap['*.css'] = false;
                 if (isset($x2ajaxCreateError) && $x2ajaxCreateError == true) {
-                    $page = $this->renderPartial(
-                        'application.components.views._form', 
-                        array(
-                            'model' => $model,
-                            'users' => $users,
-                            'modelName' => 'contacts'
-                        ),
-                        true,
-                        true
-                    );
+                    $this->widget ('FormView', array(
+                        'model' => $model
+                    ), true, true);
+                    // $page = $this->renderPartial(
+                    //     'application.components.views.@FORMVIEW', 
+                    //     array(
+                    //         'model' => $model,
+                    //         'users' => $users,
+                    //         'modelName' => 'contacts'
+                    //     ),
+                    //     true,
+                    //     true
+                    // );
                     echo json_encode(
                         array(
                             'status' => 'userError',
@@ -743,16 +704,19 @@ class ContactsController extends x2base {
                         )
                     );
                 } else {
-                    $this->renderPartial(
-                        'application.components.views._form', 
-                        array(
-                            'model' => $model,
-                            'users' => $users,
-                            'modelName' => 'contacts'
-                        ),
-                        false,
-                        true
-                    );
+                    $this->widget ('FormView', array(
+                        'model' => $model,
+                    ), false, true);
+                    // $this->renderPartial(
+                    //    'application.components.views.@FORMVIEW', 
+                    //     array(
+                    //         'model' => $model,
+                    //         'users' => $users,
+                    //         'modelName' => 'contacts'
+                    //     ),
+                    //     false,
+                    //     true
+                    // );
                 }
             } else {
                 $this->render('update', array(
@@ -922,7 +886,7 @@ class ContactsController extends x2base {
         ));
     }
 
-    public function actionCreateList() {
+    public function actionCreateList($ajax=false) {
         $list = new X2List;
         $list->modelName = 'Contacts';
         $list->type = 'dynamic';
@@ -952,6 +916,10 @@ class ContactsController extends x2base {
                     $list->lastUpdated = time();
 
                     if ($list->save()) {
+                        if ($ajax) {
+                            echo CJSON::encode($list->attributes);
+                            return;
+                        }
                         $this->redirect(array('/contacts/contacts/list', 'id' => $list->id));
                     }
                 }
@@ -964,6 +932,23 @@ class ContactsController extends x2base {
             $default->attribute = '';
             $default->comparison = 'contains';
             $criteriaModels[] = $default;
+        }
+
+        if ($ajax) {
+            $html = $this->renderPartial('createList', array(
+                'model' => $list,
+                'criteriaModels' => $criteriaModels,
+                'users' => User::getNames(),
+                // 'attributeList'=>$attributeList,
+                'comparisonList' => $comparisonList,
+                'listTypes' => array(
+                    'dynamic' => Yii::t('contacts', 'Dynamic'),
+                    'static' => Yii::t('contacts', 'Static')
+                ),
+                'itemModel' => $contactModel,
+            ), false);
+            echo $this->processOutput($html);
+            return;
         }
 
         $this->render('createList', array(
@@ -1261,10 +1246,7 @@ class ContactsController extends x2base {
                 'name'=>'email',
                 'label' => Yii::t('app', 'Send Email'), 'url' => '#',
                 'linkOptions' => array('onclick' => 'toggleEmailForm(); return false;')),
-            array(
-                'name'=>'attach',
-                'label' => Yii::t('app', 'Attach A File/Photo'), 'url' => '#',
-                'linkOptions' => array('onclick' => 'toggleAttachmentForm(); return false;')),
+            ModelFileUploader::menuLink(),
             array(
                 'name'=>'quotes',
                 'label' => Yii::t('quotes', 'Quotes/Invoices'), 'url' => 'javascript:void(0)',
@@ -1350,6 +1332,14 @@ class ContactsController extends x2base {
                             'pageTitle' => Yii::t('app', 'Contact').': '.(isset($model) ? 
                                 $model->name : "")
                         ))."');"
+                )
+            ),
+            array(
+                'name'=>'addRecordAlias',
+                'label'=>Yii::t('contacts', 'Add Social Profile'),
+                'url' => '#',
+                'linkOptions' => array (
+                    'id' => 'record-aliases-action-menu-link'
                 )
             ),
             RecordViewLayoutManager::getEditLayoutActionMenuListItem (),

@@ -49,6 +49,11 @@ class Actions extends X2Model {
      * x2_action_to_record table
      */
     const ASSOCIATION_TYPE_MULTI = '__multiple__';
+
+    /**
+     * @var bool $disableEventCreation
+     */
+    public $disableEventCreation = false; 
     
     public $skipActionTimers = false;
 
@@ -58,7 +63,8 @@ class Actions extends X2Model {
      * Types of actions that should be treated as emails
      * @var type
      */
-    public static $emailTypes = array('email', 'emailFrom','emailOpened','email_invoice', 'email_quote');
+    public static $emailTypes = array(
+        'email', 'emailFrom','emailOpened','email_invoice', 'email_quote');
 
     public $verifyCode; // CAPTCHA for guests using the publisher
     public $actionDescriptionTemp = ''; // Easy way to get around action text records
@@ -73,6 +79,26 @@ class Actions extends X2Model {
 
     /* static variable to allow calling findAll without actionText */ 
     private static $withActionText = true;
+
+    /**
+     * Get names of CFormModel classes associated with action subtypes 
+     * @return array
+     */
+    public static function getFormTypes () {
+        return array_merge (
+            array ('Actions'),
+            array ('CalendarEventFormModel'),
+            array_map (function ($type) {
+                return ucfirst ($type).'FormModel';
+            }, array (
+                'action',
+                'time',
+                'event',
+                'products',
+                'call',
+                'note',
+            )));
+    }
 
     /**
      * Returns the static model of the specified AR class.
@@ -119,8 +145,16 @@ class Actions extends X2Model {
             array('id,assignedTo,actionDescription,visibility,associationId,associationType,'.
                 'associationName,dueDate,priority,type,createDate,complete,reminder,completedBy,'.
                 'completeDate,lastUpdated,updatedBy,color,subject', 'safe'),
-            array('verifyCode', 'captcha', 'allowEmpty' => !CCaptcha::checkRequirements(), 'on' => 'guestCreate'),
+            array(
+                'verifyCode', 'captcha', 'allowEmpty' => !CCaptcha::checkRequirements(), 
+                'on' => 'guestCreate'),
+            array ('notificationUsers', 'validateNotificationUsers'),
         );
+    }
+
+    public function validateNotificationUsers ($attribute) {
+        $value = $this->$attribute;
+        return in_array ($value, array ('me', 'assigned', 'both'));
     }
 
     /**
@@ -133,6 +167,14 @@ class Actions extends X2Model {
             'actionText' => array(self::HAS_ONE, 'ActionText', 'actionId'),
             //'assignee' => array(self::BELONGS_TO,'User',array('assignedTo'=>'username')),
         ));
+    }
+
+
+    public function setX2Fields(&$data, $filter = false, $bypassPermissions=false) {
+        if (isset ($data['lineitem'])) {
+            $this->setActionLineItems ($data['lineitem']);
+        }
+        return parent::setX2Fields ($data, $filter, $bypassPermissions);
     }
 
     /**
@@ -219,15 +261,26 @@ class Actions extends X2Model {
     }
 
     public function attributeNames () {
-         return array_merge (parent::attributeNames (), array_keys ($this->metaDataTemp),
-            array ('actionDescription'));
+         return array_merge (
+            parent::attributeNames (), 
+            array_keys ($this->metaDataTemp),
+            array (
+                'actionDescription',
+                'notificationTime',
+                'notificationUsers',
+            )
+        );
     }
 
     public function getAttributes ($names=true) {
         $attrs = parent::getAttributes ($names);
-        $filter =is_array ($names);
+        $filter = is_array ($names);
         if (!$filter || in_array ('actionDescription', $names))
             $attrs['actionDescription'] = $this->actionDescription;
+        if (!$filter || in_array ('notificationUsers', $names))
+            $attrs['notificationUsers'] = $this->notificationUsers;
+        if (!$filter || in_array ('notificationTime', $names))
+            $attrs['notificationTime'] = $this->notificationTime;
         foreach (array_keys ($this->metaDataTemp) as $name) {
             if (!$filter || in_array ($name, $names))
                 $attrs[$name] = $this->$name;
@@ -248,6 +301,9 @@ class Actions extends X2Model {
         return null;
     }
 
+    public function getAssociation () {
+        return self::getAssociationModel($this->associationType, $this->associationId);
+    }
 
     /**
      * Fixes up record association, parses dates (since this doesn't use 
@@ -353,11 +409,35 @@ class Actions extends X2Model {
         parent::afterFind();
     }
 
+    private $_timerIds;
+    public function setTimerIds ($timers) {
+        $this->_timerIds = $timers;
+        $this->skipActionTimers = true;
+    }
+
     public function afterSave(){
         $this->saveMetaData ();
 
+        if ($this->reminder) {
+            $this->createNotifications (
+                $this->notificationUsers,
+                $this->dueDate - ($this->notificationTime * 60), 'action_reminder');
+        }
+
         
-        return parent::afterSave();
+        
+
+        parent::afterSave();
+
+        $association = X2Model::getAssociationModel($this->associationType, $this->associationId);
+        if($this->isNewRecord && $association && $association->hasAttribute('lastActivity')){
+            $association->lastActivity = time();
+            $association->update(array('lastActivity'));
+            X2Flow::trigger('RecordUpdateTrigger', array(
+                'model' => $association,
+            ));
+        }
+
     }
 
     public function requiredAssoc($attribute, $params = array()){
@@ -400,6 +480,15 @@ class Actions extends X2Model {
             }
             $event->save();
         }
+    }
+
+    public function createCalendarFeedEvent () {
+        $event = new Events;
+        $event->type = 'calendar_event';
+        $event->visibility = $this->visibility;
+        $event->associationType = 'Actions';
+        $event->timestamp = $this->dueDate;
+        $event->save ();
     }
 
     /**
@@ -450,7 +539,10 @@ class Actions extends X2Model {
      * Fires the onAfterCreate event in {@link X2Model::afterCreate}
      */
     public function afterCreate(){
-        if(empty($this->type)){
+        if($this->type === 'event') {
+            $this->createCalendarFeedEvent ();
+        }
+        if(!$this->disableEventCreation && !in_array ($this->type, array ('event', 'calendar'))) {
             $this->createEvents ('record_create', $this->createDate);
         }
         if(empty($this->type) && $this->complete !== 'Yes' && 
@@ -464,6 +556,9 @@ class Actions extends X2Model {
 
             $this->createNotifications ();
         }
+
+         
+
         parent::afterCreate();
     }
 
@@ -981,8 +1076,9 @@ class Actions extends X2Model {
      * Override parent method to exclude actionDescription
      */
     public function compareAttributes(&$criteria){
+        $dbAttributes = array_flip (array_keys ($this->getMetaData ()->columns));
         foreach(self::$_fields[$this->tableName()] as &$field){
-            if($field->fieldName != 'actionDescription'){
+            if(isset ($dbAttributes[$field->fieldName])) {
                 $this->compareAttribute ($criteria, $field);
             }
         }
@@ -1192,27 +1288,120 @@ class Actions extends X2Model {
      * @param type $htmlOptions
      */
     public function renderInput($fieldName, $htmlOptions = array()){
-        if($fieldName === 'color') {
-            $field = $this->getField ($fieldName);
-            $options = Dropdowns::getItems($field->linkType, null, false); 
-            $enableDropdownLegend = Yii::app()->settings->enableColorDropdownLegend;
-            if ($enableDropdownLegend) {
-                $htmlOptions['options'] = array ();
-                foreach ($options as $value => $label) {
-                    $brightness = X2Color::getColorBrightness ($value);
-                    $fontColor = $brightness > 127.5 ? 'black' : 'white';
-                    $htmlOptions['options'][$value] = array (
-                        'style' => 
-                            'background-color: '.$value.';
-                             color: '.$fontColor,
-                    );
+        switch ($fieldName) {
+            case 'color':
+                $field = $this->getField ($fieldName);
+                $options = Dropdowns::getItems($field->linkType, null, false); 
+                $enableDropdownLegend = Yii::app()->settings->enableColorDropdownLegend;
+                if ($enableDropdownLegend) {
+                    $htmlOptions['options'] = array ();
+                    foreach ($options as $value => $label) {
+                        $brightness = X2Color::getColorBrightness ($value);
+                        $fontColor = $brightness > 127.5 ? 'black' : 'white';
+                        $htmlOptions['options'][$value] = array (
+                            'style' => 
+                                'background-color: '.$value.';
+                                 color: '.$fontColor,
+                        );
+                    }
                 }
+                return CHtml::activeDropDownList($this, $field->fieldName, $options, $htmlOptions);
+            case 'priority':
+                return CHtml::activeDropdownList($this,'priority',self::getPriorityLabels());
+            case 'associationType':
+                return X2Html::activeMultiTypeAutocomplete (
+                    $this, 'associationType', 'associationId', 
+                    array ('calendar' => Yii::t('app', 'Select an option')) +
+                        X2Model::getAssociationTypeOptions ());
+            case 'reminder':
+                $reminderInput = parent::renderInput (
+                    $fieldName, array (
+                        'class' => 'reminder-checkbox',
+                    ));
+                $reminderInput .= 
+                    X2Html::openTag ('div', X2Html::mergeHtmlOptions ($htmlOptions, array (
+                        'class' => 'reminder-config',
+                    ))).
+                    Yii::t(
+                        'actions',
+                        'Create a notification reminder for {user} {time} before this {action} '.
+                            'is due',
+                        array(
+                            '{user}' => CHtml::activeDropDownList(
+                                $this,
+                                'notificationUsers', 
+                                array(
+                                    'me' => Yii::t('actions', 'me'),
+                                    'assigned' => Yii::t('actions', 'the assigned user'),
+                                    'both' => Yii::t('actions', 'me and the assigned user'),
+                                )
+                            ),
+                            '{time}' => CHtml::activeDropDownList(
+                                $this, 'notificationTime', 
+                                array(
+                                    1 => Yii::t('actions','1 minute'),
+                                    5 => Yii::t('actions','5 minutes'),
+                                    10 => Yii::t('actions','10 minutes'),
+                                    15 => Yii::t('actions','15 minutes'),
+                                    30 => Yii::t('actions','30 minutes'),
+                                    60 => Yii::t('actions','1 hour'),
+                                    1440 => Yii::t('actions','1 day'),
+                                    10080 => Yii::t('actions','1 week')
+                                )),
+                            '{action}' => lcfirst(Modules::displayName(false, 'Actions')),
+                        )).'</div>';
+                return $reminderInput;
+            default:
+                return parent::renderInput($fieldName, $htmlOptions);
+        }
+    }
+
+    private $_reminders;
+    public function getReminders () {
+        if (!isset ($this->_reminders)) {
+            $this->_reminders = X2Model::model('Notification')->findAllByAttributes(array(
+                'modelType' => 'Actions',
+                'modelId' => $this->id,
+                'type' => 'action_reminder'
+            ));
+        }
+        return $this->_reminders;
+    }
+
+    private $_notificationUsers;
+    public function setNotificationUsers ($notificationUsers) {
+        $this->_notificationUsers = $notificationUsers;
+    }
+
+    public function getNotificationUsers () {
+        if (!isset ($this->_notificationUsers)) {
+            $reminders = $this->getReminders ();
+            if(count($reminders) > 1){
+                $notificationUsers = 'both';
+            }else{
+                $notificationUsers = 'assigned';
             }
-            return CHtml::activeDropDownList($this, $field->fieldName, $options, $htmlOptions);
-        }elseif($fieldName == 'priority') {
-            return CHtml::activeDropdownList($this,'priority',self::getPriorityLabels());
-        } 
-        return parent::renderInput($fieldName, $htmlOptions);
+            $this->_notificationUsers = $notificationUsers;
+        }
+        return $this->_notificationUsers;
+    }
+
+    private $_notificationTime;
+    public function setNotificationTime ($notificationTime) {
+        $this->_notificationTime = $notificationTime;
+    }
+
+    public function getNotificationTime () {
+        if (!isset ($this->_notificationTime)) {
+            $reminders = $this->getReminders ();
+            if(count($reminders) > 0){
+                $notifTime = ($this->dueDate - $reminders[0]->createDate) / 60;
+            }else{
+                $notifTime = 15;
+            }
+            $this->_notificationTime = $notifTime;
+        }
+        return $this->_notificationTime;
     }
 
     /**

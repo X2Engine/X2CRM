@@ -50,7 +50,11 @@ $this->insertMenu($menuOptions, null, $authParams);
         echo CHtml::link(Yii::t('app', 'Edit'), $this->createUrl('update', array('id' => $newRecord->id)), array('class' => 'x2-button'));
     ?>
 </div>
-<?php $this->renderPartial('application.components.views._detailView', array('model' => $newRecord, 'modelName' => 'contacts')); ?>
+<?php 
+$this->widget('DetailView', array(
+    'model'   => $newRecord,
+));
+// $this->renderPartial('application.components.views.@DETAILVIEW', array('model' => $newRecord, 'modelName' => 'contacts')); ?>
 <div class="buttons">
     <?php
     echo "<span style='float:left'>";
@@ -122,7 +126,10 @@ foreach ($duplicates as $duplicate) {
     echo '<div class="page-title rounded-top"><h2><span class="no-bold">', Yii::t('app', 'Possible Match:'), '</span> ';
     echo $duplicate->name, '</h2></div>';
 
-    $this->renderPartial('application.components.views._detailView', array('model' => $duplicate, 'modelName' => 'contacts'));
+    $this->widget('DetailView', array(
+        'model'   => $duplicate,
+    ));
+    // $this->renderPartial('application.components.views.@DETAILVIEW', array('model' => $duplicate, 'modelName' => 'contacts'));
     echo "<div style='margin-bottom:10px;'><span style='float:left'>";
     echo CHtml::ajaxButton(Yii::t('contacts', "Keep This Record"), $this->createUrl('/contacts/contacts/discardNew'), array(
         'type' => 'POST',

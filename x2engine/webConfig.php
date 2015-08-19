@@ -4,5 +4,3 @@ $url=''; // Add your server URL here, including any folders the app may be in.
          // Note that this is used as the default base URL for tracking image URLs when
          // there is no session/request data available, i.e. a cron job for sending emails,
          // which requires Yii::app()->controller->createUrl
-$user='';
-$userKey='';

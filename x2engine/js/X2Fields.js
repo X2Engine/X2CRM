@@ -267,6 +267,7 @@ Fields.prototype.createInput = function(attributes, name) {
         value: attributes.value,
         multiple: attributes.multiple
     };
+    if (!safeAttributes.multiple) delete safeAttributes.multiple;
 
     /**
      * This prevents auto formatting of the date/datetime input by the date/datetimepicker

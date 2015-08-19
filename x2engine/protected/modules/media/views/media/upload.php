@@ -39,6 +39,9 @@ $menuOptions = array(
 );
 $this->insertMenu($menuOptions);
 
+Yii::app()->clientScript->registerCssFile(
+    Yii::app()->controller->module->assetsUrl.'/css/media.css');
+
 ?>
 <div class="page-title icon media">
 <h2><?php echo Yii::t('media','Upload Media File'); ?></h2>
@@ -49,7 +52,7 @@ $this->insertMenu($menuOptions);
    'enableAjaxValidation'=>false,
 )); ?>
 
-<div class="x2-layout form-view" style="margin-bottom: 0;">
+<div id='media-form' class="x2-layout form-view" style="margin-bottom: 0;">
 	<div class="formSection showSection">
 		<div class="formSectionHeader">
 			<span class="sectionTitle"><?php echo Yii::t('media', 'Select File'); ?></span>
@@ -113,96 +116,49 @@ $this->insertMenu($menuOptions);
 			<table>
 				<tbody>
 					<tr class="formSectionRow">
-						<td style="width: 300px">
+						<td style="">
 							<div class="formItem leftLabel">
 								<label><?php echo Yii::t('media', 'Association Type'); ?></label>
-								<div class="formInputBox" style="width: 200px; height: auto;">
-									<?php echo $form->dropDownList($model,'associationType',
-										array(
-											'none'=>Yii::t('actions','None'),
-											'contacts'=>Yii::t('actions','Contact'),
-											'opportunities'=>Yii::t('actions','Opportunity'),
-											'accounts'=>Yii::t('actions','Account'),
-											'bg'=>Yii::t('media', 'Background'),
-										), array('onChange'=>'showAssociationAutoComplete(this)')); ?>
+								<div class="formInputBox" style="height: auto;">
+									<?php 
+                                    $linkableModels = 
+                                        X2Model::getModelTypesWhichSupportRelationships(true);
+                                    $this->widget ('MultiTypeAutocomplete', array (
+                                        'selectName' => 'Media[associationType]',
+                                        'hiddenInputName' => 'Media[associationId]',
+                                        'selectValue' => '',
+                                        'options' => array_merge (
+                                            array ('' => Yii::t('app', 'None')),
+                                            array_diff_key ($linkableModels, array_flip (array (
+                                                'Media',
+                                                'Groups',
+                                                'X2List',
+                                                'Actions',
+                                                'Reports',
+                                            ))),
+                                            array ('bg' => Yii::t('app', 'Background'))
+                                        ),
+                                        'staticOptions' => array (
+                                            '', 'bg'
+                                        ), 
+                                        'htmlOptions' => array (
+                                            'class' => 'media-association-type',
+                                        ),
+                                    ));
+//                                    echo $form->dropDownList($model,'associationType',
+//										array(
+//											'none'=>Yii::t('actions','None'),
+//											'contacts'=>Yii::t('actions','Contact'),
+//											'opportunities'=>Yii::t('actions','Opportunity'),
+//											'accounts'=>Yii::t('actions','Account'),
+//											'bg'=>Yii::t('media', 'Background'),
+//										), array('onChange'=>'showAssociationAutoComplete(this)')); ?>
 								</div>
 							</div>
 							
 						</td>
 					</tr>
 					
-					<tr class="formSectionRow">
-						<td style="width: 300px">
-							<div class="formItem leftLabel">
-								<label><?php echo Yii::t('media', 'Association Name'); ?></label>
-								<div class="formInputBox" style="width: 200px; height: auto;">
-									<?php
-									
-										// contacts association auto-complete
-										$linkSource = $this->createUrl(X2Model::model('Contacts')->autoCompleteSource);
-										$this->widget('zii.widgets.jui.CJuiAutoComplete', array(
-											'name'=>'auto_select',
-											'source' => $linkSource,
-											'options'=>array(
-												'minLength'=>'2',
-												'select'=>'js:function( event, ui ) {
-													$("#association-id").val(ui.item.id);
-													$(this).val(ui.item.value);
-													return false;
-												}',
-											),
-											'htmlOptions'=>array(
-												'style'=>'display:none;',
-												'id'=>'contacts-auto-select',
-											),
-										));
-										
-										// accounts association auto-complete
-										$linkSource = $this->createUrl(X2Model::model('Accounts')->autoCompleteSource);
-										$this->widget('zii.widgets.jui.CJuiAutoComplete', array(
-											'name'=>'auto_select',
-											'source' => $linkSource,
-											'options'=>array(
-												'minLength'=>'2',
-												'select'=>'js:function( event, ui ) {
-													$("#association-id").val(ui.item.id);
-													$(this).val(ui.item.value);
-													return false;
-												}',
-											),
-											'htmlOptions'=>array(
-												'style'=>'display:none;',
-												'id'=>'accounts-auto-select',
-											),
-										));
-										
-										// opportunities association auto-complete
-										$linkSource = $this->createUrl(X2Model::model('Opportunity')->autoCompleteSource);
-										$this->widget('zii.widgets.jui.CJuiAutoComplete', array(
-											'name'=>'auto_select',
-											'source' => $linkSource,
-											'options'=>array(
-												'minLength'=>'2',
-												'select'=>'js:function( event, ui ) {
-													$("#association-id").val(ui.item.id);
-													$(this).val(ui.item.value);
-													return false;
-												}',
-											),
-											'htmlOptions'=>array(
-												'style'=>'display:none;',
-												'id'=>'opportunities-auto-select',
-											),
-										));
-
-										
-										echo $form->hiddenField($model, 'associationId', array('id'=>'association-id'));
-									?>
-								</div>
-							</div>
-							
-						</td>
-					</tr>
 				</tbody>
 			</table>
 		</div>
@@ -258,7 +214,7 @@ $this->insertMenu($menuOptions);
 
 <?php
 echo '	<div class="row buttons">'."\n";
-echo '		'.CHtml::submitButton(Yii::t('media','Upload'),array('class'=>'x2-button','id'=>'save-button','tabindex'=>24))."\n";
+echo '		'.CHtml::submitButton(Yii::t('media','Upload'),array('class'=>'x2-button','id'=>'save-button','tabindex'=>24, 'style' =>'display: inline-block'))."\n";
 echo "	</div>\n";
 $this->endWidget();
 ?>

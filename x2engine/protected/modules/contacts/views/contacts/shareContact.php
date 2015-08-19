@@ -40,10 +40,7 @@ $menuOptions = array(
 );
 $this->insertMenu($menuOptions, $model, $authParams);
 
-Yii::app()->clientScript->registerScriptFile(Yii::app()->getBaseUrl().'/js/ckeditor/ckeditor.js');
-Yii::app()->clientScript->registerScriptFile(Yii::app()->getBaseUrl().'/js/ckeditor/adapters/jquery.js');
-Yii::app()->clientScript->registerScriptFile(Yii::app()->getBaseUrl().'/js/emailEditor.js');
-
+Yii::app()->clientScript->registerPackage ('emailEditor');
 Yii::app()->clientScript->registerScript('editorSetup','createCKEditor("input");',CClientScript::POS_READY);
 ?>
 <div class="page-title icon contacts"><h2><span class="no-bold"><?php echo Yii::t('contacts','Share {module}', array('{module}'=>Modules::displayName(false)));?>:</span> <?php echo CHtml::encode($model->firstName." ".$model->lastName);?></h2></div>
@@ -63,6 +60,9 @@ if(!empty($status)) {
 ?>
 <div class="form">
 <form method="POST" name="share-contact-form">
+<?php
+echo X2Html::getFlashes ();
+?>
 	<b><span<?php if(in_array('email',$errors)) echo ' class="error"'; ?>><?php echo Yii::t('contacts','E-Mail');?></span></b><br /><input type="text" name="email" size="50"<?php if(in_array('email',$errors)) echo ' class="error"'; ?> value="<?php if(!empty($email)) echo $email; ?>"><br />
 	<b><span<?php if(in_array('body',$errors)) echo ' class="error"'; ?>><?php echo Yii::t('app','Message Body');?></span></b><br /><textarea name="body" id="input" style="height:200px;width:558px;"<?php if(in_array('body',$errors)) echo ' class="error"'; ?>><?php echo $body; ?></textarea><br />
 	<input type="submit" class="x2-button" value="<?php echo Yii::t('app','Share');?>" />
@@ -78,5 +78,8 @@ $form = $this->beginWidget('CActiveForm', array(
 ?>
 <h2><?php echo Yii::t('contacts','{module}:', array('{module}'=>Modules::displayName(false))); ?> <b><?php echo CHtml::encode($model->firstName.' '.$model->lastName); ?></b></h2>
 <?php
-$this->renderPartial('application.components.views._detailView',array('model'=>$model,'modelName'=>'contacts'));
+$this->widget('DetailView', array(
+    'model'   => $model,
+));
+// $this->renderPartial('application.components.views.@DETAILVIEW',array('model'=>$model,'modelName'=>'contacts'));
 $this->endWidget(); ?>

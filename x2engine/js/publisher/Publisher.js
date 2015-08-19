@@ -139,24 +139,14 @@ Private static methods
 Public instance methods
 */
 
+Publisher.prototype.getForm = function () {
+    return this.getSelectedTab ().getFormObj ().element$;
+};
+
 Publisher.prototype.addTab = function (tab) {
     tab.publisher = this;
-    this._tabs[tab.id] = tab;
+    this._tabs[tab.tabId] = tab;
     this.tabs.push (tab);
-};
-
-Publisher.prototype.getForm = function () {
-    return this._form;
-};
-
-/**
- * "Magic getter" method which caches jQuery objects so they don't have to be
- * looked up a second time from the DOM
- */
-Publisher.prototype.getElement = function (selector) {
-    if(typeof this._elements[selector] == 'undefined')
-        this._elements[selector] = this._form.find(selector);
-    return this._elements[selector];
 };
 
 /**
@@ -164,13 +154,7 @@ Publisher.prototype.getElement = function (selector) {
  */
 Publisher.prototype.reset = function () {
     var that = this;
-
     this.getSelectedTab ().reset ();
-    
-    // reset save button
-    auxlib.getElement(this.resolveId ('save-publisher')).removeClass('highlight');
-
-    this.blur ();
 };
 
 Publisher.prototype.getSelectedTab = function () {
@@ -191,22 +175,7 @@ Publisher.prototype.switchToTab = function (selectedTabId) {
 
     that.DEBUG && console.log ('selectedTabId = ');
     that.DEBUG && console.log (selectedTabId);
-
-    // set field SelectedTab for use in POST request
-    auxlib.getElement(this.resolveId ('SelectedTab')).val(selectedTabId);
     this._selectedTabId = selectedTabId;
-
-    // enable current tab for elements, disable inactive tab form elements
-    that.DEBUG && console.log ($.extend ({}, this.tabs));
-    for (var tabId in this.tabs) {
-        var tab = this.tabs[tabId];
-        if (this.getSelectedTab () !== tab) {
-            tab.disable ();
-            tab.blur ();
-        } else {
-            tab.enable ();
-        }
-    }
 }
 
 /**
@@ -222,13 +191,16 @@ Publisher.prototype.tabSelected = function (event, ui) {
 /**
  * Updates to perform after publisher form gets submitted
  */
-Publisher.prototype.updates = function () {
+Publisher.prototype.updates = function (suppressTransactionalViewUpdate) {
+    suppressTransactionalViewUpdate = typeof suppressTransactionalViewUpdate === 'undefined' ? 
+        false : suppressTransactionalViewUpdate; 
     if($(this.resolveId ('calendar')).length !== 0) // if we are in calendar module
         $(this.resolveId ('calendar')).fullCalendar('refetchEvents'); // refresh calendar
 
     if($('.list-view').length !== 0) {
         $.fn.yiiListView.update($('.list-view').attr('id'));
-        this.updateTransactionalView ();
+        if (!suppressTransactionalViewUpdate)
+            this.updateTransactionalView ();
     }
 
      // event detected by x2chart.js
@@ -258,75 +230,17 @@ Publisher.prototype.updateTransactionalView = function () {
     }
 };
 
-/**
- * Ad-hoc quasi-validation for the publisher
- */
-Publisher.prototype.beforeSubmit = function() {
-    if (!this.getSelectedTab ().validate ()) {
-        return false;
-    }
-    return true; // form is sane: submit!
-};
-
-/**
- * Removes focus from publisher
- */
-Publisher.prototype.blur = function () {
-    $(this.resolveId ("save-publisher")).removeClass("highlight");
-    this.getSelectedTab ().blur ();
-};
-
 /*
 Private instance methods
 */
-
-Publisher.prototype._setUpSaveButtonBehavior = function () {
-    var that = this;
-
-    // Highlight save button when something is edited in the publisher
-    $(this.resolveIds (
-        "#publisher-form input, #publisher-form select, #publisher-form textarea, #publisher")).
-        bind("focus.compose", function(){
-
-        $(that.resolveId ("save-publisher")).addClass("highlight");
-
-        // close on click outside
-        $(document).unbind("click.publisher").bind("click.publisher",function(e) {
-            if(!$(e.target).closest (that.resolveIds ('#publisher-form' + 
-                ', .ui-datepicker, .fc-day')).length && 
-               $(that.resolveIds ("#publisher-form textarea")).val() === "") {
-                
-                that.blur ();
-            }
-        });
-
-        return false;
-    });
-
-    /**
-     * Submit button click handler
-     */
-    $(this.resolveId ('save-publisher')).click (function (evt) {
-        evt.preventDefault ();
-        if (!that.beforeSubmit ()) {
-            return false;
-        }
-        that.getSelectedTab ().submit (that, that._form);
-        return false;
-    });
-
-};
 
 Publisher.prototype._init = function () {
     var that = this;
 
     $(function () {
         for (var i in that.tabs) that.tabs[i].run ();
-        that._form = $(that.resolveId ('publisher-form')); // publisher form element
-        that._setUpSaveButtonBehavior ();
-
         if (that.renderTabs) {
-            $(that.resolveId ("publisher")).multiRowTabs({
+            $("#publisher").multiRowTabs({
                 activate: function(event, ui) { that.tabSelected(event, ui); },
             });
             
@@ -337,7 +251,7 @@ Publisher.prototype._init = function () {
             }
 
             // show the tab rows now that we've instantiated the tab widget
-            $(that.resolveId ('publisher') + ' > ul').show (); 
+            $('#publisher' + ' > ul').show (); 
         } else {
             that._selectedTabId = that.initTabId;
         }

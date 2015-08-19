@@ -24,4 +24,6 @@ return array (
 'Import Products'=>'Importer des produits',
 'Export Products'=>'produits d&#39;exportation',
 'NameId'=>'NameID',
+'Create New {module}'=>'Créer un nouveau {module}',
+'Update {module}'=>'Mise à jour {module}',
 );

@@ -135,31 +135,13 @@ $defaultSecurity = CJSON::encode($modelClass->security);
         if (typeof x2.credManager == 'undefined')
             x2.credManager = {};
 
-        /**
-         * Function to toggle an input between text and password type
-         * @param string passwordField Password field identifier
-         */
-        x2.credManager.swapPasswordVisibility = function(elem) {
-            var passwordField = $(elem);
-            var newObj = document.createElement('input');
-            newObj.setAttribute('value', passwordField.val() );
-            newObj.setAttribute('name', passwordField.attr('name'));
-            newObj.setAttribute('id', passwordField.attr('id'));
-
-            if ($('#password-visible').attr('checked') === 'checked')
-                newObj.setAttribute('type', 'text');
-            else
-                newObj.setAttribute('type', 'password');
-            passwordField.replaceWith(newObj);
-        }
-
         $(".credentials-verify").click(function(evt) {
             evt.preventDefault();
             var email = $("#Credentials_auth_email").val();
             // Check if user name is different than email
             if ($('#Credentials_auth_user').length && $('#Credentials_auth_user').val ()) 
                 email = $('#Credentials_auth_user').val();
-            var password = $("#Credentials_auth_password").val();
+            var password = $("[name='Credentials[auth][password]']").val();
 
             // server, port, and security are not specified in the form for provider-specific
             // account types, such as GMail accounts
@@ -176,11 +158,13 @@ $defaultSecurity = CJSON::encode($modelClass->security);
 
             var successMsg = "<?php echo Yii::t('app', 'Authentication successful.'); ?>";
             var failureMsg = "<?php echo Yii::t('app', 'Failed to authenticate! Please check you credentials.'); ?>";
-            auxlib.containerLoading($('#verify-credentials-loading'));
+            x2.forms.inputLoading ($(this), true, {
+                'style': 'top: -14px; margin: auto;'
+            });
             // Hide previous result if any
             $('#verification-result').html('');
             $('#verification-result').removeClass();
-
+            var that = this;
             $.ajax({
                 url: "<?php echo $verifyCredsUrl; ?>",
                 type: 'post',
@@ -194,6 +178,7 @@ $defaultSecurity = CJSON::encode($modelClass->security);
                 complete: function(xhr, textStatus) {
                     $('#verify-credentials-loading').children().remove();
                     // auxlib.pageLoadingStop();
+                    x2.forms.inputLoadingStop ($(that));
                     if (xhr.responseText === '' && textStatus === 'success') {
                         $("#verification-result").addClass('flash-success');
                         $("#verification-result").removeClass('flash-error');

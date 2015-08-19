@@ -32,14 +32,13 @@
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2Engine".
  *****************************************************************************************/
-/* line 22, ../../compass/sass/css/profile/themeSelector.scss */
 
 @import "colors";
 
 #theme-picker {
     margin-top: 10px;
     max-height: 231px;
-    overflow-y: scroll;
+    overflow-y: auto;
 
     .scheme-container {
         padding: 2px;
@@ -56,6 +55,13 @@
         display: inline-block;
         text-align: center;
         border-radius: 3px;
+        & > div:first-child {
+            text-align: left;
+            overflow: hidden; 
+            white-space: nowrap; 
+            text-overflow: ellipsis; 
+            width: 107px;
+        }
     }
     .scheme-container {
         &:hover {

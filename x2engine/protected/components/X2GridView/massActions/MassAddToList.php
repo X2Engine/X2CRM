@@ -99,13 +99,15 @@ class MassAddToList extends MassAction {
         // check permissions
         if ($list !== null && Yii::app()->controller->checkPermissions ($list, 'edit')) {
             if ($list->addIds($gvSelection)) {
-                self::$successFlashes[] = Yii::t(
-                    'app', '{updatedRecordsNum} record'.($updatedRecordsNum === 1 ? '' : 's').
-                        ' added to list "{list}"', array (
-                            '{updatedRecordsNum}' => $updatedRecordsNum,
-                            '{list}' => $list->name,
-                        )
-                );
+                self::$successFlashes[] = array (
+                    'message' => Yii::t(
+                        'app', '{updatedRecordsNum} record'.($updatedRecordsNum === 1 ? '' : 's').
+                            ' added to list "{list}"', array (
+                                '{updatedRecordsNum}' => $updatedRecordsNum,
+                                '{list}' => $list->link,
+                            )
+                    ), 'encode' => false);
+                //self::$successFlashes['fade'] = 0;
             } else {
                 $success = false;
                 self::$errorFlashes[] = Yii::t(

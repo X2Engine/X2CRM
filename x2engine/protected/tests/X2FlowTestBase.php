@@ -52,7 +52,7 @@ class X2FlowTestBase extends X2DbTestCase {
 
     public function assertNoFlowError ($arr) {
         if (!$arr[0]) {
-            VERBOSE_MODE && print_r ($arr[1]);
+            X2_VERBOSE_MODE && print_r ($arr[1]);
         }
         $this->assertTrue ($arr[0]);
         return $arr;
@@ -105,12 +105,10 @@ class X2FlowTestBase extends X2DbTestCase {
         return X2FlowTestingAuxLib::checkTrace ($trace);
     }
 
-    /**
-     * Flattens the X2Flow trace, making it much easier to read programmatically. 
-     * @param array $trace One of the return value of executeFlow ()
-     * @return array flattened trace
-     */
-    public function flattenTrace ($trace) {
+    private function _flattenTrace ($trace) {
+       AuxLib::debugLogR ('$trace = ');
+        AuxLib::debugLogR ($trace);
+
         if (!$trace[0]) return false;
         $flattenedTrace = array (array ('action' => 'start', 'error' => !$trace[0]));
         $trace = $trace[1];
@@ -139,13 +137,31 @@ class X2FlowTestBase extends X2DbTestCase {
     }
 
     /**
+     * Flattens the X2Flow trace, making it much easier to read programmatically. 
+     * @param array $trace One of the return value of executeFlow ()
+     * @return array flattened trace
+     */
+    public function flattenTrace ($trace) {
+        $that = $this;
+        if (!is_array ($trace[0])) $trace = array ($trace);
+        $flattened = array ();
+
+        foreach ($trace as $segment) {
+            $flattened = array_merge ($flattened, $this->_flattenTrace ($segment));
+        }
+        return $flattened;
+    }
+
+    /**
      * Returns array of decoded flows from fixture records
      * @param X2FlowTestBase $context A test case for which to obtain data
      * @param string $fixtureName The name of the fixture to pull from
      * @return <array of arrays> decoded flow JSON strings
      */
     public function getFlows ($context,$fixtureName = 'x2flow') {
-         return array_map (function ($a) { return CJSON::decode ($a['flow']); }, $context->{$fixtureName});
+         return array_map (function ($a) { 
+            return CJSON::decode ($a['flow']); 
+        }, $context->{$fixtureName});
     }
 
     /**
@@ -157,7 +173,8 @@ class X2FlowTestBase extends X2DbTestCase {
         $_triggerDepth = $X2Flow->getProperty ('_triggerDepth');
         $_triggerDepth->setAccessible (TRUE);
         $_triggerDepth->setValue (1);
-        $fn = TestingAuxLib::setPublic ('X2Flow', 'executeFlow');
+
+        $fn = TestingAuxLib::setPublic ('X2Flow', '_executeFlow');
         $returnVal = $fn ($flow, $params);
         $_triggerDepth->setValue (0);
         return $returnVal;

@@ -2,10 +2,17 @@
 class UniqueAttributesValidator extends CValidator {
 
 	/**
-	 * The attributes boud in the unique contstraint with attribute
+	 * The attributes bound in the unique contstraint with attribute
 	 * @var string
 	 */
 	public $with;
+
+    /* x2modstart */ 
+    /**
+     * @var bool $binary set to true to enable binary (case-sensitive) comparison 
+     */
+    public $binary = false;
+    /* x2modend */  
 
 	/**
 	 * Validates the attribute of the object.
@@ -24,7 +31,9 @@ class UniqueAttributesValidator extends CValidator {
 		$conditionParams = array();
 		$params = array();
 		foreach ($with as $attribute) {
-			$conditionParams[] = "`{$attribute}`=:{$attribute}";
+            /* x2modstart */ 
+			$conditionParams[] = ($this->binary ? 'BINARY ' : '')."`{$attribute}`=:{$attribute}";
+            /* x2modend */ 
 			$params[":{$attribute}"] = $object->$attribute;
 		}
 		$condition = implode(" AND ", $conditionParams);

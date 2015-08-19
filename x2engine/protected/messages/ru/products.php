@@ -78,4 +78,6 @@ return array (
 'Import Products'=>'Импорт Продукция',
 'Export Products'=>'Экспорт товаров',
 'NameId'=>'NameId',
+'Create New {module}'=>'Создать новый {module}',
+'Update {module}'=>'Обновление {module}',
 );

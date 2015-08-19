@@ -34,6 +34,8 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 
+Tours::loadTips('marketing.create');
+
 $this->pageTitle = Yii::t('marketing','Create Campaign');
 $menuOptions = array(
     'all', 'create', 'lists', 'newsletters', 'weblead', 'webtracker', 'x2flow',
@@ -42,15 +44,17 @@ $menuOptions = array(
 $this->insertMenu($menuOptions);
 
 $form = $this->beginWidget('CActiveForm', array(
-	'id'=>'campaign-form',
-	'enableAjaxValidation'=>false
+    'id'=>'campaign-form',
+    'enableAjaxValidation'=>false
 ));
+
 ?>
 
 <div class="page-title icon marketing">
-	<h2><?php echo Yii::t('marketing','Create Campaign'); ?></h2>
-	<?php echo CHtml::submitButton(Yii::t('module','Create'),array('class'=>'x2-button highlight right')); ?>
+    <h2><?php echo Yii::t('marketing','Create Campaign'); ?></h2>
+    <?php echo CHtml::submitButton(Yii::t('module','Create'),array('class'=>'x2-button highlight right')); ?>
 </div>
+
 <?php
 $this->renderPartial('_form', array('model'=>$model, 'modelName'=>'Campaign','form'=>$form));
 

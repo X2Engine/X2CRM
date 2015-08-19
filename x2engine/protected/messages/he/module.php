@@ -34,4 +34,5 @@ return array (
 'Import {X}'=>'היבוא {X}',
 'Export {X}'=>'היצוא {X}',
 '{modelName} Attributes'=>'{modelName} תכונות',
+'Edit {X}'=>'עריכת {X}',
 );

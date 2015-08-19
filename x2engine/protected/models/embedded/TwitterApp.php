@@ -84,12 +84,37 @@ class TwitterApp extends JSONEmbeddedModel {
         echo CHtml::activeLabel($this, 'oauthAccessTokenSecret');
         $this->renderInput ('oauthAccessTokenSecret');
         echo CHtml::errorSummary($this);
+        echo '<br>';
+        echo '<br>';
+        echo $this->getInstructions ();
     }
 
     public function rules(){
         return array(
             array('oauthAccessToken,oauthAccessTokenSecret,consumerKey,consumerSecret', 'required'),
         );
+    }
+
+    private function getInstructions () {
+        return 
+            '
+            <label>'.Yii::t('app', 'Configuring Twitter Integration').'</label>
+            <hr>
+            <ol>
+                <li>'.Yii::t('app', 'Visit {link} and create a new Twitter app.', array (
+                    '{link}' => 
+                        '<a href="https://apps.twitter.com/">https://apps.twitter.com</a>'
+                )).'
+                </li>
+                <li>'.Yii::t ('app', 'From your app\'s management page, navigate to the "Keys and Access Tokens" tab.').'
+                </li>
+                <li>'.Yii::t('app', 'Click the button labelled "Create my access token".').'
+                </li>
+                <li>'.Yii::t('app', 'Copy your "Consumer Key", "Consumer Secret", "Access Token", and "Access Token Secret" into the above corresponding fields.').'
+                </li>
+                <li>'.Yii::t('app', 'Save your X2CRM Twitter Integration settings.').'</li>
+            </ol>
+            ';
     }
 
 }

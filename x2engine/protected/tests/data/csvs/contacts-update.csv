@@ -1,0 +1,4 @@
+id,name,firstName,lastName,email,leadscore,doNotCall,doNotEmail
+1,"Contact One",Contact,One,one@example.com,0,0,1
+2,"Contact Two",Contact,Two,two@example.com,4,1,0
+3,"Contact Three",Contact,Three,three@example.com,2,0,1

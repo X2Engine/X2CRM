@@ -196,7 +196,7 @@ class InlineQuotes extends X2Widget {
 		
 		echo 
             '<div id="quotes-form" style="display: none;">
-                <div id="wide-quote-form" class="wide x2-layout-island form" 
+                <div id="wide-quote-form" class="wide x2-layout-island" 
                  style="overflow: visible;">
                 <a class="widget-close-button x2-icon-button" href="#">
                     <span class="fa fa-times fa-lg" 

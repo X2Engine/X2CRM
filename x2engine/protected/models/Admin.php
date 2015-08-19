@@ -41,7 +41,9 @@ Yii::import('application.components.JSONEmbeddedModelFieldsBehavior');
  * This is the model class for table "x2_admin".
  * @package application.models
  */
-class Admin extends CActiveRecord {
+class Admin extends X2ActiveRecord {
+
+    protected $_oldAttributes = array();
 
     /**
      * Returns the static model of the specified AR class.
@@ -69,6 +71,14 @@ class Admin extends CActiveRecord {
         return 'x2_admin';
     }
 
+    /**
+     * Saves attributes on initial model lookup
+     */
+    public function afterFind() {
+        $this->_oldAttributes = $this->getAttributes();
+        parent::afterFind();
+    }
+
     public function behaviors(){
         $behaviors = array(
             'JSONFieldsBehavior' => array (
@@ -81,10 +91,10 @@ class Admin extends CActiveRecord {
                 'class' => 'application.components.JSONFieldsDefaultValuesBehavior',
                 'transformAttributes' => array(
                     'actionPublisherTabs' => array(
+                        'PublisherCommentTab' => true,
+                        'PublisherActionTab' => true,
                         'PublisherCallTab' => true,
                         'PublisherTimeTab' => true,
-                        'PublisherActionTab' => true,
-                        'PublisherCommentTab' => true,
                         'PublisherEventTab' => false,
                         'PublisherProductsTab' => false,
                     ),
@@ -96,6 +106,14 @@ class Admin extends CActiveRecord {
         return $behaviors;
     }
 
+    public function validateUniqueId ($attr) {
+        $value = $this->$attr;
+        // flush license key info cache when license key changes
+        if (!isset ($this->_oldAttributes[$attr]) || $value !== $this->_oldAttributes[$attr]) {
+            Yii::app()->cache2->delete ($this->getLicenseKeyInfoCacheKey ());
+        }
+    }
+
     /**
      * @return array validation rules for model attributes.
      */
@@ -103,6 +121,7 @@ class Admin extends CActiveRecord {
         // NOTE: you should only define rules for those attributes that
         // will receive user inputs.
         return array(
+            array('unique_id', 'validateUniqueId'),
             array('emailType,emailFromName, emailFromAddr', 'requiredIfSysDefault', 'field' => 'emailBulkAccount'),
             array('serviceCaseFromEmailName, serviceCaseFromEmailAddress', 'requiredIfSysDefault', 'field' => 'serviceCaseEmailAccount'),
             array('serviceCaseEmailSubject, serviceCaseEmailMessage', 'required'),
@@ -286,4 +305,12 @@ class Admin extends CActiveRecord {
         }
         return self::getDoNotEmailLinkDefaultText ();
     }
+
+     
+
+    private function getLicenseKeyInfoCacheKey () {
+        return 'Admin::getLicenseKeyInfoCacheKey';
+    }
 }
+
+class InvalidProductKeyException extends CException {}

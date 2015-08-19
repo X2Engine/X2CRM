@@ -168,6 +168,9 @@
 /***********************************************************************
 * This section is made to correspond with the theme keys in ThemeGenerator
 ***********************************************************************/
+/***********************************************************************
+* Responsive design
+***********************************************************************/
 /***************************************
 * Mixin for border radius 
 ***************************************/
@@ -181,13 +184,13 @@
 * CSS to extend when something 
 * should look like a link
 ***************************************/
-/* line 87, ../../../compass/css/lib/_standards.scss */
+/* line 126, ../../../compass/css/lib/_standards.scss */
 .pseudo-link {
   cursor: pointer;
   color: #004baf;
   transition: color .1s;
 }
-/* line 92, ../../../compass/css/lib/_standards.scss */
+/* line 131, ../../../compass/css/lib/_standards.scss */
 .pseudo-link:hover {
   color: #006cfb;
 }
@@ -196,18 +199,15 @@
 * CSS to extend when for elements that 
 * become transparent on mouseover
 ***************************************/
-/* line 110, ../../../compass/css/lib/_standards.scss */
+/* line 149, ../../../compass/css/lib/_standards.scss */
 .opacity-hover {
   opacity: 0.3;
 }
-/* line 105, ../../../compass/css/lib/_standards.scss */
+/* line 144, ../../../compass/css/lib/_standards.scss */
 .opacity-hover:hover {
   opacity: 1;
 }
 
-/*********************************
-* Box Shadow Prefixer
-********************************/
 /***************************************
 * Apply the standard box shadow currently
 * used on x2-island-layout items
@@ -216,6 +216,127 @@
 * Mixin for applying a fontAwesome icon
 * SEE _icons.scss FOR A BETTER IMPLEMENTATION
 ******************************************/
+/*
+  Icon Font: x2-icons
+*/
+@font-face {
+  font-family: "x2-icons";
+  src: url("./x2Icons/x2-icons.eot");
+  src: url("./x2Icons/x2-icons.eot?#iefix") format("embedded-opentype"), url("./x2Icons/x2-icons.woff") format("woff"), url("./x2Icons/x2-icons.ttf") format("truetype"), url("./x2Icons/x2-icons.svg#x2-icons") format("svg");
+  font-weight: normal;
+  font-style: normal;
+}
+@media screen and (-webkit-min-device-pixel-ratio: 0) {
+  @font-face {
+    font-family: "x2-icons";
+    src: url("./x2Icons/x2-icons.svg#x2-icons") format("svg");
+  }
+}
+/* line 23, ../../../compass/css/lib/_x2-icons.scss */
+[data-icon]:before {
+  content: attr(data-icon);
+}
+
+/* line 25, ../../../compass/css/lib/_x2-icons.scss */
+[data-icon]:before,
+.icon-activity:before,
+.icon-contact:before,
+#activity-feed-container .img-box.record_create.Contacts-create:before,
+.icon-funnel:before,
+#activity-feed-container .img-box.workflow_revert:before,
+#activity-feed-container .img-box.workflow_complete:before,
+#activity-feed-container .img-box.workflow_start:before,
+.icon-open-envelope:before,
+#activity-feed-container .img-box.email_opened:before,
+#activity-feed-container .img-box.email_opened_quote:before,
+#activity-feed-container .img-box.email_opened_invoice:before,
+.icon-package:before,
+#activity-feed-container .img-box.record_create.Product-create:before,
+.icon-profile:before,
+.icon-profile-large:before,
+.icon-quotes:before,
+#activity-feed-container .img-box.record_create.Quote-create:before,
+.icon-service:before,
+#activity-feed-container .img-box.case_escalated:before,
+#activity-feed-container .img-box.record_create.Services-create:before,
+.icon-stopwatch:before,
+#activity-feed-container .img-box.log_time:before,
+.icon-x2-logo:before,
+.icon-x2-logo-square:before {
+  display: inline-block;
+  font-family: "x2-icons";
+  font-style: normal;
+  font-weight: normal;
+  font-variant: normal;
+  line-height: 1;
+  text-decoration: inherit;
+  text-rendering: optimizeLegibility;
+  text-transform: none;
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-font-smoothing: antialiased;
+  font-smoothing: antialiased;
+}
+
+/* line 52, ../../../compass/css/lib/_x2-icons.scss */
+.icon-activity:before {
+  content: "\f113";
+}
+
+/* line 53, ../../../compass/css/lib/_x2-icons.scss */
+.icon-contact:before, #activity-feed-container .img-box.record_create.Contacts-create:before {
+  content: "\f10c";
+}
+
+/* line 54, ../../../compass/css/lib/_x2-icons.scss */
+.icon-funnel:before, #activity-feed-container .img-box.workflow_revert:before, #activity-feed-container .img-box.workflow_complete:before, #activity-feed-container .img-box.workflow_start:before {
+  content: "\f109";
+}
+
+/* line 55, ../../../compass/css/lib/_x2-icons.scss */
+.icon-open-envelope:before, #activity-feed-container .img-box.email_opened:before, #activity-feed-container .img-box.email_opened_quote:before, #activity-feed-container .img-box.email_opened_invoice:before {
+  content: "\f10a";
+}
+
+/* line 56, ../../../compass/css/lib/_x2-icons.scss */
+.icon-package:before, #activity-feed-container .img-box.record_create.Product-create:before {
+  content: "\f112";
+}
+
+/* line 57, ../../../compass/css/lib/_x2-icons.scss */
+.icon-profile:before {
+  content: "\f11e";
+}
+
+/* line 58, ../../../compass/css/lib/_x2-icons.scss */
+.icon-profile-large:before {
+  content: "\f11f";
+}
+
+/* line 59, ../../../compass/css/lib/_x2-icons.scss */
+.icon-quotes:before, #activity-feed-container .img-box.record_create.Quote-create:before {
+  content: "\f11c";
+}
+
+/* line 60, ../../../compass/css/lib/_x2-icons.scss */
+.icon-service:before, #activity-feed-container .img-box.case_escalated:before, #activity-feed-container .img-box.record_create.Services-create:before {
+  content: "\f111";
+}
+
+/* line 61, ../../../compass/css/lib/_x2-icons.scss */
+.icon-stopwatch:before, #activity-feed-container .img-box.log_time:before {
+  content: "\f114";
+}
+
+/* line 62, ../../../compass/css/lib/_x2-icons.scss */
+.icon-x2-logo:before {
+  content: "\f117";
+}
+
+/* line 63, ../../../compass/css/lib/_x2-icons.scss */
+.icon-x2-logo-square:before {
+  content: "\f116";
+}
+
 /*****************************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2015 X2Engine Inc.
@@ -352,7 +473,7 @@
  *  License - http://fontawesome.io/license (Font: SIL OFL 1.1, CSS: MIT License)
  */
 /* line 75, ../../../compass/css/lib/_font-awesome.scss */
-#activity-feed-container .img-box.action_complete:before, #activity-feed-container .img-box.action_complete .stacked-icon:before, #activity-feed-container .img-box.action_reminder:before, #activity-feed-container .img-box.calendar_event:before, #activity-feed-container .img-box.generic_calendar_event:before, #activity-feed-container .img-box.doc_update:before, #activity-feed-container .img-box.email_from:before, #activity-feed-container .img-box.email_clicked:before, #activity-feed-container .img-box.email_sent:before, #activity-feed-container .img-box.email_sent .stacked-icon:before, #activity-feed-container .img-box.email_sent_quote:before, #activity-feed-container .img-box.email_sent_quote .stacked-icon:before, #activity-feed-container .img-box.email_sent_invoice:before, #activity-feed-container .img-box.email_sent_invoice .stacked-icon:before, #activity-feed-container .img-box.invoice_emailed:before, #activity-feed-container .img-box.media:before, #activity-feed-container .img-box.notif:before, #activity-feed-container .img-box.voip_call:before, #activity-feed-container .img-box.quote_emailed:before, #activity-feed-container .img-box.record_create:before, #activity-feed-container .img-box.record_deleted:before, #activity-feed-container .img-box.web_activity:before, #activity-feed-container .img-box.weblead_create:before, #activity-feed-container .img-box.weblead_create .stacked-icon:before, #activity-feed-container .img-box.case_escalated .stacked-icon:before, #activity-feed-container .img-box.workflow_revert .stacked-icon:before, #activity-feed-container .img-box.workflow_complete .stacked-icon:before, #activity-feed-container .img-box.workflow_start .stacked-icon:before, #activity-feed-container .img-box.record_create .stacked-icon:before, #activity-feed-container .img-box.record_create.Campaign-create:before, #activity-feed-container .img-box.record_create.Actions-create:before, #activity-feed-container .img-box.record_create.Accounts-create:before, #activity-feed-container .img-box.record_create.Opportunity-create:before, #activity-feed-container .img-box.record_create.X2Leads-create:before, #activity-feed-container .img-box.record_create.Docs-create:before, #activity-feed-container .img-box.record_create.Groups-create:before, #activity-feed-container .img-box.record_create.BugReports-create:before, #activity-feed-container .img-box.record_create.Charts-create:before, #activity-feed-container .img-box.record_create.Reports-create:before {
+#activity-feed-container .img-box.action_complete:before, #activity-feed-container .img-box.action_complete .stacked-icon:before, #activity-feed-container .img-box.action_reminder:before, #activity-feed-container .img-box.calendar_event:before, #activity-feed-container .img-box.generic_calendar_event:before, #activity-feed-container .img-box.doc_update:before, #activity-feed-container .img-box.email_from:before, #activity-feed-container .img-box.email_clicked:before, #activity-feed-container .img-box.email_sent:before, #activity-feed-container .img-box.email_sent .stacked-icon:before, #activity-feed-container .img-box.email_sent_quote:before, #activity-feed-container .img-box.email_sent_quote .stacked-icon:before, #activity-feed-container .img-box.email_sent_invoice:before, #activity-feed-container .img-box.email_sent_invoice .stacked-icon:before, #activity-feed-container .img-box.invoice_emailed:before, #activity-feed-container .img-box.media:before, #activity-feed-container .img-box.notif:before, #activity-feed-container .img-box.voip_call:before, #activity-feed-container .img-box.quote_emailed:before, #activity-feed-container .img-box.record_create:before, #activity-feed-container .img-box.record_deleted:before, #activity-feed-container .img-box.web_activity:before, #activity-feed-container .img-box.weblead_create:before, #activity-feed-container .img-box.weblead_create .stacked-icon:before, #activity-feed-container .img-box.topic_reply:before, #activity-feed-container .img-box.case_escalated .stacked-icon:before, #activity-feed-container .img-box.workflow_revert .stacked-icon:before, #activity-feed-container .img-box.workflow_complete .stacked-icon:before, #activity-feed-container .img-box.workflow_start .stacked-icon:before, #activity-feed-container .img-box.record_create .stacked-icon:before, #activity-feed-container .img-box.record_create.Campaign-create:before, #activity-feed-container .img-box.record_create.Actions-create:before, #activity-feed-container .img-box.record_create.Accounts-create:before, #activity-feed-container .img-box.record_create.Opportunity-create:before, #activity-feed-container .img-box.record_create.X2Leads-create:before, #activity-feed-container .img-box.record_create.Docs-create:before, #activity-feed-container .img-box.record_create.Groups-create:before, #activity-feed-container .img-box.record_create.BugReports-create:before, #activity-feed-container .img-box.record_create.Charts-create:before, #activity-feed-container .img-box.record_create.Reports-create:before, #activity-feed-container .img-box.record_create.Topics-create:before {
   display: inline-block;
   font: normal normal normal 14px/1 FontAwesome;
   text-rendering: auto;
@@ -362,12 +483,12 @@
 
 /* makes the font 33% larger relative to the icon container */
 /* line 134, ../../../compass/css/lib/_font-awesome.scss */
-#activity-feed-container .pull-left.img-box.action_complete:before, #activity-feed-container .img-box.action_complete .pull-left.stacked-icon:before, #activity-feed-container .pull-left.img-box.action_reminder:before, #activity-feed-container .pull-left.img-box.calendar_event:before, #activity-feed-container .pull-left.img-box.generic_calendar_event:before, #activity-feed-container .pull-left.img-box.doc_update:before, #activity-feed-container .pull-left.img-box.email_from:before, #activity-feed-container .pull-left.img-box.email_clicked:before, #activity-feed-container .pull-left.img-box.email_sent:before, #activity-feed-container .img-box.email_sent .pull-left.stacked-icon:before, #activity-feed-container .pull-left.img-box.email_sent_quote:before, #activity-feed-container .img-box.email_sent_quote .pull-left.stacked-icon:before, #activity-feed-container .pull-left.img-box.email_sent_invoice:before, #activity-feed-container .img-box.email_sent_invoice .pull-left.stacked-icon:before, #activity-feed-container .pull-left.img-box.invoice_emailed:before, #activity-feed-container .pull-left.img-box.media:before, #activity-feed-container .pull-left.img-box.notif:before, #activity-feed-container .pull-left.img-box.voip_call:before, #activity-feed-container .pull-left.img-box.quote_emailed:before, #activity-feed-container .pull-left.img-box.record_create:before, #activity-feed-container .pull-left.img-box.record_deleted:before, #activity-feed-container .pull-left.img-box.web_activity:before, #activity-feed-container .pull-left.img-box.weblead_create:before, #activity-feed-container .img-box.weblead_create .pull-left.stacked-icon:before, #activity-feed-container .img-box.case_escalated .pull-left.stacked-icon:before, #activity-feed-container .img-box.workflow_revert .pull-left.stacked-icon:before, #activity-feed-container .img-box.workflow_complete .pull-left.stacked-icon:before, #activity-feed-container .img-box.workflow_start .pull-left.stacked-icon:before, #activity-feed-container .img-box.record_create .pull-left.stacked-icon:before {
+#activity-feed-container .pull-left.img-box.action_complete:before, #activity-feed-container .img-box.action_complete .pull-left.stacked-icon:before, #activity-feed-container .pull-left.img-box.action_reminder:before, #activity-feed-container .pull-left.img-box.calendar_event:before, #activity-feed-container .pull-left.img-box.generic_calendar_event:before, #activity-feed-container .pull-left.img-box.doc_update:before, #activity-feed-container .pull-left.img-box.email_from:before, #activity-feed-container .pull-left.img-box.email_clicked:before, #activity-feed-container .pull-left.img-box.email_sent:before, #activity-feed-container .img-box.email_sent .pull-left.stacked-icon:before, #activity-feed-container .pull-left.img-box.email_sent_quote:before, #activity-feed-container .img-box.email_sent_quote .pull-left.stacked-icon:before, #activity-feed-container .pull-left.img-box.email_sent_invoice:before, #activity-feed-container .img-box.email_sent_invoice .pull-left.stacked-icon:before, #activity-feed-container .pull-left.img-box.invoice_emailed:before, #activity-feed-container .pull-left.img-box.media:before, #activity-feed-container .pull-left.img-box.notif:before, #activity-feed-container .pull-left.img-box.voip_call:before, #activity-feed-container .pull-left.img-box.quote_emailed:before, #activity-feed-container .pull-left.img-box.record_create:before, #activity-feed-container .pull-left.img-box.record_deleted:before, #activity-feed-container .pull-left.img-box.web_activity:before, #activity-feed-container .pull-left.img-box.weblead_create:before, #activity-feed-container .img-box.weblead_create .pull-left.stacked-icon:before, #activity-feed-container .pull-left.img-box.topic_reply:before, #activity-feed-container .img-box.case_escalated .pull-left.stacked-icon:before, #activity-feed-container .img-box.workflow_revert .pull-left.stacked-icon:before, #activity-feed-container .img-box.workflow_complete .pull-left.stacked-icon:before, #activity-feed-container .img-box.workflow_start .pull-left.stacked-icon:before, #activity-feed-container .img-box.record_create .pull-left.stacked-icon:before {
   margin-right: .3em;
 }
 
 /* line 137, ../../../compass/css/lib/_font-awesome.scss */
-#activity-feed-container .pull-right.img-box.action_complete:before, #activity-feed-container .img-box.action_complete .pull-right.stacked-icon:before, #activity-feed-container .pull-right.img-box.action_reminder:before, #activity-feed-container .pull-right.img-box.calendar_event:before, #activity-feed-container .pull-right.img-box.generic_calendar_event:before, #activity-feed-container .pull-right.img-box.doc_update:before, #activity-feed-container .pull-right.img-box.email_from:before, #activity-feed-container .pull-right.img-box.email_clicked:before, #activity-feed-container .pull-right.img-box.email_sent:before, #activity-feed-container .img-box.email_sent .pull-right.stacked-icon:before, #activity-feed-container .pull-right.img-box.email_sent_quote:before, #activity-feed-container .img-box.email_sent_quote .pull-right.stacked-icon:before, #activity-feed-container .pull-right.img-box.email_sent_invoice:before, #activity-feed-container .img-box.email_sent_invoice .pull-right.stacked-icon:before, #activity-feed-container .pull-right.img-box.invoice_emailed:before, #activity-feed-container .pull-right.img-box.media:before, #activity-feed-container .pull-right.img-box.notif:before, #activity-feed-container .pull-right.img-box.voip_call:before, #activity-feed-container .pull-right.img-box.quote_emailed:before, #activity-feed-container .pull-right.img-box.record_create:before, #activity-feed-container .pull-right.img-box.record_deleted:before, #activity-feed-container .pull-right.img-box.web_activity:before, #activity-feed-container .pull-right.img-box.weblead_create:before, #activity-feed-container .img-box.weblead_create .pull-right.stacked-icon:before, #activity-feed-container .img-box.case_escalated .pull-right.stacked-icon:before, #activity-feed-container .img-box.workflow_revert .pull-right.stacked-icon:before, #activity-feed-container .img-box.workflow_complete .pull-right.stacked-icon:before, #activity-feed-container .img-box.workflow_start .pull-right.stacked-icon:before, #activity-feed-container .img-box.record_create .pull-right.stacked-icon:before {
+#activity-feed-container .pull-right.img-box.action_complete:before, #activity-feed-container .img-box.action_complete .pull-right.stacked-icon:before, #activity-feed-container .pull-right.img-box.action_reminder:before, #activity-feed-container .pull-right.img-box.calendar_event:before, #activity-feed-container .pull-right.img-box.generic_calendar_event:before, #activity-feed-container .pull-right.img-box.doc_update:before, #activity-feed-container .pull-right.img-box.email_from:before, #activity-feed-container .pull-right.img-box.email_clicked:before, #activity-feed-container .pull-right.img-box.email_sent:before, #activity-feed-container .img-box.email_sent .pull-right.stacked-icon:before, #activity-feed-container .pull-right.img-box.email_sent_quote:before, #activity-feed-container .img-box.email_sent_quote .pull-right.stacked-icon:before, #activity-feed-container .pull-right.img-box.email_sent_invoice:before, #activity-feed-container .img-box.email_sent_invoice .pull-right.stacked-icon:before, #activity-feed-container .pull-right.img-box.invoice_emailed:before, #activity-feed-container .pull-right.img-box.media:before, #activity-feed-container .pull-right.img-box.notif:before, #activity-feed-container .pull-right.img-box.voip_call:before, #activity-feed-container .pull-right.img-box.quote_emailed:before, #activity-feed-container .pull-right.img-box.record_create:before, #activity-feed-container .pull-right.img-box.record_deleted:before, #activity-feed-container .pull-right.img-box.web_activity:before, #activity-feed-container .pull-right.img-box.weblead_create:before, #activity-feed-container .img-box.weblead_create .pull-right.stacked-icon:before, #activity-feed-container .pull-right.img-box.topic_reply:before, #activity-feed-container .img-box.case_escalated .pull-right.stacked-icon:before, #activity-feed-container .img-box.workflow_revert .pull-right.stacked-icon:before, #activity-feed-container .img-box.workflow_complete .pull-right.stacked-icon:before, #activity-feed-container .img-box.workflow_start .pull-right.stacked-icon:before, #activity-feed-container .img-box.record_create .pull-right.stacked-icon:before {
   margin-left: .3em;
 }
 
@@ -418,6 +539,11 @@
   content: "\f080";
 }
 
+/* line 593, ../../../compass/css/lib/_font-awesome.scss */
+#activity-feed-container .img-box.record_create.Topics-create:before {
+  content: "\f086";
+}
+
 /* line 635, ../../../compass/css/lib/_font-awesome.scss */
 #activity-feed-container .img-box.voip_call:before {
   content: "\f095";
@@ -446,6 +572,11 @@
 /* line 825, ../../../compass/css/lib/_font-awesome.scss */
 #activity-feed-container .img-box.workflow_revert .stacked-icon:before {
   content: "\f0e2";
+}
+
+/* line 837, ../../../compass/css/lib/_font-awesome.scss */
+#activity-feed-container .img-box.topic_reply:before {
+  content: "\f0e5";
 }
 
 /* line 887, ../../../compass/css/lib/_font-awesome.scss */
@@ -493,186 +624,11 @@
   content: "\f1f8";
 }
 
-/*
-  Icon Font: x2-icons
-*/
-@font-face {
-  font-family: "x2-icons";
-  src: url("./x2-icons/x2-icons_22944e718c0be651c88d1109fe469031.eot");
-  src: url("./x2-icons/x2-icons_22944e718c0be651c88d1109fe469031.eot?#iefix") format("embedded-opentype"), url("./x2-icons/x2-icons_22944e718c0be651c88d1109fe469031.woff") format("woff"), url("./x2-icons/x2-icons_22944e718c0be651c88d1109fe469031.ttf") format("truetype"), url("./x2-icons/x2-icons_22944e718c0be651c88d1109fe469031.svg#x2-icons") format("svg");
-  font-weight: normal;
-  font-style: normal;
-}
-@media screen and (-webkit-min-device-pixel-ratio: 0) {
-  @font-face {
-    font-family: "x2-icons";
-    src: url("./x2-icons/x2-icons_22944e718c0be651c88d1109fe469031.svg#x2-icons") format("svg");
-  }
-}
-/* line 23, ../../../compass/css/lib/_x2-icons.scss */
-[data-icon]:before {
-  content: attr(data-icon);
-}
-
-/* line 25, ../../../compass/css/lib/_x2-icons.scss */
-[data-icon]:before,
-.icon-activity:before,
-.icon-contact:before,
-#activity-feed-container .img-box.record_create.Contacts-create:before,
-.icon-envelope-arrow:before,
-.icon-funnel:before,
-#activity-feed-container .img-box.workflow_revert:before,
-#activity-feed-container .img-box.workflow_complete:before,
-#activity-feed-container .img-box.workflow_start:before,
-.icon-funnel-arrow:before,
-.icon-funnel-check:before,
-.icon-funnel3:before,
-.icon-funnel4:before,
-.icon-old-open-envelope:before,
-.icon-old-open-envelope-o:before,
-.icon-open-envelope:before,
-#activity-feed-container .img-box.email_opened:before,
-#activity-feed-container .img-box.email_opened_quote:before,
-#activity-feed-container .img-box.email_opened_invoice:before,
-.icon-package:before,
-#activity-feed-container .img-box.record_create.Product-create:before,
-.icon-profile:before,
-.icon-profile-large:before,
-.icon-quotes:before,
-#activity-feed-container .img-box.record_create.Quote-create:before,
-.icon-service:before,
-#activity-feed-container .img-box.case_escalated:before,
-#activity-feed-container .img-box.record_create.Services-create:before,
-.icon-stopwatch:before,
-#activity-feed-container .img-box.log_time:before,
-.icon-x2-logo:before,
-.icon-x2-logo-square:before,
-.icon-x2-logo-square-small:before,
-.icon-x2engine:before {
-  display: inline-block;
-  font-family: "x2-icons";
-  font-style: normal;
-  font-weight: normal;
-  font-variant: normal;
-  line-height: 1;
-  text-decoration: inherit;
-  text-rendering: optimizeLegibility;
-  text-transform: none;
-  -moz-osx-font-smoothing: grayscale;
-  -webkit-font-smoothing: antialiased;
-  font-smoothing: antialiased;
-}
-
-/* line 61, ../../../compass/css/lib/_x2-icons.scss */
-.icon-activity:before {
-  content: "\f113";
-}
-
-/* line 62, ../../../compass/css/lib/_x2-icons.scss */
-.icon-contact:before, #activity-feed-container .img-box.record_create.Contacts-create:before {
-  content: "\f10c";
-}
-
-/* line 63, ../../../compass/css/lib/_x2-icons.scss */
-.icon-envelope-arrow:before {
-  content: "\f10d";
-}
-
-/* line 64, ../../../compass/css/lib/_x2-icons.scss */
-.icon-funnel:before, #activity-feed-container .img-box.workflow_revert:before, #activity-feed-container .img-box.workflow_complete:before, #activity-feed-container .img-box.workflow_start:before {
-  content: "\f109";
-}
-
-/* line 65, ../../../compass/css/lib/_x2-icons.scss */
-.icon-funnel-arrow:before {
-  content: "\f10e";
-}
-
-/* line 66, ../../../compass/css/lib/_x2-icons.scss */
-.icon-funnel-check:before {
-  content: "\f10f";
-}
-
-/* line 67, ../../../compass/css/lib/_x2-icons.scss */
-.icon-funnel3:before {
-  content: "\f119";
-}
-
-/* line 68, ../../../compass/css/lib/_x2-icons.scss */
-.icon-funnel4:before {
-  content: "\f11b";
-}
-
-/* line 69, ../../../compass/css/lib/_x2-icons.scss */
-.icon-old-open-envelope:before {
-  content: "\f120";
-}
-
-/* line 70, ../../../compass/css/lib/_x2-icons.scss */
-.icon-old-open-envelope-o:before {
-  content: "\f121";
-}
-
-/* line 71, ../../../compass/css/lib/_x2-icons.scss */
-.icon-open-envelope:before, #activity-feed-container .img-box.email_opened:before, #activity-feed-container .img-box.email_opened_quote:before, #activity-feed-container .img-box.email_opened_invoice:before {
-  content: "\f10a";
-}
-
-/* line 72, ../../../compass/css/lib/_x2-icons.scss */
-.icon-package:before, #activity-feed-container .img-box.record_create.Product-create:before {
-  content: "\f112";
-}
-
-/* line 73, ../../../compass/css/lib/_x2-icons.scss */
-.icon-profile:before {
-  content: "\f11e";
-}
-
-/* line 74, ../../../compass/css/lib/_x2-icons.scss */
-.icon-profile-large:before {
-  content: "\f11f";
-}
-
-/* line 75, ../../../compass/css/lib/_x2-icons.scss */
-.icon-quotes:before, #activity-feed-container .img-box.record_create.Quote-create:before {
-  content: "\f11c";
-}
-
-/* line 76, ../../../compass/css/lib/_x2-icons.scss */
-.icon-service:before, #activity-feed-container .img-box.case_escalated:before, #activity-feed-container .img-box.record_create.Services-create:before {
-  content: "\f111";
-}
-
-/* line 77, ../../../compass/css/lib/_x2-icons.scss */
-.icon-stopwatch:before, #activity-feed-container .img-box.log_time:before {
-  content: "\f114";
-}
-
-/* line 78, ../../../compass/css/lib/_x2-icons.scss */
-.icon-x2-logo:before {
-  content: "\f117";
-}
-
-/* line 79, ../../../compass/css/lib/_x2-icons.scss */
-.icon-x2-logo-square:before {
-  content: "\f116";
-}
-
-/* line 80, ../../../compass/css/lib/_x2-icons.scss */
-.icon-x2-logo-square-small:before {
-  content: "\f118";
-}
-
-/* line 81, ../../../compass/css/lib/_x2-icons.scss */
-.icon-x2engine:before {
-  content: "\f104";
-}
-
 /**************************************************
 * Class to add to a container that has a stacked icon
 * These are the icons displayed on the activity feed
 **************************************************/
-/* line 59, ../../../compass/css/lib/_icons.scss */
+/* line 58, ../../../compass/css/lib/_icons.scss */
 .stacked-icon {
   display: none;
   position: absolute;
@@ -687,7 +643,7 @@
   /* @theme background content */
   text-align: center;
 }
-/* line 78, ../../../compass/css/lib/_icons.scss */
+/* line 77, ../../../compass/css/lib/_icons.scss */
 .stacked-icon:before {
   width: 100%;
   font-size: 10px;
@@ -717,7 +673,7 @@
 /***********************************************************************
 * image attachments
 ***********************************************************************/
-/* line 44, ../../../compass/themes/x2engine/css/activityFeed.scss */
+/* line 45, ../../../compass/themes/x2engine/css/activityFeed.scss */
 #activity-feed-container {
   -webkit-border-radius: 4px !important;
   -moz-border-radius: 4px !important;
@@ -751,19 +707,19 @@
   * Activity Feed Icon Styling
   ********************************/
 }
-/* line 47, ../../../compass/themes/x2engine/css/activityFeed.scss */
+/* line 48, ../../../compass/themes/x2engine/css/activityFeed.scss */
 #activity-feed-container .attachment-img {
   height: 100px;
 }
-/* line 51, ../../../compass/themes/x2engine/css/activityFeed.scss */
+/* line 52, ../../../compass/themes/x2engine/css/activityFeed.scss */
 #activity-feed-container div.page-title .x2-button.right {
   margin: 5px 5px 5px 0px;
 }
-/* line 60, ../../../compass/themes/x2engine/css/activityFeed.scss */
+/* line 61, ../../../compass/themes/x2engine/css/activityFeed.scss */
 #activity-feed-container #attachment-form .focus-mini-module {
   box-shadow: none;
 }
-/* line 63, ../../../compass/themes/x2engine/css/activityFeed.scss */
+/* line 64, ../../../compass/themes/x2engine/css/activityFeed.scss */
 #activity-feed-container #attachment-form .form {
   -moz-border-radius: 0px;
   -o-border-radius: 0px;
@@ -774,46 +730,46 @@
   border-right: none;
   margin-bottom: 0;
 }
-/* line 79, ../../../compass/themes/x2engine/css/activityFeed.scss */
+/* line 80, ../../../compass/themes/x2engine/css/activityFeed.scss */
 #activity-feed-container .sp-replacer {
   padding: 0px !important;
   margin-left: 4px !important;
   position: relative;
   top: -2px;
 }
-/* line 86, ../../../compass/themes/x2engine/css/activityFeed.scss */
+/* line 87, ../../../compass/themes/x2engine/css/activityFeed.scss */
 #activity-feed-container .sp-dd {
   height: 13px !important;
 }
-/* line 90, ../../../compass/themes/x2engine/css/activityFeed.scss */
+/* line 91, ../../../compass/themes/x2engine/css/activityFeed.scss */
 #activity-feed-container .sp-preview {
   width: 20px !important;
   height: 17px !important;
   margin-right: 5px !important;
 }
-/* line 100, ../../../compass/themes/x2engine/css/activityFeed.scss */
+/* line 101, ../../../compass/themes/x2engine/css/activityFeed.scss */
 #activity-feed-container #broadcast-dialog-user-select {
   width: 460px;
   height: 200px;
 }
-/* line 105, ../../../compass/themes/x2engine/css/activityFeed.scss */
+/* line 106, ../../../compass/themes/x2engine/css/activityFeed.scss */
 #activity-feed-container .dialog-explanation {
   margin-bottom: 8px;
   margin-top: 7px;
 }
-/* line 111, ../../../compass/themes/x2engine/css/activityFeed.scss */
+/* line 112, ../../../compass/themes/x2engine/css/activityFeed.scss */
 #activity-feed-container #broadcast-dialog label {
   margin-bottom: 4px;
 }
-/* line 114, ../../../compass/themes/x2engine/css/activityFeed.scss */
+/* line 115, ../../../compass/themes/x2engine/css/activityFeed.scss */
 #activity-feed-container #broadcast-dialog .sp-replacer {
   margin-top: 6px;
 }
-/* line 123, ../../../compass/themes/x2engine/css/activityFeed.scss */
+/* line 124, ../../../compass/themes/x2engine/css/activityFeed.scss */
 #activity-feed-container #cke_Events_text {
   margin-bottom: 6px !important;
 }
-/* line 129, ../../../compass/themes/x2engine/css/activityFeed.scss */
+/* line 130, ../../../compass/themes/x2engine/css/activityFeed.scss */
 #activity-feed-container .cke_bottom {
   background: none !important;
   border-top: none !important;
@@ -823,11 +779,11 @@
   padding: 0 0 0 0 !important;
   margin: 0 0 0 0 !important;
 }
-/* line 141, ../../../compass/themes/x2engine/css/activityFeed.scss */
+/* line 142, ../../../compass/themes/x2engine/css/activityFeed.scss */
 #activity-feed-container .cke_resizer_ltr {
   margin-right: 2px !important;
 }
-/* line 149, ../../../compass/themes/x2engine/css/activityFeed.scss */
+/* line 150, ../../../compass/themes/x2engine/css/activityFeed.scss */
 #activity-feed-container .avatar-image {
   /*border: 3px solid #f8f8f8;*/
   border: 1px;
@@ -837,11 +793,11 @@
   -o-border-radius: 4px;
   border-radius: 4px;
 }
-/* line 155, ../../../compass/themes/x2engine/css/activityFeed.scss */
+/* line 156, ../../../compass/themes/x2engine/css/activityFeed.scss */
 #activity-feed-container .social-tabs a {
   text-decoration: none;
 }
-/* line 159, ../../../compass/themes/x2engine/css/activityFeed.scss */
+/* line 160, ../../../compass/themes/x2engine/css/activityFeed.scss */
 #activity-feed-container .comment-textbox {
   -webkit-appearance: none;
   height: 22px;
@@ -859,53 +815,53 @@
   border-radius: 3px;
   background: white;
 }
-/* line 173, ../../../compass/themes/x2engine/css/activityFeed.scss */
+/* line 174, ../../../compass/themes/x2engine/css/activityFeed.scss */
 #activity-feed-container .comment-box .items {
   margin-left: 15px;
   border: none;
 }
-/* line 181, ../../../compass/themes/x2engine/css/activityFeed.scss */
+/* line 182, ../../../compass/themes/x2engine/css/activityFeed.scss */
 #activity-feed-container .comment-box .items > .view:first-child {
   border-radius: 2px 0px 0px 0px;
 }
-/* line 185, ../../../compass/themes/x2engine/css/activityFeed.scss */
+/* line 186, ../../../compass/themes/x2engine/css/activityFeed.scss */
 #activity-feed-container .comment-box .items > .view:last-child {
   border-radius: 0px 0px 2px 0px;
 }
-/* line 191, ../../../compass/themes/x2engine/css/activityFeed.scss */
+/* line 192, ../../../compass/themes/x2engine/css/activityFeed.scss */
 #activity-feed-container .important {
   background-color: #FFFFC2;
 }
-/* line 195, ../../../compass/themes/x2engine/css/activityFeed.scss */
+/* line 196, ../../../compass/themes/x2engine/css/activityFeed.scss */
 #activity-feed-container #activity-feed .pager {
   visibility: hidden;
 }
-/* line 199, ../../../compass/themes/x2engine/css/activityFeed.scss */
+/* line 200, ../../../compass/themes/x2engine/css/activityFeed.scss */
 #activity-feed-container .yiiPager {
   display: none;
 }
-/* line 203, ../../../compass/themes/x2engine/css/activityFeed.scss */
+/* line 204, ../../../compass/themes/x2engine/css/activityFeed.scss */
 #activity-feed-container .activity-feed div.like-history-box {
   padding-top: 6px;
 }
-/* line 208, ../../../compass/themes/x2engine/css/activityFeed.scss */
+/* line 209, ../../../compass/themes/x2engine/css/activityFeed.scss */
 #activity-feed-container #sticky-feed .important-action {
   background: #FFFFC2;
 }
-/* line 213, ../../../compass/themes/x2engine/css/activityFeed.scss */
+/* line 214, ../../../compass/themes/x2engine/css/activityFeed.scss */
 #activity-feed-container #activity-feed.list-view .view.top-level.activity-feed {
   padding: 5px;
   overflow: auto;
 }
-/* line 216, ../../../compass/themes/x2engine/css/activityFeed.scss */
+/* line 217, ../../../compass/themes/x2engine/css/activityFeed.scss */
 #activity-feed-container #activity-feed.list-view .view.top-level.activity-feed.important-action {
   background: #FFFFC2;
 }
-/* line 223, ../../../compass/themes/x2engine/css/activityFeed.scss */
+/* line 224, ../../../compass/themes/x2engine/css/activityFeed.scss */
 #activity-feed-container #sticky-feed .top-level.activity-feed {
   overflow: auto;
 }
-/* line 227, ../../../compass/themes/x2engine/css/activityFeed.scss */
+/* line 228, ../../../compass/themes/x2engine/css/activityFeed.scss */
 #activity-feed-container .items {
   -webkit-border-radius: 0px !important;
   -moz-border-radius: 0px !important;
@@ -916,15 +872,15 @@
   border-left: none !important;
   border-right: none !important;
 }
-/* line 237, ../../../compass/themes/x2engine/css/activityFeed.scss */
+/* line 238, ../../../compass/themes/x2engine/css/activityFeed.scss */
 #activity-feed-container .expandable-details-override {
   display: inline !important;
 }
-/* line 241, ../../../compass/themes/x2engine/css/activityFeed.scss */
+/* line 242, ../../../compass/themes/x2engine/css/activityFeed.scss */
 #activity-feed-container .event-bottom-row {
   margin-top: -5px;
 }
-/* line 243, ../../../compass/themes/x2engine/css/activityFeed.scss */
+/* line 244, ../../../compass/themes/x2engine/css/activityFeed.scss */
 #activity-feed-container .event-bottom-row .comment-age {
   display: inline-block;
   margin-top: 8px;
@@ -933,16 +889,16 @@
   /* @theme color link */
   opacity: 0.8;
 }
-/* line 105, ../../../compass/css/lib/_standards.scss */
+/* line 144, ../../../compass/css/lib/_standards.scss */
 #activity-feed-container .event-bottom-row .comment-age:hover {
   opacity: 1;
 }
-/* line 251, ../../../compass/themes/x2engine/css/activityFeed.scss */
+/* line 252, ../../../compass/themes/x2engine/css/activityFeed.scss */
 #activity-feed-container .event-bottom-row .event-icon-button-container {
   display: inline-block;
   margin-top: -7px;
 }
-/* line 257, ../../../compass/themes/x2engine/css/activityFeed.scss */
+/* line 258, ../../../compass/themes/x2engine/css/activityFeed.scss */
 #activity-feed-container div#post-form {
   margin-bottom: 0 !important;
   border-top: none;
@@ -951,76 +907,78 @@
   border-bottom: 1px solid #eee;
   border-radius: 0;
 }
-/* line 266, ../../../compass/themes/x2engine/css/activityFeed.scss */
+/* line 267, ../../../compass/themes/x2engine/css/activityFeed.scss */
 #activity-feed-container .event-icon-button-container > * {
   height: 20px;
   opacity: 0.9;
   display: inline-block;
 }
-/* line 274, ../../../compass/themes/x2engine/css/activityFeed.scss */
+/* line 275, ../../../compass/themes/x2engine/css/activityFeed.scss */
 #activity-feed-container .important-link.x2-hint, #activity-feed-container .sticky-link.x2-hint {
   color: #c5c5c5;
 }
-/* line 279, ../../../compass/themes/x2engine/css/activityFeed.scss */
+/* line 280, ../../../compass/themes/x2engine/css/activityFeed.scss */
 #activity-feed-container .deleteButton {
   opacity: 0.5;
 }
-/* line 105, ../../../compass/css/lib/_standards.scss */
+/* line 144, ../../../compass/css/lib/_standards.scss */
 #activity-feed-container .deleteButton:hover {
   opacity: 1;
 }
-/* line 287, ../../../compass/themes/x2engine/css/activityFeed.scss */
+/* line 288, ../../../compass/themes/x2engine/css/activityFeed.scss */
 #activity-feed-container .feed-comment-icon, #activity-feed-container .broadcast-icon, #activity-feed-container .like-icon, #activity-feed-container .sticky-icon, #activity-feed-container .feed-make-important-icon, #activity-feed-container .like-count, #activity-feed-container .unsticky-icon, #activity-feed-container .unlike-icon, #activity-feed-container .feed-make-unimportant-icon {
   margin-left: 10px;
 }
-/* line 291, ../../../compass/themes/x2engine/css/activityFeed.scss */
+/* line 292, ../../../compass/themes/x2engine/css/activityFeed.scss */
 #activity-feed-container .feed-comment-icon, #activity-feed-container .broadcast-icon, #activity-feed-container .like-icon, #activity-feed-container .sticky-icon, #activity-feed-container .feed-make-important-icon, #activity-feed-container .like-count {
   opacity: 0.6;
   cursor: pointer;
   color: #454545;
 }
-/* line 297, ../../../compass/themes/x2engine/css/activityFeed.scss */
+/* line 298, ../../../compass/themes/x2engine/css/activityFeed.scss */
 #activity-feed-container .feed-comment-icon:hover, #activity-feed-container .broadcast-icon:hover, #activity-feed-container .like-icon:hover, #activity-feed-container .sticky-icon:hover, #activity-feed-container .feed-make-important-icon:hover, #activity-feed-container .like-count:hover {
   opacity: 0.8;
 }
-/* line 302, ../../../compass/themes/x2engine/css/activityFeed.scss */
+/* line 303, ../../../compass/themes/x2engine/css/activityFeed.scss */
 #activity-feed-container .unsticky-icon, #activity-feed-container .unlike-icon, #activity-feed-container .feed-make-unimportant-icon {
   opacity: 1.0;
   cursor: pointer;
 }
-/* line 307, ../../../compass/themes/x2engine/css/activityFeed.scss */
+/* line 308, ../../../compass/themes/x2engine/css/activityFeed.scss */
 #activity-feed-container .unsticky-icon:hover, #activity-feed-container .unlike-icon:hover, #activity-feed-container .feed-make-unimportant-icon:hover {
   opacity: 0.9;
 }
-/* line 320, ../../../compass/themes/x2engine/css/activityFeed.scss */
+/* line 321, ../../../compass/themes/x2engine/css/activityFeed.scss */
 #activity-feed-container .like-count {
   opacity: 0.6;
   padding-left: 3px;
   color: #004baf;
   margin-left: 0px;
 }
-/* line 328, ../../../compass/themes/x2engine/css/activityFeed.scss */
+/* line 329, ../../../compass/themes/x2engine/css/activityFeed.scss */
 #activity-feed-container .unlike-button[style*="none"] + .like-count {
   color: #454545;
 }
-/* line 332, ../../../compass/themes/x2engine/css/activityFeed.scss */
+/* line 333, ../../../compass/themes/x2engine/css/activityFeed.scss */
 #activity-feed-container #activity-feed-settings-button {
   cursor: pointer;
   float: right;
   margin-top: 8px;
   margin-right: 5px;
+  color: #919191;
+  /* @theme color: smart_text */
   opacity: 0.7;
 }
-/* line 338, ../../../compass/themes/x2engine/css/activityFeed.scss */
+/* line 67, ../../../compass/css/lib/_standards.scss */
 #activity-feed-container #activity-feed-settings-button:hover {
   opacity: 1;
 }
-/* line 343, ../../../compass/themes/x2engine/css/activityFeed.scss */
+/* line 341, ../../../compass/themes/x2engine/css/activityFeed.scss */
 #activity-feed-container #second-row-buttons-container {
   display: block;
   margin-top: 7px;
 }
-/* line 351, ../../../compass/themes/x2engine/css/activityFeed.scss */
+/* line 349, ../../../compass/themes/x2engine/css/activityFeed.scss */
 #activity-feed-container .img-box {
   display: block;
   float: left;
@@ -1034,7 +992,7 @@
   height: 45px;
   padding-bottom: 5px;
 }
-/* line 367, ../../../compass/themes/x2engine/css/activityFeed.scss */
+/* line 365, ../../../compass/themes/x2engine/css/activityFeed.scss */
 #activity-feed-container .img-box:before {
   font-size: 30px !important;
 }
@@ -1042,36 +1000,36 @@
 #activity-feed-container .img-box.action_complete:before {
   text-decoration: none;
 }
-/* line 91, ../../../compass/css/lib/_icons.scss */
+/* line 90, ../../../compass/css/lib/_icons.scss */
 #activity-feed-container .img-box.action_complete .stacked-icon:before {
   top: 0px;
   left: 0px;
 }
-/* line 92, ../../../compass/css/lib/_icons.scss */
+/* line 91, ../../../compass/css/lib/_icons.scss */
 #activity-feed-container .img-box.action_complete .img-box.record_create .stacked-icon:before, #activity-feed-container .img-box.record_create .img-box.action_complete .stacked-icon:before {
   top: 1.0px;
   left: 0px;
 }
-/* line 93, ../../../compass/css/lib/_icons.scss */
+/* line 92, ../../../compass/css/lib/_icons.scss */
 #activity-feed-container .img-box.action_complete .stacked-icon:before {
   top: 1px;
   left: 0px;
 }
-/* line 95, ../../../compass/css/lib/_icons.scss */
+/* line 94, ../../../compass/css/lib/_icons.scss */
 #activity-feed-container .img-box.action_complete .img-box.email_sent .stacked-icon:before, #activity-feed-container .img-box.email_sent .img-box.action_complete .stacked-icon:before, #activity-feed-container .img-box.action_complete .img-box.email_sent_quote .stacked-icon:before, #activity-feed-container .img-box.email_sent_quote .img-box.action_complete .stacked-icon:before, #activity-feed-container .img-box.action_complete .img-box.email_sent_invoice .stacked-icon:before, #activity-feed-container .img-box.email_sent_invoice .img-box.action_complete .stacked-icon:before, #activity-feed-container .img-box.action_complete .img-box.workflow_start .stacked-icon:before, #activity-feed-container .img-box.workflow_start .img-box.action_complete .stacked-icon:before {
   top: 0.5px;
   left: 1px;
 }
-/* line 96, ../../../compass/css/lib/_icons.scss */
+/* line 95, ../../../compass/css/lib/_icons.scss */
 #activity-feed-container .img-box.action_complete .img-box.weblead_create .stacked-icon:before, #activity-feed-container .img-box.weblead_create .img-box.action_complete .stacked-icon:before {
   top: 1px;
   left: 0px;
 }
-/* line 97, ../../../compass/css/lib/_icons.scss */
+/* line 96, ../../../compass/css/lib/_icons.scss */
 #activity-feed-container .img-box.action_complete .img-box.workflow_revert .stacked-icon:before, #activity-feed-container .img-box.workflow_revert .img-box.action_complete .stacked-icon:before {
   top: 1px;
 }
-/* line 100, ../../../compass/css/lib/_icons.scss */
+/* line 99, ../../../compass/css/lib/_icons.scss */
 #activity-feed-container .img-box.action_complete .stacked-icon {
   display: inline-block;
 }
@@ -1079,7 +1037,7 @@
 #activity-feed-container .img-box.action_complete .stacked-icon:before {
   text-decoration: none;
 }
-/* line 105, ../../../compass/css/lib/_icons.scss */
+/* line 104, ../../../compass/css/lib/_icons.scss */
 #activity-feed-container .img-box.action_complete .stacked-icon:before {
   position: absolute;
   font-size: 10px;
@@ -1112,36 +1070,36 @@
 #activity-feed-container .img-box.email_sent:before {
   text-decoration: none;
 }
-/* line 91, ../../../compass/css/lib/_icons.scss */
+/* line 90, ../../../compass/css/lib/_icons.scss */
 #activity-feed-container .img-box.email_sent .stacked-icon:before {
   top: 0px;
   left: 0px;
 }
-/* line 92, ../../../compass/css/lib/_icons.scss */
+/* line 91, ../../../compass/css/lib/_icons.scss */
 #activity-feed-container .img-box.email_sent .img-box.record_create .stacked-icon:before, #activity-feed-container .img-box.record_create .img-box.email_sent .stacked-icon:before {
   top: 1.0px;
   left: 0px;
 }
-/* line 93, ../../../compass/css/lib/_icons.scss */
+/* line 92, ../../../compass/css/lib/_icons.scss */
 #activity-feed-container .img-box.email_sent .img-box.action_complete .stacked-icon:before, #activity-feed-container .img-box.action_complete .img-box.email_sent .stacked-icon:before, #activity-feed-container .img-box.email_sent .img-box.workflow_complete .stacked-icon:before, #activity-feed-container .img-box.workflow_complete .img-box.email_sent .stacked-icon:before {
   top: 1px;
   left: 0px;
 }
-/* line 95, ../../../compass/css/lib/_icons.scss */
+/* line 94, ../../../compass/css/lib/_icons.scss */
 #activity-feed-container .img-box.email_sent .stacked-icon:before {
   top: 0.5px;
   left: 1px;
 }
-/* line 96, ../../../compass/css/lib/_icons.scss */
+/* line 95, ../../../compass/css/lib/_icons.scss */
 #activity-feed-container .img-box.email_sent .img-box.weblead_create .stacked-icon:before, #activity-feed-container .img-box.weblead_create .img-box.email_sent .stacked-icon:before {
   top: 1px;
   left: 0px;
 }
-/* line 97, ../../../compass/css/lib/_icons.scss */
+/* line 96, ../../../compass/css/lib/_icons.scss */
 #activity-feed-container .img-box.email_sent .img-box.workflow_revert .stacked-icon:before, #activity-feed-container .img-box.workflow_revert .img-box.email_sent .stacked-icon:before {
   top: 1px;
 }
-/* line 100, ../../../compass/css/lib/_icons.scss */
+/* line 99, ../../../compass/css/lib/_icons.scss */
 #activity-feed-container .img-box.email_sent .stacked-icon {
   display: inline-block;
 }
@@ -1149,7 +1107,7 @@
 #activity-feed-container .img-box.email_sent .stacked-icon:before {
   text-decoration: none;
 }
-/* line 105, ../../../compass/css/lib/_icons.scss */
+/* line 104, ../../../compass/css/lib/_icons.scss */
 #activity-feed-container .img-box.email_sent .stacked-icon:before {
   position: absolute;
   font-size: 10px;
@@ -1158,36 +1116,36 @@
 #activity-feed-container .img-box.email_sent_quote:before {
   text-decoration: none;
 }
-/* line 91, ../../../compass/css/lib/_icons.scss */
+/* line 90, ../../../compass/css/lib/_icons.scss */
 #activity-feed-container .img-box.email_sent_quote .stacked-icon:before {
   top: 0px;
   left: 0px;
 }
-/* line 92, ../../../compass/css/lib/_icons.scss */
+/* line 91, ../../../compass/css/lib/_icons.scss */
 #activity-feed-container .img-box.email_sent_quote .img-box.record_create .stacked-icon:before, #activity-feed-container .img-box.record_create .img-box.email_sent_quote .stacked-icon:before {
   top: 1.0px;
   left: 0px;
 }
-/* line 93, ../../../compass/css/lib/_icons.scss */
+/* line 92, ../../../compass/css/lib/_icons.scss */
 #activity-feed-container .img-box.email_sent_quote .img-box.action_complete .stacked-icon:before, #activity-feed-container .img-box.action_complete .img-box.email_sent_quote .stacked-icon:before, #activity-feed-container .img-box.email_sent_quote .img-box.workflow_complete .stacked-icon:before, #activity-feed-container .img-box.workflow_complete .img-box.email_sent_quote .stacked-icon:before {
   top: 1px;
   left: 0px;
 }
-/* line 95, ../../../compass/css/lib/_icons.scss */
+/* line 94, ../../../compass/css/lib/_icons.scss */
 #activity-feed-container .img-box.email_sent_quote .stacked-icon:before {
   top: 0.5px;
   left: 1px;
 }
-/* line 96, ../../../compass/css/lib/_icons.scss */
+/* line 95, ../../../compass/css/lib/_icons.scss */
 #activity-feed-container .img-box.email_sent_quote .img-box.weblead_create .stacked-icon:before, #activity-feed-container .img-box.weblead_create .img-box.email_sent_quote .stacked-icon:before {
   top: 1px;
   left: 0px;
 }
-/* line 97, ../../../compass/css/lib/_icons.scss */
+/* line 96, ../../../compass/css/lib/_icons.scss */
 #activity-feed-container .img-box.email_sent_quote .img-box.workflow_revert .stacked-icon:before, #activity-feed-container .img-box.workflow_revert .img-box.email_sent_quote .stacked-icon:before {
   top: 1px;
 }
-/* line 100, ../../../compass/css/lib/_icons.scss */
+/* line 99, ../../../compass/css/lib/_icons.scss */
 #activity-feed-container .img-box.email_sent_quote .stacked-icon {
   display: inline-block;
 }
@@ -1195,7 +1153,7 @@
 #activity-feed-container .img-box.email_sent_quote .stacked-icon:before {
   text-decoration: none;
 }
-/* line 105, ../../../compass/css/lib/_icons.scss */
+/* line 104, ../../../compass/css/lib/_icons.scss */
 #activity-feed-container .img-box.email_sent_quote .stacked-icon:before {
   position: absolute;
   font-size: 10px;
@@ -1204,36 +1162,36 @@
 #activity-feed-container .img-box.email_sent_invoice:before {
   text-decoration: none;
 }
-/* line 91, ../../../compass/css/lib/_icons.scss */
+/* line 90, ../../../compass/css/lib/_icons.scss */
 #activity-feed-container .img-box.email_sent_invoice .stacked-icon:before {
   top: 0px;
   left: 0px;
 }
-/* line 92, ../../../compass/css/lib/_icons.scss */
+/* line 91, ../../../compass/css/lib/_icons.scss */
 #activity-feed-container .img-box.email_sent_invoice .img-box.record_create .stacked-icon:before, #activity-feed-container .img-box.record_create .img-box.email_sent_invoice .stacked-icon:before {
   top: 1.0px;
   left: 0px;
 }
-/* line 93, ../../../compass/css/lib/_icons.scss */
+/* line 92, ../../../compass/css/lib/_icons.scss */
 #activity-feed-container .img-box.email_sent_invoice .img-box.action_complete .stacked-icon:before, #activity-feed-container .img-box.action_complete .img-box.email_sent_invoice .stacked-icon:before, #activity-feed-container .img-box.email_sent_invoice .img-box.workflow_complete .stacked-icon:before, #activity-feed-container .img-box.workflow_complete .img-box.email_sent_invoice .stacked-icon:before {
   top: 1px;
   left: 0px;
 }
-/* line 95, ../../../compass/css/lib/_icons.scss */
+/* line 94, ../../../compass/css/lib/_icons.scss */
 #activity-feed-container .img-box.email_sent_invoice .stacked-icon:before {
   top: 0.5px;
   left: 1px;
 }
-/* line 96, ../../../compass/css/lib/_icons.scss */
+/* line 95, ../../../compass/css/lib/_icons.scss */
 #activity-feed-container .img-box.email_sent_invoice .img-box.weblead_create .stacked-icon:before, #activity-feed-container .img-box.weblead_create .img-box.email_sent_invoice .stacked-icon:before {
   top: 1px;
   left: 0px;
 }
-/* line 97, ../../../compass/css/lib/_icons.scss */
+/* line 96, ../../../compass/css/lib/_icons.scss */
 #activity-feed-container .img-box.email_sent_invoice .img-box.workflow_revert .stacked-icon:before, #activity-feed-container .img-box.workflow_revert .img-box.email_sent_invoice .stacked-icon:before {
   top: 1px;
 }
-/* line 100, ../../../compass/css/lib/_icons.scss */
+/* line 99, ../../../compass/css/lib/_icons.scss */
 #activity-feed-container .img-box.email_sent_invoice .stacked-icon {
   display: inline-block;
 }
@@ -1241,7 +1199,7 @@
 #activity-feed-container .img-box.email_sent_invoice .stacked-icon:before {
   text-decoration: none;
 }
-/* line 105, ../../../compass/css/lib/_icons.scss */
+/* line 104, ../../../compass/css/lib/_icons.scss */
 #activity-feed-container .img-box.email_sent_invoice .stacked-icon:before {
   position: absolute;
   font-size: 10px;
@@ -1282,36 +1240,36 @@
 #activity-feed-container .img-box.weblead_create:before {
   text-decoration: none;
 }
-/* line 91, ../../../compass/css/lib/_icons.scss */
+/* line 90, ../../../compass/css/lib/_icons.scss */
 #activity-feed-container .img-box.weblead_create .stacked-icon:before {
   top: 0px;
   left: 0px;
 }
-/* line 92, ../../../compass/css/lib/_icons.scss */
+/* line 91, ../../../compass/css/lib/_icons.scss */
 #activity-feed-container .img-box.weblead_create .img-box.record_create .stacked-icon:before, #activity-feed-container .img-box.record_create .img-box.weblead_create .stacked-icon:before {
   top: 1.0px;
   left: 0px;
 }
-/* line 93, ../../../compass/css/lib/_icons.scss */
+/* line 92, ../../../compass/css/lib/_icons.scss */
 #activity-feed-container .img-box.weblead_create .img-box.action_complete .stacked-icon:before, #activity-feed-container .img-box.action_complete .img-box.weblead_create .stacked-icon:before, #activity-feed-container .img-box.weblead_create .img-box.workflow_complete .stacked-icon:before, #activity-feed-container .img-box.workflow_complete .img-box.weblead_create .stacked-icon:before {
   top: 1px;
   left: 0px;
 }
-/* line 95, ../../../compass/css/lib/_icons.scss */
+/* line 94, ../../../compass/css/lib/_icons.scss */
 #activity-feed-container .img-box.weblead_create .img-box.email_sent .stacked-icon:before, #activity-feed-container .img-box.email_sent .img-box.weblead_create .stacked-icon:before, #activity-feed-container .img-box.weblead_create .img-box.email_sent_quote .stacked-icon:before, #activity-feed-container .img-box.email_sent_quote .img-box.weblead_create .stacked-icon:before, #activity-feed-container .img-box.weblead_create .img-box.email_sent_invoice .stacked-icon:before, #activity-feed-container .img-box.email_sent_invoice .img-box.weblead_create .stacked-icon:before, #activity-feed-container .img-box.weblead_create .img-box.workflow_start .stacked-icon:before, #activity-feed-container .img-box.workflow_start .img-box.weblead_create .stacked-icon:before {
   top: 0.5px;
   left: 1px;
 }
-/* line 96, ../../../compass/css/lib/_icons.scss */
+/* line 95, ../../../compass/css/lib/_icons.scss */
 #activity-feed-container .img-box.weblead_create .stacked-icon:before {
   top: 1px;
   left: 0px;
 }
-/* line 97, ../../../compass/css/lib/_icons.scss */
+/* line 96, ../../../compass/css/lib/_icons.scss */
 #activity-feed-container .img-box.weblead_create .img-box.workflow_revert .stacked-icon:before, #activity-feed-container .img-box.workflow_revert .img-box.weblead_create .stacked-icon:before {
   top: 1px;
 }
-/* line 100, ../../../compass/css/lib/_icons.scss */
+/* line 99, ../../../compass/css/lib/_icons.scss */
 #activity-feed-container .img-box.weblead_create .stacked-icon {
   display: inline-block;
 }
@@ -1319,49 +1277,53 @@
 #activity-feed-container .img-box.weblead_create .stacked-icon:before {
   text-decoration: none;
 }
-/* line 105, ../../../compass/css/lib/_icons.scss */
+/* line 104, ../../../compass/css/lib/_icons.scss */
 #activity-feed-container .img-box.weblead_create .stacked-icon:before {
   position: absolute;
   font-size: 10px;
 }
-/* line 47, ../../../compass/css/lib/_icons.scss */
+/* line 50, ../../../compass/css/lib/_font-awesome.scss */
+#activity-feed-container .img-box.topic_reply:before {
+  text-decoration: none;
+}
+/* line 46, ../../../compass/css/lib/_icons.scss */
 #activity-feed-container .img-box.log_time:before {
   text-decoration: none;
 }
-/* line 47, ../../../compass/css/lib/_icons.scss */
+/* line 46, ../../../compass/css/lib/_icons.scss */
 #activity-feed-container .img-box.case_escalated:before {
   text-decoration: none;
 }
-/* line 91, ../../../compass/css/lib/_icons.scss */
+/* line 90, ../../../compass/css/lib/_icons.scss */
 #activity-feed-container .img-box.case_escalated .stacked-icon:before {
   top: 0px;
   left: 0px;
 }
-/* line 92, ../../../compass/css/lib/_icons.scss */
+/* line 91, ../../../compass/css/lib/_icons.scss */
 #activity-feed-container .img-box.case_escalated .img-box.record_create .stacked-icon:before, #activity-feed-container .img-box.record_create .img-box.case_escalated .stacked-icon:before {
   top: 1.0px;
   left: 0px;
 }
-/* line 93, ../../../compass/css/lib/_icons.scss */
+/* line 92, ../../../compass/css/lib/_icons.scss */
 #activity-feed-container .img-box.case_escalated .img-box.action_complete .stacked-icon:before, #activity-feed-container .img-box.action_complete .img-box.case_escalated .stacked-icon:before, #activity-feed-container .img-box.case_escalated .img-box.workflow_complete .stacked-icon:before, #activity-feed-container .img-box.workflow_complete .img-box.case_escalated .stacked-icon:before {
   top: 1px;
   left: 0px;
 }
-/* line 95, ../../../compass/css/lib/_icons.scss */
+/* line 94, ../../../compass/css/lib/_icons.scss */
 #activity-feed-container .img-box.case_escalated .img-box.email_sent .stacked-icon:before, #activity-feed-container .img-box.email_sent .img-box.case_escalated .stacked-icon:before, #activity-feed-container .img-box.case_escalated .img-box.email_sent_quote .stacked-icon:before, #activity-feed-container .img-box.email_sent_quote .img-box.case_escalated .stacked-icon:before, #activity-feed-container .img-box.case_escalated .img-box.email_sent_invoice .stacked-icon:before, #activity-feed-container .img-box.email_sent_invoice .img-box.case_escalated .stacked-icon:before, #activity-feed-container .img-box.case_escalated .img-box.workflow_start .stacked-icon:before, #activity-feed-container .img-box.workflow_start .img-box.case_escalated .stacked-icon:before {
   top: 0.5px;
   left: 1px;
 }
-/* line 96, ../../../compass/css/lib/_icons.scss */
+/* line 95, ../../../compass/css/lib/_icons.scss */
 #activity-feed-container .img-box.case_escalated .img-box.weblead_create .stacked-icon:before, #activity-feed-container .img-box.weblead_create .img-box.case_escalated .stacked-icon:before {
   top: 1px;
   left: 0px;
 }
-/* line 97, ../../../compass/css/lib/_icons.scss */
+/* line 96, ../../../compass/css/lib/_icons.scss */
 #activity-feed-container .img-box.case_escalated .img-box.workflow_revert .stacked-icon:before, #activity-feed-container .img-box.workflow_revert .img-box.case_escalated .stacked-icon:before {
   top: 1px;
 }
-/* line 100, ../../../compass/css/lib/_icons.scss */
+/* line 99, ../../../compass/css/lib/_icons.scss */
 #activity-feed-container .img-box.case_escalated .stacked-icon {
   display: inline-block;
 }
@@ -1369,57 +1331,57 @@
 #activity-feed-container .img-box.case_escalated .stacked-icon:before {
   text-decoration: none;
 }
-/* line 105, ../../../compass/css/lib/_icons.scss */
+/* line 104, ../../../compass/css/lib/_icons.scss */
 #activity-feed-container .img-box.case_escalated .stacked-icon:before {
   position: absolute;
   font-size: 10px;
 }
-/* line 47, ../../../compass/css/lib/_icons.scss */
+/* line 46, ../../../compass/css/lib/_icons.scss */
 #activity-feed-container .img-box.email_opened:before {
   text-decoration: none;
 }
-/* line 47, ../../../compass/css/lib/_icons.scss */
+/* line 46, ../../../compass/css/lib/_icons.scss */
 #activity-feed-container .img-box.email_opened_quote:before {
   text-decoration: none;
 }
-/* line 47, ../../../compass/css/lib/_icons.scss */
+/* line 46, ../../../compass/css/lib/_icons.scss */
 #activity-feed-container .img-box.email_opened_invoice:before {
   text-decoration: none;
 }
-/* line 47, ../../../compass/css/lib/_icons.scss */
+/* line 46, ../../../compass/css/lib/_icons.scss */
 #activity-feed-container .img-box.workflow_revert:before {
   text-decoration: none;
 }
-/* line 91, ../../../compass/css/lib/_icons.scss */
+/* line 90, ../../../compass/css/lib/_icons.scss */
 #activity-feed-container .img-box.workflow_revert .stacked-icon:before {
   top: 0px;
   left: 0px;
 }
-/* line 92, ../../../compass/css/lib/_icons.scss */
+/* line 91, ../../../compass/css/lib/_icons.scss */
 #activity-feed-container .img-box.workflow_revert .img-box.record_create .stacked-icon:before, #activity-feed-container .img-box.record_create .img-box.workflow_revert .stacked-icon:before {
   top: 1.0px;
   left: 0px;
 }
-/* line 93, ../../../compass/css/lib/_icons.scss */
+/* line 92, ../../../compass/css/lib/_icons.scss */
 #activity-feed-container .img-box.workflow_revert .img-box.action_complete .stacked-icon:before, #activity-feed-container .img-box.action_complete .img-box.workflow_revert .stacked-icon:before, #activity-feed-container .img-box.workflow_revert .img-box.workflow_complete .stacked-icon:before, #activity-feed-container .img-box.workflow_complete .img-box.workflow_revert .stacked-icon:before {
   top: 1px;
   left: 0px;
 }
-/* line 95, ../../../compass/css/lib/_icons.scss */
+/* line 94, ../../../compass/css/lib/_icons.scss */
 #activity-feed-container .img-box.workflow_revert .img-box.email_sent .stacked-icon:before, #activity-feed-container .img-box.email_sent .img-box.workflow_revert .stacked-icon:before, #activity-feed-container .img-box.workflow_revert .img-box.email_sent_quote .stacked-icon:before, #activity-feed-container .img-box.email_sent_quote .img-box.workflow_revert .stacked-icon:before, #activity-feed-container .img-box.workflow_revert .img-box.email_sent_invoice .stacked-icon:before, #activity-feed-container .img-box.email_sent_invoice .img-box.workflow_revert .stacked-icon:before, #activity-feed-container .img-box.workflow_revert .img-box.workflow_start .stacked-icon:before, #activity-feed-container .img-box.workflow_start .img-box.workflow_revert .stacked-icon:before {
   top: 0.5px;
   left: 1px;
 }
-/* line 96, ../../../compass/css/lib/_icons.scss */
+/* line 95, ../../../compass/css/lib/_icons.scss */
 #activity-feed-container .img-box.workflow_revert .img-box.weblead_create .stacked-icon:before, #activity-feed-container .img-box.weblead_create .img-box.workflow_revert .stacked-icon:before {
   top: 1px;
   left: 0px;
 }
-/* line 97, ../../../compass/css/lib/_icons.scss */
+/* line 96, ../../../compass/css/lib/_icons.scss */
 #activity-feed-container .img-box.workflow_revert .stacked-icon:before {
   top: 1px;
 }
-/* line 100, ../../../compass/css/lib/_icons.scss */
+/* line 99, ../../../compass/css/lib/_icons.scss */
 #activity-feed-container .img-box.workflow_revert .stacked-icon {
   display: inline-block;
 }
@@ -1427,45 +1389,45 @@
 #activity-feed-container .img-box.workflow_revert .stacked-icon:before {
   text-decoration: none;
 }
-/* line 105, ../../../compass/css/lib/_icons.scss */
+/* line 104, ../../../compass/css/lib/_icons.scss */
 #activity-feed-container .img-box.workflow_revert .stacked-icon:before {
   position: absolute;
   font-size: 10px;
 }
-/* line 47, ../../../compass/css/lib/_icons.scss */
+/* line 46, ../../../compass/css/lib/_icons.scss */
 #activity-feed-container .img-box.workflow_complete:before {
   text-decoration: none;
 }
-/* line 91, ../../../compass/css/lib/_icons.scss */
+/* line 90, ../../../compass/css/lib/_icons.scss */
 #activity-feed-container .img-box.workflow_complete .stacked-icon:before {
   top: 0px;
   left: 0px;
 }
-/* line 92, ../../../compass/css/lib/_icons.scss */
+/* line 91, ../../../compass/css/lib/_icons.scss */
 #activity-feed-container .img-box.workflow_complete .img-box.record_create .stacked-icon:before, #activity-feed-container .img-box.record_create .img-box.workflow_complete .stacked-icon:before {
   top: 1.0px;
   left: 0px;
 }
-/* line 93, ../../../compass/css/lib/_icons.scss */
+/* line 92, ../../../compass/css/lib/_icons.scss */
 #activity-feed-container .img-box.workflow_complete .stacked-icon:before {
   top: 1px;
   left: 0px;
 }
-/* line 95, ../../../compass/css/lib/_icons.scss */
+/* line 94, ../../../compass/css/lib/_icons.scss */
 #activity-feed-container .img-box.workflow_complete .img-box.email_sent .stacked-icon:before, #activity-feed-container .img-box.email_sent .img-box.workflow_complete .stacked-icon:before, #activity-feed-container .img-box.workflow_complete .img-box.email_sent_quote .stacked-icon:before, #activity-feed-container .img-box.email_sent_quote .img-box.workflow_complete .stacked-icon:before, #activity-feed-container .img-box.workflow_complete .img-box.email_sent_invoice .stacked-icon:before, #activity-feed-container .img-box.email_sent_invoice .img-box.workflow_complete .stacked-icon:before, #activity-feed-container .img-box.workflow_complete .img-box.workflow_start .stacked-icon:before, #activity-feed-container .img-box.workflow_start .img-box.workflow_complete .stacked-icon:before {
   top: 0.5px;
   left: 1px;
 }
-/* line 96, ../../../compass/css/lib/_icons.scss */
+/* line 95, ../../../compass/css/lib/_icons.scss */
 #activity-feed-container .img-box.workflow_complete .img-box.weblead_create .stacked-icon:before, #activity-feed-container .img-box.weblead_create .img-box.workflow_complete .stacked-icon:before {
   top: 1px;
   left: 0px;
 }
-/* line 97, ../../../compass/css/lib/_icons.scss */
+/* line 96, ../../../compass/css/lib/_icons.scss */
 #activity-feed-container .img-box.workflow_complete .img-box.workflow_revert .stacked-icon:before, #activity-feed-container .img-box.workflow_revert .img-box.workflow_complete .stacked-icon:before {
   top: 1px;
 }
-/* line 100, ../../../compass/css/lib/_icons.scss */
+/* line 99, ../../../compass/css/lib/_icons.scss */
 #activity-feed-container .img-box.workflow_complete .stacked-icon {
   display: inline-block;
 }
@@ -1473,45 +1435,45 @@
 #activity-feed-container .img-box.workflow_complete .stacked-icon:before {
   text-decoration: none;
 }
-/* line 105, ../../../compass/css/lib/_icons.scss */
+/* line 104, ../../../compass/css/lib/_icons.scss */
 #activity-feed-container .img-box.workflow_complete .stacked-icon:before {
   position: absolute;
   font-size: 10px;
 }
-/* line 47, ../../../compass/css/lib/_icons.scss */
+/* line 46, ../../../compass/css/lib/_icons.scss */
 #activity-feed-container .img-box.workflow_start:before {
   text-decoration: none;
 }
-/* line 91, ../../../compass/css/lib/_icons.scss */
+/* line 90, ../../../compass/css/lib/_icons.scss */
 #activity-feed-container .img-box.workflow_start .stacked-icon:before {
   top: 0px;
   left: 0px;
 }
-/* line 92, ../../../compass/css/lib/_icons.scss */
+/* line 91, ../../../compass/css/lib/_icons.scss */
 #activity-feed-container .img-box.workflow_start .img-box.record_create .stacked-icon:before, #activity-feed-container .img-box.record_create .img-box.workflow_start .stacked-icon:before {
   top: 1.0px;
   left: 0px;
 }
-/* line 93, ../../../compass/css/lib/_icons.scss */
+/* line 92, ../../../compass/css/lib/_icons.scss */
 #activity-feed-container .img-box.workflow_start .img-box.action_complete .stacked-icon:before, #activity-feed-container .img-box.action_complete .img-box.workflow_start .stacked-icon:before, #activity-feed-container .img-box.workflow_start .img-box.workflow_complete .stacked-icon:before, #activity-feed-container .img-box.workflow_complete .img-box.workflow_start .stacked-icon:before {
   top: 1px;
   left: 0px;
 }
-/* line 95, ../../../compass/css/lib/_icons.scss */
+/* line 94, ../../../compass/css/lib/_icons.scss */
 #activity-feed-container .img-box.workflow_start .stacked-icon:before {
   top: 0.5px;
   left: 1px;
 }
-/* line 96, ../../../compass/css/lib/_icons.scss */
+/* line 95, ../../../compass/css/lib/_icons.scss */
 #activity-feed-container .img-box.workflow_start .img-box.weblead_create .stacked-icon:before, #activity-feed-container .img-box.weblead_create .img-box.workflow_start .stacked-icon:before {
   top: 1px;
   left: 0px;
 }
-/* line 97, ../../../compass/css/lib/_icons.scss */
+/* line 96, ../../../compass/css/lib/_icons.scss */
 #activity-feed-container .img-box.workflow_start .img-box.workflow_revert .stacked-icon:before, #activity-feed-container .img-box.workflow_revert .img-box.workflow_start .stacked-icon:before {
   top: 1px;
 }
-/* line 100, ../../../compass/css/lib/_icons.scss */
+/* line 99, ../../../compass/css/lib/_icons.scss */
 #activity-feed-container .img-box.workflow_start .stacked-icon {
   display: inline-block;
 }
@@ -1519,41 +1481,41 @@
 #activity-feed-container .img-box.workflow_start .stacked-icon:before {
   text-decoration: none;
 }
-/* line 105, ../../../compass/css/lib/_icons.scss */
+/* line 104, ../../../compass/css/lib/_icons.scss */
 #activity-feed-container .img-box.workflow_start .stacked-icon:before {
   position: absolute;
   font-size: 10px;
 }
-/* line 91, ../../../compass/css/lib/_icons.scss */
+/* line 90, ../../../compass/css/lib/_icons.scss */
 #activity-feed-container .img-box.record_create .stacked-icon:before {
   top: 0px;
   left: 0px;
 }
-/* line 92, ../../../compass/css/lib/_icons.scss */
+/* line 91, ../../../compass/css/lib/_icons.scss */
 #activity-feed-container .img-box.record_create .stacked-icon:before {
   top: 1.0px;
   left: 0px;
 }
-/* line 93, ../../../compass/css/lib/_icons.scss */
+/* line 92, ../../../compass/css/lib/_icons.scss */
 #activity-feed-container .img-box.record_create .img-box.action_complete .stacked-icon:before, #activity-feed-container .img-box.action_complete .img-box.record_create .stacked-icon:before, #activity-feed-container .img-box.record_create .img-box.workflow_complete .stacked-icon:before, #activity-feed-container .img-box.workflow_complete .img-box.record_create .stacked-icon:before {
   top: 1px;
   left: 0px;
 }
-/* line 95, ../../../compass/css/lib/_icons.scss */
+/* line 94, ../../../compass/css/lib/_icons.scss */
 #activity-feed-container .img-box.record_create .img-box.email_sent .stacked-icon:before, #activity-feed-container .img-box.email_sent .img-box.record_create .stacked-icon:before, #activity-feed-container .img-box.record_create .img-box.email_sent_quote .stacked-icon:before, #activity-feed-container .img-box.email_sent_quote .img-box.record_create .stacked-icon:before, #activity-feed-container .img-box.record_create .img-box.email_sent_invoice .stacked-icon:before, #activity-feed-container .img-box.email_sent_invoice .img-box.record_create .stacked-icon:before, #activity-feed-container .img-box.record_create .img-box.workflow_start .stacked-icon:before, #activity-feed-container .img-box.workflow_start .img-box.record_create .stacked-icon:before {
   top: 0.5px;
   left: 1px;
 }
-/* line 96, ../../../compass/css/lib/_icons.scss */
+/* line 95, ../../../compass/css/lib/_icons.scss */
 #activity-feed-container .img-box.record_create .img-box.weblead_create .stacked-icon:before, #activity-feed-container .img-box.weblead_create .img-box.record_create .stacked-icon:before {
   top: 1px;
   left: 0px;
 }
-/* line 97, ../../../compass/css/lib/_icons.scss */
+/* line 96, ../../../compass/css/lib/_icons.scss */
 #activity-feed-container .img-box.record_create .img-box.workflow_revert .stacked-icon:before, #activity-feed-container .img-box.workflow_revert .img-box.record_create .stacked-icon:before {
   top: 1px;
 }
-/* line 100, ../../../compass/css/lib/_icons.scss */
+/* line 99, ../../../compass/css/lib/_icons.scss */
 #activity-feed-container .img-box.record_create .stacked-icon {
   display: inline-block;
 }
@@ -1561,7 +1523,7 @@
 #activity-feed-container .img-box.record_create .stacked-icon:before {
   text-decoration: none;
 }
-/* line 105, ../../../compass/css/lib/_icons.scss */
+/* line 104, ../../../compass/css/lib/_icons.scss */
 #activity-feed-container .img-box.record_create .stacked-icon:before {
   position: absolute;
   font-size: 10px;
@@ -1606,19 +1568,23 @@
 #activity-feed-container .img-box.record_create.Reports-create:before {
   text-decoration: none;
 }
-/* line 47, ../../../compass/css/lib/_icons.scss */
+/* line 50, ../../../compass/css/lib/_font-awesome.scss */
+#activity-feed-container .img-box.record_create.Topics-create:before {
+  text-decoration: none;
+}
+/* line 46, ../../../compass/css/lib/_icons.scss */
 #activity-feed-container .img-box.record_create.Quote-create:before {
   text-decoration: none;
 }
-/* line 47, ../../../compass/css/lib/_icons.scss */
+/* line 46, ../../../compass/css/lib/_icons.scss */
 #activity-feed-container .img-box.record_create.Product-create:before {
   text-decoration: none;
 }
-/* line 47, ../../../compass/css/lib/_icons.scss */
+/* line 46, ../../../compass/css/lib/_icons.scss */
 #activity-feed-container .img-box.record_create.Services-create:before {
   text-decoration: none;
 }
-/* line 47, ../../../compass/css/lib/_icons.scss */
+/* line 46, ../../../compass/css/lib/_icons.scss */
 #activity-feed-container .img-box.record_create.Contacts-create:before {
   text-decoration: none;
 }

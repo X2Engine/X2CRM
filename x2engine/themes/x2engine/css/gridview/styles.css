@@ -168,6 +168,9 @@
 /***********************************************************************
 * This section is made to correspond with the theme keys in ThemeGenerator
 ***********************************************************************/
+/***********************************************************************
+* Responsive design
+***********************************************************************/
 /***************************************
 * Mixin for border radius 
 ***************************************/
@@ -181,13 +184,13 @@
 * CSS to extend when something 
 * should look like a link
 ***************************************/
-/* line 87, ../../../../compass/css/lib/_standards.scss */
+/* line 126, ../../../../compass/css/lib/_standards.scss */
 .pseudo-link {
   cursor: pointer;
   color: #004baf;
   transition: color .1s;
 }
-/* line 92, ../../../../compass/css/lib/_standards.scss */
+/* line 131, ../../../../compass/css/lib/_standards.scss */
 .pseudo-link:hover {
   color: #006cfb;
 }
@@ -196,18 +199,15 @@
 * CSS to extend when for elements that 
 * become transparent on mouseover
 ***************************************/
-/* line 110, ../../../../compass/css/lib/_standards.scss */
+/* line 149, ../../../../compass/css/lib/_standards.scss */
 .opacity-hover {
   opacity: 0.3;
 }
-/* line 105, ../../../../compass/css/lib/_standards.scss */
+/* line 144, ../../../../compass/css/lib/_standards.scss */
 .opacity-hover:hover {
   opacity: 1;
 }
 
-/*********************************
-* Box Shadow Prefixer
-********************************/
 /***************************************
 * Apply the standard box shadow currently
 * used on x2-island-layout items
@@ -296,15 +296,19 @@
 }
 
 /* line 41, ../../../../compass/themes/x2engine/css/gridview/styles.scss */
+.grid-view td {
+  height: 24px;
+}
+/* line 44, ../../../../compass/themes/x2engine/css/gridview/styles.scss */
 .grid-view table {
   border: none !important;
 }
-/* line 44, ../../../../compass/themes/x2engine/css/gridview/styles.scss */
+/* line 47, ../../../../compass/themes/x2engine/css/gridview/styles.scss */
 .grid-view th, .grid-view td {
   box-sizing: border-box;
 }
 
-/* line 49, ../../../../compass/themes/x2engine/css/gridview/styles.scss */
+/* line 52, ../../../../compass/themes/x2engine/css/gridview/styles.scss */
 .x2-grid-view-controls-buttons > a {
   height: 24px;
   width: 24px;
@@ -315,21 +319,21 @@
 /**
  * --------------- Column Selector Dropdown ---------------
  */
-/* line 62, ../../../../compass/themes/x2engine/css/gridview/styles.scss */
+/* line 65, ../../../../compass/themes/x2engine/css/gridview/styles.scss */
 ul.column-selector {
   max-height: 300px;
 }
-/* line 63, ../../../../compass/themes/x2engine/css/gridview/styles.scss */
+/* line 66, ../../../../compass/themes/x2engine/css/gridview/styles.scss */
 ul.column-selector.x2-dropdown-list {
   display: none;
-  overflow-y: scroll;
+  overflow-y: auto;
 }
-/* line 67, ../../../../compass/themes/x2engine/css/gridview/styles.scss */
+/* line 70, ../../../../compass/themes/x2engine/css/gridview/styles.scss */
 ul.column-selector.stuck {
   position: absolute !important;
   top: 75px !important;
 }
-/* line 72, ../../../../compass/themes/x2engine/css/gridview/styles.scss */
+/* line 75, ../../../../compass/themes/x2engine/css/gridview/styles.scss */
 ul.column-selector.fixed-header {
   position: fixed;
 }
@@ -337,29 +341,33 @@ ul.column-selector.fixed-header {
 /**
  * ---------------- X2GridView Widget CSS -----------------
  */
-/* line 82, ../../../../compass/themes/x2engine/css/gridview/styles.scss */
+/* line 85, ../../../../compass/themes/x2engine/css/gridview/styles.scss */
 .grid-view .title-bar {
   display: block;
   overflow: hidden;
 }
-/* line 86, ../../../../compass/themes/x2engine/css/gridview/styles.scss */
+/* line 89, ../../../../compass/themes/x2engine/css/gridview/styles.scss */
 .grid-view .summary {
   display: inline-block;
   float: right;
   color: #555;
 }
-/* line 91, ../../../../compass/themes/x2engine/css/gridview/styles.scss */
+/* line 93, ../../../../compass/themes/x2engine/css/gridview/styles.scss */
+.grid-view .summary .form {
+  /* @theme background: highlight1 */
+}
+/* line 97, ../../../../compass/themes/x2engine/css/gridview/styles.scss */
 .grid-view .empty {
   font-style: italic;
 }
-/* line 94, ../../../../compass/themes/x2engine/css/gridview/styles.scss */
+/* line 100, ../../../../compass/themes/x2engine/css/gridview/styles.scss */
 .grid-view table {
   border: 1px solid #aaa;
   margin: 5px 0;
 }
 
 /* .grid-view h3, .grid-view h2 {float:left;margin:0 20px 0 0;} */
-/* line 102, ../../../../compass/themes/x2engine/css/gridview/styles.scss */
+/* line 108, ../../../../compass/themes/x2engine/css/gridview/styles.scss */
 .x2grid-body-container .items {
   border-bottom: 1px solid #aaa;
 }
@@ -368,14 +376,14 @@ ul.column-selector.fixed-header {
 /**
  * ------------------ X2GridView Tables -------------------
  */
-/* line 112, ../../../../compass/themes/x2engine/css/gridview/styles.scss */
+/* line 118, ../../../../compass/themes/x2engine/css/gridview/styles.scss */
 .grid-view table.items {
   table-layout: fixed;
   background: #fff;
   width: 100%;
   clear: both;
 }
-/* line 117, ../../../../compass/themes/x2engine/css/gridview/styles.scss */
+/* line 123, ../../../../compass/themes/x2engine/css/gridview/styles.scss */
 .grid-view table.items td {
   padding: 3px 5px;
   border-right: 1px solid #ccc;
@@ -385,7 +393,7 @@ ul.column-selector.fixed-header {
   white-space: nowrap;
   word-wrap: normal;
 }
-/* line 126, ../../../../compass/themes/x2engine/css/gridview/styles.scss */
+/* line 132, ../../../../compass/themes/x2engine/css/gridview/styles.scss */
 .grid-view table.items th {
   padding: 3px 5px;
   border-right: 1px solid #ccc;
@@ -395,17 +403,17 @@ ul.column-selector.fixed-header {
   white-space: nowrap;
   word-wrap: normal;
 }
-/* line 134, ../../../../compass/themes/x2engine/css/gridview/styles.scss */
+/* line 140, ../../../../compass/themes/x2engine/css/gridview/styles.scss */
 .grid-view table.items th:first-child {
   border-left: none;
   padding-left: 1px;
   text-indent: -1px;
 }
-/* line 140, ../../../../compass/themes/x2engine/css/gridview/styles.scss */
+/* line 146, ../../../../compass/themes/x2engine/css/gridview/styles.scss */
 .grid-view table.items td:last-child, .grid-view table.items th:last-child {
   border-right: none !important;
 }
-/* line 143, ../../../../compass/themes/x2engine/css/gridview/styles.scss */
+/* line 149, ../../../../compass/themes/x2engine/css/gridview/styles.scss */
 .grid-view table.items thead th {
   line-height: 25px;
   padding: 0;
@@ -425,22 +433,22 @@ ul.column-selector.fixed-header {
   background:-ms-linear-gradient(top,     #e0e0e0 0%, #ccc 100%);
   background:linear-gradient(to bottom,   #e0e0e0 0%, #ccc 100%);*/
 }
-/* line 163, ../../../../compass/themes/x2engine/css/gridview/styles.scss */
+/* line 169, ../../../../compass/themes/x2engine/css/gridview/styles.scss */
 .grid-view table.items th a {
   display: block;
   color: #333;
   font-size: 11px;
   text-decoration: none;
 }
-/* line 169, ../../../../compass/themes/x2engine/css/gridview/styles.scss */
+/* line 175, ../../../../compass/themes/x2engine/css/gridview/styles.scss */
 .grid-view table.items th:hover {
   /* background-color:#f8f8f8; */
 }
-/* line 173, ../../../../compass/themes/x2engine/css/gridview/styles.scss */
+/* line 179, ../../../../compass/themes/x2engine/css/gridview/styles.scss */
 .grid-view table.items td a {
   text-decoration: none;
 }
-/* line 175, ../../../../compass/themes/x2engine/css/gridview/styles.scss */
+/* line 181, ../../../../compass/themes/x2engine/css/gridview/styles.scss */
 .grid-view table.items td a:hover {
   text-decoration: underline;
 }
@@ -452,7 +460,7 @@ ul.column-selector.fixed-header {
 /*
  * ------------------- Rounded Borders --------------------
  */
-/* line 191, ../../../../compass/themes/x2engine/css/gridview/styles.scss */
+/* line 197, ../../../../compass/themes/x2engine/css/gridview/styles.scss */
 .gridview.boxed table.items {
   margin-top: 5px;
   border: 1px solid #ccc;
@@ -464,7 +472,7 @@ ul.column-selector.fixed-header {
 }
 
 /* rounded corner on top left TH cells in THEAD */
-/* line 202, ../../../../compass/themes/x2engine/css/gridview/styles.scss */
+/* line 208, ../../../../compass/themes/x2engine/css/gridview/styles.scss */
 .grid-view.boxed table.items th:first-child {
   -webkit-border-radius: 4px 0 0 0;
   -moz-border-radius: 4px 0 0 0;
@@ -472,7 +480,7 @@ ul.column-selector.fixed-header {
   -o-border-radius: 4px 0 0 0;
   border-radius: 4px 0 0 0;
 }
-/* line 205, ../../../../compass/themes/x2engine/css/gridview/styles.scss */
+/* line 211, ../../../../compass/themes/x2engine/css/gridview/styles.scss */
 .grid-view.boxed table.items th:last-child {
   -webkit-border-radius: 0 4px 0 0;
   -moz-border-radius: 0 4px 0 0;
@@ -480,19 +488,19 @@ ul.column-selector.fixed-header {
   -o-border-radius: 0 4px 0 0;
   border-radius: 0 4px 0 0;
 }
-/* line 210, ../../../../compass/themes/x2engine/css/gridview/styles.scss */
+/* line 216, ../../../../compass/themes/x2engine/css/gridview/styles.scss */
 .grid-view.boxed table.items tr th:first-child, .grid-view.boxed table.items tr td:first-child {
   /* border-left:none; */
 }
-/* line 213, ../../../../compass/themes/x2engine/css/gridview/styles.scss */
+/* line 219, ../../../../compass/themes/x2engine/css/gridview/styles.scss */
 .grid-view.boxed table.items tr:first-child th {
   border-top: none;
 }
-/* line 217, ../../../../compass/themes/x2engine/css/gridview/styles.scss */
+/* line 223, ../../../../compass/themes/x2engine/css/gridview/styles.scss */
 .grid-view.boxed table.items tbody tr:last-child td {
   /* border-bottom-width:1px; */
 }
-/* line 219, ../../../../compass/themes/x2engine/css/gridview/styles.scss */
+/* line 225, ../../../../compass/themes/x2engine/css/gridview/styles.scss */
 .grid-view.boxed table.items tbody tr:last-child td:first-child {
   -webkit-border-radius: 0 0 0 4px;
   -moz-border-radius: 0 0 0 4px;
@@ -500,7 +508,7 @@ ul.column-selector.fixed-header {
   -o-border-radius: 0 0 0 4px;
   border-radius: 0 0 0 4px;
 }
-/* line 222, ../../../../compass/themes/x2engine/css/gridview/styles.scss */
+/* line 228, ../../../../compass/themes/x2engine/css/gridview/styles.scss */
 .grid-view.boxed table.items tbody tr:last-child td:last-child {
   -webkit-border-radius: 0 0 4px 0;
   -moz-border-radius: 0 0 4px 0;
@@ -508,23 +516,23 @@ ul.column-selector.fixed-header {
   -o-border-radius: 0 0 4px 0;
   border-radius: 0 0 4px 0;
 }
-/* line 229, ../../../../compass/themes/x2engine/css/gridview/styles.scss */
+/* line 235, ../../../../compass/themes/x2engine/css/gridview/styles.scss */
 .grid-view table.items tr.odd {
   background: #F5F4DE;
   /* #dce7f0; */
   /* #dce7f0; */
   /* background:#f7f6f0; */
 }
-/* line 235, ../../../../compass/themes/x2engine/css/gridview/styles.scss */
+/* line 241, ../../../../compass/themes/x2engine/css/gridview/styles.scss */
 .grid-view table.items tr.unviewed td {
   background: #eef0ff;
   font-weight: bold;
 }
-/* line 239, ../../../../compass/themes/x2engine/css/gridview/styles.scss */
+/* line 245, ../../../../compass/themes/x2engine/css/gridview/styles.scss */
 .grid-view table.items tr.filters {
   background: #fff;
 }
-/* line 241, ../../../../compass/themes/x2engine/css/gridview/styles.scss */
+/* line 247, ../../../../compass/themes/x2engine/css/gridview/styles.scss */
 .grid-view table.items tr.filters td {
   padding: 0;
   border: solid #b3b3b3;
@@ -533,21 +541,25 @@ ul.column-selector.fixed-header {
   border-right-color: #b3b3b3;
   background: #d8d8d8;
 }
-/* line 249, ../../../../compass/themes/x2engine/css/gridview/styles.scss */
+/* line 255, ../../../../compass/themes/x2engine/css/gridview/styles.scss */
 .grid-view table.items tr.filters input, .grid-view table.items tr.filters select {
   width: 100%;
   box-sizing: border-box;
   margin: 0;
-  padding: 2px 4px;
+  padding: 4px 4px 5px 4px;
   border: none;
   border-radius: 0;
 }
-/* line 260, ../../../../compass/themes/x2engine/css/gridview/styles.scss */
+/* line 263, ../../../../compass/themes/x2engine/css/gridview/styles.scss */
+.grid-view table.items tr.filters select {
+  height: 23px;
+}
+/* line 269, ../../../../compass/themes/x2engine/css/gridview/styles.scss */
 .grid-view table.items th.asc, .grid-view table.items th.desc {
   border: 1px solid #1e71e2;
   background: #629ceb;
 }
-/* line 267, ../../../../compass/themes/x2engine/css/gridview/styles.scss */
+/* line 276, ../../../../compass/themes/x2engine/css/gridview/styles.scss */
 .grid-view table.items th.asc a, .grid-view table.items th.desc a {
   color: #fff;
   text-shadow: 0 0 2px rgba(0, 0, 0, 0.25);
@@ -562,13 +574,13 @@ ul.column-selector.fixed-header {
   text-decoration: none;
   margin-left: 10px;
 }
-/* line 286, ../../../../compass/themes/x2engine/css/gridview/styles.scss */
+/* line 295, ../../../../compass/themes/x2engine/css/gridview/styles.scss */
 .grid-view div.x2grid-header-container {
   overflow: hidden;
   position: relative;
   /* border-bottom:1px solid #666; */
 }
-/* line 291, ../../../../compass/themes/x2engine/css/gridview/styles.scss */
+/* line 300, ../../../../compass/themes/x2engine/css/gridview/styles.scss */
 .grid-view div.x2grid-body-container {
   overflow-x: auto;
   overflow-y: hidden;
@@ -576,21 +588,21 @@ ul.column-selector.fixed-header {
   /*  overflow-y:scroll;
       max-height:710px; */
 }
-/* line 299, ../../../../compass/themes/x2engine/css/gridview/styles.scss */
+/* line 308, ../../../../compass/themes/x2engine/css/gridview/styles.scss */
 .grid-view table.items.x2grid-resizable {
   border-collapse: separate;
   margin-top: 0;
   border: none;
   margin-bottom: 0;
 }
-/* line 305, ../../../../compass/themes/x2engine/css/gridview/styles.scss */
+/* line 314, ../../../../compass/themes/x2engine/css/gridview/styles.scss */
 .grid-view .x2grid-body-container table.items.x2grid-resizable {
   border-left: none;
   border-right: none;
   border-top: none;
   border-bottom: 1px solid #D5D5D5;
 }
-/* line 311, ../../../../compass/themes/x2engine/css/gridview/styles.scss */
+/* line 320, ../../../../compass/themes/x2engine/css/gridview/styles.scss */
 .grid-view table.items.x2grid-resizable tr:first-child td {
   border-top: none;
 }
@@ -626,12 +638,12 @@ ul.column-selector.fixed-header {
     border-right:1px solid #d3d3cc/* rgb(196,214,235) * /;
 } */
 /* .grid-view table.items.x2grid-resizable td div {white-space:nowrap;overflow:hidden;} */
-/* line 360, ../../../../compass/themes/x2engine/css/gridview/styles.scss */
+/* line 369, ../../../../compass/themes/x2engine/css/gridview/styles.scss */
 .x2grid-grips {
   height: 0px;
   position: relative;
 }
-/* line 363, ../../../../compass/themes/x2engine/css/gridview/styles.scss */
+/* line 372, ../../../../compass/themes/x2engine/css/gridview/styles.scss */
 .x2grid-grips div {
   position: absolute;
   top: 1px;
@@ -645,7 +657,7 @@ ul.column-selector.fixed-header {
 /**
  * ------------------ x2.gridColDragging ------------------
  */
-/* line 381, ../../../../compass/themes/x2engine/css/gridview/styles.scss */
+/* line 390, ../../../../compass/themes/x2engine/css/gridview/styles.scss */
 .grid-view table.items.x2grid-helper thead th {
   height: 25px;
   border: 1px solid #ccc;
@@ -653,15 +665,15 @@ ul.column-selector.fixed-header {
   opacity: 0.75;
   cursor: move;
 }
-/* line 388, ../../../../compass/themes/x2engine/css/gridview/styles.scss */
+/* line 397, ../../../../compass/themes/x2engine/css/gridview/styles.scss */
 .grid-view table.items.x2grid-helper a {
   cursor: move;
 }
-/* line 391, ../../../../compass/themes/x2engine/css/gridview/styles.scss */
+/* line 400, ../../../../compass/themes/x2engine/css/gridview/styles.scss */
 .grid-view table.items.x2grid-helper td {
   padding: 5px 5px;
 }
-/* line 395, ../../../../compass/themes/x2engine/css/gridview/styles.scss */
+/* line 404, ../../../../compass/themes/x2engine/css/gridview/styles.scss */
 .grid-view table.items td.spacer {
   /* padding:0 !important; */
   border-left: none !important;
@@ -671,7 +683,7 @@ ul.column-selector.fixed-header {
   -webkit-box-shadow: inset -1px 0 0 #999;
   box-shadow: inset -1px 0 0 #999;
 }
-/* line 404, ../../../../compass/themes/x2engine/css/gridview/styles.scss */
+/* line 413, ../../../../compass/themes/x2engine/css/gridview/styles.scss */
 .grid-view table.items th.spacer {
   /* padding:0 !important; */
   border-left: none !important;
@@ -681,27 +693,27 @@ ul.column-selector.fixed-header {
   -webkit-box-shadow: inset -1px 0 0 #999;
   box-shadow: inset -1px 0 0 #999;
 }
-/* line 412, ../../../../compass/themes/x2engine/css/gridview/styles.scss */
+/* line 421, ../../../../compass/themes/x2engine/css/gridview/styles.scss */
 .grid-view table.items th.spacer:first-child {
   padding-left: 0;
 }
-/* line 417, ../../../../compass/themes/x2engine/css/gridview/styles.scss */
+/* line 426, ../../../../compass/themes/x2engine/css/gridview/styles.scss */
 .grid-view .link-column img {
   border: 0;
 }
-/* line 420, ../../../../compass/themes/x2engine/css/gridview/styles.scss */
+/* line 429, ../../../../compass/themes/x2engine/css/gridview/styles.scss */
 .grid-view .button-column {
   text-align: center;
 }
-/* line 421, ../../../../compass/themes/x2engine/css/gridview/styles.scss */
+/* line 430, ../../../../compass/themes/x2engine/css/gridview/styles.scss */
 .grid-view .button-column img {
   border: 0;
 }
-/* line 426, ../../../../compass/themes/x2engine/css/gridview/styles.scss */
+/* line 435, ../../../../compass/themes/x2engine/css/gridview/styles.scss */
 .grid-view .checkbox-column {
   text-align: center;
 }
-/* line 429, ../../../../compass/themes/x2engine/css/gridview/styles.scss */
+/* line 438, ../../../../compass/themes/x2engine/css/gridview/styles.scss */
 .grid-view .pager {
   border-top: 1px solid #aaa;
   padding: 2px;
@@ -728,7 +740,7 @@ ul.column-selector.fixed-header {
 /**
  * ------------------------- Misc -------------------------
  */
-/* line 459, ../../../../compass/themes/x2engine/css/gridview/styles.scss */
+/* line 468, ../../../../compass/themes/x2engine/css/gridview/styles.scss */
 div.scrollbar-width-test {
   height: 100px;
   width: 100px;
@@ -740,7 +752,7 @@ div.scrollbar-width-test {
   /* visibility:hidden; */
 }
 
-/* line 470, ../../../../compass/themes/x2engine/css/gridview/styles.scss */
+/* line 479, ../../../../compass/themes/x2engine/css/gridview/styles.scss */
 .grid-view > .pager .yiiPager a {
   padding: 2px 8px 2px 8px;
 }
@@ -749,7 +761,7 @@ div.scrollbar-width-test {
     ul.yiiPager .selected a {
     }
 }*/
-/* line 478, ../../../../compass/themes/x2engine/css/gridview/styles.scss */
+/* line 487, ../../../../compass/themes/x2engine/css/gridview/styles.scss */
 .yiiPager li a {
   background: #fff;
 }
@@ -757,7 +769,7 @@ div.scrollbar-width-test {
 /*
 loading anim
 */
-/* line 486, ../../../../compass/themes/x2engine/css/gridview/styles.scss */
+/* line 495, ../../../../compass/themes/x2engine/css/gridview/styles.scss */
 .x2-gridview-updating-anim {
   margin: auto;
   top: 0;
@@ -769,7 +781,7 @@ loading anim
   display: none;
 }
 
-/* line 497, ../../../../compass/themes/x2engine/css/gridview/styles.scss */
+/* line 506, ../../../../compass/themes/x2engine/css/gridview/styles.scss */
 .grid-view-loading .x2-gridview-updating-anim {
   display: block !important;
 }
@@ -777,7 +789,7 @@ loading anim
 /*
 activity indicator
 */
-/* line 506, ../../../../compass/themes/x2engine/css/gridview/styles.scss */
+/* line 515, ../../../../compass/themes/x2engine/css/gridview/styles.scss */
 .grid-view .active-indicator, .grid-view .inactive-indicator {
   height: 12px;
   display: block;
@@ -786,52 +798,54 @@ activity indicator
   margin: auto;
   border-radius: 9px;
 }
-/* line 514, ../../../../compass/themes/x2engine/css/gridview/styles.scss */
+/* line 523, ../../../../compass/themes/x2engine/css/gridview/styles.scss */
 .grid-view .active-indicator {
   background: #0bc70b;
   border: 1px solid #a2a2a2;
 }
-/* line 518, ../../../../compass/themes/x2engine/css/gridview/styles.scss */
+/* line 527, ../../../../compass/themes/x2engine/css/gridview/styles.scss */
 .grid-view .inactive-indicator {
   border: 1px solid #dbdbdb;
   background: #e6e6e6;
 }
-/* line 522, ../../../../compass/themes/x2engine/css/gridview/styles.scss */
+/* line 531, ../../../../compass/themes/x2engine/css/gridview/styles.scss */
 .grid-view .x2grid-body-container.x2grid-no-pager .x2grid-resizable {
   border-bottom: none !important;
   border-radius: 0 0 3px 3px !important;
 }
-/* line 526, ../../../../compass/themes/x2engine/css/gridview/styles.scss */
+/* line 535, ../../../../compass/themes/x2engine/css/gridview/styles.scss */
 .grid-view table.items tr.filters select {
   padding: 0;
 }
-/* line 530, ../../../../compass/themes/x2engine/css/gridview/styles.scss */
+/* line 539, ../../../../compass/themes/x2engine/css/gridview/styles.scss */
 .grid-view div.page-title .x2-grid-view-controls-buttons .x2-button, .grid-view div.grid-top-bar .x2-button-group .x2-button, .grid-view div.page-title .x2-button-group .x2-button {
   margin: -3px 0px 0 0;
 }
-/* line 535, ../../../../compass/themes/x2engine/css/gridview/styles.scss */
+/* line 544, ../../../../compass/themes/x2engine/css/gridview/styles.scss */
 .grid-view div.grid-top-bar > a.x2-button, .grid-view div.page-title > a.x2-button {
   margin: -3px 5px 0 0;
 }
-/* line 539, ../../../../compass/themes/x2engine/css/gridview/styles.scss */
+/* line 548, ../../../../compass/themes/x2engine/css/gridview/styles.scss */
 .grid-view .x2-button {
   padding: 0 5px;
 }
-/* line 543, ../../../../compass/themes/x2engine/css/gridview/styles.scss */
+/* line 552, ../../../../compass/themes/x2engine/css/gridview/styles.scss */
 .grid-view div.grid-top-bar .x2-grid-view-controls-buttons, .grid-view div.page-title .x2-grid-view-controls-buttons, .grid-view div.grid-top-bar .x2-button-group, .grid-view div.page-title .x2-button-group {
   display: inline-block;
   margin: 0 5px 0 0;
 }
-/* line 549, ../../../../compass/themes/x2engine/css/gridview/styles.scss */
+/* line 558, ../../../../compass/themes/x2engine/css/gridview/styles.scss */
 .grid-view .mass-action-more-button {
   margin: -3px 5px 0 0;
   vertical-align: middle;
+  position: relative;
+  top: -1px;
 }
-/* line 553, ../../../../compass/themes/x2engine/css/gridview/styles.scss */
+/* line 564, ../../../../compass/themes/x2engine/css/gridview/styles.scss */
 .grid-view ::-webkit-scrollbar-track:horizontal {
   border-top: none;
 }
-/* line 556, ../../../../compass/themes/x2engine/css/gridview/styles.scss */
+/* line 567, ../../../../compass/themes/x2engine/css/gridview/styles.scss */
 .grid-view .x2-bar {
   width: 23px;
   background-color: #e9e9e9;
@@ -846,25 +860,25 @@ Remove extra border when pager isn't shown
 /***********************************************************************
 * multiselect 
 ***********************************************************************/
-/* line 574, ../../../../compass/themes/x2engine/css/gridview/styles.scss */
+/* line 585, ../../../../compass/themes/x2engine/css/gridview/styles.scss */
 .x2-datacolumn-multiselect + button {
   width: 100% !important;
   border: none !important;
   padding: 0 !important;
 }
 
-/* line 581, ../../../../compass/themes/x2engine/css/gridview/styles.scss */
+/* line 592, ../../../../compass/themes/x2engine/css/gridview/styles.scss */
 .x2-gridview .x2grid-header-container .items {
   margin-top: -1px;
   margin-bottom: 0;
   border-bottom: none;
 }
-/* line 587, ../../../../compass/themes/x2engine/css/gridview/styles.scss */
+/* line 598, ../../../../compass/themes/x2engine/css/gridview/styles.scss */
 .x2-gridview .x2grid-body-container .items {
   margin: 0;
   margin-top: -1px;
 }
-/* line 593, ../../../../compass/themes/x2engine/css/gridview/styles.scss */
+/* line 604, ../../../../compass/themes/x2engine/css/gridview/styles.scss */
 .x2-gridview table.items > tbody > tr > td.button-column.hide-edit-delete-buttons .update, .x2-gridview table.items > tbody > tr > td.button-column.hide-edit-delete-buttons .delete {
   visibility: hidden;
 }
@@ -872,12 +886,12 @@ Remove extra border when pager isn't shown
 /***********************************************************************
 * email client icons  
 ***********************************************************************/
-/* line 603, ../../../../compass/themes/x2engine/css/gridview/styles.scss */
+/* line 614, ../../../../compass/themes/x2engine/css/gridview/styles.scss */
 #email-list .mailbox-controls .mailbox-back-button {
   display: inline-block;
   margin-top: 6px;
 }
-/* line 606, ../../../../compass/themes/x2engine/css/gridview/styles.scss */
+/* line 617, ../../../../compass/themes/x2engine/css/gridview/styles.scss */
 #email-list .mailbox-controls .mailbox-back-button > span {
   background: url("../../images/icons/back.png");
   height: 24px;
@@ -887,7 +901,7 @@ Remove extra border when pager isn't shown
   background-repeat: no-repeat;
 }
 
-/* line 617, ../../../../compass/themes/x2engine/css/gridview/styles.scss */
+/* line 628, ../../../../compass/themes/x2engine/css/gridview/styles.scss */
 .sortable-widget-container .x2grid-header-container {
-  border-top: 1px solid #cfcfcf;
+  border-top: 1px solid #c5c5c5;
 }

@@ -87,17 +87,17 @@ class SiteController extends x2base {
                     'fullscreen', 'widgetState', 'widgetOrder', 'saveGridviewSettings',
                     'saveFormSettings', 'saveWidgetHeight', 'inlineEmail', 'tmpUpload', 'upload',
                     'uploadProfilePicture', 'index', 'contact', 'viewNotifications', 'inlineEmail',
-                    'toggleShowTags', 'appendTag', 'removeTag', 'addRelationship', 'printRecord',
+                    'toggleShowTags', 'appendTag', 'removeTag', 'printRecord',
                     'createRecords', 'toggleVisibility', 'page', 'showWidget', 'hideWidget',
                     'reorderWidgets', 'minimizeWidget', 'publishPost', 'getEvents', 'loadComments',
                     'loadPosts', 'addComment', 'flagPost', 'broadcastEvent', 'minimizePosts',
                     'bugReport', 'deleteRelationship', 'minMaxLeftWidget', 'toggleFeedControls',
-                    'toggleFeedFilters', 'getTip', 'share', 'activityFeedOrder',
+                    'toggleFeedFilters', 'share', 'activityFeedOrder',
                     'activityFeedWidgetBgColor', 'likePost', 'loadLikeHistory', 'dynamicDropdown',
                     'stickyPost', 'getEventsBetween', 'mediaWidgetToggle', 'createChartSetting',
                     'deleteChartSetting', 'GetActionsBetweenAction', 'DeleteURL', 'widgetSetting',
                     'removeTmpUpload', 'duplicateCheck', 'resolveDuplicates', 'getSkypeLink',
-                    'mergeRecords', 'ajaxSave'),
+                    'mergeRecords', 'ajaxSave', 'layoutPreview','tourSeen'),
                 'users' => array('@'),
             ),
             array('allow',
@@ -248,15 +248,6 @@ class SiteController extends x2base {
             } else
                 return '#3366BB'; // Blue link color
         }
-    }
-
-    /**
-     * Gets a new tip for the "helpful tips" widget
-     */
-    public function actionGetTip() {
-        $tipWidget = new HelpfulTips;
-        header('Content-type: application/json');
-        echo json_encode($tipWidget->getNewTip());
     }
 
     public function actionDynamicDropdown($val, $dropdownId, $field = false, $module = null) {
@@ -727,7 +718,7 @@ class SiteController extends x2base {
         if ($note->save()) {
             
         } else {
-            unlink('uploads/' . $name);
+            unlink('uploads/protected/' . $name);
         }
         if ($model->associationType == 'product')
             $this->redirect(array('/products/products/view', 'id' => $model->associationId));
@@ -754,18 +745,38 @@ class SiteController extends x2base {
         if ($event->save()) {
             //$this->redirect('profile');
         } else {
-            unlink('uploads/' . $name);
+            unlink('uploads/protected/' . $name);
         }
 
-        if (AuxLib::isMobile()) {
 
-            $this->redirect(array('/mobile/site/activity'));
+        if (isset($_POST['profileId'])) {
+            $this->redirect(array('/profile/view', 'id' => $_POST['profileId']));
         } else {
-            if (isset($_POST['profileId'])) {
-                $this->redirect(array('/profile/view', 'id' => $_POST['profileId']));
-            } else {
-                $this->redirect(array('/profile/view', 'id' => Yii::app()->user->getId()));
+            $this->redirect(array('/profile/view', 'id' => Yii::app()->user->getId()));
+        }
+
+    }
+    
+    private function handleTopicReplyUpload($model, $name){
+        $topicReply = new TopicReplies;
+
+        if (isset ($_POST['TopicReplies'])) {
+            $topicReply->setAttributes ($_POST['TopicReplies']);
+            if($topicReply->save()){
+                $model->associationId = $topicReply->id;
+                $model->update(array('associationId'));
+                echo $topicReply->id;
+            }else{
+                file_exists ('uploads/protected/' . $name) && unlink('uploads/protected/' . $name);
+                echo CJSON::encode (array (
+                    'message' => $topicReply->getAllErrorMessages (),
+                ));
             }
+        }else{
+            file_exists ('uploads/protected/' . $name) && unlink('uploads/protected/' . $name);
+            echo CJSON::encode (array (
+                'message' => Yii::t('app', 'Reply '),
+            ));
         }
     }
 
@@ -780,10 +791,10 @@ class SiteController extends x2base {
                 if ($tempFile) {
                     $folder = $tempFile->folder;
                     $name = $tempFile->name;
-                    if (file_exists('uploads/media/temp/' . $folder . '/' . $name))
-                        unlink('uploads/media/temp/' . $folder . '/' . $name); // delete file
-                    if (file_exists('uploads/media/temp/' . $folder))
-                        rmdir('uploads/media/temp/' . $folder); // delete folder
+                    if (file_exists('uploads/protected/media/temp/' . $folder . '/' . $name))
+                        unlink('uploads/protected/media/temp/' . $folder . '/' . $name); // delete file
+                    if (file_exists('uploads/protected/media/temp/' . $folder))
+                        rmdir('uploads/protected/media/temp/' . $folder); // delete folder
                     $tempFile->delete(); // delete database entry tracking temp file
                 }
             }
@@ -794,150 +805,53 @@ class SiteController extends x2base {
      * Upload a file.
      */
     public function actionUpload() {
-        if (isset($_FILES['upload'])) {
-            if (isset($_POST['drive']) && $_POST['drive']) { // google drive
-                $auth = new GoogleAuthenticator();
-                if ($auth->getAccessToken()) {
-                    $service = $auth->getDriveService();
-                }
-                $createdFile = null;
-                if (isset($service, $_SESSION['access_token'], $_FILES['upload'])) {
-                    try {
-                        $file = new Google_DriveFile();
-                        $file->setTitle($_FILES['upload']['name']);
-                        $file->setDescription('Uploaded by X2Engine');
-                        $file->setMimeType($_FILES['upload']['type']);
+        if (!isset($_FILES['upload'])) {
+            throw new CHttpException('400', 'Invalid request.');
+        }
 
-                        if (empty($_FILES['upload']['tmp_name'])) {
-                            $err = false;
-                            switch ($_FILES['newfile']['error']) {
-                                case UPLOAD_ERR_INI_SIZE:
-                                case UPLOAD_ERR_FORM_SIZE:
-                                    $err .= 'File size exceeds limit of ' . get_max_upload() . ' bytes.';
-                                    break;
-                                case UPLOAD_ERR_PARTIAL:
-                                    $err .= 'File upload was not completed.';
-                                    break;
-                                case UPLOAD_ERR_NO_FILE:
-                                    $err .= 'Zero-length file uploaded.';
-                                    break;
-                                default:
-                                    $err .= 'Internal error ' . $_FILES['newfile']['error'];
-                                    break;
-                            }
-                            if ((bool) $message) {
-                                throw new CException($message);
-                            }
+        if (isset($_POST['drive']) && $_POST['drive']) { // google drive
+            $auth = new GoogleAuthenticator();
+            if ($auth->getAccessToken()) {
+                $service = $auth->getDriveService();
+            }
+            $createdFile = null;
+            if (isset($service, $_SESSION['access_token'], $_FILES['upload'])) {
+                try {
+                    $file = new Google_DriveFile();
+                    $file->setTitle($_FILES['upload']['name']);
+                    $file->setDescription('Uploaded by X2Engine');
+                    $file->setMimeType($_FILES['upload']['type']);
+
+                    if (empty($_FILES['upload']['tmp_name'])) {
+                        $err = false;
+                        switch ($_FILES['newfile']['error']) {
+                            case UPLOAD_ERR_INI_SIZE:
+                            case UPLOAD_ERR_FORM_SIZE:
+                                $err .= 'File size exceeds limit of ' . get_max_upload() . ' bytes.';
+                                break;
+                            case UPLOAD_ERR_PARTIAL:
+                                $err .= 'File upload was not completed.';
+                                break;
+                            case UPLOAD_ERR_NO_FILE:
+                                $err .= 'Zero-length file uploaded.';
+                                break;
+                            default:
+                                $err .= 'Internal error ' . $_FILES['newfile']['error'];
+                                break;
                         }
-                        $data = file_get_contents($_FILES['upload']['tmp_name']);
-                        $createdFile = $service->files->insert($file, array(
-                            'data' => $data,
-                            'mimeType' => $_FILES['upload']['type'],
-                        ));
-                        if (is_array($createdFile)) {
-                            $model = new Media;
-                            $model->fileName = $createdFile['id'];
-                            $model->name = $createdFile['title'];
-                            if (isset($_POST['associationId']))
-                                $model->associationId = $_POST['associationId'];
-                            if (isset($_POST['associationType']))
-                                $model->associationType = $_POST['associationType'];
-                            if (isset($_POST['private']))
-                                $model->private = $_POST['private'];
-                            $model->uploadedBy = Yii::app()->user->getName();
-                            $model->mimetype = $createdFile['mimeType'];
-                            $model->filesize = $createdFile['fileSize'];
-                            $model->drive = 1;
-                            $model->save();
-                            if ($model->associationType == 'feed') {
-                                $event = new Events;
-                                $event->user = Yii::app()->user->getName();
-                                if (isset($_POST['attachmentText']) && !empty($_POST['attachmentText'])) {
-                                    $event->text = $_POST['attachmentText'];
-                                } else {
-                                    $event->text = Yii::t('app', 'Attached file: ');
-                                }
-                                $event->type = 'media';
-                                $event->timestamp = time();
-                                $event->lastUpdated = time();
-                                $event->associationId = $model->id;
-                                $event->associationType = 'Media';
-                                $event->save();
-                                $this->redirect(array('/profile/view', 'id' => Yii::app()->user->getId()));
-                            } elseif ($model->associationType == 'docs') {
-                                $this->redirect(array('/docs/docs/index'));
-                            } elseif (!empty($model->associationType) && !empty($model->associationId)) {
-                                $note = new Actions;
-                                $note->createDate = time();
-                                $note->dueDate = time();
-                                $note->completeDate = time();
-                                $note->complete = 'Yes';
-                                $note->visibility = '1';
-                                $note->completedBy = Yii::app()->user->getName();
-                                if ($model->private) {
-                                    $note->assignedTo = Yii::app()->user->getName();
-                                    $note->visibility = '0';
-                                } else {
-                                    $note->assignedTo = 'Anyone';
-                                }
-                                $note->type = 'attachment';
-                                $note->associationId = $_POST['associationId'];
-                                $note->associationType = $_POST['associationType'];
-
-                                $association = $this->getAssociation($note->associationType, $note->associationId);
-                                if ($association != null)
-                                    $note->associationName = $association->name;
-
-                                $note->actionDescription = $model->fileName . ':' . $model->id;
-                                if ($note->save()) {
-                                    $this->redirect(array($model->associationType . '/' . $model->associationId));
-                                }
-                            } else {
-                                $this->redirect('/media/media/view', array('id' => $model->id));
-                            }
-                        } else {
-                            throw new CHttpException('400', 'Invalid request.');
+                        if ((bool) $message) {
+                            throw new CException($message);
                         }
-                    } catch (Google_AuthException $e) {
-                        $auth->flushCredentials();
-                        $auth->setErrors($e->getMessage());
-                        $service = null;
-                        $createdFile = null;
                     }
-                } else {
-                    if (isset($_SERVER['HTTP_REFERER'])) {
-                        $this->redirect($_SERVER['HTTP_REFERER']);
-                    } else {
-                        throw new CHttpException('400', 'Invalid request');
-                    }
-                }
-            } else { // non-google drive upload
-                $model = new Media;
-                $temp = CUploadedFile::getInstanceByName('upload'); // file uploaded through form
-                $tempName = $temp->getTempName();
-                if (isset($temp) && !empty($tempName)) {
-                    $name = $temp->getName();
-                    $name = str_replace(' ', '_', $name);
-                    $check = Media::model()->findAllByAttributes(array('fileName' => $name));
-
-                    // rename file if there name conflicts by suffixing "(n)"
-                    if (count($check) != 0) {
-                        $count = 1;
-                        $newName = $name;
-                        $arr = explode('.', $name);
-                        $name = $arr[0];
-                        while (count($check) != 0) {
-                            $newName = $name . '(' . $count . ').' . $temp->getExtensionName();
-                            $check = Media::model()->findAllByAttributes(array('fileName' => $newName));
-                            $count++;
-                        }
-                        $name = $newName;
-                    }
-
-                    $username = Yii::app()->user->name;
-
-                    // copy file to user's media uploads directory
-                    if (FileUtil::ccopy($tempName, "uploads/media/$username/$name")) {
+                    $data = file_get_contents($_FILES['upload']['tmp_name']);
+                    $createdFile = $service->files->insert($file, array(
+                        'data' => $data,
+                        'mimeType' => $_FILES['upload']['type'],
+                    ));
+                    if (is_array($createdFile)) {
+                        $model = new Media;
+                        $model->fileName = $createdFile['id'];
+                        $model->name = $createdFile['title'];
                         if (isset($_POST['associationId']))
                             $model->associationId = $_POST['associationId'];
                         if (isset($_POST['associationType']))
@@ -945,62 +859,181 @@ class SiteController extends x2base {
                         if (isset($_POST['private']))
                             $model->private = $_POST['private'];
                         $model->uploadedBy = Yii::app()->user->getName();
-                        $model->createDate = time();
-                        $model->lastUpdated = time();
-                        $model->fileName = $name;
+                        $model->mimetype = $createdFile['mimeType'];
+                        $model->filesize = $createdFile['fileSize'];
+                        $model->drive = 1;
+                        $model->save();
+                        if ($model->associationType == 'feed') {
+                            $event = new Events;
+                            $event->user = Yii::app()->user->getName();
+                            if (isset($_POST['attachmentText']) && !empty($_POST['attachmentText'])) {
+                                $event->text = $_POST['attachmentText'];
+                            } else {
+                                $event->text = Yii::t('app', 'Attached file: ');
+                            }
+                            $event->type = 'media';
+                            $event->timestamp = time();
+                            $event->lastUpdated = time();
+                            $event->associationId = $model->id;
+                            $event->associationType = 'Media';
+                            $event->save();
+                            if (Auxlib::isAjax()) return print("success");
+                            $this->redirect(array('/profile/view', 'id' => Yii::app()->user->getId()));
+                        } elseif ($model->associationType == 'docs') {
+                            if (Auxlib::isAjax()) return print("success");
+                            $this->redirect(array('/docs/docs/index'));
+                        } elseif (!empty($model->associationType) && !empty($model->associationId)) {
+                            $note = new Actions;
+                            $note->createDate = time();
+                            $note->dueDate = time();
+                            $note->completeDate = time();
+                            $note->complete = 'Yes';
+                            $note->visibility = '1';
+                            $note->completedBy = Yii::app()->user->getName();
+                            if ($model->private) {
+                                $note->assignedTo = Yii::app()->user->getName();
+                                $note->visibility = '0';
+                            } else {
+                                $note->assignedTo = 'Anyone';
+                            }
+                            $note->type = 'attachment';
+                            $note->associationId = $_POST['associationId'];
+                            $note->associationType = $_POST['associationType'];
 
-                        if (!$model->save()) {
-                            $errors = $model->getErrors ();
-                            $error = ArrayUtil::pop (ArrayUtil::pop ($errors));
-                            Yii::app()->user->setFlash(
-                                'top-error', Yii::t('app', 'Attachment failed. '.$error));
-                            $this->redirect(
-                                array(
-                                    $model->associationType . '/' . $model->associationType . 
-                                        '/view', 
-                                    'id' => $model->associationId
-                                ));  
-                            Yii::app()->end ();
-                        }    
+                            $association = $this->getAssociation($note->associationType, $note->associationId);
+                            if ($association != null)
+                                $note->associationName = $association->name;
 
-                        // handle different upload types
-                        switch ($model->associationType) {
-                            case 'feed':
-                                $this->handleFeedTypeUpload($model, $name);
-                                break;
-                            case 'docs':
-                                $this->redirect(array('/docs/docs/index'));
-                                break;
-                            case 'loginSound':
-                            case 'notificationSound':
-                                $this->redirect(
-                                        array('/profile/settings', 'id' => Yii::app()->user->getId()));
-                                break;
-                            case 'bg':
-                            case 'bg-private':
-                                $this->redirect(
-                                        array(
-                                            '/profile/settings',
-                                            'id' => Yii::app()->user->getId(),
-                                            'bgId' => $model->id
-                                        )
-                                );
-                                break;
-                            default:
-                                $this->handleDefaultUpload($model, $name);
-                                break;
+                            $note->actionDescription = $model->fileName . ':' . $model->id;
+                            if ($note->save()) {
+                                if (Auxlib::isAjax()) return print("success");
+                                $this->redirect(array($model->associationType . '/' . $model->associationId));
+                            }
+                        } else {
+                            if (Auxlib::isAjax()) return print("success");
+                            $this->redirect('/media/media/view', array('id' => $model->id));
                         }
-                    }
-                } else {
-                    if (isset($_SERVER['HTTP_REFERER'])) {
-                        $this->redirect($_SERVER['HTTP_REFERER']);
                     } else {
-                        throw new CHttpException('400', 'Invalid request');
+                        throw new CHttpException('400', 'Invalid request.');
                     }
+                } catch (Google_AuthException $e) {
+                    $auth->flushCredentials();
+                    $auth->setErrors($e->getMessage());
+                    $service = null;
+                    $createdFile = null;
+                }
+            } else {
+                if (isset($_SERVER['HTTP_REFERER'])) {
+                    if (Auxlib::isAjax()) return print("success");
+                    $this->redirect($_SERVER['HTTP_REFERER']);
+                } else {
+                    throw new CHttpException('400', 'Invalid request');
                 }
             }
-        } else {
-            throw new CHttpException('400', 'Invalid request.');
+        } else { // non-google drive upload
+            $model = new Media;
+            $temp = CUploadedFile::getInstanceByName('upload'); // file uploaded through form
+            if ($temp && ($tempName = $temp->getTempName()) && !empty($tempName)) {
+                $name = $temp->getName();
+                $name = str_replace(' ', '_', $name);
+                $check = Media::model()->findAllByAttributes(array('fileName' => $name));
+
+                // rename file if there name conflicts by suffixing "(n)"
+                if (count($check) != 0) {
+                    $count = 1;
+                    $newName = $name;
+                    $arr = explode('.', $name);
+                    $name = $arr[0];
+                    while (count($check) != 0) {
+                        $newName = $name . '(' . $count . ').' . $temp->getExtensionName();
+                        $check = Media::model()->findAllByAttributes(array('fileName' => $newName));
+                        $count++;
+                    }
+                    $name = $newName;
+                }
+
+                $username = Yii::app()->user->name;
+                // copy file to user's media uploads directory
+                if (FileUtil::ccopy($tempName, "uploads/protected/media/$username/$name")) {
+                    if (isset($_POST['associationId']))
+                        $model->associationId = $_POST['associationId'];
+                    if (isset($_POST['associationType']))
+                        $model->associationType = $_POST['associationType'];
+                    if (isset($_POST['private']))
+                        $model->private = true;
+                    $model->uploadedBy = Yii::app()->user->getName();
+                    $model->createDate = time();
+                    $model->lastUpdated = time();
+                    $model->fileName = $name;
+                    $model->mimetype = $temp->type;
+
+                    if (!$model->save()) {
+                        $errors = $model->getErrors ();
+                        $error = ArrayUtil::pop (ArrayUtil::pop ($errors));
+                        Yii::app()->user->setFlash(
+                            'top-error', Yii::t('app', 'Attachment failed. '.$error));
+                        if (Auxlib::isAjax()) return print("success");
+                        $this->redirect(
+                            array(
+                                $model->associationType . '/' . $model->associationType . 
+                                    '/view', 
+                                'id' => $model->associationId
+                            ));  
+                        Yii::app()->end ();
+                    } else {   
+                        $relatedModel = X2Model::getModelOfTypeWithId($model->associationType, $model->associationId);
+                        if($relatedModel && $relatedModel->supportsRelationships){
+                            $rel = new Relationships;
+                            $rel->setFirstModel($model);
+                            $rel->setSecondModel($relatedModel);
+                            $rel->save();
+                        }
+                    }
+
+                    // handle different upload types
+                    switch ($model->associationType) {
+                        case 'feed':
+                            $this->handleFeedTypeUpload($model, $name);
+                            break;
+                        case 'docs':
+                            if (Auxlib::isAjax()) return print("success");
+                            $this->redirect(array('/docs/docs/index'));
+                            break;
+                        case 'loginSound':
+                        case 'notificationSound':
+                            if (Auxlib::isAjax()) return print("success");
+                            $this->redirect(
+                                    array('/profile/settings', 'id' => Yii::app()->user->getId()));
+                            break;
+                        case 'bg':
+                        case 'bg-private':
+                            $this->redirect(
+                                array(
+                                    '/profile/settings',
+                                    'bgId' => $model->id
+                                )
+                            );
+                            break;
+                        case 'none':
+                            if (Auxlib::isAjax()) return print("success");
+                            break;
+                        case 'topicReply':
+                            $this->handleTopicReplyUpload($model, $name);
+                            break;
+                        default:
+                            $this->handleDefaultUpload($model, $name);
+                            break;
+                    }
+                }
+            } else {
+                if (isset($_SERVER['HTTP_REFERER'])) {
+                    if (Auxlib::isAjax()) return print("success");
+                    $this->redirect($_SERVER['HTTP_REFERER']);
+                } else {
+                    throw new CHttpException('400', 'Invalid request');
+                }
+            }
+            if (isset ($_GET['redirect'])) $this->redirect ($_SERVER['HTTP_REFERER']);
         }
     }
 
@@ -1031,7 +1064,7 @@ class SiteController extends x2base {
             $model->fileName = $name;
 
             // download and save picture
-            $img = FileUtil::ccopy($photourl, "uploads/$name");
+            $img = FileUtil::ccopy($photourl, "uploads/protected/$name");
             $model->save();
 
             // put picture into new action
@@ -1055,7 +1088,7 @@ class SiteController extends x2base {
             if ($note->save()) {
                 
             } else {
-                unlink('uploads/' . $name);
+                unlink('uploads/protected/' . $name);
             }
             $this->redirect(array($model->associationType . '/' . $model->associationId));
         }
@@ -1396,14 +1429,29 @@ class SiteController extends x2base {
      * Displays the login page
      */
     public function actionLogin() {
+        $model = new LoginForm;
+        $model->useCaptcha = false;
+
+        $profile = null;
+        if(isset($_COOKIE['LoginForm'])) {
+            $model->setAttributes($_COOKIE['LoginForm']);
+            if (is_array ($_COOKIE['LoginForm']) &&
+                in_array ('username', array_keys ($_COOKIE['LoginForm']))) {
+
+                $username = $_COOKIE['LoginForm']['username'];
+                $profile = Profile::model ()->findByAttributes (array (
+                    'username' => $username
+                ));
+                if ($profile) 
+                    Yii::app()->params->profile = $profile;
+            }
+        }
+
         $this->layout = '//layouts/login';
         if (Yii::app()->user->isInitialized && !Yii::app()->user->isGuest) {
             $this->redirect(Yii::app()->homeUrl);
             return;
         }
-
-        $model = new LoginForm;
-        $model->useCaptcha = false;
 
 
         if (isset($_POST['LoginForm'])) {
@@ -1412,7 +1460,13 @@ class SiteController extends x2base {
 
         header('REQUIRES_AUTH: 1'); // tell windows making AJAX requests to redirect
 
-        $this->render('login', array('model' => $model)); // display the login form
+        $this->render(
+            'login', 
+            array(
+                'model' => $model,
+                'profile' => $profile,
+            )
+        ); // display the login form
     }
 
     /**
@@ -1626,81 +1680,9 @@ class SiteController extends x2base {
     }
 
     /**
-     * Add a record to record relationship
-     *
-     * A record can be a contact, opportunity, or account. This function is
-     * called via ajax from the Relationships Widget.
-     *
+     * Display a print-friendly version of the x2layout view associated with the specified
+     * model class and id.
      */
-    public function actionAddRelationship() {
-
-        //check if relationship already exits
-        if (isset($_POST['ModelName']) && isset($_POST['ModelId']) &&
-                isset($_POST['RelationshipModelName']) && isset($_POST['RelationshipModelId'])) {
-
-
-            $modelName = $_POST['ModelName'];
-            $modelId = $_POST['ModelId'];
-            $relationshipModelName = $_POST['RelationshipModelName'];
-            $relationshipModelId = $_POST['RelationshipModelId'];
-
-            $relationship = Relationships::model()->findByAttributes(array(
-                'firstType' => $_POST['ModelName'],
-                'firstId' => $_POST['ModelId'],
-                'secondType' => $_POST['RelationshipModelName'],
-                'secondId' => $_POST['RelationshipModelId'],
-            ));
-            if ($relationship) {
-                echo "duplicate";
-                Yii::app()->end();
-            }
-            $relationship = Relationships::model()->findByAttributes(array(
-                'firstType' => $_POST['RelationshipModelName'],
-                'firstId' => $_POST['RelationshipModelId'],
-                'secondType' => $_POST['ModelName'],
-                'secondId' => $_POST['ModelId'],
-            ));
-            if ($relationship) {
-                echo "duplicate";
-                Yii::app()->end();
-            }
-
-
-            if (isset($_POST['mutual']) && $_POST['mutual'] == 'true')
-                $_POST['secondLabel'] = $_POST['firstLabel'];
-
-
-            $relationship = new Relationships;
-            $relationship->firstType = $_POST['ModelName'];
-            $relationship->firstId = $_POST['ModelId'];
-            $relationship->firstLabel = $_POST['firstLabel'];
-            $relationship->secondType = $_POST['RelationshipModelName'];
-            $relationship->secondId = $_POST['RelationshipModelId'];
-            $relationship->secondLabel = $_POST['secondLabel'];
-
-            $relationship->save();
-//            if($relationshipModelName == "Contacts"){
-//                $results = Yii::app()->db->createCommand("SELECT * from x2_relationships WHERE (firstType='Contacts' AND firstId=$relationshipModelId AND secondType='Accounts') OR (secondType='Contacts' AND secondId=$relationshipModelId AND firstType='Accounts')")->queryAll();
-//                if(sizeof($results) == 1){
-//                    $model = Contacts::model()->findByPk($relationshipModelId);
-//                    if($model){
-//                        $model->company = $modelId;
-//                        $model->update();
-//                    }
-//                }
-//            }
-            echo "success";
-            Yii::app()->end();
-        } else {
-            throw new CHttpException(400, Yii::t('app', 'Bad Request'));
-        }
-    }
-
-    /*
-      Display a print-friendly version of the x2layout view associated with the specified
-      model class and id.
-     */
-
     public function actionPrintRecord($modelClass, $id, $pageTitle = '') {
         $this->layout = '//layouts/print';
 
@@ -2223,11 +2205,11 @@ class SiteController extends x2base {
             // original model as having been checked for duplicates
             if ($action === 'keepThis' && isset($_POST['data'])) {
                 $attributes = json_decode($_POST['data'], true);
-                if ($ref === 'view') {
+                if ($ref !== 'create') {
                     $model = $modelName::model()->findByPk($attributes['id']);
                     $model->duplicateChecked();
                     $id = $model->id;
-                } elseif ($ref === 'create') {
+                } else {
                     $model = new $modelName;
                     // If we want to keep a newly created record, we have to finish creation
                     foreach ($attributes as $key => $value) {
@@ -2246,7 +2228,7 @@ class SiteController extends x2base {
             } elseif (($action === 'deleteNew' || ($action === 'ignoreNew' && $ref === 'create')) && isset($_POST['data'])) {
                 if ($ref === 'create') {
                     return;
-                } elseif ($ref === 'view' && isset($_POST['data'])) {
+                } elseif (isset($_POST['data'])) {
                     $attributes = json_decode($_POST['data'], true);
                     $model = X2Model::model($modelName)->findByPk($attributes['id']);
                     $model->markAsDuplicate('delete');
@@ -2302,15 +2284,67 @@ class SiteController extends x2base {
                 $model->setX2Fields($attributes);
                 if ($model->save()) {
                     $retArr = array();
-                    foreach (array_intersect_key($model->attributes, $attributes) as $attr => $key) {
-                        $retArr[$modelName . '_' . $attr] = $model->renderAttribute($attr, true, false);
+                    foreach (array_intersect_key(
+                        $model->attributes, $attributes) as $attr => $key) {
+
+                        $retArr[$modelName . '_' . $attr] = $model->renderAttribute(
+                            $attr, true, false);
                     }
-                    echo json_encode($retArr);
+                    echo CJSON::encode (array (
+                        'updatedFields' => $retArr
+                    ));
                 } else {
-                    echo json_encode($model->getErrors());
+                    $errorMessages = $model->getAllErrorMessages ();
+                    $errorMessages['header'] = Yii::t(
+                        'app', '{modelName} could not be updated:', array (
+                            '{modelName}' => $model->getDisplayName (false),
+                        ));
+                    echo CJSON::encode (array (
+                        'errors' => $errorMessages,
+                    ));
                 }
             }
         }
     }
+
+    /**
+     * Action called to mark a tour (tip) as seen
+     * @param  int $id ID of the tip
+     */
+    public function actionTourSeen ($id) {
+        Tours::model()->updateByPk ($id, 
+            array('seen' => true)
+        );
+
+        echo 'success';
+    }
+
+
+    /**
+     * Gets a preview of a layout form for the form editor
+     * @param  $_POST[modelName] Name of the model to preview
+     * @param  $_POST[layout]  JSON Encoded layout  to preview
+     * @return  Echoes out HTML
+     */
+    public function actionLayoutPreview() {
+        $modelName = $_POST['modelName'];
+        $layout = CJSON::decode($_POST['layout']);
+
+        $model = new $modelName;
+        $config = array(
+            'model' => $model,
+            'layoutData' => $layout,
+            'scenario' => 'Inline',
+            'formSettings' => array (),
+        );
+        echo '<div id="preview-form">';
+        $this->widget ('FormView', $config);
+        echo '</div>';
+
+        echo '<div id="preview-view">';
+        $this->widget ('DetailView', $config);
+        echo '</div>';
+    }
+
 
 }

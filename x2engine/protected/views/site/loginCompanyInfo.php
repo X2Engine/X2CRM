@@ -42,7 +42,7 @@
     </div>
     <div id='x2-info'>
         <div id="login-version">
-            <span>VERSION <?php echo Yii::app()->params->version; ?>, <a href="http://www.x2engine.com">X2Engine, Inc.</a></span>
+            <span>Version <?php echo Yii::app()->params->version; ?>, <a href="http://www.x2engine.com">X2Engine, Inc.</a></span>
             <span><?php echo strtoupper(Yii::app()->getEditionLabel(true)); ?>
             </span>
         </div>

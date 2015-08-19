@@ -35,9 +35,6 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 
-$pieces = explode(", ",$model->editPermissions);
-$user = Yii::app()->user->getName();
-
 $authParams = array('X2Model' => $model);
 $menuOptions = array(
     'index', 'create', 'createEmail', 'createQuote',
@@ -45,13 +42,8 @@ $menuOptions = array(
 $action = $this->action->id;
 if (!$model->isNewRecord) {
     $existingRecordMenuOptions = array(
-        'view', 'permissions', 'exportToHtml',
+        'view', 'permissions', 'exportToHtml', 'edit', 'delete'
     );
-    if ($action !== 'update' && $model->checkEditPermissions ()) {
-        $existingRecordMenuOptions[] = 'edit';
-    }
-    if ($this->checkPermissions ($model, 'delete'))
-        $existingRecordMenuOptions[] = 'delete';
     $menuOptions = array_merge($menuOptions, $existingRecordMenuOptions);;
 }
 $this->insertMenu($menuOptions, $model, $authParams);
@@ -60,7 +52,7 @@ $this->insertMenu($menuOptions, $model, $authParams);
 <div class="page-title icon docs"><h2><span class="no-bold"><?php echo CHtml::encode($title); ?></span> <?php echo CHtml::encode($model->name); ?></h2>
 <?php
 if(!$model->isNewRecord){
-    if($model->checkEditPermissions () && $action != 'update'){
+    if($action !== 'update' && $this->checkPermissions($model,'edit')){
         echo X2Html::editRecordButton($model);
         // echo CHtml::link('<span></span>', array('/docs/docs/update', 'id' => $model->id), array('class' => 'x2-button x2-hint icon edit right', 'title' => Yii::t('docs', 'Edit')));
     }

@@ -40,4 +40,8 @@ $this->insertMenu($menuOptions);
 ?>
 <div class="page-title icon accounts"><h2><?php echo Yii::t('accounts','Create {module}', array('{module}'=>Modules::displayName(false))); ?></h2></div>
 
-<?php echo $this->renderPartial('application.components.views._form', array('model'=>$model, 'users'=>$users,'modelName'=>'accounts')); ?>
+<?php
+$this->widget ('FormView', array(
+	'model' => $model
+));
+// echo $this->renderPartial('application.components.views.@FORMVIEW', array('model'=>$model, 'users'=>$users,'modelName'=>'accounts')); ?>

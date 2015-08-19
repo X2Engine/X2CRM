@@ -38,11 +38,11 @@
 // ",CClientScript::POS_READY);
 
 Yii::app()->clientScript->registerScriptFile(Yii::app()->getBaseUrl().'/js/x2formEditor.js');
-Yii::app()->clientScript->registerScriptFile(Yii::app()->getBaseUrl().'/js/colResizable-1.3.min.js');
+Yii::app()->clientScript->registerScriptFile(Yii::app()->getBaseUrl().'/js/lib/colResizable/colResizable.js');
 
 if(isset($layoutModel) && !empty($layoutModel->layout)){
     Yii::app()->clientScript->registerScript('loadForm', '
-	loadFormJson(\''.preg_replace('/\\"/u', '\\\\"', addcslashes($layoutModel->layout, "'\\")).'\');
+	x2.formEditor.loadFormJson(\''.preg_replace('/\\"/u', '\\\\"', addcslashes($layoutModel->layout, "'\\")).'\');
 	', CClientScript::POS_READY);
 }
 
@@ -71,7 +71,7 @@ $('#copyLayoutButton').click(function() {
 	if(!window.layoutChanged || confirm('".addslashes(Yii::t('admin', 'Leave without saving changes?'))."')) {
 		var layoutName = prompt('".addslashes(Yii::t('admin', 'Please enter a name for the new layout.'))."');
 		if(layoutName != null && layoutName != '') {
-			$('#layoutHiddenField').val(generateFormJson());
+			$('#layoutHiddenField').val(x2.formEditor.generateFormJson());
 			$('#formEditorForm').attr('action','".CHtml::normalizeUrl(array('createFormLayout'))."?model='+$('#modelList').val()+'&newLayout=1&layoutName='+encodeURI(layoutName));
 			$('#formEditorForm').unbind('submit').submit();
 		}
@@ -244,6 +244,26 @@ echo CHtml::hiddenField('layout', '', array('id' => 'layoutHiddenField'));
 <?php } ?>
 <?php if(!empty($id)){ ?>
     <div class="formContainer span-15">
+        <!-- Preview Tabs -->
+        <div id="preview" style='display:none'>
+            <ul>
+                <li>
+                    <a href='#preview-form'>
+                        <?php echo Yii::t('admin', 'Form')?>
+                    </a>
+                </li>
+                <li>
+                    <a href='#preview-view'>
+                        <?php echo Yii::t('admin', 'View')?>
+                    </a>
+                </li>
+            </ul>
+            <div id='preview-form'>
+            </div>
+            <div id='preview-view'>
+            </div>
+        </div>
+
         <div class="x2-layout form-view editMode" id="formEditor">
             <div id="formEditorControls">
                 <a href="javascript:void(0)" id="addRow" class="x2-button"><?php echo Yii::t('admin', 'Add Row'); ?></a>

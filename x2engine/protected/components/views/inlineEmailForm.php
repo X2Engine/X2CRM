@@ -359,10 +359,11 @@ Yii::app()->clientScript->registerResponsiveCss('inlineEmailFormResponsiveCss',"
     </div>
     <?php
 
-    $form = $this->beginWidget('CActiveForm', array(
+    $formConfig = array (
         'enableAjaxValidation' => false,
         'method' => 'post',
-            ));
+    );
+    $form = $this->beginWidget('CActiveForm', $formConfig);
     echo X2Html::loadingIcon (array('id' => 'email-sending-icon', 'style' => 'display: none'));
     echo $this->specialFields;
     echo $form->hiddenField($this->model, 'modelId');
@@ -546,30 +547,37 @@ Yii::app()->clientScript->registerResponsiveCss('inlineEmailFormResponsiveCss',"
             // include('inlineEmailForm_pro.php');
              
 
-            echo CHtml::resetButton(
+            echo CHtml::button(
                 Yii::t('app', 'Cancel'), 
                 array(
                     'class' => 'x2-button right cancel-send-button x2-button-large'
                 ));
             echo CHtml::ajaxSubmitButton(
                 Yii::t('app', 'Send'), 
+                Yii::app()->controller->createUrl (
+                    (isset ($this->action) ? $this->action : 'inlineEmail'), array(
+                        'ajax' => 1,
+                        'postReplace'=>$this->postReplace,
+                        'contactFlag'=>$this->contactFlag,
+                        'skipEvent'=>$this->skipEvent
+                    )
+                ), 
                 array(
-                    'inlineEmail',
-                    'ajax' => 1,
-                    'postReplace'=>$this->postReplace,
-                    'contactFlag'=>$this->contactFlag,
-                    'skipEvent'=>$this->skipEvent
-                ), array(
                     'beforeSend' => "setInlineEmailFormLoading",
                     'dataType' => 'json',
                     'success' => "function (data) {
                         x2.inlineEmailEditorManager.handleInlineEmailActionResponse (data);
                     }",
-                ), array(
+                ), 
+                array(
                     'id' => 'send-email-button',
                     'class' => 'x2-button highlight x2-button-large',
                     'name' => 'InlineEmail[submit]',
-                    'onclick' => 'if (!x2.isAndroid) window.inlineEmailEditor.updateElement();',
+                    'onclick' => '
+                        if (!x2.isAndroid) window.inlineEmailEditor.updateElement();
+                        // campaign test email-specific. Causes recordId to update
+                        $("#InlineEmail_recordName").blur ();
+                    ',
                 )
             );
             ?>

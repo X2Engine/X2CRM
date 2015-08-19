@@ -46,14 +46,20 @@ $form=$this->beginWidget('CActiveForm', array(
 	// $isQuickCreate = true;	//signal subforms not to call beginWidget()/endWidget(), create submit buttons, etc
 	//var_dump(scandir(''));
 	//include('../x2engine/protected/views/contacts/_form.php');
-	echo $this->renderPartial('application.components.views._form',
-	array(
-		'model'=>$contactModel,
-		'modelName'=>'contacts',
-		'users'=>$users,
-		'isQuickCreate'=>true,
-		'form'=>$form,
+	
+	$this->widget ('FormView', array(
+		'model' => $contactModel,
+		'form' => $form,
+		'suppressQuickCreate' => true,
 	));
+	// echo $this->renderPartial('application.components.views.@FORMVIEW',
+	// array(
+		// 'model'=>$contactModel,
+		// 'modelName'=>'contacts',
+		// 'users'=>$users,
+		// 'isQuickCreate'=>true,
+		// 'form'=>$form,
+	// ));
 	?>
 		<?php echo $form->hiddenField($actionModel,'associationId'); ?>
 

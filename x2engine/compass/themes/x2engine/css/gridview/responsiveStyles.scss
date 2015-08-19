@@ -68,7 +68,7 @@ $left-margin: 3px;
       // border-right: 1px solid #b3b3b3;
     }
     + .x2grid-body-container .x2grid-grips div {
-      top: 75px !important;
+      top: $gridViewCellHeight + 56px !important;
     }
     .x2-gridview-fixed-top-bar-inner {
       width: 100%;
@@ -88,7 +88,7 @@ $left-margin: 3px;
     box-sizing: border-box;
   }
   .x2-gridview-body-with-fixed-header {
-    padding-top: 75px;
+    padding-top: $gridViewCellHeight + 56px;
   }
 }
 

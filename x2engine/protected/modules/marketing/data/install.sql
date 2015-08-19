@@ -68,217 +68,34 @@ VALUES
 ('marketing', 'Marketing', 1, 3, 0, 1, 0, 0, 0);
 /*&*/
 INSERT INTO x2_fields
-(modelName, fieldName, attributeLabel, modified, custom, `type`, required, readOnly, linkType, searchable, isVirtual, relevance, uniqueConstraint, safe,keyType)
+(modelName, fieldName, attributeLabel, modified, custom, `type`, required, readOnly, linkType, searchable, isVirtual, relevance, uniqueConstraint, safe,keyType, description)
 VALUES
-('Campaign', 'id',           'ID',                 0, 0, 'int',         0, 0, NULL,              0, 0, '',       1, 1, 'PRI'),
-('Campaign', 'masterId',     'Master Campaign ID', 0, 0, 'int',         0, 0, NULL,              0, 0, '',       0, 1, 'FIX'),
-('Campaign', 'name',         'Name',               0, 0, 'varchar',     1, 0, NULL,              1, 0, 'High',   0, 1, NULL),
-('Campaign', 'nameId',       'NameID',             0, 0, 'varchar',     0, 1, NULL,              1, 0, 'High',   0, 1, 'FIX'),
-('Campaign', 'assignedTo',   'Assigned To',        0, 0, 'assignment',  1, 0, NULL,              0, 0, '',       0, 1, NULL),
-('Campaign', 'listId',       'Contact List',       0, 0, 'link',        1, 0, 'X2List',          0, 0, '',       0, 1, 'MUL'),
-('Campaign', 'active',       'Active',             0, 0, 'boolean',     0, 0, NULL,              0, 0, '',       0, 1, NULL),
-('Campaign', 'description',  'Description',        0, 0, 'text',        0, 0, NULL,              1, 0, 'Medium', 0, 1, NULL),
-('Campaign', 'type',         'Type',               0, 0, 'dropdown',    0, 0, '107',             0, 0, '',       0, 1, NULL),
-('Campaign', 'template',     'Template',           0, 0, 'link',        0, 0, 'Docs',            0, 0, '',       0, 1, 'MUL'),
-('Campaign', 'enableRedirectLinks',     'Enable redirect links?',           0, 0, 'boolean',        0, 0, NULL,            0, 0, '',       0, 1, NULL),
-('Campaign', 'cost',         'Cost',               0, 0, 'varchar',     0, 0, NULL,              0, 0, '',       0, 1, NULL),
-('Campaign', 'subject',      'Subject',            0, 0, 'varchar',     0, 0, NULL,              0, 0, '',       0, 1, NULL),
-('Campaign', 'content',      'Content',            0, 0, 'text',        0, 0, NULL,              0, 0, '',       0, 1, NULL),
-('Campaign', 'complete',     'Complete',           0, 0, 'boolean',     0, 1, NULL,              0, 0, '',       0, 1, NULL),
-('Campaign', 'visibility',   'Visibility',         0, 0, 'visibility',  1, 0, NULL,              0, 0, '',       0, 1, NULL),
-('Campaign', 'createDate',   'Create Date',        0, 0, 'dateTime',    0, 1, NULL,              0, 0, '',       0, 1, NULL),
-('Campaign', 'launchDate',   'Launch Date',        0, 0, 'dateTime',    0, 0, NULL,              0, 0, '',       0, 1, NULL),
-('Campaign', 'lastUpdated',  'Last Updated',       0, 0, 'dateTime',    0, 1, NULL,              0, 0, '',       0, 1, NULL),
-('Campaign', 'lastActivity', 'Last Activity',      0, 0, 'dateTime',    0, 1, NULL,              0, 0, '',       0, 1, NULL),
-('Campaign', 'updatedBy',    'Updated By',         0, 0, 'assignment',  0, 1, NULL,              0, 0, '',       0, 1, NULL),
-('Campaign', 'sendAs',       'Send As',            0, 0, 'credentials', 0, 0, 'email:bulkEmail', 0, 0, '',       0, 1, NULL);
+('Campaign', 'id',           'ID',                 0, 0, 'int',         0, 0, NULL,              0, 0, '',       1, 1, 'PRI', NULL),
+('Campaign', 'masterId',     'Master Campaign ID', 0, 0, 'int',         0, 0, NULL,              0, 0, '',       0, 1, 'FIX', NULL),
+('Campaign', 'name',         'Name',               0, 0, 'varchar',     1, 0, NULL,              1, 0, 'High',   0, 1, NULL, NULL),
+('Campaign', 'nameId',       'NameID',             0, 0, 'varchar',     0, 1, NULL,              1, 0, 'High',   0, 1, 'FIX', NULL),
+('Campaign', 'assignedTo',   'Assigned To',        0, 0, 'assignment',  1, 0, NULL,              0, 0, '',       0, 1, NULL, NULL),
+('Campaign', 'listId',       'Contact List',       0, 0, 'link',        1, 0, 'X2List',          0, 0, '',       0, 1, 'MUL', NULL),
+('Campaign', 'active',       'Active',             0, 0, 'boolean',     0, 0, NULL,              0, 0, '',       0, 1, NULL, NULL),
+('Campaign', 'description',  'Description',        0, 0, 'text',        0, 0, NULL,              1, 0, 'Medium', 0, 1, NULL, NULL),
+('Campaign', 'type',         'Type',               0, 0, 'dropdown',    0, 0, '107',             0, 0, '',       0, 1, NULL, NULL),
+('Campaign', 'template',     'Template',           0, 0, 'link',        0, 0, 'Docs',            0, 0, '',       0, 1, 'MUL', NULL),
+('Campaign', 'enableRedirectLinks','Enable redirect links?',     
+                                                   0, 0, 'boolean',     0, 0, NULL,              0, 0, '',       0, 1, NULL, "When this is enabled, all links in the email template will be replaced with links that will track when they have been clicked."),
+('Campaign', 'cost',         'Cost',               0, 0, 'varchar',     0, 0, NULL,              0, 0, '',       0, 1, NULL, NULL),
+('Campaign', 'subject',      'Subject',            0, 0, 'varchar',     0, 0, NULL,              0, 0, '',       0, 1, NULL, NULL),
+('Campaign', 'content',      'Content',            0, 0, 'text',        0, 0, NULL,              0, 0, '',       0, 1, NULL, NULL),
+('Campaign', 'complete',     'Complete',           0, 0, 'boolean',     0, 1, NULL,              0, 0, '',       0, 1, NULL, NULL),
+('Campaign', 'visibility',   'Visibility',         0, 0, 'visibility',  1, 0, NULL,              0, 0, '',       0, 1, NULL, NULL),
+('Campaign', 'createDate',   'Create Date',        0, 0, 'dateTime',    0, 1, NULL,              0, 0, '',       0, 1, NULL, NULL),
+('Campaign', 'launchDate',   'Launch Date',        0, 0, 'dateTime',    0, 0, NULL,              0, 0, '',       0, 1, NULL, NULL),
+('Campaign', 'lastUpdated',  'Last Updated',       0, 0, 'dateTime',    0, 1, NULL,              0, 0, '',       0, 1, NULL, NULL),
+('Campaign', 'lastActivity', 'Last Activity',      0, 0, 'dateTime',    0, 1, NULL,              0, 0, '',       0, 1, NULL, NULL),
+('Campaign', 'updatedBy',    'Updated By',         0, 0, 'assignment',  0, 1, NULL,              0, 0, '',       0, 1, NULL, NULL),
+('Campaign', 'sendAs',       'Send As',            0, 0, 'credentials', 0, 0, 'email:bulkEmail', 0, 0, '',       0, 1, NULL, NULL);
 /*&*/
 INSERT INTO `x2_form_layouts`
 (`id`, `model`, `version`, `scenario`, `layout`, `defaultView`, `defaultForm`, `createDate`, `lastUpdated`)
 VALUES
-(13,'Campaign','Form','Default','
-{
-    "sections": [
-        {
-            "collapsible": false, 
-            "rows": [
-                {
-                    "cols": [
-                        {
-                            "items": [
-                                {
-                                    "height": "22", 
-                                    "labelType": "left", 
-                                    "name": "formItem_name", 
-                                    "readOnly": "0", 
-                                    "tabindex": "0", 
-                                    "width": "230"
-                                }
-                            ], 
-                            "width": 572
-                        }
-                    ]
-                }
-            ], 
-            "title": ""
-        }, 
-        {
-            "collapsible": false, 
-            "rows": [
-                {
-                    "cols": [
-                        {
-                            "items": [
-                                {
-                                    "height": "39", 
-                                    "labelType": "left", 
-                                    "name": "formItem_description", 
-                                    "readOnly": "0", 
-                                    "tabindex": "0", 
-                                    "width": "483"
-                                }
-                            ], 
-                            "width": 572
-                        }
-                    ]
-                }
-            ], 
-            "title": ""
-        }, 
-        {
-            "collapsible": false, 
-            "rows": [
-                {
-                    "cols": [
-                        {
-                            "items": [
-                                {
-                                    "height": "22", 
-                                    "labelType": "left", 
-                                    "name": "formItem_listId", 
-                                    "readOnly": "0", 
-                                    "tabindex": "NaN", 
-                                    "width": "135"
-                                }, 
-                                {
-                                    "height": "22", 
-                                    "labelType": "left", 
-                                    "name": "formItem_type", 
-                                    "readOnly": "0", 
-                                    "tabindex": "0", 
-                                    "width": "135"
-                                }, 
-                                {
-                                    "height": "22", 
-                                    "labelType": "left", 
-                                    "name": "formItem_sendAs", 
-                                    "readOnly": "undefined", 
-                                    "tabindex": "undefined", 
-                                    "width": "154"
-                                }
-                            ], 
-                            "width": 572
-                        }
-                    ]
-                }
-            ], 
-            "title": ""
-        }, 
-        {
-            "collapsible": false, 
-            "rows": [
-                {
-                    "cols": [
-                        {
-                            "items": [
-                                {
-                                    "height": "22", 
-                                    "labelType": "left", 
-                                    "name": "formItem_enableRedirectLinks", 
-                                    "readOnly": "undefined", 
-                                    "tabindex": "undefined", 
-                                    "width": "154"
-                                }
-                            ], 
-                            "width": 572
-                        }
-                    ]
-                }
-            ], 
-            "title": ""
-        }, 
-        {
-            "collapsible": false, 
-            "rows": [
-                {
-                    "cols": [
-                        {
-                            "items": [
-                                {
-                                    "height": "22", 
-                                    "labelType": "left", 
-                                    "name": "formItem_subject", 
-                                    "readOnly": "0", 
-                                    "tabindex": "0", 
-                                    "width": "226"
-                                }, 
-                                {
-                                    "height": "22", 
-                                    "labelType": "left", 
-                                    "name": "formItem_template", 
-                                    "readOnly": "0", 
-                                    "tabindex": "0", 
-                                    "width": "133"
-                                }, 
-                                {
-                                    "height": "229", 
-                                    "labelType": "none", 
-                                    "name": "formItem_content", 
-                                    "readOnly": "0", 
-                                    "tabindex": "0", 
-                                    "width": "563"
-                                }
-                            ], 
-                            "width": 572
-                        }
-                    ]
-                }
-            ], 
-            "title": "Email Template"
-        }, 
-        {
-            "collapsible": false, 
-            "rows": [
-                {
-                    "cols": [
-                        {
-                            "items": [
-                                {
-                                    "height": "24", 
-                                    "labelType": "left", 
-                                    "name": "formItem_assignedTo", 
-                                    "readOnly": "0", 
-                                    "tabindex": "0", 
-                                    "width": "145"
-                                }, 
-                                {
-                                    "height": "24", 
-                                    "labelType": "left", 
-                                    "name": "formItem_visibility", 
-                                    "readOnly": "0", 
-                                    "tabindex": "0", 
-                                    "width": "145"
-                                }
-                            ], 
-                            "width": 572
-                        }
-                    ]
-                }
-            ], 
-            "title": ""
-        }
-    ], 
-    "version": "3.2"
-}
-',0,1,1373388579,1373388579);
-
+(13,'Campaign','Form','Default','{"version":"1.3","sections":[{"rows":[{"cols":[{"items":[{"name":"formItem_description","labelType":"left","readOnly":"0","tabindex":"0"},{"name":"formItem_assignedTo","labelType":"left","readOnly":"0","tabindex":"0"},{"name":"formItem_visibility","labelType":"left","readOnly":"0","tabindex":"0"}],"width":"50%"},{"items":[{"name":"formItem_type","labelType":"left","readOnly":"0","tabindex":"0"},{"name":"formItem_sendAs","labelType":"left","readOnly":"0","tabindex":"undefined"},{"name":"formItem_enableRedirectLinks","labelType":"left","readOnly":"0","tabindex":"undefined"}],"width":"50%"}]}],"collapsible":false,"title":"Info"},{"rows":[{"cols":[{"items":[{"name":"formItem_subject","labelType":"left","readOnly":"0","tabindex":"0"},{"name":"formItem_content","labelType":"none","readOnly":"0","tabindex":"0"}],"width":"99.83%"}]}],"collapsible":false,"title":"Email Template"}]}',0,1,1429041237,1429041237),
+(14, 'Campaign','View','Default','{"version":"1.3","sections":[{"rows":[{"cols":[{"items":[{"name":"formItem_name","labelType":"left","readOnly":0},{"name":"formItem_listId","labelType":"left","readOnly":0},{"name":"formItem_description","labelType":"left","readOnly":"0","tabindex":"0"},{"name":"formItem_assignedTo","labelType":"left","readOnly":"0","tabindex":"0"}],"width":"50%"},{"items":[{"name":"formItem_visibility","labelType":"left","readOnly":"0","tabindex":"0"},{"name":"formItem_type","labelType":"left","readOnly":"0","tabindex":"0"},{"name":"formItem_sendAs","labelType":"left","readOnly":"0","tabindex":"undefined"},{"name":"formItem_enableRedirectLinks","labelType":"left","readOnly":"0","tabindex":"undefined"}],"width":"50.0%"}]}],"collapsible":false,"title":"Info"},{"rows":[{"cols":[{"items":[{"name":"formItem_active","labelType":"left","readOnly":0},{"name":"formItem_complete","labelType":"left","readOnly":0},{"name":"formItem_launchDate","labelType":"left","readOnly":0}],"width":"99.83%"}]}],"collapsible":false,"title":"Status"},{"rows":[{"cols":[{"items":[{"name":"formItem_subject","labelType":"left","readOnly":"0","tabindex":"0"},{"name":"formItem_content","labelType":"none","readOnly":"0","tabindex":"0"}],"width":"99.83%"}]}],"collapsible":true,"title":"Email Template"}]}',1,0,1429041237,1429041237);

@@ -82,7 +82,8 @@ function LineItems (argsDict) {
         /**
          * @param string url to request product options for combo box 
          */
-        getItemsUrl: null
+        getItemsUrl: null,
+        modelName: null
     };
     auxlib.applyArgs (this, defaultArgs, argsDict);
     var that = this;
@@ -123,6 +124,11 @@ Private static methods
 /*
 Public instance methods
 */
+
+LineItems.prototype.resolveName = function (name) {
+    if (!this.modelName) return name;
+    else return this.modelName + name.replace (/^([^[]+)/, '[$1]');
+};
 
 /*
 Parameters:
@@ -206,7 +212,7 @@ LineItems.prototype.calculateLineTotal = function (rowElement) {
         $(rowElement).find (".adjustment-type").val ();
     var adjustment = that.getAdjustment (rowElement, adjustmentType);
     var name =
-        $(rowElement).find ("[name*='name']").val ();
+        $(rowElement).find ("[name*='" + this.resolveName ('name') + "']").val ();
 
     var lineTotal = price * quantity;
 
@@ -389,7 +395,8 @@ LineItems.prototype.addLineItem = function (
             'class': 'line-item-field product-name',
             maxlength: '100',
             value: values['product-name'][0],
-            name: 'lineitem[' + ++that._lineCounter + '][name]' })
+            name: this.resolveName ('lineitem[' + ++that._lineCounter + '][name]') 
+        })
     ));
     if (!that.readOnly) {
         /*$inputCell.find ('input').after (
@@ -401,28 +408,32 @@ LineItems.prototype.addLineItem = function (
             type: 'text',
             'class': 'line-item-field price',
             value: values['price'][0],
-            name: 'lineitem[' + that._lineCounter + '][price]' }))
+            name: this.resolveName ('lineitem[' + that._lineCounter + '][price]')
+        }))
     );
     lineItemRow.append ($("<td>", {'class': 'x2-4th-child input-cell'}).append (
         $("<input>", {
             type: 'text',
             'class': 'line-item-field quantity',
             value: values['quantity'][0],
-            name: 'lineitem[' + that._lineCounter + '][quantity]' }))
+            name: this.resolveName ('lineitem[' + that._lineCounter + '][quantity]') 
+        }))
     );
     lineItemRow.append ($("<td>", {'class': 'x2-5th-child input-cell'}).append (
         $("<input>", {
             type: 'text',
             'class': 'line-item-field adjustment',
             value: values['adjustment'][0],
-            name: 'lineitem[' + that._lineCounter + '][adjustment]' }))
+            name: this.resolveName ('lineitem[' + that._lineCounter + '][adjustment]') 
+        }))
     );
     lineItemRow.append ($("<td>", {'class': 'x2-6th-child input-cell'}).append (
         $("<input>", {
             type: 'text',
             'class': 'line-item-field description',
             'value': values['description'][0],
-            name: 'lineitem[' + that._lineCounter + '][description]' }))
+            name: this.resolveName ('lineitem[' + that._lineCounter + '][description]') 
+        }))
     );
     lineItemRow.append ($("<td>", {
         'class': 'input-cell line-item-field x2-7th-child'}).append (
@@ -431,16 +442,19 @@ LineItems.prototype.addLineItem = function (
                 'class': 'line-item-total',
                 readonly: 'readonly',
                 onfocus: 'this.blur();',
-                name: 'lineitem[' + that._lineCounter + '][total]' }),
+                name: this.resolveName ('lineitem[' + that._lineCounter + '][total]') 
+            }),
             $("<input>", {
                 type: 'hidden',
                 'class': 'adjustment-type',
                 value: values['adjustment-type'][0],
-                name: 'lineitem[' + that._lineCounter + '][adjustmentType]' }),
+                name: this.resolveName ('lineitem[' + that._lineCounter + '][adjustmentType]') 
+            }),
             $("<input>", {
                 type: 'hidden',
                 'class': 'line-number',
-                name: 'lineitem[' + that._lineCounter + '][lineNumber]' }))
+                name: this.resolveName ('lineitem[' + that._lineCounter + '][lineNumber]') 
+            }))
     );
 
     if (fillLineItem) { // add error class if server side validation failed
@@ -596,21 +610,21 @@ LineItems.prototype.addAdjustment = function (
             'class': 'line-item-field adjustment-name',
             maxlength: '100',
             value: values['adjustment-name'][0],
-            name: 'lineitem[' + ++that._lineCounter + '][name]' }))
+            name: this.resolveName ('lineitem[' + ++that._lineCounter + '][name]') }))
     );
     lineItemRow.append ($("<td>", {'class': 'input-cell x2-5th-child'}).append (
         $("<input>", {
             type: 'text',
             'class': 'line-item-field adjustment',
             value: values['adjustment'][0],
-            name: 'lineitem[' + that._lineCounter + '][adjustment]' }))
+            name: this.resolveName ('lineitem[' + that._lineCounter + '][adjustment]') }))
     );
     lineItemRow.append ($("<td>", {'class': 'input-cell x2-6th-child'}).append (
         $("<input>", {
             type: 'text',
             'class': 'line-item-field description',
             value: values['description'][0],
-            name: 'lineitem[' + that._lineCounter + '][description]' }))
+            name: this.resolveName ('lineitem[' + that._lineCounter + '][description]') }))
     );
     lineItemRow.append ($("<td>", {'class': 'input-cell x2-7th-child'}).append (
         //$("<span></span>", {'class': 'line-item-total'}),
@@ -618,11 +632,11 @@ LineItems.prototype.addAdjustment = function (
             type: 'hidden',
             'class': 'adjustment-type',
             value: values['adjustment-type'][0],
-            name: 'lineitem[' + that._lineCounter + '][adjustmentType]' }),
+            name: this.resolveName ('lineitem[' + that._lineCounter + '][adjustmentType]') }),
         $("<input>", {
             type: 'hidden',
             'class': 'line-number',
-            name: 'lineitem[' + that._lineCounter + '][lineNumber]' }))
+            name: this.resolveName ('lineitem[' + that._lineCounter + '][lineNumber]') }))
     );
 
     if (fillAdjustment) { // add error class if server side validation failed

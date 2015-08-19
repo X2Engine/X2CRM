@@ -62,7 +62,7 @@ class MassAddToListTest extends X2DbTestCase {
             'contacts', new ContactsModule ('contacts', null));
         $gvSelection = range (1, 2);
         AuxLib::debugLogR ($newList->execute ($gvSelection));
-        $getFlashes = TestingAuxLib::setPublic ('NewListFromSelection', 'getFlashes');
+        $getFlashes = TestingAuxLib::setPublic ('NewListFromSelection', 'getResponse');
         AuxLib::debugLogR ($getFlashes ());
         $list = X2List::model ()->findByAttributes (array ('name' => 'test'));
         $itemIds = $list->queryCommand (true)->select ('id')->queryColumn ();
@@ -113,15 +113,14 @@ class MassAddToListTest extends X2DbTestCase {
         $uid = null;
         $listId = null;
         while (true) {
-            ob_start ();
+            $this->obStart ();
             if (!isset ($listId)) {
                 $newList->superExecute ($uid, 24, $idChecksum);
             } else {
                 $_POST['listId'] = $listId;
                 $addToList->superExecute ($uid, 24, $idChecksum);
             }
-            $retVal = CJSON::decode (ob_get_contents ());
-            ob_clean ();
+            $retVal = CJSON::decode (ob_get_contents ()); $this->obEndClean ();
             $this->assertTrue (!isset ($retVal['errorCode']));
             $uid = $retVal['uid'];
             if (isset ($retVal['listId'])) {

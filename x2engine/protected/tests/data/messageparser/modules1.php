@@ -10,6 +10,13 @@ Yii:: t('app','multiple').' '.Yii::t('app','messages').' '.Yii::t('app','on').' 
 Yii::t('users',"multiline
 message");
 Yii::t('app','message with params and {stuff}',array('{stuff}'=>'things'));
+Yii::t('app','Multi-line translation '.
+            'message with splitting text.');
+Yii::t('app','Multi-line translation '.
+            'message with {param} text.',array('{param}'=>'things'));
+Yii::t('app','The maximum number of '
+                    . 'hooks ({n}) has been reached for events of this type.',
+                    array('{n}'=>$max));
 installer_t('installer message');
 installer_tr('installer message with {p}',array('{p}'=>'params'));
 // "Cheating" in utility classes by using a locally-defined function / looking for exceptions:

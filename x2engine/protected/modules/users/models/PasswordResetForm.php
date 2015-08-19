@@ -101,7 +101,7 @@ class PasswordResetForm extends CFormModel {
      */
     public function save() {
         if($this->validate()) {
-            $this->userModel->password = md5($this->password);
+            $this->userModel->password = PasswordUtil::createHash($this->password);
             PasswordReset::model()->deleteAllByAttributes(array('userId'=>$this->userModel->id));
             return $this->userModel->update(array('password'));
         }

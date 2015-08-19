@@ -55,7 +55,7 @@ abstract class BaseX2FlowEmail extends X2FlowAction {
         }else{
             $credOpts = array();
         }
-        return array(
+        return array_merge (parent::paramRules (), array (
             'title' => Yii::t('studio', $this->title),
             'info' => Yii::t('studio', $this->info),
             'options' => array(
@@ -66,7 +66,7 @@ abstract class BaseX2FlowEmail extends X2FlowAction {
                     'options' => $credOpts
                 ),
             // 'time' => array('dateTime'),
-            ));
+            )));
     }
 
     /**

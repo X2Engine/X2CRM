@@ -44,8 +44,8 @@ class X2GridViewMassActionAction extends CAction {
     private $massActionClasses = array (
         'MassAddToList',
         'MassCompleteAction',
-        'MassUncompleteAction',
         'MassRemoveFromList',
+        'MassUncompleteAction',
         'NewListFromSelection',
          
     );
@@ -63,19 +63,6 @@ class X2GridViewMassActionAction extends CAction {
             }
         }
         return $this->_massActions;
-    }
-
-    /**
-     * validates mass action name and returns MassAction instance that corresponds with it
-     * @param string $massAction
-     */
-    private function getInstanceFor ($massAction) {
-        $instances = $this->getMassActionInstances ();
-        if (!in_array ($massAction, array_keys ($instances))) {
-            /**/AuxLib::debugLogR ('invalid mass action '.$massAction);
-            throw new CHttpException (400, Yii::t('app', 'Bad Request'));
-        }
-        return $instances[$massAction];
     }
 
     /**
@@ -111,10 +98,24 @@ class X2GridViewMassActionAction extends CAction {
             $massActionInstance->superExecute ($uid, $totalItemCount, $idChecksum);
         } else {
             $gvSelection = $_POST['gvSelection'];
-            $massActionInstance->beforeExecute ();
-            $massActionInstance->execute ($gvSelection);
-            $massActionInstance::echoFlashes ();
+            if ($massActionInstance->beforeExecute ()) {
+                $massActionInstance->execute ($gvSelection);
+            }
+            $massActionInstance::echoResponse ();
         }
+    }
+
+    /**
+     * validates mass action name and returns MassAction instance that corresponds with it
+     * @param string $massAction
+     */
+    private function getInstanceFor ($massAction) {
+        $instances = $this->getMassActionInstances ();
+        if (!in_array ($massAction, array_keys ($instances))) {
+            /**/AuxLib::debugLogR ('invalid mass action '.$massAction);
+            throw new CHttpException (400, Yii::t('app', 'Bad Request'));
+        }
+        return $instances[$massAction];
     }
 
 }

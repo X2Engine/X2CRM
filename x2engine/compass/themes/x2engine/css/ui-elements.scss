@@ -63,7 +63,7 @@ Title bar for sections other than the main section (e.g. widgets)
 */
 
 .submenu-title-bar {
-    background: #ddd;
+    background: $defaultTitleBar;
 }
 
 .quick-read-link {
@@ -177,13 +177,22 @@ Select element which doesn't show border or background color difference until ho
 CSS "button" links to be used instead of actual buttons 
 */
 
+// like button group, except with actual button elements instead of pseudo-links
+.real-button-group {
+    button {
+        float: left;
+        margin-left: 0 !important;
+        margin-right: 0 !important;
+    }
+}
+
 .x2-button, .x2-minimal-button, .button-group-pager li, .ui-dialog .ui-dialog-buttonpane button {
     /* , a.search-button */
     display: inline-block;
     vertical-align: top;
     padding: 0 8px;
     border: 1px solid #BEBDBD;
-    background: #e9e9e9;
+    background: $titleBarButtonColor;
     color: #333;
     font-size: 80%;
     line-height: 24px;
@@ -285,16 +294,47 @@ input.active, .ui-dialog .ui-dialog-buttonpane button:active {
         background-color: #50B138;
         border-color: #65a800;
         color: #fff;
+
+        /* @theme color: smart_text2 */
+        /* @theme border-color: darker_highlight2 */
+        /* @theme background: highlight2 */
     }
 
     &.highlight:hover {
         background-color: #459C30;
+
+        /* @theme background: light_highlight2 */
     }
 
     &.highlight:active, 
     &.highlight.clicked {
         background-color: #398B24;
         @include box-shadow(inset 0 1px 1px 0 #4A7500); 
+
+        /* @theme background: lighter_highlight2 */
+    }
+
+    &.blue {
+        background-color: $lightBlue;
+        border-color: darken($lightBlue, 20%);
+        color: white;
+
+        /* @theme color: smart_text2 */
+        /* @theme border-color: darker_highlight2 */
+        /* @theme background: highlight2 */
+        
+        &:hover {
+            background-color: darken($lightBlue, 7.5%);
+            /* @theme background: light_highlight2 */
+        }
+
+        &:active,
+        &.clicked {
+            color: white;
+            border-color: darken($lightBlue, 20%);
+            background-color: darken($lightBlue, 15%);
+            /* @theme background: lighter_highlight2 */
+        }
     }
 }
 
@@ -383,28 +423,47 @@ a {
 
 .x2-button {
     &.x2-blue {
-        // border: 1px solid #3173CC;
-        // background: #5B97E7;
         border: 1px solid darken($lightBlue, 10%);
         background: $lightBlue;
-        /* Old browsers */
+        color: white;
+
         &:hover {
             background: darken($lightBlue, 4%);
-            /* Old browsers */
         }
+
         &:active {
+            color: white;
             background: darken($lightBlue, 8%);
-            /* Old browsers */
         }
     }
-    &.x2-green {
-        border: 1px solid rgb(69, 177, 59);
-        background: rgb(94, 197, 85);
+
+    &.x2-red {
+        border: 1px solid darken($deleteRed, 10%);
+        background: $deleteRed;
+        color: white;
+
         &:hover {
-            background: rgb(102, 204, 93);
+            background: darken($deleteRed, 4%);
         }
+
         &:active {
-            background: rgb(86, 170, 79);
+            color: white;
+            background: darken($deleteRed, 8%);
+        }
+    }
+
+    &.x2-green {
+        border: 1px solid darken($highlightGreen, 10%);
+        background: $highlightGreen;
+        color: white;
+
+        &:hover {
+            background: darken($highlightGreen, 4%);
+        }
+
+        &:active {
+            color: white;
+            background: darken($highlightGreen, 8%);
         }
     }
     &.x2-silver {
@@ -704,7 +763,7 @@ small x2-button
     &.ui-state-active {
         border-color: #D1D1D1;
         border-bottom-color: #eee;
-        background: #eee;
+        background: $lightestGray;
 
         /* @theme border-bottom-color: content */
         /* @theme background: content */
@@ -718,7 +777,7 @@ small x2-button
     }
 }
 
-#publisher .form {
+#publisher .form2 {
     background: #eee;
     border-color: #D1D1D1;
     @include border-radius (4px);
@@ -726,7 +785,7 @@ small x2-button
     z-index: 1;
 }
 
-.history .ui-tabs .form {
+.history .ui-tabs .form2 {
     padding: 5px;
 }
 
@@ -750,12 +809,6 @@ small x2-button
     .ui-tabs-panel {
         padding: 0 !important;
     }
-}
-
-.history div.form textarea {
-    /* padding: 2px 5px; */
-    height: 22px;
-    resize: none;
 }
 
 .detail-form {
@@ -1134,22 +1187,24 @@ button.ui-button.ui-dialog-titlebar-close {
 /* prevent textarea from expanding past width of dialog */
 
 .ui-dialog-titlebar {
-    background: #b1b1b1 !important;
+    background: $dialogTitleBarColor !important;
 }
 
 .ui-dialog {
     // border: 1px solid #9b9b9b !important;
     z-index: 1000;//00;
     // border-width: 0;
-    @include box-shadow(0px 0px 5px 1px rgba(0, 0, 0, 0.5));
+    @include box-shadow(0px 2px 5px 2px rgba(0, 0, 0, 0.4));
 
     .ui-widget-header {
         margin: -4px -4px 0 -4px;
         @include border-radius(4px 4px 0 0);
-        border: 1px solid #9b9b9b;
+        border: 1px solid $gray;
         font-weight: bold;
         background: #444;
-        color: #fff;
+        color: $blackTextColor;
+        /* @theme color smart_text */
+
         font-family: Arial, Helvetica, sans-serif;
         padding-top: .15em;
         padding-bottom: .15em;
@@ -1450,6 +1505,24 @@ Ckeditor
     -webkit-box-shadow: none !important;
     box-shadow: none !important;
 }
+
+.cke_toolgroup .cke_button.cke_button__mediaselector {
+    border: 1px solid #c2c2c2 !important;
+}
+
+/* Media Insert Widget */
+.cke_button__mediaselector_label {
+    display: inline-block !important;
+}
+
+.cke_button__mediaselector_icon {
+    @include fa-icon(image) {
+        color: $nearBlack;
+        position: relative;
+        top: 1px;
+    }
+}
+
 
 /***********************************************************************
 * popup dropdown menu 
@@ -1998,10 +2071,6 @@ button.ui-multiselect {
 
 .x2-settings-button {
     cursor: pointer;
-    opacity: 0.7;
-    &:hover {
-        opacity: 1;
-    }
 }
 
 /***********************************************************************
@@ -2200,39 +2269,50 @@ ul.x2-dropdown-list {
 ***********************************************************************/
 
 #top-flashes-container-outer {
-  position: fixed;
-  width: 100%;
-  top: 32px;
-  left: 0;
-  right: 0;
-  margin: auto;
-  height: 4px;
-  text-align: center;
-  z-index: 1000;
+    position: fixed;
+    width: 100%;
+    top: 32px;
+    left: 0;
+    right: 0;
+    margin: auto;
+    height: 4px;
+    text-align: center;
+    z-index: 1000;
 }
 
 #top-flashes-container {
-  border-top: none;
-  width: auto;
-  display: inline-block;
-  padding: 3px 10px;
-  min-width: 300px;
-  padding-bottom: 5px;
-  //opacity: 0.8;
+    border-top: none;
+    width: auto;
+    display: inline-block;
+    padding: 3px 10px;
+    min-width: 300px;
+    padding-bottom: 5px;
+    //opacity: 0.8;
+    &.has-header {
+        text-align: left;
+    }
+    ul {
+        margin: 0; 
+        text-align: left;
+    }
 }
 
 /***********************************************************************
-* spinner overrides 
+* spinner 
 ***********************************************************************/
 
-.load8.x2-loader .loader {
-    border: 2.5em solid rgba(78, 78, 78, 0.2);
-    // border-left: 2.5em solid rgba(87, 87, 87, 0.81);
-    border-left: 2.5em solid rgba(87, 87, 87, 0.81);
-    border-radius: 50%;
-    width: 10em;
-    height: 10em;
-    font-size: 3px;
+.load8.x2-loader {
+    height: 0;
+    .loader {
+        border: 2.5em solid rgba(78, 78, 78, 0.2);
+        // border-left: 2.5em solid rgba(87, 87, 87, 0.81);
+        border-left: 2.5em solid rgba(87, 87, 87, 0.81);
+        border-radius: 50%;
+        width: 10em;
+        height: 10em;
+        font-size: 3px;
+        margin: 0;
+    }
 }
  
 .load8.full-page-loader .loader {
@@ -2441,6 +2521,13 @@ span {
     }
 }
 
+.x2-dialog-autocomplete-menu {
+    z-index: 1100;
+}
+.fixed-dialog-z-index {
+    z-index: 1000 !important;
+}
+
 /***********************************************************************
 * icons 
 ***********************************************************************/
@@ -2470,5 +2557,11 @@ ul.ui-autocomplete > li > a {
     text-decoration: none;
 }
 
-
+.password-visibility-toggle {
+    display: inline-block; 
+    margin-left: 3px;
+    * {
+        cursor: pointer;
+    }
+}
 

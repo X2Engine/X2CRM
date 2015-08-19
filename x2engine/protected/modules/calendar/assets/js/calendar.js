@@ -71,6 +71,7 @@ CalendarManager.prototype.insertDate = function(date, view, publisherName){
     if (typeof view === 'undefined'){
         view = $(this.calendar).fullCalendar('getView');
     }
+    var form$ = x2.publisher.getForm ();
 
     // Preserve hours previously set in case the user is just switching
     // the day of the event:
@@ -79,8 +80,8 @@ CalendarManager.prototype.insertDate = function(date, view, publisherName){
         end: new Date(date.getTime())
     };
     var oldDate = {
-        begin: auxlib.getElement(publisherName+' #event-form-action-due-date').datetimepicker('getDate'),
-        end: auxlib.getElement(publisherName+' #event-form-action-complete-date').datetimepicker('getDate')
+        begin: form$.find ('.action-due-date').datetimepicker('getDate'),
+        end: form$.find ('.action-complete-date').datetimepicker('getDate')
     };
     if(view.name == 'month' || view.name == 'basicWeek') {
         $(auxlib.keys(oldDate)).each(function(key, val){
@@ -91,9 +92,9 @@ CalendarManager.prototype.insertDate = function(date, view, publisherName){
         });
     }
 
-    var dateformat = auxlib.getElement(publisherName+' #publisher-form').data('dateformat');
-    var timeformat = auxlib.getElement(publisherName+' #publisher-form').data('timeformat');
-    var ampmformat = auxlib.getElement(publisherName+' #publisher-form').data('ampmformat');
+    var dateformat = form$.data('dateformat');
+    var timeformat = form$.data('timeformat');
+    var ampmformat = form$.data('ampmformat');
     var region = x2.publisher.getForm ().data('region');
 
     if(typeof(dateformat) == 'undefined') {
@@ -110,8 +111,8 @@ CalendarManager.prototype.insertDate = function(date, view, publisherName){
     }
 
 
-    auxlib.getElement(publisherName+' #event-form-action-due-date').datetimepicker("destroy");
-    auxlib.getElement(publisherName+' #event-form-action-due-date').datetimepicker(
+    form$.find ('.action-due-date').datetimepicker("destroy");
+    form$.find ('.action-due-date').datetimepicker(
         jQuery.extend(
             {
                 showMonthAfterYear:false
@@ -126,10 +127,10 @@ CalendarManager.prototype.insertDate = function(date, view, publisherName){
             }
         )
     );
-    auxlib.getElement(publisherName+' #event-form-action-due-date').datetimepicker('setDate', newDate.begin);
+    form$.find ('.action-due-date').datetimepicker('setDate', newDate.begin);
 
-    auxlib.getElement(publisherName+' #event-form-action-complete-date').datetimepicker("destroy");
-    auxlib.getElement(publisherName+' #event-form-action-complete-date').datetimepicker(
+    form$.find ('.action-complete-date').datetimepicker("destroy");
+    form$.find ('.action-complete-date').datetimepicker(
         jQuery.extend(
             {
                 showMonthAfterYear:false
@@ -144,12 +145,9 @@ CalendarManager.prototype.insertDate = function(date, view, publisherName){
             }
         )
     );
-    auxlib.getElement(publisherName+' #event-form-action-complete-date').datetimepicker('setDate', newDate.end);
+    form$.find ('.action-complete-date').datetimepicker('setDate', newDate.end);
 
-    auxlib.getElement(publisherName+' #event-action-description').click ();
-    auxlib.getElement(publisherName+' #event-action-description').select();
-    auxlib.getElement(publisherName+' #event-action-description').focus();
-    
+    form$.find ('.action-description').click ().select ().focus ();
     return false;
 }
 
@@ -239,6 +237,25 @@ x2.LayoutManager.prototype.setUpCalendarTitleBarResponsiveness = function () {
             that._expandResponsiveTitleBar (titleBar);
         }
     });
+
+    // action history responsiveness setup
+//    this.addFnToResizeQueue ((function () {
+//        return function (windowWidth, contentWidth) {
+//            if(contentWidth < that._publisherHalfWidthThreshold)
+//                var newHistoryMode = 0; // underneath record
+//            else
+//                var newHistoryMode = 1 // side of record
+//                
+//            if(that._historyMode !== newHistoryMode) {
+//                that._historyMode = newHistoryMode;
+//                if(that._historyMode === 1) {
+//                    $(that._halfWidthSelector).addClass('half-width');
+//                } else {
+//                    $(that._halfWidthSelector).removeClass('half-width');
+//                }
+//            }
+//        };
+//    }) ());
 
 };
 

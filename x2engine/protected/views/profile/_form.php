@@ -115,8 +115,7 @@
 
 	<div class="row">
 		<?php
-		Yii::app()->clientScript->registerScriptFile(Yii::app()->getBaseUrl().'/js/ckeditor/ckeditor.js');
-		Yii::app()->clientScript->registerScriptFile(Yii::app()->getBaseUrl().'/js/ckeditor/adapters/jquery.js');
+		Yii::app()->clientScript->registerPackage ('ckeditor');
 		$notNullAttributes = array_filter($model->attributes,function($a){return !empty($a);});
 		$insertableAttributes = array();
 		foreach($notNullAttributes as $attr=>$value) {

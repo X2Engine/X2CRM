@@ -46,7 +46,7 @@ class X2FlowRecordCreateAction extends X2FlowAction {
     public $info = 'Creates a new action associated with the record that triggered this flow.';
 
     public function paramRules(){
-        return array(
+        return array_merge (parent::paramRules (), array (
             'title' => Yii::t('studio', $this->title),
             'info' => Yii::t('studio', $this->info),
             'modelRequired' => 1,
@@ -54,7 +54,7 @@ class X2FlowRecordCreateAction extends X2FlowAction {
                 // array('name'=>'attributes'),
                 array('name' => 'subject', 'label' => Yii::t('actions', 'Subject'), 'optional' => 1),
                 array('name' => 'description', 'label' => Yii::t('actions', 'Description'), 'type' => 'text')
-                ));
+                )));
     }
 
     public function execute(&$params){

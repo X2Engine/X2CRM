@@ -97,16 +97,12 @@ class TriggerLog extends CActiveRecord {
     public static function appendTriggerLog ($triggerLogId, $flowTrace) {
         $model = self::model ('TriggerLog')->findByPk ($triggerLogId);
         if (!$model) {
-            //AuxLib::debugLog ('appendTriggerLog: model is null');; 
             return;
         }
-        //AuxLib::debugLog ('appendTriggerLog: model is not null');; 
 
-        //AuxLib::debugLog ('appendTriggerLog: triggerlog old = '.$model->triggerLog);
         $oldLog = CJSON::decode ($model->triggerLog); 
         $model->triggerLog = CJSON::encode (array_merge ($oldLog, $flowTrace));
         $model->save ();
-        //AuxLib::debugLog ('new trigger log ='. $model->triggerLog); 
     }
 
 }

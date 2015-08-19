@@ -1,4 +1,4 @@
-id,name,nameId,subject,emailTo,type,associationType,text,createdBy,createDate,editPermissions,updatedBy,lastUpdated,visibility
+id,name,nameId,subject,emailTo,type,associationType,text,createdBy,createDate,updatedBy,lastUpdated,visibility
 52,"Sample Quote Template","Sample Quote Template_52",,,quote,,"<html>
 <head>
     <title></title>
@@ -33,7 +33,7 @@ id,name,nameId,subject,emailTo,type,associationType,text,createdBy,createDate,ed
 
 <hr />{Quote.description}<br /><br />
 {Quote.lineItems}</body>
-</html>",Anyone,"May 7, 2013 10:42:19 PM",Anyone,Anyone,"May 7, 2013 10:42:19 PM",Public
+</html>",Anyone,"May 7, 2013 10:42:19 PM",Anyone,"May 7, 2013 10:42:19 PM",Public
 53,"First Doc","First Doc_53",,,,,"<html>
 <head>
 	<title></title>
@@ -49,7 +49,7 @@ Testing Document<br />
 <div>&nbsp;</div>
 </body>
 </html>
-",admin,"September 17, 2014 11:06:52 PM",,admin,"September 17, 2014 11:06:52 PM",Public
+",admin,"September 17, 2014 11:06:52 PM",admin,"September 17, 2014 11:06:52 PM",Public
 54,"Quote Template","Quote Template_54","Testing Quote Template",,quote,,"<html>
 <head>
 	<title></title>
@@ -62,7 +62,7 @@ Testing Document<br />
 <br />
 Thank you for your purchase of {Quote.total}</body>
 </html>
-",admin,"September 17, 2014 11:09:11 PM",,admin,"September 17, 2014 11:09:11 PM",Public
+",admin,"September 17, 2014 11:09:11 PM",admin,"September 17, 2014 11:09:11 PM",Public
 55,"Test Email Template","Test Email Template_55","Welcome Message",,email,Contacts,"<html>
 <head>
 	<title></title>
@@ -71,4 +71,4 @@ Thank you for your purchase of {Quote.total}</body>
 <br />
 Thank you for joining!</body>
 </html>
-",admin,"September 17, 2014 11:11:11 PM",,admin,"September 17, 2014 11:11:11 PM",Public
+",admin,"September 17, 2014 11:11:11 PM",admin,"September 17, 2014 11:11:11 PM",Public

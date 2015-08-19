@@ -42,9 +42,7 @@ Yii::app()->clientScript->registerScriptFile(
     Yii::app()->getBaseUrl().'/js/jquery-expander/jquery.expander.js', CClientScript::POS_END);
 
 // used for rich editing in new post text field
-Yii::app()->clientScript->registerScriptFile(Yii::app()->getBaseUrl().'/js/ckeditor/ckeditor.js');
-Yii::app()->clientScript->registerScriptFile(Yii::app()->getBaseUrl().'/js/ckeditor/adapters/jquery.js');
-Yii::app()->clientScript->registerScriptFile(Yii::app()->request->baseUrl . '/js/emailEditor.js');
+Yii::app()->clientScript->registerPackage ('emailEditor');
 
 
 Yii::app()->clientScript->registerScriptFile(Yii::app()->getBaseUrl().'/js/multiselect/js/ui.multiselect.js');
@@ -103,7 +101,7 @@ x2.activityFeed = new x2.ActivityFeed ({
 
 <div id='activity-feed-container' class='x2-layout-island'>
 <div id='page-title-container'>
-    <div class="page-title icon rounded-top activity-feed">
+    <div class="page-title icon rounded-top activity-feed x2Activity">
         <h2><?php echo Yii::t('app','Activity Feed'); ?></h2>
         <span title='<?php echo Yii::t('app', 'Feed Settings'); ?>'>
         <?php
@@ -175,7 +173,8 @@ $this->renderPartial ('_feedFilters');
                 echo CHtml::button(
                     Yii::t('app','Attach A File/Photo'),
                     array(
-                        'class'=>'x2-button','onclick'=>"$('#attachments').slideToggle();",
+                        'class'=>'x2-button',
+                        'onclick'=>"x2.FileUploader.toggle('activity')",
                         'id'=>"toggle-attachment-menu-button"));
             }
             ?>
@@ -188,20 +187,18 @@ $this->renderPartial ('_feedFilters');
 </div>
 <?php
 if ($isMyProfile) {
-?>
-<div id="attachments" style="display:none;">
-<?php 
-$this->widget(
-    'Attachments',
-    array(
-        'associationType'=>'feed',
-        'associationId'=>Yii::app()->user->getId(),
-        'profileId'=>$profileId,
-    )
-); 
-?>
-</div>
-<?php
+    $this->widget ('FileUploader',array(
+        'id' => 'activity',
+        'url' => '/site/upload',
+        'mediaParams' => array(
+            'profileId' => $profileId, 
+            'associationType' => 'feed',
+            'associationId' => Yii::app()->user->getId(),
+        ),
+        'viewParams' => array (
+            'showButton' => false
+        )
+    ));
 }
 $this->widget('zii.widgets.CListView', array(
     'dataProvider'=>$stickyDataProvider,

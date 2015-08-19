@@ -53,8 +53,8 @@ class X2FixtureManager extends CDbFixtureManager {
     }
 
     public function __construct () {
-        $this->loadFixtures = LOAD_FIXTURES && !LOAD_FIXTURES_FOR_CLASS_ONLY;
-        $this->loadFixturesForClassOnly = LOAD_FIXTURES_FOR_CLASS_ONLY;
+        $this->loadFixtures = X2_LOAD_FIXTURES && !X2_LOAD_FIXTURES_FOR_CLASS_ONLY;
+        $this->loadFixturesForClassOnly = X2_LOAD_FIXTURES_FOR_CLASS_ONLY;
     }
 
     public function prepare () {

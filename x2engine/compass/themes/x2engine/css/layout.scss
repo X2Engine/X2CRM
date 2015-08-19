@@ -35,6 +35,7 @@
  
 @import "standards";
 @import "font-awesome";
+@import "x2-icons";
 @import "icons";
 
 div.no-selection,
@@ -64,15 +65,20 @@ menu with JS
 
 #search-bar-title {
     font-size: 31px;
-    color: rgba(white, 0.9);
+    color: white;
     float: left;
     margin-left: 18px;
     margin-right: 6px;
 }
 
 #your-logo {
-    /*width: 36px;*/
     height: 30px;
+    font-size: 36px;
+}
+
+#your-logo.default-logo {
+    position: relative;
+    top: -4px;
 }
 
 #show-left-menu-button {
@@ -137,7 +143,7 @@ body {
     width: 100%;
     z-index: 1000;
     &.defaultBg {
-        background: url(../images/default_header.gif) top left repeat-x #3d70b4;
+        background: $appBlue;
         /* #417dcd to #3d70b4 */
     }
 }
@@ -628,7 +634,7 @@ Remove border radius from left widget title bars which are preceded by a collaps
         -webkit-box-shadow:     inset 0 1px 0 0 #fff;
         box-shadow:             inset 0 1px 0 0 #fff; */
     @include border-radius (2px 2px 0 0);
-    background: #ddd;
+    background: $defaultTitleBar;
 
 }
 
@@ -643,6 +649,9 @@ Remove border radius from left widget title bars which are preceded by a collaps
     line-height: 18px;
     color: #333;
     cursor: default;
+    .gear-img-container, .portlet-minimize > a {
+        @include titleBarIconButton;
+    }
 }
 
 .portlet-content {
@@ -674,7 +683,7 @@ Remove border radius from left widget title bars which are preceded by a collaps
 
 .dropdown .gear-img-container {
     float: left;
-    opacity: 0.3;
+    opacity: 0.7;
     cursor: pointer;
     // line-height: 100%;
     font-size: 120%;
@@ -699,6 +708,9 @@ Remove border radius from left widget title bars which are preceded by a collaps
 
 #sidebar-left-widget-box {
     /*margin-top: 5px;*/
+    .portlet-decoration i {
+        @include titleBarIconButton;
+    }
 }
 
 /*#sidebar-left-widget-box {
@@ -999,7 +1011,6 @@ div {
                         position: relative;
                         top: 3px;                        
                     }
-                    width: 33px;
                     margin-top: 5px;
                 }
             }
@@ -1184,6 +1195,8 @@ div {
 
 .x2-layout-island {
     background-color: white;
+
+    /* @theme background: content */
     @include standard-box-shadow ();
     @include border-radius (2px);
     border: none;
@@ -1399,4 +1412,14 @@ body.disable-mobile-layout {
     a {
         color: #004baf;
     }
+}
+
+
+/************************************************
+* Google Drive IFrame
+*************************************************/
+
+iframe.google-drive {
+    border: none;
+    background: transparent;
 }

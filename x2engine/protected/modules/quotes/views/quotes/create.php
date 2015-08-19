@@ -66,16 +66,22 @@ if($model->hasLineItemErrors) { ?>
 <?php 
 }
 
-echo $this->renderPartial('application.components.views._form',
-	array(
-		'model'=>$model,
-		'form'=>$form,
-		'users'=>$users,
-		'modelName'=>'Quote',
-		'suppressForm'=>true, // let us create the CActiveForm in this file
-		'scenario' => $quick ? 'Inline' : 'Default',
-	)
-);
+
+$this->widget ('FormView', array(
+	'model' => $model,
+	'form' => $form,
+	'scenario' => $quick ? 'Inline' : 'Default'
+));
+//echo $this->renderPartial('application.components.views.@FORMVIEW',
+// 	array(
+// 		'model'=>$model,
+// 		'form'=>$form,
+// 		'users'=>$users,
+// 		'modelName'=>'Quote',
+// 		'suppressForm'=>true, // let us create the CActiveForm in this file
+// 		'scenario' => $quick ? 'Inline' : 'Default',
+// 	)
+// );
 
 echo $this->renderPartial('_lineItems', array(
 	'model' => $model,

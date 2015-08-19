@@ -3,6 +3,9 @@
 require_once(implode(DIRECTORY_SEPARATOR,array(__DIR__, 'testconstants.php')));
 require_once(implode(DIRECTORY_SEPARATOR,array(__DIR__,'..','..','constants.php')));
 require_once(__DIR__.DIRECTORY_SEPARATOR.'WebTestConfig.php');
+if (file_exists(__DIR__ . DIRECTORY_SEPARATOR . 'vendor' . DIRECTORY_SEPARATOR . 'autoload.php')) {
+    require_once(__DIR__ . DIRECTORY_SEPARATOR . 'vendor' . DIRECTORY_SEPARATOR . 'autoload.php');
+}
 $yiit=implode(DIRECTORY_SEPARATOR,array(__DIR__,'..','..','framework','yiit.php'));
 $config=require_once(implode(DIRECTORY_SEPARATOR,array(__DIR__,'..','config','test.php')));
 

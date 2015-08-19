@@ -32,6 +32,42 @@
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2Engine".
  *****************************************************************************************/
+
+@import "icons";
+
+$errorRed: #C00;
+
+// override to prevent icon from being inserted since "data-icon", used by X2Engine to insert
+// font icons, is also used by jQuery mobile
+[data-icon]:before { content: none!important; }
+
+#login-form-logo {
+    //text-shadow: 1px 4px 6px #233d5f, 0 0 0 #233d5f, 1px 4px 6px #233d5f;
+    color: #9198A0;
+    font-weight: bold;
+    font-size: 113px;
+    width: 100%;
+    text-align: center;
+    padding: 20% 0px;
+    line-height: 70%;
+    display: block;
+}
+
+img#login-form-logo {
+    width: 95px;
+    margin: auto;
+}
+
+.errorMessage {
+    color: $errorRed;
+}
+
+input[type='text']:not(.error), select, select option, .x2-select, .x2-select option, 
+.x2-minimal-select, .x2-minimal-select-filtercol, .x2-minimal-select option,
+.x2-mobile-narrow-input-row, input[type='password'] {
+    background: transparent !important;
+}
+
 /*
 login page
 */
@@ -144,4 +180,10 @@ activity
 
 #logo-container {
   text-align: center;
+}
+
+#footer {
+    a.full-site-link {
+        //margin-left: 3px;
+    }
 }

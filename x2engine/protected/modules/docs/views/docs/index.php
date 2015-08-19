@@ -34,175 +34,219 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 
-$this->breadcrumbs=array(
-	'Docs',
-);
-
 $menuOptions = array(
     'index', 'create', 'createEmail', 'createQuote', 'import', 'export',
 );
 $this->insertMenu($menuOptions);
 
-Yii::app()->clientScript->registerCss('docsIndexCss', "
-    #attachments-grid {
-        margin-top: 17px;
+Yii::app()->clientScript->registerCssFile(
+    Yii::app()->controller->module->assetsUrl.'/css/index.css');
+
+Yii::app()->clientScript->registerScript('docsIndexJS',"
+    x2.foldersManager = {};
+    x2.foldersManager.setUpDragAndDrop = function(){
+        $('.draggable-file-system-object').draggable({
+            delay: 200,
+            cursor:'move',
+            cursorAt:{top:0,left:0},
+            revert:'invalid',
+            stack:'.draggable-file-system-object',
+            start: function(){
+                originalWidth = $(this).css('width');
+                $(this).css('width','15%');
+                $(this).css('border-radius','4px');
+                $(this).find('.file-system-object-attributes').hide();
+                $(this).find('.file-system-object-link').css('width','100%');
+                $('#file-delete').show();
+            },
+            stop: function(){
+                $(this).css('width', originalWidth);
+                $(this).css('border-radius','');
+                $(this).find('.file-system-object-link').css('width','30%');
+                $(this).find('.file-system-object-attributes').show();
+                $('#file-delete').hide();
+            }   
+        });
+        $('.droppable-file-system-object').droppable({
+            accept:'.draggable-file-system-object',
+            activeClass:'x2-active-folder',
+            hoverClass:'x2-state-active highlight',
+            drop: function(event, ui){
+                ui.draggable.hide();
+                var type = ui.draggable.attr('data-type');
+                var objId = ui.draggable.attr('data-id');
+                var destId = $(this).attr('data-id');
+                $.ajax({
+                    url:'".Yii::app()->controller->createUrl('/docs/moveFolder')."',
+                    data:{type:type, objId:objId, destId:destId},
+                    error:function(){
+                        ui.draggable.show();
+                    }
+                });
+            }
+        });
     }
+    $(document).on('click','#create-folder-button',function(){
+        $('#folder-form').dialog({
+            width: '500px',
+            buttons: [
+                {
+                    text: ".CJSON::encode (Yii::t('docs', 'Create Folder')).",
+                    click: function () {
+                        $('#folder-form input[type=\"submit\"]').click ();
+                    }
+                }
+            ]
+        });
+    });
+    $(document).on('click','.file-system-object-folder',function(){
+        $.fn.yiiListView.update('folder-contents',{
+            url:'" . Yii::app()->controller->createUrl('/docs/index') . "',
+            data:{id:$(this).attr('data-id')},
+            complete:function(){
+                x2.foldersManager.setUpDragAndDrop();
+            }
+        }); 
+        $('#DocFolders_parentFolder').val($(this).attr('data-id')); 
+        return false;
+    });
+    $(document).on('ready',function(){
+        x2.foldersManager.setUpDragAndDrop();
+        $('#delete-drop').droppable({
+            accept:'.draggable-file-system-object',
+            hoverClass:'highlight',
+            drop:function(event, ui){
+                ui.draggable.hide();
+                var type = ui.draggable.attr('data-type');
+                var id = ui.draggable.attr('data-id');
+                var message = ui.draggable.attr('data-type')=='folder'?
+                    ".CJSON::encode (
+                        Yii::t(
+                            'docs',
+                            'Are you sure you want to delete this folder and all of its '.
+                            'contents?'))." :
+                    ".CJSON::encode (
+                        Yii::t('docs','Are you sure you want to delete this file?')).";
+                if(window.confirm(message)){
+                    $.ajax({
+                        url:'".Yii::app()->controller->createUrl('/docs/deleteFileFolder')."',
+                        method:'POST',
+                        data:{YII_CSRF_TOKEN:x2.csrfToken,type:type, id:id},
+                        success:function(){
+                            x2.flashes.displayFlashes({
+                                'success':[".CJSON::encode (
+                                    Yii::t('docs','Successfully deleted.'))."]});
+                        },
+                        error:function(){
+                            x2.flashes.displayFlashes({
+                                'error':[".CJSON::encode (
+                                    Yii::t(
+                                        'docs',
+                                        'You do not have permission to delete that file or '.
+                                        'folder.'))."]
+                                });
+                            $.fn.yiiListView.update(
+                                'folder-contents', {complete:function(){ 
+                                    x2.foldersManager.setUpDragAndDrop(); }});
+                        }
+                    });
+                }else{
+                    $.fn.yiiListView.update(
+                        'folder-contents', {
+                            complete:function(){ x2.foldersManager.setUpDragAndDrop(); }});
+                }
+            }
+        });
+    });
 ");
-Yii::app()->clientScript->registerScript('search', "
-$('.search-button').click(function(){
-	$('.search-form').toggle();
-	return false;
-});
-$('.search-form form').submit(function(){
-	$.fn.yiiGridView.update('contacts-grid', {
-		data: $(this).serialize()
-	});
-	return false;
-});
-");
+
 ?>
-<div class="search-form" style="display:none">
-<?php $this->renderPartial('_search',array(
-	'model'=>$model,
-)); ?>
-</div><!-- search-form -->
+<div>
 <?php
-//	$this->widget('zii.widgets.grid.CGridView', array(
-//	'id'=>'docs-grid',
-//	'baseScriptUrl'=>Yii::app()->request->baseUrl.'/themes/'.Yii::app()->theme->name.'/css/gridview',
-//	'template'=> '<div class="page-title"><h2>'.Yii::t('docs','Documents').'</h2><div class="title-bar">'
-//		.CHtml::link(Yii::t('app','Advanced Search'),'#',array('class'=>'search-button')) . ' | '
-//		.CHtml::link(Yii::t('app','Clear Filters'),array('index','clearFilters'=>1))
-//		.'{summary}</div></div>{items}{pager}',
-//	'dataProvider'=>$model->search(),
-//	'filter'=>$model,
-//	'columns'=>array(
-//		array(
-//			'name'=>'name',
-//			'value'=>'CHtml::link($data->name,array("view","id"=>$data->id))',
-//			'type'=>'raw',
-//			'htmlOptions'=>array('width'=>'30%'),
-//		),
-//		array(
-//			'name'=>'createdBy',
-//			'value'=>'User::getUserLinks($data->createdBy)',
-//			'type'=>'raw',
-//		),
-//		array(
-//			'name'=>'updatedBy',
-//			'value'=>'User::getUserLinks($data->updatedBy)',
-//			'type'=>'raw',
-//		),
-//		array(
-//			'name'=>'createDate',
-//			'type'=>'raw',
-//			'value'=>'Yii::app()->dateFormatter->format(Yii::app()->locale->getDateFormat("medium"), $data->createDate)',
-//		),
-//		array(
-//			'name'=>'lastUpdated',
-//			'type'=>'raw',
-//			'value'=>'Yii::app()->dateFormatter->format(Yii::app()->locale->getDateFormat("medium"), $data->lastUpdated)',
-//		),
-//	),
-//));
-
-Yii::app()->clientScript->registerScript('search', "
-$('.search-button').unbind('click').click(function(){
-	$('.search-form').toggle();
-	return false;
-});
-$('.search-form form').submit(function(){
-	$.fn.yiiGridView.update('docs-grid', {
-		data: $(this).serialize()
-	});
-	return false;
-});
-
-",CClientScript::POS_READY);
-
-$this->widget('X2GridView', array(
-	'id'=>'docs-grid',
-	'title'=>Yii::t('docs','{module}', array('{module}'=>Modules::displayName())),
-	'buttons'=>array('advancedSearch','clearFilters','columnSelector','autoResize','showHidden'),
-	'template'=> '<div class="page-title icon docs">{title}{buttons}{filterHint}'.
-            
-            '{summary}</div>{items}{pager}',
-	'dataProvider'=>$model->search(),
-	// 'enableSorting'=>false,
-	// 'model'=>$model,
-	'filter'=>$model,
-	'modelName'=>'Docs',
-	'viewName'=>'docs',
-	'defaultGvSettings'=>array(
-		'name' => 253,
-		'createdBy' => 76,
-		'createDate' => 111,
-		'lastUpdated' => 115,
-	),
-	'specialColumns'=>array(
-		'name' => array(
-			'header'=>Yii::t('docs','Title'),
-			'name'=>'name',
-			'value'=>'CHtml::link($data->renderAttribute("name"),array("view","id"=>$data->id))',
-			'type'=>'raw',
-		),
-		'type' => array(
-			'header'=>Yii::t('docs','Type'),
-			'name'=>'type',
-			'value'=>'$data->parseType()',
-			'type'=>'raw',
-		),
-		'createdBy' => array(
-			'header'=>Yii::t('docs','Created By'),
-			'name'=>'createdBy',
-			'value'=>'User::getUserLinks($data->createdBy,true,true)',
-			'type'=>'raw',
-		),
-		'updatedBy' => array(
-			'header'=>Yii::t('docs','Updated By'),
-			'name'=>'updatedBy',
-			'value'=>'User::getUserLinks($data->updatedBy,true,true)',
-			'type'=>'raw',
-		),
-	),
-	'excludedColumns' => array(
-		'text',
-		'type',
-		'editPermissions',
-	),
-	'enableControls'=>false,
-	'fullscreen'=>true,
-));
+$folderViewHeader = FileSystemObject::getListViewHeader();
+$this->widget('zii.widgets.CListView', array(
+    'dataProvider' => $folderDataProvider,
+    'itemView' => '_viewFileSystemObject',
+    'id' => 'folder-contents',
+    'htmlOptions' => array('class'=>'x2-list-view list-view'),
+    'baseScriptUrl' => Yii::app()->request->baseUrl . '/themes/' . Yii::app()->theme->name . 
+        '/css/listview',
+    'template' => '<div class="page-title rounded-top icon docs"><h2>'.Yii::t('docs','Docs').
+        ' </h2>{summary}'
+        .  X2Html::tag(
+            'span', 
+            array(
+                'id'=>'create-folder-button',
+                'class' => 'x2-button fa-stack',
+                'style'=>'float:right;margin-top:5px;'),
+            X2Html::fa(
+                'folder fa-stack-2x',
+                array('style' => 'margin-top:1px;')) . 
+            X2Html::fa(
+                'plus-circle fa-stack-1x fa-inverse', 
+                array('style' => 'margin-top:3px;margin-left:5px;')))
+        . '</div>'.$folderViewHeader.'{items}{pager}',
+    ));
 ?>
+</div>
+<div id="file-delete" style="text-align:center;display:none;"> 
+    <?php 
+    echo X2Html::fa(
+        'trash fa-3x fa-border', 
+        array('id' => 'delete-drop', 'style' => 'color:red;margin:auto;margin-top:20px;')); ?>
+</div>
 <br />
 <div class='flush-grid-view'>
 <?php
-	$this->widget('zii.widgets.grid.CGridView', array(
-	'id'=>'attachments-grid',
-	'baseScriptUrl'=>Yii::app()->request->baseUrl.'/themes/'.Yii::app()->theme->name.'/css/gridview',
-	'template'=> '<div class="page-title rounded-top icon docs"><h2>'.Yii::t('docs','Uploaded {module}', array('{module}'=>Modules::displayName())).'</h2>{summary}</div>{items}{pager}',
-	'dataProvider'=>$attachments,
-	'columns'=>array(
-		array(
-			'name'=>'fileName',
-			'value'=>'$data->getMediaLink()',
-			'type'=>'raw',
-			'htmlOptions'=>array('width'=>'30%'),
-		),
-		array(
-			'name'=>'uploadedBy',
-			'value'=>'User::getUserLinks($data->uploadedBy)',
-			'type'=>'raw',
-		),
-		array(
-			'name'=>'createDate',
-			'type'=>'raw',
-			'value'=>'Yii::app()->dateFormatter->format(Yii::app()->locale->getDateFormat("medium"), $data->createDate)',
-		),
-	),
+    $this->widget('zii.widgets.grid.CGridView', array(
+    'id'=>'attachments-grid',
+    'baseScriptUrl'=>Yii::app()->request->baseUrl.'/themes/'.Yii::app()->theme->name.
+        '/css/gridview',
+    'template'=> '<div class="page-title rounded-top icon docs"><h2>'.
+        Yii::t('docs','Uploaded {module}', array('{module}'=>Modules::displayName())).
+        '</h2>{summary}</div>{items}{pager}',
+    'dataProvider'=>$attachments,
+    'columns'=>array(
+        array(
+            'name'=>'fileName',
+            'value'=>'$data->getMediaLink()',
+            'type'=>'raw',
+            'htmlOptions'=>array('width'=>'30%'),
+        ),
+        array(
+            'name'=>'uploadedBy',
+            'value'=>'User::getUserLinks($data->uploadedBy)',
+            'type'=>'raw',
+        ),
+        array(
+            'name'=>'createDate',
+            'type'=>'raw',
+            'value'=>'Yii::app()->dateFormatter->format(
+                Yii::app()->locale->getDateFormat("medium"), $data->createDate)',
+        ),
+    ),
 ));
-	?>
+    ?>
 </div>
-<br/>
+<br>
 <?php
-$this->widget('Attachments',array('associationType'=>'docs','associationId'=>$model->id)); ?>
+$this->widget ('FileUploader',array(
+    'id' => 'attachment',
+    'mediaParams' => array (
+        'associationType'=>'docs',
+        'associationId'=>null
+    ),
+    'events' => array(
+        'success' => '$.fn.yiiGridView.update("attachments-grid")',
+    ))
+); 
+
+echo '<div class="form" id="folder-form" style="display:none;" 
+    title="'.Yii::t('docs','Create Folder').'">';
+$this->renderPartial ('_folderCreate', array (
+    'model' => $model
+));
+echo '</div>';
+
+?>
+<br>

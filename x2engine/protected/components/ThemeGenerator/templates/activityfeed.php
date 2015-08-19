@@ -5,7 +5,7 @@
 	background: $colors[content]
 }
 
-.list-view .items,
+body.not-mobile-body .list-view .items,
 #activity-feed-container,
 #activity-feed {
 	color: $colors[text];

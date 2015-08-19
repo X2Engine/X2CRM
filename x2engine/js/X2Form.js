@@ -34,7 +34,7 @@
  *****************************************************************************************/
 
 /**
- * Manages behavior of report settings forms
+ * Manages behavior of settings forms
  */
 x2.X2Form = (function () {
 
@@ -45,14 +45,72 @@ function X2Form (argsDict) {
         formSelector: '',
         submitUrl: '',
         formModelName: '',
-        translations: {}
+        translations: {},
+        namespace: '',
+        /**
+         * @var bool if true, form submission will be done via ajax 
+         */
+        ajaxForm: false,
+        onAjaxSuccess: function () {}
     };
     auxlib.applyArgs (this, defaultArgs, argsDict);
-    this._form$ = $(this.formSelector);
+    this.element$ = this._form$ = $(this.formSelector);
+    this.element$.data (X2Form.dataKey, this);
     this._init ();
 }
 
-X2Form.prototype._init = function() {};
+X2Form.dataKey = 'x2-form';
+
+/**
+ * Returns X2Form instance associated with jQuery object
+ * @param string|object
+ * @return Widget 
+ */
+X2Form.getInstance = function (elem) {
+    return $(elem).data (X2Form.dataKey);
+};
+
+X2Form.prototype.findElemByAttr = function (attr) {
+    return this.element$.find ('[name=\"' + this.formModelName + '[' + attr + ']\"]');
+};
+
+X2Form.prototype.ajaxSubmit = function () {
+    var that = this;
+    $.ajax ({
+        url: this.submitUrl,
+        type: 'POST',
+        data: [
+            {
+                name: 'x2ajax', 
+                value: '1'
+            },
+            {
+                name: 'saveOnly', 
+                value: '1'
+            },
+            {
+                name: x2.Widget.NAMESPACE_KEY, 
+                value: this.namespace
+            }
+        ].concat (this.element$.serializeArray ()),
+        dataType: 'json',
+        success: function (data) {
+            that.onAjaxSuccess (data);
+        }
+    });
+};
+
+X2Form.prototype._setUpAjaxSubmission = function () {
+    var that = this;
+    this.element$.on ('submit', function () {
+        that.ajaxSubmit (); 
+        return false;
+    });
+};
+
+X2Form.prototype._init = function() {
+    if (this.ajaxForm) this._setUpAjaxSubmission ();
+};
 
 return X2Form;
 

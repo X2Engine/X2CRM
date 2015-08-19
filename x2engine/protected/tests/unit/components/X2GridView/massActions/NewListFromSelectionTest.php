@@ -97,12 +97,11 @@ class NewListFromSelectionTest extends X2DbTestCase {
         $updated = 0;
         $uid = null;
         while (true) {
-            ob_start ();
+            $this->obStart ();
             $newList->superExecute ($uid, 24, $idChecksum);
-            $retVal = CJSON::decode (ob_get_contents ());
+            $retVal = CJSON::decode (ob_get_contents ()); $this->obEndClean ();
             $this->assertTrue (!isset ($retVal['errorCode']));
             $uid = $retVal['uid'];
-            ob_clean ();
 
             // get ids of contacts not in new list
             $remainingIds = Yii::app()->db->createCommand ('

@@ -32,4 +32,10 @@ return array (
 'Relationships for Contact: '=>'מערכות יחסים ליצירת קשר:',
 'Import Opportunities'=>'הזדמנויות יבוא',
 'Export Opportunities'=>'הזדמנויות יצוא',
+'Create {opportunity}'=>'צור {opportunity}',
+'{opportunity}:'=>'{opportunity}',
+'{opportunities} List'=>'{opportunities} רשימה',
+'Edit {opportunity}'=>'עריכת {opportunity}',
+'Import {opportunities}'=>'יבוא {opportunities}',
+'Export {opportunities}'=>'יצוא {opportunities}',
 );

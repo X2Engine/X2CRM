@@ -55,7 +55,7 @@ class X2FlowRecordReassign extends X2FlowAction {
             'roundRobin' => 'Sequential Distribution',
             'singleUser' => 'Direct User Assignment'
         );
-        return array(
+        return array_merge (parent::paramRules (), array (
             'title' => Yii::t('studio', $this->title),
             'info' => Yii::t('studio', $this->info),
             'modelRequired' => 1,
@@ -72,7 +72,7 @@ class X2FlowRecordReassign extends X2FlowAction {
                 ),
             // array('name'=>'onlineOnly','label'=>'Online Only?','optional'=>1,'type'=>'boolean','defaultVal'=>false),
             )
-        );
+        ));
     }
 
     public function execute(&$params){
@@ -99,10 +99,8 @@ class X2FlowRecordReassign extends X2FlowAction {
                     false, Yii::t('studio', 'Lead routing rules cannot be used with {type} records',
                         array ('{type}' => get_class ($model))));
             }
-        }elseif(
-            $user === 'Anyone' ||
-            CActiveRecord::model('User')->exists('username=?', array($user)) || 
-            CActiveRecord::model('Groups')->exists('id=?', array($user))){ 
+        }elseif(CActiveRecord::model('User')->exists('username=?', array($user)) || 
+                CActiveRecord::model('Groups')->exists('id=?', array($user))){ 
             // make sure the user exists
 
             $assignedTo = $user;

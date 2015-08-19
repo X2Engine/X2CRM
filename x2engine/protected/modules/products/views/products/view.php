@@ -68,27 +68,35 @@ $(function() {
 <div class="page-title-fixed-outer">
     <div class="page-title-fixed-inner">
         <div class="page-title icon products">
-            <?php //echo CHtml::link('['.Yii::t('contacts','Show All').']','javascript:void(0)',array('id'=>'showAll','class'=>'right hide','style'=>'text-decoration:none;')); ?>
-            <?php //echo CHtml::link('['.Yii::t('contacts','Hide All').']','javascript:void(0)',array('id'=>'hideAll','class'=>'right','style'=>'text-decoration:none;')); ?>
             <h2><span class="no-bold"><?php echo Yii::t('products', '{module}:', array('{module}' => Modules::displayName(false))); ?></span> <?php echo CHtml::encode($model->name); ?></h2>
             <?php
-            echo X2Html::editRecordButton($model);
-            echo X2Html::inlineEditButtons();
+            echo X2Html::editRecordButton ($model);
             ?>
         </div>
     </div>
 </div>
 <div id="main-column" <?php echo $layoutManager->columnWidthStyleAttr (1); ?>>
-<?php $this->renderPartial('application.components.views._detailView', array('model' => $model, 'modelName' => 'Product')); ?>
+<?php 
+$this->widget('DetailView', array(
+    'model'   => $model,
+));
 
+//$this->renderPartial('application.components.views.@DETAILVIEW', array('model' => $model, 'modelName' => 'Product')); ?>
+
+    <div class='x2-layout-island' style='padding: 5px'>
     <?php
     $this->widget(
-            'Attachments', array(
-        'associationType' => 'products',
-        'associationId' => $model->id,
+            'ModelFileUploader', array(
+                'associationType' => 'products',
+                'associationId' => $model->id,
+                'viewParams' => array (
+                    'showButton' => true,
+                    'buttonText' => Yii::t('app', 'Attach a File'),
+                )
             )
     );
     ?>
+    </div>
 </div>
 <?php
 $this->widget('X2WidgetList', array(

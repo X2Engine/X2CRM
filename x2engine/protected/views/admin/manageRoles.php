@@ -87,10 +87,9 @@ $this->widget('zii.widgets.grid.CGridView', array(
 )); 
 X2Html::getFlashes(); ?>
 <br>
-<a style='margin-left: 5px;' href="#" onclick="$('#addRole').toggle();$('#deleteRole').hide();$('#editRole').hide();$('#exception').hide();" class="x2-button">Add Role</a>
-<a href="#" onclick="$('#deleteRole').toggle();$('#addRole').hide();$('#editRole').hide();$('#exception').hide();" class="x2-button">Delete Role</a>
-<a href="#" onclick="$('#editRole').toggle();$('#addRole').hide();$('#deleteRole').hide();$('#exception').hide();" class="x2-button">Edit Role</a>
-<a href="#" onclick="$('#exception').toggle();$('#addRole').hide();$('#deleteRole').hide();$('#editRole').hide();" class="x2-button">Add Exception</a>
+<a style='margin-left: 5px;' href="#" onclick="$('#addRole').toggle();$('#deleteRole').hide();$('#editRole').hide();" class="x2-button">Add Role</a>
+<a href="#" onclick="$('#deleteRole').toggle();$('#addRole').hide();$('#editRole').hide();" class="x2-button">Delete Role</a>
+<a href="#" onclick="$('#editRole').toggle();$('#addRole').hide();$('#deleteRole').hide();" class="x2-button">Edit Role</a>
 <br>
 </div>
 <br>
@@ -109,11 +108,5 @@ X2Html::getFlashes(); ?>
 <div id="editRole" style="display:none;" class='x2-layout-island'>
 <?php $this->renderPartial('editRole',array(
     'model'=>$model,
-)); ?>
-</div>
-<div id="exception" style="display:none;" class='x2-layout-island'>
-<?php $this->renderPartial('roleException',array(
-    'model'=>$model,
-    'workflows'=>$workflows,
 )); ?>
 </div>

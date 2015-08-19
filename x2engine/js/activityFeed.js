@@ -138,10 +138,6 @@ Send post text to server via Ajax and minimize editor.
 */
 ActivityFeed.prototype.publishPost = function  () {
     var that = this;
-    if (typeof x2.attachments !== 'undefined' && x2.attachments.fileIsUploaded ()) { 
-        // publisher text gets submitted with file, don't submit it twice
-        return;
-    }
 
     var editorText = window.newPostEditor.getData();
 
@@ -274,7 +270,10 @@ ActivityFeed.prototype.finishMinimizeEditor = function  () {
 
     window.newPostEditor.focusManager.unlock ();
 
-    $("#attachments").hide ();
+    if (typeof this.fileUploader === 'undefined') return;
+    // Close the file uploader and remove all the files
+    this.fileUploader.toggle(false);
+    this.fileUploader.dropzone.removeAllFiles();
 }
 
 /*
@@ -294,21 +293,6 @@ ActivityFeed.prototype.attachmentMenuBehavior = function  () {
 
     $("#submitAttach").hide ();
 
-    function submitAttachment (evt) {
-        evt.preventDefault ();
-        if (x2.attachments.fileIsUploaded ()) {
-            $("#submitAttach").click ();
-        }
-        return false;
-    }
-
-    $("#toggle-attachment-menu-button").click (function () {
-        if ($("#attachments").is (":visible")) {
-            $("#save-button").bind ("click", submitAttachment);
-        } else {
-            $("#save-button").unbind ("click", submitAttachment);
-        }
-    });
 }
 
 ActivityFeed.prototype.setupAndroidPublisher = function  () {
@@ -429,7 +413,19 @@ ActivityFeed.prototype.setupEditorBehavior = function  () {
     });*/
 
     $('#submit-button').click (function () { return that.publishPost (); });
-    $('#save-button').click (function () { return that.publishPost (); });
+    $('#save-button').click (function (evt) {
+        evt.preventDefault ();
+
+        // Upload file uploader file, and submit post data with the image
+        // Only submits if there are files queued
+        if (typeof that.fileUploader !== 'undefined' && that.fileUploader.filesQueued()) {
+            that.fileUploader.mediaParams.attachmentText = window.newPostEditor.getData ();
+            that.fileUploader.upload();
+            return;
+        }
+
+        return that.publishPost (); 
+    });
 
 }
 
@@ -1422,6 +1418,35 @@ ActivityFeed.prototype._setUpRelativeTimeStamps = function () {
 
 }
 
+/**
+ * Sets up the fileUploader to submit iamges with posts
+ */
+ActivityFeed.prototype._setUpDropZone = function () {
+    var that = this;
+
+    // Set the fileUploader to the fileuploader called 'activity'
+    this.fileUploader = x2.FileUploader.list['activity'];
+    if (typeof this.fileUploader === 'undefined') return;
+
+    // Override dropzone defaults
+    with (this.fileUploader.dropzone) {
+        // prevent images form uploading instantly
+        options.autoProcessQueue = false;
+
+        // Allow user to remove images once added
+        options.addRemoveLinks = true;
+
+        // Don't diplay text on these, we use icons instead
+        options.dictRemoveFile = '';
+        options.dictCancelUpload = '';
+
+        // when finished uploading, minimize editor
+        on ('success', function(){
+            that.finishMinimizeEditor();
+        });
+    }
+}
+
 
 ActivityFeed.prototype._init = function () {
 
@@ -1438,6 +1463,7 @@ ActivityFeed.prototype._init = function () {
         that._setUpTitleBar ();
         that._setUpFilters ();
         that._setUpRelativeTimeStamps ();
+        that._setUpDropZone();
     });
 
 };

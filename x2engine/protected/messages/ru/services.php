@@ -107,4 +107,7 @@ return array (
 'Import Services'=>'Импорт Услуги',
 'Export Services'=>'Экспорт услуг',
 'Case Name'=>'Дело Имя',
+'Import {services}'=>'Импорт {services}',
+'Export {services}'=>'Экспорт {services}',
+'Thank you for contacting our Technical Support team. This is to verify we have received your request for Case# {casenumber}. One of our Technical Analysts will contact you shortly.'=>'Благодарим Вас за обращение в службу технической поддержки. Это, чтобы убедиться, мы получили ваш запрос для Case # {casenumber} Один из наших технических аналитиков свяжется с вами в ближайшее время.',
 );

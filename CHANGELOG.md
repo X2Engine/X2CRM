@@ -1,5 +1,50 @@
+# 5.2 #
+8/19/2015
+
+* Highlights
+  * Platinum Edition Changes
+    * New auto-merge admin tool automatically merges duplicate records
+  * Professional Edition Changes
+    * New Execute Workflow sidebar widget enables execution of individual workflows created in the X2Workflow Studio Designer
+    * New Email Inbox Profile Dashboard widget
+    * New grid view mass actions:
+      * Mass convert leads
+      * Mass publish comments, actions, calls, and logged time
+      * Mass create relationships
+    * New importer option to update existing records on import
+  * New Topics module offers an integrated discussion board
+    * Create topic discussion threads
+    * Relate topics to Contact and Account records
+    * Tag/pin topics
+  * New Profile Dashboard widgets:
+    * Docs Summary
+    * New Web Leads
+  * New mass dedupe admin tool simplifies duplicate record management
+  * Tags can now be exported
+  * Docs can now be grouped inside nestable folders
+  * New drag and drop media upload options and simplified email image attachment
+  * New Web Activity record view widget
+  * New interactive tips system provides step-by-step feature introductions 
+  * Application-wide UI improvements to record view layouts
+  * New Module-specific theming options
+  * New Edit Global CSS admin page
+  * Themes selected on the preferences page now apply to the login screen and to X2Touch
+  * New preferences option to apply background image to login screen
+  * Admin index organizational improvements 
+* General Changelog / Developer Notes:
+  * "X2Flow" has been renamed "X2Workflow"
+  * Contact "Record Aliases" have been renamed "Social Profiles"
+* Tracked Bug Fixes:  
+  * [2631](http://x2software.com/index.php/bugReports/2631): Invalid address:   
+  * [2731](http://x2software.com/index.php/bugReports/2731): import mapping name  
+  * [2769](http://x2software.com/index.php/bugReports/2769): Undefined index:   
+  * [2778](http://x2software.com/index.php/bugReports/2778): AdminController and its behaviors do not have a method or closure named "fixupImportedModuleDropdowns". 
+  * [2862](http://x2software.com/index.php/bugReports/2862): Invalid argument supplied for foreach()  
+  * [2872](http://x2software.com/index.php/bugReports/2872): fopen(/public_html/protected/data/records_export.csv): failed to open stream: Permission denied  
+
 # 5.0.9 #
 7/13/2015
+
 * General Changelog / Developer Notes:
   * Important security updates
   * "Post to Activity Feed" flow action changes:

@@ -59,51 +59,55 @@
 #wide-quote-form h2 {
   margin-top: 0;
 }
+/* line 57, ../../../../../compass/protected/modules/quotes/assets/css/inlineQuotes.scss */
+#wide-quote-form .quote-detail-container-inner {
+  padding: 10px;
+}
 
-/* line 59, ../../../../../compass/protected/modules/quotes/assets/css/inlineQuotes.scss */
+/* line 62, ../../../../../compass/protected/modules/quotes/assets/css/inlineQuotes.scss */
 #show-new-quote-button {
   margin-left: 6px;
 }
 
-/* line 63, ../../../../../compass/protected/modules/quotes/assets/css/inlineQuotes.scss */
+/* line 66, ../../../../../compass/protected/modules/quotes/assets/css/inlineQuotes.scss */
 #quote-save-button {
   float: right;
 }
 
-/* line 67, ../../../../../compass/protected/modules/quotes/assets/css/inlineQuotes.scss */
+/* line 70, ../../../../../compass/protected/modules/quotes/assets/css/inlineQuotes.scss */
 #quotes-line-items-table {
   padding: 6px;
 }
 
-/* line 71, ../../../../../compass/protected/modules/quotes/assets/css/inlineQuotes.scss */
+/* line 74, ../../../../../compass/protected/modules/quotes/assets/css/inlineQuotes.scss */
 #wide-quote-form .widget-close-button {
   color: #222;
 }
 
-/* line 75, ../../../../../compass/protected/modules/quotes/assets/css/inlineQuotes.scss */
+/* line 78, ../../../../../compass/protected/modules/quotes/assets/css/inlineQuotes.scss */
 .viewQuote hr {
   background-color: black;
   /* @theme background-color opaque_text */
   overflow: visible;
 }
 
-/* line 81, ../../../../../compass/protected/modules/quotes/assets/css/inlineQuotes.scss */
+/* line 84, ../../../../../compass/protected/modules/quotes/assets/css/inlineQuotes.scss */
 .product-table th {
   background-color: inherit;
 }
 
-/* line 85, ../../../../../compass/protected/modules/quotes/assets/css/inlineQuotes.scss */
+/* line 88, ../../../../../compass/protected/modules/quotes/assets/css/inlineQuotes.scss */
 .product-table tfoot {
   font-style: normal;
 }
 
-/* line 89, ../../../../../compass/protected/modules/quotes/assets/css/inlineQuotes.scss */
+/* line 92, ../../../../../compass/protected/modules/quotes/assets/css/inlineQuotes.scss */
 .quote-detail-table {
   padding: 0;
   width: 100%;
 }
 
-/* line 94, ../../../../../compass/protected/modules/quotes/assets/css/inlineQuotes.scss */
+/* line 97, ../../../../../compass/protected/modules/quotes/assets/css/inlineQuotes.scss */
 .quote-detail-table th {
   background-color: inherit;
   color: #666;
@@ -112,19 +116,19 @@
   padding: 5px 0 0 0;
 }
 
-/* line 103, ../../../../../compass/protected/modules/quotes/assets/css/inlineQuotes.scss */
+/* line 106, ../../../../../compass/protected/modules/quotes/assets/css/inlineQuotes.scss */
 .quote-detail-table td {
   font-weight: bold;
   padding: 0;
 }
 
-/* line 108, ../../../../../compass/protected/modules/quotes/assets/css/inlineQuotes.scss */
+/* line 111, ../../../../../compass/protected/modules/quotes/assets/css/inlineQuotes.scss */
 .quote-create-table {
   width: 100%;
   padding: 0;
 }
 
-/* line 113, ../../../../../compass/protected/modules/quotes/assets/css/inlineQuotes.scss */
+/* line 116, ../../../../../compass/protected/modules/quotes/assets/css/inlineQuotes.scss */
 .quote-create-table th {
   background-color: inherit;
   font-weight: bold;
@@ -132,12 +136,12 @@
   padding: 5px 0 0 0;
 }
 
-/* line 120, ../../../../../compass/protected/modules/quotes/assets/css/inlineQuotes.scss */
+/* line 123, ../../../../../compass/protected/modules/quotes/assets/css/inlineQuotes.scss */
 .quote-detail-table td {
   padding: 0;
 }
 
-/* line 124, ../../../../../compass/protected/modules/quotes/assets/css/inlineQuotes.scss */
+/* line 127, ../../../../../compass/protected/modules/quotes/assets/css/inlineQuotes.scss */
 .items td {
   border-top: none;
   border-bottom: none;

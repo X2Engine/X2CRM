@@ -75,9 +75,9 @@ class GuestProfileFixTest extends X2DbTestCase {
             'migrations/pending/1410382532-guest-profile-fix.php';
         $return_var;
         $output = array ();
-        VERBOSE_MODE && print_r (exec ($command, $return_var, $output));
-        VERBOSE_MODE && print_r ($return_var);
-        VERBOSE_MODE && print_r ($output);
+        X2_VERBOSE_MODE && print_r (exec ($command, $return_var, $output));
+        X2_VERBOSE_MODE && print_r ($return_var);
+        X2_VERBOSE_MODE && print_r ($output);
             
         // ensure that guest profile has correct id
         $guestProfile = Profile::model ()->findByPk (-1);

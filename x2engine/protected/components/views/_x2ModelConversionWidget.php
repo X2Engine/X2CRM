@@ -34,35 +34,13 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 
+
 ?>
 <div id='<?php echo $this->namespace; ?>conversion-warning-dialog' style='display: none;' 
  class='form'>
     <p><?php 
-    echo Yii::t('app', 'Converting this {model} to {article} {targetModel} could result in data 
-        from your {model} being lost. The following field incompatibilities have been detected: ',
-        array (
-            '{model}' => $modelTitle,
-            '{targetModel}' => $targetModelTitle,
-            '{article}' => preg_match ('/^[aeiouAEIOU]/', $targetModelTitle) ? 'an' : 'a',
-        )); 
-    ?>
-    </p>
-    <ul class='errorSummary'>
-    <?php
-    foreach ($this->model->getConversionIncompatibilityWarnings ($this->targetClass) as $message) {
-        ?>
-        <li><?php echo $message ?></li>
-        <?php
-    }
-    ?>
-    </ul>
-    <p><?php 
-    echo Yii::t('app', 'To resolve these incompatibilities, make sure that every custom '.
-        '{model} field has a corresponding {targetModel} custom field of the same name and type.', 
-        array (
-            '{model}' => $modelTitle,
-            '{targetModel}' => $targetModelTitle,
-        ));
+    echo $this->model->asa ('X2ModelConversionBehavior')
+        ->errorSummary ($targetModelClass, false);
     ?>
     </p>
 </div>

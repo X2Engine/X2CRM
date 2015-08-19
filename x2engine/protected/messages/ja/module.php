@@ -34,4 +34,5 @@ return array (
 'Import {X}'=>'インポート{X}',
 'Export {X}'=>'輸出{X}',
 '{modelName} Attributes'=>'{modelName}の属性',
+'Edit {X}'=>'編集{X}',
 );

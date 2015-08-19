@@ -55,4 +55,7 @@ return array (
 'Import Services'=>'',
 'Export Services'=>'',
 'Case Name'=>'',
+'Import {services}'=>'',
+'Export {services}'=>'',
+'Thank you for contacting our Technical Support team. This is to verify we have received your request for Case# {casenumber}. One of our Technical Analysts will contact you shortly.'=>'',
 );

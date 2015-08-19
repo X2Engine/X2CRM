@@ -274,6 +274,7 @@ abstract class X2FlowTrigger extends X2FlowItem {
                 continue;
 
             $value = $option['value'];
+
             if(isset($option['type']))
                 $value = X2Flow::parseValue($value,$option['type'],$params);
 
@@ -417,10 +418,7 @@ abstract class X2FlowTrigger extends X2FlowItem {
                     return false;
 
                 if($operator === 'changed') {
-                    $oldAttributes = $model->getOldAttributes();
-                    return (!isset($oldAttributes[$attr]) && $model->isNewRecord) || 
-                        (in_array ($attr, array_keys ($oldAttributes)) && 
-                         $model->getAttribute($attr) != $oldAttributes[$attr]);
+                    return $model->attributeChanged ($attr);
                 }
 
                 if ($field->type === 'link') {
@@ -430,7 +428,7 @@ abstract class X2FlowTrigger extends X2FlowItem {
                 }
 
                 return self::evalComparison(
-                    $attrVal,$operator, X2Flow::parseValue($value,$field->type,$params));
+                    $attrVal,$operator, X2Flow::parseValue($value,$field->type,$params), $field);
 
             case 'current_user':
                 return self::evalComparison(
@@ -534,18 +532,11 @@ abstract class X2FlowTrigger extends X2FlowItem {
         // }
     }
 
-    /**
-     * @param mixed $subject if applicable, the value to compare $subject with (value of model 
-     *  attribute)
-     * @param string $operator the type of comparison to be used
-     * @param mixed $value the value being analyzed (specified in config menu)
-     * @return boolean
-     */
-    public static function evalComparison($subject,$operator,$value=null) {
+    protected static function parseArray ($operator, $value) {
         $expectsArray = array ('list', 'notList', 'between');
 
         // $value needs to be a comma separated list
-        if(in_array($operator,$expectsArray,true) && !is_array($value)) {    
+        if(in_array($operator, $expectsArray, true) && !is_array($value)) {    
             $value = explode(',',$value);
 
             $len = count($value);
@@ -555,7 +546,18 @@ abstract class X2FlowTrigger extends X2FlowItem {
                     unset($value[$i]);
             }
         }
+        return $value;
+    }
 
+    /**
+     * @param mixed $subject if applicable, the value to compare $subject with (value of model 
+     *  attribute)
+     * @param string $operator the type of comparison to be used
+     * @param mixed $value the value being analyzed (specified in config menu)
+     * @return boolean
+     */
+    public static function evalComparison($subject,$operator,$value=null, Fields $field = null) {
+        $value = self::parseArray ($operator, $value);
 //        if (!in_array ($operator, $expectsArray, true) && is_array ($value)) {
 //            if (count ($value) > 1) {
 //                return false;
@@ -566,6 +568,31 @@ abstract class X2FlowTrigger extends X2FlowItem {
 
         switch($operator) {
             case '=':
+                // check for multiselect dropdown
+                if ($field && $field->type === 'dropdown') {
+                    $dropdown = $field->getDropdown (); 
+                    if ($dropdown && $dropdown->multi) {
+                        $subject = StringUtil::jsonDecode ($subject, false);
+                        AuxLib::coerceToArray ($subject);
+                        AuxLib::coerceToArray ($value);
+                        return $subject === $value;
+                    }
+                // check for muti-assignment field
+                } else if ($field && $field->type === 'assignment' && 
+                    $field->linkType === 'multiple') {
+
+                    $subject = explode (Fields::MULTI_ASSIGNMENT_DELIM, $subject); 
+                    AuxLib::coerceToArray ($subject);
+                    AuxLib::coerceToArray ($value);
+                    return $subject === $value;
+                } 
+
+                // this case occurs when dropdown or assignment fields are changed from multiple
+                // to single selection, and flow conditions are left over from before the change 
+                // was made
+                if (is_array ($value)) { 
+                    AuxLib::coerceToArray ($subject);
+                }
                 return $subject == $value;
 
             case '>':

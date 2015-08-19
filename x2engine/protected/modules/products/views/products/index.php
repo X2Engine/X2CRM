@@ -69,7 +69,7 @@ $this->widget('X2GridView', array(
         '<div id="x2-gridview-top-bar-outer" class="x2-gridview-fixed-top-bar-outer">'.
         '<div id="x2-gridview-top-bar-inner" class="x2-gridview-fixed-top-bar-inner">'.
         '<div id="x2-gridview-page-title" '.
-         'class="page-title icon quotes x2-gridview-fixed-title">'.
+         'class="page-title icon products x2-gridview-fixed-title">'.
         '{title}{buttons}{filterHint}'.
         
         '{summary}{topPager}{items}{pager}',

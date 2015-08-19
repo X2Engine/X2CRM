@@ -59,4 +59,7 @@ return array (
 'Import Services'=>'Import Services',
 'Export Services'=>'Export Services',
 'Case Name'=>'Fall Namen',
+'Import {services}'=>'Import {services}',
+'Export {services}'=>'Export {services}',
+'Thank you for contacting our Technical Support team. This is to verify we have received your request for Case# {casenumber}. One of our Technical Analysts will contact you shortly.'=>'Wir danken Ihnen für unseren technischen Support. Dies ist, um sicherzustellen, wir Ihre Anfrage für Case # erhalten haben {casenumber} Einer unserer technischen Analysten werden Sie umgehend kontaktieren.',
 );

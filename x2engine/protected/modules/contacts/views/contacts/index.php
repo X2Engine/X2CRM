@@ -94,61 +94,59 @@ $('#content').on('mouseup','#contacts-grid a',function(e) {
 //    ));
     ?>
 </div><!-- search-form -->
-<form>
-    <?php
-    $this->widget('X2GridView', array(
-        'id' => 'contacts-grid',
-        'enableQtips' => true,
-        'qtipManager' => array(
-            'X2GridViewQtipManager',
-            'loadingText' => addslashes(Yii::t('app', 'loading...')),
-            'qtipSelector' => ".contact-name"
+<?php
+$this->widget('X2GridView', array(
+    'id' => 'contacts-grid',
+    'enableQtips' => true,
+    'qtipManager' => array(
+        'X2GridViewQtipManager',
+        'loadingText' => addslashes(Yii::t('app', 'loading...')),
+        'qtipSelector' => ".contact-name"
+    ),
+    'title' => $heading,
+    'enableSelectAllOnAllPages' => $enableSelectAllOnAllPages,
+    'buttons' => array('advancedSearch', 'clearFilters', 'columnSelector', 'autoResize', 'showHidden'),
+    'template' =>
+    '<div id="x2-gridview-top-bar-outer" class="x2-gridview-fixed-top-bar-outer">' .
+    '<div id="x2-gridview-top-bar-inner" class="x2-gridview-fixed-top-bar-inner">' .
+    '<div id="x2-gridview-page-title" ' .
+    'class="page-title icon contacts x2-gridview-fixed-title">' .
+    '{title}{buttons}{filterHint}{massActionButtons}{summary}{topPager}' .
+    '{items}{pager}',
+    'fixedHeader' => true,
+    'dataProvider' => $dataProvider,
+    // 'enableSorting'=>false,
+    // 'model'=>$model,
+    'filter' => $model,
+    'pager' => array('class' => 'CLinkPager', 'maxButtonCount' => 10),
+    // 'columns'=>$columns,
+    'modelName' => 'Contacts',
+    'viewName' => 'contacts',
+    // 'columnSelectorId'=>'contacts-column-selector',
+    'defaultGvSettings' => array(
+        'gvCheckbox' => 30,
+        'name' => 125,
+        'email' => 165,
+        'leadSource' => 83,
+        'leadstatus' => 91,
+        'phone' => 107,
+        'lastActivity' => 78,
+        'gvControls' => 73,
+    ),
+    'specialColumns' => array(
+        'name' => array(
+            'name' => 'name',
+            'header' => Yii::t('contacts', 'Name'),
+            'value' => '$data->link',
+            'type' => 'raw',
         ),
-        'title' => $heading,
-        'enableSelectAllOnAllPages' => $enableSelectAllOnAllPages,
-        'buttons' => array('advancedSearch', 'clearFilters', 'columnSelector', 'autoResize', 'showHidden'),
-        'template' =>
-        '<div id="x2-gridview-top-bar-outer" class="x2-gridview-fixed-top-bar-outer">' .
-        '<div id="x2-gridview-top-bar-inner" class="x2-gridview-fixed-top-bar-inner">' .
-        '<div id="x2-gridview-page-title" ' .
-        'class="page-title icon contacts x2-gridview-fixed-title">' .
-        '{title}{buttons}{filterHint}{massActionButtons}{summary}{topPager}' .
-        '{items}{pager}',
-        'fixedHeader' => true,
-        'dataProvider' => $dataProvider,
-        // 'enableSorting'=>false,
-        // 'model'=>$model,
-        'filter' => $model,
-        'pager' => array('class' => 'CLinkPager', 'maxButtonCount' => 10),
-        // 'columns'=>$columns,
-        'modelName' => 'Contacts',
-        'viewName' => 'contacts',
-        // 'columnSelectorId'=>'contacts-column-selector',
-        'defaultGvSettings' => array(
-            'gvCheckbox' => 30,
-            'name' => 125,
-            'email' => 165,
-            'leadSource' => 83,
-            'leadstatus' => 91,
-            'phone' => 107,
-            'lastActivity' => 78,
-            'gvControls' => 73,
-        ),
-        'specialColumns' => array(
-            'name' => array(
-                'name' => 'name',
-                'header' => Yii::t('contacts', 'Name'),
-                'value' => '$data->link',
-                'type' => 'raw',
-            ),
-        ),
-        'massActions' => array(
-             'MassAddToList', 'NewListFromSelection'
-        ),
-        'enableControls' => true,
-        'enableTags' => true,
-        'fullscreen' => true,
-    ));
-    ?>
-
-</form>
+    ),
+    'massActions' => array(
+         
+        'MassAddToList', 'NewListFromSelection'
+    ),
+    'enableControls' => true,
+    'enableTags' => true,
+    'fullscreen' => true,
+));
+?>

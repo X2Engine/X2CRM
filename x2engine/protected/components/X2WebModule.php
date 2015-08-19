@@ -56,10 +56,18 @@ class X2WebModule extends CWebModule {
      */
 	public function getAssetsUrl() {
 		if (!isset($this->_assetsUrl)) {
-			$this->_assetsUrl = Yii::app()->assetManager->publish(Yii::getPathOfAlias('application.modules.'.$this->id.'.assets'),false,-1,YII_DEBUG?true:null);
+			$this->_assetsUrl = Yii::app()->assetManager->publish(
+                Yii::getPathOfAlias('application.modules.'.$this->id.'.assets'),
+                false,-1,YII_DEBUG?true:null);
         }
 		return $this->_assetsUrl;
 	}
+
+    public static function getAssetsUrlOfModule ($moduleName) {
+        return Yii::app()->assetManager->publish(
+            Yii::getPathOfAlias('application.modules.'.lcfirst ($moduleName).'.assets'),
+            false,-1,YII_DEBUG?true:null);
+    }
 
 }
 

@@ -73,6 +73,7 @@ if ($isMyProfile) {
 
     list($width) = $dashboard->getColumnWidths();
 
+    Tours::loadTips ('profile.index');
 }
 
 ?>

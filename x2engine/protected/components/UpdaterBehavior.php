@@ -985,6 +985,9 @@ class UpdaterBehavior extends ResponseBehavior {
         $cache = Yii::app()->cache;
         if(!empty($cache))
             $cache->flush();
+        if (isset (Yii::app()->cache2)) {
+            Yii::app()->cache2->flush ();
+        }
         // Clear the auth cache
         Yii::app()->db->createCommand('DELETE FROM x2_auth_cache WHERE 1')->execute();
         if($this->scenario == 'update'){

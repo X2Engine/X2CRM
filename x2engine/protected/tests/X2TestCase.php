@@ -45,13 +45,44 @@ Yii::import('application.modules.bugReports.models.*');
  * @author Demitri Morgan <demitri@x2engine.com>
  */
 class X2TestCase extends CTestCase {
-
+    
+    private $_oldSession;
+    
+    public function setUp() {
+        if(X2_TEST_DEBUG_LEVEL > 1){
+            println(' '.$this->getName());
+        }
+        if(isset($_SESSION)){
+            $this->_oldSession = $_SESSION;
+        }
+        parent::setUp();
+    }
+    
+    public function tearDown() {
+        if(isset($this->_oldSession)){
+            $_SESSION = $this->_oldSession;
+        }
+        parent::tearDown();
+    }
+    
     public static function setUpBeforeClass(){
+        if (!YII_UNIT_TESTING) throw new CException ('YII_UNIT_TESTING must be set to true');
+        $testClass = get_called_class();
+        if(X2_TEST_DEBUG_LEVEL > 0){
+            println($testClass);
+        }
         Yii::app()->beginRequest();
         Yii::app()->fixture->load(array(
             'profile'=>'Profile',
             'user' => 'User'));
         parent::setUpBeforeClass();
+    }
+    
+    public static function tearDownAfterClass(){
+        if(X2_TEST_DEBUG_LEVEL > 0){
+            println("");
+        }
+        parent::tearDownAfterClass();
     }
 
     /**
@@ -62,9 +93,52 @@ class X2TestCase extends CTestCase {
     public function assertSaves (CActiveRecord $model) {
         $saved = $model->save ();
         if ($model->hasErrors ()) {
-            VERBOSE_MODE && print_r ($model->getErrors ());
+            X2_VERBOSE_MODE && print_r ($model->getErrors ());
         }
         $this->assertTrue ($saved);
+    }
+    
+    /**
+     * Polyfill for PHPUnit v4.4+ since PHPUnit now aborts test and marks as risky if ob_start is
+     * used
+     */
+    public $_outputBuffer = '';
+    public function obStart () {
+        // PHPUnit seems to be doing internal output buffering, this is intended to clear that 
+        // buffer
+        if(ob_get_contents()){
+            ob_clean (); 
+        }
+        $that = $this;
+        // documentation for setOutputCallback method is poor, but seems to do what 
+        // $output_callback parameter of ob_start does: 
+        // http://php.net/manual/en/function.ob-start.php
+        $this->setOutputCallback (function ($output) use ($that) {
+            $that->_outputBuffer .= $output; // collect output
+            return ''; // hide output
+        });
+    }
+
+    /**
+     * Polyfill for PHPUnit v4.4+ since PHPUnit now aborts test and marks as risky if ob_start is
+     * used
+     */
+    public function obClean () {
+        $this->_outputBuffer = '';
+    }
+
+    /**
+     * Polyfill for PHPUnit v4.4+ since PHPUnit now aborts test and marks as risky if ob_start is
+     * used
+     */
+    public function obEndClean () {
+        if(ob_get_contents()){
+            ob_clean (); 
+        }
+        $this->_outputBuffer = '';
+        $this->setOutputCallback (function ($output) {
+            return $output; // display output 
+        });
     }
 
 }

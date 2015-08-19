@@ -24,4 +24,4 @@ javascripts_dir = "../"
 # sass-convert -R --from scss --to sass sass scss && rm -rf sass && mv scss sass
 
 add_import_path "./css/lib"
-add_import_path "./css/lib/x2-icons"
+add_import_path "./css/lib/x2Icons"

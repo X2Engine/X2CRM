@@ -61,7 +61,7 @@ $this->actionMenu = $this->formatMenu(array(
     array(
         'label' => Yii::t('app', 'Send Email'), 'url' => '#',
         'linkOptions' => array('onclick' => 'toggleEmailForm(); return false;')),
-    array('label' => Yii::t('app', 'Attach A File/Photo'), 'url' => '#', 'linkOptions' => array('onclick' => 'toggleAttachmentForm(); return false;')),
+    ModelFileUploader::menuLink(),
     array('label' => Yii::t('quotes', 'Quotes/Invoices'), 'url' => 'javascript:void(0)', 'linkOptions' => array('onclick' => 'x2.inlineQuotes.toggle(); return false;')),
     array(
         'label' => Yii::t('app', 'Print Record'),
@@ -91,7 +91,7 @@ $(function() {
 <div class="page-title-placeholder"></div>
 <div class="page-title-fixed-outer">
     <div class="page-title-fixed-inner">
-        <div class="page-title icon">
+        <div class="page-title templates">
             <h2>
                 <?php echo Yii::t('module', 'View {X}', array('{X}' => Modules::itemDisplayName())); ?>: <?php
                 echo $model->name;
@@ -106,7 +106,11 @@ $(function() {
     </div>
 </div>
 <div id="main-column" <?php echo $layoutManager->columnWidthStyleAttr (1); ?>>
-            <?php $this->renderPartial('application.components.views._detailView', array('model' => $model, 'modelName' => 'templates')); ?>
+            <?php 
+            $this->widget ('DetailView', array(
+                'model' => $model
+            ));
+            //$this->renderPartial('application.components.views.@DETAILVIEW', array('model' => $model, 'modelName' => 'templates')); ?>
 
 <?php
 $this->widget('InlineEmailForm', array(
@@ -124,7 +128,11 @@ $this->widget('InlineEmailForm', array(
         )
 );
 
-$this->widget('Attachments', array('associationType' => 'templates', 'associationId' => $model->id, 'startHidden' => true));
+
+$this->widget ('ModelFileUploader', array(
+    'associationType' => 'templates',
+    'associationId' => $model->id,
+));
 
 ?>
     <div id="quote-form-wrapper">

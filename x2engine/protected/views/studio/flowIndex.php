@@ -48,9 +48,9 @@ Yii::app()->clientScript->registerCss('flowIndexCss',"
 ");
 
 $this->actionMenu = array(
-	array('label'=>Yii::t('studio','Manage Flows')),
+	array('label'=>Yii::t('studio','Manage Workflows')),
 	array(
-        'label'=>Yii::t('studio','Create Flow'),
+        'label'=>Yii::t('studio','Create Workflow'),
         'url'=>array('flowDesigner'),
         'visible'=>Yii::app()->contEd('pro'),
     ),
@@ -66,51 +66,60 @@ $this->actionMenu = array(
 <div class="flush-grid-view">
 <?php
 
-$this->widget('X2GridViewGeneric', array(
+$this->widget('X2ActiveGridView', array(
 	'id'=>'flow-grid',
-	'buttons'=>array('clearFilters','autoResize'),
+	'buttons'=>array('columnSelector','autoResize'),
+    'modelName' => 'X2Flow',
 	'baseScriptUrl'=>
         Yii::app()->request->baseUrl.'/themes/'.Yii::app()->theme->name.'/css/gridview',
     'template'=>
         '<div class="page-title icon x2flow">'.
-        '<h2>'.Yii::t('studio','X2Flow Automation Rules').'</h2>{buttons}'.
+        '<h2>'.Yii::t('studio','X2Workflow Automation Rules').'</h2>{buttons}'.
         '{summary}</div>{items}{pager}',
     'dataProvider'=>CActiveRecord::model('X2Flow')->search(),
     'defaultGvSettings' => array (
-        'name' => 90,
-        'active' => 90,
-        'triggerType' => 90,
+        'name' => 200,
+        'description' => 450,
+        'active' => 60,
+        'triggerType' => 120,
         'modelClass' => 90,
-        'createDate' => 60,
-        'lastUpdated' => 60,
+        'createDate' => 150,
+        'lastUpdated' => 150,
     ),
+    'excludedFields' => array ('id', 'flow'),
     'gvSettingsName' => 'flow-grid',
     'viewName' => 'flowIndex',
-	'columns'=>array(
-		array(
+	'specialColumns'=>array(
+		'name' => array(
 			'name'=>'name',
 			'headerHtmlOptions'=>array('style'=>'width:40%'),
 			'value'=>'CHtml::link(CHtml::encode($data->name),array("/studio/flowDesigner","id"=>$data->id))',
 			'type'=>'raw',
 		),
-		array(
+        'description' => array(
+			'name'=>'description',
+			'headerHtmlOptions'=>array('style'=>'width:40%'),
+			'value'=>'CHtml::encode($data->description)',
+			'type'=>'raw',
+		),
+		'active' => array(
 			'name'=>'active',
 			'headerHtmlOptions'=>array('style'=>'width:8%'),
 			'value'=>'$data->active? Yii::t("app","Yes") : Yii::t("app","No")',
 			'type'=>'raw',
 		),
-		array(
+		'triggerType' => array(
 			'name'=>'triggerType',
 			'headerHtmlOptions'=>array('style'=>'width:15%'),
 			'value'=>'X2FlowTrigger::getTriggerTitle ($data->triggerType)',
 			'type'=>'raw',
 		),
-		array(
+		'modelClass' => array(
 			'name'=>'modelClass',
 			'headerHtmlOptions'=>array('style'=>'width:10%'),
 		),
 		// 'flow',
-		array(
+		'createDate' => array(
 			'name'=>'createDate',
 			'header'=>Yii::t('admin','Create Date'),
             'headerHtmlOptions'=>array('style'=>'width:12%'),
@@ -118,7 +127,7 @@ $this->widget('X2GridViewGeneric', array(
 			'type'=>'raw',
 			// 'htmlOptions'=>array('width'=>'20%'),
 		),
-		array(
+		'lastUpdated' => array(
 			'name'=>'lastUpdated',
 			'header'=>Yii::t('admin','Last Updated'),
             'headerHtmlOptions'=>array('style'=>'width:12%'),
@@ -134,7 +143,7 @@ $this->widget('X2GridViewGeneric', array(
 <?php
 if(Yii::app()->contEd('pro')) {
 	echo CHtml::link(
-        Yii::t('studio','Create New Flow'),
+        Yii::t('studio','Create New Workflow'),
         array('/studio/flowDesigner'),
         array(
             'class'=>'x2-button',

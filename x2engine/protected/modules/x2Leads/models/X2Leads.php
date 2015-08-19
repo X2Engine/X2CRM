@@ -70,7 +70,6 @@ class X2Leads extends X2Model {
 			),
             'ContactsNameBehavior' => array(
                 'class' => 'application.components.ContactsNameBehavior',
-                'overwriteName' => false,
             ),
 		));
 	}
@@ -94,6 +93,19 @@ class X2Leads extends X2Model {
 		}
 		return implode(', ',$links);
 	}
+
+    public function beforeSave () {
+        // backwards compatibility check for when leads didn't have first and last name fields
+        if (!$this->isNewRecord && 
+            !$this->firstName && 
+            !$this->lastName && 
+            ($this->attributeChanged ('firstName') ||
+             $this->attributeChanged ('lastName'))) {
+
+            $this->name = '';
+        }
+        return parent::beforeSave ();
+    }
 
 	public function search($resultsPerPage=null, $uniqueId=null) {
 		$criteria=new CDbCriteria;

@@ -128,8 +128,9 @@ class X2ModelConversionWidget extends X2Widget {
         $this->registerPackages ();
         $this->instantiateJSClass ();
         $this->render ('application.components.views._x2ModelConversionWidget', array (
-            'modelTitle' => lcfirst (X2Model::getModelTitle (get_class ($this->model), true)),
-            'targetModelTitle' => lcfirst (X2Model::getModelTitle ($this->targetClass, true)),
+            'sourceModelClass' => get_class ($this->model),
+            'targetModelClass' => $this->targetClass,
+            'convertMultiple' => false,
         ));
     }
 

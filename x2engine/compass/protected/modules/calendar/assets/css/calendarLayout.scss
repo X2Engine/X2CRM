@@ -33,8 +33,14 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 
+@import "standards";
+@import "colors";
+
+$eventTextColor: rgb(19, 19, 19);
+
+
 table.page-title {
-    background: #CECECE !important;
+    background: $defaultTitleBar;
     
     /* @theme background: highlight1 */
 
@@ -55,9 +61,116 @@ table.page-title {
         display: block !important;
         height: 10px;
     }
-    .fc-header-right {
-        float: right !important;
-        display: block !important;
+    @include overThreshold ($mobileThreshold) {
+        .fc-header-right {
+            float: right !important;
+            display: block !important;
+            width: 36%;
+        }
     }
+}
+
+
+
+#calendar {
+    margin-bottom: 5px;
+    .fc-event {
+        color: $eventTextColor;
+        border: 1px solid rgb(34, 34, 255) !important;
+        border-radius: 0 !important;
+        padding: 2px;
+    }
+
+    .fc-border-separate th, .fc-border-separate td {
+        border: 1px solid $lightGray;
+        border-width: 1px 0 0 1px;
+    }
+    .fc-border-separate tbody tr.fc-first td, .fc-border-separate tbody tr.fc-first th {
+        border-top-width: 0;
+    }
+    td.fc-today {
+        border: 1px solid black;
+        background: $lightestGray;
+        div div.fc-day-number {
+            font-weight: bold;
+            font-size: 16px;
+        }
+    }
+    .fc-border-separate tr.fc-last th, .fc-border-separate tr.fc-last td {
+        border-bottom-width: 1px;
+    }
+    .fc-border-separate th.fc-last, .fc-border-separate td.fc-last {
+        border-right-width: 1px;
+    }
+}
+
+#publisher-tabs-row-1 {
+    border-right: 1px solid rgb(204, 204, 204); 
+}
+
+
+.ui-dialog {
+    height: auto !important;
+}
+
+.ui-dialog .ui-dialog-content {
+    height: auto !important;
+}
+
+.fc-first.fc-last {
+    background: white;
+}
+
+#content {
+    background: none !important;
+    border: none !important;
+}
+#main-column {
+    margin-top: 0 !important;
+}
+
+#publisher  {
+    .ui-tabs-anchor {
+        font-weight: bold;
+        color: rgb(88, 88, 88);
+    }
+    &.ui-tabs .ui-tabs-nav > li.ui-state-active {
+      border-color: #D1D1D1;
+      border-bottom-color: #eee;
+      background: $background;
+      /* @theme border-bottom-color: content */
+      /* @theme background: content */
+    }
+}
+
+.calendarViewEventDialog .ui-dialog-buttonpane button {
+    padding: 0 2px 0 2px !important;
+    margin: 4px 0 4px 4px !important;
+    font-size: 9pt !important;
+}
+
+/* make publisher tab look like ordinary section title */
+
+#publisher.ui-tabs .ui-tabs-nav {
+    background: none;
+    padding: 0px;
+    display: block;
+    margin-right: 1px !important;
+}
+
+#publisher li.ui-tabs-active {
+    width: 100%;
+    margin-right: 6px;
+    display: block;
+    border-bottom: none;
+    margin: auto;
+    margin-bottom: -2px;
+}
+
+#publisher > .form {
+   border-radius: 0px 0px 4px 4px;
+   -moz-border-radius: 0px 0px 4px 4px;
+   -webkit-border-radius: 0px 0px 4px 4px;
+   -o-border-radius: 0px 0px 4px 4px;
 }
 

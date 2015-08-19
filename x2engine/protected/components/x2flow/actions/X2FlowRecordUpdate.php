@@ -45,7 +45,7 @@ class X2FlowRecordUpdate extends X2FlowAction {
     public $info = 'Change one or more fields on an existing record.';
 
     public function paramRules(){
-        return array(
+        return array_merge (parent::paramRules (), array (
             'title' => Yii::t('studio', $this->title),
             'info' => Yii::t('studio', $this->info),
             'modelRequired' => 1,
@@ -53,7 +53,7 @@ class X2FlowRecordUpdate extends X2FlowAction {
             'options' => array(
                 array('name' => 'attributes'),
             )
-        );
+        ));
     }
 
     public function execute(&$params){

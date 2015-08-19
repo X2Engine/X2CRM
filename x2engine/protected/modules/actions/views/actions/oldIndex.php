@@ -124,8 +124,8 @@ $this->widget('X2GridView', array(
         '{items}{pager}',
     'fixedHeader' => true,
 	'dataProvider'=>$dataProvider,
-    'massActions' => array (
-        
+    'massActions' => array(
+         
         'MassCompleteAction', 'MassUncompleteAction'
     ),
 	// 'enableSorting'=>false,

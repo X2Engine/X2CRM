@@ -207,10 +207,10 @@ function showAssociationAutoComplete(associationType) {
 	}
 }
 
-function toggleUserMedia(userMedia, showhide, response) {
+function toggleUserMedia(userMedia, showhide) {
 	userMedia.toggle('blind');
 	var buttonClass = $(showhide).find ('i').attr ('class');
-	if(response) {
+	if(buttonClass.match('left')) {
         buttonClass = buttonClass.replace (/left/, 'down');
 	} else {
         buttonClass = buttonClass.replace (/down/, 'left');

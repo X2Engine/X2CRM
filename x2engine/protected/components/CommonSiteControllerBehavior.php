@@ -149,7 +149,7 @@ class CommonSiteControllerBehavior extends CBehavior {
                 SessionLog::logSession($model->username, $sessionId, 'login');
                 $_SESSION['playLoginSound'] = true;
 
-                if(YII_DEBUG && EmailDeliveryBehavior::DEBUG_EMAIL)
+                if(YII_UNIT_TESTING && defined ('X2_DEBUG_EMAIL') && X2_DEBUG_EMAIL)
                     Yii::app()->session['debugEmailWarning'] = 1;
 
                 // if ( isset($_POST['themeName']) ) {

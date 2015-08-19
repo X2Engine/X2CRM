@@ -210,7 +210,7 @@ return InlineQuotes;
 		x2.inlineQuotes.form.find('.x2-hint').qtip();
 		// These things are last-minute stylistic adjustments and widget initializationst that don't happen because the scripts are never rende'
 		x2.inlineQuotes.form.find('div.x2-layout.form-view > div:last-child div.formInputBox').css({
-			'margin-bottom':'-495px'
+			//'margin-bottom':'-495px'
 		});
 //		$('html,body').animate({
 //			scrollTop: x2.inlineQuotes.wrapper.offset().top

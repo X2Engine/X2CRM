@@ -34,6 +34,18 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 
+Yii::app()->clientScript->registerCss('editRoleCSS',"
+#editRole .x2-loading-icon {
+    height: 0;
+}
+#editRole .loader {
+    margin: 0;
+}
+#editRole > .form {
+    margin: 0;
+}
+");
+
 ?>
 <div class="page-title rounded-top"><h2><?php echo Yii::t('admin','Edit Role'); ?></h2></div>
 <div class="form">
@@ -54,15 +66,19 @@ foreach($list as $role){
 	<em><?php echo Yii::t('app','Fields with <span class="required">*</span> are required.'); ?></em><br />
 
         <div class="row">
-            <?php echo $form->labelEx($model,'name'); ?>
-            <?php echo $form->dropDownList($model,'name',$names,array(
+            <?php 
+            echo $form->labelEx($model,'name'); 
+            echo $form->dropDownList($model,'name',$names,array(
                 'empty'=>'Select a role',
                 'id'=>'editDropdown',
                 'ajax' => array(
                 'type'=>'POST', //request type
-                'url'=>CController::createUrl('/admin/getRole', array('mode'=>'edit')), //url to call.
+                'url'=>CController::createUrl('/admin/getRole', array('mode'=>'edit')), 
                 //Style: CController::createUrl('currentController/methodToCall')
                 'update'=>'#roleForm', //selector to update
+                'beforeSend' => "function () {
+                    auxlib.containerLoading ($('#editRole'));
+                }",
                 'complete'=>"function(data){
                     var data = data.responseText;
                     $('.multiselect').multiselect();
@@ -72,11 +88,13 @@ foreach($list as $role){
                     } else {
                         $('#roleEdit-form').find ('[type=\"submit\"]').removeAttr ('disabled'); 
                     }
+                    auxlib.containerLoadingStop ($('#editRole'));
                 }",
                 //'data'=>'js:"modelType="+$("'.CHtml::activeId($model,'modelType').'").val()'
                 //leave out the data key to pass all form values through
-                ))); ?>
-            <?php echo $form->error($model,'name'); ?>
+                ))); 
+            echo $form->error($model,'name'); 
+            ?>
         </div>
 
         <div id="roleForm">

@@ -35,6 +35,7 @@
 
 $(function() {
 	function updateTzClock() {
+        var setting = x2.clockWidget.setting;
 
 		if(setting === 'analog'){
 			$('#tzClockDigital').hide();
@@ -71,7 +72,7 @@ $(function() {
 			ampm = "";
 
 		if (setting === 'digital24' || setting ==='digital') {
-			$("#tzClockDigital").html(h+":"+fixWidth(m)+'<font id="clock-ampm">'+ampm+"</font>"+tzUtcOffset);
+			$("#tzClockDigital").html(h+":"+fixWidth(m)+'<font id="clock-ampm">'+ampm+"</font>");
 			return;
 		}
 

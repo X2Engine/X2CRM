@@ -44,4 +44,9 @@ $this->insertMenu($menuOptions);
 
 ?>
 <div class="page-title icon x2Leads"><h2><?php echo Yii::t('x2Leads','Create Lead'); ?></h2></div>
-<?php echo $this->renderPartial('application.components.views._form', array('model'=>$model,'users'=>$users,'modelName'=>'X2Leads')); ?>
+<?php 
+
+$this->widget ('FormView', array(
+    'model' => $model,
+));
+?>

@@ -96,7 +96,10 @@ $themeUrl = Yii::app()->theme->getBaseUrl();
 	'enableAjaxValidation'=>false,
 	'action'=>array('saveChanges','id'=>$model->id),
 ));
-$this->renderPartial('application.components.views._detailView',array('model'=>$model,'form'=>$form,'modelName'=>'accounts'));
+$this->widget ('DetailView', array(
+    'model' => $model
+));
+// $this->renderPartial('application.components.views.@DETAILVIEW',array('model'=>$model,'form'=>$form,'modelName'=>'accounts'));
 
 $this->endWidget();
 
@@ -125,7 +128,10 @@ $this->widget('InlineEmailForm',
         ));
         ?>
     </div>
-<?php $this->widget('Attachments',array('associationType'=>'accounts','associationId'=>$model->id,'startHidden'=>true)); ?>
+<?php $this->widget ('ModelFileUploader', array(
+    'associationId' => $model->id,
+    'associationType' => 'accounts'
+)); ?>
 </div>
 <?php  
 $this->widget(

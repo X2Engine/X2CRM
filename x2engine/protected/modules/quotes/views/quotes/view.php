@@ -164,8 +164,10 @@ $form = $this->beginWidget('CActiveForm', array(
     'enableAjaxValidation' => false,
     'action' => array('saveChanges', 'id' => $model->id)
         ));
-
-$this->renderPartial('application.components.views._detailView', array('model' => $model, 'modelName' => 'Quote'));
+$this->widget ('DetailView', array(
+    'model' => $model
+));
+//$this->renderPartial('application.components.views.@DETAILVIEW', array('model' => $model, 'modelName' => 'Quote'));
 ?>
     <?php if ($model->type == 'invoice') { ?>
         <div class="x2-layout form-view">
@@ -232,17 +234,6 @@ $this->renderPartial('_lineItems', array(
         </div>
     </div>
 <?php
-/*
-  $this->renderPartial('_detailView',
-  array(
-  'model'=>$model,
-  'form'=>$form,
-  'currentWorkflow'=>$currentWorkflow,
-  'dataProvider'=>$dataProvider,
-  'total'=>$total
-  )
-  );
- */
 $this->endWidget();
 
 $this->widget('InlineEmailForm', array(
@@ -261,7 +252,11 @@ $this->widget('InlineEmailForm', array(
 );
 ?>
 
-    <?php $this->widget('Attachments', array('associationType' => 'quotes', 'associationId' => $model->id, 'startHidden' => true)); ?>
+<?php $this->widget ('ModelFileUploader', array(
+    'associationType' => 'quotes',
+    'associationId' => $model->id,
+));
+?>
 
 </div>
 <?php 

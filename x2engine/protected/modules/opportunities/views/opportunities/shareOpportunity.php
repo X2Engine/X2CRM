@@ -40,9 +40,7 @@ $menuOptions = array(
 );
 $this->insertMenu($menuOptions, $model, $authParams);
 
-Yii::app()->clientScript->registerScriptFile(Yii::app()->getBaseUrl().'/js/ckeditor/ckeditor.js');
-Yii::app()->clientScript->registerScriptFile(Yii::app()->getBaseUrl().'/js/ckeditor/adapters/jquery.js');
-Yii::app()->clientScript->registerScriptFile(Yii::app()->getBaseUrl().'/js/emailEditor.js');
+Yii::app()->clientScript->registerPackage ('emailEditor');
 
 Yii::app()->clientScript->registerScript('editorSetup','createCKEditor("input");',CClientScript::POS_READY);
 
@@ -87,5 +85,8 @@ $form = $this->beginWidget('CActiveForm', array(
     </span> <?php echo CHtml::encode($model->name); ?></h2>
 </div>
 <?php
-$this->renderPartial('application.components.views._detailView',array('model'=>$model,'modelName'=>'opportunity','form'=>$form,'currentWorkflow'=>$currentWorkflow));
+$this->widget('DetailView', array(
+    'model'   => $model,
+));
+// $this->renderPartial('application.components.views.@DETAILVIEW',array('model'=>$model,'modelName'=>'opportunity','form'=>$form,'currentWorkflow'=>$currentWorkflow));
 $this->endWidget(); ?>

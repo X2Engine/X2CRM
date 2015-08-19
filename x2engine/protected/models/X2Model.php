@@ -60,7 +60,7 @@ Yii::import('application.models.X2Flow');
  *  admin or has no roles (in which case field-level permissions do not apply)
  * @package application.models
  */
-abstract class X2Model extends CActiveRecord {
+abstract class X2Model extends X2ActiveRecord {
 
     /**
      * @var true if this model can have workflows associated with it, false otherwise 
@@ -130,6 +130,7 @@ abstract class X2Model extends CActiveRecord {
         'opportunities' => 'Opportunity',
         'social' => 'Social',
         'services' => 'Services',
+        'users' => 'User',
         
         '' => ''
     );
@@ -214,6 +215,7 @@ abstract class X2Model extends CActiveRecord {
     // cache for models loaded for link field attributes (used by automation system)
     protected static $_linkedModels;
     protected $_runAfterCreate;   // run afterCreate before afterSave, but only for new records
+    protected $fieldFormatterClass = 'FieldFormatter';
     private static $_modelNames;
     private static $_attributeLabels;
 
@@ -519,7 +521,7 @@ abstract class X2Model extends CActiveRecord {
     }
 
     /**
-     * returns module name for given model name, or $modelName if none could be found 
+     * Returns module name for given model name, or $modelName if none could be found 
      * @param string $modelName the name of a model
      * @return string the name of the module associated with the model
      */
@@ -627,6 +629,9 @@ abstract class X2Model extends CActiveRecord {
             }
         }
         $criteria->params = $params;
+        if($this->asa('X2DuplicateBehavior')){
+            $criteria->addCondition($this->getHiddenCondition(), 'AND');
+        }
         return self::model(get_class($this))->find($criteria);
     }
 
@@ -637,6 +642,26 @@ abstract class X2Model extends CActiveRecord {
      */
     public function findByNameId($nameId) {
         return self::model()->findByAttributes(compact('nameId'));
+    }
+    
+    public function findByAttributes($attributes, $condition = '', $params = array()) {
+        if ($this->asa('X2DuplicateBehavior')) {
+            $hiddenCondition = $this->getHiddenCondition();
+            if (empty($condition)) {
+                $condition = $hiddenCondition;
+            } else {
+                if (is_array($condition)) {
+                    if (isset($condition['condition'])) {
+                        $condition['condition'] .= ' AND ' . $hiddenCondition;
+                    } else {
+                        $condition['condition'] = $hiddenCondition;
+                    }
+                } else {
+                    $condition .= ' AND ' . $hiddenCondition;
+                }
+            }
+        }
+        return parent::findByAttributes($attributes, $condition, $params);
     }
 
     /**
@@ -846,6 +871,7 @@ abstract class X2Model extends CActiveRecord {
             'tags' => array('class' => 'TagBehavior'),
             'changelog' => array('class' => 'X2ChangeLogBehavior'),
             'permissions' => array('class' => Yii::app()->params->modelPermissions),
+            'X2MergeableBehavior' => array('class' => 'X2MergeableBehavior'),
         );
         if (Yii::app()->contEd('pro')) {
             $behaviors['galleryBehavior'] = array(
@@ -1034,13 +1060,18 @@ abstract class X2Model extends CActiveRecord {
         }
 
         // deal with phone numbers
-        if (count($phoneFields))
-            X2Model::model('PhoneNumber')->deleteAllByAttributes(array('modelId' => $this->id, 'modelType' => get_class($this))); // clear out old phone numbers
+        if (count($phoneFields)) {
+            // clear out old phone numbers
+            X2Model::model('PhoneNumber')->deleteAllByAttributes(
+                array('modelId' => $this->id, 'modelType' => get_class($this))); 
+        }
 
-        foreach ($phoneFields as $field => &$number) {  // create new entries in x2_phone_numbers
+        // create new entries in x2_phone_numbers
+        foreach ($phoneFields as $field => &$number) {  
             if (!empty($number)) {
                 $num = new PhoneNumber;
-                $num->number = preg_replace('/\D/', '', $number); // eliminate everything other than digits
+                // eliminate everything other than digits
+                $num->number = preg_replace('/\D/', '', $number); 
                 $num->modelId = $this->id;
                 $num->modelType = get_class($this);
                 $num->fieldName = $field;
@@ -1051,11 +1082,13 @@ abstract class X2Model extends CActiveRecord {
         /////////////// deal with relationships ///////////////
         $oldAttributes = $this->getOldAttributes();
 
-        $relationSql = '(firstType=:type1 AND firstId=:id1 AND secondType=:type2 AND secondId=:id2) OR
+        $relationSql = 
+            '(firstType=:type1 AND firstId=:id1 AND secondType=:type2 AND secondId=:id2) OR
              (firstType=:type2 AND firstId=:id2 AND secondType=:type1 AND secondId=:id1)';
 
         foreach ($linkFields as $fieldName => &$relation) {
-            list($oldLinkName, $oldLinkId) = Fields::nameAndId(isset($oldAttributes[$fieldName]) ? $oldAttributes[$fieldName] : '');
+            list($oldLinkName, $oldLinkId) = Fields::nameAndId(
+                isset($oldAttributes[$fieldName]) ? $oldAttributes[$fieldName] : '');
 
             if ($relation['id'] == $oldLinkId) // skip field if it hasn't changed
                 continue;
@@ -1071,18 +1104,19 @@ abstract class X2Model extends CActiveRecord {
             }
             // save new relationship
             if (!empty($relation['id']) && ctype_digit((string) $relation['id'])) {
-                if (!CActiveRecord::model('Relationships')->exists($relationSql, array(// check if there's already a relationship between these here thingies
-                            ':type1' => get_class($this),
-                            ':id1' => $this->id,
-                            ':type2' => $relation['type'],
-                            ':id2' => $relation['id']
-                        ))) {
+                // check if there's already a relationship between these here thingies
+                if (!CActiveRecord::model('Relationships')->exists($relationSql, array(
+                        ':type1' => get_class($this),
+                        ':id1' => $this->id,
+                        ':type2' => $relation['type'],
+                        ':id2' => $relation['id']
+                    ))) {
+
                     $rel = new Relationships;
                     $rel->firstType = get_class($this);
                     $rel->secondType = $relation['type'];
                     $rel->firstId = $this->id;
                     $rel->secondId = $relation['id'];
-
                     $rel->save();
                 }
             }
@@ -1176,18 +1210,26 @@ abstract class X2Model extends CActiveRecord {
      * @see hasAttribute
      */
     public function getAttribute($name, $renderFlag = false, $makeLinks = false) {
-        $nameParts = explode('.', $name); // check for a linked attribute (eg. "account.assignedTo")
+        // check for a linked attribute (eg. "account.assignedTo")
+        $nameParts = explode('.', $name); 
 
-        if (count($nameParts) > 1) { // We have a complicated link like "account.primaryContact.email"
+        if (count($nameParts) > 1) { 
+            // We have a complicated link like "account.primaryContact.email"
+
             $linkField = array_shift($nameParts); // Remove the current model
             $linkModel = $this->getLinkedModel($linkField);
-            $name = implode('.', $nameParts); // Put the name back together e.g. primaryContact.email
+
+            // Put the name back together e.g. primaryContact.email
+            $name = implode('.', $nameParts); 
+
             if (isset($linkModel)) {
                 return $linkModel->getAttribute($name, $renderFlag);
             } else {
-                $fieldInfo = $this->getField($linkField); // If it's an assignment field, check the Profile model
+                // If it's an assignment field, check the Profile model
+                $fieldInfo = $this->getField($linkField); 
                 if ($fieldInfo instanceof Fields && $fieldInfo->type == 'assignment') {
-                    $profRecord = X2Model::model('Profile')->findByAttributes(array('username' => $this->$linkField));
+                    $profRecord = X2Model::model('Profile')
+                        ->findByAttributes(array('username' => $this->$linkField));
 
                     if (isset($profRecord)) {
                         return $profRecord->getAttribute($name, false);
@@ -1212,8 +1254,8 @@ abstract class X2Model extends CActiveRecord {
      */
     public function getReadableAttributeNames() {
         return array_keys(array_filter($this->getFieldPermissions(), function($p) {
-                    return $p >= 1;
-                }));
+            return $p >= 1;
+        }));
     }
 
     /**
@@ -1232,7 +1274,8 @@ abstract class X2Model extends CActiveRecord {
      * Looks up a linked attribute by loading the linked model and calling renderAttribute() on it.
      * @param string $linkField the attribute of $this linking to the external model
      * @param string $attribute the attribute of the external model
-     * @return mixed the properly formatted attribute value. Null if the attribute is not set or does not exist.
+     * @return mixed the properly formatted attribute value. Null if the attribute is not set or 
+     *  does not exist.
      * @see getLinkedAttribute
      */
     public function renderLinkedAttribute($linkField, $attribute) {
@@ -1385,11 +1428,11 @@ abstract class X2Model extends CActiveRecord {
      */
     public static function getModelTypes($assoc = false) {
         $modelTypes = Yii::app()->db->createCommand()
-                ->selectDistinct('modelName')
-                ->from('x2_fields')
-                ->where('modelName!="Calendar"')
-                ->order('modelName ASC')
-                ->queryColumn();
+            ->selectDistinct('modelName')
+            ->from('x2_fields')
+            ->where('modelName!="Calendar"')
+            ->order('modelName ASC')
+            ->queryColumn();
 
         if ($assoc === true) {
             $modelTypes = array_combine($modelTypes, array_map(function($type) {
@@ -1420,20 +1463,24 @@ abstract class X2Model extends CActiveRecord {
      * @param boolean $assoc to return as an associative array or not
      * @return array of model names as specified above
      */
+    private static $_modelsWhichSupportRelationships;
     public static function getModelTypesWhichSupportRelationships($assoc = false) {
-        $modelTypes = self::getModelTypes(true);
-        $filteredTypes = array ();
-        foreach ($modelTypes as $type => $title) {
-            if (X2Model::Model ($type)->supportsRelationships) {
-                if ($assoc) {
-                    $filteredTypes[$type] = $title; 
-                } else {
-                    $filteredTypes[] = $type;
+        if (!isset (self::$_modelsWhichSupportRelationships[$assoc])) {
+            $modelTypes = self::getModelTypes(true);
+            $filteredTypes = array ();
+            foreach ($modelTypes as $type => $title) {
+                if (X2Model::Model ($type)->supportsRelationships) {
+                    if ($assoc) {
+                        $filteredTypes[$type] = $title; 
+                    } else {
+                        $filteredTypes[] = $type;
+                    }
                 }
             }
+            self::$_modelsWhichSupportRelationships[$assoc] = $filteredTypes;
         }
 
-        return $filteredTypes;
+        return self::$_modelsWhichSupportRelationships[$assoc];
     }
 
     /**
@@ -1458,7 +1505,8 @@ abstract class X2Model extends CActiveRecord {
      * @return type
      */
     public function translatedAttributeLabel($label) {
-        return Yii::t((bool) $this->asa('X2LinkableBehavior') ? (empty($this->module) ? 'app' : $this->module) : 'app', $label);
+        return Yii::t((bool) $this->asa('X2LinkableBehavior') ? 
+            (empty($this->module) ? 'app' : $this->module) : 'app', $label);
     }
 
     /**
@@ -1690,44 +1738,6 @@ abstract class X2Model extends CActiveRecord {
         return $succeeded;
     }
 
-    public function setFormatter ($class) {
-        if (is_string ($class)) {
-            $this->_formatter = Yii::createComponent (array (
-                'class' => $class,
-                'owner' => $this,
-            ));
-        } else if ($class instanceof FieldFormatter) {
-            $this->_formatter = $class;
-        } else {
-            throw new CException ('Invalid formatter object');
-        }
-    }
-
-    private $_formatter;
-    public function getFormatter () {
-        if (!isset ($this->_formatter)) {
-            $this->_formatter = Yii::createComponent (array (
-                'class' => 'FieldFormatter',
-                'owner' => $this,
-            ));
-        }
-        return $this->_formatter;
-    }
-
-    /**
-     * Renders an attribute of the model based on its field type
-     * @param string $fieldName the name of the attribute to be rendered
-     * @param boolean $makeLinks whether to create HTML links for certain field types
-     * @param boolean $textOnly whether to generate HTML or plain text
-     * @return string the HTML or text for the formatted attribute
-     */
-    public function renderAttribute(
-        $fieldName, $makeLinks = true, $textOnly = true, $encode = true) {
-
-        $formatter = $this->getFormatter ();
-        return $formatter->renderAttribute ($fieldName, $makeLinks, $textOnly, $encode);
-    }
-
     /**
      * @param string $field the name of the field
      * @param string $class the name of the class with which the field is associated
@@ -1822,21 +1832,21 @@ abstract class X2Model extends CActiveRecord {
                 $model->$fieldName = Formatter::formatDateTime($model->$fieldName);
                 Yii::import('application.extensions.CJuiDateTimePicker.CJuiDateTimePicker');
                 $input = Yii::app()->controller->widget('CJuiDateTimePicker', array(
-                            'model' => $model, //Model object
-                            'attribute' => $fieldName, //attribute name
-                            'mode' => 'datetime', //use "time","date" or "datetime" (default)
-                            'options' => array(// jquery options
-                                'dateFormat' => Formatter::formatDatePicker('medium'),
-                                'timeFormat' => Formatter::formatTimePicker(),
-                                'ampm' => Formatter::formatAMPM(),
-                                'changeMonth' => true,
-                                'changeYear' => true,
-                            ),
-                            'htmlOptions' => array_merge(array(
-                                'title' => $field->attributeLabel,
-                                    ), $htmlOptions),
-                            'language' => (Yii::app()->language == 'en') ? '' : Yii::app()->getLanguage(),
-                                ), true);
+                    'model' => $model, //Model object
+                    'attribute' => $fieldName, //attribute name
+                    'mode' => 'datetime', //use "time","date" or "datetime" (default)
+                    'options' => array(// jquery options
+                        'dateFormat' => Formatter::formatDatePicker('medium'),
+                        'timeFormat' => Formatter::formatTimePicker(),
+                        'ampm' => Formatter::formatAMPM(),
+                        'changeMonth' => true,
+                        'changeYear' => true,
+                    ),
+                    'htmlOptions' => array_merge(array(
+                        'title' => $field->attributeLabel,
+                            ), $htmlOptions),
+                    'language' => (Yii::app()->language == 'en') ? '' : Yii::app()->getLanguage(),
+                        ), true);
                 $model->$fieldName = $oldDateTimeVal;
                 return $input;
             case 'dropdown':
@@ -1977,12 +1987,17 @@ abstract class X2Model extends CActiveRecord {
                     }',), true);
 
             case 'boolean':
-                return '<div class="checkboxWrapper">'
-                        . CHtml::activeCheckBox($model, $field->fieldName, array_merge(array(
-                            'unchecked' => 0,
-                            'title' => $field->attributeLabel,
-                                        ), $htmlOptions)) . '</div>';
-
+                $checkbox = CHtml::openTag ('div', X2Html::mergeHtmlOptions (
+                    $htmlOptions, array (
+                        'class' => 'checkboxWrapper'
+                    )
+                ));
+                $checkbox .= CHtml::activeCheckBox($model, $field->fieldName, array_merge(array(
+                    'unchecked' => 0,
+                    'title' => $field->attributeLabel,
+                ), $htmlOptions)); 
+                $checkbox .= CHtml::closeTag ('div');
+                return $checkbox;
             case 'assignment':
                 $oldAssignmentVal = $model->$fieldName;
                 $model->$fieldName = !empty($model->$fieldName) ? ($field->linkType == 'multiple' && !is_array($model->$fieldName) ? explode(', ', $model->$fieldName) : $model->$fieldName) : self::getDefaultAssignment();
@@ -2305,14 +2320,18 @@ abstract class X2Model extends CActiveRecord {
 
             $showHidden = true;
         }
+
         if ($criteria === null){
-            $criteria = $this->getAccessCriteria('t', Yii::app()->params->modelPermissions, $showHidden);
+            $criteria = $this->getAccessCriteria(
+                't', Yii::app()->params->modelPermissions, $showHidden);
         }else{
             $criteria->mergeWith(
                 $this->getAccessCriteria('t', Yii::app()->params->modelPermissions, $showHidden));
         }
 
-        $this->compareAttributes($criteria);
+        $filterCriteria = new CDbCriteria;
+        $this->compareAttributes($filterCriteria);
+        $criteria->mergeWith ($filterCriteria);
         $criteria->with = array(); // No joins necessary!
         $sort = new SmartSort(
                 get_class($this), isset($this->uid) ? $this->uid : get_class($this));
@@ -2385,12 +2404,32 @@ abstract class X2Model extends CActiveRecord {
                         't.' . $fieldName, $this->compareBoolean($this->$fieldName), true);
                 break;
             case 'assignment':
-                $criteria->compare(
-                        't.' . $fieldName, $this->compareAssignment($this->$fieldName), true);
+                $assignmentCriteria = new CDbCriteria;
+                $assignmentCriteria->compare(
+                    't.' . $fieldName, $this->compareAssignment($this->$fieldName), true);
+                if (strlen ($this->$fieldName) && strncmp (
+                    "Anyone", ucfirst ($this->$fieldName), strlen ($this->$fieldName)) === 0) {
+
+                    $assignmentCriteria->compare('t.' . $fieldName, 'Anyone', false, 'OR');
+                    $assignmentCriteria->addCondition('t.' . $fieldName . ' = ""', 'OR');
+                }
+                $criteria->mergeWith ($assignmentCriteria);
                 break;
             case 'dropdown':
-                $criteria->compare(
-                        't.' . $fieldName, $this->compareDropdown($field->linkType, $this->$fieldName), false);
+                $dropdownVal = $this->compareDropdown($field->linkType, $this->$fieldName);
+                if (is_array ($dropdownVal)) {
+                    foreach ($dropdownVal as $val) {
+                        $dropdownRegex = 
+                            '(^|((\\[|,)"))'.preg_quote ($val).'(("(,|\\]))|$)';
+                        $dropdownParamName = CDbCriteria::PARAM_PREFIX.CDbCriteria::$paramCount;
+                        $criteria->params[$dropdownParamName] = $dropdownRegex;
+                        CDbCriteria::$paramCount++;
+                        $criteria->addCondition(
+                            't.' . $fieldName .' REGEXP BINARY '.$dropdownParamName);
+                    }
+                } else {
+                    $criteria->compare('t.' . $fieldName, $dropdownVal, false);
+                }
                 break;
             case 'date':
             case 'dateTime':
@@ -2432,8 +2471,9 @@ abstract class X2Model extends CActiveRecord {
             return null;
 
         // default to true unless recognized as false
-        return in_array(mb_strtolower(
-                                trim($data)), array(0, 'f', 'false', Yii::t('actions', 'No')), true) ? 0 : 1;
+        return in_array(
+            mb_strtolower(
+                trim($data)), array(0, 'f', 'false', Yii::t('actions', 'No')), true) ? 0 : 1;
     }
 
     public function compareAssignment($data) {
@@ -2462,10 +2502,7 @@ abstract class X2Model extends CActiveRecord {
         if (isset($dropdown)) {
             $index = $dropdown->getDropdownIndex($ddId, $value, $multi);
             if (!is_null($index)) {
-                if ($multi)
-                    return CJSON::encode($index);
-                else
-                    return $index;
+                return $index;
             }else {
                 return -1;
             }
@@ -2678,19 +2715,13 @@ abstract class X2Model extends CActiveRecord {
     }
 
     /**
-     * @return array All error messages for this model as an array of strings 
+     * @return bool true if attribute changed after being saved, false otherwise 
      */
-    public function getAllErrorMessages() {
-        $errors = $this->getErrors();
-        $errorMessages = array();
-        foreach ($errors as $attrErrors) {
-            foreach ($attrErrors as $errorMessage) {
-                if ($errorMessage != '') {
-                    $errorMessages[] = $errorMessage;
-                }
-            }
-        }
-        return $errorMessages;
+    public function attributeChanged ($attr) {
+        $oldAttributes = $this->getOldAttributes();
+        return (!isset($oldAttributes[$attr]) && $this->isNewRecord) || 
+            (in_array ($attr, array_keys ($oldAttributes)) && 
+             $this->getAttribute($attr) != $oldAttributes[$attr]);
     }
 
     /**
@@ -2708,7 +2739,9 @@ abstract class X2Model extends CActiveRecord {
      * @param type $showSeparator
      * @return type
      */
-    public static function getAssignmentOptions($anyone = true, $showGroups = true, $showSeparator = true) {
+    public static function getAssignmentOptions(
+        $anyone = true, $showGroups = true, $showSeparator = true) {
+
         $users = User::getNames();
         if ($anyone !== true)
             unset($users['Anyone']);
@@ -2742,11 +2775,11 @@ abstract class X2Model extends CActiveRecord {
                 $params = AuxLib::bindArray($editableFields);
                 $in = AuxLib::arrToStrList(array_keys($params));
                 self::$_editableFieldNames[$class] = Yii::app()->db->createCommand()
-                        ->select('fieldName, attributeLabel')
-                        ->from('x2_fields')
-                        ->where('readOnly!=1 AND modelName="' . get_class($this) . '" '
-                                . 'AND fieldName IN ' . $in, $params)
-                        ->queryAll();
+                    ->select('fieldName, attributeLabel')
+                    ->from('x2_fields')
+                    ->where('readOnly!=1 AND modelName="' . get_class($this) . '" '
+                            . 'AND fieldName IN ' . $in, $params)
+                    ->queryAll();
             } else {
                 self::$_editableFieldNames[$class] = array();
             }
@@ -2777,19 +2810,19 @@ abstract class X2Model extends CActiveRecord {
             $roles = Roles::getUserRoles(Yii::app()->getSuId());
             if (!$this->isExemptFromFieldLevelPermissions) {
                 $permRecords = Yii::app()->db->createCommand()
-                        ->select("f.fieldName,MAX(rtp.permission),f.readOnly")
-                        ->from(RoleToPermission::model()->tableName() . ' rtp')
-                        ->join(Fields::model()->tableName() . ' f', 'rtp.fieldId=f.id '
-                                . 'AND rtp.roleId IN ' . AuxLib::arrToStrList($roles) . ' '
-                                . 'AND f.modelName=:class', array(':class' => $class))
-                        ->group('f.fieldName')
-                        ->queryAll(false);
+                    ->select("f.fieldName,MAX(rtp.permission),f.readOnly")
+                    ->from(RoleToPermission::model()->tableName() . ' rtp')
+                    ->join(Fields::model()->tableName() . ' f', 'rtp.fieldId=f.id '
+                            . 'AND rtp.roleId IN ' . AuxLib::arrToStrList($roles) . ' '
+                            . 'AND f.modelName=:class', array(':class' => $class))
+                    ->group('f.fieldName')
+                    ->queryAll(false);
             } else {
                 $permRecords = Yii::app()->db->createCommand()
-                        ->select("fieldName,CAST(2 AS UNSIGNED INTEGER),readOnly")
-                        ->from(Fields::model()->tableName() . ' f')
-                        ->where('modelName=:class', array(':class' => $class))
-                        ->queryAll(false);
+                    ->select("fieldName,CAST(2 AS UNSIGNED INTEGER),readOnly")
+                    ->from(Fields::model()->tableName() . ' f')
+                    ->where('modelName=:class', array(':class' => $class))
+                    ->queryAll(false);
             }
             $fieldPerms = array();
             foreach ($permRecords as $record) {
@@ -2816,13 +2849,13 @@ abstract class X2Model extends CActiveRecord {
             new CDbCriteria(array('order' => 'attributeLabel ASC'))
         );
         $layout = array('sections' => array(array(
-                    'collapsible' => false,
-                    'title' => ucfirst($modelName) . ' Info',
-                    'rows' => array(array(
-                            'cols' => array(array(
-                                    'items' => array(),
-                                )),
+            'collapsible' => false,
+            'title' => ucfirst($modelName) . ' Info',
+            'rows' => array(array(
+                    'cols' => array(array(
+                            'items' => array(),
                         )),
+                )),
         )));
 
         foreach ($fields as $field) {
@@ -2908,7 +2941,9 @@ abstract class X2Model extends CActiveRecord {
      * @param bool $ajax if true, registered scripts are processed with ajaxRender
      */
     public static function renderModelAutocomplete(
-        $modelClass, $ajax = false, $htmlOptions = array()) {
+        $modelClass, $ajax = false, $htmlOptions = array(), $value=null) {
+
+        $modelClass = self::getModelName ($modelClass);
 
         if (!class_exists($modelClass) || !$modelClass::model()->asa('X2LinkableBehavior')) {
             if ($ajax) {
@@ -2926,27 +2961,34 @@ abstract class X2Model extends CActiveRecord {
         if ($ajax)
             Yii::app()->clientScript->scriptMap['*.css'] = false;
 
-        $renderWidget = function () use ($modelClass, $htmlOptions) {
+        $renderWidget = function () use ($modelClass, $htmlOptions, $value) {
             Yii::app()->controller->widget('zii.widgets.jui.CJuiAutoComplete', array(
                 'name' => (isset($htmlOptions['name']) ? $htmlOptions['name'] : 'recordName'),
                 'source' => Yii::app()->controller->createUrl(
                         X2Model::model($modelClass)->autoCompleteSource),
-                'value' => Yii::t('app', 'Start typing to suggest...'),
+                'value' => $value ? $value : Yii::t('app', 'Start typing to suggest...'),
                 'options' => array(
                     'minLength' => '1',
+                    'create' =>
+                    'js:function (event, ui) {
+                        // check for callback in parent form
+                        if ($(this).closest ("form").data ("afterAutocompleteCreated")) {
+                            $(this).closest ("form").data ("afterAutocompleteCreated") ();
+                        }
+                    }',
                     'select' =>
                     'js:function (event, ui) {
-                            $(this).val(ui.item.value);
-                            // expects next input to be a hidden input which will contain the
-                            // record id
-                            $(this).nextAll ("input").val(ui.item.id);
-                            return false;
-                        }'
+                        $(this).val(ui.item.value);
+                        // expects next input to be a hidden input which will contain the
+                        // record id
+                        $(this).nextAll ("input").val(ui.item.id);
+                        return false;
+                    }'
                 ),
                 'htmlOptions' => array_merge(array(
                     'class' => 'record-name-autocomplete x2-default-field',
                     'data-default-text' => Yii::t('app', 'Start typing to suggest...'),
-                    'style' => 'color:#aaa',
+                    'style' => $value ? '' : 'color:#aaa',
                 ), $htmlOptions),
             ));
             Yii::app()->clientScript->registerScript('renderModelAutocomplete', "
@@ -2958,310 +3000,6 @@ abstract class X2Model extends CActiveRecord {
             X2Widget::ajaxRender($renderWidget);
         } else {
             $renderWidget();
-        }
-    }
-
-    /**
-     * Transfers all events, notifications, and actions related to the given $model to $this. 
-     */
-    public function mergeRelatedRecords(
-        X2Model $model, $mergeActions = true, $mergeEvents = true, $mergeNotifs = true,
-        $mergeTags = true, $mergeRelationships = true, $mergeLinkFields = true,
-        $logMerge = false) {
-
-        $mergeData = array();
-        if ($mergeActions) {
-            $ret = $this->mergeActions($model, $logMerge);
-            if ($logMerge && !empty($ret)) {
-                $mergeData['data']['actions'] = $ret;
-            }
-        }
-        if ($mergeEvents) {
-            $ret = $this->mergeEvents($model, $logMerge);
-            if ($logMerge && !empty($ret)) {
-                $mergeData['data']['events'] = $ret;
-            }
-        }
-        if ($mergeNotifs) {
-            $ret = $this->mergeNotifications($model, $logMerge);
-            if ($logMerge && !empty($ret)) {
-                $mergeData['data']['notifications'] = $ret;
-            }
-        }
-        if ($mergeTags) {
-            $ret = $this->mergeTags($model, $logMerge);
-            if ($logMerge && !empty($ret)) {
-                $mergeData['data']['tags'] = $ret;
-            }
-        }
-        if ($mergeRelationships) {
-            $ret = $this->mergeRelationships($model, $logMerge);
-            if ($logMerge && !empty($ret)) {
-                $mergeData['data']['relationships'] = $ret;
-            }
-        }
-        if ($mergeLinkFields) {
-            $ret = $this->mergeLinkFields($model, $logMerge);
-            if ($logMerge && !empty($ret)) {
-                $mergeData['data']['linkFields'] = $ret;
-            }
-        }
-        if ($logMerge) {
-            $mergeData['assignedTo'] = $model->assignedTo;
-            $mergeData['visibility'] = $model->visibility;
-            Yii::app()->db->createCommand()
-                ->insert('x2_merge_log', array(
-                    'modelType' => get_class($model),
-                    'modelId' => $model->id,
-                    'mergeModelId' => $this->id,
-                    'mergeData' => json_encode($mergeData),
-                    'mergeDate' => time(),
-            ));
-        }
-    }
-
-    public function mergeActions(X2Model $model, $logMerge = false) {
-        $ret = array();
-        $associationType =self::getAssociationType (get_class ($model));
-        $tartgetAssociationType =self::getAssociationType (get_class ($this));
-        if ($logMerge) {
-            $ids = Yii::app()->db->createCommand()
-                ->select('id')
-                ->from('x2_actions')
-                ->where(
-                    'associationType = :type AND associationId = :id',
-                    array(':type' => $associationType, ':id' => $model->id))
-                ->queryColumn();
-            $ret = $ids;
-        }
-
-        X2Model::model('Actions')->updateAll(array(
-                'associationType' => $tartgetAssociationType,
-                'associationId' => $this->id,
-            ), 'associationType = :type AND associationId = :id', 
-            array(
-                ':type' => $associationType,
-                ':id' => $model->id
-            ));
-
-        return $ret;
-    }
-
-    public function mergeEvents(X2Model $model, $logMerge = false) {
-        $ret = array();
-        if ($logMerge) {
-            $ids = Yii::app()->db->createCommand()
-                ->select('id')
-                ->from('x2_events')
-                ->where(
-                    'associationType = :type AND associationId = :id', 
-                    array(':type' => get_class($model), ':id' => $model->id))
-                ->queryColumn();
-            $ret = $ids;
-        }
-        $count = X2Model::model('Events')->updateAll(
-            array(
-                'associationId' => $this->id,
-            ), 'associationType = :type AND associationId = :id', 
-            array(':type' => get_class($model), ':id' => $model->id));
-        return $ret;
-    }
-
-    public function mergeNotifications(X2Model $model, $logMerge = false) {
-        $ret = array();
-        $modelType = get_class ($model);
-        $targetModelType = get_class ($this);
-        if ($logMerge) {
-            $ids = Yii::app()->db->createCommand()
-                ->select('id')
-                ->from('x2_notifications')
-                ->where(
-                    'modelType = :type and modelId = :id', 
-                    array(':type' => $modelType, ':id' => $model->id))
-                ->queryColumn();
-            $ret = $ids;
-        }
-        X2Model::model('Notification')
-            ->updateAll(array(
-                'modelId' => $this->id,
-                'modelType' => $targetModelType,
-            ), 'modelType = :type AND modelId = :id', 
-            array(
-                ':type' => $modelType, 
-                ':id' => $model->id
-            ));
-        return $ret;
-    }
-
-    public function mergeTags(X2Model $model, $logMerge = false) {
-        $ret = array();
-        if ($logMerge) {
-            $ret = $model->getTags();
-        }
-        $this->disableTagTriggers ();
-        $this->addTags($model->getTags());
-        $this->enableTagTriggers ();
-        $model->clearTags();
-        return $ret;
-    }
-
-    /**
-     * Transfers all relationships of $model to $this 
-     */
-    public function mergeRelationships(X2Model $model, $logMerge = false) {
-        $ret = array();
-        $modelType = get_class ($model);
-        $targetModelType = get_class ($this);
-        if ($logMerge) {
-            $ids = Yii::app()->db->createCommand()
-                ->select('id')
-                ->from('x2_relationships')
-                ->where(
-                    'firstType = :type AND firstId = :id', 
-                    array(':type' => $modelType, ':id' => $model->id))
-                ->queryColumn();
-            if (!empty($ids)) {
-                $ret['first'] = $ids;
-            }
-
-            $ids = Yii::app()->db->createCommand()
-                    ->select('id')
-                    ->from('x2_relationships')
-                    ->where(
-                        'secondType = :type AND secondId = :id', 
-                        array(':type' => $modelType, ':id' => $model->id))
-                    ->queryColumn();
-            if (!empty($ids)) {
-                $ret['second'] = $ids;
-            }
-        }
-        Relationships::model()->updateAll(array(
-                'firstId' => $this->id,
-                'firstType' => $targetModelType,
-            ), 'firstType = :type AND firstId = :id', array(
-                ':type' => $modelType,
-                ':id' => $model->id,
-            ));
-        Relationships::model()->updateAll(array(
-                'secondId' => $this->id,
-                'secondType' => $targetModelType,
-            ), 'secondType = :type AND secondId = :id', array(
-                ':type' => $modelType,
-                ':id' => $model->id,
-            ));
-        return $ret;
-    }
-
-    public function mergeLinkFields(X2Model $model, $logMerge = false) {
-        $ret = array();
-
-        $linkFields = Fields::model()
-            ->findAllByAttributes(array('type' => 'Link', 'linkType' => get_class($model)));
-        foreach ($linkFields as $field) {
-            if ($logMerge) {
-                $ids = Yii::app()->db->createCommand()
-                    ->select('id')
-                    ->from(X2Model::model($field->modelName)->tableName())
-                    ->where($field->fieldName . ' = :id', array(':id' => $model->nameId))
-                    ->queryColumn();
-                if (!empty($ids)) {
-                    $ret[$field->modelName]['field'] = $field->fieldName;
-                    $ret[$field->modelName]['ids'] = $ids;
-                }
-            }
-            Yii::app()->db->createCommand()->update(
-                X2Model::model($field->modelName)->tableName(),
-                array(
-                    $field->fieldName => $this->nameId,
-                ),
-                $field->fieldName . ' = :id',
-                array(':id' => $model->nameId));
-        }
-        return $ret;
-    }
-
-    public function revertMerge() {
-        $mergeLog = Yii::app()->db->createCommand()
-            ->select('*')
-            ->from('x2_merge_log')
-            ->where(
-                'mergeModelId = :id AND modelType = :type', 
-                array(':id' => $this->id, ':type' => get_class($this)))
-            ->queryAll();
-        if (!empty($mergeLog)) {
-            foreach ($mergeLog as $log) {
-                $mergeData = json_decode($log['mergeData'], true);
-                $model = X2Model::model($log['modelType'])->findByPk($log['modelId']);
-                if (isset($model) && !empty($mergeData)) {
-                    $model->assignedTo = $mergeData['assignedTo'];
-                    $model->visibility = $mergeData['visibility'];
-                    $model->save();
-                    if (isset($mergeData['data']) && !empty($mergeData['data'])) {
-                        foreach ($mergeData['data'] as $key => $data) {
-                            switch ($key) {
-                                case 'actions':
-                                    $this->unmergeActions($model->id, $data);
-                                    break;
-                                case 'events':
-                                    $this->unmergeEvents($model->id, $data);
-                                    break;
-                                case 'notifications':
-                                    $this->unmergeNotifications($model->id, $data);
-                                    break;
-                                case 'tags':
-                                    $this->unmergeTags($model->id, $data);
-                                    break;
-                                case 'relationships':
-                                    $this->unmergeRelationships($model->id, $data);
-                                    break;
-                                case 'linkFields':
-                                    $this->unmergeLinkFields($model->id, $data);
-                                    break;
-                            }
-                        }
-                    }
-                }
-            }
-            $mergeLog = Yii::app()->db->createCommand()
-                ->delete(
-                    'x2_merge_log', 'mergeModelId = :id AND modelType = :type', 
-                    array(':id' => $this->id, ':type' => get_class($this)));
-            $this->delete();
-        }
-    }
-
-    public function unmergeActions($id, $actionIds) {
-        X2Model::model('Actions')->updateByPk($actionIds, array('associationId' => $id));
-    }
-
-    public function unmergeEvents($id, $eventIds) {
-        X2Model::model('Events')->updateByPk($eventIds, array('associationId' => $id));
-    }
-
-    public function unmergeNotifications($id, $notifIds) {
-        X2Model::model('Notification')->updateByPk($notifIds, array('modelId' => $id));
-    }
-
-    public function unmergeTags($id, $tags) {
-        $this->removeTags($tags);
-        $model = X2Model::model(get_class($this))->findByPk($id);
-        $model->addTags($tags);
-    }
-
-    public function unmergeRelationships($id, $data) {
-        if (isset($data['first'])) {
-            X2Model::model('Relationships')->updateByPk($data['first'], array('firstId' => $id));
-        }
-        if (isset($data['second'])) {
-            X2Model::model('Relationships')->updateByPk($data['second'], array('secondId' => $id));
-        }
-    }
-
-    public function unmergeLinkFields($id, $data) {
-        $model = X2Model::model(get_class($this))->findByPk($id);
-        foreach ($data as $modelName => $fieldData) {
-            X2Model::model($modelName)
-                ->updateByPk($fieldData['ids'], array($fieldData['field'] => $model->nameId));
         }
     }
 
@@ -3444,15 +3182,10 @@ abstract class X2Model extends CActiveRecord {
         if ($sorted) {
             if ($condList) {
                 usort ($fields, function ($a, $b) {
-                    if ($a['label'] < $b['label']) {
-                        return -1;
-                    } elseif ($a['label'] > $b['label']) {
-                        return 1;
-                    }
-                    return 0;
+                    return strcasecmp ($a['label'], $b['label']);
                 });
             } else {
-                asort ($fields);
+                $fields = ArrayUtil::asorti ($fields);
             }
         }
         return $fields;

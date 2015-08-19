@@ -41,7 +41,7 @@ $maxVal = 200;
 $imgStyle = "display:block;max-height:{$maxVal}px; max-width:{$maxVal}px;";
 if (!$model->drive && $isImage) {
 
-	$imageUrl = $model->url;
+	$imageUrl = $model->getPublicUrl();
 
 	// Preemptively scale the image to make the preview less glitchy:
 	$dim = CJSON::decode($model->resolveDimensions());

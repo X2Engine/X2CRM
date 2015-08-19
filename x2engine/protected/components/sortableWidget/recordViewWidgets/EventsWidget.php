@@ -41,6 +41,7 @@ class EventsWidget extends TransactionalViewWidget {
 
     protected $labelIconClass = 'fa-calendar'; 
     protected $historyType = 'event';
+     
 
     public function getCreateButtonTitle () {
         return Yii::t('app', 'New event');
@@ -64,12 +65,12 @@ class EventsWidget extends TransactionalViewWidget {
             $this->_gridViewConfig = array_merge (
                 parent::getGridViewConfig (),
                 array (
-                    'defaultGvSettings'=>array(
-                        'actionDescription' => '25%',
-                        'assignedTo' => '21%',
-                        'dueDate' => 100,
-                        'completeDate' => 100,
-                    ),
+                    'defaultGvSettings'=> $this->buildDefaultGvSettings (array(
+                        'actionDescription',
+                        'assignedTo',
+                        'dueDate',
+                        'completeDate',
+                    ), array (array (1, 2))),
                     'fieldFormatter' => 'EventsWidgetFieldFormatter',
                     'columnOverrides' => array (
                         'assignedTo' => array (
@@ -89,6 +90,15 @@ class EventsWidget extends TransactionalViewWidget {
                 array (
                 )
             );
+            if (Yii::app()->params->profile->historyShowRels) {
+                $this->_gridViewConfig['defaultGvSettings'] = $this->buildDefaultGvSettings (array (
+                    'actionDescription',
+                    'assignedTo',
+                    'associationName',
+                    'dueDate',
+                    'completeDate',
+                ));
+            }
         }
         return $this->_gridViewConfig;
     }

@@ -50,7 +50,7 @@ abstract class BaseUserTrigger extends X2FlowTrigger {
                     'name'=>'user',
                     'label'=>Yii::t('studio','User'),
                     'type'=>'dropdown',
-                    'options'=>array ('Anyone' => Yii::t('x2flow', 'Anyone')) + 
+                    'options'=>array ('Anyone' => Yii::t('admin', 'Anyone')) + 
                         X2Model::getAssignmentOptions(false,false),
                     'operators'=>array(
                         '=',
@@ -64,7 +64,8 @@ abstract class BaseUserTrigger extends X2FlowTrigger {
         );
     }
 
-    public static function evalComparison($subject,$operator,$value=null) {
+    public static function evalComparison($subject,$operator,$value=null, Fields $field = null) {
+        $value = self::parseArray ($operator, $value);
         if (is_array ($value) && in_array ('Anyone', $value)) { 
             if ($operator === 'list') {
                 return true;

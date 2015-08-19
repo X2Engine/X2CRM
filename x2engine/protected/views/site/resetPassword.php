@@ -34,6 +34,9 @@
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2Engine".
  *****************************************************************************************/
+
+LoginThemeHelper::init();
+
 ?>
 
 <div id="password-reset-form-outer">
@@ -68,13 +71,12 @@
             </div><!-- #login-form -->
             <?php echo CHtml::endForm(); ?>
             <?php } else {
-                echo '<hr />'.CHtml::link(Yii::t('app','Sign In'),
-                                        array('/site/login'),
-                                        array(
-                                            'class'=>'x2-button x2-blue',
-                                            'style'=>'color:white;'
-                                        )
-                                        );
+                echo '<hr />'.CHtml::link(Yii::t('app','Sign in'),
+                    array('/site/login'),
+                    array(
+                        'class'=>'x2-button x2-blue sign-in-button-small',
+                        'style'=>'color:white;'
+                    ));
             } ?>
         </div><!-- #login-box -->
     </div><!-- #login-page -->

@@ -40,10 +40,7 @@ $menuOptions = array(
 );
 $this->insertMenu($menuOptions, $model, $authParams);
 
-Yii::app()->clientScript->registerScriptFile(Yii::app()->getBaseUrl().'/js/ckeditor/ckeditor.js');
-Yii::app()->clientScript->registerScriptFile(Yii::app()->getBaseUrl().'/js/ckeditor/adapters/jquery.js');
-Yii::app()->clientScript->registerScriptFile(Yii::app()->getBaseUrl().'/js/emailEditor.js');
-
+Yii::app()->clientScript->registerPackage ('emailEditor');
 Yii::app()->clientScript->registerScript('editorSetup','createCKEditor("input");',CClientScript::POS_READY);
 ?>
 <div class="page-title icon actions"><h2>

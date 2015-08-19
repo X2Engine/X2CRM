@@ -67,16 +67,12 @@ Public instance methods
  * is pushed.
  */
 History.prototype.pushState = function (stateObj, title, url) {
-    console.log ('push state ' + url);
-    console.log (stateObj);
     this._pushingState = true;
     window.History.pushState (stateObj, title, url);
     this._pushingState = false;
 };
 
 History.prototype.replaceState = function (stateObj, title, url) {
-    console.log ('push state ' + url);
-    console.log (stateObj);
     this._pushingState = true;
     window.History.replaceState (stateObj, title, url);
     this._pushingState = false;

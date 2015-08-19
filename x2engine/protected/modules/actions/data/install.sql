@@ -90,7 +90,7 @@ VALUES
 ("Actions", "type",              "Action Type",      0, 0, "varchar",    0, 1, NULL, 0, 0, "",     0, 1, NULL),
 ("Actions", "createDate",        "Create Date",      0, 0, "dateTime",   0, 0, NULL, 0, 0, "",     0, 1, NULL),
 ("Actions", "complete",          "Complete",         0, 0, "varchar",    0, 1, NULL, 0, 0, "",     0, 1, NULL),
-("Actions", "reminder",          "Reminder",         0, 0, "varchar",    0, 0, NULL, 0, 0, "",     0, 1, NULL),
+("Actions", "reminder",          "Reminder",         0, 0, "boolean",    0, 0, NULL, 0, 0, "",     0, 1, NULL),
 ("Actions", "completedBy",       "Completed By",     0, 0, "assignment", 0, 1, NULL, 0, 0, "",     0, 1, NULL),
 ("Actions", "completeDate",      "Date Completed",   0, 0, "dateTime",   0, 0, NULL, 0, 0, "",     0, 1, NULL),
 ("Actions", "lastUpdated",       "Last Updated",     0, 0, "dateTime",   0, 1, NULL, 0, 0, "",     0, 1, NULL),
@@ -102,4 +102,6 @@ VALUES
 ("Actions", "stageNumber",       "Process Stage",     0, 0, "int",        0, 1, NULL, 0, 0, "",     0, 1, NULL),
 ("Actions", "flowTriggered",     "Flow Triggered",   0, 0, "boolean",    0, 1, NULL, 0, 0, "",     0, 1, NULL),
 ("Actions", "quoteId",           "Quote ID",         0, 0, "int",        0, 1, NULL, 0, 0, "",     0, 1, NULL),
+("Actions", "notificationUsers", "Notification Users",0, 0, "varchar",   0, 0, NULL, 0, 0, "",     0, 1, NULL),
+("Actions", "notificationTime",  "Notification Time", 0, 0, "int",   0, 0, NULL, 0, 0, "",     0, 1, NULL),
 ("Actions", "calendarId",        "Calendar ID",      0, 0, "int",        0, 1, NULL, 0, 0, "",     0, 1, NULL);

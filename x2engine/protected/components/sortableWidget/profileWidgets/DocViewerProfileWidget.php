@@ -50,7 +50,7 @@ class DocViewerProfileWidget extends SortableWidget {
 
     public $viewFile = '_docViewerProfileWidget';
 
-    public $template = '<div class="submenu-title-bar widget-title-bar">{widgetLabel}{closeButton}{minimizeButton}{settingsMenu}{editButton}</div>{widgetContents}';
+    public $template = '<div class="submenu-title-bar widget-title-bar">{widgetLabel}{closeButton}{minimizeButton}{settingsMenu}</div>{widgetContents}';
 
     private static $_JSONPropertiesStructure;
 
@@ -69,15 +69,6 @@ class DocViewerProfileWidget extends SortableWidget {
         return $this->_viewFileParams;
     } 
 
-    public function renderEditButton () {
-        $themeUrl = Yii::app()->theme->getBaseUrl();
-        echo "<a href='#' class='widget-edit-button right x2-icon-button' style='display:none;'>".
-            CHtml::image(
-                $themeUrl.'/images/icons/Edit.png', Yii::t('app', 'Edit Document'),
-                array ('title' => Yii::t('app', 'Edit Document'))).
-            "</a>";
-    }
-
     /**
      * overrides parent method
      */
@@ -86,7 +77,7 @@ class DocViewerProfileWidget extends SortableWidget {
             self::$_JSONPropertiesStructure = array_merge (
                 parent::getJSONPropertiesStructure (),
                 array (
-                    'docId' => '',  // id of the doc record to be displayed
+                    'docId' => '', // id of the doc record to be displayed
                     'label' => Yii::t('app', 'Doc Viewer'),
                     'height' => '200',
                     'hidden' => true
@@ -119,27 +110,12 @@ class DocViewerProfileWidget extends SortableWidget {
         if (!isset ($this->_JSSortableWidgetParams)) {
             $docId = self::getJSONProperty (
                 $this->profile, 'docId', $this->widgetType, $this->widgetUID);
-            if ($docId !== '') {
-                $doc = Docs::model ()->findByPk ($docId);
-            } else {
-                $docId = '';
-            }
-            if (isset ($doc)) {
-                $canEdit = $doc->checkEditPermissions () ? 1 : 0;
-            } else {
-                $canEdit = 0;
-            }
             $this->_JSSortableWidgetParams = array_merge (parent::getJSSortableWidgetParams (),
                 array (
                     'getItemsUrl' => Yii::app()->createUrl ("/docs/docs/getItems"),
                     'getDocUrl' => Yii::app()->createUrl("/docs/docs/getItem"),
                     'enableResizing' => true,
-                    'editDocUrl' => 
-                        Yii::app()->controller->createAbsoluteUrl ('/docs/docs/update'),
                     'docId' => $docId,
-                    'canEdit' => $canEdit,
-                    'checkEditPermissionUrl' => Yii::app()->controller->createUrl (
-                        "/docs/docs/ajaxCheckEditPermission"),
                 )
             );
         }
@@ -186,11 +162,6 @@ class DocViewerProfileWidget extends SortableWidget {
                         #select-a-document-dialog p {
                             display: inline;
                             margin-right: 5px;
-                        }
-
-                        .widget-edit-button {
-                            margin-right: 10px;
-                            margin-top: 3px;
                         }
 
                         .default-text-container {

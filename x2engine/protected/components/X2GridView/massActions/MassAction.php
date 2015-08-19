@@ -44,11 +44,18 @@ abstract class MassAction extends CComponent {
     const BAD_ITEM_COUNT = 2;
     const BAD_COUNT_AND_CHECKSUM = 3;
 
+    protected static $responseForm = '';
+
     /**
      * @var bool $hasButton If true, mass action has a button, otherwise it is assumed that the
      *  mass action can only be accessed from the dropdown list
      */
     public $hasButton = false; 
+
+    /**
+     * @var X2GridViewBase|null $owner
+     */
+    public $owner = null; 
 
     /**
      * If true, user must enter their password before super mass action can proceed 
@@ -71,18 +78,59 @@ abstract class MassAction extends CComponent {
 
     public function renderDialog ($gridId, $modelName) {}
 
-    public function beforeExecute () {}
+    public function beforeExecute () {
+        if ($this->getFormModel () && !$this->getFormModel ()->validate ()) {
+            $that = $this;
+            self::$responseForm = X2Widget::ajaxRender (function () use ($that) {
+                $that->renderForm (false);
+            }, true);
+            return false;
+        }
+        return true;
+    }
 
     /**
      * Instantiates mass action classes
      * @return array  
      */
-    public static function getMassActionObjects (array $classNames) {
+    public static function getMassActionObjects (array $classNames, X2GridViewBase $owner) {
         $objs = array ();
         foreach ($classNames as $className) {
-            $objs[] = new $className; 
+            $obj = new $className;
+            $obj->owner = $owner;
+            $objs[] = $obj; 
         }
         return $objs;
+    }
+
+    private $_formModel;
+    public function getFormModel () {
+        $formModelName = get_called_class ().'FormModel';
+        if (!in_array ($formModelName, array (
+                'MassAddRelationshipFormModel', 
+                'MassConvertRecordFormModel'
+            )) ||
+            !class_exists ($formModelName))  {
+
+            return null;
+        }
+        if (!isset ($this->_formModel)) {
+            $this->_formModel = new $formModelName;
+            $this->_formModel->massAction = $this;
+            if (isset ($_POST[$formModelName])) {
+                $this->_formModel->setAttributes ($_POST[$formModelName]);
+            }
+        }
+        return $this->_formModel;
+    }
+
+    public function getModelClass () {
+        return $this->owner ? $this->owner->modelName : Yii::app()->controller->modelClass;
+    }
+
+    public function getModelDisplayName ($plural=true) {
+        $modelClass = $this->getModelClass ();
+        return $modelClass::model ()->getDisplayName ($plural);
     }
 
     public function registerPackages () {
@@ -107,8 +155,8 @@ abstract class MassAction extends CComponent {
     /**
      * Echoes flashes in the flashes arrays
      */
-    public static function echoFlashes () {
-        echo CJSON::encode (self::getFlashes ());
+    public static function echoResponse () {
+        echo CJSON::encode (static::getResponse ());
     }
 
     // used to hold success, warning, and error messages
@@ -116,8 +164,24 @@ abstract class MassAction extends CComponent {
     protected static $noticeFlashes = array ();
     protected static $errorFlashes = array ();
 
-    protected static function getFlashes () {
+    protected static function getResponse () {
+        // encode flashes unless encode property is set to false
+        foreach (array ('notice', 'success', 'error') as $flashType) {
+            $prop = $flashType.'Flashes';
+            foreach (self::$$prop as &$flash) {
+                if (is_array ($flash)) { 
+                    if (!$flash['encode']) {
+                        $flash = $flash['message'];
+                    } else {
+                        $flash = CHtml::encode ($flash['message']);
+                    }
+                } else {
+                    $flash = CHtml::encode ($flash);
+                }
+            }
+        }
         return array (
+            'form' => self::$responseForm,
             'notice' => self::$noticeFlashes,
             'success' => self::$successFlashes,
             'error' => self::$errorFlashes
@@ -175,6 +239,8 @@ abstract class MassAction extends CComponent {
             echo CJSON::encode (array (false, Yii::t('app', 'incorrect password')));
         }
     }
+
+    protected function renderForm () {}
 
     /**
      * Helper method for superExecute. Returns array of ids of records in search results.
@@ -342,7 +408,7 @@ abstract class MassAction extends CComponent {
      * @return array response data for super mass action request 
      */
     protected function generateSuperMassActionResponse ($successes, $selectedRecords, $uid) {
-        $flashes = self::getFlashes ();
+        $flashes = self::getResponse ();
         $response = $flashes;
         $response['successes'] = $successes;
         $response['uid'] = $uid;
@@ -354,4 +420,8 @@ abstract class MassAction extends CComponent {
         return $response;
     }
 
+}
+
+abstract class MassActionFormModel extends CFormModel {
+    public $massAction = null;
 }

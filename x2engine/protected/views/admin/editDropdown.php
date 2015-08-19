@@ -42,6 +42,7 @@ $names=array();
 foreach($list as $dropdown){
     $names[$dropdown->id]=$dropdown->name;
 }
+$names = ArrayUtil::asorti ($names);
 ?>
 <?php $form=$this->beginWidget('CActiveForm', array(
 	'id'=>'edit-dropdown-form',

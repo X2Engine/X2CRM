@@ -76,7 +76,7 @@ class WorkflowTest extends X2DbTestCase {
         $this->assertTrue (TestingAuxLib::suLogin('testuser'));
         $status = Workflow::getWorkflowStatus ($workflow->id);
         $permissions = Workflow::getStagePermissions ($status);
-        VERBOSE_MODE && print_r ($permissions);
+        X2_VERBOSE_MODE && print_r ($permissions);
 
         // testuser does not have permission for stage 4
         $this->assertFalse ($permissions[3]);
@@ -112,35 +112,35 @@ class WorkflowTest extends X2DbTestCase {
 
         $retVal = Workflow::moveFromStageAToStageB (
             $workflow->id, 4, 5, $model, array ('4' => 'test comment'));
-        if (!$retVal[0] && VERBOSE_MODE) println ($retVal[1]);
+        if (!$retVal[0] && X2_VERBOSE_MODE) println ($retVal[1]);
         $this->assertTrue ($retVal[0]);
 
         $retVal = Workflow::moveFromStageAToStageB (
             $workflow->id, 5, 1, $model);
-        if (!$retVal[0] && VERBOSE_MODE) println ($retVal[1]);
+        if (!$retVal[0] && X2_VERBOSE_MODE) println ($retVal[1]);
         $this->assertTrue ($retVal[0]);
 
         $retVal = Workflow::moveFromStageAToStageB (
             $workflow->id, 1, 5, $model);
-        if (!$retVal[0] && VERBOSE_MODE) println ($retVal[1]);
+        if (!$retVal[0] && X2_VERBOSE_MODE) println ($retVal[1]);
         // should fail since stage 4 requires a comment
         $this->assertFalse ($retVal[0]);
 
 
         $retVal = Workflow::moveFromStageAToStageB (
             $workflow->id, 1, 4, $model);
-        if (!$retVal[0] && VERBOSE_MODE) println ($retVal[1]);
+        if (!$retVal[0] && X2_VERBOSE_MODE) println ($retVal[1]);
         $this->assertTrue ($retVal[0]);
 
         $retVal = Workflow::moveFromStageAToStageB (
             $workflow->id, 4, 1, $model);
-        if (!$retVal[0] && VERBOSE_MODE) println ($retVal[1]);
+        if (!$retVal[0] && X2_VERBOSE_MODE) println ($retVal[1]);
         $this->assertTrue ($retVal[0]);
 
         $this->assertTrue (TestingAuxLib::suLogin ('testuser'));
         $retVal = Workflow::moveFromStageAToStageB (
             $workflow->id, 1, 4, $model);
-        if (!$retVal[0] && VERBOSE_MODE) println ($retVal[1]);
+        if (!$retVal[0] && X2_VERBOSE_MODE) println ($retVal[1]);
         // should fail since testuser doesn't have permission to go through stage 3
         $this->assertFalse ($retVal[0]);
 
@@ -229,7 +229,7 @@ class WorkflowTest extends X2DbTestCase {
             'end' => time (),
             'workflowId' => $workflow->id,
         ), array ('range' => 'all'));
-        VERBOSE_MODE && print_r ($counts);
+        X2_VERBOSE_MODE && print_r ($counts);
         $this->assertEquals (1, array_reduce ($counts, function ($a, $b) { return $a + $b; }, 0));
         $action = Actions::model ()->findByAttributes (array (
             'workflowId' => $workflow->id,
@@ -249,7 +249,7 @@ class WorkflowTest extends X2DbTestCase {
             'end' => time (),
             'workflowId' => $workflow->id,
         ), array ('range' => 'all'));
-        VERBOSE_MODE && print_r ($counts);
+        X2_VERBOSE_MODE && print_r ($counts);
         $this->assertEquals (1, array_reduce ($counts, function ($a, $b) { return $a + $b; }, 0));
 
         // ensure that testuser cannot still see the record
@@ -259,7 +259,7 @@ class WorkflowTest extends X2DbTestCase {
             'end' => time (),
             'workflowId' => $workflow->id,
         ), array ('range' => 'all'));
-        VERBOSE_MODE && print_r ($counts);
+        X2_VERBOSE_MODE && print_r ($counts);
         $this->assertEquals (0, array_reduce ($counts, function ($a, $b) { return $a + $b; }, 0));
 
         // unless it's assigned to testuser
@@ -270,7 +270,7 @@ class WorkflowTest extends X2DbTestCase {
             'end' => time (),
             'workflowId' => $workflow->id,
         ), array ('range' => 'all'));
-        VERBOSE_MODE && print_r ($counts);
+        X2_VERBOSE_MODE && print_r ($counts);
         $this->assertEquals (1, array_reduce ($counts, function ($a, $b) { return $a + $b; }, 0));
 
         TestingAuxLib::suLogin ('admin');
@@ -319,7 +319,7 @@ class WorkflowTest extends X2DbTestCase {
             'workflowId' => $workflow->id,
         ), array ('range' => 'all'));
 
-        VERBOSE_MODE && print_r ($counts);
+        X2_VERBOSE_MODE && print_r ($counts);
 
         $_SERVER['REQUEST_METHOD'] = 'POST';
         $_SERVER['SERVER_NAME'] = 'localhost';

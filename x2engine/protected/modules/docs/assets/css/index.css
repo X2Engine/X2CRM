@@ -1,0 +1,114 @@
+/*****************************************************************************************
+ * X2Engine Open Source Edition is a customer relationship management program developed by
+ * X2Engine, Inc. Copyright (C) 2011-2015 X2Engine Inc.
+ * 
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU Affero General Public License version 3 as published by the
+ * Free Software Foundation with the addition of the following permission added
+ * to Section 15 as permitted in Section 7(a): FOR ANY PART OF THE COVERED WORK
+ * IN WHICH THE COPYRIGHT IS OWNED BY X2ENGINE, X2ENGINE DISCLAIMS THE WARRANTY
+ * OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
+ * 
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.  See the GNU Affero General Public License for more
+ * details.
+ * 
+ * You should have received a copy of the GNU Affero General Public License along with
+ * this program; if not, see http://www.gnu.org/licenses or write to the Free
+ * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301 USA.
+ * 
+ * You can contact X2Engine, Inc. P.O. Box 66752, Scotts Valley,
+ * California 95067, USA. or at email address contact@x2engine.com.
+ * 
+ * The interactive user interfaces in modified source and object code versions
+ * of this program must display Appropriate Legal Notices, as required under
+ * Section 5 of the GNU Affero General Public License version 3.
+ * 
+ * In accordance with Section 7(b) of the GNU Affero General Public License version 3,
+ * these Appropriate Legal Notices must retain the display of the "Powered by
+ * X2Engine" logo. If the display of the logo is not reasonably feasible for
+ * technical reasons, the Appropriate Legal Notices must display the words
+ * "Powered by X2Engine".
+ *****************************************************************************************/
+/* line 38, ../../../../../compass/protected/modules/docs/assets/css/index.scss */
+#folder-contents .page-title > .x2-button {
+  height: 24px;
+}
+/* line 42, ../../../../../compass/protected/modules/docs/assets/css/index.scss */
+#folder-contents .items {
+  border-radius: 0;
+  border: none;
+}
+/* line 46, ../../../../../compass/protected/modules/docs/assets/css/index.scss */
+#folder-contents .pager {
+  border: none;
+}
+
+/* line 51, ../../../../../compass/protected/modules/docs/assets/css/index.scss */
+#attachments-grid {
+  margin-top: 17px;
+}
+
+/* line 54, ../../../../../compass/protected/modules/docs/assets/css/index.scss */
+.file-system-object {
+  padding: 10px !important;
+  border-bottom-style: solid;
+  border-bottom-width: 1px;
+}
+
+/* line 61, ../../../../../compass/protected/modules/docs/assets/css/index.scss */
+.file-system-header {
+  padding: 10px;
+  font-weight: bold;
+}
+
+/* line 66, ../../../../../compass/protected/modules/docs/assets/css/index.scss */
+.file-system-object-folder:hover {
+  cursor: pointer;
+}
+
+/* line 69, ../../../../../compass/protected/modules/docs/assets/css/index.scss */
+#folder-contents .items {
+  border-bottom: 0px;
+}
+
+/* line 72, ../../../../../compass/protected/modules/docs/assets/css/index.scss */
+.file-system-clear-fix:after {
+  content: ' ';
+  display: block;
+  height: 0;
+  clear: both;
+}
+
+/* line 78, ../../../../../compass/protected/modules/docs/assets/css/index.scss */
+.file-system-object-link {
+  float: left;
+  width: 30%;
+}
+
+/* line 82, ../../../../../compass/protected/modules/docs/assets/css/index.scss */
+.file-system-object-attributes {
+  float: right;
+  width: 70%;
+  text-align: center;
+}
+
+/* line 87, ../../../../../compass/protected/modules/docs/assets/css/index.scss */
+.file-system-object-owner {
+  float: left;
+  width: 30%;
+}
+
+/* line 91, ../../../../../compass/protected/modules/docs/assets/css/index.scss */
+.file-system-object-last-updated {
+  float: left;
+  width: 45%;
+}
+
+/* line 95, ../../../../../compass/protected/modules/docs/assets/css/index.scss */
+.file-system-object-visibility {
+  float: left;
+  width: 15%;
+}

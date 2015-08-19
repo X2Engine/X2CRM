@@ -54,10 +54,11 @@ class StringUtil {
         }
 
         if ($throws && $retVal === null) {
-            throw new StringUtilException (
-                Yii::t('app', 'preg_replace error: '.
-                    StringUtilException::getErrorMessage (preg_last_error ())), 
-                StringUtilException::PREG_REPLACE_ERROR);
+            throw new StringUtilException(
+            Yii::t('app', 'preg_replace error: {error}',
+                    array(
+                '{error}' => StringUtilException::getErrorMessage(preg_last_error())
+            )), StringUtilException::PREG_REPLACE_ERROR);
         }
         return $retVal;
     }
@@ -79,12 +80,22 @@ class StringUtil {
             $retVal = preg_replace_callback ($pattern, $callback, $subject);
         }
         if ($throws && $retVal === null) {
-            throw new StringUtilException (
-                Yii::t('app', 'preg_replace_callback error: '.
-                    StringUtilException::getErrorMessage (preg_last_error ())), 
-                StringUtilException::PREG_REPLACE_CALLBACK_ERROR);
+            throw new StringUtilException(
+            Yii::t('app', 'preg_replace_callback error: {error}',
+                    array(
+                '{error}' => StringUtilException::getErrorMessage(preg_last_error())
+            )), StringUtilException::PREG_REPLACE_CALLBACK_ERROR);
         }
         return $retVal;
+    }
+
+    /**
+     * Like json_decode, but returns $subject if decoding fails 
+     */
+    public static function jsonDecode ($subject, $assoc=false, $depth=512) {
+        $decoded = json_decode ($subject, $assoc, $depth);
+        if ($decoded !== null) return $decoded;
+        return $subject;
     }
 
 }

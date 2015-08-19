@@ -515,8 +515,6 @@ function installStage($stage) {
                 $dbConfig['{' . $property . '}'] = $config[$property];
             $contents = file_get_contents('webConfig.php');
             $contents = preg_replace('/\$url\s*=\s*\'\'/', "\$url=" . var_export($config['baseUrl'].$config['baseUri'], 1), $contents);
-            $contents = preg_replace('/\$user\s*=\s*\'\'/', "\$user=" . var_export($config['adminUsername'], 1), $contents);
-            $contents = preg_replace('/\$userKey\s*=\s*\'\'/', "\$userKey=" . var_export($config['adminUserKey'], 1), $contents);
             file_put_contents('webConfig.php', $contents);
             if ($config['test_db']) {
                 $filename = implode(DIRECTORY_SEPARATOR, array(__DIR__, 'protected', 'config', 'X2Config-test.php'));
@@ -918,16 +916,16 @@ if (!$silent && $complete):
             <div id="installer-box" style="padding-top:20px;">
                 <h1><?php echo installer_t('Installation Complete!'); ?></h1>
                 <div id="install-form" class="wide form">
-                    <?php echo installer_tr('X2Engine has been successfully installed on your web server!  You may now log in with username "{user}" and the password you provided during the installation process.', array('{user}' => $config['adminUsername']));
-                    echo "<br><br>" . installer_tr('New to X2? Check out our user reference guide {link}.', array('{link}' => '<a href="http://www.x2engine.com/reference_guide/" target="_blank">here</a>'));
+                    <?php echo installer_tr('X2CRM has been successfully installed on your web server!  You may now log in with username "{user}" and the password you provided during the installation process.', array('{user}' => $config['adminUsername']));
+                    echo "<br><br>" . installer_tr('New to X2? Check out our user reference guide {link}.', array('{link}' => '<a href="http://www.x2crm.com/reference_guide/" target="_blank">here</a>'));
                     ?><br /><br />
-                    <h3><a class="x2-button" href="index<?php echo ($config['test_db'] ? '-test' : ''); ?>.php"><?php echo installer_t('Click here to log in to X2Engine'); ?></a></h3><br />
+                    <h3><a class="x2-button" href="index<?php echo ($config['test_db'] ? '-test' : ''); ?>.php"><?php echo installer_t('Click here to log in to X2CRM'); ?></a></h3><br />
                 </div>
-                <a href="http://www.x2engine.com"><?php echo installer_t('For help or more information - X2Engine.com'); ?></a><br /><br />
+                <a href="http://www.x2crm.com"><?php echo installer_t('For help or more information - X2CRM.com'); ?></a><br /><br />
                 <div id="footer">
                     <div class="hr"></div>
                     <!--<img src="images/x2engine_big.png">-->
-                    Copyright &copy; <?php echo date('Y'); ?><a href="http://www.x2engine.com">X2Engine Inc.</a><br />
+                    Copyright &copy; <?php echo date('Y'); ?><a href="http://www.x2crm.com">X2Engine Inc.</a><br />
                     <?php echo installer_t('All Rights Reserved.'); ?>
                         <?php if (!$config['test_db']): ?>
                         <img style="height:0;width:0" src="http://x2planet.com/installs/registry/activity?<?php echo http_build_query($stats); ?>">

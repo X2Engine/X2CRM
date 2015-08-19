@@ -76,6 +76,10 @@ GridViewWidget.prototype.refresh = function () {
     this._refreshGrid ();
 };
 
+GridViewWidget.prototype._gridElement = function () {
+    return this.element.find ('.x2-gridview');
+};
+
 GridViewWidget.prototype._refreshGrid = function () {
     var that = this;
     x2[that.widgetType + 'WidgetManager'].refreshWidget (this.getWidgetKey ());
@@ -116,9 +120,9 @@ GridViewWidget.prototype._setUpGridSettings = function () {
 };
 
 GridViewWidget.prototype.toggleHeader = function (show) {
-    if (this.hideFullHeader)
+    if (this.hideFullHeader) {
         this.element.find ('.items').first ().toggle(show);
-    else {
+    } else {
         this.element.find ('.items').first ().toggle(true);
         this.element.find ('.page-title, tr.filters').toggle(show);
     }        
@@ -128,13 +132,21 @@ GridViewWidget.prototype._setUpShowHeaderButton = function () {
     var that = this;
 
     that.toggleHeader (that.showHeader);
-
     this.element.find ('.widget-settings-menu-content .hide-settings').click (function () {
         that.showHeader = !that.showHeader;
         that.setProperty ('showHeader', that.showHeader ? 1 : 0);
         that.toggleHeader (that.showHeader);
     });
+    this.afterGridRefresh ();
 }
+
+GridViewWidget.prototype.afterGridRefresh = function () {
+    var that = this;
+    this._gridElement ().on ('x2.GridViewMassActionsManager.checkUIShow', function (evt, shown) {
+        if (!that.hideFullHeader && !that.showHeader)
+            that.toggleHeader (shown); 
+    });
+};
 
 GridViewWidget.prototype._setUpTitleBarBehavior = function () {
     if (this.element.find ('.grid-settings-button').length) {

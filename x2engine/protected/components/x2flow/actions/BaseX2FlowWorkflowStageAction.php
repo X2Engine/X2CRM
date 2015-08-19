@@ -48,7 +48,7 @@ abstract class BaseX2FlowWorkflowStageAction extends X2FlowAction {
 		$workflowIds = array_keys($workflows);
 		$stages = count($workflowIds)? Workflow::getStagesByNumber($workflowIds[0]) : array('---');
 
-		return array(
+		return array_merge (parent::paramRules (), array (
             'title'=>$this->title,
             'modelClass'=>'modelClass',
             'modelRequired' => 1,
@@ -68,13 +68,19 @@ abstract class BaseX2FlowWorkflowStageAction extends X2FlowAction {
                     'optionsSource' => Yii::app()->createUrl ('/workflow/workflow/getStageNames')
                 ),
             )
-		);
+		));
 	}
 
     /**
      * Validates type of model that triggered the flow
      */
     public function validate (&$params=array (), $flowId=null) {
+        if(!isset($params['model'])){
+            return array (
+                false, 
+                Yii::t('studio', "Workflow stage actions must have an associated model.")
+            );
+        }
         $model = $params['model'];
         $modelName = get_class ($model);
 

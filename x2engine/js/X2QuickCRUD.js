@@ -58,7 +58,9 @@ X2QuickCRUD.prototype = auxlib.create (x2.Widget.prototype);
 X2QuickCRUD.prototype.openQuickCRUDDialog = function () {
     var that = this;
 
-    this._dialog = $('<div>');
+    this._dialog = $('<div>', {
+        'class': 'form2' 
+    });
     this._dialog.dialog ($.extend ({
         title: this.dialogTitle,
         autoOpen: false,

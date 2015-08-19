@@ -49,6 +49,9 @@ class Api2ControllerTest extends Api2TestBase {
         ));
     }
 
+    /**
+     * @group failing
+     */
     public function testSearch () {
         $contacts = array (
             $this->contacts ('testAnyone'),

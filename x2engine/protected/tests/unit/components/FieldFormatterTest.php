@@ -78,6 +78,11 @@ class FieldFormatterTest extends X2DbTestCase {
         Contacts::model ()->refreshMetaData ();
     }
 
+    public function setUp () {
+        TestingAuxLib::loadControllerMock ();
+        return parent::setUp ();
+    }
+
     private static function tryAddCol ($model, $col, $type) {
         if (!Fields::model ()->findByAttributes (array (
             'fieldName' => $col,
@@ -142,7 +147,7 @@ class FieldFormatterTest extends X2DbTestCase {
             $fieldsOfType = $contact->getFields (false, function ($field) use ($type) {
                 return strtolower ($field->type) === strtolower ($type);
             });
-            VERBOSE_MODE && println ('type='.$type);
+            X2_VERBOSE_MODE && println ('type='.$type);
             $this->assertTrue (count ($fieldsOfType) > 0);
             foreach ($fieldsOfType as $field) {
                 $contact->formatter->renderAttribute ($field->fieldName, true, true, true);

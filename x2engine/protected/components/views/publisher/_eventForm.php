@@ -53,7 +53,7 @@ if ($associationType === 'calendar') {
         $associationModels[$typ] = X2Model::getModelName ($typ);
     }
     Yii::app()->clientScript->registerScript('eventTabJS',"
-(function () {
+;(function () {
 
 $('#Actions_associationType').change (function () {
     var that = this;

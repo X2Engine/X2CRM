@@ -41,4 +41,12 @@ return array (
 'Dimensions:'=>'Dimensioni:',
 'MIME Info:'=>'Info MIME:',
 'Google Drive:'=>'Google Drive:',
+'View Full Size'=>'Visualizza a grandezza naturale',
+'All {media}'=>'Tutti {media}',
+'Drop files here to upload'=>'Drop dei file da caricare qui',
+'select files'=>'selezionare i file',
+'Image Width'=>'Larghezza immagine',
+'Image Height'=>'Altezza immagine',
+'Delete Selected Image'=>'Elimina immagine selezionata',
+'Access Key'=>'Chiave d&#39;accesso',
 );

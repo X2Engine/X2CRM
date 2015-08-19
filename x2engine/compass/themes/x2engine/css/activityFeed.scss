@@ -35,6 +35,7 @@
 
 @import "colors";
 @import "standards";
+@import "x2-icons";
 @import "icons";
 
 /***********************************************************************
@@ -334,10 +335,7 @@
         float: right;
         margin-top: 8px;
         margin-right: 5px;
-        opacity: 0.7;
-        &:hover {
-            opacity: 1;
-        }
+        @include titleBarIconButton;
     }
 
     #second-row-buttons-container {
@@ -390,6 +388,7 @@
             ("record_deleted"     "trash")
             ("web_activity"       "globe")
             ("weblead_create"     "globe" "star")
+            ("topic_reply"        "comment-o") 
         );
 
         $x2-map: (
@@ -421,6 +420,7 @@
                 ("BugReports-create" "bug")
                 ("Charts-create" "bar-chart")
                 ("Reports-create" "file-text-o")
+                ("Topics-create" "comments")
               );
 
             $x2-map: (

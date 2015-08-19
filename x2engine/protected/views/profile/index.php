@@ -70,16 +70,27 @@ $("#feed-form textarea").bind("focus blur",function(){ x2.forms.toggleText(this)
 		echo $form->dropDownList($feed,'visibility',array(1=>Yii::t('actions','Public'),0=>Yii::t('actions','Private')));
         echo $form->dropDownList($feed,'subtype',json_decode(Dropdowns::model()->findByPk(14)->options,true));
 		echo CHtml::submitButton(Yii::t('app','Post'),array('class'=>'x2-button','id'=>'save-button'));
-		echo CHtml::button(Yii::t('app','Attach A File/Photo'),array('class'=>'x2-button','onclick'=>"$('#attachments').toggle();"));
+		echo CHtml::button(Yii::t('app','Attach A File/Photo'),array('class'=>'x2-button','onclick'=>"x2.FileUploader.toggle('activity')"));
 		?>
 	</div>
 	<?php $this->endWidget(); ?>
 </div>
 
 
-<div id="attachments" style="display:none;">
-<?php $this->widget('Attachments',array('associationType'=>'feed','associationId'=>Yii::app()->user->getId())); ?>
-</div>
+<?php 
+$this->widget ('FileUploader',array(
+    'id' => 'activity',
+    'url' => '/site/upload',
+    'mediaParams' => array(
+        'profileId' => $profileId, 
+        'associationType' => 'feed',
+        'associationId' => Yii::app()->user->getId(),
+    ),
+    'viewParams' => array (
+        'showButton' => false
+    )
+));
+?>
 <?php 
 $allFlag=(isset($_GET['filter']) && $_GET['filter']=='all') || !isset($_GET['filter']);
 $publicFlag=isset($_GET['filter']) && $_GET['filter']=='public';

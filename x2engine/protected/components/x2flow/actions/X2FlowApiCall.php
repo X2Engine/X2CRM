@@ -68,7 +68,7 @@ class X2FlowApiCall extends X2FlowAction {
             'DELETE' => Yii::t('studio', 'DELETE')
         );
 
-        return array(
+        return array_merge (parent::paramRules (), array (
             'title' => Yii::t('studio', $this->title),
             'info' => Yii::t('studio', $this->info),
             'modelClass' => 'API_params',
@@ -78,7 +78,7 @@ class X2FlowApiCall extends X2FlowAction {
                 array('name' => 'attributes', 'optional' => 1),
                 array('name' => 'headers', 'type' => 'attributes', 'optional' => 1),
             // array('name'=>'immediate','label'=>'Call immediately?','type'=>'boolean','defaultVal'=>true),
-                ));
+                )));
     }
 
     /**
@@ -111,8 +111,8 @@ class X2FlowApiCall extends X2FlowAction {
      * Override parent method to add url validation. Present warning to user on flow save if
      * specified url points to same server as the one X2Engine is hosted on.
      */
-    public function validateOptions(&$paramRules,$params=null,$showWarnings=false) {
-        list ($success, $message) = parent::validateOptions ($paramRules, $params, $showWarnings);
+    public function validateOptions(&$paramRules,$params=null,$staticValidation=false) {
+        list ($success, $message) = parent::validateOptions ($paramRules, $params, $staticValidation);
         if (!$success) return array ($success, $message);
         $url = $this->config['options']['url']['value'];
 
@@ -123,7 +123,7 @@ class X2FlowApiCall extends X2FlowAction {
         }
 
         $url = preg_replace ('/^https?:\/\//', '', $url);
-        if ($showWarnings && 
+        if ($staticValidation && 
             gethostbyname ($url) === gethostbyname ($hostInfo)) {
 
             return array (
@@ -240,7 +240,7 @@ class X2FlowApiCall extends X2FlowAction {
                     }
                 }else{
                     if (YII_UNIT_TESTING) {
-                        return array(false, var_dump ($http_response_header));
+                        return array(false, print_r ($http_response_header, true));
                     } else {
                         return array(false, Yii::t('studio', "Remote API call failed!"));
                     }

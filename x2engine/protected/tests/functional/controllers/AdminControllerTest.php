@@ -58,6 +58,7 @@ class AdminControllerTest extends X2WebTestCase {
         'quotes' => array('Quote', '.ImportTest'),
         'docs' => array('Docs', '.ImportTest'),
         'bugReports' => array('BugReports', '.ImportTest'),
+        'tags' => array('Tags', '.ImportTest'),
     );
 
     /**
@@ -178,9 +179,16 @@ class AdminControllerTest extends X2WebTestCase {
      * Click the 'process' link to begin the import, and assert ui functions
      * as expected
      */
-    protected function beginExport($includeHidden = false) {
-        if ($includeHidden) {
-            $this->click ("css=#includeHidden");
+    protected function beginExport($exportOptions = array()) {
+        foreach ($exportOptions as $option) {
+            switch ($option) {
+            case 'includeHidden':
+                $this->click ("css=#includeHidden");
+                break;
+            case 'includeTags':
+                $this->click ("css=#includeTags");
+                break;
+            }
         }
         $this->click ("css=#export-button");
         $this->waitForTextPresent ("data successfully exported.");
@@ -330,6 +338,8 @@ class AdminControllerTest extends X2WebTestCase {
         }
     }
 
+      
+
     /**
      * Verify that the importer can handle line endings from various operating systems.
      * The specified CSV has lines ending in: \r\n, \n, \r, and \r\n, respectively.
@@ -372,14 +382,35 @@ class AdminControllerTest extends X2WebTestCase {
         ));
 
         // Without hidden records, should export 3 models
+        $three = $this->contacts ('three');
+        $three->markAsDuplicate ();
         $this->prepareExport ('contacts');
-        $this->beginExport (false);
+        $this->beginExport ();
         $this->assertEquals (3, count(file($exportCsv)));
 
         // With hidden records, should export 4 models instead
         $this->prepareExport ('contacts');
-        $this->beginExport (true);
+        $this->beginExport (array('includeHidden'));
         $this->assertEquals (4, count(file($exportCsv)));
+    }
+
+    /**
+     * Ensure that tags are handled accordinly on import
+     */
+    public function testImportTags() {
+        $csvFile = 'tags-contacts.csv';
+        $this->prepareImport ('Contacts', $csvFile);
+        $expected = $this->stashModels ('Contacts');
+        $this->assertGreaterThan (0, count($expected),
+            'Failed to load fixture! Models were expected');
+        $this->beginImport();
+        $this->assertNoValidationErrorsPresent();
+        $this->assertModelsWereImported ($expected, 'Contacts');
+        $this->assertModelsHaveTags ('Contacts', array(
+            '1' => array('#one', '#testing'),
+            '2' => array('#two'),
+            '3' => array('#three'),
+        ));
     }
 
     /**
@@ -390,14 +421,53 @@ class AdminControllerTest extends X2WebTestCase {
         $csvs = array_diff($this->csvs, array('actions'));
         foreach ($csvs as $modelName) {
             $this->prepareExport ($modelName);
-            $this->beginExport(true);
+            $this->beginExport (array('includeHidden'));
             $this->assertCsvExported ($modelName);
         }
+    }
+
+    /**
+     * Ensure that tags are handled accordinly on export
+     */
+    public function testExportTags() {
+        $this->prepareExport ('contacts');
+        $this->beginExport (array('includeTags', 'includeHidden'));
+        $this->assertCsvExported ('contacts');
+        $this->assertExportCsvTags (array(
+            '1' => array('#one', '#testing'),
+            '2' => array('#two'),
+            '3' => array('#three'),
+        ));
     }
 
     /********************************************************************
      * Assert methods
      ********************************************************************/
+    /**
+     * Assert that only the specified attributes of a Contact were updated
+     * accordingly
+     * @param string $fixtureName Identifier of individual fixture record to verify
+     * @param array $updatedAttributes array of updated attribute values, indexed
+     *   by attribute name.
+     */
+    protected function assertContactUpdated ($fixtureName, $updatedAttributes) {
+        $contact = $this->contacts ($fixtureName);
+        $attributes = $contact->attributes;
+        $dbContact = Contacts::model()->findByPk ($contact->id);
+
+        foreach ($attributes as $attribute => $value) {
+            if (in_array($attribute, $this->ignoreImportFields))
+                continue;
+            if (in_array($attribute, array_keys($updatedAttributes))) {
+                // Attribute was updated: verify the value is as intended
+                $this->assertEquals ($updatedAttributes[$attribute], $dbContact->$attribute);
+            } else {
+                // Attribute was not updated: verify the value hasn't been changed
+                $this->assertEquals ($value, $dbContact->$attribute);
+            }
+        }
+    }
+
     protected function assertConvertedLegacyModule($moduleName) {
         $path = implode(DIRECTORY_SEPARATOR, array(
             Yii::app()->basePath,
@@ -551,6 +621,39 @@ class AdminControllerTest extends X2WebTestCase {
         $this->assertTrue (!is_null($relationModelId),
             'Failed to locate a relationship between '.$models[0]['type'].' '.$models[0]['id'].
             ' and '.$models[1]['type'].' '.$models[1]['id']);
+    }
+
+    /**
+     * Assert that the models in question have the proper tags
+     * @param array $modelName Class name of the model
+     * @param array $tagSpec Array of tag arrays, indexed by model id to verify
+     */
+    protected function assertModelsHaveTags($modelName, $tagSpec) {
+        foreach ($tagSpec as $modelId => $tags) {
+            $model = X2Model::model ($modelName)->findByPk ($modelId);
+            $this->assertNotNull ($model);
+            $this->assertTrue ($model->hasTags ($tags, true),
+                "Failed to assert $modelName $modelId has tags ".implode(', ', $tags));
+        }
+    }
+
+    /**
+     * Assert that the exported CSV contains the proper tags for each specified model
+     * @param array $tagSpec Array of tag arrays, indexed by model id to verify
+     */
+    protected function assertExportCsvTags($tagSpec) {
+        $csvData = file_get_contents (implode (DIRECTORY_SEPARATOR, array(
+            Yii::app()->basePath,
+            'data',
+            'records_export.csv'
+        )));
+        foreach ($tagSpec as $modelId => $tags) {
+            $tagPattern = implode(',', $tags);
+            if (count($tags) > 1)
+                $tagPattern = '"'.$tagPattern.'"';
+            $pattern = '/^'.$modelId.',.*,'. preg_quote($tagPattern) .'$/m';
+            $this->assertEquals (1, preg_match ($pattern, $csvData));
+        }
     }
 
     /**

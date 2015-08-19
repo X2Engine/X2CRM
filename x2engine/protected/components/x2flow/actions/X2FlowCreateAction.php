@@ -56,7 +56,7 @@ class X2FlowCreateAction extends X2FlowAction {
 		// $assignmentOptions = array('{assignedTo}'=>'{'.Yii::t('studio','Owner of Record').'}') + X2Model::getAssignmentOptions(false,true);	// '{assignedTo}', groups, no 'anyone'
 		$assignmentOptions = array('{assignedTo}' => '{'.Yii::t('studio', 'Owner of Record').'}') + X2Model::getAssignmentOptions(false, true);	// '{assignedTo}', groups, no 'anyone'
 
-		return array(
+		return array_merge (parent::paramRules (), array (
 			'title' => Yii::t('studio',$this->title),
 			'options' => array(
 				// array('name'=>'attributes'),
@@ -67,7 +67,7 @@ class X2FlowCreateAction extends X2FlowAction {
 				array('name'=>'priority','label'=>Yii::t('actions','Priority'),'type'=>'dropdown','options'=>$priorityOptions),
 				array('name'=>'visibility','label'=>Yii::t('actions','Visibility'),'type'=>'dropdown','options'=>$visOptions),
 				// array('name'=>'reminder','label'=>Yii::t('actions','Remind Me'),'type'=>'checkbox','default'=>false),
-			));
+			)));
 	}
 
 	public function execute(&$params) {

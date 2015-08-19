@@ -47,7 +47,7 @@ function TopFlashes (argsDict) {
 }
 
 TopFlashes.prototype.displayFlash = function (message, type, closeMethod, encode) {
-    if ($.inArray (type, ['error', 'success', 'warning', 'loading']) === -1) {
+    if ($.inArray (type, ['error', 'success', 'warning', 'loading', 'tip']) === -1) {
         throw new Error ('invalid flash type');
     }
     closeMethod = typeof closeMethod === 'undefined' ? 'fade' : closeMethod; 
@@ -59,16 +59,47 @@ TopFlashes.prototype.displayFlash = function (message, type, closeMethod, encode
         'class': 'flash-' + type
     });
 
-    if (encode) {
-        flashContainer$.append ($('<div>', {
-            text: message,
+    if ($.type (message) === 'array' || $.type (message) === 'object') {
+        if (message.header) {
+            flashContainer$.addClass ('has-header');
+            if (encode) {
+                flashContainer$.append ($('<span>', {
+                    text: message.header
+                }));
+            } else {
+                flashContainer$.append ($('<span>', {
+                    html: message.header
+                }));
+            }
+        }
+        var message$ = $('<ul>', {
             id: 'top-flashes-message'
-        }));
+        });
+        for (var i in message) {
+            if (!i.match (/^\d+$/)) continue;
+            if (encode) {
+                message$.append ($('<li>', {
+                    text: message[i] 
+                }));
+            } else {
+                message$.append ($('<li>', {
+                    html: message[i] 
+                }));
+            }
+        }
+        flashContainer$.append (message$);
     } else {
-        flashContainer$.append ($('<div>', {
-            html: message,
-            id: 'top-flashes-message'
-        }));
+        if (encode) {
+            flashContainer$.append ($('<div>', {
+                text: message,
+                id: 'top-flashes-message'
+            }));
+        } else {
+            flashContainer$.append ($('<div>', {
+                html: message,
+                id: 'top-flashes-message'
+            }));
+        }
     }
 
     this.clearFlash ();

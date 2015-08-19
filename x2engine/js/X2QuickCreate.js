@@ -40,6 +40,7 @@
 x2.QuickCreate = (function () {
 
 function QuickCreate (argsDict) {
+    var that = this;
     var argsDict = typeof argsDict === 'undefined' ? {} : argsDict;
     var defaultArgs = {
         DEBUG: x2.DEBUG && false,
@@ -55,11 +56,38 @@ function QuickCreate (argsDict) {
          * @var function success callback called after successful record creation
          */
         success: function () {},
-        enableFlash: true
+        validate: function () { return true; },
+        enableFlash: true,
+        /**
+         * @var object dialogAttributes dialog settings 
+         */
+        dialogAttributes: {},
+        translations: {
+            create: 'Create',
+            cancel: 'Cancel',
+        }
     };
     auxlib.applyArgs (this, defaultArgs, argsDict);
     x2.QuickCRUD.call (this, argsDict);
     if (!QuickCreate.createRecordUrls[this.modelType]) throw new Error ('invalid model type');
+
+    $.extend (this.dialogAttributes, {
+        buttons: [
+            {
+                text: that.translations.create,
+                click: function () {
+                    that.submit (); 
+                }
+            },
+            {
+                text: that.translations.cancel,
+                click: function () {
+                    that._dialog.dialog ('close');
+                }
+            }
+        ]
+    });
+
     this.createRecordUrl = QuickCreate.createRecordUrls[this.modelType];
     this.dialogTitle = QuickCreate.dialogTitles[this.modelType];
     this.openQuickCreateDialog ();
@@ -70,6 +98,10 @@ QuickCreate.createRecordUrls = {};
 QuickCreate.dialogTitles = {};
 
 QuickCreate.prototype = auxlib.create (x2.QuickCRUD.prototype);
+
+QuickCreate.prototype.submit = function () {
+    this._handleFormSubmission (this._dialog.find ('form'));
+};
 
 /**
  * Open record creation dialog 
@@ -92,8 +124,9 @@ QuickCreate.prototype.openQuickCreateDialog = function () {
         type: 'post',
         url: this.createRecordUrl, 
         data: data,
+        dataType: 'json',
         success: function(response) {
-            that._dialog.append(response);
+            that._dialog.append(response.page);
             that._dialog.dialog('open');
             
             auxlib.onClickOutside (
@@ -103,12 +136,9 @@ QuickCreate.prototype.openQuickCreateDialog = function () {
                         that._dialog.dialog ('close'); 
                 }, true);
             that._dialog.find('.formSectionHide').remove();
-            var submit = that._dialog.find('[type="submit"]');
             var form = that._dialog.find('form');
-            $(form).submit (function () {
-                that._handleFormSubmission (form);
-                return false;
-            });
+            var submit = that._dialog.find('[type="submit"]');
+            submit.hide ();
         }
     });
 };
@@ -117,8 +147,8 @@ QuickCreate.prototype.closeDialog = function () {
     that._dialog.empty ().remove ()
 };
 
-
 QuickCreate.prototype._handleFormSubmission = function (form) {
+    if (!this.validate ()) return;
     //if (form.find ('.error').length) return;
     var that = this;
     var formdata = form.serializeArray();
@@ -127,9 +157,6 @@ QuickCreate.prototype._handleFormSubmission = function (form) {
     /* this form data object indicates this is an ajax request 
        note: yii already uses the name 'ajax' for it's ajax calls, so we use 'x2ajax' */
         name: 'x2ajax',
-        value: '1'
-    }, {
-        name: 'quickCreateOnly',
         value: '1'
     }]);
 
@@ -143,20 +170,22 @@ QuickCreate.prototype._handleFormSubmission = function (form) {
             if (response['status'] === 'success' || response[0] === 'success') {
                 that._dialog.remove ();
                 if (that.enableFlash)
-                    x2.topFlashes.displayFlash (response.message, 'success', 'clickOutside', false);
+                    x2.topFlashes.displayFlash (
+                        response.message, 'success', 'clickOutside', false);
                 that.success (response.attributes);
-            } else if (response['status'] === 'userError') {
-                if(typeof response['page'] !== 'undefined') {
-                    that._dialog.append(response['page']);
-                    that._dialog.find('.formSectionHide').remove();
-                    that._dialog.find('.create-account').remove();
-                    var submit = that._dialog.find('input[type="submit"]');
-                    var form = that._dialog.find('form');
-                    $(form).submit (function () {
-                        that._handleFormSubmission (form);
-                        return false;
-                    });
-                }
+            } else {
+                var page = response.page;
+                that._dialog.append(page);
+                var submit = that._dialog.find('[type="submit"]');
+                submit.hide ();
+                that._dialog.find('.formSectionHide').remove();
+                that._dialog.find('.create-account').remove();
+                var submit = that._dialog.find('input[type="submit"]');
+                var form = that._dialog.find('form');
+                $(form).submit (function () {
+                    that._handleFormSubmission (form);
+                    return false;
+                });
             }
         }
     });

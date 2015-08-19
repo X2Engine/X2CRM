@@ -252,8 +252,8 @@ class Contacts extends X2Model {
     /**
      * An alias for search ()
      */
-	public function searchAll($pageSize=null) {
-        return $this->search ($pageSize);
+	public function searchAll($pageSize=null, CDbCriteria $criteria = null) {
+        return $this->search ($pageSize, $criteria);
     }
 
     public function searchMyContacts() {
@@ -296,8 +296,11 @@ class Contacts extends X2Model {
     /**
      * Adds tag filtering to search base 
      */
-    public function search($pageSize=null) {
-        $criteria = new CDbCriteria;
+    public function search($pageSize=null, CDbCriteria $criteria = null) {
+        if ($criteria === null){
+            $criteria = new CDbCriteria;
+        }
+
 		if(isset($_GET['tagField']) && !empty($_GET['tagField'])) {	// process the tags filter
             
             //remove any spaces around commas, then explode to array
@@ -313,8 +316,8 @@ class Contacts extends X2Model {
                     if($tags[$i][0] != '#') {
                         $tags[$i] = '#'.$tags[$i];
                     }
-                    $inQuery[] = 'b.tag LIKE BINARY :'.$i;
-                    $params[':'.$i] = $tags[$i];
+                    $inQuery[] = 'b.tag LIKE :'.$i;
+                    $params[':'.$i] = $tags[$i].'%';
                     //$tags[$i] = 'b.tag = "'.$tags[$i].'"';
                 }
             }

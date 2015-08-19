@@ -180,24 +180,25 @@ class QuickCreateRelationshipBehavior extends QuickCRUDBehavior {
                         'id' => $model->id,
                         'attributes' => $model->getVisibleAttributes (),
                     ));
-            } else if (isset ($_POST['quickCreateOnly']) && $_POST['quickCreateOnly']) {
+            } else { 
                 $model->refresh ();
                 $modelClass = get_class ($model);
-                $modelLink = ($modelClass === 'Actions' ? $model->getLink (30, false) : $model->getLink());
-                echo CJSON::encode (
-                    array (
-                        'status' => 'success',
-                        'message' => Yii::t('app', '{recordType} created: {link}', array (
-                            '{recordType}' => $modelClass,
-                            '{link}' => $modelLink,
-                        )),
-                        'attributes' => $model->getVisibleAttributes (),
-                    ));
-            } else {
-                throw new CHttpException (400, Yii::t ('app', 'Bad Request'));
-            }
+                $modelLink = ($modelClass === 'Actions' ? 
+                    $model->getLink (30, false) : $model->getLink());
+                if (!isset ($_POST['saveOnly'])) {
+                    echo CJSON::encode (
+                        array (
+                            'status' => 'success',
+                            'message' => Yii::t('app', '{recordType} created: {link}', array (
+                                '{recordType}' => $modelClass,
+                                '{link}' => $modelLink,
+                            )),
+                            'attributes' => $model->getVisibleAttributes (),
+                        ));
+                }
+            } 
 
-            Yii::app()->end();
+            if (!isset ($_POST['saveOnly'])) Yii::app()->end();
         } else {
             $errors = true;
         }
@@ -210,30 +211,19 @@ class QuickCreateRelationshipBehavior extends QuickCRUDBehavior {
      * @param object $model 
      * @param bool $hasErrors
      */
-    public function renderInlineForm ($model, $hasErrors, array $viewParams = array ()) {
-        if ($hasErrors) {
-            $page = $this->owner->renderPartial(
-                $this->inlineFormPathAlias,
-                array_merge (array(
-                    'model' => $model,
-                    'modelName' => strtolower (get_class ($model)),
-                    'suppressQuickCreate' => true,
-                ), $viewParams), true, true);
-            echo json_encode(
-                array(
-                    'status' => 'userError',
-                    'page' => $page,
-                ));
-        } else {
-            $this->owner->renderPartial(
-                $this->inlineFormPathAlias,
-                array_merge (array(
-                    'model' => $model, 
-                    'modelName' => strtolower (get_class ($model)),
-                    'suppressQuickCreate' => true,
-                ), $viewParams), false, true);
-        }
-
+    public function renderInlineForm ($model, array $viewParams = array ()) {
+        //@FORMVIEW
+        echo json_encode(
+            array (
+                'status' => $model->hasErrors () ? 'userError' : 'success',
+                'page' => $this->owner->widget(
+                    'FormView',
+                    array_merge (array(
+                        'model' => $model, 
+                        'suppressQuickCreate' => true,
+                        'formSettings' => array ()
+                    ), $viewParams), true, true)
+            ));
     }
 
     /**
@@ -310,7 +300,7 @@ class QuickCreateRelationshipBehavior extends QuickCRUDBehavior {
      * TemplatesController.
      */
     public function renderInlineCreateForm ($model, $hasErrors) {
-        $this->renderInlineForm ($model, $hasErrors);
+        $this->renderInlineForm ($model);
     }
 
 }

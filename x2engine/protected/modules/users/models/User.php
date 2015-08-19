@@ -52,6 +52,25 @@ class User extends CActiveRecord {
     const STATUS_ACTIVE = 1;
     const STATUS_INACTIVE = 0;
 
+    public static $recentItemTypes = array(
+        'a' => 'Accounts',
+        'b' => 'BugReports',
+        'c' => 'Contacts',
+        'd' => 'Docs',
+         
+        'g' => 'Groups',
+        'l' => 'X2Leads',
+        'm' => 'Media', 
+        'o' => 'Opportunity', 
+        'p' => 'Campaign',
+        'q' => 'Quote',
+        'r' => 'Product',
+        's' => 'Services',
+        't' => 'Actions',
+         
+        'w' => 'Workflow',
+    );
+
     /**
      * Full name (cached value)
      * @var type
@@ -389,84 +408,36 @@ class User extends CActiveRecord {
         $recentItems = array();
 
         //get record for each ID/type pair
+        $validAbbreviations = array_keys (self::$recentItemTypes);
         foreach($recentItemsTemp as $item){
             $itemType = strtok($item, '-');
             $itemId = strtok('-');
+            if (in_array ($itemType, $validAbbreviations)) {
+                $recordType = self::$recentItemTypes[$itemType];
+                $record = $recordType::model ()->findByPk ($itemId);
 
-            switch($itemType){
-                case 'c': // contact
-                    $record = X2Model::model('Contacts')->findByPk($itemId);
-                    break;
-                case 't': // action
-                    $record = X2Model::model('Actions')->findByPk($itemId);
-                    break;
-                case 'a': // account
-                    $record = X2Model::model('Accounts')->findByPk($itemId);
-                    break;
-                case 'p': // campaign
-                    $record = X2Model::model('Campaign')->findByPk($itemId);
-                    break;
-                case 'o': // opportunity
-                    $record = X2Model::model('Opportunity')->findByPk($itemId);
-                    break;
-                case 'w': // workflow
-                    $record = X2Model::model('Workflow')->findByPk($itemId);
-                    break;
-                case 's': // service case
-                    $record = X2Model::model('Services')->findByPk($itemId);
-                    break;
-                case 'd': // document
-                    $record = X2Model::model('Docs')->findByPk($itemId);
-                    break;
-                case 'l': // x2leads object
-                    $record = X2Model::model('X2Leads')->findByPk($itemId);
-                    break;
-                case 'm': // media object
-                    $record = X2Model::model('Media')->findByPk($itemId);
-                    break;
-                case 'r': // product
-                    $record = X2Model::model('Product')->findByPk($itemId);
-                    break;
-                case 'q': // product
-                    $record = X2Model::model('Quote')->findByPk($itemId);
-                    break;
-                case 'g': // group
-                    $record = X2Model::model('Groups')->findByPk($itemId);
-                    break;
-                case 'f': // x2flow
-                    $record = X2Flow::model()->findByPk($itemId);
-                    break;
-                default:
-                    printR('Warning: getRecentItems: invalid item type'.$itemType);
-                    continue;
+                if(!is_null($record)) //only include item if the record ID exists
+                    array_push($recentItems, array('type' => $itemType, 'model' => $record));
             }
-            if(!is_null($record)) //only include item if the record ID exists
-                array_push($recentItems, array('type' => $itemType, 'model' => $record));
+
         }
         return $recentItems;
     }
 
-    private static $validRecentItemTypes = array(
-        'a', // account
-        'c', // contact
-        'd', // doc
-        'f', // x2flow
-        'g', // group
-        'l', // x2lead object
-        'm', // media object
-        'o', // opportunity
-        'p', // campaign
-        'q', // quote
-        'r', // product
-        's', // service case
-        't', // action
-        'w', // workflow
-    );
+    /**
+     * @param string $type recent item abbreviation (for backward compatibility)  or model type 
+     * @param int record id
+     * @param int userId id of user that recent item should be added to
+     */
+    public static function addRecentItem($type, $itemId, $userId=null){
+        if ($userId === null) $userId = Yii::app()->user->getId ();
+        if (in_array ($type, self::$recentItemTypes)) {
+            $validRecordTypes = array_flip (self::$recentItemTypes);
+            $type = $validRecordTypes[$type];
+        }
 
-    public static function addRecentItem($type, $itemId, $userId){
-        if(in_array($type, self::$validRecentItemTypes)){ //only proceed if a valid type is given
+        if(in_array($type, array_keys (self::$recentItemTypes))){ 
             $newItem = $type.'-'.$itemId;
-
             $userRecord = X2Model::model('User')->findByPk($userId);
             //create an empty array if recentItems is empty
             $recentItems = ($userRecord->recentItems == '') ? 

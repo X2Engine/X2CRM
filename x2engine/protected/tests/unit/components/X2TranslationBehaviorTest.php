@@ -55,16 +55,17 @@ class X2TranslationBehaviorTest extends X2TestCase {
 	 * Cursory test of regex
 	 */
 	public function testREGEX() {
-		preg_match(X2TranslationBehavior::REGEX,"Yii::t(  'app' ,     'Everything\\'s \"fine\".'   );",$matches);
-		$this->assertEquals('app',$matches['module']);
-		$this->assertEquals('Everything\\\'s "fine".',$matches['message']);
-		$this->assertEquals('',$matches['openquote1']);
-		$this->assertEquals('',$matches['openquote2']);
-		preg_match(X2TranslationBehavior::REGEX,'Yii::t(  "app" ,     "Everything\'s \"fine\"."   );',$matches);
-		$this->assertEquals('"',$matches['openquote1']);
-		$this->assertEquals('"',$matches['openquote2']);
-		$this->assertEquals('app',$matches['module']);
-		$this->assertEquals('Everything\'s \"fine\".',$matches['message']);
+            $cmpb = $this->instantiate();
+            preg_match(X2TranslationBehavior::REGEX,"Yii::t(  'app' ,     'Everything\\'s \"fine\".'   );",$matches);
+            $this->assertEquals('app',$matches['module']);
+            $this->assertEquals('Everything\\\'s "fine".',$cmpb->parseRegexMatch($matches['message']));
+            $this->assertEquals('',$matches['openquote1']);
+            //$this->assertEquals('',$matches['openquote2']);
+            preg_match(X2TranslationBehavior::REGEX,'Yii::t(  "app" ,     "Everything\'s \"fine\"."   );',$matches);
+            $this->assertEquals('"',$matches['openquote1']);
+           // $this->assertEquals('"',$matches['openquote2']);
+            $this->assertEquals('app',$matches['module']);
+            $this->assertEquals('Everything\'s \"fine\".',$cmpb->parseRegexMatch($matches['message']));
 	}
 
 	public function testParseFile() {
@@ -83,6 +84,9 @@ class X2TranslationBehaviorTest extends X2TestCase {
 					'same' => '',
 					'line' => '',
 					'message with params and {stuff}' => '',
+                                        'Multi-line translation message with splitting text.' => '',
+                                        'Multi-line translation message with {param} text.' => '',
+                                        'The maximum number of hooks ({n}) has been reached for events of this type.'=>'',
 					'Manage Apps' => ''
 				),
 			'admin' =>

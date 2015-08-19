@@ -48,6 +48,12 @@ abstract class X2FlowAction extends X2FlowItem {
      */
     abstract public function execute(&$params);
 
+    public function paramRules () {
+        return array (
+            'id' => null
+        );
+    }
+
     /**
      * Checks if all the config variables and runtime params are ship-shape
      * Ignores param requirements if $params isn't provided

@@ -44,7 +44,7 @@
  */
 class InlineRelationshipsWidget extends GridViewWidget {
 
-    public static $position = 5; 
+     
 
     public $viewFile = '_inlineRelationshipsWidget';
 
@@ -75,6 +75,7 @@ class InlineRelationshipsWidget extends GridViewWidget {
                     'showHeader' => false,
                     'displayMode' => 'grid', // grid | graph
                     'height' => '200',
+                    'hideFullHeader' => true, 
                 )
             );
         }
@@ -126,11 +127,13 @@ class InlineRelationshipsWidget extends GridViewWidget {
 
     public function renderTitleBarButtons () {
         echo '<div class="x2-button-group">';
-        echo 
-            "<a class='x2-button rel-title-bar-button' id='new-relationship-button' 
-              title='".CHtml::encode (Yii::t('app', 'Create a new relationship'))."'>".
-                X2Html::fa ('fa-plus', array (), ' ', 'span').
-            "</a>";
+        if ($this->checkModuleUpdatePermissions ()) {
+            echo 
+                "<a class='x2-button rel-title-bar-button' id='new-relationship-button' 
+                  title='".CHtml::encode (Yii::t('app', 'Create a new relationship'))."'>".
+                    X2Html::fa ('fa-plus', array (), ' ', 'span').
+                "</a>";
+        }
          
         echo '</div>';
     }
@@ -139,7 +142,8 @@ class InlineRelationshipsWidget extends GridViewWidget {
         $label = $this->getWidgetLabel ();
         $relationshipCount = count ($this->model->getVisibleRelatedX2Models ());
         echo "<div class='widget-title'>".
-            htmlspecialchars($label)."&nbsp(<span id='relationship-count'>$relationshipCount</span>)</div>";
+            htmlspecialchars($label).
+            "&nbsp(<span id='relationship-count'>$relationshipCount</span>)</div>";
     }
 
     public function getSetupScript () {
@@ -187,7 +191,8 @@ class InlineRelationshipsWidget extends GridViewWidget {
                                 'ajaxGetModelAutocompleteUrl' => 
                                     Yii::app()->controller->createUrl ('ajaxGetModelAutocomplete'),
                                 'createRelationshipUrl' => 
-                                    Yii::app()->controller->createUrl ('/site/addRelationship'),
+                                    Yii::app()->controller->createUrl (
+                                        '/relationships/addRelationship'),
                                 'hasUpdatePermissions' => $this->checkModuleUpdatePermissions (),
                             )))."
                         );
@@ -228,7 +233,7 @@ class InlineRelationshipsWidget extends GridViewWidget {
 
     public function getViewFileParams () {
         if (!isset ($this->_viewFileParams)) {
-            $linkableModels = X2Model::getModelTypesWhichSupportRelationships(true);
+            $linkableModels = Relationships::getRelationshipTypeOptions ();
             asort ($linkableModels);
              
 
@@ -262,16 +267,13 @@ class InlineRelationshipsWidget extends GridViewWidget {
     }
 
 
+    private $_moduleUpdatePermissions;
     private function checkModuleUpdatePermissions () {
-        $moduleName = '';
-        if (is_object (Yii::app()->controller->module)) {
-            $moduleName = Yii::app()->controller->module->name;
-        } 
-        $actionAccess = ucfirst($moduleName).'Update';
-        $authItem = Yii::app()->authManager->getAuthItem($actionAccess);
-        return (!isset($authItem) || Yii::app()->user->checkAccess($actionAccess, array(
-            'X2Model' => $this->model
-        )));
+        if (!isset ($this->_moduleUpdatePermissions)) {
+            $this->_moduleUpdatePermissions = 
+                Yii::app()->controller->checkPermissions ($this->model, 'edit');
+        }
+        return $this->_moduleUpdatePermissions;
     }
 
     public function init ($skipGridViewInit=false) {

@@ -37,11 +37,14 @@
 shift detail/form layouts to single column
 */
 @media (max-width: 777px) {
-  .formSectionRow td {
-    display: block;
+  .formSectionColumn {
     width: 100% !important;
+    td.label {
+        border-left: none !important;
+    }
   }
-  .formItem.leftLabel > .formInputBox {
-    width: 200px !important;
-  }
+	
+  // .formItem.leftLabel > .formInputBox {
+  //   width: 200px !important;
+  // }
 }

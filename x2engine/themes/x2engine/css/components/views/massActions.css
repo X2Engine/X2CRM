@@ -1,0 +1,270 @@
+/*****************************************************************************************
+ * X2Engine Open Source Edition is a customer relationship management program developed by
+ * X2Engine, Inc. Copyright (C) 2011-2015 X2Engine Inc.
+ * 
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU Affero General Public License version 3 as published by the
+ * Free Software Foundation with the addition of the following permission added
+ * to Section 15 as permitted in Section 7(a): FOR ANY PART OF THE COVERED WORK
+ * IN WHICH THE COPYRIGHT IS OWNED BY X2ENGINE, X2ENGINE DISCLAIMS THE WARRANTY
+ * OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
+ * 
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.  See the GNU Affero General Public License for more
+ * details.
+ * 
+ * You should have received a copy of the GNU Affero General Public License along with
+ * this program; if not, see http://www.gnu.org/licenses or write to the Free
+ * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301 USA.
+ * 
+ * You can contact X2Engine, Inc. P.O. Box 66752, Scotts Valley,
+ * California 95067, USA. or at email address contact@x2engine.com.
+ * 
+ * The interactive user interfaces in modified source and object code versions
+ * of this program must display Appropriate Legal Notices, as required under
+ * Section 5 of the GNU Affero General Public License version 3.
+ * 
+ * In accordance with Section 7(b) of the GNU Affero General Public License version 3,
+ * these Appropriate Legal Notices must retain the display of the "Powered by
+ * X2Engine" logo. If the display of the logo is not reasonably feasible for
+ * technical reasons, the Appropriate Legal Notices must display the words
+ * "Powered by X2Engine".
+ *****************************************************************************************/
+/* line 36, ../../../../../compass/themes/x2engine/css/components/views/massActions.scss */
+.x2-gridview-mass-action-outer {
+  position: relative;
+}
+
+@media (max-width: 820px) and (min-width: 658px) {
+  /* line 41, ../../../../../compass/themes/x2engine/css/components/views/massActions.scss */
+  .grid-view.fullscreen .x2-gridview-top-pager {
+    display: none;
+  }
+}
+/*
+Check all records in data provider feature
+*/
+/* line 50, ../../../../../compass/themes/x2engine/css/components/views/massActions.scss */
+.grid-view .select-all-records-on-all-pages-strip-container {
+  margin-right: -1px;
+}
+
+/* line 53, ../../../../../compass/themes/x2engine/css/components/views/massActions.scss */
+.grid-view .x2-gridview-fixed-top-bar-outer .select-all-records-on-all-pages-strip-container {
+  margin-right: 6px;
+  margin-left: 3px;
+}
+
+/* line 58, ../../../../../compass/themes/x2engine/css/components/views/massActions.scss */
+.grid-view .select-all-records-on-all-pages-strip-container {
+  text-align: center;
+  border-right: 1px solid #cfcfcf;
+  border-bottom: 1px solid #c7c7c7;
+  position: relative;
+  z-index: 1;
+}
+
+/* line 66, ../../../../../compass/themes/x2engine/css/components/views/massActions.scss */
+.grid-view .select-all-records-on-all-pages-strip-container .select-all-notice,
+.grid-view .select-all-records-on-all-pages-strip-container .all-selected-notice {
+  padding: 4px;
+}
+
+/* line 71, ../../../../../compass/themes/x2engine/css/components/views/massActions.scss */
+.grid-view .select-all-records-on-all-pages-strip-container .select-all-notice {
+  background: #ffffb9;
+}
+
+/* line 75, ../../../../../compass/themes/x2engine/css/components/views/massActions.scss */
+.grid-view .select-all-records-on-all-pages-strip-container .all-selected-notice {
+  background: #cbffc9;
+}
+
+/* line 79, ../../../../../compass/themes/x2engine/css/components/views/massActions.scss */
+body.no-widgets .grid-view .x2-gridview-fixed-top-bar-outer .select-all-records-on-all-pages-strip-container {
+  margin-right: 0;
+}
+
+/* line 83, ../../../../../compass/themes/x2engine/css/components/views/massActions.scss */
+.x2-mobile-layout .select-all-records-on-all-pages-strip-container {
+  margin-left: 0;
+  margin-right: -1px;
+}
+
+/* line 88, ../../../../../compass/themes/x2engine/css/components/views/massActions.scss */
+.grid-view .container-clone {
+  visibility: hidden;
+}
+
+/* line 92, ../../../../../compass/themes/x2engine/css/components/views/massActions.scss */
+.x2-mobile-layout .x2grid-body-container .container-clone,
+.x2grid-body-container.x2-gridview-body-without-fixed-header .container-clone {
+  display: none !important;
+}
+
+/*
+Flashes container
+*/
+/* line 101, ../../../../../compass/themes/x2engine/css/components/views/massActions.scss */
+.super-mass-action-feedback-box {
+  margin: 5px 0;
+  border: 1px solid #b0b0b0;
+  background: #fafafa;
+  box-shadow: inset 1px 1px #dbdbdb;
+  padding: 4px;
+  height: 76px;
+  overflow-y: scroll;
+}
+
+/* line 111, ../../../../../compass/themes/x2engine/css/components/views/massActions.scss */
+.super-mass-action-feedback-box .success-flash {
+  color: green;
+}
+
+/* line 114, ../../../../../compass/themes/x2engine/css/components/views/massActions.scss */
+.super-mass-action-feedback-box .error-flash {
+  color: red;
+}
+
+/* line 120, ../../../../../compass/themes/x2engine/css/components/views/massActions.scss */
+body.show-widgets #x2-gridview-flashes-container.fixed-flashes-container {
+  left: 155px;
+}
+
+/* line 125, ../../../../../compass/themes/x2engine/css/components/views/massActions.scss */
+#x2-gridview-flashes-container.fixed-flashes-container {
+  position: fixed;
+  opacity: 0.9;
+  bottom: 5px;
+  right: 0;
+}
+
+/* line 132, ../../../../../compass/themes/x2engine/css/components/views/massActions.scss */
+#x2-gridview-flashes-container {
+  margin-top: 5px;
+  margin-right: 5px;
+}
+
+/* line 137, ../../../../../compass/themes/x2engine/css/components/views/massActions.scss */
+#x2-gridview-flashes-container > div {
+  margin-top: 5px;
+  margin-left: 4px;
+}
+
+/* line 142, ../../../../../compass/themes/x2engine/css/components/views/massActions.scss */
+#x2-gridview-flashes-container .flash-list-header {
+  margin-bottom: 4px;
+}
+
+/* line 146, ../../../../../compass/themes/x2engine/css/components/views/massActions.scss */
+#x2-gridview-flashes-container .x2-gridview-flashes-list {
+  clear: both;
+  margin-bottom: 5px;
+}
+
+/* line 151, ../../../../../compass/themes/x2engine/css/components/views/massActions.scss */
+#x2-gridview-flashes-container .flash-list-left-arrow,
+#x2-gridview-flashes-container .flash-list-down-arrow {
+  margin-left: 6px;
+  margin-top: 3px;
+}
+
+/*
+buttons 
+*/
+/* line 163, ../../../../../compass/themes/x2engine/css/components/views/massActions.scss */
+.mass-action-more-button-container .x2-down-arrow {
+  margin-left: 30px;
+  margin-top: 11px;
+}
+
+/* line 168, ../../../../../compass/themes/x2engine/css/components/views/massActions.scss */
+.mass-action-more-button-container .more-button-arrow {
+  height: 5px;
+}
+
+/* line 172, ../../../../../compass/themes/x2engine/css/components/views/massActions.scss */
+.mass-action-more-button-container .more-button-label {
+  display: inline !important;
+  float: left;
+  margin-right: 5px;
+}
+
+/* line 178, ../../../../../compass/themes/x2engine/css/components/views/massActions.scss */
+.mass-action-more-button-container {
+  margin: 0 5px 0 0;
+  display: inline-block;
+}
+
+/* line 183, ../../../../../compass/themes/x2engine/css/components/views/massActions.scss */
+.mass-action-more-button-container button {
+  display: inline;
+  height: 26px;
+}
+
+/*
+more drop down list
+*/
+/* line 195, ../../../../../compass/themes/x2engine/css/components/views/massActions.scss */
+.x2-gridview-mass-action-buttons .more-drop-down-list.stuck {
+  position: absolute !important;
+  /*top: 74px !important;*/
+}
+
+/* line 200, ../../../../../compass/themes/x2engine/css/components/views/massActions.scss */
+.x2-gridview-mass-action-buttons .more-drop-down-list {
+  position: absolute;
+  top: 67px;
+  z-index: 99;
+  list-style-type: none;
+  background: #fff;
+  border: 1px solid #999;
+  -moz-box-shadow: 0 0 15px 0 rgba(0, 0, 0, 0.5);
+  -webkit-box-shadow: 0 0 15px 0 rgba(0, 0, 0, 0.5);
+  box-shadow: 0 0 15px 0 rgba(0, 0, 0, 0.5);
+  padding: 5px 0px 5px 0px;
+  clip: rect(0px, 1000px, 1000px, -10px);
+}
+
+/* line 214, ../../../../../compass/themes/x2engine/css/components/views/massActions.scss */
+.x2-gridview-mass-action-buttons .more-drop-down-list li {
+  line-height: 17px;
+  padding: 0 10px 0 10px;
+  cursor: default;
+  color: black;
+}
+
+/* line 220, ../../../../../compass/themes/x2engine/css/components/views/massActions.scss */
+.x2-gridview-mass-action-buttons .more-drop-down-list li:hover {
+  background: #eee;
+}
+
+/*
+general mass actions styling
+*/
+/* line 228, ../../../../../compass/themes/x2engine/css/components/views/massActions.scss */
+#mass-action-dialog-loading-anim {
+  margin-right: 30px;
+}
+
+/* line 232, ../../../../../compass/themes/x2engine/css/components/views/massActions.scss */
+.x2-gridview-mass-action-buttons .dialog-help-text {
+  margin-bottom: 5px;
+}
+
+/* line 236, ../../../../../compass/themes/x2engine/css/components/views/massActions.scss */
+.x2-gridview-mass-action-buttons {
+  margin: 0 5px 0 0;
+  display: inline-block;
+}
+
+/* line 241, ../../../../../compass/themes/x2engine/css/components/views/massActions.scss */
+div.mass-action-dialog {
+  overflow: hidden !important;
+}
+/* line 244, ../../../../../compass/themes/x2engine/css/components/views/massActions.scss */
+div.mass-action-dialog .multi-type-autocomplete-container input {
+  width: 180px;
+}

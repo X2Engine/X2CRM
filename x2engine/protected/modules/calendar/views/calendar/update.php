@@ -88,15 +88,19 @@ $form=$this->beginWidget('CActiveForm', array(
    'enableAjaxValidation'=>false,
 ));
 
-echo $this->renderPartial('application.components.views._form', 
-	array(
-		'model'=>$model,
-		'form'=>$form,
-		'modelName'=>'calendar',
-		'users'=>$users,
-		'isQuickCreate'=>true, // let us create the CActiveForm in this file
-	)
-);
+$this->widget ('FormView', array(
+    'model' => $model,
+    'suppressQuickCreate' => true
+));
+//// echo $this->renderPartial('application.components.views.@FORMVIEW', 
+	// array(
+		// 'model'=>$model,
+		// 'form'=>$form,
+		// 'modelName'=>'calendar',
+		// 'users'=>$users,
+		// 'isQuickCreate'=>true, // let us create the CActiveForm in this file
+	// )
+// );
 ?>
 
 <?php if(!$googleIntegration) { ?>

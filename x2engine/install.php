@@ -286,7 +286,7 @@ $timezones = array(
     <head>
 	<meta charset="UTF-8" />
 	<meta name="language" content="en" />
-	<title><?php echo installer_t('X2Engine Installation'); ?></title>
+	<title><?php echo installer_t('X2CRM Installation'); ?></title>
 	<link rel="icon" href="images/favicon.ico" type="image/x-icon">
 	<link rel="shortcut icon" href="images/favicon.ico" type="image/x-icon" />
 	<link rel="stylesheet" type="text/css" href="<?php echo $themeURL; ?>/css/screen.css" media="screen, projection" />
@@ -346,7 +346,7 @@ $timezones = array(
 				if(percentDone.length == 0) {
 					progressList.remove(); // Get rid of any error messages
 					box.append($('<img src="<?php echo $themeURL; ?>/images/loading.gif">').css({'display':'block','margin-left':'auto','margin-right':'auto'}));
-					messageHeader.text("<?php echo installer_t("Installing X2Engine"); ?>");
+					messageHeader.text("<?php echo installer_t("Installing X2CRM"); ?>");
 					percentDone = $('<span id="percentDone">');
 					messageHeader.append(percentDone);
 					progressList = $('<ul>');
@@ -430,25 +430,27 @@ $timezones = array(
 
         </script>
     </head>
-    <body>
+    <body class='not-mobile-body'>
     <!--<img id="bg" src="uploads/defaultBg.jpg" alt="">-->
         <div id="installer-box">
             <noscript><h3><span id="noscript-error"><?php echo installer_t('This web application requires Javascript to function properly. Please enable Javascript in your web browser before continuing.'); ?></span></h3></noscript>
             <?php
-            $edSuf = array('_pla','_pro','');//'images/x2engine_crm_pla.png';
-            foreach($edSuf as $suffix) {
-                $logoFile = "images/x2engine_crm$suffix.png";
-                if(file_exists(__DIR__.DIRECTORY_SEPARATOR.str_replace('/',DIRECTORY_SEPARATOR,$logoFile))) {
-                    echo "<img src=\"$logoFile\" alt=\"X2Engine\" id=\"installer-logo\">";
-                    break;
-                }
-            }
+//            $edSuf = array('_pla','_pro','');//'images/x2engine_crm_pla.png';
+//            foreach($edSuf as $suffix) {
+//                $logoFile = "images/x2engine_crm$suffix.png";
+//                if(file_exists(__DIR__.DIRECTORY_SEPARATOR.str_replace('/',DIRECTORY_SEPARATOR,$logoFile))) {
+//                    echo "<img src=\"$logoFile\" alt=\"X2CRM\" id=\"installer-logo\">";
+//                    break;
+//                }
+//            }
+            $logoFile = "images/mobile_logo.png";
+            echo "<img src=\"$logoFile\" alt=\"X2CRM\" id=\"installer-logo\">";
             ?>
-            <h2 id="title"><?php echo installer_t('Install X2Engine Version').'&nbsp'.$version; ?></h2>
+            <h2 id="title"><?php echo installer_t('Install X2CRM Version').'&nbsp'.$version; ?></h2>
 
 
 
-<?php echo installer_t('Welcome to the X2Engine application installer! We need to collect a little information before we can get your application up and running. Please fill out the fields listed below.'); ?>
+<?php echo installer_t('Welcome to the X2CRM application installer! We need to collect a little information before we can get your application up and running. Please fill out the fields listed below.'); ?>
 
 
             <div class="wide form" id="install-form">
@@ -462,7 +464,7 @@ $timezones = array(
                 ?>
                 <form name="install" id="install" action="initialize.php" method="POST">
                     <h2><?php echo installer_t('Application Info'); ?></h2><hr>
-                    <div class="row"><label for="app"><?php echo installer_t('Application Name'); ?></label><input type="text" name="app" id="app" value="<?php getField('app', 'X2Engine'); ?>" style="width:190px" /></div>
+                    <div class="row"><label for="app"><?php echo installer_t('Application Name'); ?></label><input type="text" name="app" id="app" value="<?php getField('app', 'X2CRM'); ?>" style="width:190px" /></div>
                     <div class="row"><label for="language"><?php echo installer_t('Default Language'); ?></label>
                         <select name="language" id="language" onChange="changeLang(this.options[this.selectedIndex].value);" style="width:200px"><option value="">English</option>
                             <?php
@@ -509,7 +511,7 @@ $timezones = array(
                         <?php echo installer_t('Choose which modules will be visible in the main menu. Any of these can be re-enabled after installation if necessary.'); ?><br /><br />
                         <?php
                         $modules = require_once(dirname(__FILE__).implode(DIRECTORY_SEPARATOR, array('', 'protected', 'data', '')).'enabledModules.php');
-                        $disabledByDefault = array('products', 'quotes', 'bugReports');
+                        $disabledByDefault = array('products', 'quotes', 'bugReports', 'x2Leads');
                         foreach($modules as $moduleName):
                             $item = "menu_$moduleName";
                             if (function_exists('ucfirst')) { 
@@ -606,13 +608,13 @@ $timezones = array(
                     <input type="submit" id="install-button" class="x2-button" value="<?php echo installer_t('Install'); ?>" />
                     <br />
                 </form>
-                <a style="text-align: center; display:block;" href="http://www.x2engine.com"><?php echo installer_t('For help or more information - X2Engine.com'); ?></a>
+                <a style="text-align: center; display:block;" href="http://www.x2crm.com"><?php echo installer_t('For help or more information - X2CRM.com'); ?></a>
 
             </div>
             <div id="footer">
 
 
-                Copyright &copy; <?php echo date('Y'); ?><a href="http://www.x2engine.com">X2Engine Inc.</a><br />
+                Copyright &copy; <?php echo date('Y'); ?><a href="http://www.x2crm.com">X2Engine Inc.</a><br />
 <?php echo installer_t('All Rights Reserved.'); ?>
             </div>
         </div>

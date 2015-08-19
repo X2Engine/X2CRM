@@ -295,7 +295,7 @@ class APIModel {
             'visibility' => '1',
         );
         if ($leadRouting) {
-            $attributes['assignedTo'] = $this->_send('admin/getRoutingType', array_merge($attributes,$this->attributes));
+            $attributes['_leadRouting'] = 1;
         }
 	    return $this->modelCreateUpdate('Contacts','create',$attributes);
     }

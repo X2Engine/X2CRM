@@ -48,8 +48,6 @@
  */
 class EmailDeliveryBehavior extends CBehavior {
 
-    const DEBUG_EMAIL = 0;
-
     /**
      * Stores the email credentials, if an account has been defined and is used.
      * @var mixed
@@ -210,7 +208,7 @@ class EmailDeliveryBehavior extends CBehavior {
      * @return array
      */
     public function deliverEmail($addresses, $subject, $message, $attachments = array()){
-        if(YII_DEBUG && self::DEBUG_EMAIL) {
+        if(YII_UNIT_TESTING && defined ('X2_DEBUG_EMAIL') && X2_DEBUG_EMAIL) {
             // Fake a successful send
             /**/AuxLib::debugLog(
                 'Faking an email delivery to address(es): '.var_export($addresses,1));
@@ -259,7 +257,7 @@ class EmailDeliveryBehavior extends CBehavior {
                     $type = $attachment['type'];
                     switch ($type) {
                         case 'temp': // stored as a temp file?
-                            $file = 'uploads/media/temp/'.$attachment['folder'].'/'.
+                            $file = 'uploads/protected/media/temp/'.$attachment['folder'].'/'.
                                 $attachment['filename'];
                             if(file_exists($file)) // check file exists
                                 if ($this->validateFileSize (filesize ($file))) {
@@ -267,7 +265,7 @@ class EmailDeliveryBehavior extends CBehavior {
                                 }
                             break;
                         case 'media': // stored in media library
-                            $file = 'uploads/media/'.$attachment['folder'].'/'.
+                            $file = 'uploads/protected/media/'.$attachment['folder'].'/'.
                                 $attachment['filename'];
                             if(file_exists($file)) // check file exists
                                 if ($this->validateFileSize (filesize ($file))) {
@@ -283,23 +281,6 @@ class EmailDeliveryBehavior extends CBehavior {
 
             $phpMail->Send();
 
-            // delete temp attachment files, if they exist
-            if($attachments){
-                foreach($attachments as $attachment){
-                    $type = $attachment['type'];
-                    if($type === 'temp'){
-                        $file = 'uploads/media/temp/'.$attachment['folder'].'/'.
-                            $attachment['filename'];
-                        $folder = 'uploads/media/temp/'.$attachment['folder'];
-                        if(file_exists($file))
-                            unlink($file); // delete temp file
-                        if(file_exists($folder))
-                            rmdir($folder); // delete temp folder
-                        TempFile::model()->deleteByPk($attachment['id']);
-                    }
-                }
-            }
-
             $this->status['code'] = '200';
             $this->status['exception'] = null;
             $this->status['message'] = Yii::t('app', 'Email Sent!');
@@ -314,6 +295,22 @@ class EmailDeliveryBehavior extends CBehavior {
             $this->status['message'] = $e->getMessage()." ".$e->getFile()." L".$e->getLine();
         }
         return $this->status;
+    }
+
+    public function clearTemporaryFiles (array $attachments = array ()) {
+        foreach($attachments as $attachment){
+            $type = $attachment['type'];
+            if($type === 'temp'){
+                $file = 'uploads/protected/media/temp/'.$attachment['folder'].'/'.
+                    $attachment['filename'];
+                $folder = 'uploads/protected/media/temp/'.$attachment['folder'];
+                if(file_exists($file))
+                    unlink($file); // delete temp file
+                if(file_exists($folder))
+                    rmdir($folder); // delete temp folder
+                TempFile::model()->deleteByPk($attachment['id']);
+            }
+        }
     }
 
     /**

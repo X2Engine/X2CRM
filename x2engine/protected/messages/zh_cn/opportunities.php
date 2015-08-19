@@ -32,4 +32,10 @@ return array (
 'Relationships for Contact: '=>'联系关系：',
 'Import Opportunities'=>'进口机会',
 'Export Opportunities'=>'出口商机',
+'Create {opportunity}'=>'创建{opportunity}',
+'{opportunity}:'=>'{opportunity} ：',
+'{opportunities} List'=>'{opportunities}名单',
+'Edit {opportunity}'=>'编辑{opportunity}',
+'Import {opportunities}'=>'进口{opportunities}',
+'Export {opportunities}'=>'出口{opportunities}',
 );

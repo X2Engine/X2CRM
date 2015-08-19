@@ -61,7 +61,7 @@ abstract class TransactionalViewWidget extends GridViewWidget {
     protected $_gridViewConfig;
     protected $_searchModel;
     protected $containerClass = 'sortable-widget-container x2-layout-island transactional-view-widget';
-    public static $position = 0;
+    
 
     private static $_JSONPropertiesStructure;
 
@@ -78,6 +78,7 @@ abstract class TransactionalViewWidget extends GridViewWidget {
                 parent::getJSONPropertiesStructure(), array(
                     'showHeader' => false,
                     'resultsPerPage' => 5,
+                    'hideFullHeader' => true, 
                 )
             );
         }
@@ -188,6 +189,68 @@ abstract class TransactionalViewWidget extends GridViewWidget {
         return array($updateRoute, $updateParams);
     }
 
+
+    /**
+     * @param array $collapse each entry should be an array of integers, corresponding to the
+     *  indexes of columns whose widths will be combined
+     * Precondition: Columns cannot be combined if their widths are of different types (percent vs.
+     *  integer)
+     * @return array width of column sizes 
+     */
+    public function getColumnWidths (array $collapse=array ()) {
+        if (!Yii::app()->params->profile->historyShowRels) {
+            $columnWidths = array (
+                '52%', 
+                '22%', 
+                '12%', 
+                '106', 
+                '60', 
+            );
+        } else {
+            $columnWidths = array (
+                '42%', 
+                '22%', 
+                '22%', 
+                '106', 
+                '60', 
+            );
+        }
+
+        $addWidths = function ($widthA, $widthB) {
+            if (preg_match ('/%/', $widthA) && preg_match ('/%/', $widthB)) {
+                return $widthA + $widthB . '%';
+            } else if (!preg_match ('/%/', $widthA) && !preg_match ('/%/', $widthB)) {
+                return $widthA + $widthB;
+            } else {
+                throw new CException ('Type mismatch: widths cannot be added');
+            }
+        };
+
+        // combine columns, adding column widths
+        foreach ($collapse as $cols) {
+            $rest = $cols;
+            unset ($rest[0]);
+            $collapsedWidth = $columnWidths[$cols[0]];
+            foreach ($rest as $otherCol) {
+                $collapsedWidth = $addWidths ($collapsedWidth, $columnWidths[$otherCol]);
+                unset ($columnWidths[$otherCol]);
+            }
+            $columnWidths[$cols[0]] = $collapsedWidth;
+        }
+
+        return $columnWidths;
+    }
+
+    /**
+     * Build defaultGvSettings property for X2GridView
+     */
+    public function buildDefaultGvSettings ($attributes, array $combine = array ()) {
+        return array_combine (
+            $attributes,
+            $this->getColumnWidths ($combine)
+        );
+    }
+
     /**
      * @return array the config array passed to widget ()
      */
@@ -218,10 +281,13 @@ abstract class TransactionalViewWidget extends GridViewWidget {
                 'fullscreen' => false,
                 'enableSelectAllOnAllPages' => false,
                 'hideSummary' => true,
-                'defaultGvSettings' => array(
-                    'actionDescription' => '38%',
-                    'assignedTo' => '28%',
-                    'createDate' => 60,
+                'enableGvSettings' => false,
+                'defaultGvSettings' => $this->buildDefaultGvSettings (
+                    array (
+                        'actionDescription',
+                        'assignedTo',
+                        'createDate',
+                    ), array (array (1, 2), array (3, 4))
                 ),
                 'specialColumns' => array(
                     'actionDescription' => array(
@@ -236,6 +302,23 @@ abstract class TransactionalViewWidget extends GridViewWidget {
                     ),
                 ),
             ));
+            $this->_gridViewConfig['specialColumns']['associationName'] = array(
+                    'header' => Yii::t('app', 'Association'),
+                    'name' => 'associationName',
+                    'value' => '$data->getAssociationLink ()',
+                    'type' => 'raw',
+                    'filter' => false,
+                );
+            if (Yii::app()->params->profile->historyShowRels) {
+                $this->_gridViewConfig['defaultGvSettings'] = $this->buildDefaultGvSettings (
+                    array (
+                        'actionDescription',
+                        'assignedTo',
+                        'associationName',
+                        'createDate',
+                    ), array (array (3, 4)) 
+                );
+            }
         }
         return $this->_gridViewConfig;
     }

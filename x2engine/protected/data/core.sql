@@ -200,6 +200,8 @@ CREATE TABLE x2_dropdowns (
     parentVal               VARCHAR(250)
 ) AUTO_INCREMENT=1000 COLLATE = utf8_general_ci;
 /*&*/
+DROP TABLE IF EXISTS x2_role_to_permission;
+/*&*/
 DROP TABLE IF EXISTS x2_fields;
 /*&*/
 CREATE TABLE x2_fields (
@@ -221,9 +223,10 @@ CREATE TABLE x2_fields (
     defaultValue            TEXT,
     keyType                 CHAR(3) DEFAULT NULL,
     data                    TEXT,
+    description             TEXT,
 	INDEX (modelName),
 	UNIQUE (modelName, fieldName)
-) COLLATE = utf8_general_ci;
+) ENGINE=InnoDB COLLATE = utf8_general_ci;
 /*&*/
 DROP TABLE IF EXISTS x2_form_layouts;
 /*&*/
@@ -394,6 +397,7 @@ CREATE TABLE x2_profile(
     historyShowRels         TINYINT         DEFAULT 0,
     googleRefreshToken      VARCHAR(255),
 	leadRoutingAvailability	TINYINT			DEFAULT 1,
+	showTours 				TINYINT			DEFAULT 1,
 	UNIQUE(username, emailAddress),
 	INDEX (username)
 ) COLLATE = utf8_general_ci;
@@ -425,44 +429,36 @@ CREATE TABLE x2_relationships (
 /* The following needs to be dropped first; there is a foreign key constraint */
 DROP TABLE IF EXISTS x2_role_to_workflow;
 /*&*/
+DROP TABLE IF EXISTS x2_role_exceptions;
+/*&*/
+DROP TABLE IF EXISTS x2_role_to_user;
+/*&*/
 DROP TABLE IF EXISTS x2_roles;
 /*&*/
 CREATE TABLE x2_roles (
-	id						INT				NOT NULL AUTO_INCREMENT PRIMARY KEY,
+	id					INT				NOT NULL AUTO_INCREMENT PRIMARY KEY,
 	name					VARCHAR(250),
 	users					TEXT,
         timeout                                 INT
 ) ENGINE=InnoDB COLLATE = utf8_general_ci;
 /*&*/
-DROP TABLE IF EXISTS x2_role_exceptions;
-/*&*/
-CREATE TABLE x2_role_exceptions (
-	id						INT				NOT NULL AUTO_INCREMENT primary key,
-	workflowId				INT,
-	stageId					INT,
-	roleId					INT, /* points to id of an x2_roles record */
-	replacementId           int /* points to id of a dummy x2_roles record */
-) COLLATE = utf8_general_ci;
-/*&*/
-DROP TABLE IF EXISTS x2_role_to_permission;
-/*&*/
 CREATE TABLE x2_role_to_permission (
-	id						INT				NOT NULL AUTO_INCREMENT PRIMARY KEY,
+	id					INT				NOT NULL AUTO_INCREMENT PRIMARY KEY,
 	roleId					INT,
 	fieldId					INT NOT NULL,
 	`permission`				INT,
-    INDEX(`fieldId`),
-    INDEX(`roleId`)
-) COLLATE = utf8_general_ci;
-/*&*/
-DROP TABLE IF EXISTS x2_role_to_user;
+        UNIQUE (`roleId`,`fieldId`),
+        FOREIGN KEY (roleId) REFERENCES x2_roles(id) ON UPDATE CASCADE ON DELETE CASCADE,
+        FOREIGN KEY (fieldId) REFERENCES x2_fields(id) ON UPDATE CASCADE ON DELETE CASCADE
+) ENGINE=InnoDB COLLATE = utf8_general_ci;
 /*&*/
 CREATE TABLE x2_role_to_user (
-	id						INT				NOT NULL AUTO_INCREMENT PRIMARY KEY,
+	id                                      INT				NOT NULL AUTO_INCREMENT PRIMARY KEY,
 	roleId					INT,
 	userId					INT,
-	type					VARCHAR(250)
-) COLLATE = utf8_general_ci;
+	type					VARCHAR(250),
+        FOREIGN KEY (roleId) REFERENCES x2_roles(id) ON UPDATE CASCADE ON DELETE CASCADE
+) ENGINE=InnoDB COLLATE = utf8_general_ci;
 /*&*/
 DROP TABLE IF EXISTS x2_sessions;
 /*&*/
@@ -617,14 +613,15 @@ DROP TABLE IF EXISTS x2_trigger_logs;
 DROP TABLE IF EXISTS x2_flows;
 /*&*/
 CREATE TABLE x2_flows(
-    id                        INT                AUTO_INCREMENT PRIMARY KEY,
-    active                    TINYINT            NOT NULL DEFAULT 1,
-    name                    VARCHAR(100)    NOT NULL,
-    triggerType                VARCHAR(40)        NOT NULL,
-    modelClass                VARCHAR(40),
+    id                      INT                 AUTO_INCREMENT PRIMARY KEY,
+    active                  TINYINT             NOT NULL DEFAULT 1,
+    name                    VARCHAR(100)        NOT NULL,
+    description             TEXT,
+    triggerType             VARCHAR(40)         NOT NULL,
+    modelClass              VARCHAR(40),
     flow                    LONGTEXT,
-    createDate                BIGINT            NOT NULL,
-    lastUpdated                BIGINT            NOT NULL
+    createDate              BIGINT              NOT NULL,
+    lastUpdated             BIGINT              NOT NULL
 ) ENGINE=InnoDB, COLLATE = utf8_general_ci;
 /*&*/
 CREATE TABLE `x2_trigger_logs` (
@@ -654,4 +651,14 @@ CREATE TABLE x2_failed_logins (
     attempts INTEGER UNSIGNED,
 	lastAttempt BIGINT DEFAULT NULL,
     INDEX(IP)
+) COLLATE = utf8_general_ci, ENGINE=INNODB;
+/*&*/
+DROP TABLE IF EXISTS `x2_tours`;
+/*&*/
+CREATE TABLE `x2_tours` (
+	`id`                             INT             NOT NULL AUTO_INCREMENT,
+	`profileId`                      INT             NOT NULL,
+	`description`                    VARCHAR(32),
+	`seen`                           TINYINT,
+	PRIMARY KEY (`id`)
 ) COLLATE = utf8_general_ci, ENGINE=INNODB;

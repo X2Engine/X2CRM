@@ -38,4 +38,9 @@ return array (
 'Import Accounts'=>'Comptes importation',
 'Export Accounts'=>'Comptes à l&#39;exportation',
 'Bug Report Attributes'=>'rapport de bogue Attributs',
+'Share {opportunity}'=>'Partager {opportunity}',
+'{account}'=>'{account}',
+'{module} Report'=>'{module} rapport',
+'This form will allow you to generate a campaign to mail related {contacts} of the {accounts} displayed in the report below. Select "Primary {contacts}" to only email {contacts} which are set as the Primary {contact} for an {account}. Select "All" to email all related {contacts} on each {account}.'=>'Ce formulaire vous permet de générer une campagne de poster connexes {contacts} des {accounts} affiché dans le rapport ci-dessous. Sélectionnez «primaire {contacts} à seulement email {contacts} qui sont définies comme la primaire {contact} pour un {account} Sélectionnez «Tous» pour envoyer tous connexes {contacts} sur chaque {account}',
+'Primary {module}'=>'Primaire {module}',
 );

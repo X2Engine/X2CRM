@@ -82,6 +82,14 @@ function SortableWidget (argsDict) {
 
 SortableWidget.prototype = auxlib.create (x2.Widget.prototype);
 
+SortableWidget.getParentType = function (widgetType) {
+    if ($.inArray (widgetType, ['data', 'profile', 'recordView']) >= 0) {
+        return widgetType;
+    } else {
+        return 'recordView';
+    }
+};
+
 /*
 Public static methods
 */
@@ -199,6 +207,26 @@ SortableWidget.prototype.setProperty = function (key, value, callback) {
     });
 };
 
+SortableWidget.prototype.setProperties = function (props, callback) {
+    $.ajax ({
+        url: this.setPropertyUrl,
+        type: 'POST',
+        data: {
+            widgetClass: this.widgetClass,
+            props: props,
+            widgetUID: this.widgetUID,
+            widgetType: this.widgetType,
+            settingsModelName: this.settingsModelName,
+            settingsModelId: this.settingsModelId,
+        },
+        success: function (data) {
+            if (data === 'success') {
+                if (typeof callback !== 'undefined') callback ();
+            }
+        }
+    });
+};
+
 /**
  * Change widget label 
  * @param string newLabel 
@@ -276,6 +304,10 @@ SortableWidget.prototype._setUpMinimizationBehavior = function () {
     });
 };
 
+SortableWidget.prototype.getParentType = function () {
+    return SortableWidget.getParentType (this.widgetType);
+};
+
 /**
  * Sets up behavior of the close button
  */
@@ -292,9 +324,9 @@ SortableWidget.prototype._setUpCloseBehavior = function () {
             that._tearDownWidget ();
             // remove sort item class to prevent sort jitter
             $(that.element).removeClass (
-                x2[that.widgetType + 'WidgetManager'].getWidgetContainerSelector ().
+                x2[that.getParentType () + 'WidgetManager'].getWidgetContainerSelector ().
                 replace (/\./, ''));
-            x2[that.widgetType + 'WidgetManager'].addWidgetToHiddenWidgetsMenu (that.element);
+            x2[that.getParentType () + 'WidgetManager'].addWidgetToHiddenWidgetsMenu (that.element);
             $(that.element).children ().remove ();
         });
     });

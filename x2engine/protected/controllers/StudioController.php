@@ -42,10 +42,8 @@ Yii::import('application.components.x2flow.triggers.*');
  * @package application.controllers
  */
 class StudioController extends x2base {
-    // Declares class-based actions.
 
     public $modelClass = 'X2Flow';
-
 
     // public $layout = '//layouts/column1';
     public function filters() {
@@ -83,15 +81,15 @@ class StudioController extends x2base {
 
     public function actionTriggerLogs($pageSize=null) {
         $triggerLogsDataProvider = new CActiveDataProvider('TriggerLog', array(
-                    'criteria' => array(
-                        'order' => 'triggeredAt DESC'
-                    ),
-                    'pagination'=>array(
-                        'pageSize' => !empty($pageSize) ?
-                            $pageSize :
-                            Profile::getResultsPerPage()
-                    ),
-                ));
+            'criteria' => array(
+                'order' => 'triggeredAt DESC'
+            ),
+            'pagination'=>array(
+                'pageSize' => !empty($pageSize) ?
+                    $pageSize :
+                    Profile::getResultsPerPage()
+            ),
+        ));
         $viewParams['triggerLogsDataProvider'] = $triggerLogsDataProvider;
         $this->render('triggerLogs', array (
             'triggerLogsDataProvider' => $triggerLogsDataProvider
@@ -103,62 +101,6 @@ class StudioController extends x2base {
         $model = $this->loadModel($id);
         $model->delete();
         $this->redirect(array('flowIndex'));
-    }
-
-    public function actionTest() {
-        echo CRYPT_SALT_LENGTH ;
-        // var_dump($a instanceof X2Model);
-
-        // $a = array();
-        // $a = array(''=>Yii::t('studio','Custom')) + Docs::getEmailTemplates();
-        // $a = Docs::getEmailTemplates();
-        // var_dump($a);
-
-        // $act = new X2FlowEmail;
-        // $act->config = array (
-            // 'type' => 'X2FlowEmail',
-            // 'options' => array (
-                // 'to' => 'me@x2engine.com',
-                // 'from' => 'mpearson@x2engine.com',
-                // 'template' => '',
-                // 'subject' => 'Hey you!',
-                // 'cc' =>'',
-                // 'bcc' =>'',
-                // 'body' => 'test test test test'
-            // )
-        // );
-        // var_dump($act->execute($a));
-
-        // $x = X2FlowTrigger::checkCondition(array('type'=>'time_of_day','operator'=>'<','value'=>'11:30'),$a);
-        // var_dump($x);
-
-        /* $triggerName = 'RecordDeleteTrigger';
-        $params = array('model'=>new Contacts);
-
-        $flowAttributes = array('triggerType'=>$triggerName);
-
-        if(isset($params['model']))
-            $flowAttributes['modelClass'] = get_class($params['model']);
-
-        $results = array();
-
-        // find all flows matching this trigger and modelClass
-        foreach(CActiveRecord::model('X2Flow')->findAllByAttributes($flowAttributes) as $flow) {
-            // file_put_contents('triggerLog.txt',"\n".$triggerName,FILE_APPEND);
-            $flowData = CJSON::decode($flow->flow);    // parse JSON flow data
-
-
-            if($flowData !== false && isset($flowData['trigger']['type'],$flowData['items'][0]['type'])) {
-
-                $trigger = X2FlowTrigger::create($flowData['trigger']);
-
-                if($trigger === null || !$trigger->validateRules($params) || !$trigger->check($params))
-                    return;
-                // var_dump($trigger->check($params));
-                $results[] = array($flow->name,$flow->executeBranch($flowData['items'],$params));
-            }
-        }
-        var_dump($results); */
     }
 
     public function actionGetParams($name,$type) {
@@ -178,8 +120,9 @@ class StudioController extends x2base {
                 if(isset($paramRules['options']))
                     $paramRules['options'] = AuxLib::dropdownForJson($paramRules['options']);
             } else {
-                foreach($paramRules['options'] as &$option) {    // find any dropdowns and reformat them
-                    if(isset($option['options']))                // so the item order is preserved in JSON
+                // find any dropdowns and reformat them
+                foreach($paramRules['options'] as &$option) { 
+                    if(isset($option['options'])) // so the item order is preserved in JSON
                         $option['options'] = AuxLib::dropdownForJson($option['options']);
                 }
                 // do the same for suboptions, if they're present
@@ -218,23 +161,32 @@ class StudioController extends x2base {
             if($field->readOnly)
                 $data['readOnly'] = 1;
             if($field->type === 'assignment' || $field->type === 'optionalAssignment' ) {
-                $data['options'] = AuxLib::dropdownForJson(X2Model::getAssignmentOptions(true, true));
+                $data['options'] = AuxLib::dropdownForJson(
+                    X2Model::getAssignmentOptions(true, true));
+                if ($field->type === 'assignment')
+                    $data['multiple'] = $field->linkType === 'multiple' ? 1 : 0;
             } elseif($field->type === 'dropdown') {
                 $data['linkType'] = $field->linkType;
+                $dropdown = Dropdowns::model ()->findByPk ($field->linkType);
                 $data['options'] = AuxLib::dropdownForJson(Dropdowns::getItems($field->linkType));
+                $data['multiple'] = $dropdown->multi ? 1 : 0;
             }
 
             if($field->type === 'link') {
                 $staticLinkModel = X2Model::model($field->linkType);
                 if(array_key_exists('X2LinkableBehavior', $staticLinkModel->behaviors())) {
                     $data['linkType'] = $field->linkType;
-                    $data['linkSource'] = Yii::app()->controller->createUrl($staticLinkModel->autoCompleteSource);
+                    $data['linkSource'] = Yii::app()->controller->createUrl(
+                        $staticLinkModel->autoCompleteSource);
                 }
             }
 
 
             $fields[] = $data;
         }
+        usort ($fields, function ($a, $b) {
+            return strcmp ($a['label'], $b['label']);
+        });
         echo CJSON::encode($fields);
     }
 
@@ -273,6 +225,8 @@ class StudioController extends x2base {
         }
         echo "failure";
     }
+    
+    
 
      
 

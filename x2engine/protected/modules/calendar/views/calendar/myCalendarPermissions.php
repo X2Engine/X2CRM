@@ -81,7 +81,7 @@ foreach($users as $name=>$user) {
 $viewPermission = X2CalendarPermissions::getUserIdsWithViewPermission(Yii::app()->user->id);
 $editPermission = X2CalendarPermissions::getUserIdsWithEditPermission(Yii::app()->user->id);
 ?>
-<div class="page-title"><h2><?php echo Yii::t('calendar', 'View Permission'); ?></h2></div>
+<div class="calendar page-title"><h2><?php echo Yii::t('calendar', 'View Permission'); ?></h2></div>
 <div class="form">
     <?php echo Yii::t('calendar', 'These users can view your {module}.', array(
         '{users}' => lcfirst(Modules::displayName(true, "Users")),
@@ -96,7 +96,7 @@ $editPermission = X2CalendarPermissions::getUserIdsWithEditPermission(Yii::app()
 	?>
 	<br>
 </div>
-<div class="page-title rounded-top"><h2><?php echo Yii::t('calendar', 'Edit Permission'); ?></h2></div>
+<div class="calendar page-title rounded-top"><h2><?php echo Yii::t('calendar', 'Edit Permission'); ?></h2></div>
 <div class="form">
     <?php echo Yii::t('calendar', 'These {users} can edit your {module}.', array(
         '{users}' => lcfirst(Modules::displayName(true, "Users")),

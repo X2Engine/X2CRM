@@ -68,13 +68,16 @@ class LoggedTimeWidget extends TransactionalViewWidget {
                         'assignedTo' => array (
                             'header' => Yii::t('app', 'Created By'),
                         ),
+                        'timeSpent' => array (
+                            'header' => Yii::t('app', 'Time Spent'),
+                        ),
                     ),
-                    'defaultGvSettings' => array (
-                        'actionDescription' => '35%',
-                        'assignedTo' => '21%',
-                        'timeSpent' => 79,
-                        'createDate' => 60,
-                    ),
+                    'defaultGvSettings' => $this->buildDefaultGvSettings (array (
+                        'actionDescription',
+                        'assignedTo',
+                        'timeSpent',
+                        'createDate',
+                    ), array (array (1, 2))),
                 )
             );
             $this->_gridViewConfig['specialColumns'] = array_merge (
@@ -87,6 +90,15 @@ class LoggedTimeWidget extends TransactionalViewWidget {
                     ),
                 )
             );
+            if (Yii::app()->params->profile->historyShowRels) {
+                $this->_gridViewConfig['defaultGvSettings'] = $this->buildDefaultGvSettings (array (
+                    'actionDescription',
+                    'assignedTo',
+                    'associationName',
+                    'timeSpent',
+                    'createDate',
+                ));
+            }
         }
         return $this->_gridViewConfig;
     }

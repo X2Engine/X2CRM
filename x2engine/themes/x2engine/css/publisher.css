@@ -32,6 +32,127 @@
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2Engine".
  *****************************************************************************************/
+/*
+  Icon Font: x2-icons
+*/
+@font-face {
+  font-family: "x2-icons";
+  src: url("./x2Icons/x2-icons.eot");
+  src: url("./x2Icons/x2-icons.eot?#iefix") format("embedded-opentype"), url("./x2Icons/x2-icons.woff") format("woff"), url("./x2Icons/x2-icons.ttf") format("truetype"), url("./x2Icons/x2-icons.svg#x2-icons") format("svg");
+  font-weight: normal;
+  font-style: normal;
+}
+@media screen and (-webkit-min-device-pixel-ratio: 0) {
+  @font-face {
+    font-family: "x2-icons";
+    src: url("./x2Icons/x2-icons.svg#x2-icons") format("svg");
+  }
+}
+/* line 23, ../../../compass/css/lib/_x2-icons.scss */
+[data-icon]:before {
+  content: attr(data-icon);
+}
+
+/* line 25, ../../../compass/css/lib/_x2-icons.scss */
+[data-icon]:before,
+.icon-activity:before,
+.icon-contact:before,
+.icon-funnel:before,
+#publisher .icon.workflow:before,
+.action.list-view .icon.workflow:before,
+.icon-open-envelope:before,
+#publisher .icon.campaignEmailOpened:before,
+.action.list-view .icon.campaignEmailOpened:before,
+#publisher .icon.emailOpened:before,
+.action.list-view .icon.emailOpened:before,
+.icon-package:before,
+.icon-profile:before,
+.icon-profile-large:before,
+.icon-quotes:before,
+.icon-service:before,
+.icon-stopwatch:before,
+#publisher .icon.time:before,
+.action.list-view .icon.time:before,
+.icon-x2-logo:before,
+.icon-x2-logo-square:before {
+  display: inline-block;
+  font-family: "x2-icons";
+  font-style: normal;
+  font-weight: normal;
+  font-variant: normal;
+  line-height: 1;
+  text-decoration: inherit;
+  text-rendering: optimizeLegibility;
+  text-transform: none;
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-font-smoothing: antialiased;
+  font-smoothing: antialiased;
+}
+
+/* line 52, ../../../compass/css/lib/_x2-icons.scss */
+.icon-activity:before {
+  content: "\f113";
+}
+
+/* line 53, ../../../compass/css/lib/_x2-icons.scss */
+.icon-contact:before {
+  content: "\f10c";
+}
+
+/* line 54, ../../../compass/css/lib/_x2-icons.scss */
+.icon-funnel:before, #publisher .icon.workflow:before,
+.action.list-view .icon.workflow:before {
+  content: "\f109";
+}
+
+/* line 55, ../../../compass/css/lib/_x2-icons.scss */
+.icon-open-envelope:before, #publisher .icon.campaignEmailOpened:before,
+.action.list-view .icon.campaignEmailOpened:before, #publisher .icon.emailOpened:before,
+.action.list-view .icon.emailOpened:before {
+  content: "\f10a";
+}
+
+/* line 56, ../../../compass/css/lib/_x2-icons.scss */
+.icon-package:before {
+  content: "\f112";
+}
+
+/* line 57, ../../../compass/css/lib/_x2-icons.scss */
+.icon-profile:before {
+  content: "\f11e";
+}
+
+/* line 58, ../../../compass/css/lib/_x2-icons.scss */
+.icon-profile-large:before {
+  content: "\f11f";
+}
+
+/* line 59, ../../../compass/css/lib/_x2-icons.scss */
+.icon-quotes:before {
+  content: "\f11c";
+}
+
+/* line 60, ../../../compass/css/lib/_x2-icons.scss */
+.icon-service:before {
+  content: "\f111";
+}
+
+/* line 61, ../../../compass/css/lib/_x2-icons.scss */
+.icon-stopwatch:before, #publisher .icon.time:before,
+.action.list-view .icon.time:before {
+  content: "\f114";
+}
+
+/* line 62, ../../../compass/css/lib/_x2-icons.scss */
+.icon-x2-logo:before {
+  content: "\f117";
+}
+
+/* line 63, ../../../compass/css/lib/_x2-icons.scss */
+.icon-x2-logo-square:before {
+  content: "\f116";
+}
+
 /*****************************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2015 X2Engine Inc.
@@ -253,186 +374,11 @@
   content: "\f144";
 }
 
-/*
-  Icon Font: x2-icons
-*/
-@font-face {
-  font-family: "x2-icons";
-  src: url("./x2-icons/x2-icons_22944e718c0be651c88d1109fe469031.eot");
-  src: url("./x2-icons/x2-icons_22944e718c0be651c88d1109fe469031.eot?#iefix") format("embedded-opentype"), url("./x2-icons/x2-icons_22944e718c0be651c88d1109fe469031.woff") format("woff"), url("./x2-icons/x2-icons_22944e718c0be651c88d1109fe469031.ttf") format("truetype"), url("./x2-icons/x2-icons_22944e718c0be651c88d1109fe469031.svg#x2-icons") format("svg");
-  font-weight: normal;
-  font-style: normal;
-}
-@media screen and (-webkit-min-device-pixel-ratio: 0) {
-  @font-face {
-    font-family: "x2-icons";
-    src: url("./x2-icons/x2-icons_22944e718c0be651c88d1109fe469031.svg#x2-icons") format("svg");
-  }
-}
-/* line 23, ../../../compass/css/lib/_x2-icons.scss */
-[data-icon]:before {
-  content: attr(data-icon);
-}
-
-/* line 25, ../../../compass/css/lib/_x2-icons.scss */
-[data-icon]:before,
-.icon-activity:before,
-.icon-contact:before,
-.icon-envelope-arrow:before,
-.icon-funnel:before,
-#publisher .icon.workflow:before,
-.action.list-view .icon.workflow:before,
-.icon-funnel-arrow:before,
-.icon-funnel-check:before,
-.icon-funnel3:before,
-.icon-funnel4:before,
-.icon-old-open-envelope:before,
-.icon-old-open-envelope-o:before,
-.icon-open-envelope:before,
-#publisher .icon.campaignEmailOpened:before,
-.action.list-view .icon.campaignEmailOpened:before,
-#publisher .icon.emailOpened:before,
-.action.list-view .icon.emailOpened:before,
-.icon-package:before,
-.icon-profile:before,
-.icon-profile-large:before,
-.icon-quotes:before,
-.icon-service:before,
-.icon-stopwatch:before,
-#publisher .icon.time:before,
-.action.list-view .icon.time:before,
-.icon-x2-logo:before,
-.icon-x2-logo-square:before,
-.icon-x2-logo-square-small:before,
-.icon-x2engine:before {
-  display: inline-block;
-  font-family: "x2-icons";
-  font-style: normal;
-  font-weight: normal;
-  font-variant: normal;
-  line-height: 1;
-  text-decoration: inherit;
-  text-rendering: optimizeLegibility;
-  text-transform: none;
-  -moz-osx-font-smoothing: grayscale;
-  -webkit-font-smoothing: antialiased;
-  font-smoothing: antialiased;
-}
-
-/* line 61, ../../../compass/css/lib/_x2-icons.scss */
-.icon-activity:before {
-  content: "\f113";
-}
-
-/* line 62, ../../../compass/css/lib/_x2-icons.scss */
-.icon-contact:before {
-  content: "\f10c";
-}
-
-/* line 63, ../../../compass/css/lib/_x2-icons.scss */
-.icon-envelope-arrow:before {
-  content: "\f10d";
-}
-
-/* line 64, ../../../compass/css/lib/_x2-icons.scss */
-.icon-funnel:before, #publisher .icon.workflow:before,
-.action.list-view .icon.workflow:before {
-  content: "\f109";
-}
-
-/* line 65, ../../../compass/css/lib/_x2-icons.scss */
-.icon-funnel-arrow:before {
-  content: "\f10e";
-}
-
-/* line 66, ../../../compass/css/lib/_x2-icons.scss */
-.icon-funnel-check:before {
-  content: "\f10f";
-}
-
-/* line 67, ../../../compass/css/lib/_x2-icons.scss */
-.icon-funnel3:before {
-  content: "\f119";
-}
-
-/* line 68, ../../../compass/css/lib/_x2-icons.scss */
-.icon-funnel4:before {
-  content: "\f11b";
-}
-
-/* line 69, ../../../compass/css/lib/_x2-icons.scss */
-.icon-old-open-envelope:before {
-  content: "\f120";
-}
-
-/* line 70, ../../../compass/css/lib/_x2-icons.scss */
-.icon-old-open-envelope-o:before {
-  content: "\f121";
-}
-
-/* line 71, ../../../compass/css/lib/_x2-icons.scss */
-.icon-open-envelope:before, #publisher .icon.campaignEmailOpened:before,
-.action.list-view .icon.campaignEmailOpened:before, #publisher .icon.emailOpened:before,
-.action.list-view .icon.emailOpened:before {
-  content: "\f10a";
-}
-
-/* line 72, ../../../compass/css/lib/_x2-icons.scss */
-.icon-package:before {
-  content: "\f112";
-}
-
-/* line 73, ../../../compass/css/lib/_x2-icons.scss */
-.icon-profile:before {
-  content: "\f11e";
-}
-
-/* line 74, ../../../compass/css/lib/_x2-icons.scss */
-.icon-profile-large:before {
-  content: "\f11f";
-}
-
-/* line 75, ../../../compass/css/lib/_x2-icons.scss */
-.icon-quotes:before {
-  content: "\f11c";
-}
-
-/* line 76, ../../../compass/css/lib/_x2-icons.scss */
-.icon-service:before {
-  content: "\f111";
-}
-
-/* line 77, ../../../compass/css/lib/_x2-icons.scss */
-.icon-stopwatch:before, #publisher .icon.time:before,
-.action.list-view .icon.time:before {
-  content: "\f114";
-}
-
-/* line 78, ../../../compass/css/lib/_x2-icons.scss */
-.icon-x2-logo:before {
-  content: "\f117";
-}
-
-/* line 79, ../../../compass/css/lib/_x2-icons.scss */
-.icon-x2-logo-square:before {
-  content: "\f116";
-}
-
-/* line 80, ../../../compass/css/lib/_x2-icons.scss */
-.icon-x2-logo-square-small:before {
-  content: "\f118";
-}
-
-/* line 81, ../../../compass/css/lib/_x2-icons.scss */
-.icon-x2engine:before {
-  content: "\f104";
-}
-
 /**************************************************
 * Class to add to a container that has a stacked icon
 * These are the icons displayed on the activity feed
 **************************************************/
-/* line 59, ../../../compass/css/lib/_icons.scss */
+/* line 58, ../../../compass/css/lib/_icons.scss */
 .stacked-icon {
   display: none;
   position: absolute;
@@ -447,7 +393,7 @@
   /* @theme background content */
   text-align: center;
 }
-/* line 78, ../../../compass/css/lib/_icons.scss */
+/* line 77, ../../../compass/css/lib/_icons.scss */
 .stacked-icon:before {
   width: 100%;
   font-size: 10px;
@@ -474,53 +420,62 @@
 *
 * These icons are currently used in activity feed and publisher 
 *******************************************************/
-/* line 39, ../../../compass/themes/x2engine/css/publisher.scss */
+/* line 40, ../../../compass/themes/x2engine/css/publisher.scss */
 #history .pager {
   border: none;
   margin: 0;
 }
 
-/* line 46, ../../../compass/themes/x2engine/css/publisher.scss */
+/* line 47, ../../../compass/themes/x2engine/css/publisher.scss */
+#publisher > .form2 {
+  background: #F4F4F4;
+  /* @theme background: content */
+}
+/* line 50, ../../../compass/themes/x2engine/css/publisher.scss */
+#publisher > .form2 textarea, #publisher > .form2 label, #publisher > .form2 .action-duration-display, #publisher > .form2 .reminder-config {
+  /* @theme color: text */
+}
+/* line 54, ../../../compass/themes/x2engine/css/publisher.scss */
 #publisher > {
   /***********************************************************************
   * multi row tabs
   ***********************************************************************/
 }
-/* line 47, ../../../compass/themes/x2engine/css/publisher.scss */
+/* line 55, ../../../compass/themes/x2engine/css/publisher.scss */
 #publisher > .ui-tabs-nav {
   /*display: inline-block;*/
   display: block;
   float: left;
   margin-bottom: 0px;
 }
-/* line 53, ../../../compass/themes/x2engine/css/publisher.scss */
+/* line 61, ../../../compass/themes/x2engine/css/publisher.scss */
 #publisher > #publisher-tabs-row-1 {
   border-right: none !important;
   margin-right: -10px;
 }
-/* line 56, ../../../compass/themes/x2engine/css/publisher.scss */
+/* line 64, ../../../compass/themes/x2engine/css/publisher.scss */
 #publisher > #publisher-tabs-row-1 li {
   margin-top: 0px !important;
 }
-/* line 64, ../../../compass/themes/x2engine/css/publisher.scss */
+/* line 72, ../../../compass/themes/x2engine/css/publisher.scss */
 #publisher > #publisher-tabs-row-1, #publisher > #publisher-tabs-row-2 {
   padding-top: 0 !important;
   padding-left: 0 !important;
 }
-/* line 67, ../../../compass/themes/x2engine/css/publisher.scss */
+/* line 75, ../../../compass/themes/x2engine/css/publisher.scss */
 #publisher > #publisher-tabs-row-1 li, #publisher > #publisher-tabs-row-2 li {
   /* @theme background: dark_content */
   /* @theme border: darker_content */
   margin-right: 2px !important;
 }
-/* line 72, ../../../compass/themes/x2engine/css/publisher.scss */
+/* line 80, ../../../compass/themes/x2engine/css/publisher.scss */
 #publisher > #publisher-tabs-row-1 li.ui-state-active, #publisher > #publisher-tabs-row-2 li.ui-state-active {
   position: relative;
   z-index: 2;
   /* @theme background: content */
   /* @theme border: border */
 }
-/* line 81, ../../../compass/themes/x2engine/css/publisher.scss */
+/* line 89, ../../../compass/themes/x2engine/css/publisher.scss */
 #publisher > #publisher-tabs-row-2 {
   background: #f8f8f8;
   width: 100%;
@@ -533,20 +488,20 @@
   margin-top: 0px;
   /*display: block !important;*/
 }
-/* line 92, ../../../compass/themes/x2engine/css/publisher.scss */
+/* line 100, ../../../compass/themes/x2engine/css/publisher.scss */
 #publisher > #publisher-tabs-row-2 li {
   margin-top: -1px !important;
   height: 24px;
 }
-/* line 93, ../../../compass/themes/x2engine/css/publisher.scss */
+/* line 101, ../../../compass/themes/x2engine/css/publisher.scss */
 #publisher > #publisher-tabs-row-2 li:first-child {
   margin-left: 3px;
 }
-/* line 100, ../../../compass/themes/x2engine/css/publisher.scss */
+/* line 108, ../../../compass/themes/x2engine/css/publisher.scss */
 #publisher > #publisher-tabs-row-2.unselected-tab-row {
   background: #eee;
 }
-/* line 106, ../../../compass/themes/x2engine/css/publisher.scss */
+/* line 114, ../../../compass/themes/x2engine/css/publisher.scss */
 #publisher.multi-row-tabs-publisher .form {
   position: relative;
   top: -1px;
@@ -555,7 +510,7 @@
 /***********************************************************************
 * comment tab
 ***********************************************************************/
-/* line 116, ../../../compass/themes/x2engine/css/publisher.scss */
+/* line 124, ../../../compass/themes/x2engine/css/publisher.scss */
 #new-comment .text-area-wrapper, #products .text-area-wrapper {
   margin-bottom: 5px;
 }
@@ -563,20 +518,20 @@
 /***********************************************************************
 * action tab
 ***********************************************************************/
-/* line 124, ../../../compass/themes/x2engine/css/publisher.scss */
+/* line 132, ../../../compass/themes/x2engine/css/publisher.scss */
 .action-event-panel .action-reminder-container {
   font-size: 12px;
   line-height: 22px;
 }
-/* line 127, ../../../compass/themes/x2engine/css/publisher.scss */
+/* line 135, ../../../compass/themes/x2engine/css/publisher.scss */
 .action-event-panel .action-reminder-container select, .action-event-panel .action-reminder-container input, .action-event-panel .action-reminder-container div {
   float: left;
 }
-/* line 130, ../../../compass/themes/x2engine/css/publisher.scss */
+/* line 138, ../../../compass/themes/x2engine/css/publisher.scss */
 .action-event-panel .action-reminder-container select {
   margin-left: 4px;
 }
-/* line 133, ../../../compass/themes/x2engine/css/publisher.scss */
+/* line 141, ../../../compass/themes/x2engine/css/publisher.scss */
 .action-event-panel .action-reminder-container > div {
   border-radius: 3px;
   border: 1px solid #cecece;
@@ -633,7 +588,7 @@
 .action.list-view .icon.overdue:before {
   text-decoration: none;
 }
-/* line 91, ../../../compass/css/lib/_icons.scss */
+/* line 90, ../../../compass/css/lib/_icons.scss */
 #publisher .icon.overdue .stacked-icon:before,
 .action.list-view #publisher .icon.overdue .stacked-icon:before,
 #publisher .action.list-view .icon.overdue .stacked-icon:before,
@@ -641,7 +596,7 @@
   top: 0px;
   left: 0px;
 }
-/* line 94, ../../../compass/css/lib/_icons.scss */
+/* line 93, ../../../compass/css/lib/_icons.scss */
 #publisher .icon.overdue .stacked-icon:before,
 .action.list-view #publisher .icon.overdue .stacked-icon:before,
 #publisher .action.list-view .icon.overdue .stacked-icon:before,
@@ -649,7 +604,7 @@
   top: 1px;
   left: 0px;
 }
-/* line 100, ../../../compass/css/lib/_icons.scss */
+/* line 99, ../../../compass/css/lib/_icons.scss */
 #publisher .icon.overdue .stacked-icon,
 .action.list-view .icon.overdue .stacked-icon {
   display: inline-block;
@@ -659,28 +614,28 @@
 .action.list-view .icon.overdue .stacked-icon:before {
   text-decoration: none;
 }
-/* line 105, ../../../compass/css/lib/_icons.scss */
+/* line 104, ../../../compass/css/lib/_icons.scss */
 #publisher .icon.overdue .stacked-icon:before,
 .action.list-view .icon.overdue .stacked-icon:before {
   position: absolute;
   font-size: 10px;
 }
-/* line 47, ../../../compass/css/lib/_icons.scss */
+/* line 46, ../../../compass/css/lib/_icons.scss */
 #publisher .icon.workflow:before,
 .action.list-view .icon.workflow:before {
   text-decoration: none;
 }
-/* line 47, ../../../compass/css/lib/_icons.scss */
+/* line 46, ../../../compass/css/lib/_icons.scss */
 #publisher .icon.time:before,
 .action.list-view .icon.time:before {
   text-decoration: none;
 }
-/* line 47, ../../../compass/css/lib/_icons.scss */
+/* line 46, ../../../compass/css/lib/_icons.scss */
 #publisher .icon.campaignEmailOpened:before,
 .action.list-view .icon.campaignEmailOpened:before {
   text-decoration: none;
 }
-/* line 47, ../../../compass/css/lib/_icons.scss */
+/* line 46, ../../../compass/css/lib/_icons.scss */
 #publisher .icon.emailOpened:before,
 .action.list-view .icon.emailOpened:before {
   text-decoration: none;

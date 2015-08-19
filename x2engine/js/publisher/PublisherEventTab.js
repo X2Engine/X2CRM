@@ -67,33 +67,6 @@ Private static methods
 Public instance methods
 */
 
-/**
- * Hide the autocomplete container after submission
- */
-PublisherEventTab.prototype.reset = function () {
-    x2.PublisherTab.prototype.reset.call (this);
-    if ($(this.resolveIds ('#association-type-autocomplete-container')).length) {
-        $(this.resolveIds ('#association-type-autocomplete-container')).hide ();
-    }
-};
-
-
-/**
- * @param Bool True if form input is valid, false otherwise
- */
-PublisherEventTab.prototype.validate = function () {
-    var errors = !x2.PublisherTab.prototype.validate.call (this);
-
-    if ($(this.resolveIds ('#event-form-action-due-date')).val () === '') {
-        errors |= true;
-        $(this.resolveIds ('#event-form-action-due-date')).addClass ('error');
-        x2.forms.errorSummaryAppend (this._element, this.translations['startDateError']);
-    }
-
-    return !errors;
-};
-
-
 /*
 Private instance methods
 */

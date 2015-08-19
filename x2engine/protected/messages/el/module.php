@@ -34,4 +34,5 @@ return array (
 'Import {X}'=>'Εισαγωγή {X}',
 'Export {X}'=>'Εξαγωγή {X}',
 '{modelName} Attributes'=>'{modelName} Χαρακτηριστικά',
+'Edit {X}'=>'Επεξεργασία {X}',
 );

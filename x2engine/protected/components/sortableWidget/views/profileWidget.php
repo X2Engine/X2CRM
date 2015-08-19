@@ -39,7 +39,8 @@
  class='<?php 
     // The container class is used to identify sortable elements. It's omitted in the case that
     // the widget is hidden to prevent sort jittering.
-    echo (isset ($this->containerClass) && !$hidden ? $this->containerClass : ''); ?>' 
+    echo (isset ($this->containerClass) && !$hidden ? $this->containerClass : '').
+     ' '.$widgetClass.'-widget-container'; ?>' 
  <?php echo ($hidden ? 'style="display: none;"' : ''); ?>> 
     <?php $this->renderWidget (); ?>
 </div>

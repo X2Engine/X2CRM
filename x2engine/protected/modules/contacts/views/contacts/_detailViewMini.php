@@ -34,12 +34,17 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 
-$this->renderPartial(
-    'application.components.views._detailView', 
-    array(
-        'model' => $model,
-        'modelName' => 'contacts',
-        'scenario'=>'Inline',
-        'nameLink' => true,
-    )
-);
+$this->widget('DetailView', array(
+    'model'   => $model,
+    'scenario' => 'Inline',
+    'nameLink' => true
+));
+// $this->renderPartial(
+//     'application.components.views.@DETAILVIEW', 
+//     array(
+//         'model' => $model,
+//         'modelName' => 'contacts',
+//         'scenario'=>'Inline',
+//         'nameLink' => true,
+//     )
+// );

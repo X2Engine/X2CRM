@@ -39,7 +39,7 @@
  */
 class ActionsWidget extends TransactionalViewWidget {
 
-    public static $position = 1; 
+     
 
     protected $labelIconClass = 'fa-play-circle'; 
     protected $historyType = 'action';
@@ -76,11 +76,11 @@ class ActionsWidget extends TransactionalViewWidget {
             $this->_gridViewConfig = array_merge (
                 parent::getGridViewConfig (),
                 array (
-                    'defaultGvSettings' => array (
-                        'actionDescription' => '38%',
-                        'assignedTo' => '22%',
-                        'dueDate' => 155,
-                    ),
+                    'defaultGvSettings' => $this->buildDefaultGvSettings (array (
+                        'actionDescription',
+                        'assignedTo',
+                        'dueDate',
+                    ), array (array (1, 2), array (3, 4))),
                 )
             );
             $this->_gridViewConfig['specialColumns'] = array_merge (
@@ -94,7 +94,14 @@ class ActionsWidget extends TransactionalViewWidget {
                     ),
                 )
             );
-
+            if (Yii::app()->params->profile->historyShowRels) {
+                $this->_gridViewConfig['defaultGvSettings'] = $this->buildDefaultGvSettings (array (
+                    'actionDescription',
+                    'assignedTo',
+                    'associationName',
+                    'dueDate',
+                ), array (array (3, 4)));
+            }
         }
         return $this->_gridViewConfig;
     }

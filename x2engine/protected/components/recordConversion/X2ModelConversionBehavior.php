@@ -128,6 +128,9 @@ class X2ModelConversionBehavior extends CActiveRecordBehavior {
         return $attributes;
     }
 
+    /**
+     * @return bool true if source and target types a conversion-compatible, false otherwise 
+     */
     public function checkConversionCompatibility ($targetClass) {
         $targetModel = new $targetClass ();
         $fieldMap = $this->getFieldMap ($targetClass, true);
@@ -152,17 +155,19 @@ class X2ModelConversionBehavior extends CActiveRecordBehavior {
         $sharedAttrs = array_intersect (
             $this->mapFields ($this->owner->attributeNames (), $targetClass), 
             $targetModel->attributeNames ());
+
         foreach ($sharedAttrs as $name) {
             // get this model's field name from converted field name, if field name is in the map
-            $name = isset ($fieldMap[$name]) ? $fieldMap[$name] : $name;
-            $leadField = $this->owner->getField ($name);
+            $sourceFieldName = isset ($fieldMap[$name]) ? $fieldMap[$name] : $name;
+
+            $sourceField = $this->owner->getField ($sourceFieldName);
             $targetModelField = $targetModel->getField ($name);
 
-            if (!$leadField instanceof Fields || !$targetModelField instanceof Fields) {
+            if (!$sourceField instanceof Fields || !$targetModelField instanceof Fields) {
                 continue;
             }
 
-            if ($leadField->type !== $targetModelField->type) {
+            if ($sourceField->type !== $targetModelField->type) {
                 return false;
             }
         }
@@ -192,8 +197,7 @@ class X2ModelConversionBehavior extends CActiveRecordBehavior {
         // don't create a targetModel creation notification or event
         $targetModel->disableBehavior('changelog'); 
         if ($targetModel->save ()) {
-            $targetModel->mergeRelatedRecords (
-                $this->owner, true, false, true, true, true, false);
+            $targetModel->mergeRelatedRecords ($this->owner);
             $changeLogBehavior = $this->owner->asa ('changelog');
             $changeLogBehavior->createEvent = false; // don't create a lead deletion event
             $this->owner->delete ();
@@ -235,23 +239,23 @@ class X2ModelConversionBehavior extends CActiveRecordBehavior {
             $attributeNames, $targetModel->attributeNames ());
         foreach ($sharedAttrs as $name) {
             $originalName = $name;
-            $name = isset ($fieldMap[$name]) ? $fieldMap[$name] : $name;
-            $leadField = $this->owner->getField ($name);
+            $sourceFieldName = isset ($fieldMap[$name]) ? $fieldMap[$name] : $name;
+            $sourceField = $this->owner->getField ($sourceFieldName);
             $targetModelField = $targetModel->getField ($name);
 
-            if (!$leadField instanceof Fields || !$targetModelField instanceof Fields) {
+            if (!$sourceField instanceof Fields || !$targetModelField instanceof Fields) {
                 continue;
             }
 
-            if ($leadField->type !== $targetModelField->type) {
+            if ($sourceField->type !== $targetModelField->type) {
                 if (isset ($fieldMap[$originalName])) {
                     $warnings[] = 
                         Yii::t('app', 
                             'The {model} field {fieldName} maps to the {targetModel} field '.
                             '{targetField} but the fields have different types.', 
                             array (
-                                '{fieldName}' => $originalName,
-                                '{fieldName}' => $name,
+                                '{fieldName}' => $sourceFieldName,
+                                '{targetField}' => $name,
                                 '{model}' => X2Model::getModelTitle (get_class ($this->owner)),
                                 '{targetModel}' => X2Model::getModelTitle ($targetClass),
                             )
@@ -272,6 +276,58 @@ class X2ModelConversionBehavior extends CActiveRecordBehavior {
         }
 
         return $warnings;
+    }
+
+    /**
+     * Renders error summary containing compatibility warnings 
+     * @return string
+     */
+    public function errorSummary ($targetModelClass, $convertMultiple=false) {
+        $sourceModelClass = get_class ($this->owner);
+        $sourceModelTitle = X2Model::getModelTitle ($sourceModelClass, true);
+        $targetModelTitle = X2Model::getModelTitle ($targetModelClass, true);
+        $sourceModelTitlePlural = X2Model::getModelTitle ($sourceModelClass, false);
+        $targetModelTitlePlural = X2Model::getModelTitle ($targetModelClass, false);
+
+        $html = '<p>';
+        $html .= CHtml::encode (!$convertMultiple ?
+            Yii::t('app', 'Converting this {model} to {article} {targetModel} could result in data 
+                from your {model} being lost. '.
+                'The following field incompatibilities have been detected: ',
+                array (
+                    '{model}' => $sourceModelTitle,
+                    '{targetModel}' => $targetModelTitle,
+                    '{article}' => preg_match ('/^[aeiouAEIOU]/', $targetModelTitle) ? 'an' : 'a',
+                )) : 
+            Yii::t('app', 'Converting these {model} to {targetModel} could result in data 
+                from your {model} being lost. '.
+                'The following field incompatibilities have been detected: ',
+                array (
+                    '{model}' => $sourceModelTitlePlural,
+                    '{targetModel}' => $targetModelTitlePlural,
+                )));
+        $html .= "
+        </p>
+        <ul class='errorSummary'>
+        ";
+        foreach ($this->owner->getConversionIncompatibilityWarnings ($targetModelClass) as 
+            $message) {
+            
+            $html .= '<li>'.CHtml::encode ($message).'</li>';
+        }
+        $html .= "
+        </ul>
+        <p>
+        ";
+        $html .= CHtml::encode (
+            Yii::t('app', 'To resolve these incompatibilities, make sure that every '.
+            '{model} field has a corresponding {targetModel} field of the same name and type.', 
+            array (
+                '{model}' => $sourceModelTitlePlural,
+                '{targetModel}' => $targetModelTitlePlural,
+            )));
+        $html .= '</p>';
+        return $html;
     }
 }
 

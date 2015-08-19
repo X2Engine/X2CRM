@@ -474,12 +474,7 @@ class OpportunitiesController extends x2base {
                     'submit'=>array('delete','id'=>$modelId),
                     'confirm'=>'Are you sure you want to delete this item?')
             ),
-            array(
-                'name'=>'attach',
-                'label'=>Yii::t('app','Attach A File/Photo'),
-                'url'=>'#',
-                'linkOptions'=>array('onclick'=>'toggleAttachmentForm(); return false;')
-            ),
+            ModelFileUploader::menuLink(),
             array(
                 'name'=>'quotes',
                 'label' => Yii::t('quotes', 'Quotes/Invoices'), 'url' => 'javascript:void(0)',

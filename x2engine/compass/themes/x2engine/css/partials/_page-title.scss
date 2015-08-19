@@ -33,6 +33,16 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 
+
+
+.page-title.icon {
+    & > .x2-button.icon { 
+        width: 41px; 
+        height: 27px; 
+        box-sizing: border-box;
+    }
+}
+
 .page-title, 
 .section-title {
     @include border-radius (2px 2px 0 0);
@@ -55,7 +65,7 @@ table.fc-header {
     background-position: 0 -5px;
     padding: 0 5px;
     border-bottom: 1px solid #aaa;
-    background: #c0c0c0;
+    background: $defaultTitleBar;
 
     filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#c0c0c0', endColorstr='#b0b0b0',GradientType=0 );
 
@@ -65,7 +75,7 @@ table.fc-header {
 }
 
 .grid-view div.page-title {
-    border-bottom: 1px solid #666;
+    border-bottom: 1px solid $gray;
     h2 {
         overflow: visible;
     }
@@ -98,21 +108,24 @@ table.fc-header .fc-header-title h2 {
 // }
 
 .page-title {
-    background: #CECECE;
+    background: $defaultTitleBar;
     border-bottom: none;
 
-    // not sure where this rule is being used...
+    span.icon, &.icon h2:before {
+        font-size: 20px !important;
+    }
+
     span.icon {
-        height: 29px;
-        width: 44px;
         display: inline-block;
         padding: 0;
-        background-position: -1px -7px;
-
         &.contacts {
             @include x2-icon('contact');
-            font-size: 31px;
             margin-left: 10px;
+            display: inline-block;
+            &:before {
+                position: relative;
+                top: -6px;
+            }
         }
     }
 
@@ -136,7 +149,6 @@ table.fc-header .fc-header-title h2 {
             background-position: -1px -5px;
 
             &:before {
-                font-size: 20px !important;
                 margin-left: -39px;
                 margin-right: 12px;
             }
@@ -157,6 +169,7 @@ table.fc-header .fc-header-title h2 {
             ("media h2" "music")
             ("users h2" "users")
             ("charts h2" "bar-chart")
+            ("topics h2" "comments")
         );
 
         $x2-map: (
@@ -169,6 +182,24 @@ table.fc-header .fc-header-title h2 {
 
         @include generate-icons($fa-map);
         @include generate-icons($x2-map, "x2");
+    }
+}
+
+.reports h2 {
+    @include fa-icon ('file-o', 'before');
+    @include fa-icon ('bar-chart', 'after');
+    &:before {
+        font-size: 22px !important;
+        position: relative;
+        top: 2px;
+    }
+    &:after {
+        float: left;
+        width: 0;
+        font-size: 12px !important;
+        position: relative;
+        left: -36px;
+        top: 14px;
     }
 }
 
@@ -245,7 +276,7 @@ td.fc-header-left h2 {
         margin-left: 3px;
         margin-right: 6px;
         width: auto;
-        border: 1px solid #D1D1D1;
+        border: 1px solid $lightGray;
         border-top: none;
         @include border-radius (0 0 4px 4px);
     }

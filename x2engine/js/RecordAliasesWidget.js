@@ -54,6 +54,7 @@ function RecordAliasesWidget (argsDict) {
     this._hideShowButton$ = this.element$.find ('.view-aliases-button');
     this._dropdown$ = this.element$.find ('.alias-dropdown');
     this._addAliasButton$ = this.element$.find ('.new-alias-button');
+    this._secondaryAddAliasButton$ = $('#record-aliases-action-menu-link');
     this._dialog$ = this.element$.find ('.add-alias-dialog');
     this._init ();
 }
@@ -75,7 +76,7 @@ RecordAliasesWidget.prototype._hideDropdown = function () {
 
 RecordAliasesWidget.prototype._setUpHideShowBehavior = function () {
     var that = this;
-    this.element$.find ('.record-name, .view-aliases-button').click (function () {
+    this.element$.prev ('.view-aliases-button').click (function () {
         if (!that._dropdown$.is (':visible')) {
             that._showDropdown ();
         } else {
@@ -126,7 +127,8 @@ RecordAliasesWidget.prototype._addAlias = function (aliasType, alias, id) {
 /**
  * Submit alias creation form
  */
-RecordAliasesWidget.prototype._createAlias = function () {
+RecordAliasesWidget.prototype._createAlias = function (afterCreate) {
+    afterCreate = typeof afterCreate === 'undefined' ? function () {} : afterCreate; 
     var that = this;
     var data = this._dialog$.serialize ();
     var dataObj = $.deparam (data);
@@ -143,6 +145,7 @@ RecordAliasesWidget.prototype._createAlias = function () {
                 that._dialog$.dialog ('close');
                 x2.forms.clearForm (that._dialog$, true);
                 that._dialog$.find ('.alias-type-cell').first ().click ();
+                afterCreate.call (that);
             } else {
                 that._dialog$.html (data.failure);
                 that._bindFormEvents ();
@@ -166,7 +169,8 @@ RecordAliasesWidget.prototype._deleteAlias = function (aliasId) {
     })
 };
 
-RecordAliasesWidget.prototype._openDialog = function () {
+RecordAliasesWidget.prototype._openDialog = function (afterCreate) {
+    afterCreate = typeof afterCreate === 'undefined' ? function () {} : afterCreate; 
     var that = this;
     this._dialog$.dialog ({
         title: this.translations.dialogTitle,
@@ -182,7 +186,7 @@ RecordAliasesWidget.prototype._openDialog = function () {
             {
                 text: this.translations.create,
                 click: function () {
-                    that._createAlias ();
+                    that._createAlias (afterCreate);
                 },
                 'class': 'highlight'
             }
@@ -200,6 +204,12 @@ RecordAliasesWidget.prototype._setUpDialog = function () {
         that._openDialog ();
         that._dropdown$.hide ();
     });
+    this._secondaryAddAliasButton$.click (function () {
+        that._openDialog (function () {
+            that._dropdown$.show ();
+        });
+        that._dropdown$.hide ();
+    });
 };
 
 /**
@@ -207,6 +217,9 @@ RecordAliasesWidget.prototype._setUpDialog = function () {
  */
 RecordAliasesWidget.prototype._bindFormEvents = function () {
     var that = this;
+    this.element$.find ('form').submit (function () {
+        return false; 
+    });
     this._dialog$.find ('input[type="radio"]').change (function () {
         that._dialog$.find ('.selected').removeClass ('selected');
         $(this).closest ('.alias-type-cell').children ().addClass ('selected');
@@ -286,11 +299,6 @@ RecordAliasesWidget.prototype._showSkypeTooltip = function (li$) {
 RecordAliasesWidget.prototype._setUpSkypeLinks = function () {
     var that = this;
     this._dropdown$.on ('click', 'li', function () {
-        console.log ('click'); 
-       console.log ('$(this) = ');
-        console.log ($(this));
-
-        console.log ($(this).attr ('data-alias-type'));
         if ($(this).attr ('data-alias-type') === 'Skype') {
             that._showSkypeTooltip ($(this));
         }

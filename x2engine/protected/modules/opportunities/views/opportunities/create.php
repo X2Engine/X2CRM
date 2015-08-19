@@ -45,4 +45,8 @@ $this->insertMenu($menuOptions);
         '{opportunity}'=>Modules::displayName(false),
     )); ?>
 </h2></div>
-<?php echo $this->renderPartial('application.components.views._form', array('model'=>$model,'users'=>$users,'modelName'=>'Opportunity')); ?>
+<?php 
+$this->widget ('FormView', array(
+	'model' => $model
+));
+//echo $this->renderPartial('application.components.views.@FORMVIEW', array('model'=>$model,'users'=>$users,'modelName'=>'Opportunity')); ?>

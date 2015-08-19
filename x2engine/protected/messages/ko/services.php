@@ -59,4 +59,7 @@ return array (
 'Import Services'=>'가져 오기 서비스',
 'Export Services'=>'수출 서비스',
 'Case Name'=>'케이스 이름',
+'Import {services}'=>'가져 오기 {services}',
+'Export {services}'=>'수출 {services}',
+'Thank you for contacting our Technical Support team. This is to verify we have received your request for Case# {casenumber}. One of our Technical Analysts will contact you shortly.'=>'우리의 기술 지원 팀에 문의 해 주셔서 감사합니다. 이것은 우리가 케이스 #에 대한 귀하의 요청을받은 확인하는 것입니다 {casenumber} . 우리의 기술 분석가 중 하나는 당신에게 곧 연락을 드릴 것입니다.',
 );

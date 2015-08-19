@@ -49,11 +49,20 @@ function MassAction (argsDict) {
         updateAfterExecute: true,
         recordCount: null,
         massActionName: '',
-        disableDialog: false
+        disableDialog: false,
+        /**
+         * Set to true to enable validation via ajax of mass action dialog form before executing
+         * mass action. In case of validation error, there should be an entry in the response 
+         * JSON with the key set to "form" and the value set to the rerendered form.
+         */
+        enableAjaxValidation: false
     };
     auxlib.applyArgs (this, defaultArgs, argsDict);
     this.dialogElem$ = $('#' + this.massActionsManager.gridId + '-' + this.massActionName + 
         '-dialog');
+    if (this.enableAjaxValidation) {
+        this.form$ = this.dialogElem$.find ('form');
+    }
     this.translations = this.massActionsManager.translations;
 }
 
@@ -80,6 +89,54 @@ MassAction.prototype.afterSuperExecute = function () {
     this.massActionsManager.massActionInProgress = false;
 };
 
+MassAction.prototype.afterValidationFailure = function (data) {};
+
+MassAction.prototype.validateForm = function () {
+    var that = this;
+    if (!(this._superExecute ^ this._execute)) throw new Error ('invalid internal state');
+    if (this.enableAjaxValidation) { 
+        if (this._superExecute) {
+            var data = $.extend ({
+                gvSelection: [null],
+                massAction: this.massActionName
+            }, x2.forms.flattenSerializedArray (this.form$));
+        } else {
+            var data = this.getExecuteParams ();
+        }
+        $.ajax({
+            url: that.massActionsManager.massActionUrl,
+            type:'POST',
+            data: data,
+            success: function (data) { 
+                var response = JSON.parse (data);
+                if (that._execute) {
+                    that._displayFlashes (response);
+                }
+                if (response['form']) {
+                    that.form$.replaceWith (response.form);
+                    that.form$ = that.dialogElem$.find ('form');
+                    that.afterValidationFailure (response);
+                    x2.forms.inputLoadingStop (
+                        that.dialogElem$.dialog ('widget').find ('.x2-dialog-go-button'));
+                    if (that._superExecute)
+                        that._superExecute = false;
+                    else
+                        that._execute = false;
+                } else {
+                    if (that._execute && response['success']) {
+                        that.afterExecute ();
+                    } else if (that._superExecute) {
+                        that.superExecute ();
+                    }
+                }
+            }
+        });
+    } else {
+        if (this._superExecute) this.superExecute ();
+        else this.execute ();
+    }
+};
+
 /**
  * Open dialog for mass action form
  */
@@ -89,9 +146,9 @@ MassAction.prototype.openDialog = function () {
     if (this.disableDialog) {
         this.massActionsManager.loading ();
         if (this.massActionsManager._allRecordsOnAllPagesSelected) {
-            this.superExecute ();
+            that.superExecute ();
         } else {
-            this.execute ();
+            that.execute ();
         }
         return;
     }
@@ -106,8 +163,8 @@ MassAction.prototype.openDialog = function () {
 
     $(dialog).show ();
 
-    var superExecute = false;
-    var execute = false;
+    this._superExecute = false;
+    this._execute = false;
 
     $(dialog).dialog ({
         title: this.dialogTitle,
@@ -122,11 +179,11 @@ MassAction.prototype.openDialog = function () {
                         x2.forms.inputLoading (
                             $(dialog).dialog ('widget').find ('.x2-dialog-go-button'), false);
                         if (that.massActionsManager._allRecordsOnAllPagesSelected) {
-                            superExecute = true;
-                            that.superExecute ();
+                            that._superExecute = true;
+                            that.validateForm ();
                         } else {
-                            execute = true;
-                            that.execute ();
+                            that._execute = true;
+                            that.validateForm ();
                         }
                     }
                 }
@@ -145,7 +202,8 @@ MassAction.prototype.openDialog = function () {
             $(dialog).dialog ('widget').find ('.x2-dialog-go-button').show ();
             $('#' + that.massActionsManager.gridId + '-mass-action-buttons .mass-action-button').
                 removeAttr ('disabled', 'disabled');
-            if (!superExecute && !execute) that.massActionsManager.massActionInProgress = false;
+            if (!that._superExecute && !that._execute) 
+                that.massActionsManager.massActionInProgress = false;
             $(dialog).dialog ('destroy').hide (); 
         }
     });
@@ -164,11 +222,10 @@ MassAction.prototype.execute = function () {
         data:this.getExecuteParams (),
         success: function (data) { 
             var response = JSON.parse (data);
-            var returnStatus = response[0];
             if (response['success']) {
                 that.afterExecute ();
             } 
-            that.massActionsManager._displayFlashes (response);
+            that._displayFlashes (response);
         }
     });
 };
@@ -336,6 +393,9 @@ MassAction.prototype.getExecuteParams = function () {
     var params = {};
     params['massAction'] = this.massActionName;
     params['gvSelection'] = this.massActionsManager._getSelectedRecords ();
+    if (this.enableAjaxValidation) {
+        $.extend (params, x2.forms.flattenSerializedArray (this.form$));
+    }
     return params;
 };
 
@@ -349,6 +409,22 @@ MassAction.prototype.getSuperExecuteParams = function () {
 
     params = $.extend (params, updateParams);
     return params;
+};
+
+MassAction.prototype._displayFlashes = function (flashes) {
+    $('#x2-gridview-flashes-container').remove ();
+    var flashesManager = new x2.Flashes ({
+        containerId: 'x2-gridview-flashes-container', 
+        translations: $.extend ({}, x2.flashes.translations, this.translations), 
+        expandWidgetSrc: x2.flashes.expandWidgetSrc,
+        closeWidgetSrc: x2.flashes.closeWidgetSrc,
+        collapseWidgetSrc: x2.flashes.collapseWidgetSrc
+    })
+    flashesManager.displayFlashes (flashes, true);
+    flashesManager.container$.width ($('#content-container').width () - 5);
+    $(window).unbind ('resize.contentContainer').bind ('resize.contentContainer', function () {
+        $(flashesManager.container$).width ($('#content-container').width () - 5);
+    });
 };
 
 MassAction.prototype._init = function () {};

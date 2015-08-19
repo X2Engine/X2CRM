@@ -616,6 +616,20 @@ class Events extends CActiveRecord {
                     $text.="<br>Media file not found.";
                 }
                 break;
+            case 'topic_reply':
+                $reply = TopicReplies::model()->findByPk($this->associationId);
+                if (isset($reply)) {
+                    $topicLink = X2Html::link($reply->topic->name, Yii::app()->controller->createUrl('/topics/topics/view', array('id' => $reply->topic->id, 'replyId' => $reply->id)));
+                    $text = Yii::t('topics', '{poster} posted a new reply to {topic}.', array(
+                                '{poster}' => $authorText,
+                                '{topic}' => $topicLink,
+                    ));
+                } else {
+                    $text = Yii::t('topics', '{poster} posted a new reply to a topic, but that reply has been deleted.', array(
+                                '{poster}' => $authorText,
+                    ));
+                }
+                break;
             default:
                 $text = $authorText . CHtml::encode($this->text);
                 break;
@@ -647,6 +661,7 @@ class Events extends CActiveRecord {
         'email_from' => 'Email Received',
         'media' => 'Media',
         'voip_call' => 'VOIP Call',
+        'topic_reply' => 'Topic Replies',
     );
 
     public static function parseType($type) {

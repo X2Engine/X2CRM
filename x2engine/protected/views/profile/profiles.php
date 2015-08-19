@@ -85,7 +85,7 @@ $this->actionMenu = $this->formatMenu(array(
 	),
 ));*/
 
-$this->widget('X2GridViewLess', array(
+$this->widget('X2ActiveGridView', array(
 	'id'=>'profiles-grid',
 	'title'=>Yii::t('profile', 'People'),
 	'buttons'=>array('advancedSearch','clearFilters','columnSelector','autoResize'),
@@ -106,7 +106,7 @@ $this->widget('X2GridViewLess', array(
 		'tagLine' => 165,
 		'isActive' => 80,
 	),
-    'modelAttrColumnNames'=>array (
+    'includedFields'=>array (
         'tagLine', 'username', 'officePhone', 'cellPhone', 'emailAddress', 'googleId'
     ),
 	'specialColumns'=>array(

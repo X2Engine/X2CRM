@@ -45,7 +45,13 @@ $authParams['X2Model'] = $newRecord;
     }
     ?>
 </div>
-<?php $this->renderPartial('application.components.views._detailView', array('model' => $newRecord, 'modelName' => $modelName)); ?>
+<?php 
+$this->widget ('DetailView', array(
+    'model' => $newRecord
+));
+$viewRedirect = (($ref == 'massDedupe') ? $this->createUrl('/admin/massDedupe') . '"' : $this->createUrl($moduleName . '/view') . '?id="+data;');
+$indexRedirect = (($ref === 'massDedupe') ? $this->createUrl('/admin/massDedupe') : $this->createUrl($moduleName . '/index'));
+//$this->renderPartial('application.components.views.@DETAILVIEW', array('model' => $newRecord, 'modelName' => $modelName)); ?>
 <div class="buttons">
     <?php
     echo "<span style='float:left'>";
@@ -59,7 +65,7 @@ $authParams['X2Model'] = $newRecord;
             'modelName' => $modelName,
         ),
         'success' => 'function(data){
-		window.location="' . $this->createUrl($moduleName . '/view') . '?id="+data;
+		window.location="' . $viewRedirect . '
 	}'
             ), array(
         'class' => 'x2-button highlight x2-hint',
@@ -76,7 +82,7 @@ $authParams['X2Model'] = $newRecord;
             'modifier' => null,
             'modelName' => $modelName,
         ),
-        'success' => 'window.location="' . $this->createUrl($moduleName . '/index') . '"'
+        'success' => 'window.location="' . $indexRedirect . '"'
             ), array(
         'class' => 'x2-button highlight x2-hint',
         'title' => 'This record is a duplicate and should be hidden.',
@@ -93,7 +99,7 @@ $authParams['X2Model'] = $newRecord;
                 'modifier' => null,
                 'modelName' => $modelName,
             ),
-            'success' => 'window.location="' . $this->createUrl($moduleName . '/index') . '"'
+            'success' => 'window.location="' . $indexRedirect . '"'
                 ), array(
             'class' => 'x2-button highlight x2-hint',
             'title' => 'This record is a duplicate and should be deleted.',
@@ -112,7 +118,7 @@ $authParams['X2Model'] = $newRecord;
                 'modelName' => $modelName,
             ),
             'success' => 'function(data){
-                window.location="' . $this->createUrl($moduleName . '/view') . '?id="+data;
+                window.location="' . $viewRedirect . '
             }'
                 ), array(
             'class' => 'x2-button highlight x2-hint',
@@ -133,7 +139,7 @@ $authParams['X2Model'] = $newRecord;
                 'modelName' => $modelName,
             ),
             'success' => 'function(data){
-            window.location="' . $this->createUrl($moduleName . '/view') . '?id="+data;
+            window.location="' . $viewRedirect . '
         }'
                 ), array(
             'class' => 'x2-button highlight x2-hint',
@@ -164,7 +170,12 @@ foreach ($duplicates as $duplicate) {
     echo '<div class="page-title rounded-top"><h2><span class="no-bold">', Yii::t('app', 'Possible Match:'), '</span> ';
     echo $duplicate->name, '</h2></div>';
 
-    $this->renderPartial('application.components.views._detailView', array('model' => $duplicate, 'modelName' => $moduleName));
+    $this->widget ('DetailView', array(
+        'model' => $duplicate, 
+        'modelName' => $moduleName
+    ));
+
+    //$this->renderPartial('application.components.views.@DETAILVIEW', array('model' => $duplicate, 'modelName' => $moduleName));
     echo "<div style='margin-bottom:10px;'>";
     if (Yii::app()->user->checkAccess(ucfirst($moduleName) . 'Update', $authParams)) {
         echo "<span style='float:left'>";

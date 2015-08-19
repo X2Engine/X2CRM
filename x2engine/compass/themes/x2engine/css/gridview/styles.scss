@@ -38,6 +38,9 @@
  @import "font-awesome";
 
 .grid-view {
+    td {
+    height: $gridViewCellHeight;
+    }
     table {
         border: none !important;
     }
@@ -62,7 +65,7 @@
 ul.column-selector {
     &.x2-dropdown-list {
         display: none;
-        overflow-y: scroll;
+        overflow-y: auto;
     }
     &.stuck {
         position: absolute !important;
@@ -87,6 +90,9 @@ ul.column-selector {
         display: inline-block;
         float: right;
         color: #555;
+        .form {
+            /* @theme background: highlight1 */
+        }
     }
     .empty {
         font-style: italic;
@@ -250,9 +256,12 @@ ul.column-selector {
                     width: 100%;
                     box-sizing: border-box;
                     margin: 0;
-                    padding: 2px 4px;
+                    padding: $gridViewCellHeight - 24px + 4px 4px 5px 4px;
                     border: none;
                     border-radius: 0;
+                }
+                select {
+                    height: $gridViewCellHeight - 1px;
                 }
             }
         }
@@ -549,6 +558,8 @@ activity indicator
     .mass-action-more-button {
         margin: -3px 5px 0 0;
         vertical-align: middle;
+        position: relative;
+        top: -1px;
     }
     ::-webkit-scrollbar-track:horizontal {
         border-top: none;
@@ -615,5 +626,5 @@ Remove extra border when pager isn't shown
 
 
 .sortable-widget-container .x2grid-header-container {
-    border-top: 1px solid #cfcfcf;
+    border-top: 1px solid $gray;
 }

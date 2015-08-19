@@ -44,7 +44,7 @@ class X2FlowRecordCreate extends X2FlowAction {
 	public $info = '';
 
 	public function paramRules() {
-		return array(
+		return array_merge (parent::paramRules (), array (
 			'title' => $this->title,
 			'modelClass' => 'modelClass',
 			'options' => array(
@@ -93,7 +93,7 @@ class X2FlowRecordCreate extends X2FlowAction {
                     'optional'=>1,
                 ),
 			),*/
-		);
+		));
 	}
 
 	public function execute(&$params) {
@@ -108,14 +108,14 @@ class X2FlowRecordCreate extends X2FlowAction {
             $acceptedModelTypes = X2Model::getModelTypesWhichSupportRelationships ();
 
             if (!in_array ($this->config['modelClass'], $acceptedModelTypes)) {
-                return array (false, Yii::t('x2flow', 'Relationships cannot be made with records '.
+                return array (false, Yii::t('admin', 'Relationships cannot be made with records '.
                     'of type {type}.', array ('{type}' => $this->config['modelClass'])));
             }
             if (!isset ($params['model'])) { // no model passed to trigger
                 return array (false, '');
             }
             if (!in_array (get_class ($params['model']), $acceptedModelTypes)) {
-                return array (false, Yii::t('x2flow', 'Relationships cannot be made with records '.
+                return array (false, Yii::t('admin', 'Relationships cannot be made with records '.
                     'of type {type}.', array ('{type}' => get_class ($params['model']))));
             }
         }

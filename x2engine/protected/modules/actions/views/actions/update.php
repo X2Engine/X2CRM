@@ -64,6 +64,4 @@ $this->insertMenu($menuOptions, $model, $authParams);
     array(
         'actionModel'=>$model,
         'users'=>$users,
-        'notifType'=>$notifType,
-        'notifTime'=>$notifTime
     )); ?>

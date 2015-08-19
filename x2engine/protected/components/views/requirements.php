@@ -675,6 +675,9 @@ if(!($requirements['extensions']['gd']=extension_loaded('gd'))){
 	$reqMessages[1][] = '<a href="http://php.net/manual/book.image.php">GD</a>: '.$rbm.'. '.installer_t('Security captchas will not work, and the media module will not be able to detect or display the dimensions of uploaded images.');
 }
 
+if(!($requirements['extensions']['iconv']=extension_loaded('iconv'))){
+	$reqMessages[1][] = '<a href="http://www.php.net/manual/book.iconv.php">iconv extension</a>: '.$rbm.'. '.installer_t('A number of components require the iconv module for encoding and will not function properly.');
+}
 
 // Determine if there are messages to show and if installation is even possible
 $hasMessages = false;

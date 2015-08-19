@@ -48,45 +48,17 @@ $this->insertMenu($menuOptions, $model);
 )); ?>
 
 <?php
-
-$parts = explode('.',$model->fileName);			// split filename on '.'
-
-$file = Yii::app()->file->set('uploads/'.$model->fileName);
-
-$file_ext = strtolower($file->getExtension());	// extension is the last part
-
-$legal_extensions = array('jpg','gif','png','bmp','jpeg','jpe');
-$fileView = '';
-
-$file_assoc = $model->associationType;
-
-
-if(file_exists("uploads/media/{$model->uploadedBy}/{$model->fileName}")) {
-	$file = Yii::app()->file->set("uploads/media/{$model->uploadedBy}/{$model->fileName}");
-	$file_ext = strtolower($file->getExtension());	// extension is the last part
-	$fileURL = Yii::app()->request->baseUrl.'/uploads/media/'. $model->uploadedBy . '/'.urlencode($model->fileName);
-
-	if(in_array($file_ext,$legal_extensions))
-		$fileView .= CHtml::link(CHtml::image($fileURL,'',array('class'=>'attachment-img', 'style'=>'height: 100%; display: block; margin-left: auto; margin-right: auto; padding: 5px')),$fileURL);
-
-} else if (file_exists("uploads/{$model->fileName}")) {
-	$fileURL = Yii::app()->request->baseUrl.'/uploads/'.urlencode($model->fileName);
-	if(in_array($file_ext,$legal_extensions))
-		$fileView .= CHtml::link(CHtml::image($fileURL,'',array('class'=>'attachment-img', 'style'=>'height: 100%; display: block; margin-left: auto; margin-right: auto; padding: 5px')),$fileURL);
-}
+Yii::app()->clientScript->registerCssFile($this->module->assetsUrl.'/css/view.css');
+Yii::app()->clientScript->registerCssFile($this->module->assetsUrl.'/css/update.css');
+$fileAssoc = $model->associationType;
 ?>
-
-		<?php if(!empty($fileView)) { ?>
-			<div style="float: left; margin-right: 5px;">
-				<div class="formItem" style="height: 200px; border: 1px solid #CCC; background: #FAFAFA; display: table-cell; -moz-border-radius: 4px; -o-border-radius: 4px; -webkit-border-radius: 4px; border-radius: 4px;">
-					<?php echo $fileView; ?>
-				</div>
-			</div>
-		<?php } ?>
-
-
-			<div class="x2-layout form-view" style="margin-bottom: 0;">
-
+			<div class="x2-layout form-view media-tray" style="margin-bottom: 0;">
+                <?php if($model->fileExists() && $model->isImage()){ ?>
+                <div class='column'>
+                <?php
+                }
+                ?>
+                <div class='x2-layout-island'>
 				<?php if (! $model->drive) { ?>
 				<div class="formSection showSection">
 					<div class="formSectionHeader">
@@ -126,7 +98,7 @@ if(file_exists("uploads/media/{$model->uploadedBy}/{$model->fileName}")) {
 											<div class="formInputBox" style="width: 200px; height: auto;">
 												<?php 
 
-													$display_array=array(
+													$displayArray=array(
 														'none'=>Yii::t('actions','None'),
 														'contacts'=>Yii::t('actions','Contact'),
 														'opportunities'=>Yii::t('actions','Opportunity'),
@@ -136,15 +108,15 @@ if(file_exists("uploads/media/{$model->uploadedBy}/{$model->fileName}")) {
 														'docs'=>Yii::t('media','Doc'),
 														'theme'=>Yii::t('media','Theme'));
 
-													if(!isset($display_array[$file_assoc])){
-														$selected = $display_array['none'];
+													if(!isset($displayArray[$fileAssoc])){
+														$selected = $displayArray['none'];
 													}
 													else {
-														$selected = $display_array[$file_assoc];
+														$selected = $displayArray[$fileAssoc];
 													}
 
 													echo $form->dropDownList($model,'associationType',
-														$display_array,
+														$displayArray,
 													 array('onChange'=>'showAssociationAutoComplete(this)',
 															'options' => 
 														array($selected=>array('selected'=>true))
@@ -265,7 +237,7 @@ if(file_exists("uploads/media/{$model->uploadedBy}/{$model->fileName}")) {
 								<tr class="formSectionRow">
 									<td style="width: 300px">
 										<div class="formItem leftLabel">
-											<div class="formInputBox" style="width: 550px; height: auto;">
+											<div class="formInputBox" style="width: 100%; height: auto;">
 												<?php echo $form->textarea($model, 'description', array('rows'=>5)); ?>
 											</div>
 										</div>
@@ -277,6 +249,23 @@ if(file_exists("uploads/media/{$model->uploadedBy}/{$model->fileName}")) {
 					</div>
 				</div>
 
+			    </div>
+                <?php if($model->fileExists() && $model->isImage()){ ?>
+                </div>
+                <?php
+                }
+                ?>
+                <?php
+                if ($model->isImage () && $model->fileExists ()) {
+                    ?>
+                    <div class='column'>
+                    <?php
+                    echo $model->renderAttribute ('image'); 
+                    ?>
+                    </div>
+                    <?php
+                }
+                ?>
 			</div>
 
 
@@ -286,4 +275,10 @@ echo '	<div class="row buttons">'."\n";
 echo '		'.CHtml::submitButton(Yii::t('media','Update'),array('class'=>'x2-button','id'=>'save-button','tabindex'=>24))."\n";
 echo "	</div>\n";
 $this->endWidget();
+
+Yii::app()->clientscript->registerScript("AutoComplete", "
+	$(function(){
+		$('#Media_associationType').change();
+	});
+");
 ?>

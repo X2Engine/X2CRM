@@ -78,11 +78,11 @@ abstract class WebTrackingTestBase extends X2WebTestCase {
             TEST_WEBROOT_URL_ALIAS_2 === '' ||
             TEST_WEBROOT_URL_ALIAS_3 === '') {
 
-            VERBOSE_MODE && println ('Warning: tests are being aborted because the web tracking '.
+            X2_VERBOSE_MODE && println ('Warning: tests are being aborted because the web tracking '.
                 'test constants have not been properly configured.');
             self::$skipAllTests = true;
         } else if (in_array ('x2WebTrackingTestPages', $output)) {
-            VERBOSE_MODE && println ('Warning: tests are being aborted because the directory '.
+            X2_VERBOSE_MODE && println ('Warning: tests are being aborted because the directory '.
                 '"x2WebTrackingTestPages" already exists in the webroot');
             self::$skipAllTests = true;
         } else {
@@ -113,6 +113,7 @@ abstract class WebTrackingTestBase extends X2WebTestCase {
      
 
     public function setUp () {
+        $this->setBaseUrl (TEST_WEBROOT_URL_ALIAS_1);
         if (self::$skipAllTests) {
             $this->markTestSkipped ();
         }
@@ -137,14 +138,26 @@ abstract class WebTrackingTestBase extends X2WebTestCase {
         return $this->open(TEST_BASE_URL_ALIAS_1 . $r_uri);
     }
 
+    private $_baseUrl;
+    public function getBaseUrl () {
+        if (!isset ($this->_baseUrl)) {
+            $this->_baseUrl = TEST_WEBROOT_URL_ALIAS_1;
+        }
+        return $this->_baseUrl;
+    }
+
+    public function setBaseUrl ($baseUrl) {
+        $this->_baseUrl = $baseUrl;
+    }
+
     /**
      * Open a URI within the app
      * 
      * @param string $r_uri
      */
     public function openPublic($r_uri) {
-        VERBOSE_MODE && print ('openPublic: '.TEST_WEBROOT_URL_ALIAS_1 . $r_uri."\n");
-        return $this->open(TEST_WEBROOT_URL_ALIAS_1 . $r_uri);
+        X2_VERBOSE_MODE && print ('openPublic: '.$this->getBaseUrl () . $r_uri."\n");
+        return $this->open($this->getBaseUrl () . $r_uri);
     }
 
     /**
@@ -227,7 +240,7 @@ abstract class WebTrackingTestBase extends X2WebTestCase {
             'email' => 'test@test.com',
         ));
         $this->assertTrue ($contact !== null);
-        VERBOSE_MODE && println (
+        X2_VERBOSE_MODE && println (
             'contact created. new contact\'s tracking key = '.$contact->trackingKey);
         return $contact;
     }
@@ -266,7 +279,7 @@ abstract class WebTrackingTestBase extends X2WebTestCase {
             'select count(*) from x2_actions
              where type="webactivity"')
              ->queryScalar ();
-        VERBOSE_MODE && println ($newCount);
+        X2_VERBOSE_MODE && println ($newCount);
         $this->assertEquals ('1', $newCount);
     }
 
@@ -274,11 +287,13 @@ abstract class WebTrackingTestBase extends X2WebTestCase {
     /**
      * Visits page with web tracker on it and asserts that the contact is being tracked
      */
-    public function assertWebTrackerTracksWithCookie () {
+    public function assertWebTrackerTracksWithCookie (
+        $page='x2WebTrackingTestPages/webTrackerTest.html') {
+
         $this->clearWebActivity ();
 
         // visit the page with the web tracker on it
-        $this->openPublic('x2WebTrackingTestPages/webTrackerTest.html');
+        $this->openPublic($page);
         $this->assertCookie ('regexp:.*x2_key.*');
         sleep (5); // wait for iframe to load
         $this->assertWebActivityGeneration ();
@@ -306,7 +321,7 @@ abstract class WebTrackingTestBase extends X2WebTestCase {
             'select count(*) from x2_actions
              where type="webactivity"')
              ->queryScalar ();
-        VERBOSE_MODE && println ($newCount);
+        X2_VERBOSE_MODE && println ($newCount);
         $this->assertTrue ($newCount === '0');
     }
 

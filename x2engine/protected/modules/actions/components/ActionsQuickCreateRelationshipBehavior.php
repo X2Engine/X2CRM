@@ -43,105 +43,30 @@ class ActionsQuickCreateRelationshipBehavior extends QuickCreateRelationshipBeha
      * @param object $model 
      * @param bool $hasErrors
      */
-    public function renderInlineForm ($model, $hasErrors, array $viewParams = array ()) {
-        $formModel = new ActionsQuickCreateFormModel;
-        $formModel->attributes = $_POST;
-        $formModel->validate ();
-        $actionType = $formModel->actionType;
-        if ($actionType) {
-            $secondModelName = $formModel->secondModelName;
-            $secondModelId = $formModel->secondModelId;
-            $associationType = X2Model::getAssociationType ($secondModelName);
-            $model->associationType = X2Model::getAssociationType ($secondModelName);
-
-            $tabClass = Publisher::$actionTypeToTab[$actionType];
-            $tab = new $tabClass;
-            $tab->namespace = get_class ($this);
-            $tab->startVisible = true;
-
-            $this->owner->widget('Publisher', array(
-                'associationType' => $associationType,
-                'associationId' => $model->id,
-                'assignedTo' => Yii::app()->user->getName(),
-                'calendar' => false,
-                'renderTabs' => false,
-                'tabs' => array ($tab),
-                'namespace' => $tab->namespace,
+    public function renderInlineForm ($model, array $viewParams = array ()) {
+        if (isset ($_POST['modelId']) && !isset ($model->associationId)) { 
+            $model->associationId = $_POST['modelId'];
+        }
+        if (isset ($_POST['modelName']) && !isset ($model->associationType)) {
+            $model->associationType = $_POST['modelName'];
+        }
+        if ($model instanceof ActionFormModelBase) {
+            echo CJSON::encode (array (
+                'status' => $model->hasErrors () ? 'userError' : 'success',
+                'page' => $this->owner->renderPartial (
+                    'application.modules.actions.views.actions._'.
+                        lcfirst (preg_replace ('/^(.*)FormModel/', '$1', get_class ($model))) .
+                        'Form', array (
+                    'model' => $model,
+                ), true, true)
             ));
-        }
-
-        switch ($actionType) {
-            case 'action':
-            case 'call':
-            case 'note':
-            case 'event':
-            case 'time':
-            case 'products':
-                $this->owner->renderPartial (
-                    'application.components.views.publisher.tabFormContainer', 
-                    array (
-                        'tab' => $tab,
-                        'model' => $formModel->getAction (),
-                        'associationType' => $model->associationType,
-                    ), false, true);
-                break;
-            default:
-                parent::renderInlineForm ($model, $hasErrors, array_merge (array (
-                    'namespace' => get_class ($this),
-                ), $viewParams));
-                //Yii::app()->controller->badRequest (Yii::t('app', 'Invalid action type'));
-        }
-    }
-
-    public function quickCreate ($model) {
-        if (isset ($_POST['SelectedTab'])) {
-            $this->owner->actionPublisherCreate ();
         } else {
-            return parent::quickCreate ($model);
+            parent::renderInlineForm ($model, array_merge (array (
+                'namespace' => get_class ($this),
+            ), $viewParams));
         }
     }
 
-}
-
-class ActionsQuickCreateFormModel extends X2FormModel {
-    public $secondModelName;
-    public $secondModelId;
-    public $actionType;
-    protected $throwsExceptions = true;
-
-    private $_model;
-    public function getModel () {
-        if (!isset ($this->_model)) {
-            $modelName = $this->secondModelName;
-            $this->_model = $modelName::model ()->findByPk ($this->secondModelId);
-        }
-        return $this->_model;
-    }
-
-    private $_action;
-    public function getAction () {
-        if (!isset ($this->_action)) {
-            $action = new Actions;
-            $action->setAttributes (array (
-                'associationType' => X2Model::getAssociationType ($this->secondModelName),
-                'associationId' => $this->secondModelId,
-                'assignedTo' => Yii::app()->user->getName (),
-            ), true);
-            $this->_action = $action;
-        }
-        return $this->_action;
-    }
-
-    public function rules () {
-        return array (
-            array (
-                'secondModelName, secondModelId', 'required'
-            ),
-            array (
-                'actionType', 'safe',
-            ),
-        );
-    }
 }
 
 ?>

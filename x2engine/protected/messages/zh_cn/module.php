@@ -34,4 +34,5 @@ return array (
 'Import {X}'=>'进口{X}',
 'Export {X}'=>'导出{X}',
 '{modelName} Attributes'=>'{modelName}属性',
+'Edit {X}'=>'编辑{X}',
 );

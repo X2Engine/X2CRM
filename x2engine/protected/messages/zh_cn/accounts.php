@@ -38,4 +38,9 @@ return array (
 'Import Accounts'=>'汇入帐户',
 'Export Accounts'=>'出口占',
 'Bug Report Attributes'=>'错误报告属性',
+'Share {opportunity}'=>'分享{opportunity}',
+'{account}'=>'{account}',
+'{module} Report'=>'{module}报告',
+'This form will allow you to generate a campaign to mail related {contacts} of the {accounts} displayed in the report below. Select "Primary {contacts}" to only email {contacts} which are set as the Primary {contact} for an {account}. Select "All" to email all related {contacts} on each {account}.'=>'这种形式可以让你生成一个竞选邮寄相关{contacts}的的{accounts}显示在下面的报告。选择“主{contacts} ”只有邮件{contacts}这些设置为主{contact}为{account} 。选择“全部”，以电子邮件联络所有相关{contacts}每{account} 。',
+'Primary {module}'=>'主{module}',
 );

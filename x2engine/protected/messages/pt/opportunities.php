@@ -32,4 +32,10 @@ return array (
 'Relationships for Contact: '=>'Relacionamentos para contato:',
 'Import Opportunities'=>'Oportunidades de importação',
 'Export Opportunities'=>'Oportunidades de Exportação',
+'Create {opportunity}'=>'Crie {opportunity}',
+'{opportunity}:'=>'{opportunity}',
+'{opportunities} List'=>'{opportunities} Lista',
+'Edit {opportunity}'=>'Editar {opportunity}',
+'Import {opportunities}'=>'Importar {opportunities}',
+'Export {opportunities}'=>'Exportação {opportunities}',
 );

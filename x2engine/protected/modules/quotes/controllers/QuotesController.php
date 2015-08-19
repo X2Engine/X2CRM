@@ -72,55 +72,6 @@ class QuotesController extends x2base {
 		));
 	}
 
-	public function actionShareQuote($id){
-
-		$model=$this->getModel($id);
-		$body="\n\n\n\n".Yii::t('quotes','Quote Record Details')." \n
-".Yii::t('quotes','Name').": $model->name
-".Yii::t('quotes','Description').": $model->description
-".Yii::t('quotes','Quotes Stage').": $model->salesStage
-".Yii::t('quotes','Lead Source').": $model->leadSource
-".Yii::t('quotes','Probability').": $model->probability
-".Yii::t('app','Link').": ".'http://'.Yii::app()->request->getServerName().$this->createUrl('/quotes/'.$model->id);
-
-		$body = trim($body);
-
-		$errors = array();
-		$status = array();
-		$email = '';
-		if(isset($_POST['email'], $_POST['body'])){
-
-			$subject = Yii::t('quotes','Quote Record Details');
-			$email = $this->parseEmailTo($this->decodeQuotes($_POST['email']));
-			$body = $_POST['body'];
-			// if(empty($email) || !preg_match("/[a-zA-Z0-9._%-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}/",$email))
-			if($email === false)
-				$errors[] = 'email';
-			if(empty($body))
-				$errors[] = 'body';
-
-			if(empty($errors))
-				$status = $this->sendUserEmail($email,$subject,$body);
-
-			if(array_search('200',$status)) {
-				$this->redirect(array('view','id'=>$model->id));
-				return;
-			}
-			if($email === false)
-				$email = $_POST['email'];
-			else
-				$email = $this->mailingListToString($email);
-		}
-		$this->render('shareQuote',array(
-			'model'=>$model,
-			'body'=>$body,
-			'currentWorkflow'=>$this->getCurrentWorkflow($model->id,'quotes'),
-			'email'=>$email,
-			'status'=>$status,
-			'errors'=>$errors
-		));
-	}
-
     /**
      * Return a set of copies of the specified quotes line items
      * @param Quote The quote whose line items are to be duplicated
@@ -659,14 +610,7 @@ class QuotesController extends x2base {
                     'confirm'=>'Are you sure you want to delete this item?'
                 ),
             ),
-            array(
-                'name'=>'attach',
-                'label'=>Yii::t('app','Attach A File/Photo'),
-                'url'=>'#',
-                'linkOptions'=>array(
-                    'onclick'=>'toggleAttachmentForm(); return false;'
-                ),
-            ),
+			ModelFileUploader::menuLink(),
             array(
                 'name'=>'print',
                 'label'=>((isset($model) && $model->type == 'invoice') ? 

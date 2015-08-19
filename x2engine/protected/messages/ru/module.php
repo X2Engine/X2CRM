@@ -86,4 +86,5 @@ return array (
 'Import {X}'=>'Импорт {X}',
 'Export {X}'=>'Экспорт {X}',
 '{modelName} Attributes'=>'{modelName} Атрибуты',
+'Edit {X}'=>'Редактировать {X}',
 );

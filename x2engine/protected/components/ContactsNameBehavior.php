@@ -36,11 +36,6 @@
 
 class ContactsNameBehavior extends CActiveRecordBehavior {
 
-    /**
-     * @var bool $overrideName
-     */
-    public $overwriteName = true; 
-
 	public function events() {
 		return array_merge(parent::events(),array(
 			'onAfterFind'=>'afterFind',
@@ -63,7 +58,10 @@ class ContactsNameBehavior extends CActiveRecordBehavior {
 //    }
 
     public function setName() {
-        if (!isset (Yii::app()->settings) || $this->owner->name && !$this->overwriteName) return;
+        if (!isset (Yii::app()->settings) || 
+            // backwards compatibility check for when leads didn't have first and last name fields
+            $this->owner instanceof X2Leads && 
+            !$this->owner->firstName && !$this->owner->lastName) return;
 
         $admin = Yii::app()->settings;
         if (!empty($admin->contactNameFormat)) {

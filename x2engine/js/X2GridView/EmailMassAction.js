@@ -68,7 +68,7 @@ EmailMassAction.prototype.execute = function () {
             if (response['success']) {
                 that.afterExecute ();
             } 
-            that.massActionsManager._displayFlashes (response);
+            that._displayFlashes (response);
         }
     });
 };

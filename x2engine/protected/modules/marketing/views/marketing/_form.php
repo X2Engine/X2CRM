@@ -36,190 +36,103 @@
 
 
 
-Yii::app()->clientScript->registerScriptFile(Yii::app()->getBaseUrl().'/js/ckeditor/ckeditor.js');
-Yii::app()->clientScript->registerScriptFile(Yii::app()->getBaseUrl().'/js/ckeditor/adapters/jquery.js');
-Yii::app()->clientScript->registerScriptFile(Yii::app()->getBaseUrl().'/js/emailEditor.js');
+Yii::app()->clientScript->registerPackage ('emailEditor');
+Yii::app()->clientScript->registerCssFile ($this->module->assetsUrl.'/css/campaignForm.css');
 
 $insertableAttributes = array();
 foreach(X2Model::model('Contacts')->attributeLabels() as $fieldName => $label)
-	$insertableAttributes[$label] = '{'.$fieldName.'}';
+    $insertableAttributes[$label] = '{'.$fieldName.'}';
 $insertableAttributes[Yii::t('profile','Signature')] = '{signature}';
 
-Yii::app()->clientScript->registerScript('editorSetup','
+$contacts = Yii::t('contacts','{module} Attributes', array (
+    '{module}' => Modules::displayName (false, "Contacts"))
+);
 
-/*
-Instantiate CKEditor for campaign text field/email template.
-Parameters:
-	suppressInsertableAttrs - if true, instantiate editor without insertable attributes
-*/
-function setUpTextEditor (suppressInsertableAttrs) {
-	if(window.emailEditor) {
-		window.emailEditor.updateElement ();
-		window.emailEditor.destroy(true);
-	}
+$JSParams = CJSON::encode (array(
+    'insertableAttributes' => array(
+        $contacts => $insertableAttributes
+)));
 
-	if (suppressInsertableAttrs) {
-		window.emailEditor = createCKEditor("Campaign_content",{
-			tabIndex:5,
-			fullPage:true
-		},function(){
-			window.emailEditor.document.on("keyup",function(){ 
-                $("#Campaign_templateDropdown").val("0"); 
-            });
-		});
-	} else {
-		window.emailEditor = createCKEditor("Campaign_content",{
-			tabIndex:5,
-			insertableAttributes:'.CJSON::encode(array(Yii::t('contacts','{module} Attributes', array('{module}'=>Modules::displayName(false, "Contacts")))=>$insertableAttributes)).',
-			fullPage:true
-		},function(){
-			window.emailEditor.document.on("keyup",function(){ 
-                $("#Campaign_templateDropdown").val("0"); 
-            });
-		});
-	}
+Yii::app()->clientScript->registerScriptFile ($this->module->assetsUrl.'/js/CampaignForm.js');
+Yii::app()->clientScript->registerScript('editorSetup',"
+    x2.CampaignForm ($JSParams);
+", CClientScript::POS_READY);
 
-}
+$contactLists = CHtml::listData (Campaign::getValidContactLists(), 'id', 'name');
 
-(function campaignsMain () {
-	$("#Campaign_content").parent()
-		.css({width:"",height:""})
-		.removeClass("formInputBox")
-		.closest(".formItem")
-		.removeClass("formItem")
-		.css("clear","both")
-		.find("label").remove();
+$templates = CHtml::listData (Docs::getEmailTemplates2('email', 'Contacts'), 'id', 'name');
+$templates[0] = "Custom";
 
-
-	x2.emailEditor.setupEmailAttachments("campaign-attachments");
-
-	$("#Campaign_templateDropdown").change(function() {
-		var template = $(this).val();
-		if(template != "0") {
-			
-			$.ajax({
-				url:yii.baseUrl+"/index.php/docs/fullView/"+template+"?json=1&replace=1",
-				type:"GET",
-				dataType:"json"
-			}).done(function(data) {
-				window.emailEditor.setData(data.body);
-				$(\'input[name="Campaign[subject]"]\').val(data.subject);
-				window.emailEditor.document.on(
-                    "keyup",function(){ $("#Campaign_templateDropdown").val("0"); });
-			});
-		}
-	});
-	
-	var currCampaignType = "";
-	$("#Campaign_type").change(function(){
-	
-		if($(this).val() == "Email") {
-			$("#Campaign_sendAs").parents(".formItem").fadeIn();
-			$("#Campaign_subject").parents(".formItem").fadeIn();
-			$("#Campaign_templateDropdown").parents(".formItem").fadeIn();
-			$("#attachments-container").show ();
-		} else {
-			$("#Campaign_sendAs").parents(".formItem").fadeOut();
-			$("#Campaign_subject").parents(".formItem").fadeOut();
-			$("#Campaign_templateDropdown").parents(".formItem").fadeOut();
-			$("#attachments-container").hide ();
-		}
-	
-		// give x2layout section an appropriate title, hide/show insertable attributes
-		var campaignType = $("#Campaign_type").val ();	
-		switch (campaignType) {
-			case "Email":
-				var campaignTypeChanged = "Email" !== currCampaignType;
-				currCampaignType = campaignType;
-				if (campaignTypeChanged) setUpTextEditor (false);
-				break;
-			case "Call List":
-			case "Physical Mail":
-				var templateTypeChanged = currCampaignType !== "Email" && campaignType === "Email";
-				currCampaignType = campaignType;
-				if (campaignTypeChanged) setUpTextEditor (false);
-				break;
-		}
-	
-	});
-	
-	$("#Campaign_type").each(function(){
-		if($(this).val() != "Email")
-			$("#Campaign_sendAs").parents(".formItem").hide();
-	});
-	
-	$("#Campaign_type").change ();
-
-}) ();
-
-',CClientScript::POS_READY);
-
-$this->renderPartial('application.components.views._form', array(
-	'model'=>$model,
-	'users'=>User::getNames(),
-	'form'=>$form,
-	'modelName'=>'Campaign',
-	'specialFields'=>array(
-		'template'=>CHtml::activeDropDownList(
-			$model,'template',
-            array('0'=>Yii::t('docs','Custom Message')) + 
-                Docs::getEmailTemplates('email', 'Contacts'),
-			array(
-				'title'=>$model->getAttributeLabel('template'),
-				'id'=>'Campaign_templateDropdown',
-			)
-		)
-	)
+$form = $this->beginWidget('CActiveForm', array(
+    'id'=>'campaign-form',
+    'enableAjaxValidation'=>false
 ));
 ?>
 
+<div id='top-container'>
+    <div id='campaign-basic-form'>
+        <div class='row'>
+            <label><?php echo Yii::t('marketing', 'Campaign Name:')?></label>
+            <?php echo $model->renderInput('name');?>
+        </div>
+        <div class='row'>
+            <label><?php echo Yii::t('marketing', 'Contact List:')?></label>
+            <?php 
+            if (isset($model->list)) {
+                $model->listId = $model->list->id;
+            }
+            echo X2Html::activeDropDownList ($model, 'listId', $contactLists, array(
+                'prompt' => 'Select a Contact List',
+            ))?>
+            <?php echo X2Html::hint (Yii::t('marketing', 'Choose a contact list to send the campaign out to, or create one here.'));?>
+            <span id='quick-create-list'>
+                <?php echo X2Html::fa ('plus')?>
+            </span>
+        </div>
+    <div id='quick-create-list-form' style='display:none'>
+        <h3><?php echo Yii::t('contacts', 'New Contact List');?></h3>
+    </div>
+        <div class='row'>
+            <label><?php echo Yii::t('marketing', 'Email Template:')?></label>
+            <?php echo X2Html::activeDropDownList ($model, 'template', $templates)?>
+            <?php echo X2Html::hint (Yii::t('marketing', "Choose a email template to use for this campaign, or create a custom one here.")); ?>
+        </div>
+    </div>
 
-<div id="attachments-container">
-	<h2><?php echo Yii::t('app','Attachments'); ?></h2>
-	
-	<div id="campaign-attachments-wrapper" class="x2-layout form-view x2-hint"
-	 title="<?php echo addslashes (Yii::t('app', 'Drag files from the Files Widget here.')); ?>">
-
-		<div class="formSection showSection">
-			<div class="formSectionHeader">
-				<span class="sectionTitle"><?php echo Yii::t('app','Attachments'); ?></span>
-			</div>
-			<div id="campaign-attachments" class="tableWrapper" 
-             style="min-height: 100px; padding: 5px;">
-				<?php 
-                $attachments = $model->attachments;
-				if($attachments) {
-					foreach($attachments as $attachment) {
-						$media = $attachment->mediaFile;
-						if($media && $media->fileName) { 
-                        ?>
-							<div style="font-weight: bold;">
-								<span class="filename"><?php echo $media->fileName; ?></span>
-								<input type="hidden" value="<?php echo $media->id; ?>" 
-								 name="AttachmentFiles[id][]" class="AttachmentFiles">
-								<span class="remove fa fa-times"></span>
-							</div>
-						<?php 
-                        }
-					}
-				} 
-                ?>
-				<div class="next-attachment" style='font-weight: bold; display: none;'>
-					<span class="filename"></span>
-					<span class="remove fa fa-times x2-icon-gray"></span>
-				</div>
-			</div>
-		</div>
-	</div>
 </div>
 
-<div class="row buttons">
-	<?php 
-    echo CHtml::submitButton(
-        $model->isNewRecord ? 
-            Yii::t('app','Create') : 
-            Yii::t('app','Save'),
-        array('class'=>'x2-button','id'=>'save-button','tabindex'=>24)); 
-    ?>
+<?php 
+
+$this->widget('FormView', array(
+    'model'=>$model,
+    'form'=>$form,
+));
+?>
+
+<div id='bottom-container'>
+    
+    <div id='save-template-container'>
+        <span class='x2-button 'id='save-template'><?php echo Yii::t('marketing', 'Save Email As Template')?></span>
+    </div>
+
+    <div id="attachments-container">
+        <?php $this->renderPartial ('attachments', array (
+            'model' => $model,
+            'canUpload' => true
+        )); ?>
+
+    </div>
+
+    <div class="row buttons">
+        <?php 
+        echo CHtml::submitButton(
+            $model->isNewRecord ? 
+                Yii::t('app','Create') : 
+                Yii::t('app','Save'),
+            array('class'=>'x2-button','id'=>'save-button','tabindex'=>24)); 
+        ?>
+    </div>
 </div>
+
+<?php $this->endWidget();?>
 

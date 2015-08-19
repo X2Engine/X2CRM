@@ -52,7 +52,7 @@ class UpdatesForm {
 		'lastName' => 'Last Name',
 		'email' => 'Email',
 		'phone' => 'Phone Number',
-		'source' => 'How you found X2Engine',
+		'source' => 'How you found X2CRM',
 		'subscribe' => 'Subscribe to the newsletter',
 		'info' => 'Comments',
 		'requestContact' => 'Request a follow-up contact',
@@ -68,11 +68,11 @@ class UpdatesForm {
 		'updatesTitle' => 'Software Updates',
 		'registrationTitle' => 'Registration',
 		'registrationSuccess' => 'Software registration succeeded.',
-		'registrationSubtext' => 'To receive software updates from X2Engine, please register your copy of X2Engine:',
+		'registrationSubtext' => 'To receive software updates from X2Engine, please register your copy of X2CRM:',
 		'registrationPostText' => 'For support or sales inquiries, please contact us',
 		'emailIni' => 'If different from Administrator Email',
-		'infoIni' => 'Intended use of X2Engine, goals, etc.',
-		'intro' => 'Please help us improve X2Engine by providing the following information:',
+		'infoIni' => 'Intended use of X2CRM, goals, etc.',
+		'intro' => 'Please help us improve X2CRM by providing the following information:',
 		'already' => 'Software update notifications enabled.',
 		'optionalTitle' => 'Optional Information',
 		'title' => 'Software Updates',
@@ -83,7 +83,7 @@ class UpdatesForm {
 	);
 
 	/**
-	 * @var array Contents of the "how you found X2Engine" selector
+	 * @var array Contents of the "how you found X2CRM" selector
 	 */
 	public $leadSources = array(
 		Null => '-----',
@@ -145,7 +145,7 @@ class UpdatesForm {
 				$attrArr[$key] = call_user_func_array($transFunc, array_merge($transFuncArgs, array($attrArr[$key])));
 			$this->$attr = $attrArr;
 		}
-		$this->message['connectionNOsMessage'] .= ': <a href="http://www.x2engine.com/contact/">x2engine.com</a>.';
+		$this->message['connectionNOsMessage'] .= ': <a href="http://www.x2crm.com/contact/">x2crm.com</a>.';
 	}
 
 	/**
