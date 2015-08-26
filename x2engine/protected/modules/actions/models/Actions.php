@@ -50,11 +50,6 @@ class Actions extends X2Model {
      */
     const ASSOCIATION_TYPE_MULTI = '__multiple__';
 
-    /**
-     * @var bool $disableEventCreation
-     */
-    public $disableEventCreation = false; 
-    
     public $skipActionTimers = false;
 
     public $supportsWorkflow = false;
@@ -472,6 +467,8 @@ class Actions extends X2Model {
             $event->associationType = 'Actions';
             $event->associationId = $this->id;
             if ($eventType === 'record_create') {
+                if (in_array ($this->type, array ('call', 'time', 'note')))
+                    $event->subtype = $this->type;
                 $event->user = Yii::app()->user->getName();
                 $event->save();
                 break; // only create one record, not one for each assignee
@@ -542,7 +539,7 @@ class Actions extends X2Model {
         if($this->type === 'event') {
             $this->createCalendarFeedEvent ();
         }
-        if(!$this->disableEventCreation && !in_array ($this->type, array ('event', 'calendar'))) {
+        if(empty ($this->type) || in_array($this->type, array('call','time','note'))){
             $this->createEvents ('record_create', $this->createDate);
         }
         if(empty($this->type) && $this->complete !== 'Yes' && 
@@ -869,7 +866,7 @@ class Actions extends X2Model {
         $criteria->addCondition(
             "(type !='workflow' AND type!='email' AND type!='event' AND type!='emailFrom' AND 
               type!='attachment' AND type!='webactivity' AND type not like 'quotes%' AND 
-              type!='emailOpened' AND type!='note') OR type IS NULL");
+              type!='emailOpened' AND type!='note' AND type!='call') OR type IS NULL");
         if(isset($filters['complete'], $filters['assignedTo'], $filters['dateType'], 
             $filters['dateRange'], $filters['order'], $filters['orderType'])){
 

@@ -552,6 +552,7 @@ Yii::app()->clientScript->registerResponsiveCss('inlineEmailFormResponsiveCss',"
                 array(
                     'class' => 'x2-button right cancel-send-button x2-button-large'
                 ));
+
             echo CHtml::ajaxSubmitButton(
                 Yii::t('app', 'Send'), 
                 Yii::app()->controller->createUrl (

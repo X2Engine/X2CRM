@@ -1,3 +1,13 @@
+# 5.2.1 #
+8/26/2015
+
+* General Changelog / Developer Notes:
+  * Fixed backwards compatibility issue affecting custom modules
+  * Added public info settings validation which prevents issues with public base URI/URL formatting
+  * Fixed bug which caused logged calls to display in the Actions module list view
+  * Fixed bug affecting cookie-based web tracking on servers whose hostname lacked a subdomain
+  * New admin option to upload a login screen logo (Professional Edition Only)
+
 # 5.2 #
 8/19/2015
 

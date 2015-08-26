@@ -109,6 +109,16 @@ class PasswordUtilTest extends X2TestCase {
         $b = 'this is a string ';
         $this->assertFalse(PasswordUtil::slowEquals($a, $b));
     }
+    
+    public function testCreateSalt(){
+        //Simple test to ensure salts are non-null and different with each call
+        $salt1 = PasswordUtil::createSalt();
+        $this->assertNotNull($salt1);
+        
+        for($i = 0; $i < 1000; $i++){
+            $this->assertNotEquals(PasswordUtil::createSalt(), PasswordUtil::createSalt());
+        }
+    }
 
 }
 

@@ -1,5 +1,5 @@
-# 5.2 #
-8/19/2015
+# 5.2.1 #
+8/26/2015
 
 * Highlights
   * Platinum Edition Changes
@@ -12,6 +12,7 @@
       * Mass publish comments, actions, calls, and logged time
       * Mass create relationships
     * New importer option to update existing records on import
+    * New admin option to upload a login screen logo
   * New Topics module offers an integrated discussion board
     * Create topic discussion threads
     * Relate topics to Contact and Account records

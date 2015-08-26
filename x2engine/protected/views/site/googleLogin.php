@@ -34,6 +34,8 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 
+LoginThemeHelper::init();
+
 Yii::app()->clientScript->registerCssFile(Yii::app()->theme->getBaseUrl().'/css/login.css');
 
 $this->pageTitle = Yii::app()->settings->appName.' - Login';

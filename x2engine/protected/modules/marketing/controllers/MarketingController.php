@@ -189,6 +189,7 @@ class MarketingController extends x2base {
 
         if(isset($_POST['Campaign'])){
             $model->setX2Fields($_POST['Campaign']);
+
             $model->content = Fields::getPurifier()->purify($model->content);
             $model->content = Formatter::restoreInsertableAttributes($model->content);
             $model->createdBy = Yii::app()->user->getName();

@@ -70,8 +70,8 @@ if ((isset($suppressForm) && !$suppressForm) || !isset($suppressForm)) {
     }
 }
 
-// echo '<em style="display:block;margin:5px;">' .
- // Yii::t('app', 'Fields with <span class="required">*</span> are required.') . "</em>\n";
+echo '<em style="display:block;margin:5px;">' .
+ Yii::t('app', 'Fields with <span class="required">*</span> are required.') . "</em>\n";
 
 // Construct criteria for finding the right form layout.
 $attributes = array('model' => ucfirst($modelName), 'defaultForm' => 1);
@@ -188,18 +188,13 @@ if (isset($layout)) {
                     if (isset($row['cols'])) {
                         foreach ($row['cols'] as &$col) {
 
-
-                            $width = isset($col['width']) ? $col['width'].'' : '';
-                            $cols = count($row['cols']);  
-                            if (!preg_match('/%/', $width) && $cols > 0) {
-                                $width = 100.0/$cols.'%'; 
-                            }
-
-                            $htmlString .= "<td style='width:$width'>";
+                            $width = isset($col['width']) ?
+                                    ' style="width:' . $col['width'] . 'px"' : '';
+                            $htmlString .= "<td$width>";
                             if (isset($col['items'])) {
                                 foreach ($col['items'] as &$item) {
 
-                                    if (isset($item['name'], $item['labelType'], $item['readOnly'], $item['height'])) {
+                                    if (isset($item['name'], $item['labelType'], $item['readOnly'], $item['height'], $item['width'])) {
 
                                         $fieldName = preg_replace('/^formItem_/u', '', $item['name']);
 
@@ -262,7 +257,7 @@ if (isset($layout)) {
                                             $htmlString .= $form->labelEx($model, $field->fieldName);
                                             $htmlString .=
                                                     '<div class="formInputBox" 
-                                  style="width:' . 'px;height:' . $item['height'] . ';">';
+                                  style="width:' . $item['width'] . 'px;height:' . $item['height'] . ';">';
                                             $default = $model->$fieldName == $field->attributeLabel;
                                             if (isset($idArray)) {
                                                 $htmlString .= X2Model::renderMergeInput($modelName, $idArray, $field);
@@ -282,7 +277,6 @@ if (isset($layout)) {
                                                 }
                                             }
                                             $htmlString .= "</div>";
-                                            $htmlString .= "<div class='extra-column'>";
 
                                             if ($field->type === 'link' && !$suppressQuickCreate &&
                                                 isset(
@@ -293,11 +287,6 @@ if (isset($layout)) {
                                                       $field->linkType . '">+</span>';
                                                 $quickCreateButtonTypes[] = $field->linkType;
                                             }
-                                            if (!empty($field->help)) {
-                                                $htmlString .= X2Html::hint($field->help);
-                                            }
-
-                                            $htmlString .= "</div>";
                                         }
                                     }
                                     unset($item);
@@ -344,7 +333,7 @@ if (!$suppressQuickCreate) {
 
     Yii::app()->clientScript->registerScript('_formScript', "
 
-;(function () {
+(function () {
     var quickCreateUrls = " .
             CJSON::encode(
                     QuickCreateRelationshipBehavior::getCreateUrlsForModels($quickCreateButtonTypes)) . ";

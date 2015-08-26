@@ -120,10 +120,12 @@ $('#mobile-signin-button').click (function () {
             <div class="cell form-cell" id="login-form-inputs-container">
                 </div>
                 <?php
-                echo X2Html::logo ('login_'.(LoginThemeHelper::singleton ()->usingDarkTheme ?
-                    'white' : 'black'), array (
-                    'id' => 'login-form-logo',
-                ));
+                 
+                    echo X2Html::logo ('login_'.(LoginThemeHelper::singleton ()->usingDarkTheme ?
+                        'white' : 'black'), array (
+                        'id' => 'login-form-logo',
+                    ));
+                 
                 if ($profile) {
                 ?>
                 <!--<div class='avatar-cell'>

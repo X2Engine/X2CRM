@@ -313,4 +313,3 @@ class Admin extends X2ActiveRecord {
     }
 }
 
-class InvalidProductKeyException extends CException {}

@@ -262,21 +262,6 @@ $menuItems[] = array(
             'id' => 'more-menu',
             'class' => 'dropdown'));
 }
-/*
-// commented out since default logo size is different than display size
-
-// find out the dimensions of the user-uploaded logo so the menu can do its layout calculations
-$logoOptions = array();
-if(is_file(Yii::app()->params->logo)){
-    $logoSize = @getimagesize(Yii::app()->params->logo);
-    if($logoSize)
-        $logoSize = array(min($logoSize[0], 200), min($logoSize[1], 30));
-    else
-        $logoSize = array(92, 30);
-
-    $logoOptions['width'] = $logoSize[0];
-    $logoOptions['height'] = $logoSize[1];
-}*/
 
 /* Construction of the user menu */
 $notifCount = X2Model::model('Notification')->countByAttributes(array('user' => Yii::app()->user->getName()), 'createDate < '.time());
@@ -465,20 +450,17 @@ echo X2Html::openBodyTag ($preferences);
                         )); ?>"
                  id='search-bar-title' class='special'>
                 <?php
-                $custom = Yii::app()->params->logo !== 'uploads/protected/logos/yourlogohere.png';
-                if ($custom) {
-                    $media = Media::model ()->findByAttributes (array (
-                        'associationType' => 'logo'
-                    ));
-                    if ($media) {
-                        echo CHtml::image(
-                            $media->getPublicUrl (),
-                            Yii::app()->settings->appName,
-                            array (
-                                'id' => 'your-logo',
-                                'class' => 'custom-logo'
-                            ));
-                    }
+                $menuLogo = Media::getMenuLogo ();
+                if ($menuLogo && 
+                    $menuLogo->fileName !== 'uploads/protected/logos/yourlogohere.png') {
+
+                    echo CHtml::image(
+                        $menuLogo->getPublicUrl (),
+                        Yii::app()->settings->appName,
+                        array (
+                            'id' => 'your-logo',
+                            'class' => 'custom-logo'
+                        ));
                 } else { 
                     echo X2Html::logo ('menu', array (
                         'id' => 'your-logo',

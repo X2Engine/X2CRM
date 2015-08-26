@@ -2009,63 +2009,83 @@ class AdminController extends Controller {
      * the X2Engine logo in the top left corner of the software.
      */
     public function actionUploadLogo() {
-        if (isset($_FILES['logo-upload'])) {
-            $temp = CUploadedFile::getInstanceByName('logo-upload');
-            if ($temp === null) {
-                Yii::app()->user->setFlash('error', Yii::t('admin', 'There was an error uploading your logo.'));
-                $this->redirect('uploadLogo');
-            }
-            $name = $temp->getName();
-            $allowedExtensions = array('gif', 'jpg', 'jpeg', 'tif', 'tiff', 'bmp', 'png');
-            if (!in_array($temp->getExtensionName(), $allowedExtensions)) {
-                Yii::app()->user->setFlash('error', Yii::t('admin', 'Invalid file extension.'));
-                $this->redirect('uploadLogo');
-            }
-            $temp->saveAs('uploads/protected/logos/' . $name);
-            $admin = Profile::model()->findByPk(1);
-            $logo = Media::model()->findByAttributes(array('associationId' => $admin->id, 'associationType' => 'logo'));
-            if (isset($logo)) {
-                if (file_exists($logo->fileName))
-                    unlink($logo->fileName);
-                $logo->delete();
-            }
+        Yii::import ('application.models.formModels.UploadLogoFormModel');
+        $formModel = new UploadLogoFormModel;
 
-            $logo = new Media;
-            $logo->associationType = 'logo';
+        if (isset ($_POST['UploadLogoFormModel']) && 
+            (isset ($_FILES['UploadLogoFormModel']))) {
 
-            $logo->associationId = $admin->id;
-            $logo->fileName = 'uploads/protected/logos/' . $name;
+            $adminProf = Yii::app()->params->adminProfile;
+            $formModel->setAttributes($_POST['UploadLogoFormModel']);
+            $formModel->menuLogoUpload = CUploadedFile::getInstance($formModel, 'menuLogoUpload');
+             
+            $uploaded = false;
+            if ($formModel->validate ()) {
+                foreach (array (
+                    'menuLogoUpload') as $upload) {
 
-            if ($logo->save()) {
-                $this->redirect('index');
+                    if ($formModel->$upload) {
+                        $fileName = 'uploads/protected/logos/' . $formModel->$upload->getName ();
+                        if ($formModel->$upload->saveAs ($fileName)) {
+                            $uploaded = true;
+                            if ($upload === 'menuLogoUpload') {
+                                $associationType = 'logo';
+                            } else {
+                                $associationType = 'loginLogo';
+                            }
+                            $oldLogo = Media::model()->findByAttributes(
+                                array(
+                                    'associationId' => $adminProf->id,
+                                    'associationType' => $associationType
+                                ));
+                            $logo = new Media;
+                            $logo->associationType = $associationType;
+                            $logo->associationId = $adminProf->id;
+                            $logo->name = $fileName;
+                            $logo->fileName = $fileName;
+
+                            if ($logo->save () && $oldLogo) {
+                                $oldLogo->delete ();
+                            }
+                        } else {
+                            $formModel->addError(
+                                $upload, Yii::t('admin', 'File could not be uploaded'));
+                        }
+                    }
+                }
+            }
+            if (!$formModel->hasErrors () && $uploaded) {
+                Yii::app()->user->setFlash(
+                    'success', Yii::t('admin', 'Logo uploaded.'));
+                $this->redirect ('uploadLogo');
             }
         }
 
-        $this->render('uploadLogo');
+        $this->render('uploadLogo', array (
+            'formModel' => $formModel
+        ));
     }
 
     /**
      * Reverts the logo back to X2Engine.
      */
-    public function actionToggleDefaultLogo() {
+    public function actionToggleDefaultLogo($logoType) {
+        if (!in_array ($logoType, array ('logo'))) {
+            throw new CHttpException (400, Yii::t('admin', 'Bad request'));
+        }
 
         $adminProf = Yii::app()->params->adminProfile;
-        $logo = Media::model()->findByAttributes(array('associationId' => $adminProf->id, 'associationType' => 'logo'));
-        if (!isset($logo)) {
-
-            $logo = new Media;
-            $logo->associationType = 'logo';
-            $name = 'yourlogohere.png';
-            $logo->associationId = $adminProf->id;
-            $logo->fileName = 'uploads/protected/logos/' . $name;
-
-            if ($logo->save()) {
-                
-            }
-        } else if ($logo->fileName != 'uploads/protected/logos/yourlogohere.png') {
-            $logo->delete();
+        $logo = Media::model()->findByAttributes(array(
+            'associationId' => $adminProf->id, 'associationType' => $logoType));
+        if ($logo) {
+            $logo->delete(); 
+            Yii::app()->user->setFlash(
+                'success', Yii::t('admin', 'Logo restored.'));
+        } else {
+            Yii::app()->user->setFlash(
+                'error', Yii::t('admin', 'Failed to restore logo.'));
         }
-        $this->redirect(array('index'));
+        $this->redirect(array('uploadLogo'));
     }
 
     /**

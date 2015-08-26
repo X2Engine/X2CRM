@@ -52,7 +52,7 @@ Yii::app()->clientScript->registerCss('changeApplicationNameCSS',"
 ?>
 <div class="form">
 
-<?php echo Yii::t('admin','Change the name of the application as displayed on the sign-in page and on page titles.');?>
+<?php echo Yii::t('admin','Change the name of the application as displayed on page titles.');?>
 
 <br><br>
 <?php

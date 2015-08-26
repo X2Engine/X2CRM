@@ -70,7 +70,7 @@ class DetailView extends RecordView {
 
     public function getJSClassParams () {
         return array_merge (parent::getJSClassParams(), array(
-            'inlineEdit' => $this->canEdit()
+            'inlineEdit' => Yii::app()->controller->checkPermissions($this->model,'edit'),
         ));
     }
 
@@ -235,7 +235,7 @@ class DetailView extends RecordView {
      * 'Inline' does not refer to inline-edit, but rather Inline view,
      * turned on in a quickView for example.
      */
-    public function canEdit($field=null) {
+    public function canEdit($field) {
         return parent::canEdit ($field) && $this->scenario !== 'Inline';
     }
 }

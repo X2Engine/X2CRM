@@ -194,11 +194,12 @@ buttons
 
 /* line 178, ../../../../../compass/themes/x2engine/css/components/views/massActions.scss */
 .mass-action-more-button-container {
+  height: 14px;
   margin: 0 5px 0 0;
   display: inline-block;
 }
 
-/* line 183, ../../../../../compass/themes/x2engine/css/components/views/massActions.scss */
+/* line 184, ../../../../../compass/themes/x2engine/css/components/views/massActions.scss */
 .mass-action-more-button-container button {
   display: inline;
   height: 26px;
@@ -207,13 +208,13 @@ buttons
 /*
 more drop down list
 */
-/* line 195, ../../../../../compass/themes/x2engine/css/components/views/massActions.scss */
+/* line 196, ../../../../../compass/themes/x2engine/css/components/views/massActions.scss */
 .x2-gridview-mass-action-buttons .more-drop-down-list.stuck {
   position: absolute !important;
   /*top: 74px !important;*/
 }
 
-/* line 200, ../../../../../compass/themes/x2engine/css/components/views/massActions.scss */
+/* line 201, ../../../../../compass/themes/x2engine/css/components/views/massActions.scss */
 .x2-gridview-mass-action-buttons .more-drop-down-list {
   position: absolute;
   top: 67px;
@@ -228,7 +229,7 @@ more drop down list
   clip: rect(0px, 1000px, 1000px, -10px);
 }
 
-/* line 214, ../../../../../compass/themes/x2engine/css/components/views/massActions.scss */
+/* line 215, ../../../../../compass/themes/x2engine/css/components/views/massActions.scss */
 .x2-gridview-mass-action-buttons .more-drop-down-list li {
   line-height: 17px;
   padding: 0 10px 0 10px;
@@ -236,7 +237,7 @@ more drop down list
   color: black;
 }
 
-/* line 220, ../../../../../compass/themes/x2engine/css/components/views/massActions.scss */
+/* line 221, ../../../../../compass/themes/x2engine/css/components/views/massActions.scss */
 .x2-gridview-mass-action-buttons .more-drop-down-list li:hover {
   background: #eee;
 }
@@ -244,27 +245,27 @@ more drop down list
 /*
 general mass actions styling
 */
-/* line 228, ../../../../../compass/themes/x2engine/css/components/views/massActions.scss */
+/* line 229, ../../../../../compass/themes/x2engine/css/components/views/massActions.scss */
 #mass-action-dialog-loading-anim {
   margin-right: 30px;
 }
 
-/* line 232, ../../../../../compass/themes/x2engine/css/components/views/massActions.scss */
+/* line 233, ../../../../../compass/themes/x2engine/css/components/views/massActions.scss */
 .x2-gridview-mass-action-buttons .dialog-help-text {
   margin-bottom: 5px;
 }
 
-/* line 236, ../../../../../compass/themes/x2engine/css/components/views/massActions.scss */
+/* line 237, ../../../../../compass/themes/x2engine/css/components/views/massActions.scss */
 .x2-gridview-mass-action-buttons {
   margin: 0 5px 0 0;
   display: inline-block;
 }
 
-/* line 241, ../../../../../compass/themes/x2engine/css/components/views/massActions.scss */
+/* line 242, ../../../../../compass/themes/x2engine/css/components/views/massActions.scss */
 div.mass-action-dialog {
   overflow: hidden !important;
 }
-/* line 244, ../../../../../compass/themes/x2engine/css/components/views/massActions.scss */
+/* line 245, ../../../../../compass/themes/x2engine/css/components/views/massActions.scss */
 div.mass-action-dialog .multi-type-autocomplete-container input {
   width: 180px;
 }

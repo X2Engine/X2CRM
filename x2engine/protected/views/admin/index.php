@@ -90,6 +90,12 @@ if(Yii::app()->session['versionCheck']==false && $admin->updateInterval > -1 && 
 <?php
  
 ?>
+    <?php if (Yii::app()->edition != 'pla') { ?>
+    <div class="row">
+        <div class="cell span-9" title="<?php echo CHtml::encode (Yii::t('admin','Upgrade X2CRM to get exclusive features and service. License key and registration info required.')); ?>"><?php echo CHtml::link(Yii::t('admin','Upgrade X2CRM'),array('/admin/updater','scenario'=>'upgrade')); ?>
+        </div>
+    </div>
+    <?php } ?>
 </div>
 <div class="form x2-layout-island">
     <h2 id="admin-support"><?php echo Yii::t('admin','Customer Support'); ?></h2>
@@ -226,11 +232,10 @@ if(Yii::app()->session['versionCheck']==false && $admin->updateInterval > -1 && 
     </div>
     <div class="row">
         <div class="cell span-6"><?php echo CHtml::link(Yii::t('admin','Manage Menu Items'),array('/admin/manageModules')); ?><br><?php echo Yii::t('admin','Re-order and add or remove top bar tabs');?></div>
-        <div class="cell span-6"><?php echo CHtml::link(Yii::t('admin','Upload your logo'),array('/admin/uploadLogo')); ?><br><?php echo Yii::t('admin','Upload your own logo. 30px height image');?></div>
-        <div class="cell span-6"><?php echo CHtml::link(Yii::t('admin','Restore Default Logo'),array('/admin/toggleDefaultLogo')); ?><br><?php echo Yii::t('admin','Change logo back to the X2CRM default logo');?></div>
+        <div class="cell span-6"><?php echo CHtml::link(Yii::t('admin','Upload your logo'),array('/admin/uploadLogo')); ?><br><?php echo Yii::t('admin','Upload your own logo for the top menu bar and login screen');?></div>
+        <div class="cell span-6"><?php echo CHtml::link(Yii::t('admin','Create a Document Page'),array('/admin/createPage')); ?><br><?php echo Yii::t('admin','Add a static document page to the top bar');?></div>
     </div>
     <div class="row">
-        <div class="cell span-6"><?php echo CHtml::link(Yii::t('admin','Create a Document Page'),array('/admin/createPage')); ?><br><?php echo Yii::t('admin','Add a static document page to the top bar');?></div>
         <div class="cell span-6"><?php echo CHtml::link(Yii::t('admin','Edit Global CSS'),array('/admin/editGlobalCss')); ?><br><?php echo Yii::t('admin','Edit globally-applied stylesheet');?></div>
     </div>
 </div>

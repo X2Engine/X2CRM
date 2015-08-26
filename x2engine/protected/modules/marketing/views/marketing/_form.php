@@ -106,6 +106,8 @@ $form = $this->beginWidget('CActiveForm', array(
 $this->widget('FormView', array(
     'model'=>$model,
     'form'=>$form,
+     // Temporary kludge until system read-only fields are added
+    'suppressFields'=>array ('listId'),
 ));
 ?>
 

@@ -117,18 +117,6 @@ abstract class RecordView extends X2Widget {
     protected $_fieldPermissions;
 
     /**
-     * Whether the user can edit the record
-     * @var boolean
-     */
-    protected $_canEdit;
-
-    /**
-     * Whether the user can View the record
-     * @var view
-     */
-    protected $_canView;
-
-    /**
      * Array of fields objects to extract settings from
      * @var array
      */
@@ -440,7 +428,7 @@ abstract class RecordView extends X2Widget {
         $fieldName = preg_replace('/^formItem_/u', '', $item['name']);
         if (!isset($this->_fields[$fieldName])) {
             return;
-        }
+        } 
 
         // Return if there is not view permission
         $field = $this->_fields[$fieldName];
@@ -572,31 +560,16 @@ abstract class RecordView extends X2Widget {
      * Returns if the form or a specific field can be edited. 
      * If Field is empty, it returns permissions of whole form
      */
-    public function canEdit($field=null) {
-        if (!isset($this->_canEdit)) {
-            $moduleName = X2Model::getModuleName($this->modelName);
-
-            // Does user have permissions to edit?
-            $this->_canEdit = Yii::app()->params->isAdmin || 
-                Yii::app()->user->checkAccess(ucfirst($moduleName) . 'Update', array(
-                    'X2Model' => $this->model
-                ));
+    public function canEdit($field) {
+        if(Yii::app()->params->isAdmin){
+            return true;
         }
-
-        if (empty ($field)) {
-            return $this->_canEdit;
-        }
-
-        // Return false if model can't be edited
-        if(!$this->_canEdit) {
-            return false;
-        }
-
+        
         // If field is read only no one can edit
         if($field->readOnly) {
             return false;
         }
-
+        
         // If permissions aren't set, it can be edited
         if (!isset($this->fieldPermissions[$field->fieldName])) {
             return true;
@@ -611,27 +584,11 @@ abstract class RecordView extends X2Widget {
         return false;
     }
 
-    public function canView($field=null) {
-        if (!isset($this->_canView)) {
-            $moduleName = X2Model::getModuleName($this->modelName);
-
-            $this->_canView = Yii::app()->params->isAdmin || 
-                Yii::app()->user->checkAccess(ucfirst($moduleName) . 'View', array(
-                    'X2Model' => $this->model
-                ));
+    public function canView($field) {
+        if(Yii::app()->params->isAdmin){
+            return true;
         }
-
-
-        // Does user have permissions to view?
-        if (empty ($field)) {
-            return $_canView;
-        }
-
-        // Return false if model can't be viewed
-        if(!$this->_canView) {
-            return false;
-        }
-
+        
         // If permissions aren't set, it can be viewed
         if (!isset($this->fieldPermissions[$field->fieldName])) {
             return true;

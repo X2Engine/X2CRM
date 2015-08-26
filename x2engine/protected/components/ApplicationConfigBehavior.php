@@ -429,12 +429,6 @@ class ApplicationConfigBehavior extends CBehavior {
             $this->owner->cache['x2Power'] = $logo;
         }
         $this->owner->params->x2Power = $logo;
-        $logo = Media::model()->findByAttributes(array(
-            'associationId' => 1,
-            'associationType' => 'logo'
-                ));
-        if(isset($logo))
-            $this->owner->params->logo = $logo->fileName;
 
         // Set currency and load currency symbols
         $this->owner->params->currency = $this->settings->currency;
@@ -594,10 +588,11 @@ Yii::app()->clientScript->registerScript(sprintf('%x', crc32(Yii::app()->name)),
             if ($route[0] !== '/' && ($module = $this->owner->controller->getModule()) !== null) {
                 $route = $module->getId() . '/' . $route;
             }
-            return $this->externalAbsoluteBaseUrl . 
-                $this->owner->getUrlManager()->createUrlWithoutBase($route, $params);
+            $requestUrl = $this->owner->getUrlManager()->createUrlWithoutBase($route, $params);
+            return rtrim($this->externalAbsoluteBaseUrl,'/') . $requestUrl;
+                
         }else{ // Offline URL generation
-            return $this->externalAbsoluteBaseUrl.
+            return rtrim($this->externalAbsoluteBaseUrl,'/') .
                 (YII_UNIT_TESTING ? '/index-test.php/' : '/index.php/').
                 trim($route, '/').'?'.http_build_query($params, '', '&');
         }
@@ -758,7 +753,8 @@ Yii::app()->clientScript->registerScript(sprintf('%x', crc32(Yii::app()->name)),
             $eabu = $this->settings->externalBaseUri;
             $this->_externalWebRoot = $eabu ? $eabu : $this->owner->baseUrl;
         }
-        return $this->_externalWebRoot;
+        return (strpos($this->_externalWebRoot, '/') !== 0) ? '/' . $this->_externalWebRoot
+                    : $this->_externalWebRoot;
     }
 
     /**

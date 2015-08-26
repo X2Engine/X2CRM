@@ -44,7 +44,7 @@ class PasswordUtil {
 
     public static function createHash($password) {
         // format: algorithm:iterations:salt:hash
-        $salt = base64_encode(mcrypt_create_iv(self::PBKDF2_SALT_BYTES, MCRYPT_DEV_URANDOM));
+        $salt = self::createSalt();
         return self::PBKDF2_HASH_ALGORITHM . ":" . self::PBKDF2_ITERATIONS . ":" . $salt . ":" .
                 base64_encode(self::pbkdf2(
                                 self::PBKDF2_HASH_ALGORITHM, $password, $salt, self::PBKDF2_ITERATIONS, self::PBKDF2_HASH_BYTES, true
@@ -119,6 +119,36 @@ class PasswordUtil {
         } else {
             return bin2hex(substr($output, 0, $key_length));
         }
+    }
+    
+    public static function createSalt() {
+        if (function_exists('mcrypt_create_iv')) {
+            return base64_encode(mcrypt_create_iv(self::PBKDF2_SALT_BYTES,
+                            MCRYPT_DEV_URANDOM));
+        } elseif (function_exists('openssl_random_pseudo_bytes')) {
+            $random = openssl_random_pseudo_bytes(self::PBKDF2_SALT_BYTES, $strong);
+            if ($strong === true) {
+                return base64_encode($random);
+            }
+        }
+        $sha =''; 
+        $random ='';
+        if(file_exists('/dev/urandom')){
+            $fp = @fopen('/dev/urandom', 'rb');
+            if($fp){
+                if (function_exists('stream_set_read_buffer')) {
+                    stream_set_read_buffer($fp, 0);
+                }
+                $sha = fread($fp, self::PBKDF2_SALT_BYTES);
+                fclose($fp);
+            }
+        }
+        for ($i = 0; $i < self::PBKDF2_SALT_BYTES; $i++) {
+            $sha = hash('sha256', $sha . mt_rand());
+            $char = mt_rand(0, 62);
+            $random .= chr(hexdec($sha[$char] . $sha[$char + 1]));
+        }
+        return base64_encode($random);
     }
 
 }

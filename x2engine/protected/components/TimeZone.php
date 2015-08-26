@@ -68,7 +68,6 @@ class TimeZone extends X2Widget {
             $localTime = new DateTime();
             if(@date_timezone_set($localTime,$dateTimeZone)) {
                 $tzOffset = $localTime->getOffset();
-                
             } 
         } else {
             if(!isset($this->model))

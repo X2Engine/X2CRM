@@ -61,6 +61,20 @@ class Media extends X2Model {
         return parent::model($className);
     }
 
+     
+
+    private static $_menuLogo;
+    public static function getMenuLogo () {
+        if (!isset (self::$_menuLogo)) {
+            $logo = Media::model()->findByAttributes(array(
+                'associationId' => 1,
+                'associationType' => 'logo'
+            ));
+            self::$_menuLogo = $logo;
+        }
+        return self::$_menuLogo;
+    }
+
     /**
      * @return string the associated database table name
      */
@@ -68,11 +82,12 @@ class Media extends X2Model {
         return 'x2_media';
     }
 
-    public function afterDelete() {
-        parent::afterDelete();
-        // Reset path if name was changed:
-        $this->_path = null;
-        if (file_exists($this->getPath())) {
+    /**
+     * Called after removing media or changing the filename field. Checks for existing references
+     * to filename and deletes file if none exist.
+     */
+    private function collectGarbage (array $exclude = array ()) {
+        if (!in_array ($this->getPath (), $exclude) && file_exists($this->getPath())) {
             $media = Media::model()->findByAttributes(array(
                 'uploadedBy' => $this->uploadedBy,
                 'fileName' => $this->fileName
@@ -84,6 +99,13 @@ class Media extends X2Model {
                 unlink($this->getPath());
             }
         }
+    }
+
+    public function afterDelete() {
+        parent::afterDelete();
+        // Reset path if name was changed:
+        $this->_path = null;
+        $this->collectGarbage ();
 
         // if theme is deleted which is default, unset default theme setting
         if ($this->id === Yii::app()->settings->defaultTheme) {

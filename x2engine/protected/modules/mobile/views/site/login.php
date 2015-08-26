@@ -73,9 +73,12 @@ if(isset($_COOKIE['LoginForm'])) {
                 ),    
             )
         );
-    echo X2Html::logo ('mobile', array (
-        'id' => 'login-form-logo',
-    ));
+
+     
+        echo X2Html::logo ('mobile', array (
+            'id' => 'login-form-logo',
+        ));
+     
     ?>
     <div data-role="fieldcontain">
         <!--?php echo $form->label($model, 'username', array()); ?-->
@@ -114,7 +117,7 @@ if(isset($_COOKIE['LoginForm'])) {
             ?>
         </div>
     <?php } ?>
-    <?php echo CHtml::submitButton(Yii::t('app', 'X2 Login')); ?>
+    <?php echo CHtml::submitButton(Yii::t('app', 'Sign in')); ?>
     <table class='login-row'>
         <tbody>
             <tr>
