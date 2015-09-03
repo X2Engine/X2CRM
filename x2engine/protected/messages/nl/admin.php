@@ -3,7 +3,7 @@ return array (
 // // Index
 // // Titles
 'Utilities'=>'Gereedschap',
-'X2Studio'=>'X2Studie',
+'X2Studio'=>'X2Studio',
 'Support & Documentation'=>'Ondersteuning en Documentatie',
 'Contact Us'=>'Neem contact op',
 // // 
