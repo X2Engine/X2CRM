@@ -3,7 +3,7 @@ return array (
 // // Index
 // // Titles
 'Utilities'=>'Gereedschap',
-'X2Studio'=>'X2Studie',
+'X2Studio'=>'X2Studio',
 'Support & Documentation'=>'Ondersteuning en Documentatie',
 'Contact Us'=>'Neem contact op',
 // // 
@@ -31,7 +31,7 @@ return array (
 'Tutorial Videos'=>'Tutorial Videos',
 'Phone Support'=>'Telefonische ondersteuning',
 'Manage Roles'=>'Rollen beheren',
-'Set Lead Distribution'=>'Set Lead Distributie',
+'Set Lead Distribution'=>'Zet Lead Distributie',
 'Add Custom Lead Rules'=>'Voeg Aangepaste Lead Regels',
 'Workflow Settings'=>'Workflow-instellingen',
 'Manage Notification Criteria'=>'Manage Notification Criteria',
