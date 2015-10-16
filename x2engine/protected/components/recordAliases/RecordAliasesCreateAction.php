@@ -57,18 +57,15 @@ class RecordAliasesCreateAction extends CAction {
             echo CJSON::encode (array (
                 'success' => array (
                     'alias' => $recordAliases->renderAlias (),
+                    'rawAlias' => $recordAliases->alias,
                     'id' => $recordAliases->id,
+                    'label' => $recordAliases->label,
                 ),
             ));
         } else {
             $model = $recordAliases->getModel ();
             echo CJSON::encode (array (
-                'failure' => 
-                    Yii::app()->controller->widget('RecordAliasesWidget', array(
-                        'model' => $model,
-                        'formOnly' => true,
-                        'aliasModel' => $recordAliases
-                    ), true),
+                'failure' =>  CHtml::errorSummary ($recordAliases),
             ));
         }
     }

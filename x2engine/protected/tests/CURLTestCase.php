@@ -51,7 +51,7 @@ require_once('WebTestConfig.php');
  * @package application.tests
  * @author Demitri Morgan <demitri@x2engine.com>
  */
-abstract class CURLTestCase extends CTestCase {
+abstract class CURLTestCase extends X2TestCase {
 
     /**
      * Allows responses w/error codes, so that we can examine the contents of the response even if the request failed

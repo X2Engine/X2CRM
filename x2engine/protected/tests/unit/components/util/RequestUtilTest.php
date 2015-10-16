@@ -40,7 +40,7 @@ Yii::import('application.components.util.*');
 /**
  * @package application.tests.unit.components.util
  */
-class RequestUtilTest extends CTestCase {
+class RequestUtilTest extends X2TestCase {
 
     private static $_appFileUtilState = array ();
 

@@ -42,12 +42,41 @@ Yii::import('application.models.embedded.*');
  *
  * @package application.models.embedded
  */
-class TwitterApp extends JSONEmbeddedModel {
+class TwitterApp extends JSONEmbeddedModel implements AdminOwnedCredentials {
+    
+    public static function getAdminProperty () {
+        return 'twitterCredentialsId'; 
+    }
+
+    public function getMetaData () {
+        return array (
+            'private' => 1,
+            'userId' => Credentials::SYS_ID,
+            'name' => 'Twitter app',
+        );
+    }
 
     public $oauthAccessToken = '';
     public $oauthAccessTokenSecret = '';
     public $consumerKey = '';
     public $consumerSecret = '';
+
+    public function rules(){
+        return array(
+            array('oauthAccessToken,oauthAccessTokenSecret,consumerKey,consumerSecret', 'safe'),
+        );
+    }
+
+    public function getProtectedFields () {
+        return array (
+            'oauthAccessToken', 'oauthAccessTokenSecret', 'consumerSecret', 'consumerKey');
+    }
+
+    public function renderForm () {
+		$this->renderInputs();
+		echo '<br />';
+		echo '<br />';
+    }
 
     public function attributeLabels(){
         return array(
@@ -58,23 +87,23 @@ class TwitterApp extends JSONEmbeddedModel {
         );
     }
 
-    public function modelLabel() {
-        return Yii::t('app','Twitter App');
+    public function getPageTitle () {
+        return $this->modelLabel ();
     }
 
-    public function renderInput ($attr) {
-        echo CHtml::activeTextField($this, $attr, $this->htmlOptions($attr, array (
-            'class' => 'twitter-credential-input',
-        )));
+    public function modelLabel() {
+        return Yii::t('app','Twitter Integration');
+    }
+
+    public function htmlOptions ($name, $options=array ()) {
+        return X2Html::mergeHtmlOptions (
+            parent::htmlOptions ($name, $options), array ('class' => 'twitter-credential-input'));
     }
 
     public function renderInputs(){
-        $this->attributes = array (
-            'oauthAccessToken' => null,
-            'oauthAccessTokenSecret' => null,
-            'consumerKey' => null,
-            'consumerSecret' => null,
-        );
+        echo $this->getInstructions ();
+		echo CHtml::tag ('h3', array (), $this->exoModel->getAttributeLabel ($this->exoAttr));
+		echo '<hr />';
         echo CHtml::activeLabel($this, 'consumerKey');
         $this->renderInput ('consumerKey');
         echo CHtml::activeLabel($this, 'consumerSecret');
@@ -86,19 +115,12 @@ class TwitterApp extends JSONEmbeddedModel {
         echo CHtml::errorSummary($this);
         echo '<br>';
         echo '<br>';
-        echo $this->getInstructions ();
-    }
-
-    public function rules(){
-        return array(
-            array('oauthAccessToken,oauthAccessTokenSecret,consumerKey,consumerSecret', 'required'),
-        );
     }
 
     private function getInstructions () {
         return 
             '
-            <label>'.Yii::t('app', 'Configuring Twitter Integration').'</label>
+            <h3>'.Yii::t('app', 'Configuring Twitter Integration').'</h3>
             <hr>
             <ol>
                 <li>'.Yii::t('app', 'Visit {link} and create a new Twitter app.', array (

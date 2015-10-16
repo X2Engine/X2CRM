@@ -44,7 +44,7 @@ Yii::import('application.components.util.*');
  *
  * @package application.tests.unit.components
  */
-class X2FixtureManagerTest extends CDbTestCase {
+class X2FixtureManagerTest extends X2DbTestCase {
 
     public $fixtures = array (
         'groups' => array ('Groups', '_1')

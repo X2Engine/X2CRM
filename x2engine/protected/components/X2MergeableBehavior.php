@@ -187,6 +187,7 @@ class X2MergeableBehavior extends CActiveRecordBehavior {
         X2Model::model('Events')->updateAll(
                 array(
             'associationId' => $this->owner->id,
+            'associationType' => get_class ($this->owner),
                 ), 'associationType = :type AND associationId = :id', array(':type' => get_class($model), ':id' => $model->id));
         return $ret;
     }

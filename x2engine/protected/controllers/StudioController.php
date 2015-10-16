@@ -168,6 +168,7 @@ class StudioController extends x2base {
             } elseif($field->type === 'dropdown') {
                 $data['linkType'] = $field->linkType;
                 $dropdown = Dropdowns::model ()->findByPk ($field->linkType);
+                if (!$dropdown) continue;
                 $data['options'] = AuxLib::dropdownForJson(Dropdowns::getItems($field->linkType));
                 $data['multiple'] = $dropdown->multi ? 1 : 0;
             }

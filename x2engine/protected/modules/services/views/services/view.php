@@ -86,7 +86,6 @@ $(function() {
             <a class="x2-button icon edit right" href="<?php echo $this->createUrl('update', array('id' => $model->id)); ?>"><span></span></a>
             <?php
             echo X2Html::emailFormButton();
-            echo X2Html::inlineEditButtons();
             ?>
         </div>
     </div>

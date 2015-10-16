@@ -187,41 +187,23 @@ class ArrayUtil {
 
     /**
      * @param array $array the array to sort
-     * @param bool $sideEffects If true, this function sorts the array reference. Otherwise, 
-     *  the array is copied before sorting
      * @return the sorted array
      */
-    public static function sort (array &$array, $sideEffects=false) {
-        if ($sideEffects) {
-            sort ($array);
-            return $array;
-        } else {
-            $newArray = $array;
-            sort ($newArray);
-            return $newArray;
-        }
+    public static function sort (array $array) {
+        sort ($array);
+        return $array;
     }
 
     /**
      * Case-insensitive, no side-effects version of asort
      * @param array $array the array to sort
-     * @param bool $sideEffects If true, this function sorts the array reference. Otherwise, 
-     *  the array is copied before sorting
      * @return the sorted array
      */
-    public static function asorti(array &$array, $sideEffects=false) {
-        if ($sideEffects) {
-            uasort ($array, function ($a, $b) {
-                return strcasecmp ($a, $b);
-            });
-            return $array;
-        } else {
-            $newArray = $array;
-            uasort ($newArray, function ($a, $b) {
-                return strcasecmp ($a, $b);
-            });
-            return $newArray;
-        }
+    public static function asorti(array $array) {
+        uasort ($array, function ($a, $b) {
+            return strcasecmp ($a, $b);
+        });
+        return $array;
     }
 
     /**

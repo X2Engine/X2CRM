@@ -244,6 +244,38 @@ class DocsController extends x2base {
         }
     }
 
+    public function actionGetFolderSelector ($id=null, array $selectedFolders=array ()) {
+        if (!$id) $id = 'root';
+        if (is_numeric ($id)) {
+            $folder = DocFolders::model ()->findByPk ($id);
+            if (!$folder)
+                throw new CHttpException(
+                    404, Yii::t('app', 'The requested page does not exist.'));
+        } elseif ($id === 'root') {
+            $folder = $id;
+        } else {
+            throw new CHttpException(
+                400, Yii::t('app', 'Bad request'));
+        }
+        $children = DocFolders::model ()->findChildren ($folder, array (
+            'folder'
+        ), array (
+            DocFolders::TEMPLATES_FOLDER_ID,
+            $id
+        ));
+        $dataProvider = new CArrayDataProvider ($children, array (
+            'id' => 'folder-selector',
+            'pagination' => array (
+                'pageSize' => 10,
+            )
+        ));
+        $this->renderPartial ('_folderSelector', array (
+            'dataProvider' => $dataProvider,
+            'folder' => $folder,
+            'selectedFolders' => $selectedFolders,
+        ), false, true);
+    }
+
     /**
      * Updates a particular model.
      * If update is successful, the browser will be redirected to the 'view' page.
@@ -330,9 +362,9 @@ class DocsController extends x2base {
             }
         }else{
             if(empty($id)){
-                $folderDataProvider = DocFolders::getRootFolderContents();
+                $folderDataProvider = DocFolders::model()->getRootFolderContents();
             } elseif ($id == -1) {
-                $folderDataProvider = DocFolders::getTemplatesFolderContents();
+                $folderDataProvider = DocFolders::model ()->getTemplatesFolderContents();
             } else {
                 $folder = DocFolders::model()->findByPk($id);
                 if(!$this->checkPermissions($folder,'view')){
@@ -362,11 +394,11 @@ class DocsController extends x2base {
     
     public function actionMoveFolder($type, $objId, $destId = null){
         if($destId == -1){
-            $destId = null;
-        }
-        if(!is_null($destId)){
+            $destination = null;
+        } else {
             $destination = DocFolders::model()->findByPk($destId);
-        }
+        } 
+
         if($type==='doc'){
             $model = Docs::model()->findByPk($objId);
         }elseif($type==='folder'){
@@ -375,17 +407,13 @@ class DocsController extends x2base {
         if(!isset($model)){
             throw new CHttpException(404, Yii::t('docs','Object or destination not found.'));
         }
-        if(!($this->checkPermissions($model,'edit') && 
-            $this->checkPermissions($destination,'edit'))){
+        if(!$this->checkPermissions($model,'edit') ||
+            ($destination instanceof DocFolders) &&
+             !$this->checkPermissions($destination,'edit')){
 
             $this->denied();
         }
-        if($model instanceof Docs){
-            $model->folderId = is_null($destId)?$destId:$destination->id;
-        }else{
-            $model->parentFolder = is_null($destId)?$destId:$destination->id;
-        }
-        if($model->save()){
+        if ($model->moveTo ($destination)) {
             echo 1;
         }
         

@@ -159,9 +159,13 @@ class Media extends X2Model {
     public function rules() {
         // NOTE: you should only define rules for those attributes that
         // will receive user inputs.
-        return array(
-            array('fileName', 'unique', 'on' => 'themeCreate'),
-            array('fileName', 'length', 'max' => 100),
+
+        return array_merge (
+            $this->getBehaviorRules (),
+            array(
+                array('fileName', 'unique', 'on' => 'themeCreate'),
+                array('fileName', 'length', 'max' => 100),
+            )
         );
     }
 
@@ -201,8 +205,8 @@ class Media extends X2Model {
         $criteria = new CDbCriteria;
         $username = Yii::app()->user->name;
         if (!Yii::app()->params->isAdmin)
-            $criteria->addCondition("uploadedBy='$username' OR private=0 OR private=null");
-        $criteria->addCondition("associationType != 'theme'");
+            $criteria->addCondition("t.uploadedBy='$username' OR t.private=0 OR t.private=null");
+        $criteria->addCondition("t.associationType != 'theme'");
         return $this->searchBase($criteria);
     }
 

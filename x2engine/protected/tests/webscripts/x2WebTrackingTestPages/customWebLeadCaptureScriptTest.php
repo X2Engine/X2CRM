@@ -58,7 +58,7 @@ if(isset($_POST['x2_key'])){
 if ((int)$contact->contactCreate()) {
 ?>
 <div id="success">success<?php echo $contact->trackingKey; ?></div>
-<div id="success">success<?php echo CHtml::encode ($_POST['x2_key']); ?></div>
+<div id="success">success<?php echo htmlentities ($_POST['x2_key']); ?></div>
 <?php
 } else {
 ?>

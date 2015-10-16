@@ -163,7 +163,7 @@ abstract class PublisherTab extends X2Widget {
     }
 
     public function renderTitle () {
-        echo '<a href="#'.$this->resolveId ($this->tabId).'">'.$this->title.'</a>';
+        echo '<a href="#'.$this->resolveId ($this->tabId).'">'.Yii::t('actions',$this->title).'</a>';
     }
 
 }

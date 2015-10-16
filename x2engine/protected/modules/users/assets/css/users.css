@@ -1,4 +1,4 @@
-/*****************************************************************************************
+/*!***************************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2015 X2Engine Inc.
  * 
@@ -31,37 +31,4 @@
  * X2Engine" logo. If the display of the logo is not reasonably feasible for
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2Engine".
- *****************************************************************************************/
-/* line 36, ../../../../../compass/protected/modules/users/assets/css/users.scss */
-#container {
-  text-align: center;
-  width: 20%;
-  position: absolute;
-  margin: 0 auto;
-  height: 600px;
-  left: 0px;
-  right: 0px;
-  top: 0px;
-  bottom: 0px;
-}
-
-/* line 47, ../../../../../compass/protected/modules/users/assets/css/users.scss */
-div.form .row.buttons input {
-  float: none !important;
-}
-
-/* line 50, ../../../../../compass/protected/modules/users/assets/css/users.scss */
-#login-box-outer {
-  min-width: 380px !important;
-}
-
-/* line 53, ../../../../../compass/protected/modules/users/assets/css/users.scss */
-div.wide.form .buttons, div.wide.form .hint, div.wide.form .errorMessage {
-  padding-left: 0px !important;
-}
-
-/* line 56, ../../../../../compass/protected/modules/users/assets/css/users.scss */
-.x2-button {
-  text-align: center !important;
-  margin: 0 auto !important;
-}
+ *****************************************************************************************/#container{text-align:center;width:20%;position:absolute;margin:0 auto;height:600px;left:0px;right:0px;top:0px;bottom:0px}div.form .row.buttons input{float:none !important}#login-box-outer{min-width:380px !important}div.wide.form .buttons,div.wide.form .hint,div.wide.form .errorMessage{padding-left:0px !important}.x2-button{text-align:center !important;margin:0 auto !important}

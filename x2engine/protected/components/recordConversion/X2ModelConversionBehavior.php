@@ -59,6 +59,28 @@ class X2ModelConversionBehavior extends CActiveRecordBehavior {
         )
     );
 
+    public $deleteConvertedRecord = true;
+
+    /**
+     * @var string|null $convertedField
+     */
+    public $convertedField; 
+
+    /**
+     * @var string|null $conversionDateField
+     */
+    public $conversionDateField; 
+
+    /**
+     * @var string|null $convertedToTypeField
+     */
+    public $convertedToTypeField;
+
+    /**
+     * @var string|null $convertedToIdField
+     */
+    public $convertedToIdField;
+
     /**
      * @var bool $conversionFailed
      */
@@ -129,6 +151,18 @@ class X2ModelConversionBehavior extends CActiveRecordBehavior {
     }
 
     /**
+     * Excludes fields whose values shouldn't be transferred to the target record
+     */
+    public function attributeNames ($model) {
+        $conversionAttrs = array ();
+        if ($this->conversionDateField) $conversionAttrs[] = $this->conversionDateField;
+        if ($this->convertedField) $conversionAttrs[] = $this->convertedField;
+        if ($this->convertedToTypeField) $conversionAttrs[] = $this->convertedToTypeField;
+        if ($this->convertedToIdField) $conversionAttrs[] = $this->convertedToIdField;
+        return array_diff ($model->attributeNames (), $conversionAttrs);
+    }
+
+    /**
      * @return bool true if source and target types a conversion-compatible, false otherwise 
      */
     public function checkConversionCompatibility ($targetClass) {
@@ -137,7 +171,7 @@ class X2ModelConversionBehavior extends CActiveRecordBehavior {
 
         // don't convert if this model has fields not in target model
         $fieldDiff = array_diff (
-            $this->mapFields ($this->owner->attributeNames (), $targetClass), 
+            $this->mapFields ($this->attributeNames ($this->owner), $targetClass), 
             $targetClass::model ()->attributeNames ());
         if (count ($fieldDiff) > 0) {
             $potentialDataLoss = false;
@@ -153,7 +187,7 @@ class X2ModelConversionBehavior extends CActiveRecordBehavior {
         // don't convert if any of this model's fields and the targetModel's fields 
         // have the same name but a different type
         $sharedAttrs = array_intersect (
-            $this->mapFields ($this->owner->attributeNames (), $targetClass), 
+            $this->mapFields ($this->attributeNames ($this->owner), $targetClass), 
             $targetModel->attributeNames ());
 
         foreach ($sharedAttrs as $name) {
@@ -186,6 +220,15 @@ class X2ModelConversionBehavior extends CActiveRecordBehavior {
         unset ($attributes['id']);
         unset ($attributes['nameId']);
         unset ($attributes['createDate']);
+        if ($this->convertedField)
+            unset ($attributes[$this->convertedField]);
+        if ($this->conversionDateField)
+            unset ($attributes[$this->conversionDateField]);
+        if ($this->convertedToTypeField)
+            unset ($attributes[$this->convertedToTypeField]);
+        if ($this->convertedToIdField)
+            unset ($attributes[$this->convertedToIdField]);
+
         $targetModel = new $targetClass ();
 
         if (!$force && !$this->checkConversionCompatibility ($targetClass)) { 
@@ -200,7 +243,34 @@ class X2ModelConversionBehavior extends CActiveRecordBehavior {
             $targetModel->mergeRelatedRecords ($this->owner);
             $changeLogBehavior = $this->owner->asa ('changelog');
             $changeLogBehavior->createEvent = false; // don't create a lead deletion event
-            $this->owner->delete ();
+            if ($this->deleteConvertedRecord) {
+                $this->owner->delete ();
+            } else {
+                $updated = array ();
+                if ($this->convertedField) {
+                    $convertedField = $this->convertedField;
+                    $this->owner->$convertedField = true;
+                    $updated[] = $convertedField;
+                }
+                if ($this->conversionDateField) {
+                    $conversionDateField = $this->conversionDateField;
+                    $this->owner->$conversionDateField = time ();
+                    $updated[] = $conversionDateField;
+                }
+                if ($this->convertedToTypeField) {
+                    $convertedToTypeField = $this->convertedToTypeField;
+                    $this->owner->$convertedToTypeField = get_class ($targetModel);
+                    $updated[] = $convertedToTypeField;
+                }
+                if ($this->convertedToIdField) {
+                    $convertedToIdField = $this->convertedToIdField;
+                    $this->owner->$convertedToIdField = $targetModel->id;
+                    $updated[] = $convertedToIdField;
+                }
+                if ($updated)
+                    $this->owner->update ($updated);
+
+            }
             return $targetModel;
         }
         $this->errorModel = $targetModel;
@@ -214,7 +284,7 @@ class X2ModelConversionBehavior extends CActiveRecordBehavior {
     public function getConversionIncompatibilityWarnings ($targetClass) {
         $warnings = array ();
         $targetModel = $targetClass::model ();
-        $attributeNames = $this->mapFields ($this->owner->attributeNames (), $targetClass);
+        $attributeNames = $this->mapFields ($this->attributeNames ($this->owner), $targetClass);
         $leadsAttrs = array_diff (
             $attributeNames, $targetClass::model()->attributeNames ());
         $fieldMap = $this->getFieldMap ($targetClass, true);

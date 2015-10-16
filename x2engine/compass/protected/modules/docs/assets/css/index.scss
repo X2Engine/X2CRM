@@ -1,4 +1,4 @@
-/*****************************************************************************************
+/*!***************************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2015 X2Engine Inc.
  * 
@@ -33,15 +33,149 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 
+@import "standards";
+@import "colors";
+$selectionGreen: mix(white, $highlightGreen, 72%); 
+$cellPadding: 11px 5px 11px 5px;
+.ui-widget-content .folder-selector-option-container a {
+    color: #004baf;
+    &:hover {
+        color: #006cfb;
+    }
+}
+
+#folder-selector-list-view {
+    .summary {
+        display: none;
+    }
+    margin-top: 8px;
+    .pager {
+        border: none;
+    }
+    .items {
+        border-radius: 0;
+        .folder-selector-option-container {
+            &.disabled-folder-option {
+                color: $gray;
+                background: $lightestGray;
+                a {
+                    color: $gray !important;
+                }
+            }
+            &:hover {
+                /* @theme background light_background */
+                background: $lightestGray;
+            }
+            cursor: pointer;
+            padding: 5px 7px 5px 7px; 
+            .file-system-object-name {
+                margin-left: 5px;
+            }
+            &.selected {
+                /* @theme background highlight2 */
+                background: $selectionGreen;
+            }
+        }
+    }
+}
+
+#x2-gridview-flashes-container {
+    position: relative;
+    right: 4px;
+}
+
 #folder-contents {
+    #create-folder-button {
+        .fa-inverse {
+            color: white;
+            /* @theme color darker_text */
+        }
+    }
+    .file-system-header {
+        border-radius: 0 !important;
+    }
     .page-title {
         & > .x2-button {
             height: 24px; 
         }
     }
     .items {
+        * {
+            box-sizing: border-box;
+        }
         border-radius: 0;
         border: none;
+        th {
+            line-height: inherit;
+            border-right: none;
+            text-align: left;
+            background: inherit;
+            padding: $cellPadding;
+            border-bottom: 1px solid $lightGray;
+            &:first-child {
+                text-align: center;
+            }
+        }
+
+        tr {
+            &.ui-draggable-dragging {
+                z-index: 1000 !important;
+                border-radius: 3px;
+                @include floating-box-shadow();
+                border-bottom: none;
+                width: 150px;
+                .file-system-object-owner, .file-system-object-last-updated, 
+                .file-system-object-visibility, td:first-child {
+                    display: none;
+                }
+                overflow: hidden;
+            }
+            &.moving-file {
+                td {
+                    background: $lightestGray;
+                    /* @theme background lighter_background */
+                    color: $gray;
+                    a {
+                        color: $gray;
+                    }
+                }
+            }
+            td {
+                padding: $cellPadding;
+                border-right: none;
+                border-bottom: 1px solid $lightGray;
+            }
+            border-bottom-style: solid;
+            border-bottom-width: 1px;
+            //border-color: #cacaca;
+            background-color:#FFF;
+            .file-system-object-name {
+                margin-left: 5px;
+            }
+            .file-system-object-link{
+                float:left;
+                width:30%;
+            }
+            .file-system-object-attributes{
+                float:right;
+                width:70%;
+                text-align:center;
+            }
+            .file-system-object-owner{
+                float:left;
+                width:30%
+            }
+            .file-system-object-last-updated{
+                float:left;
+                width:45%;
+            }
+            .file-system-object-visibility{
+                float:left;
+                width:15%;
+            }
+        }
+
+
     }
     .pager{
         border: none;
@@ -51,20 +185,10 @@
 #attachments-grid {
     margin-top: 17px;
 }
-.file-system-object{
-    padding:10px !important;
-    border-bottom-style: solid;
-    border-bottom-width: 1px;
-    //border-color: #cacaca;
-    //background-color:#FFF;
-}
 .file-system-header{
     padding:10px;
     //background-color:#eee;
     font-weight:bold;
-}
-.file-system-object-folder:hover{
-    cursor:pointer;
 }
 #folder-contents .items{
     border-bottom: 0px;
@@ -74,26 +198,5 @@
     display: block; 
     height: 0; 
     clear: both;
-}
-.file-system-object-link{
-    float:left;
-    width:30%;
-}
-.file-system-object-attributes{
-    float:right;
-    width:70%;
-    text-align:center;
-}
-.file-system-object-owner{
-    float:left;
-    width:30%
-}
-.file-system-object-last-updated{
-    float:left;
-    width:45%;
-}
-.file-system-object-visibility{
-    float:left;
-    width:15%;
 }
 

@@ -34,10 +34,15 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 
-Yii::app()->clientScript->registerScript('updateChatPollSlider', "
+Yii::app()->clientScript->registerCss('appSettingsCss',"
+#settings-form {
+    padding-bottom: 1px;
+}
+");
 
+Yii::app()->clientScript->registerScript('updateChatPollSlider', "
 $('#settings-form input, #settings-form select, #settings-form textarea').change(function() {
-	$('#save-button').addClass('highlight'); //css('background','yellow');
+	$('#save-button').addClass('highlight'); 
 });
 
 $('#chatPollTime').change(function() {
@@ -192,15 +197,25 @@ $('#currency').change(function() {
         ?>
     </div>
     <div class="form">
-        <label for="Admin_quoteStrictLock"><?php echo Yii::t('admin', 'Enable Strict Lock on Quotes'); ?> <span class="x2-hint" title="<?php echo Yii::t('admin', 'Enabling strict lock completely disables locked quotes from being edited. While this setting is off, there will be a confirm dialog before editing a locked quote.'); ?>">[?]</span></label>
-        <?php echo $form->checkBox($model, 'quoteStrictLock'); ?>
+        <label class='left-label' for="Admin_quoteStrictLock"><?php echo Yii::t('admin', 'Enable Strict Lock on Quotes'); ?></label><?php echo X2Html::hint2 (Yii::t('admin', 'Enabling strict lock completely disables locked quotes from being edited. While this setting is off, there will be a confirm dialog before editing a locked quote.'));
+        echo X2Html::clearfix (); 
+        echo $form->checkBox($model, 'quoteStrictLock'); ?>
         <br><br>
-        <label for="Admin_userActionBackdating"><?php echo Yii::t('admin', 'Allow Users to Backdate Actions'); ?> <span class="x2-hint" title="<?php echo Yii::t('admin', 'Enabling action backdating will allow any user to change the automatically set date fields (i.e. create date). While this setting is off, only those with Admin access to the Actions module will be allowed to backdate actions.'); ?>">[?]</span></label>
-        <?php echo $form->checkBox($model, 'userActionBackdating'); ?>
+        <label class='left-label' for="Admin_userActionBackdating"><?php echo Yii::t('admin', 'Allow Users to Backdate Actions'); ?></label><?php echo X2Html::hint2 (Yii::t('admin', 'Enabling action backdating will allow any user to change the automatically set date fields (i.e. create date). While this setting is off, only those with Admin access to the Actions module will be allowed to backdate actions.'));
+        echo X2Html::clearfix ();
+        echo $form->checkBox($model, 'userActionBackdating'); ?>
+        <br><br>
+        <?php
+        echo $form->label ($model, 'disableAutomaticRecordTagging', array (
+            'class' => 'left-label',
+        ));
+        echo X2Html::hint2 (Yii::t('admin', 'Enabling action backdating will allow any user to change the automatically set date fields (i.e. create date). While this setting is off, only those with Admin access to the Actions module will be allowed to backdate actions.'));
+        echo X2Html::clearfix ();
+        echo $form->checkBox($model, 'disableAutomaticRecordTagging'); ?>
     </div>
     <div class="form">
-        <label for="Admin_historyPrivacy"><?php echo Yii::t('admin', 'Event/Action History Privacy'); ?> <span class="x2-hint" title="<?php echo Yii::t('admin', 'Default will allow users to see actions/events which are public or assigned to them. User Only will allow users to only see actions/events assigned to them. Group Only will allow users to see actions/events assigned to members of their groups.') ?>">[?]</span></label>
-        <?php
+        <label class='left-label' for="Admin_historyPrivacy"><?php echo Yii::t('admin', 'Event/Action History Privacy'); ?></label><?php echo X2Html::hint2 (Yii::t('admin', 'Default will allow users to see actions/events which are public or assigned to them. User Only will allow users to only see actions/events assigned to them. Group Only will allow users to see actions/events assigned to members of their groups.'));
+        echo X2Html::clearfix ();
         echo $form->dropDownList($model, 'historyPrivacy', array(
             'default' => Yii::t('admin', 'Default'),
             'user' => Yii::t('admin', 'User Only'),
@@ -209,13 +224,6 @@ $('#currency').change(function() {
         ?>
         <br><br>
         <?php echo Yii::t('admin', 'Choose a privacy setting for the Action History widget and Activity Feed. Please note that any user with Admin level access to the module that the History is on will ignore this setting. Only users with full Admin access will ignore this setting on the Activity Feed.') ?>
-    </div>
-    <div class="form">
-        <?php echo $form->labelEx($model, 'corporateAddress'); ?>
-        <div> 
-        <?php echo Yii::t('admin', 'Enter your corporate address to enable directions on the Google Maps widget.') ?>
-        </div>
-<?php echo $form->textArea($model, 'corporateAddress', array('id' => 'corporateAddress', 'style' => 'height:100px;', 'class'=>'x2-extra-wide-input')); ?>
     </div>
     <div class="form">
         <?php echo $form->labelEx($model, 'properCaseNames'); ?>

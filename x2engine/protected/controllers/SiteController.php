@@ -817,7 +817,7 @@ class SiteController extends x2base {
             $createdFile = null;
             if (isset($service, $_SESSION['access_token'], $_FILES['upload'])) {
                 try {
-                    $file = new Google_DriveFile();
+                    $file = new Google_Service_Drive_DriveFile();
                     $file->setTitle($_FILES['upload']['name']);
                     $file->setDescription('Uploaded by X2Engine');
                     $file->setMimeType($_FILES['upload']['type']);
@@ -847,8 +847,9 @@ class SiteController extends x2base {
                     $createdFile = $service->files->insert($file, array(
                         'data' => $data,
                         'mimeType' => $_FILES['upload']['type'],
+                        'uploadType' => 'multipart',
                     ));
-                    if (is_array($createdFile)) {
+                    if ($createdFile instanceof Google_Service_Drive_DriveFile) {
                         $model = new Media;
                         $model->fileName = $createdFile['id'];
                         $model->name = $createdFile['title'];
@@ -916,7 +917,7 @@ class SiteController extends x2base {
                     } else {
                         throw new CHttpException('400', 'Invalid request.');
                     }
-                } catch (Google_AuthException $e) {
+                } catch (Google_Auth_Exception $e) {
                     $auth->flushCredentials();
                     $auth->setErrors($e->getMessage());
                     $service = null;
@@ -1484,7 +1485,11 @@ class SiteController extends x2base {
         }
         require_once 'protected/components/GoogleAuthenticator.php';
         $auth = new GoogleAuthenticator();
-        if (Yii::app()->settings->googleIntegration && $token = $auth->getAccessToken()) {
+
+        $credentials = Yii::app()->settings->getGoogleIntegrationCredentials ();
+        if ($credentials && Yii::app()->settings->googleIntegration && 
+            $token = $auth->getAccessToken()) {
+
             try {
                 $user = $auth->getUserInfo($token);
                 $email = filter_var($user->email, FILTER_SANITIZE_EMAIL);
@@ -1558,19 +1563,22 @@ class SiteController extends x2base {
                     $this->render('googleLogin', array(
                         'failure' => 'email',
                         'email' => $email,
+                        'credentials' => $credentials,
                     ));
                 }
-            } catch (Google_AuthException $e) {
+            } catch (Google_Auth_Exception $e) {
                 $auth->flushCredentials();
                 $auth->setErrors($e->getMessage());
                 $this->render('googleLogin', array(
                     'failure' => $auth->getErrors(),
+                    'credentials' => $credentials,
                 ));
             } catch (NoUserIdException $e) {
                 $auth->flushCredentials();
                 $auth->setErrors($e->getMessage());
                 $this->render('googleLogin', array(
                     'failure' => $auth->getErrors(),
+                    'credentials' => $credentials,
                 ));
             }
         } else {
@@ -1581,10 +1589,12 @@ class SiteController extends x2base {
     public function actionStoreToken() {
         $code = $_POST['code'];
         
-        require_once 'protected/extensions/google-api-php-client/src/Google_Client.php';
+        require_once 'protected/integration/Google/google-api-php-client/src/Google/autoload.php';
+
         $client = new Google_Client();
-        $client->setClientId(Yii::app()->settings->googleClientId);
-        $client->setClientSecret(Yii::app()->settings->googleClientSecret);
+        $credentials = Yii::app()->settings->getGoogleIntegrationCredentials ();
+        $client->setClientId($credentials['clientId']);
+        $client->setClientSecret($credentials['clientSecret']);
         $client->setRedirectUri('postmessage');
         $client->setAccessType('offline');
         $client->authenticate($code);
@@ -1592,16 +1602,16 @@ class SiteController extends x2base {
         // Verify the token
         $reqUrl = 'https://www.googleapis.com/oauth2/v1/tokeninfo?access_token=' .
                 $token->access_token;
-        $req = new Google_HttpRequest($reqUrl);
+        $req = new Google_Http_Request($reqUrl);
 
         $tokenInfo = json_decode(
-                $client::getIo()->authenticatedRequest($req)->getResponseBody());
+                $client->getAuth()->authenticatedRequest($req)->getResponseBody());
         // If there was an error in the token info, abort.
         if (isset($tokenInfo->error) && $tokenInfo->error) {
             return new Response($tokenInfo->error, 500);
         }
         // Make sure the token we got is for our app.
-        if ($tokenInfo->audience != Yii::app()->settings->googleClientId) {
+        if ($tokenInfo->audience != $credentials['clientId']) {
             return new Response(
                     "Token's client ID does not match app's.", 401);
         }
@@ -2279,7 +2289,9 @@ class SiteController extends x2base {
                 $attribute = str_replace(']', '', $pieces[1]);
                 $attributes[$attribute] = $val;
             }
+
             $model = X2Model::model($modelName)->findByPk($_POST['modelId']);
+
             if (isset($model) && Yii::app()->controller->checkPermissions($model, 'edit')) {
                 $model->setX2Fields($attributes);
                 if ($model->save()) {

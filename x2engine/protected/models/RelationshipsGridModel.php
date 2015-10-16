@@ -70,40 +70,31 @@ class RelationshipsGridModel extends CModel {
         if ($scenario) {
             $this->setScenario ($scenario);
         }
+    }
+
+    /**
+     * Set attributes with attributes of embedded model or values specified in GET params
+     */
+    public function init () {
+        $scenario = $this->getScenario ();
         if ($scenario === 'search' && isset ($_GET[get_called_class ()])) {
             $this->setAttributes ($_GET[get_called_class ()], false);
+        } elseif ($this->relatedModel) {
+            $this->setAttributes ($this->relatedModel->getAttributes (), false);
+            $this->label = $this->relatedModel->getRelationshipLabel (
+                $this->myModel->id, get_class ($this->myModel));
         }
     }
 
     public function attributeNames () {
         return array (
+            'id',
             'name',
             'relatedModelName',
             'assignedTo',
             'label',
             'createDate',
         );
-    }
-
-    public function getName () {
-        if (!isset ($this->relatedModel)) return null;
-        return $this->relatedModel->name;
-    }
-
-    public function getLabel () {
-        if (!isset ($this->relatedModel)) return null;
-        return $this->relatedModel->getRelationshipLabel (
-            $this->myModel->id, get_class ($this->myModel));
-    }
-
-    public function getCreateDate () {
-        if (!isset ($this->relatedModel)) return null;
-        return $this->relatedModel->createDate;
-    }
-
-    public function getAssignedTo () {
-        if (!isset ($this->relatedModel)) return null;
-        return $this->relatedModel->assignedTo;
     }
 
     public function renderAttribute ($name) {
@@ -123,11 +114,11 @@ class RelationshipsGridModel extends CModel {
                 echo $this->relatedModel->renderAttribute ('assignedTo');
                 break;
             case 'label':
-                echo $this->getLabel ();
+                echo $this->label;
                 break;
             case 'createDate':
-                echo isset ($this->relatedModel->createDate) ? 
-                    X2Html::dynamicDate ($this->relatedModel->createDate) : '';
+                echo isset ($this->createDate) ? 
+                    X2Html::dynamicDate ($this->createDate) : '';
                 break;
         }
     }
@@ -165,9 +156,11 @@ class RelationshipsGridModel extends CModel {
                         break;
                     case 'createDate':
                         $timestampA = Formatter::parseDate ($val); 
-                        $timestampB = Formatter::parseDate (
-                            $model->relatedModel->getAttribute ('createDate')); 
-                        $filterOut = $timestampA !== $timestampB;
+                        $timestampB = $model->relatedModel->getAttribute ('createDate'); 
+                    
+                        // compare days since UNIX epoch
+                        $filterOut = floor ($timestampA / (3600 * 24)) !== 
+                            floor ($timestampB / (3600 * 24));
                         break;
                 }
                 if ($filterOut) break;

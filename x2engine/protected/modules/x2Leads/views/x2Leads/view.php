@@ -34,6 +34,8 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 
+$model->renderConvertedNotice ();
+
 $layoutManager = $this->widget ('RecordViewLayoutManager', array ('staticLayout' => false));
 
 $this->pageTitle = CHtml::encode(

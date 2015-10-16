@@ -69,6 +69,23 @@ $contrast: 15%;
     }
 }
 
+@mixin link {
+  &:focus, &:hover {
+    color: lighten($darkBlue, $contrast);
+  }
+  color: $darkBlue;
+  text-decoration: underline;
+}
+
+@mixin triangle-right ($width, $color) {
+    border: $width solid $color;
+    border-top: $width solid transparent;
+    border-bottom: $width solid transparent;
+    border-right: $width solid transparent;
+    height: 0px;
+    width: 0px;
+}
+
 /***********************************************************************
 * Responsive design
 ***********************************************************************/
@@ -156,6 +173,11 @@ $mobileThreshold: 657px;
 ***************************************/
 @mixin standard-box-shadow () {
 	$shadow: 0px 2px 3px rgba(black, 0.15), 0px -1px 1px rgba(black, 0.10);
+	@include box-shadow($shadow);
+}
+
+@mixin floating-box-shadow () {
+    $shadow: 0px 2px 5px 2px rgba(0, 0, 0, 0.4);
 	@include box-shadow($shadow);
 }
 

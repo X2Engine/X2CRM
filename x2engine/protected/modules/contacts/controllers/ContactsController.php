@@ -814,16 +814,19 @@ class ContactsController extends x2base {
             'pagination' => array('pageSize' => $perPage),
             'sort' => array(
                 'attributes' => array(
-                    'name',
+                    'name' => array (
+                        'asc' => 'name asc, id desc',
+                        'desc' => 'name desc, id desc',
+                    ),
                     // secondary order is needed to fix https://github.com/yiisoft/yii/issues/2082
                     'type' => array (
                         'asc' => 'type asc, id desc',
                         'desc' => 'type desc, id desc',
                     ),
-                    'count' => array (
-                        'asc' => 'count asc, id desc',
-                        'desc' => 'count desc, id desc',
-                    ),
+//                    'count' => array (
+//                        'asc' => 'count asc, id desc',
+//                        'desc' => 'count desc, id desc',
+//                    ),
                     'assignedTo' => array (
                         'asc' => 'assignedTo asc, id desc',
                         'desc' => 'assignedTo desc, id desc',

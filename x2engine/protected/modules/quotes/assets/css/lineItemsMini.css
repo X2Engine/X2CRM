@@ -1,4 +1,4 @@
-/*****************************************************************************************
+/*!***************************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2015 X2Engine Inc.
  * 
@@ -31,76 +31,4 @@
  * X2Engine" logo. If the display of the logo is not reasonably feasible for
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2Engine".
- *****************************************************************************************/
-/**
- * Hides the comments and adjustments columns and removes the add global adjustments button.
- * This gets used for the products action UI in both the publisher and the inline action edit/view 
- * form.
- */
-/* line 30, ../../../../../compass/sass/protected/modules/quotes/assets/css/lineItemsMini.scss */
-/* line 30, ../../../../../compass/sass/protected/modules/quotes/assets/css/lineItemsMini.scss */
-/* line 45, ../../../../../compass/protected/modules/quotes/assets/css/lineItemsMini.scss */
-.line-items-mini th.lineitem-description, .line-items-mini th.lineitem-adjustments {
-  display: none;
-}
-/* line 50, ../../../../../compass/protected/modules/quotes/assets/css/lineItemsMini.scss */
-.line-items-mini tr.line-item .x2-5th-child, .line-items-mini tr.line-item .x2-6th-child {
-  display: none;
-}
-/* line 54, ../../../../../compass/protected/modules/quotes/assets/css/lineItemsMini.scss */
-.line-items-mini .add-adjustment-button {
-  display: none !important;
-}
-/* line 57, ../../../../../compass/protected/modules/quotes/assets/css/lineItemsMini.scss */
-.line-items-mini .add-line-item-button {
-  margin-top: 5px;
-}
-/* line 60, ../../../../../compass/protected/modules/quotes/assets/css/lineItemsMini.scss */
-.line-items-mini #quote-total-section td {
-  border-bottom: none !important;
-}
-/* line 64, ../../../../../compass/protected/modules/quotes/assets/css/lineItemsMini.scss */
-.line-items-mini.line-items-read td {
-  border-right: 1px solid #ccc;
-}
-/* line 66, ../../../../../compass/protected/modules/quotes/assets/css/lineItemsMini.scss */
-.line-items-mini.line-items-read td.x2-7th-child {
-  border-right: none;
-}
-/* line 70, ../../../../../compass/protected/modules/quotes/assets/css/lineItemsMini.scss */
-.line-items-mini.line-items-read #quote-total-section td.input-cell {
-  border-right: none;
-}
-/* line 73, ../../../../../compass/protected/modules/quotes/assets/css/lineItemsMini.scss */
-.line-items-mini.line-items-read table {
-  border-radius: 4px;
-  margin-top: 14px;
-  border: 1px solid #ccc;
-}
-
-/* line 35, ../../../../../compass/sass/protected/modules/quotes/assets/css/lineItemsMini.scss */
-/* line 39, ../../../../../compass/sass/protected/modules/quotes/assets/css/lineItemsMini.scss */
-/* line 42, ../../../../../compass/sass/protected/modules/quotes/assets/css/lineItemsMini.scss */
-/* line 45, ../../../../../compass/sass/protected/modules/quotes/assets/css/lineItemsMini.scss */
-/* line 49, ../../../../../compass/sass/protected/modules/quotes/assets/css/lineItemsMini.scss */
-/* line 51, ../../../../../compass/sass/protected/modules/quotes/assets/css/lineItemsMini.scss */
-/* line 55, ../../../../../compass/sass/protected/modules/quotes/assets/css/lineItemsMini.scss */
-/* line 58, ../../../../../compass/sass/protected/modules/quotes/assets/css/lineItemsMini.scss */
-/* line 35, ../../../../../compass/sass/protected/modules/quotes/assets/css/lineItemsMini.scss */
-/* line 39, ../../../../../compass/sass/protected/modules/quotes/assets/css/lineItemsMini.scss */
-/* line 42, ../../../../../compass/sass/protected/modules/quotes/assets/css/lineItemsMini.scss */
-/* line 45, ../../../../../compass/sass/protected/modules/quotes/assets/css/lineItemsMini.scss */
-/* line 49, ../../../../../compass/sass/protected/modules/quotes/assets/css/lineItemsMini.scss */
-/* line 51, ../../../../../compass/sass/protected/modules/quotes/assets/css/lineItemsMini.scss */
-/* line 55, ../../../../../compass/sass/protected/modules/quotes/assets/css/lineItemsMini.scss */
-/* line 58, ../../../../../compass/sass/protected/modules/quotes/assets/css/lineItemsMini.scss */
-/*
-Fixes dropdown button display issue in FF
-*/
-/* line 71, ../../../../../compass/sass/protected/modules/quotes/assets/css/lineItemsMini.scss */
-/* line 88, ../../../../../compass/sass/protected/modules/quotes/assets/css/lineItemsMini.scss */
-/* line 112, ../../../../../compass/protected/modules/quotes/assets/css/lineItemsMini.scss */
-.line-items-write .quote-table > thead > tr > th.line-item-name, .line-items-write .quote-table > tbody.line-items > tr > td.x2-2nd-child input {
-  padding-right: 2px;
-  width: 79% !important;
-}
+ *****************************************************************************************/.line-items-mini th.lineitem-description,.line-items-mini th.lineitem-adjustments{display:none}.line-items-mini tr.line-item .x2-5th-child,.line-items-mini tr.line-item .x2-6th-child{display:none}.line-items-mini .add-adjustment-button{display:none !important}.line-items-mini .add-line-item-button{margin-top:5px}.line-items-mini #quote-total-section td{border-bottom:none !important}.line-items-mini.line-items-read td{border-right:1px solid #ccc}.line-items-mini.line-items-read td.x2-7th-child{border-right:none}.line-items-mini.line-items-read #quote-total-section td.input-cell{border-right:none}.line-items-mini.line-items-read table{border-radius:4px;margin-top:14px;border:1px solid #ccc}.line-items-write .quote-table>thead>tr>th.line-item-name,.line-items-write .quote-table>tbody.line-items>tr>td.x2-2nd-child input{padding-right:2px;width:79% !important}

@@ -140,10 +140,6 @@ if(isset($this->calendarFilter) && $this->calendarFilter !== null) {
                 '{actions}' => $modTitles["Actions"],
                 '{opportunities}' => $modTitles["Opportunities"],
             )),
-            'quotes'=>Yii::t('calendar', 'Show {actions} associated with {quotes}', array(
-                '{actions}' => $modTitles["Actions"],
-                '{quotes}' => $modTitles["Quotes"],
-            )),
             'products'=>Yii::t('calendar', 'Show {actions} associated with {products}', array(
                 '{actions}' => $modTitles["Actions"],
                 '{products}' => $modTitles["Products"],

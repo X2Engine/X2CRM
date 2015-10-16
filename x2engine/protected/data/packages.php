@@ -119,4 +119,17 @@ return array(
         'js' => array('X2Component.js'),
         'depends' => array ('auxlib'),
     ),
+
+    'InfinityScroll' => array (
+        'baseUrl' => Yii::app()->baseUrl.'/js', 
+        'js' => array('InfinityScroll.js'),
+        'depends' => array ('auxlib', 'X2Widget'),
+    ),
+
+    'X2Widget' => array(
+        'baseUrl' => Yii::app()->baseUrl.'/js',
+        'js' => array(
+            'js/X2Widget.js',
+        ),
+    ),
 );

@@ -40,7 +40,8 @@ function InlineEditor(argsDict) {
         modelId: null,
         translations: {
             unsavedChanges: null
-        }
+        },
+        'form$': null
     };
 
     auxlib.applyArgs(this, defaultArgs, argsDict);
@@ -58,10 +59,10 @@ InlineEditor.prototype.init  = function () {
     this.confirmIcon = '.confirm-icon';
     this.cancelIcon  = '.cancel-icon';
 
-    this.$inlineEdit  = $(this.inlineEdit);
-    this.$editIcon    = $(this.editIcon);
-    this.$confirmIcon = $(this.confirmIcon);
-    this.$cancelIcon  = $(this.cancelIcon);
+    this.$inlineEdit  = this.form$.find (this.inlineEdit);
+    this.$editIcon    = this.form$.find (this.editIcon);
+    this.$confirmIcon = this.form$.find (this.confirmIcon);
+    this.$cancelIcon  = this.form$.find (this.cancelIcon);
 
     this.setUpUnsavedBehavior ();
     this.setUpEditButton ();

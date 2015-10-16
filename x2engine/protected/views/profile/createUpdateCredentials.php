@@ -46,6 +46,9 @@ $this->actionMenu = array(
 ?>
 
 <div class="page-title"><h2><?php echo $model->pageTitle; ?></h2></div>
+<?php
+X2Html::getFlashes ();
+?>
 <div style="padding:10px; display:inline-block;">
 <?php
 $this->renderPartial(
@@ -57,7 +60,6 @@ $this->renderPartial(
         'user' => $profile->user
     ));
 
-echo "<span>$message</span>";
 ?>
 
 </div>

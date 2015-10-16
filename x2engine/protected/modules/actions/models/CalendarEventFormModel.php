@@ -35,7 +35,15 @@
  *****************************************************************************************/
 
 class CalendarEventFormModel extends EventFormModel {
-
+    public function attributeLabels(){
+        return array_merge(parent::attributeLabels(), array(
+            'allDay' => Yii::t('actions', 'All Day'),
+            'eventSubtype' => Yii::t('actions', 'Event Subtype'),
+            'eventStatus' => Yii::t('actions', 'Event Status'),
+            'associationType' => Yii::t('actions', 'Association Type'),
+            'color' => Yii::t('actions', 'Color'),
+        ));
+    }
 }
 
 ?>

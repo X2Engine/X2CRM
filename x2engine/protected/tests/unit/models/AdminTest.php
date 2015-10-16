@@ -35,6 +35,9 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 
+Yii::import ('application.modules.contacts.models.*');
+Yii::import ('application.modules.accounts.models.*');
+
 /**
  * @package application.tests.unit.models
  * @author Demitri Morgan <demitri@x2engine.com>
@@ -43,6 +46,13 @@ class AdminTest extends X2DbTestCase {
 
     private static $_appFileUtilState = array ();
     private static $_adminState = array ();
+
+    public static function referenceFixtures () {
+        return array (
+            'contacts' => 'Contacts',
+            'tags' => 'Tags',
+        );
+    }
 
     public static function setUpBeforeClass () {
         self::$_appFileUtilState['alwaysCurl'] = AppFileUtil::$alwaysCurl;
@@ -94,6 +104,33 @@ class AdminTest extends X2DbTestCase {
     }
 
      
+
+    public function testDisableAutomaticRecordTagging () {
+        Yii::app()->db->createCommand ("delete from x2_tags where 1");
+        $admin = Yii::app()->settings;
+        $admin->disableAutomaticRecordTagging = true;
+        $this->assertUpdates ($admin, array ('disableAutomaticRecordTagging'));
+        $contact = new Contacts;
+        $contact->setAttributes (array (
+            'firstName' => 'test',
+            'lastName' => 'test',
+            'visibility' => 1,
+            'backgroundInfo' => '#tag0 #tag1 #tag2', 
+        ));
+        $this->assertSaves ($contact);
+        $this->assertEquals (0, (int) Yii::app()->db->createCommand ("
+            select count(*) from x2_tags
+        ")->queryScalar ());
+
+        $admin->disableAutomaticRecordTagging = false;
+        $this->assertUpdates ($admin, array ('disableAutomaticRecordTagging'));
+        $this->assertSaves ($contact);
+        $this->assertEquals (array ('#tag0', '#tag1', '#tag2'), Yii::app()->db->createCommand ()
+            ->select ('tag')
+            ->from ('x2_tags')
+            ->order ('tag asc')
+            ->queryColumn ());
+    }
 }
 
 ?>

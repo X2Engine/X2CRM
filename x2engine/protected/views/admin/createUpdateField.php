@@ -206,7 +206,7 @@
                         $linkTypes = Fields::getLinkTypes ();
                         $options = array ();
                         foreach ($linkTypes as $type) {
-                            $options[$type] = X2Model::model ($type)->getDisplayName (true, false);
+                            $options[$type] = X2Model::model ($type)->getDisplayName (true);
                         }
                         asort ($options);
                         echo CHtml::activeDropdownList(

@@ -34,59 +34,86 @@
  *****************************************************************************************/
 
 x2.FormView = (function() {
-    function FormView(argsDict) {
-        var defaultArgs = {
-            quickCreate: {
-                urls: [],
-                tooltips: [],
-                dialogTitles: [],
-                defaults: []
-            }
-        };
 
-        auxlib.applyArgs (this, defaultArgs, argsDict);
-        x2.RecordView.call(this, argsDict);
-        this.init ();
-    }
-
-    FormView.prototype = auxlib.create(x2.RecordView.prototype);
-
-    FormView.prototype.init = function() {
-        x2.RecordView.prototype.init.call(this);
-
-        $.datepicker.setDefaults ($.datepicker.regional['']);
-        $(".currency-field").maskMoney("mask");
-
-        this.setUpEvents();
-        this.setUpQuickCreate();
+function FormView (argsDict) {
+    var defaultArgs = {
+        quickCreate: {
+            urls: [],
+            tooltips: [],
+            dialogTitles: [],
+            defaults: []
+        },
+        translations: {}
     };
 
-    FormView.prototype.setUpEvents = function() {
-        $('.x2-layout.form-view :input').change(function() {
-            $('#save-button, #save-button1, #save-button2, h2 a.x2-button').addClass('highlight');
-        });
-    }
+    auxlib.applyArgs (this, defaultArgs, argsDict);
+    x2.RecordView.call(this, argsDict);
+    this.form$ = $('#' + this.namespace + 'form-view');
+    this._hasChanges = false;
+    this.init ();
+}
 
-    FormView.prototype.setUpQuickCreate = function() {
-        var that = this;
-        $('.quick-create-button').each (function () {
-            var relatedModelType = $(this).attr ('class').match (/(?:[ ]|^)create-([^ ]+)/)[1];
-            new x2.RelationshipsManager ({
-                element: $(this),
-                modelType: that.modelName,
-                modelId: that.modelId,
-                relatedModelType: relatedModelType,
-                createRecordUrl:   that.quickCreate.urls        [relatedModelType],
-                dialogTitle:       that.quickCreate.dialogTitles[relatedModelType],
-                tooltip:           that.quickCreate.tooltips    [relatedModelType],
-                attributeDefaults: that.quickCreate.defaults    [relatedModelType],
-                lookupFieldElement: $(this).siblings ('.formInputBox').find ('input').last (),
-                isViewPage: false
-            });
-        });
-    }
+FormView.prototype = auxlib.create(x2.RecordView.prototype);
 
-    return FormView;
+FormView.prototype.setUpEvents = function() {
+    $('.x2-layout.form-view :input').change(function() {
+        $('#save-button, #save-button1, #save-button2, h2 a.x2-button').addClass('highlight');
+    });
+};
+
+FormView.prototype.setUpQuickCreate = function() {
+    var that = this;
+    $('.quick-create-button').each (function () {
+        var relatedModelType = $(this).attr ('class').match (/(?:[ ]|^)create-([^ ]+)/)[1];
+        new x2.RelationshipsManager ({
+            element: $(this),
+            modelType: that.modelName,
+            modelId: that.modelId,
+            relatedModelType: relatedModelType,
+            createRecordUrl:   that.quickCreate.urls        [relatedModelType],
+            dialogTitle:       that.quickCreate.dialogTitles[relatedModelType],
+            tooltip:           that.quickCreate.tooltips    [relatedModelType],
+            attributeDefaults: that.quickCreate.defaults    [relatedModelType],
+            lookupFieldElement: $(this).siblings ('.formInputBox').find ('input').last (),
+            isViewPage: false
+        });
+    });
+};
+
+FormView.prototype.setUpUnsavedChangeDetection = function () {
+    var that = this;
+    this.form$.on ('change', function () {
+        that._hasChanges = true;
+    });
+    // display confirmation dialog if there are unsaved changes and user attempts to navigate away
+    // via a link
+    $(document).on ('click.' + this.namespace + 'setUpUnsavedChangeDetection', 'a', function (evt) {
+        var link$ = $(this); 
+        if (link$.attr ('href') !== '#' &&  that._hasChanges) {
+            auxlib.confirm (function () {
+                that._hasChanges = false;
+                window.location = link$.attr ('href');
+            }, that.translations);
+            return false;
+        } 
+    });
+};
+
+FormView.prototype.init = function() {
+    x2.RecordView.prototype.init.call(this);
+
+    this.setUpUnsavedChangeDetection ();
+
+    $.datepicker.setDefaults ($.datepicker.regional['']);
+    $(".currency-field").maskMoney("mask");
+
+    this.setUpEvents();
+    this.setUpQuickCreate();
+};
+
+return FormView;
+
+
 })();
 
 

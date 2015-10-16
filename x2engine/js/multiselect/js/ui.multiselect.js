@@ -36,6 +36,7 @@ $.widget("ui.multiselect", {
 		show: 'slideDown',
 		hide: 'slideUp',
 		dividerLocation: 0.6,
+		availableFirst: false,
         /* x2modstart */ 
 		irremovableOptions: [],
 		disableMassActions: false,
@@ -55,12 +56,12 @@ $.widget("ui.multiselect", {
         if (this.options['class']) classes += ' ' + this.options['class'];
 		this.container = $('<div class="' + classes + '"></div>').insertAfter(this.element);
         /* x2modend */ 
+		this.container = $('<div class="ui-multiselect ui-helper-clearfix ui-widget"></div>').insertAfter(this.element);
 		this.count = 0; // number of currently selected options
 		this.selectedContainer = $('<div class="selected"></div>').appendTo(this.container);
-		this.availableContainer = $('<div class="available"></div>').appendTo(this.container);
-
-        this.selectedActions = $('<div class="actions ui-widget-header ui-helper-clearfix"><span class="count">0 '+$.ui.multiselect.locale.itemsCount+'</span><a href="#" class="remove-all">'+$.ui.multiselect.locale.removeAll+'</a></div>').appendTo(this.selectedContainer);
-        this.availableActions = $('<div class="actions ui-widget-header ui-helper-clearfix"><input type="text" class="search empty ui-widget-content ui-corner-all"/><a href="#" class="add-all">'+$.ui.multiselect.locale.addAll+'</a></div>').appendTo(this.availableContainer);
+		this.availableContainer = $('<div class="available"></div>')[this.options.availableFirst?'prependTo': 'appendTo'](this.container);
+		this.selectedActions = $('<div class="actions ui-widget-header ui-helper-clearfix"><span class="count">0 '+$.ui.multiselect.locale.itemsCount+'</span><a href="#" class="remove-all">'+$.ui.multiselect.locale.removeAll+'</a></div>').appendTo(this.selectedContainer);
+		this.availableActions = $('<div class="actions ui-widget-header ui-helper-clearfix"><input type="text" class="search empty ui-widget-content ui-corner-all"/><a href="#" class="add-all">'+$.ui.multiselect.locale.addAll+'</a></div>').appendTo(this.availableContainer);
         /* x2modstart */    
         if (this.options.disableMassActions) {
             this.container.find(".remove-all").css ({'visibility': 'hidden'});
@@ -174,6 +175,7 @@ $.widget("ui.multiselect", {
 		that._filter.apply(this.availableContainer.find('input.search'), [that.availableList]);
   },
 	_updateCount: function() {
+		this.element.trigger('change');
 		this.selectedContainer.find('span.count').text(this.count+" "+$.ui.multiselect.locale.itemsCount);
 	},
 	_getOptionNode: function(option) {
@@ -190,6 +192,7 @@ $.widget("ui.multiselect", {
 
 		var node = $('<li class="' + classes + '" title="'+option.text()+'"><span class="ui-icon"/>'+option.text()+'<a href="#" class="action"><span class="ui-corner-all ui-icon"/></a></li>').hide();
         /* x2modend */ 
+		var node = $('<li class="ui-state-default ui-element" title="'+option.text()+'"><span class="ui-icon"/>'+option.text()+'<a href="#" class="action"><span class="ui-corner-all ui-icon"/></a></li>').hide();
 		node.data('optionLink', option);
 		return node;
 	},
@@ -285,8 +288,12 @@ $.widget("ui.multiselect", {
 	},
 	_registerDoubleClickEvents: function(elements) {
 		if (!this.options.doubleClickable) return;
-		elements.dblclick(function() {
-			elements.find('a.action').click();
+		elements.dblclick(function(ev) {
+			if ($(ev.target).closest('.action').length === 0) {
+				// This may be triggered with rapid clicks on actions as well. In that
+				// case don't trigger an additional click.
+				elements.find('a.action').click();
+			}
 		});
 	},
 	_registerHoverEvents: function(elements) {
@@ -327,8 +334,6 @@ $.widget("ui.multiselect", {
 	_registerRemoveEvents: function(elements) {
 		var that = this;
 		elements.click(function() {
-            if ($(this).closest ('.irremovable-option').length) return false;
-
 			that._setSelected($(this).parent(), false);
 			that.count -= 1;
 			that._updateCount();

@@ -51,6 +51,8 @@ class FileSystemObject {
     public $lastUpdated;
     public $updatedBy;
     public $visibility;
+    public $title;
+    public $isParent = false;
     
     public static function getListViewHeader(){
         $linkHeader = X2Html::tag(
@@ -85,14 +87,24 @@ class FileSystemObject {
     public function getLink() {
         if ($this->type === 'folder') {
             return X2Html::link($this->name, '#', array(
-                        'class'=>'folder-link',
-                        'data-id'=>$this->objId,
+                'class'=>'folder-link pseudo-link',
+                'data-id'=>$this->objId,
             ));
         } else {
             return X2Html::link(
                 $this->name, 
                 Yii::app()->controller->createUrl('/docs/view', array('id' => $this->objId)));
         }
+    }
+
+    public function renderName () {
+        $options = array (
+            "class" => "file-system-object-name",
+        );
+
+        if ($this->title && preg_match ('/^[a-zA-Z0-9 \-]+$/', $this->title)) 
+            $options['title'] = $this->title;
+        return $this->getIcon ().CHtml::tag ("span", $options, $this->getLink ());
     }
     
     public function getOwner(){

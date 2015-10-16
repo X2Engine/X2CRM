@@ -434,9 +434,12 @@
 		 * @return array the key values of the currently checked rows.
 		 */
 		getChecked: function (column_id) {
+            /* x2modstart */  
+            // added namespace to keys class to prevent class name conflicts in nested grids
 			var settings = gridSettings[this.attr('id')],
-				keys = this.find('.keys span'),
+				keys = this.find('.' + settings.namespacePrefix + 'keys span'),
 				checked = [];
+            /* x2modend */ 
 			if (column_id.substring(column_id.length - 2) !== '[]') {
 				column_id = column_id + '[]';
 			}

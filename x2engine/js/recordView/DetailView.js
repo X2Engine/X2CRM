@@ -41,6 +41,7 @@ x2.DetailView = (function() {
 
         auxlib.applyArgs (this, defaultArgs, argsDict);
         x2.RecordView.call(this, argsDict);
+        this.form$ = $('#' + this.namespace + 'detail-view');
         this.init ();
     }
 
@@ -56,7 +57,8 @@ x2.DetailView = (function() {
         // Instantiate Inline Editor
         if (this.inlineEdit && typeof x2.InlineEditor !== 'undefined') {
             this.inlineEditor = new x2.InlineEditor({
-                modelId: this.modelId
+                modelId: this.modelId,
+                'form$': this.form$
             }); 
         }
     }

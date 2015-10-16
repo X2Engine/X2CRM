@@ -41,6 +41,24 @@
  * @param array $defaultsByRelatedModelType (<model type> => <array of default arguments>). Used
  *  as arguments to RelationshipsManager JS prototype for each of the quick create buttons.
  */
+
+// Construct criteria for finding the right form layout.
+$attributes = array('model' => ucfirst($modelName), 'defaultForm' => 1);
+// If the $scenario variable is set in the rendering context, a special
+// different form should be retrieved.
+$attributes['scenario'] = isset($scenario) ? $scenario : 'Default';
+$layout = FormLayout::model()->findByAttributes($attributes);
+
+if (isset($layout)) {
+    $layoutData = json_decode($layout->layout, true);
+}
+
+if (isset ($layoutData['version']) && version_compare ($layoutData['version'], '5.2') >= 0) {
+    $this->widget ('FormView', array(
+        'model' => $model,
+    ));
+} else {
+
 Yii::app()->clientScript->registerScript('formUIScripts', "
 $('.x2-layout.form-view :input').change(function() {
     $('#save-button, #save-button1, #save-button2, h2 a.x2-button').addClass('highlight');
@@ -73,12 +91,6 @@ if ((isset($suppressForm) && !$suppressForm) || !isset($suppressForm)) {
 echo '<em style="display:block;margin:5px;">' .
  Yii::t('app', 'Fields with <span class="required">*</span> are required.') . "</em>\n";
 
-// Construct criteria for finding the right form layout.
-$attributes = array('model' => ucfirst($modelName), 'defaultForm' => 1);
-// If the $scenario variable is set in the rendering context, a special
-// different form should be retrieved.
-$attributes['scenario'] = isset($scenario) ? $scenario : 'Default';
-$layout = FormLayout::model()->findByAttributes($attributes);
 
 $suppressQuickCreate = isset($suppressQuickCreate) ? $suppressQuickCreate : false;
 
@@ -88,7 +100,8 @@ if (!$suppressQuickCreate) {
 }
 
 
-if (isset($layout)) {
+if (isset ($layoutData)) {
+
 
     echo '<div class="x2-layout form-view">';
 
@@ -114,7 +127,6 @@ if (isset($layout)) {
 
     echo $form->errorSummary($model) . ' ';
 
-    $layoutData = json_decode($layout->layout, true);
     $formSettings = Profile::getFormSettings($modelName);
 
     if (isset($layoutData['sections']) && count($layoutData['sections']) > 0) {
@@ -368,5 +380,7 @@ if (!$suppressQuickCreate) {
 }) ();
 
 ", CClientScript::POS_READY);
+}
+
 }
 ?>

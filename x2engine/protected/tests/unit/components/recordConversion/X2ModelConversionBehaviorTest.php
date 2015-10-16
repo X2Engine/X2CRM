@@ -123,9 +123,12 @@ class X2ModelConversionBehaviorTest extends X2DbTestCase {
         unset ($leadAttrs['nameId']);
         unset ($leadAttrs['createDate']);
         $mappedFields = $conversionBehavior->mapFields ($leadAttrs, 'Contacts', true);
+
         foreach ($mappedFields as $attr => $val) {
-            $this->assertEquals (
-                $val, $contactAttrs[$attr]);
+            if (isset ($contactAttrs[$attr])) {
+                $this->assertEquals (
+                    $val, $contactAttrs[$attr]);
+            }
         }
     }
 
@@ -190,8 +193,6 @@ class X2ModelConversionBehaviorTest extends X2DbTestCase {
         // ensure that conversion fails due to incompatibility 
         $lead = $this->x2Leads ('1');
         $leadAttrs = $lead->getAttributes ();
-       AuxLib::debugLogR ('$leadAttrs = ');
-        AuxLib::debugLogR ($leadAttrs);
 
         $contact = $lead->convert ('Contacts');
         $this->assertFalse ($contact);
@@ -206,8 +207,10 @@ class X2ModelConversionBehaviorTest extends X2DbTestCase {
         unset ($leadAttrs['createDate']);
         $mappedFields = $conversionBehavior->mapFields ($leadAttrs, 'Contacts', true);
         foreach ($mappedFields as $attr => $val) {
-            $this->assertEquals (
-                $val, $contactAttrs[$attr]);
+            if (isset ($contactAttrs[$attr])) {
+                $this->assertEquals (
+                    $val, $contactAttrs[$attr]);
+            }
         }
 
         self::restoreFields ();
@@ -217,12 +220,8 @@ class X2ModelConversionBehaviorTest extends X2DbTestCase {
         $lead = $this->x2Leads ('1');
         $this->assertConversionCompatibility ($lead, 'Opportunity');
         $leadAttrs = $lead->getAttributes ();
-       AuxLib::debugLogR ('$leadAttrs = ');
-        AuxLib::debugLogR ($leadAttrs);
 
         $contact = $lead->convert ('Opportunity');
-       AuxLib::debugLogR ('$contact = ');
-        AuxLib::debugLogR ($contact);
 
         $targetAttrs = $contact->getAttributes ();
         $conversionBehavior = X2Leads::model ()->asa ('X2ModelConversionBehavior');
@@ -232,15 +231,15 @@ class X2ModelConversionBehaviorTest extends X2DbTestCase {
         unset ($leadAttrs['createDate']);
         $mappedFields = $conversionBehavior->mapFields ($leadAttrs, 'Opportunity', true);
         foreach ($mappedFields as $attr => $val) {
-            $this->assertEquals (
-                $val, $targetAttrs[$attr]);
+            if (isset ($targetAttrs[$attr])) {
+                $this->assertEquals (
+                    $val, $targetAttrs[$attr]);
+            }
         }
     }
 
     private function assertConversionCompatibility ($record, $targetClass) {
         if (!$record->checkConversionCompatibility ($targetClass)) {
-            AuxLib::debugLogR ('$record->getConversionCompatibilityWarnings ($targetClass) = ');
-            AuxLib::debugLogR ($record->getConversionIncompatibilityWarnings ($targetClass));
             $this->assertTrue (false);
         }
     }

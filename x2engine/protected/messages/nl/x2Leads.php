@@ -1,15 +1,17 @@
-<?php
-return array(
-    
-'Edit Lead'=>'Lead bewerken',
-'View Lead'=>'Bekijk Lead',
-'Leads:'=>'Leads:',
-'{leads} List'=>'{leads} Lijst',
-'Create {lead}'=>'Maak {lead}',
-'Edit {lead}'=>'Bewerken {lead}',
-'Delete {lead}'=>'Delete {lead}',
-'Convert to {contact}'=>'Converteren naar {contact}',
-'Convert to {opportunity}'=>'Converteren naar {opportunity}',
-'Import {leads}'=>'Import {leads}',
-'Export {leads}'=>'Export {leads}',
+<?php return array (
+  'Edit Lead' => 'Lead bewerken',
+  'View Lead' => 'Bekijk Lead',
+  'Leads:' => 'Leads:',
+  '{leads} List' => '{leads} Lijst',
+  'Create {lead}' => 'Maak {lead}',
+  'Edit {lead}' => 'Bewerken {lead}',
+  'Delete {lead}' => 'Delete {lead}',
+  'Convert to {contact}' => 'Converteren naar {contact}',
+  'Convert to {opportunity}' => 'Converteren naar {opportunity}',
+  'Import {leads}' => 'Import {leads}',
+  'Export {leads}' => 'Export {leads}',
+  'Conversion Date' => 'Conversiedatum',
+  'Converted' => 'Omgebouwde',
+  'Converted To' => 'Omgerekend naar',
+  'This record has been converted. To view the new record, click {here}.' => 'Dit record is omgebouwd. Om de nieuwe record bekijken, klik {here}',
 );

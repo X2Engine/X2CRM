@@ -69,7 +69,7 @@ foreach($list as $role){
             <?php 
             echo $form->labelEx($model,'name'); 
             echo $form->dropDownList($model,'name',$names,array(
-                'empty'=>'Select a role',
+                'empty'=>Yii::t('admin','Select a role'),
                 'id'=>'editDropdown',
                 'ajax' => array(
                 'type'=>'POST', //request type

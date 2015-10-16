@@ -185,7 +185,7 @@ class Api2InputTest extends Api2TestBase {
         );
         $ch = $this->getCurlHandle('POST',array('{modelAction}'=>'Contacts/'.$this->contacts('testFormula')->id.'/Actions'),'admin',$action);
         $response = curl_exec($ch);
-        $this->assertResponseCodeIs(201, $ch,X2_VERBOSE_MODE?$response:'');
+        $this->assertResponseCodeIs(201, $ch,X2_TEST_DEBUG_LEVEL > 1?$response:'');
         $response = json_decode($response,1);
         $this->assertEquals($action['actionDescription'],$response['actionDescription']);
         $this->assertEquals($action['type'],$response['type']);

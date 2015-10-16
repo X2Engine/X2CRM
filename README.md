@@ -1,47 +1,42 @@
-# 5.2.1 #
-8/26/2015
+# 5.3 #
+10/15/2015
 
 * Highlights
-  * Platinum Edition Changes
-    * New auto-merge admin tool automatically merges duplicate records
-  * Professional Edition Changes
-    * New Execute Workflow sidebar widget enables execution of individual workflows created in the X2Workflow Studio Designer
-    * New Email Inbox Profile Dashboard widget
-    * New grid view mass actions:
-      * Mass convert leads
-      * Mass publish comments, actions, calls, and logged time
-      * Mass create relationships
-    * New importer option to update existing records on import
-    * New admin option to upload a login screen logo
-  * New Topics module offers an integrated discussion board
-    * Create topic discussion threads
-    * Relate topics to Contact and Account records
-    * Tag/pin topics
-  * New Profile Dashboard widgets:
-    * Docs Summary
-    * New Web Leads
-  * New mass dedupe admin tool simplifies duplicate record management
-  * Tags can now be exported
-  * Docs can now be grouped inside nestable folders
-  * New drag and drop media upload options and simplified email image attachment
-  * New Web Activity record view widget
-  * New interactive tips system provides step-by-step feature introductions 
-  * Application-wide UI improvements to record view layouts
-  * New Module-specific theming options
-  * New Edit Global CSS admin page
-  * Themes selected on the preferences page now apply to the login screen and to X2Touch
-  * New preferences option to apply background image to login screen
-  * Admin index organizational improvements 
+  * Professional Edition Changes:
+    * Google+ integration:
+      * Google+ Profile widget allows display of Google+ Profile data on record view screens.
+      * Google+ Profile search feature
+    * New X2Workflow Splitter enables concurrent execution of flow branches, simplifying creation of complex flow logic.
+    * Added mass actions to Email Inbox profile widget. It's now possible to delete, log, and flag emails directly from the profile page.
+    * X2Workflow Remote API Call action now supports nested JSON payloads
+  * Default processes can now be set on a per module basis.
+  * New "Redirect URL" option in web form designer
+  * Tags column now available in more module grid views, including custom modules.
+  * Added ability to select and move multiple Docs or folders at a time from the Docs grid view
 * General Changelog / Developer Notes:
-  * "X2Flow" has been renamed "X2Workflow"
-  * Contact "Record Aliases" have been renamed "Social Profiles"
+  * The Calendar Module now only displays events and actions. Logged time, logged calls, comments, and emails will no longer show in the calendar view.
+  * In order to simplify Lead conversion reporting, Leads are now preserved after conversion to Contact or Opportunity and designated as "Converted". Two new fields have been added, "Converted" and "Conversion Date", which get set automatically upon Lead conversion.
+  * Fixed bug which prevented Actions from being synced with Google Calendar 
+  * SASS-generated CSS has been minified. CSS customizations can be made by regenerating the CSS
+    from customized SASS.
+  * Updated Google PHP API client Library to version 1.1.5
+  * Fixed bug which broke inline editing on Service Cases with associated Contacts.
+  * Fixed bug which caused an error when attempting to create a reminder from the Action update page
+  * Added back red asterisks appearing alongside required fields on record edit pages.
+  * Fixed off-by-one bugs in X2Workflow Periodic Trigger scheduling
+  * "Disable automatic record tagging?" option moved out of user preferences. Automatic record tagging can now be disabled globally from the "General Settings" admin page.
+  * Added print view feature to Opportunities
 * Tracked Bug Fixes:  
-  * [2631](http://x2software.com/index.php/bugReports/2631): Invalid address:   
-  * [2731](http://x2software.com/index.php/bugReports/2731): import mapping name  
-  * [2769](http://x2software.com/index.php/bugReports/2769): Undefined index:   
-  * [2778](http://x2software.com/index.php/bugReports/2778): AdminController and its behaviors do not have a method or closure named "fixupImportedModuleDropdowns". 
-  * [2862](http://x2software.com/index.php/bugReports/2862): Invalid argument supplied for foreach()  
-  * [2872](http://x2software.com/index.php/bugReports/2872): fopen(/public_html/protected/data/records_export.csv): failed to open stream: Permission denied  
+  * [2877](http://x2software.com/index.php/bugReports/2877): "Assigned To" grid filter cannot be used to retrieve multi-assigned records  
+  * [2888](http://x2software.com/index.php/bugReports/2888): array_merge(): Argument #1 is not an array  
+  * [2889](http://x2software.com/index.php/bugReports/2889): Invalid argument supplied for foreach()  
+  * [2891](http://x2software.com/index.php/bugReports/2891): Trying to get property of non-object  
+  * [2896](http://x2software.com/index.php/bugReports/2896): Unable to resolve the request "/index.php/contacts/contacts/weblead".  
+  * [2931](http://x2software.com/index.php/bugReports/2931): Trying to get property of non-object  
+  * [2969](http://x2software.com/index.php/bugReports/2969): AdminController cannot find the requested view "deleteDropdowns".  
+  * [2972](http://x2software.com/index.php/bugReports/2972): Property "Docs.editPermissions" is not defined.  
+  * [2980](http://x2software.com/index.php/bugReports/2980): Property "Contacts.private" is not defined.  
+  * [2984](http://x2software.com/index.php/bugReports/2984): Undefined index: notificationUsers  
 
 
 

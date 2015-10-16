@@ -284,11 +284,11 @@ if(Yii::app()->session['versionCheck']==false && $admin->updateInterval > -1 && 
         <?php $editionStart('pro'); ?>
         <div class="cell span-6"><?php echo CHtml::link(Yii::t('admin','Email Capture'),array('/admin/emailDropboxSettings')); ?><br><?php echo Yii::t('admin','Settings for the "email dropbox", which allows X2CRM to receive and record email');?></div>
         <?php $editionEnd('pro'); ?>
-        <div class="cell span-6"><?php echo CHtml::link(Yii::t('admin','Convert Template Images'),array('/admin/convertEmailTemplates')); ?><br><?php echo Yii::t('admin','Fix dead image links in email templates resulting from the 5.2/5.3 media module change.');?></div>
-        <div class="cell span-6"><?php echo CHtml::link(Yii::t('admin','Google Integration'),array('/admin/googleIntegration')); ?><br><?php echo Yii::t('admin','Enter your google app settings for Calendar/Google login');?></div>
+        <div class="cell span-6"><?php echo CHtml::link(Yii::t('admin','Convert Template Images'),array('/admin/convertEmailTemplates')); ?><br><?php echo Yii::t('admin','Fix dead image links in email templates resulting from the 5.2/5.3 media module change');?></div>
+        <div class="cell span-6"><?php echo CHtml::link(Yii::t('admin','Google Integration'),array('/admin/googleIntegration')); ?><br><?php echo Yii::t('admin','Configure and enable Google integration');?></div>
     </div>
     <div class="row">
-        <div class="cell span-6"><?php echo CHtml::link(Yii::t('admin','Twitter Integration'),array('/admin/twitterIntegration')); ?><br><?php echo Yii::t('admin','Enter your Twitter app settings for twitter widget');?></div>
+        <div class="cell span-6"><?php echo CHtml::link(Yii::t('admin','Twitter Integration'),array('/admin/twitterIntegration')); ?><br><?php echo Yii::t('admin','Enter your Twitter app settings for Twitter widget');?></div>
     </div>
 </div>
 
@@ -298,15 +298,15 @@ if(Yii::app()->session['versionCheck']==false && $admin->updateInterval > -1 && 
             echo Yii::t('admin','Data Import & Export Utilities'); ?></h2>
         <div class="cell span-6"><?php echo CHtml::link(Yii::t('admin','Import Records'),array('/admin/importModels')); ?><br><?php echo Yii::t('admin','Import records using a CSV template');?></div>
         <div class="cell span-6"><?php echo CHtml::link(Yii::t('admin','Export Records'),array('/admin/exportModels')); ?><br><?php echo Yii::t('admin','Export records to a CSV file');?></div>
-        <div class="cell span-6"><?php echo CHtml::link(Yii::t('admin','X2Translations'),array('/admin/translationManager')); ?><br><?php echo Yii::t('admin','Add, remove and update message translations in the X2CRM language packs');?></div>
+        <div class="cell span-6"><?php /* echo CHtml::link(Yii::t('admin','X2Translations'),array('/admin/translationManager')); ?><br><?php echo Yii::t('admin','Add, remove and update message translations in the X2CRM language packs'); */?></div>
+        <div class="cell span-6"><?php echo CHtml::link(Yii::t('admin','Import All Data'),array('/admin/import')); ?><br><?php echo Yii::t('admin','Import from a global export file');?></div>
     </div>
     <div class="row">
-        <div class="cell span-6"><?php echo CHtml::link(Yii::t('admin','Import All Data'),array('/admin/import')); ?><br><?php echo Yii::t('admin','Import from a global export file');?></div>
         <div class="cell span-6"><?php echo CHtml::link(Yii::t('admin','Export All Data'),array('/admin/export')); ?><br><?php echo Yii::t('admin','Export all data (useful for making backups)');?></div>
         <div class="cell span-6"><?php echo CHtml::link(Yii::t('admin','Tag Manager'),array('/admin/manageTags')); ?><br><?php echo Yii::t('admin','View a list of all used tags with options for deletion');?></div>
+        <div class="cell span-6"><?php echo CHtml::link(Yii::t('admin','Rollback Import'),array('/admin/rollbackImport')); ?><br><?php echo Yii::t('admin','Delete all records created by a previous import');?></div>
     </div>
     <div class="row">
-        <div class="cell span-6"><?php echo CHtml::link(Yii::t('admin','Rollback Import'),array('/admin/rollbackImport')); ?><br><?php echo Yii::t('admin','Delete all records created by a previous import');?></div>
         <?php $editionStart('pro'); ?>
         <div class="cell span-6"><?php echo CHtml::link(Yii::t('admin','Revert Merges'),array('/admin/undoMerge')); ?><br><?php echo Yii::t('admin','Revert record merges which users have performed in the app'); ?></div>
         <?php $editionEnd('pro'); ?>
@@ -355,11 +355,11 @@ if(Yii::app()->session['versionCheck']==false && $admin->updateInterval > -1 && 
     <div class="row">
         <div class="cell span-6"><?php echo CHtml::link(Yii::t('admin','Activity Feed Settings'),array('/admin/activitySettings')); ?><br><?php echo Yii::t('admin','Configure global settings for the activity feed');?></div>
         <div class="cell span-6">
-            <?php echo CHtml::link(Yii::t('admin','Public Info Settings'),array('/admin/publicInfo')); ?><br><?php echo Yii::t('admin','Miscellaneous settings that control publicly-visible data.'); ?>
+            <?php echo CHtml::link(Yii::t('admin','Public Info Settings'),array('/admin/publicInfo')); ?><br><?php echo Yii::t('admin','Miscellaneous settings that control publicly-visible data'); ?>
         </div>
         <?php $editionStart('pro'); ?>
         <div class="cell span-6">
-            <?php echo CHtml::link(Yii::t('admin', 'Cron Table'), array('/admin/x2CronSettings')); ?><br><?php echo Yii::t('admin', 'Control the interval at which X2CRM will check for and run scheduled tasks.'); ?>
+            <?php echo CHtml::link(Yii::t('admin', 'Cron Table'), array('/admin/x2CronSettings')); ?><br><?php echo Yii::t('admin', 'Control the interval at which X2CRM will check for and run scheduled tasks'); ?>
         </div>
         <?php $editionEnd('pro'); ?>
     </div>
@@ -370,12 +370,12 @@ if(Yii::app()->session['versionCheck']==false && $admin->updateInterval > -1 && 
         <h2 id="admin-security"><?php echo Yii::t('admin', 'Security Settings'); ?></h2>
         <?php $editionStart('pro'); ?>
         <div class="cell span-6">
-        <?php echo CHtml::link(Yii::t('admin','Lock or Unlock X2CRM'),array('/admin/lockApp')); ?><br><?php echo Yii::t('admin','Set X2CRM into maintenance mode, where only administrators can access it.');?>
+        <?php echo CHtml::link(Yii::t('admin','Lock or Unlock X2CRM'),array('/admin/lockApp')); ?><br><?php echo Yii::t('admin','Set X2CRM into maintenance mode, where only administrators can access it');?>
         </div>
         <?php $editionEnd('pro'); ?>
         <?php $editionStart('pla'); ?>
         <div class="cell span-6">
-            <?php echo CHtml::link(Yii::t('admin', 'REST API'), array('/admin/api2Settings')); ?><br><?php echo Yii::t('admin', 'Advanced API security and access control settings.'); ?>
+            <?php echo CHtml::link(Yii::t('admin', 'REST API'), array('/admin/api2Settings')); ?><br><?php echo Yii::t('admin', 'Advanced API security and access control settings'); ?>
         </div>
         <?php $editionEnd('pla'); ?>
         <?php $editionStart('pla'); ?>

@@ -86,6 +86,7 @@ class RecordAliases extends CActiveRecord {
             array('recordId', 'validateRecordId'),
             array('alias', 'validateRecordAlias'),
             array('alias', 'validateAliasUniqueness', 'on' => 'insert'),
+            array('label', 'safe'),
         );
     }
 
@@ -107,14 +108,25 @@ class RecordAliases extends CActiveRecord {
         }
     }
 
-    public function renderAlias () {
-        switch ($this->aliasType) {
-            case 'email':
-                return X2Html::renderEmailLink ($this->alias);
-            case 'phone':
-                return X2Html::renderPhoneLink ($this->alias);
-            default:
-                return CHtml::encode ($this->alias);
+    public function renderAlias ($makeLinks=true) {
+        if ($makeLinks) {
+            switch ($this->aliasType) {
+                case 'email':
+                    return X2Html::renderEmailLink ($this->alias);
+                case 'phone':
+                    return X2Html::renderPhoneLink ($this->alias);
+                case 'googlePlus':
+                    return CHtml::encode ($this->label ? $this->label : $this->alias);
+                default:
+                    return CHtml::encode ($this->alias);
+            }
+        } else {
+            switch ($this->aliasType) {
+                case 'googlePlus':
+                    return CHtml::encode ($this->label ? $this->label : $this->alias);
+                default:
+                    return CHtml::encode ($this->alias);
+            }
         }
     }
 
@@ -124,10 +136,10 @@ class RecordAliases extends CActiveRecord {
 
             $this->addError (
                 'alias', 
-                Yii::t('app', 'This record already has an {aliasType} alias with the '.
+                Yii::t('app', 'This record already has a {aliasType} alias with the '.
                     'name "{alias}"', array (
-                    '{aliasType}' => $this->aliasType,
-                    '{alias}' => $this->alias,
+                    '{aliasType}' => $this->renderAliasType (false),
+                    '{alias}' => $this->renderAlias (false),
                 )));
         }
     }
@@ -192,6 +204,13 @@ class RecordAliases extends CActiveRecord {
             '<span '.($includeTitle ? 
                 'title="'.CHtml::encode ($aliasOptions[$aliasType]).'" ' : '')
             .'class="fa '.$class.'"></span>';
+    }
+
+    public function renderAliasType ($encode=true) {
+        $options = $this->getAliasTypeOptions ();
+        $html = isset ($options[$this->aliasType]) ? $options[$this->aliasType] : '';
+        if ($encode) $html = CHtml::encode ($html);
+        return $html;
     }
 
     private $_aliasTypeOptions;

@@ -150,6 +150,9 @@ class QuotesController extends x2base {
                                 $relate->secondId = $relatedModel->id;
                                 $relate->secondType = $recordType;
                                 $relate->save();
+                                $model->createAssociatedAction (
+                                    X2Model::getAssociationType (get_class ($relatedModel)), 
+                                    $relatedModel->id);
                             }
                         }
 						return;

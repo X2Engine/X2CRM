@@ -64,7 +64,6 @@ $defaultLogRoutes = array(
         'maxLogFiles' => 10,
         'maxFileSize' => 128,
     ),
-
 );
 
 $debugLogRoutes = array(
@@ -137,6 +136,7 @@ $config = array(
         'mobile',
     ),
     'behaviors' => array('ApplicationConfigBehavior'),
+     
     // application components
     'components' => array(
         'user' => $userConfig,
@@ -165,6 +165,7 @@ $config = array(
                 '<controller:(site|admin|profile|search|notifications|studio|gallery|relationships)>/<action:\w+>/<id:\d+>' => '<controller>/<action>',
                 '<controller:(site|admin|profile|search|notifications|studio|gallery|relationships)>/<action:\w+>/id/<id:\d+>' => '<controller>/<action>',
                 '<controller:(site|admin|profile|api|search|notifications|studio|gallery|relationships)>/<action:\w+>' => '<controller>/<action>',
+                 
 
                 // REST-ful 2nd-gen API URLs
                 //

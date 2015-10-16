@@ -119,13 +119,24 @@ class TagBehaviorTest extends X2DbTestCase {
     public function testScanForTags () {
         $contact = $this->contacts ('testAnyone');
         $contact->clearTags ();
-        $tags = array ('#test', '#test2', '#test3');
-        foreach ($tags as $tag) { 
+        $expectedTags = array ('#test', '#test2', '#test3', '#test4', '#test-test');
+        $badTags = array ('#test5', '#test6', '#test7', '#test-');
+        $bgInfo = 
+'#test  #test2 #test3
+#test-test
+#test4
+#test-
+<style> 
+#test5 {
+    background: #test6
+}
+</style> <span style=" #test7 "></span>';
+        foreach (array_merge ($badTags, $expectedTags) as $tag) { 
             $this->assertFalse ($contact->hasTag ($tag, null, true));
         }
-        $contact->backgroundInfo = implode (' , ', $tags);
+        $contact->backgroundInfo = $bgInfo;
         $contactTags = $contact->scanForTags ();
-        $this->assertEquals ($tags, ArrayUtil::sort ($contactTags));
+        $this->assertEquals (ArrayUtil::sort ($expectedTags), ArrayUtil::sort ($contactTags));
     }
 
     public function testAfterSave () {

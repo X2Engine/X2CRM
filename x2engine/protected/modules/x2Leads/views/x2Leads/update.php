@@ -34,6 +34,8 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 
+$model->renderConvertedNotice ();
+
 $this->pageTitle = CHtml::encode (
     Yii::app()->settings->appName . ' - '.Yii::t('x2Leads', 'Edit Lead'));
 

@@ -38,7 +38,7 @@
  * Class intended for auto-import of {@link CActiveMock}
  * @package application.tests
  */
-class CActiveRecordBehaviorTestCase extends X2TestCase {
+abstract class CActiveRecordBehaviorTestCase extends X2TestCase {
 
 	public static function setUpBeforeClass() {
 		Yii::app()->db->createCommand('DROP TABLE IF EXISTS`'.CActiveMock::MOCK_TABLE)->execute();

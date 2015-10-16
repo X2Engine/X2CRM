@@ -76,7 +76,7 @@ class WorkflowTest extends X2DbTestCase {
         $this->assertTrue (TestingAuxLib::suLogin('testuser'));
         $status = Workflow::getWorkflowStatus ($workflow->id);
         $permissions = Workflow::getStagePermissions ($status);
-        X2_VERBOSE_MODE && print_r ($permissions);
+        X2_TEST_DEBUG_LEVEL > 1 && print_r ($permissions);
 
         // testuser does not have permission for stage 4
         $this->assertFalse ($permissions[3]);
@@ -112,35 +112,35 @@ class WorkflowTest extends X2DbTestCase {
 
         $retVal = Workflow::moveFromStageAToStageB (
             $workflow->id, 4, 5, $model, array ('4' => 'test comment'));
-        if (!$retVal[0] && X2_VERBOSE_MODE) println ($retVal[1]);
+        if (!$retVal[0] && X2_TEST_DEBUG_LEVEL > 1) println ($retVal[1]);
         $this->assertTrue ($retVal[0]);
 
         $retVal = Workflow::moveFromStageAToStageB (
             $workflow->id, 5, 1, $model);
-        if (!$retVal[0] && X2_VERBOSE_MODE) println ($retVal[1]);
+        if (!$retVal[0] && X2_TEST_DEBUG_LEVEL > 1) println ($retVal[1]);
         $this->assertTrue ($retVal[0]);
 
         $retVal = Workflow::moveFromStageAToStageB (
             $workflow->id, 1, 5, $model);
-        if (!$retVal[0] && X2_VERBOSE_MODE) println ($retVal[1]);
+        if (!$retVal[0] && X2_TEST_DEBUG_LEVEL > 1) println ($retVal[1]);
         // should fail since stage 4 requires a comment
         $this->assertFalse ($retVal[0]);
 
 
         $retVal = Workflow::moveFromStageAToStageB (
             $workflow->id, 1, 4, $model);
-        if (!$retVal[0] && X2_VERBOSE_MODE) println ($retVal[1]);
+        if (!$retVal[0] && X2_TEST_DEBUG_LEVEL > 1) println ($retVal[1]);
         $this->assertTrue ($retVal[0]);
 
         $retVal = Workflow::moveFromStageAToStageB (
             $workflow->id, 4, 1, $model);
-        if (!$retVal[0] && X2_VERBOSE_MODE) println ($retVal[1]);
+        if (!$retVal[0] && X2_TEST_DEBUG_LEVEL > 1) println ($retVal[1]);
         $this->assertTrue ($retVal[0]);
 
         $this->assertTrue (TestingAuxLib::suLogin ('testuser'));
         $retVal = Workflow::moveFromStageAToStageB (
             $workflow->id, 1, 4, $model);
-        if (!$retVal[0] && X2_VERBOSE_MODE) println ($retVal[1]);
+        if (!$retVal[0] && X2_TEST_DEBUG_LEVEL > 1) println ($retVal[1]);
         // should fail since testuser doesn't have permission to go through stage 3
         $this->assertFalse ($retVal[0]);
 
@@ -229,7 +229,7 @@ class WorkflowTest extends X2DbTestCase {
             'end' => time (),
             'workflowId' => $workflow->id,
         ), array ('range' => 'all'));
-        X2_VERBOSE_MODE && print_r ($counts);
+        X2_TEST_DEBUG_LEVEL > 1 && print_r ($counts);
         $this->assertEquals (1, array_reduce ($counts, function ($a, $b) { return $a + $b; }, 0));
         $action = Actions::model ()->findByAttributes (array (
             'workflowId' => $workflow->id,
@@ -249,7 +249,7 @@ class WorkflowTest extends X2DbTestCase {
             'end' => time (),
             'workflowId' => $workflow->id,
         ), array ('range' => 'all'));
-        X2_VERBOSE_MODE && print_r ($counts);
+        X2_TEST_DEBUG_LEVEL > 1 && print_r ($counts);
         $this->assertEquals (1, array_reduce ($counts, function ($a, $b) { return $a + $b; }, 0));
 
         // ensure that testuser cannot still see the record
@@ -259,7 +259,7 @@ class WorkflowTest extends X2DbTestCase {
             'end' => time (),
             'workflowId' => $workflow->id,
         ), array ('range' => 'all'));
-        X2_VERBOSE_MODE && print_r ($counts);
+        X2_TEST_DEBUG_LEVEL > 1 && print_r ($counts);
         $this->assertEquals (0, array_reduce ($counts, function ($a, $b) { return $a + $b; }, 0));
 
         // unless it's assigned to testuser
@@ -270,7 +270,7 @@ class WorkflowTest extends X2DbTestCase {
             'end' => time (),
             'workflowId' => $workflow->id,
         ), array ('range' => 'all'));
-        X2_VERBOSE_MODE && print_r ($counts);
+        X2_TEST_DEBUG_LEVEL > 1 && print_r ($counts);
         $this->assertEquals (1, array_reduce ($counts, function ($a, $b) { return $a + $b; }, 0));
 
         TestingAuxLib::suLogin ('admin');
@@ -319,7 +319,7 @@ class WorkflowTest extends X2DbTestCase {
             'workflowId' => $workflow->id,
         ), array ('range' => 'all'));
 
-        X2_VERBOSE_MODE && print_r ($counts);
+        X2_TEST_DEBUG_LEVEL > 1 && print_r ($counts);
 
         $_SERVER['REQUEST_METHOD'] = 'POST';
         $_SERVER['SERVER_NAME'] = 'localhost';
@@ -358,6 +358,226 @@ class WorkflowTest extends X2DbTestCase {
         return $counts;
     }
 
+    public function testModuleDefaults () {
+        Yii::app()->db->createCommand ("
+            update x2_modules set defaultWorkflow=NULL
+            where true
+        ");
+        $workflow2 = $this->workflows ('workflow2');
+        $workflow2->isDefault = false;
+        $workflow3 = $this->workflows ('workflow3');
+        $workflow3->isDefault = false;
+        $this->assertSaves ($workflow2);
+        $this->assertSaves ($workflow3);
+
+        // set defaults
+        $defaults = array (1, 2, 3);
+        $workflow2->isDefaultFor = $defaults;
+        $this->assertSaves ($workflow2);
+        $defaultWorkflows = $this->assertEquals (Yii::app()->db->createCommand ("
+            select id 
+            from x2_modules 
+            where defaultWorkflow=:id
+            order by id asc
+        ")->queryColumn (array (':id' => $workflow2->id)), $defaults);
+        $this->assertEquals (false, (bool) $workflow2->isDefault);
+
+        // update defaults
+        $workflow2 = $this->workflows ('workflow2');
+        $defaults = array (4, 5, 6);
+        $workflow2->isDefaultFor = $defaults;
+        $this->assertSaves ($workflow2);
+        $defaultWorkflows = $this->assertEquals (Yii::app()->db->createCommand ("
+            select id 
+            from x2_modules 
+            where defaultWorkflow=:id
+            order by id asc
+        ")->queryColumn (array (':id' => $workflow2->id)), $defaults);
+        $this->assertEquals (false, (bool) $workflow2->isDefault);
+
+        // clear defaults with empty array
+        $workflow2 = $this->workflows ('workflow2');
+        $defaults = array ();
+        $workflow2->isDefaultFor = $defaults;
+        $this->assertSaves ($workflow2);
+        $defaultWorkflows = $this->assertEquals (Yii::app()->db->createCommand ("
+            select id 
+            from x2_modules 
+            where defaultWorkflow=:id
+            order by id asc
+        ")->queryColumn (array (':id' => $workflow2->id)), $defaults);
+        $this->assertEquals (false, (bool) $workflow2->isDefault);
+
+        // restore defaults
+        $workflow2 = $this->workflows ('workflow2');
+        $defaults = array (4, 5, 6);
+        $workflow2->isDefaultFor = $defaults;
+        $this->assertSaves ($workflow2);
+        $defaultWorkflows = $this->assertEquals (Yii::app()->db->createCommand ("
+            select id 
+            from x2_modules 
+            where defaultWorkflow=:id
+            order by id asc
+        ")->queryColumn (array (':id' => $workflow2->id)), $defaults);
+        $this->assertEquals (false, (bool) $workflow2->isDefault);
+
+        // clear defaults with empty null
+        $workflow2 = $this->workflows ('workflow2');
+        $defaults = null;
+        $workflow2->isDefaultFor = $defaults;
+        $this->assertSaves ($workflow2);
+        $defaultWorkflows = $this->assertEquals (Yii::app()->db->createCommand ("
+            select id 
+            from x2_modules 
+            where defaultWorkflow=:id
+            order by id asc
+        ")->queryColumn (array (':id' => $workflow2->id)), array ());
+        $this->assertEquals (false, (bool) $workflow2->isDefault);
+
+        // restore defaults
+        $workflow2 = $this->workflows ('workflow2');
+        $defaults = array (4, 5, 6);
+        $workflow2->isDefaultFor = $defaults;
+        $this->assertSaves ($workflow2);
+        $defaultWorkflows = $this->assertEquals (Yii::app()->db->createCommand ("
+            select id 
+            from x2_modules 
+            where defaultWorkflow=:id
+            order by id asc
+        ")->queryColumn (array (':id' => $workflow2->id)), $defaults);
+        $this->assertEquals (false, (bool) $workflow2->isDefault);
+
+        // clear module-specific defaults by settings global defauts
+        $workflow2 = $this->workflows ('workflow2');
+        $defaults = array (Workflow::DEFAULT_ALL_MODULES);
+        $workflow2->isDefaultFor = $defaults;
+        $this->assertSaves ($workflow2);
+        $defaultWorkflows = $this->assertEquals (Yii::app()->db->createCommand ("
+            select id 
+            from x2_modules 
+            where defaultWorkflow=:id
+            order by id asc
+        ")->queryColumn (array (':id' => $workflow2->id)), array ());
+        $this->assertEquals (true, (bool) $workflow2->isDefault);
+
+        // clear global default by setting module-specific defaults
+        $workflow2 = $this->workflows ('workflow2');
+        $defaults = array (Workflow::DEFAULT_ALL_MODULES);
+        $defaults = array (4, 5, 6);
+        $workflow2->isDefaultFor = $defaults;
+        $this->assertSaves ($workflow2);
+        $defaultWorkflows = $this->assertEquals (Yii::app()->db->createCommand ("
+            select id 
+            from x2_modules 
+            where defaultWorkflow=:id
+            order by id asc
+        ")->queryColumn (array (':id' => $workflow2->id)), $defaults);
+        $this->assertEquals (false, (bool) $workflow2->isDefault);
+    }
+
+    public function testModuleDefaultsMultipleWorkflows () {
+        Yii::app()->db->createCommand ("
+            update x2_modules set defaultWorkflow=NULL
+            where true
+        ");
+        $workflow2 = $this->workflows ('workflow2');
+        $workflow2->isDefault = false;
+        $workflow3 = $this->workflows ('workflow3');
+        $workflow3->isDefault = false;
+        $this->assertSaves ($workflow2);
+        $this->assertSaves ($workflow3);
+
+        // set defaults
+        $defaults2 = array (1, 2, 3);
+        $workflow2->isDefaultFor = $defaults2;
+        $this->assertSaves ($workflow2);
+        $defaultWorkflows = $this->assertEquals (Yii::app()->db->createCommand ("
+            select id 
+            from x2_modules 
+            where defaultWorkflow=:id
+            order by id asc
+        ")->queryColumn (array (':id' => $workflow2->id)), $defaults2);
+        $this->assertEquals (false, (bool) $workflow2->isDefault);
+
+        // set defaults for another workflow
+        $workflow3 = $this->workflows ('workflow3');
+        $defaults3 = array (4, 5, 6);
+        $workflow3->isDefaultFor = $defaults3;
+        $this->assertSaves ($workflow3);
+        $defaultWorkflows = $this->assertEquals (Yii::app()->db->createCommand ("
+            select id 
+            from x2_modules 
+            where defaultWorkflow=:id
+            order by id asc
+        ")->queryColumn (array (':id' => $workflow3->id)), $defaults3);
+        $this->assertEquals (false, (bool) $workflow3->isDefault);
+
+        // defaults should be union of both sets
+        $defaultWorkflows = $this->assertEquals (Yii::app()->db->createCommand ("
+            select id 
+            from x2_modules 
+            where defaultWorkflow in (:id2, :id3)
+            order by id asc
+        ")->queryColumn (array (
+            ':id2' => $workflow2->id,
+            ':id3' => $workflow3->id
+        )), array_merge ($defaults2, $defaults3));
+
+        // set overlapping defaults
+        $workflow3 = $this->workflows ('workflow3');
+        $defaults3 = array (3, 4, 5);
+        $workflow3->isDefaultFor = $defaults3;
+        $this->assertSaves ($workflow3);
+        $defaultWorkflows = $this->assertEquals (Yii::app()->db->createCommand ("
+            select id 
+            from x2_modules 
+            where defaultWorkflow=:id
+            order by id asc
+        ")->queryColumn (array (':id' => $workflow3->id)), $defaults3);
+        $this->assertEquals (false, (bool) $workflow3->isDefault);
+
+        // old duplicate defaults should have been removed
+        $defaultWorkflows = $this->assertEquals (Yii::app()->db->createCommand ("
+            select id 
+            from x2_modules 
+            where defaultWorkflow=:id
+            order by id asc
+        ")->queryColumn (array (':id' => $workflow2->id)), array_diff ($defaults2, $defaults3));
+
+        // set global default with module specific (global should take precedent)
+        $workflow3 = $this->workflows ('workflow3');
+        $defaults3 = array (Workflow::DEFAULT_ALL_MODULES, 1);
+        $workflow3->isDefaultFor = $defaults3;
+        $this->assertSaves ($workflow3);
+        $defaultWorkflows = $this->assertEquals (Yii::app()->db->createCommand ("
+            select id 
+            from x2_modules 
+            where defaultWorkflow
+        ")->queryColumn (array (':id' => $workflow3->id)), array ());
+        $this->assertEquals (true, (bool) $workflow3->isDefault);
+
+        // set a new global default
+        $workflow2 = $this->workflows ('workflow2');
+        $defaults2 = array (Workflow::DEFAULT_ALL_MODULES);
+        $workflow2->isDefaultFor = $defaults2;
+        $this->assertSaves ($workflow2);
+        $defaultWorkflows = $this->assertEquals (Yii::app()->db->createCommand ("
+            select id 
+            from x2_modules 
+            where defaultWorkflow
+        ")->queryColumn (array (':id' => $workflow2->id)), array ());
+        $this->assertEquals (true, (bool) $workflow2->isDefault);
+        // old global should have been unset
+        $workflow3->refresh ();
+        $this->assertEquals (false, (bool) $workflow3->isDefault);
+
+        // set invalid module id
+        $workflow2 = $this->workflows ('workflow2');
+        $defaults2 = array (-2);
+        $workflow2->isDefaultFor = $defaults2;
+        $this->assertFalse ($workflow2->validate ());
+        $this->assertTrue ($workflow2->hasErrors ('isDefaultFor'));
+    }
 }
 
 ?>

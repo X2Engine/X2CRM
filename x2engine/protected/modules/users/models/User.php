@@ -451,7 +451,7 @@ class User extends CActiveRecord {
                 array_pop($recentItems);  //remove the oldest ones
             }
             $userRecord->setAttribute('recentItems', implode(',', $recentItems));
-            $userRecord->update();
+            $userRecord->update(array('recentItems'));
         }
     }
 
@@ -464,7 +464,9 @@ class User extends CActiveRecord {
      * @param boolean $makeLinks Can be set to False to disable creating links but still return the name of the linked-to object
      * @return string The rendered links
      */
-    public static function getUserLinks($users, $makeLinks = true, $useFullName = true){
+    public static function getUserLinks(
+        $users, $makeLinks = true, $useFullName = true){
+
         if(!is_array($users)){
             /* x2temp */
             if(preg_match('/^\d+$/',$users)){
@@ -491,8 +493,10 @@ class User extends CActiveRecord {
         $userCache = Yii::app()->params->userCache;
         
         foreach($users as $user){
-            if($user == 'Anyone' || $user == 'Email'){  // skip these, they aren't users
+            if($user == 'Email'){  // skip these, they aren't users
                 continue;
+            }elseif($user == 'Anyone'){
+                $links[] = Yii::t('app', 'Anyone');
             }else if(is_numeric($user)){  // this is a group
                 if(isset($userCache[$user])){
                     $group = $userCache[$user];

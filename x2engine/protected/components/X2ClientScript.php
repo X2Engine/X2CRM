@@ -282,7 +282,7 @@ class X2ClientScript extends NLSClientScript {
      * Allows css containing media queries to be added conditionally 
      */
     public function registerResponsiveCssFile ($url, $media='') {
-        if (RESPONSIVE_LAYOUT) {
+        if (AuxLib::getLayoutType () === 'responsive') {
             $this->registerCssFile (
                 $url.$this->getCacheBusterSuffix ($url), $media);
         }
@@ -292,7 +292,7 @@ class X2ClientScript extends NLSClientScript {
      * Allows css containing media queries to be added conditionally 
      */
     public function registerResponsiveCss ($id, $css, $media='') {
-        if (RESPONSIVE_LAYOUT) {
+        if (AuxLib::getLayoutType () === 'responsive') {
             $this->registerCss ($id, $css, $media);
         }
     }
@@ -646,6 +646,7 @@ class X2ClientScript extends NLSClientScript {
             'rating/jquery.rating.css',
             'fontAwesome/css/font-awesome.css',
             'bootstrap/bootstrap.css',
+            //YII_DEBUG ? 'bootstrap/bootstrap.min.css' : 'bootstrap/bootstrap.css',
             'css-loaders/load8.css',
         );
 
@@ -662,7 +663,7 @@ class X2ClientScript extends NLSClientScript {
 
         $this->registerCssFiles ('combinedCss', $cssFiles, 'screen, projection');
 
-        if (RESPONSIVE_LAYOUT) {
+        if (AuxLib::getLayoutType () === 'responsive') {
             $this->registerCssFiles ('responsiveCombinedCss', 
                 $responsiveCssFiles, 'screen, projection');
         }
@@ -842,10 +843,6 @@ class X2ClientScript extends NLSClientScript {
      * Performs all the necessary JavaScript/CSS initializations for most parts of the app.
      */
     public function registerMain(){
-        foreach(array('IS_IPAD','RESPONSIVE_LAYOUT') as $layoutConst) {
-            defined($layoutConst) or define($layoutConst,false);
-        }
-
         $fullscreen = $this->fullscreen;
         $profile = $this->profile;
         $baseUrl = $this->baseUrl;
@@ -909,7 +906,7 @@ class X2ClientScript extends NLSClientScript {
         $this->registerTestingScripts ();
         $this->registerDebuggingScripts ();
 
-        if(IS_IPAD){
+        if(AuxLib::isIPad ()){
             $this->registerScriptFile($baseUrl.'/js/jquery.mobile.custom.js');
         }
         $this->registerInitScript ();
@@ -929,10 +926,10 @@ class X2ClientScript extends NLSClientScript {
             ->registerCssFile($themeUrl.'/css/print.css', 'print')
             ->registerCoreScript('cookie');
         $this->registerCombinedCss ();
-        if(!RESPONSIVE_LAYOUT && IS_ANDROID) {
+        if(AuxLib::getLayoutType () !== 'responsive' && AuxLib::isAndroid ()) {
             $this->registerCssFile(
                 $themeUrl.'/css/androidLayout.css', 'screen, projection');
-        } elseif (IS_IPAD) {
+        } elseif (AuxLib::isIPad ()) {
             $this->registerCssFile($themeUrl.'/css/ipadLayout.css', 'screen, projection');
         }
 

@@ -728,6 +728,19 @@ X2Forms.prototype.initializeDefaultFields = function () {
     $('.x2-default-field').each (function () { that.enableDefaultText ($(this)); });
 };
 
+X2Forms.prototype.initializeProtectedFields = function () {
+    var that = this;
+    $('.x2-protected-field').each (function () { 
+        $(this).attr ('data-init-val', $(this).val ());
+        $(this).unbind ('keydown.initializeProtectedFields').
+            bind ('keydown.initializeProtectedFields', function () {
+                $(this).unbind ('keydown.initializeProtectedFields');
+                $(this).removeClass ('x2-protected-field');
+                $(this).val ('');
+            });
+    });
+};
+
 /**
  * @param mixed headerCell selector or jQuery element for headerCell in column of table
  * @param function fn function to apply to each cell in same column as headerCell in body of table
@@ -875,6 +888,7 @@ X2Forms.prototype._init = function () {
     $(function () { 
         that._setUpFormElementBehavior (); 
         that.initializeDefaultFields ();
+        that.initializeProtectedFields ();
         that.initializeMultiselectDropdowns ();
         that.initializeMultiselects ();
         that.setUpRichTextareas ();

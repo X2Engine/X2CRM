@@ -42,13 +42,8 @@ class X2ActiveGridView extends X2GridViewBase {
     public $columnOverrides = array ();
     public $includedFields = array ();
     public $excludedFields = array ();
+    public $isAdmin = false;
     protected $specialColumnNames = array();
-
-    /**
-     * @var bool $enableTags if true, tags column can be added/removed by user. Don't enable this
-     *  without adding support for tag filtering.
-     */
-    public $enableTags = false;
 
     protected $_model;
     public function getModel ($row=null, $data=null) {
@@ -70,37 +65,11 @@ class X2ActiveGridView extends X2GridViewBase {
 
     public function setSummaryText () {
         if ($this instanceof X2GridViewForSortableWidgets ||
-            $this instanceof X2GridViewLessForSortableWidgets) {
+            $this instanceof X2ActiveGridViewForSortableWidgets) {
             $this->setSummaryTextForSortableWidgets ();
             return;
         }
-
-        /* add a dropdown to the summary text that let's user set how many rows to show on each 
-           page */
-        $this->summaryText = Yii::t('app', '<span class="grid-view-summary-text">
-            <b>{start}&ndash;{end}</b> of <b>{count}</b></span>').
-            '<div class="form no-border" style="display:inline;"> '.
-            CHtml::dropDownList(
-                'resultsPerPage', 
-                Profile::getResultsPerPage(),
-                Profile::getPossibleResultsPerPage(), 
-                array(
-                    'class' => 'x2-minimal-select',
-                    'onchange' => '$.ajax ({
-                        data: {
-                            results: $(this).val ()
-                        },
-                        url: "'.$this->controller->createUrl('/profile/setResultsPerPage').'",
-                        complete: function (response) {
-                            $.fn.yiiGridView.update("'.$this->id.'", {'.
-                                (isset($this->modelName) ?
-                                    'data: {'.$this->modelName.'_page: 1},' : '') .
-                                    'complete: function () {}'.
-                            '});
-                        }
-                    });'
-                )). 
-            '</div>';
+        $this->asa ('X2BaseListViewBehavior')->setSummaryText ();
     }
 
     protected function addSpecialFieldNames () {
@@ -117,9 +86,6 @@ class X2ActiveGridView extends X2GridViewBase {
         if(!empty($this->specialColumnNames))
             $this->allFieldNames = array_merge ($this->allFieldNames, $this->specialColumnNames);
 
-        // add tags column if specified
-        if($this->enableTags)
-            $this->allFieldNames['tags'] = Yii::t('app','Tags');
     }
 
 

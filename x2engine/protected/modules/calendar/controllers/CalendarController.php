@@ -293,21 +293,22 @@ class CalendarController extends x2base {
         $googleIntegration = $admin->googleIntegration;
 
         // if google integration is activated let user choose if they want to link this calendar to a google calendar
-        if($googleIntegration){
-            require_once "protected/extensions/google-api-php-client/src/Google_Client.php";
-            require_once "protected/extensions/google-api-php-client/src/contrib/Google_CalendarService.php";
+
+        $credentials = Yii::app()->settings->getGoogleIntegrationCredentials ();
+        if($googleIntegration && $credentials){
+            require_once 'protected/integration/Google/google-api-php-client/src/Google/autoload.php';
 
             $client = new Google_Client();
             $client->setApplicationName("Google Calendar Integration");
 
             // Visit https://code.google.com/apis/console?api=calendar to generate your
             // client id, client secret, and to register your redirect uri.
-            $client->setClientId($admin->googleClientId);
-            $client->setClientSecret($admin->googleClientSecret);
+            $client->setClientId($credentials['clientId']);
+            $client->setClientSecret($credentials['clientSecret']);
             $client->setRedirectUri((@$_SERVER['HTTPS'] == 'on' ? 'https://' : 'http://').$_SERVER['HTTP_HOST'].$this->createUrl(''));
             //$client->setDeveloperKey($admin->googleAPIKey);
             $client->setAccessType('offline');
-            $googleCalendar = new Google_CalendarService($client);
+            $googleCalendar = new Google_Service_Calendar($client);
 
             if(isset($_GET['unlinkGoogleCalendar'])){ // user changed thier mind about linking their google calendar
                 unset($_SESSION['token']);
@@ -418,10 +419,6 @@ class CalendarController extends x2base {
             $clause .= "OR (associationType = \"media\") "; // add media actions
         if(in_array('completed', $filter))
             $clause .= "OR (complete = \"Yes\") "; // add completed actions
-        if(in_array('email', $filter))
-            $clause .= "OR (type IS NULL OR type = \"email\") "; // add emails
-        if(in_array('attachment', $filter))
-            $clause .= "OR (type IS NULL OR type = \"attachment\") "; // add attachments
         $clause .= ")";
         return $clause;
     }
@@ -1125,8 +1122,8 @@ class CalendarController extends x2base {
         if($googleIntegration){
 //            $timezone = date_default_timezone_get();
 //            require_once "protected/extensions/google-api-php-client/src/Google_Client.php";
-//            require_once "protected/extensions/google-api-php-client/src/contrib/Google_CalendarService.php"; // for google calendar sync
-//            require_once 'protected/extensions/google-api-php-client/src/contrib/Google_Oauth2Service.php'; // for google oauth login
+//            require_once "protected/extensions/google-api-php-client/src/contrib/Google_Service_Calendar.php"; // for google calendar sync
+//            require_once 'protected/extensions/google-api-php-client/src/contrib/Google_Service_Oauth2.php'; // for google oauth login
 //            date_default_timezone_set($timezone);
 
             $auth = new GoogleAuthenticator();
@@ -1153,7 +1150,7 @@ class CalendarController extends x2base {
                             foreach($calList['items'] as $cal){
                                 $googleCalendarList[$cal['id']] = $cal['summary'];
                             }
-                        }catch(Google_ServiceException $e){
+                        }catch(Google_Service_Exception $e){
                             if($e->getCode() == '403'){
                                 $errors[] = $e->getMessage();
                                 Yii::app()->user->setFlash('error', $e->getMessage());
@@ -1184,7 +1181,7 @@ class CalendarController extends x2base {
                             }
 
 
-                        }catch(Google_ServiceException $e){
+                        }catch(Google_Service_Exception $e){
                             if($e->getCode() == '403'){
                                 $errors[] = 'Google Calendar API access has not been configured.';
                                 Yii::app()->user->setFlash(
@@ -1207,7 +1204,7 @@ class CalendarController extends x2base {
                         $googleCalendarList = null;
                     }
                 }
-            }catch(Google_AuthException $e){
+            }catch(Google_Auth_Exception $e){
                 $auth->flushCredentials();
                 $auth->setErrors($e->getMessage());
                 $client = null;
@@ -1283,7 +1280,7 @@ class CalendarController extends x2base {
         $criteria->params[':unameRegex'] = $permissionsBehavior::getUserNameRegex($calendarUser);
         // Action type filters:
         $criteria->addCondition(self::constructFilterClause($filter));
-        $criteria->addCondition("`type` IS NULL OR `type`='' OR `type`!='quotes'");
+        $criteria->addCondition("`type` IS NULL OR `type`='' OR `type`='event'");
         $criteria->addCondition('(`dueDate` >= :start1 AND `dueDate` <= :end1) '
                 .'OR (`completeDate` >= :start2 AND `completeDate` <= :end2)');
         $criteria->params = array_merge($criteria->params, array(

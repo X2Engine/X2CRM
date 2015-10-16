@@ -64,6 +64,7 @@ abstract class WidgetLayout extends JSONEmbeddedModel {
             // used for widget cloning
             $widgetClassName = preg_replace ("/_\w+$/", '', $key);
             if (is_array ($val) && isset ($currentFields[$key]) && 
+                isset ($expectedFields[$widgetClassName]) &&
                 is_array ($expectedFields[$widgetClassName])) {
 
                 // JSON property structure definitions can be nested 

@@ -14,6 +14,8 @@ CREATE TABLE x2_workflows(
     colors      TEXT /* contains JSON of stage colors */
 ) ENGINE InnoDB COLLATE = utf8_general_ci;
 /*&*/
+ALTER TABLE `x2_modules` ADD CONSTRAINT FOREIGN KEY (`defaultWorkflow`) REFERENCES x2_workflows(`id`) ON UPDATE CASCADE ON DELETE SET NULL;
+/*&*/
 CREATE TABLE x2_workflow_stages(
     id              INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
     workflowId      INT NOT NULL,

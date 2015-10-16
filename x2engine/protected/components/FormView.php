@@ -139,6 +139,13 @@ class FormView extends RecordView {
                 'dialogTitles' => QuickCreateRelationshipBehavior::getDialogTitlesForModels(
                     $this->_quickCreateButtonTypes),
                 'defaults' => $this->defaultsByRelatedModelType
+            ),
+            'translations' => array (
+                'title' => Yii::t('app', 'Discard unsaved changes?'),
+                'message' => 
+                    Yii::t('app', 'You have unsaved changes to this record. Discard changes?'),
+                'cancel' => Yii::t('app', 'Cancel'),
+                'confirm' => Yii::t('app', 'Yes'),
             )
         ));
     }
@@ -166,7 +173,8 @@ class FormView extends RecordView {
                     'baseUrl' => Yii::app()->baseUrl,
                     'js' => array (
                         'js/Relationships.js'
-                    )
+                    ),
+                    'depends' => array ('X2Widget')
                 )
             ));
         }
@@ -176,7 +184,8 @@ class FormView extends RecordView {
 
     public function getMainOptions () {
         return array (
-            'class' => 'x2-layout form-view'
+            'class' => 'x2-layout form-view',
+            'id' => $this->namespace . 'form-view',
         );
     }
 
@@ -192,7 +201,7 @@ class FormView extends RecordView {
     }
 
 
-    public function renderAttribute ($item, $field) {
+    public function renderAttribute ($item, Fields $field) {
         $fieldName = preg_replace('/^formItem_/u', '', $item['name']);
         
         $html = X2Html::openTag('div', array(
@@ -207,7 +216,8 @@ class FormView extends RecordView {
             $html .= $this->model->renderInput($fieldName, array(
                 'tabindex' => $item['tabindex'],
                 'disabled' => $item['readOnly'],
-                'style' => $item['height']
+                'style' => $item['height'],
+                'id' => $this->namespace.X2Html::resolveId ($this->model, $fieldName),
             ));
        }
 
@@ -249,6 +259,10 @@ class FormView extends RecordView {
         $layout = FormLayout::model()->findByAttributes($attributes);
 
         return CJSON::decode($layout->layout);
+    }
+
+    public function renderLabel ($field) {
+        return CHtml::activeLabelEx ($this->model, $field->fieldName);
     }
 }
 

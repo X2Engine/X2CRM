@@ -19,6 +19,10 @@ CREATE TABLE x2_x2leads(
     lastUpdated        BIGINT,
     lastActivity       BIGINT,
     updatedBy          VARCHAR(50),
+    converted          TINYINT DEFAULT 0,
+    conversionDate     BIGINT,
+    convertedToType    VARCHAR(255),
+    convertedToId      INT,
     UNIQUE(nameId),
     INDEX(accountName)
 ) COLLATE = utf8_general_ci;
@@ -40,6 +44,10 @@ VALUES
 ('X2Leads', 'quoteAmount',       'Quote Amount',        0, 0, 'currency',   0, 0, NULL,       0, 0, '',       0, 1, NULL),
 ('X2Leads', 'salesStage',        'Sales Stage',         0, 0, 'dropdown',   0, 0, '105',      0, 0, '',       0, 1, NULL),
 ('X2Leads', 'expectedCloseDate', 'Expected Close Date', 0, 0, 'date',       0, 0, NULL,       0, 0, '',       0, 1, NULL),
+('X2Leads', 'conversionDate', 'Conversion Date', 0, 0, 'date',       0, 1, NULL,       0, 0, '',       0, 1, NULL),
+('X2Leads', 'converted',        'Converted',          0, 0, 'boolean', 0, 1, NULL,       0, 0, '',       0, 1, NULL),
+('X2Leads', 'convertedToType',        'Converted To',          0, 0, 'varchar', 0, 1, NULL,       0, 0, '',       0, 1, NULL),
+('X2Leads', 'convertedToId',        'Converted To',          0, 0, 'varchar', 0, 1, NULL,       0, 0, '',       0, 1, NULL),
 ('X2Leads', 'probability',       'Probability',         0, 0, 'percentage', 0, 0, NULL,       0, 0, '',       0, 1, NULL),
 ('X2Leads', 'leadSource',        'Lead Source',         0, 0, 'dropdown',   0, 0, '103',      0, 0, '',       0, 1, NULL),
 ('X2Leads', 'description',       'Description',         0, 0, 'text',       0, 0, NULL,       1, 0, 'Medium', 0, 1, NULL),

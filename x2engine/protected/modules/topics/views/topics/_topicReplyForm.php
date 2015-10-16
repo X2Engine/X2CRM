@@ -115,7 +115,7 @@ Yii::app()->clientScript->registerScript('topic-reply-file-upload','
 ',CClientScript::POS_READY);
 
 ?>
-<div class='form x2-layout-island'>
+<div class='form'>
 <?php
 
 $form = $this->beginWidget('X2ActiveForm', array('formModel' => $model));

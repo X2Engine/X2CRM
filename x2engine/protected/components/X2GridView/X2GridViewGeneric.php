@@ -76,15 +76,23 @@ class X2GridViewGeneric extends X2GridViewBase {
                 $column['id'] = $this->namespacePrefix.$column['id'];
             }
             if (!isset ($this->gvSettings[$name])) {
+                if ($name === 'gvCheckbox') {
+                    $column = $this->getGvCheckboxColumn (null, $column);
+                }
                 $unsortedColumns[] = $column;
                 continue;
             }
             $width = $this->gvSettings[$name];
             $width = $this->formatWidth ($width);
-            $column['headerHtmlOptions'] = array('style'=>'width:'.$width.';');
-            $column['htmlOptions'] = X2Html::mergeHtmlOptions (
-                isset ($column['htmlOptions']) ? 
-                    $column['htmlOptions'] : array (), array ('width' => $width));
+            if ($width) {
+                $column['headerHtmlOptions'] = array_merge (
+                    isset ($column['headerHtmlOptions']) ? $column['headerHtmlOptions'] : array (),
+                    array('style'=>'width:'.$width.';')
+                );
+                $column['htmlOptions'] = X2Html::mergeHtmlOptions (
+                    isset ($column['htmlOptions']) ? 
+                        $column['htmlOptions'] : array (), array ('width' => $width));
+            }
         }
         unset ($column); // unset lingering reference
 

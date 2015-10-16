@@ -156,8 +156,10 @@ class ApplicationConfigBehavior extends CBehavior {
     public function getJSGlobalsSetupScript ($profile=null) {
         if ($profile) {
             $notificationSound = '';
-            if(!empty($profile->notificationSound)){
-                $notificationSound = $this->owner->baseUrl.$this->owner->request->scriptUrl.'/media/media/getFile/'.$profile->notificationSound;
+            if(!empty($profile->notificationSound) && is_numeric ($profile->notificationSound)) {
+                $notificationSound = Yii::app()->createExternalUrl('/media/media/getFile', array(
+                    'id' => $profile->notificationSound,
+                ));
             }
         }
         return '
@@ -182,44 +184,10 @@ class ApplicationConfigBehavior extends CBehavior {
                 x2.DEBUG = '.(YII_DEBUG ? 'true' : 'false').';
                 x2.UNIT_TESTING = '.(YII_UNIT_TESTING ? 'true' : 'false').';
                 x2.notifUpdateInterval = '.$this->settings->chatPollTime.';
-                x2.isAndroid = '.(IS_ANDROID ? 'true' : 'false').';
-                x2.isIPad = '.(IS_IPAD ? 'true' : 'false').';
+                x2.isAndroid = '.(AuxLib::isAndroid () ? 'true' : 'false').';
+                x2.isIPad = '.(AuxLib::isIPad () ? 'true' : 'false').';
             }) ();
         ';
-    }
-
-    /**
-     * Checks if user is on mobile device and sets appropriate constants 
-     */
-    private function checkForMobileDevice () {
-        $userAgentStr = strtolower($this->owner->request->userAgent);
-        $isAndroid = preg_match('/android/', $userAgentStr);
-        if($isAndroid){
-            define('IS_ANDROID', true);
-        }else{
-            define('IS_ANDROID', false);
-        }
-        $isIPad = preg_match('/ipad/', $userAgentStr);
-        if($isIPad){
-            //define('IS_IPAD', true);
-            define('IS_IPAD', false);
-        }else{
-            define('IS_IPAD', false);
-        }
-    }
-
-    /**
-     * Checks if responsive layout should be used based on requested action
-     */
-    private function checkResponsiveLayout () {
-        if (AuxLib::isIE8 () || strpos ($this->owner->request->getPathInfo(), 'admin') === 0 ||
-            preg_match ('/flowDesigner(\/\d+)?$/', $this->owner->request->getPathInfo())) {
-
-            define('RESPONSIVE_LAYOUT', false);
-        } else {
-            define('RESPONSIVE_LAYOUT', true);
-            //define('RESPONSIVE_LAYOUT', false);
-        }
     }
 
     /**
@@ -253,6 +221,7 @@ class ApplicationConfigBehavior extends CBehavior {
         if(!$noSession){
             if($this->owner->request->getPathInfo() == 'notifications/get'){ // skip all the loading if this is a chat/notification update
                 Yii::import('application.models.Events');
+                Yii::import('application.components.X2ActiveRecordBehavior');
                 Yii::import('application.components.X2UrlManager');
                 Yii::import('application.components.Formatter');
                 Yii::import('application.components.FieldFormatter');
@@ -410,6 +379,8 @@ class ApplicationConfigBehavior extends CBehavior {
                         }
                     }else{
                         $this->owner->user->logout(false);
+                        $this->owner->getRequest ()->redirect (
+                            $this->owner->createUrl('site/login'));
                     }
                 }else{
                     // Guest
@@ -456,8 +427,6 @@ class ApplicationConfigBehavior extends CBehavior {
 
         // Set base path and theme path globals for JS (web UI only)
         if(!$noSession){
-            $this->checkForMobileDevice ();
-            $this->checkResponsiveLayout ();
             if($notGuest){
                 $profile = $this->owner->params->profile;
                 if(isset($profile)){

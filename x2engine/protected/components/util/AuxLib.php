@@ -191,6 +191,14 @@ class AuxLib {
         Yii::log ($logMessage, 'error', 'application.debug');
     }
 
+    /**
+     * Generic version of debugLogR 
+     */
+    public static function logR ($arr, $route) {
+        $logMessage = print_r ($arr, true);
+        Yii::log ($logMessage, 'error', 'application.'.$route);
+    }
+
     public static function debugLogExport ($arr) {
         if (!YII_DEBUG) return;
         $logMessage = var_export ($arr, true);
@@ -205,6 +213,27 @@ class AuxLib {
     public static function isIE () {
         $userAgentStr = strtolower(Yii::app()->request->userAgent);
         return preg_match('/msie/i', $userAgentStr);
+    }
+
+    public static function isAndroid () {
+        $userAgentStr = strtolower(Yii::app()->request->userAgent);
+        return preg_match('/android/', $userAgentStr);
+    }
+
+    public static function isIPad () {
+        $userAgentStr = strtolower(Yii::app()->request->userAgent);
+        return preg_match('/ipad/', $userAgentStr);
+    }
+
+    public static function getLayoutType () {
+        $pathInfo = strtolower(Yii::app()->request->getPathInfo ());
+        if (AuxLib::isIE8 () || strpos ($pathInfo, 'admin') === 0 ||
+            preg_match ('/flowDesigner(\/\d+)?$/', $pathInfo)) {
+
+            return 'static';
+        } else {
+            return 'responsive';
+        }
     }
 
     /**

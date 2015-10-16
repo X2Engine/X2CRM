@@ -593,19 +593,21 @@ auxlib.confirm = function (callback, translations) {
     $('<div>').html (translations.message).dialog ({ 
         title: translations.title,
         height: 140,
+        width: 500,
         resizable: false,
+        modal: true,
         buttons: [
-            {    
-                text: translations.cancel,
-                click: function () {
-                    $(this).dialog ('close');
-                }
-            },
             {    
                 text: translations.confirm,
                 click: function () {
                     $(this).dialog ('close');
                     callback ();
+                }
+            },
+            {    
+                text: translations.cancel,
+                click: function () {
+                    $(this).dialog ('close');
                 }
             }
         ],

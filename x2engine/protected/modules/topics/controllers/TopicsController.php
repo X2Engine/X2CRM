@@ -263,9 +263,10 @@ class TopicsController extends x2base {
         $orderStr = $model->getOrder($order);
         $dataProvider = new CActiveDataProvider('Topics', array(
             'criteria' => array(
-                'select' => 't.*, (SELECT COUNT(id) FROM x2_topic_replies WHERE topicId = t.id) AS replyCount',
+                'select' => 't.*, (SELECT COUNT(id) FROM x2_topic_replies WHERE topicId = t.id) AS replyCount, min(lastPost.createDate) as minCreateDate',
                 'with' => array('lastPost'),
                 'order' => $orderStr,
+                'group' => 'lastPost.topicId',
             ),
             'pagination' => array(
                 'pageSize' => Profile::getResultsPerPage(),

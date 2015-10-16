@@ -1,15 +1,17 @@
-<?php
-return array(
-    
-'Edit Lead'=>'ویرایش سرب',
-'View Lead'=>'نمایش سرب',
-'Leads:'=>'فرصت های:',
-'{leads} List'=>'{leads} فهرست',
-'Create {lead}'=>'درست {lead}',
-'Edit {lead}'=>'ویرایش {lead}',
-'Delete {lead}'=>'حذف {lead}',
-'Convert to {contact}'=>'تبدیل به {contact}',
-'Convert to {opportunity}'=>'تبدیل به {opportunity}',
-'Import {leads}'=>'واردات {leads}',
-'Export {leads}'=>'صادرات {leads}',
+<?php return array (
+  'Edit Lead' => 'ویرایش سرب',
+  'View Lead' => 'نمایش سرب',
+  'Leads:' => 'فرصت های:',
+  '{leads} List' => '{leads} فهرست',
+  'Create {lead}' => 'درست {lead}',
+  'Edit {lead}' => 'ویرایش {lead}',
+  'Delete {lead}' => 'حذف {lead}',
+  'Convert to {contact}' => 'تبدیل به {contact}',
+  'Convert to {opportunity}' => 'تبدیل به {opportunity}',
+  'Import {leads}' => 'واردات {leads}',
+  'Export {leads}' => 'صادرات {leads}',
+  'Conversion Date' => 'تبدیل تاریخ',
+  'Converted' => 'تبدیل',
+  'Converted To' => 'تبدیل شده به',
+  'This record has been converted. To view the new record, click {here}.' => 'این رکورد تبدیل شده است. برای مشاهده رکورد جدید، کلیک کنید {here}',
 );

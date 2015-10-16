@@ -49,6 +49,12 @@
 abstract class JSONEmbeddedModel extends CModel {
 
     /**
+     * Whether or not admin rights are required to access this model
+     * @var bool
+     */
+    public $requiresAdmin = false;
+
+    /**
      * Stores derived value returned by {@link attributeNames()}
      * @var type
      */
@@ -71,6 +77,69 @@ abstract class JSONEmbeddedModel extends CModel {
      * @var CActiveRecord
      */
     public $exoModel;
+
+    public static function getProtectedFieldPlaceholder () {
+        return Yii::t('app', 'Protected field value');
+    }
+
+    public function getProtectedFields () {
+        return array ();
+    }
+
+    /**
+     * Overridden to skip placeholder values 
+     */
+    public function setAttributes ($values, $safeOnly=true) {
+        if(!is_array($values))
+            return;
+        $protectedFields = array_flip ($this->getProtectedFields ());
+
+        foreach ($values as $fieldName => $value) {
+            if (isset ($protectedFields[$fieldName]) && 
+                $value === $this->getProtectedFieldPlaceholder ()) {
+
+                unset ($values[$fieldName]);
+            }
+        }
+        return parent::setAttributes ($values, $safeOnly);
+    }
+
+    public function renderProtectedInput ($field) {
+        $htmlOptions = array ();
+        if ($this->$field) {
+            $htmlOptions['class'] = 'x2-protected-field';
+            $this->$field = self::getProtectedFieldPlaceholder ();
+        }
+        Yii::app()->clientScript->registerScript('renderProtectedInput',"
+        ");
+        echo CHtml::activeTextField($this, $field, $this->htmlOptions($field, $htmlOptions));
+    }
+
+    public function renderInput ($field) {
+        $protectedFields = array_flip ($this->getProtectedFields ());
+        if (isset ($protectedFields[$field])) {
+            echo $this->renderProtectedInput ($field);
+        } else { 
+            echo CHtml::activeTextField($this, $field, $this->htmlOptions($field));
+        }
+    }
+
+    public function renderForm () {
+		echo '<br />';
+		echo '<br />';
+		echo CHtml::tag ('h3', array (), $this->exoModel->getAttributeLabel ($this->exoAttr));
+		echo '<hr />';
+		$this->renderInputs();
+		echo '<br />';
+		echo '<br />';
+    }
+
+    /**
+     * Values of properties of parent model to set when embedded model is created
+     */
+    public function getMetaData () {
+        return array ();
+    }
 
     public function attributeNames() {
         if(!isset($this->_attributeNames)) {
@@ -119,7 +188,7 @@ abstract class JSONEmbeddedModel extends CModel {
      * @param type $options
      */
     public function htmlOptions($name,$options=array()) {
-        return array_merge($options,array('name'=>$this->resolveName($name)));
+        return X2Html::mergeHtmlOptions ($options,array('name'=>$this->resolveName($name)));
     }
 
 }

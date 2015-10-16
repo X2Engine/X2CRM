@@ -130,7 +130,7 @@ abstract class RecordView extends X2Widget {
      * @param  Field $field field object being rendered
      * @return string        HTML to add to the form
      */
-    public abstract function renderAttribute ($item, $field);
+    public abstract function renderAttribute ($item, Fields $field);
 
     /**
      * Gets the layout of the form.
@@ -186,7 +186,7 @@ abstract class RecordView extends X2Widget {
     }
 
     public function getPackages () {
-        return array(
+        return array_merge (parent::getPackages (), array(
             'RecordViewJS' => array (
                 'baseUrl' => Yii::app()->baseUrl,
                 'js' => array (
@@ -194,7 +194,7 @@ abstract class RecordView extends X2Widget {
                 ),
                 'depends' => array('auxlib')
             )
-        );
+        ));
     }
 
     public function getJSClassParams () {
@@ -257,7 +257,7 @@ abstract class RecordView extends X2Widget {
      * HtmlOptions for the .formItem tags 
      * @return array HTML Attributes
      */
-    public function getItemOptions ($item, $field) {
+    public function getItemOptions ($item, Fields $field) {
 
         // noLabel, topLabel, leftLabel, inlineLabel
         $labelClass = $item['labelType'].'Label';
@@ -461,7 +461,7 @@ abstract class RecordView extends X2Widget {
      * Renders the None Label type.
      * Omits the label and increases colspan to to 2
      */
-    public function renderNoneLabel ($item, $field) {
+    public function renderNoneLabel ($item, Fields $field) {
         $html  = '';
 
         $html .= "<td class='attribute' colspan='2'>";
@@ -474,7 +474,7 @@ abstract class RecordView extends X2Widget {
     /**
      * @see  renderNoneLabel
      */
-    public function renderInlineLabel ($item, $field) {
+    public function renderInlineLabel ($item, Fields $field) {
         return $this->renderNoneLabel($item, $field);
     }
 
@@ -486,7 +486,7 @@ abstract class RecordView extends X2Widget {
      * @param  [type] $field [description]
      * @return [type]        [description]
      */
-    public function renderTopLabel ($item, $field) {
+    public function renderTopLabel ($item, Fields $field) {
         $html  = '';
         
         $html .= '<tr class="formItem topLabel">';
@@ -504,7 +504,7 @@ abstract class RecordView extends X2Widget {
     /**
      * Renders the most common label, LeftLabel
      */
-    public function renderLeftLabel ($item, $field) {
+    public function renderLeftLabel ($item, Fields $field) {
         $html  = '';
         
         $html .= "<td class='label' >";
@@ -560,7 +560,7 @@ abstract class RecordView extends X2Widget {
      * Returns if the form or a specific field can be edited. 
      * If Field is empty, it returns permissions of whole form
      */
-    public function canEdit($field) {
+    public function canEdit(Fields $field) {
         if(Yii::app()->params->isAdmin){
             return true;
         }

@@ -42,6 +42,21 @@ class X2CheckBoxColumn extends CCheckBoxColumn {
     public $headerHtmlOptions =  array ();
     public $headerCheckBoxHtmlOptions =  array ();
 
+    public $width;
+
+    public function init () {
+        // allows width to be set for column using width property
+        if ($this->width) {
+            $this->headerHtmlOptions['style'] = isset ($this->headerHtmlOptions['style']) ? 
+                $this->headerHtmlOptions['style'] : '';
+            $this->htmlOptions['style'] = isset ($this->htmlOptions['style']) ? 
+                $this->htmlOptions['style'] : '';
+            $this->headerHtmlOptions['style'] .= 'width: '.$this->width.';';
+            $this->htmlOptions['style'] .= 'width: '.$this->width.';';
+        }
+        return parent::init ();
+    }
+
     /**
 	 * Renders the header cell content.
 	 * This method will render a checkbox in the header when {@link selectableRows} is greater than 1

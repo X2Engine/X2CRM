@@ -1,4 +1,4 @@
-/*****************************************************************************************
+/*!***************************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2015 X2Engine Inc.
  * 
@@ -194,6 +194,11 @@ select#notificationSounds {
 #save-changes {
     margin-bottom: 5px;
 }
+
+#upload-login-sound-button {
+    margin-right: 10px;
+}
+
 
 #prefs-save-theme-button,
 #prefs-create-theme-button,

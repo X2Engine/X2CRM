@@ -1,4 +1,4 @@
-/*****************************************************************************************
+/*!***************************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2015 X2Engine Inc.
  * 
@@ -33,6 +33,8 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 
+@import "standards";
+
 .x2-gridview-mass-action-outer {
     position: relative;
 }
@@ -40,6 +42,17 @@
 @media (max-width: 820px) and (min-width: 658px) {
     .grid-view.fullscreen .x2-gridview-top-pager {
         display: none;
+    }
+}
+
+@include underThreshold ($mobileThreshold) {
+    .grid-view {
+        .x2-gridview-mass-action-outer {
+            display: inline-block;
+            position: relative;
+            top: 21px;
+            left: -50px;
+        }
     }
 }
 
@@ -193,15 +206,17 @@ buttons
 more drop down list
 */
 
-.x2-gridview-mass-action-buttons .more-drop-down-list.stuck {
-    position: absolute !important;
-    /*top: 74px !important;*/
-}
 
-.x2-gridview-mass-action-buttons .more-drop-down-list {
+body > .grid-view-more-drop-down-list {
     position: absolute;
+    &.stuck {
+        position: absolute !important;
+    }
+    &.fixed-header {
+        position: fixed;
+    }
     top: 67px;
-    z-index: 99;
+    z-index: 1000;
     list-style-type: none;
     background: #fff;
     border: 1px solid #999;
@@ -210,16 +225,15 @@ more drop down list
     box-shadow: 0 0 15px 0 rgba(0,0,0,0.5);
     padding: 5px 0px 5px 0px;
     clip: rect(0px,1000px,1000px,-10px);
-}
-
-.x2-gridview-mass-action-buttons .more-drop-down-list li {
-    line-height: 17px;
-    padding: 0 10px 0 10px;
-    cursor: default;
-    color: black;
-}
-.x2-gridview-mass-action-buttons .more-drop-down-list li:hover {
-    background: #eee;
+    li {
+        line-height: 17px;
+        padding: 0 10px 0 10px;
+        cursor: default;
+        color: black;
+        &:hover {
+            background: #eee;
+        }
+    }
 }
 
 /*

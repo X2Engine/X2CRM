@@ -40,6 +40,11 @@ class X2ActiveRecord extends CActiveRecord {
 
     private $_formatter;
 
+    public function rules () {
+        $rules = $this->getBehaviorRules ();
+        return $rules;
+    }
+
     /**
      * @return array All error messages for this model as an array of strings 
      */
@@ -91,6 +96,18 @@ class X2ActiveRecord extends CActiveRecord {
 
         $formatter = $this->getFormatter ();
         return $formatter->renderAttribute ($fieldName, $makeLinks, $textOnly, $encode);
+    }
+
+    protected function getBehaviorRules () {
+        $rules = array ();
+        foreach ($this->behaviors () as $name => $config) {
+            if ($this->asa ($name) && $this->asa ($name)->getEnabled () && 
+                $this->asa ($name) instanceof X2ActiveRecordBehavior) {
+
+                $rules = array_merge ($this->asa ($name)->rules (), $rules);
+            }
+        }
+        return $rules;
     }
 
 }

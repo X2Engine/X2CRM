@@ -77,7 +77,9 @@ x2.FileUploader = (function() {
             },
 
             // Accepted File MIME type (defaults to image/*)
-            acceptedFiles: ''
+            acceptedFiles: '',
+            // max file size in mb
+            maxFileSize: 256
         };
         auxlib.applyArgs (this, defaultArgs, argsDict);
         this.element = $('.file-uploader#'+this.id);
@@ -114,7 +116,7 @@ x2.FileUploader = (function() {
         this.dropzone = new Dropzone (selector, {
             url: uploadUrl,
             paramName: 'upload',
-            maxFilesize: 2,
+            maxFilesize: this.maxFileSize,
             acceptedFiles: this.acceptedFiles,
             dictFallbackText: ""
         });

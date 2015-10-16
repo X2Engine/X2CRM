@@ -1,4 +1,4 @@
-/*****************************************************************************************
+/*!***************************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2015 X2Engine Inc.
  * 
@@ -31,35 +31,4 @@
  * X2Engine" logo. If the display of the logo is not reasonably feasible for
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2Engine".
- *****************************************************************************************/
-/* line 36, ../../../compass/themes/x2engine/css/twitter.scss */
-#twitter_container {
-  padding-bottom: 10px;
-}
-
-/* line 40, ../../../compass/themes/x2engine/css/twitter.scss */
-#twitter_update_list {
-  height: 200px;
-  padding: 5px;
-  overflow: scroll-y;
-  background: white;
-}
-/* line 45, ../../../compass/themes/x2engine/css/twitter.scss */
-#twitter_update_list li {
-  list-style: none;
-  padding: 0 0 5px 0;
-  border-bottom: dotted 1px #aaa;
-}
-/* line 49, ../../../compass/themes/x2engine/css/twitter.scss */
-#twitter_update_list li:last-child {
-  border-bottom: none;
-}
-/* line 52, ../../../compass/themes/x2engine/css/twitter.scss */
-#twitter_update_list li a {
-  color: #06c;
-  text-decoration: none;
-}
-/* line 55, ../../../compass/themes/x2engine/css/twitter.scss */
-#twitter_update_list li a:hover {
-  color: #09f;
-}
+ *****************************************************************************************/#twitter_container{padding-bottom:10px}#twitter_update_list{height:200px;padding:5px;overflow:scroll-y;background:white}#twitter_update_list li{list-style:none;padding:0 0 5px 0;border-bottom:dotted 1px #aaa}#twitter_update_list li:last-child{border-bottom:none}#twitter_update_list li a{color:#06c;text-decoration:none}#twitter_update_list li a:hover{color:#09f}

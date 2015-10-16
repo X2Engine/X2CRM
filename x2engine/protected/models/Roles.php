@@ -235,6 +235,7 @@ class Roles extends CActiveRecord {
             'id' => Yii::t('admin', 'ID'),
             'name' => Yii::t('admin', 'Name'),
             'users' => Yii::t('admin', 'Users'),
+            'timeout' => Yii::t('admin','Timeout'),
         );
     }
 
@@ -344,9 +345,9 @@ class Roles extends CActiveRecord {
         );
 
         $fieldIds = Yii::app()->db->createCommand()
-                ->select('id')
-                ->from('x2_fields')
-                ->queryColumn();
+            ->select('id')
+            ->from('x2_fields')
+            ->queryColumn();
 
         $ret['edit'] = array_intersect($this->_tmpViewPermissions, $this->_tmpEditPermissions);
         $ret['view'] = array_diff($this->_tmpViewPermissions, $this->_tmpEditPermissions);

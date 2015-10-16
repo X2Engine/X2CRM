@@ -227,7 +227,7 @@ x2.<?php echo $namespacePrefix; ?>lineItems = new x2.LineItems ({
     <tr class='subtotal-row'>
         <td class='first-cell'> </td>
         <td colspan='<?php echo $mini ? 2 : 4; ?>'> </td>
-        <td class="text-field"><span style="font-weight:bold"> Subtotal: </span></td>
+        <td class="text-field"><span style="font-weight:bold">  <?php echo Yii::t('quotes','Subtotal:');?> </span></td>
         <td class="subtotal-container input-cell">
             <input type="text" readonly='readonly' onfocus='this.blur();'
              style="font-weight:bold" id="<?php echo $namespacePrefix ?>-subtotal"  
@@ -242,7 +242,7 @@ x2.<?php echo $namespacePrefix; ?>lineItems = new x2.LineItems ({
     <tr>
         <td class='first-cell'> </td>
         <td colspan='<?php echo $mini ? 2 : 4; ?>'> </td>
-        <td class='text-field'><span style="font-weight:bold"> Total: </span></td>
+        <td class='text-field'><span style="font-weight:bold"> <?php echo Yii::t('quotes','Total:');?> </span></td>
         <td class="total-container input-cell">
             <input type="text" readonly='readonly' onfocus='this.blur();' style="font-weight:bold" 
              id="<?php echo $namespacePrefix; ?>-total" class='total' name="Quote[total]">

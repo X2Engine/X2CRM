@@ -36,6 +36,26 @@
 
 class X2FlowTestingAuxLib {
 
+    private static function _checkTrace ($tree) {
+        while (true) {
+            $complete = true;
+            foreach ($tree as $action) {
+                if ($action[0] === 'X2FlowSwitch') {
+                    $tree = $action[2];
+                    $complete = false;
+                    break;
+                } elseif ($action[0] === 'X2FlowSplitter') {
+                    $success = self::_checkTrace ($action[2]);
+                    if (!$success) return false;
+                } elseif (!$action[1][0]) {
+                    return false;
+                }
+            }
+            if ($complete) break;
+        }
+        return true;
+    }
+
     /**
      * Checks each entry in triggerLog looking for errors
      * @param array $trace One of the return value of executeFlow ()
@@ -49,18 +69,8 @@ class X2FlowTestingAuxLib {
                 return false;
             }
             $tree = $tree[1];
-            while (true) {
-                $complete = true;
-                foreach ($tree as $action) {
-                    if ($action[0] === 'X2FlowSwitch') {
-                        $tree = $action[2];
-                        $complete = false;
-                        break;
-                    }
-                    if (!$action[1][0]) return false;
-                }
-                if ($complete) break;
-            }
+            $success = self::_checkTrace ($tree);
+            if (!$success) return false;
         }
         return true;
     }

@@ -68,7 +68,7 @@ class Campaign extends X2Model {
 				'defaults'=>array(),
 				'defaultStickOnClear'=>false
 			),
-            'tags' => array(
+            'TagBehavior' => array(
                 'class' => 'TagBehavior',
                 'disableTagScanning' => true,
             ),

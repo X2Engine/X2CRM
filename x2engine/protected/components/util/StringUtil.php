@@ -98,6 +98,14 @@ class StringUtil {
         return $subject;
     }
 
+    /**
+     * @return bool true if string is json, false otherwise
+     */
+    public static function isJson ($string) {
+        json_decode ($string);
+        return (json_last_error() == JSON_ERROR_NONE);
+    }
+
 }
 
 class StringUtilException extends Exception {

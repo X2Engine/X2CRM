@@ -38,91 +38,404 @@ Yii::import('application.components.*');
 
 /**
  * Test for translations auto-parse
-
  *
  * @package application.tests.unit.components
  * @author Demitri Morgan <demitri@x2engine.com>
  */
 class X2TranslationBehaviorTest extends X2TestCase {
 
-	public function instantiate(){
-		$component = new CComponent();
-		$component->attachBehavior('messageParser',array('class'=>'X2TranslationBehavior'));
-		return $component;
-	}
+    public function instantiate() {
+        $component = new CComponent();
+        $component->attachBehavior('messageParser',
+                array('class' => 'X2TranslationBehavior'));
+        return $component;
+    }
 
-	/**
-	 * Cursory test of regex
-	 */
-	public function testREGEX() {
-            $cmpb = $this->instantiate();
-            preg_match(X2TranslationBehavior::REGEX,"Yii::t(  'app' ,     'Everything\\'s \"fine\".'   );",$matches);
-            $this->assertEquals('app',$matches['module']);
-            $this->assertEquals('Everything\\\'s "fine".',$cmpb->parseRegexMatch($matches['message']));
-            $this->assertEquals('',$matches['openquote1']);
-            //$this->assertEquals('',$matches['openquote2']);
-            preg_match(X2TranslationBehavior::REGEX,'Yii::t(  "app" ,     "Everything\'s \"fine\"."   );',$matches);
-            $this->assertEquals('"',$matches['openquote1']);
-           // $this->assertEquals('"',$matches['openquote2']);
-            $this->assertEquals('app',$matches['module']);
-            $this->assertEquals('Everything\'s \"fine\".',$cmpb->parseRegexMatch($matches['message']));
-	}
+    /**
+     * Cursory test of regex
+     */
+    public function testGetRegex() {
+        $cmpb = $this->instantiate();
+        preg_match($cmpb->getRegex(),
+                "Yii::t(  'app' ,     'Everything\\'s \"fine\".'   );", $matches);
+        $this->assertEquals('app', $matches['module']);
+        $this->assertEquals('Everything\\\'s "fine".',
+                $cmpb->parseRegexMatch($matches['message']));
+        $this->assertEquals('', $matches['openquote1']);
+        //$this->assertEquals('',$matches['openquote2']);
+        preg_match($cmpb->getRegex(),
+                'Yii::t(  "app" ,     "Everything\'s \"fine\"."   );', $matches);
+        $this->assertEquals('"', $matches['openquote1']);
+        // $this->assertEquals('"',$matches['openquote2']);
+        $this->assertEquals('app', $matches['module']);
+        $this->assertEquals('Everything\'s \"fine\".',
+                $cmpb->parseRegexMatch($matches['message']));
+    }
 
-	public function testParseFile() {
-		$cmpb = $this->instantiate();
-		$msgFile = Yii::app()->basePath.'/tests/data/messageparser/modules1.php';
-		// Note that the assertions in this method must correspond to the above file
-		$messages = $cmpb->parseFile($msgFile);
-		$expected = array(
-			'app' =>
-				array(
-					'This and that thing\\\'s thing' => '',
-					'multiple' => '',
-					'messages' => '',
-					'on' => '',
-					'the' => '',
-					'same' => '',
-					'line' => '',
-					'message with params and {stuff}' => '',
-                                        'Multi-line translation message with splitting text.' => '',
-                                        'Multi-line translation message with {param} text.' => '',
-                                        'The maximum number of hooks ({n}) has been reached for events of this type.'=>'',
-					'Manage Apps' => ''
-				),
-			'admin' =>
-				array(
-					'Messages (with parentheses)' => '',
-					'This and that \"thing\"' => '',
-					'Define how the system sends email by default.' => '',
-					'Note that this will not supersede other email settings. Usage of these particular settings is a legacy feature. Unless this web server also serves as your company\\\'s primary mail server, it is recommended to instead use "{ma}" to set up email accounts for system usage instead.' => '',
-					'Configure how X2Engine sends email when responding to new service case requests.' => '',
-				),
-			'profile' => array(
-				'Manage Passwords for Third-Party Applications' => '',
-			),
-			'users' =>
-				array(
-					"multiline\nmessage" => '',
-			),
-			'install' =>
-			array(
-				'installer message' => '',
-				'installer message with {p}' => '',
-				'Weekdays' => '',
-			),
-		);
-		$this->assertEquals($expected,$messages);
-	}
+    public function testFileList() {
+        $cmpb = $this->instantiate();
+        $t0 = time();
+        $fl = $cmpb->fileList();
+        $t1 = time();
+        // Should not take super-long
+        $this->assertLessThan(10, $t1 - $t0);
+    }
 
-	public function testFileList(){
-		$cmpb = $this->instantiate();
-		$t0 = time();
-		$fl = $cmpb->fileList();
-		$t1 = time();
-		// Should not take super-long
-		$this->assertLessThan(10, $t1-$t0);
+    public function testParseFile() {
+        $cmpb = $this->instantiate();
+        $msgFile = Yii::app()->basePath . '/tests/data/X2TranslationBehaviorTest/translationCalls1.php';
+        // Note that the assertions in this method must correspond to the above file
+        $messages = $cmpb->parseFile($msgFile);
+        $expected = require Yii::app()->basePath. '/tests/data/X2TranslationBehaviorTest/expectedMessages1.php';
+        $this->assertEquals($expected, $messages);
+    }
+    
+    public function testGetMessageList() {
+        $cmpb = $this->instantiate();
+        $msgFile = Yii::app()->basePath . '/tests/data/X2TranslationBehaviorTest/translationCalls1.php';
+        $messages = $cmpb->getMessageList($msgFile);
+        $expected = require Yii::app()->basePath . '/tests/data/X2TranslationBehaviorTest/expectedMessages1.php';
+        foreach ($expected as $key => $values) {
+            $this->assertArrayEquals(array_keys($values), $messages[$key]);
+        }
+    }
+    
+    public function testGetAttributeLabels(){
+        $cmpb = $this->instantiate();
+        $attributeLabels = $cmpb->getAttributeLabels();
+        $this->assertNotEmpty($attributeLabels);
+        $this->assertEmpty($cmpb->errors);
+    }
+    
+    public function testAddMessages(){
+        $cmpb =  $this->instantiate();
+        $msgFile = Yii::app()->basePath . '/tests/data/X2TranslationBehaviorTest/translationCalls1.php';
+        $messages = $cmpb->getMessageList($msgFile);
+        $translationFile = Yii::app()->basePath . '/tests/data/X2TranslationBehaviorTest/messages/app.php';
+        $commonFile = Yii::app()->basePath . '/tests/data/X2TranslationBehaviorTest/messages/common.php';
+        file_put_contents($translationFile, '<?php return '.var_export( array(), true ).";\n");
+        file_put_contents($commonFile, '<?php return '.var_export( array(), true ).";\n");
+        
+        $translationMessages = require $translationFile;
+        $this->assertEmpty(array_keys($translationMessages));
+        $this->assertNotEmpty($messages['app']);
+        
+        $cmpb->addMessages($translationFile, $messages['app']);
+        $translationMessages = require $translationFile;
+        $this->assertArrayEquals($messages['app'],array_keys($translationMessages));
+        
+        $messages['app'][] = 'Another message!';
+        
+        $cmpb->addMessages($translationFile, $messages['app']);
+        $translationMessages = require $translationFile;
+        $this->assertArrayEquals($messages['app'],array_keys($translationMessages));
+        
+        $messages['common'] = array('Test common.');
+        $cmpb->addMessages($commonFile, $messages['common']);
+        
+        $oldMessages = $messages['app'];
+        $messages['app'][] = 'Test common.';
+        $cmpb->addMessages($translationFile, $messages['app'], $commonFile);
+        
+        $translationMessages = require $translationFile;
+        $this->assertArrayEquals($oldMessages,array_keys($translationMessages));
+        $this->assertEmpty($cmpb->errors);
+        
+        file_put_contents($translationFile, '<?php return '.var_export( array(), true ).";\n");
+        file_put_contents($commonFile, '<?php return '.var_export( array(), true ).";\n");
+    }
+    
+    public function testBuildRedundancyList(){
+        $cmpb = $this->instantiate();
+        $this->assertEmpty($cmpb->buildRedundancyList());
+        
+        $adminFile = Yii::app()->basePath.'/messages/template/admin.php';
+        $oldAdminMessages = require $adminFile;
+        $appFile = Yii::app()->basePath.'/messages/template/app.php';
+        $oldAppMessages = require $appFile;
+        
+        $newMessages = array(
+            'This\'s a this is a test of redundancies.',
+        );
+        
+        $cmpb->addMessages($adminFile, $newMessages);
+        $cmpb->addMessages($appFile, $newMessages);
+        $this->assertNotEmpty($cmpb->buildRedundancyList());
+        
+        file_put_contents($adminFile, '<?php return '.var_export( $oldAdminMessages, true ).";\n");
+        file_put_contents($appFile, '<?php return '.var_export( $oldAppMessages, true ).";\n");
+    }
+    
+    public function testRemoveMessage() {
+        $cmpb = $this->instantiate();
+        $message = 'This\'s a test message for removal.';
+        $appFile = Yii::app()->basePath . '/messages/template/app.php';
+        $oldAppMessages = require $appFile;
+        $this->assertFalse(in_array($message, array_keys($oldAppMessages)));
 
-	}
+        $cmpb->addMessages($appFile, array($message));
+        $appMessages = require $appFile;
+        $this->assertTrue(in_array($message, array_keys($appMessages)));
+
+        $cmpb->removeMessage('app.php', $message);
+        $appMessages = require $appFile;
+        $this->assertFalse(in_array($message, array_keys($appMessages)));
+        $this->assertArrayEquals(array_keys($oldAppMessages),
+                array_keys($appMessages));
+    }
+
+    public function testAddToCommon() {
+        $cmpb = $this->instantiate();
+        $message = 'This\'s a test message for common.';
+
+        $commonFile = Yii::app()->basePath . '/messages/template/common.php';
+        $oldCommonMessages = require $commonFile;
+        $this->assertFalse(in_array($message, array_keys($oldCommonMessages)));
+
+        $cmpb->addToCommon($message);
+        $commonMessages = require $commonFile;
+        $this->assertTrue(in_array($message, array_keys($commonMessages)));
+        unset($commonMessages[$message]);
+        $this->assertNotEmpty($commonMessages);
+        $this->assertArrayEquals(array_keys($oldCommonMessages),
+                array_keys($commonMessages));
+
+        $cmpb->removeMessage('common.php', $message);
+        $commonMessages = require $commonFile;
+        $this->assertFalse(in_array($message, array_keys($commonMessages)));
+        $this->assertArrayEquals(array_keys($oldCommonMessages),
+                array_keys($commonMessages));
+    }
+    
+    public function testConsolidateMessages(){
+        $cmpb = $this->instantiate();
+        $message = 'This\'s a test consolidation of messages.';
+        $files = array();
+        foreach(scandir(Yii::app()->basePath.'/messages/template/') as $filename){
+            if(!in_array($filename, array('.','..','common.php'))){
+                $path = Yii::app()->basePath.'/messages/template/'.$filename;
+                $oldMessages = require $path;
+                $files[$path] = $oldMessages;
+                $this->assertFalse(in_array($message, array_keys($oldMessages)));
+            }
+        }
+        $commonFile = Yii::app()->basePath.'/messages/template/common.php';
+        $oldCommonMessages = require $commonFile;
+        $this->assertFalse(in_array($message, array_keys($oldCommonMessages)));
+        
+        foreach(array_keys($files) as $filename){
+            $cmpb->addMessages($filename, array($message));
+            $messages = require $filename;
+            $this->assertTrue(in_array($message, array_keys($messages)));
+        }
+        $commonMessages = require $commonFile;
+        $this->assertFalse(in_array($message, array_keys($commonMessages)));
+        
+        $cmpb->consolidateMessages();
+        
+        $commonMessages = require $commonFile;
+        $this->assertTrue(in_array($message, array_keys($commonMessages)));
+        
+        foreach ($files as $filename => $oldMessages) {
+            $messages = require $filename;
+            $this->assertFalse(in_array($message, array_keys($messages)));
+            $this->assertArrayEquals(array_keys($oldMessages),
+                    array_keys($messages));
+        }
+        
+        $cmpb->removeMessage('common.php', $message);
+    }
+    
+    public function testGetUntranslatedText(){
+        $this->markTestSkipped();
+        $cmpb = $this->instantiate();
+        $message = 'This\'s a test of untranslated text.';
+        
+        $untranslated = $cmpb->getUntranslatedText();
+        print_r ($untranslated);
+        $this->assertEmpty($untranslated);
+        
+        $appFile = Yii::app()->basePath . '/messages/ja/app.php';
+        $cmpb->addMessages($appFile, array($message));
+        
+        $untranslated = $cmpb->getUntranslatedText();
+        $this->assertNotEmpty($untranslated);
+        $this->assertTrue(in_array($message,$untranslated['ja']['app.php']));
+        
+        $cmpb->removeMessage('app.php',$message);
+    }
+    
+    public function testTranslateMessage(){
+        $this->markTestSkipped('By default skip this test because it makes a call to a billable Google API');
+        if(!file_exists(Yii::app()->basePath .'/config/googleApiKey.php')){
+            $this->markTestSkipped();
+        }
+        $cmpb = $this->instantiate();
+        
+        $lang = 'ja';
+        $message = 'This\'s a test of Google Translate\'s API.';
+        
+        $translated = $cmpb->translateMessage($message, $lang);
+        
+        //Just ensure it ran without errors. Can't guarantee result of Google API.
+        $this->assertNotEmpty($translated);
+    }
+    
+    public function testNoTranslate(){
+        $cmpb = $this->instantiate();
+        
+        $messages = array(
+            'This\'s a test of some {notranslate} text.' => 'This\'s a test of some <span class="notranslate">{notranslate}</span> text.',
+            'This message has <a href="#">HTML Tags</a> in it.' => 'This message has <span class="notranslate"><a href="#"></span>HTML Tags<span class="notranslate"></a></span> in it.',
+        );
+        
+        foreach($messages as $message => $expected){
+            $added = $cmpb->addNoTranslateTags($message);
+            $this->assertEquals($expected, $added);
+            
+            $removed = $cmpb->removeNoTranslateTags($added);
+            $this->assertEquals($message, $removed);
+        }
+    }
+    
+    public function testReplaceTranslations(){
+        $cmpb = $this->instantiate();
+        $appFile = Yii::app()->basePath.'/messages/template/app.php';
+        $oldAppMessages = require $appFile;
+        
+        $message = 'Test message';
+        $translation = 'is translated';
+        
+        $lang = 'template';
+        $file = 'app.php';
+        $translations = array(
+            $message=>$translation,
+        );
+        $this->assertNotEmpty(array_keys($translations));
+        $this->assertNotEmpty(array_keys($oldAppMessages));
+        $this->assertEmpty(array_intersect(array_keys($translations),array_keys($oldAppMessages)));
+        
+        $cmpb->addMessages($appFile, array($message));
+        $cmpb->replaceTranslations($lang, $file, $translations);
+        
+        $appMessages = require $appFile;
+        $this->assertFalse(in_array($message, array_keys($oldAppMessages)));
+        $this->assertTrue(in_array($message, array_keys($appMessages)));
+        $this->assertNotEmpty(array_diff(array_keys($appMessages), array_keys($oldAppMessages)));
+        $this->assertEquals($translation, $appMessages[$message]);
+        
+        $cmpb->removeMessage('app.php', $message);
+        
+    }
+    
+    public function testUpdateTranslations(){
+        $this->markTestSkipped('By default skip this test because it makes a call to a billable Google API');
+        if(!file_exists(Yii::app()->basePath .'/config/googleApiKey.php')){
+            $this->markTestSkipped();
+        }
+        $cmpb = $this->instantiate();
+        $appFile = Yii::app()->basePath.'/messages/ja/app.php';
+        $oldAppMessages = require $appFile;
+        $lang = 'ja';
+        $message = 'This\'s a test of Google Translate\'s API.';
+        
+        $untranslated = $cmpb->getUntranslatedText();
+        $this->assertEmpty($untranslated);
+        
+        $cmpb->addMessages($appFile, array($message));
+        $untranslated = $cmpb->getUntranslatedText();
+        $this->assertNotEmpty($untranslated);
+        
+        $cmpb->updateTranslations();
+        
+        $untranslated = $cmpb->getUntranslatedText();
+        $this->assertEmpty($untranslated);
+        $appMessages = require $appFile;
+        $this->assertTrue(in_array($message, array_keys($appMessages)));
+        $this->assertNotEmpty($appMessages[$message]);
+        
+        $cmpb->removeMessage('app.php',$message);
+        
+    }
+    
+    public function testMergeCustomTranslationFile(){
+        $cmpb = $this->instantiate();
+        $customDir = str_replace('/protected','/custom/protected',Yii::app()->basePath);
+        $appFile = Yii::app()->basePath.'/messages/template/app.php';
+        $customAppFile = str_replace('/protected','/custom/protected',$appFile);
+        
+        $message = 'This\'s a test of';
+        $translation = 'merging custom translations';
+        $messages = array(
+            $message=>$translation,
+        );
+        
+        mkdir($customDir.'/messages');
+        mkdir($customDir.'/messages/template');
+        file_put_contents($customAppFile, '<?php return '.var_export( $messages, true ).";\n"); 
+        
+        $oldAppMessages = require $appFile;
+        $this->assertFalse(in_array($message,array_keys($oldAppMessages)));
+        
+        $cmpb->mergeCustomTranslationFile($customAppFile);
+        
+        $appMessages = require $appFile;
+        $this->assertTrue(in_array($message, array_keys($appMessages)));
+        $this->assertEquals(1,count(array_diff(array_keys($appMessages), array_keys($oldAppMessages))));
+        $this->assertEquals($translation, $appMessages[$message]);
+        
+        $cmpb->removeMessage('app.php', $message);
+        
+        unlink($customAppFile);
+        rmdir($customDir.'/messages/template');
+        rmdir($customDir.'/messages');
+    }
+    
+    /**
+     * This test is unused as the function is very simple right now. However,
+     * planned changes to the translation tool will make this test necessary
+     * once it's associated function is modified
+     */
+    public function testMergeCustomLanguagePack(){
+        $this->markTestSkipped();
+    }
+    
+    public function testMergeCustomTranslations(){
+        $cmpb = $this->instantiate();
+        $customDir = str_replace('/protected','/custom/protected',Yii::app()->basePath);
+        $appFile = Yii::app()->basePath.'/messages/template/app.php';
+        $oldAppMessages = require $appFile;
+        $customAppFile = str_replace('/protected','/custom/protected',$appFile);
+        
+        //No errors and no changes with no custom messages dir
+        $cmpb->mergeCustomTranslations();
+        $appMessages = require $appFile;
+        $this->assertArrayEquals(array_keys($oldAppMessages), array_keys($appMessages));
+        
+        //No errors and no changes with empty custom messages dir
+        mkdir($customDir.'/messages');
+        $cmpb->mergeCustomTranslations();
+        $appMessages = require $appFile;
+        $this->assertArrayEquals(array_keys($oldAppMessages), array_keys($appMessages));        
+        
+        //No errors and no changes with empty custom language dir
+        mkdir($customDir.'/messages/template');
+        $cmpb->mergeCustomTranslations();
+        $appMessages = require $appFile;
+        $this->assertArrayEquals(array_keys($oldAppMessages), array_keys($appMessages));
+        
+        //No errors and no changes with empty custom translation file
+        file_put_contents($customAppFile, '<?php return '.var_export( array(), true ).";\n"); 
+        $cmpb->mergeCustomTranslations();
+        $appMessages = require $appFile;
+        $this->assertArrayEquals(array_keys($oldAppMessages), array_keys($appMessages));
+        
+        unlink($customAppFile);
+        rmdir($customDir.'/messages/template');
+        rmdir($customDir.'/messages');
+        
+        
+    }
 
 }
 

@@ -323,11 +323,13 @@ class ProfileController extends x2base {
                 $model->attributes = $_POST['Profile'];
                 if(isset($_POST['preferences']['loginSound'])){
                     $pieces = explode(',',$_POST['preferences']['loginSound']);
-                    $model->setLoginSound($pieces[0]);
+                    $model->loginSound = $pieces[0];
+                    unset ($_POST['preferences']['loginSound']);
                 }
                 if(isset($_POST['preferences']['notificationSound'])){
                     $pieces = explode(',',$_POST['preferences']['notificationSound']);
-                    $model->setNotificationSound($pieces[0]);
+                    $model->notificationSound = $pieces[0];
+                    unset ($_POST['preferences']['notificationSound']);
                 }
                 $model->save();
             }
@@ -450,8 +452,6 @@ class ProfileController extends x2base {
      * @throws CHttpException
      */
     public function actionCreateUpdateCredentials($id = null, $class = null) {
-        if (!Yii::app()->params->isAdmin && $class === 'TwitterApp')
-            $this->denied ();
 
         $this->pageTitle = Yii::t('app', 'Edit Credentials');
         $profile = Yii::app()->params->profile;
@@ -467,21 +467,42 @@ class ProfileController extends x2base {
             if (empty($model))
                 throw new CHttpException(404);
         }
-        if ($model->modelClass === 'TwitterApp') {
-            $model->private = 1;
-            $model->userId = Credentials::SYS_ID;
-            $model->name = 'Twitter app';
+        if ($model->getAuthModel ()->getMetaData ()) {
+            $model->setAttributes ($model->getAuthModel ()->getMetaData (), false);
             $disableMetaDataForm = true;
         }
+
+        if (in_array ($model->modelClass, array ('TwitterApp', 'GoogleProject'))) {
+            if (!Yii::app()->params->isAdmin) {
+                $this->denied ();
+            }
+            if ($model->modelClass === 'GoogleProject') {
+                if (isset ($_POST['Admin']['gaTracking_public'])) {
+                    Yii::app()->settings->gaTracking_public = $_POST['Admin']['gaTracking_public'];
+                }
+                if (isset ($_POST['Admin']['gaTracking_internal'])) {
+                    Yii::app()->settings->gaTracking_internal = 
+                        $_POST['Admin']['gaTracking_internal'];
+                }
+                if (isset ($_POST['Admin']['googleIntegration'])) {
+                    Yii::app()->settings->googleIntegration = 
+                        $_POST['Admin']['googleIntegration'];
+                }
+            }
+            $this->layout = '//layouts/column1';
+        }
+
         $model->scenario = $model->isNewRecord ? 'create' : 'update';
 
         // Apply changes if any:
-        $message = null;
         if (isset($_POST['Credentials'])) {
             $model->attributes = $_POST['Credentials'];
             // Check to see if user has permission:
-            if (!Yii::app()->user->checkAccess('CredentialsCreateUpdate', array('model' => $model)))
+            if (!Yii::app()->user->checkAccess(
+                'CredentialsCreateUpdate', array('model' => $model))) {
+
                 $this->denied();
+            }
             // Save the model:
             if ($model->validate()) {
                 // Set timestamps
@@ -491,10 +512,15 @@ class ProfileController extends x2base {
                 $model->lastUpdated = $time;
                 if ($model->save()) {
                     $message = Yii::t('app', 'Saved') . ' ' . Formatter::formatLongDateTime($time);
-                    if ($model->modelClass === 'TwitterApp') {
-                        $this->redirect('/admin/index');
+                    Yii::app()->user->setFlash ('success', $message);
+                    if (in_array (
+                        $model->modelClass, array ('TwitterApp', 'GoogleProject'))) {
+
+                        if ($model->modelClass === 'GoogleProject') {
+                            Yii::app()->settings->save ();
+                        }
                     } else {
-                        $this->redirect(array('manageCredentials'));
+                        $this->redirect (array('manageCredentials'));
                     }
                 }
             } else {
@@ -508,7 +534,7 @@ class ProfileController extends x2base {
                 'profile' => $profile,
                 'disableMetaDataForm' => isset ($disableMetaDataForm) ? 
                     $disableMetaDataForm : false,
-                'message' => $message));
+            ));
     }
 
     /**

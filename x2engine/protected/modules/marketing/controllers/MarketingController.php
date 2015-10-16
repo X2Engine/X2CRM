@@ -419,8 +419,11 @@ class MarketingController extends x2base {
             $this->redirect(array('view', 'id' => $id));
         }
 
-        if(($campaign->list->type == 'dynamic' && X2Model::model($campaign->list->modelName)->count($campaign->list->queryCriteria()) < 1)
-                || ($campaign->list->type != 'dynamic' && count($campaign->list->listItems) < 1)){
+        if(($campaign->list->type == 'dynamic' && 
+            X2Model::model($campaign->list->modelName)
+                ->count($campaign->list->queryCriteria()) < 1) || 
+            ($campaign->list->type != 'dynamic' && count($campaign->list->listItems) < 1)){
+
             Yii::app()->user->setFlash('error', Yii::t('marketing', 'The contact list is empty.'));
             $this->redirect(array('view', 'id' => $id));
         }

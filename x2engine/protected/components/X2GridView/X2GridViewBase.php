@@ -54,6 +54,7 @@ abstract class X2GridViewBase extends CGridView {
     public $viewName;
     public $fullscreen = false;
     public $defaultGvSettings = array ();
+    public $updateParams = array ();
     public $excludedColumns;
     public $enableGvSettings = true;
     public $enableControls = false;
@@ -155,6 +156,17 @@ abstract class X2GridViewBase extends CGridView {
         return strcmp ($a->getLabel (), $b->getLabel ());
     }
 
+	public function __construct ($owner=null) {
+        parent::__construct ($owner);
+        $this->attachBehaviors ($this->behaviors ());
+	}
+
+    public function behaviors () {
+        return array (
+            'X2BaseListViewBehavior' => 'application.components.X2GridView.X2BaseListViewBehavior'
+        );
+    }
+
     public function setResultsPerPage ($resultsPerPage) {
         $this->_resultsPerPage = $resultsPerPage;
     }
@@ -212,6 +224,10 @@ abstract class X2GridViewBase extends CGridView {
         return $this->_moduleName;
     }
 
+    public function setModuleName ($moduleName) {
+        $this->_moduleName = $moduleName;
+    }
+
     /**
      * Magic getter for gvSettingsName. If not set explicitly, will be set to viewName
      * @return string  
@@ -244,6 +260,25 @@ abstract class X2GridViewBase extends CGridView {
         }
         return $this->_namespacePrefix;
     }
+
+    /**
+     * This method is Copyright (c) 2008-2014 by Yii Software LLC
+     * http://www.yiiframework.com/license/ 
+     */
+	public function renderKeys()
+	{
+		echo CHtml::openTag('div',array(
+            /* x2modstart */ 
+            // prevents name conflicts in nested grids
+			'class'=>'keys '.$this->namespacePrefix.'keys',
+            /* x2modend */ 
+			'style'=>'display:none',
+			'title'=>Yii::app()->getRequest()->getUrl(),
+		));
+		foreach($this->dataProvider->getKeys() as $key)
+			echo "<span>".CHtml::encode($key)."</span>";
+		echo "</div>\n";
+	}
 
     /**
      * Registers JS which makes the grid header sticky
@@ -355,8 +390,7 @@ abstract class X2GridViewBase extends CGridView {
         return $width;
     }
 
-    protected function getGvCheckboxColumn ($width) {
-        $width = $this->formatWidth ($width);
+    protected function getGvCheckboxColumn ($width=null, array $options=array ()) {
         $newColumn = array ();
         $newColumn['id'] = $this->namespacePrefix.'C_gvCheckbox';
         $newColumn['class'] = 'X2CheckBoxColumn';
@@ -364,11 +398,21 @@ abstract class X2GridViewBase extends CGridView {
         $newColumn['htmlOptions'] = array('style'=>'text-align: center;');
         $newColumn['headerCheckBoxHtmlOptions'] = array('id'=>$newColumn['id'].'_all');
         $newColumn['checkBoxHtmlOptions'] = array('class'=>'checkbox-column-checkbox');
-        $newColumn['headerHtmlOptions'] = array(
-            'style'=>'width:'.$width.';',
-            'class'=>'checkbox-column',
-        );
-        return $newColumn;
+        if ($width) {
+            $width = $this->formatWidth ($width);
+            $newColumn['headerHtmlOptions'] = array(
+                'style'=>'width:'.$width.';',
+                'class'=>'checkbox-column',
+            );
+        }
+        if (isset ($options['checkBoxHtmlOptions'])) {
+            $newColumn['checkBoxHtmlOptions'] = array_merge (
+                $newColumn['checkBoxHtmlOptions'],
+                $options['checkBoxHtmlOptions']
+            );
+            unset ($options['checkBoxHtmlOptions']);
+        }
+        return array_merge ($newColumn, $options);
     }
 
     protected function extractGvSettings () {
@@ -479,7 +523,7 @@ abstract class X2GridViewBase extends CGridView {
         unset($_GET[$this->namespacePrefix.'gvSettings']);
 
         // save the new Gridview Settings
-        if ($this->enableDbPersistentGvSettings)
+        if ($this->enableDbPersistentGvSettings && $this->gvSettings !== Profile::getGridviewSettings($this->gvSettingsName))
             Profile::setGridviewSettings($this->gvSettings,$this->gvSettingsName);
 
         $columns = array();
@@ -778,6 +822,7 @@ Yii::app()->clientScript->registerScript(sprintf('%x', crc32(Yii::app()->name)),
             'sortStateKey' => 
                 ($this->dataProvider->asa ('SmartDataProviderBehavior') ? 
                     $this->dataProvider->getSortKey () : ''),
+            'updateParams' => $this->updateParams,
         );
     }
 
@@ -850,7 +895,7 @@ Yii::app()->clientScript->registerScript(sprintf('%x', crc32(Yii::app()->name)),
     }
 
     public function renderSummary () {
-        if (RESPONSIVE_LAYOUT && $this->enableResponsiveTitleBar) {
+        if (AuxLib::getLayoutType () === 'responsive' && $this->enableResponsiveTitleBar) {
         Yii::app()->clientScript->registerCss('mobileDropdownCss',"
             .grid-view .mobile-dropdown-button {
                 float: right;
@@ -911,7 +956,8 @@ Yii::app()->clientScript->registerScript(sprintf('%x', crc32(Yii::app()->name)),
 			'selectableRows'=>$this->selectableRows,
 			'enableHistory'=>$this->enableHistory,
 			'updateSelector'=>$this->updateSelector,
-			'filterSelector'=>$this->filterSelector
+			'filterSelector'=>$this->filterSelector,
+			'namespacePrefix'=>$this->namespacePrefix
 		);
 
 		if($this->ajaxUrl!==null)

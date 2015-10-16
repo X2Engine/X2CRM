@@ -34,6 +34,8 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 
+ 
+
 $aliasTypeOptions = RecordAliases::model ()->getAliasTypeOptions ();
 
 Yii::app()->clientScript->registerCssFile(
@@ -49,15 +51,18 @@ $(function () {
         aliasTypeIcons: ".CJSON::encode ($aliasModel->getAllIcons ()).",
         baseUrl: yii.scriptUrl + 
             '/".Yii::app()->controller->module->name."/".Yii::app()->controller->module->name."',
+         
         translations: ".CJSON::encode (array (
             'dialogTitle' => Yii::t('app', 'Create Social Profile'),
             'cancel' => Yii::t('app', 'Cancel'),
             'create' => Yii::t('app', 'Create'),
+            'createProfile' => Yii::t('app', 'Add Profile'),
             'confirmDeletion' => Yii::t(
-                'app', 'Are you sure you want to delete this social profile?'),
-            'confirmDeletionTitle' => Yii::t('app', 'Delete social profile?'),
+                'app', 'Are you sure you want to delete this Social Profile?'),
+            'confirmDeletionTitle' => Yii::t('app', 'Delete Social Profile?'),
             'OK' => Yii::t('app', 'OK'),
             'skypeQtipLoadingText' => Yii::t('app', 'Loading...'),
+            'googleSearchdialogTitle' => Yii::t('app', 'Find Google+ Profile'),
         )).",
         recordId: ".$this->model->id."
     });
@@ -65,13 +70,12 @@ $(function () {
 
 ", CClientScript::POS_END);
 
-if (!$this->formOnly) {
 echo CHtml::tag(
     'button', 
     array(
         'id' => 'view-aliases-button',
         'class' => 'x2-button right view-aliases-button icon',
-        'title' => Yii::t('app', 'Add social profile'),
+        'title' => Yii::t('app', 'Add Social Profile'),
     ), '');
 ?>
 <div class='record-aliases-dropdown-container'>
@@ -90,7 +94,7 @@ echo CHtml::tag(
             ?>
             </span>
             <span class='delete-alias-button fa fa-times' 
-             title="<?php echo CHtml::encode (Yii::t('app', 'Delete social profile')); ?>"></span>
+             title="<?php echo CHtml::encode (Yii::t('app', 'Delete Social Profile')); ?>"></span>
             <?php
         ?></li>     
         <?php
@@ -100,19 +104,22 @@ echo CHtml::tag(
             <span class='record-alias'>
             </span>
             <span class='delete-alias-button fa fa-times' 
-             title="<?php echo CHtml::encode (Yii::t('app', 'Delete social profile')); ?>"></span>
+             title="<?php echo CHtml::encode (Yii::t('app', 'Delete Social Profile')); ?>"></span>
             <?php
         ?></li>     
         </span>
+        <?php
+         
+        ?>
         <li class='new-alias-button x2-button'><?php 
-            echo CHtml::encode (Yii::t('app', 'Add social profile')) 
+            echo CHtml::encode (Yii::t('app', 'Add Social Profile')) 
         ?></li>     
     </ul>
     <?php
-}
     $form = $this->beginWidget('CActiveForm', array (
         'htmlOptions' => array (
             'class' => 'add-alias-dialog form2',
+            'id' => 'record-alias-form',
             'style' => 'display: none;',
         ),
     ));
@@ -164,9 +171,8 @@ echo CHtml::tag(
             echo '</div>';
         }
     $this->endWidget ();
-if (!$this->formOnly) {
     ?>
 </div>
 <?php
-}
+
 ?>

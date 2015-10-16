@@ -64,25 +64,25 @@ class CutDownPermissionsForestTest extends X2DbTestCase {
             from x2_auth_item_child
             where parent='TestRole'
         ")->queryAll ());
-        X2_VERBOSE_MODE && print_r ($testRoleAuthItemChildren);
+        X2_TEST_DEBUG_LEVEL > 1 && print_r ($testRoleAuthItemChildren);
 
         // run first migration script
         $command = Yii::app()->basePath . '/yiic runmigrationscript ' .
             'migrations/4.2b/1407436318-update-sql.php';
         $return_var;
         $output = array ();
-        X2_VERBOSE_MODE && print_r (exec ($command, $return_var, $output));
-        X2_VERBOSE_MODE && print_r ($return_var);
-        X2_VERBOSE_MODE && print_r ($output);
+        X2_TEST_DEBUG_LEVEL > 1 && print_r (exec ($command, $return_var, $output));
+        X2_TEST_DEBUG_LEVEL > 1 && print_r ($return_var);
+        X2_TEST_DEBUG_LEVEL > 1 && print_r ($output);
 
         // run second migration script
         $command = Yii::app()->basePath . '/yiic runmigrationscript ' .
             'migrations/4.2b/1406225725-cut-down-permissions-forest.php';
         $return_var;
         $output = array ();
-        X2_VERBOSE_MODE && print_r (exec ($command, $return_var, $output));
-        X2_VERBOSE_MODE && print_r ($return_var);
-        X2_VERBOSE_MODE && print_r ($output);
+        X2_TEST_DEBUG_LEVEL > 1 && print_r (exec ($command, $return_var, $output));
+        X2_TEST_DEBUG_LEVEL > 1 && print_r ($return_var);
+        X2_TEST_DEBUG_LEVEL > 1 && print_r ($output);
 
          // Get all children of test role after migration scripts run
         $newTestRoleAuthItemChildren = array_map (function ($row) {
@@ -92,11 +92,11 @@ class CutDownPermissionsForestTest extends X2DbTestCase {
             from x2_auth_item_child
             where parent='TestRole'
         ")->queryAll ());
-        X2_VERBOSE_MODE && print_r ($newTestRoleAuthItemChildren);
+        X2_TEST_DEBUG_LEVEL > 1 && print_r ($newTestRoleAuthItemChildren);
 
         // ensure that permisions were added properly by migration scripts
         foreach ($testRoleAuthItemChildren as $child) {
-            X2_VERBOSE_MODE && println ('asserting correctness of restructured permissions for '.$child);
+            X2_TEST_DEBUG_LEVEL > 1 && println ('asserting correctness of restructured permissions for '.$child);
             $module = preg_replace (
                 '/(PrivateReadOnly|PrivateUpdate|PrivateFull|PrivateBasic|ReadOnly|Basic|Update|'.
                 'Full|Admin)Access$/', '', $child);

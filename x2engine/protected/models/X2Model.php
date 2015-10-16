@@ -62,6 +62,8 @@ Yii::import('application.models.X2Flow');
  */
 abstract class X2Model extends X2ActiveRecord {
 
+    public $supportsFieldLevelPermissions = true;
+
     /**
      * @var true if this model can have workflows associated with it, false otherwise 
      */
@@ -479,7 +481,7 @@ abstract class X2Model extends X2ActiveRecord {
         return $associationTypes;
     }
 
-    public function getDisplayName ($plural=true, $ofModule=true) {
+    public function getDisplayName ($plural=true) {
         $moduleName = X2Model::getModuleName (get_class ($this));
         return Modules::displayName ($plural, $moduleName);
     }
@@ -868,7 +870,7 @@ abstract class X2Model extends X2ActiveRecord {
             'X2LinkableBehavior' => array('class' => 'X2LinkableBehavior'),
             'X2TimestampBehavior' => array('class' => 'X2TimestampBehavior'),
             'X2FlowTriggerBehavior' => array('class' => 'X2FlowTriggerBehavior'),
-            'tags' => array('class' => 'TagBehavior'),
+            'TagBehavior' => array('class' => 'TagBehavior'),
             'changelog' => array('class' => 'X2ChangeLogBehavior'),
             'permissions' => array('class' => Yii::app()->params->modelPermissions),
             'X2MergeableBehavior' => array('class' => 'X2MergeableBehavior'),
@@ -1130,7 +1132,9 @@ abstract class X2Model extends X2ActiveRecord {
      * @return array validation rules for model attributes.
      */
     public function rules() {
-        return self::modelRules(self::$_fields[$this->tableName()], $this);
+        return array_merge (
+            parent::rules (), 
+            self::modelRules(self::$_fields[$this->tableName()], $this));
     }
 
     public static function modelRules(&$fields, $model) {
@@ -1182,7 +1186,7 @@ abstract class X2Model extends X2ActiveRecord {
             }
         }
 
-        return array(
+        $rules =  array(
             array(implode(',', $fieldRules['foreignKey']),
                 'application.components.validators.X2ModelForeignKeyValidator'),
             array(implode(',', $fieldRules['uniqueIndex']),
@@ -1197,6 +1201,8 @@ abstract class X2Model extends X2ActiveRecord {
             array(implode(',', $fieldRules['safe']), 'safe'),
             array(implode(',', $fieldRules['search']), 'safe', 'on' => 'search'),
         );
+
+        return $rules;
     }
 
     /**
@@ -1558,7 +1564,7 @@ abstract class X2Model extends X2ActiveRecord {
     public function getAttributeLabel($attribute) {
         $attributeLabels = $this->getAttributeLabels ();
         if (isset ($attributeLabels[$attribute])) return $attributeLabels[$attribute];
-
+        
         if (isset(self::$_fields[$this->tableName()][$attribute])) {
             return self::$_fields[$this->tableName()][$attribute];
         }
@@ -1688,7 +1694,7 @@ abstract class X2Model extends X2ActiveRecord {
                 null, $condList, true, $filterFn, $separator);
             foreach ($linkedModels as $fieldName => $linkedModel) {
                 if ($this->getField ($fieldName)) {
-                    $optGroupHeader = $this->getField ($fieldName)->attributeLabel;
+                    $optGroupHeader = $this->getAttributeLabel ($fieldName);
                 } else if (self::isModuleModelName ($fieldName)) {
                     $optGroupHeader = self::getModelTitle ($fieldName);
                 } else {
@@ -1920,8 +1926,12 @@ abstract class X2Model extends X2ActiveRecord {
                     }
                 }
 
-                $input = CHtml::hiddenField($field->modelName . '[' . $fieldName . '_id]', $linkId, array('id' => $field->modelName . '_' . $fieldName . "_id"))
-                        . Yii::app()->controller->widget('zii.widgets.jui.CJuiAutoComplete', array(
+                static $linkInputCounter = 0;
+                $hiddenInputId = $field->modelName . '_' . $fieldName . "_id".$linkInputCounter++;
+                $input = CHtml::hiddenField(
+                    $field->modelName . '[' . $fieldName . '_id]', $linkId, 
+                    array('id' => $hiddenInputId))
+                        .Yii::app()->controller->widget('zii.widgets.jui.CJuiAutoComplete', array(
                             'model' => $model,
                             'attribute' => $fieldName,
                             // 'name'=>'autoselect_'.$fieldName,
@@ -1930,35 +1940,42 @@ abstract class X2Model extends X2ActiveRecord {
                             'options' => array(
                                 'minLength' => '1',
                                 'select' => 'js:function( event, ui ) {
-                                $("#' . $field->modelName . '_' . $fieldName . '_id").val(ui.item.id);
-                                $(this).val(ui.item.value);
-                                return false;
+                                    $("#'.$hiddenInputId.'").
+                                        val(ui.item.id);
+                                    $(this).val(ui.item.value);
+                                    return false;
                             }',
-                                'create' => $field->linkType == 'Contacts' ? 'js:function(event, ui) {
-                                    $(this).data( "uiAutocomplete" )._renderItem = function(ul,item) {
-                                        return $("<li>").data("item.autocomplete",item).append(x2.forms.renderContactLookup(item)).appendTo(ul);
-                                    };
-                                }' : ($field->linkType == 'BugReports' ? 'js:function(event, ui) {
-                                    $(this).data( "uiAutocomplete" )._renderItem = function( ul, item ) {
-                                        var label = "<a style=\"line-height: 1;\">" + item.label;
+                            'create' => $field->linkType == 'Contacts' ? 
+                                'js:function(event, ui) {
+                                    $(this).data( "uiAutocomplete" )._renderItem = 
+                                        function(ul,item) {
+                                            return $("<li>").data("item.autocomplete",item).
+                                                append(x2.forms.renderContactLookup(item)).
+                                                appendTo(ul);
+                                        };
+                            }' : ($field->linkType == 'BugReports' ? 'js:function(event, ui) {
+                                $(this).data( "uiAutocomplete" )._renderItem = 
+                                    function( ul, item ) {
 
-                                        label += "<span style=\"font-size: 0.6em;\">";
+                                    var label = "<a style=\"line-height: 1;\">" + item.label;
 
-                                        // add email if defined
-                                        if(item.subject) {
-                                            label += "<br>";
-                                            label += item.subject;
-                                        }
+                                    label += "<span style=\"font-size: 0.6em;\">";
 
-                                        label += "</span>";
-                                        label += "</a>";
+                                    // add email if defined
+                                    if(item.subject) {
+                                        label += "<br>";
+                                        label += item.subject;
+                                    }
 
-                                        return $( "<li>" )
-                                            .data( "item.autocomplete", item )
-                                            .append( label )
-                                            .appendTo( ul );
-                                    };
-                                }' : ''),
+                                    label += "</span>";
+                                    label += "</a>";
+
+                                    return $( "<li>" )
+                                        .data( "item.autocomplete", item )
+                                        .append( label )
+                                        .appendTo( ul );
+                                };
+                            }' : ''),
                             ),
                             'htmlOptions' => array_merge(array(
                                 'title' => $field->attributeLabel,
@@ -2000,16 +2017,20 @@ abstract class X2Model extends X2ActiveRecord {
                 return $checkbox;
             case 'assignment':
                 $oldAssignmentVal = $model->$fieldName;
-                $model->$fieldName = !empty($model->$fieldName) ? ($field->linkType == 'multiple' && !is_array($model->$fieldName) ? explode(', ', $model->$fieldName) : $model->$fieldName) : self::getDefaultAssignment();
-                $dropdownList = CHtml::activeDropDownList(
-                                $model, $fieldName, X2Model::getAssignmentOptions(true, true), array_merge(array(
-                            // 'tabindex'=>isset($item['tabindex'])? $item['tabindex'] : null,
-                            // 'disabled'=>$item['readOnly']? 'disabled' : null,
-                            'title' => $field->attributeLabel,
-                            'id' => $field->modelName . '_' . $fieldName . '_assignedToDropdown',
-                            'multiple' =>
-                            ($field->linkType == 'multiple' ? 'multiple' : null),
-                                        ), $htmlOptions)
+                $model->$fieldName = !empty($model->$fieldName) ? 
+                    ($field->linkType == 'multiple' && !is_array($model->$fieldName) ? 
+                        explode(', ', $model->$fieldName) : $model->$fieldName) : 
+                    self::getDefaultAssignment();
+                $dropdownList = CHtml::activeDropDownList (
+                    $model, $fieldName, X2Model::getAssignmentOptions (true, true), 
+                    array_merge (array (
+                        // 'tabindex'=>isset($item['tabindex'])? $item['tabindex'] : null,
+                        // 'disabled'=>$item['readOnly']? 'disabled' : null,
+                        'title' => $field->attributeLabel,
+                        'id' => $field->modelName . '_' . $fieldName . '_assignedToDropdown',
+                        'multiple' =>
+                        ($field->linkType == 'multiple' ? 'multiple' : null),
+                    ), $htmlOptions)
                 );
                 $model->$fieldName = $oldAssignmentVal;
                 return $dropdownList;
@@ -2106,7 +2127,9 @@ abstract class X2Model extends X2ActiveRecord {
 
             case 'currency':
                 $fieldName = $field->fieldName;
-                $elementId = isset($htmlOptions['id']) ? '#' . $htmlOptions['id'] : '#' . $field->modelName . '_' . $field->fieldName;
+                $elementId = isset($htmlOptions['id']) ? 
+                    '#' . $htmlOptions['id'] : 
+                    '#' . $field->modelName . '_' . $field->fieldName;
                 Yii::app()->controller->widget('application.extensions.moneymask.MMask', array(
                     'element' => $elementId,
                     'currency' => Yii::app()->params['currency'],
@@ -2247,7 +2270,9 @@ abstract class X2Model extends X2ActiveRecord {
             }
 
             // eliminate placeholder values
-            if ($data[$fieldName] === $this->getAttributeLabel($fieldName)) {
+            if ($data[$fieldName] === $this->getAttributeLabel($fieldName) &&
+                $field->type !== 'dropdown') {
+
                 $data[$fieldName] = null;
             }
 
@@ -2405,13 +2430,36 @@ abstract class X2Model extends X2ActiveRecord {
                 break;
             case 'assignment':
                 $assignmentCriteria = new CDbCriteria;
-                $assignmentCriteria->compare(
-                    't.' . $fieldName, $this->compareAssignment($this->$fieldName), true);
-                if (strlen ($this->$fieldName) && strncmp (
-                    "Anyone", ucfirst ($this->$fieldName), strlen ($this->$fieldName)) === 0) {
+                $assignmentVal = $this->compareAssignment($this->$fieldName);
 
-                    $assignmentCriteria->compare('t.' . $fieldName, 'Anyone', false, 'OR');
-                    $assignmentCriteria->addCondition('t.' . $fieldName . ' = ""', 'OR');
+                if ($field->linkType === 'multiple' && $this->$fieldName) {
+                    if (!is_array ($assignmentVal)) $assignmentVal = array ();
+                    $assignmentVal = array_map (function ($val) {
+                        return preg_quote ($val);
+                    }, $assignmentVal);
+                    if (strlen ($this->$fieldName) && strncmp (
+                        "Anyone", ucfirst ($this->$fieldName), strlen ($this->$fieldName)) === 0) {
+
+                        $assignmentVal[] = 'Anyone';
+                    }
+                    $assignmentRegex = 
+                        '(^|, )('.implode ('|', $assignmentVal).')'.
+                        (in_array ('Anyone', $assignmentVal) ? '?' : '').'(, |$)';
+
+                    $assignmentParamName = CDbCriteria::PARAM_PREFIX.CDbCriteria::$paramCount;
+                    $criteria->params[$assignmentParamName] = $assignmentRegex;
+                    CDbCriteria::$paramCount++;
+                    $criteria->addCondition(
+                        't.' . $fieldName .' REGEXP BINARY '.$assignmentParamName);
+                } else {
+                    $assignmentCriteria->compare(
+                        't.' . $fieldName, $assignmentVal, true);
+                    if (strlen ($this->$fieldName) && strncmp (
+                        "Anyone", ucfirst ($this->$fieldName), strlen ($this->$fieldName)) === 0) {
+
+                        $assignmentCriteria->compare('t.' . $fieldName, 'Anyone', false, 'OR');
+                        $assignmentCriteria->addCondition('t.' . $fieldName . ' = ""', 'OR');
+                    }
                 }
                 $criteria->mergeWith ($assignmentCriteria);
                 break;
@@ -2461,6 +2509,14 @@ abstract class X2Model extends X2ActiveRecord {
     }
 
     public function compareAttributes(&$criteria) {
+        if ($this->asa ('TagBehavior') && $this->asa ('TagBehavior')->getEnabled () && 
+            $this->tags) {
+
+            $tagCriteria = new CDbCriteria;
+            $this->compareTags ($tagCriteria);
+            $criteria->mergeWith ($tagCriteria);
+        }
+
         foreach (self::$_fields[$this->tableName()] as &$field) {
             $this->compareAttribute($criteria, $field);
         }
@@ -3161,7 +3217,7 @@ abstract class X2Model extends X2ActiveRecord {
                 }
                 foreach ($dateFns as $fn) {
                     $name = $fn.'('.$fieldName.')';
-                    $label = $field->attributeLabel.' (' . Yii::t('app', $fn) . ')';
+                    $label = $this->getAttributeLabel($fieldName).' (' . Yii::t('app', $fn) . ')';
                     if ($condList) {
                         $fields[] = X2ConditionList::listOption (
                             array_merge ($attributes, array (
@@ -3176,7 +3232,7 @@ abstract class X2Model extends X2ActiveRecord {
             if ($condList) {
                 $fields[] = X2ConditionList::listOption ($attributes, $fieldName);
             } else {
-                $fields[$fieldName] = $field->attributeLabel;
+                $fields[$fieldName] = $this->getAttributeLabel($fieldName);
             }
         }
         if ($sorted) {

@@ -202,7 +202,7 @@ class Profile extends X2ActiveRecord {
         // will receive user inputs.
         return array(
             array('fullName, username, status', 'required'),
-            array('status, lastUpdated, disableNotifPopup, allowPost, disableAutomaticRecordTagging, disablePhoneLinks, resultsPerPage', 'numerical', 'integerOnly' => true),
+            array('status, lastUpdated, disableNotifPopup, allowPost', 'numerical', 'integerOnly' => true),
             array('enableFullWidth,showSocialMedia,showDetailView,disableTimeInTitle,showTours', 'boolean'), //,showWorkflow
             array('emailUseSignature', 'length', 'max' => 10),
             array('startPage', 'length', 'max' => 30),
@@ -251,8 +251,6 @@ class Profile extends X2ActiveRecord {
             'avatar' => Yii::t('profile', 'Avatar'),
             'allowPost' => Yii::t('profile', 'Allow users to post on your profile?'),
             'disablePhoneLinks' => Yii::t('profile', 'Disable phone field links?'),
-            'disableAutomaticRecordTagging' => 
-                Yii::t('profile', 'Disable automatic record tagging?'),
             'disableTimeInTitle' => Yii::t('profile','Disable timer display in page title?'),
             'disableNotifPopup' => Yii::t('profile', 'Disable notifications pop-up?'),
             'language' => Yii::t('profile', 'Language'),
@@ -737,7 +735,7 @@ class Profile extends X2ActiveRecord {
 //                    // Google Calendar Libraries
 //                    $timezone = date_default_timezone_get();
 //                    require_once "protected/extensions/google-api-php-client/src/Google_Client.php";
-//                    require_once "protected/extensions/google-api-php-client/src/contrib/Google_CalendarService.php";
+//                    require_once "protected/extensions/google-api-php-client/src/contrib/Google_Service_Calendar.php";
 //                    date_default_timezone_set($timezone);
 //
 //                    $client = new Google_Client();
@@ -745,7 +743,7 @@ class Profile extends X2ActiveRecord {
 //                    $client->setClientSecret($admin->googleClientSecret);
 //                    //$client->setDeveloperKey($admin->googleAPIKey);
 //                    $client->setAccessToken($this->syncGoogleCalendarAccessToken);
-//                    $googleCalendar = new Google_CalendarService($client);
+//                    $googleCalendar = new Google_Service_Calendar($client);
                     $auth = new GoogleAuthenticator();
                     $googleCalendar = $auth->getCalendarService();
 
@@ -773,29 +771,29 @@ class Profile extends X2ActiveRecord {
                     if($action->associationType == 'contacts' || $action->associationType == 'contact')
                         $summary = $action->associationName.' - '.$action->actionDescription;
 
-                    $event = new Google_Event();
+                    $event = new Google_Service_Calendar_Event();
                     $event->setSummary($summary);
                     if(empty($action->dueDate)){
                         $action->dueDate = time();
                     }
                     if($action->allDay){
-                        $start = new Google_EventDateTime();
+                        $start = new Google_Service_Calendar_EventDateTime();
                         $start->setDate(date('Y-m-d', $action->dueDate));
                         $event->setStart($start);
 
                         if(!$action->completeDate)
                             $action->completeDate = $action->dueDate;
-                        $end = new Google_EventDateTime();
+                        $end = new Google_Service_Calendar_EventDateTime();
                         $end->setDate(date('Y-m-d', $action->completeDate + 86400));
                         $event->setEnd($end);
                     } else{
-                        $start = new Google_EventDateTime();
+                        $start = new Google_Service_Calendar_EventDateTime();
                         $start->setDateTime(date('c', $action->dueDate));
                         $event->setStart($start);
 
                         if(!$action->completeDate)
                             $action->completeDate = $action->dueDate; // if no end time specified, make event 1 hour long
-                        $end = new Google_EventDateTime();
+                        $end = new Google_Service_Calendar_EventDateTime();
                         $end->setDateTime(date('c', $action->completeDate));
                         $event->setEnd($end);
                     }
@@ -831,7 +829,7 @@ class Profile extends X2ActiveRecord {
 //                    // Google Calendar Libraries
 //                    $timezone = date_default_timezone_get();
 //                    require_once "protected/extensions/google-api-php-client/src/Google_Client.php";
-//                    require_once "protected/extensions/google-api-php-client/src/contrib/Google_CalendarService.php";
+//                    require_once "protected/extensions/google-api-php-client/src/contrib/Google_Service_Calendar.php";
 //                    date_default_timezone_set($timezone);
 //
 //                    $client = new Google_Client();
@@ -840,7 +838,7 @@ class Profile extends X2ActiveRecord {
 //                    //$client->setDeveloperKey($admin->googleAPIKey);
 //                    $client->setAccessToken($this->syncGoogleCalendarAccessToken);
 //                    $client->setUseObjects(true); // return objects instead of arrays
-//                    $googleCalendar = new Google_CalendarService($client);
+//                    $googleCalendar = new Google_Service_Calendar($client);
                     $auth = new GoogleAuthenticator();
                     $googleCalendar = $auth->getCalendarService();
 
@@ -860,30 +858,30 @@ class Profile extends X2ActiveRecord {
 
                     $event = $googleCalendar->events->get($this->syncGoogleCalendarId, $action->syncGoogleCalendarEventId);
                     if(is_array($event)){
-                        $event = new Google_Event($event);
+                        $event = new Google_Service_Calendar_Event($event);
                     }
                     $event->setSummary($summary);
                     if(empty($action->dueDate)){
                         $action->dueDate = time();
                     }
                     if($action->allDay){
-                        $start = new Google_EventDateTime();
+                        $start = new Google_Service_Calendar_EventDateTime();
                         $start->setDate(date('Y-m-d', $action->dueDate));
                         $event->setStart($start);
 
                         if(!$action->completeDate)
                             $action->completeDate = $action->dueDate;
-                        $end = new Google_EventDateTime();
+                        $end = new Google_Service_Calendar_EventDateTime();
                         $end->setDate(date('Y-m-d', $action->completeDate + 86400));
                         $event->setEnd($end);
                     } else{
-                        $start = new Google_EventDateTime();
+                        $start = new Google_Service_Calendar_EventDateTime();
                         $start->setDateTime(date('c', $action->dueDate));
                         $event->setStart($start);
 
                         if(!$action->completeDate)
                             $action->completeDate = $action->dueDate; // if no end time specified, make event 1 hour long
-                        $end = new Google_EventDateTime();
+                        $end = new Google_Service_Calendar_EventDateTime();
                         $end->setDateTime(date('c', $action->completeDate));
                         $event->setEnd($end);
                     }
@@ -910,21 +908,20 @@ class Profile extends X2ActiveRecord {
     public function deleteGoogleCalendarEvent($action){
         try{ // catch google exceptions so the whole app doesn't crash if google has a problem syncing
             $admin = Yii::app()->settings;
-            if($admin->googleIntegration){
+            $credentials = Yii::app()->settings->getGoogleIntegrationCredentials ();
+            if($admin->googleIntegration && $credentials){
                 if(isset($this->syncGoogleCalendarId) && $this->syncGoogleCalendarId){
                     // Google Calendar Libraries
                     $timezone = date_default_timezone_get();
-                    require_once "protected/extensions/google-api-php-client/src/Google_Client.php";
-                    require_once "protected/extensions/google-api-php-client/src/contrib/Google_CalendarService.php";
+                    require_once 'protected/integration/Google/google-api-php-client/src/Google/autoload.php';
                     date_default_timezone_set($timezone);
 
                     $client = new Google_Client();
-                    $client->setClientId($admin->googleClientId);
-                    $client->setClientSecret($admin->googleClientSecret);
+                    $client->setClientId($credentials['clientId']);
+                    $client->setClientSecret($credentials['clientSecret']);
                     //$client->setDeveloperKey($admin->googleAPIKey);
                     $client->setAccessToken($this->syncGoogleCalendarAccessToken);
-                    $client->setUseObjects(true); // return objects instead of arrays
-                    $googleCalendar = new Google_CalendarService($client);
+                    $googleCalendar = new Google_Service_Calendar($client);
 
                     $googleCalendar->events->delete($this->syncGoogleCalendarId, $action->syncGoogleCalendarEventId);
                 }

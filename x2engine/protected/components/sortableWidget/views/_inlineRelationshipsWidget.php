@@ -168,7 +168,7 @@ $columns = array(
         'name' => 'createDate',
         'header' => Yii::t('contacts', 'Create Date'),
         'value' => '$data->renderAttribute("createDate")',
-        'filterType' => 'dateTime',
+        'filterType' => 'date',
         'type' => 'raw'
     ),
 );

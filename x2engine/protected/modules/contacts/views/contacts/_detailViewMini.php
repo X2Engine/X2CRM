@@ -37,7 +37,8 @@
 $this->widget('DetailView', array(
     'model'   => $model,
     'scenario' => 'Inline',
-    'nameLink' => true
+    'nameLink' => true,
+    'namespace' => 'contactDetailViewMini',
 ));
 // $this->renderPartial(
 //     'application.components.views.@DETAILVIEW', 

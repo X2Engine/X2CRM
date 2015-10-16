@@ -272,7 +272,7 @@ abstract class SortableWidget extends X2Widget {
             } else {
                 $className = $type;
             }
-            if (class_exists ($className) && $className::$canBeCreated) $filtered[$type] = $label;
+            if (class_exists ($className) && $className::$canBeCreated) $filtered[$type] = Yii::t('app',$label);
         }    
         return $filtered;
     }    
@@ -819,12 +819,20 @@ abstract class SortableWidget extends X2Widget {
         return $this->_viewFileParams;
     } 
 
+    private $_errors = array ();
+    public function addError ($message) {
+        $this->_errors[] = $message;
+    }
+
+    public function hasError () {
+        return count ($this->_errors);
+    }
+
     /**
      * Renders widget components by parsing the template string and calling rendering methods
      * for each template item. HTML contained in the template gets echoed out.
      */
     public function renderWidget () {
-
         // don't render hidden widgets to prevent page load slow down
         $hidden = self::getJSONProperty (
             $this->profile, 'hidden', $this->widgetType, $this->widgetUID);
@@ -902,6 +910,14 @@ abstract class SortableWidget extends X2Widget {
         Yii::app()->clientScript->registerScript (
             get_called_class ().$this->widgetUID.'Script', $this->setupScript, 
             ($this->isAjaxRequest ? CClientScript::POS_END: CClientScript::POS_BEGIN));
+
+        if ($this->hasError ()) {
+            Yii::app()->controller->renderPartial (
+                'application.components.sortableWidget.views._widgetError', array (
+                'errors' => $this->_errors,
+            ));
+            return;
+        }
 
         $minimized = self::getJSONProperty (
             $this->profile, 'minimized', $this->widgetType, $this->widgetUID);
@@ -1142,6 +1158,7 @@ abstract class SortableWidget extends X2Widget {
                 'translations' => $this->getTranslations (),
                 'deleteWidgetUrl' =>  Yii::app()->controller->createUrl (
                     '/profile/deleteSortableWidget'),
+                'hasError' => $this->hasError ()
             );
         }
         return $this->_JSSortableWidgetParams;

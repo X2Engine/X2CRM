@@ -51,15 +51,30 @@ class Modules extends CActiveRecord {
         }, $records);
     }
 
-    public static function getDropdownOptions () {
-        $moduleNames = self::getModuleNames ();
-        $options = array ();
-        foreach ($moduleNames as $name) {
-            $options[$name] = self::displayName (true, $name);
+    public static function getDropdownOptions ($keyType='name', $filter=null) {
+        $filter = $filter === null ? function () { return true; } : $filter;
+        if ($keyType === 'name') {
+            $moduleNames = array_filter (self::getModuleNames (), $filter);
+            $options = array ();
+            foreach ($moduleNames as $name) {
+                $options[$name] = self::displayName (true, $name);
+            }
+        } elseif ($keyType === 'id') {
+            $modules = array_filter (Yii::app()->db->createCommand ()
+                ->select ('id, name')
+                ->from ('x2_modules')
+                ->queryAll (), $filter);
+            $options = array ();
+            foreach ($modules as $record) {
+                $options[$record['id']] = self::displayName (true, $record['name']);
+            }
+        } else {
+            throw new CException ('invalid key type');
         }
         asort ($options);
         return $options;
     }
+
 
     public static function dropDownList ($name, $selected='', $htmlOptions=array ()) {
         return CHtml::dropDownList (

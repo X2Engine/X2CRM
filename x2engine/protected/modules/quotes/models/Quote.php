@@ -348,10 +348,24 @@ class Quote extends X2Model {
         return $id;
     }
 
+    public function getAccountId () {
+        list ($name, $id) = Fields::nameAndId ($this->accountName);
+        return $id;
+    }
+
 	/**
 	 * Creates an action history event record in the contact/account
 	 */
 	public function createActionRecord() {
+		if(!empty($this->contactId)) {
+            $this->createAssociatedAction ('contacts', $this->contactId);
+		}
+		if(!empty($this->accountName)) {
+            $this->createAssociatedAction ('accounts', $this->accountId);
+		}
+	}
+
+    public function createAssociatedAction ($type, $id) {
 		$now = time();
 		$actionAttributes = array(
 			'type' => 'quotes',
@@ -364,21 +378,12 @@ class Quote extends X2Model {
 			'completedBy' => $this->createdBy,
 			'updatedBy' => $this->updatedBy
 		);
-		if(!empty($this->contactId)) {
-			$action = new Actions();
-			$action->attributes = $actionAttributes;
-			$action->associationType = 'contacts';
-			$action->associationId = $this->contactId;
-			$action->save();
-		}
-		if(!empty($this->accountName)) {
-			$action = new Actions();
-			$action->attributes = $actionAttributes;
-			$action->associationType = 'accounts';
-			$action->associationId = $this->accountName;
-			$action->save();
-		}
-	}
+        $action = new Actions();
+        $action->attributes = $actionAttributes;
+        $action->associationType = $type;
+        $action->associationId = $id;
+        $action->save();
+    }
 
 	/**
 	 * Creates an event record for the creation of the model.
@@ -644,7 +649,7 @@ class Quote extends X2Model {
 		$criteria = new CDbCriteria;
 		$parameters = array('limit' => ceil($pageSize));
 		$criteria->scopes = array('findAll' => array($parameters));
-		$criteria->addCondition("(t.type!='invoice' and type!='dummyQuote') OR t.type IS NULL");
+		$criteria->addCondition("(t.type!='invoice' and t.type!='dummyQuote') OR t.type IS NULL");
 
 		return $this->searchBase($criteria, $pageSize);
 	}

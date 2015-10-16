@@ -137,10 +137,10 @@ class ApiControllerSecurityTest extends CURLDbTestCase {
 				$apiAccess = curl_exec($ch) == 'true';
 				$access = false;
                 $access = $auth->checkAccess($urlParam['{action}'], $user->id);
-                X2_VERBOSE_MODE && println ('Action:');
-                X2_VERBOSE_MODE && print_r ($urlParam);
-                X2_VERBOSE_MODE && println ((int) $access);
-                X2_VERBOSE_MODE && println ((int) $apiAccess);
+                X2_TEST_DEBUG_LEVEL > 1 && println ('Action:');
+                X2_TEST_DEBUG_LEVEL > 1 && print_r ($urlParam);
+                X2_TEST_DEBUG_LEVEL > 1 && println ((int) $access);
+                X2_TEST_DEBUG_LEVEL > 1 && println ((int) $apiAccess);
 				$this->assertEquals((int) $access, (int) $apiAccess,'Failed asserting consistency between API-reported permissions and internal app permissions.');
 			}
 		}

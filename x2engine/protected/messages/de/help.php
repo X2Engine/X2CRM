@@ -1,15 +1,13 @@
-<?php
-return array (
-
-'Icon Reference'=>'Icon Referenz',
-'X2Engine Modules'=>'X2Engine Module',
-'Events'=>'Geschehen',
-'Action Reminder'=>'Aktion Reminder',
-'Calendar Event'=>'Event Calendar',
-'Case Escalated'=>'Fall Eskaliert',
-'Document Updated'=>'Dokument Aktualisiert',
-'Email Opened'=>'E-Mail Geöffnet',
-'Email Sent'=>'E-Mail Gesendet',
-'Web Lead Created'=>'Web Blei Erstellt',
-'Workflow Completed'=>'Workflow Abgeschlossen',
+<?php return array (
+  'Icon Reference' => 'Icon Referenz',
+  'X2Engine Modules' => 'X2Engine Module',
+  'Events' => 'Events',
+  'Action Reminder' => 'Erinnerung an Aufgaben',
+  'Calendar Event' => 'Ereignis Kalendar',
+  'Case Escalated' => 'Fall eskaliert',
+  'Document Updated' => 'Dokument aktualisiert',
+  'Email Opened' => 'E-Mail geöffnet',
+  'Email Sent' => 'E-Mail gesendet',
+  'Web Lead Created' => 'Web-Lead erstellt',
+  'Workflow Completed' => 'Workflow abgeschlossen',
 );

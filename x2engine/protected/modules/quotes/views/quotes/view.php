@@ -221,7 +221,7 @@ $productField = Fields::model()->findByAttributes(array('modelName' => 'Quote', 
     <div class="x2-layout form-view">
         <div class="formSection showSection">
             <div class="formSectionHeader">
-                <span class="sectionTitle"><?php echo $productField->attributeLabel; ?></span>
+                <span class="sectionTitle"><?php echo Yii::t('products',$productField->attributeLabel); ?></span>
             </div>
             <div class="tableWrapper">
 <?php

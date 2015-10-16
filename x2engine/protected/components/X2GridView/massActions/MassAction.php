@@ -243,6 +243,17 @@ abstract class MassAction extends CComponent {
     protected function renderForm () {}
 
     /**
+     * @return bool true if attribute is a valid filter or sort attribute for given model, false 
+     *  otherwise
+     */
+    protected function isValidAttribute ($className, $attr) {
+        $staticModel = X2Model::model ($className);
+        return 
+            ($staticModel->hasAttribute ($attr) || 
+             $attr === 'tags' && $staticModel->asa ('TagBehavior'));
+    }
+
+    /**
      * Helper method for superExecute. Returns array of ids of records in search results.
      * @param string $modelClass
      * @return array array of ids and their checksum
@@ -257,15 +268,10 @@ abstract class MassAction extends CComponent {
             // ensure that specified filter attributes are valid
             foreach ($_GET[$modelClass] as $attr => $val) {
 
-                if (!X2Model::model ($modelClass)->hasAttribute ($attr)) {
+                if (!$this->isValidAttribute ($modelClass, $attr)) {
                     throw new CHttpException (400, Yii::t('app', 'Bad Request'));
                 }
             }
-        }
-
-        // the tag filter is a special case since tags don't have a Fields record
-        if (isset ($_POST['tagField'])) {
-            $_GET['tagField'] = $_POST['tagField'];
         }
 
         if (isset ($_POST[$modelClass.'_sort'])) {
@@ -274,7 +280,7 @@ abstract class MassAction extends CComponent {
             // ensure that specified sort order attribute is valid
             $sortAttr = preg_replace ('/\.desc$/', '', $_GET[$modelClass.'_sort']);
 
-            if (!X2Model::model ($modelClass)->hasAttribute ($sortAttr)) {
+            if (!$this->isValidAttribute ($modelClass, $sortAttr)) {
                 throw new CHttpException (400, Yii::t('app', 'Bad Request'));
             }
         }

@@ -37,15 +37,36 @@
 
 Yii::app()->clientScript->registerCssFile (Yii::app()->theme->baseUrl.'/css/importexport.css');
 ?>
-<div class="page-title icon contacts"><h2><?php echo Yii::t('contacts','Export {model}', array('{model}'=>Modules::displayName(true, $model))); ?></h2></div>
+<div class="page-title icon contacts"><h2>
+    <?php echo Yii::t('contacts','Export {model}', array(
+        '{model}'=>Modules::displayName (true, $model)
+    )); ?>
+</h2></div>
+
 <div class="form">
-    
-<?php if (!empty($model)) { ?>
-    <?php echo '<div style="width:600px;">'; ?>
-    <?php echo Yii::t('admin','Please click the button below to begin the export. Do not close this page until the export is finished, which may take some time if you have a large number of records. A counter will keep you updated on how many records have been successfully updated.'); ?><br><br>
-    <?php echo isset($listName)?Yii::t('admin','You are currently exporting: ')."<b>$listName</b>":''; ?>
+
+<?php if (!empty($model)) {
+    echo '<div style="width:600px;">';
+    echo Yii::t('admin', 'Please click the button below to begin the export. Do not close this '.
+        'page until the export is finished, which may take some time if you have a large number '.
+        'of records. A counter will keep you updated on how many records have been successfully '.
+        'updated.'); ?><br><br>
+    <?php if (isset($listName)) {
+        echo Yii::t('admin','You are currently exporting: ')."<b>$listName</b>";
+    } ?>
+    </div>
+    <h3><?php echo Yii::t('admin', 'Customize CSV') .
+        CHtml::link(X2Html::fa('fa-caret-down', array('id'=>'expand-exportSeparator')), '#'); ?></h3>
+    <div id='exportSeparator' style='display:none'>
+        <?php
+            echo CHtml::label(Yii::t('admin', 'Delimeter'), 'delimeter');
+            echo CHtml::textField('delimeter', ',').'<br />';
+            echo CHtml::label(Yii::t('admin', 'Enclosure'), 'enclosure');
+            echo CHtml::textField('enclosure', '"');
+        ?>
     </div>
     <br>
+
     <div class="exportOption">
         <?php 
         if (Yii::app()->params->isAdmin) {
@@ -65,60 +86,117 @@ Yii::app()->clientScript->registerCssFile (Yii::app()->theme->baseUrl.'/css/impo
 
     <?php echo CHtml::button(Yii::t('app','Export'),array('class'=>'x2-button','id'=>'export-button')); ?>
 
-    <div id="status-text">
-
-    </div>
+    <div id="status-text"></div>
 
     <div style="display:none" id="download-link-box">
         <?php echo Yii::t('admin','Please click the link below to download {model}.', array('{model}'=>$model));?><br><br>
         <a class="x2-button" id="download-link" href="#"><?php echo Yii::t('app','Download');?>!</a>
     </div>
-    <script>
-$('#export-button').on('click',function(){
-    prepareModelExport();
-});
-function prepareModelExport(){
-    var includeTags = $("#includeTags").is (':checked');
-    $.ajax({
-        url:'prepareModelExport?model=<?php echo $model; ?>&includeTags='+includeTags,
-        success:function(data) {
-            exportModelData(0);
-        },
-        error: function(data) {
-            var resp = JSON.parse(data['responseText']);
-            $('#status-text').html (resp['message'])
-                .addClass ('flash-error')
-                .css ('color', 'red')
-                .show();
-        }
-    });
-}
-function exportModelData(page){
-    var includeHidden = $("#includeHidden").is (':checked');
-    var includeTags = $("#includeTags").is (':checked');
-    if($('#export-status').length==0){
-       $('#status-text').append("<div id='export-status'><?php echo Yii::t('admin','Exporting <b>{model}</b> data...', array('{model}'=>$model)); ?><br></div>");
-    }
-    $('#export-button').hide();
-    $.ajax({
-        url:'exportModelRecords?page='+page+'&model=<?php echo $model; ?>&includeHidden='+includeHidden+'&includeTags='+includeTags,
-        success:function(data){
-            if(data>0){
-                $('#export-status').html(((data)*100)+" <?php echo Yii::t('admin','records from <b>{model}</b> successfully exported.', array('{model}'=>$model));?><br>");
-                exportModelData(data);
-            }else{
-                $('#export-status').html("<?php echo Yii::t('admin','All {model} data successfully exported.', array('{model}'=>$model));?><br>");
-                $('#download-link-box').show();
-                alert("<?php echo Yii::t('admin','Export Complete!');?>");
+
+    <?php Yii::app()->clientScript->registerScript('recordExportVariables', "
+        if (typeof x2 == 'undefined')
+            x2 = {};
+        if (typeof x2.recordExport == 'undefined')
+            x2.recordExport = {
+                'modelName': '".$model."',
+                'dlUrl': '".$this->createUrl('/admin/downloadData',array('file'=>$_SESSION['modelExportFile']))."',
+
+                'exportMessages': {
+                    'init': ".CJSON::encode(Yii::t('admin',
+                        'Exporting <b>{model}</b> data...', array('{model}'=>$model))).",
+                    'progress': ".CJSON::encode(Yii::t('admin',
+                        'records from <b>{model}</b> successfully exported.', array('{model}'=>$model))).",
+                    'finished': ".CJSON::encode(Yii::t('admin',
+                        'All {model} data successfully exported.', array('{model}'=>$model))).",
+                    'complete': ".CJSON::encode(Yii::t('admin','Export Complete!')).",
+                    'invalidParams': ".CJSON::encode(Yii::t('admin', 'Invalid CSV parameters! Delimeter '.
+                        'and enclosure can only be a single character'))."
+                }
+            };
+    ", CClientScript::POS_HEAD);
+
+    Yii::app()->clientScript->registerScript('recordExportJs', "
+    /**
+     *
+     */
+    x2.recordExport.prepareModelExport = function() {
+        var includeTags = $('#includeTags').is (':checked');
+        $.ajax({
+            url:'prepareModelExport',
+            data: {
+                model: x2.recordExport.modelName,
+                includeTags: includeTags
+            },
+            success:function(data) {
+                x2.recordExport.exportModelData(0);
+            },
+            error: function(data) {
+                var resp = JSON.parse(data['responseText']);
+                $('#status-text').html (resp['message'])
+                    .addClass ('flash-error')
+                    .css ('color', 'red')
+                    .show();
             }
+        });
+    }
+
+    /**
+     * Recursively make ajax calls to export the requested records
+     * @param int page Page number
+     */
+    x2.recordExport.exportModelData = function (page) {
+        if($('#export-status').length==0){
+            $('#status-text').append('<div id=\'export-status\'>' +
+                x2.recordExport.exportMessages['init'] + '<br></div>');
         }
+        $('#export-button').hide();
+
+        var includeHidden = $('#includeHidden').is(':checked');
+        $.ajax({
+            url:'exportModelRecords',
+            data: {
+                page: page,
+                model: x2.recordExport.modelName,
+                includeHidden: includeHidden,
+                delimeter: x2.recordExport.delimeter,
+                enclosure: x2.recordExport.enclosure
+            },
+            success: function (data) {
+                if (data>0){
+                    $('#export-status').html (((data)*100)+ ' ' +
+                        x2.recordExport.exportMessages['progress'] + '<br>');
+                    x2.recordExport.exportModelData(data);
+                } else {
+                    $('#export-status').html (x2.recordExport.exportMessages['finished'] + '<br>');
+                    $('#download-link-box').show();
+                    alert (x2.recordExport.exportMessages['complete']);
+                }
+            }
+        });
+    }
+
+    /**
+     * Set up event listeners for export button and download link
+     */
+    $('#expand-exportSeparator').on('click', function() {
+        $('#exportSeparator').slideToggle();
     });
-}
-$('#download-link').click(function(e) {
-    e.preventDefault();  //stop the browser from following
-    window.location.href = '<?php echo $this->createUrl('/admin/downloadData',array('file'=>$_SESSION['modelExportFile'])); ?>';
-});</script>
-<?php } else {
+    $('#export-button').on('click',function(){
+        x2.recordExport.delimeter = $('#delimeter').val();
+        x2.recordExport.enclosure = $('#enclosure').val();
+        if (x2.recordExport.delimeter.length != 1 || x2.recordExport.enclosure.length != 1) {
+            alert (x2.recordExport.exportMessages['invalidParams']);
+            return false;
+        }
+        x2.recordExport.prepareModelExport();
+    });
+    $('#download-link').click(function(e) {
+        e.preventDefault();  //stop the browser from following
+        window.location.href = x2.recordExport.dlUrl;
+    });
+    ", CClientScript::POS_READY);
+} else {
+    // Render list of models to choose from
     echo "<h3>".Yii::t('admin','Please select a module to export from.')."</h3>";
     foreach ($modelList as $class => $modelName) {
         echo CHtml::link($modelName, array('/admin/exportModels', 'model'=>$class))."<br />";

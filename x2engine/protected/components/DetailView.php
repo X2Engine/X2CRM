@@ -55,6 +55,12 @@ class DetailView extends RecordView {
      */
     public $halfWidth = false;
 
+    /**
+     * @var array $disableInlineEditingFor Names of fields for which inline editing should be 
+     *  disabled
+     */
+    public $disableInlineEditingFor = array (); 
+
     public function getPackages () {
         return array_merge (parent::getPackages(), array(
             'DetailViewJS' => array(
@@ -87,14 +93,15 @@ class DetailView extends RecordView {
         $width = $this->halfWidth ? 'half-width' : '';
 
         return X2Html::mergeHtmlOptions (array (
-            'class' => "x2-layout detail-view $width"
+            'class' => "x2-layout detail-view $width",
+            'id' => $this->namespace . 'detail-view',
         ), $this->htmlOptions);
     }
 
     /**
      * Modified to add inline-edit class if necessary
      */
-    public function getItemOptions($item, $field) {
+    public function getItemOptions($item, Fields $field) {
         $inlineEdit = $this->canEdit($field) ? ' inline-edit' : '';
 
         $parent = parent::getItemOptions($item, $field);
@@ -107,7 +114,7 @@ class DetailView extends RecordView {
      * Renders the attribute and invisible inline edit field
      * if user can inline-edit
      */
-    public function renderAttribute ($item, $field) {
+    public function renderAttribute ($item, Fields $field) {
         $class = '';
         $style = '';
         if ($field->type == 'text') {
@@ -235,8 +242,9 @@ class DetailView extends RecordView {
      * 'Inline' does not refer to inline-edit, but rather Inline view,
      * turned on in a quickView for example.
      */
-    public function canEdit($field) {
-        return parent::canEdit ($field) && $this->scenario !== 'Inline';
+    public function canEdit(Fields $field) {
+        return !in_array ($field->fieldName, $this->disableInlineEditingFor) &&
+            parent::canEdit ($field) && $this->scenario !== 'Inline';
     }
 }
 

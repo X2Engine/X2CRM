@@ -59,9 +59,13 @@ Yii::app()->clientScript->registerScript('editorSetup',"
 ", CClientScript::POS_READY);
 
 $contactLists = CHtml::listData (Campaign::getValidContactLists(), 'id', 'name');
+if ($model->list && !in_array ($model->list->id, array_keys ($contactLists))) {
+    $contactLists[$model->list->id] = $model->list->name;
+    $contactLists = ArrayUtil::asorti ($contactLists);
+}
 
 $templates = CHtml::listData (Docs::getEmailTemplates2('email', 'Contacts'), 'id', 'name');
-$templates[0] = "Custom";
+$templates[0] = Yii::t('marketing',"Custom");
 
 $form = $this->beginWidget('CActiveForm', array(
     'id'=>'campaign-form',
@@ -82,7 +86,7 @@ $form = $this->beginWidget('CActiveForm', array(
                 $model->listId = $model->list->id;
             }
             echo X2Html::activeDropDownList ($model, 'listId', $contactLists, array(
-                'prompt' => 'Select a Contact List',
+                'prompt' => Yii::t('marketing','Select a Contact List'),
             ))?>
             <?php echo X2Html::hint (Yii::t('marketing', 'Choose a contact list to send the campaign out to, or create one here.'));?>
             <span id='quick-create-list'>

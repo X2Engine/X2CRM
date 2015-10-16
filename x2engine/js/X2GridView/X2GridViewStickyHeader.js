@@ -103,7 +103,7 @@ GridViewStickyHeader.prototype.makeSticky = function () {
     $(bodyContainer).find ('table').addClass ('x2-gridview-body-without-fixed-header');
 
     $('.column-selector').addClass ('stuck');
-    $('#' + this.gridId + '-mass-action-buttons .more-drop-down-list').
+    $('#' + this.gridId + 'more-drop-down-list').
         addClass ('stuck');
     this._isStuck = true;
 };
@@ -116,7 +116,7 @@ GridViewStickyHeader.prototype.makeUnsticky = function () {
     $(bodyContainer).find ('table').removeClass ('x2-gridview-body-without-fixed-header');
 
     $('.column-selector').removeClass ('stuck');
-    $('#' + this.gridId + '-mass-action-buttons .more-drop-down-list').
+    $('#' + this.gridId + 'more-drop-down-list').
         removeClass ('stuck');
     this._isStuck = false;
 };
@@ -144,6 +144,7 @@ GridViewStickyHeader.prototype.checkX2GridViewHeaderSticky = function () {
         this.DEBUG && console.log ('sticky');
 
         $(titleContainer).hide ();
+        $('#' + this.gridId + 'more-drop-down-list').hide ();
 
         /* unfix header */
         //$(bodyContainer).hide ();
@@ -200,6 +201,7 @@ GridViewStickyHeader.prototype.checkX2GridViewHeaderUnsticky = function () {
         //x2.gridviewStickyHeader.DEBUG && console.log ('unsticky');
 
         $(titleContainer).show ();
+        $('#' + this.gridId + 'more-drop-down-list').show ();
 
         /*var bodyContainer = x2.gridviewStickyHeader.bodyContainer;
         x2.gridviewStickyHeader.isStuck = false;*/

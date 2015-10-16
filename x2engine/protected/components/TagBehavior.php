@@ -40,7 +40,7 @@
  * @package application.components
  * TagBehavior adds and removes tags from x2_tags when a record is created, updated or deleted
  */
-class TagBehavior extends CActiveRecordBehavior {
+class TagBehavior extends X2ActiveRecordBehavior {
 
     /**
      * @var bool $disableTagScanning
@@ -53,6 +53,12 @@ class TagBehavior extends CActiveRecordBehavior {
     protected $_tags = null;
 
     private $flowTriggersEnabled = true; 
+
+    public function rules () {
+        return array (
+            array ('tags', 'safe', 'on' => 'search'),
+        );
+    }
 
     public function enableTagTriggers () {
         $this->flowTriggersEnabled = true;
@@ -125,8 +131,7 @@ class TagBehavior extends CActiveRecordBehavior {
         if ($this->disableTagScanning) return array ();
         $tags = array();
 
-        $profile = Yii::app()->params->profile;
-        if (isset($profile) && $profile->disableAutomaticRecordTagging) {
+        if (Yii::app()->settings->disableAutomaticRecordTagging) {
             return array();
         }
 
@@ -169,7 +174,7 @@ class TagBehavior extends CActiveRecordBehavior {
         }
 
         // Primary expression to filter out tags
-        $exp = '/(?:^|\s)(#(?:\w+|\w[-\w]+\w))(?:$|\s)/u';
+        $exp = '/(?:|\s)(#(?:\w+|\w[-\w]+\w))(?:$|\s)/u';
 
         $matches = array();
         preg_match_all($exp, $text, $matches);
@@ -224,6 +229,49 @@ class TagBehavior extends CActiveRecordBehavior {
                 ->queryColumn();
         }
         return $this->_tags;
+    }
+
+    public function setTags ($tags, $rawInput=false) {
+        if (!$rawInput)
+            $tags = is_string ($tags) ? array_map (function ($tag) {
+                return trim ($tag);
+            }, explode (Tags::DELIM, $tags)) : $tags;
+        $this->_tags = $tags;
+    }
+
+    public function compareTags (CDbCriteria $criteria) {
+        $tags = $this->tags;
+        $inQuery = array ();
+        $params = array (
+            ':type' => get_class ($this->owner),
+        );
+        for ($i = 0; $i < count ($tags); $i++) {
+            if ($tags[$i] === '') {
+                unset ($tags[$i]);
+                $i--;
+                continue;
+            } else {
+                $inQuery[] = 'b.tag LIKE :'.$i;
+                $params[':'.$i] = '%'.$tags[$i].'%';
+            }
+        }
+        $tagConditions = implode (' OR ',$inQuery);
+
+        if ($tagConditions) {
+            $criteria->distinct = true;
+            $criteria->join .= ' JOIN x2_tags b ON (b.itemId=t.id AND b.type=:type '.
+                'AND ('.$tagConditions.'))';
+            $criteria->params = $params;
+        }
+
+        return $criteria;
+    }
+
+    public function renderTagInput () {
+        $clone = clone $this->owner;  
+        $clone->setTags (implode (', ', $this->tags), true);
+
+        return CHtml::activeTextField ($clone, 'tags');
     }
 
     /**

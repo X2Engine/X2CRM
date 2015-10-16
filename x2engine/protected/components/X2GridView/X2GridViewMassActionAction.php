@@ -47,6 +47,7 @@ class X2GridViewMassActionAction extends CAction {
         'MassRemoveFromList',
         'MassUncompleteAction',
         'NewListFromSelection',
+        'MassMoveFileSysObjToFolder',
          
     );
 

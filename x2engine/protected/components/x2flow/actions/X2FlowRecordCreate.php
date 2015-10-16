@@ -58,10 +58,11 @@ class X2FlowRecordCreate extends X2FlowAction {
                     'name'=>'createRelationship',
                     'label' => 
                         Yii::t('studio', 'Create Relationship'). 
-                        '<span class="x2-hint" title="'.
-                        Yii::t('app', 'Check this box if you want a new relationship to be '.
-                        'established between the record created by this action and the record that'.
-                        ' triggered the flow.').'">&nbsp;[?]</span>', 
+                        '&nbsp;'.
+                        X2Html::hint2 (
+                            Yii::t('app', 'Check this box if you want a new relationship to be '.
+                                'established between the record created by this action and the '.
+                                'record that triggered the flow.')), 
                     'type'=>'boolean',
                     'defaultVal' => false,
                 ),

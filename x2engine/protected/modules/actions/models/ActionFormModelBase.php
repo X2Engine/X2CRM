@@ -122,6 +122,10 @@ abstract class ActionFormModelBase extends X2FormModel {
     public function attributeLabels () {
         return array (
             'assignedTo' => Yii::t('actions', 'Assigned To'),
+            'dueDate' => Yii::t('actions', 'Due Date'),
+            'priority' => Yii::t('actions', 'Priority'),
+            'visibility' => Yii::t('actions', 'Visibility'),
+            'reminder' => Yii::t('actions', 'Reminder'),
         );
     }
 

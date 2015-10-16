@@ -50,7 +50,7 @@ class X2TestCase extends CTestCase {
     
     public function setUp() {
         if(X2_TEST_DEBUG_LEVEL > 1){
-            println(' '.$this->getName());
+            println("\n".$this->getName());
         }
         if(isset($_SESSION)){
             $this->_oldSession = $_SESSION;
@@ -64,12 +64,18 @@ class X2TestCase extends CTestCase {
         }
         parent::tearDown();
     }
+
+    public static function getPath ($arg) {
+        $reflect = new ReflectionClass ($arg);
+        return ltrim (
+            preg_replace ('/^'.preg_quote (__DIR__, '/').'/', '', $reflect->getFileName ()), '/');
+    }
     
     public static function setUpBeforeClass(){
         if (!YII_UNIT_TESTING) throw new CException ('YII_UNIT_TESTING must be set to true');
         $testClass = get_called_class();
         if(X2_TEST_DEBUG_LEVEL > 0){
-            println($testClass);
+            println("\nrunning ".self::getPath ($testClass));
         }
         Yii::app()->beginRequest();
         Yii::app()->fixture->load(array(
@@ -93,11 +99,27 @@ class X2TestCase extends CTestCase {
     public function assertSaves (CActiveRecord $model) {
         $saved = $model->save ();
         if ($model->hasErrors ()) {
-            X2_VERBOSE_MODE && print_r ($model->getErrors ());
+            X2_TEST_DEBUG_LEVEL > 1 && print_r ($model->getErrors ());
         }
         $this->assertTrue ($saved);
     }
     
+    /**
+     * Checks that two arrays have the same values regardless of order
+     */
+    public function assertArrayEquals(array $a, array $b) {
+        $equality = false;
+        if (count(array_diff($a, $b)) === 0) {
+            foreach ($a as $v) {
+                if (!in_array($v, $b)) {
+                    break;
+                }
+            }
+            $equality = true;
+        }
+        $this->assertTrue($equality);
+    }
+
     /**
      * Polyfill for PHPUnit v4.4+ since PHPUnit now aborts test and marks as risky if ob_start is
      * used
@@ -139,6 +161,10 @@ class X2TestCase extends CTestCase {
         $this->setOutputCallback (function ($output) {
             return $output; // display output 
         });
+    }
+
+    public function assertUpdates (CActiveRecord $model, array $attrs=null) {
+        $this->assertTrue ($model->update ($attrs));
     }
 
 }

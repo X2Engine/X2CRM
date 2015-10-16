@@ -36,7 +36,7 @@
 
 Yii::import('application.components.util.*');
 
-class StringUtilTest extends CTestCase {
+class StringUtilTest extends X2TestCase {
 
     private static $dummyString = '1234567890-=!@#$%^&*()_+qwertyuiop[]\QWERTYUIOP{}|asdfghASDFGHJKLLL:"zxcvbnm,./ZXCVBNM<>?   1234567890-=!@#$%^&*()_+qwertyuiop[]\QWERTYUIOP{}|asdfghASDFGHJKLLL:"zxcvbnm,./ZXCVBNM<>?   ';
 

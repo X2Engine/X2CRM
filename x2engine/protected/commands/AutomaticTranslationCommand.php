@@ -41,47 +41,47 @@
  */
 class AutomaticTranslationCommand extends CConsoleCommand {
 
-    private $_verbose = false;
-    private $_missing;
+    private $_find;
     private $_consolidate;
     private $_update;
-    private $_add;
-    private $_newLanguages;
+    private $_merge;
 
     public function run($args) {
-        list($action, $options, $args) = $this->resolveRequest($args);
-        $this->parseOptions($options);
         $this->attachBehaviors(array(
             'X2TranslationBehavior' => array('class' => 'X2TranslationBehavior'),
         ));
-        if ($this->_missing) {
+        
+        list($action, $options, $args) = $this->resolveRequest($args);
+        $this->parseOptions($options);
+        if ($this->_find) {
             $this->addMissingTranslations();
-            $this->_verbose && $this->outputMissingStats();
+            $this->outputMissingStats();
         }
         if ($this->_consolidate) {
             $this->consolidateMessages();
-            $this->_verbose && $this->outputConsolidationStats();
+            $this->outputConsolidationStats();
         }
         if ($this->_update) {
             $this->updateTranslations();
-            $this->_verbose && $this->outputTranslationStats();
+            $this->outputTranslationStats();
         }
-        if ($this->_add) {
-            //TODO: Add a new language
+        if($this->_merge){
+            $this->mergeCustomTranslations();
+            $this->outputMergeStats();
         }
         $this->outputErrors();
     }
 
     private function parseOptions($args) {
         if (isset($args['verbose'])) {
-            $this->_verbose = true;
+            $this->verbose = true;
         }
 
         if (!isset($args['mode'])) {
-            $args['mode'] = 'mcu';
+            $args['mode'] = 'fcu';
         }
-        if (strpos($args['mode'], 'm') !== false) {
-            $this->_missing = true;
+        if (strpos($args['mode'], 'f') !== false) {
+            $this->_find = true;
         }
         if (strpos($args['mode'], 'c') !== false) {
             $this->_consolidate = true;
@@ -89,65 +89,47 @@ class AutomaticTranslationCommand extends CConsoleCommand {
         if (strpos($args['mode'], 'u') !== false) {
             $this->_update = true;
         }
-
-        if (strpos($args['mode'], 'a') !== false) {
-            if (!isset($args['add'])) {
-                throw new CException('A language code must be provided to add a new language.');
-            }
-            $this->_add = true;
-            if (is_array($args['add'])) {
-                $this->_newLanguages = $args['add'];
-            } else {
-                $this->_newLanguages = explode(',', $args['add']);
-            }
+        if (strpos($args['mode'], 'm') !== false) {
+            $this->_merge = true;
         }
     }
 
     private function outputMissingStats() {
-        echo Yii::t('app',
-                '{count} new messages were found and added to the translation files.',
-                array(
-            '{count}' => $this->newMessages,
-        )) . "\n\n";
+        echo $this->newMessages." new messages were found and added to the translation files.\n\n";
     }
 
     private function outputConsolidationStats() {
-        echo Yii::t('app', '{count} messages were added to the common file.',
-                array(
-            '{count}' => $this->addedToCommon,
-        )) . "\n";
-        echo Yii::t('app', '{count} messages were removed from other files.',
-                array(
-            '{count}' => $this->messagesRemoved,
-        )) . "\n\n";
+        echo $this->addedToCommon." messages were added to the common file.\n";
+        echo $this->messagesRemoved." messages were removed from other files.\n\n";
     }
 
     private function outputTranslationStats() {
         setlocale(LC_MONETARY, 'en_US');
-        echo Yii::t('app', '{count} messages needed to be translated.',
-                array(
-            '{count}' => $this->untranslated,
-        )) . "\n";
-        echo Yii::t('app',
-                '{count} characters were translated, resulting in approximately {cost} in fees to Google.',
-                array(
-            '{count}' => $this->characterCount,
-            '{cost}' => money_format('%n',
-                    (($this->characterCount) / 2000000) * 20)
-        )) . "\n";
+        echo $this->characterCount . ' characters were translated, resulting in approximately ' . money_format('%n',
+                (($this->characterCount) / 2000000) * 20) . " in fees to Google.\n";
         if($this->limitReached){
-            echo Yii::t('app', 'Limit reached. Untranslated messages still remain.') . "\n\n";
+            echo 'Limit reached. Untranslated messages still remain.' . "\n\n";
         }else{
-            echo Yii::t('app', 'Automated translation complete.') . "\n\n";
+            echo 'Automated translation complete.' . "\n\n";
         }
+    }
+    
+    private function outputMergeStats(){
+        echo $this->customMessageCount." custom translations incorporated into base code.\n\n";
     }
 
     private function outputErrors() {
         if (isset($this->errors['missingFiles'])) {
-            echo Yii::t('app',
-                    'Error - Unable to find the following requested translation files:') . "\n";
+            echo 'Error - Unable to find the following requested translation files:' . "\n";
             foreach ($this->errors['missingFiles'] as $file) {
                 echo $file . "\n";
+            }
+            echo "\n";
+        }
+        if(isset($this->errors['missingAttributes'])){
+            echo 'Error - Unable to find associated files for the following models:'."\n";
+            foreach($this->errors['missingAttributes'] as $modelName){
+                echo $modelName . "\n";
             }
             echo "\n";
         }

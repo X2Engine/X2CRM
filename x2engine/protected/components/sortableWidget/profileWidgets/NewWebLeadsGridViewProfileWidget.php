@@ -139,8 +139,6 @@ class NewWebLeadsGridViewProfileWidget extends ProfileGridViewWidget {
                         'name' => 125,
                         'email' => 165,
                         'leadSource' => 83,
-                        'leadstatus' => 91,
-                        'phone' => 107,
                     ),
                     'specialColumns'=>array(
                         'name'=>array(

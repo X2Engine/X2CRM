@@ -200,7 +200,7 @@ class OpportunitiesController extends x2base {
         }
 
         if(isset($_POST['x2ajax'])){
-            $this->renderInlineCreateForm ($model, isset ($ajaxErrors) ? $ajaxErrors : false);
+            $this->renderInlineForm ($model);
         } else {
             $this->render('create',array(
                 'model'=>$model,
@@ -505,6 +505,20 @@ class OpportunitiesController extends x2base {
                         '{contact}'=>Modules::displayName(false, "Contacts"),
                         '{account}'=>Modules::displayName(false, "Accounts"),
                     )))
+            ),
+            array(
+                'name' => 'print',
+                'label' => Yii::t('app', 'Print Record'),
+                'url' => '#',
+                'linkOptions' => array (
+                    'onClick'=>"window.open('".
+                        Yii::app()->createUrl('/site/printRecord', array (
+                            'modelClass' => 'Opportunity',
+                            'id' => $modelId,
+                            'pageTitle' => Yii::t('app', 'Opportunity').': '.(isset($model) ? 
+                                $model->name : "")
+                        ))."');"
+                )
             ),
             RecordViewLayoutManager::getEditLayoutActionMenuListItem (),
         );

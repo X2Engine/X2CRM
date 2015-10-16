@@ -1,4 +1,4 @@
-/*****************************************************************************************
+/*!***************************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2015 X2Engine Inc.
  * 
@@ -43,6 +43,32 @@
     pointer-events: none;
 }
 .list-view {
+//    .avatar-upload {
+//        position: relative;
+//        top: 6px;
+//        right: 2px;
+//    }
+    .default-avatar {
+        line-height: 0;
+    }
+    .avatar-upload, .default-avatar {
+    }
+    .topic-attributes{
+        float:right;
+        width:30%;
+        min-width: 270px;
+        text-align:center;
+        padding-right: 10px;
+    }
+    .avatar-container {
+        display:inline-block;
+        width: 50px; 
+    }
+    .topic-last-updated-text{
+        display:inline-block;
+        line-height:normal;
+        margin-top: 8px;
+    }
     .items {
         border: none !important;
     }
@@ -87,17 +113,7 @@
     float:left;
     max-width:65%;
 }
-.topic-attributes{
-    float:right;
-    width:30%;
-    min-width: 270px;
-    text-align:center;
-}
 .topic-reply-count{
     float:left;
     width:30%;
-}
-.topic-last-updated-text{
-    display:inline-block;
-    line-height:normal;
 }

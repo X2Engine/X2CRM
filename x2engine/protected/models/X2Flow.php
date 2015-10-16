@@ -164,6 +164,7 @@ class X2Flow extends X2ActiveRecord {
             'name' => Yii::t('admin', 'Name'),
             'createDate' => Yii::t('admin', 'Create Date'),
             'lastUpdated' => Yii::t('admin', 'Last Updated'),
+            'description' => Yii::t('admin', 'Description'),
         );
     }
 
@@ -326,7 +327,7 @@ class X2Flow extends X2ActiveRecord {
         $startOfBranchExecution = $flowTrace[1];
         $lastAction = $startOfBranchExecution[sizeof ($startOfBranchExecution) - 1];
         while (true) {
-            if ($lastAction[0] === 'X2FlowSwitch') {
+            if (is_subclass_of ($lastAction[0], 'MultiChildNode')){
                 $startOfBranchExecution = $lastAction[2];
                 if (sizeof ($startOfBranchExecution) > 0) {
                     $lastAction = $startOfBranchExecution[sizeof ($startOfBranchExecution) - 1];
@@ -421,29 +422,32 @@ class X2Flow extends X2ActiveRecord {
         // if it's true or false, skip directly to the next true/false fork
         if(is_bool($flowPath[$pathIndex])){
             foreach($flowItems as &$item){
-                if($item['type'] === 'X2FlowSwitch'){
-                    if($flowPath[$pathIndex] && isset($item['trueBranch'])){
+                if(is_subclass_of ($item['type'], 'MultiChildNode')){
+                    $nodeClass = $item['type'];
+                    if($flowPath[$pathIndex] && isset($item[$nodeClass::getRightChildName ()])){
                         if(isset($flowPath[$pathIndex + 1])) {
                             return $this->traverseLegacy(
-                                $flowPath, $item['trueBranch'], $params, $pathIndex + 1,
-                                $triggerLogId);
+                                $flowPath, $item[$nodeClass::getRightChildName ()], $params, 
+                                $pathIndex + 1, $triggerLogId);
                         } else {
                             return array(
                                 $item['type'], true,
                                 $this->executeBranch(
-                                    $item['trueBranch'], $params, $triggerLogId)
+                                    $item[$nodeClass::getRightChildName], $params, $triggerLogId)
                             );
                         }
-                    } elseif(!$flowPath[$pathIndex] && isset($item['falseBranch'])){
+                    } elseif(!$flowPath[$pathIndex] && 
+                        isset($item[$nodeClass::getLeftChildName ()])){
+
                         if(isset($flowPath[$pathIndex + 1])) {
                             return $this->traverseLegacy(
-                                $flowPath, $item['falseBranch'], $params, $pathIndex + 1,
-                                $triggerLogId);
+                                $flowPath, $item[$nodeClass::getLeftChildName ()], $params, 
+                                $pathIndex + 1, $triggerLogId);
                         } else {
                             return array(
                                 $item['type'], false,
                                 $this->executeBranch(
-                                    $item['falseBranch'], $params, $triggerLogId)
+                                    $item[$nodeClass::getLeftChildName ()], $params, $triggerLogId)
                             );
                         }
                     }
@@ -476,15 +480,18 @@ class X2Flow extends X2ActiveRecord {
                     $sliced = array_slice ($flowItems, $i + 1);
                     return $this->executeBranch ($sliced, $params, $triggerLogId);
                 }
-                if ($item['type'] === 'X2FlowSwitch') {
-                    if (isset ($item['falseBranch'])) {
+                if (is_subclass_of ($item['type'], 'MultiChildNode')) {
+                    $nodeClass = $item['type'];
+                    if (isset ($item[$nodeClass::getLeftChildName ()])) {
                         $ret = $this->traverse (
-                            $actionId, $item['falseBranch'], $params, $triggerLogId);
+                            $actionId, $item[$nodeClass::getLeftChildName ()], $params, 
+                            $triggerLogId);
                         if ($ret) return $ret;
                     }
-                    if (isset ($item['trueBranch'])) {
+                    if (isset ($item[$nodeClass::getRightChildName ()])) {
                         $ret = $this->traverse (
-                            $actionId, $item['trueBranch'], $params, $triggerLogId);
+                            $actionId, $item[$nodeClass::getRightChildName ()], $params,
+                            $triggerLogId);
                         if ($ret) return $ret;
                     }
                 } 
@@ -510,12 +517,12 @@ class X2Flow extends X2ActiveRecord {
             if(!isset($item['type']) || !class_exists($item['type']))
                 continue;
 
+            $node = X2FlowItem::create($item);
             if($item['type'] === 'X2FlowSwitch'){
-                $switch = X2FlowItem::create($item);
-                $validateRetArr = $switch->validate($params, $this->id);
+                $validateRetArr = $node->validate($params, $this->id);
                 if($validateRetArr[0]){
 
-                    $checkRetArr = $switch->check($params);
+                    $checkRetArr = $node->check($params);
                     if($checkRetArr[0] && isset($item['trueBranch'])){
                         $results[] = array(
                             $item['type'], true,
@@ -530,16 +537,36 @@ class X2Flow extends X2ActiveRecord {
                         );
                     }
                 }
+            }elseif($item['type'] === 'X2FlowSplitter'){
+                $validateRetArr = $node->validate($params, $this->id);
+                if($validateRetArr[0]){
+                    // right to left pre-order traversal
+                    $branchVal = true;
+                    if(isset($item[X2FlowSplitter::getRightChildName ()])){
+                        $results[] = array(
+                            $item['type'], true,
+                            $this->executeBranch(
+                                $item[X2FlowSplitter::getRightChildName ()], $params, $triggerLogId)
+                        );
+                    }
+                    if(isset($item[X2FlowSplitter::getLeftChildName ()])){
+                        $results[] = array(
+                            $item['type'], false,
+                            $this->executeBranch(
+                                $item[X2FlowSplitter::getLeftChildName ()], $params, $triggerLogId)
+                        );
+                    }
+                }
             }else{
                 $flowAction = X2FlowAction::create($item);
                 if($item['type'] === 'X2FlowWait'){
-                    $flowAction->flowId = $this->id;
+                    $node->flowId = $this->id;
                     $results[] = $this->validateAndExecute (
-                        $item, $flowAction, $params, $triggerLogId);
+                        $item, $node, $params, $triggerLogId);
                     break;
                 }else{
                     $results[] = $this->validateAndExecute (
-                        $item, $flowAction, $params, $triggerLogId);
+                        $item, $node, $params, $triggerLogId);
                 }
             }
         }
@@ -611,7 +638,9 @@ class X2Flow extends X2ActiveRecord {
 
 
     public static function getModelTypes($assoc=false) {
-        return array_diff_key (X2Model::getModelTypes ($assoc), array_flip (array ('Fingerprint')));
+        return array_diff_key (
+            X2Model::getModelTypes ($assoc), 
+            array_flip (array ('Fingerprint', 'Charts')));
     }
 
     /**
@@ -701,15 +730,16 @@ class X2Flow extends X2ActiveRecord {
             if(!isset($item['type']) || !class_exists($item['type'])) {
                 continue;
             }
-            if ($item['type'] === 'X2FlowSwitch') {
-                if (isset ($item['type']['falseBranch'])) {
-                    if (!$this->validateFlowPrime ($item['falseBranch'])) {
+            if(is_subclass_of ($item['type'], 'MultiChildNode')){
+                $nodeClass = $item['type'];
+                if (isset ($item['type'][$nodeClass::getLeftChildName ()])) {
+                    if (!$this->validateFlowPrime ($item[$nodeClass::getLeftChildName ()])) {
                         $valid = false;
                         break;
                     }
                 }
-                if (isset ($item['type']['trueBranch'])) {
-                    if (!$this->validateFlowPrime ($item['trueBranch'])) {
+                if (isset ($item['type'][$nodeClass::getRightChildName ()])) {
+                    if (!$this->validateFlowPrime ($item[$nodeClass::getRightChildName ()])) {
                         $valid = false;
                         break;
                     }

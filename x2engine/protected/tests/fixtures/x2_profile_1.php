@@ -17,7 +17,6 @@ return array(
       'allowPost' => '1',
       'disablePhoneLinks' => '0',
       'disableNotifPopup' => '0',
-      'disableAutomaticRecordTagging' => '0',
       'disableTimeInTitle' => '0',
       'language' => 'en',
       'timeZone' => 'UTC',

@@ -56,10 +56,15 @@ $cs->registerCssFile(Yii::app()->theme->baseUrl.'/css/css-loaders/load8.css');
 $cs->registerScript('ConfigMenuJS', "
 	$('.config-panel-content').prependTo($('#config-panel-inner'));
 ", CClientScript::POS_END);
+
+mb_internal_encoding('UTF-8');
+mb_regex_encoding('UTF-8');
+
 ?>
 
 <html>
 <head>
+<meta charset="UTF-8">
 <title><?php echo Yii::t('app','Print') ?></title>
 </head>
 <body>	

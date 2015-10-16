@@ -62,7 +62,7 @@ $accountModule = Modules::model()->findByAttributes(array('name'=>'accounts'));
 
 $menuOptions = array(
     'index', 'create', 'view', 'edit', 'share', 'delete', 'attach', 'quotes', 'import', 'export',
-    'editLayout',
+    'editLayout', 'print'
 );
 if ($contactModule->visible && $accountModule->visible)
     $menuOptions[] = 'quick';

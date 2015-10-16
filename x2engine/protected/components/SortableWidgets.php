@@ -225,13 +225,10 @@ class SortableWidgets extends CJuiWidget {
                         $auth = new GoogleAuthenticator();
                         if($auth->getAccessToken()){
                             $header = 
-                                '<div style="margin-right:15%;display:inline-block;">'.
+                                '<div style="display:inline-block;">'.
                                     Yii::t('app', 'Media').
                                 '</div>
-                                <span style="float:left">
-                                    <img src="'.Yii::app()->theme->baseUrl.'/images/widgets.png" 
-                                     style="opacity:0.3" onmouseout="this.style.opacity=0.3;"
-                                    onmouseover="this.style.opacity=1" />
+                                <span class="gear-img-container fa fa-cog fa-lg">
                                 </span>
                                 <ul class="closed" id="media-widget-gear-menu">
                                     <div style="text-align: left">'.

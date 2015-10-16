@@ -57,6 +57,7 @@ CREATE TABLE x2_web_forms(
     userEmailTemplate    INT,
     webleadEmailTemplate INT,
     leadSource           VARCHAR(100),
+    redirectUrl          VARCHAR(255),
     generateLead         TINYINT DEFAULT 0,
     generateAccount      TINYINT DEFAULT 0,
     PRIMARY KEY (id)

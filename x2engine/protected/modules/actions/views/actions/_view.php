@@ -267,7 +267,7 @@ if($type == 'attachment' && $data->completedBy != 'Email') {
     }
     echo ($legacy ? '<br />' : '').
         CHtml::link(
-            '[View email]', '#', 
+            Yii::t('app','[View email]'), '#', 
             array('onclick' => 'return false;', 'id' => $data->id, 'class' => 'email-frame'));
 }elseif($data->type == 'quotesDeleted'){
     echo $data->actionDescription;

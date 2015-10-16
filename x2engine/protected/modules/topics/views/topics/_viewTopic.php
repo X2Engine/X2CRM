@@ -48,7 +48,11 @@
                 <?php echo $data->renderAttribute ('replyCount'); ?>
             </div>
             <div class="topic-last-updated">
-                <?php echo Profile::renderFullSizeAvatar($data->originalPost->getAuthorId(), 30); ?>
+                <div class='avatar-container'>
+                <?php 
+                echo Profile::renderFullSizeAvatar($data->lastPost->getAuthorId(), 30); 
+                ?>
+                </div>
                 <div class="topic-last-updated-text">
                     <?php echo User::getUserLinks($data->lastPost->updatedBy); ?><br>
                     <?php echo Formatter::formatDateTime($data->lastPost->createDate); ?>

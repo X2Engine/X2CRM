@@ -42,6 +42,12 @@ Yii::import('application.models.X2Model');
  */
 class Actions extends X2Model {
 
+    /**
+     * If we want this to be user configurable, then the height of the list view items container 
+     * needs to be set dynamically. Otherwise, infinity scrolling will break.
+     */
+    const ACTION_INDEX_PAGE_SIZE = 20;
+
     const COLORS_DROPDOWN_ID = 123;
 
     /**
@@ -74,6 +80,29 @@ class Actions extends X2Model {
 
     /* static variable to allow calling findAll without actionText */ 
     private static $withActionText = true;
+
+    /**
+     * Add note to model 
+     * @param X2Model $model model to which note should be added
+     * @param string $note
+     */
+    public static function associateAction (X2Model $model, array $attributes) {
+        $now = time ();
+        $action = new Actions;
+        $action->setAttributes (array_merge (array (
+            'assignedTo' => $model->assignedTo,
+            'visibility' => '1',
+            'associationType' => X2Model::getAssociationType (get_class ($model)),
+            'associationId' => $model->id,
+            'associationName' => $model->name,
+            'createDate' => $now,
+            'lastUpdated' => $now,
+            'completeDate' => $now,
+            'complete' => 'Yes',
+            'updatedBy' => 'admin',
+        ), $attributes), false);
+        return $action->save();
+    }
 
     /**
      * Get names of CFormModel classes associated with action subtypes 
@@ -118,7 +147,7 @@ class Actions extends X2Model {
             ),
             'X2TimestampBehavior' => array('class' => 'X2TimestampBehavior'),
             'X2FlowTriggerBehavior' => array('class' => 'X2FlowTriggerBehavior'),
-            'tags' => array('class' => 'TagBehavior'),
+            'TagBehavior' => array('class' => 'TagBehavior'),
             'ERememberFiltersBehavior' => array(
                 'class' => 'application.components.ERememberFiltersBehavior',
                 'defaults' => array(),
@@ -133,17 +162,21 @@ class Actions extends X2Model {
      * @return array validation rules for model attributes.
      */
     public function rules(){
-        return array(
-            array('allDay', 'boolean'),
-            array('associationId,associationType','requiredAssoc'),
-            array('createDate, completeDate, lastUpdated', 'numerical', 'integerOnly' => true),
-            array('id,assignedTo,actionDescription,visibility,associationId,associationType,'.
-                'associationName,dueDate,priority,type,createDate,complete,reminder,completedBy,'.
-                'completeDate,lastUpdated,updatedBy,color,subject', 'safe'),
+        return array_merge (
+            $this->getBehaviorRules (),
             array(
-                'verifyCode', 'captcha', 'allowEmpty' => !CCaptcha::checkRequirements(), 
-                'on' => 'guestCreate'),
-            array ('notificationUsers', 'validateNotificationUsers'),
+                array('allDay', 'boolean'),
+                array('associationId,associationType','requiredAssoc'),
+                array('createDate, completeDate, lastUpdated', 'numerical', 'integerOnly' => true),
+                array(
+                    'id,assignedTo,actionDescription,visibility,associationId,associationType,'.
+                    'associationName,dueDate,priority,type,createDate,complete,reminder,'.
+                    'completedBy,completeDate,lastUpdated,updatedBy,color,subject', 'safe'),
+                array(
+                    'verifyCode', 'captcha', 'allowEmpty' => !CCaptcha::checkRequirements(), 
+                    'on' => 'guestCreate'),
+                array ('notificationUsers', 'validateNotificationUsers'),
+            )
         );
     }
 
@@ -272,10 +305,10 @@ class Actions extends X2Model {
         $filter = is_array ($names);
         if (!$filter || in_array ('actionDescription', $names))
             $attrs['actionDescription'] = $this->actionDescription;
-        if (!$filter || in_array ('notificationUsers', $names))
-            $attrs['notificationUsers'] = $this->notificationUsers;
-        if (!$filter || in_array ('notificationTime', $names))
-            $attrs['notificationTime'] = $this->notificationTime;
+//        if (!$filter || in_array ('notificationUsers', $names))
+//            $attrs['notificationUsers'] = $this->notificationUsers;
+//        if (!$filter || in_array ('notificationTime', $names))
+//            $attrs['notificationTime'] = $this->notificationTime;
         foreach (array_keys ($this->metaDataTemp) as $name) {
             if (!$filter || in_array ($name, $names))
                 $attrs[$name] = $this->$name;
@@ -414,6 +447,8 @@ class Actions extends X2Model {
         $this->saveMetaData ();
 
         if ($this->reminder) {
+            if (!$this->isNewRecord)
+                $this->deleteOldNotifications ($this->notificationUsers);
             $this->createNotifications (
                 $this->notificationUsers,
                 $this->dueDate - ($this->notificationTime * 60), 'action_reminder');
@@ -992,8 +1027,8 @@ class Actions extends X2Model {
         $parameters = array(
             'condition' => 
                 $assignedToCondition.
-                 " AND dueDate < '".$dueDate."' AND 
-                    (type=\"\" OR type IS NULL)", 
+                 " AND t.dueDate < '".$dueDate."' AND 
+                    (t.type=\"\" OR t.type IS NULL)", 
                 'limit' => ceil(Profile::getResultsPerPage() / 2), 
             'params' => $params);
         $criteria->scopes = array('findAll' => array($parameters));
@@ -1008,10 +1043,10 @@ class Actions extends X2Model {
         list ($assignedToCondition, $params) = $this->getAssignedToCondition (); 
         $condition = $assignedToCondition;
         if (Yii::app()->params->profile->showActions === 'overdue') {
-            $condition = $assignedToCondition.' AND dueDate < '.time ();
+            $condition = $assignedToCondition.' AND t.dueDate < '.time ();
         }
         $parameters = array(
-            "condition" => $condition.' AND (type=\'\' OR type IS NULL)',
+            "condition" => $condition.' AND (t.type=\'\' OR t.type IS NULL)',
             'limit' => ceil(Profile::getResultsPerPage() / 2),
             'params' => $params);
         $criteria->scopes = array('findAll' => array($parameters));
@@ -1026,13 +1061,13 @@ class Actions extends X2Model {
         if(!Yii::app()->user->checkAccess('ActionsAdmin')){
             list ($assignedToCondition, $params) = $this->getAssignedToCondition (); 
             $criteria->addCondition(
-                "(visibility='1' OR ".$assignedToCondition.")");
+                "(t.visibility='1' OR ".$assignedToCondition.")");
             $criteria->params = array_merge($criteria->params,$params);
         }
         if (Yii::app()->params->profile->showActions === 'overdue') {
-            $criteria->addCondition('dueDate < '.time ());
+            $criteria->addCondition('t.dueDate < '.time ());
         }
-        $criteria->addCondition('(type=\'\' OR type IS NULL)');
+        $criteria->addCondition('(t.type=\'\' OR t.type IS NULL)');
         return $this->searchBase($criteria);
     }
 
@@ -1047,25 +1082,41 @@ class Actions extends X2Model {
         /*$criteria->with = 'actionText';
         $criteria->compare('actionText.text', $this->actionDescriptionTemp, true);*/
         if(!empty($criteria->order)){
-            $criteria->order = $order = "sticky DESC, ".$criteria->order;
+            $criteria->order = $order = "t.sticky DESC, ".$criteria->order;
         }else{
-            $order = 
-                'sticky DESC, IF(
-                    complete="No", IFNULL(dueDate, IFNULL(createDate,0)), 
-                    GREATEST(createDate, IFNULL(completeDate,0), IFNULL(lastUpdated,0))) DESC';
+            $order = 't.sticky DESC, IF(
+                t.complete="No", IFNULL(t.dueDate, IFNULL(t.createDate,0)), 
+                GREATEST(t.createDate, IFNULL(t.completeDate,0), IFNULL(t.lastUpdated,0))) DESC';
         }
 
-        $dataProvider = new SmartActiveDataProvider('Actions', array(
-            'sort' => array(
-                'defaultOrder' => $order,
-            ),
-            'pagination' => array(
-                'pageSize' => $pageSize
-            ),
-            'criteria' => $criteria,
-            'uid' => $this->uid,
-            'dbPersistentGridSettings' => $this->dbPersistentGridSettings
-        ));
+        if ((Yii::app()->controller instanceof ActionsController) &&
+            Yii::app()->controller->action->id !== 'index') {
+
+            $dataProvider = new SmartActiveDataProvider('Actions', array(
+                'sort' => array(
+                    'defaultOrder' => $order,
+                ),
+                'pagination' => array(
+                    'pageSize' => $pageSize
+                ),
+                'criteria' => $criteria,
+                'uid' => $this->uid,
+                'dbPersistentGridSettings' => $this->dbPersistentGridSettings
+            ));
+        } else {
+            // for actions index, use CActiveDataProvider since SmartActiveDataProvider is 
+            // incompatible with IasPager
+            $dataProvider = new CActiveDataProvider('Actions', array(
+                'sort' => array(
+                    'defaultOrder' => $order,
+                ),
+                'pagination' => array(
+                    'pageSize' => $pageSize
+                ),
+                'criteria' => $criteria,
+            ));
+        }
+
         return $dataProvider;
     }
 
@@ -1073,6 +1124,14 @@ class Actions extends X2Model {
      * Override parent method to exclude actionDescription
      */
     public function compareAttributes(&$criteria){
+        if ($this->asa ('TagBehavior') && $this->asa ('TagBehavior')->getEnabled () && 
+            $this->tags) {
+
+            $tagCriteria = new CDbCriteria;
+            $this->compareTags ($tagCriteria);
+            $criteria->mergeWith ($tagCriteria);
+        }
+
         $dbAttributes = array_flip (array_keys ($this->getMetaData ()->columns));
         foreach(self::$_fields[$this->tableName()] as &$field){
             if(isset ($dbAttributes[$field->fieldName])) {
@@ -1354,8 +1413,8 @@ class Actions extends X2Model {
     }
 
     private $_reminders;
-    public function getReminders () {
-        if (!isset ($this->_reminders)) {
+    public function getReminders ($refresh = false) {
+        if (!isset ($this->_reminders) || $refresh) {
             $this->_reminders = X2Model::model('Notification')->findAllByAttributes(array(
                 'modelType' => 'Actions',
                 'modelId' => $this->id,
@@ -1408,6 +1467,41 @@ class Actions extends X2Model {
      */
     public function getStaticLinkedModels () {
         return array_merge (parent::getStaticLinkedModels (), self::getModuleModelsByName ());
+    }
+
+    /**
+     * Deletes duplicate notifications. Meant to be called before the creation of new notifications
+     * @param string $notificationUsers assignee of the newly created notifications
+     * TODO: unit test
+     */
+    private function deleteOldNotifications ($notificationUsers) {
+        $notifCount = (int) X2Model::model('Notification')->countByAttributes(array(
+            'modelType' => 'Actions',
+            'modelId' => $this->id,
+            'type' => 'action_reminder'
+        ));
+        if ($notifCount === 0) return;
+
+        $notifications = X2Model::model('Notification')->findAllByAttributes(array(
+            'modelType' => 'Actions',
+            'modelId' => $this->id,
+            'type' => 'action_reminder'
+        ));
+
+        foreach($notifications as $notification){
+            if ($this->isAssignedTo ($notification->user, true) && 
+               ($notificationUsers == 'assigned' || 
+                $notificationUsers == 'both')){
+
+                $notification->delete();
+            }elseif($notification->user == Yii::app()->user->getName() && 
+                ($notificationUsers == 'me' || 
+                 $notificationUsers == 'both')){
+
+                $notification->delete();
+            }
+        }
+
     }
 
 }

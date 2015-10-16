@@ -176,7 +176,7 @@ class TestingAuxLib  {
         $output = array (); 
         $retVar;
         $retVal = exec ($command, $output, $retVar);
-        X2_VERBOSE_MODE && print_r ($output);
+        X2_TEST_DEBUG_LEVEL > 1 && print_r ($output);
         return $output;
     }   
 
@@ -258,9 +258,6 @@ class TestingAuxLib  {
         $_SERVER['SERVER_NAME'] = $serverName; 
         $_SERVER['SCRIPT_NAME'] = $scriptName; 
         $_SERVER['REQUEST_URI'] = '/index.php/controllerMock/actionMock'; 
-        foreach(array('IS_IPAD','RESPONSIVE_LAYOUT') as $layoutConst) {
-            defined($layoutConst) or define($layoutConst,false);
-        }
         Yii::app()->controller = new ControllerMock (
             'moduleMock', new ModuleMock ('moduleMock', null));
         Yii::app()->controller->action = new ActionMock (Yii::app()->controller, 'actionMock');
@@ -311,6 +308,10 @@ class TestingAuxLib  {
         $owner->assertTrue (is_array ($uids));
         $owner->assertEquals (1, count ($uids));
         $emailTestUtil->close ();
+    }
+
+    public static function getTestBaseUri () {
+        return '/'.preg_replace ('/'.preg_quote (TEST_WEBROOT_URL, '/').'(.*)index-test.php\//', '$1', TEST_BASE_URL);
     }
 
 }

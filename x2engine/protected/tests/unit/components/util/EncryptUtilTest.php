@@ -91,7 +91,7 @@ class EncryptUtilTest extends FileOperTestCase {
         foreach(range(1,3) as $method) {
             foreach(range(1,2) as $hash) {
                 $id = EncryptUtil::secureUniqueIdHash64($method,$hash);
-                if(X2_VERBOSE_MODE >= 1) {
+                if(X2_TEST_DEBUG_LEVEL > 1) {
                     echo "\nmethod $method hash $hash $id";
                 }
                 $this->assertEquals(64,strlen($id));

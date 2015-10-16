@@ -149,12 +149,17 @@ class TwitterFeedWidget extends SortableWidget {
     public function run () {
         $credentials = $this->getTwitterCredentials ();
         if (!$credentials) return '';
-        $aliases = $this->getModelTwitterAliases ();
-        if (!count ($aliases)) return '';
-        if (isset ($_GET['twitterScreenName'])) {
-            $this->_username = $_GET['twitterScreenName'];
+        if (!extension_loaded('curl')) {
+            $this->addError (Yii::t('app', 'The Twitter widget requires the PHP curl extension.'));
+            return parent::run (); 
         } else {
-            $this->_username = $aliases[0]->alias;
+            $aliases = $this->getModelTwitterAliases ();
+            if (!count ($aliases)) return '';
+            if (isset ($_GET['twitterScreenName'])) {
+                $this->_username = $_GET['twitterScreenName'];
+            } else {
+                $this->_username = $aliases[0]->alias;
+            }
         }
         return parent::run ();
     }
@@ -282,20 +287,20 @@ class TwitterFeedWidget extends SortableWidget {
     public function remainingRequests ($resourceName, $value=null) {
         $resourceName = preg_replace ('/\.json$/', '', $resourceName);
         $rateLimitStatus = $this->getRateLimitStatus ();
-       AuxLib::debugLogR ('$resourceName = ');
-        AuxLib::debugLogR ($resourceName);
-
-        AuxLib::debugLogR ($rateLimitStatus);
+//       AuxLib::debugLogR ('$resourceName = ');
+//        AuxLib::debugLogR ($resourceName);
+//
+//        AuxLib::debugLogR ($rateLimitStatus);
         if (!$rateLimitStatus) {
             return false; // no rate limit info available
         }
         $matches = array ();
         preg_match ('/^\/([^\/]+)\//', $resourceName, $matches);
         $resourceCategory = $matches[1];
-       AuxLib::debugLogR ('$resourceCategory = ');
-        AuxLib::debugLogR ($resourceCategory);
-       AuxLib::debugLogR ('$resourceName = ');
-        AuxLib::debugLogR ($resourceName);
+//       AuxLib::debugLogR ('$resourceCategory = ');
+//        AuxLib::debugLogR ($resourceCategory);
+//       AuxLib::debugLogR ('$resourceName = ');
+//        AuxLib::debugLogR ($resourceName);
 
         if (!isset ($rateLimitStatus['resources'][$resourceCategory][$resourceName])) {
             return false; // rate limit info not found
@@ -308,8 +313,8 @@ class TwitterFeedWidget extends SortableWidget {
 
         $entry = $rateLimitStatus['resources'][$resourceCategory][$resourceName];
         $remaining = (int) $entry['remaining'];
-       AuxLib::debugLogR ('$remaining = ');
-        AuxLib::debugLogR ($remaining);
+//       AuxLib::debugLogR ('$remaining = ');
+//        AuxLib::debugLogR ($remaining);
 
         return $remaining;
     }
@@ -359,7 +364,7 @@ class TwitterFeedWidget extends SortableWidget {
                     return false;
                 } else {
                     // rate limit info is valid
-                    AuxLib::debugLogR ('cache hit');
+                    //AuxLib::debugLogR ('cache hit');
                     return $rateLimits;
                 }
             }
@@ -371,7 +376,7 @@ class TwitterFeedWidget extends SortableWidget {
             return false; 
         }
 
-        AuxLib::debugLogR ('cache miss');
+        //AuxLib::debugLogR ('cache miss');
 
         // refresh the rate limit status cache
         $credentials = $this->getTwitterCredentials ();
@@ -419,6 +424,7 @@ class TwitterFeedWidget extends SortableWidget {
                 // invalidated. To avoid having to determine how many pages down the user is, 
                 // we simply refresh the feed.
                 $append = false;
+                $maxId = -1;
             }
 
             if (!$tweets || $append) { // fetch tweets and add to cache
@@ -427,8 +433,8 @@ class TwitterFeedWidget extends SortableWidget {
                 $credentials = $this->getTwitterCredentials ();
                 $resourceName = '/statuses/user_timeline.json';
                 $remainingRequests = $this->remainingRequests ($resourceName);
-               AuxLib::debugLogR ('$remainingRequests = ');
-                AuxLib::debugLogR ($remainingRequests);
+               //AuxLib::debugLogR ('$remainingRequests = ');
+                //AuxLib::debugLogR ($remainingRequests);
 
                 if ($remainingRequests < 1) {
                     throw new CException ('Rate limit met');
@@ -452,9 +458,9 @@ class TwitterFeedWidget extends SortableWidget {
                     $tweets = array_merge ($oldTweets, $tweets);
                 } 
                 $cache->set ($cacheKey, $tweets, 60 * 5);
-                AuxLib::debugLogR ('cache miss');
+                //AuxLib::debugLogR ('cache miss');
             } else {
-                AuxLib::debugLogR ('cache hit');
+                //AuxLib::debugLogR ('cache hit');
             }
 
             if ($maxId === -1) { // initial page load, just return the first page
@@ -538,7 +544,11 @@ class TwitterFeedWidget extends SortableWidget {
 
     protected function getJSSortableWidgetParams () {
         if (!isset ($this->_JSSortableWidgetParams)) {
-            $lastTweetId = $this->getLastTweetId ();
+            if (!$this->hasError ()) {
+                $lastTweetId = $this->getLastTweetId ();
+            } else {
+                $lastTweetId = null;
+            }
             $this->_JSSortableWidgetParams = array_merge (parent::getJSSortableWidgetParams (),
                 array (
                     'lastTweetId' => $lastTweetId,

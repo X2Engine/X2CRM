@@ -561,7 +561,8 @@ $.widget("x2.gvSettings", {
         gridResizingClass: 'gridResizing',
         colDraggingClass: 'colDragging',
         enableDbPersistentGvSettings: true,
-        DEBUG: x2.DEBUG && false
+        DEBUG: x2.DEBUG && false,
+        updateParams: {}
     },
 
     // setGridviewModel:function(model) {

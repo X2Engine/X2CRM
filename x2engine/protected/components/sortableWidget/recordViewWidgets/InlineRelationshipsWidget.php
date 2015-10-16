@@ -88,6 +88,7 @@ class InlineRelationshipsWidget extends GridViewWidget {
             $model = $this->model;
             $filterModel = new RelationshipsGridModel ('search');
             $filterModel->myModel = $model;
+            $filterModel->init ();
             $this->_filterModel = $filterModel;
         }
         return $this->_filterModel;
@@ -100,26 +101,31 @@ class InlineRelationshipsWidget extends GridViewWidget {
         // convert related models into grid models
         $gridModels = array ();
         foreach ($model->visibleRelatedX2Models as $relatedModel) {
-            $gridModels[] = Yii::createComponent (array (
+            $gridModel = Yii::createComponent (array (
                 'class' => 'RelationshipsGridModel', 
                 'relatedModel' => $relatedModel,
                 'myModel' => $model,
-                'id' => $model->id,
             ));
+            $gridModel->init ();
+            $gridModels[] = $gridModel;
         }
 
         // use filter model to filter grid models based on GET params
         $gridModels = $filterModel->filterModels ($gridModels);
         //$gridModels = $filterModel->sortModels ($gridModels, $this->widgetKey.'_sort');
 
+        $sort = Yii::createComponent (array (
+            'class' => 'SmartSort',
+            'uniqueId' => $this->widgetKey,
+            'sortVar' => $this->widgetKey.'_sort',
+            'attributes'=>array('name','relatedModelName','label','createDate','assignedTo'),
+            'defaultOrder' => 'id desc',
+            'alwaysApplyDefaultOrder' => true
+        ));
+
         $relationshipsDataProvider = new CArrayDataProvider($gridModels, array(
             'id' => 'relationships-gridview',
-            'sort' => array(
-                'class' => 'SmartSort',
-                'uniqueId' => $this->widgetKey,
-                'sortVar' => $this->widgetKey.'_sort',
-                'attributes'=>array('name','relatedModelName','label','createDate','assignedTo'),
-            ),
+            'sort' => $sort,
             'pagination' => array('pageSize'=>$this->getWidgetProperty ('resultsPerPage'))
         ));
         return $relationshipsDataProvider;

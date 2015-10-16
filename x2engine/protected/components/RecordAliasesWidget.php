@@ -58,7 +58,7 @@ class RecordAliasesWidget extends X2Widget {
                 'js' => array(
                     'js/RecordAliasesWidget.js',
                 ),
-                'depends' => array ('auxlib'),
+                'depends' => array ('auxlib', 'InfinityScroll'),
             ),
         ));
     }

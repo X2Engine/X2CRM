@@ -277,6 +277,7 @@ class ActionsController extends x2base {
 
             if (!$model->hasErrors () && isset($_POST['x2ajax'])) {
                 $this->quickCreate($model);
+                $model->syncGoogleCalendar('create');
             } elseif(!$model->hasErrors () && $model->save()){
                 $model->syncGoogleCalendar('create');
                 $this->redirect(array('index'));
@@ -622,38 +623,6 @@ class ActionsController extends x2base {
 
             // $this->update($model,$oldAttributes,'0');
             if($model->save()){
-                if(isset($_POST['Actions']['reminder']) && $_POST['Actions']['reminder']
-                        && X2Model::model('Notification')->countByAttributes(array(
-                            'modelType' => 'Actions',
-                            'modelId' => $model->id,
-                            'type' => 'action_reminder'
-                                )
-                        ) != 0){
-                    $notifications = X2Model::model('Notification')->findAllByAttributes(array(
-                        'modelType' => 'Actions',
-                        'modelId' => $model->id,
-                        'type' => 'action_reminder'
-                            ));
-                    // TODO: unit test. refactor notifications deletion into model
-                    // if new notifications were added, delete the old ones
-                    foreach($notifications as $notification){
-                        if ($model->isAssignedTo ($notification->user, true) && 
-                           ($_POST['notificationUsers'] == 'assigned' || 
-                            $_POST['notificationUsers'] == 'both')){
-
-                            $notification->delete();
-                        }elseif($notification->user == Yii::app()->user->getName() && 
-                            ($_POST['notificationUsers'] == 'me' || 
-                             $_POST['notificationUsers'] == 'both')){
-
-                            $notification->delete();
-                        }
-                    }
-                }elseif(isset($_POST['Actions']['reminder']) && $_POST['Actions']['reminder']){
-                    $model->createNotifications (
-                        $_POST['notificationUsers'],
-                        $model->dueDate - ($_POST['notificationTime'] * 60), 'action_reminder');
-                }
                 if(Yii::app()->user->checkAccess('ActionsAdmin') || 
                     Yii::app()->settings->userActionBackdating){
 
@@ -995,6 +964,7 @@ class ActionsController extends x2base {
             Yii::app()->params->profile->update(array('oldActions'));
             $this->redirect(array('index'));
         }
+
         $model = new Actions('search');
         if(!isset(Yii::app()->params->profile->oldActions) || 
            !Yii::app()->params->profile->oldActions){
@@ -1025,10 +995,10 @@ class ActionsController extends x2base {
                     $filters = json_decode(Yii::app()->params->profile->actionFilters, true);
                 }
                 $condition = Actions::createCondition($filters);
-                $dataProvider = $model->search($condition);
+                $dataProvider = $model->search($condition, Actions::ACTION_INDEX_PAGE_SIZE);
                 $params = $filters;
             }else{
-                $dataProvider = $model->search();
+                $dataProvider = $model->search(null, Actions::ACTION_INDEX_PAGE_SIZE);
                 $params = array();
             }
             $this->render('index', array(

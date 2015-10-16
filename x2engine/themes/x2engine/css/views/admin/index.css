@@ -1,4 +1,4 @@
-/*****************************************************************************************
+/*!***************************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2015 X2Engine Inc.
  * 
@@ -31,57 +31,4 @@
  * X2Engine" logo. If the display of the logo is not reasonably feasible for
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2Engine".
- *****************************************************************************************/
-/* line 37, ../../../../../compass/themes/x2engine/css/views/admin/index.scss */
-.admin-screen .license-info-section {
-  padding-top: 10px;
-}
-
-/* line 42, ../../../../../compass/themes/x2engine/css/views/admin/index.scss */
-.form.x2-layout-island {
-  padding-bottom: 10px !important;
-}
-
-/* line 46, ../../../../../compass/themes/x2engine/css/views/admin/index.scss */
-.page-title h2 {
-  line-height: 36px !important;
-}
-
-/* line 50, ../../../../../compass/themes/x2engine/css/views/admin/index.scss */
-#content {
-  border: none;
-  background: none;
-}
-/* line 53, ../../../../../compass/themes/x2engine/css/views/admin/index.scss */
-#content .cell {
-  margin-right: 15px;
-  margin-bottom: 5px;
-}
-
-/*@media (max-width: 950px) {
-    #content {
-        width: auto !important;
-    }
-}
-
-@media (max-width: 790px) {
-    #content > .admin-screen {
-        width: auto !important;
-        margin-right: 0 !important;
-    }
-    .admin-screen .cell {
-        margin-top: 7px !important;
-    }
-    .admin-screen .form h2 {
-        line-height: normal !important;
-        min-height: 48px;
-        padding-top: 13px;
-    }
-    .admin-screen .page-title .x2-button {
-        margin-bottom: 4px !important;
-    }
-}*/
-/* line 83, ../../../../../compass/themes/x2engine/css/views/admin/index.scss */
-.admin-screen .page-title {
-  margin-bottom: 5px;
-}
+ *****************************************************************************************/.admin-screen .license-info-section{padding-top:10px}.form.x2-layout-island{padding-bottom:10px !important}.page-title h2{line-height:36px !important}#content{border:none;background:none}#content .cell{margin-right:15px;margin-bottom:5px}.admin-screen .page-title{margin-bottom:5px}

@@ -139,10 +139,13 @@ class Credentials extends CActiveRecord {
         'EmailAccount',
         'GMailAccount',
         'MandrillAccount',
+        'MailjetAccount',
+        'MailgunAccount',
         'OutlookEmailAccount',
         'SendgridAccount',
         'YahooEmailAccount',
         'TwitterApp',
+        'GoogleProject',
     );
 
 	/**
@@ -191,8 +194,12 @@ class Credentials extends CActiveRecord {
 	}
 
     public function afterSave () {
-        if ($this->modelClass === 'TwitterApp') {
-            Yii::app()->settings->twitterCredentialsId = $this->id;
+        if ($this->modelClass && 
+            in_array ($this->modelClass, array ('TwitterApp', 'GoogleProject'))) {
+
+            $modelClass = $this->modelClass;
+            $prop = $modelClass::getAdminProperty ();
+            Yii::app()->settings->$prop = $this->id;
             Yii::app()->settings->save ();
         }
         parent::afterSave ();
@@ -305,11 +312,14 @@ class Credentials extends CActiveRecord {
                 'EmailAccount',
                 'GMailAccount',
                 'MandrillAccount',
+                'MailjetAccount',
+                'MailgunAccount',
                 'OutlookEmailAccount',
                 'SendgridAccount',
                 'YahooEmailAccount',
             ),
             'twitter' => array ('TwitterApp'),
+            'googleProject' => array ('GoogleProject'),
 //			'google' => array('GMailAccount'),
 		);
 	}
@@ -322,10 +332,13 @@ class Credentials extends CActiveRecord {
 			'EmailAccount' => array('email'),
 			'GMailAccount' => array('email'), // ,'google'),
 			'MandrillAccount' => array('email'),
+			'MailjetAccount' => array('email'),
+			'MailgunAccount' => array('email'),
 			'OutlookEmailAccount' => array('email'),
 			'SendgridAccount' => array('email'),
 			'YahooEmailAccount' => array('email'),
             'TwitterApp' => array ('twitter'),
+            'GoogleProject' => array ('googleProject'),
 		);
 	}
 
@@ -366,12 +379,25 @@ class Credentials extends CActiveRecord {
 		return $this->_isInUseBySystem;
 	}
 
+    public function getAuthModel () {
+		if(!$this->auth instanceof JSONEmbeddedModel)
+			$this->instantiateField('auth');
+        return $this->auth;
+    }
+    
 	/**
 	 * Returns an appropriate title for create/update pages.
 	 * @return type
 	 */
 	public function getPageTitle() {
-		return $this->isNewRecord ? Yii::t('app', "New {service}", array('{service}' => $this->serviceLabel)) : Yii::t('app', 'Editing:')." <em>{$this->name}</em> ({$this->serviceLabel})";
+        if (method_exists ($this->getAuthModel (), 'getPageTitle')) {
+
+            return $this->getAuthModel ()->getPageTitle ();
+        } else {    
+		    return $this->isNewRecord ? 
+                Yii::t('app', "New {service}", array('{service}' => $this->serviceLabel)) : 
+                Yii::t('app', 'Editing:')." <em>{$this->name}</em> ({$this->serviceLabel})";
+        }
 	}
 
 	/**
@@ -390,6 +416,7 @@ class Credentials extends CActiveRecord {
 		return array(
 			'email' => Yii::t('app', 'Email Account'),
 			'twitter' => Yii::t('app', 'Twitter App'),
+			'googleProject' => Yii::t('app', 'Google Project'),
 			// 'google' => Yii::t('app','Google Account')
 		);
 	}

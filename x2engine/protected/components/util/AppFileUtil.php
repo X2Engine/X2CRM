@@ -601,6 +601,27 @@ class AppFileUtil {
         return $try;
     }
 
+    /**
+     * Taken from CFileValidator
+     * This method is Copyright (c) 2008-2014 by Yii Software LLC
+     * http://www.yiiframework.com/license/ 
+     */
+	public static function sizeToBytes($sizeStr)
+	{
+		// get the latest character
+		switch (strtolower(substr($sizeStr, -1)))
+		{
+			case 'm': return (int)$sizeStr * 1048576; // 1024 * 1024
+			case 'k': return (int)$sizeStr * 1024; // 1024
+			case 'g': return (int)$sizeStr * 1073741824; // 1024 * 1024 * 1024
+			default: return (int)$sizeStr; // do nothing
+		}
+	}
+
+    public static function sizeToMb ($sizeStr) {
+        return self::sizeToBytes ($sizeStr) / 1048576;
+    }
+
 }
 
 ?>

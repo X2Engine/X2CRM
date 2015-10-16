@@ -43,6 +43,22 @@ class SmartSort extends CSort {
 
     public $uniqueId;
 
+    public $alwaysApplyDefaultOrder = false;
+
+    public function getOrderBy ($criteria=null) {
+        $order = parent::getOrderBy ($criteria);
+        if ($this->alwaysApplyDefaultOrder && $this->defaultOrder && 
+            $order !== $this->defaultOrder) {
+
+            if ($order) {
+                $order .= ', '.$this->defaultOrder;
+            } else {
+                $order = $this->defaultOrder;
+            }
+        }
+        return $order;
+    }
+
     /**
      * Overrides parent __construct ().
      * @param string $uniqueId (optional) If set, will be used to uniquely identify this sort

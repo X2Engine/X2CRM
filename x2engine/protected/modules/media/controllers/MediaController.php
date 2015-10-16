@@ -53,9 +53,13 @@ class MediaController extends x2base {
     }
 
     public function checkPermissions(&$model, $action = null) {
-        return Yii::app()->params->isAdmin ||
-                (!$model->private || $model->uploadedBy === Yii::app()->user->name) &&
-                $this->asa('PermissionsBehavior')->checkPermissions($model, $action);
+        if ($model instanceof Media) {
+            return Yii::app()->params->isAdmin ||
+                    (!$model->private || $model->uploadedBy === Yii::app()->user->name) &&
+                    $this->asa('PermissionsBehavior')->checkPermissions($model, $action);
+        } else {
+            return $this->asa('PermissionsBehavior')->checkPermissions($model, $action);
+        }
     }
 
     /**
@@ -345,7 +349,7 @@ class MediaController extends x2base {
 //        }
 //        $createdFile = null;
 //        if(isset($service, $_SESSION['access_token'], $_FILES['upload'])){
-//            $file = new Google_DriveFile();
+//            $file = new Google_Service_Drive_DriveFile();
 //            $file->setTitle($_FILES['upload']['name']);
 //            $file->setDescription('Uploaded by X2Engine');
 //            $file->setMimeType($_FILES['upload']['type']);
@@ -368,7 +372,7 @@ class MediaController extends x2base {
 //                    $media->drive = 1;
 //                    $media->save();
 //                }
-//            }catch(Google_AuthException $e){
+//            }catch(Google_Auth_Exception $e){
 //                unset($_SESSION['access_token']);
 //                $auth->setErrors($e->getMessage());
 //                $service = null;
@@ -422,7 +426,7 @@ class MediaController extends x2base {
             } else {
                 return false;
             }
-        } catch (Google_AuthException $e) {
+        } catch (Google_Auth_Exception $e) {
             if (isset($_SESSION['access_token']) || isset($_SESSION['token'])) { // If these are set it's possible the token expired and there is a refresh token available
                 $auth->flushCredentials(false); // Only flush the recently received information
                 return $this->printFolder($folderId); // Try again, it will use a refresh token if available this time, otherwise it will fail.
@@ -431,7 +435,7 @@ class MediaController extends x2base {
                 $auth->setErrors($e->getMessage());
                 return false;
             }
-        } catch (Google_ServiceException $e) {
+        } catch (Google_Service_Exception $e) {
             $auth->setErrors($e->getMessage());
             return false;
         }

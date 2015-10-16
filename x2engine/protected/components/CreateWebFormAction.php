@@ -50,7 +50,6 @@ class CreateWebFormAction extends CAction {
      *  
      */
     public function run(){
-        AuxLib::debugLogR($_POST);
         $modelClass = $this->controller->modelClass;
         if ($modelClass === 'Campaign') $modelClass = 'Contacts';
 
@@ -108,6 +107,9 @@ class CreateWebFormAction extends CAction {
                 $model->generateAccount = 1;
             } else {
                 $model->generateAccount = 0;
+            }
+            if(isset($_POST['redirectUrl'])) {
+                $model->redirectUrl = $_POST['redirectUrl'];
             }
 
             

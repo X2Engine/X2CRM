@@ -41,6 +41,63 @@ class X2DataColumnGeneric extends CDataColumn {
      */
     public $filterType; 
 
+    public $width;
+
+    public function init () {
+        // allows width to be set for column using width property
+        if ($this->width) {
+            $this->headerHtmlOptions['style'] = isset ($this->headerHtmlOptions['style']) ? 
+                $this->headerHtmlOptions['style'] : '';
+            $this->htmlOptions['style'] = isset ($this->htmlOptions['style']) ? 
+                $this->htmlOptions['style'] : '';
+            $this->headerHtmlOptions['style'] .= 'width: '.$this->width.';';
+            $this->htmlOptions['style'] .= 'width: '.$this->width.';';
+        }
+        return parent::init ();
+    }
+
+    /**
+     * This method is Copyright (c) 2008-2014 by Yii Software LLC
+     * http://www.yiiframework.com/license/ 
+     */
+    public function renderDataCell($row)
+    {
+        $data=$this->grid->dataProvider->data[$row];
+        $options=$this->htmlOptions;
+        /* x2modstart */ 
+        $options = $this->evaluateHtmlOptions ($options, $data);
+        /* x2modend */ 
+        if($this->cssClassExpression!==null)
+        {
+            $class=$this->evaluateExpression($this->cssClassExpression,array('row'=>$row,'data'=>$data));
+            if(!empty($class))
+            {
+                if(isset($options['class']))
+                    $options['class'].=' '.$class;
+                else
+                    $options['class']=$class;
+            }
+        }
+        echo CHtml::openTag('td',$options);
+        $this->renderDataCellContent($row,$data);
+        echo '</td>';
+    }
+
+    /**
+     * Allows php snippets to be included in html option values 
+     */
+    public function evaluateHtmlOptions (array $options, $data) {
+        foreach ($options as $attr => $val) {
+            if (preg_match ('/^php:/', $val)) {
+                $val = preg_replace ('/^php:/', '', $val);
+                $options[$attr] = $this->evaluateExpression ($val, array (
+                    'data' => $data,
+                ));
+            }
+        }
+        return $options;
+    }
+
 	/**
 	 * Renders the filter cell content.
 	 * This method will render the {@link filter} as is if it is a string.
@@ -78,11 +135,14 @@ class X2DataColumnGeneric extends CDataColumn {
 
     public function renderFilterCellByType () {
         $model = $this->grid->filter;
+        $fieldName = $this->name;
         switch ($this->filterType) {
             case 'date':
+                $model->$fieldName = Formatter::parseDate ($model->$fieldName);
                 return X2Html::activeDatePicker ($model, $this->name);
                 break;
             case 'dateTime':
+                $model->$fieldName = Formatter::parseDate ($model->$fieldName);
                 return X2Html::activeDatePicker ($model, $this->name, array (), 'datetime');
                 break;
         }

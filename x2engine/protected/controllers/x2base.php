@@ -1,5 +1,4 @@
 <?php
-
 /*****************************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2015 X2Engine Inc.
@@ -131,6 +130,10 @@ abstract class x2base extends X2Controller {
         $response['status'] = $status;
         if ($message !== null) $response['message'] = $message;
         return CJSON::encode ($response);
+    }
+
+    public function getModuleObj () {
+        return Modules::model ()->findByAttributes (array ('name' => $this->module->name));
     }
 
     public function actions() {
@@ -332,13 +335,15 @@ abstract class x2base extends X2Controller {
             ->queryRow(false);
 
         if($currentWorkflow === false || !isset($currentWorkflow[0])) {
-
-            $defaultWorkflow = Yii::app()->db->createCommand()
-                ->select('id')
-                ->from('x2_workflows')
-                ->where('isDefault=1')
-                ->limit(1)
-                ->queryScalar();
+            $defaultWorkflow = Yii::app()->db->createCommand("
+                select x2_workflows.id
+                from x2_workflows, x2_modules
+                where x2_workflows.isDefault=1 or 
+                    x2_modules.id=:moduleId and x2_modules.defaultWorkflow=x2_workflows.id
+                limit 1
+            ")->queryScalar (array (
+                ':moduleId' => $this->getModuleObj ()->id
+            ));
             if($defaultWorkflow !== false)
                 return $defaultWorkflow;
             return 0;
@@ -1246,6 +1251,8 @@ abstract class x2base extends X2Controller {
 
     /**
      * Override parent method so that layout business logic can be moved to controller 
+     * This method is Copyright (c) 2008-2014 by Yii Software LLC
+     * http://www.yiiframework.com/license/ 
      */
     public function render($view,$data=null,$return=false)
     {
@@ -1352,8 +1359,14 @@ abstract class x2base extends X2Controller {
         throw $this->badRequestException ($message);
     }
 
+    /**
+     * More reliable alternative to CHttpRequest::getIsAjaxRequest in cases where 'x2ajax' or
+     * 'ajax' parameters are being used.
+     * See http://www.yiiframework.com/forum/index.php?/topic/4945-yiiapp-request-isajaxrequest/
+     */
     public function isAjaxRequest () {
         return 
+            Yii::app()->request->getIsAjaxRequest () ||
             isset ($_POST['x2ajax']) && $_POST['x2ajax'] || 
             isset ($_POST['ajax']) && $_POST['ajax'] || 
             isset ($_GET['x2ajax']) && $_GET['x2ajax'] || 
@@ -1374,21 +1387,23 @@ abstract class x2base extends X2Controller {
             echo Yii::t('app', 'Quick view not supported');
         }
         if ($this->checkPermissions($model, 'view')) {
-            $this->widget ('DetailView', array_merge( array(
-                'model' => $model,
-                'scenario' => 'Inline',
-                'nameLink' => true
-            ))
-            , false, true);
-            // $this->renderPartial(
-                // 'application.components.views.@DETAILVIEW', 
-            //     array_merge( array(
-            //         'model' => $model,
-            //         'modelName' => get_class ($model),
-            //         'scenario'=>'Inline',
-            //         'nameLink' => true,
-            //     ), $options)
-            // , false, true);
+            $that = $this;
+            X2Widget::ajaxRender (function () use ($model, $that) {
+                $that->widget ('DetailView', array_merge(array(
+                    'model' => $model,
+                    'scenario' => 'Inline',
+                    'nameLink' => true
+                )));
+                // $this->renderPartial(
+                    // 'application.components.views.@DETAILVIEW', 
+                //     array_merge( array(
+                //         'model' => $model,
+                //         'modelName' => get_class ($model),
+                //         'scenario'=>'Inline',
+                //         'nameLink' => true,
+                //     ), $options)
+                // , false, true);
+            });
             return;
         }
         throw new CHttpException (403);

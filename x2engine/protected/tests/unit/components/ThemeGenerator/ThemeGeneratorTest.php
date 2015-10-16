@@ -70,11 +70,11 @@ class ThemeGeneratorTest extends X2DbTestCase {
 		}
 
 		$generated = ThemeGenerator::generatePalette($colors);
-		X2_VERBOSE_MODE && print_r($generated);
+		X2_TEST_DEBUG_LEVEL > 1 && print_r($generated);
 
 		$keys = ThemeGenerator::getProfileKeys();
 		$this->assertTrue(in_array('themeName', $keys));
-		X2_VERBOSE_MODE && print_r($keys);
+		X2_TEST_DEBUG_LEVEL > 1 && print_r($keys);
 
 		foreach($keys as $key) {
 			if ($key == 'themeName') {

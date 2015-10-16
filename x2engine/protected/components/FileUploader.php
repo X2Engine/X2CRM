@@ -87,7 +87,7 @@ class FileUploader extends X2Widget {
         'showButton' => true,
         'open' => false,
         'closeButton' => true,
-        'buttonText' => 'Upload File'
+        'buttonText' => null,
     );
 
     /**
@@ -154,9 +154,12 @@ class FileUploader extends X2Widget {
 
         // Set up default view Params
         $this->viewParams = array_merge (self::$defaultViewParams, $this->viewParams);
+        if(is_null($this->viewParams['buttonText'])){
+            $this->viewParams['buttonText'] = Yii::t('media','Upload File');
+        }
 
-        $this->googleDrive &= Yii::app()->params->profile->mediaWidgetDrive 
-                           && Yii::app()->settings->googleIntegration;
+        $this->googleDrive &= Yii::app()->params->profile->mediaWidgetDrive && 
+            Yii::app()->settings->googleIntegration;
 
 
         $this->registerJSEvents ($this->events);
@@ -195,7 +198,9 @@ class FileUploader extends X2Widget {
                     'id'  => $this->id,
                     'mediaParams' => $this->mediaParams,
                     'viewParams' => $this->viewParams,
-                    'acceptedFiles' => $this->acceptedFiles
+                    'acceptedFiles' => $this->acceptedFiles,
+                    'maxFileSize' =>  
+                        floor (AppFileUtil::sizeToMb (ini_get('upload_max_filesize'))),
                 )
             );
         }

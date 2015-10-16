@@ -75,14 +75,14 @@ Yii::app()->clientScript->registerResponsiveCss ('massActionsCssResponsive', "
     .show-top-buttons .x2-gridview-mass-action-buttons {
         right: -183px; 
     }
+    body > .grid-view-more-drop-down-list.fixed-header {
+        position: absolute;
+    }
 }
 
 @media (min-width: 658px) {
-    .x2-gridview-mass-action-buttons .more-drop-down-list.fixed-header {
-        /*position: fixed;*/
-    }
-    .x2-gridview.fullscreen .x2-gridview-mass-action-buttons .more-drop-down-list.fixed-header {
-        position: absolute;
+    body > .grid-view-more-drop-down-list.fixed-header {
+        position: fixed;
     }
 }
 
@@ -113,7 +113,6 @@ $gridObj->addToBeforeAjaxUpdate ($beforeUpdateJSString);
 
 // reapply event handlers and checks
 $afterUpdateJSString = "
-    x2.DEBUG && console.log ('afterUpdateJSSTring');
     if (typeof x2.".$namespacePrefix."MassActionsManager !== 'undefined') 
         x2.".$namespacePrefix."MassActionsManager.reinit (); 
     $('#".$gridId." .x2-gridview-updating-anim').hide ();
@@ -153,6 +152,8 @@ Yii::app()->clientScript->registerScript($namespacePrefix.'massActionsInitScript
                 'newList' => Yii::t('app', 'Create new list from selected'),
                 'moveToFolder' => Yii::t('app', 'Move selected messages'),
                 'moveOneToFolder' => Yii::t('app', 'Move message'),
+                'moveFileSysObjToFolder' => Yii::t('app', 'Move selected'),
+                'moveFileSysObjOneToFolder' => Yii::t('app', 'Move selected'),
                 'move' => Yii::t('app', 'Move'),
                 'add' => Yii::t('app', 'Add to list'),
                 'remove' => Yii::t('app', 'Remove from list'),
@@ -249,8 +250,10 @@ Yii::app()->clientScript->registerScript($namespacePrefix.'massActionsInitScript
                     '/images/icons/Collapse_Widget.png'; ?>' />
             </button>
         </div>
-        <ul style='display: none;'
-         class="more-drop-down-list<?php echo ($fixedHeader ? ' fixed-header' : ''); ?>"> 
+        <ul 
+         id='<?php echo $gridId; ?>more-drop-down-list'
+         style='display: none;'
+         class="grid-view-more-drop-down-list<?php echo ($fixedHeader ? ' fixed-header' : ''); ?>"> 
         <?php
         usort ($massActionObjs, array ('X2GridViewBase', 'massActionLabelComparison'));
         foreach ($massActionObjs as $obj) {

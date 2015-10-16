@@ -1,15 +1,17 @@
-<?php
-return array(
-    
-'Edit Lead'=>'Editar Plomo',
-'View Lead'=>'Ver Plomo',
-'Leads:'=>'Conduce:',
-'{leads} List'=>'{leads} Lista',
-'Create {lead}'=>'Crear {lead}',
-'Edit {lead}'=>'Editar {lead}',
-'Delete {lead}'=>'Eliminar {lead}',
-'Convert to {contact}'=>'Convertir a {contact}',
-'Convert to {opportunity}'=>'Convertir a {opportunity}',
-'Import {leads}'=>'Importar {leads}',
-'Export {leads}'=>'Exportación {leads}',
+<?php return array (
+  'Edit Lead' => 'Editar Plomo',
+  'View Lead' => 'Ver Plomo',
+  'Leads:' => 'Conduce:',
+  '{leads} List' => '{leads} Lista',
+  'Create {lead}' => 'Crear {lead}',
+  'Edit {lead}' => 'Editar {lead}',
+  'Delete {lead}' => 'Eliminar {lead}',
+  'Convert to {contact}' => 'Convertir a {contact}',
+  'Convert to {opportunity}' => 'Convertir a {opportunity}',
+  'Import {leads}' => 'Importar {leads}',
+  'Export {leads}' => 'Exportación {leads}',
+  'Conversion Date' => 'Fecha de Conversión',
+  'Converted' => 'Construcción',
+  'Converted To' => 'Convertido a',
+  'This record has been converted. To view the new record, click {here}.' => 'Este registro se ha convertido. Para ver el nuevo registro, haga clic en {here}',
 );

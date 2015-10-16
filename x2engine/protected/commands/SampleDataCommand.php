@@ -155,16 +155,19 @@ class SampleDataCommand extends CConsoleCommand {
 			'x2_auth_assignment',
 			'x2_auth_item',
 			'x2_auth_item_child',
+			'x2_doc_folders',
 			'x2_modules',
 			'x2_sessions',
 			'x2_temp_files',
-			'x2_timezones',
 			'x2_timezone_points',
-			'x2_tips'
+			'x2_timezones',
+			'x2_tips',
 		),$tblEditions['pro'],$tblEditions['pla']);
         // These for professional edition:
 		$tblsExclude['pro'] = array_merge(array(
 			'x2_forwarded_email_patterns',
+			'x2_charts',
+			'x2_reports_2',
 		),$tblEditions['pla']);
         // These for platform/platinum edition:
         $tblsExclude['pla'] = array(
@@ -217,6 +220,9 @@ class SampleDataCommand extends CConsoleCommand {
 		 */
 		$insertFirst = $specTemplate;
 		$insertFirst['opensource'] = array(
+			'x2_action_meta_data' => array ('x2_actions'),
+			'x2_role_to_permission' => array('x2_roles'),
+			'x2_role_to_user' => array('x2_roles'),
 			'x2_list_criteria' => array('x2_lists'),
 			'x2_list_items' => array('x2_lists'),
 			'x2_role_to_workflow' => array('x2_workflow_stages', 'x2_roles', 'x2_workflows'),

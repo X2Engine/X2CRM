@@ -46,7 +46,7 @@ Yii::import('application.components.util.*');
  *
  * @package application.tests.unit.components
  */
-class GroupTest extends CDbTestCase {
+class GroupTest extends X2DbTestCase {
 
     public $fixtures = array (
         'users' => 'User',
@@ -63,9 +63,9 @@ class GroupTest extends CDbTestCase {
             $groupModel = Groups::model ()->findByAttributes ($val);
             $userIds = array_map (function ($a) { return $a['id']; }, $groupModel->users);
 
-            if(X2_VERBOSE_MODE) {
-                X2_VERBOSE_MODE && print ($groupModel->id."\n");
-                X2_VERBOSE_MODE && print_r ($userIds);
+            if(X2_TEST_DEBUG_LEVEL > 1) {
+                X2_TEST_DEBUG_LEVEL > 1 && print ($groupModel->id."\n");
+                X2_TEST_DEBUG_LEVEL > 1 && print_r ($userIds);
             }
             
             /*
@@ -94,8 +94,8 @@ class GroupTest extends CDbTestCase {
 
     public function testAfterDelete () {
         $group = Groups::model ()->findByPk ('1');
-        X2_VERBOSE_MODE && print ('id of group to delete: ');
-        X2_VERBOSE_MODE && print ($group->id);
+        X2_TEST_DEBUG_LEVEL > 1 && print ('id of group to delete: ');
+        X2_TEST_DEBUG_LEVEL > 1 && print ($group->id);
         
         // assert that group to user records exist for this group
         $this->assertTrue (

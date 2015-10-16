@@ -1,15 +1,17 @@
-<?php
-return array(
-    
-'Edit Lead'=>'Blei bearbeiten',
-'View Lead'=>'Blei anzeigen',
-'Leads:'=>'Führt:',
-'{leads} List'=>'{leads} Liste',
-'Create {lead}'=>'Erstellen Sie {lead}',
-'Edit {lead}'=>'Bearbeiten {lead}',
-'Delete {lead}'=>'Löschen {lead}',
-'Convert to {contact}'=>'Convert to {contact}',
-'Convert to {opportunity}'=>'Convert to {opportunity}',
-'Import {leads}'=>'Import {leads}',
-'Export {leads}'=>'Export {leads}',
+<?php return array (
+  'Edit Lead' => 'Lead bearbeiten',
+  'View Lead' => 'Lead anzeigen',
+  'Leads:' => 'Lead:',
+  '{leads} List' => '{leads} Liste',
+  'Create {lead}' => '{lead} erstellen',
+  'Edit {lead}' => '{lead} bearbeiten',
+  'Delete {lead}' => '{lead} löschen',
+  'Convert to {contact}' => 'In {contact} umwandeln',
+  'Convert to {opportunity}' => 'In {opportunity} umwandeln',
+  'Import {leads}' => 'Import {leads}',
+  'Export {leads}' => 'Export {leads}',
+  'Conversion Date' => 'Umwandlungszeitpunkt',
+  'Converted' => 'Konvertierte',
+  'Converted To' => 'Umgewandelt',
+  'This record has been converted. To view the new record, click {here}.' => 'Dieser Rekord wurde umgebaut. Um den neuen Datensatz zu lesen, klicken Sie auf {here}',
 );

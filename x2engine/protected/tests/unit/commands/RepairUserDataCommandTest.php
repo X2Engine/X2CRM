@@ -126,15 +126,15 @@ class RepairUserDataCommandTest extends X2DbTestCase {
         $return_var;
         $output = array ();
         $command = Yii::app()->basePath."/yiic repairuserdata repair --username='testUser'";
-        X2_VERBOSE_MODE && println("Running $command...");
+        X2_TEST_DEBUG_LEVEL > 1 && println("Running $command...");
         ob_start();
         exec ($command, $return_var, $output);
-        if(X2_VERBOSE_MODE)
+        if(X2_TEST_DEBUG_LEVEL > 1)
             ob_end_flush();
         else
             ob_end_clean();
-        X2_VERBOSE_MODE && println ($output);
-        X2_VERBOSE_MODE && print_r ($return_var);
+        X2_TEST_DEBUG_LEVEL > 1 && println ($output);
+        X2_TEST_DEBUG_LEVEL > 1 && print_r ($return_var);
 
         /*
         actions reassignment

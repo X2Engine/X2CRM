@@ -36,24 +36,24 @@
 
 echo Tours::tips (array(
     array (
-        "content" => "<h3>Welcome to the Campaign Creator!</h3> With campaigns, you can send out personalized emails to contacts, and track when they have been opened. Let's walk through the creation of your first Campaign.",
+        "content" => "<h3>".Yii::t('marketing',"Welcome to the Campaign Creator!")."</h3> ".Yii::t('marketing',"With campaigns, you can send out personalized emails to contacts, and track when they have been opened. Let's walk through the creation of your first Campaign."),
         'type' => 'flash',
     ),
     array (
-        'content' => "Insert the name of the campaign you will be running, for internal usage",
+        'content' => Yii::t('marketing',"Insert the name of the campaign you will be running, for internal usage."),
         'target' => '#Campaign_name',
     ),
     array (
-        'content' => 'Select a contact list to send this campaign to, or create one here.',
+        'content' => Yii::t('marketing','Select a contact list to send this campaign to, or create one here.'),
         'target' => '#quick-create-list',
     ),
     array (
-        'content' => 'Next, choose a template as your email, or design one from scratch below.',
+        'content' => Yii::t('marketing','Next, choose a template as your email, or design one from scratch below.'),
         'target' => '#Campaign_template',
         'highlight' => true
     ), 
     array(
-        'content' => 'Enable Redirect Links will allow you to track when links have been clicked. Any link in the body of your email will be converted to a special tracking link.',
+        'content' => Yii::t('marketing','Enable Redirect Links will allow you to track when links have been clicked. Any link in the body of your email will be converted to a special tracking link.'),
         'target' => '#Campaign_enableRedirectLinks'
     ),
 ));

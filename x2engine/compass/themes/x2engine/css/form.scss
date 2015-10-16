@@ -1,4 +1,4 @@
-/*****************************************************************************************
+/*!***************************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2015 X2Engine Inc.
  * 
@@ -150,6 +150,9 @@ div {
         box-shadow: none;
     }
     &.form, &.form2 {
+        .x2-protected-field {
+            color: grey;
+        }
         label + [type="checkbox"] {
             position: relative;
             top: -2px;
@@ -208,6 +211,13 @@ body.not-mobile-body div.form, .form2 {
         -webkit-border-radius: 3px;
         border-radius: 3px;
         /* @theme background: content */
+    }
+    input:not(.highlight), textarea {
+        margin: 3px 0 5px 0;
+        -moz-border-radius: 3px;
+        -o-border-radius: 3px;
+        -webkit-border-radius: 3px;
+        border-radius: 3px;
     }
 }
 
@@ -276,6 +286,8 @@ div.form, .form2 {
         display: block;
         font-size: 11px;
         font-weight: bold;
+        & + .x2-hint {
+        }
     }
     .left-checkbox {
         float: left;
@@ -294,6 +306,9 @@ div.form, .form2 {
                 margin-bottom: -7px;
                 margin-left: 3px;
             }
+        }
+        & + .x2-hint {
+            margin-top: 7px;
         }
     }
     textarea {

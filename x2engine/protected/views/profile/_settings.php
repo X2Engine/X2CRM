@@ -42,7 +42,7 @@ Yii::app()->clientScript->registerCssFile(Yii::app()->theme->baseUrl.'/css/profi
 
 Tours::tips (array(
     array(
-        'content' => 'You can disable tips like this by unchecking this box.',
+        'content' => Yii::t('app','You can disable tips like this by unchecking this box.'),
         'target' =>  '#Profile_showTours'
     )
 ));
@@ -116,19 +116,6 @@ $form = $this->beginWidget('X2ActiveForm', array(
             ?>
         </div>
     </div>
-    <div class="row">
-        <div class="cell">
-            <?php
-            echo $form->checkBox(
-                    $model, 'disableAutomaticRecordTagging', 
-                    array('onchange' => 'js:x2.profileSettings.highlightSave();'));
-            echo '&nbsp;'.$form->labelEx(
-                    $model, 'disableAutomaticRecordTagging', array('style' => 'display:inline;'));
-            echo X2Html::hint2 (
-                Yii::t('app', 'Prevent tags from being automatically generated when hashtags are detected in record fields.')); 
-            ?>
-        </div>
-    </div>
     <?php if(Yii::app()->contEd('pro')) { ?>
     <div class="row"> 
         <div class="cell">
@@ -198,8 +185,66 @@ $form = $this->beginWidget('X2ActiveForm', array(
         </div>
     </div>
     <div class="row">
+        <div class="cell">
+        <label for="loginSounds">
+            <?php echo Yii::t('profile', 'Login Sound'); ?>
+        </label>
+        <select id="loginSounds" name="preferences[loginSound]" class='x2-select'>
+            <option value=""> <?php echo Yii::t('app', 'None'); ?> </option>
+            <?php foreach($myLoginSounds->data as $loginSound){ ?>
+                <option value="<?php
+            echo $loginSound->id.",".
+            $loginSound->fileName.",".$loginSound->uploadedBy;
+                ?>"
+                        id="sound-<?php echo $loginSound->id; ?>"
+                        <?php
+                        if ($loginSound->id == $model->loginSound) {
+                            echo "selected='selected'";
+                        }
+                        ?>>
+                            <?php echo $loginSound->fileName; ?>
+                </option>
+            <?php } ?>
+        </select>
+        <?php
+        echo X2Html::fa ('upload', array (
+            'id' => 'upload-login-sound-button',
+            'class' => 'icon-button-min',
+            'title' => Yii::t('profile', 'Upload Login Sound')
+        ));
+        ?>
+        </div>
+        <div class="cell">
+            <label for="notificationSounds">
+                <?php echo Yii::t('profile', 'Notification Sound'); ?>
+            </label>
+            <select id="notificationSounds" name="preferences[notificationSound]"
+                    class='x2-select'>
+                <option value=""> <?php echo Yii::t('app', 'None'); ?> </option>
+                <?php foreach($myNotificationSounds->data as $notificationSound){ ?>
+                    <option value="<?php
+                        echo $notificationSound->id.",".$notificationSound->fileName.",".
+                            $notificationSound->uploadedBy; ?>"
+                     id="sound-<?php echo $notificationSound->id; ?>"
+                     <?php
+                     if($notificationSound->id == $model->notificationSound){
+                         echo "selected='selected'";
+                     }
+                     ?>><?php echo $notificationSound->fileName; ?></option>
+                <?php } ?>
+            </select>
+            <?php
+            echo X2Html::fa ('upload', array (
+                'id' => 'upload-notification-sound-button',
+                'class' => 'icon-button-min',
+                'title' => Yii::t('profile', 'Upload Notification Sound')
+            ));
+            ?>
+        </div>
+    </div>
+    <div class="row">
         <div class="cell" style="margin: 8px 0px">
-            <label style='display:inline-block'>Show Tips:</label>
+            <label style='display:inline-block'><?php echo Yii::t('app','Show Tips');?></label>
             <?php echo X2Html::activeCheckBox ($model, 'showTours', array(
                 'style' =>'margin: 0px; vertical-align: middle',
                 'type' =>'checkbox'
@@ -318,10 +363,13 @@ $form = $this->beginWidget('X2ActiveForm', array(
                     </option>
                 <?php } ?>
             </select>
-            <button type='button' class='x2-button x2-small-button'
-                    id='upload-background-img-button'>
-                        <?php echo Yii::t('profile', 'Upload Background Image'); ?>
-            </button>
+            <?php
+            echo X2Html::fa ('upload', array (
+                'id' => 'upload-background-img-button',
+                'class' => 'icon-button-min',
+                'title' => Yii::t('profile', 'Upload Background Image')
+            ));
+            ?>
             <br>
             <?php
             echo CHtml::checkBox (
@@ -337,56 +385,6 @@ $form = $this->beginWidget('X2ActiveForm', array(
                     'class' => 'right-label'
                 ));
             ?>
-        </div>
-        <div class="row">
-            <label for="loginSounds">
-                <?php echo Yii::t('profile', 'Login Sound'); ?>
-            </label>
-            <select id="loginSounds" name="preferences[loginSound]" class='x2-select'>
-                <option value=""> <?php echo Yii::t('app', 'None'); ?> </option>
-                <?php foreach($myLoginSounds->data as $loginSound){ ?>
-                    <option value="<?php
-                echo $loginSound->id.",".
-                $loginSound->fileName.",".$loginSound->uploadedBy;
-                    ?>"
-                            id="sound-<?php echo $loginSound->id; ?>"
-                            <?php
-                            if($loginSound->id == $model->loginSound){
-                                echo "selected='selected'";
-                            }
-                            ?>>
-                                <?php echo $loginSound->fileName; ?>
-                    </option>
-                <?php } ?>
-            </select>
-            <button type='button' class='x2-button x2-small-button'
-                    id='upload-login-sound-button'>
-                        <?php echo Yii::t('profile', 'Upload Login Sound'); ?>
-            </button>
-        </div>
-        <div class="row">
-            <label for="notificationSounds">
-                <?php echo Yii::t('profile', 'Notification Sound'); ?>
-            </label>
-            <select id="notificationSounds" name="preferences[notificationSound]"
-                    class='x2-select'>
-                <option value=""> <?php echo Yii::t('app', 'None'); ?> </option>
-                <?php foreach($myNotificationSounds->data as $notificationSound){ ?>
-                    <option value="<?php
-                        echo $notificationSound->id.",".$notificationSound->fileName.",".
-                            $notificationSound->uploadedBy; ?>"
-                     id="sound-<?php echo $notificationSound->id; ?>"
-                     <?php
-                     if($notificationSound->id == $model->notificationSound){
-                         echo "selected='selected'";
-                     }
-                     ?>><?php echo $notificationSound->fileName; ?></option>
-                <?php } ?>
-            </select>
-            <button type='button' class='x2-button x2-small-button'
-                    id='upload-notification-sound-button'>
-                        <?php echo Yii::t('profile', 'Upload Notification Sound'); ?>
-            </button>
         </div>
     </div>
 

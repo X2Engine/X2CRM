@@ -38,6 +38,8 @@ LoginThemeHelper::init();
 
 Yii::app()->clientScript->registerCssFile(Yii::app()->theme->getBaseUrl().'/css/login.css');
 
+$credentials = Yii::app()->settings->getGoogleIntegrationCredentials ();
+
 $this->pageTitle = Yii::app()->settings->appName.' - Login';
 $admin = Admin::model()->findByPk(1);
 
@@ -79,7 +81,9 @@ Yii::app()->clientScript->registerCss('googleLogin', "
 <div class="container<?php echo (isset ($profileId) ? ' welcome-back-page' : ''); ?>" id="login-page">
 <div id="login-box">
 <div class="form" id="login-form">
-    <?php if(isset($admin->googleIntegration) && $admin->googleIntegration == '1'){ ?>
+    <?php 
+    if (isset($admin->googleIntegration) && $admin->googleIntegration == '1' && 
+        isset ($credentials)) { ?>
         <div id="login-box">
             <div id="error-message">
                 <?php
@@ -100,7 +104,7 @@ Yii::app()->clientScript->registerCss('googleLogin', "
                       https://www.googleapis.com/auth/userinfo.profile
                       https://www.googleapis.com/auth/calendar
                       https://www.googleapis.com/auth/calendar.readonly"
-                      data-clientid="<?php echo trim(Yii::app()->settings->googleClientId) ?>"
+                      data-clientid="<?php echo trim($credentials['clientId']); ?>"
                       data-redirecturi="postmessage"
                       data-accesstype="offline"
                       data-cookiepolicy="single_host_origin"
@@ -110,7 +114,7 @@ Yii::app()->clientScript->registerCss('googleLogin', "
             <div id="result"></div>
         </div>
         <?php } ?>
-    <?php }else{ ?>
+    <?php } else { ?>
         <div id="login-box">
             <div id="error-message">
                 Google Integration is not enabled for this instance of X2Engine.  Please contact an administrator.

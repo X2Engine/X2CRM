@@ -37,7 +37,7 @@
 Yii::import ('application.modules.products.models.*');
 Yii::import ('application.components.permissions.*');
 
-class X2LinkableBehaviorTest extends CDbTestCase {
+class X2LinkableBehaviorTest extends X2DbTestCase {
 
     public function testGetItems2 () {
         // test attribute retrieval

@@ -147,7 +147,7 @@ class FieldFormatterTest extends X2DbTestCase {
             $fieldsOfType = $contact->getFields (false, function ($field) use ($type) {
                 return strtolower ($field->type) === strtolower ($type);
             });
-            X2_VERBOSE_MODE && println ('type='.$type);
+            X2_TEST_DEBUG_LEVEL > 1 && println ('type='.$type);
             $this->assertTrue (count ($fieldsOfType) > 0);
             foreach ($fieldsOfType as $field) {
                 $contact->formatter->renderAttribute ($field->fieldName, true, true, true);

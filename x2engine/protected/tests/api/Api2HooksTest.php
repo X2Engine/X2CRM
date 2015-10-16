@@ -75,7 +75,7 @@ class Api2HooksTest extends Api2TestBase {
         );
         $ch = $this->getCurlHandle('POST',array('{suffix}'=>''),'admin',$hook,array(CURLOPT_HEADER=>1));
         $response = curl_exec($ch);
-        $this->assertResponseCodeIs(201, $ch,X2_VERBOSE_MODE?$response:'');
+        $this->assertResponseCodeIs(201, $ch,X2_TEST_DEBUG_LEVEL > 1?$response:'');
         $trigger = ApiHook::model()->findByAttributes($hook);
 
         // 2. Create a contact

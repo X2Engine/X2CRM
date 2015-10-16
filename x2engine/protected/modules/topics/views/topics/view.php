@@ -122,7 +122,9 @@ $this->widget('TopicsListView', array(
             </div>{widgets}
         </div><div class="x2-layout-island">{pager}{items}{pager}</div>'
 ));
+echo '<div class="x2-layout-island">';
 $this->renderPartial('_topicReplyForm',
         array('model' => $topicReply, 'topic' => $model, 'method' => 'new-reply'));
+echo "</div>";
 echo "</div>";
 ?>

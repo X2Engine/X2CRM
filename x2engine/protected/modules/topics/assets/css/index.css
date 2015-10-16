@@ -1,4 +1,4 @@
-/*****************************************************************************************
+/*!***************************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2015 X2Engine Inc.
  * 
@@ -31,90 +31,4 @@
  * X2Engine" logo. If the display of the logo is not reasonably feasible for
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2Engine".
- *****************************************************************************************/
-/* line 37, ../../../../../compass/protected/modules/topics/assets/css/index.scss */
-#content > .form {
-  padding: 0;
-}
-
-/* line 42, ../../../../../compass/protected/modules/topics/assets/css/index.scss */
-#topics-sort-buttons a.disabled {
-  pointer-events: none;
-}
-
-/* line 46, ../../../../../compass/protected/modules/topics/assets/css/index.scss */
-.list-view .items {
-  border: none !important;
-}
-/* line 49, ../../../../../compass/protected/modules/topics/assets/css/index.scss */
-.list-view .pager {
-  border: none !important;
-}
-/* line 52, ../../../../../compass/protected/modules/topics/assets/css/index.scss */
-.list-view .page-title {
-  line-height: 26px;
-  min-height: 35px;
-  height: auto;
-}
-/* line 56, ../../../../../compass/protected/modules/topics/assets/css/index.scss */
-.list-view .page-title > h2, .list-view .page-title .summary {
-  position: relative;
-  top: 4px;
-}
-/* line 60, ../../../../../compass/protected/modules/topics/assets/css/index.scss */
-.list-view .page-title #topics-sort-buttons {
-  padding: 5px;
-}
-/* line 64, ../../../../../compass/protected/modules/topics/assets/css/index.scss */
-.list-view .topic-entry {
-  padding: 10px;
-  border-bottom: 1px solid #ddd;
-  vertical-align: middle;
-  line-height: 45px;
-}
-/* line 70, ../../../../../compass/protected/modules/topics/assets/css/index.scss */
-.list-view .topics-header {
-  padding: 5px 0 5px 0;
-  font-weight: bold;
-}
-
-/* line 75, ../../../../../compass/protected/modules/topics/assets/css/index.scss */
-.clear-fix:after {
-  content: ' ';
-  display: block;
-  height: 0;
-  clear: both;
-}
-
-/* line 81, ../../../../../compass/protected/modules/topics/assets/css/index.scss */
-.topic-sticky {
-  float: left;
-  width: 5%;
-  text-align: center;
-}
-
-/* line 86, ../../../../../compass/protected/modules/topics/assets/css/index.scss */
-.topic-title {
-  float: left;
-  max-width: 65%;
-}
-
-/* line 90, ../../../../../compass/protected/modules/topics/assets/css/index.scss */
-.topic-attributes {
-  float: right;
-  width: 30%;
-  min-width: 270px;
-  text-align: center;
-}
-
-/* line 96, ../../../../../compass/protected/modules/topics/assets/css/index.scss */
-.topic-reply-count {
-  float: left;
-  width: 30%;
-}
-
-/* line 100, ../../../../../compass/protected/modules/topics/assets/css/index.scss */
-.topic-last-updated-text {
-  display: inline-block;
-  line-height: normal;
-}
+ *****************************************************************************************/#content>.form{padding:0}#topics-sort-buttons a.disabled{pointer-events:none}.list-view .default-avatar{line-height:0}.list-view .topic-attributes{float:right;width:30%;min-width:270px;text-align:center;padding-right:10px}.list-view .avatar-container{display:inline-block;width:50px}.list-view .topic-last-updated-text{display:inline-block;line-height:normal;margin-top:8px}.list-view .items{border:none !important}.list-view .pager{border:none !important}.list-view .page-title{line-height:26px;min-height:35px;height:auto}.list-view .page-title>h2,.list-view .page-title .summary{position:relative;top:4px}.list-view .page-title #topics-sort-buttons{padding:5px}.list-view .topic-entry{padding:10px;border-bottom:1px solid #ddd;vertical-align:middle;line-height:45px}.list-view .topics-header{padding:5px 0 5px 0;font-weight:bold}.clear-fix:after{content:' ';display:block;height:0;clear:both}.topic-sticky{float:left;width:5%;text-align:center}.topic-title{float:left;max-width:65%}.topic-reply-count{float:left;width:30%}

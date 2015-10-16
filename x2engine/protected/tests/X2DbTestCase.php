@@ -83,7 +83,7 @@ abstract class X2DbTestCase extends CDbTestCase {
             $this->getFixtureManager ()->loadFixtures = true;
 
         if(X2_TEST_DEBUG_LEVEL > 1){
-            /**/println(' '.$this->getName());
+            /**/println("\n".$this->getName ());
         }
         if (static::$skipAllTests) {
             $this->markTestSkipped ();
@@ -94,6 +94,12 @@ abstract class X2DbTestCase extends CDbTestCase {
         $fixtures = is_array ($this->fixtures) ? $this->fixtures : array ();
         $this->fixtures = array_merge ($fixtures, static::referenceFixtures ());
         parent::setUp ();
+    }
+
+    public static function getPath ($arg) {
+        $reflect = new ReflectionClass ($arg);
+        return ltrim (
+            preg_replace ('/^'.preg_quote (__DIR__, '/').'/', '', $reflect->getFileName ()), '/');
     }
 
     /**
@@ -142,7 +148,7 @@ abstract class X2DbTestCase extends CDbTestCase {
         // to be reloaded after every single test method:
         $testClass = get_called_class();
         if(X2_TEST_DEBUG_LEVEL > 0){
-            /**/println($testClass);
+            /**/println("\nrunning ".self::getPath ($testClass));
         }
         $refFix = call_user_func("$testClass::referenceFixtures");
         $fm = Yii::app()->getComponent('fixture');
@@ -210,9 +216,29 @@ abstract class X2DbTestCase extends CDbTestCase {
     public function assertSaves (CActiveRecord $model) {
         $saved = $model->save ();
         if ($model->hasErrors ()) {
-            X2_VERBOSE_MODE && print_r ($model->getErrors ());
+            X2_TEST_DEBUG_LEVEL > 1 && print_r ($model->getErrors ());
         }
         $this->assertTrue ($saved);
+    }
+
+    public function assertUpdates (CActiveRecord $model, array $attrs=null) {
+        $this->assertTrue ($model->update ($attrs));
+    }
+    
+    /**
+     * Checks that two arrays have the same values regardless of order
+     */
+    public function assertArrayEquals(array $a, array $b) {
+        $equality = false;
+        if (count(array_diff($a, $b)) === 0) {
+            foreach ($a as $k => $v) {
+                if (!in_array($v, $b)) {
+                    break;
+                }
+            }
+            $equality = true;
+        }
+        $this->assertTrue($equality);
     }
 
     public function __get($name) {

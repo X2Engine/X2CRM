@@ -88,9 +88,7 @@ if ($maxExecTime <= 30) {
         X2Html::minimizeButton (array(), '#import-map-box', false, true);
 ?></span></h2>
 <div id="import-map-box" class="import-hide form" style="width:600px">
-    <div id="form-error-box" style="color:red">
-
-    </div>
+    <div id="form-error-box"></div>
 </br />
 
 <div id='mapping-overrides'>
@@ -219,7 +217,10 @@ if ($maxExecTime <= 30) {
 
 </div>
 <br /><br />
-<?php echo CHtml::link(Yii::t('admin',"Process Import"),"#",array('id'=>'process-link','class'=>'x2-button highlight'));?>
+<?php echo CHtml::link(Yii::t('admin',"Process Import"),"#",array(
+        'id'=>'process-link',
+        'class'=>'x2-button highlight'
+    ));?>
 <br /><br />
 </div>
 <h3 id="import-status" style="display:none;"><?php echo Yii::t('admin','Import Status'); ?></h3>
@@ -243,7 +244,6 @@ if ($maxExecTime <= 30) {
 </div>
 <div id="failures-box">
 
-</div>
 <div id="continue-box" style="display:none;">
 <br />
 <?php

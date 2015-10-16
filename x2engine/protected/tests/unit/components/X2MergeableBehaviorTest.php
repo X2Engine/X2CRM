@@ -88,19 +88,19 @@ class X2MergeableBehaviorTest extends X2DbTestCase {
         $model->save();
 
         $this->assertEquals(0,
-                Yii::app()->db->createCommand()->select('COUNT(*)')
-                        ->from('x2_actions')
-                        ->where(
-                                'associationType = "contacts" AND associationId = :id',
-                                array(':id' => $model->id))
-                        ->queryScalar());
+            Yii::app()->db->createCommand()->select('COUNT(*)')
+                ->from('x2_actions')
+                ->where(
+                    'associationType = "contacts" AND associationId = :id',
+                    array(':id' => $model->id))
+                ->queryScalar());
         $this->assertEquals(1,
-                Yii::app()->db->createCommand()->select('COUNT(*)')
-                        ->from('x2_actions')
-                        ->where(
-                                'associationType = "contacts" AND associationId = :id',
-                                array(':id' => $contact->id))
-                        ->queryScalar());
+            Yii::app()->db->createCommand()->select('COUNT(*)')
+                ->from('x2_actions')
+                ->where(
+                    'associationType = "contacts" AND associationId = :id',
+                    array(':id' => $contact->id))
+                ->queryScalar());
 
         $mergeData = $model->mergeActions($contact, true);
 

@@ -408,7 +408,6 @@ $(function(){
         var headerLeft = $('#small-calendar .fc-header-left').append($('<div class=\"x2-button-group\" ></div>'));
         
         headerLeft.find('.x2-button-group').append(headerRight.children());
-        $('#small-calendar #add-button').appendTo(headerLeft).show();
         $('#small-calendar #me-button').appendTo(headerLeft).show();
         
 
@@ -433,10 +432,10 @@ $(function(){
         $('#small-calendar .fc-day-number').css('padding-top', width/3/1.25);
 
         if($('.fc-header-left').height()> 50){
-            $('#me-button, #add-button').css('float', 'left');
+            $('#me-button').css('float', 'left');
         }
         else {
-            $('#me-button, #add-button').css('float', 'right');
+            $('#me-button').css('float', 'right');
         }
 
         var title = $('#widget_SmallCalendar #widget-dropdown');
@@ -479,15 +478,15 @@ $(function(){
 
             <?php 
                 // Be aware these buttons are added dynamically with JS
-                echo X2Html::link(
-                Yii::t('calendar','Full Calendar'),
-                Yii::app()->createUrl('/calendar'),
-                array (
-                    'style' =>'display:none;',
-                    'class' =>"x2-button fc-button",
-                    'id' =>"add-button",
-                    'type' =>'button',
-                ))
+//                echo X2Html::link(
+//                Yii::t('calendar','Full Calendar'),
+//                Yii::app()->createUrl('/calendar'),
+//                array (
+//                    'style' =>'display:none;',
+//                    'class' =>"x2-button fc-button",
+//                    'id' =>"add-button",
+//                    'type' =>'button',
+//                ))
             ?>                
 
             <span title='<?php echo Yii::t('calendar','Show just my events') ?>'

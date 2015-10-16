@@ -49,7 +49,7 @@ class PersistentGridSettingsTest extends X2DbTestCase {
         $models = X2Model::getModelNames (); 
         unset ($models['EmailInboxes']);
         foreach ($models as $class => $title) {
-            X2_VERBOSE_MODE && println ('testing sort for '.$class);
+            X2_TEST_DEBUG_LEVEL > 1 && println ('testing sort for '.$class);
             $uid = rand ();
             $_GET["{$uid}_sort"] = 'test';
             $_GET[$class] = array (
@@ -77,7 +77,7 @@ class PersistentGridSettingsTest extends X2DbTestCase {
         $uid = 'testUID';
         $_GET["{$uid}_sort"] = 'firstName';
         $contact = new Contacts ('search', $uid, true);
-        X2_VERBOSE_MODE && print_r ($contact->getAttributes ());
+        X2_TEST_DEBUG_LEVEL > 1 && print_r ($contact->getAttributes ());
         $dataProvider = $contact->search ();
         $this->assertNotEmpty (
             $dataProvider->asa ('SmartDataProviderBehavior')->getSetting ('sort'));
@@ -117,9 +117,9 @@ class PersistentGridSettingsTest extends X2DbTestCase {
         );
         $_GET["Contacts_sort"] = 'firstName';
         $contact = new Contacts ('search');
-        X2_VERBOSE_MODE && print_r ($contact->getAttributes ());
+        X2_TEST_DEBUG_LEVEL > 1 && print_r ($contact->getAttributes ());
         $dataProvider = $contact->search ();
-        X2_VERBOSE_MODE && print_r ($_SESSION);
+        X2_TEST_DEBUG_LEVEL > 1 && print_r ($_SESSION);
 
         $sort = $contact->asa ('ERememberFiltersBehavior')->getSetting ('sort');
         $filters = $contact->asa ('ERememberFiltersBehavior')->getSetting ('filters');
@@ -139,7 +139,7 @@ class PersistentGridSettingsTest extends X2DbTestCase {
         unset ($models['EmailInboxes']);
         foreach ($models as $class => $title) {
             $_SESSION = array ();
-            X2_VERBOSE_MODE && println ('testing sort for '.$class);
+            X2_TEST_DEBUG_LEVEL > 1 && println ('testing sort for '.$class);
             $uid = rand ();
             $_GET["{$class}_sort"] = 'test';
             $_GET[$class] = array (
@@ -172,14 +172,14 @@ class PersistentGridSettingsTest extends X2DbTestCase {
 //        );
 //        $_GET["Contacts_sort"] = 'firstName';
 //        $contact = new Contacts ('search');
-//        X2_VERBOSE_MODE && print_r ($contact->getAttributes ());
+//        X2_TEST_DEBUG_LEVEL > 1 && print_r ($contact->getAttributes ());
 //        $dataProvider = $contact->search ();
 //
 //        $contact->asa ('ERememberFiltersBehavior')
 //            ->unsetFiltersNotIn (array ('firstName', 'lastName'));
 //        $filters = $contact->asa ('ERememberFiltersBehavior')->getSetting ('filters');
 //        unset ($_GET['Contacts']['email']);
-//        X2_VERBOSE_MODE && print_r ($filters);
+//        X2_TEST_DEBUG_LEVEL > 1 && print_r ($filters);
 //        $this->assertEquals ($filters, $_GET['Contacts']);
 //    }
 //

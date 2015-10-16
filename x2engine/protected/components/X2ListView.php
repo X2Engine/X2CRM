@@ -43,8 +43,35 @@ Yii::import('zii.widgets.CListView');
 class X2ListView extends CListView {
 
     protected $ajax = false;
+    private $afterGridViewUpdateJSString = "";
+    private $beforeGridViewUpdateJSString = "";
+
+	public function __construct ($owner=null) {
+        parent::__construct ($owner);
+        $this->attachBehaviors ($this->behaviors ());
+	}
+
+    public function behaviors () {
+        return array (
+            'X2BaseListViewBehavior' => 'application.components.X2GridView.X2BaseListViewBehavior'
+        );
+    }
 
     public function init(){
+        if ($this->pager === array('class'=>'CLinkPager')) {
+            $this->pager = array (
+                'header' => '',
+                'firstPageCssClass' => '',
+                'lastPageCssClass' => '',
+                'prevPageLabel' => '<',
+                'nextPageLabel' => '>',
+                'firstPageLabel' => '<<',
+                'lastPageLabel' => '>>',
+            );
+        }
+
+        $this->asa ('X2BaseListViewBehavior')->setSummaryText ();
+
         $this->ajax = isset($_GET['ajax']) && $_GET['ajax'] === $this->id;
 
         if($this->ajax && ob_get_length ()) {
@@ -77,7 +104,6 @@ class X2ListView extends CListView {
         $this->renderKeys();
         if($this->ajax){
             // remove any external JS and CSS files
-            Yii::app()->clientScript->scriptMap['*.js'] = false;
             Yii::app()->clientScript->scriptMap['*.css'] = false;
             // remove JS for gridview checkboxes and delete buttons (these events use jQuery.on() and shouldn't be reapplied)
             Yii::app()->clientScript->registerScript('CButtonColumn#C_gvControls', null);
@@ -96,6 +122,23 @@ class X2ListView extends CListView {
         echo CHtml::closeTag($this->tagName);
     }
 
+    public function addToAfterAjaxUpdate ($str) {
+        $this->afterGridViewUpdateJSString .= $str;
+        if ($this->ajax) return;
+        $this->afterAjaxUpdate =
+            'js: function(id, data) {'.
+                $this->afterGridViewUpdateJSString.
+            '}';
+    }
+
+    public function addToBeforeAjaxUpdate ($str) {
+        $this->beforeGridViewUpdateJSString .= $str;
+        if ($this->ajax) return;
+        $this->beforeAjaxUpdate =
+            'js: function(id, data) {'.
+                $this->beforeGridViewUpdateJSString .
+            '}';
+    }
 }
 
 ?>

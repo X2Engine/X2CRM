@@ -109,56 +109,22 @@ class WebFormAction extends CAction {
             }*/
 
             
-
-            if (empty ($model->visibility)) $model->visibility = 1;
+            $model->visibility = 1;
 
             $model->validate (null, false);
             if(!$model->hasErrors()){
-                $duplicates = array ();
-                if(!empty($model->email)){
+                $model->assignedTo = $this->controller->getNextAssignee();
+                $model->createDate = $now;
+                $model->lastUpdated = $now;
+                $model->updatedBy = 'admin';
 
-                    //find any existing contacts with the same contact info
-                    $criteria = new CDbCriteria();
-                    $criteria->compare('email', $model->email, false, "OR");
-                    $emailFields = Yii::app()->db->createCommand()
-                        ->select('fieldName')
-                        ->from('x2_fields')
-                        ->where('modelName = "Contacts" AND type = "email"')
-                        ->queryColumn();
-                    foreach ($emailFields as $field)
-                        $criteria->compare($field, $model->email, false, "OR");
-                    $duplicates = $model->findAll($criteria);
-                }
+                
 
-                if(count($duplicates) > 0){ //use existing record, update background info
-                    $newBgInfo = $model->backgroundInfo;
-                    $model = $duplicates[0];
-                    $oldBgInfo = $model->backgroundInfo;
-                    if ($newBgInfo !== $oldBgInfo) {
-                        $model->backgroundInfo .= 
-                            (($oldBgInfo && $newBgInfo) ? "\n" : '') . $newBgInfo;
-                    }
+                $success = $model->save();
 
-                    
+                
 
-                    
-
-                    $success = $model->save();
-                }else{ //create new record
-                    $model->assignedTo = $this->controller->getNextAssignee();
-                    $model->visibility = 1;
-                    $model->createDate = $now;
-                    $model->lastUpdated = $now;
-                    $model->updatedBy = 'admin';
-
-                    
-
-                    $success = $model->save();
-
-                    
-
-                    //TODO: upload profile picture url from webleadfb
-                }
+                //TODO: upload profile picture url from webleadfb
                 
                 if($success){
                     if ($extractedParams['generateLead'])
@@ -175,29 +141,18 @@ class WebFormAction extends CAction {
                     }
 
                     //use the submitted info to create an action
-                    $action = new Actions;
-                    $action->actionDescription = Yii::t('contacts', 'Web Lead')
-                            ."\n\n".Yii::t('contacts', 'Name').': '.
-                            CHtml::decode($model->firstName)." ".
-                            CHtml::decode($model->lastName)."\n".Yii::t('contacts', 'Email').": ".
-                            CHtml::decode($model->email)."\n".Yii::t('contacts', 'Phone').": ".
-                            CHtml::decode($model->phone)."\n".
-                            Yii::t('contacts', 'Background Info').": ".
-                            CHtml::decode($model->backgroundInfo);
-
-                    // create action
-                    $action->type = 'note';
-                    $action->assignedTo = $model->assignedTo;
-                    $action->visibility = '1';
-                    $action->associationType = 'contacts';
-                    $action->associationId = $model->id;
-                    $action->associationName = $model->name;
-                    $action->createDate = $now;
-                    $action->lastUpdated = $now;
-                    $action->completeDate = $now;
-                    $action->complete = 'Yes';
-                    $action->updatedBy = 'admin';
-                    $action->save();
+                    Actions::associateAction ($model, array (
+                        'actionDescription' => 
+                            Yii::t('contacts', 'Web Lead')
+                                ."\n\n".Yii::t('contacts', 'Name').': '.
+                                CHtml::decode($model->firstName)." ".
+                                CHtml::decode($model->lastName)."\n".Yii::t('contacts', 'Email').
+                                ": ".CHtml::decode($model->email)."\n".Yii::t('contacts', 'Phone').
+                                ": ".CHtml::decode($model->phone)."\n".
+                                Yii::t('contacts', 'Background Info').": ".
+                                CHtml::decode($model->backgroundInfo),
+                        'type' => 'note',
+                    ));
 
                     // create a notification if the record is assigned to someone
                     $event = new Events;
@@ -259,7 +214,11 @@ class WebFormAction extends CAction {
                 }
 
                 $this->controller->renderPartial('application.components.views.webFormSubmit',
-                    array ('type' => 'weblead'));
+                    array (
+                        'type' => 'weblead',
+                        'redirectUrl' => $extractedParams['redirectUrl']
+                    )
+                );
 
                 Yii::app()->end(); // success!
             }
@@ -543,6 +502,7 @@ class WebFormAction extends CAction {
         $extractedParams['leadSource'] = null;
         $extractedParams['generateLead'] = false;
         $extractedParams['generateAccount'] = false;
+        $extractedParams['redirectUrl'] = null;
         if (isset ($webForm)) { // new method
             if (!empty ($webForm->leadSource)) 
                 $extractedParams['leadSource'] = $webForm->leadSource;
@@ -550,6 +510,8 @@ class WebFormAction extends CAction {
                 $extractedParams['generateLead'] = $webForm->generateLead;
             if (!empty ($webForm->generateAccount)) 
                 $extractedParams['generateAccount'] = $webForm->generateAccount;
+            if (!empty ($webForm->redirectUrl)) 
+                $extractedParams['redirectUrl'] = $webForm->redirectUrl;
         }
 
         

@@ -40,10 +40,10 @@
 <div class="form">
 <br> 
 <span style="color:red;">
-    <b><?php echo Yii::t('admin','WARNING');?>:</b><?php 
+    <b><?php echo Yii::t('admin','WARNING');?>:&nbsp;</b><?php 
         echo Yii::t(
             'admin',
-            'this operation is not reversible, and will create issues with any forms using the '.
+            'this operation is not reversible, and will create issues with any fields or forms using the '.
             'deleted dropdown.');
     ?></span>
 <form name="deleteDropdowns" action="deleteDropdown" method="POST">

@@ -168,7 +168,7 @@ GridViewMassActionsManager.prototype.moveMoreButtonMenuItemIntoButtons = functio
     var buttonSet = $('#' + that.gridId + '-mass-action-buttons .mass-action-button-set');
     var buttons = $(buttonSet).children ();
     var moreButton = $('#' + that.gridId + '-mass-action-buttons .mass-action-more-button');
-    var moreDropDownList = $('#' + that.gridId + '-mass-action-buttons .more-drop-down-list');
+    var moreDropDownList = $('#' + that.gridId + 'more-drop-down-list');
     var listItems = $(moreDropDownList).children ();
     var firstItem;
 
@@ -274,11 +274,10 @@ GridViewMassActionsManager.prototype._checkX2GridViewRows = function () {
     // create a dictionary for O(1) access
     var dictOfIdsOfChecked = {};
     for (var i in idsOfchecked) dictOfIdsOfChecked[idsOfchecked[i]] = true;
-    that.DEBUG && console.log ('checkX2GridViewRows:  dictOfIdsOfChecked = ');
-    that.DEBUG && console.log (dictOfIdsOfChecked);
 
     $(that.gridSelector).find ('[type=\"checkbox\"]').each (function () {
-        if (dictOfIdsOfChecked[$(this).val ().toString ()]) {
+        if (dictOfIdsOfChecked[$(this).val ().toString ()] && 
+            $(this).attr ('id') !== that.namespacePrefix + 'C_gvCheckbox_all') {
             $(this).attr ('checked', 'checked');
         }
     });
@@ -292,7 +291,12 @@ GridViewMassActionsManager.prototype._checkX2GridViewRows = function () {
 GridViewMassActionsManager.prototype._setUpMoreButtonBehavior = function () {
     var that = this; 
 
-    var moreDropDownList = $('#' + that.gridId + '-mass-action-buttons .more-drop-down-list');
+    var moreDropDownList = 
+        $('#' + that.gridId + '-mass-action-buttons .grid-view-more-drop-down-list');
+    // remove the old one in case we're refreshing
+    $('body').children ('#' + that.gridId + 'more-drop-down-list').remove ();
+    // move dropdown up to prevent clipping
+    $('body').append (moreDropDownList.detach ());
 
     // action more button behavior
     function massActionMoreButtonBehavior () {
@@ -308,8 +312,8 @@ GridViewMassActionsManager.prototype._setUpMoreButtonBehavior = function () {
         that.DEBUG && console.log ('massActionMoreButtonBehavior');
         if (that.headerIsFixed () && !$('body').hasClass ('x2-mobile-layout')) {
             $(moreDropDownList).css ({
-                left: $(this).position ().left + 'px',
-                top: '24px',
+                left: $(this).offset ().left + 'px',
+                top: $(this).offset ().top + $(this).height () + 1 + 'px',
                 width: '175px'
             });
         } else if ($('body').hasClass ('x2-mobile-layout')) {
@@ -319,14 +323,14 @@ GridViewMassActionsManager.prototype._setUpMoreButtonBehavior = function () {
             if (moreButtonOffsetLeft + moreMenuWidth > $(window).width ()) {
                 var moreButtonWidth = $(this).width ();
                 $(moreDropDownList).css ({
-                    left: ($(this).position ().left - moreMenuWidth + moreButtonWidth) + 'px',
-                    top: '34px',
+                    left: ($(this).offset ().left - moreMenuWidth + moreButtonWidth) + 'px',
+                    top: $(this).offset ().top + $(this).height () + 1 + 'px',
                     width: '175px'
                 });
             } else {
                 $(moreDropDownList).css ({
-                    left: ($(this).position ().left) + 'px',
-                    top: '34px',
+                    left: ($(this).offset ().left) + 'px',
+                    top: $(this).offset ().top + $(this).height () + 1 + 'px',
                     width: '175px'
                 });
             }
@@ -337,8 +341,8 @@ GridViewMassActionsManager.prototype._setUpMoreButtonBehavior = function () {
             /*var yPos = $(that.gridSelector).find ('.x2grid-resizable').eq(0).parent().
                 position().top - 1;*/
             $(moreDropDownList).css ({
-                left: $(this).position ().left + 'px',
-                top: '24px',
+                left: $(this).offset ().left + 'px',
+                top: $(this).offset ().top + $(this).height () + 1 + 'px',
                 width: '175px'
             });
         }
@@ -378,7 +382,8 @@ GridViewMassActionsManager.prototype._setUpMassActions = function () {
     
 
     if ($('#' + that.gridId + ' .mass-action-more-button').length) {
-        var moreDropDownList = $('#' + that.gridId + '-mass-action-buttons .more-drop-down-list');
+        var moreDropDownList = 
+            $('#' + that.gridId + 'more-drop-down-list');
         $(moreDropDownList).find ('li').on ('click', function () {
             $(moreDropDownList).hide ();
             var massAction = $(this).attr ('class').replace (/mass-action-button/, '').
@@ -538,8 +543,14 @@ GridViewMassActionsManager.prototype._setUpUIHideShowBehavior = function () {
         });
 };
 
-GridViewMassActionsManager.prototype._element = function () {
-    return $('#' + this.gridId);
+GridViewMassActionsManager.prototype.getRowById = function (id) {
+    // convert data provider offset to row offset
+    var grid$ = $('#' + this.gridId);
+    var keys = $.makeArray (grid$.find ('.keys span').map (function () { 
+        return $(this).text (); 
+    }));
+    var id = keys.indexOf (id);
+    return $('#' + this.namespacePrefix + 'C_gvCheckbox_' + id).closest ('tr');
 };
 
 /**
@@ -553,6 +564,10 @@ GridViewMassActionsManager.prototype._getSelectedRecords = function () {
         return null;
 };
 
+GridViewMassActionsManager.prototype.getGvSettings = function () {
+    return $('#' + this.gridId).data ('x2GvSettings');
+};
+
 /**
  * Removes objects which will get reconstructed after the grid updates and then updates the grid
  */
@@ -560,6 +575,7 @@ GridViewMassActionsManager.prototype._updateGrid = function (afterUpdate) {
     var afterUpdate = typeof afterUpdate === 'undefined' ? function () {} : afterUpdate; 
     var that = this; 
     $('#' + that.gridId).yiiGridView ('update', {
+        data: this.getGvSettings ().updateParams,
         complete: function () {
             afterUpdate ();
             that.superCheckAllManager.hideInterface ();

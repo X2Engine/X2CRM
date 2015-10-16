@@ -156,8 +156,26 @@ $(function() {
 			<?php echo $form->error($model,'name'); ?>
 		</div>
 		<div class="cell">
-			<?php echo $form->labelEx($model,'isDefault'); ?>
-			<?php echo $form->checkbox($model,'isDefault'); ?>
+			<?php 
+            $moduleOptions = 
+                array (
+                   Workflow::DEFAULT_ALL_MODULES => Yii::t('workflow', 'All Modules')
+                ) + Modules::getDropdownOptions ('id', function ($record) {
+                    $modelName = X2Model::getModelName ($record['name']);
+                    return $modelName && ($modelName::model () instanceof X2Model) && 
+                        $modelName::model ()->supportsWorkflow;
+                });
+            echo $form->labelEx($model,'isDefaultFor'); 
+            echo $form->dropDownList (
+                $model, 'isDefaultFor', 
+                $moduleOptions,
+                array (
+                    'multiple' => 'multiple',
+                    'class' => 'x2-multiselect-dropdown',
+                    'style' => 'display: none',
+                    'data-selected-text' => Yii::t('workflow', 'module(s)'),
+                ));
+            ?>
 		</div>
 	</div>
 	<div id="workflow-stages" class="x2-sortlist">

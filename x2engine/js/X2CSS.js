@@ -72,6 +72,7 @@ X2CSS.prototype.css = function (elem$, rules, merge) {
  * @return object 
  */
 X2CSS.prototype.parseStyle = function (style) {
+    if (!style) return {};
     var rules = style.split (/;/);
     var css = {};
     for (var i in rules) {

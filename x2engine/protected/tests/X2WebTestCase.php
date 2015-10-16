@@ -74,7 +74,15 @@ abstract class X2WebTestCase extends CWebTestCase {
     protected $screenshotUrl = null;
     protected static $skipAllTests = false;
 
+    private static $_referenceFixtureRecords = array();
+
+    private static $_referenceFixtureRows = array();
+
     public $firstLogin = true;
+
+    public static function referenceFixtures() {
+        return array();
+    }
 
     public static function getTestHost () {
         return preg_replace ('/^https?:\/\/([^\/]+)\/.*$/', '$1', TEST_WEBROOT_URL);
@@ -122,7 +130,7 @@ abstract class X2WebTestCase extends CWebTestCase {
             $this->type("name=LoginForm[$fld]", $val);
         $this->clickAndWait("css=#signin-button");
         // Finally, make sure the login succeeded
-        X2_VERBOSE_MODE && println ('login');
+        X2_TEST_DEBUG_LEVEL > 1 && println ('login');
         $this->waitForPageToLoad ();
         $this->assertCorrectUser($login);
     }
@@ -153,7 +161,7 @@ abstract class X2WebTestCase extends CWebTestCase {
      * @param string $r_uri
      */
     public function openPublic($r_uri) {
-        X2_VERBOSE_MODE && print ('openPublic: '.TEST_WEBROOT_URL . $r_uri."\n");
+        X2_TEST_DEBUG_LEVEL > 1 && print ('openPublic: '.TEST_WEBROOT_URL . $r_uri."\n");
         return $this->open(TEST_WEBROOT_URL . $r_uri);
     }
 
@@ -205,6 +213,41 @@ abstract class X2WebTestCase extends CWebTestCase {
         if(X2_TEST_DEBUG_LEVEL > 0){
             println($testClass);
         }
+        // Load "reference fixtures", needed for reference, which do not need
+        // to be reloaded after every single test method:
+        $testClass = get_called_class();
+        if(X2_TEST_DEBUG_LEVEL > 0){
+            /**/println($testClass);
+        }
+        $refFix = call_user_func("$testClass::referenceFixtures");
+        $fm = Yii::app()->getComponent('fixture');
+        self::$_referenceFixtureRows = array();
+        self::$_referenceFixtureRecords = array();
+        if(is_array($refFix)){
+            Yii::import('application.components.X2Settings.*');
+            $fm->load($refFix);
+            if(self::$loadFixtures || self::$loadFixturesForClassOnly){
+                foreach($refFix as $alias => $table){
+                    $tableName = is_array($table) ? $table[0] : $table;
+                    self::$_referenceFixtureRows[$alias] = $fm->getRows($alias);
+                    if(strpos($tableName, ':') !== 0){
+                        foreach(self::$_referenceFixtureRows[$alias] as $rowAlias => $row){
+                            $model = CActiveRecord::model($tableName);
+                            $key = $model->getTableSchema()->primaryKey;
+                            if(is_string($key))
+                                $pk = $row[$key];
+                            else{
+                                foreach($key as $k)
+                                    $pk[$k] = $row[$k];
+                            }
+                            self::$_referenceFixtureRecords[$alias][$rowAlias] = 
+                                $model->findByPk($pk);
+                        }
+                    }
+                }
+            }
+        }
+
         parent::setUpBeforeClass();
     }
     
@@ -229,6 +272,9 @@ abstract class X2WebTestCase extends CWebTestCase {
 
         if (self::$loadFixturesForClassOnly)
             $this->getFixtureManager ()->loadFixtures = true;
+
+        $fixtures = is_array ($this->fixtures) ? $this->fixtures : array ();
+        $this->fixtures = array_merge ($fixtures, static::referenceFixtures ());
 
         if(X2_TEST_DEBUG_LEVEL > 1){
             println(' '.$this->getName());
@@ -255,6 +301,9 @@ abstract class X2WebTestCase extends CWebTestCase {
         if(isset($this->_oldSession)){
             $_SESSION = $this->_oldSession;
         }
+        self::$skipAllTests = false;
+        self::$loadFixtures = X2_LOAD_FIXTURES;
+        self::$loadFixturesForClassOnly = X2_LOAD_FIXTURES_FOR_CLASS_ONLY;
         parent::tearDown();
     }
 
@@ -276,6 +325,14 @@ abstract class X2WebTestCase extends CWebTestCase {
      */
     protected function assertNoErrors () {
 		$this->assertElementNotPresent('css=.xdebug-error');
+        // get stack trace and error message
+        $this->storeEval (
+            "window.$('#error-form').html ()",
+            'errorInfo');
+        $errorMessage = $this->getExpression ('${errorInfo}');
+        if ($errorMessage) {
+            println ($errorMessage);
+        }
 		$this->assertElementNotPresent('css=#x2-php-error');
         $this->storeEval (
             "window.document.body.attributes['x2-js-error'] ? 'true' : 'false'", 
@@ -287,6 +344,23 @@ abstract class X2WebTestCase extends CWebTestCase {
             println ($errorMessage);
             $this->assertTrue (false, $errorMessage);
         } 
+        $this->assertHttpOK ();
+    }
+    
+    /**
+     * Checks that two arrays have the same values regardless of order
+     */
+    public function assertArrayEquals(array $a, array $b) {
+        $equality = false;
+        if (count(array_diff($a, $b)) === 0) {
+            foreach ($a as $k => $v) {
+                if (!in_array($v, $b)) {
+                    break;
+                }
+            }
+            $equality = true;
+        }
+        $this->assertTrue($equality);
     }
 
     public function getHttpErrorResponse () {

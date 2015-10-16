@@ -1,5 +1,4 @@
 <?php
-
 /*****************************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2015 X2Engine Inc.
@@ -41,6 +40,8 @@
  * @package application.modules.docs.models
  */
 class DocFolders extends CActiveRecord {
+
+    const TEMPLATES_FOLDER_ID = -1;
     
     public $module = 'docs';
 
@@ -84,6 +85,13 @@ class DocFolders extends CActiveRecord {
         );
     }
     
+    public function attributeLabels() {
+        return array(
+            'name' => Yii::t('docs', 'Name'),
+            'visibility' => Yii::t('docs', 'Visibility'),
+        );
+    }
+
     /**
      * Retrieves a list of models based on the current search/filter conditions.
      * @return CActiveDataProvider the data provider that can return the models based on the search/filter conditions.
@@ -103,6 +111,10 @@ class DocFolders extends CActiveRecord {
         return array(
             'X2TimestampBehavior' => array('class' => 'X2TimestampBehavior'),
             'permissions' => array('class' => Yii::app()->params->modelPermissions),
+            'FileSystemObjectBehavior' => array(
+                'class' => 'application.modules.docs.components.FileSystemObjectBehavior',
+                'folderRefName' => 'parentFolder',
+            ),
         );
     }
     
@@ -119,45 +131,67 @@ class DocFolders extends CActiveRecord {
         return parent::beforeDelete();
     }
 
-    public static function getTemplatesFolderContents() {
-        $model = DocFolders::model();
-        $model->id = -1;
-        $contents = array(0 => $model->createFileSystemObject(0, 'parent', null));
-        $index = 1;
-        $children = $model->getChildren('templates');
-        foreach ($children['folders'] as $folder) {
-            $contents[$index] = $model->createFileSystemObject($index, 'folder', $folder);
-            $index++;
-        }
-        foreach ($children['docs'] as $doc) {
-            $contents[$index] = $model->createFileSystemObject($index, 'doc', $doc);
-            $index++;
-        }
-        return new CArrayDataProvider($contents, array(
+    public function getTemplatesFolderContents() {
+        $contents = $this->findChildren (self::TEMPLATES_FOLDER_ID);
+        return new FileSystemObjectDataProvider($contents, array(
             'id' => 'root-folder-contents',
             'pagination' => array(
-                'pageSize' => Profile::getResultsPerPage(),
+                'pageSize' => $this->getPageSize (),
             )
         ));
     }
 
-    public static function getRootFolderContents() {
+    /**
+     * Find children of specified file sys object of specified types
+     * @return array array of FileSystemObject instances
+     */
+    public function findChildren ($folderId='root', array $types=array ('folder', 'doc'), 
+        array $exclude=array ()) { 
+        //, $depth=1) {
+
+        $exclude = array_flip ($exclude);
+
+        if ($folderId === 'root') {
+            $model = self::model ();
+            $fileSysObjs = array ($model->createFileSystemObject ('templates', null));
+        } elseif ($folderId === self::TEMPLATES_FOLDER_ID) {
+            $model = self::model ();
+            $this->id = self::TEMPLATES_FOLDER_ID;
+            $fileSysObjs = array($this->createFileSystemObject ('parent', null));
+        } elseif ($folderId instanceof DocFolders) {
+            $model = $folderId;
+            $fileSysObjs = array($this->createFileSystemObject ('parent', $model->parent));
+        } 
+        $children = $model->getChildren ($folderId);
+        foreach ($types as $type) {
+            foreach ($children[$type.'s'] as $child) { 
+                $fileSysObjs[] = $this->createFileSystemObject ($type, $child);
+            }
+        }
+
+        $count = count ($fileSysObjs);
+        for ($i = 0; $i < $count; $i++) {
+            $fileSysObj = $fileSysObjs[$i];
+            if (isset ($exclude[$fileSysObj->objId])) {
+                unset ($fileSysObjs[$i]);
+            }
+        }
+
+        return $fileSysObjs;
+    }
+
+    public function getPageSize () {
+        return Profile::getResultsPerPage ();
+    }
+
+    public function getRootFolderContents($pageSize=null) {
+        if (!$pageSize) $pageSize = $this->getPageSize ();
         $model = DocFolders::model();
-        $contents = array(0 => $model->createFileSystemObject(0, 'templates', null));
-        $index = 1;
-        $children = $model->getChildren('root');
-        foreach ($children['folders'] as $folder) {
-            $contents[$index] = $model->createFileSystemObject($index, 'folder', $folder);
-            $index++;
-        }
-        foreach ($children['docs'] as $doc) {
-            $contents[$index] = $model->createFileSystemObject($index, 'doc', $doc);
-            $index++;
-        }
-        return new CArrayDataProvider($contents, array(
+        $contents = $this->findChildren ();
+        return new FileSystemObjectDataProvider($contents, array(
             'id' => 'root-folder-contents',
             'pagination' => array(
-                'pageSize' => Profile::getResultsPerPage(),
+                'pageSize' => $pageSize,
             )
         ));
     }
@@ -207,21 +241,12 @@ class DocFolders extends CActiveRecord {
     }
 
     public function getContents() {
-        $contents = array(0 => $this->createFileSystemObject(0, 'parent', null));
-        $index = 1;
-        $children = $this->getChildren();
-        foreach ($children['folders'] as $folder) {
-            $contents[$index] = $this->createFileSystemObject($index, 'folder', $folder);
-            $index++;
-        }
-        foreach ($children['docs'] as $doc) {
-            $contents[$index] = $this->createFileSystemObject($index, 'doc', $doc);
-            $index++;
-        }
-        return new CArrayDataProvider($contents, array(
+        $contents = array_merge (
+            $this->findChildren ($this));
+        return new FileSystemObjectDataProvider($contents, array(
             'id' => $this->id . '-folder-contents',
             'pagination' => array(
-                'pageSize' => Profile::getResultsPerPage(),
+                'pageSize' => $this->getPageSize (),
             )
         ));
     }
@@ -242,7 +267,7 @@ class DocFolders extends CActiveRecord {
         $doc = Docs::model();
         if ($option === 'root') {
             $docsCriteria->condition = 'folderId IS NULL AND type NOT IN ("email","quote")';
-        } elseif($option === 'templates'){
+        } elseif($option === self::TEMPLATES_FOLDER_ID){
             $docsCriteria->condition = 'folderId IS NULL AND type IN ("email","quote")';
         } else {
             $docsCriteria->compare('folderId', $this->id);
@@ -254,9 +279,10 @@ class DocFolders extends CActiveRecord {
         return $children;
     }
     
-    private function createFileSystemObject($id, $type, $object) {
+    private function createFileSystemObject($type, $object) {
+        static $id = 0;
         $options = array(
-            'id' => $id,
+            'id' => $id++,
             'parentId' => $this->id,
             'type' => null,
             'objId' => null,
@@ -267,9 +293,11 @@ class DocFolders extends CActiveRecord {
             'visibility' => null,
         );
         if ($type === 'parent') {
-            $options['objId'] = is_null($this->parentFolder) ? null : $this->parentFolder;
+            $options['objId'] = $object ? $object->id : null;
             $options['type'] = 'folder';
             $options['name'] = '..';
+            $options['title'] = $object ? $object->name : Yii::t('docs', 'Docs');
+            $options['isParent'] = true;
         } elseif ($type === 'templates') {
             $options['type'] = 'folder';
             $options['objId'] = -1;

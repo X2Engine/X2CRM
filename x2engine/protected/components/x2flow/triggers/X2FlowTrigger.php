@@ -895,6 +895,6 @@ abstract class X2FlowTrigger extends X2FlowItem {
     }
 
     public static function getTriggerInstances(){
-        return self::getInstances('triggers',array(__CLASS__,'X2FlowSwitch','BaseTagTrigger','BaseWorkflowStageTrigger', 'BaseWorkflowTrigger', 'BaseUserTrigger'));
+        return self::getInstances('triggers',array(__CLASS__,'X2FlowSwitch','X2FlowSplitter','BaseTagTrigger','BaseWorkflowStageTrigger', 'BaseWorkflowTrigger', 'BaseUserTrigger', 'MultiChildNode'));
     }
 }

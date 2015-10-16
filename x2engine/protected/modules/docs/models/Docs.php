@@ -63,16 +63,20 @@ class Docs extends X2Model {
 
     public function behaviors() {
         return array_merge(parent::behaviors(), array(
-                    'X2LinkableBehavior' => array(
-                        'class' => 'X2LinkableBehavior',
-                        'module' => 'docs',
-                    ),
-                    'ERememberFiltersBehavior' => array(
-                        'class' => 'application.components.ERememberFiltersBehavior',
-                        'defaults' => array(),
-                        'defaultStickOnClear' => false
-                    )
-                ));
+            'X2LinkableBehavior' => array(
+                'class' => 'X2LinkableBehavior',
+                'module' => 'docs',
+            ),
+            'ERememberFiltersBehavior' => array(
+                'class' => 'application.components.ERememberFiltersBehavior',
+                'defaults' => array(),
+                'defaultStickOnClear' => false
+            ),
+            'FileSystemObjectBehavior' => array(
+                'class' => 'application.modules.docs.components.FileSystemObjectBehavior',
+                'folderRefName' => 'folderId',
+            ),
+        ));
     }
 
     /**
@@ -82,6 +86,7 @@ class Docs extends X2Model {
         // NOTE: you may need to adjust the relation name and the related
         // class name for the relations automatically generated below.
         return array(
+            'parent' => array(self::BELONGS_TO, 'DocFolders', 'folderId'),
         );
     }
 
@@ -122,9 +127,9 @@ class Docs extends X2Model {
      * Retrieves a list of models based on the current search/filter conditions.
      * @return CActiveDataProvider the data provider that can return the models based on the search/filter conditions.
      */
-    public function search() {
+    public function search($pageSize=null) {
         $criteria = new CDbCriteria;
-        return $this->searchBase ($criteria, null, false);
+        return $this->searchBase ($criteria, $pageSize, false);
     }
 
     /**

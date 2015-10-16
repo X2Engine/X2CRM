@@ -98,6 +98,7 @@ abstract class ProfileGridViewWidget extends GridViewWidget {
                 'sortableWidget' => $this,
                 'id'=>$this->getWidgetKey (),
                 'enableScrollOnPageChange' => false,
+                'possibleResultsPerPage' => array(5, 10, 20, 30, 40, 50, 75, 100),
                 'buttons'=>array('advancedSearch','clearFilters','columnSelector','autoResize'),
                 'template'=>
                     CHtml::openTag ('div', X2Html::mergeHtmlOptions (array (

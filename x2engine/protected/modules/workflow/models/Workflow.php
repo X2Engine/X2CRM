@@ -42,6 +42,8 @@
  */
 class Workflow extends CActiveRecord {
 
+    const DEFAULT_ALL_MODULES = '-1';
+
     /**
      * Returns the static model of the specified AR class.
      * @return Workflow the static model class
@@ -86,6 +88,7 @@ class Workflow extends CActiveRecord {
             array('lastUpdated', 'numerical', 'integerOnly'=>true),
             array('name', 'length', 'max'=>250),
             array('isDefault', 'boolean'),
+            array('isDefaultFor', 'validateIsDefaultFor'),
             // The following rule is used by search().
             // Please remove those attributes that should not be searched.
             array('id, name, lastUpdated', 'safe', 'on'=>'search'),
@@ -109,6 +112,22 @@ class Workflow extends CActiveRecord {
     // public function behaviors(){
         // return array('CSaveRelationsBehavior' => array('class' => 'application.components.CSaveRelationsBehavior'));
     // }
+
+    /**
+     * isDefault should either be a boolean value or an array of module ids 
+     */
+    public function validateIsDefaultFor ($attr) {
+        $val = $this->$attr;
+        if (is_array ($val)) {
+            $moduleIds = Yii::app()->db->createCommand ()
+                ->select ('id')
+                ->from ('x2_modules')
+                ->queryColumn ();
+            if (array_diff ($val, array_merge (array (self::DEFAULT_ALL_MODULES), $moduleIds))) {
+                $this->addError ($attr, Yii::t('workflow', 'Invalid module'));
+            }
+        }
+    }
     
     /**
      * @return array customized attribute labels (name=>label)
@@ -118,17 +137,114 @@ class Workflow extends CActiveRecord {
             'id' => 'ID',
             'name' => Yii::t('workflow','Process Name'),
             'isDefault' => Yii::t('workflow','Default Process'),
+            'isDefaultFor' => Yii::t('workflow','Default Process'),
             'lastUpdated' => Yii::t('workflow','Last Updated'),
         );
     }
-    
+
+    private $_isDefaultFor;
+    public function setIsDefaultFor ($isDefaultFor) {
+        if (!is_array ($isDefaultFor)) $isDefaultFor = array ();
+        $this->_isDefaultFor = $isDefaultFor;
+        if (in_array (self::DEFAULT_ALL_MODULES, $this->_isDefaultFor)) {
+            $this->isDefault = true;
+            $this->_isDefaultFor = array (self::DEFAULT_ALL_MODULES);
+        } else {
+            $this->isDefault = false;
+        }
+    }
+
+    public function getIsDefaultFor () {
+        if (!isset ($this->_isDefaultFor)) {
+            if ($this->isDefault) {
+                $this->_isDefaultFor = array (self::DEFAULT_ALL_MODULES);
+            } else {
+                $this->_isDefaultFor = Yii::app()->db->createCommand ("
+                    select id
+                    from x2_modules
+                    where defaultWorkflow=:id
+                ")->queryColumn (array (':id' => $this->id));
+            }
+        }
+        return $this->_isDefaultFor;
+    }
+
+    public function renderAttribute ($attr) {
+        switch ($attr) {
+            case 'isDefaultFor':
+                $isDefaultFor = $this->getIsDefaultFor ();
+                if (in_array (self::DEFAULT_ALL_MODULES, $isDefaultFor)) {
+                    return Yii::t('workflow', 'All modules');
+                } elseif ($isDefaultFor) {
+                    $qpg = new QueryParamGenerator;
+                    $moduleNames = Yii::app()->db->createCommand ()
+                        ->select ('name')
+                        ->from ('x2_modules')
+                        ->where ('id in '.$qpg->bindArray ($isDefaultFor, true))
+                        ->queryColumn ($qpg->getParams ());
+                    return implode (', ', ArrayUtil::asorti (array_map (function ($name) {
+                        return Modules::displayName (true, $name);
+                    }, $moduleNames)));
+                }
+                break;
+            default:
+                return $this->$attr;
+        }
+    }
+
     /**
      * If this workflow is the default, unset isDefault flag on all other workflows
      */
     public function afterSave() {
-        if($this->isDefault) {
-            Yii::app()->db->createCommand('UPDATE x2_workflows SET isDefault=0 WHERE id != ?')
-                ->execute(array($this->id));
+        if (in_array (self::DEFAULT_ALL_MODULES, $this->isDefaultFor)) {
+            // this workflow is default for all modules, so remove all defaults
+            Yii::app()->db->createCommand("
+                update x2_modules
+                set defaultWorkflow=NULL
+                where true
+            ")->execute (array (':id' => $this->id));
+            // remove old global default
+            Yii::app()->db->createCommand("
+                update x2_workflows
+                set isDefault=0
+                where id!=:id
+            ")->execute (array (':id' => $this->id));
+        } else {
+            // set default on a per-module basis
+
+            // add new values
+            if ($this->isDefaultFor) {
+                $qpg = new QueryParamGenerator;
+                Yii::app()->db->createCommand("
+                    update x2_modules
+                    set defaultWorkflow=:id
+                    where id in ".$qpg->bindArray ($this->isDefaultFor, true)."
+                ")->execute ($qpg->mergeParams (array (':id' => $this->id))->getParams ());
+            }
+
+            // clear old values
+            if ($this->isDefaultFor) {
+                $qpg = new QueryParamGenerator;
+                Yii::app()->db->createCommand("
+                    update x2_modules
+                    set defaultWorkflow=NULL
+                    where id not in ".$qpg->bindArray ($this->isDefaultFor, true)." and
+                        defaultWorkflow=:id
+                ")->execute ($qpg->mergeParams (array (':id' => $this->id))->getParams ());
+            } else {
+                Yii::app()->db->createCommand("
+                    update x2_modules
+                    set defaultWorkflow=NULL
+                    where defaultWorkflow=:id
+                ")->execute (array (':id' => $this->id));
+            }
+
+            // if there's a global default, remove it
+            Yii::app()->db->createCommand("
+                update x2_workflows
+                set isDefault=0
+                where true
+            ")->execute ();
         }
         
         parent::afterSave();
@@ -1253,7 +1369,7 @@ class Workflow extends CActiveRecord {
                 
                 // don't genererate normal action changelog/triggers/events
                 $actionModels[0]->disableBehavior('changelog');    
-                $actionModels[0]->disableBehavior('tags'); // no tags
+                $actionModels[0]->disableBehavior('TagBehavior'); // no tags
                 $actionModels[0]->completeDate = time(); // set completeDate and save model
                 $actionModels[0]->dueDate=null;
                 $actionModels[0]->complete = 'Yes';
@@ -1285,7 +1401,7 @@ class Workflow extends CActiveRecord {
                            
                            // don't genererate normal action changelog/triggers/events
                            $nextAction->disableBehavior('changelog');    
-                           $nextAction->disableBehavior('tags'); // no tags
+                           $nextAction->disableBehavior('TagBehavior'); // no tags
                            $nextAction->associationId = $modelId;
                            $nextAction->associationType = $type;
                            $nextAction->assignedTo = Yii::app()->user->getName();
@@ -1378,7 +1494,7 @@ class Workflow extends CActiveRecord {
 
             // don't genererate normal action changelog/triggers/events
             $action->disableBehavior('changelog');    
-            $action->disableBehavior('tags'); // no tags up in here
+            $action->disableBehavior('TagBehavior'); // no tags up in here
             $action->associationId = $modelId;
             $action->associationType = $type;
             $action->assignedTo = Yii::app()->user->getName();
@@ -1465,7 +1581,7 @@ class Workflow extends CActiveRecord {
                 
                 // don't genererate normal action changelog/triggers/events
                 $actions[0]->disableBehavior('changelog');    
-                $actions[0]->disableBehavior('tags'); // no tags up in here
+                $actions[0]->disableBehavior('TagBehavior'); // no tags up in here
                 $actions[0]->complete = 'No';
                 $actions[0]->completeDate = null;
                 $actions[0]->completedBy = '';

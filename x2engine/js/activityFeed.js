@@ -399,8 +399,8 @@ ActivityFeed.prototype.setupEditorBehavior = function  () {
         var editorText = window.newPostEditor.getData();
 
         if (that.editorIsExpanded && editorText === "" &&
-            $('#upload').val () === "") {
-
+            $('#activity.file-uploader').is (':hidden')) {
+            
             $('#feed-form').css({opacity: 0.5});
             that.initMinimizeEditor ();
             that.finishMinimizeEditor ();
@@ -566,9 +566,7 @@ ActivityFeed.prototype.setupActivityFeed = function  () {
 ActivityFeed.prototype.makePostExpandable = function  (element) {
     var that = this;
     if ($(element).hasClass ('is-expandable')) return;
-    that.DEBUG && console.log ('that.makePostExpandable');
     $(element).addClass ('is-expandable');
-    that.DEBUG && console.log (element);
     $(element).expander ({
         slicePoint: 80,
         expandPrefix: '',

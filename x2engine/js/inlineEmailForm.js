@@ -552,6 +552,33 @@ InlineEmailEditorManager.prototype._init = function () {
 
 };
 
+InlineEmailEditorManager.prototype.reinstantiate = function () {
+    var that = this;
+    if(window.inlineEmailEditor)
+        window.inlineEmailEditor.destroy(true);
+
+    $('#email-message').val(x2.inlineEmailOriginalBody);
+    window.inlineEmailEditor = createCKEditor(
+        'email-message',
+        {
+            toolbarStartupExpanded: !$('body').hasClass ('x2-mobile-layout'),
+            fullPage:true,
+            height:'300px',
+            tabIndex:5,
+            insertableAttributes:x2.insertableAttributes
+        }, function() {
+            if(typeof inlineEmailEditorCallback == 'function') {
+                /* call a callback function after the inline email editor is created (if 
+                   function exists) */
+                inlineEmailEditorCallback(); 
+            }
+            that.executeCallbacks ();
+            x2.inlineEmailEditor.isSetUp = true;
+        });
+    
+    x2.emailEditor.setupEmailAttachments('email-attachments');
+};
+
 InlineEmailEditorManager.prototype._initializeEmailEditor = function () {
     var that = this;
     function setupInlineEmailEditorAndroid () {
@@ -564,30 +591,7 @@ InlineEmailEditorManager.prototype._initializeEmailEditor = function () {
     $(document).on('setupInlineEmailEditor',function(){
         if (!that.reinstantiateEditorWhenShown && 
             window.inlineEmailEditor) return;
-
-        if(window.inlineEmailEditor)
-            window.inlineEmailEditor.destroy(true);
-
-        $('#email-message').val(x2.inlineEmailOriginalBody);
-        window.inlineEmailEditor = createCKEditor(
-            'email-message',
-            {
-                toolbarStartupExpanded: !$('body').hasClass ('x2-mobile-layout'),
-                fullPage:true,
-                height:'300px',
-                tabIndex:5,
-                insertableAttributes:x2.insertableAttributes
-            }, function() {
-                if(typeof inlineEmailEditorCallback == 'function') {
-                    /* call a callback function after the inline email editor is created (if 
-                       function exists) */
-                    inlineEmailEditorCallback(); 
-                }
-                that.executeCallbacks ();
-                x2.inlineEmailEditor.isSetUp = true;
-            });
-        
-        x2.emailEditor.setupEmailAttachments('email-attachments');
+        that.reinstantiate ();
     });
 
     $(document).delegate('#email-template','change',function() {

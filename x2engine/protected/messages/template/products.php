@@ -1,28 +1,17 @@
-<?php
-return array (
-// Product Attributes
-'Inventory'=>'',
-'Product Information'=>'',
-'USD'=>'',
-
-// Product Actions
-'Product List'=>'',
-
-// Product Titles
-'Product:'=>'',
-'Update Product: {name}'=>'',
-'Create New Product'=>'',
-'Update Product'=>'',
-
-'Adjustments'=>'',
-// Product Table
-'Line Item'=>'',
-'Unit Price'=>'',
-
-// Misc Text
-'Import Products'=>'',
-'Export Products'=>'',
-'NameId'=>'',
-'Create New {module}'=>'',
-'Update {module}'=>'',
+<?php return array (
+  'Inventory' => '',
+  'Product Information' => '',
+  'USD' => '',
+  'Product List' => '',
+  'Product:' => '',
+  'Update Product: {name}' => '',
+  'Create New Product' => '',
+  'Update Product' => '',
+  'Adjustments' => '',
+  'Line Item' => '',
+  'Unit Price' => '',
+  'Import Products' => '',
+  'Export Products' => '',
+  'Create New {module}' => '',
+  'Update {module}' => '',
 );

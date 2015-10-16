@@ -45,7 +45,8 @@
 
 Yii::app()->clientScript->registerCss('credentialsFormCss',"
 
-form > .twitter-credential-input {
+form > .twitter-credential-input,
+form > .google-credential-input {
     width: 300px; 
 }
 
@@ -93,10 +94,7 @@ if (!$disableMetaDataForm) {
 	
 <!-- Credentials details (embedded model) -->
 <?php
-$this->widget('EmbeddedModelForm', array(
-	'model' => $model,
-	'attribute' => 'auth'
-));
+$model->getAuthModel ()->renderForm ();
 ?>
 </div>
 

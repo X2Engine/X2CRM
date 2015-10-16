@@ -192,15 +192,16 @@ SortableWidgetManager.prototype._getShowWidgetContentsData = function (widgetCla
     };
 };
 
-SortableWidgetManager.prototype.refreshWidget = function (widgetKey) {
-    this._showWidgetContents (widgetKey);
+SortableWidgetManager.prototype.refreshWidget = function (widgetKey, callback) {
+    this._showWidgetContents (widgetKey, callback);
 };
 
 /**
  * Request widget HTML and display it 
  * @param string widgetClass The name of the widget class
  */
-SortableWidgetManager.prototype._showWidgetContents = function (widgetKey) {
+SortableWidgetManager.prototype._showWidgetContents = function (widgetKey, callback) {
+    callback = typeof callback === 'undefined' ? function () {} : callback; 
     var that = this;
     var url = this.showWidgetContentsUrl;
     if (this.showWidgetContentsUrl.match (/\?\w+$/)) {
@@ -222,6 +223,7 @@ SortableWidgetManager.prototype._showWidgetContents = function (widgetKey) {
                 hideShowHiddenWidgetSubmenuDividers ();
                 widget$ = 
                     $('#' + widgetKey.replace (/_.*$/, '') + '-widget-container-' + data.uid);
+                callback ();
                 that._afterShowWidgetContents (widget$);
             }
         }

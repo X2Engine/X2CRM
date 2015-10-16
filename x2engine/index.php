@@ -40,6 +40,15 @@ $yii = implode(DIRECTORY_SEPARATOR, array(__DIR__, 'framework', 'yii.php'));
 require_once($constants);
 require_once($yii);
 Yii::$enableIncludePath = false;
+if (YII_DEBUG && X2_TRANSLATION_LOGGING) {
+    exec('pwd', $output);
+    preg_match('|/home/(.*?)/|', $output[0], $matches);
+    $username = '';
+    if (isset($matches[1])) {
+        $username = $matches[1];
+    }
+    Yii::$systemuser = $username;
+}
 Yii::registerAutoloader(array('Yii', 'x2_autoload'));
 if(!empty($_SERVER['REMOTE_ADDR'])){
     $matches = array();

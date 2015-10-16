@@ -414,7 +414,7 @@ if(!$isGuest){
 if(method_exists($this,'renderGaCode'))
     $this->renderGaCode('internal');
 
-if (RESPONSIVE_LAYOUT) {
+if (AuxLib::getLayoutType () === 'responsive') {
 ?>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <?php
@@ -534,12 +534,11 @@ echo X2Html::openBodyTag ($preferences);
     if(Yii::app()->session['translate'])
         echo '<div class="yiiTranslationList"><b>Other translated messages</b><br></div>';
     if($preferences != null &&
-       ($preferences['loginSound'] || $preferences['notificationSound']) &&
+       $profile->loginSound &&
        isset($_SESSION['playLoginSound']) && $_SESSION['playLoginSound']){
 
         $_SESSION['playLoginSound'] = false;
-        $loginSound = Yii::app()->controller->createUrl('/media/media/getFile',array('id'=>$preferences['loginSound']));
-        echo "";
+        $loginSound = Yii::app()->controller->createUrl('/media/media/getFile',array('id'=>$profile->loginSound));
         Yii::app()->clientScript->registerScript('playLoginSound', '
             $("#loginSound").attr("src","'.$loginSound.'");
 

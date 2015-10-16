@@ -60,6 +60,11 @@ class X2GridView extends X2ActiveGridView {
 
     public $allFields = array ();
 
+    /**
+     * @deprecated tag column enabled if model has TagBehavior
+     */
+    public $enableTags = false;
+
     protected $_fieldModels;
     protected $_isAdmin;
 
@@ -70,6 +75,13 @@ class X2GridView extends X2ActiveGridView {
 
      
 
+    protected function addSpecialFieldNames () {
+        parent::addSpecialFieldNames ();
+
+        // add tags column if specified
+        if($this->model->asa ('TagBehavior'))
+            $this->allFieldNames['tags'] = Yii::t('app','Tags');
+    }
 
     protected function addFieldNames () {
         $this->addSpecialFieldNames ();
@@ -111,8 +123,9 @@ class X2GridView extends X2ActiveGridView {
         }
 
         // Begin setting fields
+        $excludedColumns = array_flip ($this->excludedColumns ? $this->excludedColumns : array ());
         foreach($fields as $field) {
-            if (isset($this->excludedColumns[$field->fieldName]))
+            if (isset($excludedColumns[$field->fieldName]))
                 continue;
             if((!isset($fieldPermissions[$field->id]) || $fieldPermissions[$field->id] > 0))
                 $this->allFields[$field->fieldName] = $field;
@@ -146,8 +159,7 @@ class X2GridView extends X2ActiveGridView {
             $newColumn['headerHtmlOptions'] = array('style'=>'width:'.$width.'px;');
             $newColumn['value'] = 'Tags::getTagLinks("'.$this->modelName.'",$data->id)';
             $newColumn['type'] = 'raw';
-            $newColumn['filter'] = CHtml::textField(
-                'tagField',isset($_GET['tagField'])? $_GET['tagField'] : '');
+            $newColumn['filter'] = $this->filter->renderTagInput ();
         } 
         return $newColumn;
     }

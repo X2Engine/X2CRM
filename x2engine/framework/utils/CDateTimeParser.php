@@ -105,15 +105,6 @@ class CDateTimeParser
 					$i+=strlen($year);
 					break;
 				}
-                /* x2modstart */
-                case 'y':
-                {
-                    if(($year=self::parseInteger($value,$i,4,4))===false)
-						return false;
-					$i+=4;
-					break;
-                }
-                /* x2modend */
 				case 'MMMM':
 				{
 					$monthName='';

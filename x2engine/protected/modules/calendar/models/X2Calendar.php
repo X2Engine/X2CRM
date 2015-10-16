@@ -154,7 +154,7 @@ class X2Calendar extends CActiveRecord
 	
 	// get a list of the names of all filters
 	public static function getCalendarFilterNames() {
-		return array('contacts', 'accounts', 'opportunities', 'quotes', 'products', 'media', 'completed', 'email', 'attachment');
+		return array('contacts', 'accounts', 'opportunities', 'quotes', 'products', 'media', 'completed');
 	}
 
 	/**
@@ -269,18 +269,18 @@ class X2Calendar extends CActiveRecord
 	public function getGoogleCalendar() {
 		// Google Calendar Libraries
 		$timezone = date_default_timezone_get();
-		require_once "protected/extensions/google-api-php-client/src/Google_Client.php";
-		require_once "protected/extensions/google-api-php-client/src/contrib/Google_CalendarService.php";
+        require_once 'protected/integration/Google/google-api-php-client/src/Google/autoload.php';
 		date_default_timezone_set($timezone);
 
 		$admin = Yii::app()->settings;
-		if($admin->googleIntegration) {
+        $credentials = Yii::app()->settings->getGoogleIntegrationCredentials ();
+		if($admin->googleIntegration && $credentials) {
 			$client = new Google_Client();
-			$client->setClientId($admin->googleClientId);
-			$client->setClientSecret($admin->googleClientSecret);
+			$client->setClientId($credentials['clientId']);
+			$client->setClientSecret($credentials['clientSecret']);
 			//$client->setDeveloperKey($admin->googleAPIKey);
 			$client->setAccessToken($this->googleAccessToken);
-			$service = new Google_CalendarService($client);
+			$service = new Google_Service_Calendar ($client);
 
 			// check if the access token needs to be refreshed
 			// note that the google library automatically refreshes the access token if we need a new one, 
@@ -302,8 +302,7 @@ class X2Calendar extends CActiveRecord
 	
 		// Google Calendar Libraries
 		$timezone = date_default_timezone_get();
-		require_once "protected/extensions/google-api-php-client/src/Google_Client.php";
-		require_once "protected/extensions/google-api-php-client/src/contrib/Google_CalendarService.php";
+        require_once 'protected/integration/Google/google-api-php-client/src/Google/autoload.php';
 		date_default_timezone_set($timezone);
 		
 		$googleCalendar = $this->getGoogleCalendar();

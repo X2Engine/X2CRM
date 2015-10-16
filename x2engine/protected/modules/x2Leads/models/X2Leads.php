@@ -67,6 +67,11 @@ class X2Leads extends X2Model {
 			),
 			'X2ModelConversionBehavior' => array(
 				'class' => 'application.components.recordConversion.X2ModelConversionBehavior',
+                'deleteConvertedRecord' => false,
+                'convertedField' => 'converted',
+                'conversionDateField' => 'conversionDate',
+                'convertedToTypeField' => 'convertedToType',
+                'convertedToIdField' => 'convertedToId',
 			),
             'ContactsNameBehavior' => array(
                 'class' => 'application.components.ContactsNameBehavior',
@@ -107,18 +112,47 @@ class X2Leads extends X2Model {
         return parent::beforeSave ();
     }
 
-	public function search($resultsPerPage=null, $uniqueId=null) {
-		$criteria=new CDbCriteria;
-		$parameters=array('limit'=>ceil(Profile::getResultsPerPage()));
-		$criteria->scopes=array('findAll'=>array($parameters));
-
-		return $this->searchBase($criteria, $resultsPerPage);
-	}
+     public function search($resultsPerPage=null, $uniqueId=null) {
+         $criteria=new CDbCriteria;
+         $parameters=array('limit'=>ceil(Profile::getResultsPerPage()));
+         $criteria->scopes=array('findAll'=>array($parameters));
+ 
+         // allows converted leads to be filtered out of grid by default
+         $filters = $this->asa ('ERememberFiltersBehavior')->getSetting ('filters');
+         if (!isset ($filters['converted'])) {
+             $this->converted = 'false';
+         } elseif ($filters['converted'] === 'all') {
+             unset ($this->converted);
+         }   
+         return $this->searchBase($criteria, $resultsPerPage);
+     }   
 
 	public function searchAdmin() {
 		$criteria=new CDbCriteria;
 
 		return $this->searchBase($criteria);
 	}
+
+    public function getConvertedTo () {
+        if ($this->converted) {
+            $type = $this->convertedToType;
+            $id = $this->convertedToId;
+            return X2Model::model ($type)->findByPk ($id);
+        }
+    }
+
+    public function renderConvertedNotice () {
+        $convertedTo = $this->getConvertedTo ();
+        if ($convertedTo) {
+            Yii::app()->user->setFlash (
+                'notice', 
+                Yii::t('x2Leads', 'This record has been converted. '.
+                    'To view the new record, click {here}.', array (
+                        '{here}' => CHtml::link (
+                            Yii::t('x2Leads', 'here'), $convertedTo->getUrl ()
+                    ))));
+            X2Flashes::renderTopFlashes ('notice');
+        }
+    }
 
 }

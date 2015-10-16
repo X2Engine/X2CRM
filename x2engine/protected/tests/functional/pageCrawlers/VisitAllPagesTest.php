@@ -35,7 +35,7 @@
  *****************************************************************************************/
 
 Yii::import('application.modules.contacts.models.Contacts');
-Yii::import('application.modules.actions.models.Actions');
+Yii::import('application.modules.actions.models.*');
 Yii::import('application.modules.accounts.models.Accounts');
 
 /**
@@ -45,6 +45,37 @@ Yii::import('application.modules.accounts.models.Accounts');
 abstract class VisitAllPagesTest extends X2WebTestCase {
 
     public $autoLoginOnlyOnce = true;
+
+    public static function referenceFixtures(){
+        return array(
+            'actions' => array ('Actions', '.VisitAllPagesTest'),
+             
+        );
+    }
+
+    public static function setUpBeforeClass () {
+        Yii::app()->db->createCommand ("
+            insert into x2_auth_item_child (`parent`, `child`) values 
+                ('DefaultRole', 'ReportsReadOnlyAccess'),
+                ('DefaultRole', 'GroupsBasicAccess'),
+                ('DefaultRole', 'GroupsUpdateAccess'),
+                ('DefaultRole', 'GroupsFullAccess');
+        ")->execute ();
+        Yii::app()->authCache->clear ();
+        return parent::setUpBeforeClass ();
+    }
+
+    public static function tearDownAfterClass () {
+        Yii::app()->db->createCommand ("
+            delete from x2_auth_item_child where
+                parent='DefaultRole' and child='ReportsReadOnlyAccess' or
+                parent='DefaultRole' and child='GroupsFullAccess' or
+                parent='DefaultRole' and child='GroupsUpdateAccess' or
+                parent='DefaultRole' and child='GroupsBasicAccess';
+        ")->execute ();
+        Yii::app()->authCache->clear ();
+        return parent::tearDownAfterClass ();
+    }
 
     /**
      * @param array $pages array of URIs 
@@ -146,7 +177,6 @@ abstract class VisitAllPagesTest extends X2WebTestCase {
         'accounts/1',
         'accounts/create',
         'accounts/shareAccount/id/1',
-         
 
         'marketing/index',
         'marketing/create',
@@ -162,7 +192,6 @@ abstract class VisitAllPagesTest extends X2WebTestCase {
         'x2Leads/create',
         'x2Leads/1',
         'x2Leads/update/id/1',
-        'x2Leads/delete/id/1',
 
         'opportunities/index',
         'opportunities/51',
@@ -174,7 +203,6 @@ abstract class VisitAllPagesTest extends X2WebTestCase {
         'services/3',
         'services/create',
         'services/update/id/3',
-        'services/createWebForm',
 
         'actions/index',
         'actions/create',
@@ -186,8 +214,6 @@ abstract class VisitAllPagesTest extends X2WebTestCase {
 
         'calendar/index',
         'calendar/myCalendarPermissions',
-        'calendar/userCalendarPermissions',
-        'calendar/userCalendarPermissions/id/1',
 
         'docs/index',
         'docs/create',
@@ -195,7 +221,6 @@ abstract class VisitAllPagesTest extends X2WebTestCase {
         'docs/createQuote',
         'docs/1',
         'docs/update/id/1',
-        'docs/changePermissions/id/1',
         'docs/exportToHtml/id/1',
 
         'workflow/index',
@@ -205,9 +230,9 @@ abstract class VisitAllPagesTest extends X2WebTestCase {
         'workflow/update/id/1',
 
         'products/index',
-        'products/1',
+        'products/5',
         'products/create',
-        'products/update/id/1',
+        'products/update/id/5',
 
         'quotes/index',
         'quotes/indexInvoice',
@@ -217,12 +242,6 @@ abstract class VisitAllPagesTest extends X2WebTestCase {
         'quotes/update/id/1',
 
          
-
-        // charts
-        //'charts/leadVolume',
-        //'charts/marketing',
-        //'charts/pipeline',
-        //'charts/sales',
 
         'media/index',
         'media/1',
@@ -255,6 +274,13 @@ abstract class VisitAllPagesTest extends X2WebTestCase {
     );
 
     public $adminPages = array(
+        'services/createWebForm',
+
+        'calendar/userCalendarPermissions',
+        'calendar/userCalendarPermissions/id/1',
+
+         
+
          
         'users/admin',
         'users/1',
@@ -308,7 +334,6 @@ abstract class VisitAllPagesTest extends X2WebTestCase {
         'admin/setDefaultTheme',
         'admin/setLeadRouting',
         'admin/setServiceRouting',
-        'admin/toggleDefaultLogo',
         'admin/translationManager',
         'admin/updater',
         'admin/updaterSettings',

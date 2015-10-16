@@ -1,4 +1,4 @@
-/*****************************************************************************************
+/*!***************************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2015 X2Engine Inc.
  * 
@@ -35,7 +35,9 @@
 
 @import "colors";
 @import "icons";
+@import "standards";
 
+$searchResultHeight: 60px;
 $borderGray: #B0B0B0;
 
 .skype-qtip {
@@ -138,7 +140,9 @@ $borderGray: #B0B0B0;
             line-height: 22px;
             & > span:first-child {
                 margin-right: 8px; 
+                margin-top: 5px; 
                 color: $darkBlue; 
+                float: left;
             }
             & > .delete-alias-button {
                 visibility: hidden;
@@ -150,7 +154,8 @@ $borderGray: #B0B0B0;
                 position: relative;
                 right: -8px;
             }
-            &.new-alias-button {
+            &.new-alias-button,
+            &.find-google-plus-profile {
                 cursor: pointer;
                 padding-bottom: 0;
                 text-align: center;
@@ -160,6 +165,14 @@ $borderGray: #B0B0B0;
                 border-left: none;
                 border-right: none;
                 border-bottom: none;
+            }
+            .record-alias {
+                height: 20px;
+                max-width: 127px;
+                display: block;
+                text-overflow: ellipsis;
+                overflow: hidden;
+                float: left;
             }
         }
     }
@@ -203,6 +216,50 @@ $borderGray: #B0B0B0;
                 position: relative;
                 top: -3px;
             }
+        }
+    }
+}
+
+#google-plus-profile-search-form {
+    * {
+        box-sizing: border-box;
+    }
+    .search-results-container {
+        max-height: $searchResultHeight * 4;
+        overflow-y: hidden;
+        &:hover {
+            overflow-y: auto;
+        }
+    }
+    .search-result {
+        cursor: pointer;
+        margin-right: 1px;
+        height: $searchResultHeight;
+        * {
+            display: inline-block;
+        }
+        padding: 5px 5px 5px 5px;
+        &:hover {
+            /* @theme background light_background */
+            background: $lightestGray;
+        }
+        img {
+            border-radius: 50%;
+            margin-right: 23px;
+        }
+        .search-result-display-name {
+            line-height: 47px;
+            vertical-align: top;
+        }
+        border: 1px solid transparent; 
+        &.selected {
+            border: 1px solid $highlightGreen; 
+            background-color: mix(white, $highlightGreen, 92%); 
+            /* @theme border-color darker_highlight2 */
+            /* @theme background highlight2 */
+            $shadow: inset 0px 1px 3px rgba(black, 0.15);
+            @include box-shadow($shadow);
+            //position: absolute;
         }
     }
 }

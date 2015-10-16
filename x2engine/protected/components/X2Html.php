@@ -36,7 +36,11 @@
 
 class X2Html extends CHtml {
 
-    public static function openBodyTag (array $preferences, array $htmlOptions = array ()) {
+    public static function clearfix () {
+        return '<span class="clearfix"></span>';
+    }
+
+    public static function openBodyTag ($preferences, array $htmlOptions = array ()) {
         $cs = Yii::app()->clientScript;
         $baseUrl = $cs->baseUrl;
         $fullscreen = $cs->fullscreen;
@@ -81,7 +85,7 @@ class X2Html extends CHtml {
         }
         if($noBorders) $classes .= ' no-borders'; 
         if($fullscreen) $classes .= ' no-widgets'; else $classes .=  ' show-widgets';
-        if(!RESPONSIVE_LAYOUT) $classes .=  ' disable-mobile-layout'; 
+        if(AuxLib::getLayoutType () !== 'responsive') $classes .=  ' disable-mobile-layout'; 
         $classes .= ' not-mobile-body';
 
         $htmlOptions = self::mergeHtmlOptions (array (
@@ -784,6 +788,48 @@ class X2Html extends CHtml {
             ");
         }
         return $html;
+    }
+
+    public static function orderedList (array $items, array $htmlOptions=array ()) {
+        return self::_list (true, $items, $htmlOptions);
+    }
+
+    public static function unorderedList (array $items, array $htmlOptions=array ()) {
+        return self::_list (false, $items, $htmlOptions);
+    }
+
+    /**
+     * Creates fragment targets which are offset by a little more than the height of the top menu. 
+     * Allows you to link inside documents without having the top of the section you're linking to 
+     * cut off.
+     */
+    public static function fragmentTarget ($id) {
+        return self::tag (
+            'span', 
+            array ('class' => 'fragment-target-outer'), 
+            self::tag ('span', array ('class' => 'fragment-target', 'id' => $id)));
+    }
+
+    private static function _list ($ordered=false, array $items, array $htmlOptions=array ()) {
+        $html = '';
+        $html .= self::openTag ($ordered ? 'ol' : 'ul', $htmlOptions);
+        foreach ($items as $item) {
+            $html .= self::tag ('li', array (), $item);
+        }
+        $html .= self::closeTag ($ordered ? 'ol' : 'ul');
+        return $html;
+    }
+
+    public static function encodeArray ($arr) {
+        return array_map (function ($elem) {
+            return CHtml::encode ($elem);
+        }, $arr);
+    }
+
+    public static function resolveId (CModel $model, $attr) {
+        $htmlOptions = array ();
+        self::resolveNameId ($model, $attr, $htmlOptions);
+        return $htmlOptions['id'];
     }
 
 }

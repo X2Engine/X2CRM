@@ -59,12 +59,16 @@ class X2LeadsTest extends X2DbTestCase {
         unset ($leadAttrs['firstName']);
         unset ($leadAttrs['lastName']);
         unset ($leadAttrs['createDate']);
+        unset ($leadAttrs['converted']);
+        unset ($leadAttrs['conversionDate']);
+        unset ($leadAttrs['convertedToType']);
+        unset ($leadAttrs['convertedToId']);
         unset ($opportunityAttrs['id']);
         unset ($opportunityAttrs['nameId']);
         unset ($opportunityAttrs['createDate']);
 
-        X2_VERBOSE_MODE && print_r ($leadAttrs);
-        X2_VERBOSE_MODE && print_r ($opportunityAttrs);
+        X2_TEST_DEBUG_LEVEL > 1 && print_r ($leadAttrs);
+        X2_TEST_DEBUG_LEVEL > 1 && print_r ($opportunityAttrs);
 
         // ensure that opportunity has all attributes of lead, with exceptions
         $this->assertTrue (sizeof (array_diff_assoc ($leadAttrs, $opportunityAttrs)) === 0);

@@ -80,6 +80,7 @@ function ComboBox (argsDict) {
     // max number of pages of options that can be stored in dropdown before auto-removal occurs
     this._maxCachedPages = 10; 
     this._mode = null; // whether filtered or unfiltered results are displayed
+    this._changed = false; // whether the user has changed the input value
 
     this._init ();
 }
@@ -130,6 +131,8 @@ ComboBox.prototype.refreshDropdown = function (all) {
 ComboBox.prototype._getPage = function (next, all) {
     var next = typeof next === 'undefined' ? true : next; 
     var all = typeof all === 'undefined' ? false : all; 
+    // display all options for inputs on updated records
+    if (!this._changed) all = true;
     // can't get previous page if we already have the first page
     if (this._cachedStartPage === 0 && !next) return;
 
@@ -284,6 +287,7 @@ ComboBox.prototype._setUpEvents = function () {
     var that = this;  
     this.element$.keyup (function () {
         that.refreshDropdown (false); // display filtered options
+        that._changed = true;
     });
     this._button$.click (function () {
         if (that._dropdown$.is (':visible')) {
@@ -303,6 +307,7 @@ ComboBox.prototype._setUpEvents = function () {
         that._hideOptions ();
     });
 
+    // TODO: replace this with calls to InfinityScroll.js 
 
     // fetch next or previous page if user scrolls to the end or beginning of the options list
     var pause = null;

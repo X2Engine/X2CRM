@@ -99,7 +99,7 @@ class GMailAccount extends EmailAccount {
         $this->renderInput ('password');
         echo '<br/>';
         echo '<br/>';
-        echo CHtml::label(Yii::t('app', 'IMAP Configuration'), false);
+		echo CHtml::tag ('h3', array (), Yii::t('app', 'IMAP Configuration'));
         echo '<hr/>';
         echo CHtml::activeLabel($this, 'imapPort');
         $this->renderInput ('imapPort');

@@ -85,6 +85,7 @@ $this->widget('X2GridView', array(
 	'filter'=>$model,
     'gvSettingsName' => 'media-index',
 	'defaultGvSettings'=>array(
+		'gvCheckbox' => 30,
 		'fileName' => 285,
 		'name' => 114,
 		'associationType' => 85,

@@ -34,8 +34,6 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 
-
-
 mb_internal_encoding('UTF-8');
 mb_regex_encoding('UTF-8');
 Yii::app()->params->profile = Profile::model()->findByPk(1);
@@ -65,15 +63,24 @@ if (!empty($error)) { ?>
 <?php
 } else { ?>
 	<h1 id='web-form-submit-message'><?php echo Yii::t('contacts','Thank You!'); ?></h1>
+    <?php
+    if ($type === 'weblead') { ?>
+        <p><?php echo Yii::t('contacts','Thank you for your interest!'); ?></p>
+    <?php
+    } elseif ($type === 'service') { ?>
+        <p><?php echo Yii::t('contacts','Your case number is: ') . $caseNumber; ?></p>
+    <?php
+    } ?>
+        <p><?php echo Yii::t('contacts','Someone will be in touch shortly.'); ?></p>
+    <?php 
+} 
+if (isset ($redirectUrl) && $redirectUrl) {
+?>
+<script>
+    window.top.location.href = '<?php echo addslashes ($redirectUrl); ?>';
+</script>
 <?php
-if ($type === 'weblead') { ?>
-	<p><?php echo Yii::t('contacts','Thank you for your interest!'); ?></p>
-<?php
-} elseif ($type === 'service') { ?>
-	<p><?php echo Yii::t('contacts','Your case number is: ') . $caseNumber; ?></p>
-<?php
-} ?>
-	<p><?php echo Yii::t('contacts','Someone will be in touch shortly.'); ?></p>
-<?php } ?>
+}
+?>
 </body>
 </html>

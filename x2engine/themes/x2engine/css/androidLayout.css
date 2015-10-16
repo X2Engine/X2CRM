@@ -1,4 +1,4 @@
-/*****************************************************************************************
+/*!***************************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2015 X2Engine Inc.
  * 
@@ -31,12 +31,4 @@
  * X2Engine" logo. If the display of the logo is not reasonably feasible for
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2Engine".
- *****************************************************************************************/
-/* line 37, ../../../compass/themes/x2engine/css/androidLayout.scss */
-body.disable-mobile-layout #header {
-  position: static;
-}
-/* line 40, ../../../compass/themes/x2engine/css/androidLayout.scss */
-body.disable-mobile-layout #page {
-  margin-top: 0 !important;
-}
+ *****************************************************************************************/body.disable-mobile-layout #header{position:static}body.disable-mobile-layout #page{margin-top:0 !important}

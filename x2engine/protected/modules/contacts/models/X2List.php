@@ -236,6 +236,11 @@ class X2List extends X2Model {
         return self::model()->findByPk((int) $id, $condition);
     }
 
+    public function calculateCount () {
+        $criteria = $this->queryCriteria ();
+        return Contacts::model ()->count ($criteria);
+    }
+
 
     /**
      * Returns a CDbCriteria to retrieve all models specified by the list

@@ -64,6 +64,21 @@ class Admin extends X2ActiveRecord {
             '</title></head><body>'.$message.'</body></html>';
     }
 
+    private $_googleIntegrationCredentials;
+    public function getGoogleIntegrationCredentials ($refresh=false) {
+        if (!isset ($this->_googleIntegrationCredentials) || $refresh) {
+            $credId = Yii::app()->settings->googleCredentialsId;
+            if ($credId && ($credentials = Credentials::model ()->findByPk ($credId))) {
+                $this->_googleIntegrationCredentials = array (
+                     
+                    'clientId' => $credentials->auth->clientId,
+                    'clientSecret' => $credentials->auth->clientSecret,
+                );
+            }
+        }
+        return $this->_googleIntegrationCredentials;
+    }
+
     /**
      * @return string the associated database table name
      */
@@ -150,7 +165,7 @@ class Admin extends X2ActiveRecord {
             array('emailSignature', 'length', 'max' => 4096),
             array('externalBaseUrl','url','allowEmpty'=>true),
             array('externalBaseUrl','match','pattern'=>':/$:','not'=>true,'allowEmpty'=>true,'message'=>Yii::t('admin','Value must not include a trailing slash.')),
-            array('enableWebTracker, quoteStrictLock, workflowBackdateReassignment', 'boolean'),
+            array('enableWebTracker, quoteStrictLock, workflowBackdateReassignment,disableAutomaticRecordTagging', 'boolean'),
             array('gaTracking_internal,gaTracking_public', 'match', 'pattern' => "/'/", 'not' => true, 'message' => Yii::t('admin', 'Invalid property ID')),
             array ('appDescription', 'length', 'max' => 255),
             array (
@@ -183,6 +198,8 @@ class Admin extends X2ActiveRecord {
             'rrId' => Yii::t('admin', 'Round Robin ID'),
             'leadDistribution' => Yii::t('admin', 'Lead Distribution'),
             'onlineOnly' => Yii::t('admin', 'Online Only'),
+            'disableAutomaticRecordTagging' => 
+                Yii::t('profile', 'Disable automatic record tagging?'),
             'emailBulkAccount' => Yii::t('admin', 'Send As (when sending bulk email)'),
             'emailFromName' => Yii::t('admin', 'Sender Name'),
             'emailFromAddr' => Yii::t('admin', 'Sender Email Address'),
@@ -201,9 +218,6 @@ class Admin extends X2ActiveRecord {
             'installDate' => Yii::t('admin', 'Installed'),
             'updateDate' => Yii::t('admin', 'Last Update'),
             'updateInterval' => Yii::t('admin', 'Version Check Interval'),
-            'googleClientId' => Yii::t('admin', 'Google Client ID'),
-            'googleClientSecret' => Yii::t('admin', 'Google Client Secret'),
-            'googleAPIKey' => Yii::t('admin', 'Google API Key'),
             'googleIntegration' => Yii::t('admin', 'Activate Google Integration'),
             'inviteKey' => Yii::t('admin', 'Invite Key'),
             'workflowBackdateWindow' => Yii::t('admin', 'Process Backdate Window'),
@@ -221,7 +235,6 @@ class Admin extends X2ActiveRecord {
             'eventDeletionTime' => Yii::t('admin', 'Event Deletion Time'),
             'eventDeletionTypes' => Yii::t('admin', 'Event Deletion Types'),
             'properCaseNames' => Yii::t('admin', 'Proper Case Names'),
-            'corporateAddress' => Yii::t('admin', 'Corporate Address'),
             'contactNameFormat' => Yii::t('admin', 'Contact Name Format'),
             'webLeadEmailAccount' => Yii::t('admin','Send As (to web leads)'),
             'emailNotificationAccount' => Yii::t('admin','Send As (when notifying users)'),
@@ -235,6 +248,7 @@ class Admin extends X2ActiveRecord {
             'doNotEmailLinkText' => Yii::t('app','"Do not email" Link Text'),
             'doNotEmailLinkPage' => Yii::t('app','"Do not email" Page'),
              
+            
         );
     }
 

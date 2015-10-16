@@ -136,7 +136,6 @@ class DocsGridViewProfileWidget extends ProfileGridViewWidget {
                     'excludedColumns' => array(
                         'text',
                         'type',
-                        'editPermissions',
                     ),
                     'enableControls'=>false,
                 )

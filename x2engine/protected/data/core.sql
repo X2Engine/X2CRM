@@ -42,13 +42,14 @@ CREATE TABLE x2_admin(
 	webTrackerCooldown		INT				DEFAULT 60,
 	enableWebTracker		TINYINT			DEFAULT 1,
 	currency				VARCHAR(3)		NULL,
-	chatPollTime			INT				DEFAULT 2000,
+	chatPollTime			INT				DEFAULT 3000,
     defaultTheme            INT             NULL,
 	ignoreUpdates			TINYINT			DEFAULT 0,
 	rrId					INT				DEFAULT 0,
 	leadDistribution		VARCHAR(255),
 	onlineOnly				TINYINT,
     actionPublisherTabs     TEXT,
+	disableAutomaticRecordTagging		TINYINT			DEFAULT 0,
 	emailBulkAccount		INT	NOT NULL DEFAULT -1,
 	emailNotificationAccount	INT NOT NULL DEFAULT -1,
 	emailFromName			VARCHAR(255)	NOT NULL DEFAULT "X2Engine",
@@ -73,9 +74,6 @@ CREATE TABLE x2_admin(
 	updateInterval			INT				NOT NULL DEFAULT 0,
 	quoteStrictLock			TINYINT,
 	googleIntegration		TINYINT,
-	googleClientId			VARCHAR(255),
-	googleClientSecret		VARCHAR(255),
-	googleAPIKey			VARCHAR(255),
 	inviteKey				VARCHAR(255),
 	workflowBackdateWindow			INT			NOT NULL DEFAULT -1,
 	workflowBackdateRange			INT			NOT NULL DEFAULT -1,
@@ -115,7 +113,8 @@ CREATE TABLE x2_admin(
     doNotEmailLinkText          VARCHAR(255) DEFAULT NULL,
     twitterCredentialsId        INT UNSIGNED,
     twitterRateLimits           TEXT DEFAULT NULL,
-    triggerLogMax               INT UNSIGNED DEFAULT 1000000
+    triggerLogMax               INT UNSIGNED DEFAULT 1000000,
+    googleCredentialsId         INT UNSIGNED
 ) ENGINE=InnoDB, COLLATE = utf8_general_ci;
 /*&*/
 DROP TABLE IF EXISTS x2_api_hooks;
@@ -167,6 +166,8 @@ CREATE TABLE x2_credentials(
 ) ENGINE=InnoDB COLLATE = utf8_general_ci;
 /*&*/
 ALTER TABLE `x2_admin` ADD CONSTRAINT FOREIGN KEY (`twitterCredentialsId`) REFERENCES x2_credentials(`id`) ON UPDATE CASCADE ON DELETE SET NULL;
+/*&*/
+ALTER TABLE `x2_admin` ADD CONSTRAINT FOREIGN KEY (`googleCredentialsId`) REFERENCES x2_credentials(`id`) ON UPDATE CASCADE ON DELETE SET NULL;
 /*&*/
 DROP TABLE IF EXISTS x2_credentials_default;
 /*&*/
@@ -268,8 +269,9 @@ CREATE TABLE x2_modules (
 	custom					INT,
 	enableRecordAliasing    TINYINT 	    DEFAULT 0,
 	itemName				VARCHAR(100),
-    pseudoModule            TINYINT         DEFAULT 0
-) COLLATE = utf8_general_ci;
+    pseudoModule            TINYINT         DEFAULT 0,
+    defaultWorkflow         INT
+) ENGINE InnoDB COLLATE = utf8_general_ci;
 /*&*/
 DROP TABLE IF EXISTS x2_notifications;
 /*&*/
@@ -285,8 +287,9 @@ CREATE TABLE x2_notifications(
 	user					VARCHAR(20),
 	createdBy				VARCHAR(20),
 	viewed					TINYINT			DEFAULT 0,
-	createDate				BIGINT
-) COLLATE = utf8_general_ci;
+	createDate				BIGINT,
+        INDEX(user)
+) ENGINE InnoDB COLLATE = utf8_general_ci;
 /*&*/
 DROP TABLE IF EXISTS x2_events;
 /*&*/
@@ -641,6 +644,7 @@ CREATE TABLE `x2_record_aliases` (
   `recordType`                  VARCHAR(100)    NOT NULL,
   `alias`                       VARCHAR(100)    NOT NULL,
   `aliasType`                   VARCHAR(100)    NOT NULL,
+  `label`                       VARCHAR(100)    NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB, COLLATE = utf8_general_ci;
 /*&*/

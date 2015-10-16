@@ -126,7 +126,9 @@ $this->widget('X2GridViewGeneric', array(
 			'header'=>$attributeLabels['count'],
 			'headerHtmlOptions'=>array('class'=>'contact-count'),
 			'htmlOptions'=>array('class'=>'contact-count'),
-			'value'=>'Yii::app()->locale->numberFormatter->formatDecimal($data["count"])',
+            'filter' => '',
+			//'value'=>'Yii::app()->locale->numberFormatter->formatDecimal($data["count"])',
+			'value'=>'Yii::app()->locale->numberFormatter->formatDecimal($data->calculateCount ())',
 		),
         array (
             'id' => 'C_gvControls',

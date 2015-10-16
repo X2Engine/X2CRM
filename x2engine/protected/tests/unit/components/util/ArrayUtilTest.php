@@ -84,7 +84,7 @@ class ArrayUtilTest extends X2TestCase {
             'b' => 'two',
         );
         $matches = ArrayUtil::arraySearchPreg ('o|t', $arr);
-        X2_VERBOSE_MODE && print_r ($matches);
+        X2_TEST_DEBUG_LEVEL > 1 && print_r ($matches);
         $this->assertContains ('a', $matches);
         $this->assertContains ('b', $matches);
         $arr = array (
@@ -95,7 +95,7 @@ class ArrayUtilTest extends X2TestCase {
             )
         );
         $matches = ArrayUtil::arraySearchPreg ('o|t', $arr);
-        X2_VERBOSE_MODE && print_r ($matches);
+        X2_TEST_DEBUG_LEVEL > 1 && print_r ($matches);
         $this->assertContains ('a', $matches);
         $this->assertContains ('b', $matches);
         $this->assertContains ('c', $matches);

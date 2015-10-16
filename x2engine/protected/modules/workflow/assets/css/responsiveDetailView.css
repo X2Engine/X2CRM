@@ -1,4 +1,4 @@
-/*****************************************************************************************
+/*!***************************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2015 X2Engine Inc.
  * 
@@ -31,40 +31,4 @@
  * X2Engine" logo. If the display of the logo is not reasonably feasible for
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2Engine".
- *****************************************************************************************/
-/* responsive title bar behaves differently on this page from how it does on others. these 
-lines compensate for that. */
-@media (max-width: 657px) {
-  /* line 25, ../../../../../compass/sass/protected/modules/workflow/assets/css/responsiveDetailView.scss */
-  /* line 25, ../../../../../compass/sass/protected/modules/workflow/assets/css/responsiveDetailView.scss */
-  /* line 40, ../../../../../compass/protected/modules/workflow/assets/css/responsiveDetailView.scss */
-  .responsive-menu-items {
-    margin-top: 29px !important;
-    margin-right: -19px !important;
-  }
-
-  /* line 29, ../../../../../compass/sass/protected/modules/workflow/assets/css/responsiveDetailView.scss */
-  /* line 30, ../../../../../compass/sass/protected/modules/workflow/assets/css/responsiveDetailView.scss */
-  /* line 46, ../../../../../compass/protected/modules/workflow/assets/css/responsiveDetailView.scss */
-  .responsive-page-title > .mobile-dropdown-button {
-    margin-top: 9px !important;
-  }
-}
-/*@media (max-width: 526px) {
-    #process-status {
-        clear:both !important;
-    }
-}
-
-@media (max-width: 1036px) {
-    #process-status-container { 
-        clear: both !important;
-    }
-    #process-status-container form { 
-        width: auto !important;
-    }
-    #process-status-container form > .row { 
-        float: left !important;
-        clear: none !important;
-    }
-}*/
+ *****************************************************************************************/@media (max-width: 657px){.responsive-menu-items{margin-top:29px !important;margin-right:-19px !important}.responsive-page-title>.mobile-dropdown-button{margin-top:9px !important}}

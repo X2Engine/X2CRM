@@ -87,9 +87,9 @@ $this->widget('zii.widgets.grid.CGridView', array(
 )); 
 X2Html::getFlashes(); ?>
 <br>
-<a style='margin-left: 5px;' href="#" onclick="$('#addRole').toggle();$('#deleteRole').hide();$('#editRole').hide();" class="x2-button">Add Role</a>
-<a href="#" onclick="$('#deleteRole').toggle();$('#addRole').hide();$('#editRole').hide();" class="x2-button">Delete Role</a>
-<a href="#" onclick="$('#editRole').toggle();$('#addRole').hide();$('#deleteRole').hide();" class="x2-button">Edit Role</a>
+<a style='margin-left: 5px;' href="#" onclick="$('#addRole').toggle();$('#deleteRole').hide();$('#editRole').hide();" class="x2-button"><?php echo Yii::t('admin','Add Role');?></a>
+<a href="#" onclick="$('#deleteRole').toggle();$('#addRole').hide();$('#editRole').hide();" class="x2-button"><?php echo Yii::t('admin','Delete Role');?></a>
+<a href="#" onclick="$('#editRole').toggle();$('#addRole').hide();$('#deleteRole').hide();" class="x2-button"><?php echo Yii::t('admin','Edit Role');?></a>
 <br>
 </div>
 <br>

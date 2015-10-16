@@ -45,6 +45,8 @@ class Topics extends X2Model {
     
     const PAGE_SIZE = 20;
 
+    public $supportsFieldLevelPermissions = false;
+
     protected $fieldFormatterClass = 'TopicsFieldFormatter';
 
     private $_originalPost;
@@ -221,7 +223,7 @@ class Topics extends X2Model {
                 break;
             case 'mostRecent':
             default:
-                $ret.='lastPost.createDate DESC';
+                $ret.='minCreateDate DESC';
         }
         return $ret;
     }

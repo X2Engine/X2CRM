@@ -87,6 +87,8 @@ $this->widget('X2GridView', array(
 		'lastActivity' => 79,
 		'assignedTo' => 119,
 	),
+    'excludedColumns' => array ('convertedToType', 'convertedToId'),
+    'dataColumnClass' => 'application.modules.x2Leads.components.X2LeadsDataColumn',
 	'specialColumns'=>array(
 		'name'=>array(
 			'name'=>'name',

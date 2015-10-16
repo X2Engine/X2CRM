@@ -57,7 +57,8 @@ function SortableWidget (argsDict) {
         DEBUG: x2.DEBUG && false,
         enableResizing: false,
         translations: {},
-        urls: {}
+        urls: {},
+        hasError: false
     };
 
     auxlib.applyArgs (this, defaultArgs, argsDict);
@@ -71,13 +72,17 @@ function SortableWidget (argsDict) {
 
     // the widget content container (excludes the top bar)
     this.contentContainer = $('#' + this.widgetClass + '-widget-content-container-'+this.widgetUID);
+    if (this.enableResizing) {
+        this.resizableContainer = this.contentContainer;
+        this.resizeHandles = null;
+    }
 
     this._settingsMenuContentSelector = this.elementSelector  + ' .widget-settings-menu-content';
 
     SortableWidget.sortableWidgets.push (this);
 
-
-    this._init ();
+    if (!this.hasError)
+        this._init ();
 }
 
 SortableWidget.prototype = auxlib.create (x2.Widget.prototype);
@@ -496,31 +501,57 @@ SortableWidget.prototype._afterStop = function () {
  */
 SortableWidget.prototype._setUpResizeBehavior = function () {
     var that = this; 
-    $(this.contentContainer).resizable ({
-        handles: 's', 
+    var handles = this.resizeHandles ? this.resizeHandles : 's';
+
+    var handle$ = null;
+
+    if ($(this.resizableContainer).hasClass ('ui-resizable')) { // we're refreshing
+        // Remove the handle jQuery classes, destroy the widget, and then add the classes back.
+        // This prevents jQuery from removing the handle elements when the widget is destroyed.
+        if (this.resizeHandles) {
+            var handleElems = [];
+            for (var i in handles) {
+                var classes = $(handles[i]).attr ('class')
+                handleElems.push ({
+                    elem$: handles[i],
+                    classes: classes
+                });
+                $(handles[i]).attr ('class', '');
+            }
+        }
+        $(this.resizableContainer).resizable ('destroy');
+        for (var i in handleElems) {
+           handleElems[i].elem$.attr ('class', handleElems[i].classes); 
+        }
+    }
+    $(this.resizableContainer).resizable ({
+        handles: handles, 
         minHeight: 50,
         start: function () {
             /* 
             Make the handle bigger to prevent iframe from triggeing mouseleave event.
             Also prevents widget controls from being hidden during resize.
             */
-            that.resizeHandle.css ({ 
-                'height': '1000px',
-                'position': 'relative',
-                'top' : '-500px'
-            });
+            if (handle$)
+                handle$.css ({ 
+                    'height': '1000px',
+                    'position': 'relative',
+                    'top' : '-500px'
+                });
         },
         stop: function () {
-            that.resizeHandle.css ({
-                'height': '',
-                'position': '',
-                'top': '',
-            });
+            if (handle$)
+                handle$.css ({
+                    'height': '',
+                    'position': '',
+                    'top': '',
+                });
             that._afterStop ();
         },
         resize: function () { that._resizeEvent (); }
     });
-    this.resizeHandle = that.contentContainer.find ('.ui-resizable-handle');
+    if (!this.resizeHandles)
+        handle$ = that.resizableContainer.find ('.ui-resizable-handle');
 };
 
 SortableWidget.prototype._resizeEvent = function () {};

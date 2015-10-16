@@ -25,6 +25,8 @@ require(dirname(__FILE__).'/YiiBase.php');
 class Yii extends YiiBase
 {
     public static $paths = array();
+    public static $systemuser;
+    public static $translationLog = array();
 	protected static $rootPath;
 
     /**
@@ -101,17 +103,11 @@ class Yii extends YiiBase
             self::getRootPath().DIRECTORY_SEPARATOR.'custom',self::getRootPath(),$customPath);
 	}
 
-	/**
-	 * Imports a class or a directory.
-	 * Overrides {@link YiiBase::import()} to check in /custom for all imported classes
-	 *
-	 * @param string $alias path alias to be imported
-	 * @param boolean $forceInclude whether to include the class file immediately. If false, the class file
-	 * will be included only when the class is being used. This parameter is used only when
-	 * the path alias refers to a class.
-	 * @return string the class name or the directory that this alias refers to
-	 * @throws CException if the alias is invalid
-	 */
+    /**
+     * Modified to check custom paths
+     * This method is Copyright (c) 2008-2014 by Yii Software LLC
+     * http://www.yiiframework.com/license/ 
+     */
 	public static function import($alias,$forceInclude=false)
 	{
 		if(isset(self::$_imports[$alias]))  // previously imported
@@ -129,9 +125,11 @@ class Yii extends YiiBase
 				if($forceInclude)
 				{
 					if(is_file($classFile))
-						require(self::getCustomPath($classFile));
+                        /* x2modstart */  
+						require(self::getCustomPath ($classFile));
+                        /* x2modend */ 
 					else
-						throw new CException(Yii::t('yii','Alias "{alias}" is invalid. Make sure it points to an existing PHP file.',array('{alias}'=>$alias)));
+						throw new CException(Yii::t('yii','Alias "{alias}" is invalid. Make sure it points to an existing PHP file and the file is readable.',array('{alias}'=>$alias)));
 					self::$_imports[$alias]=$alias;
 				}
 				else
@@ -139,13 +137,22 @@ class Yii extends YiiBase
 				return $alias;
 			}
 			else
-				throw new CException(Yii::t('yii','Alias "{alias}" is invalid. Make sure it points to an existing directory.',
-					array('{alias}'=>$namespace)));
+			{
+				// try to autoload the class with an autoloader
+				if (class_exists($alias,true))
+					return self::$_imports[$alias]=$alias;
+				else
+					throw new CException(Yii::t('yii','Alias "{alias}" is invalid. Make sure it points to an existing directory or file.',
+						array('{alias}'=>$namespace)));
+			}
 		}
 
 		if(($pos=strrpos($alias,'.'))===false)  // a simple class name
 		{
-			if($forceInclude && self::x2_autoload($alias))
+			// try to autoload the class with an autoloader if $forceInclude is true
+            /* x2modstart */     
+			if($forceInclude && (self::x2_autoload($alias,true) || class_exists($alias,true)))
+            /* x2modend */    
 				self::$_imports[$alias]=$alias;
 			return $alias;
 		}
@@ -163,9 +170,11 @@ class Yii extends YiiBase
 				if($forceInclude)
 				{
 					if(is_file($path.'.php'))
-						require(self::getCustomPath($path.'.php'));
+                        /* x2modstart */ 
+						require(self::getCustomPath ($path.'.php'));
+                        /* x2modend */ 
 					else
-						throw new CException(Yii::t('yii','Alias "{alias}" is invalid. Make sure it points to an existing PHP file.',array('{alias}'=>$alias)));
+						throw new CException(Yii::t('yii','Alias "{alias}" is invalid. Make sure it points to an existing PHP file and the file is readable.',array('{alias}'=>$alias)));
 					self::$_imports[$alias]=$className;
 				}
 				else
@@ -194,19 +203,22 @@ class Yii extends YiiBase
 				array('{alias}'=>$alias)));
 	}
 
-	/**
-	 * Class autoload loader.
-	 * This method is provided to be invoked within an __autoload() magic method.
-	 * @param string $className class name
-	 * @return boolean whether the class has been loaded successfully
-	 */
-	public static function x2_autoload($className)
+    /**
+     * Added custom path checking
+     * This method is Copyright (c) 2008-2014 by Yii Software LLC
+     * http://www.yiiframework.com/license/ 
+     */
+	public static function x2_autoload($className,$classMapOnly=false)
 	{
 		// use include so that the error PHP file may appear
 		if(isset(self::$classMap[$className]))
+            /* x2modstart */  
 			include(self::getCustomPath(self::$classMap[$className]));
-		else if(isset(self::$_coreClasses[$className]))
+            /* x2modend */ 
+		elseif(isset(self::$_coreClasses[$className]))
 			include(YII_PATH.self::$_coreClasses[$className]);
+		elseif($classMapOnly)
+			return false;
 		else
 		{
 			// include class file relying on include_path
@@ -219,19 +231,30 @@ class Yii extends YiiBase
 						$classFile=$path.DIRECTORY_SEPARATOR.$className.'.php';
 						if(is_file($classFile))
 						{
-							include(self::getCustomPath($classFile));
+                            /* x2modstart */     
+							include(self::getCustomPath ($classFile));
+                            /* x2modend */ 
+							if(YII_DEBUG && basename(realpath($classFile))!==$className.'.php')
+								throw new CException(Yii::t('yii','Class name "{class}" does not match class file "{file}".', array(
+									'{class}'=>$className,
+									'{file}'=>$classFile,
+								)));
 							break;
 						}
 					}
 				}
 				else
-					include(self::getCustomPath($className.'.php'));
+                    /* x2modstart */ 
+					include(self::getCustomPath ($className.'.php'));
+                    /* x2modend */ 
 			}
 			else  // class name with namespace in PHP 5.3
 			{
 				$namespace=str_replace('\\','.',ltrim($className,'\\'));
 				if(($path=self::getPathOfAlias($namespace))!==false)
-					include(self::getCustomPath($path.'.php'));
+                    /* x2modstart */ 
+					include(self::getCustomPath ($path.'.php'));
+                    /* x2modend */ 
 				else
 					return false;
 			}
@@ -241,6 +264,7 @@ class Yii extends YiiBase
 	}
 
 	public static function t($category,$message,$params=array(),$source=null,$language=null) {
+        YII_DEBUG && X2_TRANSLATION_LOGGING && Yii::logTranslation($category, $message);
 		if(isset($_GET['t']) && $_GET['t'])
 			return '<dt class="yii-t">'
 				.CHtml::hiddenField('cat',$category)
@@ -251,4 +275,12 @@ class Yii extends YiiBase
 		else
 			return parent::t($category,$message,$params,$source,$language);
 	}
+        
+    public static function logTranslation($category, $message){
+        if(!isset(Yii::$translationLog[$category])){
+            Yii::$translationLog[$category] = array();
+        }
+        Yii::$translationLog[$category][$message] = '';
+    }
+
 }

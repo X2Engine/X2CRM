@@ -619,11 +619,21 @@ class Events extends CActiveRecord {
             case 'topic_reply':
                 $reply = TopicReplies::model()->findByPk($this->associationId);
                 if (isset($reply)) {
-                    $topicLink = X2Html::link($reply->topic->name, Yii::app()->controller->createUrl('/topics/topics/view', array('id' => $reply->topic->id, 'replyId' => $reply->id)));
+                    $topicLink = X2Html::link(
+                        $reply->topic->name, 
+                        Yii::app()->controller->createUrl(
+                            '/topics/topics/view', 
+                            array('id' => $reply->topic->id, 'replyId' => $reply->id)));
                     $text = Yii::t('topics', '{poster} posted a new reply to {topic}.', array(
-                                '{poster}' => $authorText,
-                                '{topic}' => $topicLink,
+                        '{poster}' => $authorText,
+                        '{topic}' => $topicLink,
                     ));
+                    // TODO: add topic preview
+                    // reliable rich text truncation tool needed
+//                    $text .= '<br/>';
+//                    $text .= '<blockquote class="topic-preview">';
+//                    $text .= $reply->text;
+//                    $text .= '</blockquote>';
                 } else {
                     $text = Yii::t('topics', '{poster} posted a new reply to a topic, but that reply has been deleted.', array(
                                 '{poster}' => $authorText,

@@ -138,5 +138,28 @@ class X2WebApplication extends CWebApplication {
 			$basePath.=DIRECTORY_SEPARATOR.$id;
 		}
 	}
+        
+    public function onEndRequest($event) {
+        if (!empty(Yii::$translationLog)) {
+            $username = '';
+            if (isset(Yii::$systemuser)) {
+                $username = Yii::$systemuser;
+            }
+            if (!is_dir(Yii::app()->basePath . '/messages/log_' . $username)) {
+                mkdir(Yii::app()->basePath . '/messages/log_' . $username);
+            }
+            foreach (Yii::$translationLog as $category => $messages) {
+                $fileName = Yii::app()->basePath . '/messages/log_' . $username . '/' . $category . '.php';
+                if (!is_file($fileName)) {
+                    file_put_contents($fileName,
+                            '<?php return ' . var_export(array(), true) . ";\n");
+                }
+                $messages = array_merge(require $fileName, $messages);
+                file_put_contents($fileName,
+                        '<?php return ' . var_export($messages, true) . ";\n");
+            }
+        }
+        parent::onEndRequest($event);
+    }
 
 }

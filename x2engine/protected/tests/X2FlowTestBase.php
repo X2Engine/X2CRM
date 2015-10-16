@@ -52,7 +52,7 @@ class X2FlowTestBase extends X2DbTestCase {
 
     public function assertNoFlowError ($arr) {
         if (!$arr[0]) {
-            X2_VERBOSE_MODE && print_r ($arr[1]);
+            X2_TEST_DEBUG_LEVEL > 1 && print_r ($arr[1]);
         }
         $this->assertTrue ($arr[0]);
         return $arr;
@@ -106,12 +106,7 @@ class X2FlowTestBase extends X2DbTestCase {
     }
 
     private function _flattenTrace ($trace) {
-       AuxLib::debugLogR ('$trace = ');
-        AuxLib::debugLogR ($trace);
-
-        if (!$trace[0]) return false;
-        $flattenedTrace = array (array ('action' => 'start', 'error' => !$trace[0]));
-        $trace = $trace[1];
+        $flattenedTrace = array ();
         while (true) {
             $complete = true;
             foreach ($trace as $action) {
@@ -123,6 +118,13 @@ class X2FlowTestBase extends X2DbTestCase {
                     $trace = $action[2];
                     $complete = false;
                     break;
+                } elseif ($action[0] === 'X2FlowSplitter') {
+                    array_push ($flattenedTrace, array (
+                        'action' => $action[0],
+                        'branch' => $action[1],
+                    ));
+                    $flattenedTrace = array_merge (
+                        $flattenedTrace, $this->_flattenTrace ($action[2]));
                 } else {
                     array_push ($flattenedTrace, array (
                         'action' => $action[0],
@@ -147,7 +149,18 @@ class X2FlowTestBase extends X2DbTestCase {
         $flattened = array ();
 
         foreach ($trace as $segment) {
-            $flattened = array_merge ($flattened, $this->_flattenTrace ($segment));
+            $flattened = array_merge (
+                $flattened, 
+                !$segment[0] ? false : array_merge (
+                        array (
+                            array (
+                                'action' => 'start',
+                                'error' => !$segment[0],
+                            ),  
+                        ),
+                        $this->_flattenTrace ($segment[1])
+                    )
+            );
         }
         return $flattened;
     }

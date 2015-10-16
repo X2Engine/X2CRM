@@ -78,11 +78,11 @@ abstract class WebTrackingTestBase extends X2WebTestCase {
             TEST_WEBROOT_URL_ALIAS_2 === '' ||
             TEST_WEBROOT_URL_ALIAS_3 === '') {
 
-            X2_VERBOSE_MODE && println ('Warning: tests are being aborted because the web tracking '.
+            X2_TEST_DEBUG_LEVEL > 1 && println ('Warning: tests are being aborted because the web tracking '.
                 'test constants have not been properly configured.');
             self::$skipAllTests = true;
         } else if (in_array ('x2WebTrackingTestPages', $output)) {
-            X2_VERBOSE_MODE && println ('Warning: tests are being aborted because the directory '.
+            X2_TEST_DEBUG_LEVEL > 1 && println ('Warning: tests are being aborted because the directory '.
                 '"x2WebTrackingTestPages" already exists in the webroot');
             self::$skipAllTests = true;
         } else {
@@ -156,7 +156,7 @@ abstract class WebTrackingTestBase extends X2WebTestCase {
      * @param string $r_uri
      */
     public function openPublic($r_uri) {
-        X2_VERBOSE_MODE && print ('openPublic: '.$this->getBaseUrl () . $r_uri."\n");
+        X2_TEST_DEBUG_LEVEL > 1 && print ('openPublic: '.$this->getBaseUrl () . $r_uri."\n");
         return $this->open($this->getBaseUrl () . $r_uri);
     }
 
@@ -240,7 +240,7 @@ abstract class WebTrackingTestBase extends X2WebTestCase {
             'email' => 'test@test.com',
         ));
         $this->assertTrue ($contact !== null);
-        X2_VERBOSE_MODE && println (
+        X2_TEST_DEBUG_LEVEL > 1 && println (
             'contact created. new contact\'s tracking key = '.$contact->trackingKey);
         return $contact;
     }
@@ -279,7 +279,7 @@ abstract class WebTrackingTestBase extends X2WebTestCase {
             'select count(*) from x2_actions
              where type="webactivity"')
              ->queryScalar ();
-        X2_VERBOSE_MODE && println ($newCount);
+        X2_TEST_DEBUG_LEVEL > 1 && println ($newCount);
         $this->assertEquals ('1', $newCount);
     }
 
@@ -321,7 +321,7 @@ abstract class WebTrackingTestBase extends X2WebTestCase {
             'select count(*) from x2_actions
              where type="webactivity"')
              ->queryScalar ();
-        X2_VERBOSE_MODE && println ($newCount);
+        X2_TEST_DEBUG_LEVEL > 1 && println ($newCount);
         $this->assertTrue ($newCount === '0');
     }
 

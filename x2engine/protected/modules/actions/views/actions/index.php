@@ -34,6 +34,7 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 
+
 Yii::app()->clientScript->registerResponsiveCss('responsiveActionsCss',"
 
 @media (max-width: 759px) {
@@ -59,6 +60,7 @@ $menuOptions = array(
     'list', 'create', 'import', 'export',
 );
 $this->insertMenu($menuOptions, $model);
+
 
 ?>
 <div class="responsive-page-title page-title icon actions" id="page-header">
@@ -86,34 +88,34 @@ $this->insertMenu($menuOptions, $model);
         echo CHtml::link(Yii::t('actions','Switch to Grid'),array('index','toggleView'=>1),array('class'=>'x2-button right')); ?>
         </div>
 </div>
-<?php echo $this->renderPartial('_advancedControls',$params,true); ?>
-<?php
+<?php 
+echo $this->renderPartial('_advancedControls',$params,true);
 $this->widget('zii.widgets.CListView', array(
-			'id'=>'action-list',
-			'dataProvider'=>$dataProvider,
-			'itemView'=>'application.modules.actions.views.actions._viewIndex',
-			'htmlOptions'=>array('class'=>'action x2-list-view list-view','style'=>'width:100%'),
-            'viewData'=>$params,
-			'template'=>'{items}{pager}',
-            'afterAjaxUpdate'=>'js:function(){
-                clickedFlag=false;
-                lastClass="";
-                $(\'#advanced-controls\').after(\'<div class="form x2-layout-island" id="action-view-pane" style="float:right;width:0px;display:none;padding:0px;"></div>\');
-            }',
-        'pager' => array(
-                    'class' => 'ext.infiniteScroll.IasPager',
-                    'rowSelector'=>'.view',
-                    'listViewId' => 'action-list',
-                    'header' => '',
-                    'options' => array(
-                        'history' => true,
-                        'triggerPageTreshold' => 2,
-                        'trigger'=>Yii::t('app','Load More'),
-                        'scrollContainer'=>'.items',
-                        'container'=>'.items',
-                    ),
-                  ),
-		));
+    'id'=>'action-list',
+    'dataProvider'=>$dataProvider,
+    'itemView'=>'application.modules.actions.views.actions._viewIndex',
+    'htmlOptions'=>array('class'=>'action x2-list-view list-view','style'=>'width:100%'),
+    'viewData'=>$params,
+    'template'=>'{items}{pager}',
+    'afterAjaxUpdate'=>'js:function(){
+        clickedFlag=false;
+        lastClass="";
+        $(\'#advanced-controls\').after(\'<div class="form x2-layout-island" id="action-view-pane" style="float:right;width:0px;display:none;padding:0px;"></div>\');
+    }',
+    'pager' => array(
+        'class' => 'ext.infiniteScroll.IasPager',
+        'rowSelector'=>'.view',
+        'listViewId' => 'action-list',
+        'header' => '',
+        'options' => array(
+            'history' => true,
+            'triggerPageTreshold' => 2,
+            'trigger'=>Yii::t('app','Load More'),
+            'scrollContainer'=>'.items',
+            'container'=>'.items',
+        ),
+      ),
+));
 ?>
 
 <script>
@@ -136,7 +138,7 @@ $this->widget('zii.widgets.CListView', array(
         $('#advanced-controls').after('<div class="form" id="action-view-pane" style="float:right;width:0px;display:none;padding:0px;"></div>');
     });
     <?php 
-	if (IS_IPAD) { 
+	if (AuxLib::isIPad ()) { 
 		echo "$(document).on('vclick', '.view', function (e) {" ;
 	} else {
 		echo "$(document).on('click','.view',function(e){";

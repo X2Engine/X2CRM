@@ -108,8 +108,8 @@ class ContactsGridViewProfileWidget extends ProfileGridViewWidget {
                         'gvCheckbox' => 30,
                         'name' => 125,
                         'email' => 165,
-                        'leadSource' => 83,
-                        'leadstatus' => 91,
+                        //'leadSource' => 83,
+                        //'leadstatus' => 91,
                         'phone' => 107,
                     ),
                     'specialColumns'=>array(

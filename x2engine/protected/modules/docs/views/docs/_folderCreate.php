@@ -57,8 +57,12 @@ echo X2Html::ajaxSubmitButton('', '', array(
         if (data.success) {
             folderForm$.dialog("close");
             x2.forms.clearForm ($("#folder-form form"), true);
-            $.fn.yiiListView.update("folder-contents", {complete:function(){ 
-                x2.foldersManager.setUpDragAndDrop(); }});
+            x2.flashes.displayFlashes({
+                success:['.
+                    CJSON::encode (Yii::t('docs','Folder created.')).']});
+
+            $.fn.yiiGridView.update("folder-contents", {complete:function(){ 
+                x2.folderManager.setUpDragAndDrop(); }});
         } else {
             folderForm$.find ("form").replaceWith (data.form);
         }

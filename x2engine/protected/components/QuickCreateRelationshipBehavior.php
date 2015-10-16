@@ -213,16 +213,20 @@ class QuickCreateRelationshipBehavior extends QuickCRUDBehavior {
      */
     public function renderInlineForm ($model, array $viewParams = array ()) {
         //@FORMVIEW
-        echo json_encode(
+        $that = $this;
+        echo CJSON::encode (
             array (
                 'status' => $model->hasErrors () ? 'userError' : 'success',
-                'page' => $this->owner->widget(
-                    'FormView',
-                    array_merge (array(
-                        'model' => $model, 
-                        'suppressQuickCreate' => true,
-                        'formSettings' => array ()
-                    ), $viewParams), true, true)
+                'page' => 
+                    X2Widget::ajaxRender (function () use ($model, $that, $viewParams) {
+                        echo $that->owner->widget(
+                            'FormView',
+                            array_merge (array(
+                                'model' => $model, 
+                                'suppressQuickCreate' => true,
+                                'formSettings' => array ()
+                            ), $viewParams), true, true);
+                    }, true),
             ));
     }
 
@@ -298,6 +302,7 @@ class QuickCreateRelationshipBehavior extends QuickCRUDBehavior {
     /**
      * Alias for {@link renderInlineForm} preserved for backwards compatibility with 
      * TemplatesController.
+     * @deprecated
      */
     public function renderInlineCreateForm ($model, $hasErrors) {
         $this->renderInlineForm ($model);

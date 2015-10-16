@@ -603,9 +603,8 @@ class AdminController extends Controller {
      * @param string $tag The name of the tag to be deleted.
      */
     public function actionDeleteTag($tag) {
-        if (!empty($tag)) {
+        if (is_string ($tag) && strlen ($tag)) {
             if ($tag != 'all') {
-                $tag = "#" . $tag;
                 X2Model::model('Tags')->deleteAllByAttributes(array('tag' => $tag));
             } else {
                 X2Model::model('Tags')->deleteAll();
@@ -1131,13 +1130,17 @@ class AdminController extends Controller {
                         'size' => 8
                     ));
                 $output.= "</div>";
-                $fields = Fields::model()->findAll(array('order' => 'modelName ASC'));
+                $fields = Fields::getFieldsOfModelsWithFieldLevelPermissions ();
+                $fieldIds = array_flip (array_map (function ($field) {
+                    return $field->id;
+                }, $fields));
                 $viewSelected = array();
                 $editSelected = array();
                 $fieldUnselected = array();
                 $fieldPerms = RoleToPermission::model()
                     ->findAllByAttributes(array('roleId' => $role->id));
                 foreach ($fieldPerms as $perm) {
+                    if (!isset ($fieldIds[$perm->fieldId])) continue;
                     if ($perm->permission == 2) {
                         $viewSelected[] = $perm->fieldId;
                         $editSelected[] = $perm->fieldId;
@@ -1149,18 +1152,32 @@ class AdminController extends Controller {
                     $fieldUnselected[$field->id] = X2Model::getModelTitle($field->modelName) . 
                         " - " . $field->attributeLabel;
                 }
+                assert (
+                    count ($fieldUnselected) === 
+                    count (array_unique (array_keys ($fieldUnselected))));
                 $output.= "<br /><label>View Permissions</label>";
                 $output.= CHtml::dropDownList(
                     'viewPermissions[]', 
                     $viewSelected, 
                     $fieldUnselected, 
-                    array('class' => 'multiselect', 'multiple' => 'multiple', 'size' => 8));
+                    array(
+                        'class' => 'multiselect',
+                        'multiple' => 'multiple',
+                        'size' => 8,
+                        'id' => 'edit-role-field-view-permissions'
+                    ));
                 $output.= "<br /><label>Edit Permissions</label>";
+
                 $output.= CHtml::dropDownList(
                     'editPermissions[]', 
                     $editSelected, 
                     $fieldUnselected, 
-                    array('class' => 'multiselect', 'multiple' => 'multiple', 'size' => 8));
+                    array(
+                        'class' => 'multiselect',
+                        'multiple' => 'multiple',
+                        'size' => 8,
+                        'id' => 'edit-role-field-edit-permissions'
+                    ));
             }
         }
         echo $output;
@@ -1522,22 +1539,34 @@ class AdminController extends Controller {
      * with their Google Calendar.
      */
     public function actionGoogleIntegration() {
+//
+//        $admin = &Yii::app()->settings;
+//        if (isset($_POST['Admin'])) {
+//            foreach ($admin->attributes as $fieldName => $field) {
+//                if (isset($_POST['Admin'][$fieldName])) {
+//                    $admin->$fieldName = $_POST['Admin'][$fieldName];
+//                }
+//            }
+//
+//            if ($admin->save()) {
+//                $this->redirect('googleIntegration');
+//            }
+//        }
+//        $this->render('googleIntegration', array(
+//            'model' => $admin,
+//        ));
+//      return;
 
-        $admin = &Yii::app()->settings;
-        if (isset($_POST['Admin'])) {
-            foreach ($admin->attributes as $fieldName => $field) {
-                if (isset($_POST['Admin'][$fieldName])) {
-                    $admin->$fieldName = $_POST['Admin'][$fieldName];
-                }
-            }
 
-            if ($admin->save()) {
-                $this->redirect('googleIntegration');
-            }
+        $credId = Yii::app()->settings->googleCredentialsId;
+
+        if ($credId && ($cred = Credentials::model()->findByPk($credId))) {
+            $params = array('id' => $credId);
+        } else {
+            $params = array('class' => 'GoogleProject');
         }
-        $this->render('googleIntegration', array(
-            'model' => $admin,
-        ));
+        $url = Yii::app()->createUrl('/profile/createUpdateCredentials', $params);
+        $this->redirect($url);
     }
 
     public function actionTwitterIntegration() {
@@ -1748,9 +1777,6 @@ class AdminController extends Controller {
         if (isset($_POST['Docs'])) {
 
             $model->attributes = $_POST['Docs'];
-            $arr = $model->editPermissions;
-            if (isset($arr))
-                $model->editPermissions = Fields::parseUsers($arr);
             $model->createdBy = 'admin';
             $model->createDate = time();
             $model->lastUpdated = time();
@@ -2858,7 +2884,6 @@ class AdminController extends Controller {
         $staticModel = X2Model::model(str_replace(' ', '', $model));
         $fields = $staticModel->getFields();
         $fp = fopen($file, 'a+');
-        $includeTags = isset($_GET['includeTags']) && $_GET['includeTags'] === 'true';
 
         // Load data provider based on export criteria
         $excludeHidden = !isset($_GET['includeHidden']) || $_GET['includeHidden'] === 'false';
@@ -2881,6 +2906,9 @@ class AdminController extends Controller {
         $dp->setPagination($pg);
         $records = $dp->getData();
         $pageCount = $dp->getPagination()->getPageCount();
+        // Retrieve specified export delimeter and enclosure
+        $delimeter = (isset($_GET['delimeter']) ? $_GET['delimeter'] : ',');
+        $enclosure = (isset($_GET['enclosure']) ? $_GET['enclosure'] : '"');
 
         // We need to set our data to be human friendly, so loop through all the
         // records and format any date / link / visibility fields.
@@ -2926,7 +2954,7 @@ class AdminController extends Controller {
                     ));
                 }
             }
-            if ($includeTags) {
+            if ($_SESSION['includeTags']) {
                 $tags= $record->getTags();
                 $recordAttributes = array_merge ($recordAttributes, array(
                     'tags' => implode(',', $tags),
@@ -2934,7 +2962,7 @@ class AdminController extends Controller {
             }
             $tempAttributes = array_intersect_key($recordAttributes, $combinedMeta);
             $tempAttributes = array_merge($combinedMeta, $tempAttributes);
-            fputcsv($fp, $tempAttributes);
+            fputcsv($fp, $tempAttributes, $delimeter, $enclosure);
         }
 
         unset($dp);
@@ -3052,10 +3080,6 @@ class AdminController extends Controller {
         ));
     }
 
-    /***********************************************************************
-    * Importer
-    ***********************************************************************/
-
     /**
      * The general model import page
      */
@@ -3064,6 +3088,10 @@ class AdminController extends Controller {
         if (isset($_GET['model']) || isset($_POST['model'])) {
             $_SESSION['model'] = (isset($_GET['model'])) ? $_GET['model'] : $_POST['model'];
         }
+        // Retrieve specified export delimeter and enclosure
+        $_SESSION['delimeter'] = (isset($_POST['delimeter']) ? $_POST['delimeter'] : ',');
+        $_SESSION['enclosure'] = (isset($_POST['enclosure']) ? $_POST['enclosure'] : '"');
+
         if (isset($_FILES['data'])) {
             $temp = CUploadedFile::getInstanceByName('data');
             $temp->saveAs($filePath = $this->safePath('data.csv'));
@@ -3136,281 +3164,6 @@ class AdminController extends Controller {
     }
 
     /**
-     * Insert placeholders for unmapped fields to ensure the import
-     * map contains all possible fields
-     * @param array $map Import map
-     * @param array $fields Metadata fields from CSV
-     * @returns array Normalized import map
-     */
-    protected function normalizeImportMap($map, $fields) {
-        foreach ($fields as $field) {
-            if (!array_key_exists ($field, $map)) {
-                $map[$field] = null;
-            }
-        }
-        return $map;
-    }
-
-    /**
-     * Calculates the number of lines in a CSV file for import
-     * Warning: This must load and traverse the length of the file
-     */
-    protected function calculateCsvLength($csvfile) {
-        $lineCount = null;
-        ini_set('auto_detect_line_endings', 1); // Account for Mac based CSVs if possible
-        $fp = fopen ($csvfile, 'r');
-        if ($fp) {
-            $lineCount = 0;
-            while (true) {
-                $arr = fgetcsv ($fp);
-                if ($arr !== false && !is_null ($arr)) {
-                    if ($arr === array (null)) {
-                        continue;
-                    } else {
-                        $lineCount++;
-                    }
-                } else {
-                    break;
-                }
-            }
-        }
-        return $lineCount - 1;
-    }
-
-    /**
-     * Remove any lone \r characters
-     * @param string $csvfile Path to CSV file
-     */
-    protected function fixCsvLineEndings($csvFile) {
-        $text = file_get_contents($csvFile);
-        $replacement = preg_replace('/\r([^\n])/m', "\r\n\\1", $text);
-        file_put_contents($csvFile, $replacement);
-    }
-
-    /**
-     * Read metadata from the CSV and initialize session variables
-     * @param resource $fp File pointer to CSV
-     * @return array CSV Metadata and X2Attributes
-     */
-    protected function initializeModelImporter($fp) {
-        $meta = fgetcsv($fp);
-        if ($meta === false)
-            throw new Exception('There was an error parsing the models of the CSV.');
-        while ("" === end($meta)) {
-            array_pop($meta); // Remove empty data from the end of the metadata
-        }
-        if (count($meta) == 1) { // This was from a global export CSV, the first row is the version
-            $version = $meta[0]; // Remove it and repeat the above process
-            $meta = fgetcsv($fp);
-            if ($meta === false)
-                throw new Exception('There was an error parsing the contents of the CSV.');
-            while ("" === end($meta)) {
-                array_pop($meta);
-            }
-        }
-        if (empty($meta)) {
-            $_SESSION['errors'] = Yii::t('admin', "Empty CSV or no metadata specified");
-            $this->redirect('importModels');
-        }
-
-        // Set our file offset for importing Contacts
-        $_SESSION['offset'] = ftell($fp);
-        $_SESSION['metaData'] = $meta;
-        $failedContacts = fopen($this->safePath('failedRecords.csv'), 'w+');
-        // Add the import failures column to the failed records meta
-        $failedHeader = $meta;
-        if (end($meta) != 'X2_Import_Failures')
-            $failedHeader[] = 'X2_Import_Failures';
-        fputcsv($failedContacts, $failedHeader);
-        fclose($failedContacts);
-
-        // Ensure the selected model hasn't been lost
-        if (array_key_exists('model', $_SESSION))
-            $modelName = str_replace(' ', '', $_SESSION['model']);
-        else
-            $this->errorMessage(Yii::t('admin', "Session information has been lost. Please retry your import."
-            ));
-        $x2attributes = array_keys(X2Model::model($modelName)->attributes);
-        while ("" === end($x2attributes)) {
-            array_pop($x2attributes);
-        }
-        if ($modelName === 'Actions') {
-            // add Action.description to attributes so that it is automatically mapped
-            $x2attributes[] = 'actionDescription';
-        }
-        // Initialize session data
-        $_SESSION['importMap'] = array();
-        $_SESSION['imported'] = 0;
-        $_SESSION['failed'] = 0;
-        $_SESSION['created'] = 0;
-        $_SESSION['fields'] = X2Model::model($modelName)->getFields(true);
-        $_SESSION['x2attributes'] = $x2attributes;
-        $_SESSION['mapName'] = "";
-        $_SESSION['importId'] = $this->getNextImportId();
-
-        return array($meta, $x2attributes);
-    }
-
-    /**
-     * The goal of this function is to attempt to map meta into a series of
-     * Contact attributes, which it will do via string comparison on the Contact
-     * attribute names, the Contact attribute labels and a pattern match.
-     * @param array $attributes Contact model's attributes
-     * @param array $meta Provided metadata in the CSV
-     */
-    protected function createImportMap($attributes, $meta) {
-        // We need to do data processing on attributes, first copy & preserve
-        $originalAttributes = $attributes;
-        // Easier to just do both strtolower than worry about case insensitive comparison
-        $attributes = array_map('strtolower', $attributes);
-        $processedMeta = array_map('strtolower', $meta);
-        // Remove any non word characters or underscores
-        $processedMeta = preg_replace('/[\W|_]/', '', $processedMeta);
-        // Now do the same with Contact attribute labels
-        $labels = X2Model::model(str_replace(' ', '', $_SESSION['model']))->attributeLabels();
-        $labels = array_map('strtolower', $labels);
-        $labels = preg_replace('/[\W|_]/', '', $labels);
-        /*
-         * At the end of this loop, any fields we are able to suggest a mapping
-         * for are automatically populated into an array in $_SESSION with
-         * the format:
-         *
-         * $_SESSION['importMap'][<x2_attribute>] = <metadata_attribute>
-         */
-        foreach ($meta as $metaVal) {
-            // Ignore the import failures column
-            if ($metaVal == 'X2_Import_Failures')
-                continue;
-            if ($metaVal === 'tags') {
-                $_SESSION['importMap']['applyTags'] = $metaVal;
-                continue;
-            }
-            // Same reason as $originalAttributes
-            $originalMetaVal = $metaVal;
-            $metaVal = strtolower(preg_replace('/[\W|_]/', '', $metaVal));
-            /*
-             * First check if we're lucky and maybe the processed metadata value
-             * matches a contact attribute directly. Things like first_name
-             * would be converted to firstname and so match perfectly. If we
-             * find a match here, assume it is the most correct possibility
-             * and add it to our session import map
-             */
-            if (in_array($metaVal, $attributes)) {
-                $attrKey = array_search($metaVal, $attributes);
-                $_SESSION['importMap'][$originalAttributes[$attrKey]] = $originalMetaVal;
-                /*
-                 * The next possibility is that the metadata value matches an attribute
-                 * label perfectly. This is more common for a field like company
-                 * where the label is "Account" but it's our second best bet for
-                 * figuring out the metadata.
-                 */
-            } elseif (in_array($metaVal, $labels)) {
-                $attrKey = array_search($metaVal, $labels);
-                $_SESSION['importMap'][$attrKey] = $originalMetaVal;
-                /*
-                 * The third best option is that there is a partial word match
-                 * on the metadata value. However, we don't want to do a simple
-                 * preg search as that may give weird results, we want to limit
-                 * with a word boundary to see if the first part matches. This isn't
-                 * ideal but it fixes some edge cases.
-                 */
-            } elseif (count(preg_grep("/\b$metaVal/i", $attributes)) > 0) {
-                $keys = array_keys(preg_grep("/\b$metaVal/i", $attributes));
-                $attrKey = $keys[0];
-                if (!isset($_SESSION['importMap'][$originalMetaVal]))
-                    $_SESSION['importMap'][$originalAttributes[$attrKey]] = $originalMetaVal;
-                /*
-                 * Finally, check if there is a partial word match on the attribute
-                 * label as opposed to the field name
-                 */
-            }elseif (count(preg_grep("/\b$metaVal/i", $labels)) > 0) {
-                $keys = array_keys(preg_grep("/\b$metaVal/i", $labels));
-                $attrKey = $keys[0];
-                if (!isset($_SESSION['importMap'][$originalMetaVal]))
-                    $_SESSION['importMap'][$attrKey] = $originalMetaVal;
-            }
-        }
-        /*
-         * Finally, we want to do a quick reverse operation in case there
-         * were any fields that weren't mapped correctly based on the directionality
-         * of the word boundary. For example, if we were checking "zipcode"
-         * against "zip" this would not be a match because the pattern "zipcode"
-         * is longer and will fail. However, "zip" will match into "zipcode"
-         * and should be accounted for. This loop goes through the x2 attributes
-         * instead of the metadata to ensure bidirectionality.
-         */
-        foreach ($originalAttributes as $attribute) {
-            if (in_array($attribute, $processedMeta)) {
-                $metaKey = array_search($attribute, $processedMeta);
-                $_SESSION['importMap'][$attribute] = $meta[$metaKey];
-            } elseif (count(preg_grep("/\b$attribute/i", $processedMeta)) > 0) {
-                $matches = preg_grep("/\b$attribute/i", $processedMeta);
-                $metaKeys = array_keys($matches);
-                $metaValue = $meta[$metaKeys[0]];
-                if (!isset($_SESSION['importMap'][$attribute]))
-                    $_SESSION['importMap'][$attribute] = $metaValue;
-            }
-        }
-    }
-
-    /**
-     * This grabs 5 sample records from the CSV to get an example of what
-     * the data looks like.
-     * @return array Sample records
-     */
-    protected function prepareImportSampleRecords($meta, $fp) {
-        $sampleRecords = array();
-        for ($i = 0; $i < 5; $i++) {
-            if ($sampleRecord = fgetcsv($fp)) {
-                if (count($sampleRecord) > count($meta)) {
-                    $sampleRecord = array_slice($sampleRecord, 0, count($meta));
-                }
-                if (count($sampleRecord) < count($meta)) {
-                    $sampleRecord = array_pad($sampleRecord, count($meta), null);
-                }
-                if (!empty($meta)) {
-                    $sampleRecord = array_combine($meta, $sampleRecord);
-                    $sampleRecords[] = $sampleRecord;
-                }
-            }
-        }
-        return $sampleRecords;
-    }
-
-    /**
-     * Save and attempt to load the uploaded import mapping
-     */
-    protected function loadUploadedImportMap() {
-        $temp = CUploadedFile::getInstanceByName('mapping');
-        $temp->saveAs($mapPath = $this->safePath('mapping.json'));
-        $mappingFile = fopen($mapPath, 'r');
-        $importMap = fread($mappingFile, filesize($mapPath));
-        $importMap = json_decode($importMap, true);
-        if ($importMap === null) {
-            $_SESSION['errors'] = Yii::t('admin', 'Invalid JSON string specified');
-            $this->redirect('importModels');
-        }
-        $_SESSION['importMap'] = $importMap;
-
-        if (array_key_exists('mapping', $importMap)) {
-            $_SESSION['importMap'] = $importMap['mapping'];
-            if (isset($importMap['name']))
-                $_SESSION['mapName'] = $importMap['name'];
-            else
-                $_SESSION['mapName'] = Yii::t('admin', "Untitled Mapping");
-            // Make sure $importMap is consistent with legacy import map format
-            $importMap = $importMap['mapping'];
-        } else {
-            $_SESSION['importMap'] = $importMap;
-            $_SESSION['mapName'] = Yii::t('admin', "Untitled Mapping");
-        }
-
-        fclose($mappingFile);
-        if (file_exists($mapPath))
-            unlink($mapPath);
-    }
-
-    /**
      * Bulk import of model records
      *
      * The actual meat of the import process happens here, this is called recursively via
@@ -3429,18 +3182,7 @@ class AdminController extends Controller {
             $importMap = $_SESSION['importMap'];
             $fp = fopen($path, 'r+');
             fseek($fp, $_SESSION['offset']); // Seek to the right file offset
-            // Store valid model attributes to insert in bulk later
-            $modelContainer = array(
-                $modelName => array(),
-                'Tags' => array(),
-            );
-            // Add a container to store the text if we're importing Actions
-            if ($modelName === 'Actions')
-                $modelContainer['ActionText'] = array();
-            // Store an array of relationships for each record
-            $relationships = array();
-            // Keep track of the linked models that were created
-            $createdLinkedModels = array();
+
             // Whether the user has mapped the ID field
             $mappedId = false;
 
@@ -3449,26 +3191,26 @@ class AdminController extends Controller {
                 throw new CHttpException (400, Yii::t('app', 'Bad import map'));
             }
 
+            
+
             for ($i = 0; $i < $count; $i++) {
-                $arr = fgetcsv($fp); // Loop through and start importing
-                if ($arr !== false && !is_null($arr)) {
-                    if ($arr === array(null)) {
+                // Loop through and start importing
+                $csvLine = fgetcsv($fp, 0, $_SESSION['delimeter'], $_SESSION['enclosure']);
+                if ($csvLine !== false && !is_null($csvLine)) {
+                    if ($csvLine === array(null)) {
                         // Skip empty lines
                         continue;
                     }
-                    if (count($arr) > count($metaData))
-                        $arr = array_slice($arr, 0, count($metaData));
-                    else if (count($arr) < count($metaData))
-                        $arr = array_pad($arr, count($metaData), null);
+                    if (count($csvLine) > count($metaData))
+                        $csvLine = array_slice($csvLine, 0, count($metaData));
+                    else if (count($csvLine) < count($metaData))
+                        $csvLine = array_pad($csvLine, count($metaData), null);
                     unset($_POST);
 
-                    // Add a container for this model's relationships
-                    $relationships[] = array();
-                    $linkedRecordPreexist = array();
                     // Nix all invalid multibyte sequences to avoid errors
-                    $arr = array_map('Formatter::mbSanitize', $arr);
-                    if (!empty($metaData) && !empty($arr))
-                        $importAttributes = array_combine($metaData, $arr);
+                    $csvLine = array_map('Formatter::mbSanitize', $csvLine);
+                    if (!empty($metaData) && !empty($csvLine))
+                        $importAttributes = array_combine($metaData, $csvLine);
                     else
                         continue;
 
@@ -3485,699 +3227,31 @@ class AdminController extends Controller {
                         $isActionText = ($modelName === 'Actions' &&
                             $importMap[$attribute] === 'actionDescription');
                         if ($importMap[$attribute] === 'applyTags') {
-                            $modelContainer['Tags'][] = $this->importTags (
-                                $modelName, $importAttributes[$attribute]
-                            );
+                            $this->importTags ($modelName, $importAttributes[$attribute]);
                             continue;
                         }
                         if (isset($importMap[$attribute]) &&
                                 ($model->hasAttribute($importMap[$attribute]) || $isActionText)) {
-                            $this->importRecordAttribute($modelName, $model, $importMap[$attribute], $importAttributes[$attribute], $relationships, $modelContainer, $createdLinkedModels);
+                            $model = $this->importRecordAttribute ($modelName, $model, $importMap[$attribute], $importAttributes[$attribute]);
                             $_POST[$importMap[$attribute]] = $model->$importMap[$attribute];
                         }
                     }
-                    $this->fixupImportedAttributes($modelName, $model);
+                    $this->fixupImportedAttributes ($modelName, $model);
 
                     if (!$model->hasErrors() && $model->validate())
-                        $this->saveImportedModel($model, $modelName, $modelContainer, $importedIds);
+                        $importedIds = $this->saveImportedModel ($model, $modelName, $importedIds);
                     else
-                        $this->markFailedRecord($model, $arr, $metaData);
-                }else {
-                    $this->finishImportBatch($modelName, $modelContainer, $relationships, $createdLinkedModels, $mappedId, true);
+                        $this->markFailedRecord ($model, $csvLine, $metaData);
+                } else {
+                    $this->finishImportBatch ($modelName, $mappedId, true);
                     return;
                 }
             }
             // Change the offset to wherever we got to and continue.
             $_SESSION['offset'] = ftell($fp);
-            $this->finishImportBatch($modelName, $modelContainer, $relationships, $createdLinkedModels, $mappedId);
+            $this->finishImportBatch ($modelName, $mappedId);
         }
     }
-
-    /**
-     * Create tag records for each of the specified tags
-     * @param string $modelName The model class being imported
-     * @param string $tagsField Comma separated list of tags to generate
-     * @return array of Tag attributes
-     */
-    protected function importTags($modelName, $tagsField) {
-        $tagAttributes = array();
-        if (empty($tagsField)) return array();
-
-        // Read in comma separated list of tags and store Tag attributes
-        $tags = explode(',', $tagsField);
-        foreach ($tags as $tagName) {
-            if (empty($tagName)) continue;
-            $tag = new Tags;
-            $tag->tag = $tagName;
-            $tag->type = $modelName;
-            $tag->timestamp = time();
-            $tag->taggedBy = Yii::app()->getSuName();
-            $tagAttributes[] = $tag->attributes;
-        }
-        return $tagAttributes;
-    }
-
-    /**
-     * The import assumes we have human readable data in the CSV and will thus need to convert. This
-     * method converts link, date, and dateTime fields to the appropriate machine friendly data.
-     * @param string $modelName The model class being imported
-     * @param X2Model $model The currently importing model record
-     * @param string $fieldName Field to set
-     * @param string $importAttribute Value to set field
-     * @param array $relationships Attributes of Relationships to be created
-     * @param array $modelContainer Attributes of Models to be created
-     * @param array $createdLinkedModels Linked models that will be created
-     */
-    protected function importRecordAttribute($modelName, X2Model &$model, $fieldName, $importAttribute, &$relationships, &$modelContainer, &$createdLinkedModels) {
-
-        $fieldRecord = Fields::model()->findByAttributes(array(
-            'modelName' => $modelName,
-            'fieldName' => $fieldName,
-        ));
-
-        // Skip setting the attribute if it has already been set or if the entry from
-        // the CSV is empty.
-        if (empty($importAttribute) && ($importAttribute !== 0 && $importAttribute !== '0')) {
-            return;
-        }
-        if ($fieldName === 'actionDescription' && $modelName === 'Actions') {
-            $text = new ActionText;
-            $text->text = $importAttribute;
-            if (isset($model->id))
-                $text->actionId = $model->id;
-            $modelContainer['ActionText'][] = $text->attributes;
-            return;
-        }
-
-        // ensure the provided id is valid
-        if ((strtolower($fieldName) === 'id') && (!preg_match('/^\d+$/', $importAttribute) || $importAttribute >= 4294967295)) {
-            return;
-        }
-
-        switch ($fieldRecord->type) {
-            case "link":
-                $this->importRecordLinkAttribute($modelName, $model, $fieldRecord, $importAttribute, $relationships, $modelContainer, $createdLinkedModels);
-                break;
-            case "dateTime":
-            case "date":
-                if (strtotime($importAttribute) !== false) {
-                    $model->$fieldName = strtotime($importAttribute);
-                } elseif (is_numeric($importAttribute)) {
-                    $model->$fieldName = $importAttribute;
-                } else {
-                    
-                }
-                break;
-            case "visibility":
-                switch ($importAttribute) {
-                    case 'Private':
-                        $model->$fieldName = 0;
-                        break;
-                    case 'Public':
-                        $model->$fieldName = 1;
-                        break;
-                    case 'User\'s Groups':
-                        $model->$fieldName = 2;
-                        break;
-                    default:
-                        $model->$fieldName = $importAttribute;
-                }
-                break;
-            default:
-                $model->$fieldName = $importAttribute;
-        }
-    }
-
-    /**
-     * Handle setting link type fields and create linked records if specified
-     * @param string $modelName The model class being imported
-     * @param X2Model $model The currently importing model record
-     * @param Fields $fieldRecord Field to set
-     * @param string $importAttribute Value to set field
-     * @param array $relationships Attributes of Relationships to be created
-     * @param array $modelContainer Attributes of Models to be created
-     * @param array $createdLinkedModels Linked models that will be created
-     */
-    protected function importRecordLinkAttribute($modelName, X2Model &$model, Fields $fieldRecord, $importAttribute, &$relationships, &$modelContainer, &$createdLinkedModels) {
-        $fieldName = $fieldRecord->fieldName;
-        $className = ucfirst($fieldRecord->linkType);
-
-        if (ctype_digit($importAttribute)) {
-            $lookup = X2Model::model($className)->findByPk($importAttribute);
-            $model->$fieldName = $importAttribute;
-            if (!empty($lookup)) {
-                // Create a link to the existing record
-                $model->$fieldName = $lookup->nameId;
-                $relationship = new Relationships;
-                $relationship->firstType = $modelName;
-                $relationship->secondType = $className;
-                $relationship->secondId = $importAttribute;
-                $relationships[count($relationships) - 1][] = $relationship->attributes;
-            }
-        } else {
-            $lookup = X2Model::model($className)->findByAttributes(array('name' => $importAttribute));
-            if (isset($lookup)) {
-                $model->$fieldName = $lookup->nameId;
-                $relationship = new Relationships;
-                $relationship->firstType = $modelName;
-                $relationship->secondType = $className;
-                $relationship->secondId = $lookup->id;
-                $relationships[count($relationships) - 1][] = $relationship->attributes;
-            } elseif (isset($_SESSION['createRecords']) && $_SESSION['createRecords'] == 1 &&
-                    !($modelName === 'BugReports' && $fieldRecord->linkType === 'BugReports')) {
-                // Skip creating related bug reports; the created report wouldn't hold any useful info.
-                $className = ucfirst($fieldRecord->linkType);
-                if (class_exists($className)) {
-                    $lookup = new $className;
-                    if ($_SESSION['skipActivityFeed'] === 1)
-                        $lookup->createEvent = false;
-                    $lookup->name = $importAttribute;
-                    if ($className === 'Contacts' || $className === 'X2Leads') {
-                        $this->fixupImportedContactName($lookup);
-                    }
-                    if ($lookup->hasAttribute('visibility'))
-                        $lookup->visibility = 1;
-                    if ($lookup->hasAttribute('description'))
-                        $lookup->description = "Generated by " . $modelName . " import.";
-                    if ($lookup->hasAttribute('createDate'))
-                        $lookup->createDate = time();
-
-                    if (!array_key_exists($className, $modelContainer))
-                        $modelContainer = array_merge($modelContainer, array($className => array()));
-                    // Ensure this linked record has not already been accounted for
-                    $createNewLinkedRecord = true;
-                    if ($model->hasAttribute('name')) {
-                        $model->$fieldName = $lookup->name;
-                    } else {
-                        $model->$fieldName = $importAttribute;
-                    }
-
-                    foreach ($modelContainer[$className] as $record) {
-                        if ($record['name'] === $lookup->name) {
-                            $createNewLinkedRecord = false;
-                            break;
-                        }
-                    }
-
-                    if ($createNewLinkedRecord) {
-                        $modelContainer[$className][] = $lookup->attributes;
-                        if (isset($_SESSION['created'][$className])) {
-                            $_SESSION['created'][$className] ++;
-                        } else {
-                            $_SESSION['created'][$className] = 1;
-                        }
-                    }
-                    $relationship = new Relationships;
-                    $relationship->firstType = $modelName;
-                    $relationship->secondType = $className;
-                    $relationships[count($relationships) - 1][] = $relationship->attributes;
-                    $createdLinkedModels[] = $model->$fieldName;
-                }
-            } else {
-                $model->$fieldName = $importAttribute;
-            }
-        }
-    }
-
-    /**
-     * Helper method to help out the user in the special case where a Contact's full name
-     * is set, but first and last name aren't, or vice versa.
-     * @param $model
-     */
-    protected function fixupImportedContactName(&$model) {
-        if (!empty($model->name) && (empty($model->firstName) && empty($model->lastName))) {
-            $names = preg_split('/ /', $model->name);
-            if (count($names) === 2) {
-                $model->firstName = $names[0];
-                $model->lastName = $names[1];
-            }
-        } else if (empty($model->name) && (!empty($model->firstName) && !empty($model->lastName)))
-            $model->name = $model->firstName . " " . $model->lastName;
-    }
-
-    /**
-     * This method is used after importing a records attributes to perform extra tasks, such as
-     * assigning lead routing, setting visibility, and reconstructing Action associations.
-     * @param string $modelName Name of the model being imported
-     * @param X2Model $model Current moel to import
-     */
-    protected function fixupImportedAttributes($modelName, X2Model &$model) {
-        if ($modelName === 'Contacts' || $modelName === 'X2Leads')
-            $this->fixupImportedContactName($model);
-
-        if ($modelName === 'Actions' && isset($model->associationType))
-            $this->reconstructImportedActionAssoc($model);
-
-        // Set visibility to Public by default if unset by import
-        if ($model->hasAttribute('visibility') && is_null($model->visibility))
-            $model->visibility = 1;
-        // If date fields were provided, do not create new values for them
-        if (!empty($model->createDate) || !empty($model->lastUpdated) ||
-                !empty($model->lastActivity)) {
-            $now = time();
-            if (empty($model->createDate))
-                $model->createDate = $now;
-            if (empty($model->lastUpdated))
-                $model->lastUpdated = $now;
-            if ($model->hasAttribute('lastActivity') && empty($model->lastActivity))
-                $model->lastActivity = $now;
-        }
-        if ($_SESSION['leadRouting'] == 1) {
-            $assignee = $this->getNextAssignee();
-            if ($assignee == "Anyone")
-                $assignee = "";
-            $model->assignedTo = $assignee;
-        }
-        // Loop through our override and set the manual data
-        foreach ($_SESSION['override'] as $attr => $val) {
-            $model->$attr = $val;
-        }
-    }
-
-    /**
-     * Handle reconstructing and validating Action associations
-     * @param Action $model Action to reconstruct association
-     */
-    protected function reconstructImportedActionAssoc(Actions &$model) {
-        $exportableModules = array_merge(
-                array_keys(Modules::getExportableModules()), array('None')
-        );
-        $exportableModules = array_map('lcfirst', $exportableModules);
-        $model->associationType = lcfirst($model->associationType);
-        if (!in_array($model->associationType, $exportableModules)) {
-            // Invalid association type
-            $model->addError('associationType', Yii::t('admin', 'Unknown associationType.'));
-        } else if (isset($model->associationId) && $model->associationId !== '0') {
-            $associatedModel = X2Model::model($model->associationType)
-                    ->findByPk($model->associationId);
-            if ($associatedModel)
-                $model->associationName = $associatedModel->nameId;
-        } else if (!isset($model->associationId) && isset($model->associationName)) {
-            // Retrieve associationId
-            $staticAssociationModel = X2Model::model($model->associationType);
-            if ($staticAssociationModel->hasAttribute('name') &&
-                    !ctype_digit($model->associationName)) {
-                $associationModelParams = array('name' => $model->associationName);
-            } else {
-                $associationModelParams = array('id' => $model->associationName);
-            }
-            $lookup = $staticAssociationModel->findByAttributes($associationModelParams);
-            if (isset($lookup)) {
-                $model->associationId = $lookup->id;
-                $model->associationName = $lookup->hasAttribute('nameId') ?
-                        $lookup->nameId : $lookup->name;
-            }
-        }
-    }
-
-    /**
-     * Finalize this batch of records by performing a mass insert, handling accounting,
-     * updating nameIds, and rendering the JSON response
-     * @param string $modelName Name of the model class being imported
-     * @param array $modelContainer Array of model attributes to be created
-     * @param array $relationships Array of relationship attributes to be created
-     * @param array $createdLinkedModels Array of name|nameId of the newly created linked records
-     * @param boolean $mappedId Whether the primary model's ID has been mapped: this alters
-     *    the result of lastInsertId
-     * @param boolean $finished Whether this batch has reached the end of the CSV
-     */
-    protected function finishImportBatch($modelName, $modelContainer, $relationships, $createdLinkedModels, $mappedId, $finished = false) {
-        // Keep track of the lastInsertId for each type
-        $lastInsertedIds = array();
-
-        // First insert the records being imported
-        $lastInsertedIds[$modelName] = $this->insertMultipleRecords(
-                $modelName, $modelContainer[$modelName]
-        );
-        $primaryModelCount = count($modelContainer[$modelName]);
-        // If id was mapped, then lastInsertId would actually be the last in the sequence.
-        // Otherwise, lastInsertId would be the first
-        if ($mappedId) {
-            $primaryIdRange = range(
-                    $lastInsertedIds[$modelName] - $primaryModelCount + 1, $lastInsertedIds[$modelName]
-            );
-        } else {
-            $primaryIdRange = range(
-                    $lastInsertedIds[$modelName], $lastInsertedIds[$modelName] + $primaryModelCount - 1
-            );
-        }
-        $this->handleImportAccounting($modelContainer[$modelName], $modelName, $lastInsertedIds, $relationships, $createdLinkedModels, $mappedId);
-        $this->massUpdateImportedNameIds($primaryIdRange, $modelName);
-
-        // Now create remaining auxiliary records
-        foreach ($modelContainer as $type => $models) {
-            if ($type === $modelName) // these were already processed
-                continue;
-
-            if ($modelName === 'Actions' && $type === 'ActionText') {
-                // set the actionIds and insert ActionText records
-                $firstInsertedId = $primaryIdRange[0];
-                $actionTexts = array();
-                foreach ($models as $i => $model) {
-                    if (empty($model) or isset($model['actionId']))
-                        continue;
-                    $model['actionId'] = $firstInsertedId + $i;
-                    $actionTexts[] = $model;
-                }
-                $this->insertMultipleRecords ('ActionText', $actionTexts);
-            } else if ($type === 'Tags') {
-                // Associate each of the tags with the respective imported model
-                $firstInsertedId = $primaryIdRange[0];
-                $tags = array();
-                foreach ($models as $i => $tagModels) {
-                    if (empty($tagModels))
-                        continue;
-                    foreach ($tagModels as $tag) {
-                        $tag['itemId'] = $firstInsertedId + $i;
-                        $tags[] = $tag;
-                    }
-                }
-                $this->insertMultipleRecords ('Tags', $tags);
-            } else {
-                // otherwise handle the records normally
-                $lastInsertedIds[$type] = $this->insertMultipleRecords($type, $models);
-                $this->handleImportAccounting($models, $type, $lastInsertedIds, $relationships, $createdLinkedModels);
-                $this->fixupLinkFields($modelName, $type, $primaryIdRange);
-                // related records won't have ID set; therefore, lastInsertId would have
-                // returned the first record in a sequence
-                $idRange = range(
-                        $lastInsertedIds[$type], $lastInsertedIds[$type] + count($models) - 1
-                );
-                $this->massUpdateImportedNameIds($idRange, $type);
-            }
-        }
-        $this->establishImportRelationships($relationships, $primaryIdRange[0], $createdLinkedModels, $mappedId);
-
-        $this->importerResponse ($finished);
-    }
-
-    private function importerResponse ($finished) {
-        $finished = !isset ($finished) ? false : $finished;
-        echo json_encode(array(
-            ($finished ? '1' : '0'),
-            $_SESSION['imported'],
-            $_SESSION['failed'],
-            json_encode($_SESSION['created']),
-        ));
-    }
-
-    /**
-     * Populate the nameId field since auto-populating fields is
-     * disabled and it is far more efficient to do it in a single query
-     */
-    protected function massUpdateImportedNameIds($importedIds, $type) {
-        $hasNameId = Fields::model()->findByAttributes(array(
-            'fieldName' => 'nameId',
-            'modelName' => $type,
-        ));
-        if ($hasNameId)
-            X2Model::massUpdateNameId($type, $importedIds);
-    }
-
-    /**
-     * Create additional records related to the import, including the requested Tags, comment
-     * Actions, Import records, Events, and Relationships
-     * @param array $models Array of arrays of model attributes
-     * @param string $modelName Name of the model being imported
-     * @param array $lastInsertedIds The last MySQL IDs that were created, indexed by model type
-     * @param array $relationships Array of relationship attributes to be created
-     * @param array $createdLinkedModels Array of the name|nameId of newly created linked records
-     * @param boolean $mappedId Whether ID was mapped: this affects lastInsertId's behavior
-     */
-    protected function handleImportAccounting($models, $modelName, $lastInsertedIds, $relationships, $createdLinkedModels, $mappedId = false) {
-        $now = time();
-        $editingUsername = Yii::app()->user->name;
-        $modelContainer = array(
-            'Imports' => array(),
-            'Actions' => array(),
-            'Events' => array(),
-            'Notification' => array(),
-            'Tags' => array(),
-        );
-        if ($mappedId)
-            $firstNewId = $lastInsertedIds[$modelName] - count($models) + 1;
-        else
-            $firstNewId = $lastInsertedIds[$modelName];
-        for ($i = 0; $i < count($models); $i++) {
-            $record = $models[$i];
-            if ($mappedId) {
-                $modelId = $models[$i]['id'];
-            } else {
-                $modelId = $i + $firstNewId;
-            }
-            // Create a event for the imported record, and create a notification for the assigned
-            // user if one exists, since X2ChangelogBehavior will not be triggered with
-            // createMultipleInsertCommand()
-            if ($_SESSION['skipActivityFeed'] !== 1) {
-                $event = new Events;
-                $event->visibility = array_key_exists('visibility', $record) ?
-                        $record['visibility'] : 1;
-                $event->associationType = $modelName;
-                $event->associationId = $modelId;
-                $event->timestamp = $now;
-                $event->user = $editingUsername;
-                $event->type = 'record_create';
-                $modelContainer['Events'][] = $event->attributes;
-            }
-            if (array_key_exists('assignedTo', $record) && !empty($record['assignedTo']) &&
-                    $record['assignedTo'] != $editingUsername && $record['assignedTo'] != 'Anyone') {
-                $notif = new Notification;
-                $notif->user = $record['assignedTo'];
-                $notif->createdBy = $editingUsername;
-                $notif->createDate = $now;
-                $notif->type = 'create';
-                $notif->modelType = $modelName;
-                $notif->modelId = $modelId;
-                $modelContainer['Notification'][] = $notif->attributes;
-            }
-
-            // Add all listed tags
-            foreach ($_SESSION['tags'] as $tag) {
-                $tagModel = new Tags;
-                $tagModel->taggedBy = 'Import';
-                $tagModel->timestamp = $now;
-                $tagModel->type = $modelName;
-                $tagModel->itemId = $modelId;
-                $tagModel->tag = $tag;
-                $tagModel->itemName = $modelName;
-                $modelContainer['Tags'][] = $tagModel->attributes;
-            }
-            // Log a comment if one was requested
-            if (!empty($_SESSION['comment'])) {
-                $action = new Actions;
-                $action->associationType = lcfirst(str_replace(' ', '', $modelName));
-                $action->associationId = $modelId;
-                $action->createDate = $now;
-                $action->updatedBy = Yii::app()->user->getName();
-                $action->lastUpdated = $now;
-                $action->complete = "Yes";
-                $action->completeDate = $now;
-                $action->completedBy = Yii::app()->user->getName();
-                $action->type = "note";
-                $action->visibility = 1;
-                $action->reminder = "No";
-                $action->priority = 1; // Set priority to Low
-                $modelContainer['Actions'][] = $action->attributes;
-            }
-
-            $importLink = new Imports;
-            $importLink->modelType = $modelName;
-            $importLink->modelId = $modelId;
-            $importLink->importId = $_SESSION['importId'];
-            $importLink->timestamp = $now;
-            $modelContainer['Imports'][] = $importLink->attributes;
-        }
-
-        foreach ($modelContainer as $type => $records) {
-            if (empty($records))
-                continue;
-            $lastInsertId = $this->insertMultipleRecords($type, $records);
-            if ($type === 'Actions') {
-                // Create ActionText and Import records for the comment Actions that were created
-                if (empty($records))
-                    continue;
-                $actionImportRecords = array();
-                $actionTextRecords = array();
-                $actionIdRange = range($lastInsertId, $lastInsertId + count($records) - 1);
-                foreach ($actionIdRange as $i) {
-                    $importLink = new Imports;
-                    $importLink->modelType = "Actions";
-                    $importLink->modelId = $i;
-                    $importLink->importId = $_SESSION['importId'];
-                    $importLink->timestamp = $now;
-                    $actionImportRecords[] = $importLink->attributes;
-
-                    $actionText = new ActionText;
-                    $actionText->actionId = $i;
-                    $actionText->text = $_SESSION['comment'];
-                    $actionTextRecords[] = $actionText->attributes;
-                }
-                $this->insertMultipleRecords('Imports', $actionImportRecords);
-                $this->insertMultipleRecords('ActionText', $actionTextRecords);
-            }
-        }
-    }
-
-    /**
-     * Process the link-type fields to set nameId
-     * @param int $count The number of primary models being imported
-     * @param string $modelName The primary model being imported
-     * @param string $type The model of the linked record
-     * @param array $lastInsertedIds Array of last inserted IDs, indexed by model name
-     */
-    protected function fixupLinkFields($modelName, $type, $primaryIdRange) {
-        $linkTypeFields = Yii::app()->db->createCommand()
-                        ->select('fieldName')
-                        ->from('x2_fields')
-                        ->where('type = "link" AND modelName = :modelName AND linkType = :linkType', array(
-                            ':modelName' => $modelName,
-                            ':linkType' => $type,
-                        ))->queryColumn();
-        $primaryTable = X2Model::model($modelName)->tableName();
-        foreach ($linkTypeFields as $field) {
-            // update each link type field
-            $staticModel = X2Model::model($type);
-            if (!$staticModel->hasAttribute('name'))
-                continue;
-            $secondaryTable = $staticModel->tableName();
-
-            $sql = 'UPDATE `' . $primaryTable . '` a JOIN `' . $secondaryTable . '` b ' .
-                    'ON a.' . $field . ' = b.name ' .
-                    'SET a.`' . $field . '` = CONCAT(b.name, \'' . Fields::NAMEID_DELIM . '\', b.id) ' .
-                    'WHERE a.id in (' . implode(',', $primaryIdRange) . ')';
-            Yii::app()->db->createCommand($sql)->execute();
-        }
-    }
-
-    /**
-     * Create relationships records for the linked models
-     * @param array $relationships Relationship attributes
-     * @param int $firstNewId The first inserted id
-     * @param array $createdLinkedModels
-     * @param boolean $mappedId Whether or not ID was a mapped field
-     */
-    protected function establishImportRelationships($relationships, $firstNewId, $createdLinkedModels, $mappedId = false) {
-        $validRelationships = array();
-
-        foreach ($relationships as $i => $modelsRelationships) {
-            $modelId = $i + $firstNewId;
-            if (empty($modelsRelationships)) // skip placeholders
-                continue;
-            foreach ($modelsRelationships as $relationship) {
-                $relationship['firstId'] = $modelId;
-                if (empty($relationship['secondId'])) {
-                    $model = X2Model::model($relationship['firstType'])
-                            ->findByPk($modelId);
-                    $linkedStaticModel = X2Model::model($relationship['secondType']);
-                    if (!$model)
-                        continue;
-                    $fields = Yii::app()->db->createCommand()
-                                    ->select('fieldName')
-                                    ->from('x2_fields')
-                                    ->where('type = \'link\' AND modelName = :firstType AND ' .
-                                            'linkType = :secondType', array(
-                                        ':firstType' => $relationship['firstType'],
-                                        ':secondType' => $relationship['secondType'],
-                                    ))->queryColumn();
-                    foreach ($fields as $field) {
-                        // Check for relationships to new linked models for each link type field
-                        if (empty($model->$field)) // skip fields that weren't set
-                            continue;
-                        $attr = $linkedStaticModel->hasAttribute('nameId') ? 'nameId' : 'name';
-                        $linkedId = Yii::app()->db->createCommand()
-                                        ->select('id')
-                                        ->from($linkedStaticModel->tableName())
-                                        ->where($attr . ' = :reference', array(
-                                            ':reference' => $model->$field,
-                                        ))->queryScalar();
-                        if (!$linkedId)
-                            continue;
-                        $relationship['secondId'] = $linkedId;
-                    }
-                }
-                if (!empty($relationship['secondId']))
-                    $validRelationships[] = $relationship;
-            }
-        }
-        $this->insertMultipleRecords('Relationships', $validRelationships);
-    }
-
-    /**
-     * Execute a multiple insert command
-     * @param string $modelType Child of X2Model
-     * @param array $models Array of model attributes to create
-     * @return int Last inserted id
-     */
-    protected function insertMultipleRecords($modelType, $models) {
-        if (empty($models))
-            return null;
-        $tableName = X2Model::model($modelType)->tableName();
-        Yii::app()->db->schema->commandBuilder
-                ->createMultipleInsertCommand($tableName, $models)
-                ->execute();
-        $lastInsertId = Yii::app()->db->schema->commandBuilder
-                ->getLastInsertId($tableName);
-        return $lastInsertId;
-    }
-
-    /**
-     * Remove a record with the same ID, save the model attributes in the container, and increment
-     * the count of imported records
-     * @param X2Model $model
-     * @param array $modelContainer Array of validated models attributes
-     * @param array $importedIds Array of ids from imported models
-     */
-    protected function saveImportedModel(X2Model $model, $modelName, &$modelContainer, &$importedIds) {
-        if (!empty($model->id)) {
-            $lookup = X2Model::model(str_replace(' ', '', $modelName))->findByPk($model->id);
-            if (isset($lookup)) {
-                Relationships::model()->deleteAllByAttributes(array(
-                    'firstType' => $modelName,
-                    'firstId' => $lookup->id)
-                );
-                Relationships::model()->deleteAllByAttributes(array(
-                    'secondType' => $modelName,
-                    'secondId' => $lookup->id)
-                );
-                $lookup->delete();
-                unset($lookup);
-            }
-        }
-        // Save our model & create the import records and 
-        // relationships. Passing $validate=false to CActiveRecord.save
-        // because validation has already happened at this point
-        $modelContainer[$modelName][] = $model->attributes;
-        $_SESSION['imported'] ++;
-        $importedIds[] = $model->id;
-    }
-
-    /**
-     * Save the failed record into a CSV with validation errors
-     * @param X2Model $model
-     * @param array $arr
-     * @param array $metadata
-     */
-    protected function markFailedRecord(X2Model $model, &$arr, $metaData) {
-        // If the import failed, then put the data into the failedRecords CSV for easy recovery.
-        $failedRecords = fopen($this->safePath('failedRecords.csv'), 'a+');
-        $errorMsg = array();
-        foreach ($model->errors as $error)
-            $errorMsg[] = strtr(implode(' ', array_values($error)), '"', "'");
-        $errorMsg = implode(' ', $errorMsg);
-
-        // Add the error to the last column of the csv record
-        if (end($metaData) === 'X2_Import_Failures')
-            $arr[count($arr) - 1] = $errorMsg;
-        else
-            $arr[] = $errorMsg;
-        fputcsv($failedRecords, $arr);
-        fclose($failedRecords);
-        $_SESSION['failed']++;
-    }
-
-    /************************************************************************
-     *          End Record Importing Methods
-     ***********************************************************************/
 
     /**
      * Import a zip of a module.
@@ -4196,6 +3270,7 @@ class AdminController extends Controller {
             }
 
             $moduleName = $module->filename;
+            
             if (X2Model::model('Modules')->findByAttributes(array('name' => $moduleName))) {
                 Yii::app()->user->setFlash('error', Yii::t('admin', 'Unable to upload module. A module with this name already exists.'));
                 $this->redirect('importModule');
@@ -4216,13 +3291,21 @@ class AdminController extends Controller {
                 $this->redirect('importModule');
             }
 
-            $this->loadModuleData($moduleName);
-            unlink($filename);
+            if ($this->loadModuleData($moduleName)) {
+                unlink($filename);
 
-            $this->createDefaultModulePermissions(ucfirst($moduleName));
-            $this->fixupImportedModuleDropdowns(array($moduleName));
+                $this->createDefaultModulePermissions(ucfirst($moduleName));
+                $this->fixupImportedModuleDropdowns(array($moduleName));
 
-            $this->redirect(array($moduleName . '/index'));
+                $this->redirect(array($moduleName . '/index'));
+            } else {
+                Yii::app()->user->setFlash(
+                    'error',
+                    Yii::t('admin', 'Failed to load module data. Please ensure that the archive '.
+                        'is in the expected format.')
+                );
+                $this->redirect('importModule');
+            }
         }
         $this->render('importModule');
     }
@@ -4230,6 +3313,7 @@ class AdminController extends Controller {
     /**
      * Private helper function to load module SQL
      * @param string $moduleName Name of the module to install SQL from
+     * @return boolean Whether the module data was successfully loaded
      */
     private function loadModuleData($moduleName) {
         $regPath = implode(DIRECTORY_SEPARATOR, array(
@@ -4252,6 +3336,9 @@ class AdminController extends Controller {
                     }
                 }
             }
+            return true;
+        } else {
+            return false;
         }
     }
 
@@ -4547,9 +3634,7 @@ class AdminController extends Controller {
             }
         }
 
-        $this->render('deleteDropdowns', array(
-            'dropdowns' => $dropdowns,
-        ));
+        $this->redirect ('manageDropdowns');
     }
 
     /**
@@ -4945,9 +4030,10 @@ class AdminController extends Controller {
      */
     public function actionPrepareImport() {
         $fp = fopen($this->safePath(), 'r+');
-        $version = fgetcsv($fp); // The first row should be just the version number of the data
+        // The first row should be just the version number of the data
+        $version = fgetcsv($fp, 0, $_SESSION['delimeter'], $_SESSION['enclosure']);
         $version = $version[0];
-        $tempMeta = fgetcsv($fp);
+        $tempMeta = fgetcsv($fp, 0, $_SESSION['delimeter'], $_SESSION['enclosure']);
         while ("" === end($tempMeta)) { // Clear all blank rows from the metadata
             array_pop($tempMeta);
         }
@@ -4972,7 +4058,7 @@ class AdminController extends Controller {
             $_SESSION['importId'] = 1;
         }
         $failedImport = fopen($this->safePath('failedImport.csv'), 'w+'); // Prepare a CSV for any failed records
-        fputcsv($failedImport, array(Yii::app()->params->version));
+        fputcsv($failedImport, array(Yii::app()->params->version), $_SESSION['delimeter'], $_SESSION['enclosure']);
         fclose($failedImport);
         echo json_encode(array($version));
     }
@@ -4986,7 +4072,7 @@ class AdminController extends Controller {
             $model = (isset($_GET['model'])) ? $_GET['model'] : $_POST['model'];
             $modelName = str_replace(' ', '', $model);
         }
-        $includeTags = isset($_GET['includeTags']) && $_GET['includeTags'] === 'true';
+        $_SESSION['includeTags'] = isset($_GET['includeTags']) && $_GET['includeTags'] === 'true';
         $filePath = $this->safePath($_SESSION['modelExportFile']);
         $attributes = X2Model::model($modelName)->attributes;
         if ($modelName === 'Actions') {
@@ -4994,7 +4080,7 @@ class AdminController extends Controller {
             $attributes = array_merge($attributes, array('actionDescription' => null));
         }
         $meta = array_keys($attributes);
-        if ($includeTags)
+        if ($_SESSION['includeTags'])
             $meta[] = 'tags';
         if (isset($_SESSION['exportModelListId'])) {
             // Figure out gridview settings to export those columns
@@ -5078,172 +4164,6 @@ class AdminController extends Controller {
                 $cache->flush();
             }
         }
-    }
-
-    /**
-     * Helper function to return the next importId
-     * @return int Next import ID
-     */
-    private function getNextImportId() {
-        $criteria = new CDbCriteria;
-        $criteria->order = "importId DESC";
-        $criteria->limit = 1;
-        $import = Imports::model()->find($criteria);
-
-        // Figure out which import this is so we can set up the Imports models
-        // for this import.
-        if (isset($import)) {
-            $importId = $import->importId + 1;
-        } else {
-            $importId = 1;
-        }
-        return $importId;
-    }
-
-    /**
-     * Parse the given keys and attributes to ensure required fields are
-     * mapped and new fields are to be created. The verified map will be
-     * stored in the 'importMap' key for the $_SESSION super global.
-     * @param string $model name of the model
-     * @param array $keys
-     * @param array $attributes
-     * @param boolean $createFields whether or not to create new fields
-     */
-    protected function verifyImportMap($model, $keys, $attributes, $createFields = false) {
-        if (!empty($keys) && !empty($attributes)) {
-            // New import map is the provided data
-            $importMap = array_combine($keys, $attributes);
-            $conflictingFields = array();
-            $failedFields = array();
-
-            // To keep track of fields that were mapped multiple times
-            $mappedValues = array();
-            $multiMappings = array();
-
-            foreach ($importMap as $key => &$value) {
-                if (in_array($value, $mappedValues) && !empty($value) && !in_array($value, $multiMappings)) {
-                    // This attribute is mapped to two different fields in X2
-                    $multiMappings[] = $value;
-                } else if ($value !== 'createNew') {
-                    $mappedValues[] = $value;
-                }
-                // Loop through and figure out if we need to create new fields
-                $origKey = $key;
-                $key = Formatter::deCamelCase($key);
-                $key = preg_replace('/\[W|_]/', ' ', $key);
-                $key = mb_convert_case($key, MB_CASE_TITLE, "UTF-8");
-                $key = preg_replace('/\W/', '', $key);
-                if ($value == 'createNew' && !$createFields) {
-                    $importMap[$origKey] = 'c_' . strtolower($key);
-                    $fieldLookup = Fields::model()->findByAttributes(array(
-                        'modelName' => $model,
-                        'fieldName' => $key
-                    ));
-                    if (isset($fieldLookup)) {
-                        $conflictingFields[] = $key;
-                        continue;
-                    } else {
-                        $customFieldLookup = Fields::model()->findByAttributes(array(
-                            'modelName' => $model,
-                            'fieldName' => $importMap[$origKey]
-                        ));
-                        if (!$customFieldLookup instanceof Fields) {
-                            // Create a custom field if one doesn't exist already
-                            $columnName = strtolower($key);
-                            $field = new Fields;
-                            $field->modelName = $model;
-                            $field->type = "varchar";
-                            $field->fieldName = $columnName;
-                            $field->required = 0;
-                            $field->searchable = 1;
-                            $field->relevance = "Medium";
-                            $field->custom = 1;
-                            $field->modified = 1;
-                            $field->attributeLabel = $field->generateAttributeLabel($key);
-                            if (!$field->save()) {
-                                $failedFields[] = $key;
-                            }
-                        }
-                    }
-                }
-            }
-
-            // Check for required attributes that are missing
-            $requiredAttrs = Yii::app()->db->createCommand()
-                    ->select('fieldName, attributeLabel')
-                    ->from('x2_fields')
-                    ->where('modelName = :model AND required = 1', array(
-                        ':model' => str_replace(' ', '', $model)))
-                    ->query();
-            $missingAttrs = array();
-            foreach ($requiredAttrs as $attr) {
-                // Skip visibility, it can be set for them
-                if (strtolower($attr['fieldName']) == 'visibility')
-                    continue;
-                // Ignore missing first/last name, this can be inferred from full name
-                if ($model === 'Contacts' && ($attr['fieldName'] === 'firstName' || $attr['fieldName'] === 'lastName') && in_array('name', array_values($importMap)))
-                    continue;
-                // Otherwise, a required field is missing and should be reported to the user
-                if (!in_array($attr['fieldName'], array_values($importMap)))
-                    $missingAttrs[] = $attr['attributeLabel'];
-            }
-            if (!empty($conflictingFields)) {
-                $result = array("2", implode(', ', $conflictingFields));
-            } else if (!empty($missingAttrs)) {
-                $result = array("3", implode(', ', $missingAttrs));
-            } else if (!empty($failedFields)) {
-                $result = array("1", implode(', ', $failedFields));
-            } else if (!empty($multiMappings)) {
-                $result = array("4", implode(', ', $multiMappings));
-            } else {
-                $result = array("0");
-            }
-            $_SESSION['importMap'] = $importMap;
-        } else {
-            $result = array("0");
-            $_SESSION['importMap'] = array();
-        }
-        return $result;
-    }
-
-    /**
-     * List available import maps from a directory,
-     * optionally of type $model
-     * @param string $model Name of the model to load import maps
-     * @return array Available import maps, with the filenames as
-     * keys, and import mapping names (product/version) as values
-     */
-    protected function availableImportMaps($model = null) {
-        $maps = array();
-        if ($model === "X2Leads")
-            $model = "Leads";
-        $modelName = (isset($model)) ? lcfirst($model) : '.*';
-        $importMapDir = "importMaps";
-        $files = scandir($this->safePath($importMapDir));
-        foreach ($files as $file) {
-            $filename = basename($file);
-            // Filenames are in the form "app-model.json"
-            if (!preg_match('/^.*-' . $modelName . '\.json$/', $filename))
-                continue;
-            $mapping = file_get_contents($this->safePath($importMapDir . DIRECTORY_SEPARATOR . $file));
-            $mapping = json_decode($mapping, true);
-            $maps[$file] = $mapping['name'];
-        }
-        return $maps;
-    }
-
-    /**
-     * Load an import map from the map directory
-     * @param string $filename of the import map
-     * @return array Import map
-     */
-    protected function loadImportMap($filename) {
-        if (empty($filename))
-            return null;
-        $importMapDir = "importMaps";
-        $map = file_get_contents($this->safePath($importMapDir . DIRECTORY_SEPARATOR . $filename));
-        $map = json_decode($map, true);
-        return $map;
     }
 
     /**
@@ -5553,7 +4473,7 @@ class AdminController extends Controller {
         $cf = new CronForm;
         $cf->jobs = array(
             'app_update' => array(
-                'cmd' => Yii::app()->basePath . DIRECTORY_SEPARATOR . 'yiic update app --lock=1',
+                'cmd' => Yii::app()->basePath . DIRECTORY_SEPARATOR . 'yiic update app --lock=1 &>/dev/null',
                 'desc' => Yii::t('admin', 'Automatic software updates cron job'),
             ),
         );

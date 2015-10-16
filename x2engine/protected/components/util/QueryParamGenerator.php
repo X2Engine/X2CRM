@@ -127,5 +127,6 @@ class QueryParamGenerator extends CComponent {
             }
             $this->params = array_merge ($this->params, $params);
         }
+        return $this;
     }
 }

@@ -90,10 +90,7 @@ class AccountsGridViewProfileWidget extends ProfileGridViewWidget {
                         'gvCheckbox' => 30,
                         'name' => 184,
                         'type' => 153,
-                        'annualRevenue' => 108,
                         'phone' => 115,
-                        'lastUpdated' => 77,
-                        'assignedTo' => 99,
                     ),
                     'specialColumns'=>array(
                         'name'=>array(

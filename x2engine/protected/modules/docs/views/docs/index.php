@@ -41,138 +41,99 @@ $this->insertMenu($menuOptions);
 
 Yii::app()->clientScript->registerCssFile(
     Yii::app()->controller->module->assetsUrl.'/css/index.css');
+Yii::app()->clientScript->registerScriptFile(Yii::app()->controller->module->assetsUrl.'/js/FolderManager.js');
+
 
 Yii::app()->clientScript->registerScript('docsIndexJS',"
-    x2.foldersManager = {};
-    x2.foldersManager.setUpDragAndDrop = function(){
-        $('.draggable-file-system-object').draggable({
-            delay: 200,
-            cursor:'move',
-            cursorAt:{top:0,left:0},
-            revert:'invalid',
-            stack:'.draggable-file-system-object',
-            start: function(){
-                originalWidth = $(this).css('width');
-                $(this).css('width','15%');
-                $(this).css('border-radius','4px');
-                $(this).find('.file-system-object-attributes').hide();
-                $(this).find('.file-system-object-link').css('width','100%');
-                $('#file-delete').show();
-            },
-            stop: function(){
-                $(this).css('width', originalWidth);
-                $(this).css('border-radius','');
-                $(this).find('.file-system-object-link').css('width','30%');
-                $(this).find('.file-system-object-attributes').show();
-                $('#file-delete').hide();
-            }   
-        });
-        $('.droppable-file-system-object').droppable({
-            accept:'.draggable-file-system-object',
-            activeClass:'x2-active-folder',
-            hoverClass:'x2-state-active highlight',
-            drop: function(event, ui){
-                ui.draggable.hide();
-                var type = ui.draggable.attr('data-type');
-                var objId = ui.draggable.attr('data-id');
-                var destId = $(this).attr('data-id');
-                $.ajax({
-                    url:'".Yii::app()->controller->createUrl('/docs/moveFolder')."',
-                    data:{type:type, objId:objId, destId:destId},
-                    error:function(){
-                        ui.draggable.show();
-                    }
-                });
-            }
-        });
-    }
-    $(document).on('click','#create-folder-button',function(){
-        $('#folder-form').dialog({
-            width: '500px',
-            buttons: [
-                {
-                    text: ".CJSON::encode (Yii::t('docs', 'Create Folder')).",
-                    click: function () {
-                        $('#folder-form input[type=\"submit\"]').click ();
-                    }
-                }
-            ]
-        });
-    });
-    $(document).on('click','.file-system-object-folder',function(){
-        $.fn.yiiListView.update('folder-contents',{
-            url:'" . Yii::app()->controller->createUrl('/docs/index') . "',
-            data:{id:$(this).attr('data-id')},
-            complete:function(){
-                x2.foldersManager.setUpDragAndDrop();
-            }
-        }); 
-        $('#DocFolders_parentFolder').val($(this).attr('data-id')); 
-        return false;
-    });
-    $(document).on('ready',function(){
-        x2.foldersManager.setUpDragAndDrop();
-        $('#delete-drop').droppable({
-            accept:'.draggable-file-system-object',
-            hoverClass:'highlight',
-            drop:function(event, ui){
-                ui.draggable.hide();
-                var type = ui.draggable.attr('data-type');
-                var id = ui.draggable.attr('data-id');
-                var message = ui.draggable.attr('data-type')=='folder'?
-                    ".CJSON::encode (
-                        Yii::t(
-                            'docs',
-                            'Are you sure you want to delete this folder and all of its '.
-                            'contents?'))." :
-                    ".CJSON::encode (
-                        Yii::t('docs','Are you sure you want to delete this file?')).";
-                if(window.confirm(message)){
-                    $.ajax({
-                        url:'".Yii::app()->controller->createUrl('/docs/deleteFileFolder')."',
-                        method:'POST',
-                        data:{YII_CSRF_TOKEN:x2.csrfToken,type:type, id:id},
-                        success:function(){
-                            x2.flashes.displayFlashes({
-                                'success':[".CJSON::encode (
-                                    Yii::t('docs','Successfully deleted.'))."]});
-                        },
-                        error:function(){
-                            x2.flashes.displayFlashes({
-                                'error':[".CJSON::encode (
-                                    Yii::t(
-                                        'docs',
-                                        'You do not have permission to delete that file or '.
-                                        'folder.'))."]
-                                });
-                            $.fn.yiiListView.update(
-                                'folder-contents', {complete:function(){ 
-                                    x2.foldersManager.setUpDragAndDrop(); }});
-                        }
-                    });
-                }else{
-                    $.fn.yiiListView.update(
-                        'folder-contents', {
-                            complete:function(){ x2.foldersManager.setUpDragAndDrop(); }});
-                }
-            }
-        });
-    });
-");
+x2.folderManager = new x2.FolderManager (".CJSON::encode (array (
+    'translations' => array (    
+        'createFolder' => Yii::t('docs', 'Create Folder'),
+        'deleteFolderConf' => 
+            Yii::t('docs', 'Are you sure you want to delete this folder and all of its contents?'),
+        'deleteDocConf' => Yii::t('docs','Are you sure you want to delete this Doc?'),
+        'folderDeleted' => Yii::t('docs', 'Folder deleted.'),
+        'docDeleted' => Yii::t('docs', 'Doc deleted.'),
+        'permissionsMissing' => 
+            Yii::t('docs', 'You do not have permission to delete that Doc or folder.'),
+    ),
+    'urls' => array (
+        'moveFolder' => Yii::app()->controller->createUrl('/docs/moveFolder'),
+        'index' => Yii::app()->controller->createUrl('/docs/index'),
+        'deleteFileFolder' => Yii::app()->controller->createUrl('/docs/deleteFileFolder'),
+    ),
+)).");
+", CClientScript::POS_END);
 
 ?>
 <div>
 <?php
 $folderViewHeader = FileSystemObject::getListViewHeader();
-$this->widget('zii.widgets.CListView', array(
+
+$columns = array (
+    array (
+        'name' => 'gvCheckbox',
+        'width' => '30px',
+        'header' => '',
+        'disabled' => '!$data->objId || $data->objId === -1',
+        'value' => '$data->objId ? $data->objId : -2',
+    ),
+    array (
+        'name' => 'name',
+        'header' => Yii::t('docs', 'Name'),
+        'type' => 'raw',
+        'value' => '$data->renderName ()',
+        'width' => '30%',
+        'htmlOptions' => array (
+            'id' => 'php:$data->id . "-file-system-object"',
+            'data-type' => 'php:$data->type',
+            'data-id' => 'php:$data->objId',
+            'class' => 'php:"view file-system-object".'.
+                "(\$data->type=='folder'?' file-system-object-folder':' file-system-object-doc')",
+        )
+
+    ),
+    array (
+        'name' => 'owner',
+        'header' => Yii::t('docs', 'Owner'),
+        'type' => 'raw',
+        'value' => '$data->getOwner ();',
+        'width' => '30%',
+        'htmlOptions' => array (
+            'class' => 'file-system-object-owner',
+        ),
+    ),
+    array (
+        'name' => 'lastUpdated',
+        'header' => Yii::t('docs', 'Last Updated'),
+        'type' => 'raw',
+        'value' => '$data->getLastUpdateInfo ();',
+        'width' => '25%',
+        'htmlOptions' => array (
+            'class' => 'file-system-object-last-updated',
+        ),
+    ),
+    array (
+        'name' => 'visibility',
+        'header' => Yii::t('docs', 'Visibility'),
+        'type' => 'raw',
+        'value' => '$data->getVisibility ();',
+        'width' => '10%',
+        'htmlOptions' => array (
+            'class' => 'file-system-object-visibility',
+        ),
+    ),
+);
+
+$listView = $this->widget('X2GridViewGeneric', array(
     'dataProvider' => $folderDataProvider,
-    'itemView' => '_viewFileSystemObject',
+    //'itemView' => '_viewFileSystemObject',
     'id' => 'folder-contents',
-    'htmlOptions' => array('class'=>'x2-list-view list-view'),
+    //'htmlOptions' => array('class'=>'x2-list-view list-view'),
     'baseScriptUrl' => Yii::app()->request->baseUrl . '/themes/' . Yii::app()->theme->name . 
         '/css/listview',
+    'columns' => $columns,
     'template' => '<div class="page-title rounded-top icon docs"><h2>'.Yii::t('docs','Docs').
-        ' </h2>{summary}'
+        ' </h2>{massActionButtons}{summary}'
         .  X2Html::tag(
             'span', 
             array(
@@ -185,8 +146,19 @@ $this->widget('zii.widgets.CListView', array(
             X2Html::fa(
                 'plus-circle fa-stack-1x fa-inverse', 
                 array('style' => 'margin-top:3px;margin-left:5px;')))
-        . '</div>'.$folderViewHeader.'{items}{pager}',
-    ));
+        . '</div>{items}{pager}',
+    'afterGridViewUpdateJSString' => 'x2.folderManager.setUpDragAndDrop ();',
+    'massActions' => array ('MassMoveFileSysObjToFolder'),
+    'dataColumnClass' => 'X2DataColumnGeneric',
+    'rowHtmlOptionsExpression' => 'array (
+        "class" => ($data->validDraggable() ? " draggable-file-system-object" : "").
+                   ($data->validDroppable() ? " droppable-file-system-object" : ""),
+    )',
+    'enableColDragging' => false,
+    'enableGridResizing' => false,
+    'rememberColumnSort' => false,
+));
+
 ?>
 </div>
 <div id="file-delete" style="text-align:center;display:none;"> 
@@ -198,7 +170,7 @@ $this->widget('zii.widgets.CListView', array(
 <br />
 <div class='flush-grid-view'>
 <?php
-    $this->widget('zii.widgets.grid.CGridView', array(
+$this->widget('zii.widgets.grid.CGridView', array(
     'id'=>'attachments-grid',
     'baseScriptUrl'=>Yii::app()->request->baseUrl.'/themes/'.Yii::app()->theme->name.
         '/css/gridview',
@@ -226,7 +198,7 @@ $this->widget('zii.widgets.CListView', array(
         ),
     ),
 ));
-    ?>
+?>
 </div>
 <br>
 <?php

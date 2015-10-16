@@ -73,6 +73,9 @@ class X2DataColumn extends CDataColumn {
     }
 
     /**
+     * Overridden to allow title attribute to be evaluated.
+     * TODO: remove this and use method in X2DataColumnGeneric instead. Refactor will involve 
+     *  prepending 'php:' to all titles that need to be evaluated.
      * This method is Copyright (c) 2008-2014 by Yii Software LLC
      * http://www.yiiframework.com/license/ 
      */

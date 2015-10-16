@@ -44,10 +44,8 @@ function RecordAliasesWidget (argsDict) {
         aliasOptions: {},
         aliasTypeIcons: {},
         recordId: null,
+         
         translations: {
-            dialogTitle: 'Create Alias',
-            cancel: 'Cancel',
-            create: 'Create'
         }
     };
     auxlib.applyArgs (this, defaultArgs, argsDict);
@@ -89,17 +87,19 @@ RecordAliasesWidget.prototype._setUpHideShowBehavior = function () {
 /**
  * Add new alias to dropdown 
  */
-RecordAliasesWidget.prototype._addAlias = function (aliasType, alias, id) {
+RecordAliasesWidget.prototype._addAlias = function (aliasType, alias, id, label) {
+    var label = label ? label : alias;
     var newAliasTitle = this.aliasOptions[aliasType];
     var li$ = this._dropdown$.find ('.alias-template').clone ();
     li$.show ().
         removeClass ('alias-template').
         attr ('data-alias-type', newAliasTitle).
         attr ('data-id', id);
-    li$.find ('.record-alias').html (alias);
+    li$.find ('.record-alias').html (label);
     li$.find ('.record-alias').before (this.aliasTypeIcons[aliasType]);
     this._dropdown$.children ('span').append (li$);
-    listItems$ = this._dropdown$.find ('li').not ('.new-alias-button, .alias-template');
+    listItems$ = this._dropdown$.find ('li').
+        not ('.new-alias-button, .find-google-plus-profile, .alias-template');
     sortedListItems$ = listItems$.sort (function (a, b) {
         var a$ = $(a);
         var b$ = $(b);
@@ -119,7 +119,8 @@ RecordAliasesWidget.prototype._addAlias = function (aliasType, alias, id) {
             return 1;
         }
     });
-    this._dropdown$.find ('li').not ('.new-alias-button, .alias-template').remove ();
+    this._dropdown$.find ('li').
+        not ('.new-alias-button, .find-google-plus-profile, .alias-template').remove ();
     this._dropdown$.children ('span').append (sortedListItems$);
     this._setUpAliasDeletion ();
 };
@@ -127,10 +128,11 @@ RecordAliasesWidget.prototype._addAlias = function (aliasType, alias, id) {
 /**
  * Submit alias creation form
  */
-RecordAliasesWidget.prototype._createAlias = function (afterCreate) {
+RecordAliasesWidget.prototype._createAlias = function (afterCreate, dialog$) {
     afterCreate = typeof afterCreate === 'undefined' ? function () {} : afterCreate; 
+    dialog$ = typeof dialog$ === 'undefined' ? this._dialog$ : dialog$; 
     var that = this;
-    var data = this._dialog$.serialize ();
+    var data = dialog$.serialize ();
     var dataObj = $.deparam (data);
     var aliasType = dataObj['RecordAliases']['aliasType'];
     var alias = dataObj['RecordAliases']['alias'];
@@ -141,14 +143,18 @@ RecordAliasesWidget.prototype._createAlias = function (afterCreate) {
         dataType: 'json',
         success: function (data) {
             if (data.success) {
-                that._addAlias (aliasType, data.success.alias, data.success.id);
-                that._dialog$.dialog ('close');
-                x2.forms.clearForm (that._dialog$, true);
-                that._dialog$.find ('.alias-type-cell').first ().click ();
-                afterCreate.call (that);
+                that._addAlias (aliasType, data.success.alias, data.success.id, data.success.label);
+                dialog$.dialog ('close');
+                if (dialog$.attr ('id') === 'record-alias-form') {
+                    x2.forms.clearForm (dialog$, true);
+                    dialog$.find ('.alias-type-cell').first ().click ();
+                }
+                afterCreate.call (
+                    that, data.success.alias, data.success.id, data.success.label,
+                    data.success.rawAlias);
             } else {
-                that._dialog$.html (data.failure);
-                that._bindFormEvents ();
+                x2.forms.clearErrorMessages (dialog$);
+                dialog$.append (data.failure);
             }
         }
     })
@@ -305,12 +311,15 @@ RecordAliasesWidget.prototype._setUpSkypeLinks = function () {
     });
 };
 
+ 
+
 RecordAliasesWidget.prototype._init = function () {
     this._setUpHideShowBehavior ();
     this._setUpDialog ();
     this._setUpAliasDeletion ();
     this._bindFormEvents ();
     this._setUpSkypeLinks ();
+     
 };
 
 return RecordAliasesWidget;

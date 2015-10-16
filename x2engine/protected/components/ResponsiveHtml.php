@@ -40,7 +40,7 @@
 class ResponsiveHtml extends CHtml {
 
     public static function gripButton ($htmlOptions=array ()) {
-        if (!RESPONSIVE_LAYOUT) return '';
+        if (AuxLib::getLayoutType () !== 'responsive') return '';
         if (!isset ($htmlOptions['class'])) {
             $htmlOptions['class'] = 'mobile-dropdown-button'; 
         }

@@ -1,4 +1,4 @@
-/*****************************************************************************************
+/*!***************************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2015 X2Engine Inc.
  * 
@@ -31,49 +31,4 @@
  * X2Engine" logo. If the display of the logo is not reasonably feasible for
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2Engine".
- *****************************************************************************************/
-/* line 36, ../../../compass/themes/x2engine/css/error.scss */
-i.fa.fa-exclamation-triangle.fa-3x {
-  color: red;
-  float: left;
-  margin-top: 10px;
-  margin-left: 8px;
-  margin-right: 8px;
-}
-
-/* line 44, ../../../compass/themes/x2engine/css/error.scss */
-h1#h1-error {
-  color: #f00;
-  float: left;
-}
-
-/* line 49, ../../../compass/themes/x2engine/css/error.scss */
-div#send-error {
-  margin-left: 10px;
-}
-
-/* line 53, ../../../compass/themes/x2engine/css/error.scss */
-div#send-error-button {
-  margin-left: 20px;
-  padding-bottom: 15px;
-}
-
-/* line 58, ../../../compass/themes/x2engine/css/error.scss */
-div#x2-php-error {
-  width: 600px;
-}
-
-/* line 62, ../../../compass/themes/x2engine/css/error.scss */
-div#error-form {
-  width: 600px;
-}
-
-/* line 66, ../../../compass/themes/x2engine/css/error.scss */
-div#stack-trace {
-  display: none;
-}
-
-/* line 70, ../../../compass/themes/x2engine/css/error.scss */
-a#toggle-trace {
-  text-decoration: none;
-}
+ *****************************************************************************************/i.fa.fa-exclamation-triangle.fa-3x{color:red;float:left;margin-top:10px;margin-left:8px;margin-right:8px}h1#h1-error{color:#f00;float:left}div#send-error{margin-left:10px}div#send-error-button{margin-left:20px;padding-bottom:15px}div#x2-php-error{width:600px}div#error-form{width:600px}div#stack-trace{display:none}a#toggle-trace{text-decoration:none}

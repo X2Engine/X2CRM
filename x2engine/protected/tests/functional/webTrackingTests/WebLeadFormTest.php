@@ -60,7 +60,7 @@ class WebLeadFormTest extends WebTrackingTestBase {
             'leadSource' => 'facebook',
         ));
         $this->assertTrue ($lead !== null);
-        X2_VERBOSE_MODE && println (
+        X2_TEST_DEBUG_LEVEL > 1 && println (
             'lead created');
         return $lead;
     }
@@ -70,7 +70,7 @@ class WebLeadFormTest extends WebTrackingTestBase {
             'name' => 'testAccount',
         ));
         $this->assertTrue ($lead !== null);
-        X2_VERBOSE_MODE && println (
+        X2_TEST_DEBUG_LEVEL > 1 && println (
             'account created');
         return $lead;
     }

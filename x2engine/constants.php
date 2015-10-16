@@ -24,6 +24,9 @@ defined('YII_TRACE_LEVEL') or define('YII_TRACE_LEVEL',3);
 // Enable all logging or bare minimum logging:
 defined('YII_LOGGING') or define('YII_LOGGING',true);
 
+// Enable translation message logging
+defined('X2_TRANSLATION_LOGGING') or define('X2_TRANSLATION_LOGGING',false);
+
 // If true, adds debug toolbar route to array of debug log routes
 defined('YII_DEBUG_TOOLBAR') or define('YII_DEBUG_TOOLBAR',false);
 

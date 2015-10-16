@@ -36,7 +36,7 @@
  *****************************************************************************************/
 
 echo '<div class="page-title icon topics"><h2>' . Yii::t('topics', 'Update Reply to {topic}', array('{topic}' => $topic->name)) . '</h2></div>';
-echo "<div class='form'>";
+echo "<div>";
 $this->renderPartial('_topicReplyForm',
         array('model' => $model, 'topic' => $topic, 'method' => 'update-reply'));
 echo "</div>";

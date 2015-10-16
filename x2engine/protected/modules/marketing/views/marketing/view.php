@@ -89,6 +89,7 @@ $this->insertMenu($menuOptions, $model, $authParams);
 
     $partialParams = array(
         'model' => $model,
+        'disableInlineEditingFor' => array ('content'),
         'modelName' => 'Campaign',
         'specialFields' => array(
             'content' => '<div style="height:350px;"><iframe src="'.$this->createUrl('/marketing/marketing/viewContent',array('id'=>$model->id)).'" id="docIframe" frameBorder="0" style="height:100%;background:#fff;"></iframe></div>'

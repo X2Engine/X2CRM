@@ -71,7 +71,7 @@ class SortableWidgetTest extends X2DbTestCase {
 
         $widgetLayoutAfter = $profile->profileWidgetLayout;
         $createdWidgetAttr = array_diff_key ($widgetLayoutAfter, $widgetLayoutBefore);
-        X2_VERBOSE_MODE && print_r ($createdWidgetAttr);
+        X2_TEST_DEBUG_LEVEL > 1 && print_r ($createdWidgetAttr);
         // ensure that widget settings were saved correctly
         $keys = array_keys ($createdWidgetAttr);
         $this->assertEquals ($widgetSubtype.'_'.$uid, array_pop ($keys));

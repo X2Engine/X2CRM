@@ -237,7 +237,7 @@ class ThemeBuildCommand extends CConsoleCommand {
         // Remove extra spaces in between
         $stripped = preg_replace('/\ \ */', ' ', $stripped);
         $stripped = preg_replace('/:/', '', $stripped);
-        $params = split(' ', $stripped);
+        $params = explode(' ', $stripped);
 
         // Backtrack the last comment
         while(!preg_match('/line\ [0-9]+/', $lines[$lineNumber])) {

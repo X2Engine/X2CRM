@@ -71,7 +71,7 @@ $this->widget('X2GridViewGeneric', array(
 	'gvSettingsName'=>'workflowIndex',
     'defaultGvSettings' => array (
         'name' => 240,
-        'isDefault' => 100,
+        'isDefaultFor' => 100,
         'stages' => 100,
     ),
 	'columns'=>array(
@@ -81,8 +81,8 @@ $this->widget('X2GridViewGeneric', array(
 			'type'=>'raw',
 		),
 		array(
-			'name'=>'isDefault',
-			'value'=>'$data->isDefault? Yii::t("app","Yes") : ""',
+			'name'=>'isDefaultFor',
+			'value'=>'$data->renderAttribute ("isDefaultFor")',
 			'type'=>'raw',
 		),
 		array(

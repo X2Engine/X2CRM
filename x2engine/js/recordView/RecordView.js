@@ -33,24 +33,29 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 
- /**
-  * Skeleton Class for future improvements to the Detail View
-  */
- x2.RecordView = (function() {
-     function RecordView(argsDict) {
-         var defaultArgs = {
-             modelName: null,
-             modelId: null
-         };
+/**
+ * Skeleton Class for future improvements to the Detail View
+ */
+x2.RecordView = (function() {
+    function RecordView(argsDict) {
+        x2.Widget.call (this, argsDict);
+        var defaultArgs = {
+            modelName: null,
+            modelId: null
+        };
 
-         auxlib.applyArgs (this, defaultArgs, argsDict);
-     }
+        auxlib.applyArgs (this, defaultArgs, argsDict);
+    }
 
-     RecordView.prototype.init = function() {
-         window.formName = this.modelName;
-     };
+    RecordView.prototype = auxlib.create (x2.Widget.prototype);
 
-     return RecordView;
- })();
+    RecordView.prototype.init = function() {
+        // Dependency of form editor  
+        // TODO: add namespace
+        window.formName = this.modelName;
+    };
+
+    return RecordView;
+})();
 
 

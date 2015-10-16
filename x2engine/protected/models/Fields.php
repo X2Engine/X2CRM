@@ -1030,4 +1030,19 @@ class Fields extends CActiveRecord {
         return $this->_dropdown;
     }
 
+    public static function getFieldsOfModelsWithFieldLevelPermissions () {
+        $fields = Fields::model()
+            ->findAll(array('order' => 'modelName ASC'));
+        $filtered = array ();
+        foreach ($fields as $field) {
+            $modelClass = $field->modelName;
+            if (class_exists ($modelClass) && 
+                $modelClass::model ()->supportsFieldLevelPermissions) { 
+
+                $filtered[] = $field;
+            }
+        }
+        return $filtered;
+    }
+
 }

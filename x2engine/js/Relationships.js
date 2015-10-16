@@ -256,13 +256,16 @@ RelationshipsManager.prototype._setUpOpenDialogBehavior = function () {
     $(this.element).unbind ('click')
         .bind ('click', function() {
 
+        var data = {
+            x2ajax: true
+        };
+        data[x2.Widget.NAMESPACE_KEY] = 'RelationshipsManager';
+
         if (that._dialogInactive) {
             $.ajax({
                 type: 'post',
                 url: that.createRecordUrl, 
-                data: {
-                    x2ajax: true
-                }, 
+                data: data,
                 dataType: 'json',
                 success: function(response) {
                     var page = response.page;

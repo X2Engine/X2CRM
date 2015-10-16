@@ -57,6 +57,8 @@ function ProfileSettings (argsDict) {
  * @param string value
  */
 ProfileSettings.prototype.addColorSelector = function (label, key, value) {
+    if ($('#module-override' + key).length) return false;
+
     var colorSelectorCount = this.themeAttributes$.find ('.row.theme-color-selector').
         not ('#theme-color-selector-template').length;
     var lastColorSelector$ = this.themeAttributes$.find ('.row.theme-color-selector').last ();
@@ -68,7 +70,8 @@ ProfileSettings.prototype.addColorSelector = function (label, key, value) {
         lastColorSelector$.next () : lastColorSelector$;
     var newColorSelector$ = this.colorSelectorTemplate$.clone ()
         .attr ('style', '')
-        .removeAttr ('id');
+        .removeAttr ('id')
+        .attr ('id', 'module-override' + key);
     newColorSelector$.find ('input').removeAttr ('disabled');
     newColorSelector$.find ('input').attr ('name', 
         newColorSelector$.find ('input').attr ('name').replace (/\[\]/, '[' + key + ']'));

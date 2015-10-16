@@ -35,6 +35,7 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 
+Yii::app()->clientScript->registerCssFile(Yii::app()->theme->baseUrl.'/css/importexport.css');
 ?>
 <div class="page-title"><h2><?php echo Yii::t('admin','Import {model} from Template', array('{model}'=>(empty($model)? "" : X2Model::getModelTitle ($model)))); ?></h2></div>
 <div class="form">
@@ -58,13 +59,28 @@
     <br><br>
     </div>
     <div class="form" style="width:600px;">
+<?php unset($_SESSION['model']); ?>
+    <h3><?php echo Yii::t('admin','Upload File'); ?></h3>
+    <?php
+        echo CHtml::form('importModels','post',array('enctype'=>'multipart/form-data','id'=>'importModels'));
+        echo CHtml::fileField('data', '', array('id'=>'data'))."<br>";
+        echo CHtml::hiddenField('model', $model);
+    ?>
+        <i><?php echo Yii::t('app','Allowed filetypes: .csv'); ?></i>
+        <br><br>
+        <h3><?php
+            echo Yii::t('admin', 'Customize CSV') .
+                X2Html::minimizeButton (array('class' => 'pseudo-link'), '#importSeparator'); ?>
+        </h3>
+    <div id='importSeparator' style='display:none'>
+        <?php
+            echo CHtml::label(Yii::t('admin', 'Delimeter'), 'delimeter');
+            echo CHtml::textField('delimeter', ',').'<br />';
+            echo CHtml::label(Yii::t('admin', 'Enclosure'), 'enclosure');
+            echo CHtml::textField('enclosure', '"');
+        ?>
+    </div>
 <?php
-    unset($_SESSION['model']);
-    echo "<h3>".Yii::t('admin','Upload File')."</h3>";
-    echo CHtml::form('importModels','post',array('enctype'=>'multipart/form-data','id'=>'importModels'));
-    echo CHtml::fileField('data', '', array('id'=>'data'))."<br>";
-    echo CHtml::hiddenField('model', $model);
-    echo "<i>".Yii::t('app','Allowed filetypes: .csv')."</i><br><br>";
     echo "<h3>".Yii::t('admin', 'Import Map').
         X2Html::minimizeButton (array('class' => 'pseudo-link'), '#upload-map')."</h3>";
     echo "<div id='upload-map' style='display:none;'>";
@@ -95,22 +111,31 @@
 ?>
 
 </div>
-<script>
+
+<?php
+Yii::app()->clientScript->registerScript('recordExportJs', "
+    /**
+     * Set up event listeners for export button and download link
+     */
+    $('#expand-importSeparator').on('click', function() {
+        $('#importSeparator').slideToggle();
+    });
+
     $('#x2maps').change(function() {
         // Reset the file upload if a radio button is selected
-        $('#mapping').val("");
+        $('#mapping').val('');
     });
     $('#mapping').change(function() {
         // Deselect the radio buttons when a file is selected instead
         $('#x2maps').find('input:radio:checked').prop('checked', false);
     });
     $(document).on('submit','#importModels',function(){
-        var fileName=$("#data").val();
+        var fileName=$('#data').val();
         var pieces=fileName.split('.');
         var ext=pieces[pieces.length-1];
         if(ext!='csv'){
-            $("#data").val("");
-            alert("File must be a .csv file.");
+            $('#data').val('');
+            alert('File must be a .csv file.');
             return false;
         }
         var mapfileName = $('#mapping').val();
@@ -118,11 +143,16 @@
             var pieces = mapfileName.split('.');
             var ext = pieces[pieces.length - 1];
             if (ext != 'json'){
-                $('#mapping').val("");
+                $('#mapping').val('');
                 alert('Map file must be a .json file.');
                 return false;
             }
         }
+        if ($('#delimeter').val().length != 1 || $('#enclosure').val().length != 1) {
+            alert (".CJSON::encode(Yii::t('admin', 'Invalid CSV parameters! Delimeter '.
+                        'and enclosure can only be a single character')).");
+            return false;
+        }
     });
-</script>
-    
+", CClientScript::POS_READY);
+?>

@@ -73,12 +73,40 @@ class X2FlowApiCall extends X2FlowAction {
             'info' => Yii::t('studio', $this->info),
             'modelClass' => 'API_params',
             'options' => array(
-                array('name' => 'url', 'label' => Yii::t('studio', 'URL')),
-                array('name' => 'method', 'label' => Yii::t('studio', 'Method'), 'type' => 'dropdown', 'options' => $httpVerbs),
-                array('name' => 'attributes', 'optional' => 1),
-                array('name' => 'headers', 'type' => 'attributes', 'optional' => 1),
+                array(
+                    'name' => 'url', 'label' => Yii::t('studio', 'URL')
+                ),
+                array(
+                    'name' => 'method', 
+                    'label' => Yii::t('studio', 'Method'), 
+                    'type' => 'dropdown',
+                    'options' => $httpVerbs
+                ),
+                array(
+                    'name' => 'jsonPayload', 
+                    'label' => Yii::t('studio', 'Use JSON payload?'), 
+                    'type' => 'boolean',
+                    'defaulVal' => 0 
+                ),
+                array(
+                    'name' => 'jsonBlob', 
+                    'label' => Yii::t('studio', 'JSON'), 
+                    'type' => 'text',
+                    'optional' => 1,
+                    'htmlOptions' => array (
+                        'style' => 'display: none;'
+                    )
+                ),
+                array(
+                    'name' => 'attributes', 'optional' => 1
+                ),
+                array(
+                    'name' => 'headers', 
+                    'type' => 'attributes', 
+                    'optional' => 1
+                ),
             // array('name'=>'immediate','label'=>'Call immediately?','type'=>'boolean','defaultVal'=>true),
-                )));
+            )));
     }
 
     /**
@@ -116,12 +144,7 @@ class X2FlowApiCall extends X2FlowAction {
         if (!$success) return array ($success, $message);
         $url = $this->config['options']['url']['value'];
 
-        if (YII_UNIT_TESTING) {
-            $hostInfo = 'localhost';
-        } else {
-            $hostInfo = preg_replace ('/^https?:\/\//', '', Yii::app()->getAbsoluteBaseUrl ());
-        }
-
+        $hostInfo = preg_replace ('/^https?:\/\//', '', Yii::app()->getAbsoluteBaseUrl ());
         $url = preg_replace ('/^https?:\/\//', '', $url);
         if ($staticValidation && 
             gethostbyname ($url) === gethostbyname ($hostInfo)) {
@@ -146,11 +169,7 @@ class X2FlowApiCall extends X2FlowAction {
      * wouldn't want to have effect flow execution.
      */
     private function validateUrl ($url) {
-        if (YII_UNIT_TESTING) {
-            $absoluteBaseUrl = 'http://localhost';
-        } else {
-            $absoluteBaseUrl = Yii::app()->getAbsoluteBaseUrl ();
-        }
+        $absoluteBaseUrl = Yii::app()->getAbsoluteBaseUrl ();
         $absoluteBaseUrl = preg_replace ('/^https?:\/\//', '', $absoluteBaseUrl);
         $url = preg_replace ('/^https?:\/\//', '', $url);
         if (preg_match ("/^".preg_quote ($absoluteBaseUrl, '/').".*\/api2?\/.*/", $url)) {
@@ -172,35 +191,47 @@ class X2FlowApiCall extends X2FlowAction {
                 'timeout' => 5, // 5 second timeout
                 'method' => $method,
             );
-            if(isset($this->config['attributes']) && !empty($this->config['attributes'])){
+            if (isset ($this->config['headerRows'])) {
+                $headers = $this->getHeaders ($this->config['headerRows'], $params);
+            } 
 
-                if (isset ($this->config['headerRows'])) {
-                    $headers = $this->getHeaders ($this->config['headerRows'], $params);
-                } 
-
-                $data=array();
+            if ($method !== 'GET' && $this->parseOption ('jsonPayload', $params)) {
+                $data = $this->parseOption ('jsonBlob', $params);
+            } elseif(isset($this->config['attributes']) && !empty($this->config['attributes'])){
+                $data = array();
                 foreach($this->config['attributes'] as $param){
                     if(isset($param['name'],$param['value'])){
                         $data[$param['name']]=X2Flow::parseValue(
                             $param['value'],'',$params, false);
                     }
                 }
+            }
+
+            if (isset ($data)) {
                 if($method === 'GET'){
                     $data = http_build_query($data);
                     // make sure the URL is ready for GET params
                     $url .= strpos($url, '?') === false ? '?' : '&'; 
                     $url .= $data;
                 }else{
-                    // set up default header for POST style data
-                    if (!isset ($headers['Content-Type']))
-                        $headers['Content-Type'] = 'application/x-www-form-urlencoded'; 
-
-                    if (preg_match ("/application\/json/", $headers['Content-Type'])) {
-                        $data = CJSON::encode ($data);
+                    if ($this->parseOption ('jsonPayload', $params)) {
+                        // nested JSON option
+                        if (!isset ($headers['Content-Type']))
+                            $headers['Content-Type'] = 'application/json'; 
                         $httpOptions['content'] = $data;
                     } else {
-                        $data = http_build_query($data);
-                        $httpOptions['content'] = $data;
+                        // set up default header for POST style data
+                        if (!isset ($headers['Content-Type']))
+                            $headers['Content-Type'] = 'application/x-www-form-urlencoded'; 
+
+                        if (preg_match ("/application\/json/", $headers['Content-Type'])) {
+                            // legacy flat JSON object support
+                            $data = CJSON::encode ($data);
+                            $httpOptions['content'] = $data;
+                        } else {
+                            $data = http_build_query($data);
+                            $httpOptions['content'] = $data;
+                        }
                     }
 
                     // set up default header for POST style data

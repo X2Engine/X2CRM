@@ -51,7 +51,7 @@
  * timeout and navigates to the login page.
  */
 $('body').bind('ajaxSuccess', function(event, request, settings) {
-    if (request.getResponseHeader('REQUIRES_AUTH') == '1') {
+    if (request && request.getResponseHeader('REQUIRES_AUTH') == '1') {
         window.location = window.location;
     }
 });

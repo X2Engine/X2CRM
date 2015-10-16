@@ -97,16 +97,28 @@ class ProfilesGridViewProfileWidget extends ProfileGridViewWidget {
             $this->_gridViewConfig = array_merge (
                 parent::getGridViewConfig (),
                 array (
+                    'possibleResultsPerPage' => array (5, 10, 20, 30, 40, 50, 75, 100),
                     'defaultGvSettings'=>array(
                         'isActive' => 65,
                         'fullName' => 125,
-                        'tagLine' => 100,
-                        'emailAddress' => 100,
-                        'cellPhone' => 100,
+                        //'tagLine' => 100,
+                        //'cellPhone' => 100,
                         'lastLogin' => 80,
+                        'emailAddress' => 100,
                     ),
                     'template'=>
-                        '<div class="page-title"><h2 class="grid-widget-title-bar-dummy-element">'.
+                        CHtml::openTag ('div', X2Html::mergeHtmlOptions (array (
+                            'class' => 'page-title'
+                        ), array (
+                            'style' =>  
+                                !CPropertyValue::ensureBoolean (
+                                    $this->getWidgetProperty('showHeader')) &&
+                                !CPropertyValue::ensureBoolean (
+                                    $this->getWidgetProperty('hideFullHeader')) ?
+                                    'display: none;' : ''
+
+                        ))).
+                        '<h2 class="grid-widget-title-bar-dummy-element">'.
                         '</h2>{buttons}{filterHint}'.
                         '{summary}{topPager}</div>{items}{pager}',
                     'includedFields'=>array (
@@ -124,8 +136,7 @@ class ProfilesGridViewProfileWidget extends ProfileGridViewWidget {
                             'name'=>'lastLogin',
                             'header'=>Yii::t('profile', 'Last Login'),
                             'value'=>'$data->user ? ($data->user->lastLogin == 0 ? "" : '.
-                                'Yii::app()->dateFormatter->formatDateTime ('.
-                                    '$data->user->lastLogin, "medium")) : ""',
+                                'Formatter::formatDateDynamic ($data->user->lastLogin)) : ""',
                             'type'=>'raw',
                         ),
                         'isActive'=>array(

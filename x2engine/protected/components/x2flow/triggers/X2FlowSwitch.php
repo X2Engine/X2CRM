@@ -39,9 +39,17 @@
  * 
  * @package application.components.x2flow.actions
  */
-class X2FlowSwitch extends X2FlowTrigger {
+class X2FlowSwitch extends MultiChildNode {
 	public $title = 'Conditional Switch';
 	public $info = 'Creates a fork in the automation flow based on your conditions.';
+
+    public static function getRightChildName () {
+        return 'trueBranch';
+    }
+
+    public static function getLeftChildName () {
+        return 'falseBranch';
+    }
 	
 	public function paramRules() {
 		return array(

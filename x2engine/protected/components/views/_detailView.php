@@ -1,5 +1,4 @@
 <?php
-
 /*****************************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2015 X2Engine Inc.
@@ -35,59 +34,13 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 
-
-$attributeLabels = $model->attributeLabels();
-
-// $showSocialMedia = Yii::app()->params->profile->showSocialMedia;
-// $showWorkflow = Yii::app()->params->profile->showWorkflow;
-
 $cs = Yii::app()->getClientScript();
 
-
-if ($modelName == 'contacts' || $modelName == 'opportunities') {
-$cs->registerScript('toggleWorkflow', "
-    function showWorkflow() {
-        $('tr#workflow-row').show();
-        $('tr#workflow-toggle').hide();
-    }
-    function hideWorkflow() {
-        $('tr#workflow-row').hide();
-        $('tr#workflow-toggle').show();
-    }
-", CClientScript::POS_HEAD);
-}
-
-// $(function() {\n"
-// .($showWorkflow? "showWorkflow();\n" : "hideWorkflow()\n")
-// ."});",CClientScript::POS_HEAD);
-
-$cs->registerScript('setFormName', "
-window.formName = '$modelName';
-", CClientScript::POS_HEAD);
-
-$scenario = isset($scenario) ? $scenario : 'Default';
 $nameLink = isset($nameLink) ? $nameLink : false;
-
-$authParams['X2Model'] = $model;
-$moduleName = X2Model::getModuleName($modelName);
-$modelEdit = Yii::app()->params->isAdmin || Yii::app()->user->checkAccess(ucfirst($moduleName) . 'Update', $authParams);
+$scenario = isset($scenario) ? $scenario : 'Default';
 
 // check the app cache for the data
 $layoutData = Yii::app()->cache->get('form_' . $modelName . '_' . $scenario);
-$fields = array();
-
-
-// remove this later, once all models extend X2Models
-if (method_exists($model, 'getFields')) {
-    $fields = $model->getFields(true);
-} else {
-    foreach (X2Model::model('Fields')->findAllByAttributes(
-            array('modelName' => ucfirst($modelName))) as $fieldModel) {
-
-        $fields[$fieldModel->fieldName] = $fieldModel;
-    }
-}
-
 if ($layoutData === false) {
     $layout = FormLayout::model()->findByAttributes(
             array('model' => ucfirst($modelName), 'defaultView' => 1, 'scenario' => $scenario));
@@ -102,7 +55,52 @@ if ($layoutData === false) {
     }
 }
 
+if (isset ($layoutData['version']) && version_compare ($layoutData['version'], '5.2') >= 0) {
+    $this->widget ('DetailView', array(
+        'model' => $model,
+        'nameLink' => $nameLink,
+        'scenario' => $scenario,
+    ));
+} else {
+
+if ($modelName == 'contacts' || $modelName == 'opportunities') {
+$cs->registerScript('toggleWorkflow', "
+    function showWorkflow() {
+        $('tr#workflow-row').show();
+        $('tr#workflow-toggle').hide();
+    }
+    function hideWorkflow() {
+        $('tr#workflow-row').hide();
+        $('tr#workflow-toggle').show();
+    }
+", CClientScript::POS_HEAD);
+}
+
+$cs->registerScript('setFormName', "
+window.formName = '$modelName';
+", CClientScript::POS_HEAD);
+
+$authParams['X2Model'] = $model;
+$moduleName = X2Model::getModuleName($modelName);
+$modelEdit = Yii::app()->params->isAdmin || Yii::app()->user->checkAccess(ucfirst($moduleName) . 'Update', $authParams);
+
+$fields = array();
+
+
+// remove this later, once all models extend X2Models
+if (method_exists($model, 'getFields')) {
+    $fields = $model->getFields(true);
+} else {
+    foreach (X2Model::model('Fields')->findAllByAttributes(
+            array('modelName' => ucfirst($modelName))) as $fieldModel) {
+
+        $fields[$fieldModel->fieldName] = $fieldModel;
+    }
+}
+
+
 if ($layoutData !== false && isset($layoutData['sections']) && count($layoutData['sections']) > 0) {
+
     echo '<div class="detail-view x2-layout x2-layout-island' . ((isset($halfWidth) && $halfWidth) ? ' half-width' : '') . '">';
     $formSettings = Profile::getFormSettings($modelName);
 
@@ -327,5 +325,7 @@ if ($scenario != 'Inline') {
     Yii::app()->clientScript->registerScript('inlineEditJS', "
         new x2.InlineEditor($jsParams); 
     ", CClientScript::POS_READY);
+}
+
 }
 ?>
