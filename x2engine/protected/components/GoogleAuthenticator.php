@@ -154,7 +154,7 @@ class GoogleAuthenticator {
                 $client->setClientSecret($this->clientSecret);
                 $client->setRedirectUri($this->redirectUri);
                 $_GET['code'] = $authorizationCode;
-                return $client->authenticate();
+                return $client->authenticate($authorizationCode);
             }catch(Google_Auth_Exception $e){
                 $this->setErrors($e->getMessage());
                 throw new CodeExchangeException(null);

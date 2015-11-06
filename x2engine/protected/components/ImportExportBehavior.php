@@ -489,6 +489,19 @@ class ImportExportBehavior extends CBehavior {
     }
 
     /**
+     * Append an empty placeholder for action texts, or set the attribute of the last action
+     * text in the container if attributes are specified
+     */
+    protected function setCurrentActionText($attributes = null) {
+        if (is_null($attributes))
+            $this->modelContainer['ActionText'][] = array();
+        else {
+            $containerId = count($this->modelContainer['ActionText']) - 1;
+            $this->modelContainer['ActionText'][$containerId] = $attributes;
+        }
+    }
+
+    /**
      * The import assumes we have human readable data in the CSV and will thus need to convert. This
      * method converts link, date, and dateTime fields to the appropriate machine friendly data.
      * @param string $modelName The model class being imported
@@ -514,7 +527,7 @@ class ImportExportBehavior extends CBehavior {
             $text->text = $importAttribute;
             if (isset($model->id))
                 $text->actionId = $model->id;
-            $this->modelContainer['ActionText'][] = $text->attributes;
+            $this->setCurrentActionText ($text->attributes);
             return $model;
         }
 
@@ -879,9 +892,10 @@ class ImportExportBehavior extends CBehavior {
                 $firstInsertedId = $primaryIdRange[0];
                 $actionTexts = array();
                 foreach ($models as $i => $model) {
-                    if (empty($model) or isset($model['actionId']))
+                    if (empty($model))
                         continue;
-                    $model['actionId'] = $firstInsertedId + $i;
+                    if (!isset($model['actionId']))
+                        $model['actionId'] = $firstInsertedId + $i;
                     $actionTexts[] = $model;
                 }
                 $this->insertMultipleRecords ('ActionText', $actionTexts);
@@ -1148,11 +1162,12 @@ class ImportExportBehavior extends CBehavior {
 
     /**
      * Save the failed record into a CSV with validation errors
+     * @param string $modelName
      * @param X2Model $model
      * @param array $csvLine
      * @param array $metadata
      */
-    protected function markFailedRecord(X2Model $model, $csvLine, $metaData) {
+    protected function markFailedRecord($modelName, X2Model $model, $csvLine, $metaData) {
         // If the import failed, then put the data into the failedRecords CSV for easy recovery.
         $failedRecords = fopen($this->safePath('failedRecords.csv'), 'a+');
         $errorMsg = array();
@@ -1168,6 +1183,10 @@ class ImportExportBehavior extends CBehavior {
         fputcsv($failedRecords, $csvLine);
         fclose($failedRecords);
         $_SESSION['failed']++;
+
+        // Remove ActionText placeholder from model container
+        if ($modelName === 'Actions')
+            array_pop ($this->modelContainer['ActionText']);
     }
 
     /**

@@ -125,7 +125,9 @@ Yii::app()->clientScript->registerCssFile (Yii::app()->theme->baseUrl.'/css/impo
             url:'prepareModelExport',
             data: {
                 model: x2.recordExport.modelName,
-                includeTags: includeTags
+                includeTags: includeTags,
+                delimeter: x2.recordExport.delimeter,
+                enclosure: x2.recordExport.enclosure
             },
             success:function(data) {
                 x2.recordExport.exportModelData(0);
@@ -157,9 +159,7 @@ Yii::app()->clientScript->registerCssFile (Yii::app()->theme->baseUrl.'/css/impo
             data: {
                 page: page,
                 model: x2.recordExport.modelName,
-                includeHidden: includeHidden,
-                delimeter: x2.recordExport.delimeter,
-                enclosure: x2.recordExport.enclosure
+                includeHidden: includeHidden
             },
             success: function (data) {
                 if (data>0){

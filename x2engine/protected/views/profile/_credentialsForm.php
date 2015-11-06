@@ -101,7 +101,13 @@ $model->getAuthModel ()->renderForm ();
 <div class="credentials-buttons">
 <?php
 echo CHtml::submitButton(Yii::t('app','Save'),array('class'=>'x2-button credentials-save','style'=>'display:inline-block;margin-top:0;'));
-echo CHtml::link(Yii::t('app','Cancel'),array('/profile/manageCredentials'),array('class'=>'x2-button credentials-cancel'));
+if (in_array (
+    $model->modelClass, array ('TwitterApp', 'GoogleProject'))) {
+    $linkInfo = array('/admin/index');
+} else {
+    $linkInfo = array('/profile/manageCredentials');
+}
+echo CHtml::link(Yii::t('app','Cancel'),$linkInfo,array('class'=>'x2-button credentials-cancel'));
 if (isset ($model->auth->enableVerification) && $model->auth->enableVerification) {
     echo CHtml::link(Yii::t('app', 'Verify Credentials'), "#", array('class' => 'x2-button credentials-verify', 'style' => 'margin-left: 5px;'));
     ?><div id='verify-credentials-loading'></div>
@@ -155,7 +161,7 @@ $defaultSecurity = CJSON::encode($modelClass->security);
                 security = $('#Credentials_auth_security').val();
 
             var successMsg = "<?php echo Yii::t('app', 'Authentication successful.'); ?>";
-            var failureMsg = "<?php echo Yii::t('app', 'Failed to authenticate! Please check you credentials.'); ?>";
+            var failureMsg = "<?php echo Yii::t('app', 'Failed to authenticate! Please check your credentials.'); ?>";
             x2.forms.inputLoading ($(this), true, {
                 'style': 'top: -14px; margin: auto;'
             });

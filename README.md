@@ -1,43 +1,15 @@
-# 5.3 #
-10/15/2015
+# 5.3.1 #
+11/5/2015
 
-* Highlights
-  * Professional Edition Changes:
-    * Google+ integration:
-      * Google+ Profile widget allows display of Google+ Profile data on record view screens.
-      * Google+ Profile search feature
-    * New X2Workflow Splitter enables concurrent execution of flow branches, simplifying creation of complex flow logic.
-    * Added mass actions to Email Inbox profile widget. It's now possible to delete, log, and flag emails directly from the profile page.
-    * X2Workflow Remote API Call action now supports nested JSON payloads
-  * Default processes can now be set on a per module basis.
-  * New "Redirect URL" option in web form designer
-  * Tags column now available in more module grid views, including custom modules.
-  * Added ability to select and move multiple Docs or folders at a time from the Docs grid view
 * General Changelog / Developer Notes:
-  * The Calendar Module now only displays events and actions. Logged time, logged calls, comments, and emails will no longer show in the calendar view.
-  * In order to simplify Lead conversion reporting, Leads are now preserved after conversion to Contact or Opportunity and designated as "Converted". Two new fields have been added, "Converted" and "Conversion Date", which get set automatically upon Lead conversion.
-  * Fixed bug which prevented Actions from being synced with Google Calendar 
-  * SASS-generated CSS has been minified. CSS customizations can be made by regenerating the CSS
-    from customized SASS.
-  * Updated Google PHP API client Library to version 1.1.5
-  * Fixed bug which broke inline editing on Service Cases with associated Contacts.
-  * Fixed bug which caused an error when attempting to create a reminder from the Action update page
-  * Added back red asterisks appearing alongside required fields on record edit pages.
-  * Fixed off-by-one bugs in X2Workflow Periodic Trigger scheduling
-  * "Disable automatic record tagging?" option moved out of user preferences. Automatic record tagging can now be disabled globally from the "General Settings" admin page.
-  * Added print view feature to Opportunities
+  * Fixed bug which caused "Discard unsaved changes?" dialog to display incorrectly in certain cases
+  * Fixed bug in module import which could break link-type fields
+  * Fixed bug in records export which caused the custom delimiter/enclosure to be ignored in the resulting CSV header
+  * Fixed bug in records import causing Action descriptions to be ignored if the ID field was mapped
+  * Fixed bug in records import which attempted to insert ActionText even if the Actions model failed validation, resulting in a constraint violation
 * Tracked Bug Fixes:  
-  * [2877](http://x2software.com/index.php/bugReports/2877): "Assigned To" grid filter cannot be used to retrieve multi-assigned records  
-  * [2888](http://x2software.com/index.php/bugReports/2888): array_merge(): Argument #1 is not an array  
-  * [2889](http://x2software.com/index.php/bugReports/2889): Invalid argument supplied for foreach()  
-  * [2891](http://x2software.com/index.php/bugReports/2891): Trying to get property of non-object  
-  * [2896](http://x2software.com/index.php/bugReports/2896): Unable to resolve the request "/index.php/contacts/contacts/weblead".  
-  * [2931](http://x2software.com/index.php/bugReports/2931): Trying to get property of non-object  
-  * [2969](http://x2software.com/index.php/bugReports/2969): AdminController cannot find the requested view "deleteDropdowns".  
-  * [2972](http://x2software.com/index.php/bugReports/2972): Property "Docs.editPermissions" is not defined.  
-  * [2980](http://x2software.com/index.php/bugReports/2980): Property "Contacts.private" is not defined.  
-  * [2984](http://x2software.com/index.php/bugReports/2984): Undefined index: notificationUsers  
-
+  * [3099](http://x2software.com/index.php/bugReports/3099): Missing argument 1 for Google_Client::authenticate(), called in /var/www/html/crm/protected/components/GoogleAuthenticator.php on line 146 and defined 
+  * [3115](http://x2software.com/index.php/bugReports/3115): Undefined offset: 0  
 
 
 # Introduction #

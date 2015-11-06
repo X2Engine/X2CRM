@@ -59,7 +59,8 @@ Yii::app()->clientScript->registerScript('manageCredentialsScript', "
 <div class="credentials-storage">
 <?php
 $crit = new CDbCriteria(array(
-    'condition' => '(userId=:uid OR userId=-1) AND modelClass != "TwitterApp"',
+    'condition' => '(userId=:uid OR userId=-1) AND modelClass != "TwitterApp" AND 
+        modelClass != "GoogleProject"',
     'order' => 'name ASC',
     'params' => array(':uid' => $profile->user->id),
 )

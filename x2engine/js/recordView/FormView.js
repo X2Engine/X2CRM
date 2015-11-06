@@ -89,7 +89,10 @@ FormView.prototype.setUpUnsavedChangeDetection = function () {
     // via a link
     $(document).on ('click.' + this.namespace + 'setUpUnsavedChangeDetection', 'a', function (evt) {
         var link$ = $(this); 
-        if (link$.attr ('href') !== '#' &&  that._hasChanges) {
+        if ($.type (link$.attr ('href')) === 'string' && link$.attr ('href') !== '#' && 
+            !link$.attr ('href').match (/^javascript:/) && 
+            that._hasChanges) {
+
             auxlib.confirm (function () {
                 that._hasChanges = false;
                 window.location = link$.attr ('href');

@@ -98,9 +98,6 @@ class AdminController extends Controller {
     public function actions() {
         return array_merge($this->webUpdaterActions, array(
             
-            'automateTranslation' => array(
-                'class' => 'X2TranslationAction',
-            ),
             'viewLog' => array(
                 'class' => 'LogViewerAction',
             ),
@@ -650,7 +647,10 @@ class AdminController extends Controller {
                     if ($dropdownId) {
                         Yii::app()->db->createCommand()
                                 ->update(
-                                        'x2_fields', array('linkType' => $dropdownId), array('id = :id', array(':id' => $field['id']))
+                                    'x2_fields',
+                                    array('linkType' => $dropdownId),
+                                    'id = :id AND type = "dropdown"',
+                                    array(':id' => $field['id'])
                         );
                     }
                 }
@@ -2906,9 +2906,6 @@ class AdminController extends Controller {
         $dp->setPagination($pg);
         $records = $dp->getData();
         $pageCount = $dp->getPagination()->getPageCount();
-        // Retrieve specified export delimeter and enclosure
-        $delimeter = (isset($_GET['delimeter']) ? $_GET['delimeter'] : ',');
-        $enclosure = (isset($_GET['enclosure']) ? $_GET['enclosure'] : '"');
 
         // We need to set our data to be human friendly, so loop through all the
         // records and format any date / link / visibility fields.
@@ -2962,7 +2959,7 @@ class AdminController extends Controller {
             }
             $tempAttributes = array_intersect_key($recordAttributes, $combinedMeta);
             $tempAttributes = array_merge($combinedMeta, $tempAttributes);
-            fputcsv($fp, $tempAttributes, $delimeter, $enclosure);
+            fputcsv($fp, $tempAttributes, $_SESSION['importerDelimeter'], $_SESSION['importerEnclosure']);
         }
 
         unset($dp);
@@ -3182,9 +3179,7 @@ class AdminController extends Controller {
             $importMap = $_SESSION['importMap'];
             $fp = fopen($path, 'r+');
             fseek($fp, $_SESSION['offset']); // Seek to the right file offset
-
-            // Whether the user has mapped the ID field
-            $mappedId = false;
+            $mappedId = false; // Whether the user has mapped the ID field
 
             // validate meta data
             if (!ArrayUtil::setEquals (array_keys ($importMap), $metaData)) {
@@ -3206,6 +3201,8 @@ class AdminController extends Controller {
                     else if (count($csvLine) < count($metaData))
                         $csvLine = array_pad($csvLine, count($metaData), null);
                     unset($_POST);
+                    if ($modelName === 'Actions')
+                        $this->setCurrentActionText();
 
                     // Nix all invalid multibyte sequences to avoid errors
                     $csvLine = array_map('Formatter::mbSanitize', $csvLine);
@@ -3214,11 +3211,9 @@ class AdminController extends Controller {
                     else
                         continue;
 
-                    // Locate an existing model to update, if requested, otherwise create
-                    // a new model to populate
-                     
+                    
                         $model = new $modelName;
-                     
+                    
 
                     foreach ($metaData as $attribute) {
                         if ($importMap[$attribute] === 'id')
@@ -3241,7 +3236,7 @@ class AdminController extends Controller {
                     if (!$model->hasErrors() && $model->validate())
                         $importedIds = $this->saveImportedModel ($model, $modelName, $importedIds);
                     else
-                        $this->markFailedRecord ($model, $csvLine, $metaData);
+                        $this->markFailedRecord ($modelName, $model, $csvLine, $metaData);
                 } else {
                     $this->finishImportBatch ($modelName, $mappedId, true);
                     return;
@@ -4075,6 +4070,11 @@ class AdminController extends Controller {
         $_SESSION['includeTags'] = isset($_GET['includeTags']) && $_GET['includeTags'] === 'true';
         $filePath = $this->safePath($_SESSION['modelExportFile']);
         $attributes = X2Model::model($modelName)->attributes;
+
+        // Retrieve specified export delimeter and enclosure
+        $_SESSION['importerDelimeter'] = (isset($_GET['delimeter']) ? $_GET['delimeter'] : ',');
+        $_SESSION['importerEnclosure'] = (isset($_GET['enclosure']) ? $_GET['enclosure'] : '"');
+
         if ($modelName === 'Actions') {
             // Make sure the ActionText is exported too
             $attributes = array_merge($attributes, array('actionDescription' => null));
@@ -4094,7 +4094,7 @@ class AdminController extends Controller {
         $_SESSION['modelExportMeta'] = $meta;
         $fp = @fopen($filePath, 'w+');
         if ($fp) {
-            fputcsv($fp, $meta);
+            fputcsv($fp, $meta, $_SESSION['importerDelimeter'], $_SESSION['importerEnclosure']);
             fclose($fp);
         } else {
             $msg = Yii::t ('admin', 'Failed to open CSV file for writing. Please ensure the '.

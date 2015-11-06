@@ -1,3 +1,16 @@
+# 5.3.1 #
+11/5/2015
+
+* General Changelog / Developer Notes:
+  * Fixed bug which caused "Discard unsaved changes?" dialog to display incorrectly in certain cases
+  * Fixed bug in module import which could break link-type fields
+  * Fixed bug in records export which caused the custom delimiter/enclosure to be ignored in the resulting CSV header
+  * Fixed bug in records import causing Action descriptions to be ignored if the ID field was mapped
+  * Fixed bug in records import which attempted to insert ActionText even if the Actions model failed validation, resulting in a constraint violation
+* Tracked Bug Fixes:  
+  * [3099](http://x2software.com/index.php/bugReports/3099): Missing argument 1 for Google_Client::authenticate(), called in /var/www/html/crm/protected/components/GoogleAuthenticator.php on line 146 and defined 
+  * [3115](http://x2software.com/index.php/bugReports/3115): Undefined offset: 0  
+
 # 5.3 #
 10/15/2015
 

@@ -113,10 +113,8 @@ x2.CampaignForm = (function() {
                 });
             }
         });
-        
-        var currCampaignType = "";
-        $("#Campaign_type").change(function(){
-        
+
+        function campaignTypeChangeHandler () {
             if($(this).val() == "Email") {
                 $("#Campaign_sendAs").parents(".formItem").show();
                 $("#Campaign_enableRedirectLinks").parents(".formItem").show();
@@ -142,7 +140,11 @@ x2.CampaignForm = (function() {
                     if (campaignTypeChanged) CF.setUpTextEditor (false);
                     break;
             }
+        }
         
+        var currCampaignType = "";
+        $("#Campaign_type").change(function(){
+            campaignTypeChangeHandler.call (this);
         });
         
         $("#Campaign_type").each(function(){
@@ -150,7 +152,7 @@ x2.CampaignForm = (function() {
                 $("#Campaign_sendAs").parents(".formItem").hide();
         });
         
-        $("#Campaign_type").change ();
+        campaignTypeChangeHandler.call ($('#Campaign_type').get (0));
     }
 
     /**

@@ -316,7 +316,7 @@ class CalendarController extends x2base {
 
 
             if(isset($_GET['code'])){ // returning from google with access token
-                $client->authenticate();
+                $client->authenticate($_GET['code']);
                 $_SESSION['token'] = $client->getAccessToken();
                 header('Location: '.(@$_SERVER['HTTPS'] == 'on' ? 'https://' : 'http://').$_SERVER['HTTP_HOST'].$_SERVER['PHP_SELF']);
             }

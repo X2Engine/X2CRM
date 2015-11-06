@@ -193,7 +193,7 @@ class AccountsController extends x2base {
             if (isset($_POST['x2ajax'])) {
                 $ajaxErrors = $this->quickCreate($model);
             } else {
-                if ($model->checkForDuplicates()) {
+                if ($model->validate () && $model->checkForDuplicates()) {
                     Yii::app()->user->setState('json_attributes', json_encode($model->attributes));
                     $this->redirect($this->createUrl('/site/duplicateCheck', array(
                                 'moduleName' => 'accounts',
