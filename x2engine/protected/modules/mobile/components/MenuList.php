@@ -113,18 +113,20 @@ class MenuList extends X2Widget {
     protected function renderMenuItem($item) {
         if (isset($item['url'])) {
             $url = $item['url'];
+            
             $params = array();
             if (!is_string($url)) {
                 $route = $url[0];
                 $params = array_splice($url,1);
             }
-            $route = $this->getController()->createUrl($route,$params);
+            // absolute url needed for phonegap app
+            $route = $this->getController()->createAbsoluteUrl($route,$params);
             //Yii::trace('url|route='.(is_string ($url) ? $url : 'Array').'|'.$route); 
             $label = $this->linkLabelWrapper === null ? $item['label'] : '<' . $this->linkLabelWrapper . '>' . $item['label'] . '</' . $this->linkLabelWrapper . '>';
-        if (isset($item['left'])) 
-            return CHtml::link($label, $route, $this->leftOptions);
-            else
-            return CHtml::link($label, $route, $this->rightOptions);
+            $options = X2Html::mergeHtmlOptions (
+                isset ($item['left']) ? $this->leftOptions : $this->rightOptions,
+                isset ($item['linkOptions']) ? $item['linkOptions'] : array ());
+            return CHtml::link($label, $route, $options);
         }
     }
 

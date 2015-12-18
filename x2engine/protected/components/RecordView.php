@@ -564,7 +564,7 @@ abstract class RecordView extends X2Widget {
         if(Yii::app()->params->isAdmin){
             return true;
         }
-        
+
         // If field is read only no one can edit
         if($field->readOnly) {
             return false;

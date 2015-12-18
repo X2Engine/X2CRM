@@ -53,6 +53,11 @@ class ActiveDateRangeInput extends X2Widget {
      */
     public $endDateAttribute; 
 
+    /**
+     * @var array $options
+     */
+    public $options = array ();  
+
     public function getPackages () {
         if (!isset ($this->_packages)) {
             $this->_packages = array_merge (parent::getPackages (), array (
@@ -62,7 +67,7 @@ class ActiveDateRangeInput extends X2Widget {
                         'js/ActiveDateRangeInput.js',
                     ),
                 ),
-            ));
+            ), $this->options);
         }
         return $this->_packages;
     }
@@ -73,7 +78,7 @@ class ActiveDateRangeInput extends X2Widget {
                 'startDateAttribute' => $this->startDateAttribute,
                 'endDateAttribute' => $this->endDateAttribute,
                 'element' => '#'.$this->resolveId ($this->id),
-            ));
+            ), $this->options);
         }
         return $this->_JSClassParams;
     }

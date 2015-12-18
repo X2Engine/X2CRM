@@ -114,7 +114,7 @@ X2Forms.prototype.setUpQTips = function () {
  */
 X2Forms.prototype.initializeMultiselectDropdowns = function () {
     var that = this;
-    $('.x2-multiselect-dropdown').each (function () {
+    $('.x2-multiselect-dropdown').not ('[data-skip-auto-init="1"]').each (function () {
 
         // don't reinitialize
         if ($(this).next ().hasClass ('.ui-multiselect')) return;
@@ -131,7 +131,7 @@ X2Forms.prototype.initializeMultiselectDropdowns = function () {
 
 X2Forms.prototype.initializeMultiselects = function () {
     var that = this;
-    $('.x2-multiselect').each (function () {
+    $('.x2-multiselect').not ('[data-skip-auto-init="1"]').each (function () {
 
         // don't reinitialize
         if ($(this).next ().hasClass ('.ui-multiselect')) return;
@@ -784,7 +784,9 @@ X2Forms.prototype._setUpFormElementBehavior = function () {
             });
         }
     });
-
+    $('.inlineLabel').find('input:text, textarea').each(function(){
+        that.formFieldBlur(this);
+    });
     $('.inlineLabel').find('input:text, textarea').focus(function() { 
             that.formFieldFocus(this); 
         }).blur(function() { 

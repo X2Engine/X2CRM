@@ -54,7 +54,7 @@ x2.LoginThemeHelper = (function(){
 //        },
         {
             "colors": [
-                '#3E5C9E'
+                '#255296'
             ],
             "name": "blue"
         },
@@ -165,11 +165,14 @@ x2.LoginThemeHelper = (function(){
 		var colors = scheme.colors;
 		var name = scheme.name;
 
-		$('.background').css('background', 
-			'radial-gradient('+colors[0]+', '+
-                (tinycolor (colors[0]).darken (
-                    colors[1] && $.type (colors[1]) === 'number' ? colors[1] : 10).toString ())+')'
-		);
+        if (colors[1] && $.type (colors[1]) === 'number') {
+            $('.background').css('background', 
+                'radial-gradient('+colors[0]+', '+
+                    (tinycolor (colors[0]).darken (colors[1]).toString ())+')'
+            );
+        } else {
+            $('.background').css('background', colors[0]);
+        }
 //		$('.background').css('background', 
 //			colors[2]
 //		);

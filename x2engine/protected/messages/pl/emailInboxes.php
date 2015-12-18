@@ -58,4 +58,6 @@
   'Unable to load selected mailbox' => 'Nie można załadować wybraną skrzynkę pocztową',
   'Invalid folder specified' => 'Nieprawidłowy folderu podano',
   'Auto-log outbound emails' => 'Auto-log-maile wychodzące',
+  'Auto-log inbound emails' => 'Auto-maili przychodzących zalogować',
+  'From' => 'Od',
 );

@@ -44,7 +44,7 @@
  * @propoerty User $user The user model corresponding to the current login; null
  *  if no match for username/alias was found.
  */
-class LoginForm extends CFormModel {
+class LoginForm extends X2FormModel {
 
     public $username;
     public $password;
@@ -58,17 +58,20 @@ class LoginForm extends CFormModel {
      * @return array
      */
     public function rules() {
-	return array(
-	    // username and password are required
-	    array('username, password', 'required'),
-	    // rememberMe needs to be a boolean
-	    array('rememberMe', 'boolean'),
-	    // password needs to be authenticated
-	    array('password', 'authenticate'),
-	    // captcha needs to be filled out
-	    array('verifyCode', 'captcha', 'allowEmpty' => !(CCaptcha::checkRequirements()), 'on' => 'loginWithCaptcha'),
-	    array('verifyCode', 'safe'),
-	);
+        return array(
+            // username and password are required
+            array('username, password', 'required'),
+            // rememberMe needs to be a boolean
+            array('rememberMe', 'boolean'),
+            // password needs to be authenticated
+            array('password', 'authenticate'),
+            // captcha needs to be filled out
+            array(
+                'verifyCode', 
+                'captcha', 
+                'allowEmpty' => !(CCaptcha::checkRequirements()), 'on' => 'loginWithCaptcha'),
+            array('verifyCode', 'safe'),
+        );
     }
 
     /**

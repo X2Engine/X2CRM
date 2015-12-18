@@ -337,9 +337,7 @@ class FieldFormatter extends FieldFormatterBase {
 
     protected function renderDropdown ($field, $makeLinks, $textOnly, $encode) {
         $fieldName = $field->fieldName;
-        return $this->render(
-            X2Model::model('Dropdowns')->getDropdownValue(
-                $field->linkType, $this->owner->$fieldName), $encode);
+        return $this->render($field->getDropdownValue ($this->owner->$fieldName), $encode);
     }
 
     protected function renderParentCase ($field, $makeLinks, $textOnly, $encode) {
@@ -351,7 +349,7 @@ class FieldFormatter extends FieldFormatterBase {
     protected function renderText ($field, $makeLinks, $textOnly, $encode) {
         $fieldName = $field->fieldName;
         return Yii::app()->controller->convertUrls(
-            $this->render ($this->owner->$fieldName, $encode));
+            $this->render ($this->owner->$fieldName, false));
     }
 
     protected function renderCredentials ($field, $makeLinks, $textOnly, $encode) {

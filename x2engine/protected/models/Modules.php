@@ -22,6 +22,42 @@ class Modules extends CActiveRecord {
      */
     private static $_displayNames;
 
+    /**
+     * Update visibility and order of top bar module links 
+     * @param array $idsOfVisibleModules 
+     * @param array $idsOfHiddenModules
+     */
+    public static function updateTopBarLinks (
+        array $idsOfVisibleModules, array $idsOfHiddenModules) {
+
+        $transaction = Yii::app()->db->beginTransaction ();
+        try {
+            $count = count ($idsOfVisibleModules);
+            for ($i = 0; $i < $count; $i++) {
+                $id = $idsOfVisibleModules[$i];
+                Yii::app()->db->createCommand ("
+                    update x2_modules
+                    set visible=1, menuPosition=$i
+                    where id=:id
+                ")->execute (array (':id' => $id));
+            }
+            $count = count ($idsOfHiddenModules);
+            for ($i = 0; $i < $count; $i++) {
+                $id = $idsOfHiddenModules[$i];
+                Yii::app()->db->createCommand ("
+                    update x2_modules
+                    set visible=0, menuPosition=-1
+                    where id=:id
+                ")->execute (array (':id' => $id));
+            }
+            $transaction->commit ();
+        } catch (Exception $e) {
+            $transaction->rollback ();
+            return false;
+        }
+        return true;
+    }
+
 	/**
 	 * Returns the static model of the specified AR class.
 	 * @param string $className active record class name.
@@ -108,6 +144,13 @@ class Modules extends CActiveRecord {
             // The following rule is used by search().
             // Please remove those attributes that should not be searched.
             array('id, name, title, visible, menuPosition, searchable, editable, adminOnly, custom, toggleable', 'safe', 'on'=>'search'),
+            array(
+                'moduleType', 'in', 
+                'range' => array ('module', 'link', 'recordLink', 'pseudoModule')
+            ),
+            array(
+                'linkHref,linkRecordType,linkRecordId', 'safe', 
+            ),
         );
     }
 
@@ -233,6 +276,10 @@ class Modules extends CActiveRecord {
             }
         }
         return $models;
+    }
+
+    public function getDisplayName ($plural = true) {
+        return self::displayName ($plural, $this->name);
     }
 
     /**
@@ -374,5 +421,33 @@ class Modules extends CActiveRecord {
             return false;
         }
     }
+
+    public function getLinkedRecord () {
+        if ($this->moduleType !== 'recordLink') {
+            throw new CException ('invalid module type');
+        }
+        $model = X2Model::model2 ($this->linkRecordType);
+        if ($model && ($record = $model->findByPk ($this->linkRecordId))) {
+            return $record;
+        }
+    }
+
+    public function getTitle () {
+        switch ($this->moduleType) {
+            case 'module':
+            case 'pseudoModule':
+            case 'link':
+                return $this->title;
+            case 'recordLink':
+                $linkedRecord = $this->getLinkedRecord ();
+                if ($linkedRecord && isset ($linkedRecord->name)) {
+                    return $linkedRecord->name;
+                }
+                break;
+            default:
+                break;
+        }
+    }
+
 
 }

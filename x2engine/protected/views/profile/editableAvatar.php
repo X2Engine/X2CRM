@@ -206,7 +206,7 @@ $(function() {
 ",CClientScript::POS_HEAD);
 ?>
 <div id='profile-image-container'>
-<?php Profile::renderFullSizeAvatar ($id); 
+<?php echo Profile::renderFullSizeAvatar ($id); 
 	if($editable) { ?>
     <div id='photo-upload-overlay' style='display:none;'>
         <span><?php echo Yii::t('app', 'Change Avatar'); ?></span>

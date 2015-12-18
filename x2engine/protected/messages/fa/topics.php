@@ -19,5 +19,4 @@
   'Most Recent' => 'اخیرا',
   'Alphabetical' => 'بر اساس حروف الفبا',
   'Most Popular' => 'محبوبترین',
-  'Sticky' => 'چسبنده',
 );

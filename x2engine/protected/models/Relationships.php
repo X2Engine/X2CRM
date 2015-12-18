@@ -237,51 +237,6 @@ class Relationships extends X2ActiveRecord {
         return $this->_otherModel[$myType.$myId];
     }
     
-    
-    /**
-     * Creates a relationship between two models.
-     *
-     * Before the relationship is created, this function checks that the relationship
-     * does not already exist
-     * @param X2Model $firstType name of the class for the first model in this relationship
-     * @param X2Model $firstId id of the first model in this relationship
-     * @param X2Model $secondType name of the class for the second model in this relationship
-     * @param X2Model $secondId id of the second model in this relationship
-     * @return true if the relationship was created, false if it already exists
-     *
-     */
-    public static function create(
-        $firstType, $firstId, $secondType, $secondId, $firstLabel='', $secondLabel='') {
-
-        $relationship = Relationships::model()
-            ->findByAttributes(
-                array('firstType'=>$firstType, 'firstId'=>$firstId, 'secondType'=>$secondType,
-                    'secondId'=>$secondId));
-
-        if($relationship)
-            return false;
-
-        $relationship = Relationships::model()->
-            findByAttributes(
-                array('firstType'=>$secondType, 'firstId'=>$secondId, 'secondType'=>$firstType,
-                    'secondId'=>$firstId));
-
-        if($relationship)
-            return false;
-
-        
-        $relationship = new Relationships;
-        $relationship->firstType=$firstType;
-        $relationship->firstId=$firstId;
-        $relationship->firstLabel=$firstLabel;
-        $relationship->secondType=$secondType;
-        $relationship->secondId=$secondId;
-        $relationship->secondLabel=$secondLabel;
-        $relationship->save();
-        
-        return true;
-    }
-
     /**
      * Retrieves a list of models based on the current search/filter conditions.
      * @return CActiveDataProvider the data provider that can return the models based on the 

@@ -81,8 +81,7 @@ class RelationshipsGridModel extends CModel {
             $this->setAttributes ($_GET[get_called_class ()], false);
         } elseif ($this->relatedModel) {
             $this->setAttributes ($this->relatedModel->getAttributes (), false);
-            $this->label = $this->relatedModel->getRelationshipLabel (
-                $this->myModel->id, get_class ($this->myModel));
+            $this->label = $this->relatedModel->getRelationshipLabel ($this->myModel);
         }
     }
 
@@ -151,8 +150,7 @@ class RelationshipsGridModel extends CModel {
                     case 'label':
                         $filterOut = !preg_match (
                             '/'.$val.'/i',
-                            $model->relatedModel->getRelationshipLabel (
-                                $this->myModel->id, get_class ($this->myModel)));
+                            $model->relatedModel->getRelationshipLabel ($this->myModel));
                         break;
                     case 'createDate':
                         $timestampA = Formatter::parseDate ($val); 

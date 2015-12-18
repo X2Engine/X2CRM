@@ -108,7 +108,11 @@ class X2ControllerPermissionsBehavior extends ControllerPermissionsBehavior {
             return true;
         } elseif (Yii::app()->user->isGuest) {
             Yii::app()->user->returnUrl = Yii::app()->request->url;
-            $this->owner->redirect($this->owner->createUrl('/site/login'));
+            if (Yii::app()->params->isMobileApp) {
+                $this->owner->redirect($this->owner->createAbsoluteUrl('/mobile/login'));
+            } else {
+                $this->owner->redirect($this->owner->createUrl('/site/login'));
+            }
         } else {
             $this->owner->denied();
         }
@@ -157,6 +161,11 @@ class X2ControllerPermissionsBehavior extends ControllerPermissionsBehavior {
                         array('X2Model' => $model)
                     );
             }
+        } elseif ($model->asa('permissions')) {
+            // Only visibility based permissions are possible
+            $view = $model->isVisibleTo(Yii::app()->getSuModel());
+            $edit = $model->isVisibleTo(Yii::app()->getSuModel());
+            $delete = $model->isVisibleTo(Yii::app()->getSuModel());
         } else {
             // No special permissions checks are available
             $view = true;

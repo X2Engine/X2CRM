@@ -87,7 +87,7 @@ WorkflowViewManager._getQueryString = function (modelId, ajax) {
         '&expectedCloseDateEnd=".Formatter::formatDate($expectedCloseDateDateRange['end'])."' +
         '&expectedCloseDateRange=".$expectedCloseDateDateRange['range']."' +
         '&users=".$users."' +
-        '&modelType=".urlencode (CJSON::encode ($modelType))."');
+        '&modelType=".urlencode ($modelType)."');
 };
 
 /**
@@ -375,7 +375,7 @@ if ($perStageWorkflowView) {
             'stagePermissions'=>$stagePermissions,
             'stagesWhichRequireComments'=>$stagesWhichRequireComments,
             'stageNames'=>$stageNames,
-            'stageValues' => $stageValues,
+            'stageCounts' => $stageCounts,
             'users'=>$users,
             'listItemColors' => $listItemColors,
         )

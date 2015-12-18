@@ -54,6 +54,9 @@ class EventFormModel extends ActionFormModelBase {
             array (
                 'completeDate', 'validateCompleteDate',
             ),
+            array (
+                'eventSubtype,eventStatus', 'safe',
+            ),
         ));
     }
 

@@ -40,6 +40,7 @@
  * @package application.controllers
  */
 Yii::import('application.models.Relationships');
+Yii::import('application.components.RelationshipsBehavior');
 Yii::import('application.models.Tags');
 
 class NotificationsController extends CController {

@@ -100,6 +100,7 @@ abstract class X2FlowTrigger extends X2FlowItem {
         'user_active' => 'User Logged In',
         'on_list' => 'On List',
         'has_tags' => 'Has Tags',
+        'email_open' => 'Email Opened',
         // 'workflow_status'    => 'Workflow Status',
         // 'current_local_time' => ''),
     );
@@ -185,6 +186,12 @@ abstract class X2FlowTrigger extends X2FlowItem {
                 return array(
                     'label' => Yii::t('studio','Has Tags'),
                     'type' => 'tags',
+                );
+            case 'email_open':
+                return array(
+                    'label' => Yii::t('studio', 'Email Opened'),
+                    'type' => 'dropdown',
+                    'options' => array(),
                 );
             default:
                 return false;
@@ -512,11 +519,16 @@ abstract class X2FlowTrigger extends X2FlowItem {
                                 ':workflow' => $condition['workflowId'],
                             ));
                         return $actionCount >= $stageCount;
-                    default:
-                        return false;
                 }
-            return false;
+                return false;
+            case 'email_open':
+                if (isset($params['sentEmails'], $params['sentEmails'][$value])) {
+                    $trackEmail = TrackEmail::model()->findByAttributes(array('uniqueId' => $params['sentEmails'][$value]));
+                    return $trackEmail && !is_null($trackEmail->opened);
+                }
+                return false;
         }
+        return false;
 
         // foreach($condition as $key = >$value) {
 

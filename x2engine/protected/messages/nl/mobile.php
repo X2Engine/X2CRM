@@ -9,7 +9,11 @@
   'Search for a Contact' => 'Zoek een Contact',
   'Go to Full Site' => 'Ga naar volledige site',
   'Who\'s Online' => 'Who \\ &#39;s Online',
-  'Back' => 'Terug',
   'No documents available.' => 'Geen documenten beschikbaar.',
   'No social items available.' => 'Geen sociale items beschikbaar.',
+  'Change web address' => 'Change webadres',
+  'Legal' => 'Wettelijk',
+  'Add a post...' => 'Voeg een bericht ...',
+  'Activities' => 'Activiteiten',
+  'Dashboard' => 'Dashboard',
 );

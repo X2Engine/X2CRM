@@ -103,12 +103,105 @@ class Profile extends X2ActiveRecord {
         return 'x2_profile';
     }
 
+
+    public function getLanguageOptions () {
+        $languageDirs = scandir('./protected/messages'); // scan for installed language folders
+        if(is_dir('./custom/protected/messages')){
+            $languageDirs += scandir('./custom/protected/messages');
+        }
+        sort($languageDirs);
+        $languages = array('en' => 'English');
+
+        foreach ($languageDirs as $code) {  // look for langauges name
+            $name = $this->getLanguageName($code, $languageDirs);  // in each item in $languageDirs
+            if ($name !== false)
+                $languages[$code] = $name; // add to $languages if name is found
+        }
+        return $languages;
+    }
+
+    /**
+     * Obtain the name of the language given its 2-5 letter code.
+     *
+     * If a language pack was found for the language code, return its full
+     * name. Otherwise, return false.
+     *
+     * @param string $code
+     * @param array $languageDirs
+     * @return mixed
+     */
+    public function getLanguageName($code, $languageDirs) { // lookup language name for the language code provided
+        if (in_array($code, $languageDirs)) { // is the language pack here?
+            if(file_exists("custom/protected/messages/$code/app.php")){
+                $appMessageFile = "custom/protected/messages/$code/app.php";
+            }else{
+                $appMessageFile = "protected/messages/$code/app.php";
+            }
+            if (file_exists($appMessageFile)) { // attempt to load 'app' messages in
+                $appMessages = include($appMessageFile);     // the chosen language
+                if (is_array($appMessages) and isset($appMessages['languageName']) && $appMessages['languageName'] != 'Template')
+                    return $appMessages['languageName'];       // return language name
+            }
+        }
+        return false; // false if languge pack wasn't there
+    }
+
     public function behaviors(){
         // Skip loading theme settins if this request isn't associated with a session, eg API
         $theme = (Yii::app()->params->noSession ? array() :
             ThemeGenerator::getProfileKeys(true, true, false));
 
+        $that = $this;
         return array(
+            'X2StaticFieldsBehavior' => array(
+                'class' => 'application.components.behaviors.X2StaticFieldsBehavior',
+                'translationCategory' => 'profile',
+                'fields' => array (
+                    array (
+                        'fieldName' => 'fullName',
+                        'attributeLabel' => 'Full Name',
+                        'type' => 'varchar',
+                    ),
+                    array (
+                        'fieldName' => 'tagLine',
+                        'attributeLabel' => 'Tag Line',
+                        'type' => 'varchar',
+                    ),
+                    array (
+                        'fieldName' => 'username',
+                        'attributeLabel' => 'Username',
+                        'type' => 'varchar',
+                    ),
+                    array (
+                        'fieldName' => 'officePhone',
+                        'attributeLabel' => 'Office Phone',
+                        'type' => 'phone',
+                    ),
+                    array (
+                        'fieldName' => 'cellPhone',
+                        'attributeLabel' => 'Cell Phone',
+                        'type' => 'phone',
+                    ),
+                    array (
+                        'fieldName' => 'emailAddress',
+                        'attributeLabel' => 'Email Address',
+                        'type' => 'email',
+                    ),
+                    array (
+                        'fieldName' => 'language',
+                        'attributeLabel' => 'Language',
+                        'type' => 'dropdown',
+                        'linkType' => function () use ($that) {
+                            return $that->getLanguageOptions ();
+                        },
+                    ),
+                    array (
+                        'fieldName' => 'googleId',
+                        'attributeLabel' => 'Google ID',
+                        'type' => 'email',
+                    ),
+                ),
+            ),
             'X2LinkableBehavior' => array(
                 'class' => 'X2LinkableBehavior',
                 'baseRoute' => '/profile',
@@ -160,7 +253,7 @@ class Profile extends X2ActiveRecord {
     /**
      * Save default layouts 
      */
-    protected function afterSave () {
+    public function afterSave () {
         parent::afterSave ();
         foreach ($this->_widgetLayouts as $name => $settings) {
             if ($settings) $settings->save ();
@@ -203,7 +296,7 @@ class Profile extends X2ActiveRecord {
         return array(
             array('fullName, username, status', 'required'),
             array('status, lastUpdated, disableNotifPopup, allowPost', 'numerical', 'integerOnly' => true),
-            array('enableFullWidth,showSocialMedia,showDetailView,disableTimeInTitle,showTours', 'boolean'), //,showWorkflow
+            array('enableFullWidth,showSocialMedia,showDetailView,disablePhoneLinks,disableTimeInTitle,showTours', 'boolean'), //,showWorkflow
             array('emailUseSignature', 'length', 'max' => 10),
             array('startPage', 'length', 'max' => 30),
             array('googleId', 'unique'),
@@ -1271,7 +1364,11 @@ class Profile extends X2ActiveRecord {
      * @param int $id the profile id 
      */
     public static function renderFullSizeAvatar ($id, $dimensionLimit=95) {
-        $model = Profile::model ()->findByPk ($id);
+        if ($id instanceof Profile) {
+            $model = $id;
+        } else {
+            $model = Profile::model ()->findByPk ($id);
+        }
         if(isset($model->avatar) && $model->avatar!='' && file_exists($model->avatar)) {
             $imgSize = @getimagesize($model->avatar);
             if(!$imgSize)
@@ -1285,9 +1382,9 @@ class Profile extends X2ActiveRecord {
 
             $imgSize[0] = round($imgSize[0] * $scaleFactor);
             $imgSize[1] = round($imgSize[1] * $scaleFactor);
-            echo Profile::renderAvatarImage($id, $imgSize[0], $imgSize[1]);
+            return Profile::renderAvatarImage($id, $imgSize[0], $imgSize[1]);
         } else {
-            echo X2Html::x2icon ('profile-large', array(
+            return X2Html::fa ('user', array(
                 'class' => 'avatar-image default-avatar',
                 'style' => "font-size: ${dimensionLimit}px",
             )); 

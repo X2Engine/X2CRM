@@ -247,12 +247,11 @@ class X2TranslationBehaviorTest extends X2TestCase {
     }
     
     public function testGetUntranslatedText(){
-        $this->markTestSkipped();
+        //$this->markTestSkipped();
         $cmpb = $this->instantiate();
         $message = 'This\'s a test of untranslated text.';
         
         $untranslated = $cmpb->getUntranslatedText();
-        print_r ($untranslated);
         $this->assertEmpty($untranslated);
         
         $appFile = Yii::app()->basePath . '/messages/ja/app.php';

@@ -1,5 +1,4 @@
 <?php
-
 /*****************************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2015 X2Engine Inc.
@@ -84,6 +83,12 @@ abstract class X2WebTestCase extends CWebTestCase {
         return array();
     }
 
+    public static function getPath ($arg) {
+        $reflect = new ReflectionClass ($arg);
+        return ltrim (
+            preg_replace ('/^'.preg_quote (__DIR__, '/').'/', '', $reflect->getFileName ()), '/');
+    }
+
     public static function getTestHost () {
         return preg_replace ('/^https?:\/\/([^\/]+)\/.*$/', '$1', TEST_WEBROOT_URL);
     }
@@ -151,7 +156,9 @@ abstract class X2WebTestCase extends CWebTestCase {
      * 
      * @param string $r_uri
      */
+    private $_currentPage;
     public function openX2($r_uri) {
+        $this->_currentPage = $r_uri;
         return $this->open(TEST_BASE_URL . $r_uri);
     }
 
@@ -211,7 +218,7 @@ abstract class X2WebTestCase extends CWebTestCase {
         if (!YII_UNIT_TESTING) throw new CException ('YII_UNIT_TESTING must be set to true');
         $testClass = get_called_class();
         if(X2_TEST_DEBUG_LEVEL > 0){
-            println($testClass);
+            println("\nrunning test class: ".self::getPath ($testClass));
         }
         // Load "reference fixtures", needed for reference, which do not need
         // to be reloaded after every single test method:
@@ -266,7 +273,10 @@ abstract class X2WebTestCase extends CWebTestCase {
      * Selenese path to make it easier to locate/use Selenese HTML scripts.
      */
     public function setUp() {
-        if (self::$skipAllTests) {
+        if(X2_TEST_DEBUG_LEVEL > 1){
+            /**/println("\nrunning test case: ".$this->getName ());
+        }
+        if (X2_SKIP_ALL_TESTS || self::$skipAllTests) {
             $this->markTestSkipped ();
         }
 
@@ -327,10 +337,12 @@ abstract class X2WebTestCase extends CWebTestCase {
 		$this->assertElementNotPresent('css=.xdebug-error');
         // get stack trace and error message
         $this->storeEval (
-            "window.$('#error-form').html ()",
+            "window.document.querySelector ('#error-form') ? 
+                window.document.querySelector ('#error-form').innerHtml : null",
             'errorInfo');
         $errorMessage = $this->getExpression ('${errorInfo}');
-        if ($errorMessage) {
+        // #error-form is always on site/bugReport
+        if ($errorMessage && $errorMessage !== 'null' && $this->_currentPage !== 'site/bugReport') {
             println ($errorMessage);
         }
 		$this->assertElementNotPresent('css=#x2-php-error');

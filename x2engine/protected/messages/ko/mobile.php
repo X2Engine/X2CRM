@@ -9,7 +9,11 @@
   'Search for a Contact' => '기업에게 연락 검색',
   'Go to Full Site' => '전체 사이트로 이동',
   'Who\'s Online' => '누가 \\ &#39;의 온라인에게',
-  'Back' => '뒤로',
   'No documents available.' => '어떤 문서가이 없습니다.',
   'No social items available.' => '가능한 사회적 항목이 없습니다.',
+  'Change web address' => '변경 웹 주소',
+  'Legal' => '적법한',
+  'Add a post...' => '게시물을 추가 ...',
+  'Activities' => '활동',
+  'Dashboard' => '계기반',
 );

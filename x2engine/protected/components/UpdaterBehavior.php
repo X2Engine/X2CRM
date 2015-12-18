@@ -1327,7 +1327,8 @@ class UpdaterBehavior extends ResponseBehavior {
                     else
                         $prog = 'mysqldump.exe';
                 }
-                $this->_dbBackupCommand = $prog." -h{$this->dbParams['dbhost']} -u{$this->dbParams['dbuser']} -p{$this->dbParams['dbpass']} {$this->dbParams['dbname']}";
+                $quotedPass = escapeshellarg($this->dbParams['dbpass']);
+                $this->_dbBackupCommand = $prog." -h{$this->dbParams['dbhost']} -u{$this->dbParams['dbuser']} -p{$quotedPass} {$this->dbParams['dbname']}";
             } else{ // no other database types supported yet...
                 return null;
             }
@@ -1781,7 +1782,7 @@ class UpdaterBehavior extends ResponseBehavior {
         if((bool) $prog){
             $backup = proc_open($this->dbBackupCommand, $descriptor, $pipes, $this->webRoot);
             $return = proc_close($backup);
-            if($return == -1)
+            if($return !== 0)
                 throw new CException(Yii::t('admin', "Database backup process did not exit cleanly. See the file {file} for error output details.", array('{file}' => "protected/data/$errFile")));
             else
                 return True;

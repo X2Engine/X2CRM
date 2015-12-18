@@ -48,6 +48,7 @@ class AdminControllerTest extends X2WebTestCase {
 
     public $fixtures = array(
         'modules' => 'Modules',
+        'action_text' => array('ActionText', '.ImportTest'),
         'actions' => array('Actions', '.ImportTest'),
         'contacts' => array('Contacts', '.ImportTest'),
         'accounts' => array('Accounts', '.ImportTest'),
@@ -85,7 +86,6 @@ class AdminControllerTest extends X2WebTestCase {
         'createDate',
         'lastUpdated',
         'lastActivity',
-        'trackingKey',
     );
 
     /**
@@ -173,6 +173,15 @@ class AdminControllerTest extends X2WebTestCase {
         $this->click ("css=#process-link");
         $this->waitForTextPresent ("Import Complete");
         $this->assertAlert ("Import Complete!");
+
+        // Handle warning confirmations whenever a link match attribute selector is used
+        $this->storeEval ('window.document.querySelector (".linkMatchSelector") ?
+            window.document.querySelector (".linkMatchSelector").length : null',
+            'retVal');
+        $retVal = $this->getExpression ('${retVal}');
+        if ($retVal && $retVal > 0) {
+            $this->storeConfirmation();
+        }
     }
 
     /**

@@ -59,7 +59,9 @@ $this->pageTitle = Yii::app()->settings->appName . ' - Home';
             array(
                 'label' => Yii::t('mobile', 'Find Contacts'),
                 'url' => array('/mobile/contacts/search')),
-            array('label' => Yii::t('mobile', 'People'), 'url' => array('/mobile/site/people')),
+            array(
+                'label' => Yii::t('mobile', 'People'), 
+                'url' => array('/mobile/site/people')),
             array(
                 'label' => Yii::t('mobile', 'Who\'s Online'),
                 'url' => array('/mobile/site/online')),
@@ -83,7 +85,17 @@ $this->pageTitle = Yii::app()->settings->appName . ' - Home';
     }
 
     $userMenu = array(
-        array('label' => Yii::t('mobile', 'Logout ({username})', array('{username}' => Yii::app()->user->name)), 'url' => array('/mobile/site/logout'), 'left'=>true)
+        array(
+            'label' => Yii::t(
+                'mobile', 'Logout ({username})',
+                array(
+                    '{username}' => Yii::app()->user->name)), 
+                'url' => array('/mobile/site/logout'),
+                'linkOptions' => array (
+                    //'rel' => 'external'
+                ),
+                'left'=>true
+            )
     );
 
     //render main menu items

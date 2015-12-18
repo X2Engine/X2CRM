@@ -41,14 +41,14 @@ function MassMoveFileSysObjToFolder (argsDict) {
         DEBUG: x2.DEBUG && false,
     };
     auxlib.applyArgs (this, defaultArgs, argsDict);
-    x2.MassAction.call (this, argsDict);
+    x2.DocsMassAction.call (this, argsDict);
     this.goButtonLabel = this.massActionsManager.translations['move'];
     this.dialogTitle = this.massActionsManager.translations['moveFileSysObjToFolder'];
     this.dialogTitlePlural = this.dialogTitle;
     this.dialogTitleSingular = this.massActionsManager.translations['moveOneFileSysObjToFolder'];
 }
 
-MassMoveFileSysObjToFolder.prototype = auxlib.create (x2.MassAction.prototype);
+MassMoveFileSysObjToFolder.prototype = auxlib.create (x2.DocsMassAction.prototype);
 
 MassMoveFileSysObjToFolder.prototype.getSelectedFolders = function () {
     var selectedFolders = [];
@@ -83,24 +83,9 @@ MassMoveFileSysObjToFolder.prototype.openDialog = function () {
 
 MassMoveFileSysObjToFolder.prototype.getExecuteParams = function () {
     var that = this;
-    var params = x2.MassAction.prototype.getExecuteParams.call (this);
+    var params = x2.DocsMassAction.prototype.getExecuteParams.call (this);
     var targetFolder = this.dialogElem$.find ('[name="targetFolderId"]').val ();
     params['targetFolder'] = targetFolder;
-    var selectedObjs = [];
-    var selectedObjTypes = [];
-
-    for (var index in params['gvSelection']) {
-        var id = params['gvSelection'][index]
-
-        var row$ = this.massActionsManager.getRowById (id);
-        selectedObjs.push (
-            row$.find ('.file-system-object').attr ('data-id'));
-        selectedObjTypes.push (
-            row$.find ('.file-system-object').
-                attr ('data-type'));
-    }
-    params['selectedObjs'] = selectedObjs;
-    params['selectedObjTypes'] = selectedObjTypes;
     return params;
 };
 

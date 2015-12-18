@@ -198,6 +198,16 @@ abstract class FileOperTestCase extends X2TestCase {
         } else
             $this->markTestSkipped('Skipping: X2_FTP_FILEOPER is disabled.');
     }
+
+    public function useSsh($test) {
+        if (X2_SCP_FILEOPER) {
+            // Change to the tests directory so that relative paths work in testing.
+            FileUtil::sshInit(X2_SCP_HOST, X2_SCP_USER, X2_SCP_PASS);
+            $this->$test();
+            FileUtil::sshClose();
+        } else
+            $this->markTestSkipped('Skipping: X2_SCP_FILEOPER is disabled.');
+    }
 }
 
 ?>

@@ -55,7 +55,7 @@
   }
 }
 
-[data-icon]:before { content: attr(data-icon); }
+[data-icon]:before { content: attr(data-x2-icon); }
 
 [data-icon]:before,
 .icon-activity:before,

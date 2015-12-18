@@ -19,5 +19,4 @@
   'Most Recent' => 'Πρόσφατα',
   'Alphabetical' => 'Αλφαβητικά',
   'Most Popular' => 'Δημοφιλέστερος',
-  'Sticky' => 'Κολλώδης',
 );

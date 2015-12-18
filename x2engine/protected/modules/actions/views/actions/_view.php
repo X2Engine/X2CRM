@@ -66,20 +66,6 @@ if(empty($data->type)){
 } else
     $type = $data->type;
 
-if($type == 'workflow'){
-
-    $workflowRecord = X2Model::model('Workflow')->findByPk($data->workflowId);
-    $stageRecords = X2Model::model('WorkflowStage')->findAllByAttributes(
-            array('workflowId' => $data->workflowId), new CDbCriteria(array('order' => 'id ASC'))
-    );
-
-    // see if this stage even exists; if not, delete this junk
-    if($workflowRecord === null || $data->stageNumber < 1 || $data->stageNumber > count($stageRecords)){
-        $data->delete();
-        return;
-    }
-}
-
 // if($type == 'call') {
 // $type = 'note';
 // $data->type = 'note';
@@ -113,7 +99,7 @@ if(empty($data->type) || $data->type == 'weblead'){
     }
 } elseif($data->type == 'workflow'){
     // $actionData = explode(':',$data->actionDescription);
-    echo Yii::t('workflow', 'Process:').'<b> '.$workflowRecord->name.'/'.$stageRecords[$data->stageNumber - 1]->name.'</b> ';
+    echo Yii::t('workflow', 'Process:').'<b> '.$data->workflow->name.'/'.$data->workflowStage->name.'</b> ';
 }elseif($data->type == 'event'){
     echo '<b>'.CHtml::link(Yii::t('calendar', 'Event').': ', '#', array('class' => 'action-frame-link', 'data-action-id' => $data->id));
     if($data->allDay){
@@ -214,12 +200,10 @@ if(empty($data->type) || $data->type == 'weblead'){
 if($type == 'attachment' && $data->completedBy != 'Email') {
     echo Media::attachmentActionText(Yii::app()->controller->convertUrls($data->actionDescription), true, true);
 } else if($type == 'workflow'){
-
-    if(!empty($data->stageNumber) && !empty($data->workflowId) && $data->stageNumber <= count($stageRecords)){
-        if($data->complete == 'Yes')
-            echo ' <b>'.Yii::t('workflow', 'Completed').'</b> '.Formatter::formatLongDateTime($data->completeDate);
-        else
-            echo ' <b>'.Yii::t('workflow', 'Started').'</b> '.Formatter::formatLongDateTime($data->createDate);
+    if($data->complete == 'Yes') {
+        echo ' <b>' . Yii::t('workflow', 'Completed') . '</b> ' . Formatter::formatLongDateTime($data->completeDate);
+    } else {
+        echo ' <b>' . Yii::t('workflow', 'Started') . '</b> ' . Formatter::formatLongDateTime($data->createDate);
     }
     if(isset($data->actionDescription))
         echo '<br>'.CHtml::encode($data->actionDescription);

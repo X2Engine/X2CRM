@@ -86,10 +86,11 @@ class CommonSiteControllerBehavior extends CBehavior {
         $maxFailedLoginAttemptsPerIP = 100;
         $maxLoginsBeforeCaptcha = 5;
         
-        $this->pruneTimedOutBans();
-        $failedLoginRecord = FailedLogins::model()->findByPk ($ip);
+        $this->pruneTimedOutBans ($badAttemptsRefreshTimeout);
+        $failedLoginRecord = FailedLogins::model()->findActiveByIp ($ip);
         $badAttemptsWithThisIp = ($failedLoginRecord) ? $failedLoginRecord->attempts : 0;
         if ($badAttemptsWithThisIp >= $maxFailedLoginAttemptsPerIP) {
+            $this->recordFailedLogin ($ip);
             throw new CHttpException (403, Yii::t('app',
                 'You are not authorized to use this application'));
         }
@@ -164,10 +165,7 @@ class CommonSiteControllerBehavior extends CBehavior {
                 LoginThemeHelper::login();
 
                 if ($isMobile) {
-                    $cookie = new CHttpCookie('x2mobilebrowser', 'true'); // create cookie
-                    $cookie->expire = time() + 31104000; // expires in 1 year
-                    Yii::app()->request->cookies['x2mobilebrowser'] = $cookie; // save cookie
-                    $this->owner->redirect($this->owner->createUrl('/mobile/site/home'));
+                    $this->owner->redirect($this->owner->createUrl('/mobile/home'));
                 } else {
                     if(Yii::app()->user->returnUrl == '/site/index') {
                         $this->owner->redirect(array('/site/index'));
@@ -182,6 +180,7 @@ class CommonSiteControllerBehavior extends CBehavior {
                 $model->verifyCode = ''; // clear captcha code
                 $this->recordFailedLogin ($ip);
                 $session->save();
+
                 if ($badAttemptsWithThisIp + 1 >= $maxFailedLoginAttemptsPerIP) {
                     throw new CHttpException (403, Yii::t('app',
                         'You are not authorized to use this application'));
@@ -195,8 +194,23 @@ class CommonSiteControllerBehavior extends CBehavior {
         $model->rememberMe = false;
     }
 
+    /**
+     * @return bool Whether this IP has reached the CAPTCHA threshold
+     */
+    protected function loginRequiresCaptcha() {
+        if (isset($_SESSION['sessionId'])) {
+            $failedLoginRecord = FailedLogins::model()->findActiveByIp ($this->owner->getRealIp());
+            $badAttemptsWithThisIp = ($failedLoginRecord) ? $failedLoginRecord->attempts : 0;
+
+            $maxLoginsBeforeCaptcha = 5;
+            
+
+            return $badAttemptsWithThisIp >= $maxLoginsBeforeCaptcha;
+        }
+    }
+
     public function recordFailedLogin($ip) {
-        $record = FailedLogins::model()->findByPk ($ip);
+        $record = FailedLogins::model()->findActiveByIp ($ip);
         if ($record) {
             $record->attempts++;
         } else {
@@ -208,13 +222,18 @@ class CommonSiteControllerBehavior extends CBehavior {
         $record->save();
     }
 
-    private function pruneTimedOutBans() {
-        $badAttemptsRefreshTimeout = 900;
-        
+    /**
+     * Update any timed out bans and mark them as inactive
+     * @param int Timeout period (in minutes)
+     */
+    private function pruneTimedOutBans ($badAttemptsRefreshTimeout) {
         Yii::app()->db->createCommand()
-            ->delete ('x2_failed_logins', 'lastAttempt < :timeout', array(
-                ':timeout' => time() - ($badAttemptsRefreshTimeout * 60)
-            ));
+            ->update (
+                'x2_failed_logins',
+                array('active' => false),
+                'active = 1 AND lastAttempt < :timeout',
+                array(':timeout' => time() - ($badAttemptsRefreshTimeout * 60))
+            );
     }
 
     

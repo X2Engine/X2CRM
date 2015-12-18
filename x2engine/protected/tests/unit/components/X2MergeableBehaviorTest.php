@@ -44,6 +44,7 @@ class X2MergeableBehaviorTest extends X2DbTestCase {
         'contact' => 'Contacts',
         'account' => 'Accounts',
         'events' => array('Events','.DummyData'),
+        'relationships' => 'Relationships',
     );
 
     
@@ -294,21 +295,16 @@ class X2MergeableBehaviorTest extends X2DbTestCase {
         $this->assertEquals(count($tags), count($contact->getTags(true)));
     }
 
+    /**
+     * @group failing
+     */
     public function testMergeRelationships() {
         $contact = $this->contact('testAnyone');
         $otherContact = $this->contact('testUser');
         $thirdContact = $this->contact('testUser_unsent');
 
-        $rel = new Relationships;
-        $rel->firstType = $rel->secondType = 'Contacts';
-        $rel->firstId = $contact->id;
-        $rel->secondId = $otherContact->id;
-        $rel->save();
-        $rel = new Relationships;
-        $rel->firstType = $rel->secondType = 'Contacts';
-        $rel->secondId = $contact->id;
-        $rel->firstId = $thirdContact->id;
-        $rel->save();
+        $contact->createRelationship($otherContact);
+        $contact->createRelationship($thirdContact);
 
         $model = new Contacts;
         foreach ($contact->attributes as $key => $val) {

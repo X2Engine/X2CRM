@@ -42,26 +42,7 @@
  */
 abstract class X2Widget extends CWidget {
 
-    const NAMESPACE_KEY = '_x2widget_namespace';
-
     protected $_module;
-
-    protected $_packages;
-
-    /**
-     * @var string $JSClass
-     */
-    public $JSClass = 'Widget'; 
-
-    /**
-     * @var string $element
-     */
-    public $element; 
-
-    /**
-     * @var string $namespace
-     */
-    public $namespace = ''; 
 
 	/**
 	 * Constructor.
@@ -69,82 +50,17 @@ abstract class X2Widget extends CWidget {
      *  controller.
 	 */
 	public function __construct ($owner=null) {
-        if ($this->namespace === '' && isset ($_POST[X2Widget::NAMESPACE_KEY])) {
-            $this->namespace = $_POST[X2Widget::NAMESPACE_KEY];
-        }
-        parent::__construct ($owner);
         $this->attachBehaviors ($this->behaviors ());
+        $this->initNamespace ();
+        parent::__construct ($owner);
 	}
 
     public function behaviors () {
-        return array ();
-    }
-
-    protected $_translations;
-    protected function getTranslations () {
-        if (!isset ($this->_translations)) {
-            $this->_translations = array ();
-        }
-        return $this->_translations;
-    }
-
-    protected $_JSClassParams;
-    public function getJSClassParams () {
-        if (!isset ($this->_JSClassParams)) {
-            $this->_JSClassParams = array (
-                'element' => $this->element,
-                'translations' => $this->getTranslations (),
-                'namespace' => $this->namespace,
-            );
-        }
-        return $this->_JSClassParams;
-    }
-
-    public function resolveIds ($selector) {
-        return preg_replace ('/#/', '#'.$this->namespace, $selector);
-    }
-
-    public function resolveId ($id) {
-        return $this->namespace.$id;
-    }
-
-    public function getJSObjectName () {
-        return "x2.".$this->namespace.lcfirst ($this->JSClass);
-    }
-
-    /**
-     * @param bool $onReady whether or not JS class should be instantiated after page is ready
-     */
-    public function instantiateJSClass ($onReady=true) {
-        Yii::app()->clientScript->registerScript (
-            $this->namespace.get_class ($this).'JSClassInstantiation', 
-            ($onReady ? "$(function () {" : "").
-                $this->getJSObjectName ()."= new x2.$this->JSClass (".
-                        CJSON::encode ($this->getJSClassParams ()).
-                    ");".
-            ($onReady ? "});" : ""), CClientScript::POS_END);
-
-        Yii::app()->clientScript->registerScript('X2WidgetSetup',"
-        x2.Widget.NAMESPACE_KEY = '".self::NAMESPACE_KEY."';
-        ", CClientScript::POS_READY);
-    }
-
-    public function registerPackages () {
-        Yii::app()->clientScript->registerPackages ($this->getPackages (), true);
-    }
-
-    public function getPackages () {
-        if (!isset ($this->_packages)) {
-            $this->_packages = array (
-                'X2Widget' => array(
-                    'baseUrl' => Yii::app()->request->baseUrl,
-                    'js' => array(
-                        'js/X2Widget.js',
-                    ),
-                ),
-            );
-        }
-        return $this->_packages;
+        return array (
+            'X2WidgetBehavior' => array (
+                'class' => 'application.components.behaviors.X2WidgetBehavior'
+            ),
+        );
     }
 
 	/**
@@ -212,6 +128,14 @@ abstract class X2Widget extends CWidget {
 
     public function setModule ($moduleName) {
         $this->_module = Yii::app()->getModule($moduleName);
+    }
+
+    public function init () {
+        if ($this->instantiateJSClassOnInit) {
+            $this->registerPackages (); 
+            $this->instantiateJSClass ();
+        }
+        return parent::init ();
     }
 
 }

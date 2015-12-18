@@ -47,7 +47,7 @@ class Yii extends YiiBase
      * Precondition: Request component has already been created. If it hasn't, infinite recursion 
      * will occur when Yii::app()->getRequest () is called implicitly by self::app()->request.
      */
-	private static function getRootPath() {
+	public static function getRootPath() {
         if (YII_UNIT_TESTING) { 
             // resets root path to the webroot so that custom files can be detected
             $path = array ();
@@ -264,7 +264,7 @@ class Yii extends YiiBase
 	}
 
 	public static function t($category,$message,$params=array(),$source=null,$language=null) {
-        YII_DEBUG && X2_TRANSLATION_LOGGING && Yii::logTranslation($category, $message);
+        X2_TRANSLATION_LOGGING && Yii::logTranslation($category, $message);
 		if(isset($_GET['t']) && $_GET['t'])
 			return '<dt class="yii-t">'
 				.CHtml::hiddenField('cat',$category)

@@ -148,7 +148,7 @@ $listView = $this->widget('X2GridViewGeneric', array(
                 array('style' => 'margin-top:3px;margin-left:5px;')))
         . '</div>{items}{pager}',
     'afterGridViewUpdateJSString' => 'x2.folderManager.setUpDragAndDrop ();',
-    'massActions' => array ('MassMoveFileSysObjToFolder'),
+    'massActions' => array ('MassMoveFileSysObjToFolder', 'MassRenameFileSysObj'),
     'dataColumnClass' => 'X2DataColumnGeneric',
     'rowHtmlOptionsExpression' => 'array (
         "class" => ($data->validDraggable() ? " draggable-file-system-object" : "").

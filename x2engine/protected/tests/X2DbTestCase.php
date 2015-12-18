@@ -82,9 +82,12 @@ abstract class X2DbTestCase extends CDbTestCase {
         if (self::$loadFixturesForClassOnly)
             $this->getFixtureManager ()->loadFixtures = true;
 
-        if(X2_TEST_DEBUG_LEVEL > 1){
-            /**/println("\n".$this->getName ());
+        if(X2_TEST_DEBUG_LEVEL > 0){
+            $timer = TestingAuxLib::getCaseTimer ();
+            $timer->start ();
         }
+        TestingAuxLib::log ("running test case: ".$this->getName ());
+
         if (static::$skipAllTests) {
             $this->markTestSkipped ();
         }
@@ -148,8 +151,11 @@ abstract class X2DbTestCase extends CDbTestCase {
         // to be reloaded after every single test method:
         $testClass = get_called_class();
         if(X2_TEST_DEBUG_LEVEL > 0){
-            /**/println("\nrunning ".self::getPath ($testClass));
+            $timer = TestingAuxLib::getClassTimer ();
+            $timer->start ();
         }
+        TestingAuxLib::log ("running test class: ".self::getPath ($testClass));
+
         $refFix = call_user_func("$testClass::referenceFixtures");
         $fm = Yii::app()->getComponent('fixture');
         self::$_referenceFixtureRows = array();
@@ -188,8 +194,10 @@ abstract class X2DbTestCase extends CDbTestCase {
      */
     public static function tearDownAfterClass(){
         if(X2_TEST_DEBUG_LEVEL > 0){
-            /**/println("");
+            $timer = TestingAuxLib::getClassTimer ();
+            TestingAuxLib::log ("time elapsed for test class: {$timer->stop ()->getTime ()}");
         }
+
         parent::tearDownAfterClass();
         self::tearDownAppEnvironment();
     }
@@ -204,6 +212,10 @@ abstract class X2DbTestCase extends CDbTestCase {
         self::$loadFixturesForClassOnly = X2_LOAD_FIXTURES_FOR_CLASS_ONLY;
         if(isset($this->_oldSession)){
             $_SESSION = $this->_oldSession;
+        }
+        if(X2_TEST_DEBUG_LEVEL > 0){
+            $timer = TestingAuxLib::getCaseTimer ();
+            TestingAuxLib::log ("time elapsed for test case: {$timer->stop ()->getTime ()}");
         }
         return parent::tearDown ();
     }
@@ -267,10 +279,11 @@ abstract class X2DbTestCase extends CDbTestCase {
      * used
      */
     public $_outputBuffer = '';
+    public $_oldBuffer = '';
     public function obStart () {
         // PHPUnit seems to be doing internal output buffering, this is intended to clear that 
         // buffer
-        if(ob_get_contents()){
+        if($this->_oldBuffer = ob_get_contents()){
             ob_clean (); 
         }
         $that = $this;
@@ -303,6 +316,7 @@ abstract class X2DbTestCase extends CDbTestCase {
         $this->setOutputCallback (function ($output) {
             return $output; // display output 
         });
+        echo $this->_oldBuffer; // add old buffer contents to PHPUnit's output buffer
     }
 
     protected function assertModelArrayEquality (array $expected, array $actual, $sort=true) {

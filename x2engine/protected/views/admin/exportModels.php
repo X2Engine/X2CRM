@@ -39,7 +39,7 @@ Yii::app()->clientScript->registerCssFile (Yii::app()->theme->baseUrl.'/css/impo
 ?>
 <div class="page-title icon contacts"><h2>
     <?php echo Yii::t('contacts','Export {model}', array(
-        '{model}'=>Modules::displayName (true, $model)
+        '{model}'=>$modelDisplayName,
     )); ?>
 </h2></div>
 
@@ -55,17 +55,6 @@ Yii::app()->clientScript->registerCssFile (Yii::app()->theme->baseUrl.'/css/impo
         echo Yii::t('admin','You are currently exporting: ')."<b>$listName</b>";
     } ?>
     </div>
-    <h3><?php echo Yii::t('admin', 'Customize CSV') .
-        CHtml::link(X2Html::fa('fa-caret-down', array('id'=>'expand-exportSeparator')), '#'); ?></h3>
-    <div id='exportSeparator' style='display:none'>
-        <?php
-            echo CHtml::label(Yii::t('admin', 'Delimeter'), 'delimeter');
-            echo CHtml::textField('delimeter', ',').'<br />';
-            echo CHtml::label(Yii::t('admin', 'Enclosure'), 'enclosure');
-            echo CHtml::textField('enclosure', '"');
-        ?>
-    </div>
-    <br>
 
     <div class="exportOption">
         <?php 
@@ -84,6 +73,25 @@ Yii::app()->clientScript->registerCssFile (Yii::app()->theme->baseUrl.'/css/impo
         ?>
     </div>
 
+    <h3><?php echo Yii::t('admin', 'Customize CSV') .
+        CHtml::link(X2Html::minimizeButton(array(), '#exportSeparator', true, false), '#'); ?></h3>
+    <div id='exportSeparator' style='display:none'>
+        <?php
+            echo CHtml::label(Yii::t('admin', 'Delimeter'), 'delimeter');
+            echo CHtml::textField('delimeter', ',').'<br />';
+            echo CHtml::label(Yii::t('admin', 'Enclosure'), 'enclosure');
+            echo CHtml::textField('enclosure', '"');
+        ?>
+    </div>
+
+    <h3><?php echo Yii::t ('admin', 'Format Options').
+        CHtml::link(X2Html::minimizeButton (array(), '#exportFormat', true, false), '#'); ?></h3>
+
+    <div id="exportFormat">
+        <?php $this->renderPartial ('application.components.views._exportFormat'); ?>
+    </div>
+    <br>
+
     <?php echo CHtml::button(Yii::t('app','Export'),array('class'=>'x2-button','id'=>'export-button')); ?>
 
     <div id="status-text"></div>
@@ -99,8 +107,8 @@ Yii::app()->clientScript->registerCssFile (Yii::app()->theme->baseUrl.'/css/impo
         if (typeof x2.recordExport == 'undefined')
             x2.recordExport = {
                 'modelName': '".$model."',
-                'dlUrl': '".$this->createUrl('/admin/downloadData',array('file'=>$_SESSION['modelExportFile']))."',
-
+                'dlUrl': '".$this->createUrl('/admin/downloadData')."',
+                'dlFile': '".$_SESSION['modelExportFile']."',
                 'exportMessages': {
                     'init': ".CJSON::encode(Yii::t('admin',
                         'Exporting <b>{model}</b> data...', array('{model}'=>$model))).",
@@ -109,6 +117,7 @@ Yii::app()->clientScript->registerCssFile (Yii::app()->theme->baseUrl.'/css/impo
                     'finished': ".CJSON::encode(Yii::t('admin',
                         'All {model} data successfully exported.', array('{model}'=>$model))).",
                     'complete': ".CJSON::encode(Yii::t('admin','Export Complete!')).",
+                    'exportFormatError': ".CJSON::encode(Yii::t('admin','There was an error saving the export.')).",
                     'invalidParams': ".CJSON::encode(Yii::t('admin', 'Invalid CSV parameters! Delimeter '.
                         'and enclosure can only be a single character'))."
                 }
@@ -121,8 +130,10 @@ Yii::app()->clientScript->registerCssFile (Yii::app()->theme->baseUrl.'/css/impo
      */
     x2.recordExport.prepareModelExport = function() {
         var includeTags = $('#includeTags').is (':checked');
+        var exportTargetParams = x2.exportFormats.readExportFormatOptions();
+
         $.ajax({
-            url:'prepareModelExport',
+            url:'prepareModelExport?' + exportTargetParams,
             data: {
                 model: x2.recordExport.modelName,
                 includeTags: includeTags,
@@ -162,14 +173,25 @@ Yii::app()->clientScript->registerCssFile (Yii::app()->theme->baseUrl.'/css/impo
                 includeHidden: includeHidden
             },
             success: function (data) {
-                if (data>0){
-                    $('#export-status').html (((data)*100)+ ' ' +
+                var msg = JSON.parse(data['message']);
+                if (msg['page'] && msg['page'] > 0){
+                    $('#export-status').html (((msg['page'])*100)+ ' ' +
                         x2.recordExport.exportMessages['progress'] + '<br>');
-                    x2.recordExport.exportModelData(data);
+                    x2.recordExport.exportModelData(msg['page']);
                 } else {
-                    $('#export-status').html (x2.recordExport.exportMessages['finished'] + '<br>');
-                    $('#download-link-box').show();
-                    alert (x2.recordExport.exportMessages['complete']);
+                    var success = msg['success'];
+                    var dlUrl = msg['dlUrl'];
+
+                    if (success) {
+                        $('#export-status').html (x2.recordExport.exportMessages['finished'] + '<br>');
+                        if (dlUrl !== '') {
+                            x2.recordExport.dlFile = dlUrl;
+                            $('#download-link-box').show();
+                        }
+                        alert (x2.recordExport.exportMessages['complete']);
+                    } else {
+                        alert (x2.recordExport.exportMessages['exportFormatError']);
+                    }
                 }
             }
         });
@@ -178,9 +200,6 @@ Yii::app()->clientScript->registerCssFile (Yii::app()->theme->baseUrl.'/css/impo
     /**
      * Set up event listeners for export button and download link
      */
-    $('#expand-exportSeparator').on('click', function() {
-        $('#exportSeparator').slideToggle();
-    });
     $('#export-button').on('click',function(){
         x2.recordExport.delimeter = $('#delimeter').val();
         x2.recordExport.enclosure = $('#enclosure').val();
@@ -192,7 +211,10 @@ Yii::app()->clientScript->registerCssFile (Yii::app()->theme->baseUrl.'/css/impo
     });
     $('#download-link').click(function(e) {
         e.preventDefault();  //stop the browser from following
-        window.location.href = x2.recordExport.dlUrl;
+        var queryParams = {
+            file: x2.recordExport.dlFile
+        };
+        window.location.href = x2.recordExport.dlUrl + '?' + $.param (queryParams);
     });
     ", CClientScript::POS_READY);
 } else {

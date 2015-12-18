@@ -131,6 +131,7 @@ class ActionsController extends x2base {
         if(!Yii::app()->user->isGuest || 
             Yii::app()->user->checkAccess(ucfirst($action->associationType).'View')){
 
+            header('Content-Type: text/html; charset=utf-8');
             if(!Yii::app()->user->isGuest){
                 echo preg_replace(
                     '/<\!--BeginOpenedEmail-->(.*?)<\!--EndOpenedEmail-->/s', '', 
@@ -874,79 +875,7 @@ class ActionsController extends x2base {
 
         if($type == 'open' && !$fromApp){
             $track = TrackEmail::model()->findByAttributes(array('uniqueId' => $uid));
-            if($track && $track->opened == null){
-                $action = $track->action;
-                if($action){
-                    $note = new Actions;
-                    switch($action->type){
-                        case 'email_quote':
-                        case 'email_invoice':
-                            $subType = str_replace('email_','',$action->type);
-                            $note->type = "emailOpened_$subType";
-                            $quote = Quote::model()->findByPk($action->associationId);
-                            if($quote instanceof Quote) {
-                                $contact = $quote->associatedContactsModel;
-                                if($contact instanceof Contacts){
-                                    $note->associationType = 'contacts';
-                                    $note->associationId = $contact->id;
-                                }
-                            }
-                            break;
-                        default:
-                            $note->type = 'emailOpened';
-                            $note->associationType = $action->associationType;
-                            $note->associationId = $action->associationId;
-                    }
-                    $now = time();
-                    $note->createDate = $now;
-                    $note->lastUpdated = $now;
-                    $note->completeDate = $now;
-                    $note->complete = 'Yes';
-                    $note->updatedBy = 'admin';
-                    
-                    $note->associationName = $action->associationName;
-                    $note->visibility = $action->visibility;
-                    $note->assignedTo = $action->assignedTo;
-                    $note->actionDescription = Yii::t('marketing', 'Contact has opened the email sent on ');
-                    $note->actionDescription .= Formatter::formatLongDateTime($action->createDate)."<br>";
-                    $note->actionDescription .= $action->actionDescription;
-                    if($note->save()){
-                        $event = new Events;
-                        $event->type = 'email_opened';
-                        switch($action->type){
-                            case 'email_quote':
-                                $event->subtype = 'quote';
-                                break;
-                            case 'email_invoice':
-                                $event->subtype = 'invoice';
-                                break;
-                            default:
-                                $event->subtype = 'email';
-                        }
-                        
-                        $contact = isset($quote) && $quote instanceof Quote
-                                ? $quote->associatedContactsModel
-                                : X2Model::model('Contacts')->findByPk($action->associationId);
-                        if(isset($contact)){
-                            $event->user = $contact->assignedTo;
-                        }
-                        $event->associationType = 'Contacts';
-                        $event->associationId = isset($contact) ? $contact->id : $note->associationId;
-                        if($action->associationType == 'services'){
-                            $case = X2Model::model('Services')->findByPk($action->associationId);
-                            if(isset($case) && is_numeric($case->contactId)){
-                                $event->associationId = $case->contactId;
-                            }elseif(isset($case)){
-                                $event->associationType = 'Services';
-                                $event->associationId = $case->id;
-                            }
-                        }
-                        $event->save();
-                        $track->opened = $now;
-                        $track->update();
-                    }
-                }
-            }
+            $track->recordEmailOpen();
         }
         //return a one pixel transparent png
         header('Content-Type: image/png');

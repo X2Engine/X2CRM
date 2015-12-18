@@ -54,11 +54,7 @@ if (class_exists($data->associationType)) {
     }
 }
 Yii::app()->params->isAdmin = Yii::app()->user->checkAccess('AdminIndex');
-$profId = Yii::app()->db->createCommand()
-        ->select('id')
-        ->from('x2_profile')
-        ->where('username=:user', array(':user' => $data->user))
-        ->queryScalar();
+$profId = User::getUserId ($data->user);
 
 $themeUrl = Yii::app()->theme->getBaseUrl();
 $typeFile = $data->type;
@@ -79,7 +75,7 @@ if ($data->type == 'record_create') {
     }
 }
 
-$authorRecord = X2Model::model('User')->findByAttributes(array('username' => $data->user));
+$authorRecord = $data->userObj;
 if (isset($authorRecord)) {
     if (Yii::app()->user->getName() == $data->user) {
         $author = Yii::t('app', 'You');
@@ -89,11 +85,7 @@ if (isset($authorRecord)) {
 } else {
     $author = '';
 }
-$commentCount = X2Model::model('Events')->countByAttributes(array(
-    'type' => 'comment',
-    'associationType' => 'Events',
-    'associationId' => $data->id,
-        ));
+$commentCount = $data->comments ()->count ();
 $likeCount = Yii::app()->db->createCommand()
         ->select('count(postId)')
         ->from('x2_like_to_post')
@@ -111,7 +103,7 @@ $likedPost = Yii::app()->db->createCommand()
 if ($data->sticky) {
     if (!isset($_SESSION['stickyFlag']) || !$_SESSION['stickyFlag']) {
         $_SESSION['stickyFlag'] = true;
-        echo "<div class='view top-level date-break sticky-section-headert'>- Sticky -</div>";
+        echo "<div class='view top-level date-break sticky-section-headert'>- ".Yii::t('app','Sticky')." -</div>";
     }
 } else {
     if (!isset($noDateBreak) || !$noDateBreak) {
@@ -169,8 +161,8 @@ $important = $data->important ? 'important-action' : '';
         }
         ?>
         <?php
-        if ($data->type == 'feed') {
-            Profile::renderFullSizeAvatar($profId, 35);
+        if ($data->isTypeFeed ()) {
+            echo Profile::renderFullSizeAvatar($profId, 35);
         }
         ?>
         <div class='stacked-icon'></div>
@@ -178,10 +170,10 @@ $important = $data->important ? 'important-action' : '';
     <div class="event-text-box">
         <div class="deleteButton">
             <?php
-            if (($data->type == 'feed') && ($data->user == Yii::app()->user->getName() || Yii::app()->params->isAdmin)) {
+            if (($data->isTypeFeed ()) && ($data->user == Yii::app()->user->getName() || Yii::app()->params->isAdmin)) {
                 echo CHtml::link('', array('/profile/updatePost', 'id' => $data->id, 'profileId' => $profileId), array('class' => 'fa fa-edit')) . " ";
             }
-            if ((($data->user == Yii::app()->user->getName() || $data->associationId == Yii::app()->user->getId()) && ($data->type == 'feed')) || Yii::app()->params->isAdmin)
+            if ((($data->user == Yii::app()->user->getName() || $data->associationId == Yii::app()->user->getId()) && ($data->isTypeFeed ())) || Yii::app()->params->isAdmin)
                 echo CHtml::link('', '#', array('class' => 'fa fa-close delete-link', 'id' => $data->id . '-delete'));
             ?>
         </div>
@@ -190,6 +182,17 @@ $important = $data->important ? 'important-action' : '';
             echo Formatter::convertLineBreaks(x2base::convertUrls($data->getText()));
             ?>
         </span>
+        <div class='event-attachments'>
+        <?php
+            foreach ($data->media as $media) {
+            ?>
+            <div class='photo-attachment-container'>
+                <?php echo $media->getImage (false, array ('photo-attachment')); ?>
+            </div>
+            <?php
+            }
+        ?>
+        </div>
         <div class='event-bottom-row'>
             <span class="comment-age x2-hint" id="<?php echo $data->id . "-" . $data->timestamp; ?>" 
                   style="<?php echo $style; ?>"

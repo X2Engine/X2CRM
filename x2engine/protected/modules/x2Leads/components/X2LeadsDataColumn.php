@@ -40,22 +40,20 @@ class X2LeadsDataColumn extends X2DataColumn {
      * Allows for default boolean filter to be set. See {@link X2Leads::search}
      */
     public function renderFilterCellContent() {
-        switch($this->fieldType){
-            case 'boolean':
-                echo CHtml::activeDropdownList(
-                    $this->grid->filter, $this->name, 
+        if ($this->fieldModel['fieldName'] == 'converted') {
+            echo CHtml::activeDropdownList(
+                    $this->grid->filter, $this->name,
                     array(
-                        'all' => Yii::t('app', 'All'), 
+                        'all' => Yii::t('app', 'All'),
                         '1' => Yii::t('app', 'Yes'),
                         'false' => Yii::t('app', "No")
-                    ), 
+                    ),
                     array(
                         'class' => 'x2-minimal-select-filtercol'
                     )
-                );
-                break;
-            default:
-                parent::renderFilterCellContent();
+            );
+        } else {
+            parent::renderFilterCellContent();
         }
     }
 }

@@ -34,6 +34,8 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 
+
+
 /**
  * Behavior for dealing with data files directly on the server while avoiding
  * directory traversal and publicly visible files.
@@ -75,6 +77,30 @@ class ImportExportBehavior extends CBehavior {
             'data',
             $filename
         ));
+    }
+
+    /**
+     * Retrieve the current CSV delimeter for import/export
+     * @return string Import CSV delimeter
+     */
+    public function getImportDelimeter() {
+        if (array_key_exists ('importDelimeter', $_SESSION) &&
+            strlen ($_SESSION['importDelimeter']) === 1)
+                return $_SESSION['importDelimeter'];
+        else
+            return ',';
+    }
+
+    /**
+     * Retrieve the current CSV enclosure for import/export
+     * @return string Import CSV enclosure
+     */
+    public function getImportEnclosure() {
+        if (array_key_exists ('importEnclosure', $_SESSION) &&
+            strlen ($_SESSION['importEnclosure']) === 1)
+                return $_SESSION['importEnclosure'];
+        else
+            return '"';
     }
 
     /**
@@ -533,6 +559,8 @@ class ImportExportBehavior extends CBehavior {
 
         // ensure the provided id is valid
         if ((strtolower($fieldName) === 'id') && (!preg_match('/^\d+$/', $importAttribute) || $importAttribute >= 4294967295)) {
+            $model->id = $importAttribute;
+            $model->addError ('id', Yii::t('importexport', "ID '$importAttribute' is not valid."));
             return $model;
         }
 
@@ -542,13 +570,8 @@ class ImportExportBehavior extends CBehavior {
                 break;
             case "dateTime":
             case "date":
-                if (strtotime($importAttribute) !== false) {
-                    $model->$fieldName = strtotime($importAttribute);
-                } elseif (is_numeric($importAttribute)) {
-                    $model->$fieldName = $importAttribute;
-                } else {
-                    
-                }
+                if (Formatter::parseDateTime ($importAttribute) !== false)
+                    $model->$fieldName = Formatter::parseDateTime ($importAttribute);
                 break;
             case "visibility":
                 switch ($importAttribute) {
@@ -582,8 +605,11 @@ class ImportExportBehavior extends CBehavior {
     protected function importRecordLinkAttribute($modelName, X2Model $model, Fields $fieldRecord, $importAttribute) {
         $fieldName = $fieldRecord->fieldName;
         $className = ucfirst($fieldRecord->linkType);
+        if (isset($_SESSION['linkMatchMap']) && !empty($_SESSION['linkMatchMap'][$fieldName])) {
+            $linkMatchAttribute = $_SESSION['linkMatchMap'][$fieldName];
+        }
 
-        if (ctype_digit($importAttribute)) {
+        if (ctype_digit($importAttribute) && !isset($linkMatchAttribute)) {
             $lookup = X2Model::model($className)->findByPk($importAttribute);
             $model->$fieldName = $importAttribute;
             if (!empty($lookup)) {
@@ -596,7 +622,8 @@ class ImportExportBehavior extends CBehavior {
                 $this->importRelations[count($this->importRelations) - 1][] = $relationship->attributes;
             }
         } else {
-            $lookup = X2Model::model($className)->findByAttributes(array('name' => $importAttribute));
+            $lookupAttr = isset($linkMatchAttribute) ? $linkMatchAttribute : 'name';
+            $lookup = X2Model::model($className)->findByAttributes(array($lookupAttr => $importAttribute));
             if (isset($lookup)) {
                 $model->$fieldName = $lookup->nameId;
                 $relationship = new Relationships;
@@ -922,17 +949,21 @@ class ImportExportBehavior extends CBehavior {
                 $idRange = range(
                         $lastInsertedIds[$type], $lastInsertedIds[$type] + count($models) - 1
                 );
-                $this->massUpdateImportedNameIds($idRange, $type);
+                $this->massUpdateImportedNameIds ($idRange, $type);
+                $this->triggerImportedRecords ($idRange, $type);
             }
         }
-        $this->establishImportRelationships($primaryIdRange[0], $mappedId);
 
+        $this->establishImportRelationships ($primaryIdRange[0], $mappedId);
+        $this->triggerImportedRecords ($primaryIdRange, $modelName);
         $this->importerResponse ($finished);
     }
 
     /**
      * Populate the nameId field since auto-populating fields is
      * disabled and it is far more efficient to do it in a single query
+     * @param array $importedIds List of record ids
+     * @param string $type Model name
      */
     protected function massUpdateImportedNameIds($importedIds, $type) {
         $hasNameId = Fields::model()->findByAttributes(array(
@@ -941,6 +972,18 @@ class ImportExportBehavior extends CBehavior {
         ));
         if ($hasNameId)
             X2Model::massUpdateNameId($type, $importedIds);
+    }
+
+    /**
+     * Trigger the X2Workflow RecordCreateTrigger on the imported models
+     * @param array $importedIds List of record ids
+     * @param string $type Model name
+     */
+    protected function triggerImportedRecords($importedIds, $type) {
+        foreach ($importedIds as $id) {
+            $model = X2Model::model ($type)->findByPk ($id);
+            X2Flow::trigger('RecordCreateTrigger', array('model'=>$model));
+        }
     }
 
     /**
@@ -965,6 +1008,8 @@ class ImportExportBehavior extends CBehavior {
      * @param boolean $mappedId Whether ID was mapped: this affects lastInsertId's behavior
      */
     protected function handleImportAccounting($models, $modelName, $lastInsertedIds, $mappedId = false) {
+        if (count($models) === 0)
+            return;
         $now = time();
         $editingUsername = Yii::app()->user->name;
         $auxModelContainer = array(
@@ -978,6 +1023,7 @@ class ImportExportBehavior extends CBehavior {
             $firstNewId = $lastInsertedIds[$modelName] - count($models) + 1;
         else
             $firstNewId = $lastInsertedIds[$modelName];
+
         for ($i = 0; $i < count($models); $i++) {
             $record = $models[$i];
             if ($mappedId) {
@@ -1221,6 +1267,84 @@ class ImportExportBehavior extends CBehavior {
         if (file_exists($mapPath))
             unlink($mapPath);
     }
+
+    /**
+     * Retrieve all associated export format options from the request parameters
+     * @param array $params Request parameters, e.g., $_GET
+     * @return array of format options, indexed by form element ID
+     */
+    protected function readExportFormatOptions($params) {
+        $paramNames = array(
+            'compressOutput',
+            'exportDestination',
+            
+        );
+        // Defaults
+        $formatParams = array(
+            'exportDestination' => 'download',
+            'compressOutput' => 'false',
+        );
+        foreach ($paramNames as $param) {
+            if (array_key_exists ($param, $params) && !empty($params[$param]))
+                $formatParams[$param] = $params[$param];
+        }
+        $formatParams['compressOutput'] = $formatParams['compressOutput'] === 'true' ? true : false;
+        return $formatParams;
+    }
+
+    /**
+     * Modifies the export path to ensure a consistent file extensions
+     * @param string $path Path to export file
+     * @param array $params Export format parameters
+     * @param string $filetype Expected file extension
+     * @return string $path Modified export path
+     */
+    protected function adjustExportPath($path, $params, $filetype = 'csv') {
+        if (isset($params['compressOutput']) && $params['compressOutput']) {
+            $path = str_replace('.'.$filetype, '.zip', $path);
+            if (!preg_match ('/\.zip$/', $path))
+                $path = $path.'.zip';
+        } else {
+            if (!preg_match ('/\.'.$filetype.'$/', $path))
+                $path = "{$path}.{$filetype}";
+        }
+        return $path;
+    }
+
+    /*
+     * Handle pushing exported data to various targets, including download in browser, save
+     * locally to server, copy to remote server by FTP or SCP, or push to a cloud provider
+     * like Amazon S3 or Google Drive.
+     * @param string $src Source file to copy
+     * @param array $params Export deliverable parameters, as retrieved by {@link readExportFormatOptions}
+     */
+    public function prepareExportDeliverable($src, $params) {
+        $success = true;
+        if (!array_key_exists ('mimeType', $params))
+            $params['mimeType'] = 'text/csv';
+        if (!array_key_exists ('exportDestination', $params))
+            return false;
+
+        if (array_key_exists ('compressOutput', $params) && $params['compressOutput']) {
+            // Package the CSV, media files, and modules
+            $zip = Yii::app()->zip;
+            $dirname = str_replace('.csv', '', $src);
+            $dst = $dirname .'/'. basename($src);
+            AppFileUtil::ccopy ($src, $dst);
+            $zipPath = $this->safePath(basename ($dirname) . '.zip');
+
+            if ($zip->makeZip($dirname, $zipPath)) {
+                $src = $zipPath;
+                $params['mimeType'] = 'application/zip';
+            } else {
+                $success = false;
+            }
+        }
+        
+        return $success;
+    }
+
+    
 }
 
 ?>

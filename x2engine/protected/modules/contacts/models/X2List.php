@@ -298,12 +298,8 @@ class X2List extends X2Model {
                         }
                     }
                     $tagCondition = implode(' OR ', $tags);
-                    $search->addCondition (
-                        "EXISTS (
-                            SELECT * 
-                            FROM x2_tags 
-                            WHERE x2_tags.itemId=t.id AND x2_tags.type='$this->modelName' AND 
-                                ($tagCondition))", $logicMode);
+                    $search->join = 'LEFT JOIN x2_tags ON t.id = x2_tags.itemId';
+                    $search->addCondition("x2_tags.id IS NOT NULL AND x2_tags.type='$this->modelName' AND " ."($tagCondition)", $logicMode);
                 } else if($dateType){
                     //assume for now that any dates in a criterion are at midnight of that day
                     $thisDay = $criterion->value;

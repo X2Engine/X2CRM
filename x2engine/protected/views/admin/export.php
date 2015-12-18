@@ -33,6 +33,8 @@
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2Engine".
  *****************************************************************************************/
+
+Yii::app()->clientScript->registerCssFile(Yii::app()->theme->baseUrl.'/css/importexport.css');
 ?>
 <div class="page-title"><h2><?php echo Yii::t('admin', 'Export All Data'); ?></h2></div>
 <div class="form">
@@ -48,6 +50,28 @@
         echo CHtml::checkBox("$model", true, array('class' => 'model-checkbox','style'=>'margin-left:5px;'));
         echo "</div>";
     }
+?>
+
+    <h3><?php echo Yii::t('admin', 'Customize CSV') .
+        X2Html::minimizeButton (array('class' => 'pseudo-link'), '#importSeparator'); ?></h3>
+
+    <div id='importSeparator' style='display:none'>
+        <?php
+            echo CHtml::label(Yii::t('admin', 'Delimeter'), 'delimeter');
+            echo CHtml::textField('delimeter', ',').'<br />';
+            echo CHtml::label(Yii::t('admin', 'Enclosure'), 'enclosure');
+            echo CHtml::textField('enclosure', '"');
+        ?>
+    </div>
+
+    <h3><?php echo Yii::t ('admin', 'Format Options').
+        CHtml::link(X2Html::minimizeButton (array(), '#exportFormat', true, false), '#'); ?></h3>
+
+    <div id="exportFormat">
+        <?php $this->renderPartial ('application.components.views._exportFormat'); ?>
+    </div><br /><br />
+
+    <?php
     echo CHtml::button(Yii::t('app','Export'), array('class' => 'x2-button', 'id' => 'export-button'));
     ?>
     <div id="status-text" style="color:green">
@@ -60,65 +84,91 @@
     </div>
 </div>
 
-<script>
-    $('#export-button').on('click',function(){
-        prepareFile();
-    });
-    function exportData(models,i, page){
+<?php Yii::app()->clientScript->registerScript ('globalExportJs', "
+    if (typeof x2 === 'undefined')
+        x2 = {};
+    if (typeof x2.export === 'undefined')
+        x2.export = {};
+    x2.export.globalExportFile = 'data.csv';
+
+    x2.export.finishExport = function() {
+        $.ajax({
+            url:'finishGlobalExport',
+            success:function(data){
+                if (data !== '') {
+                    x2.export.globalExportFile = data;
+                    $('#download-link-box').show();
+                }
+                alert('Export Complete!');
+            }
+        });
+    };
+
+    x2.export.exportData = function (models,i, page) {
         if($('#'+models[i]+'-status').length==0){
-            $('#status-text').append("<div id='"+models[i]+"-status'>Exporting data from: <b>"+models[i]+"</b><br></div>");
+            $('#status-text').append('<div id=\''+models[i]+'-status\'>Exporting data from: <b>'+models[i]+'</b><br></div>');
         }
         $.ajax({
             url:'globalExport?model='+models[i]+'&page='+page,
             success:function(data){
                 if(data>0){
-                    $('#'+models[i]+'-status').html(((data)*100)+" records from: <b>"+models[i]+"</b> successfully exported.<br>");
-                    exportData(models,i,data);
+                    $('#'+models[i]+'-status').html(((data)*100)+' records from: <b>'+models[i]+'</b> successfully exported.<br>');
+                    x2.export.exportData(models,i,data);
                 }else{
-                    if(i==models.length-1){
-                        $('#'+models[i]+'-status').html("All data from: <b>"+models[i]+"</b> successfully exported.<br>");
-                        $('#download-link-box').show();
-                        alert("Export Complete!");
-                    }else{
-                        $('#'+models[i]+'-status').html("All data from: <b>"+models[i]+"</b> successfully exported.<br>");
-                        exportData(models,i+1,0);
-                    }
+                    $('#'+models[i]+'-status').html('All data from: <b>'+models[i]+'</b> successfully exported.<br>');
+                    if(i==models.length-1)
+                        x2.export.finishExport();
+                    else
+                        x2.export.exportData(models,i+1,0);
                 }
             }
         });
     }
-    function prepareFile(){
+
+    x2.export.prepareFile = function (){
         $('#status-text').html('');
         $('#download-link-box').hide();
+        var exportTargetParams = x2.exportFormats.readExportFormatOptions();
+
         $.ajax({
-            'url':'prepareExport',
+            'url':'prepareExport?' + exportTargetParams,
+            data: {
+                'delimeter': $('#delimeter').val(),
+                'enclosure': $('#enclosure').val()
+            },
             success:function(){
-                $('#status-text').append("Data file prepared.<br>");
-                var models=getModelList();
+                $('#status-text').append('Data file prepared.<br>');
+                var models = x2.export.getModelList();
                 var i=0;
                 var page=0;
-                exportData(models,i, page);
+                x2.export.exportData(models,i, page);
             }
         });
     }
-    function getModelList(){
+
+    x2.export.getModelList = function (){
         var models=new Array();
-        $('.model-checkbox').each(function(){
-            if($(this).attr('checked')=='checked'){
+        $('.model-checkbox').each (function() {
+            if ($(this).is (':checked')) {
                 models.push($(this).attr('name'));
-                if($(this).attr('name')=="User"){
-                    models.push("Profile");
+                if($(this).attr('name')=='User'){
+                    models.push('Profile');
                 }
-                if($(this).attr('name')=="Workflow"){
-                    models.push("WorkflowStage");
+                if($(this).attr('name')=='Workflow'){
+                    models.push('WorkflowStage');
                 }
             }
         });
         return models;
-
     }
+
+    $('#export-button').click (function(){
+        $(this).hide();
+        x2.export.prepareFile();
+    });
+
     $('#download-link').click(function(e) {
         e.preventDefault();  //stop the browser from following
-        window.location.href = 'downloadData?file=data.csv';
+        window.location.href = 'downloadData?file=' + x2.export.globalExportFile;
     });
-</script>
+", CClientScript::POS_READY);

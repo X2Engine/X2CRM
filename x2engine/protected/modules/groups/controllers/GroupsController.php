@@ -38,8 +38,17 @@
  * @package application.modules.groups.controllers 
  */
 class GroupsController extends x2base {
+
     public $modelClass='Groups';
 
+//    public function behaviors() {
+//        return array_merge(parent::behaviors(), array(
+//            'X2MobileControllerBehavior' => array(
+//                'class' => 
+//                    'application.modules.mobile.components.behaviors.X2MobileControllerBehavior'
+//            ),
+//        ));
+//    }
 	
 	/**
 	 * Filters to be used by the controller.
@@ -56,6 +65,19 @@ class GroupsController extends x2base {
             'setPortlets',
         );
 	}
+
+//    public function actionMobileView ($id) {
+//        $model = $this->loadModel ($id);
+//        $this->dataUrl = $model->getUrl ();
+//        if ($this->checkPermissions($model, 'view')) {
+//            $this->render (
+//                $this->pathAliasBase.'views.mobile.recordView',
+//                array (
+//                    'model' => $model,
+//                )
+//            );
+//        }
+//    }
 
 	/**
 	 * Displays a particular model.

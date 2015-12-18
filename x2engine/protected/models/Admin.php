@@ -100,6 +100,7 @@ class Admin extends X2ActiveRecord {
                 'class' => 'application.components.JSONFieldsBehavior',
                 'transformAttributes' => array (
                     'twitterRateLimits',
+                    'assetBaseUrls',
                 ),
             ),
             'JSONFieldsDefaultValuesBehavior' => array(
@@ -113,6 +114,7 @@ class Admin extends X2ActiveRecord {
                         'PublisherEventTab' => false,
                         'PublisherProductsTab' => false,
                     ),
+                    
                 ),
                 'maintainCurrentFieldsOrder' => true
             ),
@@ -130,6 +132,28 @@ class Admin extends X2ActiveRecord {
     }
 
     /**
+     * Custom validator for an array of URLs
+     */
+    public function validateUrlArray ($attr, $params) {
+        $values = $this->$attr;
+        $urlValidator = new CUrlValidator;
+        $allowEmpty = array_key_exists ('allowEmpty', $params) && $params['allowEmpty'];
+
+        if (is_array ($values)) {
+            foreach ($values as $url) {
+                if ($urlValidator->validateValue ($url) || ($allowEmpty && empty($url)))
+                    continue;
+                $this->addError (
+                    $attr,
+                    Yii::t('admin', 'The specified URL "{url}" is not in the correct format.', array(
+                        '{url}' => CHtml::encode($url),
+                    ))
+                );
+            }
+        }
+    }
+
+    /**
      * @return array validation rules for model attributes.
      */
     public function rules(){
@@ -142,7 +166,7 @@ class Admin extends X2ActiveRecord {
             array('serviceCaseEmailSubject, serviceCaseEmailMessage', 'required'),
             array('timeout, webTrackerCooldown, chatPollTime, ignoreUpdates, rrId, onlineOnly, emailBatchSize, emailInterval, emailPort, installDate, updateDate, updateInterval, workflowBackdateWindow, workflowBackdateRange', 'numerical', 'integerOnly' => true),
             // accounts, sales,
-            array('chatPollTime', 'numerical', 'max' => 10000, 'min' => 100),
+            array('chatPollTime', 'numerical', 'max' => 100000, 'min' => 100),
             array('currency', 'length', 'max' => 3),
             array('emailUseAuth, emailUseSignature', 'length', 'max' => 10),
             array('emailType, emailSecurity,gaTracking_internal,gaTracking_public', 'length', 'max' => 20),
@@ -164,8 +188,9 @@ class Admin extends X2ActiveRecord {
             array('emailNotificationAccount','setDefaultEmailAccount','alias'=>'systemNotificationEmail'),
             array('emailSignature', 'length', 'max' => 4096),
             array('externalBaseUrl','url','allowEmpty'=>true),
+            array('assetBaseUrls','validateUrlArray','allowEmpty'=>false),
             array('externalBaseUrl','match','pattern'=>':/$:','not'=>true,'allowEmpty'=>true,'message'=>Yii::t('admin','Value must not include a trailing slash.')),
-            array('enableWebTracker, quoteStrictLock, workflowBackdateReassignment,disableAutomaticRecordTagging', 'boolean'),
+            array('enableWebTracker, quoteStrictLock, workflowBackdateReassignment,disableAutomaticRecordTagging,enableAssetDomains', 'boolean'),
             array('gaTracking_internal,gaTracking_public', 'match', 'pattern' => "/'/", 'not' => true, 'message' => Yii::t('admin', 'Invalid property ID')),
             array ('appDescription', 'length', 'max' => 255),
             array (
@@ -238,15 +263,17 @@ class Admin extends X2ActiveRecord {
             'contactNameFormat' => Yii::t('admin', 'Contact Name Format'),
             'webLeadEmailAccount' => Yii::t('admin','Send As (to web leads)'),
             'emailNotificationAccount' => Yii::t('admin','Send As (when notifying users)'),
-            'batchTimeout' => Yii::t('app','Time limit on batch actions'),
-            'massActionsBatchSize' => Yii::t('app','Batch size for grid view mass actions'),
-            'externalBaseUrl' => Yii::t('app','External / Public Base URL'),
-            'externalBaseUri' => Yii::t('app','External / Public Base URI'),
-            'appName' => Yii::t('app','Application Name'),
+            'batchTimeout' => Yii::t('admin','Time limit on batch actions'),
+            'massActionsBatchSize' => Yii::t('admin','Batch size for grid view mass actions'),
+            'externalBaseUrl' => Yii::t('admin','External / Public Base URL'),
+            'externalBaseUri' => Yii::t('admin','External / Public Base URI'),
+            'appName' => Yii::t('admin','Application Name'),
             'x2FlowRespectsDoNotEmail' => Yii::t(
                 'app','Respect contacts\' "Do not email" settings?'),
-            'doNotEmailLinkText' => Yii::t('app','"Do not email" Link Text'),
-            'doNotEmailLinkPage' => Yii::t('app','"Do not email" Page'),
+            'doNotEmailLinkText' => Yii::t('admin','"Do not email" Link Text'),
+            'doNotEmailLinkPage' => Yii::t('admin','"Do not email" Page'),
+            'doNotEmailPage' => Yii::t('admin','Do Not Email Page'),
+            'enableAssetDomains' => Yii::t('admin','Enable Asset Domains'),
              
             
         );

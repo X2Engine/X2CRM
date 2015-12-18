@@ -46,8 +46,6 @@ function Funnel (argsDict) {
     argsDict = typeof argsDict === 'undefined' ? {} : argsDict;
 
     var defaultArgs = {
-        stageValues: null, // array of projected deal values for each stage
-        totalValue: null, // formatted sum of stageValues
         recordsPerStage: null, // array of record counts per stage
         stageNameLinks: null, // array of links which open stage details
     };
@@ -151,25 +149,6 @@ Funnel.prototype._addStageNameLinks = function () {
 
 };
 
-/**
- * Place stage values in a column to the right of the funnel with y coordinate aligned with stage 
- * centroid 
- */
-Funnel.prototype._addStageValues = function () {
-    var that = this;
-    for (var i = 0; i < this.stageCount; i++) {
-        var stageValueContainer = $('<span>', {
-            'class': 'funnel-stage-value',
-            html: '<b>' + this.stageValues[i] + '</b>',
-            css: {
-                position: 'absolute',
-                right: -(this._funnelW1 / 2) - 15,
-                top: this._stageCentroids[i].y - 10,
-            }
-        });
-        $(this.containerSelector).append (stageValueContainer);
-    }
-};
 
 /**
  * Add totals row below the funnel 
@@ -189,16 +168,6 @@ Funnel.prototype._addTotals = function () {
     });
     $(this.containerSelector).append (totalRecordsContainer);
 
-    var totalValue = $('<span>', {
-        'class': 'funnel-total-value',
-        html: this.translations['Total Amount'] + ': <b>' + this.totalValue + '</b>',
-        css: {
-            position: 'absolute',
-            right: -(this._funnelW1 / 2) - 15,
-            top: this._funnelHeight + 10,
-        }
-    });
-    $(this.containerSelector).append (totalValue);
 };
 
 
@@ -236,7 +205,6 @@ Funnel.prototype._init = function () {
     x2.BaseFunnel.prototype._init.call (this);
     that._addStageCounts ();
     that._addStageNameLinks ();
-    that._addStageValues ();
     that._addTotals ();
 };
 

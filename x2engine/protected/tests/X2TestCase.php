@@ -49,9 +49,11 @@ class X2TestCase extends CTestCase {
     private $_oldSession;
     
     public function setUp() {
-        if(X2_TEST_DEBUG_LEVEL > 1){
-            println("\n".$this->getName());
+        if(X2_TEST_DEBUG_LEVEL > 0){
+            $timer = TestingAuxLib::getCaseTimer ();
+            $timer->start ();
         }
+        TestingAuxLib::log ("running test case: ".$this->getName ());
         if(isset($_SESSION)){
             $this->_oldSession = $_SESSION;
         }
@@ -62,6 +64,11 @@ class X2TestCase extends CTestCase {
         if(isset($this->_oldSession)){
             $_SESSION = $this->_oldSession;
         }
+        if(X2_TEST_DEBUG_LEVEL > 0){
+            $timer = TestingAuxLib::getCaseTimer ();
+            TestingAuxLib::log ("time elapsed for test case: {$timer->stop ()->getTime ()}");
+        }
+
         parent::tearDown();
     }
 
@@ -75,8 +82,11 @@ class X2TestCase extends CTestCase {
         if (!YII_UNIT_TESTING) throw new CException ('YII_UNIT_TESTING must be set to true');
         $testClass = get_called_class();
         if(X2_TEST_DEBUG_LEVEL > 0){
-            println("\nrunning ".self::getPath ($testClass));
+            $timer = TestingAuxLib::getClassTimer ();
+            $timer->start ();
         }
+        TestingAuxLib::log ("running test class: ".self::getPath ($testClass));
+
         Yii::app()->beginRequest();
         Yii::app()->fixture->load(array(
             'profile'=>'Profile',
@@ -86,8 +96,10 @@ class X2TestCase extends CTestCase {
     
     public static function tearDownAfterClass(){
         if(X2_TEST_DEBUG_LEVEL > 0){
-            println("");
+            $timer = TestingAuxLib::getClassTimer ();
+            TestingAuxLib::log ("time elapsed for test class: {$timer->stop ()->getTime ()}");
         }
+
         parent::tearDownAfterClass();
     }
 

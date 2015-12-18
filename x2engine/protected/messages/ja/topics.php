@@ -19,5 +19,4 @@
   'Most Recent' => '最も最近の',
   'Alphabetical' => 'アルファベット順',
   'Most Popular' => 'もっとも人気のある',
-  'Sticky' => '粘着性の',
 );

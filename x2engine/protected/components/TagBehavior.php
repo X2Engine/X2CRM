@@ -137,7 +137,6 @@ class TagBehavior extends X2ActiveRecordBehavior {
 
         // Type of fields to search in 
         $fieldTypes = array (
-            'varchar',
             'text'
         );
 

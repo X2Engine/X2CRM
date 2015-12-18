@@ -157,9 +157,9 @@ class X2TranslationBehavior extends CBehavior {
             /*
              * Next, we can optionally match either a . followed by a newline and optional 
              * whitespace or a newline followed by optional whitespace and a .
-             * This pattern matches multiline translation calls wit concatenated strings
+             * This pattern matches multiline translation calls with concatenated strings
              */
-            $regex .= '((\.\n\s*)|(\n\s*\.\s*))?';
+            $regex .= '((\h*\.\h*\n\h*)|(\h*\n\h*\.\h*))?';
 
             /*
              * Finally, expect to see one or more lines of messages and close the
@@ -386,7 +386,7 @@ class X2TranslationBehavior extends CBehavior {
     }
     
     public function parseRegexMatch($message) {
-        $ret = preg_replace("/(\'|\")((\.(\r\n?|\n)\s*)|((\r\n?|\n)\s*\.\s*))(\'|\")/", '', $message);
+        $ret = preg_replace("/(\'|\")((\h*\.\h*(\r\n?|\n)\h*)|(\h*(\r\n?|\n)\h*\.\h*))(\'|\")/", '', $message);
         if (strpos($ret, '"') === 0 || strpos($ret, "'") === 0) {
             $ret = substr($ret, 1);
         }
@@ -734,6 +734,35 @@ class X2TranslationBehavior extends CBehavior {
                 $this->writeMessagesToFile($baseFile, $messages);
             }
         }
+    }
+    
+    public function assimilateLanguageFiles(){
+        $languagePackPath = Yii::app()->basePath."/messages";
+        $languagePacks = array_diff(scandir($languagePackPath),array('.','..','template'));
+        foreach($languagePacks as $languagePack){
+            if (is_dir($languagePackPath . '/' . $languagePack)) {
+                $this->assimilateLanguagePack($languagePack);
+            }
+        }
+    }
+    
+    public function assimilateLanguagePack($lang){
+        $languagePackPath = Yii::app()->basePath."/messages";
+        $languageFiles = array_diff(scandir($languagePackPath . '/' . $lang),array('.','..'));
+        foreach($languageFiles as $file){
+            if(is_file($languagePackPath . '/' . $lang . '/' . $file)){
+                $this->assimilateLanguageFile($lang, $file);
+            }
+        }
+    }
+    
+    public function assimilateLanguageFile($lang, $file){
+        $templateMessages = require Yii::app()->basePath."/messages/template/$file";
+        $langMessages = require Yii::app()->basePath."/messages/$lang/$file";
+        
+        $intersection  = array_intersect_key($langMessages,array_flip(array_keys($templateMessages)));
+        
+        $this->writeMessagesToFile(Yii::app()->basePath."/messages/$lang/$file", $intersection);
     }
     
     /**

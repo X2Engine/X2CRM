@@ -9,7 +9,11 @@
   'Search for a Contact' => 'לחפש איש קשר',
   'Go to Full Site' => 'עבור אל האתר המלא',
   'Who\'s Online' => 'מי \\ &#39;s באינטרנט',
-  'Back' => 'בחזרה',
   'No documents available.' => 'אין מסמכים זמינים.',
   'No social items available.' => 'אין פריטים חברתיים זמינים.',
+  'Change web address' => 'כתובת אינטרנט שינוי',
+  'Legal' => 'מִשׁפָּטִי',
+  'Add a post...' => 'הוסף הודעה ...',
+  'Activities' => 'פעילויות',
+  'Dashboard' => 'לוּחַ מַחווָנִים',
 );

@@ -95,33 +95,41 @@ class WebFormAction extends CAction {
             }
             $now = time();
 
-            //require email field, check format
-            /*if(preg_match(
-                "/[a-zA-Z0-9._%-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}/",
-                $_POST['Contacts']['email']) == 0) {
-                $this->renderPartial('application.components.views.webFormSubmit',
-                    array (
-                        'type' => 'weblead',
-                        'error' => Yii::t('contacts', 'Invalid Email Address')
-                    )
-                );
-                return;
-            }*/
-
             
             $model->visibility = 1;
 
             $model->validate (null, false);
             if(!$model->hasErrors()){
-                $model->assignedTo = $this->controller->getNextAssignee();
-                $model->createDate = $now;
                 $model->lastUpdated = $now;
                 $model->updatedBy = 'admin';
 
                 
-
+                
+                if($model->asa('X2DuplicateBehavior') && $model->checkForDuplicates()){
+                    $duplicates = $model->getDuplicates();
+                    $oldest = $duplicates[0];
+                    $fields = $model->getFields(true);
+                    foreach ($fields as $field) {
+                        if (!in_array($field->fieldName,
+                                        $model->X2MergeableBehavior->restrictedFields)
+                                && !is_null($model->{$field->fieldName})) {
+                            if ($field->type === 'text' && !empty($oldest->{$field->fieldName})) {
+                                $oldest->{$field->fieldName} .= "\n--\n" . $model->{$field->fieldName};
+                            } else {
+                                $oldest->{$field->fieldName} = $model->{$field->fieldName};
+                            }
+                        }
+                    }
+                    $model = $oldest;
+                    $newRecord = $model->isNewRecord;
+                }
+                if($newRecord){
+                    $model->createDate = $now;
+                    $model->assignedTo = $this->controller->getNextAssignee();
+                }
+                
                 $success = $model->save();
-
+                
                 
 
                 //TODO: upload profile picture url from webleadfb
@@ -536,7 +544,7 @@ class WebFormAction extends CAction {
         $lead->leadSource = $leadSource;
         // disable validation to prevent saving from failing if leadSource isn't set
         if ($lead->save (false)) {
-            Relationships::create ('X2Leads', $lead->id, 'Contacts', $contact->id);
+            $lead->createRelationship($contact);
         }
 
     }

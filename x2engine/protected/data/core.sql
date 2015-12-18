@@ -103,6 +103,8 @@ CREATE TABLE x2_admin(
     massActionsBatchSize        INT DEFAULT 10,
     externalBaseUrl             VARCHAR(255) DEFAULT NULL,
     externalBaseUri             VARCHAR(255) DEFAULT NULL,
+    assetBaseUrls               VARCHAR(255) DEFAULT NULL,
+    enableAssetDomains          TINYINT NOT NULL DEFAULT 0,
     appName                     VARCHAR(255) DEFAULT NULL,
     appDescription              VARCHAR(255) DEFAULT NULL,
     /* If set to 1, prevents X2Flow from sending emails to contacts that have doNotEmail set to 1 */
@@ -269,8 +271,12 @@ CREATE TABLE x2_modules (
 	custom					INT,
 	enableRecordAliasing    TINYINT 	    DEFAULT 0,
 	itemName				VARCHAR(100),
-    pseudoModule            TINYINT         DEFAULT 0,
-    defaultWorkflow         INT
+    defaultWorkflow         INT,
+    linkRecordType          VARCHAR(250),
+    linkRecordId            INT,
+    linkHref                VARCHAR(250),
+    linkOpenInNewTab        TINYINT         DEFAULT 0,
+    moduleType              ENUM('module', 'link', 'recordLink', 'pseudoModule') DEFAULT 'module'
 ) ENGINE InnoDB COLLATE = utf8_general_ci;
 /*&*/
 DROP TABLE IF EXISTS x2_notifications;
@@ -290,6 +296,8 @@ CREATE TABLE x2_notifications(
 	createDate				BIGINT,
         INDEX(user)
 ) ENGINE InnoDB COLLATE = utf8_general_ci;
+/*&*/
+DROP TABLE IF EXISTS `x2_events_to_media`;
 /*&*/
 DROP TABLE IF EXISTS x2_events;
 /*&*/
@@ -651,9 +659,12 @@ CREATE TABLE `x2_record_aliases` (
 DROP TABLE IF EXISTS `x2_failed_logins`;
 /*&*/
 CREATE TABLE x2_failed_logins (
-	IP VARCHAR(40) NOT NULL PRIMARY KEY,
+	`id` INT NOT NULL AUTO_INCREMENT,
+	IP VARCHAR(40) NOT NULL,
     attempts INTEGER UNSIGNED,
+	active TINYINT DEFAULT 1,
 	lastAttempt BIGINT DEFAULT NULL,
+	PRIMARY KEY (`id`),
     INDEX(IP)
 ) COLLATE = utf8_general_ci, ENGINE=INNODB;
 /*&*/
@@ -665,4 +676,25 @@ CREATE TABLE `x2_tours` (
 	`description`                    VARCHAR(32),
 	`seen`                           TINYINT,
 	PRIMARY KEY (`id`)
+) COLLATE = utf8_general_ci, ENGINE=INNODB;
+/*&*/
+DROP TABLE IF EXISTS `x2_mobile_layouts`;
+/*&*/
+CREATE TABLE `x2_mobile_layouts` (
+	`id`                             INT             NOT NULL AUTO_INCREMENT,
+    `version`                        VARCHAR(16)     NOT NULL,
+	`modelName`                      VARCHAR(100)    NOT NULL,
+	`layout`                         TEXT,
+	`defaultForm`                    TINYINT         NOT NULL DEFAULT 0,     
+	`defaultView`                    TINYINT         NOT NULL DEFAULT 1,     
+	PRIMARY KEY (`id`)
+) COLLATE = utf8_general_ci, ENGINE=INNODB;
+/*&*/
+CREATE TABLE `x2_events_to_media` (
+	`id`                             INT             NOT NULL AUTO_INCREMENT,
+    `eventsId`                       INT UNSIGNED    NOT NULL,
+    `mediaId`                        INT             NOT NULL,
+	PRIMARY KEY (`id`),
+    FOREIGN KEY (`eventsId`) REFERENCES x2_events(id) ON UPDATE CASCADE ON DELETE CASCADE,
+	UNIQUE (`eventsId`, `mediaId`)
 ) COLLATE = utf8_general_ci, ENGINE=INNODB;

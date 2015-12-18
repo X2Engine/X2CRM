@@ -54,6 +54,18 @@ class X2FormModel extends CFormModel {
         return $valid;
     }
 
+    public function getAllErrorMessages() {
+        $errors = $this->getErrors();
+        $errorMessages = array();
+        foreach ($errors as $attrErrors) {
+            foreach ($attrErrors as $errorMessage) {
+                if ($errorMessage != '') {
+                    $errorMessages[] = $errorMessage;
+                }
+            }
+        }
+        return $errorMessages;
+    }
 }
 
 ?>

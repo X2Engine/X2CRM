@@ -9,7 +9,11 @@
   'Search for a Contact' => 'Suche nach einem Kontakt',
   'Go to Full Site' => 'Vollansicht',
   'Who\'s Online' => 'Wer ist online',
-  'Back' => 'Zurück',
   'No documents available.' => 'Keine Dokumente verfügbar.',
   'No social items available.' => 'Keine social items verfügbar.',
+  'Change web address' => 'Ändern Web-Adresse',
+  'Legal' => 'Legal',
+  'Add a post...' => 'Fügen Sie einen Beitrag ...',
+  'Activities' => 'Aktivitäten',
+  'Dashboard' => 'Armaturenbrett',
 );

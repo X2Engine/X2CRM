@@ -56,6 +56,10 @@ abstract class X2Controller extends CController {
 		// return parent::renderFile(Yii::getCustomPath($viewFile),$data,$return);
 	// }
 	
+
+    public function actions () {
+        return $this->getBehaviorActions ();
+    }
 	
 	
 	/**
@@ -70,8 +74,6 @@ abstract class X2Controller extends CController {
 	 * If this is not set, the application base view path will be used.
 	 * @return mixed the view file path. False if the view file does not exist.
 	 */
-	
-	
 	public function resolveViewFile($viewName,$viewPath,$basePath,$moduleViewPath=null) {
 		if(empty($viewName))
 			return false;
@@ -106,4 +108,85 @@ abstract class X2Controller extends CController {
 		}
 		return false;
 	}
+
+    public function badRequest ($message=null) {
+        throw $this->badRequestException ($message);
+    }
+
+    public function redirectToLogin () {
+        if (Yii::app()->params->isMobileApp) {
+            $this->redirect($this->createUrl('/mobile/login'));
+        } else {
+            $this->redirect($this->createUrl('/site/login'));
+        }
+    }
+
+    /**
+     * @return CHttpException 
+     */
+    protected function badRequestException ($message=null) {
+        if ($message === null) $message = Yii::t('app', 'Bad request.');
+        return new CHttpException (400, $message);
+    }
+
+
+    /**
+     * More reliable alternative to CHttpRequest::getIsAjaxRequest in cases where 'x2ajax' or
+     * 'ajax' parameters are being used.
+     * See http://www.yiiframework.com/forum/index.php?/topic/4945-yiiapp-request-isajaxrequest/
+     */
+    public function isAjaxRequest () {
+        return 
+            Yii::app()->request->getIsAjaxRequest () ||
+            isset ($_POST['x2ajax']) && $_POST['x2ajax'] || 
+            isset ($_POST['ajax']) && $_POST['ajax'] || 
+            isset ($_GET['x2ajax']) && $_GET['x2ajax'] || 
+            isset ($_GET['ajax']) && $_GET['ajax'];
+    }
+
+    /**
+     * Rejects ajax requests to non-mobile actions from X2Touch.
+     */
+//    protected function validateMobileRequest ($action) {
+//        if (!Yii::app()->isMobileApp () || !$this->isAjaxRequest ()) return;
+//
+//        if (!($this instanceof MobileController) &&
+//            (!$this->asa ('X2MobileControllerBehavior') ||
+//             !$this->asa ('X2MobileControllerBehavior')->hasMobileAction ($action->getId ()))) {
+//
+//             throw new CHttpException (400, Yii::t('app', 'Bad request.'));
+//        }
+//    }
+
+    protected function beforeAction ($action) {
+        $run = $this->runBehaviorBeforeActionHandlers ($action);
+        return $run;
+    }
+
+    protected function runBehaviorBeforeActionHandlers ($action) {
+        $run = true;
+        foreach ($this->behaviors () as $name => $config) {
+            if ($this->asa ($name) && $this->asa ($name)->getEnabled () && 
+                $this->asa ($name) instanceof X2ControllerBehavior) {
+
+                $run &= $this->asa ($name)->beforeAction ($action);
+            }
+            if (!$run) break;
+        }
+        return $run;
+    }
+
+    protected function getBehaviorActions () {
+        $actions = array ();
+        foreach ($this->behaviors () as $name => $config) {
+            if ($this->asa ($name) && $this->asa ($name)->getEnabled () && 
+                $this->asa ($name) instanceof X2ControllerBehavior) {
+
+                $actions = array_merge ($this->asa ($name)->actions (), $actions);
+            }
+        }
+        return $actions;
+    }
+
+
 }

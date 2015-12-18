@@ -56,8 +56,6 @@ x2.funnel = new x2.Funnel ({
     )).",
     stageCount: ".$stageCount.",
     recordsPerStage: ".CJSON::encode ($recordsPerStage).",
-    stageValues: ".CJSON::encode ($stageValues).",
-    totalValue: '".addslashes ($totalValue)."',
     containerSelector: '#funnel-container',
     stageNameLinks: ".CJSON::encode ($stageNameLinks).",
     colors: ".CJSON::encode ($colors).",

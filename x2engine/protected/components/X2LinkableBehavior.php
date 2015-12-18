@@ -85,8 +85,13 @@ class X2LinkableBehavior extends CActiveRecordBehavior {
         if (!isset($this->baseRoute))
             $this->baseRoute = '/' . $this->module;
 
-        if (!isset($this->viewRoute))
+        if (!isset($this->viewRoute)) {
             $this->viewRoute = $this->baseRoute;
+        }
+        if (Yii::app()->params->isMobileApp) {
+            $this->viewRoute .= '/mobileView';
+        }
+
 
 		if(!isset($this->autoCompleteSource))
 			$this->autoCompleteSource = 
@@ -114,11 +119,44 @@ class X2LinkableBehavior extends CActiveRecordBehavior {
 	 */
     public function getUrl(){
         $url = null;
-        if(Yii::app()->controller instanceof CController) // Use the controller
+        // Use the controller
+        if(Yii::app()->controller instanceof CController) {
             $url = Yii::app()->controller->createAbsoluteUrl($this->viewRoute, array('id' => $this->owner->id));
-        if(empty($url)) // Construct an absolute URL; no web request data available.
+        }
+        if(empty($url)) { // Construct an absolute URL; no web request data available.
             $url = Yii::app()->absoluteBaseUrl.'/index.php'.$this->viewRoute.'/'.$this->owner->id;
+        }
         return $url;
+    }
+
+    /**
+     * @return array keys corresponding to names of record types which are linkable from within 
+     *  X2Touch
+     */
+    private static $_mobileLinkableRecordTypes;
+    public static function getMobileLinkableRecordTypes () {
+        if (!isset (self::$_mobileLinkableRecordTypes)) {
+            self::$_mobileLinkableRecordTypes = array_flip (array_merge (array (
+                'Contacts',
+                'Accounts',
+                'X2Leads',
+                'Opportunity',
+                'User',
+                'Product',
+                'Quote',
+                'BugReports',
+            ), Yii::app()->db->createCommand ("
+                select name
+                from x2_modules
+                where custom
+            ")->queryColumn ()));
+        }
+        return self::$_mobileLinkableRecordTypes;
+    }
+
+    public static function isMobileLinkableRecordType ($type) {
+        $mobileLinkableRecordTypes = self::getMobileLinkableRecordTypes ();
+        return isset ($mobileLinkableRecordTypes[$type]);
     }
 
     /**
@@ -127,6 +165,12 @@ class X2LinkableBehavior extends CActiveRecordBehavior {
 	 * @return string a link to the model
 	 */
 	public function getUrlLink($htmlOptions=array ()) {
+        if (Yii::app()->params->isMobileApp && 
+            !self::isMobileLinkableRecordType (get_class ($this->owner))) {
+
+            return $this->owner->renderAttribute ('name');
+        }
+
 		$name = ($this->owner->hasAttribute('name') || $this->owner->canGetProperty('name') || 
             property_exists($this->owner, 'name')) ? $this->owner->name : '';
 		if(trim($name) == '') {

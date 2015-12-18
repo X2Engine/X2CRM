@@ -43,7 +43,4 @@ clicked.
 <h3><?php echo Yii::t(
     'charts','{stageName} Stage Summary', array ('{stageName}' => $stageName)); ?></h3>
 <span><?php echo Yii::t('charts','Total Records'); ?>:<b><?php echo $count; ?></b></span>
-<span><?php echo Yii::t('charts','Total Value'); ?>:<b> <?php echo $totalValue; ?></b></span>
-<span><?php echo Yii::t('charts','Projected Value'); ?>:<b> <?php echo $projectedValue; ?></b></span>
-<span><?php echo Yii::t('charts','Current Value'); ?>:<b> <?php echo $currentAmount; ?></b></span>
 </div>

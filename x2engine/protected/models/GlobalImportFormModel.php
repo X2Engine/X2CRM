@@ -46,6 +46,16 @@ class GlobalImportFormModel extends X2FormModel {
     public $data;
 
     /**
+     * @var string CSV delimeter character
+     */
+    public $delimeter = ',';
+
+    /**
+     * @var string CSV enclosure character
+     */
+    public $enclosure = '"';
+
+    /**
      * @var bool whether or not to overwrite old data 
      */
     public $overwrite = true;
@@ -57,6 +67,9 @@ class GlobalImportFormModel extends X2FormModel {
             ),
             array (
                 'data', 'file', 'types' => array ('csv'),
+            ),
+            array (
+                'delimeter, enclosure', 'length', 'is' => 1,
             ),
         );
     }

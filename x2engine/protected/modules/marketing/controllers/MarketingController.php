@@ -557,7 +557,7 @@ class MarketingController extends x2base {
         if($item === null || $item->list->campaign === null){
             if($type == 'click'){
                 // campaign redirect link click
-                $this->redirect(urldecode($url));
+                $this->redirect(htmlspecialchars_decode($url, ENT_NOQUOTES));
             }elseif($type == 'open'){
                 //return a one pixel transparent gif
                 header('Content-Type: image/gif');
@@ -713,8 +713,7 @@ class MarketingController extends x2base {
                     $item->list->campaign->name."\n\n".$item->emailAddress.' '.
                     Yii::t('marketing', 'has clicked a link').":\n".urldecode($url);
             }
-
-            $this->redirect(urldecode($url));
+            $this->redirect(htmlspecialchars_decode($url, ENT_NOQUOTES));
         }
 
         $action->save();

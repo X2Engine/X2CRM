@@ -198,20 +198,7 @@ class WorkflowController extends x2base {
         // die(var_dump($_POST['WorkflowStages']));
         if(isset($_POST['Workflow'], $_POST['WorkflowStages'])) {
 
-            $validStages = true;
-            for($i=0; $i<count($_POST['WorkflowStages']); $i++) {
-                
-                $stages[$i] = new WorkflowStage;
-                $stages[$i]->workflowId = $id;
-                $stages[$i]->attributes = $_POST['WorkflowStages'][$i+1];
-                $stages[$i]->stageNumber = $i+1;
-                $stages[$i]->roles = $_POST['WorkflowStages'][$i+1]['roles'];
-                if(empty($stages[$i]->roles) || in_array('',$stages[$i]->roles))
-                    $stages[$i]->roles = array();
-
-                if(!$stages[$i]->validate())
-                    $validStages = false;
-            }
+            list($validStages, $newStages, $forDeletion) = $workflowModel->updateStages($_POST['WorkflowStages']);
 
             $workflowModel->attributes = $_POST['Workflow'];
             $workflowModel->lastUpdated = time();
@@ -228,22 +215,23 @@ class WorkflowController extends x2base {
             
             if($validStages && $workflowModel->validate()) {
             
-                Yii::app()->db->createCommand()->delete(
-                    'x2_workflow_stages','workflowId='.$workflowModel->id); // delete old stages
+                WorkflowStage::model()->deleteByPk($forDeletion);
                 
                 // delete role stuff too
                 Yii::app()->db->createCommand()->delete('x2_role_to_workflow','workflowId='.$id);    
-                foreach($stages as &$stage) {
+                foreach($newStages as &$stage) {
                     $stage->save();
-                    foreach($stage->roles as $roleId)
+                    foreach($stage->roles as $roleId){
                         Yii::app()->db->createCommand()->insert('x2_role_to_workflow',array(
                             'stageId'=>$stage->id,
                             'roleId'=>$roleId,
                             'workflowId'=>$id,
                         ));
+                    }
                 }
-                if ($workflowModel->save())
+                if ($workflowModel->save()){
                     $this->redirect(array('view','id'=>$workflowModel->id));
+                }
             }
         }
         $this->render('update',array(
@@ -307,8 +295,6 @@ class WorkflowController extends x2base {
 
         $model = $this->loadModel($workflowId);
         $colors = $model->getWorkflowStageColors (sizeof ($stageCounts));
-        $stageValues = Workflow::getStageValues (
-            $model, $users, $modelType, $dateRange, $expectedCloseDateDateRange);
 
         $stageNameLinks = Workflow::getStageNameLinks (
             $workflowStatus, $dateRange, $expectedCloseDateDateRange, $users);
@@ -317,13 +303,6 @@ class WorkflowController extends x2base {
             'workflowStatus' => $workflowStatus,
             'recordsPerStage' => $stageCounts,
             'stageCount' => sizeof ($stageCounts),
-            'stageValues' => array_map (
-                function ($a) { return Formatter::formatCurrency ($a[1]); }, $stageValues),
-            'totalValue' => Formatter::formatCurrency (array_reduce (
-                $stageValues, 
-                function ($a, $b) { 
-                    return $a + $b[1]; 
-                }, 0)),
             'stageNameLinks' => $stageNameLinks,
             'colors' => $colors,
         ));
@@ -339,14 +318,14 @@ class WorkflowController extends x2base {
         if(is_numeric($workflowId) && is_numeric($stage) && is_numeric($modelId)) {
 
             $workflowStatus = Workflow::getWorkflowStatus($workflowId,$modelId,$type);
-        
-            if(isset($workflowStatus['stages'][$stage])) {
+            $stageArr = $workflowStatus['stages'][$stage];
+            if(isset($stageArr)) {
                 $model = X2Model::model('Actions')->findByAttributes(array(
                     'associationId'=>$modelId,
                     'associationType'=>$type,
                     'type'=>'workflow',
                     'workflowId'=>$workflowId,
-                    'stageNumber'=>$stage
+                    'stageNumber'=>$stageArr['id']
                 ));
                 
                 if($model->complete != 'Yes')
@@ -355,9 +334,9 @@ class WorkflowController extends x2base {
                 $editable = true;    // default is full permission for everybody
                 
                 // if roles are specified, check if user has any of them
-                if(!empty($workflowStatus['stages'][$stage]['roles'])) {    
+                if(!empty($stageArr['roles'])) {    
                     $editable = count(array_intersect(Yii::app()->params->roles, 
-                        $workflowStatus['stages'][$stage]['roles'])) > 0;
+                        $stageArr['roles'])) > 0;
                 }
 
                 // if the workflow backdate window isn't unlimited, check if the window has passed
@@ -551,12 +530,8 @@ class WorkflowController extends x2base {
                     $workflowId, $stageNumber, $model, $workflowStatus);
             assert ($started);
         }
-        $value = Yii::app()->locale->numberFormatter->formatCurrency (
-            Workflow::getProjectedValue ($type, $model->getAttributes ()),
-            Yii::app()->params->currency);
         echo CJSON::encode (array (
             'workflowStatus' => $workflowStatus,
-            'dealValue' => $value,
             'flashes' => array (
                 'error' => !empty ($message) ? array ($message) : array (),
                 'success' => empty ($message) ? 
@@ -620,111 +595,22 @@ class WorkflowController extends x2base {
 
 
     /**
-     * Get a data provider with contacts, opportunities, and accounts 
-     */
-    public function getStageMemberDataProviderMixed (
-        $workflowId, $dateRange, $expectedCloseDateDateRange, $stage, $users, $modelType='') {
-            
-        $dateRange=self::getDateRange();
-        $expectedCloseDateDateRange=self::getDateRange(
-            'expectedCloseDateStart', 'expectedCloseDateEnd', 'expectedCloseDateRange');
-
-        
-        if(!is_numeric($workflowId) || !is_numeric($stage))
-            return new CActiveDataProvider();
-
-        $records = array ();
-        $attrs = array ();
-
-//        AuxLib::debugLogR ('$modelType = ');
-//        AuxLib::debugLogR ($modelType);
-//        AuxLib::debugLogR (gettype ( $modelType));
-//        AuxLib::debugLogR (strlen ($modelType));
-//        AuxLib::debugLogR ($modelType[0]);
-//        AuxLib::debugLogR ($modelType[1]);
-        if (!empty ($modelType)) {
-            AuxLib::coerceToArray ($modelType);
-        }
-//        AuxLib::debugLogR ('$modelType = ');
-//        AuxLib::debugLogR ($modelType);
-
-
-        // CActiveDataProviders are used for the purposes of reusing code.
-        if (empty ($modelType) || in_array ('contacts', $modelType)) {
-            $contactsDataProvider = $this->getStageMemberDataProvider (
-                'contacts', $workflowId, $dateRange, $expectedCloseDateDateRange, $stage, $users, 
-                false);
-            $records['contacts'] = $contactsDataProvider->data;
-            $attrs = array_merge ($attrs, Contacts::model ()->attributeNames ());
-        }
-        if (empty ($modelType) || in_array ('opportunities', $modelType)) {
-            $opportunitiesDataProvider = $this->getStageMemberDataProvider (
-                'opportunities', $workflowId, $dateRange, $expectedCloseDateDateRange, $stage,
-                $users, false);
-            $records['opportunities'] = $opportunitiesDataProvider->data;
-            $attrs = array_merge ($attrs, Opportunity::model ()->attributeNames ());
-        }
-        if (empty ($modelType) || in_array ('accounts', $modelType)) {
-            $accountsDataProvider = $this->getStageMemberDataProvider (
-                'accounts', $workflowId, $dateRange, $expectedCloseDateDateRange, $stage,
-                $users, false);
-            $records['accounts'] = $accountsDataProvider->data;
-            $attrs = array_merge ($attrs, Accounts::model ()->attributeNames ());
-        }
-
-        // get union of attribute names
-        $attrUnion = array_unique ($attrs);
-        $attrUnion[] = 'actionLastUpdated'; // used to sort records
-
-        $combinedRecords = Record::mergeMixedRecords ($records, $attrUnion);
-
-        /* 
-        Sort records by the in descending order by the last time their associated workflow action 
-        was updated. This allows Workflow stage listviews to be updated without reloading the 
-        entire page. Every time a user drags a record from one stage to the next, placing that 
-        record at the top of the target stage's list maintains the correct record ordering.
-        */
-        usort ($combinedRecords, function ($a, $b) {
-            if ($a['actionLastUpdated'] > $b['actionLastUpdated']) {
-                return -1;
-            } else if ($a['actionLastUpdated'] < $b['actionLastUpdated']) {
-                return 1;
-            } else {
-                return 0;
-            }
-        });
-
-        $dataProvider = new CArrayDataProvider (
-            $combinedRecords,
-            array (
-                'pagination' => array (
-                    'pageSize' => 20
-                )
-            )
-        );
-
-        $dataProvider->pagination->route = '/workflow/workflow/view';
-        $dataProvider->pagination->params = $_GET;
-        unset ($dataProvider->pagination->params['ajax']);
-
-        return $dataProvider;
-    }
-
-    /**
      * Get a data provider for members of a given type in a given stage
      * @param string $type {'contacts', 'opportunities', 'accounts'}
      */
     public function getStageMemberDataProvider (
-        $type, $workflowId, $dateRange, $expectedCloseDateDateRange, $stage, $user, 
-        $perStageWorkflowView=true) {
+        $type, $workflowId, $dateRange, $expectedCloseDateDateRange, $stage, $user) {
 
         $modelName = X2Model::getModelName ($type);
         $model = X2Model::model ($modelName);
         $tableName = $model->tableName ();
-
+        $stageModel = WorkflowStage::model()->findByAttributes(array(
+            'workflowId' => $workflowId,
+            'stageNumber' => $stage,
+        ));
         $params = array (
             ':workflowId' => $workflowId,
-            ':stage' => $stage,
+            ':stage' => $stageModel->id,
             ':start' => $dateRange['start'],
             ':end' => $dateRange['end'],
             ':type' => $type,
@@ -782,7 +668,7 @@ class WorkflowController extends x2base {
             'sort'=>array(
                 'defaultOrder'=>'lastUpdated DESC',
             ),
-            'pagination'=> (!$perStageWorkflowView ? false : array('pageSize'=>20)),
+            'pagination'=> array('pageSize'=>20),
             'params' => $params
         ));
 
@@ -792,15 +678,14 @@ class WorkflowController extends x2base {
     public function actionGetStageMembers(
         $id,$stage,$start,$end,$range,$expectedCloseDateStart, $expectedCloseDateEnd,
         $expectedCloseDateRange,$users,$modelType) {
-
-        $modelType = self::parseModelType ($modelType);
+        
         $this->getStageMembers (
             $id, $stage, $start, $end, $range, $expectedCloseDateStart, $expectedCloseDateEnd,
             $expectedCloseDateRange, $users, $modelType);
     }
 
     public function getStageMembers($workflowId,$stage,$start,$end,$range,$expectedCloseDateStart,
-        $expectedCloseDateEnd, $expectedCloseDateRange, $users,$modelType='') {
+        $expectedCloseDateEnd, $expectedCloseDateRange, $users, $modelType='') {
 
         $params = array ();
         
@@ -811,18 +696,8 @@ class WorkflowController extends x2base {
         if(!is_numeric($workflowId) || !is_numeric($stage))
             return new CActiveDataProvider();
 
-        if (!empty ($modelType)) AuxLib::coerceToArray ($modelType);
-
-        if (empty ($modelType) || in_array ('contacts', $modelType))
-            $contactsDataProvider = $this->getStageMemberDataProvider (
-                'contacts', $workflowId, $dateRange, $expectedCloseDateDateRange, $stage, $users);
-        if (empty ($modelType) || in_array ('opportunities', $modelType))
-            $opportunitiesDataProvider = $this->getStageMemberDataProvider (
-                'opportunities', $workflowId, $dateRange, $expectedCloseDateDateRange, $stage, 
-                $users);
-        if (empty ($modelType) || in_array ('accounts', $modelType))
-            $accountsDataProvider = $this->getStageMemberDataProvider (
-                'accounts', $workflowId, $dateRange, $expectedCloseDateDateRange, $stage, $users);
+        $dataProvider = $this->getStageMemberDataProvider (
+                $modelType, $workflowId, $dateRange, $expectedCloseDateDateRange, $stage, $users);
 
         $gridConfig = array (
             'baseScriptUrl'=>Yii::app()->theme->getBaseUrl().'/css/gridview',
@@ -833,48 +708,46 @@ class WorkflowController extends x2base {
             'fullscreen' => false,
 	        'buttons'=>array('columnSelector','autoResize'),
         );
-        
-        if(isset($contactsDataProvider) && !empty ($contactsDataProvider) && 
-            // only render the grid that's requested if an X2GridView update request is being made
-           (!isset ($_GET['ajax']) || $_GET['ajax'] === 'contacts-grid')) {
-
+        $modelName = X2Model::getModelName($modelType);
         $this->renderPartial ('_ajaxRequestedStageMembers', 
             array ('gridConfig' => array_merge (
                 $gridConfig,
                 array (
-                    'gvSettingsName' => 'contactsStageMembers',
-                    'viewName' => 'workflowViewContacts',
+                    'gvSettingsName' => $modelType.'-stageMembers',
+                    'viewName' => $modelType.'-workflowView',
                     'defaultGvSettings'=>array(
                         'name' => 125,
-                        'dealvalue' => 165,
-                        'dealstatus' => 80,
                         'lastUpdated' => 80,
                         'assignedTo' => 80,
                     ),
-                    'dataProvider' => $contactsDataProvider,
-                    'id'=>'contacts-grid',
-                    'ajaxUpdate'=>'contacts-grid',
-                    'modelName' => 'Contacts',
-                    'title' => Yii::t('contacts','Contacts'),
+                    'dataProvider' => $dataProvider,
+                    'id'=>'workflow-stage-grid',
+                    'ajaxUpdate'=>'workflow-stage-grid',
+                    'modelName' => $modelName,
+                    'title' => Modules::displayName(true, $modelType),
                     'specialColumns'=>array(
                         'name' => array(
                             'name'=>'name',
-                            'header'=>Yii::t('contacts','Name'),
-                            'value'=>'CHtml::link('.
-                                '$data["name"],array("/contacts/contacts/view",'.'
-                                    "id"=>$data["id"]))',
+                            'header'=>Yii::t('app','Name'),
+                            'value'=>'X2Model::getModelLinkMock (
+                                "'.$modelName.'",
+                                $data[\'nameId\'],
+                                array (
+                                    \'data-qtip-title\' => $data[\'name\']
+                                )
+                            )',
                             'type'=>'raw',
                             'htmlOptions'=>array('width'=>'30%')
                         ),
                         'lastUpdated' => array(
                             'name'=>'lastUpdated',
-                            'header'=>Yii::t('contacts','Expected Close Date'),
+                            'header'=>X2Model::model($modelName)->getAttributeLabel('lastUpdated'),
                             'value'=>'Formatter::formatDate($data["lastUpdated"])',
                             'type'=>'raw',
                             'htmlOptions'=>array('width'=>'15%')
                         ),
                         'assignedTo' => array(
-                            'header'=>X2Model::model('Contacts')->getAttributeLabel('assignedTo'),
+                            'header'=>X2Model::model($modelName)->getAttributeLabel('assignedTo'),
                             'name'=>'assignedTo',
                             'value'=>'empty($data["assignedTo"])?'.
                                 'Yii::t("app","Anyone"):User::getUserLinks($data["assignedTo"])',
@@ -884,140 +757,19 @@ class WorkflowController extends x2base {
                 )
             )), false, true);
         
-        }
-        
-        if(isset ($opportunitiesDataProvider) && !empty($opportunitiesDataProvider) &&
-           (!isset ($_GET['ajax']) || $_GET['ajax'] === 'opportunities-grid')) {
-
-        $this->renderPartial ('_ajaxRequestedStageMembers', 
-            array ('gridConfig' => array_merge (
-                $gridConfig,
-                array (
-                    'defaultGvSettings'=>array(
-                        'name' => 125,
-                        'quoteAmount' => 165,
-                        'salesStage' => 80,
-                        'expectedCloseDate' => 80,
-                        'assignedTo' => 80,
-                    ),
-                    'dataProvider' => $opportunitiesDataProvider,
-                    'id'=>'opportunities-grid',
-                    'ajaxUpdate'=>'opportunities-grid',
-                    'modelName' => 'Opportunity',
-                    'viewName' => 'workflowViewOpportunities',
-                    'gvSettingsName' => 'opportunityStageMembers',
-                    'title' => Yii::t('opportunities','Opportunities'),
-                    'specialColumns'=>array(
-                        'name' => array(
-                            'header'=>X2Model::model('Opportunity')->getAttributeLabel('name'),
-                            'name'=>'name',
-                            'value'=>'CHtml::link('.
-                                    '$data["name"],'.
-                                    'array("/opportunities/opportunities/view",'.
-                                        '"id"=>$data["id"]))',
-                            'type'=>'raw',
-                            'htmlOptions'=>array('width'=>'40%'),
-                        ),
-                        'expectedCloseDate' => array(
-                            'header'=>X2Model::model('Opportunity')->getAttributeLabel(
-                                'expectedCloseDate'),
-                            'name'=>'expectedCloseDate',
-                            'value'=>'Formatter::formatDate($data["expectedCloseDate"])',
-                            'type'=>'raw',
-                            'htmlOptions'=>array('width'=>'13%'),
-                        ),
-                        'assignedTo' => array(
-                            'header'=>X2Model::model('Opportunity')->getAttributeLabel(
-                                'assignedTo'),
-                            'name'=>'assignedTo',
-                            'value'=>'empty($data["assignedTo"])?'.
-                                'Yii::t("app","Anyone"):User::getUserLinks($data["assignedTo"])',
-                            'type'=>'raw',
-                        ),
-                    ),
-                )
-            )), false, true);
-        }
-
-        if(isset ($accountsDataProvider) && !empty($accountsDataProvider) && 
-           (!isset ($_GET['ajax']) || $_GET['ajax'] === 'accounts-grid')) {
-
-        $this->renderPartial ('_ajaxRequestedStageMembers', 
-            array ('gridConfig' => array_merge (
-                $gridConfig,
-                array (
-                    'gvSettingsName' => 'accountsStageMembers',
-                    'viewName' => 'workflowViewAccounts',
-                    'dataProvider' => $accountsDataProvider,
-                    'id'=>'accounts-grid',
-                    'ajaxUpdate'=>'accounts-grid',
-                    'modelName' => 'Accounts',
-                    'title' => Yii::t('accounts','Accounts'),
-                    'defaultGvSettings'=>array(
-                        'name' => 125,
-                        'dealvalue' => 165,
-                        'dealstatus' => 80,
-                        'lastUpdated' => 80,
-                        'assignedTo' => 80,
-                    ),
-                    'specialColumns'=>array(
-                        'name' => array(
-                            'name'=>'name',
-                            'header'=>Yii::t('accounts','Name'),
-                            'value'=>'CHtml::link('.
-                                '$data["name"],array("/accounts/accounts/view",'.'
-                                    "id"=>$data["id"]))',
-                            'type'=>'raw',
-                            'htmlOptions'=>array('width'=>'30%')
-                        ),
-                        'lastUpdated' => array(
-                            'name'=>'lastUpdated',
-                            'header'=>Yii::t('accounts','Expected Close Date'),
-                            'value'=>'Formatter::formatDate($data["lastUpdated"])',
-                            'type'=>'raw',
-                            'htmlOptions'=>array('width'=>'15%')
-                        ),
-                        'assignedTo' => array(
-                            'header'=>X2Model::model('Accounts')->getAttributeLabel('assignedTo'),
-                            'name'=>'assignedTo',
-                            'value'=>'empty($data["assignedTo"])?'.
-                                'Yii::t("app","Anyone"):User::getUserLinks($data["assignedTo"])',
-                            'type'=>'raw',
-                        ),
-                    ),
-                )
-            )), false, true);
-        }
-    }
-
-    public static function parseModelType ($modelType) {
-        //AuxLib::debugLogR ($modelType);
-        if (isset ($_GET['workflowAjax']) && $_GET['workflowAjax']) 
-            $modelType = CJSON::decode ($modelType);
-        if (empty ($modelType) || (is_array ($modelType) && sizeof ($modelType) === 1 &&
-            empty ($modelType[0]))) {
-
-            return '';
-        }
-        AuxLib::coerceToArray ($modelType);
-        return $modelType;
     }
 
     public function actionGetStageValue($id,$stage,$users,$modelType,$start,$end){
-        $modelType = self::parseModelType ($modelType);
         $dateRange = self::getDateRange ();
         $expectedCloseDateDateRange=self::getDateRange(
             'expectedCloseDateStart', 'expectedCloseDateEnd', 'expectedCloseDateRange');
         $workflow = Workflow::model ()->findByPk ($id);
         if ($workflow !== null) {
-            list ($totalValue, $projectedValue, $currentAmount, $count) = Workflow::getStageValue (
-                $id, $stage, $users, $modelType, $dateRange, $expectedCloseDateDateRange);
+            $workflowStatus = Workflow::getWorkflowStatus ($id);
+            $counts = Workflow::getStageCounts($workflowStatus, $dateRange, $expectedCloseDateDateRange, $users, $modelType);
             $this->renderPartial ('_dataSummary', array (
                 'stageName' => $workflow->getStageName ($stage),
-                'totalValue' => Formatter::formatCurrency ($totalValue),
-                'projectedValue' => Formatter::formatCurrency ($projectedValue),
-                'currentAmount' => Formatter::formatCurrency ($currentAmount),
-                'count' => $count,
+                'count' => $counts[$stage - 1],
             ));
         }
     }
@@ -1075,15 +827,13 @@ class WorkflowController extends x2base {
 
     private function getDragAndDropViewParams ($id, $users='') {
         $model = $this->loadModel($id);
-        $modelType = isset ($_GET['modelType']) ? self::parseModelType ($_GET['modelType']) : '';
+        $modelType = isset ($_GET['modelType']) ? $_GET['modelType'] : 'contacts';
 
         $dateRange=self::getDateRange();
         $expectedCloseDateDateRange=self::getDateRange(
             'expectedCloseDateStart', 'expectedCloseDateEnd', 'expectedCloseDateRange');
 
         $memberListContainerSelectors = array ();
-        $stageValues = Workflow::getStageValues (
-            $model, $users, $modelType, $dateRange, $expectedCloseDateDateRange);
         $stageCount = count ($model->stages);
         for ($i = 1; $i <= $stageCount; $i++) {
             $memberListContainerSelectors[] = '#workflow-stage-'.$i.' .items';
@@ -1093,6 +843,8 @@ class WorkflowController extends x2base {
         $stagesWhichRequireComments = Workflow::getStageCommentRequirements ($workflowStatus);
         $stageNames = Workflow::getStageNames ($workflowStatus);
         $colors = $model->getWorkflowStageColors ($stageCount, true);
+        $stageCounts = Workflow::getStageCounts (
+            $workflowStatus, $dateRange, $expectedCloseDateDateRange, $users, $modelType);
         return array (
             'model'=>$model,
             'modelType'=>$modelType,
@@ -1105,7 +857,7 @@ class WorkflowController extends x2base {
             'stagePermissions'=>$stagePermissions,
             'stagesWhichRequireComments'=>$stagesWhichRequireComments,
             'stageNames'=>$stageNames,
-            'stageValues' => $stageValues
+            'stageCounts' => $stageCounts
         );
     }
 
@@ -1113,7 +865,7 @@ class WorkflowController extends x2base {
         $dateRange=self::getDateRange();
         $expectedCloseDateDateRange=self::getDateRange(
             'expectedCloseDateStart', 'expectedCloseDateEnd', 'expectedCloseDateRange');
-        $modelType = isset ($_GET['modelType']) ? self::parseModelType ($_GET['modelType']) : '';
+        $modelType = isset ($_GET['modelType']) ? $_GET['modelType'] : 'contacts';
         $model = $this->loadModel($id);
         $stageCount = count ($model->stages);
         return array (
@@ -1126,31 +878,6 @@ class WorkflowController extends x2base {
             'users'=>$users,
         );
     }
-
-    /**
-     * Helper function for actionGetStageMembers 
-     */
-    /*private function getStageMemberCondition (
-        $workflowId, $stage, $dateRange, $userString, $modelClass, $suppressContactsCond=true) {
-        $condition = "x2_actions.workflowId=:workflowId AND x2_actions.stageNumber=:stage AND 
-            x2_actions.associationType=:modelClass AND complete!='Yes' AND 
-            (completeDate IS NULL OR completeDate=0) AND 
-            x2_actions.createDate BETWEEN :start AND :end". 
-            " $userString".
-                (!$suppressContactsCond ? 
-            " AND (x2_contacts.visibility=1 OR x2_contacts.assignedTo=:username)" : '');
-        $params = array ();
-        $params[':workflowId'] = $workflowId;
-        $params[':stage'] = $stage;
-        $params[':start'] = $dateRange['start'];
-        $params[':end'] = $dateRange['end'];
-        if (!$suppressContactsCond)
-            $params[':username'] = Yii::app()->user->getName();
-        $params[':modelClass'] = $modelClass;
-
-        return array ($condition, $params);
-    }*/
-
 
     /**
      *  Used for auto-complete methods.

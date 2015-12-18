@@ -35,21 +35,29 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 
-LoginThemeHelper::init();
+if (!Yii::app()->params->isMobileApp) {
+    LoginThemeHelper::init();
+}
 
 ?>
 
 <div id="password-reset-form-outer">
     <div class="container" id="login-page">
-        <div id="login-box">
+        <div id="login-box" class='login-box'>
             <div id='login-title-container'>
-                <h1 id='app-title'>
+                <h1 id='app-title' class='app-title'>
                     <?php echo $title; ?>
                 </h1>
-                <p><?php echo $message; ?></p>
+                <p class='message'><?php echo $message; ?></p>
             </div>
-            <?php if($scenario != 'message') { ?>
-            <?php echo CHtml::beginForm(); ?>
+            <?php 
+            if($scenario != 'message') { 
+                if (Yii::app()->params->isMobileApp) {
+                    $this->beginWidget ('application.modules.mobile.components.MobileActiveForm');
+                } else {
+                    $this->beginWidget ('CActiveForm');
+                }
+            ?>
             <div class="form" id="login-form">
                 <div class="row">
                     <?php if($scenario=='new') {
@@ -64,15 +72,16 @@ LoginThemeHelper::init();
                     }
                     echo CHtml::submitButton(Yii::t('app','Submit'),
                             array(
-                                'class'=>'x2-button x2-blue',
+                                'class'=>'x2-button x2-blue no-css-override',
                                 'style'=>'color:white; margin: 0 auto;'));
                     ?>
                 </div>
             </div><!-- #login-form -->
-            <?php echo CHtml::endForm(); ?>
-            <?php } else {
+            <?php 
+            $this->endWidget ();
+            } else {
                 echo '<hr />'.CHtml::link(Yii::t('app','Sign in'),
-                    array('/site/login'),
+                    $this->createAbsoluteUrl ($loginRoute),
                     array(
                         'class'=>'x2-button x2-blue sign-in-button-small',
                         'style'=>'color:white;'
@@ -81,5 +90,3 @@ LoginThemeHelper::init();
         </div><!-- #login-box -->
     </div><!-- #login-page -->
 </div><!-- #password-reset-form-outer -->
-<div id="racing-stripe">
-</div>

@@ -49,6 +49,7 @@ function MassAction (argsDict) {
         updateAfterExecute: true,
         recordCount: null,
         massActionName: '',
+        allowMultiple: true,
         disableDialog: false,
         /**
          * Set to true to enable validation via ajax of mass action dialog form before executing

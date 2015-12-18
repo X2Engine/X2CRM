@@ -197,6 +197,9 @@ buttons
 .mass-action-more-button-container button {
     display: inline;
     height: 26px;
+    &.disabled {
+        display: none;
+    }
 }
 
 
@@ -232,6 +235,9 @@ body > .grid-view-more-drop-down-list {
         color: black;
         &:hover {
             background: #eee;
+        }
+        &.disabled {
+            display: none;
         }
     }
 }

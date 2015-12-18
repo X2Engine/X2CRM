@@ -40,6 +40,16 @@
 class UsersController extends x2base {
 
     public $modelClass = 'User';
+
+    public function behaviors() {
+        return array_merge(parent::behaviors(), array(
+            'X2MobileControllerBehavior' => array(
+                'class' => 
+                    'application.modules.mobile.components.behaviors.X2MobileControllerBehavior'
+            ),
+        ));
+    }
+
     /**
      * Specifies the access control rules.
      * This method is used by the 'accessControl' filter.
@@ -110,7 +120,8 @@ class UsersController extends x2base {
             $model->attributes=$_POST['User'];
             //Temporarily maintain unhashed in case of validation error
             $unhashedPassword = $model->password;
-            $model->password = PasswordUtil::createHash($model->password);
+            
+                $model->password = PasswordUtil::createHash($model->password);
             $model->userKey=substr(str_shuffle(str_repeat(
                 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789', 32)), 0, 32);
             $profile=new Profile;
@@ -173,7 +184,8 @@ class UsersController extends x2base {
                         $model->attributes=$_POST['User'];
                         $model->status=1;
                         //$this->updateChangelog($model);
-                        $model->password = PasswordUtil::createHash($model->password);
+                        
+                            $model->password = PasswordUtil::createHash($model->password);
                         $model->userKey=substr(str_shuffle(str_repeat('ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789', 32)), 0, 32);
                         $profile=new Profile;
                         $profile->fullName=$model->firstName." ".$model->lastName;
@@ -240,10 +252,12 @@ class UsersController extends x2base {
             $temp=$model->password;
             $model->attributes=$_POST['User'];
 
-            if($model->password!="")
-                $model->password = PasswordUtil::createHash($model->password);
-            else
+            if($model->password!="") {
+                
+                    $model->password = PasswordUtil::createHash($model->password);
+            } else {
                 $model->password=$temp;
+            }
             if(empty($model->userKey)){
                 $model->userKey=substr(str_shuffle(str_repeat('ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789', 32)), 0, 32);
             }
@@ -426,52 +440,23 @@ Please click on the link below to create an account at X2Engine!
         }
     }
 
-    public function actionAddTopContact() {
-        if(isset($_GET['contactId']) && is_numeric($_GET['contactId'])) {
-
-            $id = Yii::app()->user->getId();
-            $model=$this->loadModel($id);
-
-            $topContacts = empty($model->topContacts) ? array() : explode(',',$model->topContacts);
-
-            // only add to list if it isn't already in there
-            if(!in_array($_GET['contactId'],$topContacts)) {        
-                array_unshift($topContacts,$_GET['contactId']);
-                $model->topContacts = implode(',',$topContacts);
-            }
-            if ($model->update())
-                $this->renderTopContacts();
-            // else
-                // echo print_r($model->getErrors());
-
-        }
+    public function actionAddTopContact($recordId, $modelClass) {
+        Yii::import('application.components.leftWidget.TopContacts');
+        $model = $this->getModelFromTypeAndId ($modelClass, $recordId, false);
+        if (TopContacts::addBookmark ($model))
+            $this->renderTopContacts();
     }
 
-    public function actionRemoveTopContact() {
-        if(isset($_GET['contactId']) && is_numeric($_GET['contactId'])) {
-
-            $id = Yii::app()->user->getId();
-            $model=$this->loadModel($id);
-
-            $topContacts = empty($model->topContacts)? array() : explode(',',$model->topContacts);
-            $index = array_search($_GET['contactId'],$topContacts);
-
-            if($index!==false)
-                unset($topContacts[$index]);
-
-            $model->topContacts = implode(',',$topContacts);
-
-            if ($model->update()) {
-                $this->renderTopContacts();
-            } else {
-                //AuxLib::debugLogR ($model->getErrors ());
-            }
-        }
+    public function actionRemoveTopContact($recordId, $modelClass) {
+        Yii::import('application.components.leftWidget.TopContacts');
+        $model = $this->getModelFromTypeAndId ($modelClass, $recordId, false);
+        if (TopContacts::removeBookmark ($model))
+            $this->renderTopContacts();
     }
 
     private function renderTopContacts() {
         $this->renderPartial('application.components.leftWidget.views.topContacts',array(
-            'topContacts'=>User::getTopContacts(),
+            'bookmarkRecords'=>User::getTopContacts(),
             //'viewId'=>$viewId
         ));
     }

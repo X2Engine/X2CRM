@@ -39,7 +39,7 @@
  * 
  * @package application.components 
  */
-class RememberPagination extends CPagination{
+class RememberPagination extends CPagination {
 	public function createPageUrl($controller,$page)
 	{
 		$params=$this->params===null ? $_GET : $this->params;
@@ -47,7 +47,9 @@ class RememberPagination extends CPagination{
 			$params[$this->pageVar]=$page+1;
 	//  else
 	//      unset($params[$this->pageVar]);
-		return $controller->createUrl($this->route,$params);
+         
+		    return $controller->createUrl($this->route,$params);
+         
 	}
 }
 

@@ -16,7 +16,7 @@ CREATE TABLE x2_templates(
 INSERT INTO `x2_modules`
 (`name`, title, visible, menuPosition, searchable, editable, adminOnly, custom, toggleable)
 VALUES
-('templates', 'Templates', 1, 1, 1, 1, 0, 1, 1);
+('templates', 'TemplatesTitle', 1, 1, 1, 1, 0, 1, 1);
 /*&*/
 INSERT INTO x2_fields
 (modelName, fieldName, attributeLabel, custom, `type`, required, readOnly, linkType, searchable, isVirtual, relevance, uniqueConstraint, safe, keyType)

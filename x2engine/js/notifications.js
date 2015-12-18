@@ -74,7 +74,7 @@ x2.Notifs = function (argsDict) {
 Public static properties
 */
 
-x2.Notifs.fetchNotificationUpdates = !x2.DEBUG;
+x2.Notifs.fetchNotificationUpdates = !x2.DEV_MODE;
 //x2.Notifs.fetchNotificationUpdates = true;
 
 
@@ -302,7 +302,7 @@ x2.Notifs.prototype._setUpUIBehavior = function () {
         if (!window.confirm (that.translations['clearAll'])) return;
         $.ajax({
             type: 'GET',
-            url: yii.scriptUrl + '/notifications/deleteAll',
+            url: auxlib.createUrl ('/notifications/deleteAll'),
             success: function(response) {
                 that._removeAllNotifications ();
             },
@@ -379,7 +379,7 @@ x2.Notifs.prototype._deleteNotification = function (notifId) {
 
     $.ajax({
         type: 'GET',
-        url: yii.scriptUrl + '/notifications/delete',
+        url: auxlib.createUrl ('/notifications/delete'),
         data: {
             id: notifId,
             getNext: getNextNotif,
@@ -421,7 +421,7 @@ x2.Notifs.prototype._getUpdates = function (firstCall) {
 
     $.ajax({
         type: 'GET',
-        url: yii.scriptUrl + '/notifications/get',
+        url: auxlib.createUrl ('/notifications/get'),
         data: {
             lastNotifId: that._lastNotifId,
             lastEventId: that._lastEventId,
@@ -512,7 +512,7 @@ x2.Notifs.prototype._openNotifications = function () {
         if (notifIds.length) {
             $.ajax({
                 type: 'GET',
-                url: yii.scriptUrl + '/notifications/markViewed',
+                url: auxlib.createUrl ('/notifications/markViewed'),
                 data: encodeURI(notifIds.join('&'))
             });
         }

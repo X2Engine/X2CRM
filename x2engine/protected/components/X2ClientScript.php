@@ -44,6 +44,7 @@ Yii::import('application.extensions.NLSClientScript');
  */
 class X2ClientScript extends NLSClientScript {
 
+    public $useAbsolutePaths = false;
     private $_admin;
     private $_baseUrl;
     private $_fullscreen;
@@ -91,7 +92,7 @@ class X2ClientScript extends NLSClientScript {
      * @param string returns cache buster value. Append this value to names of files upon 
      *  registration to avoid retrieving the cached file.
      */
-    private function getCacheBuster() {
+    public function getCacheBuster() {
         if (!isset ($this->_cacheBuster)) {
             if (YII_DEBUG) {
                 /*
@@ -103,6 +104,7 @@ class X2ClientScript extends NLSClientScript {
                 }
                 // always bust caches in debug mode
                 $this->_cacheBuster = $_SESSION['cacheBuster'];
+
             } else {
                 // bust cache on update/upgrade
                 $this->_cacheBuster = Yii::app()->params->buildDate;
@@ -297,10 +299,31 @@ class X2ClientScript extends NLSClientScript {
         }
     }
 
+    public function makeUrlAbsolute ($url) {
+        $hostInfo = Yii::app()->request->getHostInfo ();
+// phonegap testing
+//        if (YII_DEBUG && Yii::app()->params->isPhoneGap &&
+//            preg_match ('/^http:\/\/mobile/', $absoluteBaseUrl)) {
+//
+//            $absoluteBaseUrl = 'http://mobile';
+//        }
+        if (!preg_match ('/^https?:\/\//', $url) && 
+            !preg_match ('/^'.preg_quote ($hostInfo, '/').'/', $url)) {
+
+            $url = $hostInfo.$url;
+        }
+        return $url;
+    }
+
     /**
-     * Overrides parent method to add cache buster parameter 
+     * Overrides parent method to add cache buster parameter and substitute the asset
+     * domain if requested
      */
     public function registerScriptFile ($url, $position=null, array $htmlOptions=array()) {
+        if ($this->useAbsolutePaths) $url = $this->makeUrlAbsolute ($url);
+        $url = $this->getJSPathname ($url);
+        if (X2AssetManager::$enableAssetDomains)
+            $url = Yii::app()->assetManager->substituteAssetDomain ($url);
         return parent::registerScriptFile (
             $url.$this->getCacheBusterSuffix ($url), $position,
             $htmlOptions);
@@ -318,19 +341,26 @@ class X2ClientScript extends NLSClientScript {
 		foreach($this->coreScripts as $name=>$package)
 		{
 			$baseUrl=$this->getPackageBaseUrl($name);
+            if ($this->useAbsolutePaths) $baseUrl = $this->makeUrlAbsolute ($baseUrl);
 			if(!empty($package['js']))
 			{
-                /* x2modstart */ 
-				foreach($package['js'] as $js)
+				/* x2modstart */
+				foreach($package['js'] as $js) {
+					if (X2AssetManager::$enableAssetDomains)
+						$baseUrl = Yii::app()->assetManager->substituteAssetDomain ($this->getPackageBaseUrl($name));
 					$jsFiles[$baseUrl.'/'.$js.$this->getCacheBusterSuffix ($js)]=$baseUrl.'/'.$js;
-                /* x2modend */ 
+				}
+				/* x2modend */
 			}
 			if(!empty($package['css']))
 			{
-                /* x2modstart */ 
-				foreach($package['css'] as $css)
+				/* x2modstart */
+				foreach($package['css'] as $css) {
+					if (X2AssetManager::$enableAssetDomains && !in_array($css, X2AssetManager::$skipAssets))
+						$baseUrl = Yii::app()->assetManager->substituteAssetDomain ($this->getPackageBaseUrl($name));
 					$cssFiles[$baseUrl.'/'.$css.$this->getCacheBusterSuffix ($css)]='';
-                /* x2modend */ 
+				}
+				/* x2modend */
 			}
 		}
 		// merge in place
@@ -350,6 +380,95 @@ class X2ClientScript extends NLSClientScript {
 			$this->scriptFiles[$this->coreScriptPosition]=$jsFiles;
 		}
 	}
+
+    /**
+     * Used by X2Touch to return JS resources during ajax requests
+     * @return string rendered JS in all positions 
+     * This method is Copyright (c) 2008-2014 by Yii Software LLC
+     * http://www.yiiframework.com/license/ 
+     */
+    public function renderX2TouchAssets () {
+		$html='';
+        $fullPage = 1;
+
+        // adds core scripts to scriptFiles array
+        $this->renderCoreScripts ();
+
+//		foreach($this->linkTags as $link)
+//			$html.=CHtml::linkTag(null,null,null,null,$link)."\n";
+//
+//        foreach($this->cssFiles as $url=>$media)
+//            $html.=CHtml::cssFile($url,$media)."\n";
+//
+//        foreach($this->css as $css) {
+//            $text = $css[0];
+//            $media = $css[1];
+//
+//            if (is_array ($text) && isset ($text['text']) && isset ($text['htmlOptions'])) {
+//                // special case for css registered with html options
+//                $html.=X2Html::css ($text['text'], $media, $text['htmlOptions']);
+//                continue;
+//            }
+//            $html.=CHtml::css($text, $media)."\n";
+//        }
+
+        if(isset($this->scriptFiles[self::POS_HEAD]))
+        {
+            foreach($this->scriptFiles[self::POS_HEAD] as $scriptFileValueUrl=>$scriptFileValue)
+            {
+                if(is_array($scriptFileValue))
+                    $html.=CHtml::scriptFile($scriptFileValueUrl,$scriptFileValue)."\n";
+                else
+                    $html.=CHtml::scriptFile($scriptFileValueUrl)."\n";
+            }
+        }
+
+        if(isset($this->scripts[self::POS_HEAD]))
+            $html.=$this->renderScriptBatch($this->scripts[self::POS_HEAD]);
+
+		if(isset($this->scriptFiles[self::POS_BEGIN]))
+		{
+			foreach($this->scriptFiles[self::POS_BEGIN] as $scriptFileUrl=>$scriptFileValue)
+			{
+				if(is_array($scriptFileValue))
+					$html.=CHtml::scriptFile($scriptFileUrl,$scriptFileValue)."\n";
+				else
+					$html.=CHtml::scriptFile($scriptFileUrl)."\n";
+			}
+		}
+		if(isset($this->scripts[self::POS_BEGIN]))
+			$html.=$this->renderScriptBatch($this->scripts[self::POS_BEGIN]);
+
+		if(isset($this->scriptFiles[self::POS_END]))
+		{
+			foreach($this->scriptFiles[self::POS_END] as $scriptFileUrl=>$scriptFileValue)
+			{
+				if(is_array($scriptFileValue))
+					$html.=CHtml::scriptFile($scriptFileUrl,$scriptFileValue)."\n";
+				else
+					$html.=CHtml::scriptFile($scriptFileUrl)."\n";
+			}
+		}
+		$scripts=isset($this->scripts[self::POS_END]) ? $this->scripts[self::POS_END] : array();
+		if(isset($this->scripts[self::POS_READY]))
+		{
+			if($fullPage)
+				$scripts[]="jQuery(function($) {\n".implode("\n",$this->scripts[self::POS_READY])."\n});";
+			else
+				$scripts[]=implode("\n",$this->scripts[self::POS_READY]);
+		}
+		if(isset($this->scripts[self::POS_LOAD]))
+		{
+			if($fullPage)
+				$scripts[]="jQuery(window).on('load',function() {\n".implode("\n",$this->scripts[self::POS_LOAD])."\n});";
+			else
+				$scripts[]=implode("\n",$this->scripts[self::POS_LOAD]);
+		}
+		if(!empty($scripts))
+			$html.=$this->renderScriptBatch($scripts);
+
+        return $html;
+    }
 
 	/**
 	 * Inserts the scripts in the head section.
@@ -435,7 +554,10 @@ class X2ClientScript extends NLSClientScript {
         }
 
         // prevent global css from being applied if this is an admin or guest request
-        if (!(Yii::app()->controller instanceof AdminController) && !Yii::app()->user->isGuest) {
+        if (!(Yii::app()->controller instanceof AdminController) && 
+            !Yii::app()->user->isGuest && 
+            !Yii::app()->params->isMobileApp) {
+
             $globalCssUrl = GlobalCSSFormModel::getGlobalCssUrl ();
             $html.=CHtml::cssFile($globalCssUrl.$this->getCacheBusterSuffix ($globalCssUrl))."\n";
         }
@@ -530,9 +652,14 @@ class X2ClientScript extends NLSClientScript {
 	}
 
     /**
-     * Overrides parent method to add cache buster parameter 
+     * Overrides parent method to add cache buster parameter and substitute the asset
+     * domain if requested
      */
     public function registerCssFile ($url, $media='') {
+        if ($this->useAbsolutePaths) $url = $this->makeUrlAbsolute ($url);
+        $url = $this->getCSSPathname ($url);
+        if (X2AssetManager::$enableAssetDomains)
+            $url = Yii::app()->assetManager->substituteAssetDomain ($url);
         return parent::registerCssFile (
             $url.$this->getCacheBusterSuffix ($url), $media);
     }
@@ -641,12 +768,11 @@ class X2ClientScript extends NLSClientScript {
             'form.css',
             'publisher.css',
             'sortableWidgets.css',
-            '../../../js/qtip/jquery.qtip.min.css',
+            '../../../js/qtip/jquery.qtip.css',
             '../../../js/checklistDropdown/jquery.multiselect.css',
             'rating/jquery.rating.css',
             'fontAwesome/css/font-awesome.css',
             'bootstrap/bootstrap.css',
-            //YII_DEBUG ? 'bootstrap/bootstrap.min.css' : 'bootstrap/bootstrap.css',
             'css-loaders/load8.css',
         );
 
@@ -838,7 +964,6 @@ class X2ClientScript extends NLSClientScript {
         }
     }
 
-
     /**
      * Performs all the necessary JavaScript/CSS initializations for most parts of the app.
      */
@@ -886,6 +1011,8 @@ class X2ClientScript extends NLSClientScript {
 
         // custom scripts
         $this->registerScriptFile($baseUrl.'/js/json2.js')
+            ->registerScriptFile(
+                $baseUrl.'/js/lib/lodash/lodash.js', self::POS_END)
             ->registerScriptFile($baseUrl.'/js/webtoolkit.sha256.js')
             ->registerScriptFile($baseUrl.'/js/main.js', CCLientScript::POS_HEAD)
             ->registerScriptFile($baseUrl.'/js/auxlib.js', CClientScript::POS_HEAD)
@@ -896,7 +1023,7 @@ class X2ClientScript extends NLSClientScript {
             ->registerScript('formatCurrency-locales', $cldScript, CCLientScript::POS_HEAD)
             ->registerScriptFile($baseUrl.'/js/modernizr.custom.66175.js')
             ->registerScriptFile($baseUrl.'/js/widgets.js')
-            ->registerScriptFile($baseUrl.'/js/qtip/jquery.qtip.min.js')
+            ->registerScriptFile($baseUrl.'/js/qtip/jquery.qtip.js')
             ->registerScriptFile($baseUrl.'/js/ActionFrames.js')
             ->registerScriptFile($baseUrl.'/js/ColorPicker.js', CCLientScript::POS_END)
             ->registerScriptFile($baseUrl.'/js/PopupDropdownMenu.js', CCLientScript::POS_END)
@@ -1053,6 +1180,26 @@ class X2ClientScript extends NLSClientScript {
                 });
             }) ();
         ", CClientScript::POS_HEAD);
+    }
+
+    private function getJSPathname ($path) {
+        if (preg_match ('/\.min\.js$/', $path)) return $path;
+        $altPath = Yii::getRootPath ().preg_replace ('/\.js$/', '.min.js', $path);
+        if (!YII_DEBUG && file_exists ($altPath)) {
+            return preg_replace ('/\.js$/', '.min.js', $path);
+        } else {
+            return $path;
+        }
+    }
+
+    private function getCSSPathname ($path) {
+        if (preg_match ('/\.min\.css$/', $path)) return $path;
+        $altPath = Yii::getRootPath ().preg_replace ('/\.css$/', '.min.css', $path);
+        if (!YII_DEBUG && file_exists ($altPath)) {
+            return preg_replace ('/\.css$/', '.min.css', $path);
+        } else {
+            return $path;
+        }
     }
 
 }

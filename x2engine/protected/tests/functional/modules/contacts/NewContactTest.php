@@ -15,7 +15,7 @@ class NewContactTest extends X2WebTestCase {
 		'actions' => 'Actions'
 	);
 
-    protected function setUp () {
+    public function setUp () {
         $this->markTestSkipped ();
     }
 	

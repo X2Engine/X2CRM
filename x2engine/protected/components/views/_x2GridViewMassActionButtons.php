@@ -46,19 +46,6 @@ Parameters:
 Yii::app()->clientScript->registerScriptFile (
     Yii::app()->getBaseUrl().'/js/X2GridView/X2GridViewMassActionsManager.js', CClientScript::POS_END);
 
-$massActionLabels = array (
-    'completeAction' => Yii::t ('app', 'Complete selected {actions}', array(
-        '{actions}' => strtolower(Modules::displayName(true, 'Actions'))
-    )),
-    'uncompleteAction' => Yii::t ('app', 'Uncomplete selected {actions}', array(
-        '{actions}' => strtolower(Modules::displayName(true, 'Actions'))
-    )),
-    'newList' => Yii::t ('app', 'New list from selection'),
-    'addToList' => Yii::t ('app', 'Add selected to list'),
-    'removeFromList' => Yii::t ('app', 'Remove selected from list'),
-    
-);
-
 Yii::app()->clientScript->registerCssFile(
     Yii::app()->theme->baseUrl.'/css/components/views/massActions.css');
 
@@ -136,6 +123,10 @@ Yii::app()->clientScript->registerScript($namespacePrefix.'massActionsInitScript
                 lcfirst ($gridObj->moduleName) .  '/x2GridViewMassAction'."',
              
             modelName: '".$modelName."',
+            paramsByClass: ".CJSON::encode (array_combine (
+                array_map (function ($obj) { return get_class ($obj); }, $massActionObjs),
+                array_map (function ($obj) { return $obj->getJSClassParams (); }, $massActionObjs)
+            )).",
             translations: ".CJSON::encode (array (
                 'deleteprogressBarDialogTitle' => Yii::t('app', 'Mass Deletion in Progress'),
                 'updateFieldprogressBarDialogTitle' => Yii::t('app', 'Mass Update in Progress'),
@@ -154,9 +145,11 @@ Yii::app()->clientScript->registerScript($namespacePrefix.'massActionsInitScript
                 'moveOneToFolder' => Yii::t('app', 'Move message'),
                 'moveFileSysObjToFolder' => Yii::t('app', 'Move selected'),
                 'moveFileSysObjOneToFolder' => Yii::t('app', 'Move selected'),
+                'renameFileSysObj' => Yii::t('app', 'Rename'),
                 'move' => Yii::t('app', 'Move'),
                 'add' => Yii::t('app', 'Add to list'),
                 'remove' => Yii::t('app', 'Remove from list'),
+                'rename' => Yii::t('app', 'Rename'),
                 'noticeFlashList' => Yii::t('app', 'Mass action exectuted with'),
                 'errorFlashList' => Yii::t('app', 'Mass action exectuted with'),
                 'noticeItemName' => Yii::t('app', 'warnings'),

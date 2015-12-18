@@ -19,6 +19,10 @@ class TwitterAPIExchange
     private $consumer_secret;
     private $postfields;
     private $getfield;
+    /* x2modstart */   
+    private $resource;
+    /* x2modend */ 
+
     protected $oauth;
     public $url;
 
@@ -212,10 +216,23 @@ class TwitterAPIExchange
         $feed = curl_init();
         curl_setopt_array($feed, $options);
         $json = curl_exec($feed);
-        curl_close($feed);
+
+        /* x2modstart */ 
+        //curl_close($feed);
+        $this->resource = $feed;
+        /* x2modend */ 
 
         if ($return) { return $json; }
     }
+
+    /* x2modstart */ 
+    public function getLastStatusCode () {
+        if (!$this->resource) {
+            throw new CException ('API request not made');
+        }
+        return curl_getinfo ($this->resource, CURLINFO_HTTP_CODE);
+    }
+    /* x2modend */ 
     
     /**
      * Private method to generate the base string used by cURL

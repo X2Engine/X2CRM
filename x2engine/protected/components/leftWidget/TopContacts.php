@@ -34,7 +34,7 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 
-Yii::import('application.components.LeftWidget');
+Yii::import('application.components.leftWidget.LeftWidget');
 
 /**
  * Widget for displaying the "Top Contacts" portlet
@@ -42,13 +42,98 @@ Yii::import('application.components.LeftWidget');
  */
 class TopContacts extends LeftWidget {
 
+    const ITEM_SEPARATOR = ',';
+    const PROP_SEPARATOR = ':';
+
 	public $id = 'top-contacts';
 
-	public $widgetLabel = 'Top Contacts';
+	public $widgetLabel = 'Favorites';
+
+    public static function addBookmark (CActiveRecord $record) {
+        $type = get_class ($record);
+        $id = $record->id;
+        $user = Yii::app()->params->profile->user;
+        if (empty ($user->topContacts)) {
+            $bookmarks = array ();
+        } else {
+            $bookmarks = explode (self::ITEM_SEPARATOR, $user->topContacts);
+        }
+        foreach ($bookmarks as $item) {
+            $parts = explode (self::PROP_SEPARATOR, $item);
+            if (count ($parts) === 1 && $type === 'Contacts' && $id === $item) {
+                return false;
+            }
+            if ($type === $parts[0] && $parts[1] === $id) {
+                return false;
+            }
+        }
+        $bookmarks[] = $type.':'.$id;
+        $user->topContacts = implode (self::ITEM_SEPARATOR, $bookmarks);
+        if ($user->update ('topContacts')) return true;
+    }
+
+    public static function removeBookmark (CActiveRecord $record) {
+        $type = get_class ($record);
+        $id = $record->id;
+        $user = Yii::app()->params->profile->user;
+        if (empty ($user->topContacts)) {
+            $bookmarks = array ();
+        } else {
+            $bookmarks = explode (self::ITEM_SEPARATOR, $user->topContacts);
+        }
+        $found = false;
+        $count = count ($bookmarks);
+        for ($i = 0; $i < $count; $i++) {
+            $item = $bookmarks[$i];
+            $parts = explode (self::PROP_SEPARATOR, $item);
+            if (count ($parts) === 1 && $type === 'Contacts' && $id === $item) {
+                $found = true;
+                unset ($bookmarks[$i]);
+                break;
+            }
+            if ($type === $parts[0] && $parts[1] === $id) {
+                $found = true;
+                unset ($bookmarks[$i]);
+                break;
+            }
+        }
+        $user->topContacts = implode (self::ITEM_SEPARATOR, $bookmarks);
+        if ($found && $user->update ('topContacts')) return true;
+    }
+
+    public static function getBookmarkedRecords () {
+        $user = Yii::app()->params->profile->user;
+
+        $bookmarks = empty($user->topContacts) ? 
+            array() : explode(TopContacts::ITEM_SEPARATOR, $user->topContacts);
+
+        $bookmarkRecords = array();
+        foreach($bookmarks as $item){
+            $parts = explode (TopContacts::PROP_SEPARATOR, $item);
+            if (count ($parts) === 1) {
+                $record = X2Model::model ('Contacts')->findByPk($item);
+            } elseif (count ($parts) === 2) {
+                $type = $parts[0];
+                try {
+                    $model = X2Model::model ($type, false);
+                } catch (CHttpException $e) {
+                    continue;
+                }
+                $id = $parts[1];
+                $record = $model->findByPk ($id);
+            } else {
+                continue;
+            }
+            if(!is_null($record)) //only include contact if the contact ID exists
+                $bookmarkRecords[] = $record;
+        }
+        return $bookmarkRecords;
+    }
 
 	protected function renderContent() {
+            Yii::t('app','Favorites');
 		$this->render('topContacts',array(
-			'topContacts'=>User::getTopContacts()
+			'bookmarkRecords'=>User::getTopContacts()
 		));
 	}
 }

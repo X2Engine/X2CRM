@@ -1,5 +1,5 @@
 id,assignedTo,calendarId,subject,visibility,associationId,associationType,associationName,dueDate,showTime,priority,type,createDate,complete,reminder,completedBy,completeDate,lastUpdated,updatedBy,workflowId,quoteId,stageNumber,allDay,color,syncGoogleCalendarEventId,sticky,flowTriggered,timeSpent,actionDescription
-127,admin,,,Public,2,opportunity,,,0,,workflow,"2014/09/15 07:59:07",No,,,,"2014/09/15 07:59:07",jvalerian,1,,1,,,,0,1,0,
+127,admin,,,Public,2,opportunity,,,0,,workflow,"2014/09/15 07:59:07",No,,,,"2014/09/15 07:59:07",jvalerian,,,,,,,0,1,0,
 614,admin,,,Public,0,contacts,,"2014/09/16 09:27:21",0,3,,"2014/09/15 08:06:19",Yes,Yes,api,"2014/09/15 13:21:37","2014/09/15 08:06:19",chames,,,,0,Green,,0,1,0,"Introduction Call"
 633,admin,,,Public,14,product,"Campbell's Cloud Pro (per month, per user)","2014/09/16 10:34:11",0,,attachment,"2014/09/15 18:26:36",Yes,,acarisella,"2014/09/15 18:26:36",,,,,,,,,0,1,0,Pro_Selling_Points.odt:17
 1181,admin,,,Public,150,contacts,"Francesca Spencer",,0,,email,"2014/09/15 09:59:22",Yes,,api,"2014/09/15 09:59:22",,,,,,,,,0,1,0,"<b>Campaign: Web Lead Intro Campaign</b>
@@ -38,7 +38,7 @@ Campbell&#39;s Cloud Computing<br />
 <b>test</b>
 
 test<!--EndSig-->"
-3333,admin,,,Public,3,opportunity,,,0,,workflow,"2014/09/15 23:30:42",Yes,,admin,"2014/09/15 23:30:42",,,1,,4,,,,0,1,0,"Approved Quote"
+3333,admin,,,Public,3,opportunity,,,0,,workflow,"2014/09/15 23:30:42",Yes,,admin,"2014/09/15 23:30:42",,,,,,,,,0,1,0,"Approved Quote"
 3351,admin,,,Public,1156,contacts,"Marissa Romero",,0,,webactivity,"2014/09/16 02:00:51",Yes,,,"2014/09/16 02:00:51","2014/09/16 02:00:51",admin,,,,,,,0,1,0,http://www.x2engine.com/pricing-plans/
 3380,,,,Public,1,contacts,Contacts,"2014/09/17 03:06:18",0,,quotes,"2014/09/17 03:06:18",Yes,,admin,"2014/09/17 03:06:18","2014/09/17 03:06:18",admin,,,,,,,0,0,0,1001
 3385,admin,,,Public,1,contacts,Contacts,"2014/09/17 03:06:18",0,,call,"2014/09/17 03:06:18",Yes,,admin,"2014/09/17 03:06:18","2014/09/17 03:06:18",admin,,,,,,,0,0,0,1001

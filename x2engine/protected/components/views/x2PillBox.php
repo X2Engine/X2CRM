@@ -37,7 +37,7 @@
 Yii::app()->clientScript->registerScript($this->id.'x2PillBoxJS',"
 
 $(function () {
-    new x2.{$this->pillBoxJSClass} (".CJSON::encode ($this->getJSClassConstructorArgs ()).");
+    new x2.{$this->pillBoxJSClass} (".CJSON::encode ($this->getJSClassParams ()).");
 });
 
 ", CClientScript::POS_END);

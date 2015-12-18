@@ -173,7 +173,7 @@ ul.filter-hint {
     color: black;
 }
 
-#actions .portlet-content a:hover, #recent-items .portlet-content a:hover, #top-contacts .portlet-content a:hover, #actions span, #recent-items span, #top-contacts span, #actions a:active, #recent-items .portlet-content a:active, #top-contacts .portlet-content a:active {
+#actions .portlet-content a:hover, #recent-items .portlet-content a:hover, #actions span, #recent-items span, #top-contacts span, #actions a:active, #recent-items .portlet-content a:active {
     background: #E9E9E9;
 }
 
@@ -186,19 +186,35 @@ ul.filter-hint {
     font-size: 12px;
 }
 
-#top-contacts .portlet-content a {
-    strong {
-        font-size: 12px;
-    }
-    &.delete-link {
-        @include opacity-hover(0.5);
-        display: block;
+#top-contacts li {
+    position: relative;
+    .delete-link {
+        display: none;
         width: auto;
-        margin: -23px 5px 0 0;
         padding: 0;
         color: inherit;
         float: right;
         background: none;
+        position: absolute;
+        right: 5px;
+        top: 0;
+        bottom: 0;
+        height: 11px;
+        margin: auto;
+        i {
+            @include iconButton;
+        }
+    }
+    &:hover {
+        .delete-link {
+            display: block;
+        }
+    }
+}
+
+#top-contacts .portlet-content a {
+    strong {
+        font-size: 12px;
     }
 }
 

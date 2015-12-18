@@ -83,8 +83,21 @@ ActionHistory.prototype._setUpEvents = function () {
     });
 };
 
+ActionHistory.prototype.setUpImageAttachmentBehavior = function  () {
+    var that = this;
+    $('.attachment-img').each (function () {
+        new x2.EnlargeableImage ({
+            elem: $(this)
+        });                                       
+    });
+}
+
 ActionHistory.prototype._init = function () {
     this._setUpEvents ();
+    var that = this;
+    $(document).on('ready', function(){
+        that.setUpImageAttachmentBehavior ();
+    });
 };
 
 return ActionHistory;

@@ -95,19 +95,12 @@ class RelationshipsController extends x2base {
             if (isset($_POST['mutual']) && $_POST['mutual'] == 'true')
                 $_POST['secondLabel'] = $_POST['firstLabel'];
 
-            $relationship = new Relationships;
-            $relationship->firstType = $_POST['ModelName'];
-            $relationship->firstId = $_POST['ModelId'];
-            $relationship->firstLabel = $_POST['firstLabel'];
-            $relationship->secondType = $_POST['RelationshipModelName'];
-            $relationship->secondId = $_POST['RelationshipModelId'];
-            $relationship->secondLabel = $_POST['secondLabel'];
-            if ($relationship->hasDuplicates ()) {
+            if ($model->hasRelationship($relationshipModel)) {
                 echo 'duplicate';
                 Yii::app()->end();
             }
 
-            if ($relationship->save()) {
+            if ($model->createRelationship($relationshipModel) === true) {
                 echo 'success';
                 Yii::app()->end();
             } else {
@@ -121,21 +114,5 @@ class RelationshipsController extends x2base {
 
      
 
-    private function getModelsFromTypeAndId (array $recordInfo) {
-        // validate record info and look up models
-        foreach ($recordInfo as $info) {
-            $model = $this->getModelFromTypeAndId ($info[0], $info[1]);
-            $models[] = $model;
-        }
-        return $models;
-    }
-
-    private function getModelFromTypeAndId ($modelName, $modelId) {
-        $model = X2Model::getModelOfTypeWithId ($modelName, $modelId);
-        if (!$model) {
-            throw new CHttpException (400, Yii::t('app', 'Invalid record type or record id')); 
-        }
-        return $model;
-    }
 
 }

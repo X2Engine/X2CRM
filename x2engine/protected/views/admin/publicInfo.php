@@ -76,7 +76,135 @@
         <?php echo CHtml::error($model, 'externalBaseUri');?>
 <?php
 
-?>
+        echo CHtml::label(Yii::t('admin', 'Asset Domain Sharding'), 'Admin_enableAssetDomains'); ?><br />
+        <p><?php
+        echo Yii::t('admin', 'This will be the web root URL to use for generating URLs to '.
+            'public-facing static assets, such as JavaScript and CSS stylesheets. This has '.
+            'the benefit of allowing your browser to use more connections to fetch assets '.
+            'and avoid the overhead of sending unnecessary cookies on each request.');
+        ?></p>
+        <p><?php
+        echo Yii::t('admin', 'To configure your server to support a static asset domains, '.
+            'first create a CNAME alias that resolves to your CRM, such as static1.example.com. '.
+            'Then, ensure that your web server is accepting requests for these new domains, '.
+            'for example, through Apache name-based virtual hosts.');
+        ?></p>
+        <p><?php
+        echo Yii::t('admin', 'Note: the benefits of asset domain sharding are being superceded '.
+            'with newer technologies such as SPDY and HTTP2 pipelining. Asset domain sharding '.
+            'will provide the most benefit on a server using HTTP1.1, as it is designed to '.
+            'work around limitiations in the protocol.');
+        ?></p>
+
+        <div id="assetDomainWarning" class="flash-notice hide"><?php
+        echo X2Html::fa ('warning').' '.
+            Yii::t('admin', 'Warning: enabling more than three asset domains for sharding '.
+            'leads to diminishing returns. It is best to measure performance while adjusting '.
+            'the number of asset domains to determine the most effective configuration.');
+        ?></div>
+            <?php echo $form->checkbox($model, 'enableAssetDomains'); ?>
+            <?php echo $form->label($model, 'enableAssetDomains',
+                array('style' => 'display: inline-block')); ?>
+        <br />
+
+        <?php
+            $pendingAssetUrls = CJSON::encode ($model->assetBaseUrls);
+            if (array_key_exists ('Admin', $_POST) && array_key_exists ('assetBaseUrls', $_POST['Admin'])) {
+                $pendingAssetUrls =  $_POST['Admin']['assetBaseUrls'];
+            }
+            echo CHtml::hiddenField('Admin[assetBaseUrls]', $pendingAssetUrls);
+        ?>
+        <?php echo CHtml::error($model, 'assetBaseUrls');?>
+        <div id='assetUrls'>
+        </div>
+        <?php echo CHtml::htmlButton (
+            X2Html::fa ('plus').' '.Yii::t('admin', 'Add Asset Domain'),
+            array(
+                'id' => 'newAssetBaseUrl',
+                'class' => 'x2-button small',
+                'style' => 'padding: 1px;',
+            )
+        ); ?>
+
+        <?php
+            $fa_times = X2HTML::fa('times', array(
+                'class' => 'removeAssetUrl',
+                'style' => 'cursor: pointer'
+            ));
+            $assetDomainErrors  = array();
+            if (isset($model->errors['assetBaseUrls']))
+                $assetDomainErrors = $model->errors['assetBaseUrls'];
+            Yii::app()->clientScript->registerScript ('assetBaseUrlJs', '
+                if (typeof x2 == "undefined")
+                    x2 = {};
+                if (typeof x2.assetBaseUrl == "undefined")
+                    x2.assetBaseUrl = {};
+                x2.assetBaseUrl.removeAssetUrlButton = '.CJavaScript::encode($fa_times).';
+                x2.assetBaseUrl.pendingAssetUrls = '.CJSON::encode ($model->assetBaseUrls).';
+
+                /**
+                 * Click handler to remove URL entry links
+                 */
+                x2.assetBaseUrl.removeAssetUrl = function() {
+                    $(this).parent().remove();
+                    var numDomains = $(".assetBaseUrlEntry").length;
+                    if (numDomains < 4)
+                        $("#assetDomainWarning").slideUp(333);
+                };
+
+                /**
+                 * Create a new text input element for asset URLs
+                 */
+                x2.assetBaseUrl.createAssetUrlEntry = function() {
+                    var urlEntry = $("<input>", {class: "assetBaseUrlInput"});
+                    var urlDiv = $("<div>", {class: "assetBaseUrlEntry"})
+                        .append (urlEntry)
+                        .append (x2.assetBaseUrl.removeAssetUrlButton);
+                    return urlDiv;
+                }
+
+                /**
+                 * Create URL entry text fields for each existing asset domain
+                 */
+                x2.assetBaseUrl.renderExistingAssetUrls = function(entries) {
+                    $.each (entries, function(index, url) {
+                        var urlDiv = x2.assetBaseUrl.createAssetUrlEntry();
+                        $(urlDiv).find (".assetBaseUrlInput").val (url);
+                        $("#assetUrls").append(urlDiv);
+                        $(".assetBaseUrlEntry > .removeAssetUrl").click (x2.assetBaseUrl.removeAssetUrl);
+                    });
+                }
+
+                /**
+                 * Prepare click handler for adding asset domain entries
+                 */
+                $("#newAssetBaseUrl").click (function() {
+                    var urlDiv = x2.assetBaseUrl.createAssetUrlEntry();
+                    $("#assetUrls").append(urlDiv);
+                    var numDomains = $(".assetBaseUrlEntry").length;
+                    if (numDomains > 3)
+                        $("#assetDomainWarning").slideDown(333);
+                    $(".assetBaseUrlEntry > .removeAssetUrl").click (x2.assetBaseUrl.removeAssetUrl);
+                });
+
+                /**
+                 * Set up click handler on form save to pack asset URLs into a JSON
+                 * string in the hidden field #Admin_assetBaseUrls
+                 */
+                $("#save-button").click (function() {
+                    var baseUrls = [];
+                    $(".assetBaseUrlInput").each (function() {
+                        baseUrls.push($(this).val());
+                    });
+                    $("#Admin_assetBaseUrls").val (JSON.stringify (baseUrls));
+                });
+
+                var assetBaseUrl = $("#Admin_assetBaseUrls").val();
+                if (assetBaseUrl)
+                    x2.assetBaseUrl.renderExistingAssetUrls (JSON.parse (assetBaseUrl));
+            ', CClientScript::POS_READY);
+        ?>
+        <br /><br />
     </div><!-- .form -->
 
     <?php echo CHtml::submitButton(Yii::t('app', 'Save'), array('class' => 'x2-button', 'id' => 'save-button'))."\n"; ?>

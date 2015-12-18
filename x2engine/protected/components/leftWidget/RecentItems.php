@@ -48,7 +48,7 @@ class RecentItems extends LeftWidget {
 	public $widgetLabel = 'Recent Items';
 
 	protected function renderContent() {
-		$recentItems = User::getRecentItems(Yii::app()->user->getId());
+		$recentItems = User::getRecentItems();
 		$this->render('recentItems',array('recentItems'=>$recentItems));
 	}
 }

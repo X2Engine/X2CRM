@@ -63,7 +63,7 @@
                 <?php echo User::getUserLinks($data->assignedTo); ?>
             </div>
             <div class="img-box user-avatar">
-                <?php Profile::renderFullSizeAvatar($data->getAuthorId(), 45); ?>
+                <?php echo Profile::renderFullSizeAvatar($data->getAuthorId(), 45); ?>
             </div>
         </div>
         <div class='topic-text'>

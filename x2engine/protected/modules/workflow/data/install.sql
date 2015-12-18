@@ -16,6 +16,8 @@ CREATE TABLE x2_workflows(
 /*&*/
 ALTER TABLE `x2_modules` ADD CONSTRAINT FOREIGN KEY (`defaultWorkflow`) REFERENCES x2_workflows(`id`) ON UPDATE CASCADE ON DELETE SET NULL;
 /*&*/
+ALTER TABLE `x2_actions` ADD CONSTRAINT FOREIGN KEY (`workflowId`) REFERENCES x2_workflows(`id`) ON UPDATE CASCADE ON DELETE CASCADE;
+/*&*/
 CREATE TABLE x2_workflow_stages(
     id              INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
     workflowId      INT NOT NULL,
@@ -28,6 +30,8 @@ CREATE TABLE x2_workflow_stages(
     requireComment  TINYINT DEFAULT 0,
     FOREIGN KEY (workflowId) REFERENCES x2_workflows(id) ON UPDATE CASCADE ON DELETE CASCADE
 ) ENGINE InnoDB COLLATE = utf8_general_ci;
+/*&*/
+ALTER TABLE `x2_actions` ADD CONSTRAINT FOREIGN KEY (`stageNumber`) REFERENCES x2_workflow_stages(`id`) ON UPDATE CASCADE ON DELETE CASCADE;
 /*&*/
 CREATE TABLE x2_role_to_workflow(
     id         INT                NOT NULL AUTO_INCREMENT PRIMARY KEY,

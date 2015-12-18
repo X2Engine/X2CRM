@@ -161,7 +161,7 @@ class QuickCreateRelationshipBehavior extends QuickCRUDBehavior {
 
             if (isset ($secondModelName) && !empty ($secondModelId)) {
                 $secondModel = $this->quickCreateRelationship (
-                    $model, get_class ($model), $model->id, $secondModelName, $secondModelId);
+                    $model, $secondModelName, $secondModelId);
                 echo CJSON::encode (
                     array (
                         'status' => 'success',
@@ -261,16 +261,14 @@ class QuickCreateRelationshipBehavior extends QuickCRUDBehavior {
      * @return mixed false if the second model isn't updated, the second model otherwise
      */
     private function quickCreateRelationship (
-        $firstModel, $firstModelName, $firstModelId, $secondModelName, $secondModelId) {
-
-        $success = Relationships::create (
-            $firstModelName, $firstModelId, $secondModelName, $secondModelId);
-
+        $firstModel, $secondModelName, $secondModelId) {
+        
+        $secondModel = $secondModelName::model ()->findByPk ($secondModelId);
+        $firstModel->createRelationship($secondModel);
+       
         $attributesToUpdate = (isset ($this->attributesOfNewRecordToUpdate[$secondModelName]) ? 
             $this->attributesOfNewRecordToUpdate[$secondModelName] : array ());
-
-        $secondModel = $secondModelName::model ()->findByPk ($secondModelId);
-
+        
         if ($secondModel) {
             $changed = false;
 

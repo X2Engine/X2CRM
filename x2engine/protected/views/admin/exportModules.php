@@ -39,6 +39,7 @@
 <?php echo Yii::t('admin','Please select a model to export.');?>
 
 <form name="exportModule" action="exportModule" method="POST">
+    <?php X2Html::getFlashes(); ?>
 	<br>
 	<select name="name">
 		<?php

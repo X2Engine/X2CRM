@@ -113,6 +113,23 @@ class Fields extends CActiveRecord {
         }   
     }
 
+    public function behaviors () {
+        return array_merge (parent::behaviors (), array (
+            'CommonFieldsBehavior' => array (
+                'class' => 'application.components.behaviors.CommonFieldsBehavior',
+            )
+        ));
+    }
+
+    public function getDropdownValue ($fieldValue) {
+        return X2Model::model('Dropdowns')->getDropdownValue(
+            $this->linkType, $fieldValue);
+    }
+
+    public function getDropdownOptions () {
+        return Dropdowns::getItems($this->linkType, null, true);
+    }
+
     public function setAttributes ($values, $safeOnly=true) {
         if (isset ($values['type']) && $this->type !== $values['type']) {
             $this->_typeChanged = true;

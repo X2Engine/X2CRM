@@ -82,11 +82,11 @@ Yii::app()->clientScript->registerCss('activeDateRangeInput',"
                 'onClick' => "$('#ui-datepicker-div').css('z-index', '100');", 
                 'class' => 'action-due-date',
                 'id' => $this->resolveId ('action-due-date'),
-            ), 'datetime', array (
+            ), 'datetime', array_merge (array (
                 'dateFormat' => Formatter::formatDatePicker ('medium'),
                 'timeFormat' => Formatter::formatTimePicker (),
                 'ampm' => Formatter::formatAMPM (),
-            ));
+            ), $this->options));
 
         echo CHtml::activeLabel(
             $this->model, $this->endDateAttribute, 
@@ -96,11 +96,11 @@ Yii::app()->clientScript->registerCss('activeDateRangeInput',"
                 'onClick' => "$('#ui-datepicker-div').css('z-index', '100');", 
                 'class' => 'action-complete-date',
                 'id' => $this->resolveId ('action-complete-date'),
-            ), 'datetime', array (
+            ), 'datetime', array_merge (array (
                 'dateFormat' => Formatter::formatDatePicker ('medium'),
                 'timeFormat' => Formatter::formatTimePicker (),
                 'ampm' => Formatter::formatAMPM (),
-            ));
+            ), $this->options));
         ?>
     </div>
 </div>

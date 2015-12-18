@@ -46,6 +46,8 @@ class Topics extends X2Model {
     const PAGE_SIZE = 20;
 
     public $supportsFieldLevelPermissions = false;
+    
+    public $supportsWorkflow = false;
 
     protected $fieldFormatterClass = 'TopicsFieldFormatter';
 

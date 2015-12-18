@@ -1,1 +1,1 @@
-options -Indexes
+deny from all

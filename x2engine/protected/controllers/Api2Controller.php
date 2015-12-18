@@ -137,6 +137,32 @@ class Api2Controller extends CController {
     }
 
     /**
+     * Retrieve the number of models of a specific class or matching query criteria
+     *
+     * @param string $_class Model name
+     * @param array $_findBy Model query criteria
+     */
+    public function actionCount($_class,$_findBy=null) {
+        $staticModel = $this->getStaticModel();
+
+        if(!empty($_findBy)) {
+            // Use case: count models by uniquely identifying attributes
+            $attributeConditions = $this->findConditions(
+                $_findBy,
+                $staticModel->attributes
+            );
+            $criteria = new CDbCriteria ();
+            foreach ($attributeConditions as $field => $value)
+                $criteria->compare ($field, $value);
+            $count = $this->getDataProvider(null, $criteria)->getTotalItemCount();
+        } else {
+            // Use case: count all models
+            $count = $this->getDataProvider()->getTotalItemCount();
+        }
+        $this->responseBody = $count;
+    }
+
+    /**
      * Responds with dropdown list metadata
      *
      * @param integer $_id
@@ -910,6 +936,13 @@ class Api2Controller extends CController {
         // There are three actions and five different request types (DELETE,
         // GET, PATCH, POST, PUT) two of which (PATCH/PUT) are indistinct.
         switch($this->action->id) {
+            case 'count':
+                switch($method) {
+                    case 'GET':
+                        $action = "{$module}Index";
+                        break;
+                }
+                break;
             case 'model':
                 switch($method) {
                     case 'DELETE':
@@ -976,7 +1009,7 @@ class Api2Controller extends CController {
             'authenticate', // Valid user
             'methods', // Valid request method for the given action
             'contentType', // Valid content type when submitting data
-            'rbac + model,relationships,tags', // Checks permission
+            'rbac + count,model,relationships,tags', // Checks permission
         );
     }
 
@@ -1493,6 +1526,7 @@ class Api2Controller extends CController {
     public static function methods() {
         return array(
             'appInfo' => 'GET',
+            'count' => 'GET',
             'dropdowns' => 'GET',
             'fieldPermissions' => 'GET',
             'fields' => 'GET',

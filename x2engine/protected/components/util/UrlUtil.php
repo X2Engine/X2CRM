@@ -49,7 +49,10 @@ class UrlUtil {
         }
         $query = array_merge ($query, $params);
         $newQuery = '?'.http_build_query ($query);
-        return preg_replace ('/\??'.preg_quote ($oldQuery).'$/', $newQuery, $url);
+        if ($newQuery !== '?')
+            return preg_replace ('/\??'.preg_quote ($oldQuery).'$/', $newQuery, $url);
+        else
+            return $url;
     }
 }
 

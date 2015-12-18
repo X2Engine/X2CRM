@@ -19,5 +19,4 @@
   'Most Recent' => '가장 최근',
   'Alphabetical' => '알파벳',
   'Most Popular' => '가장 인기 많은',
-  'Sticky' => '끈적 끈적한',
 );

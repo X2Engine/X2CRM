@@ -88,7 +88,6 @@ if ($maxExecTime <= 30) {
         X2Html::minimizeButton (array(), '#import-map-box', false, true);
 ?></span></h2>
 <div id="import-map-box" class="import-hide form" style="width:600px">
-    <div id="form-error-box"></div>
 </br />
 
 <div id='mapping-overrides'>
@@ -99,17 +98,25 @@ if ($maxExecTime <= 30) {
     <tr>
         <td><strong><?php echo Yii::t('admin','Your Field');?></strong></td>
         <td><strong><?php echo Yii::t('admin','Our Field');?></strong></td>
-        <td><strong><?php echo Yii::t('admin','Sample Record');?></strong> <a href="#" class="clean-link" onclick="prevRecord();"><?php echo Yii::t('admin','[Prev]');?></a> <a href="#" class="clean-link" onclick="nextRecord();"><?php echo Yii::t('admin','[Next]');?></a></td>
+        <td><strong><?php echo Yii::t('admin','Sample Record');?></strong> <a href="#" class="clean-link" onclick="x2.importer.prevRecord();"><?php echo Yii::t('admin','[Prev]');?></a> <a href="#" class="clean-link" onclick="x2.importer.nextRecord();"><?php echo Yii::t('admin','[Next]');?></a></td>
     </tr>
 <?php
     foreach($meta as $attribute){
         echo "<tr>";
         echo "<td style='width:33%'>$attribute</td>";
-        echo "<td style='width:33%'>".CHtml::dropDownList($attribute,
-                isset($importMap[$attribute])?$importMap[$attribute]:'',
-                array_merge(array(''=>Yii::t('admin','DO NOT MAP'),'createNew'=>Yii::t('admin','CREATE NEW FIELD'), 'applyTags'=>Yii::t('admin','APPLY TAGS')),X2Model::model($model)->attributeLabels()),
+        echo "<td style='width:33%'>".CHtml::dropDownList(
+                $attribute,
+                isset ($importMap[$attribute]) ? $importMap[$attribute] : $defaultMapping,
+                array_merge(
+                    array(
+                        '' => Yii::t('admin','DO NOT MAP'),
+                        'createNew' => Yii::t('admin','CREATE NEW FIELD'),
+                        'applyTags'=>Yii::t('admin','APPLY TAGS')
+                    ),
+                    X2Model::model($model)->attributeLabels()
+                ),
                 array('class'=>'import-attribute')
-                )."</td>";
+            )."</td>";
         echo "<td style='width:33%'>";
         for ($i=0; $i < count($sampleRecords); $i++) {
             if (isset($sampleRecords[$i])) {
@@ -255,265 +262,105 @@ if ($maxExecTime <= 30) {
     echo CHtml::link(Yii::t('admin', 'Rollback Import'),
         array('rollbackImport', 'importId' => $_SESSION['importId']),
         array('class' => 'x2-button', 'id' => 'revert-btn', 'style' => 'display:none;'));
+
+    $importerMessages = array(
+        'success' => Yii::t('admin', 'Import setup completed successfully.'),
+        'begin' => Yii::t('admin', 'Beginning import.'),
+        'complete' => Yii::t('admin', 'Import Complete!'),
+        'failCreate' => Yii::t('admin', "Import preparation failed.  Failed to create the following fields: "),
+        'failConflicting' => Yii::t('admin', "Import preparation failed.  The following fields already exist: "),
+        'failRequired' => Yii::t('admin', "Import Preparation failed. The following required fields were not mapped: "),
+        'confirm' => Yii::t('admin', "You have mapped multiple columns to the same field, are you sure you would like to proceed? The following fields were mapped more than once: "),
+        'aborting' => Yii::t('admin', "Import preparation failed.  Aborting import."),
+        
+        'nonUniqueAssocMatch' => Yii::t ('admin', 'You have selected to match link type fields on '.
+                        'non-unique attributes. This can result in an association being '.
+                        'formed with the incorrect record. Are you sure you would like to proceed? '.
+                        'The following mappings would match on non-unique attributes: '),
+        'modelsImported' => Yii::t('admin', " <b>{model}</b> have been successfully imported.", array('{model}' => $model)),
+        'modelsLinked' => Yii::t('admin', "were created and linked to {model}.", array('{model}' => $model)),
+        'modelsFailed' => Yii::t('admin', " <b>{model}</b> have failed validation and were not imported.", array('{model}' => $model)),
+        'clickToRecover' => Yii::t('admin', 'Click here to recover them: ', array('{model}' => $model)).
+                "<a href=\"#\" id=\"download-link\" class=\"x2-button\">".Yii::t('admin', "Download")."</a>",
+    );
+
+    Yii::app()->clientScript->registerScriptFile (Yii::app()->getBaseUrl().'/js/importexport.js');
 ?>
 </div>
-<script>
+<?php
+    Yii::app()->clientScript->registerScript ('importexport', "
+    if (typeof x2 == 'undefined')
+        x2 = {};
+    if (typeof x2.importer == 'undefined') {
+        x2.importer = {
+            batchSize: 25
+        };
+    }
+
+    x2.importer.model = ". CJSON::encode ($model) .";
+    x2.importer.preselectedMap = ". ($preselectedMap ? 'true':'false') .";
+    x2.importer.numSampleRecords = ". count($sampleRecords) .";
+    x2.importer.attributeLabels = ". CJSON::encode (X2Model::model($model)->attributeLabels(), false) .";
+    x2.importer.failedRecordsUrl = ". CJSON::encode ($this->createUrl ('/admin/downloadData',array('file'=>'failedRecords.csv'))) .";
+    x2.importer.modifiedPresetMap = false;
+    x2.importer.messageTranslations = ". CJSON::encode ($importerMessages) .";
+    x2.importer.linkFieldModelMap = ". CJSON::encode ($linkFieldModelMap) .";
+    x2.importer.linkedRecordDropdowns = ". CJSON::encode ($linkedRecordDropdowns) .";
+    x2.importer.linkFieldHint = ". CJSON::encode(X2Html::hint (Yii::t('app', 'Please select the attribute you would like to match on to link the associated record.'))) .";
+
     $(function() {
         // Hide the import map box if a mapping was uploaded
-        if (<?php echo ($preselectedMap)? 'true':'false'; ?>)
+        if (x2.importer.preselectedMap)
             $('#super-import-map-box').hide();
+
+        // Present a dropdown to select the match attribute for reconstructing
+        // associations for link type fields
+        $.each ($('#import-map select'), function(i, dropdown) {
+            if ($.inArray($(dropdown).val(), Object.keys(x2.importer.linkFieldModelMap)) != -1)
+                x2.importer.showLinkFieldMatchSelector ($(dropdown));
+        });
     });
-    
-    var attributeLabels = <?php echo json_encode(X2Model::model($model)->attributeLabels(), false);?>;
-    var modifiedPresetMap = false;
-    var loadingThrobber;
+
     $('#process-link').click(function(){
-       prepareImport();
+       $('#editPresetMap').hide();
+       x2.importer.prepareImport();
     });
+
     $('#fill-fields-box').change(function(){
         $('#fields').toggle();
     });
+
      
+
     $('#log-comment-box').change(function(){
        $('#comment-form').toggle();
     });
+
     $('#batch-size').change(function() {
         $('#batch-size-slider').slider('value', $('#batch-size').val ());
     });
 
-    function prepareImport(){
-        $('#import-container').hide();
-        var attributes=[];
-        var keys=[];
-        var forcedAttributes=[];
-        var forcedValues=[];
-        var comment="";
-        var routing=0;
-        var skipActivityFeed=0;
-        var batchSize = $('#batch-size').val();
-         
-        $('.import-attribute').each(function(){
-            attributes.push ($(this).val());
-            keys.push ($(this).attr('name'));
-        });
-        if($('#fill-fields-box').is(':checked')){
-            $('.forced-attribute').each(function(){
-            forcedAttributes.push($(this).val());
-            });
-            $('.forced-value').each(function(){
-                forcedValues.push($(this).val());
-            });
-        }
-        if($('#log-comment-box').is(':checked')){
-            comment=$("#comment").val();
-        }
-        if($('#lead-routing-box').is(':checked')){
-            routing=1;
-        }
-        if($('#activity-feed-box').is(':checked')){
-            skipActivityFeed=1;
-        }
-        var createRecords = '';
-        if ($('#create-records-box').is(':checked')) {
-            createRecords = 'checked';
-        }
-         
-
-        function showPreparationResult (success, msg) {
-            if (success) {
-                $('#import-status').show();
-                $('#import-progress-bar').show();
-                loadingThrobber = auxlib.pageLoading();
-                importData (batchSize);
-                $('#prep-status-box').html (msg);
-            } else {
-                $('#super-import-map-box').show();
-                $('#import-container').show();
-                $('#form-error-box').html (msg);
-            }
-        }
-
-        $.ajax({
-            url:'prepareModelImport',
-            type:"POST",
-            data:{
-                attributes:attributes,
-                keys:keys,
-                forcedAttributes:forcedAttributes,
-                forcedValues:forcedValues,
-                createRecords:createRecords,
-                tags:$('input[type=text]#tags').val(),
-                comment:comment,
-                routing:routing,
-                skipActivityFeed:skipActivityFeed,
-                model:"<?php echo $model; ?>",
-                preselectedMap: (<?php echo ($preselectedMap)? 'true' : 'false'; ?> && !modifiedPresetMap) 
-            },
-            success:function(data){
-                data=JSON.parse(data);
-                var resp = data[0];
-                 
-                switch (resp) {
-                    case '0':
-                        var str="<?php echo Yii::t('admin', "Import setup completed successfully...<br />Beginning import."); ?>";
-                        showPreparationResult (true, str);
-                        break;
-                    case '1':
-                        var str="<?php echo Yii::t('admin', "Import preparation failed.  Failed to create the following fields: "); ?>";
-                        str = str + data[1] + "<br /><br />";
-                        showPreparationResult (false, str);
-                        break;
-                    case '2':
-                        var str="<?php echo Yii::t('admin', "Import preparation failed.  The following fields already exist: "); ?>";
-                        str = str + data[1] + "<br /><br />";
-                        showPreparationResult (false, str);
-                        break;
-                    case '3':
-                        var str="<?php echo Yii::t('admin', "Import Preparation failed. The following required fields were not mapped: "); ?>";
-                        str = str + data[1] + "<br /><br />";
-                        showPreparationResult (false, str);
-                        break;
-                    case '4':
-                        var fields = data[1];
-                        var confirmMsg = '<?php echo Yii::t('admin', "You have mapped multiple columns to the same field, are you sure ".
-                                        "you would like to proceed? The following fields were mapped more than once: "); ?>' + fields;
-                        if (window.confirm(confirmMsg)) {
-                            var str="<?php echo Yii::t('admin', "Import setup completed successfully...<br />Beginning import."); ?>";
-                            showPreparationResult (true, str);
-                        } else {
-                            var str="<?php echo Yii::t('admin', "Import cancelled."); ?>";
-                            showPreparationResult (false, str);
-                        }
-                        break;
-                }
-            },
-            error:function(){
-                var str="<?php echo Yii::t('admin', "Import preparation failed.  Aborting import."); ?>";
-                $('#prep-status-box').css({'color':'red'});
-                $('#prep-status-box').html(str);
-            }
-        });
-    }
-    function importData(count){
-        $.ajax({
-            url:'importModelRecords',
-            type:"POST",
-            data:{
-                count:count,
-                model:"<?php echo $model; ?>"
-            },
-            error: function (data) {
-                alert (data.responseText);
-            },
-            success:function(data){
-                data=JSON.parse(data);
-                if(data[0]!=1){
-                    str=data[1]+"<?php echo Yii::t('admin', " <b>{model}</b> have been successfully imported.",
-                            array('{model}' => $model)); ?>";
-                    created=JSON.parse(data[3]);
-                    for(type in created){
-                        if(created[type]>0){
-                            str+="<br />"+created[type]+" <b>"+type+"</b> <?php echo Yii::t('admin', "were created and linked to {model}.",
-                                    array('{model}' => $model)); ?>";
-                        }
-                    }
-                    $('#status-box').html(str);
-                    if(data[2]>0){
-                        str=data[2]+"<?php echo Yii::t('admin', " <b>{model}</b> have failed validation and were not imported.",
-                                array('{model}' => $model)); ?>";
-                        $("#failures-box").html(str);
-                    }
-                    // Increment the progress bar counter
-                    $('#x2-progress-bar-container-x2import').data('progressBar').incrementCount (Number(count));
-                    importData(count);
-                }else{
-                    str=data[1]+"<?php echo Yii::t('admin', " <b>{model}</b> have been successfully imported.",
-                            array('{model}' => $model)); ?>";
-                    created=JSON.parse(data[3]);
-                    for(type in created){
-                        if(created[type]>0){
-                            str+="<br />"+created[type]+" <b>"+type+"</b> <?php echo Yii::t('admin', "were created and linked to {model}.",
-                                array('{model}' => $model)); ?>";
-                        }
-                    }
-                    $('#status-box').html(str);
-                    if(data[2]>0){
-                        str=data[2]+'<?php echo Yii::t('admin', " <b>{model}</b> have failed validation and were not imported. ".
-                                "Click here to recover them: ", array('{model}' => $model))."<a href=\"#\" id=\"download-link\" class=\"x2-button\">".
-                                Yii::t('admin', "Download")."</a>"; ?>';
-                        $("#failures-box").html(str);
-                        $('#download-link').click(function(e) {
-                            e.preventDefault();  //stop the browser from following
-                            window.location.href = '<?php echo $this->createUrl('/admin/downloadData',array('file'=>'failedRecords.csv')); ?>';
-                        });
-                    }
-
-                    $('#continue-box').show();
-                    if ($('#failures-box').html().trim().length > 0) {
-                        // Present a button to rollback if there were any failures
-                        $('#revert-btn').show();
-                    }
-
-                    // Fill the progress bar
-                    var maxCsvLines = $('#x2-progress-bar-container-x2import').data('progressBar').getMax();
-                    $('#x2-progress-bar-container-x2import').data('progressBar').updateCount (maxCsvLines);
-
-                    $.ajax({
-                        url:'cleanUpModelImport',
-                        complete:function(){
-                            var str="<strong><?php echo Yii::t('admin', "Import Complete."); ?></strong>";
-                            $('#prep-status-box').html(str);
-                            loadingThrobber.remove();
-                            alert('<?php echo Yii::t('admin', 'Import Complete!'); ?>');
-                        }
-                    });
-                }
-            }
-        });
-    }
-    function prevRecord(){
-        $('.record-'+record).hide();
-        if (record==0) {
-            record = <?php echo count($sampleRecords) - 1; ?>;
+    // Present an additional dropdown to select the linked record's match attribute
+    $('.import-attribute').change(function() {
+        var selected = $(this).val();
+        var linkedModel = x2.importer.linkFieldModelMap[selected];
+        var attributeId = $(this).attr('id');
+        if ($.inArray(selected, Object.keys(x2.importer.linkFieldModelMap)) != -1 &&
+                typeof x2.importer.linkedRecordDropdowns[linkedModel] !== undefined) {
+            x2.importer.showLinkFieldMatchSelector ($(this));
         } else {
-            record--;
+            // Remove the match attribute dropdown
+            var children = $(this).siblings('#' + attributeId + '-linkSelector');
+            $(children).remove();
+            $(this).parent()
+                .css ('border', '')
+                .children ('span').remove();
         }
-        $('.record-'+record).show();
-    }
+    });
 
-    function nextRecord(){
-        $('.record-'+record).hide();
-        if (record == <?php echo count($sampleRecords) - 1; ?>) {
-            record=0;
-        } else {
-            record++;
-        }
-        $('.record-'+record).show();
-    }
-
-    function createDropdown(list, ignore) {
-        var sel = $(document.createElement('select'));
-        $.each(list, function(key, value) {
-            if ($.inArray(key, ignore) == -1) {
-                sel.append('<option value=\"' + key  + '\">' + value + '</option>');
-            }
-        });
-        return sel;
-    }
-
-    function createAttrCell(){
-        var div = $(document.createElement('div'));
-        div.attr('class', 'field-row');
-        var dropdown = createDropdown(attributeLabels);
-        dropdown.attr('class', 'forced-attribute');
-        var input = $('<input size="30" type="text" value="" class="forced-value">');
-        input.attr('name', 'force-values[]');
-        var link= $('<a href="#" class="del-link clean-link">[x]</a>');
-        return div.append(dropdown).append(input).append(link);
-    }
     $('#add-link').click(function(e){
        e.preventDefault();
-       $('#field-box').append(createAttrCell());
+       $('#field-box').append(x2.importer.createAttrCell());
        $('.del-link').click(function(e){
             e.preventDefault();
             $(this).closest('.field-row').remove();;
@@ -535,22 +382,24 @@ if ($maxExecTime <= 30) {
             url: 'exportMapping',
             type: 'POST',
             data: {
-                model: "<?php echo $model; ?>",
+                model: x2.importer.model,
                 name: $('#mapping-name').val(),
                 attributes: attributes,
                 keys: keys
             },
             success: function(data) {
                 data = JSON.parse(data);
-                console.log (data);
-                if (data[0] == '0') {
+                response = x2.importer.interpretPreparationResult (data);
+
+                if (response.success) {
                     var filename = data['map_filename'];
                     $('#download-map').attr ('data-map_filename', filename);
                     $('#download-map').show();
+                    $('#prep-status-box').css({'color':'green'});
+                    $('#prep-status-box').html(response.msg);
                 } else {
-                    var str="<?php echo Yii::t('admin', "Preparing the import map failed. Aborting."); ?>";
                     $('#prep-status-box').css({'color':'red'});
-                    $('#prep-status-box').html(str);
+                    $('#prep-status-box').html(response.msg);
                 }
             }
         });
@@ -558,7 +407,7 @@ if ($maxExecTime <= 30) {
 
     $('#download-map').click(function(e) {
         e.preventDefault();
-        var downloadUrl = '<?php echo $this->createUrl('admin/downloadData'); ?>';
+        var downloadUrl = '". $this->createUrl('admin/downloadData') ."';
         var filename = $('#download-map').attr ('data-map_filename');
         window.location.href = downloadUrl + '?file=' + filename;
     });
@@ -568,7 +417,6 @@ if ($maxExecTime <= 30) {
         $(this).hide();
         $('#importMapSummary').hide();
         $('#super-import-map-box').slideDown(500);
-        modifiedPresetMap = true;
+        x2.importer.modifiedPresetMap = true;
     });
-
-</script>
+", CClientScript::POS_READY);

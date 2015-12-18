@@ -84,6 +84,12 @@ Yii::app()->clientScript->registerCssFile(Yii::app()->theme->baseUrl.'/css/impor
     echo "<h3>".Yii::t('admin', 'Import Map').
         X2Html::minimizeButton (array('class' => 'pseudo-link'), '#upload-map')."</h3>";
     echo "<div id='upload-map' style='display:none;'>";
+    echo Yii::t('admin', 'Please select the default mapping option for any fields that cannot be automatically mapped.')."<br />";
+    echo CHtml::dropDownList ('defaultMapOption', '', array(
+        '' => Yii::t('admin', 'DO NOT MAP'),
+        'createNew' => Yii::t('admin', 'CREATE NEW'),
+    )).'<br /><br />';
+
     echo Yii::t('admin', "You may select a predefined map here, or upload your own.")."<br />";
     $availImportMaps = $this->availableImportMaps($model);
     if (empty($availImportMaps)) {

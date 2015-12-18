@@ -19,5 +19,4 @@
   'Most Recent' => '最新',
   'Alphabetical' => '按英文字母顺序',
   'Most Popular' => '最受欢迎',
-  'Sticky' => '粘粘',
 );

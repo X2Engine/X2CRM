@@ -67,8 +67,8 @@ abstract class ActionActiveFormBase extends X2ActiveForm {
         return $this->_packages;
     }
 
-    public function getJSClassConstructorArgs () {
-        return array_merge (parent::getJSClassConstructorArgs (), array (
+    public function getJSClassParams () {
+        return array_merge (parent::getJSClassParams (), array (
             'ajaxForm' => true,
         ));
     }
@@ -83,12 +83,15 @@ abstract class ActionActiveFormBase extends X2ActiveForm {
         return $html;
     }
 
-    public function dateRangeInput (CModel $model, $attributeA, $attributeB) {
+    public function dateRangeInput (
+        CModel $model, $attributeA, $attributeB, array $options = array ()) {
+
         return $this->widget ('ActiveDateRangeInput', array (
             'model' => $model,
             'startDateAttribute' => $attributeA,
             'endDateAttribute' => $attributeB,
             'namespace' => get_class ($this->formModel).$this->namespace,
+            'options' => $options,
         ), true);
     }
 

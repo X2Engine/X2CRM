@@ -63,6 +63,13 @@ class EventsTest extends X2DbTestCase {
     }
 
     public function testGetFilteredEventsDataProvider () {
+        /*
+         * This test is marked as skipped until it can be refactored. The test 
+         * assumes that Events::getEvents and Events::getFilteredEventsDataProvider
+         * return the same data, which may be true in some circumstances but depends
+         * on the parameters passed to getEvents, which are currently incorrect. 
+         */
+        $this->markTestSkipped('Test requires refactor');
         TestingAuxLib::loadX2NonWebUser ();
         $testUser = $this->users ('testUser');
         TestingAuxLib::suLogin ($testUser->username);
@@ -72,7 +79,9 @@ class EventsTest extends X2DbTestCase {
         $dataProvider = $retVal['dataProvider'];
         $events = $dataProvider->getData ();
         $expectedEvents = Events::getEvents (0, 0, count ($events), $profile);
-
+        
+        // I'm not sure this assert is necessary, at the very least it needs
+        // more thorough conditions
         // verify events from getData
         $this->assertEquals (
             Yii::app()->db->createCommand ("
@@ -102,6 +111,13 @@ class EventsTest extends X2DbTestCase {
     }
 
     public function testGetEventsPublicProfile(){
+        /*
+         * This test is currently run with some faulty assumptions and is
+         * marked to skip until a refactor can happen. Events::getEvents has far
+         * more conditions applied to it than the findAllByAttributes it's being
+         * compared against and so it is possible for them to not match up
+         */
+        $this->markTestSkipped('Test requires refactor');
         TestingAuxLib::loadX2NonWebUser ();
         TestingAuxLib::suLogin ('testuser');
 
@@ -290,6 +306,68 @@ class EventsTest extends X2DbTestCase {
                 $this->assertEquals (strtolower($dummyTitle), Events::parseModelName ($model));
             }
         }
+    }
+    
+    /**
+     * TODO: Remove hardcoded references to events in the fixture.
+     */
+    public function testCheckPermissions(){
+        TestingAuxLib::loadX2NonWebUser ();
+        $event1 = $this->event(0);
+        // Admin can do anything
+        TestingAuxLib::suLogin ('admin');
+        $this->assertTrue($event1->checkPermissions('view', true));
+        $this->assertTrue($event1->checkPermissions('edit', true));
+        $this->assertTrue($event1->checkPermissions('delete', true));
+        // Private and no shared group means testuser can't do anything
+        TestingAuxLib::suLogin ('testuser');
+        $this->assertFalse($event1->checkPermissions('view', true));
+        $this->assertFalse($event1->checkPermissions('edit', true));
+        $this->assertFalse($event1->checkPermissions('delete', true));
+        // Associated with testuser2, so they can view and delete but not edit
+        TestingAuxLib::suLogin ('testuser2');
+        $this->assertTrue($event1->checkPermissions('view', true));
+        $this->assertFalse($event1->checkPermissions('edit', true));
+        $this->assertTrue($event1->checkPermissions('delete', true));
+        // Created by testuser3, so they can do anything
+        TestingAuxLib::suLogin ('testuser3');
+        $this->assertTrue($event1->checkPermissions('view', true));
+        $this->assertTrue($event1->checkPermissions('edit', true));
+        $this->assertTrue($event1->checkPermissions('delete', true));
+        
+        $event2 = $this->event(6);
+        // Admin can do anything
+        TestingAuxLib::suLogin ('admin');
+        $this->assertTrue($event2->checkPermissions('view', true));
+        $this->assertTrue($event2->checkPermissions('edit', true));
+        $this->assertTrue($event2->checkPermissions('delete', true));
+        // Public posts are visible but not editable or deletable by regular users
+        TestingAuxLib::suLogin ('testuser');
+        $this->assertTrue($event2->checkPermissions('view', true));
+        $this->assertFalse($event2->checkPermissions('edit', true));
+        $this->assertFalse($event2->checkPermissions('delete', true));
+        // Public posts are visible but not editable or deletable by regular users
+        TestingAuxLib::suLogin ('testuser2');
+        $this->assertTrue($event2->checkPermissions('view', true));
+        $this->assertFalse($event2->checkPermissions('edit', true));
+        $this->assertFalse($event2->checkPermissions('delete', true));
+        
+        $event3 = $this->event(7);
+        // Admin can do anything
+        TestingAuxLib::suLogin ('admin');
+        $this->assertTrue($event3->checkPermissions('view', true));
+        $this->assertTrue($event3->checkPermissions('edit', true));
+        $this->assertTrue($event3->checkPermissions('delete', true));
+        // Non-social post is visible to user it's assigned to but they can't edit or delete
+        TestingAuxLib::suLogin ('testuser');
+        $this->assertTrue($event3->checkPermissions('view', true));
+        $this->assertFalse($event3->checkPermissions('edit', true));
+        $this->assertFalse($event3->checkPermissions('delete', true));
+        // Private, so testuser3 can't do anything
+        TestingAuxLib::suLogin ('testuser3');
+        $this->assertFalse($event3->checkPermissions('view', true));
+        $this->assertFalse($event3->checkPermissions('edit', true));
+        $this->assertFalse($event3->checkPermissions('delete', true));
     }
 }
 

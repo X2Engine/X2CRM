@@ -68,6 +68,8 @@ if ($isAdmin && file_exists(
     Yii::app()->session['alertUpdate'] = false;
 }
 
+
+
 if(is_int(Yii::app()->locked)) {
     $lockMsg = '<strong>'.Yii::t('admin','The application is currently locked.').'</strong>';
     if(file_exists(
@@ -112,11 +114,12 @@ ThemeGenerator::render();
 /* Retrieve flash messages and calculate the appropriate styles for flash messages if applicable */
 $allFlashes = Yii::app()->user->getFlashes();
 $adminFlashes = array();
-$index = 0;
 foreach($allFlashes as $key => $message){
     if(strpos($key, 'admin') === 0){
-        $adminFlashes[$index] = $message;
-        $index++;
+        $adminFlashes[] = array(
+            'message' => $message,
+            'class' => ($key === 'admin.licenseError' ? 'admin-flash-error' : ''),
+        );
     }
 }
 
@@ -132,13 +135,24 @@ if($n_flash = count($adminFlashes)) {
     div#page {
         margin-top:'.(32 + $flashTotalHeight*$n_flash).'px !important;
     }
-    div#x2-gridview-top-bar-outer {
+    div.page-title-fixed-outer {
         position:fixed;
         top: '.(32 +$flashTotalHeight*$n_flash).'px;
         left: 0;
     }
+    div#x2-gridview-top-bar-outer.x2-gridview-fixed-top-bar-outer {
+        position:fixed;
+        top: '.(32 +$flashTotalHeight*$n_flash).'px;
+        left: 0;
+    }
+    div#top-flashes-container-outer {
+        top: '.(32 +$flashTotalHeight*$n_flash).'px;
+    }
+    #user-menu-2 {
+        top: '.($flashTotalHeight*$n_flash).'px;
+    }
     ';
-    foreach($adminFlashes as $index => $message) {
+    foreach($adminFlashes as $index => $flashInfo) {
         $themeCss .= "
         div.flash-message-$index {
                 top: ".(string)($index*$flashTotalHeight)."px;
@@ -176,65 +190,96 @@ usort ($modules, function ($a, $b) {
     }
 });
 
-$standardMenuItems = array();
-foreach($modules as $moduleItem){
-    if(($isAdmin || $moduleItem->adminOnly == 0) && $moduleItem->name != 'users'){
-        if($moduleItem->name !== 'document')
-            $standardMenuItems[$moduleItem->name] = $moduleItem->title;
-        else
-            $standardMenuItems[$moduleItem->title] = $moduleItem->title;
-    }
-}
-
 $defaultAction = 'index';
 
-foreach($standardMenuItems as $key => $value){
-    if ($key === 'x2Activity' && !$isGuest) {
-        $menuItems[$key] = array(
-            'label' => Yii::t('app', $value), 
+foreach($modules as $moduleItem){
+    if(!(($isAdmin || $moduleItem->adminOnly == 0) && $moduleItem->name != 'users')){
+        continue;
+    }
+    if ($moduleItem->name === 'document') { // legacy module type
+        $name = $moduleItem->title;
+        $title = $moduleItem->title;
+    } else {
+        $name = $moduleItem->name;
+        $title = $moduleItem->title;
+    }
+    if ($name === 'x2Activity' && !$isGuest) {
+        $menuItems[$name] = array(
+            'label' => Yii::t('app', $title), 
             'itemOptions' => array ('class' => 'top-bar-module-link'),
             'url' => array("/profile/activity"),
-            'active' => (strtolower($module) == strtolower($key)) ? true : null);
+            'active' => (strtolower($module) == strtolower($name)) ? true : null);
         continue;
     }  
 
-    $file = Yii::app()->file->set('protected/controllers/'.ucfirst($key).'Controller.php');
-    $action = ucfirst($key).ucfirst($defaultAction);
-    $authItem = $auth->getAuthItem($action);
-    $permission = Yii::app()->params->isAdmin || Yii::app()->user->checkAccess($action) || 
-        is_null($authItem);
-    if($file->exists){
-        if($permission){
-            $menuItems[$key] = array(
-                'label' => Yii::t('app', $value), 
-                'itemOptions' => array ('class' => 'top-bar-module-link'),
-                'url' => array("/$key/$defaultAction"),
-                'active' => (strtolower($module) == strtolower($key)) ? true : null);
+    if ($moduleItem->moduleType === 'module') { 
+        $file = Yii::app()->file->set('protected/controllers/'.ucfirst($name).'Controller.php');
+        $action = ucfirst($name).ucfirst($defaultAction);
+        $authItem = $auth->getAuthItem($action);
+        $permission = Yii::app()->params->isAdmin ||
+            is_null($authItem) ||
+            Yii::app()->user->checkAccess($action);
+        if($file->exists){
+            if($permission){
+                $menuItems[] = array(
+                    'label' => Yii::t('app', $title), 
+                    'itemOptions' => array ('class' => 'top-bar-module-link'),
+                    'url' => array("/$name/$defaultAction"),
+                    'active' => (strtolower($module) == strtolower($name)) ? true : null);
+            }
+        }elseif(is_dir('protected/modules/'.$name)){
+            if(!is_null($this->getModule()))
+                $module = $this->getModule()->id;
+            if($permission){
+                $active = (strtolower($module) == strtolower($name) && 
+                    (!isset($_GET['static']) || $_GET['static'] != 'true')) ? true : null;
+                 
+                $menuItems[] = array(
+                    'label' => Yii::t('app', $title), 
+                    'url' => array("/$name/$defaultAction"),
+                    'itemOptions' => array ('class' => 'top-bar-module-link'),
+                    'active' => $active,
+                );
+            }
+        } else {
+            $page = Docs::model()->findByAttributes(
+                array('name' => ucfirst(mb_ereg_replace('&#58;', ':', $title))));
+            if(isset($page) && Yii::app()->user->checkAccess('DocsView')){
+                $id = $page->id;
+                $menuItems[] = array(
+                    'label' => ucfirst($title), 
+                    'url' => array('/docs/'.$id.'?static=true'),
+                    'itemOptions' => array ('class' => 'top-bar-module-link'),
+                    'active' => Yii::app()->request->requestUri == 
+                        $scriptUrl.'/docs/'.$id.'?static=true' ? true : null);
+            }
         }
-    }elseif(is_dir('protected/modules/'.$key)){
-        if(!is_null($this->getModule()))
-            $module = $this->getModule()->id;
-        if($permission){
-            $active = (strtolower($module) == strtolower($key) && 
-                (!isset($_GET['static']) || $_GET['static'] != 'true')) ? true : null;
-             
-            $menuItems[$key] = array(
-                'label' => Yii::t('app', $value), 
-                'url' => array("/$key/$defaultAction"),
+    } elseif ($moduleItem->moduleType === 'link') {
+        if (isset ($moduleItem->linkHref)) {
+            $menuItems[] = array (
+                'label' => $moduleItem->title,
+                'url' => $moduleItem->linkHref,
                 'itemOptions' => array ('class' => 'top-bar-module-link'),
-                'active' => $active,
+                'linkOptions' => $moduleItem->linkOpenInNewTab ? 
+                    array ('target' => '_blank') : array (),
+                'active' => AuxLib::getRequestUrl () === $moduleItem->linkHref,
             );
         }
-    } else{
-        $page = Docs::model()->findByAttributes(
-            array('name' => ucfirst(mb_ereg_replace('&#58;', ':', $value))));
-        if(isset($page) && Yii::app()->user->checkAccess('DocsView')){
-            $id = $page->id;
-            $menuItems[$key] = array(
-                'label' => ucfirst($value), 'url' => array('/docs/'.$id.'?static=true'),
+    } elseif ($moduleItem->moduleType === 'recordLink') {
+        if (isset ($moduleItem->linkRecordType) && isset ($moduleItem->linkRecordId) &&
+            ($model = X2Model::model2 ($moduleItem->linkRecordType)) && 
+            ($record = $model->findByPk ($moduleItem->linkRecordId)) &&
+            $record->asa ('X2LinkableBehavior') &&
+            $record->isVisibleTo (Yii::app()->params->profile->user)) {
+
+            $menuItems[] = array (
+                'label' => $record->name,
+                'url' => $record->getUrl (),
                 'itemOptions' => array ('class' => 'top-bar-module-link'),
-                'active' => Yii::app()->request->requestUri == 
-                    $scriptUrl.'/docs/'.$id.'?static=true' ? true : null);
+                'linkOptions' => $moduleItem->linkOpenInNewTab ? 
+                    array ('target' => '_blank') : array (),
+                'active' => AuxLib::getRequestUrl () == $record->getUrl (),
+            );
         }
     }
 }
@@ -290,6 +335,8 @@ if(!Yii::app()->user->isGuest){
     $widgetMenu = "";
 }
 
+$usersIndexAccess = Yii::app()->user->checkAccess('UsersIndex');
+
 $userMenu = array(
     array(
         'label' => Yii::t('app', 'Admin'), 
@@ -312,7 +359,7 @@ $userMenu = array(
     array(
         'label' => Yii::t('app', 'Users'), 
         'url' => array('/users/users/admin'),
-        'visible' => $isAdmin,
+        'visible' => $isAdmin || $usersIndexAccess,
         'itemOptions' => array (
             'id' => 'admin-users-user-menu-link',
             'class' => 'user-menu-link',
@@ -321,7 +368,7 @@ $userMenu = array(
     array(
         'label' => Yii::t('app', 'Users'), 
         'url' => array('/profile/profiles'),
-        'visible' => !$isAdmin,
+        'visible' => !$isAdmin && !$usersIndexAccess,
         'itemOptions' => array (
             'id' => 'non-admin-users-user-menu-link',
             'class' => 'user-menu-link',
@@ -432,9 +479,10 @@ echo X2Html::openBodyTag ($preferences);
 <div id="page">
     <?php
     if(count($adminFlashes) > 0){
-        foreach($adminFlashes as $index => $message){
+        foreach($adminFlashes as $index => $flashInfo){
+            $classes = "admin-flash-message flash-message-$index ". $flashInfo['class'];
             echo CHtml::tag(
-                'div',array('class'=>"admin-flash-message flash-message-$index"),$message);
+                'div',array('class' => $classes),$flashInfo['message']);
         }
     } ?>
     <div id="header" <?php echo !$preferences['menuBgColor']? 'class="defaultBg"' : ''; ?>>

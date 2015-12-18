@@ -55,7 +55,7 @@
 <div class="form">
     <?php
     echo CHtml::beginForm();
-    echo CHtml::submitButton('Convert Templates', array('class' => 'x2-button'));
+    echo CHtml::submitButton(Yii::t('admin','Convert Templates'), array('class' => 'x2-button'));
     echo CHtml::endForm();
     ?>
 </div>

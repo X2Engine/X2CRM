@@ -227,6 +227,9 @@ class History extends X2Widget {
         // Register JS to make the history tabs update the history when selected.
         Yii::app()->clientScript->registerScriptFile(
                 Yii::app()->getBaseUrl() . '/js/ActionHistory.js');
+        Yii::app()->clientScript->registerScriptFile(
+                Yii::app()->getBaseUrl() . '/js/EnlargeableImage.js',
+                CClientScript::POS_END);
         Yii::app()->clientScript->registerScript('history-tabs', "
             x2.actionHistory = new x2.ActionHistory ({
                 relationshipFlag: {$this->relationships}

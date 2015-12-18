@@ -34,48 +34,63 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 
-// Yii::app()->clientScript->registerScriptFile(Yii::app()->getBaseUrl().'/js/multiselect/js/jquery-1.3.2.min.js');
-// Yii::app()->clientScript->registerScriptFile(Yii::app()->getBaseUrl().'/js/multiselect/js/jquery-ui-1.7.1.custom.min.js');
-Yii::app()->clientScript->registerScriptFile(Yii::app()->getBaseUrl().'/js/multiselect/js/ui.multiselect.js');
-Yii::app()->clientScript->registerCssFile(Yii::app()->getBaseUrl().'/js/multiselect/css/ui.multiselect.css','screen, projection');
-Yii::app()->clientScript->registerCss('multiselectCss',"
-.multiselect {
-	width: 460px;
-	height: 200px;
-}
-#switcher {
-	margin-top: 20px;
-}
-",'screen, projection');
-
-
+Yii::app()->clientScript->registerPackage ('multiselect');
+Yii::app()->clientScript->registerScriptFile(
+    Yii::app()->getBaseUrl ().'/js/ManageMenuItemsMultiselect.js', CClientScript::POS_END);
+Yii::app()->clientScript->registerCssFile(
+    Yii::app()->theme->baseUrl.'/css/views/admin/manageModules.css');
 Yii::app()->clientScript->registerScript('renderMultiSelect',"
 $(document).ready(function() {
-	 $('.multiselect').multiselect({searchable: false});
+	 $('#module-multiselect').manageMenuItemsMultiselect ({
+        searchable: false,
+        deletableOptions: ".CJSON::encode ($deletableOptions).",
+        translations: ".CJSON::encode (array (
+            'deleteModule' => Yii::t('app', 'Delete top bar link'),
+            'message' => Yii::t('app', 'Are you sure you want to delete this top bar link?'),
+            'title' => Yii::t('app', 'Delete top bar link?'),
+            'confirm' => Yii::t('app', 'Delete'),
+        ))."
+    });
 });
 ",CClientScript::POS_HEAD);
 ?>
 
-<div class="page-title"><h2><?php echo Yii::t('admin','Rearrange Main Menu Items'); ?></h2></div>
-<?php $form=$this->beginWidget('CActiveForm', array(
+<div class="page-title"><h2><?php 
+    echo CHtml::encode (Yii::t('admin','Manage Menu Items')); 
+?></h2></div>
+<?php 
+$form = $this->beginWidget ('CActiveForm', array (
 	'id'=>'manage-modules',
 	'enableAjaxValidation'=>false,
 )); 
+X2Html::getFlashes ();
 ?>
-<div class="form">
-<?php echo Yii::t('admin','Add, remove and reorder modules:'); ?>
+<div class="form" id='manage-menu-items-form-outer'>
+<?php 
+echo CHtml::encode (Yii::t('admin','Re-order, add, or remove top bar module links:')); 
+?>
 <br><br>
 <?php
 echo CHtml::hiddenField('formSubmit','1');
-echo CHtml::dropDownList('menuItems[]',$selectedItems,$menuItems,array('class'=>'multiselect','multiple'=>'multiple', 'size'=>8));
+echo CHtml::dropDownList(
+    'menuItems[]',
+    $selectedItems,
+    $menuItems,array(
+        'class'=>'x2-multiselect',
+        'id'=>'module-multiselect',
+        'multiple'=>'multiple',
+        'data-skip-auto-init'=>'1',
+        'size'=>8
+    )
+);
 ?>
 <br>
 <div class="row buttons">
-	<?php echo CHtml::submitButton(Yii::t('app','Submit'),array('class'=>'x2-button')); ?>
+	<?php 
+    echo CHtml::submitButton(Yii::t('app','Submit'),array('class'=>'x2-button')); 
+    ?>
 </div>
 </div>
-<?php $this->endWidget(); ?>
-
-
-
-
+<?php 
+$this->endWidget(); 
+?>

@@ -36,45 +36,14 @@
 @import "standards";
 @import "colors";
 @import "login-shared";
+@import "mobileColors";
+
+.x2-remote-page {
 
 /* narrow header */
 
-.ui-content {
-    padding-bottom: 35px !important;
-}
-
 .ui-header {
 	font-size: 12px !important;
-}
-
-/* style text in footer */
-
-.ui-footer {
-	text-shadow: none !important;
-	font-weight: normal !important;
-	font-size: 12px !important;
-	background: none !important;
-    border: none !important;
-    opacity: 0.5;
-    color: white;
-    position: absolute;
-    bottom: 0px;
-    width: 100%;
-
-    & > p {
-        float: left;
-    }
-
-    #logo-container {
-        //display: none;
-        float: right;
-        margin-right: 8px;
-    }
-    .ui-link {
-		font-weight: normal !important;
-		// color: #3090D1 !important;
-	}
-
 }
 
 
@@ -82,40 +51,16 @@
 /* remove text shadow from footer text */
 
 .ui-loader {
-	background: #5C5C5C !important;
+	background: none !important;
+    border: none !important;
 	color: #fff;
 	font-size: 12px !important;
 	text-shadow: none !important;
-	background: -moz-linear-gradient(top, #5c5c5c 0%, #1c1c1c 100%) !important;
-	background: -webkit-gradient(0% 0%, 0% 100%, from(#5c5c5c), to(#1c1c1c)) !important;
-	background: -webkit-linear-gradient(top, #5c5c5c 0%, #1c1c1c 100%) !important;
-	background: -o-linear-gradient(top, #5c5c5c 0%, #1c1c1c 100%) !important;
-	background: -ms-linear-gradient(top, #5c5c5c 0%, #1c1c1c 100%) !important;
-	background: linear-gradient(to bottom, #5c5c5c 0%, #1c1c1c 100%) !important;
-}
-
-#site-login, .ui-page, .ui-body-a:not(.ui-loader) { 
-    color: white;
-    background: radial-gradient($defaultBgColor, darken($defaultBgColor, 10%));
-    /* @theme background: background */
-    text-shadow: none;
-	.ui-content[role="main"] {
-		// padding: -0px 10% !important;
-	}
-    
-    #login-form {
-    }
-
 }
 
 .ui-input-text {
-    width: 100% !important;
     box-sizing: border-box;
-    background: none !important;
     input {
-        height: 38px !important;
-        box-shadow: none !important;
-        background: none !important;
         // width: 100% !important;
     }
 }        
@@ -131,7 +76,6 @@
 
 .login-row {
     width: 100%;
-    margin-top: 10px !important;
 
     td {
         padding: 0px;
@@ -154,10 +98,8 @@
     width: 100%;
     margin-top: 15px !important;
     margin-bottom: 15px !important;
-    height: 23px !important;
 
     .ui-checkbox {
-        height: 30px !important;
         label {
             margin: 0px !important;
         }
@@ -234,5 +176,59 @@
         height: 100%;
         width: $smallWidth;
     }
+
+}
+
+.ui-body-a, .ui-page-theme-a .ui-body-inherit, html .ui-bar-a .ui-body-inherit, html .ui-body-a .ui-body-inherit, html body .ui-group-theme-a .ui-body-inherit, html .ui-panel-page-container-a {
+    text-shadow: none;
+}
+
+
+.ui-page-theme-a .ui-btn,
+.ui-btn {
+    font-family: Helvetica, Arial, sans-serif;
+    .ui-link-inherit {
+        color: black;
+    }
+    a.ui-link {
+        color: #7cc4e7;
+        &:visited, &:hover, &:active {
+            color: #2489ce;
+        }
+    }
+    input, select, textarea, button {
+        font-family: Helvetica, Arial, sans-serif;
+    }
+}
+
+.ui-input-btn input:not(.no-css-override) {
+    position: static;
+    top: 0;
+    left: 0;
+    width: auto;
+    height: auto;
+    padding: inherit;
+}
+
+.ui-input-btn {
+    input {
+        margin: 0;
+        min-height: 2.2em;
+        text-align: left;
+        border: 0;
+        background: transparent none;
+        -webkit-appearance: none;
+        -webkit-border-radius: inherit;
+        border-radius: inherit;
+    }
+}
+
+
+.ui-page-theme-a .ui-btn:hover, html .ui-bar-a .ui-btn:hover, html .ui-body-a .ui-btn:hover, html body .ui-group-theme-a .ui-btn:hover, html head + body .ui-btn.ui-btn-a:hover {
+    text-shadow: none !important;
+}
+.ui-page-theme-a .ui-btn, html .ui-bar-a .ui-btn, html .ui-body-a .ui-btn, html body .ui-group-theme-a .ui-btn, html head + body .ui-btn.ui-btn-a, .ui-page-theme-a .ui-btn:visited, html .ui-bar-a .ui-btn:visited, html .ui-body-a .ui-btn:visited, html body .ui-group-theme-a .ui-btn:visited, html head + body .ui-btn.ui-btn-a:visited {
+    text-shadow: none !important;
+}
 
 }

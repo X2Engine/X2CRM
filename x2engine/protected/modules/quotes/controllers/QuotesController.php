@@ -51,6 +51,16 @@ class QuotesController extends x2base {
 
 	public $modelClass = 'Quote';
 
+    public function behaviors () {
+         return array_merge (parent::behaviors (), array (
+            'X2MobileControllerBehavior' => array(
+                'class' => 
+                    'application.modules.mobile.components.behaviors.'.
+                    'X2MobileQuotesControllerBehavior'
+            ),
+         ));
+    }
+
 	/**
 	 * Displays a particular model.
 	 * @param integer $id the ID of the model to be displayed
@@ -142,18 +152,7 @@ class QuotesController extends x2base {
                             $recordId = $_GET['recordId'];
                             $recordType = $_GET['recordType'];
                             $relatedModel = X2Model::model ($_GET['recordType'])->findByPk ($recordId);
-			   	            // tie record to quote
-                            if ($relatedModel) {
-                                $relate = new Relationships;
-                                $relate->firstId = $model->id;
-                                $relate->firstType = "Quote";
-                                $relate->secondId = $relatedModel->id;
-                                $relate->secondType = $recordType;
-                                $relate->save();
-                                $model->createAssociatedAction (
-                                    X2Model::getAssociationType (get_class ($relatedModel)), 
-                                    $relatedModel->id);
-                            }
+                            $model->createRelationship($relatedModel);
                         }
 						return;
                     }
@@ -396,38 +395,7 @@ class QuotesController extends x2base {
 	    $model->lastUpdated = time();
 	    $model->updatedBy = Yii::app()->user->name;
 
-	    // $changes = $this->calculateChanges($oldAttributes, $model->attributes, $model);
-	    // $model = $this->updateChangelog($model,$changes);
-
 	    if($model->save()) {
-
-	    	// update contacts
-	    	/*
-	    	$relationships = Relationships::model()->findAllByAttributes(
-	    		array(
-	    			'firstType'=>'quotes',
-	    			'firstId'=>$model->id,
-	    			'secondType'=>'contacts'
-	    		)
-	    	);
-	    	foreach($relationships as $relate)
-	    		if($key = array_search($relate->secondId, $contacts))
-	    			unset($contacts[$key]);
-	    		else
-	    			$relate->delete();
-
-	   		// tie new contacts to quote
-	   		/*
-	   		foreach($contacts as $contact) {
-	   			$relate = new Relationships;
-	   			$relate->firstId = $model->id;
-	   			$relate->firstType = "quotes";
-	   			$relate->secondId = $contact;
-	   			$relate->secondType = "contacts";
-	   			$relate->save();
-	   		}
-	   		*/
-
 	   		// update products
 	   		$orders = QuoteProduct::model()->findAllByAttributes(array('quoteId'=>$model->id));
 	   		foreach($orders as $order) {

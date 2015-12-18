@@ -715,6 +715,10 @@ class Formatter {
         return date ('Y') === date ('Y', $date);
     }
 
+//    public static function isThisWeek ($date) {
+//        return date ('w') === date ('w', $date);
+//    }
+
     public static function formatDateDynamic ($date) {
         if (self::isToday ($date)) {
             return Yii::app()->dateFormatter->format ('h:mm a', $date);
@@ -760,6 +764,19 @@ class Formatter {
                     Yii::app()->locale->getTimeFormat('short'), 
                 $timestamp);
         }
+    }
+
+    /**
+     * Adjust abbreviated months for French locale: The trailing . is removed
+     * from the month names in CDateTimeParser.parseMonth(), resulting in French
+     * DateTimes failing to parse.
+     */
+    public static function getPlainAbbrMonthNames() {
+        $months = array_map (
+            function($e) { return rtrim($e,'.'); },
+            Yii::app()->getLocale()->getMonthNames ('abbreviated')
+        );
+        return array_values ($months);
     }
 
     /**

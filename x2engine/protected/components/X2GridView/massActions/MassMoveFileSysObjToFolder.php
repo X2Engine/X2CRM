@@ -34,7 +34,7 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 
-class MassMoveFileSysObjToFolder extends MassAction {
+class MassMoveFileSysObjToFolder extends BaseDocsMassAction {
 
     public $hasButton = true;
 
@@ -68,6 +68,8 @@ class MassMoveFileSysObjToFolder extends MassAction {
         
         echo "
             <a href='#' title='".CHtml::encode ($this->getLabel ())."'
+             data-mass-action='".get_class ($this)."'
+             data-allow-multiple='".($this->allowMultiple ? 'true' : 'false')."'
              class='fa fa-folder fa-lg mass-action-button x2-button mass-action-button-".
                 get_class ($this)."'>
             </a>";
@@ -91,7 +93,7 @@ class MassMoveFileSysObjToFolder extends MassAction {
                 'js' => array(
                     'js/X2GridView/MassMoveFileSysObjToFolder.js',
                 ),
-                'depends' => array ('X2MassAction'),
+                'depends' => array ('X2MassAction', 'BaseDocsMassActionJS'),
             ),
         ));
     }
@@ -118,8 +120,11 @@ class MassMoveFileSysObjToFolder extends MassAction {
             $destination = DocFolders::model ()->findByPk ($targetFolder);
             if (!$destination)
                 throw new CHttpException (400, Yii::t('app', 'Folder not found'));
-            if (!Yii::app()->controller->checkPermissions ($destination, 'edit'))
-                Yii::app()->controller->denied ();
+            if (!Yii::app()->controller->checkPermissions ($destination, 'edit')) {
+                self::$errorFlashes[] = 
+                    Yii::t('app', 'You do not have permission to edit this folder.');
+                return 0;
+            }
         }
 
         $objCount = count ($gvSelection);
@@ -145,7 +150,7 @@ class MassMoveFileSysObjToFolder extends MassAction {
                     ));
                 continue;
             }
-            if (!Yii::app()->controller->checkPermissions ($obj)) {
+            if (!Yii::app()->controller->checkPermissions ($obj, 'edit')) {
                 self::$errorFlashes[] = 
                     Yii::t('app', 'You do not have permission to edit this {type}.', array (
                         '{type}' => $type === 'doc' ? ucfirst ($type) : $type,

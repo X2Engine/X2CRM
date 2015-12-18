@@ -39,7 +39,13 @@ class X2ActiveRecordFieldFormatter extends FieldFormatterBase {
     public function renderAttribute(
         $fieldName, $makeLinks = true, $textOnly = true, $encode = true) {
 
-        return $this->render ($this->owner->$fieldName, $encode);
+        $renderByNameFn = 'render'.ucfirst ($fieldName);
+        if (method_exists ($this, $renderByNameFn)) {
+
+            return $this->$renderByNameFn ($fieldName, $makeLinks, $textOnly, $encode);
+        } else {
+            return $this->render ($this->owner->$fieldName, $encode);
+        }
     }
 
 }

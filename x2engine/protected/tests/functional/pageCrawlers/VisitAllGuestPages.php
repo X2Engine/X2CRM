@@ -34,6 +34,8 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 
+Yii::import('application.tests.functional.pageCrawlers.VisitAllPagesTest');
+
 class VisitAllGuestPages extends VisitAllPagesTest {
 
     public $autoLogin = false;
@@ -42,7 +44,7 @@ class VisitAllGuestPages extends VisitAllPagesTest {
         $this->visitPages (array (
             'site/resetPassword',
             'site/anonHelp',
-            'mobile/site/login',
+            'mobile/login',
         ));
     }
 

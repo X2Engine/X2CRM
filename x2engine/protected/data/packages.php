@@ -129,7 +129,14 @@ return array(
     'X2Widget' => array(
         'baseUrl' => Yii::app()->baseUrl.'/js',
         'js' => array(
-            'js/X2Widget.js',
+            'X2Widget.js',
         ),
+    ),
+
+    'multiselect' => array (
+        'baseUrl' => Yii::app()->baseUrl.'/js/multiselect', 
+        'js' => array('js/ui.multiselect.js'),
+        'css' => array('css/ui.multiselect.css'),
+        'depends' => array ('jquery.ui'),
     ),
 );

@@ -58,4 +58,6 @@
   'Unable to load selected mailbox' => '无法加载所选邮箱',
   'Invalid folder specified' => '无效的文件夹指定',
   'Auto-log outbound emails' => '自动登录站电子邮件',
+  'Auto-log inbound emails' => '自动记录入站邮件',
+  'From' => '从',
 );

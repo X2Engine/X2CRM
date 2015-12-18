@@ -57,7 +57,7 @@
             array(
                 'id'=>'powered-by-x2engine',
             )
-        ),'http://www.x2engine.com/'); 
+        ),'http://www.x2crm.com/'); 
     ?>
 	<div id="response-time">
 	<?php

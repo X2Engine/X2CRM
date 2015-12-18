@@ -58,4 +58,6 @@
   'Unable to load selected mailbox' => 'Impossibile caricare casella selezionata',
   'Invalid folder specified' => 'La cartella specificata non valida',
   'Auto-log outbound emails' => 'Auto-log email in uscita',
+  'Auto-log inbound emails' => 'Auto-log email in entrata',
+  'From' => 'Da parte di',
 );

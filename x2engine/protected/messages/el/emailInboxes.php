@@ -58,4 +58,6 @@
   'Unable to load selected mailbox' => 'Δεν είναι δυνατή η φόρτωση επιλεγμένης θυρίδας',
   'Invalid folder specified' => 'Μη έγκυρο φάκελο που καθορίζεται',
   'Auto-log outbound emails' => 'Auto-log εξερχόμενων e-mail',
+  'Auto-log inbound emails' => 'Auto-log εισερχόμενα μηνύματα ηλεκτρονικού ταχυδρομείου',
+  'From' => 'Από',
 );

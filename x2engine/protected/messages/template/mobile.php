@@ -9,7 +9,11 @@
   'Search for a Contact' => '',
   'Go to Full Site' => '',
   'Who\'s Online' => '',
-  'Back' => '',
   'No documents available.' => '',
   'No social items available.' => '',
+  'Change web address' => '',
+  'Legal' => '',
+  'Add a post...' => '',
+  'Activities' => '',
+  'Dashboard' => '',
 );

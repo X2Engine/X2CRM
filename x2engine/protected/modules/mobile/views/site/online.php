@@ -37,6 +37,10 @@
 $menuItems = array(
             array('label' => Yii::t('app', 'Main Menu'), 'url' => array('/mobile/site/home')),
         );
+?>
+<div>
+<?php
+
 
 $this->widget('MenuList', array(
         'id' => 'main-menu',
@@ -53,3 +57,4 @@ for ($i = 0; $i < $usersLength; ++$i){
 }
 
 ?>
+</div>

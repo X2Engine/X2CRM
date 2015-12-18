@@ -304,7 +304,7 @@ abstract class SortableWidget extends X2Widget {
                         // prefix widget class name with custom module model name and a delimiter
                         $cache[$widgetType][$modelName.'::TemplatesGridViewProfileWidget'] =
                             Yii::t(
-                                'app', '{modelName} Summary', array ('{modelName}' => $modelName));
+                                'app', '{modelName} Summary', array ('{modelName}' => Modules::displayName(true, $module->name)));
                     }
                 }
             }
@@ -895,6 +895,19 @@ abstract class SortableWidget extends X2Widget {
         }
     }
 
+    private $_minimized;
+    public function getMinimized () {
+        if (!isset ($this->_minimized)) {
+            $this->_minimized = self::getJSONProperty (
+                $this->profile, 'minimized', $this->widgetType, $this->widgetUID);
+        }
+        return $this->_minimized;
+    }
+
+    public function setMinimized ($minimized) {
+        $this->_minimized = $minimized;
+    }
+
     /**
      * Renders widget contents contained in the view file pointed to by the viewFile property. 
      * This gets called if {widgetContents} is contained in the template string.
@@ -911,24 +924,26 @@ abstract class SortableWidget extends X2Widget {
             get_called_class ().$this->widgetUID.'Script', $this->setupScript, 
             ($this->isAjaxRequest ? CClientScript::POS_END: CClientScript::POS_BEGIN));
 
-        if ($this->hasError ()) {
-            Yii::app()->controller->renderPartial (
-                'application.components.sortableWidget.views._widgetError', array (
-                'errors' => $this->_errors,
-            ));
-            return;
-        }
-
-        $minimized = self::getJSONProperty (
-            $this->profile, 'minimized', $this->widgetType, $this->widgetUID);
+        $minimized = $this->getMinimized ();
         echo "<div id='".get_called_class ()."-widget-content-container-".$this->widgetUID."'".
             ($minimized ? " style='display: none;'" : '').">";
-        if ($this->viewFile) {
+
+        if ($this->hasError ()) {
+            $this->renderErrors ();
+        } elseif ($this->viewFile) {
             $this->render (
                 'application.components.sortableWidget.views.'.$this->viewFile,
                 $this->getViewFileParams ());
         }
+
         echo "</div>";
+    }
+
+    public function renderErrors () {
+        Yii::app()->controller->renderPartial (
+            'application.components.sortableWidget.views._widgetError', array (
+            'errors' => $this->_errors,
+        ));
     }
 
     /**

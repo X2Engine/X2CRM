@@ -37,8 +37,10 @@
 class X2ActiveRecord extends CActiveRecord {
 
     protected $fieldFormatterClass = 'X2ActiveRecordFieldFormatter';
+    protected $fieldInputRendererClass;
 
     private $_formatter;
+    private $_inputRenderer;
 
     public function rules () {
         $rules = $this->getBehaviorRules ();
@@ -82,6 +84,29 @@ class X2ActiveRecord extends CActiveRecord {
             ));
         }
         return $this->_formatter;
+    }
+
+    public function setInputRenderer ($class) {
+        if (is_string ($class)) {
+            $this->_inputRenderer = Yii::createComponent (array (
+                'class' => $class,
+                'owner' => $this,
+            ));
+        } else if ($class instanceof FieldInputRenderer) {
+            $this->_inputRenderer = $class;
+        } else {
+            throw new CException ('Invalid input renderer object');
+        }
+    }
+
+    public function getInputRenderer () {
+        if (!isset ($this->_inputRenderer) && $this->fieldInputRendererClass) {
+            $this->_inputRenderer = Yii::createComponent (array (
+                'class' => $this->fieldInputRendererClass,
+                'owner' => $this,
+            ));
+        }
+        return $this->_inputRenderer;
     }
 
     /**

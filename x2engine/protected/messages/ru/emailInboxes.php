@@ -7,8 +7,6 @@
   'Message "{subject}" already associated with {contact}' => 'Сообщение {subject} уже связан с {contact}',
   'Message not found' => 'Сообщение не нашли',
   'Unable to retrieve the specified message' => 'Невозможно получить указанное сообщение',
-  'From:' => 'Из:',
-  'To:' => 'Для:',
   'Cc:' => 'Копия:',
   'Bcc:' => 'Копия:',
   'On:' => 'На:',
@@ -60,4 +58,6 @@
   'Unable to load selected mailbox' => 'Невозможно загрузить выбранный почтовый ящик',
   'Invalid folder specified' => 'Указан неверный папки',
   'Auto-log outbound emails' => 'Авто-авторизуйтесь исходящих электронных писем',
+  'Auto-log inbound emails' => 'Авто-авторизуйтесь входящие электронные письма',
+  'From' => 'Из',
 );

@@ -496,7 +496,7 @@ class InlineEmail extends CFormModel {
         if(!isset($this->_recipientContacts)){
             $contacts = array();
             foreach($this->recipients as $target){
-                $contacts[$target[1]] = Contacts::model()->findByAttributes(array('email' => $target[1]));
+                $contacts[$target[1]] = Contacts::model()->findByEmail($target[1]);
             }
             $this->_recipientContacts = $contacts;
         }
@@ -749,6 +749,15 @@ class InlineEmail extends CFormModel {
         }
     }
 
+    public static function extractTrackingUid($body) {
+        $pattern = self::insertedPattern('track', '(<img.*\/>)', 1, 'u');
+        if (preg_match ($pattern, $body, $matchImg)) {
+            if (preg_match (self::UIDREGEX, $matchImg[1], $matchId)) {
+                return $matchId[1];
+            }
+        }
+    }
+
     /**
      * Inserts something near the end of the body in the HTML email.
      *
@@ -886,6 +895,7 @@ class InlineEmail extends CFormModel {
             $action->completeDate = $now;
             $action->complete = 'Yes';
             $action->actionDescription = $emailRecordBody;
+            
 
             // These attributes are context-sensitive and subject to change:
             $action->associationId = $model->id;

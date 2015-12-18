@@ -39,12 +39,26 @@ Yii::import ('application.models.X2Model');
  * Model for x2_failed_logins table
  */
 class FailedLogins extends CActiveRecord {
+    public static $defaultMaxFailedLogins = 5000;
+
     public static function model($className = __CLASS__) {
         return parent::model($className);
     }
 
     public function relations() {
         return array();
+    }
+
+    public function behaviors() {
+        $max = self::$defaultMaxFailedLogins;
+        
+        return array(
+            'RecordLimitBehavior' => array(
+                'class' => 'application.components.RecordLimitBehavior',
+                'limit' => $max,
+                'timestampField' => 'lastAttempt',
+            ),
+        );
     }
 
     public function tableName() {
@@ -57,6 +71,13 @@ class FailedLogins extends CActiveRecord {
             'attempts' => Yii::t('admin', 'Number of Attempts'),
             'lastAttempt' => Yii::t('admin', 'Last Attempt'),
         );
+    }
+
+    public function findActiveByIp ($ip) {
+        return self::model()->findByAttributes (array(
+            'IP' => $ip,
+            'active' => true,
+        ));
     }
 }
 

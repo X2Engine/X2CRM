@@ -58,4 +58,6 @@
   'Unable to load selected mailbox' => '선택한 사서함을로드 할 수 없습니다',
   'Invalid folder specified' => '잘못된 폴더 지정',
   'Auto-log outbound emails' => '아웃 바운드 이메일을 자동 로그',
+  'Auto-log inbound emails' => '인바운드 이메일을 자동 로그',
+  'From' => '에서',
 );

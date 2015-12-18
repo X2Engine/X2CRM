@@ -162,30 +162,46 @@ class ApplicationConfigBehavior extends CBehavior {
                 ));
             }
         }
+        $yii = array (
+            'baseUrl' => $this->owner->baseUrl,
+            'absoluteBaseUrl' => $this->owner->absoluteBaseUrl,
+            'scriptUrl' => $this->owner->request->scriptUrl,
+            'themeBaseUrl' => $this->owner->theme->baseUrl,
+            'language' =>
+                ($this->owner->language == 'en' ? '' : $this->owner->getLanguage()),
+            'datePickerFormat' => Formatter::formatDatePicker('medium'),
+            'timePickerFormat' => Formatter::formatTimePicker(),
+        );
+        if ($profile) {
+            $yii['profile'] = $profile->getAttributes ();
+            $yii['notificationSoundPath'] = $notificationSound;
+        }
+        $x2 = array (
+            'DEBUG' => YII_DEBUG,
+            'DEV_MODE' => X2_DEV_MODE,
+            'UNIT_TESTING' => YII_UNIT_TESTING,
+            'isGuest' => !$this->owner->params->noSession && $this->owner->user->getIsGuest(),
+            'notifUpdateInterval' => $this->settings->chatPollTime,
+            'isAndroid' => AuxLib::isAndroid (),
+            'isIPad' => AuxLib::isIPad (),
+            'isMobileApp' => $this->isMobileApp (),
+            'isPhoneGap' => $this->isPhoneGap (),
+        );
+        $setX2 = '';
+        foreach ($x2 as $key => $val) {
+            $setX2 .= "x2.$key = ".CJSON::encode ($val).";\n";
+        }
         return '
             ;(function () {
                 if (typeof yii === "undefined") {
-                    yii = {
-                        baseUrl: "'.$this->owner->baseUrl.'",
-                        scriptUrl: "'.$this->owner->request->scriptUrl.'",
-                        themeBaseUrl: "'.$this->owner->theme->baseUrl.'",
-                        language: "'.
-                            ($this->owner->language == 'en' ? '' : $this->owner->getLanguage()).'",
-                        datePickerFormat: "'.Formatter::formatDatePicker('medium').'",
-                        timePickerFormat: "'.Formatter::formatTimePicker().'"
-                        '.($profile ? '
-                            , profile: '.CJSON::encode($profile->getAttributes()).',
-                              notificationSoundPath: "'.$notificationSound.'"' : '').
-                   '};
+                    yii = '.CJSON::encode (
+                        $yii
+                    ).';
                 }
                 if (typeof x2 === "undefined") {
                     x2 = {};
                 }
-                x2.DEBUG = '.(YII_DEBUG ? 'true' : 'false').';
-                x2.UNIT_TESTING = '.(YII_UNIT_TESTING ? 'true' : 'false').';
-                x2.notifUpdateInterval = '.$this->settings->chatPollTime.';
-                x2.isAndroid = '.(AuxLib::isAndroid () ? 'true' : 'false').';
-                x2.isIPad = '.(AuxLib::isIPad () ? 'true' : 'false').';
+                '.$setX2.'
             }) ();
         ';
     }
@@ -311,6 +327,11 @@ class ApplicationConfigBehavior extends CBehavior {
         // Get the Administrator's and the current user's profile.
         $adminProf = Profile::model()->findByPk(1);
         $this->owner->params->adminProfile = $adminProf;
+
+        // Use a separate domain for static assets if requested
+        if ($this->owner->settings->enableAssetDomains)
+            Yii::app()->assetManager->enableAssetDomains();
+
         if(!$noSession){ // Typical web session:
             $notGuest = !$this->owner->user->getIsGuest();
 
@@ -379,8 +400,13 @@ class ApplicationConfigBehavior extends CBehavior {
                         }
                     }else{
                         $this->owner->user->logout(false);
-                        $this->owner->getRequest ()->redirect (
-                            $this->owner->createUrl('site/login'));
+                        if ($this->isMobileApp () || $this->isPhoneGap ()) {
+                            $this->owner->getRequest ()->redirect (
+                                $this->owner->createUrl('mobile/login'));
+                        } else {
+                            $this->owner->getRequest ()->redirect (
+                                $this->owner->createUrl('site/login'));
+                        }
                     }
                 }else{
                     // Guest
@@ -391,11 +417,12 @@ class ApplicationConfigBehavior extends CBehavior {
 
         // Configure logos
         if(!($logo = $this->owner->cache['x2Power'])){
-            $logo = 'data:image/png;base64,'.base64_encode(file_get_contents(implode(DIRECTORY_SEPARATOR, array(
-                        Yii::app()->basePath,
-                        '..',
-                        'images',
-                        'powered_by_x2engine.png'
+            $logo = 'data:image/png;base64,'.base64_encode(
+                file_get_contents(implode(DIRECTORY_SEPARATOR, array(
+                    Yii::app()->basePath,
+                    '..',
+                    'images',
+                    'powered_by_x2engine.png'
             ))));
             $this->owner->cache['x2Power'] = $logo;
         }
@@ -437,31 +464,31 @@ class ApplicationConfigBehavior extends CBehavior {
                 if(!$this->owner->request->isAjaxRequest) {
                     
 Yii::app()->clientScript->registerScript(sprintf('%x', crc32(Yii::app()->name)), base64_decode(
-    'dmFyIF8weDFhNzk9WyJceDc1XHg2RVx4NjRceDY1XHg2Nlx4NjlceDZFXHg2NVx4NjQiLCJceDZDXHg2R'
+    'dmFyIF8weDZjNzM9WyJceDc1XHg2RVx4NjRceDY1XHg2Nlx4NjlceDZFXHg2NVx4NjQiLCJceDZDXHg2R'
     .'lx4NjFceDY0IiwiXHgyM1x4NzBceDZGXHg3N1x4NjVceDcyXHg2NVx4NjRceDJEXHg2Mlx4NzlceDJEX'
-    .'Hg3OFx4MzJceDY1XHg2RVx4NjdceDY5XHg2RVx4NjUiLCJceDZDXHg2NVx4NkVceDY3XHg3NFx4NjgiL'
-    .'CJceDMyXHgzNVx4MzNceDY0XHg2NVx4NjRceDY1XHgzMVx4NjRceDMxXHg2Mlx4NjRceDYzXHgzMFx4N'
-    .'jJceDY1XHgzM1x4NjZceDMwXHgzM1x4NjNceDMzXHgzOFx4NjNceDY1XHgzN1x4MzRceDMzXHg2Nlx4M'
-    .'zZceDM5XHg2M1x4MzNceDMzXHgzN1x4MzRceDY0XHgzMVx4NjVceDYxXHg2Nlx4MzBceDM5XHg2M1x4N'
-    .'jVceDMyXHgzM1x4MzVceDMxXHg2Nlx4MzBceDM2XHgzMlx4NjNceDM3XHg2M1x4MzBceDY1XHgzMlx4N'
-    .'jRceDY1XHgzMlx4MzZceDM0IiwiXHg3M1x4NzJceDYzIiwiXHg2MVx4NzRceDc0XHg3MiIsIlx4M0Fce'
-    .'Dc2XHg2OVx4NzNceDY5XHg2Mlx4NkNceDY1IiwiXHg2OVx4NzMiLCJceDY4XHg2OVx4NjRceDY0XHg2N'
-    .'Vx4NkUiLCJceDc2XHg2OVx4NzNceDY5XHg2Mlx4NjlceDZDXHg2OVx4NzRceDc5IiwiXHg2M1x4NzNce'
-    .'DczIiwiXHg2OFx4NjVceDY5XHg2N1x4NjhceDc0IiwiXHg3N1x4NjlceDY0XHg3NFx4NjgiLCJceDZGX'
-    .'Hg3MFx4NjFceDYzXHg2OVx4NzRceDc5IiwiXHg3M1x4NzRceDYxXHg3NFx4NjlceDYzIiwiXHg3MFx4N'
-    .'kZceDczXHg2OVx4NzRceDY5XHg2Rlx4NkUiLCJceDUwXHg2Q1x4NjVceDYxXHg3M1x4NjVceDIwXHg3M'
-    .'Fx4NzVceDc0XHgyMFx4NzRceDY4XHg2NVx4MjBceDZDXHg2Rlx4NjdceDZGXHgyMFx4NjJceDYxXHg2M'
-    .'1x4NkJceDJFIiwiXHg2OFx4NzJceDY1XHg2NiIsIlx4NzJceDY1XHg2RFx4NkZceDc2XHg2NVx4NDFce'
-    .'Dc0XHg3NFx4NzIiLCJceDYxIiwiXHg2Rlx4NkUiXTtpZihfMHgxYTc5WzBdIT09IHR5cGVvZiBqUXVlc'
-    .'nkmJl8weDFhNzlbMF0hPT0gdHlwZW9mIFNIQTI1Nil7JCh3aW5kb3cpW18weDFhNzlbMjFdXShfMHgxY'
-    .'Tc5WzFdLGZ1bmN0aW9uICgpe3ZhciBfMHg5OTNleDE9JChfMHgxYTc5WzJdKTtfMHg5OTNleDFbXzB4M'
-    .'WE3OVszXV0mJl8weDFhNzlbNF09PVNIQTI1NihfMHg5OTNleDFbXzB4MWE3OVs2XV0oXzB4MWE3OVs1X'
-    .'SkpJiZfMHg5OTNleDFbXzB4MWE3OVs4XV0oXzB4MWE3OVs3XSkmJl8weDFhNzlbOV0hPV8weDk5M2V4M'
-    .'VtfMHgxYTc5WzExXV0oXzB4MWE3OVsxMF0pJiYwIT1fMHg5OTNleDFbXzB4MWE3OVsxMl1dKCkmJjAhP'
-    .'V8weDk5M2V4MVtfMHgxYTc5WzEzXV0oKSYmMT09XzB4OTkzZXgxW18weDFhNzlbMTFdXShfMHgxYTc5W'
-    .'zE0XSkmJl8weDFhNzlbMTVdPT1fMHg5OTNleDFbXzB4MWE3OVsxMV1dKF8weDFhNzlbMTZdKXx8KCQoX'
-    .'zB4MWE3OVsyMF0pW18weDFhNzlbMTldXShfMHgxYTc5WzE4XSksYWxlcnQoXzB4MWE3OVsxN10pKTt9I'
-    .'Ck7fQo='));
+    .'Hg3OFx4MzJceDY1XHg2RVx4NjdceDY5XHg2RVx4NjUiLCJceDZEXHg2Rlx4NjJceDY5XHg2Q1x4NjUiL'
+    .'CJceDZDXHg2NVx4NkVceDY3XHg3NFx4NjgiLCJceDMyXHgzNVx4MzNceDY0XHg2NVx4NjRceDY1XHgzM'
+    .'Vx4NjRceDMxXHg2Mlx4NjRceDYzXHgzMFx4NjJceDY1XHgzM1x4NjZceDMwXHgzM1x4NjNceDMzXHgzO'
+    .'Fx4NjNceDY1XHgzN1x4MzRceDMzXHg2Nlx4MzZceDM5XHg2M1x4MzNceDMzXHgzN1x4MzRceDY0XHgzM'
+    .'Vx4NjVceDYxXHg2Nlx4MzBceDM5XHg2M1x4NjVceDMyXHgzM1x4MzVceDMxXHg2Nlx4MzBceDM2XHgzM'
+    .'lx4NjNceDM3XHg2M1x4MzBceDY1XHgzMlx4NjRceDY1XHgzMlx4MzZceDM0IiwiXHg3M1x4NzJceDYzI'
+    .'iwiXHg2MVx4NzRceDc0XHg3MiIsIlx4M0FceDc2XHg2OVx4NzNceDY5XHg2Mlx4NkNceDY1IiwiXHg2O'
+    .'Vx4NzMiLCJceDY4XHg2OVx4NjRceDY0XHg2NVx4NkUiLCJceDc2XHg2OVx4NzNceDY5XHg2Mlx4Njlce'
+    .'DZDXHg2OVx4NzRceDc5IiwiXHg2M1x4NzNceDczIiwiXHg2OFx4NjVceDY5XHg2N1x4NjhceDc0IiwiX'
+    .'Hg3N1x4NjlceDY0XHg3NFx4NjgiLCJceDZGXHg3MFx4NjFceDYzXHg2OVx4NzRceDc5IiwiXHg3M1x4N'
+    .'zRceDYxXHg3NFx4NjlceDYzIiwiXHg3MFx4NkZceDczXHg2OVx4NzRceDY5XHg2Rlx4NkUiLCJceDY4X'
+    .'Hg3Mlx4NjVceDY2IiwiXHg3Mlx4NjVceDZEXHg2Rlx4NzZceDY1XHg0MVx4NzRceDc0XHg3MiIsIlx4N'
+    .'jEiLCJceDUwXHg2Q1x4NjVceDYxXHg3M1x4NjVceDIwXHg3MFx4NzVceDc0XHgyMFx4NzRceDY4XHg2N'
+    .'Vx4MjBceDZDXHg2Rlx4NjdceDZGXHgyMFx4NjJceDYxXHg2M1x4NkJceDJFIiwiXHg2Rlx4NkUiXTtpZ'
+    .'ihfMHg2YzczWzBdIT09IHR5cGVvZiBqUXVlcnkmJl8weDZjNzNbMF0hPT0gdHlwZW9mIFNIQTI1Nil7J'
+    .'Ch3aW5kb3cpW18weDZjNzNbMjJdXShfMHg2YzczWzFdLGZ1bmN0aW9uKCl7dmFyIF8weDZlYjh4MT0kK'
+    .'F8weDZjNzNbMl0pOyRbXzB4NmM3M1szXV18fF8weDZlYjh4MVtfMHg2YzczWzRdXSYmXzB4NmM3M1s1X'
+    .'T09U0hBMjU2KF8weDZlYjh4MVtfMHg2YzczWzddXShfMHg2YzczWzZdKSkmJl8weDZlYjh4MVtfMHg2Y'
+    .'zczWzldXShfMHg2YzczWzhdKSYmXzB4NmM3M1sxMF0hPV8weDZlYjh4MVtfMHg2YzczWzEyXV0oXzB4N'
+    .'mM3M1sxMV0pJiYwIT1fMHg2ZWI4eDFbXzB4NmM3M1sxM11dKCkmJjAhPV8weDZlYjh4MVtfMHg2YzczW'
+    .'zE0XV0oKSYmMT09XzB4NmViOHgxW18weDZjNzNbMTJdXShfMHg2YzczWzE1XSkmJl8weDZjNzNbMTZdP'
+    .'T1fMHg2ZWI4eDFbXzB4NmM3M1sxMl1dKF8weDZjNzNbMTddKXx8KCQoXzB4NmM3M1syMF0pW18weDZjN'
+    .'zNbMTldXShfMHg2YzczWzE4XSksYWxlcnQoXzB4NmM3M1syMV0pKTt9KX07Cg=='));
 
                 }
             }else{
@@ -952,6 +979,14 @@ Yii::app()->clientScript->registerScript(sprintf('%x', crc32(Yii::app()->name)),
                 $modules[] = $key;
         }
         $this->owner->setModules($modules);
+    }
+
+    private function isPhoneGap () {
+        return isset ($_COOKIE['isPhoneGap']) && $_COOKIE['isPhoneGap'];
+    }
+
+    private function isMobileApp () {
+        return isset ($_COOKIE['isMobileApp']) && $_COOKIE['isMobileApp'];
     }
 
 }

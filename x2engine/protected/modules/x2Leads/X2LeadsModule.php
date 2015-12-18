@@ -38,7 +38,7 @@
 /**
  * @package application.modules.x2Leads 
  */
-class X2LeadsModule extends CWebModule {
+class X2LeadsModule extends X2WebModule {
 	public function init() {
 		// this method is called when the module is being created
 		// you may place code here to customize the module or the application

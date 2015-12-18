@@ -154,34 +154,20 @@ table.fc-header .fc-header-title h2 {
             }
         }
 
+        // append " h2" to selectors of all items in the icon list
+        $mod-icon-list-fa: $icon-list-fa;
+        @for $i from 1 through length($icon-list-fa) {
+            $item: nth($mod-icon-list-fa, $i);
+            $mod-icon-list-fa: set-nth($mod-icon-list-fa, $i, set-nth($item, 1, nth($item, 1) + ' h2'));
+        }
+        $mod-icon-list-x2: $icon-list-x2;
+        @for $i from 1 through length($icon-list-x2) {
+            $item: nth($mod-icon-list-x2, $i);
+            $mod-icon-list-x2: set-nth($mod-icon-list-x2, $i, set-nth($item, 1, nth($item, 1) + ' h2'));
+        }
 
-        $fa-map: (
-            ("emailInboxes h2" "envelope")
-            ("profile h2" "user")
-            ("actions h2" "play-circle")
-            ("accounts h2" "building")
-            ("opportunities h2" "bullseye")
-            ("marketing h2" "bullhorn")
-            ("x2flow h2" "sitemap, %fa-rotate-270")
-            ("x2Leads h2" "star")
-            ("docs h2" "file-text")
-            ("groups h2" "users")
-            ("media h2" "music")
-            ("users h2" "users")
-            ("charts h2" "bar-chart")
-            ("topics h2" "comments")
-        );
-
-        $x2-map: (
-            ("quotes h2" "quotes")
-            ("services h2" "service")
-            ("workflow h2" "funnel")
-            ("products h2" "package")
-            ("contacts h2" "contact")
-        );
-
-        @include generate-icons($fa-map);
-        @include generate-icons($x2-map, "x2");
+        @include generate-icons($mod-icon-list-fa);
+        @include generate-icons($mod-icon-list-x2, 'x2');
     }
 }
 

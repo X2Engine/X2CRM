@@ -33,57 +33,99 @@
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2Engine".
  *****************************************************************************************/
+
+Yii::app()->clientScript->registerCssFile(
+    Yii::app()->theme->baseUrl.'/css/views/admin/createPage.css');
+
+Yii::app()->clientScript->registerScript('adminCreatePageJS',"
+;(function () {
+
+var form$ = $('#admin-add-top-link-form');
+form$.find ('.choice-container').click (function () {
+    if ($(this).hasClass ('selected-choice')) {
+    } else {
+        form$.find ('.choice-container').toggleClass ('selected-choice');
+    }
+});
+
+$('#create-top-bar-link').click (function () {
+    form$.find ('.choice-container').not ('.selected-choice').find (':input').
+        attr ('disabled', 'disabled');
+    form$.find ('.choice-container.selected-choice').find (':input').
+        removeAttr ('disabled');
+});
+
+}) ();
+", CClientScript::POS_END);
+
 ?>
 <div class='page-title'>
-<h2><?php echo Yii::t('admin','Create Page'); ?></h2>
+<h2><?php echo Yii::t('admin','Add Top Bar Link'); ?></h2>
 </div>
-<div class='admin-form-container'>
+<div class='admin-form-container form' id='admin-add-top-link-form'>
     <?php
-        echo Yii::t('admin','Create a Document that will be linked on the top menu bar, or select an existing '
-                             .'document from the dropdown below.')."<br />";
-        echo CHtml::dropDownList('existingDoc', '', $existingDocs, array(
-            'empty' => Yii::t('admin', '--- Select an existing document ---'),
-            'id' => 'existing-doc-dropdown'
+    $form = $this->beginWidget ('X2ActiveForm', array (
+            'formModel' => $model,
+            'instantiateJSClassOnInit' => false,
         ));
+        X2Html::getFlashes ();
+        echo $form->errorSummary ($model);
+        echo Yii::t(
+            'admin',
+            'Add a link to the top bar, either to a specific URL, or to a record in X2CRM.').
+            "<br />";
+        ?>
+        <div class='choice-container-outer'>
+            <div class='url-specification-container choice-container<?php  
+                echo $model->getSelection () === 'topLinkUrl' ? ' selected-choice' : '';
+            ?>'>
+            <?php
+            echo CHtml::tag ('h3', array (), CHtml::encode (Yii::t('admin', 'Specify a URL:')));
+            echo $form->label ($model, 'topLinkUrl');
+            echo $form->textField ($model, 'topLinkUrl');
+            echo $form->label ($model, 'topLinkText');
+            echo $form->textField ($model, 'topLinkText');
+            ?>
+            </div>
+            <?php
+            echo '<div class="alternation-text">-&nbsp;'.CHtml::encode (Yii::t('app', 'OR')).
+                '&nbsp;-</div>';
+            ?>
+            <div class='record-specification-container choice-container<?php
+                echo $model->getSelection () !== 'topLinkUrl' ? ' selected-choice' : '';
+            ?>'>
+            <?php
+            echo CHtml::tag ('h3', array (), CHtml::encode (Yii::t('admin', 'Select a record:')));
+            echo $form->label ($model, 'recordName');
+            if (!isset ($model->recordType)) $model->recordType = 'Contacts';
+            echo $form->multiTypeAutocomplete ($model, 'recordType', 'recordId',
+                X2Model::getModelTypes (true, function ($elem) {
+                    return X2Model::model ($elem)->asa ('X2LinkableBehavior');
+                }),
+                array (
+                    'autocompleteName' => 'recordName',
+                    'autocompleteValue' => $model->recordName,
+                    'htmlOptions' => array (
+                        'class' => 'all-form-input-style',
+                    )
+                )
+            );
+            ?>
+            </div>
+            <div class='extra-options-container'>
+            <?php
+            echo $form->checkBox ($model, 'openInNewTab');
+            echo $form->label ($model, 'openInNewTab', array (
+                'style' => 'display: inline;',
+            ));
+            ?>
+            </div>
+        </div>
+        <?php
         echo CHtml::submitButton(Yii::t('admin', "Create"), array(
             'class' => 'x2-button',
-            'id' => 'create-existing',
-            'style' => 'display: none;',
+            'id' => 'create-top-bar-link',
         ));
+    $this->endWidget ();
     ?>
-    <br /><br />
-
 </div>
-<div id="create-static-doc">
-    <?php echo $this->renderPartial('application.modules.docs.views.docs._form', array('model'=>$model,'users'=>$users)); ?>
-</div>
-<?php
-    Yii::app()->clientScript->registerScript('toggle-create-doc', '
-        $("#existing-doc-dropdown").change(function() {
-            if ($(this).val() === "") {
-                $("#create-static-doc").slideDown(500);
-                $("#create-existing").hide();
-            } else {
-                $("#create-static-doc").slideUp(500);
-                $("#create-existing").show();
-            }
-        });
-
-        $("#create-existing").click(function() {
-            var createPageUrl = "'.Yii::app()->createUrl('admin/createPage').'";
-            var staticDocUrl = "'.Yii::app()->createUrl('/docs/docs/view', array('static'=>'true')).'";
-            var existingDoc = $("#existing-doc-dropdown").children("option:selected").text();
-            $.ajax({
-                url: createPageUrl,
-                type: "post",
-                data: {
-                    existingDoc: existingDoc
-                },
-                success: function(data) {
-                    document.location = staticDocUrl + "&id=" + data;
-                }
-            });
-        });
-    ');
-
-?>

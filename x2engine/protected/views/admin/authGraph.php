@@ -34,16 +34,12 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 
-$this->menu=array(
-	array('label'=>'Admin Index', 'url'=>array('index')),
-);
 
 Yii::app()->clientScript->registerCss('authGraph','pre em {color:silver;font-style:normal;} pre {color:black;line-height:1em;} pre b {color:blue;font-weight:normal;} pre b.biz {color:red;}');
 
 echo '<h2>AuthGraph</h2>';
 
 function printGraph($task,$level,&$bizrules) {
-
 	
 	foreach($task as $child=>$grandChildren) {
 		

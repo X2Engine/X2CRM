@@ -123,6 +123,7 @@ function updateStageNumbers() {
 		$(this).find('select.workflow_requirePrevious').attr('name','WorkflowStages['+(i+1)+'][requirePrevious]');
 		$(this).find('select.workflow_roles').attr('name','WorkflowStages['+(i+1)+'][roles][]');
 		$(this).find('select.workflow_requireComment').attr('name','WorkflowStages['+(i+1)+'][requireComment]');
+                $(this).find('input.workflow_stageId').attr('name','WorkflowStages['+(i+1)+'][stageId]');
 	});
 }
 
@@ -217,6 +218,11 @@ $(function() {
 				<?php echo $form->labelEx($stage,'requireComment'); ?>
 				<?php echo CHtml::dropdownList('WorkflowStages['.($i+1).'][requireComment]',$stage->requireComment,array('0'=>Yii::t('app','No'),'1'=>Yii::t('app','Yes')),array('class'=>'workflow_requireComment','style'=>'width:80px;')); ?>
 			</div>
+                        <div class="cell">
+                            <?php if (isset($stage->id)) {
+                                echo CHtml::hiddenField('WorkflowStages['.($i+1).'][stageId]', $stage->id,array('class'=>'workflow_stageId'));
+                            } ?>
+                        </div>
 			<a href="javascript:void(0)" onclick="deleteStage(this);" title="<?php echo Yii::t('workflow','Del'); ?>" class="del"></a>
 		</div>
 		</li>

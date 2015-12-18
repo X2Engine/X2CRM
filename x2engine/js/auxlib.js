@@ -657,6 +657,10 @@ auxlib.msie = function () {
     return (navigator.appVersion.indexOf("MSIE")!=-1);
 }
 
+auxlib.createUrl = function (route) {
+    return yii.scriptUrl + route;
+}
+
 $(function () {
 
     /**

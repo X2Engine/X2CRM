@@ -67,7 +67,7 @@ $('.search-form form').submit(function(){
 
 <?php $this->widget('X2GridView', array(
 	'id'=>'templates-grid',
-	'title'=>'Templates',
+	'title'=>Modules::displayName(true, $moduleConfig['moduleName']),
 	'buttons'=>array('advancedSearch','clearFilters','columnSelector','autoResize'),
 	'template'=> '<div class="page-title">{title}{buttons}{filterHint}{summary}</div>{items}{pager}',
 	'dataProvider'=>$model->search(),

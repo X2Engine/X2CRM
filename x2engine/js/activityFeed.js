@@ -1183,7 +1183,7 @@ ActivityFeed.prototype.updateEventList = function  () {
     }
     updateFeed();
 
-    $(document).on("click",".delete-link",function(e){
+    $(document).on("click","#activity-feed-container .delete-link",function(e){
         var link = this;
         pieces = $(link).attr("id").split("-");
         id = pieces[0];
@@ -1417,7 +1417,7 @@ ActivityFeed.prototype._setUpRelativeTimeStamps = function () {
 }
 
 /**
- * Sets up the fileUploader to submit iamges with posts
+ * Sets up the fileUploader to submit images with posts
  */
 ActivityFeed.prototype._setUpDropZone = function () {
     var that = this;

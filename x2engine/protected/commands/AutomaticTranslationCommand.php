@@ -45,6 +45,7 @@ class AutomaticTranslationCommand extends CConsoleCommand {
     private $_consolidate;
     private $_update;
     private $_merge;
+    private $_assimilate;
 
     public function run($args) {
         $this->attachBehaviors(array(
@@ -53,6 +54,9 @@ class AutomaticTranslationCommand extends CConsoleCommand {
         
         list($action, $options, $args) = $this->resolveRequest($args);
         $this->parseOptions($options);
+        if($this->_assimilate){
+            $this->assimilateLanguageFiles();
+        }
         if ($this->_find) {
             $this->addMissingTranslations();
             $this->outputMissingStats();
@@ -91,6 +95,9 @@ class AutomaticTranslationCommand extends CConsoleCommand {
         }
         if (strpos($args['mode'], 'm') !== false) {
             $this->_merge = true;
+        }
+        if(strpos($args['mode'], 'a') !== false){
+            $this->_assimilate = true;
         }
     }
 

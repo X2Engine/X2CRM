@@ -58,4 +58,6 @@
   'Unable to load selected mailbox' => 'Kann das ausgewählte Postfach nicht laden',
   'Invalid folder specified' => 'Ungültiger Ordner angegeben',
   'Auto-log outbound emails' => 'Auto-log verschickten E-Mails',
+  'Auto-log inbound emails' => 'Auto-log eingehenden E-Mails',
+  'From' => 'Von',
 );

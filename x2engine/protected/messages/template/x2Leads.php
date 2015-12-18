@@ -1,7 +1,4 @@
 <?php return array (
-  'Edit Lead' => '',
-  'View Lead' => '',
-  'Leads:' => '',
   '{leads} List' => '',
   'Create {lead}' => '',
   'Edit {lead}' => '',
@@ -13,5 +10,9 @@
   'Conversion Date' => '',
   'Converted' => '',
   'Converted To' => '',
+  'View Lead' => '',
+  'Leads:' => '',
+  'Lead' => '',
   'This record has been converted. To view the new record, click {here}.' => '',
+  'Edit Lead' => '',
 );

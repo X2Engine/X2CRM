@@ -71,8 +71,16 @@ class FileUtilTest extends FileOperTestCase {
         $this->useFtp('testRrmDirWithPat');
     }
 
+    public function testRrmDirWithPatSsh(){
+        $this->useSsh('testRrmDirWithPat');
+    }
+
     public function testRrmDirWithoutPatFtp(){
         $this->useFtp('testRrmDirWithoutPat');
+    }
+
+    public function testRrmDirWithoutPatSsh(){
+        $this->useSsh('testRrmDirWithoutPat');
     }
 
     /**
@@ -250,6 +258,10 @@ class FileUtilTest extends FileOperTestCase {
         $this->useFtp("testCcopy");
     }
 
+    public function testCcopySsh(){
+        $this->useSsh("testCcopy");
+    }
+
     public function testFailPathRmDir(){
         $this->setupTestDirs();
         FileUtil::rrmdir(FileUtil::rpath($this->baseDir.'/subdir1/.'));
@@ -259,6 +271,10 @@ class FileUtilTest extends FileOperTestCase {
 
     public function testFailPathRmDirFtp(){
         $this->useFtp("testFailPathRmDir");
+    }
+
+    public function testFailPathRmDirSsh(){
+        $this->useSsh("testFailPathRmDir");
     }
 
     public function testFormatSize(){
@@ -353,6 +369,7 @@ class FileUtilTest extends FileOperTestCase {
         $winChroot = "C:\\Inetpub\\Ftproot\\LocalUser\\testuser";
         $relative = "../test/dir";
 
+        FileUtil::$fileOper = 'ftp';
         FileUtil::$ftpChroot = $chrootDir;
         $this->assertEquals("/some/directory", FileUtil::ftpStripChroot($absolute));
         $this->assertEquals($relative, FileUtil::ftpStripChroot($relative));
@@ -360,6 +377,7 @@ class FileUtilTest extends FileOperTestCase {
         $this->assertEquals("/some/directory", FileUtil::ftpStripChroot($absolute));
         FileUtil::$ftpChroot = $winChroot;
         $this->assertEquals("\\some\\test\\file.txt", FileUtil::ftpStripChroot($absoluteWin));
+        FileUtil::$fileOper = 'php';
     }
 
     public function testFtpInit() {
@@ -371,6 +389,17 @@ class FileUtilTest extends FileOperTestCase {
             $this->assertEquals('php', FileUtil::$fileOper);
         } else
             $this->markTestSkipped('Skipping: X2_FTP_FILEOPER is disabled.');
+    }
+
+    public function testSshInit() {
+        if (X2_SCP_FILEOPER) {
+            $this->assertEquals('php', FileUtil::$fileOper);
+            FileUtil::sshInit(X2_SCP_HOST, X2_SCP_USER, X2_SCP_PASS);
+            $this->assertEquals('scp', FileUtil::$fileOper);
+            FileUtil::sshClose();
+            $this->assertEquals('php', FileUtil::$fileOper);
+        } else
+            $this->markTestSkipped('Skipping: X2_SCP_FILEOPER is disabled.');
     }
 
 }

@@ -9,7 +9,11 @@
   'Search for a Contact' => 'Ricerca di un Contatto',
   'Go to Full Site' => 'Vai al Sito Principale',
   'Who\'s Online' => 'Chi \\ &#39;s in linea',
-  'Back' => 'Indietro',
   'No documents available.' => 'Nessun documento disponibile.',
   'No social items available.' => 'Non ci sono elementi sociali disponibili.',
+  'Change web address' => 'Cambiare indirizzo web',
+  'Legal' => 'Legale',
+  'Add a post...' => 'Aggiungi un posto ...',
+  'Activities' => 'Attività',
+  'Dashboard' => 'Cruscotto',
 );

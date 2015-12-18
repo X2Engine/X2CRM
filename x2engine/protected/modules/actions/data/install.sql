@@ -26,9 +26,9 @@ CREATE TABLE x2_actions (
     completeDate              BIGINT,
     lastUpdated               BIGINT,
     updatedBy                 VARCHAR(50),
-    workflowId                INT UNSIGNED,
+    workflowId                INT,
     quoteId                   INT UNSIGNED,
-    stageNumber               INT UNSIGNED,
+    stageNumber               INT,
     allDay                    TINYINT,
     color                     VARCHAR(20),
     syncGoogleCalendarEventId TEXT,
@@ -37,7 +37,8 @@ CREATE TABLE x2_actions (
     timeSpent                 INT DEFAULT 0,
     INDEX (assignedTo),
     INDEX (type),
-    INDEX (associationType,associationId)
+    INDEX (associationType,associationId),
+    UNIQUE (associationType, associationId, workflowId, stageNumber)
 ) COLLATE = utf8_general_ci, ENGINE = INNODB;
 /*&*/
 CREATE TABLE x2_action_meta_data (

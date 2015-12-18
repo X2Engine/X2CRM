@@ -58,4 +58,6 @@
   'Unable to load selected mailbox' => 'قادر به بار صندوق پستی انتخاب',
   'Invalid folder specified' => 'پوشه مشخص شده نامعتبر',
   'Auto-log outbound emails' => 'خودکار ورود ایمیل های خروجی',
+  'Auto-log inbound emails' => 'خودکار ورود ایمیل های ورودی',
+  'From' => 'از',
 );

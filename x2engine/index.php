@@ -40,7 +40,7 @@ $yii = implode(DIRECTORY_SEPARATOR, array(__DIR__, 'framework', 'yii.php'));
 require_once($constants);
 require_once($yii);
 Yii::$enableIncludePath = false;
-if (YII_DEBUG && X2_TRANSLATION_LOGGING) {
+if (X2_TRANSLATION_LOGGING) {
     exec('pwd', $output);
     preg_match('|/home/(.*?)/|', $output[0], $matches);
     $username = '';

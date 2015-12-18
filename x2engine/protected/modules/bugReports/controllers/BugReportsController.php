@@ -37,6 +37,15 @@
 class BugReportsController extends x2base {
     public $modelClass = 'BugReports';
 
+    public function behaviors () {
+         return array_merge (parent::behaviors (), array (
+            'X2MobileControllerBehavior' => array(
+                'class' => 
+                    'application.modules.mobile.components.behaviors.X2MobileControllerBehavior'
+            ),
+         ));
+    }
+
     /**
      * @var string the default layout for the views. Defaults to '//layouts/column2', meaning
      * using two-column layout. See 'protected/views/layouts/column2.php'.

@@ -37,7 +37,7 @@
 $users = User::getUserIds();
 
 $menuItems = array(
-    array('label' => Yii::t('app', 'Main Menu'), 'url' => array('/mobile/site/home')),
+    array('label' => Yii::t('app', 'Main Menu'), 'url' => array('/mobile/home')),
 );
 
 $this->widget('MenuList', array(
@@ -52,7 +52,7 @@ $this->widget('MenuList', array(
      placeholder='<?php echo Yii::t('app', 'Enter text here...'); ?>' value='' />-->
     <textarea type='text' name='name' id='feed-post-editor' 
      placeholder='<?php echo Yii::t('app', 'Enter text here...'); ?>'></textarea>
-    <fieldset data-role='controlgroup' data-type='horizontal'>
+    <fieldset data-role='controlgroup' data-type='horizontal' data-shadow="true">
 <?php
     $userIds = array_keys ($users);
     $firstUser = $userIds[0];

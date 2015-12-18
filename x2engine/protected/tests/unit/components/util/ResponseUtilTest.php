@@ -162,9 +162,9 @@ class ResponseUtilTest extends CURLTestCase {
 
     public function testRespondFatalError() {
         $r = $this->getResponseObject(array('{case}'=>'respondFatalErrorMessage.parse'));
-        $this->assertRegExp('/PHP parse error \['.E_PARSE.'\]/',$r['message']);
+        $this->assertRegExp('/PHP parse error \['.E_PARSE.'\]/',(string) $r['message']);
         $r = $this->getResponseObject(array('{case}'=>'respondFatalErrorMessage.class'));
-        $this->assertRegExp('/PHP fatal error \['.E_ERROR.'\]/',$r['message']);
+        $this->assertRegExp('/PHP fatal error \['.E_ERROR.'\]/',(string) $r['message']);
     }
 
     public function testRespondWithException() {

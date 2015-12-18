@@ -60,7 +60,8 @@ function GridViewMassActionsManager (argsDict) {
         // used to validate super mass action query results
         totalItemCount: null,
         // used to validate super mass action query results
-        idChecksum: null
+        idChecksum: null,
+        paramsByClass: {}
     };
 
     this._previouslySelectedRecords = null; // records selected before grid update
@@ -370,10 +371,9 @@ GridViewMassActionsManager.prototype._setUpMassActions = function () {
     for (var i = 0; i < this.massActions.length; i++) {
         var massActionName = this.massActions[i];
         if (typeof x2[massActionName] !== 'undefined') {
-            this.massActionObjects[massActionName] = new x2[massActionName] ({
-                massActionsManager: this,
-                massActionName: massActionName
-            })
+            this.massActionObjects[massActionName] = new x2[massActionName] ($.extend ({
+                massActionsManager: this
+            }, this.paramsByClass[massActionName]));
         } else {
             throw new Error ('Invalid mass action name: ' + massActionName);
         }
@@ -459,7 +459,8 @@ GridViewMassActionsManager.prototype._checkUIShow = function (justChanged, check
     var that = this; 
 
     justChanged = typeof justChanged === 'undefined' ? true : justChanged;
-    var massActionButtons = $('#' + that.gridId + '-mass-action-buttons');
+    var massActionButtons$ = $('#' + that.gridId + '-mass-action-buttons');
+    var listItems$ = $('#' + that.gridId + 'more-drop-down-list').children ();
     if (justChanged) { 
 
         // at this point, the state of the checkboxes does not reflect the records that the user 
@@ -487,20 +488,41 @@ GridViewMassActionsManager.prototype._checkUIShow = function (justChanged, check
             }
         }
 
+        if (this.gridElem ().find ('.checkbox-column-checkbox:checked').length > 1) {
+            listItems$.filter ('[data-allow-multiple="false"]').addClass ('disabled');
+            // hide the mass action menu button if all list items have been disabled
+            if (_.difference (
+                    $.makeArray (
+                        listItems$.map (function () { return $(this).attr ('data-mass-action'); })),
+                    $.makeArray (
+                        massActionButtons$.map (function () { 
+                            return $(this).attr ('data-mass-action'); }))
+                ).filter (function (elem) { return !$(elem).hasClass ('disabled'); }).length === 0) {
+
+                $('#' + that.gridId + '-mass-action-buttons .mass-action-more-button').
+                    addClass ('disabled');
+            }
+        } else {
+            listItems$.filter ('[data-allow-multiple="false"]').removeClass ('disabled');
+            $('#' + that.gridId + '-mass-action-buttons .mass-action-more-button').
+                removeClass ('disabled');
+        }
+
         // do nothing if additional checkbox is checked/unchecked
-        if ($(checkBox).is (':checked') && $(massActionButtons).css ('visibility') === 'visible' ||
-            !$(checkBox).is (':checked') && $(massActionButtons).css ('visibility') === 'hidden') {
+        if ($(checkBox).is (':checked') && massActionButtons$.css ('visibility') === 'visible' ||
+            !$(checkBox).is (':checked') && massActionButtons$.css ('visibility') === 'hidden') {
             return;
         }
 
         // hide ui when uncheck all box is unchecked
         if ($(checkBox).attr ('id') == this.namespacePrefix + 'C_gvCheckbox_all' &&
-            !$(checkBox).is (':checked') && $(massActionButtons).css ('visibility') === 'visible') {
+            !$(checkBox).is (':checked') && massActionButtons$.css ('visibility') === 'visible') {
 
             that._hideButtons ();
             this._element ().trigger ('x2.GridViewMassActionsManager.checkUIShow', false);
             return;
         }
+
     }
 
     var foundChecked = false; 
@@ -512,6 +534,7 @@ GridViewMassActionsManager.prototype._checkUIShow = function (justChanged, check
     });
 
     if (foundChecked) {
+
         that._showButtons ();
         if (that.condenseExpandTitleBar) {
             //that.condenseExpandTitleBar ($(that._elementSelector).parent ().next ().
@@ -546,7 +569,7 @@ GridViewMassActionsManager.prototype._setUpUIHideShowBehavior = function () {
 GridViewMassActionsManager.prototype.getRowById = function (id) {
     // convert data provider offset to row offset
     var grid$ = $('#' + this.gridId);
-    var keys = $.makeArray (grid$.find ('.keys span').map (function () { 
+    var keys = $.makeArray (grid$.find ('.' + this.namespacePrefix + 'keys span').map (function () {
         return $(this).text (); 
     }));
     var id = keys.indexOf (id);

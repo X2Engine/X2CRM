@@ -81,8 +81,7 @@ function SortableWidget (argsDict) {
 
     SortableWidget.sortableWidgets.push (this);
 
-    if (!this.hasError)
-        this._init ();
+    this._init ();
 }
 
 SortableWidget.prototype = auxlib.create (x2.Widget.prototype);

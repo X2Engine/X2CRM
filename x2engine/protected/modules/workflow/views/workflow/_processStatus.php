@@ -94,17 +94,10 @@ $dragAndDropView = isset ($parentView) && $parentView === '_dragAndDropView';
         <div class="cell">
             <?php echo CHtml::label(Yii::t('app', 'Record Type'),'modelType'); ?>
             <?php
-            echo CHtml::dropDownList('modelType',$modelType,array(
-                ''=>Yii::t('workflow','All'),
-                'contacts'=>Yii::t('workflow','Contacts'),
-                'opportunities'=>Yii::t('workflow','Opportunities'),
-                'accounts'=>Yii::t('workflow','Accounts'),
-            ),array(
-                'id'=>'workflow-model-type-filter',
-                'style'=>'display: none;',
-                'multiple' => 'multiple',
-                'class' => 'x2-multiselect-dropdown',
-                'data-selected-text' => Yii::t('workflow', 'record type(s)'),
+            echo CHtml::dropDownList('modelType', $modelType,
+                    X2Model::getModelTypesWhichSupportWorkflow(true, true),
+                    array(
+                'id' => 'workflow-model-type-filter',
             ));
             ?>
         </div>

@@ -15,6 +15,9 @@ Yii::t('app','Multi-line translation '.
 Yii::t('app','Multi-line translation '.
             'message with {param} text.',array('{param}'=>'things'));
 Yii::t('app','Special character translation: (){}_.-,+^%@*#|&!?/<>;:');
+Yii::t('app','To set up a website domain alias for tracking, you\'ll need to create a' .
+            ' CNAME DNS resource record through your domain name registrar. Your CNAME record\'s name should'. 
+            ' refer to a subdomain of your website and should point to the domain of your CRM.');
 installer_t('installer message');
 installer_tr('installer message with {p}',array('{p}'=>'params'));
 // "Cheating" in utility classes by using a locally-defined function / looking for exceptions:

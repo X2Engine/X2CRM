@@ -40,7 +40,7 @@
 $loginText: #444343;
 $loginTextFaded: #666;
 $loginBoldText: rgb(104, 104, 104);
-$defaultBgColor: #3E5C9E;
+$defaultBgColor: $appBlue;
 
 a.x2-button {
     padding: 5px 20px;
@@ -637,8 +637,7 @@ body.custom-background-image {
     width: 100%;
     height: 100%;
     z-index: -10;
-    background: #203758;
-    background: radial-gradient($defaultBgColor, darken($defaultBgColor, 10%));
+    background: $defaultBgColor;
 
     .stripe-container {
         width: 650px;

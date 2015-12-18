@@ -91,7 +91,7 @@ class WorkflowTest extends X2DbTestCase {
 
         list ($success, $status) = Workflow::revertStage (
             $workflow->id, 4, $model);
-
+        
         // admin user unaffected by backdate window
         $this->assertTrue ($success);
         
@@ -232,9 +232,10 @@ class WorkflowTest extends X2DbTestCase {
         X2_TEST_DEBUG_LEVEL > 1 && print_r ($counts);
         $this->assertEquals (1, array_reduce ($counts, function ($a, $b) { return $a + $b; }, 0));
         $action = Actions::model ()->findByAttributes (array (
+            'associationType' => 'contacts',
             'workflowId' => $workflow->id,
             'complete' => 'No',
-            'stageNumber' => 4,
+            'stageNumber' => 8,
         ));
 
         // make record invisible
@@ -290,7 +291,7 @@ class WorkflowTest extends X2DbTestCase {
         $action = Actions::model ()->findByAttributes (array (
             'workflowId' => $workflow->id,
             'complete' => 'No',
-            'stageNumber' => 4,
+            'stageNumber' => 8,
         ));
         $record = X2Model::getModelOfTypeWithId ($action->associationType, $action->associationId);
         $record->visibility = 0;
@@ -335,25 +336,10 @@ class WorkflowTest extends X2DbTestCase {
                 'workflowId' => $workflow->id,
             ), array ('range' => 'all'), $stageNumber, '');
 
-        $opportunitiesDataProvider = Yii::app()->controller->getStageMemberDataProvider (
-            'opportunities', $workflow->id, array (
-                'start' => 0,
-                'end' => time (),
-                'workflowId' => $workflow->id,
-            ), array ('range' => 'all'), $stageNumber, '');
-        $accountsDataProvider = Yii::app()->controller->getStageMemberDataProvider (
-            'accounts', $workflow->id, array (
-                'start' => 0,
-                'end' => time (),
-                'workflowId' => $workflow->id,
-            ), array ('range' => 'all'), $stageNumber, '');
-
         // ensure that number of record in dataproviders matches count
         // stage 0 should have no records in it
-        $this->assertEquals (
-            $counts[$stageNumber - 1], 
-            count ($contactsDataProvider->data) + count ($opportunitiesDataProvider->data) + 
-                count ($accountsDataProvider->data));
+        $this->assertEquals(
+                $counts[$stageNumber - 1], count($contactsDataProvider->data));
 
         return $counts;
     }

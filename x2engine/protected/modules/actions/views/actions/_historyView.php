@@ -57,6 +57,9 @@ function deleteAction(actionId, type) {
 ", CClientScript::POS_HEAD);
 $themeUrl = Yii::app()->theme->getBaseUrl();
 $data = Actions::model()->findByPk($data['id']);
+if(!$data){
+    return;
+}
 if(empty($data->type)){
     if($data->complete == 'Yes')
         $type = 'complete';
@@ -67,33 +70,24 @@ if(empty($data->type)){
 } else
     $type = $data->type;
 
-if($type == 'workflow'){
-
-    $workflowRecord = X2Model::model('Workflow')->findByPk($data->workflowId);
-    $stageRecords = X2Model::model('WorkflowStage')->findAllByAttributes(
-            array('workflowId' => $data->workflowId), new CDbCriteria(array('order' => 'id ASC'))
-    );
-
-    // see if this stage even exists; if not, delete this junk
-    if($workflowRecord === null || $data->stageNumber < 1 || $data->stageNumber > count($stageRecords)){
-        $data->delete();
-        return;
-    }
-}
-
 // if($type == 'call') {
 // $type = 'note';
 // $data->type = 'note';
 // }
 ?>
 
-
+<?php
+    // Use standard email icon for emailFrom
+    $iconType = $type;
+    if ($type === 'emailFrom')
+        $iconType = 'email';
+?>
 
 <div class="view" id="history-<?php echo $data->id; ?>">
     <!--<div class="deleteButton">
 <?php //echo CHtml::link('[x]',array('deleteNote','id'=>$data->id)); //,array('class'=>'x2-button')  ?>
     </div>-->
-    <div class="icon <?php echo $type; ?>">
+    <div class="icon <?php echo $iconType; ?>">
     <div class="stacked-icon"></div>
     </div>
     <div class="header">
@@ -114,7 +108,7 @@ if(empty($data->type) || $data->type == 'weblead'){
     }
 } elseif($data->type == 'workflow'){
     // $actionData = explode(':',$data->actionDescription);
-    echo Yii::t('workflow', 'Process:').'<b> '.$workflowRecord->name.'/'.$stageRecords[$data->stageNumber - 1]->name.'</b> ';
+    echo Yii::t('workflow', 'Process:').'<b> '.$data->workflow->name.'/'.$data->workflowStage->name.'</b> ';
 }elseif($data->type == 'event'){
     echo '<b>'.CHtml::link(Yii::t('calendar', 'Event').': ', '#', array('class' => 'action-frame-link', 'data-action-id' => $data->id));
     if($data->allDay){
@@ -215,12 +209,10 @@ if(empty($data->type) || $data->type == 'weblead'){
 if($type == 'attachment' && $data->completedBy != 'Email') {
     echo Media::attachmentActionText(Yii::app()->controller->convertUrls($data->actionDescription), true, true);
 } else if($type == 'workflow'){
-
-    if(!empty($data->stageNumber) && !empty($data->workflowId) && $data->stageNumber <= count($stageRecords)){
-        if($data->complete == 'Yes')
-            echo ' <b>'.Yii::t('workflow', 'Completed').'</b> '.Formatter::formatLongDateTime($data->completeDate);
-        else
-            echo ' <b>'.Yii::t('workflow', 'Started').'</b> '.Formatter::formatLongDateTime($data->createDate);
+    if($data->complete == 'Yes'){
+        echo ' <b>'.Yii::t('workflow', 'Completed').'</b> '.Formatter::formatLongDateTime($data->completeDate);
+    } else {
+        echo ' <b>'.Yii::t('workflow', 'Started').'</b> '.Formatter::formatLongDateTime($data->createDate);
     }
     if(isset($data->actionDescription))
         echo '<br>'.CHtml::encode($data->actionDescription);
@@ -261,23 +253,32 @@ if($type == 'attachment' && $data->completedBy != 'Email') {
     if($type == 'emailOpened'){
         echo "Contact has opened the following email:<br />";
     }
+    $body = '<div class="historyEmailBody email-frame" id="'.$data->id.'">'.$body.'</div>';
     if(!Yii::app()->user->isGuest){
-        echo $legacy ? '<strong>'.$header.'</strong> '.$body : $header.$body;
+        echo $legacy ? '<strong>'.$header.'</strong> '.$body: $header.$body;
     }else{
         echo $body;
     }
-    echo ($legacy ? '<br />' : '').
-        CHtml::link(
-            '[View email]', '#', 
-            array('onclick' => 'return false;', 'id' => $data->id, 'class' => 'email-frame'));
+    if ($type !== 'emailFrom') {
+        echo ($legacy ? '<br />' : '').
+            CHtml::link(
+                '[View email]', '#', 
+                array('onclick' => 'return false;', 'id' => $data->id, 'class' => 'email-frame'));
+    }
 }elseif($data->type == 'quotesDeleted'){
     echo $data->actionDescription;
 }elseif($data->type == 'quotes'){
     $data->renderInlineViewLink ();
 } else
-    echo Yii::app()->controller->convertUrls(CHtml::encode($data->actionDescription)); // convert LF and CRLF to <br />
+    echo Yii::app()->controller->convertUrls($data->actionDescription); // convert LF and CRLF to <br />
 ?>
     </div>
+
+<?php if ($type == 'emailFrom') { ?>
+        <button class='x2-button message-reply-button fa fa-reply fa-lg'
+          title='<?php echo CHtml::encode (Yii::t('emailInboxes', 'Reply')); ?>'></button>
+<?php } ?>
+
     <div class="footer">
         <?php
         if(isset($relationshipFlag) && $relationshipFlag && $data->associationId !== 0 && X2Model::getModelName($data->associationType) !== false){
@@ -305,3 +306,38 @@ if($type == 'attachment' && $data->completedBy != 'Email') {
     </div>
 
 </div>
+
+<?php
+Yii::app()->clientScript->registerScript('replyToEmailJS', "
+/**
+ * Prepare the inline email form in reply to an email on the History widget
+ */
+function replyToLoggedEmail(emailElem) {
+    var parent = $(emailElem).parent();
+    var emailBody = parent.find ('.historyEmailBody').clone ();
+    emailBody.find ('script, meta, html, head, title, body').remove ();
+
+    var emailSubject = parent.find ('strong').text ();
+    var emailDate = parent.find ('.header').text ();
+    emailDate = emailDate.slice (emailDate.indexOf (':') + 1);
+    var emailTo = $('#email-to').val();
+    emailTo = emailTo.slice (0, emailTo.length - 2);
+
+    var quotedBody$ = $('<blockquote>').append (emailBody.html ());
+    var replyBody$ = $('<div>')
+        .text(emailDate + ', ' + emailTo + ':')
+        .prepend ('<br><br><br>')
+        .append (quotedBody$);
+
+    x2.inlineEmailEditorManager
+        .toggleEmailForm ()
+        .setSubjectField ('Re: ' + emailSubject)
+        .prependToBody (replyBody$);
+}
+
+$(function() {
+    $('.message-reply-button').click (function() {
+        replyToLoggedEmail ($(this));
+    });
+});
+", CClientScript::POS_READY);

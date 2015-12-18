@@ -104,10 +104,11 @@ echo CHtml::openTag ('div', X2Html::mergeHtmlOptions (array (
         ));
     }
 
-    if (isset ($this->autocompleteName)) 
+    if (isset ($this->autocompleteName)) {
         $htmlOptions['name'] = isset ($this->model) ? 
             CHtml::resolveName ($this->model, $this->autocompleteName) : 
             $this->autocompleteName;
+    }
     if ($this->selectValue === 'calendar') {
         $htmlOptions['disabled'] = 'disabled';
         $htmlOptions['style'] = 'display: none;';

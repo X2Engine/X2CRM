@@ -42,7 +42,7 @@ function GridViewStickyHeader (argsDict) {
     argsDict = typeof argsDict === 'undefined' ? {} : argsDict;
     var defaultArgs = {
         gridId: null,
-        DEBUG: false && x2.DEBUG
+        DEBUG: true && x2.DEBUG
     };
     auxlib.applyArgs (this, defaultArgs, argsDict);
 
@@ -79,6 +79,10 @@ Private static methods
 Public instance methods
 */
 
+GridViewStickyHeader.prototype.bodyContainer = function () {
+    return $('#' + this.gridId).find ('.x2grid-body-container');
+};
+
 GridViewStickyHeader.prototype.getIsStuck = function () {
     return this._isStuck;
 };
@@ -94,10 +98,11 @@ GridViewStickyHeader.prototype.makeUnstickyForMobile = function () {
 };
 
 GridViewStickyHeader.prototype.makeSticky = function () {
-    var bodyContainer = this._bodyContainer;
+    var bodyContainer = this.bodyContainer ();
     var $titleBar =
         $('#x2-gridview-top-bar-outer').
             removeClass ('x2-gridview-fixed-top-bar-outer')
+
     $(bodyContainer).find ('table').
         removeClass ('x2-gridview-body-with-fixed-header');
     $(bodyContainer).find ('table').addClass ('x2-gridview-body-without-fixed-header');
@@ -109,7 +114,7 @@ GridViewStickyHeader.prototype.makeSticky = function () {
 };
 
 GridViewStickyHeader.prototype.makeUnsticky = function () {
-    var bodyContainer = this._bodyContainer;
+    var bodyContainer = this.bodyContainer ();
     var $titleBar =
         $('#x2-gridview-top-bar-outer').addClass ('x2-gridview-fixed-top-bar-outer')
     $(bodyContainer).find ('table').addClass ('x2-gridview-body-with-fixed-header');

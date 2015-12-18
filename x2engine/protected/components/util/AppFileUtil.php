@@ -47,6 +47,7 @@
 class AppFileUtil {
 
     const ERR_FTPOPER = 100;
+    const ERR_SCPOPER = 200;
 
     public static $_finfo;
 
@@ -59,6 +60,8 @@ class AppFileUtil {
     public static $fileOper = "php";
     public static $ftpChroot = false;
     private static $_ftpStream;
+    private static $_sshStream;
+    private static $_sftpStream;
 
     /**
      * Copies a file or directory recursively.
@@ -84,11 +87,18 @@ class AppFileUtil {
         // a trailing slash, and is platform-agnostic:
         $target = rtrim(self::rpath($target), $ds);
         // Make the target into a relative path:
-        if($relTarget && self::$fileOper !== 'ftp')
+        if($relTarget && !in_array(self::$fileOper, array('ftp', 'scp')))
             $target = self::relpath($target);
         // Safeguard against overwriting files:
         if(!$remote && is_dir($source) && !is_dir($target) && is_file($target))
             throw new Exception("Cannot copy a directory ($source) into a file ($target).");
+
+        // Modify file paths for scp and ftp file operations
+        if (self::$fileOper === 'scp') {
+            $target = self::scpXlateRelpath($target);
+        } elseif (self::$fileOper === 'ftp') {
+            $target = self::ftpStripChroot($target);
+        }
 
         // Create parent directories if they don't exist already.
         // 
@@ -100,7 +110,7 @@ class AppFileUtil {
         // If a directory is being copied and $contents is false: it's assumed
         //  that the target is a destination directory and not part of the tree
         //  to be copied.
-        $pathNodes = explode($ds, self::ftpStripChroot($target));
+        $pathNodes = explode($ds, $target);
         if($contents)
             array_pop($pathNodes);
         for($i = 0; $i <= count($pathNodes); $i++){
@@ -112,16 +122,7 @@ class AppFileUtil {
             else
                 $verifyDir = $parent;
             if($parent != '' && !is_dir($verifyDir)){
-                switch (self::$fileOper) {
-                    case 'ftp':
-                        if (!@ftp_mkdir(self::$_ftpStream, self::ftpStripChroot($parent)))
-                            throw new Exception("Failed to create directory $parent", self::ERR_FTPOPER);
-                        break;
-                    case 'php':
-                    default:
-                        if(!@mkdir($parent))
-                            throw new Exception("Failed to create directory $parent");
-                }
+                self::mkdir ($parent);
             }
         }
 
@@ -160,15 +161,7 @@ class AppFileUtil {
                     $target = $target.$ds.array_pop($sourceNodes);
                 }
                 if(!is_dir($target)){
-                    switch (self::$fileOper) {
-                        case 'ftp':
-                            if (!@ftp_mkdir(self::$_ftpStream, self::ftpStripChroot($target)))
-                                throw new Exception("Unable to create directory $target", self::ERR_FTPOPER);
-                            break;
-                        case 'php':
-                        default:
-                            mkdir($target);
-                    }
+                    self::mkdir ($target);
                 }
                 $return = true;
                 $files = scandir($source);
@@ -189,6 +182,8 @@ class AppFileUtil {
                 switch (self::$fileOper) {
                     case 'ftp':
                         return @ftp_put(self::$_ftpStream, self::ftpStripChroot($target), $source, FTP_BINARY);
+                    case 'scp':
+                        return @ssh2_scp_send (self::$_sshStream, $source, self::scpXlateRelpath ($target));
                     case 'php':
                     default:
                         $retVal = @copy($source, $target) !== false;
@@ -196,6 +191,27 @@ class AppFileUtil {
                         return $retVal;
                 }
             }
+        }
+    }
+
+    /**
+     * Create a new directory according to the current file operation method
+     * @param string $path Path to new directory
+     */
+    public static function mkdir($path) {
+        switch (self::$fileOper) {
+            case 'ftp':
+                if (!@ftp_mkdir(self::$_ftpStream, self::ftpStripChroot($path)))
+                    throw new Exception("Failed to create directory $path", self::ERR_FTPOPER);
+                break;
+            case 'scp':
+                if (!ssh2_sftp_mkdir (self::$_sftpStream, self::scpXlateRelpath($path)))
+                    throw new Exception("Failed to create directory $path", self::ERR_SCPOPER);
+                break;
+            case 'php':
+            default:
+                if(!@mkdir($path))
+                    throw new Exception("Failed to create directory $path");
         }
     }
 
@@ -293,6 +309,12 @@ class AppFileUtil {
                     throw new Exception("Unable to create lockfile $lockfile", self::ERR_FTPOPER);
                 fclose($stream);
                 break;
+            case 'scp':
+                $stream = @fopen ('ssh2.sftp://'.ssh2_sftp(self::$_sshStream).$lockfile, 'w');
+                if (!@fwrite ($stream, time()))
+                    throw new Exception("Unable to create lockfile $lockfile", self::ERR_SCPOPER);
+                fclose ($stream);
+                break;
             case 'php':
             default:
                 file_put_contents($lockfile, time());
@@ -354,7 +376,7 @@ class AppFileUtil {
     }
 
     public static function ftpStripChroot($dir) {
-        if (self::$ftpChroot === false || self::isRelative($dir)) // Don't modify a relative path
+        if (self::$fileOper !== 'ftp' || self::$ftpChroot === false || self::isRelative($dir)) // Don't modify a relative path
             return $dir;
         else {
             $replaced = str_replace(self::$ftpChroot, '', $dir);
@@ -365,6 +387,47 @@ class AppFileUtil {
         }
     }
 
+    /**
+     * Translate a relative path to absolute when using the SCP file operation
+     */
+    public static function scpXlateRelpath($path) {
+        $oldpath = $path;
+        if (preg_match ('/^\.\./', $path)) {
+            $path = preg_replace ('/^\.\./', dirname (getcwd()), $path);
+        } elseif (preg_match ('/^\./', $path)) {
+            exit;
+            $path = preg_replace ('/^\./', dirname (__FILE__), $path);
+        }
+        if ($oldpath !== $path)
+            AuxLib::DebugLog ("Xlating $oldpath to $path");
+        return $path;
+    }
+
+    /**
+     * Initializes SCP file operation functionality. This connects to
+     * the SSH server and authenticates as the provided user.
+     * @param string $host The SSH server to connect to
+     * @param string $user The SSH user.
+     * @param string $pass Specified SSH user's password.
+     */
+    public static function sshInit($host, $user, $pass) {
+        if (!self::$_sshStream = ssh2_connect ($host, 22))
+            throw new Exception("Unable to connect to $host. Please check your SSH connection settings");
+        if (!ssh2_auth_password (self::$_sshStream, $user, $pass))
+            throw new Exception("Unable to login as user $user");
+        self::$_sftpStream = ssh2_sftp(self::$_sshStream);
+        self::$fileOper = "scp";
+    }
+
+    /**
+     * Explicitly close the current SSH stream and resets the file
+     * operation method to 'php'
+     */
+    public static function sshClose() {
+        ssh2_exec (self::$_sshStream, 'exit;');
+        self::$_sshStream = null;
+        self::$fileOper = 'php';
+    }
     /**
      * Wrapper for file_get_contents that attempts to use CURL if allow_url_fopen is disabled.
      *
@@ -439,6 +502,10 @@ class AppFileUtil {
                 $lockfile = self::ftpStripChroot($lockfile);
                 if (!@ftp_delete(self::$_ftpStream, $lockfile))
                     throw new Exception("Unable to delete the lockfile $lockfile", self::ERR_FTPOPER);
+                break;
+            case 'scp':
+                if (!@ssh2_sftp_unlink (ssh2_sftp(self::$_sshStream), $lockfile))
+                    throw new Exception("Unable to delete the lockfile $lockfile", self::ERR_SCPOPER);
                 break;
             case 'php':
             default:
@@ -545,6 +612,9 @@ class AppFileUtil {
                             $path = self::ftpStripChroot($path);
                             ftp_rmdir(self::$_ftpStream, $path);
                             break;
+                        case 'scp':
+                            ssh2_sftp_rmdir (ssh2_sftp(self::$_sshStream), $path);
+                            break;
                         case 'php':
                         default:
                             rmdir($path);
@@ -554,6 +624,9 @@ class AppFileUtil {
                 case 'ftp':
                     $path = self::ftpStripChroot($path);
                     ftp_delete(self::$_ftpStream, $path);
+                    break;
+                case 'scp':
+                    ssh2_sftp_unlink (ssh2_sftp(self::$_sshStream), $path);
                     break;
                 case 'php':
                 default:

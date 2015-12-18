@@ -72,7 +72,7 @@ Yii::app()->clientScript->registerScript('loginPageJS', "
 
 document.getElementById('LoginForm_username').focus (); // for when autofocus isn't supported
 
-var mobileLoginUrl = '".Yii::app()->getBaseUrl().'/index.php/mobile/site/login'."';
+var mobileLoginUrl = '".Yii::app()->getBaseUrl().'/index.php/mobile/login'."';
 $('#mobile-signin-button').click (function () {
     $('#login-form-outer').attr ('action', mobileLoginUrl);
 });
@@ -131,7 +131,7 @@ $('#mobile-signin-button').click (function () {
                 <!--<div class='avatar-cell'>
                     <span class='image-alignment-helper'></span>
                     <?php 
-                    Profile::renderFullSizeAvatar ($profile->id, 105); 
+                    echo Profile::renderFullSizeAvatar ($profile->id, 105); 
                     ?>
                 </div>-->
                 <?php
@@ -240,8 +240,8 @@ $('#mobile-signin-button').click (function () {
                     <div class="cell x2touch-cell">
                     <?php
                     echo CHtml::link(
-                        '<img src="'.Yii::app()->theme->baseUrl.'/images/mobile.png" id="mobile-icon" /><span>X2Touch Mobile</span>',
-                        Yii::app()->getBaseUrl() . '/index.php/mobile/site/login',
+                        '<img src="'.Yii::app()->theme->baseUrl.'/images/mobile.png" id="mobile-icon" /><span>'.Yii::t('app','X2Touch Mobile').'</span>',
+                        Yii::app()->getBaseUrl() . '/index.php/mobile/login',
                         array('class'=>'x2touch-link alt-sign-in-link text-link')); 
                     ?>
                     </div>

@@ -9,7 +9,11 @@
   'Search for a Contact' => 'Wyszukiwanie kontaktów',
   'Go to Full Site' => 'Pokaż pełną stronę',
   'Who\'s Online' => 'Who \\ &#39;s online',
-  'Back' => 'Z powrotem',
   'No documents available.' => 'Brak dokumentów dostępnych.',
   'No social items available.' => 'Brak pozycji społecznych dostępnych.',
+  'Change web address' => 'Zmień adres internetowy',
+  'Legal' => 'Prawny',
+  'Add a post...' => 'Dodaj post ...',
+  'Activities' => 'Działania',
+  'Dashboard' => 'Tablica rozdzielcza',
 );

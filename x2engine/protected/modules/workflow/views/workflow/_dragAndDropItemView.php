@@ -35,18 +35,22 @@
  *****************************************************************************************/
 ?>
 <div class='stage-member-container stage-member-id-<?php echo $data['id']; 
- ?> stage-member-type-<?php echo $data['recordType']; ?>'> 
+ ?> stage-member-type-<?php echo $recordType; ?>'> 
 
 <?php
-$modelName = X2Model::getModelName ($data['recordType']);
-$recordName = $recordNames[$modelName];
+$modelName = X2Model::getModelName ($recordType);
 ?>
 
 <div class='stage-icon-container' 
- title='<?php echo Yii::t('workflow', '{recordName}', array ('{recordName}' => $recordName)); ?>'>
+ title='<?php echo Yii::t('workflow', '{recordName}', array ('{recordName}' => $modelName)); ?>'>
     <img src='<?php 
-        echo Yii::app()->theme->getBaseUrl ().'/images/workflow_stage_'.$data['recordType'].
-            '.png'; ?>' 
+  if(file_exists(substr(Yii::app()->theme->getBaseUrl() . '/images/workflow_stage_' . $recordType .'.png',1))) {
+             echo Yii::app()->theme->getBaseUrl() . '/images/workflow_stage_' . $recordType .
+             '.png';
+         } else {
+             echo Yii::app()->theme->getBaseUrl() . '/images/workflow_stage_model.png';
+         }
+         ?>' 
      class='stage-member-type-icon left' alt=''>
 </div>
 <div class='stage-member-name left'><?php 
@@ -69,16 +73,6 @@ $recordName = $recordNames[$modelName];
      title='<?php echo Yii::t('app', 'View/Edit Workflow Details'); ?>'>
         <span class='x2-edit-icon'></span>
 </a>
-</div>
-<div class='stage-member-info'>
-<span class='stage-member-value'>
-<?php
-if (!$dummyPartial) {
-echo Yii::app()->locale->numberFormatter->formatCurrency (
-    Workflow::getProjectedValue ($data['recordType'], $data),Yii::app()->params->currency);
-}
-?>
-</span>
 </div>
 
 </div>

@@ -35,69 +35,121 @@
  *****************************************************************************************/
  
 Yii::app()->clientScript->registerScript('topContacts',"
-function addTopContact(contactId) {
-	$.ajax({
-		url: '" . CHtml::normalizeUrl(array('/users/users/addTopContact')) . "',
-		type: 'GET',
-		data: 'contactId='+contactId,
-		//data: 'contactId='+contactId+'&viewId='+viewId,
-		success: function(response) {
-			if(response!='')
-				$('#top-contacts-list').html(response);
-				$('#sidebar-left-box').height($('#sidebar-left').height());
-			}
-	});
+;(function () {
+
+x2.topContacts = (function () {
+
+function TopContacts (argsDict) {
+    var argsDict = typeof argsDict === 'undefined' ? {} : argsDict;
+    var defaultArgs = {
+        DEBUG: x2.DEBUG && false
+    };
+    auxlib.applyArgs (this, defaultArgs, argsDict);
 }
-function removeTopContact(contactId) {
-	$.ajax({
-		url: '" . CHtml::normalizeUrl(array('/users/users/removeTopContact')) . "',
-		type: 'GET',
-		data: 'contactId='+contactId,
-		// data: 'contactId='+contactId+'&viewId='+viewId,
-		success: function(response) {
-			if(response!='')
-				$('#top-contacts-list').html(response);
-				$('#sidebar-left-box').height($('#sidebar-left').height());
-			}
-	});
-	//$('#contact'+id).remove();
-}",CClientScript::POS_HEAD);
+
+TopContacts.prototype.addTopContact = function addTopContact(contactId, modelClass) {
+    $.ajax({
+        url: '" . CHtml::normalizeUrl(array('/users/users/addTopContact')) . "',
+        type: 'GET',
+        data: {
+            recordId: contactId,
+            modelClass: modelClass
+        },
+        success: function(response) {
+            if(response!='')
+                $('#top-contacts-list').html(response);
+                $('#sidebar-left-box').height($('#sidebar-left').height());
+            }
+    });
+};
+
+TopContacts.prototype.removeTopContact = function (contactId, modelClass) {
+    $.ajax({
+        url: '" . CHtml::normalizeUrl(array('/users/users/removeTopContact')) . "',
+        type: 'GET',
+        // data: 'contactId='+contactId+'&viewId='+viewId,
+        data: {
+            recordId: contactId,
+            modelClass: modelClass
+        },
+        success: function(response) {
+            if(response!='')
+                $('#top-contacts-list').html(response);
+                $('#sidebar-left-box').height($('#sidebar-left').height());
+            }
+    });
+    //$('#contact'+id).remove();
+};
+
+return new TopContacts;
+
+}) ();
+
+}) ();",CClientScript::POS_HEAD);
 
 $actionParams = Yii::app()->controller->getActionParams();
 //if(!isset($viewId) || $viewId == null)
-	$viewId = isset($actionParams['id'])? $actionParams['id'] : null;
+    $viewId = isset($actionParams['id'])? $actionParams['id'] : null;
 
 ?>
 <ul id="top-contacts-list">
 <?php
-$contactIdList = array();
-foreach($topContacts as $contact) {
-	$contactIdList[] = $contact->id;
-	echo '<li id="contact' . $contact->id . '">';
-	$link = '<strong>'.CHtml::encode($contact->firstName).' '.CHtml::encode($contact->lastName).'</strong><br />'.CHtml::encode($contact->phone);
-	echo CHtml::link($link,array('/contacts/contacts/view','id'=>$contact->id));
-	
-	echo CHtml::link(X2Html::fa('fa-times'),'#',array(
-		'class'=>'delete-link',
-		'onclick'=>"removeTopContact('".$contact->id."'); return false;" //."','".$viewId."'); return false;"
-	));
-	echo "</li>\n";
+$bookmarkInfo = array();
+foreach($bookmarkRecords as $record) {
+    $bookmarkInfo[get_class ($record)][] = $record->id;
+    echo '<li id="contact' . $record->id . '">';
+    if ($record instanceof Contacts) {
+        $link = '<strong>'.CHtml::encode($record->firstName).' '.CHtml::encode($record->lastName).'</strong><br />'.CHtml::encode($record->phone);
+    } elseif (isset ($record->name)) {
+        $link = '<strong>'.CHtml::encode($record->name).'</strong><br />';
+    }
+    if (isset ($link) && $record->asa ('X2LinkableBehavior')) {
+        echo CHtml::link($link, $record->url);
+    }
+    unset ($link);
+    
+    echo CHtml::link(X2Html::fa('fa-times'),'#',array(
+        'class'=>'delete-link',
+        'onclick'=>"
+            x2.topContacts.removeTopContact ('".$record->id."', ".CJSON::encode (
+                get_class ($record)
+            )."); 
+            return false;
+        "
+    ));
+    echo "</li>\n";
 }
 
-if((Yii::app()->controller->id=='contacts' || (!is_null(Yii::app()->controller->module) && Yii::app()->controller->module->id=='contacts'))			// must be a contact
-	&& Yii::app()->controller->action->id=='view'	// must be viewing it
-	&& $viewId != null							// must have an actual ID value
-	&& !in_array($viewId,$contactIdList)) {		// must not already be in Top Contacts
+if(isset (Yii::app()->controller->modelClass)
+    && (is_subclass_of (Yii::app()->controller->modelClass, 'X2Model'))
+    && Yii::app()->controller->action->id=='view'    // must be viewing it
+    && $viewId != null                            // must have an actual ID value
+    && (!isset ($bookmarkInfo[Yii::app()->controller->modelClass])
+    || !in_array($viewId,$bookmarkInfo[Yii::app()->controller->modelClass]))) {// must not already be in Top Contacts
 
-	$currentRecord = X2Model::model('Contacts')->findByPk($viewId);
+    $currentRecord = X2Model::model(Yii::app()->controller->modelClass)->findByPk($viewId);
 
-	echo '<li>';
-	echo CHtml::link(
-		Yii::t('app','Add {name}',array('{name}'=>CHtml::encode($currentRecord->firstName).' '.CHtml::encode($currentRecord->lastName))),
-		'#',
-		array('onclick'=>"addTopContact('".$viewId."'); return false;") //"','".$viewId."'); return false;")
-	);
-	echo "</li>\n";;
+    if ($currentRecord instanceof Contacts) {
+        $name = CHtml::encode($currentRecord->firstName).' '.CHtml::encode($currentRecord->lastName);
+    } elseif (isset ($currentRecord->name)) {
+        $name = CHtml::encode($currentRecord->name);
+    } else {
+        $name = '';
+    }
+
+    echo '<li>';
+    echo CHtml::link(
+        Yii::t('app','Add {name}',array('{name}'=>$name)),
+        '#',
+        array(
+            'onclick'=>"
+                x2.topContacts.addTopContact('".$viewId."', ".CJSON::encode (
+                    Yii::app()->controller->modelClass
+                )."); 
+                return false;"
+        )
+    );
+    echo "</li>\n";;
 }
 ?>
 </ul>

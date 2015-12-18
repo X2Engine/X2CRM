@@ -676,6 +676,10 @@ if(!($requirements['extensions']['gd']=extension_loaded('gd'))){
 	$reqMessages[1][] = '<a href="http://php.net/manual/book.image.php">GD</a>: '.$rbm.'. '.installer_t('Security captchas will not work, and the media module will not be able to detect or display the dimensions of uploaded images.');
 }
 
+// Check for SSH2 extension
+if(!($requirements['extensions']['ssh2']=extension_loaded('ssh2'))){
+	$reqMessages[1][] = '<a href="http://www.php.net/manual/book.ssh2.php">ssh2 extension</a>: '.$rbm.'. '.installer_t('The FileUtil class needs the SSH2 extension to use SSH as a file operation method.');
+}
 if(!($requirements['extensions']['iconv']=extension_loaded('iconv'))){
 	$reqMessages[1][] = '<a href="http://www.php.net/manual/book.iconv.php">iconv extension</a>: '.$rbm.'. '.installer_t('A number of components require the iconv module for encoding and will not function properly.');
 }

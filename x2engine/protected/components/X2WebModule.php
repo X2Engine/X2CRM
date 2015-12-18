@@ -1,5 +1,4 @@
 <?php
-
 /*****************************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2015 X2Engine Inc.
@@ -62,6 +61,10 @@ class X2WebModule extends CWebModule {
         }
 		return $this->_assetsUrl;
 	}
+
+    public function setAssetsUrl ($assetsUrl) {
+        $this->_assetsUrl = $assetsUrl;
+    }
 
     public static function getAssetsUrlOfModule ($moduleName) {
         return Yii::app()->assetManager->publish(

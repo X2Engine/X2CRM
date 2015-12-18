@@ -58,28 +58,6 @@ class PasswordResetFormTest extends X2DbTestCase {
         $user->refresh();
         $this->assertTrue(PasswordUtil::validatePassword($password, $user->password));
         $this->assertEquals(0,PasswordReset::model()->countByAttributes(array('userId'=>$user->id)));
-
-        // Test validation as well, as a "bonus", since there needn't be any
-        // fixture loading for it, and it thus saves a few seconds when running
-        // the test:
-        $form = new PasswordResetForm($user);
-        $passwords = array(
-            false => array(
-                'n#6', // 3 character classes but too short
-                'ninininini' // long enough but not enough character classes
-            ),
-            true => array(
-                'D83*@)1', // 5 characters long and multiple character classes
-                'this that and the next thing', // only two characters but very long
-            )
-        );
-        foreach($passwords as $good => $passes) {
-            foreach($passes as $pass) {
-                $form->password = $pass;
-                $form->confirm = $pass;
-                $this->assertEquals($good,$form->validate(array('password')));
-            }
-        }
     }
 }
 

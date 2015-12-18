@@ -70,7 +70,7 @@
                         return false;
                     });
                     ', CClientScript::POS_READY);
-        echo '<h2><a class="show-duplicate-link fa fa-plus-square" id="' . $modelType . '-show-duplicates" href="#"></a> ' . $modelType . '</h2>';
+        echo '<h2><a class="show-duplicate-link fa fa-plus-square" id="' . $modelType . '-show-duplicates" href="#"></a> ' . Modules::displayName(true, $modelType) . '</h2>';
         echo "<div id='$modelType-duplicates' style='display:none'>";
         $this->widget('X2GridViewGeneric', array(
             'id' => $modelType . '-dedupe-grid',

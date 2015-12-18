@@ -121,6 +121,7 @@ $config = array(
         'application.components.ApplicationConfigBehavior',
         'application.components.X2UrlRule',
         'application.components.ThemeGenerator.ThemeGenerator',
+        'application.components.formatters.*',
     // 'application.controllers.x2base',
     // 'application.models.*',
     // 'application.components.*',
@@ -154,7 +155,7 @@ $config = array(
             'rules' => array(
                 'api/tags/<model:[A-Z]\w+>/<id:\d+>/<tag:\w+>' => 'api/tags/model/<model>/id/<id>/tag/<tag>',
                 'api/tags/<model:[A-Z]\w+>/<id:\d+>' => 'api/tags/model/<model>/id/<id>',
-                'x2touch' => 'mobile/site/home',
+                'x2touch' => '/mobile/mobile/home',
                 '<module:(mobile)>/<controller:\w+>/<id:\d+>' => '<module>/<controller>/view',
                 '<module:(mobile)>/<controller:\w+>/<action:\w+>' => '<module>/<controller>/<action>',
                 '<module:(mobile)>/<controller:\w+>/<action:\w+>/<id:\d+>' => '<module>/<controller>/<action>',
@@ -198,6 +199,9 @@ $config = array(
                 // ...By attributes
                 // Example: api2/Contacts/by:firstName=John;lastName=Doe.json
                 'api2/<_class:[A-Z]\w+>/by:<_findBy:.+>.json'=>'api2/model',
+                // Count records by attributes
+                // Example: api2/Contacts/by:firstName=John;lastName=Doe.json
+                'api2/<_class:[A-Z]\w+>/count/by:<_findBy:.+>.json'=>'api2/count',
                 // ...By ID
                 // Example: api2/Contacts/1121.json = Contact #1121
                 'api2/<_class:[A-Z]\w+>/<_id:\d+>.json'=>'api2/model',
@@ -272,6 +276,9 @@ $config = array(
             'class' => 'application.components.X2ClientScript',
             'mergeJs' => false,
             'mergeCss' => false,
+        ),
+        'assetManager'=>array(
+            'class' => 'application.components.X2AssetManager',
         ),
         'errorHandler' => array(
             // use 'site/error' action to display errors
@@ -350,6 +357,8 @@ $config = array(
         'supportedCurrencySymbols' => array(),
         'modelPermissions'=>'X2PermissionsBehavior',
         'controllerPermissions'=>'X2ControllerPermissionsBehavior',
+        'isPhoneGap' => false,
+        'isMobileApp' => false,
     ),
 );
 

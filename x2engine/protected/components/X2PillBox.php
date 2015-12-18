@@ -79,9 +79,8 @@ class X2PillBox extends X2Widget {
     /**
      * @return arguments passed to $pillBoxJSClass constructor
      */
-    public function getJSClassConstructorArgs () {
-        return array (
-            'element' => '#' . $this->id,
+    public function getJSClassParams () {
+        return array_merge (parent::getJSClassParams (), array (
             'name' => $this->name,
             'options' => $this->options,
             'value' => $this->value,
@@ -91,7 +90,7 @@ class X2PillBox extends X2Widget {
                 'delete' => Yii::t('app', 'Delete'),
             ), $this->translations),
             'pillClass' => $this->pillJSClass,
-        );
+        ));
     }
 
     /**

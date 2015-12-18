@@ -44,6 +44,7 @@ class RequestUtil extends CComponent {
     public $header = array ();
     public $timeout = 5;
     public $url;
+    public $multipart = false;
     private $_content = '';
     private $_header;
 
@@ -55,7 +56,10 @@ class RequestUtil extends CComponent {
     }
 
     public function setContent (array $content) {
-        $this->_content = http_build_query ($content);
+        if ($this->method === 'POST' && $this->multipart)
+            $this->_content = $content;
+        else
+            $this->_content = http_build_query ($content);
     }
 
     public function getContent () {
@@ -69,7 +73,7 @@ class RequestUtil extends CComponent {
         if (!isset ($this->_header)) {
             $header = $this->header;
             if ($this->method === 'POST' && $this->getContent ()) {
-                if (!isset ($header['Content-Length'])) {
+                if (!isset ($header['Content-Length']) && !$this->multipart) {
                     $header['Content-Length'] = strlen ($this->getContent ());
                 }
                 if (!isset ($header['Content-Type'])) {
@@ -85,6 +89,10 @@ class RequestUtil extends CComponent {
      * Get stream context with specified request configuration 
      */
     public function getStreamContext () {
+        $content = $this->getContent();
+        if ($this->multipart)
+            $content = $this->assembleMultipartContent ($content);
+
         if ($this->method === 'POST') {
         } else if ($this->method === 'GET' && $this->getContent ()) {
             $this->url .= (strpos ($this->url, '?') === false ? '?' : '&').$this->getContent ();
@@ -99,8 +107,10 @@ class RequestUtil extends CComponent {
                 'method' => $this->method,
                 'timeout' => $this->timeout,
                 'header' => $header,
-                'content' => $this->getContent (),
+                'content' => $content,
             ));
+        if ($this->multipart)
+            $options['http']['follow_location'] = 0;
 
         return stream_context_create ($options);
     }
@@ -124,6 +134,21 @@ class RequestUtil extends CComponent {
         return $ch;
     }
 
+    /**
+     * Assemble multipart body content as demonstrated here: https://stackoverflow.com/a/4247082
+     */
+    private function assembleMultipartContent($content) {
+        $boundry = '--------------------------'.microtime(true);
+        $this->header['Content-Type'] = 'multipart/form-data; boundary='.$boundry;
+        $mpContent = '';
+        foreach ($content as $key => $value) {
+            $mpContent .= '--'.$boundry."\r\n".
+                          "Content-Disposition: form-data; name=\"$key\"\r\n\r\n".
+                          "$value\r\n";
+        }
+        $mpContent .= '--'.$boundry."--\r\n";
+        return $mpContent;
+    }
 }
 
 ?>

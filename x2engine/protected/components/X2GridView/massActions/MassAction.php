@@ -53,6 +53,11 @@ abstract class MassAction extends CComponent {
     public $hasButton = false; 
 
     /**
+     * @var bool $allowMultiple whether or not mass action should be allowed for multiple records
+     */
+    public $allowMultiple = true; 
+
+    /**
      * @var X2GridViewBase|null $owner
      */
     public $owner = null; 
@@ -137,6 +142,13 @@ abstract class MassAction extends CComponent {
         Yii::app()->clientScript->registerPackages ($this->getPackages (), true);
     }
 
+    public function getJSClassParams () {
+        return array (
+            'massActionName' => get_class ($this),
+            'allowMultiple' => $this->allowMultiple,
+        );
+    }
+
     public function getPackages () {
         if (!isset ($this->_packages)) {
             $this->_packages = array (
@@ -203,6 +215,8 @@ abstract class MassAction extends CComponent {
         
         echo "
             <a href='#' title='".CHtml::encode ($this->getLabel ())."'
+             data-mass-action='".get_class ($this)."'
+             data-allow-multiple='".($this->allowMultiple ? 'true' : 'false')."'
              class='mass-action-button x2-button mass-action-button-".get_class ($this)."'>
                 <span></span>
             </a>";
@@ -213,8 +227,10 @@ abstract class MassAction extends CComponent {
      */
     public function renderListItem () {
         echo "
-            <li class='mass-action-button mass-action-".get_class ($this)."' ".
-            ($this->hasButton ? 'style="display: none;"' : '').">
+            <li class='mass-action-button mass-action-".get_class ($this)."'
+             data-mass-action='".get_class ($this)."'
+             data-allow-multiple='".($this->allowMultiple ? 'true' : 'false')."'".
+            ($this->hasButton ? ' style="display: none;"' : '').">
             ".CHtml::encode ($this->getLabel ())."
             </li>";
     }

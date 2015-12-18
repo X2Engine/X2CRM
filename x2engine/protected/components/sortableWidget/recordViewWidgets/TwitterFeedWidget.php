@@ -160,6 +160,16 @@ class TwitterFeedWidget extends SortableWidget {
             } else {
                 $this->_username = $aliases[0]->alias;
             }
+            try {
+                $this->getTweetDataProvider ();
+            } catch (TwitterFeedWidgetException $e) {
+                $errorMessage = $e->getMessage ();
+                if (isset ($_GET['twitterFeedAjax'])) {
+                    throw new CHttpException (429, $errorMessage);
+                } else {
+                    $this->addError ($errorMessage);
+                }
+            }
         }
         return parent::run ();
     }
@@ -387,6 +397,9 @@ class TwitterFeedWidget extends SortableWidget {
             $twitter
             ->buildOauth ($url, $requestMethod)
             ->performRequest ()); 
+        if (($statusCode = $twitter->getLastStatusCode ()) != 200) {
+            $this->throwApiException ($rateLimitStatus, $statusCode);
+        }
         Yii::app()->settings->twitterRateLimits = $rateLimitStatus;
         Yii::app()->settings->save ();
 
@@ -428,16 +441,15 @@ class TwitterFeedWidget extends SortableWidget {
             }
 
             if (!$tweets || $append) { // fetch tweets and add to cache
-                if ($append) AuxLib::debugLogR ('append');
                 $tweetCount = 100;
                 $credentials = $this->getTwitterCredentials ();
                 $resourceName = '/statuses/user_timeline.json';
                 $remainingRequests = $this->remainingRequests ($resourceName);
-               //AuxLib::debugLogR ('$remainingRequests = ');
-                //AuxLib::debugLogR ($remainingRequests);
 
                 if ($remainingRequests < 1) {
-                    throw new CException ('Rate limit met');
+                    // rate limit met
+                    throw new TwitterFeedWidgetException (Yii::t(
+                        'app', 'Twitter feed could not be retrieved. Please try again later.'));
                 }
 
                 $url = 'https://api.twitter.com/1.1'.$resourceName;;
@@ -450,9 +462,13 @@ class TwitterFeedWidget extends SortableWidget {
                 $requestMethod = 'GET';
                 $twitter = new TwitterAPIExchange ($credentials);
                 $oldTweets = $tweets;
+
                 $tweets = CJSON::decode ($twitter->setGetfield ($getfield)
                     ->buildOauth ($url, $requestMethod)
                     ->performRequest ()); 
+                if (($statusCode = $twitter->getLastStatusCode ()) != 200) {
+                    $this->throwApiException ($tweets, $statusCode);
+                }
                 $this->remainingRequests ($resourceName, $remainingRequests - 1);
                 if ($append) {
                     $tweets = array_merge ($oldTweets, $tweets);
@@ -490,19 +506,7 @@ class TwitterFeedWidget extends SortableWidget {
     private $_tweetDataProvider;
     public function getTweetDataProvider () {
         if (!isset ($this->_tweetDataProvider)) {
-            try {
-                $tweets = $this->requestTweets ();
-            } catch (CException $e) {
-                $errorMessage = Yii::t(
-                    'app', 'Twitter feed could not be retrieved. Please try again later.');
-                if (isset ($_GET['twitterFeedAjax'])) {
-                    throw new CHttpException (429, $errorMessage);
-                } else {
-                    echo CHtml::encode ($errorMessage);
-                    $this->_tweetDataProvider = false;
-                    return false;
-                }
-            }
+            $tweets = $this->requestTweets ();
             $this->_tweetDataProvider = new CArrayDataProvider ($tweets, array (
                 'pagination' => array (
                     'pageSize' => PHP_INT_MAX,
@@ -558,6 +562,32 @@ class TwitterFeedWidget extends SortableWidget {
         return $this->_JSSortableWidgetParams;
     }
 
+    /**
+     * @param array $response decoded Twitter API response
+     * @param int $code http status code
+     */
+    private function throwApiException ($response, $code) {
+        $error = isset ($response['error']) ? $response['error'] : '';
+        switch ($code) {
+            case 404: 
+                $message = Yii::t('app', 'Twitter username not found.');
+                break;
+            case 401: 
+                $message = Yii::t(
+                    'app', 'Twitter Integration credentials are missing or incorrect. Please '.
+                        'contact an administrator.');
+                break;
+            default:
+                $message = Yii::t('app', 'Twitter API {code} error{message}', array (
+                    '{code}' => $code,
+                    '{message}' => $error ?  ': '.$error : '',
+                ));
+        }
+        throw new TwitterFeedWidgetException ($message);
+    }
+}
+
+class TwitterFeedWidgetException extends CException {
 }
 
 ?>

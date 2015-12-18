@@ -1,17 +1,9 @@
 <?php return array (
   'Inventory' => '',
   'Product Information' => '',
-  'USD' => '',
-  'Product List' => '',
-  'Product:' => '',
-  'Update Product: {name}' => '',
-  'Create New Product' => '',
-  'Update Product' => '',
-  'Adjustments' => '',
   'Line Item' => '',
   'Unit Price' => '',
-  'Import Products' => '',
-  'Export Products' => '',
+  'Adjustments' => '',
   'Create New {module}' => '',
   'Update {module}' => '',
 );

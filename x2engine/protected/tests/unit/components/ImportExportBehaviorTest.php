@@ -78,4 +78,56 @@ class ImportExportBehaviorTest extends X2TestCase {
         $admin->contactNameFormat = null;
         $this->assertUpdates ($admin, array ('contactNameFormat'));
     }
+
+    public function testAdjustExportPath() {
+        $component = new CComponent;
+        $component->attachBehavior ('importexport', new ImportExportBehavior);
+
+        // Test csv filename without compression enabled
+        $expected = 'records_export.csv';
+        foreach (array('records_export.csv', 'records_export') as $path) {
+            $this->assertEquals (
+                $expected,
+                $component->adjustExportPath ($path, array())
+            );
+        }
+
+        // Test csv filename with compression enabled
+        $expected = 'records_export.zip';
+        foreach (array('records_export.csv', 'records_export', 'records_export.zip') as $path) {
+            $this->assertEquals (
+                $expected,
+                $component->adjustExportPath ($path, array('compressOutput' => true))
+            );
+        }
+    }
+
+    /**
+     * Verify correct operation of {@link prepareExportDeliverable}.
+     * Currently, the exportDestinations with test cases include: download, server, ftp, scp
+     * exportDestinations remaining to be tested: s3, gdrive
+     */
+    public function testPrepareExportDeliverable() {
+        $component = new CComponent;
+        $component->attachBehavior ('importexport', new ImportExportBehavior);
+        $testfile = implode(DIRECTORY_SEPARATOR, array(
+            Yii::app()->basePath, 'tests', 'data', 'csvs', 'contacts.csv'
+        ));
+
+        // Ensure failure when the exportDestination is not specified
+        $ret = $component->prepareExportDeliverable ($testfile, array());
+        $this->assertFalse ($ret);
+
+        // Test standard browser download method
+        $params = array('exportDestination' => 'download');
+        $ret = $component->prepareExportDeliverable ($testfile, $params);
+        $this->assertTrue ($ret);
+        $params['compressOutput'] = true;
+
+        $ret = $component->prepareExportDeliverable ($testfile, $params);
+        $this->assertTrue ($ret);
+        $this->assertFileExists ($component->safePath('contacts.zip'));
+        unlink ($component->safePath ('contacts.zip'));
+        
+    }
 }

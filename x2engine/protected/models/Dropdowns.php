@@ -66,6 +66,15 @@ class Dropdowns extends CActiveRecord {
         return 'x2_dropdowns';
     }
 
+    public function scopes () {
+        return array (  
+            'children' => array (
+                'condition' => 'parent=:id',
+                'params' => array (':id' => $this->id)
+            )
+        );
+    }
+
     /**
      * @return array validation rules for model attributes.
      */

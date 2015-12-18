@@ -105,12 +105,14 @@ class PersistentGridSettingsTest extends X2DbTestCase {
     }
 
     /**
+     * @group failing
      * Ensure that sort order and filters in GET params get saved to session correctly 
      */
     public function testSessionSettings () {
         $_SESSION = array ();
 
         $_GET['Contacts'] = array (
+            'tags' => array(),
             'firstName' => 'test',
             'lastName' => 'test',
             'email' => 'test@test.com',

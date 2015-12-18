@@ -34,32 +34,130 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 
-// remove the following lines when in production mode
-defined('YII_DEBUG') or define('YII_DEBUG', true);
-// specify how many levels of call stack should be shown in each log message
-defined('YII_TRACE_LEVEL') or define('YII_TRACE_LEVEL', 3);
+Yii::import ('application.modules.mobile.components.*');
+
+/**
+ * All CSS for the mobile module should be specified in this file. Corresponding sass files
+ * are automatically merged into combined.css. When new CSS assets are added, the console 
+ * command combinemobilecss must be run in order to regenerate the combined.scss file.
+ */
 
 /**
  * @package application.modules.mobile
  */
-class MobileModule extends CWebModule {
+class MobileModule extends X2WebModule {
+
+    public static $useMergedCss = true;
 
     /**
      * @var string the path of the assets folder for this module. Defaults to 'assets'.
      */
     public $packages = array();
-    
-    private $_assetsUrl;
- 
-    public function getAssetsUrl()
-    {
-        if ($this->_assetsUrl === null)
-            $this->_assetsUrl = Yii::app()->getAssetManager()->publish(
-                Yii::getPathOfAlias('mobile.assets'), false, -1, true );
-        return $this->_assetsUrl;
+
+    public static function registerDefaultCss () {
+        $packages = self::getPackages (Yii::app()->controller->assetsUrl);
     }
 
+    public static function registerDefaultJs () {
+        $packages = self::getPackages (Yii::app()->controller->assetsUrl);
+    }
 
+    public static function getPackages ($assetsUrl) {
+        return array(
+            'jquery-migrate' => array(
+                'baseUrl' => Yii::app()->baseUrl,
+                'js' => array(
+                    'js/lib/jquery-migrate-1.2.1.js',
+                ),
+                'depends' => array('jquery')
+            ),
+            'jqueryMobileCss' => array(
+                'baseUrl' => $assetsUrl,
+                'css' => array(
+                    'css/jquery.mobile.structure-1.4.5.css',
+                ),
+                'depends' => array('jquery', 'jquery-migrate'),
+            ),
+            'jqueryMobileJs' => array(
+                'baseUrl' => $assetsUrl,
+                'js' => array(
+                    'js/x2mobile-init.js',
+                    'js/lib/jquery.mobile-1.4.5.js',
+                ),
+                'depends' => array('jquery', 'jquery-migrate'),
+            ),
+            'x2TouchCss' => array (
+                'baseUrl' => $assetsUrl,
+                'css' => array_merge (
+                    array (
+                        'js/lib/jqueryui/jquery-ui.structure.css',
+                        'js/lib/datepicker/jquery.mobile.datepicker.css',
+                    ), 
+                    YII_DEBUG && !self::$useMergedCss ? array(
+                        'css/main.css',
+                        'css/forms.css',
+                        'css/jqueryMobileCssOverrides.css',
+                        'css/login.css',
+                        'css/passwordReset.css',
+                        'css/recordIndex.css',
+                        'css/recordView.css',
+                        'css/activityFeed.css',
+                        'css/settings.css',
+                        'css/about.css',
+                        'css/license.css',
+                        'css/recentItems.css',
+                         
+                    ) : array (
+                        'css/combined.css'
+                    )),
+                'depends' => array('jqueryMobileCss'),
+            ),
+            'x2TouchJs' => array (
+                'baseUrl' => $assetsUrl,
+                'js' => array(
+                    'js/x2touchJQueryOverrides.js',
+                    'js/MobileForm.js',
+                    'js/Controller.js',
+                    'js/CameraButton.js',
+                    'js/Main.js',
+                    'js/MobileAutocomplete.js',
+                    'js/lib/jqueryui/jquery-ui.js',
+                    'js/lib/datepicker/jquery.mobile.datepicker.js',
+                ),
+                'depends' => array('jqueryMobileJs', 'auxlib', 'bbq', 'X2Widget'),
+            ),
+             
+            'x2TouchSupplementalCss' => array (
+                'baseUrl' => Yii::app()->baseUrl,
+                'css' => array_merge (
+                    array (
+                        'themes/x2engine/css/fontAwesome/css/font-awesome.css',
+                        'themes/x2engine/css/css-loaders/load8.css',
+                        'themes/x2engine/css/x2IconsStandalone.css',
+                        'themes/x2engine/css/x2touchIcons.css',
+                         
+                    ), 
+                    YII_DEBUG && !self::$useMergedCss ? array(
+                    ) : array ()),
+            ),
+            'x2TouchSupplementalJs' => array (
+                'baseUrl' => Yii::app()->baseUrl,
+                'js' => array(
+                    'js/jQueryOverrides.js',
+                    'js/webtoolkit.sha256.js',
+                    'js/auxlib.js',
+                    'js/jstorage.min.js',
+                    'js/notifications.js',
+                    'js/Attachments.js',
+                ),
+            ),
+            'yiiactiveform' => array(
+                'js' => array('jquery.yiiactiveform.js'),
+                'depends' => array('jqueryMobileJs'),
+            )
+        );
+    }
+    
     public function init() {
         // this method is called when the module is being created
         // you may place code here to customize the module or the application
@@ -69,34 +167,7 @@ class MobileModule extends CWebModule {
             'mobile.components.*',
         ));
 
-        // Set module specific javascript packages
-        $this->packages = array(
-            'jquery-migrate' => array(
-                'baseUrl' => Yii::app()->baseUrl,
-                'js' => array(
-                    'js/lib/jquery-migrate-1.2.1.js',
-                ),
-                'depends' => array('jquery')
-            ),
-            'jquerymobile' => array(
-                'basePath' => $this->getBasePath(),
-                'baseUrl' => $this->assetsUrl,
-                'css' => array(
-                    'css/x2MobileTheme.css',
-                    'css/jquery.mobile.structure-1.3.2.css'
-                ),
-                'js' => array(
-                    'js/x2mobile-init.js',
-                    'js/jquery.mobile-1.3.2.js',
-                ),
-                'depends' => array('jquery', 'jquery-migrate'),
-            ),
-            'yiiactiveform' => array(
-                'js' => array('jquery.yiiactiveform.js'),
-                'depends' => array('jquerymobile'),
-            )
-        );
-        Yii::app()->clientScript->packages = $this->packages;
+        Yii::app()->clientScript->packages = self::getPackages ($this->assetsUrl);
 
         // set module layout
         $this->layout = 'main';

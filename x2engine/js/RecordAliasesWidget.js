@@ -108,9 +108,11 @@ RecordAliasesWidget.prototype._addAlias = function (aliasType, alias, id, label)
         if (aliasTypeA < aliasTypeB) {
             return -1;
         } else if (aliasTypeA === aliasTypeB) {
-            if (a$.html () < b$.html ()) {
+            var aliasA = $.trim (a$.find ('.record-alias').text ());
+            var aliasB = $.trim (b$.find ('.record-alias').text ());
+            if (aliasA < aliasB) {
                 return -1;
-            } else if (a$.html () === b$.html ()) {
+            } else if (aliasA === aliasB) {
                 return 0;
             } else {
                 return 1;

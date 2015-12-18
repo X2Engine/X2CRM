@@ -70,7 +70,9 @@ class ProfileController extends x2base {
                     'setDefaultCredentials', 'activity', 'ajaxSaveDefaultEmailTemplate',
                     'deleteActivityReport', 'createActivityReport', 'manageEmailReports',
                     'toggleEmailReport', 'deleteEmailReport', 'sendTestActivityReport',
-                    'createProfileWidget','deleteSortableWidget','deleteTheme','previewTheme', 'resetTours', 'disableTours'),
+                    'createProfileWidget','deleteSortableWidget','deleteTheme','previewTheme', 
+                    'resetTours', 'disableTours', 'mobileView', 'mobileActivity', 
+                    'mobileViewEvent', 'mobilePublisher'),
                 'users' => array('@'),
             ),
             array('deny', // deny all users
@@ -81,6 +83,11 @@ class ProfileController extends x2base {
 
     public function behaviors() {
         return array_merge(parent::behaviors(), array(
+            'X2MobileControllerBehavior' => array(
+                'class' => 
+                    'application.modules.mobile.components.behaviors.'.
+                        'X2MobileProfileControllerBehavior'
+            ),
             'ImportExportBehavior' => array('class' => 'ImportExportBehavior'),
                 )
         );
@@ -361,18 +368,8 @@ class ProfileController extends x2base {
         }
         $menuItems = array('' => Yii::t('app', 'Activity Feed')) + $menuItems;
 
-        $languageDirs = scandir('./protected/messages'); // scan for installed language folders
-        if(is_dir('./custom/protected/messages')){
-            $languageDirs += scandir('./custom/protected/messages');
-        }
-        sort($languageDirs);
-        $languages = array('en' => 'English');
+        $languages = $model->getLanguageOptions ();
 
-        foreach ($languageDirs as $code) {  // look for langauges name
-            $name = $this->getLanguageName($code, $languageDirs);  // in each item in $languageDirs
-            if ($name !== false)
-                $languages[$code] = $name; // add to $languages if name is found
-        }
         $times = $this->getTimeZones();
 
         $myThemeProvider = new CActiveDataProvider('Media', array(
@@ -817,32 +814,6 @@ class ProfileController extends x2base {
     }
 
     /**
-     * Obtain the name of the language given its 2-5 letter code.
-     *
-     * If a language pack was found for the language code, return its full
-     * name. Otherwise, return false.
-     *
-     * @param string $code
-     * @param array $languageDirs
-     * @return mixed
-     */
-    private function getLanguageName($code, $languageDirs) { // lookup language name for the language code provided
-        if (in_array($code, $languageDirs)) { // is the language pack here?
-            if(file_exists("custom/protected/messages/$code/app.php")){
-                $appMessageFile = "custom/protected/messages/$code/app.php";
-            }else{
-                $appMessageFile = "protected/messages/$code/app.php";
-            }
-            if (file_exists($appMessageFile)) { // attempt to load 'app' messages in
-                $appMessages = include($appMessageFile);     // the chosen language
-                if (is_array($appMessages) and isset($appMessages['languageName']) && $appMessages['languageName'] != 'Template')
-                    return $appMessages['languageName'];       // return language name
-            }
-        }
-        return false; // false if languge pack wasn't there
-    }
-
-    /**
      * Return a mapping of Olson TZ code names to timezone names.
      * @return array
      */
@@ -996,7 +967,7 @@ class ProfileController extends x2base {
         if (preg_match ('/::/', $widgetClass)) {
             // Custom module summary widget. extract model name
             $widgetSettings['modelType'] = preg_replace ('/::.*$/', '', $widgetClass);
-            $widgetSettings['label'] = $widgetSettings['modelType'] . ' Summary';
+            $widgetSettings['label'] = Modules::displayName(true,$widgetSettings['modelType']) . ' Summary';
             $widgetClass = preg_replace ('/^.*::/', '', $widgetClass);
             if (!class_exists ($widgetSettings['modelType'])) {
                 echo 'false';
@@ -1142,7 +1113,7 @@ class ProfileController extends x2base {
                 if (SortableWidget::getParentType ($widgetType) === 'recordView') {
                     $model = X2Model::getModelOfTypeWithId (
                         $_POST['modelType'], $_POST['modelId']);
-                    if ($model !== null) {
+                    if ($model !== null && $model instanceof X2Model) {
                         echo $widgetClass::getWidgetContents(
                             $this, $profile, $widgetType, $widgetUID, 
                             array (
@@ -1237,13 +1208,13 @@ class ProfileController extends x2base {
         echo $failed ? 'failure' : 'success';
     }
 
-    private function getActivityFeedViewParams($id, $publicProfile) {
+    public function getActivityFeedViewParams($id, $publicProfile) {
         Events::deleteOldEvents();
 
         $isMyProfile = !$publicProfile && $id === Yii::app()->params->profile->id;
         $profile = $this->loadModel($id);
 
-        if (!Yii::app()->request->isAjaxRequest) {
+        if (!Yii::app()->request->isAjaxRequest || Yii::app()->params->isMobileApp) {
             $_SESSION['lastDate'] = 0;
             unset($_SESSION['lastEventId']);
         }
@@ -1372,7 +1343,7 @@ class ProfileController extends x2base {
 
             $this->render('profile', $params);
         } else {
-            $this->redirect('login');
+            $this->redirectToLogin ();
         }
 
     }
@@ -1421,7 +1392,8 @@ class ProfileController extends x2base {
         $sqlParams = array(
             ':lastEventId' => $lastEventId
         );
-        $condition = "type='comment' AND timestamp <=" . time() . " AND id > :lastEventId";
+        $condition = "associationType='Events' AND 
+            timestamp <=" . time() . " AND id > :lastEventId";
         $parameters = array('order' => 'id ASC');
         $parameters['condition'] = $condition;
         $parameters['params'] = $sqlParams;
@@ -1458,7 +1430,7 @@ class ProfileController extends x2base {
         $commentDataProvider = new CActiveDataProvider('Events', array(
             'criteria' => array(
                 'order' => 'timestamp ASC',
-                'condition' => "type='comment' AND associationType='Events' AND associationId=$id",
+                'condition' => "type in ('comment', 'structured-feed') AND associationType='Events' AND associationId=$id",
         )));
         $this->widget('zii.widgets.CListView', array(
             'dataProvider' => $commentDataProvider,
@@ -1867,6 +1839,11 @@ class ProfileController extends x2base {
                 'url' => array('view', 'id' => $model->id)
             ),
             array(
+                'name' => 'profiles', 
+                'label' => Yii::t('profile', 'All Profiles'), 
+                'url' => array('profiles')
+            ),
+            array(
                 'name' => 'viewPublic', 
                 'label' => Yii::t('profile', 'View Profile'), 
                 'url' => array('view', 'id' => $model->id, 'publicProfile' => 1)
@@ -1896,7 +1873,7 @@ class ProfileController extends x2base {
 
         if ($this->action->id == 'view') {
             if (isset($_GET['publicProfile']) && $_GET['publicProfile']) {
-                unset($this->actionMenu[1]['url']);
+                unset($this->actionMenu[2]['url']);
             } 
             return;
         }

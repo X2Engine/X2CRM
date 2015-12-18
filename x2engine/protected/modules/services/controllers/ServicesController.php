@@ -85,6 +85,10 @@ class ServicesController extends x2base {
 
     public function behaviors(){
         return array_merge(parent::behaviors(), array(
+            'X2MobileControllerBehavior' => array(
+                'class' => 
+                    'application.modules.mobile.components.behaviors.X2MobileControllerBehavior'
+            ),
             'ServiceRoutingBehavior' => array(
                 'class' => 'ServiceRoutingBehavior'
             ),

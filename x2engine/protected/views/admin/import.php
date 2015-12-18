@@ -33,6 +33,8 @@
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2Engine".
  *****************************************************************************************/
+
+Yii::app()->clientScript->registerCssFile(Yii::app()->theme->baseUrl.'/css/importexport.css');
 ?>
 <div class="page-title"><h2><?php echo Yii::t('admin','Import Data from Template'); ?></h2></div>
 <div class='admin-form-container'>
@@ -61,7 +63,21 @@ echo CHtml::activeDropDownList(
     $formModel, 
     'overwrite', 
     array(0=>Yii::t('app','No'),1=>Yii::t('app','Yes')),array('id'=>'overwrite-selector')); 
-?> <br><br>
+?>
+
+<h3><?php
+    echo Yii::t('admin', 'Customize CSV') .
+        X2Html::minimizeButton (array('class' => 'pseudo-link'), '#importSeparator'); ?>
+</h3>
+<div id='importSeparator' style='display:none'>
+    <?php
+        echo CHtml::activeLabel($formModel, 'delimeter');
+        echo CHtml::activeTextField($formModel, 'delimeter').'<br />';
+        echo CHtml::activeLabel($formModel, 'enclosure');
+        echo CHtml::activeTextField($formModel, 'enclosure');
+    ?>
+</div>
+<br><br>
 <?php 
 echo CHtml::submitButton(Yii::t('app','Submit'),array('class'=>'x2-button','id'=>'import-button'));
 echo CHtml::endForm(); 

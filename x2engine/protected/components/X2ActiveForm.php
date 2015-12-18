@@ -42,9 +42,9 @@ class X2ActiveForm extends CActiveForm {
     public $id = 'x2-form'; 
 
     /**
-     * @var bool $instantiateJSClass
+     * @var bool $instantiateJSClassOnInit
      */
-    public $instantiateJSClass = true;
+    public $instantiateJSClassOnInit = true;
 
     /**
      * @var string $JSClass 
@@ -56,45 +56,33 @@ class X2ActiveForm extends CActiveForm {
      */
     public $formModel; 
 
-    /**
-     * @var string $namespace
-     */
-    public $namespace = '';  
-
-    protected $_packages;
-
     public function __construct ($owner=null) {
-        // TODO: refactor dependency to X2Widget into a behavior that manages namespacing
-        if ($this->namespace === '' && isset ($_POST[X2Widget::NAMESPACE_KEY])) {
-            $this->namespace = $_POST[X2Widget::NAMESPACE_KEY];
-        }
+        $this->attachBehaviors ($this->behaviors ());
         parent::__construct ($owner);
     }
 
-    public function resolveIds ($selector) {
-        return preg_replace ('/#/', '#'.$this->namespace, $selector);
-    }
-
-    public function resolveId ($id) {
-        return $this->namespace.$id;
-    }
-
-    /**
-     * @param array 
-     */
-    public function getJSClassConstructorArgs () {
+    public function behaviors () {
         return array (
-            'formSelector' => '#'.$this->id,
-            'submitUrl' => $this->action ? $this->action : '',
-            'formModelName' => get_class ($this->formModel),
-            'translations' => array (),
-            'namespace' => $this->namespace,
+            'X2WidgetBehavior' => array (
+                'class' => 'application.components.behaviors.X2WidgetBehavior'
+            ),
+        );
+    }
+
+    public function getJSClassParams () {
+        return array_merge (
+            $this->asa ('X2WidgetBehavior')->getJSClassParams (),
+            array (
+                'formSelector' => '#'.$this->id,
+                'submitUrl' => $this->action ? $this->action : '',
+                'formModelName' => get_class ($this->formModel),
+            )
         );
     }
 
     public function getPackages () {
         if (!isset ($this->_packages)) {
-            $this->_packages = array(
+            $this->_packages = array_merge ($this->asa ('X2WidgetBehavior')->getPackages (), array(
                 'X2FormJS' => array(
                     'baseUrl' => Yii::app()->baseUrl,
                     'js' => array(
@@ -102,13 +90,15 @@ class X2ActiveForm extends CActiveForm {
                     ),
                     'depends' => array ('auxlib'),
                 ),
-            );
+            ));
         }
         return $this->_packages;
     }
 
-    public function multiTypeAutocomplete ($model, $typeAttribute, $idAttribute, $options) {
-        return X2Html::activeMultiTypeAutocomplete ($model, $typeAttribute, $idAttribute, $options);
+    public function multiTypeAutocomplete (
+        $model, $typeAttribute, $idAttribute, $options, array $config = array ()) {
+        return X2Html::activeMultiTypeAutocomplete (
+            $model, $typeAttribute, $idAttribute, $options, $config);
 
     }
 
@@ -134,32 +124,16 @@ class X2ActiveForm extends CActiveForm {
         return $htmlOptions;
     }
 
-    public function registerPackages () {
-        Yii::app()->clientScript->registerPackages ($this->getPackages (), true);
-    }
-
-    protected function registerJSClassInstantiationScript () {
-        Yii::app()->clientScript->registerScript(
-            $this->getId ().'registerJSClassInstantiationScript', "
-        
-        ;(function () {     
-            x2.".lcfirst($this->JSClass)." = new x2.$this->JSClass (".
-                CJSON::encode ($this->getJSClassConstructorArgs ()).
-            ");
-        }) ();
-        ", CClientScript::POS_END);
-    }
-
     public function init () {
         $this->id = $this->resolveId ($this->id);
 
-        if ($this->instantiateJSClass) {
+        if ($this->instantiateJSClassOnInit) {
             $this->registerPackages (); 
-            $this->registerJSClassInstantiationScript ();
+            $this->instantiateJSClass (false);
         }
 
         parent::init ();
-        echo CHtml::hiddenField (X2Widget::NAMESPACE_KEY, $this->namespace);
+        echo CHtml::hiddenField (X2WidgetBehavior::NAMESPACE_KEY, $this->namespace);
     }
 
 }

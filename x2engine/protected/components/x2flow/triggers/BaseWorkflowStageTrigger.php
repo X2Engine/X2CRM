@@ -50,18 +50,18 @@ abstract class BaseWorkflowStageTrigger extends X2FlowTrigger {
         $stages = array ('' => Yii::t('app', 'Any')) + $stages;
 
 		return array(
-            'title'=>$this->title,
+            'title'=>Yii::t('studio',$this->title),
             'modelClass'=>'modelClass',
 			'options' => array(
 				array(
                     'name'=>'workflowId',
-                    'label'=>'Process',
+                    'label'=>Yii::t('studio','Process'),
                     'type'=>'dropdown',
                     'options'=>$workflows
                 ),
 				array(
                     'name'=>'stageNumber',
-                    'label'=>'Stage',
+                    'label'=>Yii::t('studio','Stage'),
                     'type'=>'dependentDropdown',
                     'dependency' => 'workflowId',
                     'options'=>$stages,

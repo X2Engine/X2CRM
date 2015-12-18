@@ -56,26 +56,25 @@
 //    }
 //});
 
+
 var x2_ScaleFix = {
-viewportmeta : document.querySelector && document.querySelector('meta[name="viewport"]'),
-ua : navigator.userAgent,
-gestureStart : function()
-{
-x2_ScaleFix.viewportmeta.content = "width=device-width, minimum-scale=0.25, maximum-scale=1.6";
-},
-init : function()
-{
-if (x2_ScaleFix.viewportmeta && /iPhone|iPad/.test(x2_ScaleFix.ua) && !/Opera Mini/.test(x2_ScaleFix.ua))
-{
-x2_ScaleFix.viewportmeta.content = "width=device-width, minimum-scale=1.0, maximum-scale=1.0";
-document.addEventListener("gesturestart", x2_ScaleFix.gestureStart, false);
-}
-window.onorientationchange = function()
-{
-document.body.scrollLeft = 0;
+    viewportmeta : document.querySelector && document.querySelector('meta[name="viewport"]'),
+    ua : navigator.userAgent,
+    gestureStart : function() {
+        x2_ScaleFix.viewportmeta.content = "width=device-width, minimum-scale=0.25, maximum-scale=1.6";
+    },
+    init : function() {
+        if (x2_ScaleFix.viewportmeta && /iPhone|iPad/.test(x2_ScaleFix.ua) && !/Opera Mini/.test(x2_ScaleFix.ua)) {
+        x2_ScaleFix.viewportmeta.content = "width=device-width, minimum-scale=1.0, maximum-scale=1.0";
+        document.addEventListener("gesturestart", x2_ScaleFix.gestureStart, false);
+        }
+    window.onorientationchange = function()
+        {
+            document.body.scrollLeft = 0;
+        };
+    }
 };
-}
-};
+
 x2_ScaleFix.init();
 
 function setMobileBrowserFalse() {

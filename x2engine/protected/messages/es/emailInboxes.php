@@ -58,4 +58,6 @@
   'Unable to load selected mailbox' => 'No se puede cargar buzón seleccionado',
   'Invalid folder specified' => 'Carpeta no válido',
   'Auto-log outbound emails' => 'Auto-log correos electrónicos salientes',
+  'Auto-log inbound emails' => 'Auto-log correos electrónicos entrantes',
+  'From' => 'De',
 );

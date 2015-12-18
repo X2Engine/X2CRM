@@ -34,80 +34,432 @@
  *****************************************************************************************/
 
 @import "icons";
+@import "standards";
+@import "colors";
+@import "login-shared";
+@import "mobileColors";
+@import "mobileStandards";
+@import "compass/css3";
+
+/*
+Be careful when adding style rules outside of .x2-remote-page since it could introduce 
+compatibility issues with PhoneGap app
+*/
 
 $errorRed: #C00;
+$headerTextSecondary: lighten($headerBackground, 28%);
+
+@mixin page-with-panel {
+    .x2-remote-page {
+        .ui-page {
+            overflow-y: hidden;
+        }
+        .panel-contents {
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            overflow-y: auto;
+            width: 100%;
+        }
+    }
+}
+
+body {
+    background: $backgroundColor;
+    margin-bottom: 0;
+    height: auto !important;
+    &.ui-panel-page-container {
+        @include page-with-panel;
+    }
+    .ui-panel-page-container {
+        @include page-with-panel;
+    }
+}
+
+body.x2-phone-gap {
+    ::-webkit-scrollbar {
+        display: none;
+    }
+
+    ::-webkit-scrollbar-track {
+        display: none;
+    }
+
+    ::-webkit-scrollbar-thumb {
+        display: none;
+    }
+}
+
+$loaderColor: black;
+$loaderDiameter: 50px;
+$loaderRadiusDelta: 8px;
+
+.ui-loader {
+    opacity: 1;
+    width: $loaderDiameter;
+    height: $loaderDiameter;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    margin: auto;
+    .load8 .loader {
+        border-top: $loaderRadiusDelta solid rgba($loaderColor, 0.2);
+        border-right: $loaderRadiusDelta solid rgba($loaderColor, 0.2);
+        border-bottom: $loaderRadiusDelta solid rgba($loaderColor, 0.2);
+        border-left: $loaderRadiusDelta solid rgba($loaderColor, 0.4);
+        width: $loaderDiameter;
+        height: $loaderDiameter;
+        margin: 0;
+    }
+}
+
+.x2-mobile-overlay {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+}
+
+* {
+    box-sizing: border-box;
+    font-family: Arial;
+}
+
+
+.x2-remote-page {
+
+.flashes-container {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 40px;
+    margin: auto;
+    text-align: center;
+    z-index: 1000;
+    .flash-error, .flash-success, .flash-notice {
+        display: none;
+    }
+    .flash-success {
+        display: inline;
+        padding: 7px 12px;
+        background: rgba(darken($gray, 23%), 0.90);
+        color: white;
+        border-radius: 20px;
+        width: auto;
+        @include animation(2s linear 1s fadeout);
+        @include keyframes(fadeout) {
+            from { 
+                opacity: 1; 
+            }
+            to { 
+                opacity: 0; 
+            }
+        }
+        @include animation-fill-mode(forwards);
+    }
+}
+
+.fixed-corner-button {
+    background: $headerBackground;
+    border: 1px solid $headerBackground;
+    border-radius: 50%;
+    display: block;
+    width: 50px;
+    height: 50px;
+    line-height: 50px;
+    position: fixed;
+    color: $headerText;
+    box-shadow: 0px 3px 4px lighten(black,65%);
+    right: 25px;
+    bottom: 25px;
+    cursor: pointer;
+    text-align: center;
+}
+
+a {
+    color: $linkColor; 
+}
+
+.ui-content {
+    position: absolute;
+    top: $headerHeight !important;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    overflow-y: auto;
+    padding: 0;
+    z-index: 0;
+    & + .nano-pane {
+        top: $headerHeight !important;
+    }
+
+}
+
+.mobile-list-view {
+    .list-view-section-title {
+        @include list-item;
+        color: $subduedTextColor;
+        border-bottom: none;
+        font-size: 18px;
+        line-height: 41px;
+    }
+    .mobile-list-view-item {
+        @include list-item;
+        a {
+            width: 100%;
+        }
+    }
+}
+
+div.x2touch-panel {
+    .powered-by-container {
+        text-align: center;
+        padding: 15px 5px;
+        a { 
+            height: auto;
+            line-height: normal;
+        }
+    }
+    background: $panelBackgroundColor;
+    color: $panelText;
+    box-shadow: 2px -4px 4px darken($panelBackgroundColor,10%);
+    &.no-scrollbar .panel-contents  {
+        //overflow-y: hidden;
+    }
+    & > .ui-panel-inner {
+        // extremely important rule, but unintuitively so. 
+        // Prevents jqm from resizing the page to the
+        // height of the panel. Allows panel to scroll independently in the y direction.
+        // see the method "_positionPanel" in jqm 1.4.5
+        height: 0; 
+    }
+    ul { 
+        li {
+            &.selected::before {
+                position: absolute;
+                content: ' ';
+                display: block;
+                background: $greenHighlight;
+                width: 5px;
+                height: $panelItemHeight;
+            }
+            height: $panelItemHeight;
+            border-bottom: 1px solid $panelBorder;
+            a {
+                width: 100%;
+            }
+            &.ui-li-divider {
+                font-family: Arial;
+                height: 25px;
+                line-height: 13px;
+                background: darken($panelBackgroundColor,7%);
+                border-top: none;
+                padding-left: 15px;
+            }
+        }
+    }
+    ul > li > a > i { 
+        width: 50px;
+        text-align: center;
+        color: darken($panelBackgroundColor,18%);
+        &::before {
+            margin-top: 12px;
+            font-size: 25px !important;
+        }
+    }
+    ul > li > a > i, a { 
+        display: inline-block;
+        vertical-align: middle;
+        height: $panelItemHeight;
+        line-height: $panelItemHeight;
+    }
+    a {
+        padding: 0;
+        color: $panelText;
+        border: none !important;
+        text-decoration: none;
+    }
+}
+
+@mixin header-button {
+    color: $headerTextSecondary;
+    font-size: 25px;
+    padding: 0;
+    display: inline-block;
+    vertical-align: middle;
+    top: 0;
+}
+
+.search-box {
+    position: fixed;
+    z-index: 1000;
+    top: 0;
+    width: 100%;
+    background: $headerBackground;
+    height: $headerHeight;
+    box-shadow: 0px 1px 1px darken($headerBackground, 5%);
+    div.ui-input-text {
+        height: $headerHeight;
+        padding-left: 10px;
+        border: none;
+        margin: 0;
+        display: block;
+        overflow: hidden;
+        width: auto;
+    }
+    .search-cancel-button {
+        @include header-button;
+        display: block;
+        float: left;
+        margin: 0;
+        margin-left: 10px;
+        line-height: $headerHeight;
+    }
+    .search-clear-button {
+        @include header-button;
+        margin: 0;
+        line-height: $headerHeight;
+        position: absolute;
+        right: 10px;
+        top: 0;
+    }
+    input {
+        height: $headerHeight;
+        padding: 0;
+        color: $headerText;
+        font-size: $headerTextSize;
+    } 
+    input::-webkit-input-placeholder {
+        color: $headerTextSecondary;
+        font-size: $headerTextSize;
+    }
+}
+
+#header {
+    z-index: 1000;
+    position: fixed;
+    width: 100%;
+    background: $headerBackground;
+    border-bottom: none;
+    border-top: none;
+    height: $headerHeight;
+    box-shadow: 0px 1px 1px darken($headerBackground, 5%);
+    line-height: $headerHeight;
+    h1.page-title {
+        padding: 0;
+        display: inline-block;
+        vertical-align: middle;
+        margin: auto;
+        width: 100%;
+        color: $headerText;
+        font-size: $headerTextSize;
+    }
+    & > a {
+    }
+    .show-left-menu-button {
+        font-size: 25px;
+        padding: 0;
+        display: block;
+        color: $headerTextSecondary;
+    }
+    .ui-btn {
+        @include header-button;
+    }
+    .search-button, .icon-btn {
+        float: right;
+        position: absolute;
+        top: 0;
+        right: 10px;
+        margin: 0;
+    }
+    .show-settings-menu {
+        padding: 0 9px;
+    }
+    .header-content-right {
+        position: absolute;
+        right: 0;
+        top: 0;
+    }
+}
+
+#footer {
+    &.control-panel {
+        border-bottom: none;
+        width: 100%;
+        background: $backgroundColor;
+        height: auto;
+        line-height: 50px;
+        border-top: 1px solid $lightGray;
+        padding: 5px 10px;
+        line-height: 40px;
+    }
+    &.fixed-footer {
+        position: fixed;
+        bottom: 0;
+    }
+    .icon-button {
+        display: inline-block;
+        height: 40px;
+        font-size: 30px;
+        line-height: 40px;
+        vertical-align: middle;
+        cursor: pointer;
+        width: 40px;
+        text-align: center;
+        color: $subduedTextColor;
+    }
+}
+
+#settings-menu-popup {
+    top: 41px !important;
+    //right: 10px !important;
+    margin-right: 10px;
+    background: $menuBackgroundColor;
+    color: $menuText;
+    .ui-popup {
+        border: none;
+    }
+    a {
+        color: $menuText;
+        border: none;
+        text-decoration: none;
+    }
+    box-shadow: 0px 3px 11px #2D2D2D;
+}
+
+$errorBackgroundColor:lighten(red,19%);
+
+.errorSummary {
+    background: $errorBackgroundColor;
+    border: 1px solid darken($errorBackgroundColor, 5%);
+    border-radius: 3px;
+    padding: 10px;
+}
+
+&.mobile-login { 
+    //background: radial-gradient($defaultBgColor, darken($defaultBgColor, 10%));
+    background: $defaultBgColor;
+    /* @theme background: background */
+}
 
 // override to prevent icon from being inserted since "data-icon", used by X2Engine to insert
 // font icons, is also used by jQuery mobile
 [data-icon]:before { content: none!important; }
 
-#login-form-logo {
-    //text-shadow: 1px 4px 6px #233d5f, 0 0 0 #233d5f, 1px 4px 6px #233d5f;
-    color: #9198A0;
-    font-weight: bold;
-    font-size: 113px;
-    width: 100%;
-    text-align: center;
-    padding: 20% 0px;
-    line-height: 70%;
-    display: block;
-}
 
-#custom-login-form-logo {
-    margin: auto;
-    text-align: center;
-    padding: 20% 0px;
-    line-height: 70%;
-    display: block;
-}
-
-img#login-form-logo {
-    width: 95px;
-    margin: auto;
-}
-
-.errorMessage {
-    color: $errorRed;
-}
-
-input[type='text']:not(.error), select, select option, .x2-select, .x2-select option, 
-.x2-minimal-select, .x2-minimal-select-filtercol, .x2-minimal-select option,
-.x2-mobile-narrow-input-row, input[type='password'] {
-    background: transparent !important;
-}
-
-/*
-login page
-*/
-/* line 27, ../../../../../compass/sass/protected/modules/mobile/assets/css/main.scss */
-/* line 27, ../../../../../compass/sass/protected/modules/mobile/assets/css/main.scss */
-
-.remember-me-checkbox-container {
-  .ui-btn-text {
-    font-size: 10px;
-    vertical-align: middle;
-  }
-  .ui-fullsize span.ui-btn-inner {
-    // padding: 2px 40px !important;
-  }
-}
-
-/* line 31, ../../../../../compass/sass/protected/modules/mobile/assets/css/main.scss */
-
-/* line 31, ../../../../../compass/sass/protected/modules/mobile/assets/css/main.scss */
 /* 
 general css rules
 */
-/* line 40, ../../../../../compass/sass/protected/modules/mobile/assets/css/main.scss */
-/* line 43, ../../../../../compass/sass/protected/modules/mobile/assets/css/main.scss */
 
 .x2-mobile-narrow-input {
   color: #ADADAD;
   width: 280px;
 }
-
-/* line 45, ../../../../../compass/sass/protected/modules/mobile/assets/css/main.scss */
-/* line 50, ../../../../../compass/sass/protected/modules/mobile/assets/css/main.scss */
 
 .x2-mobile-narrow-input-row .ui-input-text {
   margin-bottom: 4px;
@@ -116,13 +468,10 @@ general css rules
   display: inline-block;
 }
 
-/* line 53, ../../../../../compass/sass/protected/modules/mobile/assets/css/main.scss */
-/* line 60, ../../../../../compass/sass/protected/modules/mobile/assets/css/main.scss */
-
 div {
   &.ui-input-text.error {
-    border-color: #C00;
-    background: #FEE;
+    //border-color: #C00;
+    //background: #FEE;
   }
   &.input-error-container {
     float: left;
@@ -133,17 +482,9 @@ div {
   }
 }
 
-/* line 64, ../../../../../compass/sass/protected/modules/mobile/assets/css/main.scss */
-
-/* line 68, ../../../../../compass/sass/protected/modules/mobile/assets/css/main.scss */
-
-/* line 57, ../../../../../compass/sass/protected/modules/mobile/assets/css/main.scss */
-/* line 61, ../../../../../compass/sass/protected/modules/mobile/assets/css/main.scss */
 /*
 activity
 */
-/* line 71, ../../../../../compass/sass/protected/modules/mobile/assets/css/main.scss */
-/* line 83, ../../../../../compass/sass/protected/modules/mobile/assets/css/main.scss */
 
 #feed-box {
   div.message {
@@ -160,21 +501,9 @@ activity
   }
 }
 
-/* line 87, ../../../../../compass/sass/protected/modules/mobile/assets/css/main.scss */
-
-/* line 92, ../../../../../compass/sass/protected/modules/mobile/assets/css/main.scss */
-
-/* line 75, ../../../../../compass/sass/protected/modules/mobile/assets/css/main.scss */
-/* line 80, ../../../../../compass/sass/protected/modules/mobile/assets/css/main.scss */
-/* line 85, ../../../../../compass/sass/protected/modules/mobile/assets/css/main.scss */
-/* line 103, ../../../../../compass/sass/protected/modules/mobile/assets/css/main.scss */
-
 #feed-post-publisher {
   margin-bottom: 10px;
 }
-
-/* line 89, ../../../../../compass/sass/protected/modules/mobile/assets/css/main.scss */
-/* line 109, ../../../../../compass/sass/protected/modules/mobile/assets/css/main.scss */
 
 #attachments {
   margin: 18px -2px;
@@ -182,9 +511,6 @@ activity
   padding: 6px;
   border-radius: 8px;
 }
-
-/* line 96, ../../../../../compass/sass/protected/modules/mobile/assets/css/main.scss */
-/* line 118, ../../../../../compass/sass/protected/modules/mobile/assets/css/main.scss */
 
 #logo-container {
   text-align: center;
@@ -194,4 +520,62 @@ activity
     a.full-site-link {
         //margin-left: 3px;
     }
+}
+
+/***********************************************************************
+* scroll bar 
+***********************************************************************/
+
+//.nano > .nano-pane   { background: #888; }
+//.nano > .nano-pane > .nano-slider { background: #111; }
+.nano { 
+    .nano-pane { 
+        background: none !important;  
+        width: 7px !important;
+        .nano-slider {
+            border-radius: 0 !important;
+        }
+    }
+}
+
+//.ui-panel-wrapper {
+//    ::-webkit-scrollbar {
+//        height: 10px;
+//        &:vertical {
+//            width: 5px;
+//        }
+//    }
+//
+//    ::-webkit-scrollbar-track {
+//        &:horizontal {
+//            border-top: 1px solid rgb(230, 230, 230);
+//        }
+//        border-left: 1px solid rgb(230, 230, 230);
+//    }
+//
+//    ::-webkit-scrollbar-thumb {
+//        background-color: rgb(216, 216, 216);
+//    }
+//}
+
+//.x2touch-panel {
+//    ::-webkit-scrollbar {
+//        height: 10px;
+//        &:vertical {
+//            width: 5px;
+//        }
+//    }
+//
+//    ::-webkit-scrollbar-track {
+//        &:horizontal {
+//            border-top: 1px solid rgb(230, 230, 230);
+//        }
+//        border-left: 1px solid $panelBorder;
+//    }
+//
+//    ::-webkit-scrollbar-thumb {
+//        background-color: $panelBorder;
+//    }
+//}
+
 }

@@ -132,7 +132,7 @@ class TwitterApp extends JSONEmbeddedModel implements AdminOwnedCredentials {
                 </li>
                 <li>'.Yii::t('app', 'Click the button labelled "Create my access token".').'
                 </li>
-                <li>'.Yii::t('app', 'Copy your "Consumer Key", "Consumer Secret", "Access Token", and "Access Token Secret" into the above corresponding fields.').'
+                <li>'.Yii::t('app', 'Copy your "Consumer Key", "Consumer Secret", "Access Token", and "Access Token Secret" into the corresponding fields below.').'
                 </li>
                 <li>'.Yii::t('app', 'Save your X2CRM Twitter Integration settings.').'</li>
             </ol>

@@ -46,7 +46,7 @@ class X2MergeableBehavior extends CActiveRecordBehavior {
      * Fields which should not be set from old records in a merge.
      * @var array 
      */
-    private $restrictedFields = array(
+    public $restrictedFields = array(
         'id',
         'nameId',
     );

@@ -175,12 +175,12 @@ $recordNames = X2Model::getAllRecordNames ();
 // render a dummy item view so that it can be cloned on the client
 $this->renderpartial ('_dragAndDropItemView', array (
     'data' => array (
-        'recordType' => 'contacts',
         'id' => null,
         'name' => null,
     ),
     'recordNames' => $recordNames,
     'dummyPartial' => true,
+    'recordType' => 'contacts',
 ));
 ?>
 </div>
@@ -231,25 +231,23 @@ for ($i = 0; $i < count ($stages); ++$i) {
             ),
         ),
         'id' => 'workflow-stage-'.($i + 1),
-        'dataProvider' => $this->getStageMemberDataProviderMixed (
-            $model->id, $dateRange, $expectedCloseDateDateRange, $i + 1, $users, $modelType),
+        'dataProvider' => $this->getStageMemberDataProvider ($modelType,
+            $model->id, $dateRange, $expectedCloseDateDateRange, $i + 1, $users),
         'itemView' => '_dragAndDropItemView',
         'viewData' => array (
             'modelTypes' => $modelTypes,
             'recordNames' => $recordNames,
             'dummyPartial' => false,
+            'recordType'=> $modelType,
         ),
         'template' => 
             '<div class="stage-list-title" style="'.$colorGradients[$i].'">'.
                 '<h2>'.$stage['name'].'</h2>
                 <div class="stage-title-row">
-                <div class="total-projected-stage-value">'.
-                Formatter::formatCurrency ($stageValues[$i][1]).
-                '</div>
                 <div class="total-stage-deals">
-                    <span class="stage-deals-num">'.$stageValues[$i][3].'</span>
+                    <span class="stage-deals-num">'.$stageCounts[$i].'</span>
                     <span>'.
-                        ($stageValues[$i][3] === 1 ? 
+                        ($stageCounts[$i] === 1 ? 
                             Yii::t('workflow', 'deal') :
                             Yii::t('workflow', 'deals')).'</span>
                 </div>

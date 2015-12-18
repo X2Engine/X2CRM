@@ -192,6 +192,40 @@ class AuxLib {
     }
 
     /**
+     * Render a hex dump to the debug log
+     * Adapted from: https://stackoverflow.com/a/4225813
+     */
+    public static function debugLogHd ($data) {
+        if (!YII_DEBUG) return;
+        static $from = '';
+        static $to = '';
+        static $width = 16; # number of bytes per line
+        static $pad = '.'; # padding for non-visible characters
+
+        if ($from==='') {
+            for ($i=0; $i<=0xFF; $i++) {
+                $from .= chr($i);
+                $to .= ($i >= 0x20 && $i <= 0x7E) ? chr($i) : $pad;
+            }
+        }
+
+        $hex = str_split(bin2hex($data), $width*2);
+        $chars = str_split(strtr($data, $from, $to), $width);
+
+        $output = "\n"; // begin on next line
+        $offset = 0;
+        foreach ($hex as $i => $line) {
+            $hexBytes = str_split($line, 16);
+            $hexContent = implode(' ', str_split($hexBytes[0],2));
+            if (isset($hexBytes[1]))
+                $hexContent .= '  '.implode(' ', str_split($hexBytes[1],2));
+            $output .= sprintf('%06X  %-48s',$offset, $hexContent). ' |' . $chars[$i] . "|\n";
+            $offset += $width;
+        }
+        self::debugLog ($output);
+    }
+
+    /**
      * Generic version of debugLogR 
      */
     public static function logR ($arr, $route) {
@@ -248,14 +282,6 @@ class AuxLib {
             $ver = INF;
         }
         return $ver;
-    }
-
-    /**
-     * @return bool returns true if user is using mobile app, false otherwise 
-     */
-    public static function isMobile () {
-        return (Yii::app()->request->cookies->contains('x2mobilebrowser') && 
-                Yii::app()->request->cookies['x2mobilebrowser']->value);
     }
 
     public static function setCookie ($key, $val, $time) {
@@ -360,6 +386,13 @@ class AuxLib {
     public static function isAjax () {
         return (!empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest');
 
+    }
+
+    public static function getRequestUrl () {
+        $protocol = !empty ($_SERVER['HTTPS']) ? 'https' : 'http';
+		$baseUrl = $protocol . '://' . $_SERVER['HTTP_HOST'];
+		$uri = $_SERVER['REQUEST_URI'];
+        return $baseUrl.$uri;
     }
     
     

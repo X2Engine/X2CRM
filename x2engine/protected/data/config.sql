@@ -108,9 +108,9 @@ UPDATE x2_profile SET `widgets`='0:1:1:1:1:1:0:0:0:0:0:0:0:0',
 	`widgetOrder`='OnlineUsers:TimeZone:SmallCalendar:GoogleMaps:ChatBox:TagCloud:TwitterFeed:MessageBox:QuickContact:NoteBox:ActionMenu:MediaBox:DocViewer:TopSites';
 /*&*/
 INSERT INTO `x2_modules`
-(`name`, title, visible, menuPosition, searchable, editable, adminOnly, custom, toggleable, pseudoModule)
+(`name`, title, visible, menuPosition, searchable, editable, adminOnly, custom, toggleable, moduleType)
 VALUES
-('x2Activity', 'Activity', 1, 0, 0, 0, 0, 0, 0, 1);
+('x2Activity', 'Activity', 1, 0, 0, 0, 0, 0, 0, 'pseudoModule');
 /*&*/
 UPDATE `x2_modules` SET `visible`=0;
 /*&*/
@@ -126,3 +126,8 @@ INSERT INTO `x2_tips` (`tip`, `edition`, `admin`, `module`) VALUES
 ("You can drag and drop widgets on the right sidebar to re-arrange their order.",'opensource',0,'Layout'),
 ("The options in the \"Quick Note\" menu on the publisher can be changed in the Dropdown Editor.",'opensource',1,'Admin'),
 ("You can see the history of related records by clicking \"Relationships\" on the History widget. Accounts do this by default.",'opensource',0,'Relationships');
+/*&*/
+INSERT INTO `x2_mobile_layouts`
+(`modelName`, `layout`, `defaultForm`, `defaultView`, `version`)
+VALUES
+('Profile', '["fullName","tagLine","username","officePhone","cellPhone","emailAddress","googleId"]',0,1,'5.4');

@@ -80,6 +80,17 @@ class X2FlowEmail extends BaseX2FlowEmail {
                     'type' => 'email'
                 ),
                 array(
+                    'name' => 'logEmail', 
+                    'label' => 
+                        Yii::t('studio', 'Log email?').'&nbsp;'.
+                        X2Html::hint2 (
+                        Yii::t('studio', 'Checking this box will cause the email to be attached '.
+                            'to the record associated with this flow, if it exists.')),
+                    'optional' => 1,
+                    'defaultVal' => 1,
+                    'type' => 'boolean',
+                ),
+                array(
                     'name' => 'body', 
                     'label' => Yii::t('studio', 'Message'),
                     'optional' => 1,
@@ -91,67 +102,73 @@ class X2FlowEmail extends BaseX2FlowEmail {
         return $parentRules;
     }
 
-	public function execute(&$params) {
-		$eml = new InlineEmail;
+    public function execute(&$params) {
+        $eml = new InlineEmail;
 
         // make subject optional in order to support legacy flows  
         $eml->requireSubjectOnCustom = false;
+        $id = $this->config['id'];
+        $options = &$this->config['options'];
+        $eml->to = $this->parseOption('to', $params);
 
-		$options = &$this->config['options'];
-		$eml->to = $this->parseOption('to', $params);
-        
         $historyFlag = false;
-        if(isset($params['model'])){
-            $historyFlag = true;
-            $eml->targetModel=$params['model'];
+        if (isset($params['model'])) {
+            $historyFlag = $options['logEmail']['value'];
+            $eml->targetModel = $params['model'];
         }
-		if(isset($options['cc']['value']))
-			$eml->cc = $this->parseOption('cc',$params);
-		if(isset($options['bcc']['value'])){
-			$eml->bcc = $this->parseOption('bcc',$params);
+        if (isset($options['cc']['value']))
+                $eml->cc = $this->parseOption('cc', $params);
+        if (isset($options['bcc']['value'])) {
+            $eml->bcc = $this->parseOption('bcc', $params);
         }
 
-		//$eml->from = array('address'=>$this->parseOption('from',$params),'name'=>'');
-        $eml->credId = $this->parseOption('from',$params);
+        //$eml->from = array('address'=>$this->parseOption('from',$params),'name'=>'');
+        $eml->credId = $this->parseOption('from', $params);
         if ($eml->credentials && $eml->credentials->user)
-            $eml->setUserProfile($eml->credentials->user->profile);
+                $eml->setUserProfile($eml->credentials->user->profile);
 
         //printR ($eml->from, true);
-		$eml->subject = $this->parseOption('subject',$params);
+        $eml->subject = $this->parseOption('subject', $params);
 
         // "body" option (deliberately-entered content) takes precedence over template
-		if(isset($options['body']['value']) && !empty($options['body']['value'])) {	
+        if (isset($options['body']['value']) && !empty($options['body']['value'])) {
             $eml->scenario = 'custom';
-			$eml->message = InlineEmail::emptyBody($this->parseOption('body',$params));
-			$prepared = $eml->prepareBody();
-			// $eml->insertSignature(array('<br /><br /><span style="font-family:Arial,Helvetica,sans-serif; font-size:0.8em">','</span>'));
-		} elseif(!empty($options['template']['value'])) {
-			$eml->scenario = 'template';
-			$eml->template = $this->parseOption('template',$params);
-			$prepared = $eml->prepareBody();
-		} else {
+            $eml->message = InlineEmail::emptyBody($this->parseOption('body',
+                                    $params));
+            $prepared = $eml->prepareBody();
+            // $eml->insertSignature(array('<br /><br /><span style="font-family:Arial,Helvetica,sans-serif; font-size:0.8em">','</span>'));
+        } elseif (!empty($options['template']['value'])) {
+            $eml->scenario = 'template';
+            $eml->template = $this->parseOption('template', $params);
+            $prepared = $eml->prepareBody();
+        } else {
             $prepared = true; // no email body
         }
 
         if (!$prepared) { // InlineEmail failed validation
-            $errors = $eml->getErrors ();
-            return array (false, array_shift ($errors));
+            $errors = $eml->getErrors();
+            return array(false, array_shift($errors));
         }
 
-        list ($success, $message) = $this->checkDoNotEmailFields ($eml);
+        list ($success, $message) = $this->checkDoNotEmailFields($eml);
         if (!$success) {
-            return array ($success, $message);
+            return array($success, $message);
         }
 
-		$result = $eml->send($historyFlag);
-		if (isset($result['code']) && $result['code'] == 200) {
+        $result = $eml->send($historyFlag);
+        if (isset($result['code']) && $result['code'] == 200) {
+            if (!isset($params['sentEmails'])) {
+                $params['sentEmails'] = array();
+            }
+            $params['sentEmails'][$id] = $eml->uniqueId;
             if (YII_UNIT_TESTING) {
                 return array(true, $eml->message);
             } else {
                 return array(true, "");
             }
         } else {
-            return array (false, Yii::t('app', "Email could not be sent"));
+            return array(false, Yii::t('app', "Email could not be sent"));
         }
-	}
+    }
+
 }

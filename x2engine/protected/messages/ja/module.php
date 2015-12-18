@@ -1,8 +1,6 @@
 <?php return array (
-  'Data fields' => 'データフィールド',
   'Module Title' => 'モジュールのタイトル',
   'The name for your new module' => 'あなたの新しいモジュールの名前',
-  'Item Name' => 'アイテム名',
   '(Optional) What to call individual records, e.g. "Create new X"' => '（オプション）個々のレコードを呼び出すために何が、例えば「新しいXを作る」',
   'DB Table Name' => 'DBのテーブル名',
   'Optional (alphanumeric only, must start with a letter)' => 'オプション（英数字のみ、文字で始まる必要があります）',
@@ -15,9 +13,6 @@
   'Create New {X}' => '新しい{X}を作る',
   'Manage {X}' => '{X}を削除する',
   'Invalid table name' => '無効なテーブル名',
-  'A module with that title already exists' => 'そのタイトルを持つモジュールが既に存在しています',
-  'Please fill out the fields below to create a new module.' => '新しいモジュールを作成するには、下のフィールドにご記入ください。',
-  'Enter field name here' => 'フィールド名をここに入力してください',
   'A module with that name already exists' => 'その名前のモジュールが既に存在してい',
   'Unable to create custom module directory.' => 'カスタムモジュールのディレクトリを作成できません。',
   'Unable to create config file for custom module.' => 'カスタムモジュールの設定ファイルを作成できません。',

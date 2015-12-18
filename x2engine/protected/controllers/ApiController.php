@@ -196,18 +196,8 @@ class ApiController extends x2base {
             $this->modelSetUsernameFields($model);
         // Attempt to save the model, and perform special post-save (or error)
         // operations based on the model type:
-        $valid = $model->validate();
-        if($valid){
-            // First (a hack) to ensure that empty numeric fields get set
-            // properly to avoid SQL "invalid value" errors in strict mode
-            foreach($model->fields as $fieldModel)
-                if(in_array($fieldModel->type, array('currency', 'float', 'int')) && !isset($_POST[$fieldModel->fieldName]))
-                    $model->{$fieldModel->fieldName} = $fieldModel->parseValue($model->{$fieldModel->fieldName});
-            $valid = $valid && $model->save();
-        }
-        $this->response['model'] = $model->attributes;
-
-        if($valid){ // New record successfully created
+        if($model->save()){ // New record successfully created
+            $this->response['model'] = $model->attributes;
             $message = "A {$this->modelClass} type record was created"; //sprintf(' <b>%s</b> was created',$this->modelClass);
             switch($this->modelClass){
                 // Special extra actions to take for each model type:
@@ -390,7 +380,6 @@ class ApiController extends x2base {
 		$rType = Yii::app()->request->requestType;
 		switch($rType){
 			case 'GET': // Look up relationships on a model
-				$relationship = new Relationships('api');
 				$attr = array('firstType'=>$_GET['model']);
 				$relationships = Relationships::model()->findAllByAttributes(array_merge(array_intersect_key($_GET,array_flip(Relationships::model()->safeAttributeNames)),$attr));
 				if(empty($relationships))

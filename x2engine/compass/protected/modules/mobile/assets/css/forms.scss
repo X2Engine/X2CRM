@@ -1,0 +1,276 @@
+/*****************************************************************************************
+ * X2Engine Open Source Edition is a customer relationship management program developed by
+ * X2Engine, Inc. Copyright (C) 2011-2015 X2Engine Inc.
+ * 
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU Affero General Public License version 3 as published by the
+ * Free Software Foundation with the addition of the following permission added
+ * to Section 15 as permitted in Section 7(a): FOR ANY PART OF THE COVERED WORK
+ * IN WHICH THE COPYRIGHT IS OWNED BY X2ENGINE, X2ENGINE DISCLAIMS THE WARRANTY
+ * OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
+ * 
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.  See the GNU Affero General Public License for more
+ * details.
+ * 
+ * You should have received a copy of the GNU Affero General Public License along with
+ * this program; if not, see http://www.gnu.org/licenses or write to the Free
+ * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301 USA.
+ * 
+ * You can contact X2Engine, Inc. P.O. Box 66752, Scotts Valley,
+ * California 95067, USA. or at email address contact@x2engine.com.
+ * 
+ * The interactive user interfaces in modified source and object code versions
+ * of this program must display Appropriate Legal Notices, as required under
+ * Section 5 of the GNU Affero General Public License version 3.
+ * 
+ * In accordance with Section 7(b) of the GNU Affero General Public License version 3,
+ * these Appropriate Legal Notices must retain the display of the "Powered by
+ * X2Engine" logo. If the display of the logo is not reasonably feasible for
+ * technical reasons, the Appropriate Legal Notices must display the words
+ * "Powered by X2Engine".
+ *****************************************************************************************/
+
+@import "font-awesome";
+@import "standards";
+@import "mobileColors";
+@import "mobileStandards";
+
+.x2-remote-page {
+
+.errorSummary { display: none; } // this is parsed by JS and displayed in an alert/dialog 
+
+input[type='text'] {
+    &[disabled='disabled'] {
+        background: $lightGray;
+    }
+}
+
+.ui-btn {
+    &.ui-state-disabled {
+        background: $lightGray;
+    }
+}
+
+/*
+star rating
+*/
+
+$starSize: 25px;
+.star-rating-control {
+    & > div {
+        display: inline-block;
+        width: $starSize;
+        height: $starSize;
+        line-height: $starSize;
+        text-align: center;
+        font-size: $starSize;
+        margin-right: 15px;
+        cursor: pointer;
+        a {
+            color: orange !important;
+        }
+        &.rating-cancel {
+            a {
+                color: $errorRed !important;
+            }
+        }
+    }
+}
+
+/*
+custom select menu
+*/
+.ui-selectmenu {
+    border: 1px solid $itemBorderColor;
+    background: white;
+    border-radius: 3px;
+    @include dialog-box-shadow;
+    .ui-icon-delete {
+        display: none;
+    }
+    a {
+        border-top: 1px solid $itemBorderColor;
+        color: $text;
+        text-decoration: none;
+        &.ui-checkbox-on {
+            @include fa-icon('check', 'after');
+            &::after {
+                line-height: 22px;
+                color: green;
+                border: 1px solid $itemBorderColor;
+                text-align: center;
+            }
+        }
+        &.ui-checkbox-off {
+            @include fa-icon('check', 'after');
+            &::after {
+                line-height: 22px;
+                color: green;
+                border: 1px solid $itemBorderColor;
+                content: ' ';
+                text-align: center;
+            }
+        }
+    }
+}
+
+/*
+check boxes
+*/
+$checkBoxWidth: 25px;
+.ui-checkbox {
+    margin: 0;
+    label.ui-checkbox-off,
+    label.ui-checkbox-on {
+        height: 35px;
+        &::after {
+            width: $checkBoxWidth;
+            height: $checkBoxWidth;
+            line-height: $checkBoxWidth;
+            margin: -11px 2px 0 -3px;
+            background: white;
+            border: 1px solid $itemBorderColor;
+            left: 8px;
+        }
+    }
+    label.ui-checkbox-off {
+        &::after { 
+        }
+    }
+    label.ui-checkbox-on {
+        @include fa-icon('check', 'after');
+        &::after {
+            font-size: 19px;
+            text-align: center;
+            color: green;
+        }
+    }
+    input {
+        display: none;
+    }
+}
+
+}
+
+/*
+datepicker. must be outside page selector 
+*/
+
+$datepickerWidth: 295px;
+.ui-datepicker {
+    height: 336px;
+}
+.ui-datetimepicker {
+    height: 436px;
+}
+.ui-datepicker {
+    padding: 18px;
+    width: $datepickerWidth + 18 * 2;
+    position: absolute;
+    top: 0 !important;
+    left: 0 !important;
+    bottom: 0 !important;
+    z-index: 1000;
+    display: block;
+    right: 0 !important;
+    margin: auto !important;
+    background: white;
+    border: 1px solid transparent;
+    border-radius: 3px !important;
+    display: none;
+    @include dialog-box-shadow;
+    .ui-datepicker-header {
+        background: white;
+        width: $datepickerWidth;
+        .ui-datepicker-prev,
+        .ui-datepicker-next {
+            border: none !important;
+            &::before {
+                text-indent: 0;
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 28px;
+                height: 28px;
+                line-height: 28px;
+                font-size: 20px;
+                color: black;
+                background-image: none !important;
+                background: none !important;
+            }
+            &::after {
+                display: none;
+            }
+        }
+        .ui-datepicker-prev {
+            @include fa-icon('arrow-left', 'before');
+        }
+        .ui-datepicker-next {
+            @include fa-icon('arrow-right');
+        }
+    }
+    .ui-datepicker-calendar {
+        background: white;
+        width: $datepickerWidth;
+        border: none;
+        tr, td, th {
+            border: none;
+        }
+        a {
+            color: $text; 
+            font-weight: normal;
+        }
+        .ui-datepicker-today {
+            position: relative;
+            &::before {
+                content: ' ';
+                display: block;
+                width: 41px;
+                height: 41px;
+                background: #D9D9D9;
+                position: absolute;
+                border-radius: 50%;
+                left: 5px;
+                top: -2px;
+            }
+        }
+    }
+    .ui-timepicker-div {
+        .ui-timepicker-select {
+            width: 100%;
+            background: none;
+            border: none;
+        }
+        dt, dd {
+            display: inline-block;
+        }
+        dt {
+            clear: left;
+            float: left;
+        }
+        dd {
+            float: right;
+            width: 223px;
+            margin-left: 0;
+            padding-left: 50px;
+        }
+    }
+    .ui-datepicker-buttonpane {
+        position: relative;
+        top: 12px;
+        button {
+            height: 38px;
+            text-transform: uppercase;
+            &:active, &:focus {
+                border: none;
+                outline: none;
+            }
+            background: none;
+            border: none;
+        }
+    }
+}
+

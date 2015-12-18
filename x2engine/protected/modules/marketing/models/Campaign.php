@@ -148,7 +148,7 @@ class Campaign extends X2Model {
      * Skips HTML purification for the content so that tracking links will work.
      */
     public function setX2Fields(&$data, $filter = false, $bypassPermissions=false) {
-        $originalContent = isset($data['content'])?$data['content']:null;
+        $originalContent = isset($data['content'])?$data['content']:$this->content;
         parent::setX2Fields($data, $filter, $bypassPermissions);
         $this->content = $originalContent;
     }

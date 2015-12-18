@@ -123,7 +123,7 @@ $(function() {
 if(empty($errors) && $googleIntegration && !$auth->getErrors() && $auth->getAccessToken()){
     echo '	<div class="row buttons">'."\n";
     echo '		'.CHtml::submitButton(
-        Yii::t('app', 'Sync'), 
+        Yii::t('app', 'Enable Sync'), 
         array('class' => 'x2-button', 'id' => 'save-button', 'tabindex' => 24))."\n";
     echo "	</div>\n";
 }

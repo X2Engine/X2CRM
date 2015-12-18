@@ -56,12 +56,14 @@ class Groups extends X2Model {
 	public function tableName() { return 'x2_groups'; }
 
 	public function behaviors() {
-		return array_merge(parent::behaviors(),array(
+		$behaviors = array_merge(parent::behaviors(),array(
 			'X2LinkableBehavior'=>array(
 				'class'=>'X2LinkableBehavior',
 				'module'=>'groups'
 			)
 		));
+                unset($behaviors['relationships']);
+                return $behaviors;
 	}
 
 	/**

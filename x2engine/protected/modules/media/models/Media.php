@@ -115,6 +115,24 @@ class Media extends X2Model {
         }
     }
 
+    public function resolveNameConflicts () {
+        $found = (int) Media::model()->countByAttributes (array('fileName' => $this->fileName));
+
+        // rename file if there name conflicts by suffixing "(n)"
+        if ($found) {
+            $count = 1;
+            $newName = $this->fileName;
+            $ext = CFileHelper::getExtension ($newName);
+            $base = preg_replace ('/\.'.preg_quote ($ext).'$/', '', $newName);
+            while ($found) {
+                $newName = "$base($count).$ext";
+                $found = (int) Media::model()->countByAttributes(array('fileName' => $newName));
+                $count++;
+            }
+            $this->fileName = $newName;
+        }
+    }
+
     public function beforeSave() {
         if (empty($this->associationType)) {
             $this->associationType = 'none';
@@ -227,7 +245,7 @@ class Media extends X2Model {
 
     // return an img tag of this file
     // return '' if file is not an image
-    public function getImage($link = false) {
+    public function getImage($link = false, array $htmlOptions=array ()) {
         if (!$this->fileExists() || !$this->isImage()) {
             return '';
         }
@@ -237,9 +255,9 @@ class Media extends X2Model {
         }
 
         $img = CHtml::image(
-            $this->getPublicUrl(), '', array(
+            $this->getPublicUrl(), '', X2Html::mergeHtmlOptions (array(
                 'class' => 'attachment-img',
-            )
+            ), $htmlOptions)
         );
 
         if (!$link) {
@@ -289,9 +307,7 @@ class Media extends X2Model {
             } else {
                 $pathFmt = array(
                     implode(DIRECTORY_SEPARATOR, array('{bp}', 'uploads', 'protected', 'media', '{uploadedBy}', '{fileName}')),
-                    implode(DIRECTORY_SEPARATOR, array('{bp}', 'uploads', 'media', '{uploadedBy}', '{fileName}')),
                     implode(DIRECTORY_SEPARATOR, array('{bp}', 'uploads', 'protected', '{fileName}')),
-                    implode(DIRECTORY_SEPARATOR, array('{bp}', 'uploads', '{fileName}')),
                 );
                 $basePath = realpath(Yii::app()->basePath . DIRECTORY_SEPARATOR . '..');
                 $params = array(
@@ -405,9 +421,7 @@ class Media extends X2Model {
     public static function getFilePath($uploadedBy, $fileName) {
         $possiblePaths = array(
             "uploads/protected/media/{$uploadedBy}/{$fileName}",
-            "uploads/media/{$uploadedBy}/{$fileName}",
             "uploads/protected/{$fileName}",
-            "uploads/{$fileName}"
         );
         foreach($possiblePaths as $path){
             if (file_exists(implode(DIRECTORY_SEPARATOR, array(Yii::app()->basePath, "..", $path)))) {
@@ -462,22 +476,20 @@ class Media extends X2Model {
     // return a link to the Media Module view for this file
     public function getMediaLink() {
         if ($this->drive) {
+            $name = $this->name;
             // return CHtml::link($this->name, "https://drive.google.com/file/d/".$this->fileName, array('target' => '_blank'));
-            return CHtml::link($this->name, Yii::app()->controller->createUrl('/media/', array('view' => $this->id)));
         } else {
-            return CHtml::link($this->fileName, Yii::app()->controller->createUrl('/media/', array('view' => $this->id)));
+            $name = $this->fileName;
         }
+        return CHtml::link(
+            $this->fileName, Yii::app()->controller->createUrl('/media/', array('view' => $this->id)));
     }
     
     //
     public function fileExists() {
         if (file_exists(implode(DIRECTORY_SEPARATOR, array(Yii::app()->basePath, "..", "uploads", "protected", "media", $this->uploadedBy, $this->fileName)))) // try new format
             return true;
-        else if (file_exists(implode(DIRECTORY_SEPARATOR, array(Yii::app()->basePath, "..", "uploads", "media", $this->uploadedBy, $this->fileName)))) // try old format
-            return true;
         else if (file_exists(implode(DIRECTORY_SEPARATOR, array(Yii::app()->basePath, "..", "uploads", "protected", $this->fileName)))) // try old format
-            return true;
-        else if (file_exists(implode(DIRECTORY_SEPARATOR, array(Yii::app()->basePath, "..", "uploads", $this->fileName)))) // try old format
             return true;
         else if ($this->drive)
             return true;
@@ -535,13 +547,13 @@ class Media extends X2Model {
         if ($fileExists == false)
             return $str . ' ' . Yii::t('media', '(deleted)');
 
-        if ($makeLink)
+        if ($makeLink && !Yii::app()->params->isMobileApp)
             $str .= $media->getMediaLink();
         else
             $str .= "";
 
         if ($makeImage && $media->isImage()) { // to render an image, first check file extension
-            $str .= $media->getImage();
+            $str .= '<br>'.$media->getImage();
         }
 
         return $str;

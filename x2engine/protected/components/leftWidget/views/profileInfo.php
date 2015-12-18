@@ -40,7 +40,7 @@
 
 <div id='profile-badge'>
 	<span id='profile-avatar'>
-	<?php Profile::renderFullSizeAvatar ($this->model->id, 45); ?>
+	<?php echo Profile::renderFullSizeAvatar ($this->model->id, 45); ?>
 	</span>
 
 	<span id='info'>

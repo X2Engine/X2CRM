@@ -363,6 +363,9 @@
 				size = null,
 				i = 0,
 				l = 0;
+            /* x2modstart */   
+            $dp.addClass ('ui-datetimepicker');
+            /* x2modend */ 
 
 			// Prevent displaying twice
 			if ($dp.find("div.ui-timepicker-div").length === 0 && o.showTimepicker) {

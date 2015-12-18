@@ -58,4 +58,6 @@
   'Unable to load selected mailbox' => 'Impossible de charger la boîte aux lettres sélectionnée',
   'Invalid folder specified' => 'Dossier spécifié invalide',
   'Auto-log outbound emails' => 'Auto-journal mails sortants',
+  'Auto-log inbound emails' => 'Auto-journal emails entrants',
+  'From' => 'De',
 );

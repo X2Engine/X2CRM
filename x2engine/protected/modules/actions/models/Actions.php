@@ -191,6 +191,7 @@ class Actions extends X2Model {
     public function relations(){
         return array_merge(parent::relations(), array(
             'workflow' => array(self::BELONGS_TO, 'Workflow', 'workflowId'),
+            'workflowStage' => array(self::BELONGS_TO, 'WorkflowStage', 'stageNumber'),
             'actionMetaData' => array(self::HAS_ONE, 'ActionMetaData', 'actionId'),
             'actionText' => array(self::HAS_ONE, 'ActionText', 'actionId'),
             //'assignee' => array(self::BELONGS_TO,'User',array('assignedTo'=>'username')),
@@ -230,6 +231,50 @@ class Actions extends X2Model {
             'recordType' => get_class ($model),
         ), false);
         return $joinModel->save ();
+    }
+
+    /**
+     * Retrieve the associated models
+     * @return array of associated models, indexed by model type
+     */
+    public function getMultiassociations ($modelClass = null) {
+        $multiAssociations = array();
+        $attributes = array ('actionId' => $this->id);
+        if (!is_null($modelClass))
+            $attributes['recordType'] = $modelClass;
+        $joinModels = ActionToRecord::model ()->findAllByAttributes ($attributes);
+        foreach ($joinModels as $model) {
+            $modelRecord = X2Model::model($model->recordType)->findByPk ($model->recordId);
+            $multiAssociations[$model->recordType][] = $modelRecord;
+        }
+        return $multiAssociations;
+    }
+
+    /**
+     * Convert an Action from a single association to multiassociation
+     */
+    public function convertToMultiassociation() {
+        $success = true;
+        if ($this->associationId) {
+            $joinModel = ActionToRecord::model ()->findByAttributes (array (
+                'actionId' => $this->id,
+                'recordId' => $this->associationId,
+                'recordType' => $this->associationType,
+            ));
+            if (!$joinModel) {
+                $joinModel = new ActionToRecord;
+                $joinModel->setAttributes (array (
+                    'actionId' => $this->id,
+                    'recordId' => $this->associationId,
+                    'recordType' => $this->associationType,
+                ), false);
+                $success &= $joinModel->save ();
+            }
+            $this->associationId = null;
+        }
+        $this->associationType = self::ASSOCIATION_TYPE_MULTI;
+        $success &= $this->save();
+        return $success;
     }
 
     /**
@@ -317,7 +362,9 @@ class Actions extends X2Model {
     }
 
     public function getAttribute($name, $renderFlag = false, $makeLinks = false){
-        if ($name === 'actionDescription') {
+        if (in_array ($name, array_keys ($this->metaDataTemp))) {
+            return $this->$name;
+        } elseif ($name === 'actionDescription') {
             $model = ActionText::model ()->findByAttributes (
                 array (
                     'actionId' => $this->id
@@ -519,6 +566,7 @@ class Actions extends X2Model {
         $event->type = 'calendar_event';
         $event->visibility = $this->visibility;
         $event->associationType = 'Actions';
+        $event->associationId = $this->id;
         $event->timestamp = $this->dueDate;
         $event->save ();
     }
@@ -620,7 +668,7 @@ class Actions extends X2Model {
 
     public function setActionDescription($value){
         // Magic setter stores value in actionDescriptionTemp until saved
-        $this->actionDescriptionTemp = $value;
+        $this->actionDescriptionTemp = Fields::getPurifier()->purify($value);
     }
 
     public function getEventSubtype () {
@@ -1289,9 +1337,9 @@ class Actions extends X2Model {
 
         switch ($fieldName) {
             case 'stageNumber':
-                $workflow = $this->workflow;
-                if ($workflow)
-                    return $render ($workflow->getStageName ($this->stageNumber));
+                $workflowStage = $this->workflowStage;
+                if ($workflowStage)
+                    return $render ($workflowStage->name);
                 else
                     return null;
             case 'priority':

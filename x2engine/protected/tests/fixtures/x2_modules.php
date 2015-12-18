@@ -243,7 +243,6 @@ return array(
         'custom' => '0',
         'enableRecordAliasing' => '0',
         'itemName' => NULL,
-        'pseudoModule' => '0',
     ),
 );
 ?>

@@ -130,7 +130,7 @@ class User extends CActiveRecord {
     public function rules(){
         // NOTE: you should only define rules for those attributes that
         // will receive user inputs.
-        return array(
+        $userRules = array(
             array('status', 'required'),
             array('password', 'required', 'on' => 'insert'),
             array('firstName, lastName, username', 'required', 'except' => 'invite'),
@@ -162,6 +162,8 @@ class User extends CActiveRecord {
             // Please remove those attributes that should not be searched.
             array('id, firstName, lastName, username, password, title, department, officePhone, cellPhone, homePhone, address, backgroundInfo, emailAddress, status, lastUpdated, updatedBy, recentItems, topContacts, lastLogin, login', 'safe', 'on' => 'search'),
         );
+        
+        return $userRules;
     }
 
     /**
@@ -371,6 +373,21 @@ class User extends CActiveRecord {
         return array('' => Yii::t('app', 'Anyone')) + $userNames;
     }
 
+    public static function getUserId ($username) {
+        static $cache = array ();
+        if (!$cache) {
+            $records = Yii::app()->db->createCommand()
+                ->select('id, username')
+                ->from('x2_users')
+                ->where('status=1')
+                ->query();
+            foreach ($records as $record) {
+                $cache[$record['username']] = $record['id'];
+            }
+        }
+        if (isset ($cache[$username])) return $cache[$username];
+    }
+
     public function getName(){
         return $this->firstName.' '.$this->lastName;
     }
@@ -384,22 +401,15 @@ class User extends CActiveRecord {
         return $names;
     }
 
+    /**
+     * @return array
+     */
     public static function getTopContacts(){
-        $userRecord = X2Model::model('User')->findByPk(Yii::app()->user->getId());
-
-        //get array of IDs
-        $topContactIds = empty($userRecord->topContacts) ? array() : explode(',', $userRecord->topContacts);
-        $topContacts = array();
-        //get record for each ID
-        foreach($topContactIds as $contactId){
-            $record = X2Model::model('Contacts')->findByPk($contactId);
-            if(!is_null($record)) //only include contact if the contact ID exists
-                $topContacts[] = $record;
-        }
-        return $topContacts;
+        Yii::import('application.components.leftWidget.TopContacts');
+        return TopContacts::getBookmarkedRecords ();
     }
 
-    public static function getRecentItems(){
+    public static function getRecentItems($filter=null){
         $userRecord = X2Model::model('User')->findByPk(Yii::app()->user->getId());
 
         //get array of type-ID pairs
@@ -420,6 +430,9 @@ class User extends CActiveRecord {
                     array_push($recentItems, array('type' => $itemType, 'model' => $record));
             }
 
+        }
+        if (is_callable ($filter)) {
+            $recentItems = array_filter ($recentItems, $filter);
         }
         return $recentItems;
     }
@@ -467,13 +480,19 @@ class User extends CActiveRecord {
     public static function getUserLinks(
         $users, $makeLinks = true, $useFullName = true){
 
+        if (Yii::app()->params->isMobileApp) {
+            $makeGroupLinks = false;
+        } else {
+            $makeGroupLinks = $makeLinks;
+        }
+
         if(!is_array($users)){
             /* x2temp */
             if(preg_match('/^\d+$/',$users)){
                 $group = Groups::model()->findByPk($users);
                 if(isset($group))
                 //$link = $makeLinks ? CHtml::link($group->name, array('/groups/groups/view', 'id' => $group->id)) : $group->name;
-                    $link = $makeLinks ? 
+                    $link = $makeGroupLinks ? 
                         CHtml::link(
                             $group->name, 
                             Yii::app()->controller->createAbsoluteUrl(
@@ -501,13 +520,13 @@ class User extends CActiveRecord {
                 if(isset($userCache[$user])){
                     $group = $userCache[$user];
                     //$links[] =  $makeLinks ? CHtml::link($group->name, array('/groups/groups/view', 'id' => $group->id)) : $group->name;
-                    $links[] = $makeLinks ? CHtml::link($group->name, Yii::app()->controller->createAbsoluteUrl('/groups/groups/view', array('id' => $group->id)), array('style'=>'text-decoration:none;')) : $group->name;
+                    $links[] = $makeGroupLinks ? CHtml::link($group->name, Yii::app()->controller->createAbsoluteUrl('/groups/groups/view', array('id' => $group->id)), array('style'=>'text-decoration:none;')) : $group->name;
                 }else{
                     $group = Groups::model()->findByPk($user);
                     // $group = Groups::model()->findByPk($users);
                     if(isset($group)){
                         //$groupLink = $makeLinks ? CHtml::link($group->name, array('/groups/groups/view', 'id' => $group->id)) : $group->name;
-                        $groupLink = $makeLinks ? CHtml::link($group->name, Yii::app()->controller->createAbsoluteUrl('/groups/groups/view', array('id' => $group->id)),array('style'=>'text-decoration:none;')) : $group->name;
+                        $groupLink = $makeGroupLinks ? CHtml::link($group->name, Yii::app()->controller->createAbsoluteUrl('/groups/groups/view', array('id' => $group->id)),array('style'=>'text-decoration:none;')) : $group->name;
                         $userCache[$user] = $group;
                         $links[] = $groupLink;
                     }
@@ -517,14 +536,14 @@ class User extends CActiveRecord {
                     $model = $userCache[$user];
                     $linkText = $useFullName ? $model->fullName : $model->getAlias ();
                     //$userLink = $makeLinks ? CHtml::link($linkText, array('/profile/view', 'id' => $model->id)) : $linkText;
-                    $userLink = $makeLinks ? CHtml::link($linkText, Yii::app()->controller->createAbsoluteUrl('/profile/view', array('id' => $model->id)),array('style'=>'text-decoration:none;')) : $linkText;
+                    $userLink = $makeLinks ? $model->getLink (array('style'=>'text-decoration:none;')) : $linkText;
                     $links[] = $userLink;
                 }else{
                     $model = X2Model::model('User')->findByAttributes(array('username' => $user));
                     if(isset($model)){
                         $linkText = $useFullName ? $model->fullName : $model->getAlias ();
                         //$userLink = $makeLinks ? CHtml::link($linkText, array('/profile/view', 'id' => $model->id)) : $linkText;
-                        $userLink = $makeLinks ? CHtml::link($linkText, Yii::app()->controller->createAbsoluteUrl('/profile/view', array('id' => $model->id)),array('style'=>'text-decoration:none;')) : $linkText;
+                        $userLink = $makeLinks ? $model->getLink (array('style'=>'text-decoration:none;')) : $linkText;
                         $userCache[$user] = $model;
                         $links[] = $userLink;
                     }

@@ -127,9 +127,7 @@ class X2FlowRecordCreate extends X2FlowAction {
             $model->save()) {
 
             if($this->parseOption('createRelationship', $params)) {
-                Relationships::create (
-                    get_class($params['model']), $params['model']->id, 
-                    get_class ($model), $model->id);
+                $params['model']->createRelationship($model);
             }
 
             return array (

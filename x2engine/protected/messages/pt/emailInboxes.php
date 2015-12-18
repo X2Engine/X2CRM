@@ -58,4 +58,6 @@
   'Unable to load selected mailbox' => 'Não é possível carregar caixa de correio selecionada',
   'Invalid folder specified' => 'Pasta especificada inválida',
   'Auto-log outbound emails' => 'Auto-log-mails de saída',
+  'Auto-log inbound emails' => 'Auto-log-mails de entrada',
+  'From' => 'A partir da',
 );

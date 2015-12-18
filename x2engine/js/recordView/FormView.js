@@ -64,19 +64,22 @@ FormView.prototype.setUpEvents = function() {
 FormView.prototype.setUpQuickCreate = function() {
     var that = this;
     $('.quick-create-button').each (function () {
-        var relatedModelType = $(this).attr ('class').match (/(?:[ ]|^)create-([^ ]+)/)[1];
-        new x2.RelationshipsManager ({
-            element: $(this),
-            modelType: that.modelName,
-            modelId: that.modelId,
-            relatedModelType: relatedModelType,
-            createRecordUrl:   that.quickCreate.urls        [relatedModelType],
-            dialogTitle:       that.quickCreate.dialogTitles[relatedModelType],
-            tooltip:           that.quickCreate.tooltips    [relatedModelType],
-            attributeDefaults: that.quickCreate.defaults    [relatedModelType],
-            lookupFieldElement: $(this).siblings ('.formInputBox').find ('input').last (),
-            isViewPage: false
-        });
+        if ($(this).data ('x2QuickCreateInitialized') !== 1) {
+            var relatedModelType = $(this).attr ('class').match (/(?:[ ]|^)create-([^ ]+)/)[1];
+            $(this).data ('x2QuickCreateInitialized', 1);
+            new x2.RelationshipsManager ({
+                element: $(this),
+                modelType: that.modelName,
+                modelId: that.modelId,
+                relatedModelType: relatedModelType,
+                createRecordUrl:   that.quickCreate.urls        [relatedModelType],
+                dialogTitle:       that.quickCreate.dialogTitles[relatedModelType],
+                tooltip:           that.quickCreate.tooltips    [relatedModelType],
+                attributeDefaults: that.quickCreate.defaults    [relatedModelType],
+                lookupFieldElement: $(this).siblings ('.formInputBox').find ('input').last (),
+                isViewPage: false
+            });
+        }
     });
 };
 

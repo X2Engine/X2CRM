@@ -66,7 +66,7 @@ class RecordAliases extends CActiveRecord {
         $aliases = RecordAliases::model ()->findAll (array (
             'condition' => 'recordType=:type AND recordId=:recordId'.
                 ($aliasType ? ' AND aliasType=:aliasType' : ''),
-            'group' => 'aliasType, alias',
+            'order' => 'aliasType ASC, alias ASC',
             'params' => $params,
         ));
         return $aliases;

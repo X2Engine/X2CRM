@@ -14,7 +14,8 @@ return array(
         'Multi-line translation message with splitting text.' => '',
         'Multi-line translation message with {param} text.' => '',
         'Special character translation: (){}_.-,+^%@*#|&!?/<>;:' => '',
-        'Manage Apps' => ''
+        'To set up a website domain alias for tracking, you\'ll need to create a CNAME DNS resource record through your domain name registrar. Your CNAME record\'s name should refer to a subdomain of your website and should point to the domain of your CRM.' => '',
+        'Manage Apps' => '',        
     ),
     'admin' =>
     array(

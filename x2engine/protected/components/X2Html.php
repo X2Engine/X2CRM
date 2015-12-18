@@ -36,6 +36,17 @@
 
 class X2Html extends CHtml {
 
+    /**
+     * Can be called to guarantee safety of attribute value before inserting into markup. 
+     * Far more restrictive than it needs to be, but useful in cases where a small character set
+     * is expected.
+     */
+     // uncomment if needed
+//    public static function sanitizeAttribute ($value) {
+//        // overly restrictive, but safe, regex. 
+//        return preg_replace ("/[^a-zA-Z0-9-]/", $value);
+//    }
+
     public static function clearfix () {
         return '<span class="clearfix"></span>';
     }
@@ -406,14 +417,14 @@ class X2Html extends CHtml {
 	}
 
     public static function activeMultiTypeAutocomplete (
-        CModel $model, $typeAttribute, $idAttribute, $options) {
+        CModel $model, $typeAttribute, $idAttribute, $options, array $config = array ()) {
 
-        return Yii::app()->controller->widget ('MultiTypeAutocomplete', array (
+        return Yii::app()->controller->widget ('MultiTypeAutocomplete', array_merge (array (
             'model' => $model,
             'selectName' => $typeAttribute,
             'hiddenInputName' => $idAttribute,
-            'options' => $options
-        ), true);
+            'options' => $options,
+        ), $config), true);
 
     }
 

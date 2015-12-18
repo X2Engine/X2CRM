@@ -69,6 +69,15 @@ $contrast: 15%;
     }
 }
 
+@mixin iconButton {
+    color: $gray;
+    /* @theme color: text */ 
+    opacity: 0.7;
+    &:hover {
+        opacity: 1;
+    }
+}
+
 @mixin link {
   &:focus, &:hover {
     color: lighten($darkBlue, $contrast);
@@ -113,6 +122,26 @@ $mobileThreshold: 657px;
     -ms-border-radius: $radius;
 	 -o-border-radius: $radius;
         border-radius: $radius;
+}
+
+/***********************************************************************
+* animations 
+***********************************************************************/
+
+@mixin transition($content) {
+-webkit-transition: $content;
+   -moz-transition: $content;
+    -ms-transition: $content;
+     -o-transition: $content;
+        transition: $content;
+}
+
+@mixin animation($content) {
+-webkit-animation: $content;
+   -moz-animation: $content;
+    -ms-animation: $content;
+     -o-animation: $content;
+        animation: $content;
 }
 
 /***************************************

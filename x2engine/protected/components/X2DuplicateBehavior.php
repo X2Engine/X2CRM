@@ -213,6 +213,7 @@ class X2DuplicateBehavior extends CActiveRecordBehavior {
         }
         $dupeFields = $this->owner->duplicateFields();
         $criteria = new CDbCriteria();
+        $criteria->order = 'createDate ASC';
         foreach ($dupeFields as $fieldName) {
             if (!empty($this->owner->$fieldName)) {
                 $criteria->compare($fieldName, $this->owner->$fieldName, false, $strict?"AND":"OR");

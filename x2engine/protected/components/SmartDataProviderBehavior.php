@@ -82,6 +82,10 @@ class SmartDataProviderBehavior extends CBehavior {
         return $this->owner->getId()!='' ? $this->owner->getId().'_page' : 'page';
     }
 
+    public function getSessionPageKey () {
+        return $this->getStatePrefix ().$this->getPageKey ();
+    }
+
     public function storeSettings () {
 
 		//Sort and page saving code modified from:
@@ -104,12 +108,12 @@ class SmartDataProviderBehavior extends CBehavior {
 		$key = $this->getPageKey ();
         $statePrefix = $this->getStatePrefix ();
 		if(!empty($_GET[$key])){
-			Yii::app()->user->setState($statePrefix.$key, $_GET[$key]);
+			Yii::app()->user->setState($this->getSessionPageKey (), $_GET[$key]);
 		} elseif(!empty($_GET["ajax"])){
 			// page 1 passes no page number, just an ajax flag
-			Yii::app()->user->setState($statePrefix.$key, 1);
+			Yii::app()->user->setState($this->getSessionPageKey (), 1);
 		} else {
-			$val = Yii::app()->user->getState($statePrefix.$key);
+			$val = Yii::app()->user->getState($this->getSessionPageKey ());
 			if(!empty($val))
 				$_GET[$key] = $val;
 		}

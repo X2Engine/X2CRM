@@ -19,5 +19,4 @@
   'Most Recent' => 'Самое новое',
   'Alphabetical' => 'Алфавитный',
   'Most Popular' => 'Самый популярный',
-  'Sticky' => 'Липкий',
 );

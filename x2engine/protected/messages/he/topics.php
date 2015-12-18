@@ -19,5 +19,4 @@
   'Most Recent' => 'הכי עדכני',
   'Alphabetical' => 'אלפביתי',
   'Most Popular' => 'הכי פופולארי',
-  'Sticky' => 'נעוץ',
 );

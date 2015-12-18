@@ -14,7 +14,7 @@
 $iniModules = array(
 	'accounts',
 	'actions',
-    'x2Activity',
+        'x2Activity',
 	'calendar',
 	'charts',
 	'contacts',
@@ -32,8 +32,8 @@ $iniModules = array(
 	'gauges',
 	'services',
         'topics',
-    'bugReports',
-    'emailInboxes',
+        'bugReports',
+        'emailInboxes',
 );
 
 // Search for module availability; criteria = existence of register.php

@@ -85,7 +85,7 @@ class MediaTest extends X2DbTestCase {
         
     public function testGetPath() {
         $source = implode(DIRECTORY_SEPARATOR, array(Yii::app()->basePath, 'tests', 'data', 'media', 'testfile.txt'));
-        $dest = implode(DIRECTORY_SEPARATOR, array(Yii::app()->basePath, '..', 'uploads', 'media', 'admin', 'testfile.txt'));
+        $dest = implode(DIRECTORY_SEPARATOR, array(Yii::app()->basePath, '..', 'uploads', 'protected', 'media', 'admin', 'testfile.txt'));
         FileUtil::ccopy($source, $dest);
         $dest = realpath($dest);
         $testfile = $this->media("testfile");
@@ -97,7 +97,7 @@ class MediaTest extends X2DbTestCase {
 
     public function testDeleteUpload() {
         $source = implode(DIRECTORY_SEPARATOR, array(Yii::app()->basePath, 'tests', 'data', 'media', 'testfile.txt'));
-        $dest = implode(DIRECTORY_SEPARATOR, array(Yii::app()->basePath, '..', 'uploads', 'media', 'admin', 'testfile.txt'));
+        $dest = implode(DIRECTORY_SEPARATOR, array(Yii::app()->basePath, '..', 'uploads', 'protected', 'media', 'admin', 'testfile.txt'));
         FileUtil::ccopy($source, $dest);
         $dest = realpath($dest);
         $testfile = $this->media("testfile");

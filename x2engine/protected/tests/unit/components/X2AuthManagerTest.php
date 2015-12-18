@@ -87,7 +87,7 @@ class X2AuthManagerTest extends X2DbTestCase {
             'ContactsUpdateAccess', 2, array ('scalar' => ''));
         $this->assertEquals ($expectedCacheValue, Yii::app()->authCache->loadAuthCache (2));
         $timeB = $timer->stop ()->getTime ();
-        $this->assertLessThan ($timeA, $timeB);
+        $this->assertLessThanOrEqual ($timeA, $timeB);
     }
 
 }

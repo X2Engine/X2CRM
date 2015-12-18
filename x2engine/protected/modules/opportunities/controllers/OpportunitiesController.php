@@ -64,6 +64,10 @@ class OpportunitiesController extends x2base {
 
     public function behaviors(){
         return array_merge(parent::behaviors(), array(
+            'X2MobileControllerBehavior' => array(
+                'class' => 
+                    'application.modules.mobile.components.behaviors.X2MobileControllerBehavior'
+            ),
             'QuickCreateRelationshipBehavior' => array(
                 'class' => 'QuickCreateRelationshipBehavior',
                 'attributesOfNewRecordToUpdate' => array (
@@ -153,23 +157,6 @@ class OpportunitiesController extends x2base {
         ));
     }
 
-    /* public function create($model,$oldAttributes,$api=0) {
-
-        // process currency into an INT
-//        $model->quoteAmount = Formatter::parseCurrency($model->quoteAmount,false);
-
-        if(isset($model->associatedContacts))
-            $model->associatedContacts = Opportunity::parseContacts($model->associatedContacts);
-        $model->createDate = time();
-        $model->lastUpdated = time();
-        // $model->expectedCloseDate = Formatter::parseDate($model->expectedCloseDate);
-        if($api == 1) {
-            return parent::create($model,$oldAttributes,$api);
-        } else {
-            parent::create($model,$oldAttributes,'0');
-        }
-    } */
-
     /**
      * Creates a new model.
      * If creation is successful, the browser will be redirected to the 'view' page.
@@ -209,32 +196,6 @@ class OpportunitiesController extends x2base {
         }
     }
 
-    /* public function update($model,$oldAttributes,$api=0){
-
-        // process currency into an INT
-        // $model->quoteAmount = Formatter::parseCurrency($model->quoteAmount,false);
-
-        $arr=$model->associatedContacts;
-        if(isset($model->associatedContacts)) {
-            foreach($model->associatedContacts as $contact) {
-                $rel=new Relationships;
-                $rel->firstType='Contacts';
-                $rel->firstId=$contact;
-                $rel->secondType='Opportunity';
-                $rel->secondId=$model->id;
-                if($rel->firstId!="" && $rel->secondId!="")
-                    $rel->save();
-            }
-                $model->associatedContacts=Opportunity::parseContacts($arr);
-        }
-        $model->lastUpdated = time();
-        // if($model->expectedCloseDate!=""){
-            // $model->expectedCloseDate=strtotime($model->expectedCloseDate);
-        // }
-
-        parent::update($model,$oldAttributes,'0');
-    } */
-
     /**
      * Updates a particular model.
      * If update is successful, the browser will be redirected to the 'view' page.
@@ -264,31 +225,7 @@ class OpportunitiesController extends x2base {
             'model'=>$model,
         ));
     }
-    /*
-    public function actionSaveChanges($id) {
-        $opportunity=$this->loadModel($id);
-        if(isset($_POST['Opportunity'])) {
-            $temp=$opportunity->attributes;
-            foreach($opportunity->attributes as $field=>$value){
-                            if(isset($_POST['Opportunity'][$field])){
-                                $opportunity->$field=$_POST['Opportunity'][$field];
-                            }
-                        }
-
-            // process currency into an INT
-            $opportunity->quoteAmount = Formatter::parseCurrency($opportunity->quoteAmount,false);
-
-
-            if($opportunity->expectedCloseDate!=""){
-                $opportunity->expectedCloseDate=strtotime($opportunity->expectedCloseDate);
-            }
-            $changes=$this->calculateChanges($temp,$opportunity->attributes, $opportunity);
-            $opportunity=$this->updateChangelog($opportunity,$changes);
-            $opportunity->save();
-            $this->redirect(array('view','id'=>$opportunity->id));
-        }
-    }
-        */
+  
     public function actionAddUser($id) {
         $users=User::getNames();
         unset($users['admin']);

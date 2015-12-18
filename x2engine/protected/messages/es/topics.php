@@ -19,5 +19,4 @@
   'Most Recent' => 'Más reciente',
   'Alphabetical' => 'Alfabético',
   'Most Popular' => 'Más popular',
-  'Sticky' => 'Sticky',
 );

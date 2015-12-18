@@ -106,7 +106,7 @@ abstract class x2base extends X2Controller {
     }
 
     protected function beforeAction($action = null) {
-        return $this->PermissionsBehavior->beforeAction($action);
+        return $this->PermissionsBehavior->beforeAction($action) && parent::beforeAction ($action);
     }
 
     public function appLockout() {
@@ -137,14 +137,17 @@ abstract class x2base extends X2Controller {
     }
 
     public function actions() {
-        $actions = array(
+        $actions = array_merge (parent::actions (), array(
+            'ajaxGetModelAutocomplete' => array(
+                'class' => 'application.components.actions.AjaxGetModelAutocompleteAction',
+            ),
             'x2GridViewMassAction' => array(
                 'class' => 'X2GridViewMassActionAction',
             ),
             'inlineEmail' => array(
                 'class' => 'InlineEmailAction',
             ),
-        );
+        ));
         if ($this->module) {
             $module = Modules::model ()->findByAttributes (array ('name' => $this->module->name));
             if ($module->enableRecordAliasing) {
@@ -171,9 +174,6 @@ abstract class x2base extends X2Controller {
         return $this->widget ('DetailView', array(
             'model' => $model
         ), true, true);
-        // return $this->renderPartial(
-            // 'application.components.views.@DETAILVIEW', 
-            // array('model' => $model, 'modelName' => get_class ($model)), true, true); 
     }
 
     /**
@@ -197,14 +197,6 @@ abstract class x2base extends X2Controller {
 
         if (($viewFile = $this->getViewFile($view)) !== false) {
 
-            // if(class_exists('ReflectionClass')) {
-            // $counter = abs(crc32($this->route));
-            // $reflection = new ReflectionClass('CWidget');
-            // $property = $reflection->getProperty('_counter');
-            // $property->setAccessible(true);
-            // $property->setValue($counter);
-            // }
-
             $output = $this->renderFile($viewFile, $data, true);
 
             $cs = Yii::app()->clientScript;
@@ -223,20 +215,6 @@ abstract class x2base extends X2Controller {
                     array('{controller}' => get_class($this), '{view}' => $view)));
         }
     }
-
-    /**
-     * Determines if we have permission to edit something based on the assignedTo field.
-     *
-     * @param mixed $model The model in question (subclass of {@link CActiveRecord} or {@link X2Model}
-     * @return boolean
-     * @deprecated
-     */
-//    public function editPermissions(&$model) {
-//        if (Yii::app()->params->isAdmin || !$model->hasAttribute('assignedTo'))
-//            return true;
-//        else
-//            return $model->assignedTo == Yii::app()->user->getName() || in_array($model->assignedTo, Yii::app()->params->groups);
-//    }
 
     /**
      * Determines if we have permission to edit something based on the assignedTo field.
@@ -370,24 +348,6 @@ abstract class x2base extends X2Controller {
      * @param boolean $convertLineBreaks
      */
     public static function convertUrls($text, $convertLineBreaks = true) {
-        /* $text = preg_replace(
-          array(
-          '/(?(?=<a[^>]*>.+<\/a>)(?:<a[^>]*>.+<\/a>)|([^="\']?)((?:https?|ftp|bf2|):\/\/[^<> \n\r]+))/iex',
-          '/<a([^>]*)target="?[^"\']+"?/i',
-          '/<a([^>]+)>/i',
-          '/(^|\s|>)(www.[^<> \n\r]+)/iex',
-          '/(([_A-Za-z0-9-]+)(\\.[_A-Za-z0-9-]+)*@([A-Za-z0-9-]+)(\\.[A-Za-z0-9-]+)*)/iex'
-          ),
-          array(
-          "stripslashes((strlen('\\2')>0?'\\1<a href=\"\\2\">\\2</a>\\3':'\\0'))",
-          '<a\\1',
-          '<a\\1 target="_blank">',
-          "stripslashes((strlen('\\2')>0?'\\1<a href=\"http://\\2\">\\2</a>\\3':'\\0'))",
-          "stripslashes((strlen('\\2')>0?'<a href=\"mailto:\\0\">\\0</a>':'\\0'))"
-          ),
-          $text
-          ); */
-
         /* URL matching regex from the interwebs:
          * http://www.regexguru.com/2008/11/detecting-urls-in-a-block-of-text/
          */
@@ -477,95 +437,6 @@ abstract class x2base extends X2Controller {
      * If creation is successful, the browser will be redirected to the 'view' page.
      */
     public function create($model, $oldAttributes, $api) {
-        // $name = get_class($model);
-        // $model->createDate = time();
-        // if($model->hasAttribute('lastUpdated'))
-            // $model->lastUpdated=time();
-        // if($model->hasAttribute('lastActivity'))
-            // $model->lastActivity = time();
-
-        // if ($model->save()) {
-
-            // relationships (now in X2Model::afterSave())
-            /* if (!($model instanceof Actions)) {
-                $fields = Fields::model()->findAllByAttributes(array('modelName' => $name, 'type' => 'link'));
-                foreach ($fields as $field) {
-                    $fieldName = $field->fieldName;
-                    if (isset($model->$fieldName) && is_numeric($model->$fieldName)) {
-                        if (is_null(Relationships::model()->findBySql("SELECT * FROM x2_relationships WHERE
-                            (firstType='$name' AND firstId='$model->id' AND secondType='" . ucfirst($field->linkType) . "' AND secondId='" . $model->$fieldName . "')
-                            OR (secondType='$name' AND secondId='$model->id' AND firstType='" . ucfirst($field->linkType) . "' AND firstId='" . $model->$fieldName . "')"))) {
-                            $rel = new Relationships;
-                            $rel->firstType = $name;
-                            $rel->secondType = ucfirst($field->linkType);
-                            $rel->firstId = $model->id;
-                            $rel->secondId = $model->$fieldName;
-                            if ($rel->save()) {
-                                $lookup = Relationships::model()->findBySql("SELECT * FROM x2_relationships WHERE
-                                    (firstType='$name' AND firstId='$model->id' AND secondType='" . ucfirst($field->linkType) . "' AND secondId='" . $oldAttributes[$fieldName] . "')
-                                    OR (secondType='$name' AND secondId='$model->id' AND firstType='" . ucfirst($field->linkType) . "' AND firstId='" . $oldAttributes[$fieldName] . "')");
-                                if (isset($lookup))
-                                    $lookup->delete();
-                            }
-                        }
-                    }
-                }
-            } */
-            // $changes = $this->calculateChanges($oldAttributes, $model->attributes, $model);
-            // $this->updateChangelog($model, $changes);
-
-
-            // create event, and notification if record was reassigned - now in X2ChangeLogBehavior::afterSave()
-            /* $event=new Events;
-            if($model->hasAttribute('visibility')){
-                $event->visibility=$model->visibility;
-            }
-            $event->associationType=$name;
-            $event->associationId=$model->id;
-            $event->user=Yii::app()->user->getName();
-            $event->type='record_create';
-            if(!$model instanceof Contacts || $api==0){ // Event creation already handled by web lead.
-                $event->save();
-            }
-            if ($model->hasAttribute('assignedTo')) {
-                if (!empty($model->assignedTo) && $model->assignedTo != Yii::app()->user->getName() && $model->assignedTo != 'Anyone') {
-
-                    $notif = new Notification;
-                    $notif->user = $model->assignedTo;
-                    $notif->createdBy = ($api == 0) ? 'API' : Yii::app()->user->getName();
-                    $notif->createDate = time();
-                    $notif->type = 'create';
-                    $notif->modelType = $name;
-                    $notif->modelId = $model->id;
-                    $notif->save();
-                }
-            } */
-            // if ($model instanceof Actions) {
-                // create reminder - now in Actions::afterCreate()
-                /* if(empty($model->type)){
-                    $event=new Events;
-                    $event->timestamp=$model->dueDate;
-                    $event->visibility=$model->visibility;
-                    $event->type='action_reminder';
-                    $event->associationType="Actions";
-                    $event->associationId=$model->id;
-                    $event->user=$model->assignedTo;
-                    $event->save();
-                } */
-                // if($api==0){
-                    // now in ActionsController::actionCreate
-                    /* if (isset($_GET['inline']) || $model->type == 'note')
-                        if ($model->associationType == 'product' || $model->associationType == 'products')
-                            $this->redirect(array('/products/products/view', 'id' => $model->associationId));
-                        //TODO: avoid such hackery
-                        else if ($model->associationType == 'Campaign')
-                            $this->redirect(array('/marketing/marketing/view', 'id' => $model->associationId));
-                        else
-                            $this->redirect(array('/' . $model->associationType . '/' . $model->associationType . '/view', 'id' => $model->associationId));
-                    else
-                        $this->redirect(array('view', 'id' => $model->id)); */
-                // }
-            // } else if ($api == 0) {
         if($model->save()) {
             if($api == 0)
                 $this->redirect(array('view', 'id' => $model->id));
@@ -582,133 +453,6 @@ abstract class x2base extends X2Controller {
      * @param integer $id the ID of the model to be updated
      */
     public function update($model, $oldAttributes, $api) {
-        // $name = $this->modelClass;
-        // if($model->hasAttribute('lastActivity'))
-            // $model->lastActivity = time();
-
-        // $temp = $oldAttributes;
-        // $changes = $this->calculateChanges($temp, $model->attributes, $model);
-        // $model = $this->updateChangelog($model, $changes);
-/*        if($model->save()) {
-            if( $model instanceof Contacts) {
-            // now in Contacts::afterUpdate()
-                // send subscribe emails if anyone has subscribed to this contact
-                $result = Yii::app()->db->createCommand()
-                        ->select()
-                        ->from('x2_subscribe_contacts')
-                        ->where("contact_id={$model->id}")
-                        ->queryAll();
-
-                $datetime = Formatter::formatLongDateTime(time());
-                $modelLink = CHtml::link($model->name, $this->createAbsoluteUrl('/contacts/' . $model->id));
-                $subject = "X2Engine: {$model->name} updated";
-                $message = "Hello,<br>\n<br>\n";
-                $message .= "You are receiving this email because you are subscribed to changes made to the contact $modelLink in X2Engine. ";
-                $message .= "The following changes were made on $datetime:<br>\n<br>\n";
-
-                foreach($changes as $attribute=>$change) {
-                    if($attribute != 'lastActivity') {
-                        $old = $change['old'] == ''? '-----' : $change['old'];
-                        $new = $change['new'] == ''? '-----' : $change['new'];
-                        $label = $model->getAttributeLabel($attribute);
-                        $message .= "$label: $old => $new<br>\n";
-                    }
-                }
-
-                $message .="<br>\nYou can unsubscribe to these messages by going to $modelLink and clicking Unsubscribe.<br>\n<br>\n";
-
-                $adminProfile = Profile::model()->findByPk(1);
-                foreach($result as $subscription) {
-                    $profile = Profile::model()->findByPk($subscription['user_id']);
-                    if($profile && $profile->emailAddress && $adminProfile && $adminProfile->emailAddress) {
-                        $to = array($profile->fullName, $profile->emailAddress);
-                        $from = array('name'=> $adminProfile->fullName, 'address'=>$adminProfile->emailAddress);
-                        $this->sendUserEmail($to, $subject, $message, null, $from);
-                    }
-                }
-
-            }*/
-            // relationships, now in X2Model::afterSave()
-            /* if (!($model instanceof Actions)) {
-
-                $fields = Fields::model()->findAllByAttributes(array('modelName' => $name, 'type' => 'link'));
-                foreach ($fields as $field) {
-                    $fieldName = $field->fieldName;
-                    if (isset($model->$fieldName) && $model->$fieldName != "") {
-                        if (is_null(Relationships::model()->findBySql("SELECT * FROM x2_relationships WHERE
-                                (firstType=:name AND firstId=:id AND secondType=:linktype AND secondId=:fieldname)
-                                OR (secondType=:name AND secondId=:id AND firstType=:linktype AND firstId=:fieldname)",array(':name'=>$name,':id'=>$model->id,':linktype'=>ucfirst($field->linkType),':fieldname'=>$model->$fieldName)))) {
-
-                            $rel = new Relationships;
-                            $rel->firstType = $name;
-                            $rel->secondType = ucfirst($field->linkType);
-                            $rel->firstId = $model->id;
-                            $rel->secondId = $model->$fieldName;
-                            if ($rel->save()) {
-                                if ($field->linkType != 'contacts' && $field->linkType != 'Contacts') {
-                                    if (is_numeric($oldAttributes[$fieldName]))
-                                        $oldRel = X2Model::model(ucfirst($field->linkType))->findByPk($oldAttributes[$fieldName]);
-                                    else
-                                        $oldRel = X2Model::model(ucfirst($field->linkType))->findByAttributes(array('name' => $oldAttributes[$fieldName]));
-                                }
-                                else {
-                                    $pieces = explode(" ", $oldAttributes[$fieldName]);
-                                    if (count($pieces) > 1) {
-                                        if (is_numeric($oldAttributes[$fieldName]))
-                                            $oldRel = X2Model::model(ucfirst($field->linkType))->findByPk($oldAttributes[$fieldName]);
-                                        else
-                                            $oldRel = X2Model::model(ucfirst($field->linkType))->findByAttributes(array('firstName' => $pieces[0], 'lastName' => $pieces[1]));
-                                    }
-                                }
-                                if (isset($oldRel)) {
-                                    $lookup = Relationships::model()->findBySql("SELECT * FROM x2_relationships WHERE
-                                    (firstType=:name AND firstId=:id AND secondType=:linktype AND secondId=:oldid)
-                                    OR (secondType=:name AND secondId=:id AND firstType=:linktype AND firstId=:oldid)",array(':name'=>$name,':id'=>$model->id,':linktype'=>ucfirst($field->linkType),':oldid'=>$oldRel->id));
-                                    if (isset($lookup)) {
-                                        $lookup->delete();
-                                    }
-                                }
-                            }
-                        }
-                    } elseif ($model->$fieldName == "") {
-                        if ($field->linkType != 'contacts' && $field->linkType != 'Contacts') {
-                            if (is_numeric($oldAttributes[$fieldName]))
-                                $oldRel = X2Model::model(ucfirst($field->linkType))->findByPk($oldAttributes[$fieldName]);
-                            else
-                                $oldRel = X2Model::model(ucfirst($field->linkType))->findByAttributes(array('name' => $oldAttributes[$fieldName]));
-                        }else {
-                            $pieces = explode(" ", $oldAttributes[$fieldName]);
-                            if (count($pieces) > 1) {
-                                if (is_numeric($oldAttributes[$fieldName]))
-                                    $oldRel = X2Model::model(ucfirst($field->linkType))->findByPk($oldAttributes[$fieldName]);
-                                else
-                                    $oldRel = X2Model::model(ucfirst($field->linkType))->findByAttributes(array('firstName' => $pieces[0], 'lastName' => $pieces[1]));
-                            }
-                        }
-                        if (isset($oldRel)) {
-                            $lookup = Relationships::model()->findBySql("SELECT * FROM x2_relationships WHERE
-                                    (firstType=:name AND firstId=:id AND secondType=:linktype AND secondId=:oldid)
-                                    OR (secondType=:name AND secondId=:id AND firstType=:linktype AND firstId=:oldid)",array(':name'=>$name,':id'=>$model->id,':linktype'=>ucfirst($field->linkType),':oldid'=>$oldRel->id));
-                            if (isset($lookup)) {
-                                $lookup->delete();
-                            }
-                        }
-                    }
-                }
-            } */
-            /* if ($model instanceof Actions && $api == 0) {
-                if (isset($_GET['redirect']) && $model->associationType != 'none') { // if the action has an association
-                    if ($model->associationType == 'product' || $model->associationType == 'products')
-                        $this->redirect(array('/products/products/view', 'id' => $model->associationId));
-                    //TODO: avoid such hackery
-                    else if ($model->associationType == 'Campaign')
-                        $this->redirect(array('/marketing/marketing/view', 'id' => $model->associationId));
-                    else
-                        $this->redirect(array('/' . $model->associationType . '/' . $model->associationType . '/view', 'id' => $model->associationId)); // go back to the association
-                } else // no association
-                    $this->redirect(array('/actions/' . $model->id)); // view the action
-            } else if ($api == 0) { */
-
         if($model->save()) {
             if($api == 0)
                 $this->redirect(array('view', 'id' => $model->id));
@@ -745,221 +489,13 @@ abstract class x2base extends X2Controller {
     }
 
     /**
-     * Sets the lastUpdated and updatedBy fields to reflect recent changes.
-     * @param type $model The model to be updated
-     * @return type $model The model with modified attributes
-     */
-/*     protected function updateChangelog($model, $changes) {
-        $model->lastUpdated = time();
-        $model->updatedBy = Yii::app()->user->getName();
-        $model->save();
-        $type = get_class($model);
-        if(is_array($changes)){
-            foreach($changes as $field=>$array){
-                $changelog = new Changelog;
-                $changelog->type = $type;
-                if (!isset($model->id)) {
-                    if ($model->save()) {
-
-                    }
-                }
-                $changelog->itemId = $model->id;
-                if($model->hasAttribute('name')){
-                    $changelog->recordName=$model->name;
-                }else{
-                    $changelog->recordName=$type;
-                }
-                $changelog->changedBy = Yii::app()->user->getName();
-                $changelog->fieldName = $field;
-                $changelog->oldValue=$array['old'];
-                $changelog->newValue=$array['new'];
-                $changelog->timestamp = time();
-
-                if ($changelog->save()) {
-
-                }
-            }
-        }
-
-        if ($changes != 'Create' && $changes != 'Completed' && $changes != 'Edited') {
-            if ($changes != "" && !is_array($changes)) {
-                $pieces = explode("<br />", $change);
-                foreach ($pieces as $piece) {
-                    $newPieces = explode("TO:", $piece);
-                    $forDeletion = $newPieces[0];
-                    if (isset($newPieces[1]) && preg_match('/<b>' . Yii::t('actions', 'color') . '<\/b>/', $piece) == false) {
-                        $changes[] = $newPieces[1];
-                    }
-
-                    preg_match_all('/(^|\s|)#(\w\w+)/', $forDeletion, $deleteMatches);
-                    $deleteMatches = $deleteMatches[0];
-                    foreach ($deleteMatches as $match) {
-                        $oldTag = Tags::model()->findByAttributes(array('tag' => substr($match, 1), 'type' => $type, 'itemId' => $model->id));
-                        if (isset($oldTag))
-                            $oldTag->delete();
-                    }
-                }
-            }
-        }else if ($changes == 'Create' || $changes == 'Edited') {
-            if ($model instanceof Contacts)
-                $change = $model->backgroundInfo;
-            else if ($model instanceof Actions)
-                $change = $model->actionDescription;
-            else if ($model instanceof Docs)
-                $change = $model->text;
-            else
-                $change = $model->name;
-        }
-        if(is_array($changes)){
-            foreach ($changes as $field=>$array) {
-                if(is_string($array['new'])){
-                    preg_match_all('/(^|\s|)#(\w\w+)/', $array['new'], $matches);
-                    $matches = $matches[0];
-                }else{
-                    $matches=array();
-                }
-                foreach ($matches as $match) {
-                    if(!preg_match('/\&(^|\s|)#(\w\w+);/',$match)){
-                        $tag = new Tags;
-                        $tag->type = $type;
-                        $tag->taggedBy = Yii::app()->user->getName();
-                        $tag->type = $type;
-                        //cut out leading whitespace
-                        $tag->tag = trim($match);
-                        if ($model instanceof Contacts)
-                            $tag->itemName = $model->firstName . " " . $model->lastName;
-                        else if ($model instanceof Actions)
-                            $tag->itemName = $model->actionDescription;
-                        else if ($model instanceof Docs)
-                            $tag->itemName = $model->title;
-                        else
-                            $tag->itemName = $model->name;
-                        if (!isset($model->id)) {
-                            $model->save();
-                        }
-                        $tag->itemId = $model->id;
-                        $tag->timestamp = time();
-                        //save tags including # sign
-                        if ($tag->save()) {
-
-                        }
-                    }
-                }
-            }
-        }
-        return $model;
-    }
-
-    /**
      * Delete all tags associated with a model
      */
     public function cleanUpTags($model) {
         Tags::model()->deleteAllByAttributes(array('itemId' => $model->id));
     }
 
-    /* protected function calculateChanges($old, $new, &$model = null) {
-        $arr = array();
-        $keys = array_keys($new);
-        for ($i = 0; $i < count($keys); $i++) {
-            if ($old[$keys[$i]] != $new[$keys[$i]]) {
-                $arr[$keys[$i]] = $new[$keys[$i]];
-                $allCriteria = Criteria::model()->findAllByAttributes(array('modelType' => $this->modelClass, 'modelField' => $keys[$i]));
-                foreach ($allCriteria as $criteria) {
-                    if (($criteria->comparisonOperator == "=" && $new[$keys[$i]] == $criteria->modelValue)
-                            || ($criteria->comparisonOperator == ">" && $new[$keys[$i]] >= $criteria->modelValue)
-                            || ($criteria->comparisonOperator == "<" && $new[$keys[$i]] <= $criteria->modelValue)
-                            || ($criteria->comparisonOperator == "change" && $new[$keys[$i]] != $old[$keys[$i]])) {
-
-                        $users = explode(", ", $criteria->users);
-
-                        if ($criteria->type == 'notification') {
-                            foreach ($users as $user) {
-                                $event=new Events;
-                                $event->user=$user;
-                                $event->associationType='Notifications';
-                                $event->type='notif';
-
-                                $notif = new Notification;
-                                $notif->type = 'change';
-                                $notif->fieldName = $keys[$i];
-                                $notif->modelType = get_class($model);
-                                $notif->modelId = $model->id;
-
-                                if ($criteria->comparisonOperator == 'change') {
-                                    $notif->comparison = 'change';    // if the criteria is just 'changed'
-                                    $notif->value = $new[$keys[$i]];   // record the new value
-                                } else {
-                                    $notif->comparison = $criteria->comparisonOperator;  // otherwise record the operator type
-                                    $notif->value = substr($criteria->modelValue, 0, 250); // and the comparison value
-                                }
-                                $notif->user = $user;
-                                $notif->createdBy = Yii::app()->user->name;
-                                $notif->createDate = time();
-
-                                if($notif->save()){
-                                    $event->associationId=$notif->id;
-                                    $event->save();
-                                }
-                            }
-                        } elseif ($criteria->type == 'action') {
-                            $users = explode(", ", $criteria->users);
-                            foreach ($users as $user) {
-                                $action = new Actions;
-                                $action->assignedTo = $user;
-                                if ($criteria->comparisonOperator == "=") {
-                                    $action->actionDescription = "A record of type " . $this->modelClass . " has been modified to meet $criteria->modelField $criteria->comparisonOperator $criteria->modelValue" . " by " . Yii::app()->user->getName();
-                                } else if ($criteria->comparisonOperator == ">") {
-                                    $action->actionDescription = "A record of type " . $this->modelClass . " has been modified to meet $criteria->modelField $criteria->comparisonOperator $criteria->modelValue" . " by " . Yii::app()->user->getName();
-                                } else if ($criteria->comparisonOperator == "<") {
-                                    $action->actionDescription = "A record of type " . $this->modelClass . " has been modified to meet $criteria->modelField $criteria->comparisonOperator $criteria->modelValue" . " by " . Yii::app()->user->getName();
-                                } else if ($criteria->comparisonOperator == "change") {
-                                    $action->actionDescription = "A record of type " . $this->modelClass . " has had its $criteria->modelField field changed from " . $old[$keys[$i]] . " to " . $new[$keys[$i]] . " by " . Yii::app()->user->getName();
-                                }
-                                $action->dueDate = mktime('23', '59', '59');
-                                $action->createDate = time();
-                                $action->lastUpdated = time();
-                                $action->updatedBy = 'admin';
-                                $action->visibility = 1;
-                                $action->associationType = strtolower($this->modelClass);
-                                $action->associationId = $new['id'];
-
-                                $action->associationName = $model->name;
-                                $action->save();
-                            }
-                        } elseif ($criteria->type == 'assignment') {
-                            $model->assignedTo = $criteria->users;
-
-                            if ($model->save()) {
-                                $event=new Events;
-                                $event->type='notif';
-                                $event->user=$model->assignedTo;
-                                $event->associationType='Notifications';
-
-                                $notif = new Notification;
-                                $notif->user = $model->assignedTo;
-                                $notif->createDate = time();
-                                $notif->type = 'assignment';
-                                $notif->modelType = $this->modelClass;
-                                $notif->modelId = $new['id'];
-                                if($notif->save()){
-                                    $event->associationId=$notif->id;
-                                    $event->save();
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        $changes=array();
-        foreach ($arr as $key => $item) {
-            if(is_array($old[$key]))
-                $old[$key] = implode(', ',$old[$key]);
-            $changes[$key]=array('old'=>$old[$key],'new'=>$new[$key]);
-        }
-        return $changes;
-    } */
-
+    
     public function decodeQuotes($str) {
         return preg_replace('/&quot;/u', '"', $str);
     }
@@ -1044,19 +580,7 @@ abstract class x2base extends X2Controller {
                     return false;
             } else
                 return false;
-
-            // if(preg_match('/^"(.*)"/i',$token,$matches)) {        // if there is a name like <First Last> at the beginning,
-            // $token = trim(preg_replace('/^".*"/i','',$token));    // remove it
-            // if(isset($matches[1]))
-            // $name = trim($matches[1]);                        // and put it in $name
-            // }
-            // $address = trim(preg_replace($token);
-            // if(PHPMailer::ValidateAddress($address))
-            // $mailingList[] = array($address,$name);
-            // else
-            // return false;
         }
-        // echo var_dump($mailingList);
 
         if (count($mailingList) < 1)
             return false;
@@ -1090,17 +614,6 @@ abstract class x2base extends X2Controller {
         $filterChain->run();
     }
 
-
-    // This function needs to be made in your extensions of the class with similar code.
-    // Replace "Opportunities" with the Model being used.
-    /*     * public function loadModel($id)
-      {
-      $model=Opportunity::model()->findByPk((int)$id);
-      if($model===null)
-      throw new CHttpException(404,'The requested page does not exist.');
-      return $model;
-      } */
-
     /**
      * Performs the AJAX validation.
      * @param CModel the model to be validated
@@ -1110,18 +623,6 @@ abstract class x2base extends X2Controller {
             echo CActiveForm::validate($model);
             Yii::app()->end();
         }
-    }
-
-    /**
-     * Called by the InlineRelationships widget to render autocomplete widgets 
-     * @param string $modelType
-     */
-    public function actionAjaxGetModelAutocomplete ($modelType, $name=null) {
-        $htmlOptions = array ();
-        if ($name) {
-            $htmlOptions['name'] = $name;
-        }
-        X2Model::renderModelAutocomplete ($modelType, true, $htmlOptions);
     }
 
     /**
@@ -1355,32 +856,6 @@ abstract class x2base extends X2Controller {
         }
     }
 
-    public function badRequest ($message=null) {
-        throw $this->badRequestException ($message);
-    }
-
-    /**
-     * More reliable alternative to CHttpRequest::getIsAjaxRequest in cases where 'x2ajax' or
-     * 'ajax' parameters are being used.
-     * See http://www.yiiframework.com/forum/index.php?/topic/4945-yiiapp-request-isajaxrequest/
-     */
-    public function isAjaxRequest () {
-        return 
-            Yii::app()->request->getIsAjaxRequest () ||
-            isset ($_POST['x2ajax']) && $_POST['x2ajax'] || 
-            isset ($_POST['ajax']) && $_POST['ajax'] || 
-            isset ($_GET['x2ajax']) && $_GET['x2ajax'] || 
-            isset ($_GET['ajax']) && $_GET['ajax'];
-    }
-
-    /**
-     * @return CHttpException 
-     */
-    protected function badRequestException ($message=null) {
-        if ($message === null) $message = Yii::t('app', 'Bad request.');
-        return new CHttpException (400, $message);
-    }
-
     public function actionQuickView ($id) {
         $model = $this->loadModel($id);
         if (!FormLayout::model()->findByAttributes (array ('model' => get_class ($model)))) {
@@ -1394,15 +869,6 @@ abstract class x2base extends X2Controller {
                     'scenario' => 'Inline',
                     'nameLink' => true
                 )));
-                // $this->renderPartial(
-                    // 'application.components.views.@DETAILVIEW', 
-                //     array_merge( array(
-                //         'model' => $model,
-                //         'modelName' => get_class ($model),
-                //         'scenario'=>'Inline',
-                //         'nameLink' => true,
-                //     ), $options)
-                // , false, true);
             });
             return;
         }
@@ -1425,4 +891,20 @@ abstract class x2base extends X2Controller {
         return array();
     }
 
+    protected function getModelFromTypeAndId ($modelName, $modelId, $x2ModelOnly=true) {
+        $model = X2Model::getModelOfTypeWithId ($modelName, $modelId);
+        if (!$model || ($x2ModelOnly && !($model instanceof X2Model))) {
+            throw new CHttpException (400, Yii::t('app', 'Invalid record type or record id')); 
+        }
+        return $model;
+    }
+
+    protected function getModelsFromTypeAndId (array $recordInfo) {
+        // validate record info and look up models
+        foreach ($recordInfo as $info) {
+            $model = $this->getModelFromTypeAndId ($info[0], $info[1]);
+            $models[] = $model;
+        }
+        return $models;
+    }
 }

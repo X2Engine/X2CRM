@@ -47,12 +47,12 @@ abstract class BaseWorkflowTrigger extends X2FlowTrigger {
 		$workflows = Workflow::getList(false);	// no "none" options
 
 		return array(
-            'title'=>$this->title,
+            'title'=>Yii::t('studio',$this->title),
             'modelClass'=>'modelClass',
 			'options' => array(
 				array(
                     'name'=>'workflowId',
-                    'label'=>'Process',
+                    'label'=>Yii::t('studio','Process'),
                     'type'=>'dropdown',
                     'options'=>$workflows
                 ),

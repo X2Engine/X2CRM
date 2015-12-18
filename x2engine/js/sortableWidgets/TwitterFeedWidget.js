@@ -102,11 +102,13 @@ TwitterFeedWidget.prototype._setUpScreenNameSelection = function () {
 
 TwitterFeedWidget.prototype._init = function () {
     SortableWidget.prototype._init.call (this);
-    this._paginationButton$ = this.element.find ('.load-more-tweets-button');
-    this._listView$ = this.element.find ('.list-view');
-    this._origListViewHeight = this._listView$.height ();
-    this._setUpPaginationButtonBehavior ();
-    this._setUpScreenNameSelection ();
+    if (!this.hasError) {
+        this._paginationButton$ = this.element.find ('.load-more-tweets-button');
+        this._listView$ = this.element.find ('.list-view');
+        this._origListViewHeight = this._listView$.height ();
+        this._setUpPaginationButtonBehavior ();
+        this._setUpScreenNameSelection ();
+    }
 };
 
 return TwitterFeedWidget;

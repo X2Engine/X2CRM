@@ -51,6 +51,22 @@ class TestingAuxLib  {
         return array ($arg1, $arg2);
     }
 
+    private static $_caseTimer;
+    public static function getCaseTimer () {
+        if (!isset (self::$_caseTimer)) {
+            self::$_caseTimer = new TimerUtil;
+        }
+        return self::$_caseTimer;
+    }
+
+    private static $_classTimer;
+    public static function getClassTimer () {
+        if (!isset (self::$_classTimer)) {
+            self::$_classTimer = new TimerUtil;
+        }
+        return self::$_classTimer;
+    }
+
     /**
      * Updates timestamps of session records 
      */
@@ -59,6 +75,12 @@ class TestingAuxLib  {
             $model = Session::model ()->findByAttributes ($session);
             $model->lastUpdated = time ();
             $model->save ();
+        }
+    }
+
+    public static function log ($str) {
+        if(X2_TEST_DEBUG_LEVEL > 0){
+            /**/println("\n[".date ('H:i:s', time ())."] ".$str);
         }
     }
 
@@ -181,7 +203,7 @@ class TestingAuxLib  {
     }   
 
     public static function runCronCommand () {
-        self::printExec ('curl '.TEST_BASE_URL.'api/x2cron &>/dev/null');
+        self::printExec ('curl -s '.TEST_BASE_URL.'api/x2cron &>/dev/null');
     }
 
 // not tested yet, might eventually be useful

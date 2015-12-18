@@ -58,4 +58,6 @@
   'Unable to load selected mailbox' => '選択したメールボックスを読み込むことができません',
   'Invalid folder specified' => '無効なフォルダ指定',
   'Auto-log outbound emails' => 'アウトバウンドメールを自動ログイン',
+  'Auto-log inbound emails' => '受信メールの自動ログイン',
+  'From' => 'から',
 );

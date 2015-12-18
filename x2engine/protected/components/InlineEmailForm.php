@@ -58,6 +58,8 @@ class InlineEmailForm extends X2Widget {
 
     public $attributes;
 
+    public $instantiateJSClassOnInit = true;
+
     /**
      * @var string|null $action inline email form action
      */
@@ -194,8 +196,6 @@ class InlineEmailForm extends X2Widget {
             $this->insertableAttributes = $this->model->insertableAttributes;
         }
 
-        $this->registerJSClassInstantiation ();
-
         // Load resources:
         Yii::app()->clientScript->registerPackage ('emailEditor');
 
@@ -215,13 +215,12 @@ class InlineEmailForm extends X2Widget {
             "window.hideInlineEmail = false;\n"
         ), CClientScript::POS_HEAD);
 
-        $this->registerPackages ();
         parent::init();
     }
 
 
     public function getJSClassParams () {
-        return array (
+        return array_merge (parent::getJSClassParams (), array (
             'translations' => array (
                 'defaultTemplateDialogTitle' => 
                     Yii::t('app', 'Set a Default Email Template'),
@@ -237,14 +236,7 @@ class InlineEmailForm extends X2Widget {
             'rmTmpUploadUrl' => Yii::app()->createUrl('/site/removeTmpUpload'),
             'type' => $this->type,
             'enableResizability' => $this->enableResizability
-        );
-    }
-
-    public function registerJSClassInstantiation () {
-        Yii::app()->clientScript->registerScript('InlineEmailFormJS',"
-        x2.inlineEmailEditorManager = new x2.{$this->JSClass} (".
-            CJSON::encode ($this->getJSClassParams ()).");
-        ", CClientScript::POS_END);
+        ));
     }
 
     public function run(){

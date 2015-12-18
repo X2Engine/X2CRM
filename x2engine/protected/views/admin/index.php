@@ -231,9 +231,9 @@ if(Yii::app()->session['versionCheck']==false && $admin->updateInterval > -1 && 
         <?php $editionEnd('pro'); ?>
     </div>
     <div class="row">
-        <div class="cell span-6"><?php echo CHtml::link(Yii::t('admin','Manage Menu Items'),array('/admin/manageModules')); ?><br><?php echo Yii::t('admin','Re-order and add or remove top bar tabs');?></div>
-        <div class="cell span-6"><?php echo CHtml::link(Yii::t('admin','Upload your logo'),array('/admin/uploadLogo')); ?><br><?php echo Yii::t('admin','Upload your own logo for the top menu bar and login screen');?></div>
-        <div class="cell span-6"><?php echo CHtml::link(Yii::t('admin','Create a Document Page'),array('/admin/createPage')); ?><br><?php echo Yii::t('admin','Add a static document page to the top bar');?></div>
+        <div class="cell span-6"><?php echo CHtml::link(Yii::t('admin','Manage Menu Items'),array('/admin/manageModules')); ?><br><?php echo Yii::t('admin','Re-order, add, or remove top bar links');?></div>
+        <div class="cell span-6"><?php echo CHtml::link(Yii::t('admin','Upload Your Logo'),array('/admin/uploadLogo')); ?><br><?php echo Yii::t('admin','Upload your own logo for the top menu bar and login screen');?></div>
+        <div class="cell span-6"><?php echo CHtml::link(Yii::t('admin','Add Top Bar Link'),array('/admin/createPage')); ?><br><?php echo Yii::t('admin','Add a link to the top bar');?></div>
     </div>
     <div class="row">
         <div class="cell span-6"><?php echo CHtml::link(Yii::t('admin','Edit Global CSS'),array('/admin/editGlobalCss')); ?><br><?php echo Yii::t('admin','Edit globally-applied stylesheet');?></div>
@@ -379,7 +379,7 @@ if(Yii::app()->session['versionCheck']==false && $admin->updateInterval > -1 && 
         </div>
         <?php $editionEnd('pla'); ?>
         <?php $editionStart('pla'); ?>
-        <div class="cell span-6"><?php echo CHtml::link(Yii::t('admin','Advanced Security Settings'),array('/admin/securitySettings')); ?><br><?php echo Yii::t('admin','Configure IP access control and failed login penalties to help prevent unauthorized access to the system');?></div>
+        <div class="cell span-6"><?php echo CHtml::link(Yii::t('admin','Advanced Security Settings'),array('/admin/securitySettings')); ?><br><?php echo Yii::t('admin','Configure IP access control, failed login penalties, and user password requirements to help prevent unauthorized access to the system');?></div>
         <?php $editionEnd('pla'); ?>
     </div>
 </div>

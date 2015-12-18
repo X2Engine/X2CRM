@@ -36,6 +36,7 @@
 Yii::app()->clientScript->registerCssFile(Yii::app()->theme->baseUrl.'/css/error.css');
 $errorTitle = Yii::t('app','Error {code}',array('{code}'=>$code));
 $this->pageTitle=Yii::app()->settings->appName . ' - ' . $errorTitle;
+
 ?>
 <i class="fa fa-exclamation-triangle fa-3x"></i>
 <h1 id="h1-error"><?php echo Yii::t('app','Error '.$code); ?></h1>

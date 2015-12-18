@@ -593,6 +593,10 @@ resMap2Request = '.$this->resMap2Request.';
 if (!$.nlsc)
 	$.nlsc={resMap:{}};
 
+/* x2modstart */ 
+$.nlsc.cacheBuster = '.CJSON::encode (Yii::app()->clientScript->getCacheBuster ()).'
+/* x2modend */ 
+
 $.nlsc.normUrl=function(url) {
 	if (!url) return null;
 	if (cont) {
@@ -612,7 +616,14 @@ $.nlsc.normUrl=function(url) {
     url didn\'t already have get parameters before the jQuery cache busting parameter was added.
     */
 	//return url.replace(/\?*(_=\d+)?$/g,"");
-	return url.replace(/(\&|\?)?(_=\d+)?$/g,"");
+	url = url.replace(/(\&|\?)?(_=\d+)?$/g,"");
+
+    // also remove cache busting param. We don\'t want to have an asset reloaded during an AJAX
+    // request just because there\'s a new version
+
+    if ($.nlsc.cacheBuster)
+	    url = url.replace(new RegExp (\'(\\\\&|\\\\?)?\' + $.nlsc.cacheBuster + "$", "g"),"");
+    return url;
     /* x2modend */ 
 }
 $.nlsc.h=function(s) {
@@ -656,7 +667,6 @@ var c = {
         /* x2modend */ 
 		
 		var url = $.nlsc.normUrl(opt.url);
-
 		if (!url) return true;
 		if ($.nlsc.resMap[url]) return false;
 		$.nlsc.resMap[url] = $.nlsc.h(url);

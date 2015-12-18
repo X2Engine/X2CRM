@@ -36,85 +36,190 @@
 
 Yii::import ('application.modules.mobile.components.ThemeGenerator.*');
 
+
 $isGuest = Yii::app()->user->isGuest;
 $cs = Yii::app()->clientScript;
+$cs->useAbsolutePaths = true;
 $cs->scriptMap = array();
-$baseUrl = $this->module->assetsUrl;
-$cs->registerCoreScript('jquery');
-$cs->registerPackage('jquerymobile');
-$cs->registerCssFile($this->module->getAssetsUrl() . '/css/jqueryMobileCssOverrides.css');
-$cs->registerCssFile($this->module->getAssetsUrl() . '/css/main.css');
-$cs->registerScriptFile(Yii::app()->baseUrl.'/js/webtoolkit.sha256.js');
-
-$cs->registerScriptFile($baseUrl . '/js/x2mobile.js');
-
-$jsVersion = '?'.Yii::app()->params->buildDate;
-$cs->registerScriptFile(Yii::app()->getBaseUrl ().'/js/auxlib.js'.$jsVersion);
-$cs->registerScriptFile(Yii::app()->getBaseUrl ().'/js/jstorage.min.js'.$jsVersion)
-   ->registerScriptFile(Yii::app()->getBaseUrl ().'/js/notifications.js'.$jsVersion, 
-     CClientScript::POS_BEGIN)
-   ->registerScriptFile(Yii::app()->getBaseUrl ().'/js/Attachments.js'.$jsVersion, 
-     CClientScript::POS_HEAD);
-$cs->registerScript ('X2ClientScript.registerAttachments',"
-    x2.attachments = new x2.Attachments ({
-        translations: ".CJSON::encode (array (
-            'filetypeError' => Yii::t('app', '"{X}" is not an allowed filetype.'),
-        ))."
-    });
-", CClientScript::POS_END);
-
-if (Yii::app()->user->isGuest) {
-    MobileLoginThemeHelper::init();
-    MobileLoginThemeHelper::render();
-} else {
-    ThemeGenerator::render();
+$baseUrl = $this->assetsUrl;
+if ($this->includeDefaultJsAssets ()) { 
+    $cs->registerCoreScript('jquery');
+    $cs->registerPackage('jqueryMobileJs');
+    $cs->registerPackage('x2TouchJs');
+    $cs->registerPackage('x2TouchSupplementalJs');
+     
+}
+if ($this->includeDefaultCssAssets ()) { 
+    $cs->registerPackage('jqueryMobileCss');
+    $cs->registerPackage('x2TouchCss');
+    $cs->registerPackage('x2TouchSupplementalCss');
+         
 }
 
+if (!$this->isAjaxRequest ()) {
+    $cs->registerScriptFile($baseUrl . '/js/x2mobile.js', CClientScript::POS_READY);
+}
+
+if (!$this->isAjaxRequest ()) {
+    // Needed since jQM doesn't trigger the page load/show event for pages that are included in 
+    // the original document. 
+    // Allows initial page load and ajax page loads to be handled with the same events. 
+    Yii::app()->clientScript->registerScript('jqueryPageLoadEventFix',"
+        $(function () {
+            //$(document).trigger ('pagecontainerload');
+            //$(document).trigger ('pagecontainerbeforeshow');
+            //$(document).trigger ('pagecontainershow');
+        });
+    ", CClientScript::POS_END);
+}
+
+$this->onPageLoad ("function () {
+    if (!x2.attachments) {
+        x2.attachments = new x2.Attachments ({
+            translations: ".CJSON::encode (array (
+                'filetypeError' => Yii::t('app', '"{X}" is not an allowed filetype.'),
+            ))."
+        });
+    }
+}");
 
 ?><!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 <head>
+<?php
+if (!$this->isAjaxRequest ()) {
+?>
 <meta charset="UTF-8" />
 <meta name="language" content="en" />
 <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1, maximum-scale=1"/> 
 <meta name="apple-mobile-web-app-capable" content="yes"/>
 <link rel="icon" href="<?php echo Yii::app()->getBaseUrl(); ?>/images/favicon.ico" type="image/x-icon0" />
 <link rel="shortcut icon" href="<?php echo Yii::app()->getBaseUrl(); ?>/images/favicon.ico" type="image/x-icon" />
-<title><?php echo CHtml::encode($this->pageTitle); ?></title>
+<title><?php echo CHtml::encode($this->headerTitle); ?></title>
+<?php
+}
+?>
 </head>
-<body class='mobile-body'> 
-<div id="container"> 
-	<div id="<?php echo $this->pageId; ?>" data-role="page" data-url="<?php echo $this->dataUrl; ?>/" data-theme="a">
-		<!--div data-role="header" data-theme="a">
-			<div  class="figure"><a href="<?php echo $this->createUrl('/mobile/site/home');?>" rel="external"><img style="margin-left:20px;" src="<?php echo $this->module->getAssetsUrl() . '/css/images/x2touch-logo.png'; ?>" alt="x2engine" /></a></div>
-		</div-->
+<body class='mobile-body<?php 
+     
+?>'> 
+<?php
+
+//if (Yii::app()->user->isGuest) {
+//    MobileLoginThemeHelper::init();
+//    MobileLoginThemeHelper::render();
+//} else {
+//    ThemeGenerator::render();
+//}
+
+?>
+
+<div id="<?php echo $this->pageId.'-'.$this->getUniquePageIdSuffix (); ?>" data-role="page" 
+ data-page-id="<?php echo $this->pageId; ?>"
+ class='<?php echo $this->pageId.' '.$this->pageClass; ?> x2-remote-page' 
+ data-url="<?php echo $this->dataUrl; ?>/" data-theme="a">
+
+<div class='flashes-container'>
+<?php
+X2Html::getFlashes ();
+?>
+</div>
+
+    <div id='header' data-role='header'>
+        <a href='#<?php echo $this->pageId; ?>-panel' style='display: none;' 
+          class='ui-btn-left ui-btn show-left-menu-button'>
+            <i class='fa fa-bars'></i>
+        </a>
+        <h1 class='page-title'>
+        <?php
+        echo CHtml::encode ($this->headerTitle);
+        ?>
+        </h1>
+        <a href='#settings-menu' data-rel='popup' data-transition='pop' 
+         class='ui-btn-right ui-btn show-settings-menu'>
+            <i class='fa fa-ellipsis-v'></i>
+        </a>
+        <div class='header-content-center'>
+        </div>
+        <div class='header-content-right'>
+        </div>
+    </div>
+
+    <div data-role='panel' data-display='push' class='x2touch-panel no-scrollbar' 
+     id='<?php echo $this->pageId; ?>-panel'>
+        <?php
+        //if ($this->includeDefaultJsAssets ()) { 
+        if (!Yii::app()->user->isGuest) { 
+        ?>
+        <div class='panel-contents'>
+        <?php
+        $this->widget ('application.modules.mobile.components.panel.Panel');
+        ?>
+        </div>
+        <?php
+        } else { // only the recent items need to be refreshed on ajax request
+        ?>
+        <div class='refresh-content' data-refresh-selector='.panel-recent-item'>
+        <?php
+        $panel = $this->createWidget ('application.modules.mobile.components.panel.Panel');
+        echo $panel->renderItems (function ($section) {
+            return $section === 'recentItems';
+        });
+        ?>
+        </div>
+        <?php
+        }
+        ?>
+    </div>
+<script>
+if (typeof x2 === 'undefined') x2 = {};
+x2.isAjaxRequest = <?php echo $this->isAjaxRequest () ? 'true' : 'false'; ?>;
+ 
+x2.csrfToken = <?php echo CJSON::encode (Yii::app()->request->getCsrfToken ()); ?>;
+</script>
+<?php
+if ($this->isAjaxRequest ()) {
+    // when the page is being updated via ajax, scripts must be registered inside body so that 
+    // they're fetched by jQuery mobile
+    $cs = Yii::app()->clientScript;
+    $assets = $cs->renderX2TouchAssets ();
+    echo $assets;
+}
+?>
 		<div data-role="content">
 			<?php
 			echo $content;
 			?>
 		</div>
+        <?php
+        if (false) {
+        ?>
 		<div id='footer' data-role="footer" data-theme="a">
 			<p>&nbsp;&nbsp;&copy;<?php 
                 echo date('Y') . ' ' . CHtml::link('X2Engine Inc.', 'http://www.x2engine.com')." ";
 				echo Yii::t('app', 'Rights Reserved.'); 
-                echo '&nbsp;';
-				echo CHtml::link(
-                    Yii::t('mobile', 'Go to Full Site'),
-                    Yii::app()->getBaseUrl().'/index.php/site/index?mobile=false',
-                    array(
-                        'rel'=>'external',
-                        'onClick'=>'setMobileBrowserFalse()',
-                        'class'=>'full-site-link',
-                    )); 
+                 
+                    echo '&nbsp;';
+                    echo CHtml::link(
+                        Yii::t('mobile', 'Go to Full Site'),
+                        Yii::app()->getBaseUrl().'/index.php/site/index?mobile=false',
+                        array(
+                            'rel'=>'external',
+                            'onClick'=>'setMobileBrowserFalse()',
+                            'class'=>'full-site-link',
+                        )); 
+                 
                 ?>
 			</p>
             <div id='logo-container'>
             <?php
-            echo CHtml::image(Yii::app()->params->x2Power,'',array('id'=>'powered-by-x2engine')); 
+            //echo CHtml::image(Yii::app()->params->x2Power,'',array('id'=>'powered-by-x2engine')); 
             ?>
             </div>
 		</div>
-	</div>
+        <?php
+        }
+        ?>
 </div>
 </body>
 </html>

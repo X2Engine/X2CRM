@@ -640,7 +640,7 @@ class X2Flow extends X2ActiveRecord {
     public static function getModelTypes($assoc=false) {
         return array_diff_key (
             X2Model::getModelTypes ($assoc), 
-            array_flip (array ('Fingerprint', 'Charts')));
+            array_flip (array ('Fingerprint', 'Charts','EmailInboxes')));
     }
 
     /**

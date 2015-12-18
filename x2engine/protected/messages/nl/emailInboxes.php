@@ -58,4 +58,6 @@
   'Unable to load selected mailbox' => 'Niet in staat om geselecteerde mailbox laden',
   'Invalid folder specified' => 'Ongeldige map opgegeven',
   'Auto-log outbound emails' => 'Auto-log uitgaande e-mails',
+  'Auto-log inbound emails' => 'Auto-log inkomende e-mails',
+  'From' => 'Van',
 );

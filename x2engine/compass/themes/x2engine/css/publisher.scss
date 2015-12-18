@@ -41,6 +41,12 @@
         border: none;
         margin: 0;
     }
+    .attachment-img {
+        max-height: 100px;
+        margin: 5px;
+        display: block;
+        max-width: none;
+    }
 }
 
 #publisher {
@@ -174,7 +180,7 @@ $x2-map: (
 #publisher .icon,
 .action.list-view .icon {
     @include generate-icons($fa-map);
-    @include generate-icons($x2-map, "x2");
+    @include generate-icons($x2-map, 'x2');
 }
 
 // Old Icons

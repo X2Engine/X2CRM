@@ -9,7 +9,11 @@
   'Search for a Contact' => 'پرس و جوی یک تماس',
   'Go to Full Site' => 'برو به نسخه تمام صفحه',
   'Who\'s Online' => 'چه کسی آنلاین حاضر در سایت &quot;\\ &#39;',
-  'Back' => 'پشت',
   'No documents available.' => 'اسناد در دسترس است.',
   'No social items available.' => 'هیچ آیتمی اجتماعی در دسترس است.',
+  'Change web address' => 'آدرس وب سایت تغییر',
+  'Legal' => 'قانونی',
+  'Add a post...' => 'اضافه کردن یک پست ...',
+  'Activities' => 'فعالیت',
+  'Dashboard' => 'داشبورد',
 );

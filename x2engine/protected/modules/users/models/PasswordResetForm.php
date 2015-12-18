@@ -68,28 +68,18 @@ class PasswordResetForm extends CFormModel {
     }
 
     public function rules() {
-        return array(
+        $passwordResetRules = array(
             array('password,confirm','required'),
             array('password','securePassword'),
-            array('confirm','compareAttr','against'=>'password','message'=>Yii::t('users','Passwords do not match.')),
+            array('confirm','compare','compareAttribute'=>'password','message'=>Yii::t('users','Passwords do not match.')),
         );
+        
+        return $passwordResetRules;
     }
 
     public function __construct(User $userModel,$scenario = ''){
         $this->userModel = $userModel;
         parent::__construct($scenario);
-    }
-
-    /**
-     * Validator that checks equality between attributes
-     * 
-     * @param type $attribute
-     * @param type $params
-     */
-    public function compareAttr($attribute,$params=array()) {
-        if($this->$attribute != $this->{$params['against']}) {
-            $this->addError($attribute,$params['message']);
-        }
     }
 
     /**

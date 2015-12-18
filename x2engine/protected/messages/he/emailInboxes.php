@@ -58,4 +58,6 @@
   'Unable to load selected mailbox' => 'לא ניתן לטעון את תיבת דואר שנבחר',
   'Invalid folder specified' => 'תיקייה שצוינה אינה חוקית',
   'Auto-log outbound emails' => 'Auto-log מיילים יוצאים',
+  'Auto-log inbound emails' => 'Auto-log מיילים נכנסים',
+  'From' => 'מִן',
 );

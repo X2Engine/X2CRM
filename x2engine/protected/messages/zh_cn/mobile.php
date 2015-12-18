@@ -9,7 +9,11 @@
   'Search for a Contact' => '搜索联系人',
   'Go to Full Site' => '转到完整的网站',
   'Who\'s Online' => '谁\\“在线',
-  'Back' => '后面',
   'No documents available.' => '没有可用的文件。',
   'No social items available.' => '任何社会项目。',
+  'Change web address' => '更改网址',
+  'Legal' => '法律',
+  'Add a post...' => '添加后...',
+  'Activities' => '活动',
+  'Dashboard' => '仪表板',
 );

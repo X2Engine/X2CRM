@@ -55,7 +55,7 @@ abstract class VisitAllPagesTest extends X2WebTestCase {
 
     public static function setUpBeforeClass () {
         Yii::app()->db->createCommand ("
-            insert into x2_auth_item_child (`parent`, `child`) values 
+            insert ignore into x2_auth_item_child (`parent`, `child`) values 
                 ('DefaultRole', 'ReportsReadOnlyAccess'),
                 ('DefaultRole', 'GroupsBasicAccess'),
                 ('DefaultRole', 'GroupsUpdateAccess'),

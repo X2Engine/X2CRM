@@ -74,11 +74,11 @@ class ActionText extends CActiveRecord
         }
     }
 
-    public function renderAttribute ($attr, $makeLinks=true, $textOnly=true, $encode=true) {
+    public function renderAttribute ($attr, $makeLinks=true, $textOnly=true, $encode=false) {
         if ($attr === 'text') {
             $action = Actions::model ();
             $action->actionDescription = $this->$attr;
-            return $action->renderAttribute ('actionDescription', $makeLinks, $textOnly, $encode);
+            return $action->renderAttribute ('actionDescription', $makeLinks, $textOnly, false);
         }
     }
 
