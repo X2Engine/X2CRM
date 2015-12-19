@@ -18,7 +18,7 @@ CREATE TABLE x2_media(
     drive           TINYINT DEFAULT 0,
     accessKey       VARCHAR(255),
     UNIQUE(nameId)
-) COLLATE = utf8_general_ci;
+) COLLATE = utf8_general_ci, ENGINE = InnoDB;
 /*&*/
 ALTER TABLE `x2_events_to_media` ADD CONSTRAINT FOREIGN KEY (`mediaId`) REFERENCES x2_media(`id`) ON UPDATE CASCADE ON DELETE CASCADE;
 /*&*/

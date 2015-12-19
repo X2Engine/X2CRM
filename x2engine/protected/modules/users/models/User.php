@@ -99,11 +99,15 @@ class User extends CActiveRecord {
     }
 
     public function behaviors(){
+        $viewRoute = '/profile';
+        if (!Yii::app()->params->isMobileApp) {
+            $viewRoute = '/profile/view';
+        }
         return array_merge(parent::behaviors(), array(
             'X2LinkableBehavior' => array(
                 'class' => 'X2LinkableBehavior',
                 'module' => 'users',
-                'viewRoute' => '/profile',
+                'viewRoute' => $viewRoute,
             ),
             'ERememberFiltersBehavior' => array(
                 'class' => 'application.components.ERememberFiltersBehavior',

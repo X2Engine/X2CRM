@@ -318,7 +318,7 @@ CREATE TABLE x2_events(
     color                   VARCHAR(10),
     fontColor               VARCHAR(10),
     linkColor               VARCHAR(10)
-) COLLATE = utf8_general_ci;
+) COLLATE = utf8_general_ci, ENGINE = InnoDB;
 /*&*/
 DROP TABLE IF EXISTS x2_events_data;
 /*&*/

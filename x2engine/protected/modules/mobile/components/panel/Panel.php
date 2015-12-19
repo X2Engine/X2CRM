@@ -73,7 +73,8 @@ class Panel extends X2Widget {
         $qpg = new QueryParamGenerator;
         $criteria = new CDbCriteria;
         $criteria->condition = 
-            '(name in '.$qpg->bindArray ($basicModules, true).' or custom) and visible';
+            '(name in '.$qpg->bindArray ($basicModules, true).' or custom) and visible and 
+             moduleType in ("module", "pseudoModule") and name != "document"';
         $criteria->params = $qpg->getParams ();
         $criteria->order = 'menuPosition ASC';
         $modules = Modules::model ()->findAll (
@@ -86,8 +87,8 @@ class Panel extends X2Widget {
                 $action = ucfirst ($module->title).'Index';
             }
             $authItem = Yii::app()->authManager->getAuthItem ($action);
-            return Yii::app()->params->isAdmin || is_null ($authItem) || 
-                Yii::app()->user->checkAccess ($action);
+            return Yii::app()->params->isAdmin || 
+                is_null ($authItem) || Yii::app()->user->checkAccess ($action);
         });
         return array_map (function ($module) {
             $item = new ModulePanelItem;

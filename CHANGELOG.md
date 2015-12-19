@@ -1,3 +1,12 @@
+# 5.4.1 #
+12/18/2015
+* General Changelog / Developer Notes
+  * Fixed opened email display in action history
+  * Fixed mass action menu displaying when scrolling up
+  * Fixed 404 error caused by clicking on a user profile from the activity feed
+  * Fixed avatars not displaying correctly
+  * Fixes and improvements to X2Touch
+
 # 5.4 #
 12/17/2015
 

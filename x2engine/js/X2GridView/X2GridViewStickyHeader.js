@@ -149,7 +149,15 @@ GridViewStickyHeader.prototype.checkX2GridViewHeaderSticky = function () {
         this.DEBUG && console.log ('sticky');
 
         $(titleContainer).hide ();
-        $('#' + this.gridId + 'more-drop-down-list').hide ();
+        if ($('#' + this.gridId + 'more-drop-down-list').length) {
+            if ($('#' + this.gridId + 'more-drop-down-list').is (':visible')) {
+                x2.gridViewStickyHeader.listWasVisible = true;
+                $('#' + this.gridId + 'more-drop-down-list').hide ();
+            } else {
+                x2.gridViewStickyHeader.listWasVisible = false;
+            }
+        }
+        //$('#' + this.gridId + 'more-drop-down-list').hide ();
 
         /* unfix header */
         //$(bodyContainer).hide ();
@@ -206,7 +214,10 @@ GridViewStickyHeader.prototype.checkX2GridViewHeaderUnsticky = function () {
         //x2.gridviewStickyHeader.DEBUG && console.log ('unsticky');
 
         $(titleContainer).show ();
-        $('#' + this.gridId + 'more-drop-down-list').show ();
+        if (x2.gridViewStickyHeader.listWasVisible &&
+                $('#' + this.gridId + 'more-drop-down-list').length) {
+            $('#' + this.gridId + 'more-drop-down-list').show ();
+        }
 
         /*var bodyContainer = x2.gridviewStickyHeader.bodyContainer;
         x2.gridviewStickyHeader.isStuck = false;*/

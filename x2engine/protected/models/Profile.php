@@ -1369,6 +1369,17 @@ class Profile extends X2ActiveRecord {
         } else {
             $model = Profile::model ()->findByPk ($id);
         }
+        if (isset($model->avatar) && $model->avatar != '' && !file_exists($model->avatar)
+                && strpos($model->avatar, 'uploads') !== false && strpos($model->avatar, 'protected') === false) {
+            $path = explode(DIRECTORY_SEPARATOR, $model->avatar);
+            $oldPathIndex = array_search('uploads',$path);
+            array_splice($path, $oldPathIndex+1, 0, 'protected');
+            $newPath = implode(DIRECTORY_SEPARATOR, $path);
+            if(file_exists($newPath)){
+                $model->avatar = $newPath;
+                $model->update(array('avatar'));
+            }
+        }
         if(isset($model->avatar) && $model->avatar!='' && file_exists($model->avatar)) {
             $imgSize = @getimagesize($model->avatar);
             if(!$imgSize)

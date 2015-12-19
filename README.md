@@ -1,57 +1,11 @@
-# 5.4 #
-12/17/2015
-
-* Highlights
-  * Platinum Edition Changes:
-    * Added Role and permissions support to X2Packager
-    * Configure user password complexity requirements
-    * Failed login grid now maintains historical records
-  * Professional Edition Changes:
-    * Native X2CRM Android App (Beta)
-      * Manage Contacts, Accounts, Opportunities and more
-      * Get activity feed updates, comment on feed events, and post photos
-      * View interactive Charts Dashboard
-      * Access records from custom modules
-    * Automatic inbound and outbound email logging in Email Inboxes
-    * New email related triggers and conditions in X2Workflow
-    * New email opened trigger and condition for X2Workflow
-    * New export target options allowing data exports to an FTP or SSH server, Amazon S3, and Google Drive, as well as optionally compressing the export to a ZIP archive
-    * Added ability to shard static assets over multiple domains
-  * Process module visualization now supports any record type
-  * New "Favorites" widget replaces "Top Contacts", allowing quick access to frequently used records of any type
-  * New top bar customization options:
-    * Add links to external URLs
-    * Add links to arbitrary records inside X2CRM
-  * Improved importer link field controls allowing selection of attribute to match for linked records
+# 5.4.1 #
+12/18/2015
 * General Changelog / Developer Notes
-  * Added ability to rename folders in Docs module
-  * Process stage order can now be edited without the risk of data loss
-  * Back end code refactoring and stability improvements
-  * Major translation updates to remove unused text
-  * Fixed a bug where campaign text could be deleted when using inline editing
-  * Fixed a bug that caused Calendar events to show up in the activity feed as "Calendar event not found"
-  * Fixed a bug in module delete functionality that failed to remove associated Fields records
-  * Fixed a bug in Email Inboxes when selecting and moving messages to a folder whose name uses UTF8 encoded characters
-* Tracked Bug Fixes:  
-  * [2956](http://x2software.com/index.php/bugReports/2956): Undefined index: notificationUsers  
-  * [3046](http://x2software.com/index.php/bugReports/3046): mb_convert_encoding(): Illegal character encoding specified  
-  * [3082](http://x2software.com/index.php/bugReports/3082): User Report  
-  * [3084](http://x2software.com/index.php/bugReports/3084): Undefined index: wide  
-  * [3085](http://x2software.com/index.php/bugReports/3085): Report settings could not be saved.  
-  * [3089](http://x2software.com/index.php/bugReports/3089): Undefined index: notificationUsers  
-  * [3095](http://x2software.com/index.php/bugReports/3095): Report settings could not be saved.  
-  * [3099](http://x2software.com/index.php/bugReports/3099): Missing argument 1 for Google_Client::authenticate(), called in GoogleAuthenticator.php on line 146 and defined  
-  * [3115](http://x2software.com/index.php/bugReports/3115): Undefined offset: 0  
-  * [3131](http://x2software.com/index.php/bugReports/3131): Syntax error or access violation: 1055 Expression #1 of SELECT list is not in GROUP BY clause and contains nonaggregated column 'X2CRM.t.id' which is not functionally dependent on colu  
-  * [3133](http://x2software.com/index.php/bugReports/3133): Property "Testmodule.c_Client_ID" is not defined.  
-  * [3137](http://x2software.com/index.php/bugReports/3137): Missing argument 1 for Google_Client::authenticate(), called in GoogleAuthenticator.php on line 146 and defined  
-  * [3150](http://x2software.com/index.php/bugReports/3150): EmailConfigException
-  * [3203](http://x2software.com/index.php/bugReports/3203): fgetcsv(): delimiter must be a character  
-  * [3244](http://x2software.com/index.php/bugReports/3244): Trying to get property of non-object  
-  * [3255](http://x2software.com/index.php/bugReports/3255): Quick Create Form
-  * [3258](http://x2software.com/index.php/bugReports/3258): No such file or directory  
-  * [3259](http://x2software.com/index.php/bugReports/3259): French date picker issue
-  * [3265](http://x2software.com/index.php/bugReports/3265): array_combine(): Both parameters should have at least 1 element  
+  * Fixed opened email display in action history
+  * Fixed mass action menu displaying when scrolling up
+  * Fixed 404 error caused by clicking on a user profile from the activity feed
+  * Fixed avatars not displaying correctly
+  * Fixes and improvements to X2Touch
 
 # Introduction #
 Welcome to X2CRM!

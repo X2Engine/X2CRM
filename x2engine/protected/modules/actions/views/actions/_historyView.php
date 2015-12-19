@@ -242,13 +242,8 @@ if($type == 'attachment' && $data->completedBy != 'Email') {
         $header = $matches[1];
         $body = '';
     }else{
-        if(empty($data->subject)){
-            $header = "No subject found";
-            $body = "(Error displaying email)";
-        }else{
-            $header = $data->subject."<br>";
-            $body = $data->actionDescription;
-        }
+        $header = empty($data->subject) ? '' : $data->subject."<br>";
+        $body = empty($data->actionDescription) ? Yii::t('actions', "(Error displaying email)") : $data->actionDescription;
     }
     if($type == 'emailOpened'){
         echo "Contact has opened the following email:<br />";
