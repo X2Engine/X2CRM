@@ -16,4 +16,12 @@
   'Add a post...' => '게시물을 추가 ...',
   'Activities' => '활동',
   'Dashboard' => '계기반',
+  'Default View Layout' => '보기 레이아웃 기본',
+  'Default Form Layout' => '양식 레이아웃 기본',
+  'Delete Topic' => '주제 삭제',
+  'Login Failed' => '로그인 실패',
+  'The verification code your entered is incorrect.' => '당신의 입력 한 인증 코드가 올바르지 않습니다.',
+  'The username or password you entered is incorrect. Please try again.' => '사용자가 입력 한 사용자 이름 또는 암호가 올바르지 않습니다. 다시 시도하십시오.',
+  'Username and password cannot be left blank.' => '사용자 이름과 암호는 비워 둘 수 없습니다.',
+  'Web Address' => '웹 주소',
 );

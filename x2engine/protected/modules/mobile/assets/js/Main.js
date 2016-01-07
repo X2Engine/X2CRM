@@ -1,6 +1,6 @@
 /*****************************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2015 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2016 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -44,7 +44,8 @@ function Main (argsDict) {
     var argsDict = typeof argsDict === 'undefined' ? {} : argsDict;
     var defaultArgs = {
         DEBUG: x2.DEBUG && false,
-        controllers: {}
+        controllers: {},
+        translations: {}
     };
     auxlib.applyArgs (this, defaultArgs, argsDict);
     this.prevPage$ = null;
@@ -329,6 +330,15 @@ Main.prototype.footerFix = function () {
         $('.ui-content').on ('scroll.footerFix', function () {
             if ($('#footer').length && $('#footer').is (':visible'))
                 $(this).attr ('style', 'margin-bottom: ' + $('#footer').outerHeight () + 'px;');
+            $.mobile.activePage.find ('.nano-pane').attr ('style', 
+                'margin-bottom: ' + $('#footer').outerHeight () + 'px;');
+//            var slider$ = $.mobile.activePage.find ('.nano-slider');
+//            if (!slider$.attr ('x2-slider-height')) {
+//                slider$.attr ('x2-slider-height', slider$.height ());
+//            }
+//            $.mobile.activePage.find ('.nano-slider').height (
+//                $.mobile.activePage.find ('.nano-slider').attr ('x2-slider-height') - 
+//                    $('#footer').outerHeight ());
         });
     });
 };
@@ -346,11 +356,76 @@ Main.prototype.setUpOrientationChange = function () {
     });
 };
 
+Main.prototype.alert = function (message, title) {
+     
+        window.alert (message);
+     
+
+};
+
 Main.prototype.confirm = function (message, title, buttons, callback) {
      
         if (window.confirm (title + "\n" + message)) {
             callback ();
         }
+     
+};
+
+Main.prototype.checkForExternalLink = function (a$, url) {
+    var that = this;
+    var urlRegex = new RegExp ('^' + that.getBaseUrl ().replace (
+        // escape special characters
+        /([-\/\\^$*+?.()|[\]{}])/g, '\\$1'));
+    if (url &&
+        url.match (/^https?\/\//) &&
+        (a$.attr ('rel') === 'external' ||
+         !url.match (/^#/) && 
+         !url.match (urlRegex))) {
+
+         
+            window.open (url, '_blank');
+         
+        return false;
+    } 
+};
+
+/**
+ * Prevents user generated links from directing jqm to an invalid page. 
+ */
+Main.prototype.setUpLinkClick = function () {
+    var that = this;
+
+    $(document).on ('click', 'a', function () {
+        var href = $(this).attr ('href');
+
+        if ($(this).hasClass ('requires-confirmation')) {
+            that.confirm (
+                $.trim ($(this).siblings ('.confirmation-text').text ()), 
+                ' ', 
+                [
+                    that.translations.confirmOkay, 
+                    that.translations.confirmCancel
+                 ],
+                function () {
+                    $(':mobile-pagecontainer').pagecontainer (
+                        'change', href);
+                });
+            return false;
+        }
+
+        if ($(this).hasClass ('file-download-link')) {
+             
+                window.location = href;
+             
+            return false;
+        }
+        return that.checkForExternalLink ($(this), href);
+    });
+};
+
+Main.prototype.getBaseUrl = function () {
+     
+        return yii.absoluteBaseUrl;
      
 };
 
@@ -367,15 +442,10 @@ Main.prototype.init = function () {
     this.configureDebug (); 
     this.setUpScrollBars (); 
     this.setUpOrientationChange (); 
+    this.setUpLinkClick (); 
 };
 
 return Main;
 
 }) ();
-
-x2.Main.onPageCreate (function () {
-    if (!x2.main) {
-        x2.main = new x2.Main ();
-    }
-});
 

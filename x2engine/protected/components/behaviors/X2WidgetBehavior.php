@@ -1,7 +1,7 @@
 <?php
 /*****************************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2015 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2016 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -111,20 +111,58 @@ class X2WidgetBehavior extends CBehavior {
         return $this->_packages;
     }
 
+    public function prepareJSParams ($args, array $functions=array ()) {
+        foreach ($args as $key => &$val) {
+            if (is_array ($val)) {
+            } else if (is_string ($val) && preg_match ('/^js:/', $val)) {
+                $val = preg_replace ('/^js:/', '', $val);
+                $functions[$key] = $val;
+                unset ($args[$key]);
+            }
+        }
+        unset ($val);
+
+        $paramStr = '';
+        if (count ($functions)) {
+            $fnStr = '';
+            foreach ($functions as $key => $val) {
+                $fnStr .= $key . ': ' . $val . ',';
+            }
+            $fnStr = preg_replace ('/,$/', '', $fnStr);
+            $paramStr = '$.extend ('.CJSON::encode ($args).', {'.
+                $fnStr.
+            '})';
+        } else {
+            $paramStr = CJSON::encode ($args);
+        }
+
+        return $paramStr;
+    }
+
     /**
      * @param bool $onReady whether or not JS class should be instantiated after page is ready
      */
     public function instantiateJSClass ($onReady=true) {
         $jsObjName = $this->owner->getJSObjectName ();
-        Yii::app()->clientScript->registerScript (
-            $this->owner->getId ().get_class ($this->owner).'JSClassInstantiation', 
-            ($onReady ? "$(function () {" : "").
-                ($this->checkIfJSClassIsDefined ? "if (typeof $jsObjName === 'undefined') {" : '').
-                "$jsObjName = new x2.{$this->owner->JSClass} (".
-                        CJSON::encode ($this->owner->getJSClassParams ()).
-                    ");".
-                ($this->checkIfJSClassIsDefined ? "}" : '').
-            ($onReady ? "});" : ""), CClientScript::POS_END);
+
+        $args = $this->prepareJSParams ($this->owner->getJSClassParams ());
+
+        $js = ($this->checkIfJSClassIsDefined ? "if (typeof $jsObjName === 'undefined') {" : '').
+            "$jsObjName = new x2.{$this->owner->JSClass} (".
+                    $args.
+                ");".
+            ($this->checkIfJSClassIsDefined ? "}" : '');
+        $scriptName = $this->owner->getId ().get_class ($this->owner).'JSClassInstantiation';
+
+        if (Yii::app()->params->isMobileApp) {
+            Yii::app()->controller->onPageLoad ($js, $scriptName);  
+        } else {
+            Yii::app()->clientScript->registerScript (
+                $scriptName,
+                ($onReady ? "$(function () {" : "").
+                    $js.
+                ($onReady ? "});" : ""), CClientScript::POS_END);
+        }
 
         Yii::app()->clientScript->registerScript('X2WidgetSetup',"
         x2.Widget.NAMESPACE_KEY = '".self::NAMESPACE_KEY."';
@@ -150,6 +188,10 @@ class X2WidgetBehavior extends CBehavior {
             );
         }
         return $this->_JSClassParams;
+    }
+
+    public function setJSClassParams ($jSClassParams) {
+        $this->_JSClassParams = array_merge ($this->getJSClassParams (), $jSClassParams);
     }
 
 }

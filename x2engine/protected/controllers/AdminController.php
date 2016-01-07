@@ -2,7 +2,7 @@
 
 /*****************************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2015 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2016 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -320,6 +320,7 @@ class AdminController extends X2Controller {
      * @throws CHttpException Generates a 403 error if authorization fails
      */
     protected function beforeAction($action = null) {
+        $this->validateMobileRequest ($action);
         $auth = Yii::app()->authManager;
         $action = ucfirst($this->getId()) . ucfirst($this->getAction()->getId());
         $authItem = $auth->getAuthItem($action);
@@ -1738,6 +1739,88 @@ class AdminController extends X2Controller {
         }
     }
 
+    public function actionEditMobileForms () {
+        Yii::import ('application.modules.mobile.models.*');
+        Yii::import ('application.modules.mobile.*');
+        Yii::import ('application.models.formModels.*');
+        $model = new EditMobileFormsFormModel;
+        if (isset ($_POST['EditMobileFormsFormModel'])) {
+            $model->setAttributes ($_POST['EditMobileFormsFormModel']);
+            if ($model->validate ()) {
+                Yii::app()->db->createCommand ()
+                    ->delete (
+                        'x2_mobile_layouts',
+                        'modelName=:modelName',
+                        array (':modelName' => $model->modelName));
+                foreach (array ('defaultView', 'defaultForm') as $layoutName) {
+                    $layout = new MobileLayouts;
+                    $layout->modelName = $model->modelName;
+                    $layout->layout = $model->$layoutName;
+                    $layout->defaultView = $layoutName === 'defaultView';
+                    $layout->defaultForm = $layoutName === 'defaultForm';
+                    $layout->save ();
+                }
+                Yii::app()->user->setFlash (
+                    'success', Yii::t('app', 'Layout updated'));
+            }
+        }
+
+        $modules = MobileModule::supportedModules (new CDbCriteria (array (
+            'condition' => 'editable'
+        )));
+
+        $modelList = array('' => '---');
+        foreach ($modules as $module) {
+            if ($module->name == 'marketing')
+                $modelList['Campaign'] = Yii::t('marketing', 'Campaign');
+            elseif ($module->name == 'opportunities')
+                $modelList['Opportunity'] = Yii::t('opportunities', 'Opportunity');
+            elseif ($module->name == 'products')
+                $modelList['Product'] = Yii::t('products', 'Product');
+            elseif ($module->name == 'quotes')
+                $modelList['Quote'] = Yii::t('quotes', 'Quote');
+            else
+                $modelList[ucfirst($module->name)] = Yii::t('app', $module->title);
+        }
+
+        $this->render('editMobileForms', array(
+            'model' => $model,
+            'recordTypes' => $modelList,
+        ));
+    }
+
+    public function actionGetMobileLayouts ($modelName) {
+        Yii::import ('application.modules.mobile.models.*');
+
+        // find or generate layouts
+        $formLayout = MobileLayouts::model ()->findByAttributes (array (
+            'modelName' => $modelName,
+            'defaultView' => 1
+        ));
+        $viewLayout = MobileLayouts::model ()->findByAttributes (array (
+            'modelName' => $modelName,
+            'defaultForm' => 1
+        ));
+        $formLayout = $formLayout ? $formLayout->layout : null;
+        $viewLayout = $viewLayout ? $viewLayout->layout : null;
+        if (!$formLayout)
+            $formLayout = MobileLayouts::generateDefaultLayout ('form', $modelName);
+        if (!$viewLayout)
+            $viewLayout = MobileLayouts::generateDefaultLayout ('view', $modelName);
+
+        list ($formLayout, $unselectedForm) = MobileLayouts::getFieldOptions (
+            $formLayout, $modelName);
+        list ($viewLayout, $unselectedView) = MobileLayouts::getFieldOptions (
+            $viewLayout, $modelName);
+
+        echo CJSON::encode (array (
+            'defaultForm' => $formLayout, 
+            'defaultView' => $viewLayout, 
+            'defaultFormUnselected' => $unselectedForm, 
+            'defaultViewUnselected' => $unselectedView, 
+        ));
+    }
+
     /**
      * Create a static page.
      *
@@ -1844,7 +1927,7 @@ class AdminController extends X2Controller {
         $itemNames = array();
         foreach ($order as $module) {
             $menuItems[$module->name] = Yii::t('app', $module->title);
-            if ($module->custom || $module->name === 'bugReports')
+            if ($module->moduleType === 'module' && ($module->custom || $module->name === 'bugReports'))
                 $itemNames[$module->name] = Modules::itemDisplayName($module->name);
         }
         foreach ($menuItems as $key => $value) {
@@ -2088,6 +2171,13 @@ class AdminController extends X2Controller {
             }
             foreach ($modules as $module) {
                 $moduleName = $module->name;
+                if (empty ($moduleName)) {
+                    $status['admin']['messages'][] = Yii::t('admin', 'Warning: custom module with id :id exists without a "name." Skipping...', array(
+                        ':id' => $module->id,
+                    ));
+                    $status['admin']['title'] = Yii::t('admin', 'Module Conversion');
+                    continue;
+                }
                 $modulePath = 'protected/modules/' . $moduleName;
                 $ucName = ucfirst($moduleName);
                 if (is_dir($modulePath)) {
@@ -2759,10 +2849,23 @@ class AdminController extends X2Controller {
         $auth->removeAuthItem($ucName . 'MobileView');
         $auth->removeAuthItem($ucName . 'QuickView');
         $auth->removeAuthItem($ucName . 'MobileIndex');
+        $auth->removeAuthItem($ucName . 'MobileCreate');
+        $auth->removeAuthItem($ucName . 'MobileDelete');
+        $auth->removeAuthItem($ucName . 'MobileUpdate');
         $auth->removeAuthItem($ucName . 'GetX2ModelInput');
         $auth->removeAuthItem($ucName . 'AjaxGetModelAutocomplete');
         $auth->removeAuthItem($ucName . 'X2GridViewMassAction');
         $auth->removeAuthItem($ucName . 'InlineEmail');
+
+        // Remove related Summary widgets
+        foreach (Profile::model()->findAll () as $profile) {
+            $settings = $profile->getProfileWidgetLayout();
+            foreach ($settings as $key => $data)
+                if (isset ($data['modelType']) && $data['modelType'] === $ucName)
+                    $settings[$key] = null;
+            $profile->setProfileWidgetLayout($settings);
+            $profile->save();
+        }
 
         FileUtil::rrmdir('protected/modules/' . $moduleName);
     }

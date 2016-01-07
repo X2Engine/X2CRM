@@ -602,4 +602,8 @@
   'License Expiration Date' => 'Άδεια Ημερομηνία Λήξης',
   '(expired)' => '(έληξε)',
   'License Max Users' => 'Άδεια Χρήστες Max',
+  'Select a model' => 'Επιλέξτε ένα μοντέλο',
+  'Okay' => 'εντάξει',
+  'Headquarters' => 'Αρχηγείο',
+  'Mailing Address' => 'Ταχυδρομική διεύθυνση',
 );

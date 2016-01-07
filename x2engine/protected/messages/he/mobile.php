@@ -16,4 +16,12 @@
   'Add a post...' => 'הוסף הודעה ...',
   'Activities' => 'פעילויות',
   'Dashboard' => 'לוּחַ מַחווָנִים',
+  'Default View Layout' => 'ברירת מחדל צפה בפריסה',
+  'Default Form Layout' => 'ברירת מחדל טופס פריסה',
+  'Delete Topic' => 'מחק נושא',
+  'Login Failed' => 'ההתחברות נכשלה',
+  'The verification code your entered is incorrect.' => 'קוד האימות נכנס שגוי.',
+  'The username or password you entered is incorrect. Please try again.' => 'שם המשתמש או הסיסמה שהכנסת אינם נכונים. בבקשה נסה שוב.',
+  'Username and password cannot be left blank.' => 'שם משתמש וסיסמא לא יכולים להישאר ריקים.',
+  'Web Address' => 'כתובת אינטרנט',
 );

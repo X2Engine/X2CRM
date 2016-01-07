@@ -7,11 +7,14 @@ DROP TABLE IF EXISTS x2_workflow_stages;
 DROP TABLE IF EXISTS x2_workflows;
 /*&*/
 CREATE TABLE x2_workflows(
-    id          INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-    name        VARCHAR(250),
-    isDefault   TINYINT NOT NULL DEFAULT 0,
-    lastUpdated BIGINT,
-    colors      TEXT /* contains JSON of stage colors */
+    id              INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    name            VARCHAR(250),
+    isDefault       TINYINT NOT NULL DEFAULT 0,
+    lastUpdated     BIGINT,
+    colors          TEXT, /* contains JSON of stage colors */
+    financial       TINYINT NOT NULL DEFAULT 0,
+    financialModel  VARCHAR (250),
+    financialField  VARCHAR (250)
 ) ENGINE InnoDB COLLATE = utf8_general_ci;
 /*&*/
 ALTER TABLE `x2_modules` ADD CONSTRAINT FOREIGN KEY (`defaultWorkflow`) REFERENCES x2_workflows(`id`) ON UPDATE CASCADE ON DELETE SET NULL;

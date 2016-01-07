@@ -49,4 +49,9 @@
   'All modules' => '所有模块',
   'All Modules' => '所有模块',
   'module(s)' => '模块（多个）',
+  'Show Financial Data' => '显示财务数据',
+  'Financial Data Model' => '金融数据模型',
+  'Financial Data Field' => '财务数据字段',
+  'Select a model type' => '选择模型类型',
+  'Select a field' => '选择字段',
 );

@@ -1,7 +1,7 @@
 <?php
 /*****************************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2015 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2016 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -83,9 +83,6 @@ WorkflowViewManager._getQueryString = function (modelId, ajax) {
         '&start=".Formatter::formatDate($dateRange['start'])."' +
         '&end=".Formatter::formatDate($dateRange['end'])."' +
         '&range=".$dateRange['range']."' +
-        '&expectedCloseDateStart=".Formatter::formatDate($expectedCloseDateDateRange['start'])."' +
-        '&expectedCloseDateEnd=".Formatter::formatDate($expectedCloseDateDateRange['end'])."' +
-        '&expectedCloseDateRange=".$expectedCloseDateDateRange['range']."' +
         '&users=".$users."' +
         '&modelType=".urlencode ($modelType)."');
 };
@@ -359,7 +356,6 @@ if ($perStageWorkflowView) {
             'modelType'=>$modelType,
             'viewStage'=>$viewStage,
             'dateRange'=>$dateRange,
-            'expectedCloseDateDateRange'=>$expectedCloseDateDateRange,
             'users'=>$users,
         )
     );
@@ -369,13 +365,13 @@ if ($perStageWorkflowView) {
             'model'=>$model,
             'modelType'=>$modelType,
             'dateRange'=>$dateRange,
-            'expectedCloseDateDateRange'=>$expectedCloseDateDateRange,
             'colors'=>$colors,
             'memberListContainerSelectors'=>$memberListContainerSelectors,
             'stagePermissions'=>$stagePermissions,
             'stagesWhichRequireComments'=>$stagesWhichRequireComments,
             'stageNames'=>$stageNames,
             'stageCounts' => $stageCounts,
+            'stageValues' => $stageValues,
             'users'=>$users,
             'listItemColors' => $listItemColors,
         )

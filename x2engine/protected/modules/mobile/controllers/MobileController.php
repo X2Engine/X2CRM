@@ -1,7 +1,7 @@
 <?php
 /*****************************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2015 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2016 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -175,6 +175,7 @@ class MobileController extends X2Controller {
         //if (YII_DEBUG) header('Access-Control-Allow-Origin: *'); 
 
         $response = array ();
+        $requiresVersion = '0.0.2';
         if (Yii::app()->edition === 'opensource') {
             $response['error'] = 'wrongEdition';
             $response['requiresEdition'] = 'pro';
@@ -201,17 +202,17 @@ class MobileController extends X2Controller {
             $this->redirect ($this->createAbsoluteUrl ('/profile/mobileActivity'));
     }
     
-    /**
-     * This is the action to handle external exceptions.
-     */
-    public function actionError() {
-        if ($error = Yii::app()->errorHandler->error) {
-            if (Yii::app()->request->isAjaxRequest)
-                echo $error['message'];
-            else
-                $this->render('error', $error);
-        }
-    }
+//    /**
+//     * This is the action to handle external exceptions.
+//     */
+//    public function actionError() {
+//        if ($error = Yii::app()->errorHandler->error) {
+//            if ($this->isAjaxRequest ()) {
+//                echo $error['message'];
+//            else
+//                $this->render('error', $error);
+//        }
+//    }
 
     /**
      * Obtain the IP address of the current web client.
@@ -325,21 +326,12 @@ class MobileController extends X2Controller {
 	public function redirect($url,$terminate=true,$statusCode=302) {
         $params = array ();
         if (isset ($_GET['x2ajax'])) $params['x2ajax'] = $_GET['x2ajax'];
+        if (isset ($_GET['isMobileApp'])) $params['isMobileApp'] = $_GET['isMobileApp'];
           
         $url = UrlUtil::mergeParams ($url, $params);
         return parent::redirect ($url, $terminate, $statusCode);
     }
 
 
-//    /**
-//     * This is the action to handle external exceptions.
-//     */
-//    public function actionError() {
-//        if ($error = Yii::app()->errorHandler->error) {
-//            Yii::app()->clientScript->registerScript('actionError',"
-//                alert (".CJSON::encode ($error['message']).");
-//            ");
-//        }
-//    }
 
 }

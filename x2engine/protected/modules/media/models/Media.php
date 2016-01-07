@@ -1,8 +1,7 @@
 <?php
-
 /*****************************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2015 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2016 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -595,7 +594,10 @@ class Media extends X2Model {
 
     public function getDownloadLink($text = null, $htmlOptions = array()) {
         $text = !isset($text) ? '[' . CHtml::encode(Yii::t('media', 'Download')) . ']' : $text;
-        return CHtml::link($text, array('/media/media/download', 'id' => $this->id));
+         
+            $url = Yii::app()->createUrl ('/media/media/download', array ('id' => $this->id));
+         
+        return CHtml::link ($text, $url, $htmlOptions);
     }
 
     public function renderFile() {

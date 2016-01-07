@@ -2,7 +2,7 @@
 
 /*****************************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2015 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2016 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -52,6 +52,46 @@ class X2MergeableBehavior extends CActiveRecordBehavior {
     );
     
     
+    
+    /**
+     * Set the value of $this->owner->{$field->fieldName} to the merged value from
+     * the set of duplicates. The value will be set to the value of the duplicate
+     * which has a non-null value for this field and the most recent lastUpdated value.
+     * @param Fields $field The field object determining which field to set
+     * @param array $duplicates Records to set the value from
+     */
+    public function setMergedField($field, $duplicates) {
+        $value = null;
+        $oldModelId = null;
+        $timestamp = 0;
+        foreach ($duplicates as $oldModel) {
+            if ($field->type === 'text') {
+                // Text fields should be concatenated
+                if(!empty($oldModel->{$field->fieldName})){
+                    if (is_null($value)) {
+                        $value = $oldModel->{$field->fieldName};
+                    }else{
+                        $value .= "\n--\n" . $oldModel->{$field->fieldName};
+                    }
+                }
+            } else if (!is_null($oldModel->{$field->fieldName}) && $oldModel->lastUpdated >= $timestamp) {
+                $value = $oldModel->{$field->fieldName};
+                //Store lastUpdated of the model used to set this value
+                $timestamp = $oldModel->lastUpdated;
+                //Maintain ID of model used to set this value in case of unique fields
+                $oldModelId = $oldModel->id;
+            }
+        }
+        $this->owner->{$field->fieldName} = $value;
+        if ($field->uniqueConstraint) {
+            //If there is a unique constraint, we need to set the value of the model that was used to null
+            $tmpModel = X2Model::model(get_class($this->owner))->findByPk($oldModelId);
+            if($tmpModel){
+                $tmpModel->{$field->fieldName} = null;
+                $tmpModel->update(array($field->fieldName));
+            }
+        }
+    }
 
     /**
      * Set the createDate value of $this->owner to the oldest createDate of the duplicates

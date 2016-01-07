@@ -1,6 +1,6 @@
 /*!***************************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2015 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2016 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -66,9 +66,6 @@ $headerTextSecondary: lighten($headerBackground, 28%);
 }
 
 body {
-    background: $backgroundColor;
-    margin-bottom: 0;
-    height: auto !important;
     &.ui-panel-page-container {
         @include page-with-panel;
     }
@@ -91,46 +88,6 @@ body.x2-phone-gap {
     }
 }
 
-$loaderColor: black;
-$loaderDiameter: 50px;
-$loaderRadiusDelta: 8px;
-
-.ui-loader {
-    opacity: 1;
-    width: $loaderDiameter;
-    height: $loaderDiameter;
-    left: 0;
-    right: 0;
-    top: 0;
-    bottom: 0;
-    margin: auto;
-    .load8 .loader {
-        border-top: $loaderRadiusDelta solid rgba($loaderColor, 0.2);
-        border-right: $loaderRadiusDelta solid rgba($loaderColor, 0.2);
-        border-bottom: $loaderRadiusDelta solid rgba($loaderColor, 0.2);
-        border-left: $loaderRadiusDelta solid rgba($loaderColor, 0.4);
-        width: $loaderDiameter;
-        height: $loaderDiameter;
-        margin: 0;
-    }
-}
-
-.x2-mobile-overlay {
-    position: fixed;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    top: 0;
-    width: 100%;
-    height: 100%;
-}
-
-* {
-    box-sizing: border-box;
-    font-family: Arial;
-}
-
-
 .x2-remote-page {
 
 .flashes-container {
@@ -144,10 +101,15 @@ $loaderRadiusDelta: 8px;
     .flash-error, .flash-success, .flash-notice {
         display: none;
     }
-    .flash-success {
+    .flash-success, .flash-error {
         display: inline;
         padding: 7px 12px;
-        background: rgba(darken($gray, 23%), 0.90);
+        &.flash-success {
+            background: rgba(darken($gray, 23%), 0.90);
+        }
+        &.flash-error {
+            background: rgba(red, 0.90);
+        }
         color: white;
         border-radius: 20px;
         width: auto;
@@ -240,6 +202,7 @@ div.x2touch-panel {
     }
     ul { 
         li {
+            @include btn-states;
             &.selected::before {
                 position: absolute;
                 content: ' ';

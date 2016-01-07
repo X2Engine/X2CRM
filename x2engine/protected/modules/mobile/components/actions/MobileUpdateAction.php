@@ -1,7 +1,7 @@
 <?php
 /*****************************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2015 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2016 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -36,28 +36,65 @@
 
 class MobileUpdateAction extends MobileAction {
 
+    public $pageClass = 'record-update';
+    public $viewFile = 'recordUpdate';
+
+    public function loadModel ($id) {
+        return $this->controller->loadModel ($id);
+    }
+
+    public function getRedirectUrl ($model) {
+        return $model->getUrl ();
+    }
+
     public function run ($id) {
         parent::beforeRun ();
 
-        $model = $this->controller->loadModel ($id);
-        $modelClass = $this->controller->modelClass;
+        $model = $this->loadModel ($id);
+        $modelClass = get_class ($model);
         $this->controller->dataUrl = $this->controller->createAbsoluteUrl (
-            'mobileUpdate', array ('id' => $model->id));
+            $this->getId (), array ('id' => $model->id));
         $this->controller->pageId .= '-'.$model->id;
 
         if ($this->controller->checkPermissions($model, 'edit')) {
             if (isset ($_POST[$modelClass])) {
-                $model->setX2Fields ($_POST[$modelClass]);
-                if ($model->save ()) {
-                    $this->controller->redirect (array ('mobileView', 'id' => $model->id));
+                if ($model instanceof X2Model) {
+                    $model->setX2Fields ($_POST[$modelClass]);
+                } else {
+                    $model->setAttributes ($_POST[$modelClass]);
                 }
+
+                // special case. Shouldn't need to add a fields db record just to get setX2Fields
+                // to set an attribute
+                if (($model instanceof Topics ||
+                     $model instanceof TopicReplies) &&
+                    isset ($_POST[get_class ($model)]['upload'])) {
+
+                    $model->upload = $_POST[get_class ($model)]['upload'];
+                }
+
+                $this->controller->setFileFields ($model, true);
+                if ($model->save ()) {
+                    if (isset ($_FILES[get_class ($model)])) {
+                        // this is an ajax file upload request
+                        echo CJSON::encode (array ( 
+                            'redirectUrl' => $this->getRedirectUrl ($model),
+                        ));
+                        Yii::app()->end ();
+                    } else {
+                        $this->controller->redirect ($this->getRedirectUrl ($model));
+                    }
+                } elseif (isset ($_FILES[$modelClass])) {
+                    throw new CException (400, Yii::t('app', 'Upload failed'));
+                }
+
             }
 
-            $this->controller->pageClass = 'record-update';
+            $this->controller->pageClass = $this->pageClass;
             $model->setInputRenderer (
                 'application.modules.mobile.components.formatters.MobileFieldInputRenderer');
             $this->controller->render (
-                $this->pathAliasBase.'views.mobile.recordUpdate',
+                $this->pathAliasBase.'views.mobile.'.$this->viewFile,
                 array (
                     'model' => $model,
                 )

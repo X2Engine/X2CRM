@@ -1,7 +1,7 @@
 <?php
 /*****************************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2015 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2016 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -66,6 +66,22 @@ class X2StaticFieldsBehavior extends CBehavior {
         return $this->_fields[$fieldName];
     }
 
+    public function renderInput($fieldName, $htmlOptions = array()) {
+        $field = $this->getField($fieldName);
+
+        if (!$field) return;
+        
+        if (isset ($this->inputRenderer) && $this->inputRenderer instanceof FieldInputRenderer) {
+            // check if there's a renderer for this field type
+            if ($input = $this->inputRenderer->renderInput ($field, $htmlOptions)) {
+                return $input;
+            }
+        }
+
+        return X2Model::renderModelInput($this->owner, $field, $htmlOptions);
+
+    }
+
 }
 
 /**
@@ -99,6 +115,7 @@ class X2StaticField extends CComponent{
     public $fieldName;
     public $owner;
     public $required;
+    public $includeEmpty = true;
 
     public function __construct () {
         $this->attachBehaviors ($this->behaviors ());

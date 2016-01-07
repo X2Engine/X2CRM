@@ -1,6 +1,6 @@
 /*****************************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2015 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2016 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -86,12 +86,28 @@ RecordIndexController.prototype.setUpSearch = function () {
     });
 };
 
+RecordIndexController.prototype.setUpClickBehavior = function () {
+    var clickedLink = false;
+    this.listView$.find ('.record-list-item').click (function () {
+        if (!clickedLink && $(this).attr ('data-x2-href')) {
+            $(':mobile-pagecontainer').pagecontainer (
+                'change', $(this).attr ('data-x2-href'), { transition: 'none' }); 
+            return false;
+        }
+        clickedLink = false;
+    });
+    this.listView$.find ('a').click (function () {
+        clickedLink = true;
+    });
+};
+
 RecordIndexController.prototype.init = function () {
     var that = this;
     x2.RecordIndexControllerBase.prototype.init.call (this);
     this.documentEvents.push (x2.main.onPageShow (function () {
         that.createButton$ = x2.main.activePage$.find ('.record-create-button');
         that.setUpSearch ();
+        that.setUpClickBehavior ();
     }, 'RecordIndexController'));
 };
 

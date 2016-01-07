@@ -1,7 +1,7 @@
 <?php
 /*****************************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2015 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2016 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -38,14 +38,13 @@
 <div id='per-stage-view-container-first' class='x2-layout-island x2-layout-island-merge-top-bottom'>
     <?php
     $this->renderFunnelView (
-        $model->id, $dateRange, $expectedCloseDateDateRange, $users, null, $modelType);
+        $model->id, $dateRange, $users, null, $modelType);
     //$workflowStatus = Workflow::getWorkflowStatus($model->id, 0, $modelType);	// true = include dropdowns
     //echo Workflow::renderWorkflowStats($workflowStatus, $modelType);
     ?>
     <?php
     $this->renderPartial ('_processStatus', array (
         'dateRange' => $dateRange,
-        'expectedCloseDateDateRange' => $expectedCloseDateDateRange,
         'model' => $model,
         'modelType' => $modelType,
         'users' => $users,
@@ -62,9 +61,6 @@
             Formatter::formatDate($dateRange['start']),
             Formatter::formatDate($dateRange['end']),
             $dateRange['range'],
-            Formatter::formatDate($expectedCloseDateDateRange['start']),
-            Formatter::formatDate($expectedCloseDateDateRange['end']),
-            $expectedCloseDateDateRange['range'],
             $users,
             $modelType
         );

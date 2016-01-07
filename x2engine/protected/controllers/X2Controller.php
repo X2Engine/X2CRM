@@ -1,7 +1,7 @@
 <?php
 /*****************************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2015 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2016 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -122,6 +122,26 @@ abstract class X2Controller extends CController {
     }
 
     /**
+     * Set fields of model using uploaded files in super global
+     * @param bool $merge if true, files will be merged with existing values
+     */
+    public function setFileFields ($model, $merge=false) {
+        if (isset ($_FILES[get_class ($model)])) {
+            $files = $_FILES[get_class ($model)]; 
+            $attributes = array_keys ($files['name']);
+            foreach ($attributes as $attr) {
+                if ($merge) {
+                    $model->$attr = array_merge (
+                        is_array ($model->$attr) ? $model->$attr : array (),
+                        CUploadedFile::getInstances ($model, $attr));
+                } else {
+                    $model->$attr = CUploadedFile::getInstance ($model, $attr);
+                }
+            }
+        }
+    }
+
+    /**
      * @return CHttpException 
      */
     protected function badRequestException ($message=null) {
@@ -147,18 +167,21 @@ abstract class X2Controller extends CController {
     /**
      * Rejects ajax requests to non-mobile actions from X2Touch.
      */
-//    protected function validateMobileRequest ($action) {
-//        if (!Yii::app()->isMobileApp () || !$this->isAjaxRequest ()) return;
-//
-//        if (!($this instanceof MobileController) &&
-//            (!$this->asa ('X2MobileControllerBehavior') ||
-//             !$this->asa ('X2MobileControllerBehavior')->hasMobileAction ($action->getId ()))) {
-//
-//             throw new CHttpException (400, Yii::t('app', 'Bad request.'));
-//        }
-//    }
+    protected function validateMobileRequest ($action) {
+        if (!Yii::app()->isMobileApp () || !$this->isAjaxRequest ()) return;
+
+        $whitelist = array ('getItems', 'error');
+        if (!in_array ($action->getId (), $whitelist) &&
+            !($this instanceof MobileController) &&
+            (!$this->asa ('X2MobileControllerBehavior') ||
+             !$this->asa ('X2MobileControllerBehavior')->hasMobileAction ($action->getId ()))) {
+
+             throw new CHttpException (400, Yii::t('app', 'Bad request.'));
+        }
+    }
 
     protected function beforeAction ($action) {
+        $this->validateMobileRequest ($action);
         $run = $this->runBehaviorBeforeActionHandlers ($action);
         return $run;
     }
@@ -187,6 +210,7 @@ abstract class X2Controller extends CController {
         }
         return $actions;
     }
+
 
 
 }

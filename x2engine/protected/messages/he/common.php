@@ -602,4 +602,8 @@
   'License Expiration Date' => 'תאריך תפוגת רישיון',
   '(expired)' => '(לא בתוקף)',
   'License Max Users' => 'משתמשי מקס רישיון',
+  'Select a model' => 'בחר מודל',
+  'Okay' => 'אוקי',
+  'Headquarters' => 'מַטֶה',
+  'Mailing Address' => 'כתובת דואר',
 );

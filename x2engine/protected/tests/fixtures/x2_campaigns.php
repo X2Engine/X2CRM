@@ -65,11 +65,11 @@ return array(
 <head>
         <title></title>
 </head>
-<body>Hello {name},<br />
+Hello {name},<br />
 <br />
 This is a test.<br />
 <br />
-Have a nice day!</body>
+Have a nice day!
 </html>
 ',
         'createdBy' => 'admin',

@@ -1,7 +1,7 @@
 <?php
 /*****************************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2015 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2016 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -98,7 +98,8 @@
                     echo "</div>";
                     echo "<div class='topic-attachment-list'>";
                     foreach($data->attachments as $media){
-                        echo '<span class="x2-pillbox topic-attachment">'.$media->getMediaLink().'</span>';
+                        echo '<span class="x2-pillbox topic-attachment">'.
+                            $media->getMediaLink().'</span>';
                     }
                     echo "</div>";
                 }

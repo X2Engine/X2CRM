@@ -2,7 +2,7 @@
 
 /*****************************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2015 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2016 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -574,8 +574,14 @@ class CampaignMailingBehavior extends EmailDeliveryBehavior {
             $deliver = false;
         }
 
-        if ($deliver)
-            $this->deliverEmail($addresses, $subject, $message);
+        if ($deliver) {
+            $unsubUrl = Yii::app()->createExternalUrl('/marketing/marketing/click', array(
+                'uid' => $uniqueId,
+                'type' => 'unsub',
+                'email' => $this->recipient->email
+            ));
+            $this->deliverEmail($addresses, $subject, $message, array(), $unsubUrl);
+        }
         if($this->status['code'] == 200) {
             // Successfully sent email. Mark as sent.
             $this->markEmailSent($uniqueId);

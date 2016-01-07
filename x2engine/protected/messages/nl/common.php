@@ -602,4 +602,8 @@
   'License Expiration Date' => 'Licentie Vervaldatum',
   '(expired)' => '(verlopen)',
   'License Max Users' => 'Licentie Max Gebruikers',
+  'Select a model' => 'Selecteer een model',
+  'Okay' => 'oke',
+  'Headquarters' => 'Hoofdkwartier',
+  'Mailing Address' => 'Postadres',
 );

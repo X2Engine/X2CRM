@@ -1,7 +1,7 @@
 <?php
 /*****************************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2015 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2016 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -40,6 +40,32 @@ Yii::app()->clientScript->registerCss('workflowFormCss',"
     margin: 9px 0;
 }
 
+");
+
+$financialFieldsUrl = $this->createUrl('workflow/getFinancialFields');
+Yii::app()->clientScript->registerScript('workflowFinancial',"
+    $('#Workflow_financial').on('change',function(){
+        if($('#Workflow_financial').is(':checked')){
+            $('#financialModel').show();
+            $('#financialField').show();
+        } else {
+            $('#financialModel').hide();
+            $('#financialField').hide();
+        }
+    });
+    $('#Workflow_financialModel').on('change',function(){
+        $.ajax({
+            url: '$financialFieldsUrl',
+            data: {modelType: $(this).val()},
+            success: function(data){
+                $('#Workflow_financialField').empty();
+                $.each(JSON.parse(data), function(key, val){
+                    $('#Workflow_financialField').append($('<option></option>')
+                    .attr('value', key).text(val));
+                });
+            }
+        });
+    });
 ");
 
 if(empty($model->stages))
@@ -151,33 +177,60 @@ $(function() {
 	<?php echo $form->errorSummary($model); ?>
 
 	<div class="row">
-		<div class="cell">
-			<?php echo $form->labelEx($model,'name'); ?>
-			<?php echo $form->textField($model,'name',array('maxlength'=>250, 'class'=>'x2-wide-input')); ?>
-			<?php echo $form->error($model,'name'); ?>
-		</div>
-		<div class="cell">
-			<?php 
-            $moduleOptions = 
-                array (
-                   Workflow::DEFAULT_ALL_MODULES => Yii::t('workflow', 'All Modules')
-                ) + Modules::getDropdownOptions ('id', function ($record) {
-                    $modelName = X2Model::getModelName ($record['name']);
-                    return $modelName && ($modelName::model () instanceof X2Model) && 
-                        $modelName::model ()->supportsWorkflow;
-                });
-            echo $form->labelEx($model,'isDefaultFor'); 
-            echo $form->dropDownList (
-                $model, 'isDefaultFor', 
-                $moduleOptions,
-                array (
+            <div class="cell">
+                <?php
+                echo $form->labelEx($model, 'name');
+                echo $form->textField($model, 'name',
+                        array('maxlength' => 250, 'class' => 'x2-wide-input'));
+                echo $form->error($model, 'name');
+                ?>
+            </div>
+            <div class="cell">
+                <?php
+                $moduleOptions = array(
+                            Workflow::DEFAULT_ALL_MODULES => Yii::t('workflow',
+                                    'All Modules')
+                        ) + Modules::getDropdownOptions('id',
+                                function ($record) {
+                            $modelName = X2Model::getModelName($record['name']);
+                            return $modelName && ($modelName::model() instanceof X2Model)
+                                    &&
+                                    $modelName::model()->supportsWorkflow;
+                        });
+                echo $form->labelEx($model, 'isDefaultFor');
+                echo $form->dropDownList(
+                        $model, 'isDefaultFor', $moduleOptions,
+                        array(
                     'multiple' => 'multiple',
                     'class' => 'x2-multiselect-dropdown',
                     'style' => 'display: none',
                     'data-selected-text' => Yii::t('workflow', 'module(s)'),
                 ));
-            ?>
-		</div>
+                ?>
+            </div>
+            <div class="cell">
+                <?php 
+                echo $form->labelEx($model, 'financial');
+                echo $form->checkBox($model, 'financial');
+                echo $form->error($model, 'financial');
+                ?>
+            </div>
+            <div class="cell" id="financialModel" style="<?php echo $model->financial?'':'display:none;'; ?>">
+                <?php 
+                echo $form->labelEx($model, 'financialModel');
+                echo $form->dropDownList($model, 'financialModel', X2Model::getModelTypesWhichSupportWorkflow(true, true), array('empty'=>Yii::t('workflow','Select a model type')));
+                echo $form->error($model, 'financialModel');
+                ?>
+            </div>
+            <div class="cell" id="financialField" style="<?php echo $model->financial?'':'display:none;'; ?>">
+                <?php 
+                echo $form->labelEx($model, 'financialField');
+                $currencyFields = !empty($model->financialModel)?Workflow::getCurrencyFields($model->financialModel):array();
+                $emptyText = empty($currencyFields)?Yii::t('workflow','Select a model'):Yii::t('workflow','Select a field');
+                echo $form->dropDownList($model, 'financialField', $currencyFields, array('empty'=>$emptyText));
+                echo $form->error($model, 'financialField');
+                ?>
+            </div>
 	</div>
 	<div id="workflow-stages" class="x2-sortlist">
 	<ol><?php

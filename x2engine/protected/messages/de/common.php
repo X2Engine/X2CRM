@@ -602,4 +602,8 @@
   'License Expiration Date' => 'Ablaufdatum der Lizenz',
   '(expired)' => '(abgelaufen)',
   'License Max Users' => 'Erweitert Max Benutzer',
+  'Select a model' => 'Wählen Sie ein Modell',
+  'Okay' => 'okay',
+  'Headquarters' => 'Hauptsitz',
+  'Mailing Address' => 'Postanschrift',
 );

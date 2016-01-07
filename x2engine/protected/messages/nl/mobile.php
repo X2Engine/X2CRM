@@ -16,4 +16,12 @@
   'Add a post...' => 'Voeg een bericht ...',
   'Activities' => 'Activiteiten',
   'Dashboard' => 'Dashboard',
+  'Default View Layout' => 'Default View Layout',
+  'Default Form Layout' => 'Standaard formulier Layout',
+  'Delete Topic' => 'Verwijder onderwerp',
+  'Login Failed' => 'Aanmelden mislukt',
+  'The verification code your entered is incorrect.' => 'De verificatiecode van uw klopt niet.',
+  'The username or password you entered is incorrect. Please try again.' => 'De gebruikersnaam of het wachtwoord dat u hebt ingevoerd is niet correct. Probeer opnieuw.',
+  'Username and password cannot be left blank.' => 'Gebruikersnaam en wachtwoord kan niet leeg zijn.',
+  'Web Address' => 'Webadres',
 );

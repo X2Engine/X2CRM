@@ -1,7 +1,7 @@
 <?php
 /*****************************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2015 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2016 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -39,8 +39,6 @@ class MobilePublisherAction extends MobileAction {
     public function run () {
         $model = new EventPublisherFormModel;
         $profile = Yii::app()->params->profile;
-        //AuxLib::debugLogR ('$_POST= ');
-        //AuxLib::debugLogR ($_POST);
 
         if (isset ($_POST['EventPublisherFormModel'])) {
             $model->setAttributes ($_POST['EventPublisherFormModel']);
@@ -65,14 +63,20 @@ class MobilePublisherAction extends MobileAction {
                             $this->controller->createAbsoluteUrl (
                                 '/profile/mobileActivity'));
                     } else {
-                        //AuxLib::debugLogR ($event->getAllErrorMessages ());
-                        Yii::app()->end (); // redirect handled on front-end for file upload
+                        echo CJSON::encode (array ( 
+                            'redirectUrl' => $this->controller->createAbsoluteUrl (
+                                '/profile/mobileActivity'),
+                        ));
+                        Yii::app()->end ();
                     }
                 } else {
                     //AuxLib::debugLogR ('invalid');
                     throw new CHttpException (500, implode (';', $event->getAllErrorMessages ()));
                 }
             } else {
+                if (isset ($_FILES['EventPublisherFormModel'])) {
+                    throw new CHttpException (500, implode (';', $event->getAllErrorMessages ()));
+                }
                 //AuxLib::debugLogR ('invalid model');
                 //AuxLib::debugLogR ($model->getErrors ());
             }

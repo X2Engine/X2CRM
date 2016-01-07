@@ -1,7 +1,7 @@
 <?php
 /*****************************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2015 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2016 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -62,6 +62,43 @@ class MobileModule extends X2WebModule {
         $packages = self::getPackages (Yii::app()->controller->assetsUrl);
     }
 
+    public static function supportedModules (CDbCriteria $criteria = null) {
+        $basicModules = array (
+            'x2Activity',
+            'topics',
+            'contacts',
+            'charts',
+            'accounts',
+            'opportunities',
+            'x2Leads',
+            'quotes',
+            'products',
+            'services',
+            'bugReports',
+            'users',
+            //'groups',
+        );
+
+        $qpg = new QueryParamGenerator;
+        $newCriteria = new CDbCriteria;
+        $newCriteria->condition = 
+            '(name in '.$qpg->bindArray ($basicModules, true).' or custom) and visible and 
+             moduleType in ("module", "pseudoModule") and name != "document"';
+        $newCriteria->params = $qpg->getParams ();
+        $newCriteria->order = 'menuPosition ASC';
+        if ($criteria) {
+            $newCriteria->mergeWith ($criteria);
+            $criteria = $newCriteria;
+        } else {
+            $criteria = $newCriteria;
+        }
+
+        $modules = Modules::model ()->findAll (
+            $criteria
+        );
+        return $modules;
+    }
+
     public static function getPackages ($assetsUrl) {
         return array(
             'jquery-migrate' => array(
@@ -89,10 +126,10 @@ class MobileModule extends X2WebModule {
             'x2TouchCss' => array (
                 'baseUrl' => $assetsUrl,
                 'css' => array_merge (
-                    array (
+                    array_merge (array (
                         'js/lib/jqueryui/jquery-ui.structure.css',
                         'js/lib/datepicker/jquery.mobile.datepicker.css',
-                    ), 
+                    ), Yii::app()->params->isPhoneGap ? array () : array ('css/shared.css')), 
                     YII_DEBUG && !self::$useMergedCss ? array(
                         'css/main.css',
                         'css/forms.css',
@@ -100,7 +137,11 @@ class MobileModule extends X2WebModule {
                         'css/login.css',
                         'css/passwordReset.css',
                         'css/recordIndex.css',
+                        'css/topicsIndex.css',
                         'css/recordView.css',
+                        'css/recordCreate.css',
+                        'css/topicsCreate.css',
+                        'css/topicsView.css',
                         'css/activityFeed.css',
                         'css/settings.css',
                         'css/about.css',
@@ -115,6 +156,7 @@ class MobileModule extends X2WebModule {
             'x2TouchJs' => array (
                 'baseUrl' => $assetsUrl,
                 'js' => array(
+                    'js/jQueryOverrides.js',
                     'js/x2touchJQueryOverrides.js',
                     'js/MobileForm.js',
                     'js/Controller.js',

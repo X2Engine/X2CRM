@@ -2,7 +2,7 @@
 
 /*****************************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2015 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2016 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -167,12 +167,14 @@
                  * Create URL entry text fields for each existing asset domain
                  */
                 x2.assetBaseUrl.renderExistingAssetUrls = function(entries) {
-                    $.each (entries, function(index, url) {
-                        var urlDiv = x2.assetBaseUrl.createAssetUrlEntry();
-                        $(urlDiv).find (".assetBaseUrlInput").val (url);
-                        $("#assetUrls").append(urlDiv);
-                        $(".assetBaseUrlEntry > .removeAssetUrl").click (x2.assetBaseUrl.removeAssetUrl);
-                    });
+                    if(entries) {
+                        $.each (entries, function(index, url) {
+                            var urlDiv = x2.assetBaseUrl.createAssetUrlEntry();
+                            $(urlDiv).find (".assetBaseUrlInput").val (url);
+                            $("#assetUrls").append(urlDiv);
+                            $(".assetBaseUrlEntry > .removeAssetUrl").click (x2.assetBaseUrl.removeAssetUrl);
+                        });
+                    }
                 }
 
                 /**

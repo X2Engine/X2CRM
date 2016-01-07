@@ -16,4 +16,12 @@
   'Add a post...' => '',
   'Activities' => '',
   'Dashboard' => '',
+  'Default View Layout' => '',
+  'Default Form Layout' => '',
+  'Delete Topic' => '',
+  'Login Failed' => '',
+  'The verification code your entered is incorrect.' => '',
+  'The username or password you entered is incorrect. Please try again.' => '',
+  'Username and password cannot be left blank.' => '',
+  'Web Address' => '',
 );

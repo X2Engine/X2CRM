@@ -616,7 +616,9 @@ $.nlsc.normUrl=function(url) {
     url didn\'t already have get parameters before the jQuery cache busting parameter was added.
     */
 	//return url.replace(/\?*(_=\d+)?$/g,"");
-	url = url.replace(/(\&|\?)?(_=\d+)?$/g,"");
+	if (url.match (/\?\d+(&|$)/)) {
+	    url = url.replace(/\?(\d+).*$/,"?$1"); // remove all parameters except cache buster
+    }
 
     // also remove cache busting param. We don\'t want to have an asset reloaded during an AJAX
     // request just because there\'s a new version

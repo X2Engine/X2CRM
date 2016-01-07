@@ -1,7 +1,7 @@
 <?php
 /*****************************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2015 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2016 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -71,7 +71,7 @@ class ProfileController extends x2base {
                     'deleteActivityReport', 'createActivityReport', 'manageEmailReports',
                     'toggleEmailReport', 'deleteEmailReport', 'sendTestActivityReport',
                     'createProfileWidget','deleteSortableWidget','deleteTheme','previewTheme', 
-                    'resetTours', 'disableTours', 'mobileView', 'mobileActivity', 
+                    'resetTours', 'disableTours', 'mobileIndex', 'mobileView', 'mobileActivity', 
                     'mobileViewEvent', 'mobilePublisher'),
                 'users' => array('@'),
             ),
@@ -662,22 +662,12 @@ class ProfileController extends x2base {
     public function actionUploadPhoto($id) {
         if ($id == Yii::app()->user->getId()) {
             $prof = Profile::model()->findByPk($id);
-            if (isset($_FILES['photo'])) {
-                if ($_FILES["photo"]["error"]) {
-                    Yii::app()->user->setFlash('error', Yii::t('app', "There was an error uploading the file."));
-                } else if ($_FILES["photo"]["size"] < 2000000) {
-                    if ($prof->avatar != '' && isset($prof->avatar) && file_exists($prof->avatar)) {
-                        unlink($prof->avatar);
-                    }
-                    $temp = CUploadedFile::getInstanceByName('photo');
-                    $name = $this->generatePictureName();
-                    $ext = $temp->getExtensionName();
-                    $temp->saveAs('uploads/protected/' . $name . '.' . $ext);
-
-                    $prof->avatar = 'uploads/protected/' . $name . '.' . $ext;
-                    $prof->save();
+            if (isset($_FILES['Profile'])) {
+                $prof->photo = CUploadedFile::getInstance ($prof, 'photo'); 
+                if ($prof->save ()) {
                 } else {
-                    Yii::app()->user->setFlash('error', Yii::t('app', "File is too large!"));
+                    Yii::app()->user->setFlash(
+                        'error', Yii::t('app', "There was an error uploading the file."));
                 }
             } else if (isset($_GET['clear']) && $_GET['clear']) {
                 $prof->avatar = null;

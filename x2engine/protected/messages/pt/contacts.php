@@ -63,4 +63,5 @@
   'lastUpdated' => 'Ultima atualização',
   'Top Menu Bar Logo' => 'Menu Superior Bar Logo',
   'Login Screen Logo' => 'Logo de início de sessão Tela',
+  'Tag list must be non-empty' => 'Lista de etiquetas devem ser não-vazia',
 );

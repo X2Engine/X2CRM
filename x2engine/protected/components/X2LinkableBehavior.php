@@ -2,7 +2,7 @@
 
 /*****************************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2015 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2016 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -120,7 +120,7 @@ class X2LinkableBehavior extends CActiveRecordBehavior {
     public function getUrl(){
         $url = null;
         // Use the controller
-        if(Yii::app()->controller instanceof CController) {
+        if(Yii::app()->controller instanceof CController && !Yii::app()->controller instanceof ProfileController) {
             $url = Yii::app()->controller->createAbsoluteUrl($this->viewRoute, array('id' => $this->owner->id));
         }
         if(empty($url)) { // Construct an absolute URL; no web request data available.
@@ -148,7 +148,7 @@ class X2LinkableBehavior extends CActiveRecordBehavior {
             ), Yii::app()->db->createCommand ("
                 select name
                 from x2_modules
-                where custom
+                where custom and name
             ")->queryColumn ()));
         }
         return self::$_mobileLinkableRecordTypes;

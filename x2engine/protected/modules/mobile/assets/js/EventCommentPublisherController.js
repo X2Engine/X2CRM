@@ -1,6 +1,6 @@
 /*****************************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2015 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2016 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -54,16 +54,6 @@ EventCommentPublisherController.prototype.setUpForm = function () {
 
     commentBox$.keyup (function () {
         that.submitButton$.toggleClass ('disabled', !$.trim (commentBox$.val ()));
-    });
-
-    this.submitButton$.click (function () {
-        console.log ('post');
-        if (!$.trim (commentBox$.val ())) {
-            console.log ('empt');
-            return;
-        } else {
-            that.form$.submit ();
-        }
     });
 
     var cameraButton$ = $('#footer .photo-attach-button');

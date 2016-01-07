@@ -1,6 +1,6 @@
 /*****************************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2015 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2016 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -130,4 +130,4 @@ INSERT INTO `x2_tips` (`tip`, `edition`, `admin`, `module`) VALUES
 INSERT INTO `x2_mobile_layouts`
 (`modelName`, `layout`, `defaultForm`, `defaultView`, `version`)
 VALUES
-('Profile', '["fullName","tagLine","username","officePhone","cellPhone","emailAddress","googleId"]',0,1,'5.4');
+('Profile', '["tagLine","username","officePhone","cellPhone","emailAddress","googleId"]',0,1,'5.4');

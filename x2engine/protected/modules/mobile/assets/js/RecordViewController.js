@@ -1,6 +1,6 @@
 /*****************************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2015 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2016 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -41,7 +41,10 @@ function RecordViewController (argsDict) {
     var argsDict = typeof argsDict === 'undefined' ? {} : argsDict;
     var defaultArgs = {
         DEBUG: x2.DEBUG && false,
-        hasSettingsMenu: true
+        hasSettingsMenu: true,
+        modelName: null,
+        modelId: null,
+        myProfileId: null
     };
     auxlib.applyArgs (this, defaultArgs, argsDict);
     x2.Controller.call (this, argsDict);
@@ -60,23 +63,27 @@ RecordViewController.prototype.setUpEdit = function () {
 
 RecordViewController.prototype.setUpDelete = function () {
     var that = this;
-    var deleteButton$ = $.mobile.activePage.find ('.delete-button');
-    deleteButton$.click (function () {
-        x2.main.confirm (
-            that.translations.deleteConfirm,
-            '',
-            [
-                that.translations.deleteConfirmOkay,
-                that.translations.deleteConfirmCancel
-            ],
-            function () {
-                $(':mobile-pagecontainer').pagecontainer (
-                    'change', deleteButton$.attr ('href'));
-            }
-        );
-        return false;
-    });
+//    var deleteButton$ = $.mobile.activePage.find ('.delete-button');
+//    deleteButton$.click (function () {
+//        x2.main.confirm (
+//            that.translations.deleteConfirm,
+//            '',
+//            [
+//                that.translations.deleteConfirmOkay,
+//                that.translations.deleteConfirmCancel
+//            ],
+//            function () {
+//                $(':mobile-pagecontainer').pagecontainer (
+//                    'change', deleteButton$.attr ('href'));
+//            }
+//        );
+//        return false;
+//    });
 
+};
+
+RecordViewController.prototype.setUpProfile = function () {
+     
 };
 
 RecordViewController.prototype.init = function () {
@@ -84,6 +91,9 @@ RecordViewController.prototype.init = function () {
     this.documentEvents.push (x2.main.onPageShow (function () {
         that.setUpEdit ();
         that.setUpDelete ();
+        if (that.modelName === 'Profile') {
+            that.setUpProfile ();
+        }
     }, this.constructor.name));
 };
 

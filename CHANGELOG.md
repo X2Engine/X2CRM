@@ -1,3 +1,27 @@
+# 5.4.2 #
+1/7/2016
+* General Changelog / Developer Notes
+  * X2Touch changes:
+    * Added support for the Topics module
+    * Module form layouts can now be customized from the new "Mobile App Form Editor" admin page
+  * Improved error handling of automated email logging
+  * Action History "Email From" filter now includes logged inbound emails
+  * New option on the "Email Settings" admin page to enable List-Unsubscribe email header
+  * Updated module delete functionality to clean up associated custom module summary widgets
+  * Updated Process module to allow for financial information on any module type
+* Tracked Bug Fixes:  
+  * [3189](http://x2software.com/index.php/bugReports/3189): CDbCommand failed to execute the SQL statement: SQLSTATE[42S22]: Column not found: 1054 Unknown column 't.createDate' in 'having clause'  
+  * [3283](http://x2software.com/index.php/bugReports/3283): file_exists(): open_basedir restriction in effect. File is not within the allowed path(s)
+  * [3296](http://x2software.com/index.php/bugReports/3296): CDbCommand failed to execute the SQL statement: SQLSTATE[23000]: Integrity constraint violation: 1062 Duplicate entry 'Admin' for key 'PRIMARY'  
+  * [3300](http://x2software.com/index.php/bugReports/3300): array_flip(): Can only flip STRING and INTEGER values!  
+  * [3302](http://x2software.com/index.php/bugReports/3302): CDbCommand failed to execute the SQL statement: SQLSTATE[HY000]: General error: 1366 Incorrect integer value: '' for column 'active' at row 1  
+  * [3303](http://x2software.com/index.php/bugReports/3303): CDbCommand failed to execute the SQL statement: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'tags' in 'where clause'  
+  * [3310](http://x2software.com/index.php/bugReports/3310): X2MergeableBehavior and its behaviors do not have a method or closure named "setMergedField".  
+  * [3312](http://x2software.com/index.php/bugReports/3312): The system is unable to find the requested action "id".  
+  * [3323](http://x2software.com/index.php/bugReports/3323): Trying to get property of non-object  
+  * [3324](http://x2software.com/index.php/bugReports/3324): Eigenschaft "Contacts.Array ist nicht definiert."
+  * [3330](http://x2software.com/index.php/bugReports/3330): Relationships labelling bug
+
 # 5.4.1 #
 12/18/2015
 * General Changelog / Developer Notes

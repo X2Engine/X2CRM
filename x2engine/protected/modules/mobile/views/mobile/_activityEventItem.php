@@ -1,7 +1,7 @@
 <?php
 /*****************************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2015 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2016 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -37,8 +37,15 @@
 $showComments = !isset ($showComments) ? true : $showComments;
 $showRecipient = !isset ($showRecipient) ? true : $showRecipient;
 
+$attrs['data-x2-event-subtype'] = 
+    X2Html::sanitizeAttribute (preg_replace ('/ /', '-', strtolower ($data->subtype)));
+$attrs['data-x2-event-type'] = 
+    X2Html::sanitizeAttribute (preg_replace ('/ /', '-', strtolower ($data->type)));
+
+echo CHtml::openTag ('div', array_merge (array (
+    'class' => 'record-list-item',
+), $attrs));
 ?>
-<div class='record-list-item'>
     <?php
     if (($data->isTypeFeed () || in_array ($data->type, array ('comment', 'media'))) && 
         $data->profile) {

@@ -602,4 +602,8 @@
   'License Expiration Date' => '',
   '(expired)' => '',
   'License Max Users' => '',
+  'Select a model' => '',
+  'Okay' => '',
+  'Headquarters' => '',
+  'Mailing Address' => '',
 );

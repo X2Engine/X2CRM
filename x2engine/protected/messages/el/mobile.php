@@ -16,4 +16,12 @@
   'Add a post...' => 'Προσθέστε μια θέση ...',
   'Activities' => 'Δραστηριότητες',
   'Dashboard' => 'Ταμπλό',
+  'Default View Layout' => 'Προεπιλογή Διάταξη',
+  'Default Form Layout' => 'Προεπιλεγμένη φόρμα Διάταξη',
+  'Delete Topic' => 'Διαγραφή Θέματος',
+  'Login Failed' => 'Αποτυχία σύνδεσης',
+  'The verification code your entered is incorrect.' => 'Ο κωδικός επαλήθευσης τέθηκε σας είναι λανθασμένη.',
+  'The username or password you entered is incorrect. Please try again.' => 'Το όνομα χρήστη ή ο κωδικός πρόσβασης που εισάγατε δεν είναι σωστός. Παρακαλώ προσπάθησε ξανά.',
+  'Username and password cannot be left blank.' => 'Το όνομα χρήστη και ο κωδικός πρόσβασης δεν μπορεί να μείνει κενό.',
+  'Web Address' => 'Ηλεκτρονική διεύθυνση',
 );

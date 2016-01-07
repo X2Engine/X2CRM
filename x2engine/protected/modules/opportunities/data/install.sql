@@ -28,6 +28,12 @@ INSERT INTO `x2_modules`
 VALUES
 ('opportunities', 'Opportunities', 1, 5, 1, 1, 0, 0, 0);
 /*&*/
+INSERT INTO `x2_mobile_layouts`
+(`modelName`, `layout`, `defaultView`, `defaultForm`, `version`)
+VALUES
+('Opportunity', '["name","accountName","salesStage","leadSource","expectedCloseDate","quoteAmount","probability","description","assignedTo"]', 1, 0, '5.4'),
+('Opportunity', '["name","accountName","salesStage","leadSource","expectedCloseDate","quoteAmount","probability","description","assignedTo"]', 0, 1, '5.4');
+/*&*/
 INSERT INTO x2_fields
 (modelName, fieldName, attributeLabel, modified, custom, `type`, required, readOnly, linkType, searchable, isVirtual, relevance, uniqueConstraint, safe, keyType)
 VALUES

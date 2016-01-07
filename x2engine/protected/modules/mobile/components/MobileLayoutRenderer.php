@@ -1,7 +1,7 @@
 <?php
 /*****************************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2015 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2016 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -67,14 +67,19 @@ abstract class MobileLayoutRenderer extends X2Widget {
             return;
         }
 
-        return $this->model->getFieldPermissions();
+        if ($this->model instanceof X2Model) {
+            return $this->model->getFieldPermissions();
+        } else {
+            return null;
+        }
     }
 
     /**
      * Returns if the form or a specific field can be edited. 
      * If Field is empty, it returns permissions of whole form
      */
-    public function canEdit(Fields $field) {
+    public function canEdit($field) {
+        if (!($field instanceof Fields)) return true;
         if(Yii::app()->params->isAdmin){
             return true;
         }
@@ -128,9 +133,10 @@ abstract class MobileLayoutRenderer extends X2Widget {
     public function renderLabel ($text) {
     }
 
-    public function renderValue ($fieldName) {
+    public function renderValue ($fieldName, array $htmlOptions=array ()) {
         $html = '';
-        $html .= CHtml::openTag ('div', array ('class' => 'field-value'));
+        $html .= CHtml::openTag (
+            'div', X2Html::mergeHtmlOptions (array ('class' => 'field-value'), $htmlOptions));
         $html .= $this->model->renderAttribute ($fieldName);
         $html .= CHtml::closeTag ('div');
         return $html;
@@ -146,20 +152,22 @@ abstract class MobileLayoutRenderer extends X2Widget {
         return $html;
     }
 
-    public function renderField ($field, $inner) {
+    public function renderField ($field, $inner, array $htmlOptions=array ()) {
         $html = '';
         if ($field->valueIsLink ()) {
             $classes = 'ui-link field-container field-link-container';
             if ($field->linkType === 'multiple')
                 $classes .= ' multiple-links';
             $html .= CHtml::tag (
-                'div', array (
+                'div', X2Html::mergeHtmlOptions (array (
                     'class' => $classes,
-                ));
+                ), $htmlOptions));
             $html .= $inner;
             $html .= CHtml::closeTag ('div');
         } else {
-            $html .= CHtml::openTag ('div', array ('class' => 'field-container'));
+            $html .= CHtml::openTag (
+                'div', X2Html::mergeHtmlOptions (
+                    array ('class' => 'field-container'), $htmlOptions));
             $html .= $inner;
             $html .= CHtml::closeTag ('div');
         }
@@ -169,27 +177,8 @@ abstract class MobileLayoutRenderer extends X2Widget {
     public function getLayoutData () {
         if (!$this->mobileLayout) {
             // if there's no mobile layout, generate layout from default desktop app record layout
-
-            $layout = $this->getLayout ();
-            $layoutData = array ();
-            if ($layout) {
-                $layout = CJSON::decode ($layout->layout);
-                if (isset ($layout['sections'])) {
-                    foreach ($layout['sections'] as $section) {
-                        foreach ($section['rows'] as $row) {
-                            foreach ($row['cols'] as $col) {
-                                foreach ($col['items'] as $item) {
-                                    if (isset ($item['name'])) {
-                                        $fieldName = preg_replace(
-                                            '/^formItem_/u', '', $item['name']);
-                                        $layoutData[] = $fieldName;
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
+            $layoutData = MobileLayouts::generateDefaultLayout (
+                $this->layoutType, $this->modelName);
         } else {
             $layoutData = $this->mobileLayout->layout;
         }

@@ -601,4 +601,8 @@
   'License Expiration Date' => 'Срок действия лицензии',
   '(expired)' => '(истекший)',
   'License Max Users' => 'Лицензионные Максимальное Люди',
+  'Select a model' => 'Выберите модель',
+  'Okay' => 'Хорошо',
+  'Headquarters' => 'Главное управление',
+  'Mailing Address' => 'Почтовый адрес',
 );

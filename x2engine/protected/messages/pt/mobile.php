@@ -16,4 +16,12 @@
   'Add a post...' => 'Adicionar um post ...',
   'Activities' => 'Atividades',
   'Dashboard' => 'Painel de instrumentos',
+  'Default View Layout' => 'Padrão Layout de Vista',
+  'Default Form Layout' => 'Padrão Form Layout',
+  'Delete Topic' => 'Excluir Tópico',
+  'Login Failed' => 'Falha na autenticação',
+  'The verification code your entered is incorrect.' => 'O código de verificação seu digitou está incorreta.',
+  'The username or password you entered is incorrect. Please try again.' => 'O nome de usuário ou senha que você digitou está incorreto. Por favor, tente novamente.',
+  'Username and password cannot be left blank.' => 'Nome de usuário e senha não pode ser deixado em branco.',
+  'Web Address' => 'Endereço Web',
 );

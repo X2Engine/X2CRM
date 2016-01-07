@@ -49,4 +49,9 @@
   'All modules' => '모든 모듈',
   'All Modules' => '모든 모듈',
   'module(s)' => '모듈 (들)',
+  'Show Financial Data' => '쇼 재무 데이터',
+  'Financial Data Model' => '금융 데이터 모델',
+  'Financial Data Field' => '금융 데이터 필드',
+  'Select a model type' => '모델 유형을 선택',
+  'Select a field' => '필드를 선택',
 );

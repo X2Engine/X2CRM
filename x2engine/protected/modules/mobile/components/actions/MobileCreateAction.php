@@ -1,7 +1,7 @@
 <?php
 /*****************************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2015 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2016 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -36,6 +36,9 @@
 
 class MobileCreateAction extends MobileAction {
 
+    public $pageClass = 'record-create';
+    public $viewFile = 'recordCreate';
+
     public function run () {
         parent::beforeRun ();
 
@@ -46,17 +49,32 @@ class MobileCreateAction extends MobileAction {
             if ($model->asa ('ContactsNameBehavior')) {
                 $model->setName ();
             }
+
+            if ($model instanceof Topics && isset ($_POST['Topics']['upload'])) {
+                $model->upload = $_POST['Topics']['upload'];
+            }
+            $this->controller->setFileFields ($model, true);
+
             // TODO: handle duplicates, possibly by adding a mobile duplicate handling page
             if ($model->save ()) {
-                $this->controller->redirect (array ('mobileView', 'id' => $model->id));
+                if (isset ($_FILES[$modelClass])) {
+                    echo CJSON::encode (array (
+                        'redirectUrl' => $model->getUrl (),
+                    ));
+                    Yii::app()->end ();
+                } else {
+                    $this->controller->redirect (array ('mobileView', 'id' => $model->id));
+                }
+            } elseif (isset ($_FILES[$modelClass])) {
+                throw new CException (400, Yii::t('app', 'Upload failed'));
             }
         }
 
-        $this->controller->pageClass = 'record-create';
+        $this->controller->pageClass = $this->pageClass;;
         $model->setInputRenderer (
             'application.modules.mobile.components.formatters.MobileFieldInputRenderer');
         $this->controller->render (
-            $this->pathAliasBase.'views.mobile.recordCreate',
+            $this->pathAliasBase.'views.mobile.'.$this->viewFile,
             array (
                 'model' => $model,
             )

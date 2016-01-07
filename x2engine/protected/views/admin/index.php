@@ -1,7 +1,7 @@
 <?php
 /*****************************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2015 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2016 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -237,6 +237,11 @@ if(Yii::app()->session['versionCheck']==false && $admin->updateInterval > -1 && 
     </div>
     <div class="row">
         <div class="cell span-6"><?php echo CHtml::link(Yii::t('admin','Edit Global CSS'),array('/admin/editGlobalCss')); ?><br><?php echo Yii::t('admin','Edit globally-applied stylesheet');?></div>
+        <div class="cell span-6"><?php echo CHtml::link(Yii::t('admin','Mobile App Form Editor'),array('/admin/editMobileForms')); ?><br><?php 
+         
+            echo Yii::t('admin', 'Edit form layouts for X2Touch.');
+         
+        ?></div>
     </div>
 </div>
 <div class="form x2-layout-island">

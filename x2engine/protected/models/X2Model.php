@@ -2,7 +2,7 @@
 
 /*****************************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2015 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2016 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -681,11 +681,6 @@ abstract class X2Model extends X2ActiveRecord {
 
     
 
-
-    public function getName () {
-        if (property_exists ($this, 'name')) return $this->name;
-        else return $this->id;
-    }
 
     
     public function resetFieldsPropertyCache () {
@@ -1765,8 +1760,9 @@ abstract class X2Model extends X2ActiveRecord {
                         'options' => $multiSelectOptions,
                         'multiple' => 'multiple'
                     ));
-                } else {
-                    $htmlOptions = array_merge($htmlOptions, array('empty' => Yii::t('app', "Select an option")));
+                } elseif ($field->includeEmpty) {
+                    $htmlOptions = array_merge(
+                        $htmlOptions, array('empty' => Yii::t('app', "Select an option")));
                 }
                 return CHtml::activeDropDownList($model, $field->fieldName, $dropdowns, $htmlOptions);
 

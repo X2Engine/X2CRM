@@ -1,6 +1,6 @@
 /*****************************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2015 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2016 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -278,6 +278,8 @@ VALUES
 ('AdminDropDownEditor',0,'Create a new dropdown.',NULL,'N;'),
 ('AdminEditDropdown',0,'Customize a dropdown.',NULL,'N;'),
 ('AdminEditor',0,'Form editor control.',NULL,'N;'),
+('AdminEditMobileForms',0,'',NULL,'N;'),
+('AdminGetMobileLayouts',0,'',NULL,'N;'),
 ('AdminEditRole',0,'',NULL,'N;'),
 ('AdminEditRoleAccess',0,'',NULL,'N;'),
 ('AdminEmailDropboxSettings',0,'Edit the email dropbox settings.',NULL,'N;'),
@@ -804,6 +806,13 @@ VALUES
 ('ServicesCreateWebForm',0,'Edit the web form.',NULL,'N;'),
 ('ServicesServicesReport',0,'',NULL,'N;'),
 ('ServicesExportServiceReport',0,'',NULL,'N;'),
+('TopicsMobileIndex',0,'',NULL,'N;'),
+('TopicsMobileView',0,'',NULL,'N;'),
+('TopicsMobileDelete',0,'',NULL,'N;'),
+('TopicsMobileCreate',0,'',NULL,'N;'),
+('TopicsMobileUpdate',0,'',NULL,'N;'),
+('TopicsMobileUpdateReply',0,'',NULL,'N;'),
+('TopicsMobileDeleteReply',0,'',NULL,'N;'),
 ('TopicsAjaxGetModelAutocomplete',0,'',NULL,'N;'),
 ('TopicsAdmin',0,'',NULL,'N;'),
 ('TopicsAdminAccess',1,'',NULL,'N;'),
@@ -905,6 +914,7 @@ VALUES
 ('WorkflowQuickView',0,'',NULL,'N;'),
 ('WorkflowViewStage',0,'',NULL,'N;'),
 ('WorkflowGetStageValue',0,'',NULL,'N;'),
+('WorkflowGetFinancialFields',0,'',NULL,'N;'),
 ('X2StudioTask',1,'A set of permissions for the use of X2Studio.',NULL,'N;'),
 ('AdminCalculateTranslationRedundancy',0,'',NULL,'N;'),
 ('AdminFindMissingPermissions',0,'',NULL,'N;'),
@@ -1174,6 +1184,8 @@ INSERT INTO `x2_auth_item_child` (`parent`,`child`) VALUES
 ('DropDownsTask','AdminDropDownEditor'),
 ('DropDownsTask','AdminEditDropdown'),
 ('X2StudioTask','AdminEditor'),
+('X2StudioTask','AdminEditMobileForms'),
+('X2StudioTask','AdminGetMobileLayouts'),
 ('RoleAccessTask','AdminEditRole'),
 ('GeneralAdminSettingsTask','AdminEmailSetup'),
 ('GeneralAdminSettingsTask','AdminExport'),
@@ -1787,6 +1799,13 @@ INSERT INTO `x2_auth_item_child` (`parent`,`child`) VALUES
 ('TopicsMinimumRequirements','TopicsGetTerms'),
 ('TopicsMinimumRequirements','TopicsGetX2ModelInput'),
 ('TopicsMinimumRequirements','TopicsIndex'),
+('TopicsIndex','TopicsMobileIndex'),
+('TopicsView','TopicsMobileView'),
+('TopicsDelete','TopicsMobileDelete'),
+('TopicsCreate','TopicsMobileCreate'),
+('TopicsUpdate','TopicsMobileUpdate'),
+('TopicsUpdateReply','TopicsMobileUpdateReply'),
+('TopicsDeleteReply','TopicsMobileDeleteReply'),
 ('TopicsMinimumRequirements','TopicsQtip'),
 ('TopicsMinimumRequirements','TopicsSearch'),
 ('TopicsMinimumRequirements','TopicsX2GridViewMassAction'),
@@ -1883,6 +1902,7 @@ INSERT INTO `x2_auth_item_child` (`parent`,`child`) VALUES
 ('AuthenticatedSiteFunctionsTask','WorkflowGetStageMembers'),
 ('AuthenticatedSiteFunctionsTask','WorkflowGetStages'),
 ('AuthenticatedSiteFunctionsTask','WorkflowGetWorkflow'),
+('WorkflowMinimumRequirements','WorkflowGetFinancialFields'),
 ('WorkflowMinimumRequirements','WorkflowIndex'),
 ('WorkflowIndex', 'WorkflowX2GridViewMassAction'),
 ('WorkflowIndex','WorkflowAjaxGetModelAutocomplete'),

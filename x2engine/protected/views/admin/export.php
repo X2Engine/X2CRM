@@ -1,7 +1,7 @@
 <?php
 /*****************************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2015 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2016 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -150,12 +150,16 @@ Yii::app()->clientScript->registerCssFile(Yii::app()->theme->baseUrl.'/css/impor
         var models=new Array();
         $('.model-checkbox').each (function() {
             if ($(this).is (':checked')) {
-                models.push($(this).attr('name'));
-                if($(this).attr('name')=='User'){
-                    models.push('Profile');
-                }
                 if($(this).attr('name')=='Workflow'){
-                    models.push('WorkflowStage');
+                    // Add process and process stages to beginning of model list to
+                    // satisfy constraints when the data is imported
+                    models.unshift('WorkflowStage');
+                    models.unshift('Workflow');
+                } else {
+                    models.push($(this).attr('name'));
+                    if($(this).attr('name')=='User'){
+                        models.push('Profile');
+                    }
                 }
             }
         });

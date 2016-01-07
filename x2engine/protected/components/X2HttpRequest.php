@@ -1,7 +1,7 @@
 <?php
 /*****************************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2015 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2016 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -54,6 +54,17 @@ class X2HttpRequest extends CHttpRequest {
         }
 
         return parent::validateCsrfToken ($event);
+    }
+
+	public function redirect($url,$terminate=true,$statusCode=302) {
+        if (Yii::app()->isMobileApp ()) {
+            $params = array ();
+            if (isset ($_GET['x2ajax'])) $params['x2ajax'] = $_GET['x2ajax'];
+            if (isset ($_GET['isMobileApp'])) $params['isMobileApp'] = $_GET['isMobileApp'];
+              
+            $url = UrlUtil::mergeParams ($url, $params);
+        }
+        return parent::redirect ($url, $terminate, $statusCode);
     }
 
 

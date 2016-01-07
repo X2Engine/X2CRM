@@ -1,7 +1,7 @@
 <?php
 /*****************************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2015 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2016 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -44,11 +44,11 @@ Yii::app()->clientScript->registerScriptFile(
 $attr = 'photo';
 $htmlOptions = array ();
 CHtml::resolveNameID ($model, $attr, $htmlOptions);
-$this->onPageLoad ("function () {
+$this->onPageLoad ("
     x2.main.controllers['$this->pageId'] = new x2.EventPublisherController ({
         photoAttrName: ".CJSON::encode ($htmlOptions['name'])."
     });
-}", CClientScript::POS_END);
+", CClientScript::POS_END);
 
 ?>
 
@@ -68,7 +68,15 @@ $this->onPageLoad ("function () {
 $form = $this->beginWidget ('MobileActiveForm', array (
     'htmlOptions' => array (
         'class' => 'publisher-form',
-    )
+    ),
+    'photoAttrName' => 'EventPublisherFormModel[photo]',
+    'JSClassParams' => array (
+        'submitButtonSelector' => '#header .post-event-button',
+        'validate' => 'js:function () {
+            return $.trim (this.form$.find (".event-text-box").val ()) ||
+                this.form$.find (".photo-attachment");
+        }',
+    ),
 ));
 ?>
     <div class='avatar'>

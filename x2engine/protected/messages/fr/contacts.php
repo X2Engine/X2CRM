@@ -63,4 +63,5 @@
   'lastUpdated' => 'dernière mise à jour',
   'Top Menu Bar Logo' => 'Top Menu Bar Logo',
   'Login Screen Logo' => 'Connexion Screen Logo',
+  'Tag list must be non-empty' => 'Liste de Tag doit être non-vide',
 );

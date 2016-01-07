@@ -602,4 +602,8 @@
   'License Expiration Date' => 'ライセンスの有効期限',
   '(expired)' => '（期限切れ）',
   'License Max Users' => 'ライセンス最大ユーザ数',
+  'Select a model' => 'モデルを選択',
+  'Okay' => 'はい',
+  'Headquarters' => '本部',
+  'Mailing Address' => '送り先',
 );

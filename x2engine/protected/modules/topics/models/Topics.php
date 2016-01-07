@@ -2,7 +2,7 @@
 
 /*****************************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2015 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2016 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -44,6 +44,8 @@ Yii::import ('application.modules.topics.components.formatters.TopicsFieldFormat
 class Topics extends X2Model {
     
     const PAGE_SIZE = 20;
+
+    public $upload;
 
     public $supportsFieldLevelPermissions = false;
     
@@ -135,7 +137,16 @@ class Topics extends X2Model {
     }
 
     public function behaviors() {
+        $that = $this;
         return array_merge(parent::behaviors(), array(
+            'AssociatedMediaBehavior' => array(
+                'class' => 'application.components.behaviors.AssociatedMediaBehavior',
+                'fileAttribute' => 'upload',
+                'associationType' => 'topicReply',
+                'getAssociationId' => function () use ($that) {
+                    return $that->originalPost->id;
+                },
+            ),
             'X2LinkableBehavior' => array(
                 'class' => 'X2LinkableBehavior',
                 'module' => 'topics'
@@ -253,6 +264,14 @@ class Topics extends X2Model {
             ->from('x2_topic_replies')
             ->where('topicId = :id',array(':id'=>$this->id))
             ->queryScalar() - 1;
+    }
+
+    private $_attachments;
+    public function getAttachments () {
+        if (!isset ($this->_attachments)) {
+            $this->_attachments = $this->originalPost ? $this->originalPost->attachments : array ();
+        }
+        return $this->_attachments;
     }
 
 }

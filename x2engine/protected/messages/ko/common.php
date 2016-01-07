@@ -602,4 +602,8 @@
   'License Expiration Date' => '라이센스 만료 날짜',
   '(expired)' => '(만료)',
   'License Max Users' => '라이센스 최대 사용자',
+  'Select a model' => '모델을 선택',
+  'Okay' => '알았어',
+  'Headquarters' => '본부',
+  'Mailing Address' => '우편 주소',
 );

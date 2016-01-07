@@ -1,7 +1,7 @@
 <?php
 /*****************************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2015 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2016 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -159,14 +159,16 @@ class X2MobileControllerBehavior extends X2ControllerBehavior {
      * Wrap specified JS in the appropriate on load handler 
      * @param string $js
      */
-    public function onPageLoad ($js) {
+    public function onPageLoad ($js, $scriptName=null) {
         static $i=0;
+        $scriptName  = !isset ($scriptName) ? 
+            'X2MobileControllerBehavior.onPageLoad.'.$i : $scriptName;
         if ($this->owner->isAjaxRequest ()) {
-            Yii::app()->clientScript->registerScript('X2MobileControllerBehavior.onPageLoad.'.$i, 
-            "$($js);", CClientScript::POS_END);
+            Yii::app()->clientScript->registerScript($scriptName, 
+            "$(function () { $js });", CClientScript::POS_END);
         } else {
-            Yii::app()->clientScript->registerScript('X2MobileControllerBehavior.onPageLoad.'.$i, 
-            "$(document).on ('pagecontainercreate', $js);", CClientScript::POS_END);
+            Yii::app()->clientScript->registerScript($scriptName, 
+            "$(document).on ('pagecontainercreate', function () { $js });", CClientScript::POS_END);
         }
         $i++;
     }

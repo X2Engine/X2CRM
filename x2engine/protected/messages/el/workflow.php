@@ -49,4 +49,9 @@
   'All modules' => 'Όλες οι ενότητες',
   'All Modules' => 'Όλες οι Ενότητες',
   'module(s)' => 'μονάδα (-ες)',
+  'Show Financial Data' => 'Εμφάνιση Οικονομικά Στοιχεία',
+  'Financial Data Model' => 'Μοντέλο Οικονομικά Στοιχεία',
+  'Financial Data Field' => 'Οικονομικά Στοιχεία πεδίο',
+  'Select a model type' => 'Επιλέξτε έναν τύπο μοντέλο',
+  'Select a field' => 'Επιλέξτε ένα πεδίο',
 );

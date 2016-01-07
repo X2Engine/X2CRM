@@ -1,7 +1,7 @@
 <?php
 /*****************************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2015 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2016 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -36,6 +36,26 @@
 
 //Yii::app()->clientScript->registerCssFile(
 //    Yii::app()->controller->assetsUrl.'/css/recordView.css');
+
+if ($model instanceof Profile) {
+?>
+<div class='profile-header'>    
+    <div class='avatar'>
+        <?php
+        $this->beginWidget ('MobileActiveForm');
+        echo Profile::renderFullSizeAvatar ($model->id, 120);
+        $this->endWidget ();
+         
+        ?>
+    </div>
+    <div class='full-name'>
+    <?php
+        echo CHtml::encode ($model->fullName);
+    ?>
+    </div>
+</div>
+<?php
+}
 
 ?>
 <div class='detail-view'>

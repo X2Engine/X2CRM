@@ -1,6 +1,6 @@
 /*****************************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2015 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2016 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -57,7 +57,8 @@ MobileForm.prototype.makePhotoAttachment = function (data) {
     var remove$ = $('<div>', {
         'class': 'remove-attachment-button'
     });
-    remove$.append ($('<i>', { 'class': 'fa fa-close' }));
+    remove$.append ($('<i>', { 'class': 'fa fa-circle' }));
+    remove$.append ($('<i>', { 'class': 'fa fa-times-circle' }));
     attachment$.append (img$);
     attachment$.append (remove$);
     remove$.click (function () { $(this).parent ().remove (); });

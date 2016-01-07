@@ -1,7 +1,7 @@
 <?php
 /*****************************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2015 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2016 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -870,6 +870,10 @@ class X2List extends X2Model {
             foreach(array('attribute', 'comparison', 'value') as $property){
                 if(isset($values[$property]))
                     $this->criteriaInput[$property] = $values[$property];
+            }
+            $criteria = array_combine ($this->criteriaInput['attribute'], $this->criteriaInput['value']);
+            if (array_key_exists ('tags', $criteria) && empty($criteria['tags'])) {
+                $this->addError ('tags', Yii::t ('contacts', 'Tag list must be non-empty'));
             }
         }
         parent::setAttributes($values, $safeOnly);

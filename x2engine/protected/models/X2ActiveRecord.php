@@ -1,7 +1,7 @@
 <?php
 /*****************************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2015 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2016 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -107,6 +107,11 @@ class X2ActiveRecord extends CActiveRecord {
             ));
         }
         return $this->_inputRenderer;
+    }
+
+    public function getName () {
+        if (property_exists ($this, 'name') || $this->hasAttribute ('name')) return $this->name;
+        else return $this->id;
     }
 
     /**

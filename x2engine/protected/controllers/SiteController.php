@@ -2,7 +2,7 @@
 
 /*****************************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2015 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2016 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -68,6 +68,7 @@ class SiteController extends x2base {
     }
 
     protected function beforeAction($action = null) {
+        $this->validateMobileRequest ($action);
         if (is_int(Yii::app()->locked) &&
                 !Yii::app()->user->checkAccess('GeneralAdminSettingsTask') &&
                 !(in_array($this->action->id, array('login', 'logout')) ||
@@ -75,7 +76,7 @@ class SiteController extends x2base {
 
             $this->appLockout();
         }
-        return true && $this->runBehaviorBeforeActionHandlers ($action);
+        return $this->runBehaviorBeforeActionHandlers ($action);
     }
 
     public function accessRules() {
@@ -1205,7 +1206,7 @@ class SiteController extends x2base {
         }
 
         if ($error = Yii::app()->errorHandler->error) {
-            if (Yii::app()->request->isAjaxRequest) {
+            if ($this->isAjaxRequest ()) {
                 echo $error['message'];
             } else {
                 $referer = isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : '';
@@ -1404,7 +1405,11 @@ class SiteController extends x2base {
         foreach (array('username', 'rememberMe') as $attr) {
             // Remove the cookie if they unchecked the box
 
-            AuxLib::clearCookie(CHtml::resolveName($loginForm, $attr));
+            $cookieName = CHtml::resolveName($loginForm, $attr);
+            $cookie = new CHttpCookie(
+                $cookieName, '');
+            $cookie->expire = time () - 3600; // expire cookie
+            Yii::app()->request->cookies[$cookieName] = $cookie;
         }
         $this->redirectToLogin ();
     }
@@ -1413,6 +1418,8 @@ class SiteController extends x2base {
      * Displays the login page
      */
     public function actionLogin() {
+        if (Yii::app()->isMobileApp ()) $this->redirect ('/mobile/login');
+
         
         $model = new LoginForm;
         $model->useCaptcha = false;

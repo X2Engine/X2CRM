@@ -118,8 +118,8 @@ VALUES
 INSERT INTO `x2_mobile_layouts`
 (`modelName`, `layout`, `defaultView`, `defaultForm`, `version`)
 VALUES
-('Contacts', '["name","company","title","email","phone","address","city","state","zipcode","country"]', 1, 0, '5.4'),
-('Contacts', '["firstName","lastName","company","title","email","phone","address","city","state","zipcode","country","visibility"]', 0, 1, '5.4');
+('Contacts', '["name","company","title","email","phone","backgroundInfo","address","city","state","zipcode","country","assignedTo","visibility"]', 1, 0, '5.4'),
+('Contacts', '["firstName","lastName","company","title","email","phone","backgroundInfo","address","city","state","zipcode","country","assignedTo","visibility"]', 0, 1, '5.4');
 /*&*/
 INSERT INTO x2_fields
 (modelName, fieldName, attributeLabel, modified, custom, `type`, required, readOnly, linkType, searchable, isVirtual, relevance, uniqueConstraint, safe, keyType)

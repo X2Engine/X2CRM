@@ -63,4 +63,5 @@
   'Create a List' => '',
   'Drop a tag here to filter map results.' => '',
   'We\'re Sorry!' => '',
+  'Tag list must be non-empty' => '',
 );

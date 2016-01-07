@@ -1,6 +1,6 @@
 /*****************************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2015 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2016 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -63,13 +63,14 @@
                     // a custom HTTP header is used to access the request URL, allowing us
                     // to determine whether we're being redirected to the login screen
                     var requestedUrl = jqXHR.getResponseHeader ('X2-Requested-Url');
-                    if (requestedUrl && requestedUrl.match (/mobile\/login$/) &&
-                        !options.url.match (/mobile\/login$/)) {
+
+                    if (requestedUrl && requestedUrl.match (/mobile\/login(\?.*)?$/) &&
+                        !options.url.match (/mobile\/login(\?.*)?$/)) {
 
                         if (x2.main.isPhoneGap) {
                             x2touch.API.refresh ();
                         } else {
-                            window.location = requestedUrl;
+                            window.location = requestedUrl.replace (/\?.*$/, '');
                         }
                         return;
                     }

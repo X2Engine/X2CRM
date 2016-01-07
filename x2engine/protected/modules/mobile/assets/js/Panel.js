@@ -1,6 +1,6 @@
 /*****************************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2015 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2016 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -62,20 +62,21 @@ Panel.prototype.setUpItemBehavior = function () {
     var element$ = this.getElement ();
 
     element$.find ('a').click (function () {
-        if ($(this).hasClass ('logout-button')) { 
-            if (x2.main.isPhoneGap) { // full page refresh 
-                $.mobile.loading ('show');
-                $.ajax ({
-                    url: $(this).attr ('href'),
-                    success: function () {
-                        x2touch.API.refresh ();
-                    }
-                })
-            } else {
-                window.location = $(this).attr ('href');
-            }
-            return false;
-        }
+       // page refresh now handled by x2touchJQueryOverrides 
+//        if ($(this).hasClass ('logout-button')) { 
+//            if (x2.main.isPhoneGap) { // full page refresh 
+//                $.mobile.loading ('show');
+//                $.ajax ({
+//                    url: $(this).attr ('href'),
+//                    success: function () {
+//                        x2touch.API.refresh ();
+//                    }
+//                })
+//            } else {
+//                window.location = $(this).attr ('href');
+//            }
+//            return false;
+//        }
 
         // refreshing charts from charts causes display problems
         if ($(this).parent ().hasClass ('selected') &&

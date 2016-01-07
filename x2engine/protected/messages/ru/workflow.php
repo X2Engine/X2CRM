@@ -49,4 +49,9 @@
   'All modules' => 'Все модули',
   'All Modules' => 'Все модули',
   'module(s)' => 'Модуль (ы)',
+  'Show Financial Data' => 'Показать Финансовые данные',
+  'Financial Data Model' => 'Модель Финансовые данные',
+  'Financial Data Field' => 'Финансовые данные поле',
+  'Select a model type' => 'Выберите тип модели',
+  'Select a field' => 'Выберите поле',
 );

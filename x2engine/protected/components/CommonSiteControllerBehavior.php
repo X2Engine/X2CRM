@@ -1,7 +1,7 @@
 <?php
 /*****************************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2015 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2016 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -125,9 +125,11 @@ class CommonSiteControllerBehavior extends CBehavior {
                 
                 if($model->rememberMe){
                     foreach(array('username','rememberMe') as $attr) {
-                        // Expires in 30 days
-                        AuxLib::setCookie (CHtml::resolveName ($model, $attr), $model->$attr,
-                            2592000);
+                        $cookieName = CHtml::resolveName ($model, $attr);
+                        $cookie = new CHttpCookie(
+                            $cookieName, $model->$attr);
+                        $cookie->expire = time () + 2592000; // expire in 30 days
+                        Yii::app()->request->cookies[$cookieName] = $cookie; // save cookie
                     }
                 }else{
                     foreach(array('username','rememberMe') as $attr) {
@@ -230,7 +232,7 @@ class CommonSiteControllerBehavior extends CBehavior {
         Yii::app()->db->createCommand()
             ->update (
                 'x2_failed_logins',
-                array('active' => false),
+                array('active' => 0),
                 'active = 1 AND lastAttempt < :timeout',
                 array(':timeout' => time() - ($badAttemptsRefreshTimeout * 60))
             );

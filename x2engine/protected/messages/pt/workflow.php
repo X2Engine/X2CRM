@@ -49,4 +49,9 @@
   'All modules' => 'Todos os módulos',
   'All Modules' => 'Todos os módulos',
   'module(s)' => 'módulo (s)',
+  'Show Financial Data' => 'Mostrar Dados Financeiros',
+  'Financial Data Model' => 'Modelo Dados Financeiros',
+  'Financial Data Field' => 'Financial Campo de dados',
+  'Select a model type' => 'Selecione um tipo de modelo',
+  'Select a field' => 'Selecione um campo',
 );

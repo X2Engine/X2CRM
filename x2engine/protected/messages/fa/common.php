@@ -602,4 +602,8 @@
   'License Expiration Date' => 'مجوز تاریخ انقضا',
   '(expired)' => '(منقضی شده)',
   'License Max Users' => 'مجوز MAX اعضای',
+  'Select a model' => 'انتخاب یک مدل',
+  'Okay' => 'باشه',
+  'Headquarters' => 'مرکز فرماندهی',
+  'Mailing Address' => 'آدرس پستی',
 );

@@ -49,4 +49,9 @@
   'All modules' => 'تمام ماژول',
   'All Modules' => 'تمام ماژول ها',
   'module(s)' => 'ماژول (بازدید کنندگان)',
+  'Show Financial Data' => 'نشان دادن اطلاعات مالی',
+  'Financial Data Model' => 'مدل داده های مالی',
+  'Financial Data Field' => 'درست اطلاعات مالی',
+  'Select a model type' => 'انتخاب نوع مدل',
+  'Select a field' => 'انتخاب رشته',
 );

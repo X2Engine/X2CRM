@@ -1,7 +1,7 @@
 <?php
 /*****************************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2015 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2016 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -42,10 +42,10 @@ class X2Html extends CHtml {
      * is expected.
      */
      // uncomment if needed
-//    public static function sanitizeAttribute ($value) {
-//        // overly restrictive, but safe, regex. 
-//        return preg_replace ("/[^a-zA-Z0-9-]/", $value);
-//    }
+    public static function sanitizeAttribute ($value) {
+        // overly restrictive, but safe, regex. 
+        return preg_replace ("/[^a-zA-Z0-9-]/", '', $value);
+    }
 
     public static function clearfix () {
         return '<span class="clearfix"></span>';

@@ -1,6 +1,6 @@
 /*****************************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2015 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2016 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -62,45 +62,6 @@ EventPublisherController.prototype.setUpForm = function () {
         that.submitButton$.toggleClass ('disabled', !$.trim (eventBox$.val ()));
     });
 
-    this.submitButton$.click (function () {
-        if (!$.trim (eventBox$.val ()) && !that.form$.find ('.photo-attachment').length) {
-            return;
-        } else {
-            if (that.form$.find ('.photo-attachment').length) {
-                x2.mobileForm.submitWithPhotos (
-                    that.form$.attr ('action'), 
-                    that.form$, 
-                    that.photoAttrName,
-                    function (response) {
-                        if (response.responseCode == 200)  {
-                            $(':mobile-pagecontainer').pagecontainer (
-                                'change', 
-                                x2.main.createUrl (
-                                    '/profile/mobileActivity'), { transition: 'none' }); 
-                        }
-                    }
-                );
-            } else {
-                that.form$.submit ();
-            }
-        }
-    });
-
-    var cameraButton$ = $('#footer .photo-attach-button');
-    var attachmentsContainer$ = this.form$.find ('.photo-attachments-container');
-    new x2.CameraButton ({
-        element$: cameraButton$,
-        validate: function () {
-            return !that.form$.find ('.' + x2.mobileForm.photoAttachmentClass).length;
-        },
-        success: function (data) {
-            var attachment$ = x2.mobileForm.makePhotoAttachment (data);
-            attachmentsContainer$.append (attachment$);
-        },
-        failure: function (message) {
-
-        }
-    });
 };
 
 EventPublisherController.prototype.init = function () {

@@ -16,4 +16,12 @@
   'Add a post...' => 'ポストを追加...',
   'Activities' => 'アクティビティ',
   'Dashboard' => 'ダッシュボード',
+  'Default View Layout' => 'デフォルトのビューレイアウト',
+  'Default Form Layout' => 'デフォルトのフォームレイアウト',
+  'Delete Topic' => 'トピックを削除します',
+  'Login Failed' => 'ログインに失敗しました',
+  'The verification code your entered is incorrect.' => 'あなたの入力した検証コードが正しくありません。',
+  'The username or password you entered is incorrect. Please try again.' => '入力されたユーザー名またはパスワードは正しくありません。もう一度やり直してください。',
+  'Username and password cannot be left blank.' => 'ユーザー名とパスワードは空白のままにすることはできません。',
+  'Web Address' => 'Webアドレス',
 );

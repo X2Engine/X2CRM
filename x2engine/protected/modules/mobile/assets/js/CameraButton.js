@@ -1,6 +1,6 @@
 /*****************************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2015 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2016 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -40,7 +40,9 @@ function CameraButton (argsDict) {
     var defaultArgs = {
         DEBUG: x2.DEBUG && false,
         element$: null,
-        validate: function () { return true; },
+        enableCrop: false,
+        //direction: 0, // back-facing
+        validate: function (callback) { callback (); },
         success: function (data) {},
         failure: function (message) {}
     };
@@ -53,8 +55,10 @@ function CameraButton (argsDict) {
 CameraButton.prototype.setUpButtonBrowser = function () {
     var that = this;
     this.element$.click (function () {
-        that.success (
-        );
+        that.validate (function () {
+             that.success (
+             );
+        });
     })
 };
 

@@ -51,6 +51,12 @@ INSERT INTO `x2_modules`
 VALUES
 ('accounts', 'Accounts', 1, 2, 1, 1, 0, 0, 0);
 /*&*/
+INSERT INTO `x2_mobile_layouts`
+(`modelName`, `layout`, `defaultView`, `defaultForm`, `version`)
+VALUES
+('Accounts', '["name","website","phone","description","address","city","state","zipcode","country","assignedTo","visibility"]', 0, 1, '5.4'),
+('Accounts', '["name","website","phone","description","address","city","state","zipcode","country","assignedTo","visibility"]', 1, 0, '5.4');
+/*&*/
 INSERT INTO x2_fields
 (modelName, fieldName, attributeLabel, modified, custom, `type`, required, readOnly, linkType, searchable, isVirtual, relevance, uniqueConstraint, safe, keyType)
 VALUES

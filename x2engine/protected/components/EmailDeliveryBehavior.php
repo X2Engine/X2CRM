@@ -2,7 +2,7 @@
 
 /*****************************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2015 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2016 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -207,7 +207,7 @@ class EmailDeliveryBehavior extends CBehavior {
      * @throws Exception
      * @return array
      */
-    public function deliverEmail($addresses, $subject, $message, $attachments = array()){
+    public function deliverEmail($addresses, $subject, $message, $attachments = array(), $unsubLink = null){
         if(YII_UNIT_TESTING && defined ('X2_DEBUG_EMAIL') && X2_DEBUG_EMAIL) {
             // Fake a successful send
             /**/AuxLib::debugLog(
@@ -279,6 +279,10 @@ class EmailDeliveryBehavior extends CBehavior {
                 }
             }
 
+            // Add the List-Unsubscribe header if enabled and an unsubscribe link is provided
+            if (Yii::app()->settings->enableUnsubscribeHeader && !empty($unsubLink)) {
+                $phpMail->AddCustomHeader ('List-Unsubscribe:<'.$unsubLink.'>');
+            }
             $phpMail->Send();
 
             $this->status['code'] = '200';

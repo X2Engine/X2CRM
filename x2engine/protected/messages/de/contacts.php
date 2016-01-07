@@ -63,4 +63,5 @@
   'lastUpdated' => 'letzte Aktualisierung',
   'Top Menu Bar Logo' => 'Top-Menüleiste Logo',
   'Login Screen Logo' => 'Anmeldebildschirm Logo',
+  'Tag list must be non-empty' => 'Schlagwortliste muss nicht leer sein',
 );

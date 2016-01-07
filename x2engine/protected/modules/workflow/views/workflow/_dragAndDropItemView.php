@@ -1,7 +1,7 @@
 <?php
 /*****************************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2015 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2016 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -72,7 +72,21 @@ $modelName = X2Model::getModelName ($recordType);
     <a class='stage-member-button edit-details-button right' style='display: none;'
      title='<?php echo Yii::t('app', 'View/Edit Workflow Details'); ?>'>
         <span class='x2-edit-icon'></span>
-</a>
+    </a>
 </div>
-
+    <div class='stage-member-info'>
+        <?php if($workflow->financial && $workflow->financialModel === $recordType){ ?>
+        <span class='stage-member-value'>
+            <?php
+            if (!$dummyPartial && array_key_exists($workflow->financialField, $data)) {
+                echo Yii::app()->locale->numberFormatter->formatCurrency(
+                        $data[$workflow->financialField],
+                        Yii::app()->params->currency);
+            }
+            ?>
+        </span>
+        <?php } ?>
+    </div>
+    
+    
 </div>

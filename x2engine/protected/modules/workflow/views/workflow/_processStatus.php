@@ -1,7 +1,7 @@
 <?php
 /*****************************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2015 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2016 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -70,23 +70,6 @@ $dragAndDropView = isset ($parentView) && $parentView === '_dragAndDropView';
             'dateRangeName' => 'range',
             'dateRangeLabel' => Yii::t('app', 'Date Range'),
             'dateRangeValue' => $dateRange['range'],
-        ));
-        ?>
-    </div>
-    <div class="row">
-        <div class='date-range-title'><?php echo Yii::t('app', 'Expected Close Date:'); ?> </div>
-        <?php
-        $this->widget ('DateRangeInputsWidget', array (
-            'startDateName' => 'expectedCloseDateStart',
-            'startDateLabel' => Yii::t('workflow', 'Start Date'),
-            'startDateValue' => $expectedCloseDateDateRange['start'],
-            'endDateName' => 'expectedCloseDateEnd',
-            'endDateLabel' => Yii::t('app', 'End Date'),
-            'endDateValue' => $expectedCloseDateDateRange['end'],
-            'dateRangeName' => 'expectedCloseDateRange',
-            'dateRangeLabel' => Yii::t('app', 'Date Range'),
-            'dateRangeValue' => $expectedCloseDateDateRange['range'] === '' ? 
-                'all' : $expectedCloseDateDateRange['range'],
         ));
         ?>
     </div>

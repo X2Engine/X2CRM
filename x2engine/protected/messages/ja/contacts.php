@@ -63,4 +63,5 @@
   'lastUpdated' => 'lastUpdated',
   'Top Menu Bar Logo' => '上部のメニューバーのロゴ',
   'Login Screen Logo' => 'ログイン画面のロゴ',
+  'Tag list must be non-empty' => 'タグリストは非空である必要があります',
 );

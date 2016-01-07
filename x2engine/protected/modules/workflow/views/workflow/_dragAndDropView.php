@@ -1,7 +1,7 @@
 <?php
 /*****************************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2015 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2016 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -153,7 +153,6 @@ x2.dragAndDropViewManager = new x2.DragAndDropViewManager ({
 <?php
 $this->renderPartial ('_processStatus', array (
     'dateRange' => $dateRange,
-    'expectedCloseDateDateRange' => $expectedCloseDateDateRange,
     'model' => $model,
     'modelType' => $modelType,
     'users' => $users,
@@ -181,6 +180,7 @@ $this->renderpartial ('_dragAndDropItemView', array (
     'recordNames' => $recordNames,
     'dummyPartial' => true,
     'recordType' => 'contacts',
+    'workflow' => $model,
 ));
 ?>
 </div>
@@ -232,18 +232,22 @@ for ($i = 0; $i < count ($stages); ++$i) {
         ),
         'id' => 'workflow-stage-'.($i + 1),
         'dataProvider' => $this->getStageMemberDataProvider ($modelType,
-            $model->id, $dateRange, $expectedCloseDateDateRange, $i + 1, $users),
+            $model->id, $dateRange, $i + 1, $users),
         'itemView' => '_dragAndDropItemView',
         'viewData' => array (
             'modelTypes' => $modelTypes,
             'recordNames' => $recordNames,
             'dummyPartial' => false,
             'recordType'=> $modelType,
+            'workflow' => $model,
         ),
         'template' => 
             '<div class="stage-list-title" style="'.$colorGradients[$i].'">'.
                 '<h2>'.$stage['name'].'</h2>
                 <div class="stage-title-row">
+                <div class="total-projected-stage-value">'.
+                (is_null($stageValues[$i])?'':Formatter::formatCurrency ($stageValues[$i])).
+                '</div>
                 <div class="total-stage-deals">
                     <span class="stage-deals-num">'.$stageCounts[$i].'</span>
                     <span>'.

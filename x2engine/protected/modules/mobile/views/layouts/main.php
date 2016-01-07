@@ -1,7 +1,7 @@
 <?php
 /*****************************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2015 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2016 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -60,20 +60,22 @@ if (!$this->isAjaxRequest ()) {
     $cs->registerScriptFile($baseUrl . '/js/x2mobile.js', CClientScript::POS_READY);
 }
 
-if (!$this->isAjaxRequest ()) {
-    // Needed since jQM doesn't trigger the page load/show event for pages that are included in 
-    // the original document. 
-    // Allows initial page load and ajax page loads to be handled with the same events. 
-    Yii::app()->clientScript->registerScript('jqueryPageLoadEventFix',"
-        $(function () {
-            //$(document).trigger ('pagecontainerload');
-            //$(document).trigger ('pagecontainerbeforeshow');
-            //$(document).trigger ('pagecontainershow');
+if ($this->includeDefaultJsAssets ()) {
+    Yii::app()->clientScript->registerScript('registerMain',"
+        x2.Main.onPageCreate (function () {
+            if (!x2.main) {
+                x2.main = new x2.Main (".CJSON::encode (array (
+                    'translations' => array (
+                        'confirmCancel' => Yii::t('app', 'Cancel'),
+                        'confirmOkay' => Yii::t('app', 'Okay'),
+                    )
+                )).");
+            }
         });
-    ", CClientScript::POS_END);
+    ", CClientScript::POS_HEAD);
 }
 
-$this->onPageLoad ("function () {
+$this->onPageLoad ("
     if (!x2.attachments) {
         x2.attachments = new x2.Attachments ({
             translations: ".CJSON::encode (array (
@@ -81,7 +83,7 @@ $this->onPageLoad ("function () {
             ))."
         });
     }
-}");
+");
 
 ?><!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">

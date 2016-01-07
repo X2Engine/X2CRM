@@ -1,6 +1,6 @@
 /*****************************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2015 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2016 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -51,32 +51,7 @@
         padding: 10px;
         border-bottom: none;
         height: auto;
-        .ui-input-text {
-            border: 1px solid $lightGray;   
-            border-radius: 3px;
-            height: $inputHeight;
-            input {
-                height: $inputHeight;
-                padding-top: 0;
-                padding-bottom: 0;
-            }
-            @include box-shadow(inset 0px 1px 3px $itemBorderColor);
-            .x2-autocomplete-results {
-                position: absolute;
-                left: 0;
-                right: 0;
-                width: 100%;
-                background: white;
-                z-index: 1000;
-            }
-            &.error {
-                border-color: $inputErrorBorder;
-                @include box-shadow(inset 0px 1px 3px lighten($inputErrorBorder,15%));
-                background: lighten($inputErrorBorder, 30%);
-                input.error {
-                }
-            }
-        }
+        @include text-input;
         .ui-select {
             .ui-btn {
                 position: relative;

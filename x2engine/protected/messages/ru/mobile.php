@@ -16,4 +16,12 @@
   'Add a post...' => 'Добавить пост ...',
   'Activities' => 'мероприятия',
   'Dashboard' => 'Панель приборов',
+  'Default View Layout' => 'По умолчанию Посмотреть планировку',
+  'Default Form Layout' => 'По умолчанию макет формы',
+  'Delete Topic' => 'Удалить тему',
+  'Login Failed' => 'Авторизация не удалась',
+  'The verification code your entered is incorrect.' => 'Код подтверждения вашей неверны.',
+  'The username or password you entered is incorrect. Please try again.' => 'Неверное имя пользователя или пароль. Пожалуйста, попробуйте еще раз.',
+  'Username and password cannot be left blank.' => 'Имя пользователя и пароль не может быть пустым.',
+  'Web Address' => 'Веб-адрес',
 );

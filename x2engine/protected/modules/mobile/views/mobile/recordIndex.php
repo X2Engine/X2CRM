@@ -28,17 +28,23 @@
 Yii::app()->clientScript->registerScriptFile(
     Yii::app()->controller->assetsUrl.'/js/RecordIndexControllerBase.js');
 Yii::app()->clientScript->registerScriptFile(
-    Yii::app()->controller->module->assetsUrl.'/js/RecordIndexController.js');
+    Yii::app()->controller->assetsUrl.'/js/RecordIndexController.js');
 
-$this->onPageLoad ("function () {
+if (Yii::app()->controller instanceof ProfileController) {
+    $title = Yii::t('app', 'Users');
+} else {
+    $title = Yii::app()->controller->moduleObj->title;
+}
+
+$this->onPageLoad ("
     x2.main.controllers['$this->pageId'] = new x2.RecordIndexController ();
-}", CClientScript::POS_END);
+", CClientScript::POS_END);
 
 ?>
 <div class='refresh-content' data-refresh-selector='.page-title'>
 <h1 class='page-title ui-title'>
 <?php
-echo CHtml::encode (Yii::app()->controller->moduleObj->title);
+echo CHtml::encode ($title);
 ?>
 </h1>
 </div>
@@ -62,7 +68,7 @@ echo CHtml::encode (Yii::app()->controller->moduleObj->title);
                 echo $htmlOptions['name'];
             ?>'
              placeholder='<?php 
-                echo 'Search ' . ucfirst (Yii::app()->controller->moduleObj->title); ?>' />
+                echo 'Search ' . ucfirst ($title); ?>' />
         </form>
         <div class='search-clear-button ui-btn'>
             <i class='fa fa-close'></i>
@@ -77,7 +83,10 @@ $this->widget (
     array (
         'dataProvider' => $dataProvider,
         'template' => '{items}{moreButton}',
-        'itemView' => 'application.modules.mobile.views.mobile._recordIndexItem',
+        'itemView' => 
+            $model instanceof Topics ?
+                'application.modules.mobile.views.mobile._topicsIndexItem' :
+                'application.modules.mobile.views.mobile._recordIndexItem',
         'htmlOptions' => array (
             'class' => 'record-index-list-view'
         ),

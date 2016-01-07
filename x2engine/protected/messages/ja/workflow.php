@@ -49,4 +49,9 @@
   'All modules' => 'すべてのモジュール',
   'All Modules' => 'すべてのモジュール',
   'module(s)' => 'モジュール（複数可）',
+  'Show Financial Data' => 'ショー財務データ',
+  'Financial Data Model' => '財務データモデル',
+  'Financial Data Field' => '財務データフィールド',
+  'Select a model type' => 'モデルタイプを選択',
+  'Select a field' => 'フィールドを選択します',
 );

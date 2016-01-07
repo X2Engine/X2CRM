@@ -63,4 +63,5 @@
   'lastUpdated' => 'اخرین به روز رسانی',
   'Top Menu Bar Logo' => 'بالا نوار منو لوگو',
   'Login Screen Logo' => 'ورود به صفحه نمایش لوگو',
+  'Tag list must be non-empty' => 'فهرست برچسب ها باید غیر خالی می باشد',
 );

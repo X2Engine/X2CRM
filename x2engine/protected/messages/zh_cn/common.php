@@ -602,4 +602,8 @@
   'License Expiration Date' => '许可证的有效期',
   '(expired)' => '（过期）',
   'License Max Users' => '许可最大用户',
+  'Select a model' => '选择一个模型',
+  'Okay' => '好',
+  'Headquarters' => '司令部',
+  'Mailing Address' => '邮寄地址',
 );

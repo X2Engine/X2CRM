@@ -1,7 +1,7 @@
 <?php
 /*****************************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2015 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2016 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -41,14 +41,14 @@ class UsersController extends x2base {
 
     public $modelClass = 'User';
 
-    public function behaviors() {
-        return array_merge(parent::behaviors(), array(
-            'X2MobileControllerBehavior' => array(
-                'class' => 
-                    'application.modules.mobile.components.behaviors.X2MobileControllerBehavior'
-            ),
-        ));
-    }
+//    public function behaviors() {
+//        return array_merge(parent::behaviors(), array(
+//            'X2MobileControllerBehavior' => array(
+//                'class' => 
+//                    'application.modules.mobile.components.behaviors.X2MobileControllerBehavior'
+//            ),
+//        ));
+//    }
 
     /**
      * Specifies the access control rules.

@@ -2,7 +2,7 @@
 
 /*****************************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2015 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2016 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -68,11 +68,13 @@ class Fields extends CActiveRecord {
 
     const NO_PERMISSION = 0;
 
-    private static $_purifier;
+    public $includeEmpty = true;
 
     private $_myTableName;
 
     private $_typeChanged = false;
+
+    private static $_purifier;
 
     /**
      * PHP types corresponding to field types in X2Engine.

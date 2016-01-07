@@ -1,7 +1,7 @@
 <?php
 /*****************************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2015 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2016 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -86,12 +86,12 @@ class Workflow extends CActiveRecord {
         return array(
             array('name', 'required'),
             array('lastUpdated', 'numerical', 'integerOnly'=>true),
-            array('name', 'length', 'max'=>250),
-            array('isDefault', 'boolean'),
+            array('name, financialModel, financialField', 'length', 'max'=>250),
+            array('isDefault, financial', 'boolean'),
             array('isDefaultFor', 'validateIsDefaultFor'),
             // The following rule is used by search().
             // Please remove those attributes that should not be searched.
-            array('id, name, lastUpdated', 'safe', 'on'=>'search'),
+            array('id, name, lastUpdated, financial, financialModel, financialField', 'safe', 'on'=>'search'),
         );
     }
 
@@ -139,6 +139,9 @@ class Workflow extends CActiveRecord {
             'isDefault' => Yii::t('workflow','Default Process'),
             'isDefaultFor' => Yii::t('workflow','Default Process'),
             'lastUpdated' => Yii::t('workflow','Last Updated'),
+            'financial' => Yii::t('workflow','Show Financial Data'),
+            'financialModel' => Yii::t('workflow','Financial Data Model'),
+            'financialField' => Yii::t('workflow','Financial Data Field'),
         );
     }
 
@@ -695,6 +698,13 @@ class Workflow extends CActiveRecord {
             'completed'=>true
         );
         
+        $workflow = Workflow::model()->findByPk($workflowId);
+        if($workflow){
+            $workflowStatus['financial'] = $workflow->financial;
+            $workflowStatus['financialModel'] = $workflow->financialModel;
+            $workflowStatus['financialField'] = $workflow->financialField;
+        }
+        
         $workflowStages = X2Model::model('WorkflowStage')
             ->findAllByAttributes(
                 array('workflowId'=>$workflowId),
@@ -932,7 +942,7 @@ class Workflow extends CActiveRecord {
      * @return array number of records at each stage subject to specified filters
      */
     public static function getStageCounts (
-        &$workflowStatus, $dateRange, $expectedCloseDateDateRange, $users='', $modelType='contacts') {
+        &$workflowStatus, $dateRange, $users='', $modelType='contacts') {
 
         $stageCount = count($workflowStatus['stages']);
 
@@ -948,15 +958,12 @@ class Workflow extends CActiveRecord {
             ':workflowId' => $workflowStatus['id'],
         );
 
-        if ($expectedCloseDateDateRange['range'] !== 'all') {
-            $params = array_merge ($params, array (
-                ':expectedCloseDateStart' => $expectedCloseDateDateRange['end'],
-                ':expectedCloseDateEnd' => $expectedCloseDateDateRange['end'],
-            ));
-        }
-
         $stageCounts = array ();
         $modelName = X2Model::getModelName ($modelType);
+        if(!$modelName){
+            $modelType = 'contacts';
+            $modelName = 'Contacts';
+        }
         $model = X2Model::model($modelName);
         $tableName = $model->tableName();
         list ($accessCondition, $accessConditionParams) = 
@@ -974,15 +981,12 @@ class Workflow extends CActiveRecord {
                 (x2_actions.completeDate IS NULL OR x2_actions.completeDate = 0) AND 
                 x2_actions.createDate BETWEEN :start AND :end AND
                 x2_actions.type='workflow' AND workflowId=:workflowId AND 
-                 associationType='".$modelType."' AND ".$accessCondition.
-                ($expectedCloseDateDateRange['range'] !== 'all' ? 
-                (' AND '.$tableName . '.expectedCloseDate 
-                    BETWEEN :expectedCloseDateStart AND :expectedCloseDateEnd') : ''),
+                 associationType='".$modelType."' AND ".$accessCondition,
                 $allParams)
             ->group('stageNumber')
             ->queryAll();
         foreach($recordsAtStages as $row){
-            $stage = WorkflowStage::model()->findByPK($row['stageNumber']);
+            $stage = WorkflowStage::model()->findByPk($row['stageNumber']);
             if($stage){
                 $stageCounts[$stage->stageNumber - 1] = $row['COUNT(*)'];
             }
@@ -995,6 +999,72 @@ class Workflow extends CActiveRecord {
         ksort($stageCounts);
         return $stageCounts;
     }
+    
+    public static function getStageValues(
+    &$workflowStatus, $dateRange, $users = '', $modelType = 'contacts') {
+        $stageValues = array();
+        $stageCount = count($workflowStatus['stages']);
+        if ($workflowStatus['financial'] && $modelType === $workflowStatus['financialModel']
+                && !empty($workflowStatus['financialField'])) {
+            $financialField = Fields::model()->findByAttributes(array(
+                'modelName' => X2Model::getModelName($workflowStatus['financialModel']),
+                'fieldName' => $workflowStatus['financialField']
+            ));
+            if($financialField){
+                $params = array(
+                    ':start' => $dateRange['start'],
+                    ':end' => $dateRange['end'],
+                    ':workflowId' => $workflowStatus['id'],
+                );
+                if (!empty($users)) {
+                    $userString = " AND x2_actions.assignedTo=:user ";
+                    $params[':user'] = $users;
+                } else {
+                    $userString = "";
+                }
+                $modelName = X2Model::getModelName($modelType);
+                $model = X2Model::model($modelName);
+                $tableName = $model->tableName();
+                list ($accessCondition, $accessConditionParams) = $modelName::model()->getAccessSQLCondition($tableName);
+
+                $allParams = array_merge($params, $accessConditionParams);
+                $vals = Yii::app()->db->createCommand()
+                    ->select('stageNumber, SUM(' . $workflowStatus['financialField'] . ') as total')
+                    ->from($tableName)
+                    ->join(
+                        'x2_actions',
+                        'x2_actions.associationId='.$tableName.'.id')
+                    ->where(
+                        "x2_actions.complete != 'Yes' $userString AND 
+                        (x2_actions.completeDate IS NULL OR x2_actions.completeDate = 0) AND 
+                        x2_actions.createDate BETWEEN :start AND :end AND
+                        x2_actions.type='workflow' AND workflowId=:workflowId AND 
+                         associationType='".$modelType."' AND ".$accessCondition,
+                        $allParams)
+                    ->group('stageNumber')
+                    ->queryAll();
+                foreach($vals as $row){
+                    $stage = WorkflowStage::model()->findByPk($row['stageNumber']);
+                    if($stage){
+                        $stageValues[$stage->stageNumber - 1] = $row['total'];
+                    }
+                }
+                for($i = 0; $i < $stageCount; $i++){
+                    if(!isset($stageValues[$i])){
+                        $stageValues[$i] = 0;
+                    }
+                }
+            }
+        }
+        for($i = 0; $i < $stageCount; $i++){
+            if(!isset($stageValues[$i])){
+                $stageValues[$i] = null;
+            }
+        }
+        
+        ksort($stageValues);
+        return $stageValues;
+    }
 
     /**
      * Helper method for the workflow view.  
@@ -1002,7 +1072,7 @@ class Workflow extends CActiveRecord {
      *  particular stage will be shown
      */
     public static function getStageNameLinks (
-        &$workflowStatus, $dateRange, $expectedCloseDateDateRange, $users) {
+        &$workflowStatus, $dateRange, $users) {
 
         $links = array ();
         $stageCount = count($workflowStatus['stages']);
@@ -1017,12 +1087,6 @@ class Workflow extends CActiveRecord {
                     'start'=>Formatter::formatDate($dateRange['start']),
                     'end'=>Formatter::formatDate($dateRange['end']),
                     'range'=>$dateRange['range'],
-                    'expectedCloseDateStart'=>Formatter::formatDate(
-                        $expectedCloseDateDateRange['start']),
-                    'expectedCloseDateEnd'=>Formatter::formatDate(
-                        $expectedCloseDateDateRange['end']),
-                    'expectedCloseDateEnd'=>Formatter::formatDate(
-                        $expectedCloseDateDateRange['range']),
                     $users
                 ),
                 array(
@@ -1506,6 +1570,21 @@ class Workflow extends CActiveRecord {
         return Yii::t('workflow', '{process}', array(
             '{process}' => Modules::displayName($plural, 'Process'),
         ));
+    }
+    
+    public static function getCurrencyFields($model='contacts'){
+        $ret = array();
+        if(X2Model::getModelName($model)){
+            $financialFields = Fields::model()->findAllByAttributes(array(
+                'modelName'=>X2Model::getModelName($model),
+                'type' => 'currency'
+            ));
+            foreach($financialFields as $field){
+                $ret[$field->fieldName] = $field->attributeLabel;
+            }
+            asort($ret);
+        }
+        return $ret;
     }
 
 }

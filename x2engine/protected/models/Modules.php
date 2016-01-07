@@ -73,6 +73,7 @@ class Modules extends CActiveRecord {
             $cache = Yii::app()->db->createCommand ()
                 ->select ('name, custom')
                 ->from ('x2_modules')
+                ->where('moduleType = "module"')
                 ->queryAll ();
         }
         if ($custom) {
@@ -99,6 +100,7 @@ class Modules extends CActiveRecord {
             $modules = array_filter (Yii::app()->db->createCommand ()
                 ->select ('id, name')
                 ->from ('x2_modules')
+                ->where('moduleType = "module"')
                 ->queryAll (), $filter);
             $options = array ();
             foreach ($modules as $record) {
@@ -291,11 +293,11 @@ class Modules extends CActiveRecord {
      */
     public static function displayName($plural = true, $module = null, $refresh = false) {
         $moduleTitle = null;
-        if (is_null($module))
+        if (is_null($module) && isset(Yii::app()->controller->module))
             $module = Yii::app()->controller->module->name;
 
         // return a cached value
-        if (!$refresh && isset(self::$_displayNames[$module][$plural]))
+        if (!$refresh && !is_null($module) && isset(self::$_displayNames[$module][$plural]))
             return self::$_displayNames[$module][$plural];
 
         $moduleTitle = Yii::app()->db->createCommand()
@@ -350,9 +352,12 @@ class Modules extends CActiveRecord {
      * @param string $module Module to retrieve item name for, or the current module if null
      */
     public static function itemDisplayName($moduleName = null) {
-        if (is_null($moduleName))
+        if (is_null($moduleName) && isset(Yii::app()->controller->module))
             $moduleName = Yii::app()->controller->module->name;
         $module = X2Model::model('Modules')->findByAttributes(array('name' => $moduleName));
+        if(!$module){
+            return $moduleName;
+        }
         $itemName = $moduleName;
         if (!empty($module->itemName)) {
             $itemName = $module->itemName;

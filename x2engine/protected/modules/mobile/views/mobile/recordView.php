@@ -1,7 +1,7 @@
 <?php
 /*****************************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2015 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2016 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -39,15 +39,18 @@ Yii::app()->clientScript->registerScriptFile(
 
 $authParams['X2Model'] = $model;
 
-$this->onPageLoad ("function () {
+$this->onPageLoad ("
     x2.main.controllers['$this->pageId'] = new x2.RecordViewController (".CJSON::encode (array (
+        'modelName' => get_class ($model),
+        'modelId' => $model->id,
+        'myProfileId' => Yii::app()->params->profile->id,
         'translations' => array (
             'deleteConfirm' => Yii::t('mobile', 'Are you sure you want to delete this record?'),
             'deleteConfirmOkay' => Yii::t('mobile', 'Okay'),
             'deleteConfirmCancel' => Yii::t('mobile', 'Cancel'),
         )
     )).");
-}", CClientScript::POS_END);
+", CClientScript::POS_END);
 
 
 if ($model instanceof X2Model &&
@@ -58,11 +61,19 @@ if ($model instanceof X2Model &&
 <div data-role='popup' id='settings-menu'>
     <ul data-role='listview' data-inset='true'>
         <li>
-            <a class='delete-button' 
+            <a class='delete-button requires-confirmation' 
              href='<?php echo $this->createAbsoluteUrl ('mobileDelete', array (
                 'id' => $model->id,
              )); ?>'><?php 
                 echo CHtml::encode (Yii::t('mobile', 'Delete')); ?></a>
+            <div class='confirmation-text' style='display: none;'>
+                <?php
+                echo CHtml::encode (
+                    Yii::t('app', 'Are you sure you want to delete this {type}?', array (
+                        '{type}' => Modules::displayName (false, get_class ($model)), 
+                    )));
+                ?>
+            </div>
         </li>
     </ul>
 </div>

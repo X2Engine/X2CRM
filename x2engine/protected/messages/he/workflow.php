@@ -49,4 +49,9 @@
   'All modules' => 'כל המודולים',
   'All Modules' => 'כל המודולים',
   'module(s)' => 'מודול (ים)',
+  'Show Financial Data' => 'הצג נתונים כספיים',
+  'Financial Data Model' => 'דגם נתונים כספיים',
+  'Financial Data Field' => 'נתונים כספיים שדה',
+  'Select a model type' => 'בחר סוג מודל',
+  'Select a field' => 'בחר שדה',
 );

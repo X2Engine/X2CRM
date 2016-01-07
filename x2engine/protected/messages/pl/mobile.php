@@ -16,4 +16,12 @@
   'Add a post...' => 'Dodaj post ...',
   'Activities' => 'Działania',
   'Dashboard' => 'Tablica rozdzielcza',
+  'Default View Layout' => 'Domyślnie Zobacz Layout',
+  'Default Form Layout' => 'Domyślnie Form Layout',
+  'Delete Topic' => 'Usuń Temat',
+  'Login Failed' => 'Logowanie nie powiodło się',
+  'The verification code your entered is incorrect.' => 'Kod weryfikacyjny twoja jest niepoprawna.',
+  'The username or password you entered is incorrect. Please try again.' => 'Nazwa użytkownika lub hasło jest nieprawidłowe. Proszę spróbuj ponownie.',
+  'Username and password cannot be left blank.' => 'Nazwa użytkownika i hasło nie mogą być puste.',
+  'Web Address' => 'Adres internetowy',
 );

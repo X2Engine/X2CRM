@@ -1,7 +1,7 @@
 <?php
 /*****************************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2015 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2016 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -38,6 +38,7 @@
 class TopicReplies extends X2ActiveRecord {
     
     public $module = 'topics';
+    public $upload;
     
     private $_attachments;
     
@@ -62,13 +63,37 @@ class TopicReplies extends X2ActiveRecord {
                 'text','filter','filter'=>array($obj=new CHtmlPurifier(),'purify')
             ),
             array(
-                'topicId, text', 'required'
+                'topicId', 'required'
+            ),
+            array(
+                'text', 'application.components.validators.RequiredIfNotSetValidator',
+                'otherAttr' => 'upload'
             ),
         );
     }
-    
+
     public function behaviors(){
+        $that = $this;
         return array_merge(parent::behaviors(),array(
+            'AssociatedMediaBehavior' => array(
+                'class' => 'application.components.behaviors.AssociatedMediaBehavior',
+                'fileAttribute' => 'upload',
+                'associationType' => 'topicReply',
+                'getAssociationId' => function () use ($that) {
+                    return $that->id;
+                },
+            ),
+            'X2StaticFieldsBehavior' => array(
+                'class' => 'application.components.behaviors.X2StaticFieldsBehavior',
+                'translationCategory' => 'topics',
+                'fields' => array (
+                    array (
+                        'fieldName' => 'text',
+                        'attributeLabel' => 'Text',
+                        'type' => 'text',
+                    ),
+                ),
+            ),
             'X2TimestampBehavior' => array('class' => 'X2TimestampBehavior'),
             'permissions' => array('class' => Yii::app()->params->modelPermissions),
         ));
@@ -77,6 +102,8 @@ class TopicReplies extends X2ActiveRecord {
     public function relations(){
         return array(
             'topic' => array(self::BELONGS_TO, 'Topics', 'topicId'),
+            'profile' => array(self::HAS_ONE, 'Profile', 
+                array ('username' => 'assignedTo')),
         );
     }
     
@@ -86,6 +113,17 @@ class TopicReplies extends X2ActiveRecord {
         }
         $this->updatedBy = Yii::app()->user->getName();
         return parent::beforeSave();
+    }
+
+    public function afterSave () {
+        parent::afterSave ();
+        $event = new Events;
+        $event->visibility = 1;
+        $event->associationType = 'TopicRepies';
+        $event->associationId = $this->id;
+        $event->user = Yii::app()->user->getName();
+        $event->type = 'topic_reply';
+        $event->save();
     }
     
     public function getTopicPage(){

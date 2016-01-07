@@ -63,4 +63,5 @@
   'lastUpdated' => 'ostatnio zaktualizowany',
   'Top Menu Bar Logo' => 'Top Menu Bar Logo',
   'Login Screen Logo' => 'Zaloguj się ekran z logo',
+  'Tag list must be non-empty' => 'Lista tag muszą być niepusty',
 );

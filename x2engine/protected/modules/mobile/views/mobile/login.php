@@ -1,7 +1,7 @@
 <?php
 /*****************************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2015 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2016 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -62,9 +62,9 @@ if(isset($_COOKIE['LoginForm'])) {
     }
 }
 
-$this->onPageLoad ("function () {
+$this->onPageLoad ("
     x2.main.controllers['$this->pageId'] = new x2.LoginController ();
-}");
+");
 
  
 
@@ -104,13 +104,18 @@ if ($model->hasErrors ()) {
                 ),    
             )
         );
+    ?>
+    <div class='logo-container'>
+    <?php
 
      
         echo X2Html::logo ('mobile', array (
             'id' => 'login-form-logo',
+            'class' => 'login-logo',
         ));
      
     ?>
+    </div>
     <div data-role="fieldcontain">
         <!--?php echo $form->label($model, 'username', array()); ?-->
         <?php 
@@ -174,49 +179,8 @@ if ($model->hasErrors ()) {
     </div>
     <?php
     }
-    if (0 && !Yii::app()->params->isPhoneGap) {
-    ?>
-    <table class='login-row'>
-        <tbody>
-            <tr>
-                <td>
-                    <div data-role="fieldcontain" class='remember-me-checkbox-container ui-shadow'>
-                        <?php 
-                        if ($model->rememberMe) {
-                            echo $form->hiddenField($model,'rememberMe',array('value'=>1));
-                        } else {
-                            echo $form->checkBox(
-                                $model,'rememberMe',array('value'=>'1','uncheckedValue'=>'0')); 
-                            echo $form->label($model,'rememberMe',array('style'=>'font-size:10px;')); 
-                            echo $form->error($model,'rememberMe'); 
-                        }
-                        ?>
-                    </div>
-                </td>
-                <td>
-                    <div data-corners="true" data-shadow="true" 
-                    data-iconshadow="true" data-wrapperels="span" 
-                    data-theme="a" data-disabled="false" 
-                    class="ui-btn ui-btn-corner-all ui-btn-up-a full-site ui-shadow" 
-                    aria-disabled="false">
-                        <?php echo CHtml::link (
-                            Yii::t('mobile', 'Go to Full Site'),
-                            Yii::app()->getBaseUrl().'/index.php/site/index?mobile=false',
-                            array(
-                                'rel'=>'external', 
-                                'onClick'=>'setMobileBrowserFalse()',
-                                'class'=>'ui-btn-inner'
-                                )
-                            ); ?>
-                    </div>
-                </td>
-            </tr>
-        </tbody>
-    </table>
-
-
-    <?php 
-    }
+    $model->rememberMe = 1;
+    echo $form->hiddenField ($model, 'rememberMe');
     $this->endWidget(); 
     ?>
 </div>

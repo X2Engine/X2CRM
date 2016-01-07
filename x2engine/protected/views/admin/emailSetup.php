@@ -1,7 +1,7 @@
 <?php
 /*****************************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2015 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2016 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -303,6 +303,21 @@ Yii::app()->clientScript->registerScript('toggleAuthInfo', "
                         'they have clicked the "Do Not Email" link contained in an email.'), 
                         false, null, true);
                 echo $form->richTextarea ($model, 'doNotEmailPage'); 
+                ?>
+            </div>
+        </div>
+        <div class="row">
+            <div class="cell">
+                <?php
+                echo $form->checkbox ($model, 'enableUnsubscribeHeader', array ('class' => 'left'));
+                echo $form->labelEx(
+                    $model, 'enableUnsubscribeHeader', array ('class' => 'left'));
+                echo X2Html::hint (
+                    Yii::t('admin', 'This option enables use of the List-Unsubscribe email '.
+                    'header. This allows compatible email clients to present custom unsubscribe '.
+                    'controls. Additionally, including a List-Unsubscribe header can increase '.
+                    'sender reputation with Email Service Providers.'),
+                        false, null, true);
                 ?>
             </div>
         </div>

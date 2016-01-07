@@ -1,6 +1,6 @@
 /*!***************************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2015 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2016 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -39,7 +39,17 @@
 
 $inputSpacing: 23px;
 
+.x2-remote-page.mobile-login {
+    .form {
+        height: 100%;
+    }
+}
+
 #login-form {
+    height: 100%;
+    .ui-btn {
+        @include btn-states;
+    }
     a {
         color: $loginLinkColor;
     }
@@ -109,10 +119,20 @@ $inputSpacing: 23px;
         a {
             text-decoration: none;
         }
-        margin-top: 40px !important;
         text-align: center;
-        margin-bottom: 40px;
+        margin-bottom: 0px;
     }
+
+    .password-help-container {
+        margin-top: 30px !important;
+        margin-bottom: 30px;
+    }
+
+    .full-app-link {
+        margin-top: 20px !important;
+        margin-bottom: 30px;
+    }
+
 
     .ui-btn {
         background: $defaultBgColor;
@@ -148,29 +168,50 @@ $inputSpacing: 23px;
         color: $loginPlaceholderText;
     }
 
+    .logo-container {
+        position: relative;
+        height: 30%;
+        min-height: 166px;
+        & > .login-logo {
+            position: absolute;
+            margin: auto;
+            left: 0;
+            right: 0;
+            top: 0;
+            bottom: 0;
+            width: 100%;
+            text-align: center;
+            padding: 0 0;
+            display: block;
+            height: 110px;
+        }
+    }
+
+    #login-form-logo {
+        //text-shadow: 1px 4px 6px #233d5f, 0 0 0 #233d5f, 1px 4px 6px #233d5f;
+        color: white;
+        font-weight: bold;
+        font-size: 113px;
+    }
+
+    #custom-login-form-logo {
+    }
+
+    img#login-form-logo {
+        width: 95px;
+        margin: auto;
+    }
+
+    //@media (orientation: landscape) {
+//    @media (max-height: 545px) {
+//        #login-form-logo {
+//            line-height: 25%;
+//            padding: 0;
+//        }
+//        .password-help-container, .full-app-link {
+//            margin-top: 25px !important;
+//            margin-bottom: 25px;
+//        }
+//    }
 }
 
-#login-form-logo {
-    //text-shadow: 1px 4px 6px #233d5f, 0 0 0 #233d5f, 1px 4px 6px #233d5f;
-    color: white;
-    font-weight: bold;
-    font-size: 113px;
-    width: 100%;
-    text-align: center;
-    padding: 10% 0;
-    line-height: 70%;
-    display: block;
-}
-
-#custom-login-form-logo {
-    margin: auto;
-    text-align: center;
-    padding: 20% 0px;
-    line-height: 70%;
-    display: block;
-}
-
-img#login-form-logo {
-    width: 95px;
-    margin: auto;
-}

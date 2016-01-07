@@ -1,7 +1,7 @@
 <?php
 /*****************************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2015 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2016 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -54,6 +54,8 @@ class Profile extends X2ActiveRecord {
 
     private $_isActive;
 
+    public $photo; // used for avatar upload
+
     /**
      * @var string Used in the search scenario to uniquely identify this model. Allows filters
      *  to be saved for each grid view.
@@ -75,6 +77,12 @@ class Profile extends X2ActiveRecord {
         $this->dbPersistentGridSettings = $dbPersistentGridSettings;
         parent::__construct ($scenario);
     }
+
+
+    public function getName () {
+        return $this->fullName;
+    }
+
 
     public function setIsActive ($isActive) {
         $this->_isActive = $isActive;
@@ -147,6 +155,8 @@ class Profile extends X2ActiveRecord {
     }
 
     public function behaviors(){
+        Yii::import ('application.components.X2ActiveRecordBehavior');
+        Yii::import ('application.components.behaviors.FileFieldBehavior');
         // Skip loading theme settins if this request isn't associated with a session, eg API
         $theme = (Yii::app()->params->noSession ? array() :
             ThemeGenerator::getProfileKeys(true, true, false));
@@ -191,6 +201,7 @@ class Profile extends X2ActiveRecord {
                         'fieldName' => 'language',
                         'attributeLabel' => 'Language',
                         'type' => 'dropdown',
+                        'includeEmpty' => false,
                         'linkType' => function () use ($that) {
                             return $that->getLanguageOptions ();
                         },
@@ -201,6 +212,19 @@ class Profile extends X2ActiveRecord {
                         'type' => 'email',
                     ),
                 ),
+            ),
+            'FileFieldBehavior' => array(
+                'class' => 'application.components.behaviors.FileFieldBehavior',
+                'attribute' => 'avatar',
+                'fileAttribute' => 'photo',
+                'fileType' => FileFieldBehavior::IMAGE,
+                'getFilename' => function (CUploadedFile $file) {
+                    $time = time();
+                    $rand = chr(rand(65, 90));
+                    $salt = $time . $rand;
+                    $name = md5($salt . md5($salt) . $salt);
+                    return 'uploads/protected/'.$name.'.'.$file->getExtensionName ();
+                }
             ),
             'X2LinkableBehavior' => array(
                 'class' => 'X2LinkableBehavior',
@@ -311,7 +335,7 @@ class Profile extends X2ActiveRecord {
             array('notes, avatar, gridviewSettings, formSettings, widgetSettings', 'safe'),
             // The following rule is used by search().
             // Please remove those attributes that should not be searched.
-            array('id, fullName, username, officePhone, extension, cellPhone, emailAddress, lastUpdated, language', 'safe', 'on' => 'search')
+            array('id, fullName, username, officePhone, extension, cellPhone, emailAddress, lastUpdated, language', 'safe', 'on' => 'search'),
         );
     }
 
@@ -1393,7 +1417,9 @@ class Profile extends X2ActiveRecord {
 
             $imgSize[0] = round($imgSize[0] * $scaleFactor);
             $imgSize[1] = round($imgSize[1] * $scaleFactor);
-            return Profile::renderAvatarImage($id, $imgSize[0], $imgSize[1]);
+            return Profile::renderAvatarImage($id, $imgSize[0], $imgSize[1], array (
+                'class' => 'avatar-image'
+            ));
         } else {
             return X2Html::fa ('user', array(
                 'class' => 'avatar-image default-avatar',
@@ -1416,12 +1442,17 @@ class Profile extends X2ActiveRecord {
         );
     }
     
-    public static function renderAvatarImage($id, $width, $height){
+    public static function renderAvatarImage($id, $width, $height, array $htmlOptions = array ()){
         $model = Profile::model ()->findByPk ($id);
         $file = Yii::app()->file->set($model->avatar);
         if ($file->exists) {
-            return '<img id="avatar-image" class="avatar-upload" width="'.$width.'" height="'.$height.'"'
-            . 'src="data:image/x-icon;base64,'.base64_encode($file->getContents()).'">';
+            return CHtml::tag ('img', X2Html::mergeHtmlOptions (array (
+                'id'=>"avatar-image",
+                'class'=>"avatar-upload", 
+                'width'=>$width, 
+                'height'=>$height,
+                'src'=>"data:image/x-icon;base64,".base64_encode($file->getContents()),
+            ), $htmlOptions));
         }
     }
 

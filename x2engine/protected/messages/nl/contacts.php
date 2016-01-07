@@ -63,4 +63,5 @@
   'lastUpdated' => 'laatst bijgewerkt',
   'Top Menu Bar Logo' => 'Menubalk bovenaan Logo',
   'Login Screen Logo' => 'Login scherm Logo',
+  'Tag list must be non-empty' => 'Tag lijst moet niet-leeg zijn',
 );

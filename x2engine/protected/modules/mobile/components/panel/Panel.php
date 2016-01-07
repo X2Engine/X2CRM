@@ -1,7 +1,7 @@
 <?php
 /*****************************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2015 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2016 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -55,36 +55,12 @@ class Panel extends X2Widget {
     }
 
     public function getModuleItems () {
-        $basicModules = array (
-            'x2Activity',
-            'contacts',
-            'charts',
-            'accounts',
-            'opportunities',
-            'x2Leads',
-            'quotes',
-            'products',
-            'services',
-            'bugReports',
-            'users',
-            //'groups',
-        );
-
-        $qpg = new QueryParamGenerator;
-        $criteria = new CDbCriteria;
-        $criteria->condition = 
-            '(name in '.$qpg->bindArray ($basicModules, true).' or custom) and visible and 
-             moduleType in ("module", "pseudoModule") and name != "document"';
-        $criteria->params = $qpg->getParams ();
-        $criteria->order = 'menuPosition ASC';
-        $modules = Modules::model ()->findAll (
-            $criteria
-        );
+        $modules = MobileModule::supportedModules ();
         $modules = array_filter ($modules, function ($module) {
-            if ($module->title === 'charts') {
-                $action = 'ReportsChartDashboard';
+            if ($module->name === 'users') {
+                $action = 'ProfileMobileIndex';
             } else {
-                $action = ucfirst ($module->title).'Index';
+                $action = ucfirst ($module->name).'Index';
             }
             $authItem = Yii::app()->authManager->getAuthItem ($action);
             return Yii::app()->params->isAdmin || 

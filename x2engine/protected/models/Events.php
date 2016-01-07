@@ -2,7 +2,7 @@
 
 /*****************************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2015 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2016 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -117,16 +117,6 @@ class Events extends X2ActiveRecord {
                     throw new CException (implode (';', $this->getAllErrorMessages ()));
                 }
 
-                // save the file
-                $tempName = $this->photo->getTempName ();
-                $username = Yii::app()->user->getName ();
-                if (!FileUtil::ccopy(
-                    $tempName, 
-                    "uploads/protected/media/$username/{$this->photo->getName ()}")) {
-
-                    throw new CException ();
-                }
-
                 // add media record for file
                 $media = new Media; 
                 $media->setAttributes (array (
@@ -136,6 +126,16 @@ class Events extends X2ActiveRecord {
                 $media->resolveNameConflicts ();
                 if (!$media->save ()) {
                     throw new CException (implode (';', $media->getAllErrorMessages ()));
+                }
+
+                // save the file
+                $tempName = $this->photo->getTempName ();
+                $username = Yii::app()->user->getName ();
+                if (!FileUtil::ccopy(
+                    $tempName, 
+                    "uploads/protected/media/$username/{$media->fileName}")) {
+
+                    throw new CException ();
                 }
 
                 // relate file to event
@@ -150,6 +150,7 @@ class Events extends X2ActiveRecord {
                 return $ret;
             } catch (CException $e) {
                 $transaction->rollback ();
+                return false;
             }
         } else {
             return parent::save ($runValidation, $attributes);
@@ -203,6 +204,7 @@ class Events extends X2ActiveRecord {
         $customModule = Modules::model()->findByAttributes(array(
             'custom' => 1,
             'name' => $model,
+            'moduleType'=>'module',
         ));
         if ($customModule) {
             //$model = $customModule->title;
@@ -271,8 +273,9 @@ class Events extends X2ActiveRecord {
                                 $actionFlag = true;
                                 // Retrieve the assigned user from the related action
                                 $relatedAction = Actions::model()->findByPk ($this->associationId);
-                                if ($authorText)
+                                if ($relatedAction){
                                     $authorText = User::getUserLinks ($relatedAction->assignedTo);
+                                }
                             }
                         }
                         if ($actionFlag) {
@@ -300,12 +303,15 @@ class Events extends X2ActiveRecord {
                                     ));
                                     break;
                                 default:
-                                    if (!empty($authorText)) {
+                                    if (!empty($authorText) 
+                                            && $authorText != Yii::t('app', 'Anyone') 
+                                            && $authorText != Yii::t('app', 'Someone')) {
                                         $text = Yii::t(
                                             'app', 
                                             "A new {actionLink} associated with the contact ".
-                                            "{contactLink} has been assigned to " . $authorText, 
+                                            "{contactLink} has been assigned to {authorText}", 
                                             array(
+                                                '{authorText}' => $authorText,
                                                 '{actionLink}' => $this->renderFrameLink (
                                                     $htmlOptions),
                                                 '{contactLink}' => X2Model::getModelLink(
@@ -760,11 +766,15 @@ class Events extends X2ActiveRecord {
             case 'topic_reply':
                 $reply = TopicReplies::model()->findByPk($this->associationId);
                 if (isset($reply)) {
-                    $topicLink = X2Html::link(
-                        $reply->topic->name, 
-                        Yii::app()->controller->createUrl(
-                            '/topics/topics/view', 
-                            array('id' => $reply->topic->id, 'replyId' => $reply->id)));
+                    if (!Yii::app()->params->isMobileApp) {
+                        $topicLink = X2Html::link(
+                            $reply->topic->name, 
+                            Yii::app()->controller->createUrl(
+                                '/topics/topics/view', 
+                                array('id' => $reply->topic->id, 'replyId' => $reply->id)));
+                    } else {
+                        $topicLink = $reply->topic->name;
+                    }
                     $text = Yii::t('topics', '{poster} posted a new reply to {topic}.', array(
                         '{poster}' => $authorText,
                         '{topic}' => $topicLink,

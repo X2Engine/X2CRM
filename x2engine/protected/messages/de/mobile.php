@@ -16,4 +16,12 @@
   'Add a post...' => 'Fügen Sie einen Beitrag ...',
   'Activities' => 'Aktivitäten',
   'Dashboard' => 'Armaturenbrett',
+  'Default View Layout' => 'Benutzerbild von Layout-',
+  'Default Form Layout' => 'Standard Formular-Layout',
+  'Delete Topic' => 'Thema löschen',
+  'Login Failed' => 'Anmeldung fehlgeschlagen',
+  'The verification code your entered is incorrect.' => 'Der Bestätigungscode Ihres stimmt nicht.',
+  'The username or password you entered is incorrect. Please try again.' => 'Der eingegebene Benutzername oder das Passwort sind falsch. Bitte versuche es erneut.',
+  'Username and password cannot be left blank.' => 'Benutzernamen und Passwort darf nicht leer sein.',
+  'Web Address' => 'Webadresse',
 );

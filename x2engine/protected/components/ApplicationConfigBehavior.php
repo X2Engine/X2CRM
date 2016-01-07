@@ -1,7 +1,7 @@
 <?php
 /*****************************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2015 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2016 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -981,12 +981,12 @@ Yii::app()->clientScript->registerScript(sprintf('%x', crc32(Yii::app()->name)),
         $this->owner->setModules($modules);
     }
 
-    private function isPhoneGap () {
-        return isset ($_COOKIE['isPhoneGap']) && $_COOKIE['isPhoneGap'];
+    public function isMobileApp () {
+        return isset ($_GET['isMobileApp']) && $_GET['isMobileApp'];
     }
 
-    private function isMobileApp () {
-        return isset ($_COOKIE['isMobileApp']) && $_COOKIE['isMobileApp'];
+    private function isPhoneGap () {
+        return isset ($_COOKIE['isPhoneGap']) && $_COOKIE['isPhoneGap'];
     }
 
 }

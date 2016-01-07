@@ -1,7 +1,7 @@
 <?php
 /*****************************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2015 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2016 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -34,12 +34,91 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 
-class MobileActiveForm extends CActiveForm {
+class MobileActiveForm extends X2ActiveForm {
+
+    public $JSClass = 'MobileActiveForm'; 
+    public $photoAttrName = null; 
+    public $redirectUrl = null; 
+
+    public function getPackages () {
+        return array_merge (parent::getPackages (), array (
+            'MobileActiveFormJS' => array(
+                'baseUrl' => Yii::app()->controller->assetsUrl,
+                'js' => array(
+                    'js/MobileActiveForm.js',
+                ),
+                'depends' => array ('X2FormJS'),
+            ),
+        ));
+    }
+
+    public function getJSClassParams () {
+        return array_merge (parent::getJSClassParams (), array (
+            'photoAttrName' => $this->photoAttrName,
+            'redirectUrl' => $this->redirectUrl ? $this->redirectUrl : AuxLib::getRequestUrl (),
+        ));
+    }
+
     public function init () {
         if (!$this->action && Yii::app()->params->isPhoneGap) {
             $this->action = AuxLib::getRequestUrl ();
         }
         return parent::init ();
+    }
+
+    public function photoAttachment (CModel $model, $attr, Media $media) {
+        static $count = 0;
+        $count++;
+        $html = '';
+        $html .= CHtml::openTag ('div', array (
+            'class' => 'photo-attachment-container',
+        ));
+        $html .= $media->getImage (false, array (
+            'class' => 'photo-attachment dummy-attachment',
+        ));
+        $html .= CHtml::tag ('div', array (
+            'class' => 'remove-attachment-button',
+            'id' => 'remove-attachment-button-'.$count,
+        ), 
+            X2Html::fa ('circle').
+            X2Html::fa ('times-circle-o')
+        );
+        $html .= $this->hiddenField ($model, $attr.'[]', array (
+            'value' => $media->id
+        ));
+        
+        $html .= CHtml::closeTag ('div');
+
+        Yii::app()->clientScript->registerScript('MobileActiveForm::photoAttachment'.$count,"
+            $('#remove-attachment-button-$count').click (function () {
+                $(this).parent ().remove ();
+            });
+        ");
+
+        return $html;
+    }
+
+    public function photoAttachmentsContainer (
+        CModel $model, $attr, $uploadAttr, array $htmlOptions=array ()) {
+
+        $htmlOptions = X2Html::mergeHtmlOptions (array (
+            'class' => 'photo-attachments-container',
+        ), $htmlOptions);
+
+        $attachmentTags = array ();
+        foreach ($model->$attr as $attachment) {
+            $attachmentTags[] = $this->photoAttachment ($model, $uploadAttr, $attachment);
+        }
+
+        return CHtml::tag ('div', $htmlOptions, implode ("\n", $attachmentTags));
+    }
+
+    public function photoAttachmentButton () {
+        $html = ''; 
+        $html .= "<div class='photo-attach-button icon-button'>".
+            X2Html::fa ('camera').
+        '</div>';
+        return $html;
     }
 
 }

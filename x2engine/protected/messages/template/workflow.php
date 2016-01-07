@@ -50,4 +50,9 @@
   'A stage required a comment but was given none.' => '',
   'At least one stage could not be reverted because its backdate window has expired.' => '',
   'Processes' => '',
+  'Show Financial Data' => '',
+  'Financial Data Model' => '',
+  'Financial Data Field' => '',
+  'Select a model type' => '',
+  'Select a field' => '',
 );

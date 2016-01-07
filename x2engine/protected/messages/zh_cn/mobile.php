@@ -16,4 +16,12 @@
   'Add a post...' => '添加后...',
   'Activities' => '活动',
   'Dashboard' => '仪表板',
+  'Default View Layout' => '默认视图布局',
+  'Default Form Layout' => '默认窗体布局',
+  'Delete Topic' => '删除主题',
+  'Login Failed' => '登录失败',
+  'The verification code your entered is incorrect.' => '您输入的验证码不正确。',
+  'The username or password you entered is incorrect. Please try again.' => '您输入的用户名或密码不正确。请再试一次。',
+  'Username and password cannot be left blank.' => '用户名和密码不能为空。',
+  'Web Address' => '网址',
 );

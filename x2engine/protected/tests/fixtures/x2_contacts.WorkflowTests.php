@@ -16,6 +16,7 @@ return array(
 		'trackingKey' => '12345678901234567890',
         'lastUpdated' => 0,
 		'fingerprintId' => '10',
+            'dealvalue'=> 1234,
 	),
 );
 

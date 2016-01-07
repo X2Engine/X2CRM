@@ -16,4 +16,12 @@
   'Add a post...' => 'Aggiungi un posto ...',
   'Activities' => 'Attività',
   'Dashboard' => 'Cruscotto',
+  'Default View Layout' => 'Predefinito Vista layout',
+  'Default Form Layout' => 'Predefinito Disposizione form',
+  'Delete Topic' => 'Elimina Discussione',
+  'Login Failed' => 'Accesso fallito',
+  'The verification code your entered is incorrect.' => 'Il codice di verifica tua inserito non è corretto.',
+  'The username or password you entered is incorrect. Please try again.' => 'Il nome utente o la password sono errati. Riprova.',
+  'Username and password cannot be left blank.' => 'Username e password non possono essere lasciati vuoti.',
+  'Web Address' => 'Indirizzo Web',
 );

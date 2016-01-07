@@ -49,4 +49,9 @@
   'All modules' => 'Alle modules',
   'All Modules' => 'Alle modules',
   'module(s)' => 'module (s)',
+  'Show Financial Data' => 'Toon Financiële gegevens',
+  'Financial Data Model' => 'Financial Data Model',
+  'Financial Data Field' => 'Financiële Dataveld',
+  'Select a model type' => 'Selecteer een modeltype',
+  'Select a field' => 'Selecteer een veld',
 );

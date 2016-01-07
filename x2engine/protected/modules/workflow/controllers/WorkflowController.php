@@ -1,7 +1,7 @@
 <?php
 /*****************************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2015 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2016 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -107,10 +107,6 @@ class WorkflowController extends x2base {
         // add workflow to user's recent item list
         User::addRecentItem('w', $id, Yii::app()->user->getId()); 
 
-        //AuxLib::debugLogR ('actionView');
-        //$params = ($this->getPerStageViewParams ($id, $viewStage, $users));
-        //AuxLib::debugLogR ($params['expectedCloseDateDateRange']);
-
 		$workflows = Workflow::getList(false);	// no "none" options
 
         $this->render('view',
@@ -136,27 +132,27 @@ class WorkflowController extends x2base {
 
         $stages = array();
         
-        if(isset($_POST['Workflow'], $_POST['WorkflowStages'])) {
+        $workflowAttr = filter_input(INPUT_POST,'Workflow', FILTER_DEFAULT, FILTER_REQUIRE_ARRAY);
+        $workflowStages = filter_input(INPUT_POST,'WorkflowStages', FILTER_DEFAULT, FILTER_REQUIRE_ARRAY);
+        if(!empty($workflowAttr) && !empty($workflowStages)) {
         
         
-            $workflowModel->attributes = $_POST['Workflow'];
-            if (isset ($_POST['colors']) && is_array ($_POST['colors'])) {
-                // remove empty strings
-                $_POST['colors'] = 
-                    array_filter ($_POST['colors'], function ($a) { return $a !== ''; });
-
-                $workflowModel->colors = $_POST['colors'];
+            $workflowModel->attributes = $workflowAttr;
+            $colors = filter_input(INPUT_POST, 'colors', FILTER_DEFAULT, FILTER_REQUIRE_ARRAY);
+            if (!empty($colors)) {
+                $colors =  array_filter ($colors, function ($a) { return $a !== ''; });
+                $workflowModel->colors = $colors;
             }
 
             if($workflowModel->save()) {
                 $validStages = true;
-                for($i=0; $i<count($_POST['WorkflowStages']); $i++) {
+                for($i=0; $i<count($workflowStages); $i++) {
                     
                     $stages[$i] = new WorkflowStage;
                     $stages[$i]->workflowId = $workflowModel->id;
-                    $stages[$i]->attributes = $_POST['WorkflowStages'][$i+1];
+                    $stages[$i]->attributes = $workflowStages[$i+1];
                     $stages[$i]->stageNumber = $i+1;
-                    $stages[$i]->roles = $_POST['WorkflowStages'][$i+1]['roles'];
+                    $stages[$i]->roles = $workflowStages[$i+1]['roles'];
                     if(empty($stages[$i]->roles) || in_array('',$stages[$i]->roles))
                         $stages[$i]->roles = array();
 
@@ -192,25 +188,18 @@ class WorkflowController extends x2base {
     public function actionUpdate($id) {
         $workflowModel = $this->loadModel($id);
 
-        $stages = array();
-        // echo '<html><body>'.var_dump($_POST['WorkflowStages']).'</body></html>';
+        $workflowAttr = filter_input(INPUT_POST,'Workflow', FILTER_DEFAULT, FILTER_REQUIRE_ARRAY);
+        $workflowStages = filter_input(INPUT_POST,'WorkflowStages', FILTER_DEFAULT, FILTER_REQUIRE_ARRAY);
+        if(!empty($workflowAttr) && !empty($workflowStages)) {
 
-        // die(var_dump($_POST['WorkflowStages']));
-        if(isset($_POST['Workflow'], $_POST['WorkflowStages'])) {
+            list($validStages, $newStages, $forDeletion) = $workflowModel->updateStages($workflowStages);
 
-            list($validStages, $newStages, $forDeletion) = $workflowModel->updateStages($_POST['WorkflowStages']);
-
-            $workflowModel->attributes = $_POST['Workflow'];
+            $workflowModel->attributes = $workflowAttr;
             $workflowModel->lastUpdated = time();
-
-            if (isset ($_POST['colors']) && 
-                is_array ($_POST['colors'])) {
-                
-                // remove empty strings
-                $_POST['colors'] = 
-                    array_filter ($_POST['colors'], function ($a) { return $a !== ''; });
-
-                $workflowModel->colors = $_POST['colors'];
+            $colors = filter_input(INPUT_POST, 'colors', FILTER_DEFAULT, FILTER_REQUIRE_ARRAY);
+            if (!empty($colors)) {
+                $colors =  array_filter ($colors, function ($a) { return $a !== ''; });
+                $workflowModel->colors = $colors;
             }
             
             if($validStages && $workflowModel->validate()) {
@@ -286,24 +275,29 @@ class WorkflowController extends x2base {
      * Render funnel for workflow view 
      */
     public function renderFunnelView (
-        $workflowId, $dateRange, $expectedCloseDateDateRange, $users='', $modelId=0, 
+        $workflowId, $dateRange, $users='', $modelId=0, 
         $modelType='') {
 
         $workflowStatus = Workflow::getWorkflowStatus($workflowId, $modelId, $modelType);
         $stageCounts = Workflow::getStageCounts (
-            $workflowStatus, $dateRange, $expectedCloseDateDateRange, $users, $modelType);
+            $workflowStatus, $dateRange, $users, $modelType);
+        $stageValues = Workflow::getStageValues(
+            $workflowStatus, $dateRange, $users, $modelType);
 
         $model = $this->loadModel($workflowId);
         $colors = $model->getWorkflowStageColors (sizeof ($stageCounts));
 
         $stageNameLinks = Workflow::getStageNameLinks (
-            $workflowStatus, $dateRange, $expectedCloseDateDateRange, $users);
+            $workflowStatus, $dateRange, $users);
 
         $this->renderPartial ('_funnel', array (
             'workflowStatus' => $workflowStatus,
             'recordsPerStage' => $stageCounts,
             'stageCount' => sizeof ($stageCounts),
-            'stageNameLinks' => $stageNameLinks,
+            'stageValues' => array_map (
+                function ($a) { return (is_null($a) ? '' : Formatter::formatCurrency ($a)); }, $stageValues),
+            'totalValue' => Formatter::formatCurrency (array_sum ($stageValues)),
+            'stageNameLinks' => $stageNameLinks,    
             'colors' => $colors,
         ));
     
@@ -599,9 +593,13 @@ class WorkflowController extends x2base {
      * @param string $type {'contacts', 'opportunities', 'accounts'}
      */
     public function getStageMemberDataProvider (
-        $type, $workflowId, $dateRange, $expectedCloseDateDateRange, $stage, $user) {
+        $type, $workflowId, $dateRange, $stage, $user) {
 
         $modelName = X2Model::getModelName ($type);
+        if(!$modelName){
+            $type = 'contacts';
+            $modelName = 'Contacts';
+        }
         $model = X2Model::model ($modelName);
         $tableName = $model->tableName ();
         $stageModel = WorkflowStage::model()->findByAttributes(array(
@@ -615,12 +613,6 @@ class WorkflowController extends x2base {
             ':end' => $dateRange['end'],
             ':type' => $type,
         );
-        if ($expectedCloseDateDateRange['range'] !== 'all') {
-            $params = array_merge ($params, array (
-                ':expectedCloseDateStart' => $expectedCloseDateDateRange['end'],
-                ':expectedCloseDateEnd' => $expectedCloseDateDateRange['end'],
-            ));
-        }
 
         if(!empty($user)){
             $userString=" AND x2_actions.assignedTo=:user ";
@@ -636,11 +628,7 @@ class WorkflowController extends x2base {
             ->select("$tableName.*, x2_actions.lastUpdated as actionLastUpdated")
             ->from($tableName)
             ->join('x2_actions',"$tableName.id = x2_actions.associationId")
-            ->where(
-                ($expectedCloseDateDateRange['range'] !== 'all' ? 
-                ($tableName . '.expectedCloseDate 
-                    BETWEEN :expectedCloseDateStart AND :expectedCloseDateEnd AND ') : '').
-                "x2_actions.workflowId=:workflowId AND x2_actions.stageNumber=:stage AND
+            ->where("x2_actions.workflowId=:workflowId AND x2_actions.stageNumber=:stage AND
                 x2_actions.associationType=:type AND complete!='Yes' AND 
                 (completeDate IS NULL OR completeDate=0) AND 
                 x2_actions.createDate BETWEEN :start AND :end ".$userString." AND ".$accessCondition
@@ -651,11 +639,7 @@ class WorkflowController extends x2base {
             ->select("COUNT(*)")
             ->from($tableName)
             ->join('x2_actions',"$tableName.id = x2_actions.associationId")
-            ->where(
-                ($expectedCloseDateDateRange['range'] !== 'all' ? 
-                ($tableName . '.expectedCloseDate 
-                    BETWEEN :expectedCloseDateStart AND :expectedCloseDateEnd AND ') : '').
-                "x2_actions.workflowId=:workflowId AND x2_actions.stageNumber=:stage AND
+            ->where("x2_actions.workflowId=:workflowId AND x2_actions.stageNumber=:stage AND
                 x2_actions.associationType=:type AND complete!='Yes' AND 
                 (completeDate IS NULL OR completeDate=0) AND 
                 x2_actions.createDate BETWEEN :start AND :end ".$userString.' AND '.$accessCondition,
@@ -676,28 +660,24 @@ class WorkflowController extends x2base {
     }
 
     public function actionGetStageMembers(
-        $id,$stage,$start,$end,$range,$expectedCloseDateStart, $expectedCloseDateEnd,
-        $expectedCloseDateRange,$users,$modelType) {
+        $id,$stage,$start,$end,$range, $users,$modelType) {
         
         $this->getStageMembers (
-            $id, $stage, $start, $end, $range, $expectedCloseDateStart, $expectedCloseDateEnd,
-            $expectedCloseDateRange, $users, $modelType);
+            $id, $stage, $start, $end, $range, $users, $modelType);
     }
 
-    public function getStageMembers($workflowId,$stage,$start,$end,$range,$expectedCloseDateStart,
-        $expectedCloseDateEnd, $expectedCloseDateRange, $users, $modelType='') {
+    public function getStageMembers($workflowId,$stage,$start,$end,$range,
+        $users, $modelType='') {
 
         $params = array ();
         
         $dateRange=self::getDateRange();
-        $expectedCloseDateDateRange=self::getDateRange(
-            'expectedCloseDateStart', 'expectedCloseDateEnd', 'expectedCloseDateRange');
         
         if(!is_numeric($workflowId) || !is_numeric($stage))
             return new CActiveDataProvider();
 
         $dataProvider = $this->getStageMemberDataProvider (
-                $modelType, $workflowId, $dateRange, $expectedCloseDateDateRange, $stage, $users);
+                $modelType, $workflowId, $dateRange, $stage, $users);
 
         $gridConfig = array (
             'baseScriptUrl'=>Yii::app()->theme->getBaseUrl().'/css/gridview',
@@ -761,12 +741,10 @@ class WorkflowController extends x2base {
 
     public function actionGetStageValue($id,$stage,$users,$modelType,$start,$end){
         $dateRange = self::getDateRange ();
-        $expectedCloseDateDateRange=self::getDateRange(
-            'expectedCloseDateStart', 'expectedCloseDateEnd', 'expectedCloseDateRange');
         $workflow = Workflow::model ()->findByPk ($id);
         if ($workflow !== null) {
             $workflowStatus = Workflow::getWorkflowStatus ($id);
-            $counts = Workflow::getStageCounts($workflowStatus, $dateRange, $expectedCloseDateDateRange, $users, $modelType);
+            $counts = Workflow::getStageCounts($workflowStatus, $dateRange, $users, $modelType);
             $this->renderPartial ('_dataSummary', array (
                 'stageName' => $workflow->getStageName ($stage),
                 'count' => $counts[$stage - 1],
@@ -827,11 +805,18 @@ class WorkflowController extends x2base {
 
     private function getDragAndDropViewParams ($id, $users='') {
         $model = $this->loadModel($id);
-        $modelType = isset ($_GET['modelType']) ? $_GET['modelType'] : 'contacts';
-
+        if(isset($_GET['modelType'])){
+            $modelType = $_GET['modelType'];
+        }elseif(!empty($model->financialModel)){
+            if(X2Model::getModelName($model->financialModel)){
+                $modelType = $model->financialModel;
+            }else{
+                $modelType = 'contacts';
+            }
+        }else{
+            $modelType = 'contacts';
+        }
         $dateRange=self::getDateRange();
-        $expectedCloseDateDateRange=self::getDateRange(
-            'expectedCloseDateStart', 'expectedCloseDateEnd', 'expectedCloseDateRange');
 
         $memberListContainerSelectors = array ();
         $stageCount = count ($model->stages);
@@ -844,12 +829,13 @@ class WorkflowController extends x2base {
         $stageNames = Workflow::getStageNames ($workflowStatus);
         $colors = $model->getWorkflowStageColors ($stageCount, true);
         $stageCounts = Workflow::getStageCounts (
-            $workflowStatus, $dateRange, $expectedCloseDateDateRange, $users, $modelType);
+            $workflowStatus, $dateRange, $users, $modelType);
+        $stageValues = Workflow::getStageValues(
+            $workflowStatus, $dateRange, $users, $modelType);
         return array (
             'model'=>$model,
             'modelType'=>$modelType,
             'dateRange'=>$dateRange,
-            'expectedCloseDateDateRange'=>$expectedCloseDateDateRange,
             'users'=>$users,
             'colors'=>$colors,
             'listItemColors'=>Workflow::getPipelineListItemColors ($colors),
@@ -857,16 +843,15 @@ class WorkflowController extends x2base {
             'stagePermissions'=>$stagePermissions,
             'stagesWhichRequireComments'=>$stagesWhichRequireComments,
             'stageNames'=>$stageNames,
-            'stageCounts' => $stageCounts
+            'stageCounts' => $stageCounts,
+            'stageValues' => $stageValues,
         );
     }
 
     private function getPerStageViewParams ($id, $viewStage=null, $users='') {
         $dateRange=self::getDateRange();
-        $expectedCloseDateDateRange=self::getDateRange(
-            'expectedCloseDateStart', 'expectedCloseDateEnd', 'expectedCloseDateRange');
-        $modelType = isset ($_GET['modelType']) ? $_GET['modelType'] : 'contacts';
         $model = $this->loadModel($id);
+        $modelType = isset ($_GET['modelType']) ? $_GET['modelType'] : (!empty($model->financialModel)?$model->financialModel:'contacts');
         $stageCount = count ($model->stages);
         return array (
             'model'=>$model,
@@ -874,7 +859,6 @@ class WorkflowController extends x2base {
             'viewStage'=>$viewStage,
             'colors'=>$model->getWorkflowStageColors ($stageCount, true),
             'dateRange'=>$dateRange,
-            'expectedCloseDateDateRange'=>$expectedCloseDateDateRange,
             'users'=>$users,
         );
     }
@@ -913,26 +897,19 @@ class WorkflowController extends x2base {
         echo CJSON::encode ($stageNames);
     }
     
+    public function actionGetFinancialFields($modelType){
+        $ret = array('' => 'Select a field');
+        $ret = array_merge($ret, Workflow::getCurrencyFields($modelType));
+        echo CJSON::encode($ret);
+    }
+    
     /**
      * Calls getDateRange and sets to default range to 'all' if the date range is the 
      * expected close date date range
      */
     public static function getDateRange ( 
         $startKey='start',$endKey='end',$rangeKey='range') {
-
-        if ($startKey === 'expectedCloseDateStart') {
-            $range = X2DateUtil::getDateRange ($startKey, $endKey, $rangeKey, 'all');
-
-            // for expected close date, override the default behavior of getDateRange.
-            // 'all time' should not end at 'today' since expected close dates can be in 
-            // the future.
-            if ($range['range'] === 'all') {
-                $range['end'] = 0;
-            }
-            return $range;
-        } else {
-            return X2DateUtil::getDateRange ($startKey, $endKey, $rangeKey, 'custom');
-        }
+        return X2DateUtil::getDateRange ($startKey, $endKey, $rangeKey, 'custom');
     }
 
     /**

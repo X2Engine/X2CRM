@@ -63,4 +63,5 @@
   'lastUpdated' => '最近更新时间',
   'Top Menu Bar Logo' => '顶部菜单栏标志',
   'Login Screen Logo' => '登录屏幕徽标',
+  'Tag list must be non-empty' => '标签列表必须是非空',
 );

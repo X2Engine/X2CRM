@@ -1,7 +1,7 @@
 <?php
 /*****************************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2015 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2016 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -1184,9 +1184,10 @@ class X2ClientScript extends NLSClientScript {
 
     private function getJSPathname ($path) {
         if (preg_match ('/\.min\.js$/', $path)) return $path;
-        $altPath = Yii::getRootPath ().preg_replace ('/\.js$/', '.min.js', $path);
+        $fileName = str_replace('/',DIRECTORY_SEPARATOR, str_replace(Yii::app()->baseUrl, '', $path));
+        $altPath = Yii::getRootPath ().preg_replace  ('/\.js(\?\d+)?$/', '.min.js', $fileName);
         if (!YII_DEBUG && file_exists ($altPath)) {
-            return preg_replace ('/\.js$/', '.min.js', $path);
+            return preg_replace ('/\.js(\?\d+)?$/', '.min.js\1', $path);
         } else {
             return $path;
         }
@@ -1194,9 +1195,10 @@ class X2ClientScript extends NLSClientScript {
 
     private function getCSSPathname ($path) {
         if (preg_match ('/\.min\.css$/', $path)) return $path;
-        $altPath = Yii::getRootPath ().preg_replace ('/\.css$/', '.min.css', $path);
+        $fileName = str_replace('/',DIRECTORY_SEPARATOR, str_replace(Yii::app()->baseUrl, '', $path));
+        $altPath = Yii::getRootPath ().preg_replace ('/\.css(\?\d+)?$/', '.min.css', $fileName);
         if (!YII_DEBUG && file_exists ($altPath)) {
-            return preg_replace ('/\.css$/', '.min.css', $path);
+            return preg_replace ('/\.css(\?\d+)?$/', '.min.css\1', $path);
         } else {
             return $path;
         }

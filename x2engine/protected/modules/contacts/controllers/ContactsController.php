@@ -2,7 +2,7 @@
 
 /*****************************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2015 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2016 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -916,13 +916,10 @@ class ContactsController extends x2base {
                 $values = &$_POST['X2List']['value'];
 
                 if (count($attributes) > 0 && count($attributes) == count($comparisons) && count($comparisons) == count($values)) {
-
-                    $list->attributes = $_POST['X2List'];
                     $list->modelName = 'Contacts';
-
                     $list->lastUpdated = time();
 
-                    if ($list->save()) {
+                    if (!$list->hasErrors() && $list->save()) {
                         if ($ajax) {
                             echo CJSON::encode($list->attributes);
                             return;
@@ -1000,7 +997,7 @@ class ContactsController extends x2base {
                     $list->modelName = 'Contacts';
                     $list->lastUpdated = time();
 
-                    if ($list->save()) {
+                    if (!$list->hasErrors() && $list->save()) {
                         $this->redirect(array('/contacts/contacts/list', 'id' => $list->id));
                     }
                 }

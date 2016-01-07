@@ -1,7 +1,7 @@
 <?php
 /*****************************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2015 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2016 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -50,6 +50,12 @@ class ModulePanelItem extends PanelItem {
     public function getIsSelected () {
         if (!isset ($this->_isSelected)) {
             $this->_isSelected = 
+                $this->module->name === 'users' &&
+                Yii::app()->controller instanceof ProfileController &&
+                  in_array (Yii::app()->controller->action->getId (), array (
+                    'mobileIndex', 
+                    'mobileView', 
+                  )) ||
                 $this->module->name === 'charts' &&
                   in_array (Yii::app()->controller->action->getId (), array (
                     'mobileChartDashboard', 
@@ -94,6 +100,9 @@ class ModulePanelItem extends PanelItem {
         if ($this->module->name === 'x2Activity') {
             return Yii::app()->createAbsoluteUrl (
                 $this->module->name.'/profile/mobileActivity');
+        } elseif ($this->module->name === 'users') {
+            return Yii::app()->createAbsoluteUrl (
+                $this->module->name.'/profile/mobileIndex');
         } else {
             return Yii::app()->createAbsoluteUrl (
                 $this->module->name.'/'.$this->module->name.'/mobileIndex');

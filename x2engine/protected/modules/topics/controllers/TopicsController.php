@@ -1,7 +1,7 @@
 <?php
 /*****************************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2015 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2016 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -42,6 +42,11 @@ class TopicsController extends x2base {
         return array_merge(parent::behaviors(), array(
             'QuickCreateRelationshipBehavior' => array(
                 'class' => 'QuickCreateRelationshipBehavior',
+            ),
+            'X2MobileControllerBehavior' => array(
+                'class' => 
+                    'application.modules.mobile.components.behaviors.'.
+                        'X2MobileTopicsControllerBehavior'
             ),
         ));
     }
@@ -125,48 +130,15 @@ class TopicsController extends x2base {
             if(isset($_POST['x2ajax'])){
                 $ajaxErrors = $this->quickCreate ($model);
             } else{
+                if ($fileCreation) {
+                    // file uploaded through form
+                    $temp = CUploadedFile::getInstanceByName('upload'); 
+                    $model->upload = $temp;
+                }
                 if ($model->save()) {
-                    if ($fileCreation) {
-                        $media = new Media;
-                        $username = Yii::app()->user->getName();
-                        // file uploaded through form
-                        $temp = CUploadedFile::getInstanceByName('upload'); 
-                        if ($temp && ($tempName = $temp->getTempName()) && !empty($tempName)) {
-                            $name = $temp->getName();
-                            $name = str_replace(' ', '_', $name);
-                            $check = Media::model()->findAllByAttributes(
-                                array('fileName' => $name));
-
-                            // rename file if there name conflicts by suffixing "(n)"
-                            if (count($check) != 0) {
-                                $count = 1;
-                                $newName = $name;
-                                $arr = explode('.', $name);
-                                $name = $arr[0];
-                                while (count($check) != 0) {
-                                    $newName = $name . '(' . $count . ').' . 
-                                        $temp->getExtensionName();
-                                    $check = Media::model()->findAllByAttributes(array(
-                                        'fileName' => $newName));
-                                    $count++;
-                                }
-                                $name = $newName;
-                            }
-                        }
-                        if (FileUtil::ccopy($tempName,
-                                "uploads/protected/media/$username/$name")) {
-                            $media->associationType = 'topicReply';
-                            $media->associationId = $model->originalPost->id;
-                            $media->uploadedBy = $username;
-                            $media->createDate = time();
-                            $media->lastUpdated = time();
-                            $media->fileName = $name;
-                            $media->mimetype = $temp->type;
-                            if ($media->save()) {
-                                echo $model->id;
-                                Yii::app()->end();
-                            }
-                        }
+                    if ($fileCreation && count ($model->originalPost->attachments)) {
+                        echo $model->id;
+                        Yii::app()->end();
                     } else {
                         $this->redirect(array('view', 'id' => $model->id));
                     }
@@ -289,13 +261,6 @@ class TopicsController extends x2base {
             $reply->text = $_POST['TopicReplies']['text'];
             $reply->topicId = $_POST['TopicReplies']['topicId'];
             if ($reply->save()) {
-                $event = new Events;
-                $event->visibility = 1;
-                $event->associationType = 'TopicRepies';
-                $event->associationId = $reply->id;
-                $event->user = Yii::app()->user->getName();
-                $event->type = 'topic_reply';
-                $event->save();
                 echo $reply->id;
             }
         }

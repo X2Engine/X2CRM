@@ -1,7 +1,7 @@
 <?php
 /*****************************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2015 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2016 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -228,7 +228,7 @@ class WorkflowTest extends X2DbTestCase {
             'start' => 0,
             'end' => time (),
             'workflowId' => $workflow->id,
-        ), array ('range' => 'all'));
+        ));
         X2_TEST_DEBUG_LEVEL > 1 && print_r ($counts);
         $this->assertEquals (1, array_reduce ($counts, function ($a, $b) { return $a + $b; }, 0));
         $action = Actions::model ()->findByAttributes (array (
@@ -249,7 +249,7 @@ class WorkflowTest extends X2DbTestCase {
             'start' => 0,
             'end' => time (),
             'workflowId' => $workflow->id,
-        ), array ('range' => 'all'));
+        ));
         X2_TEST_DEBUG_LEVEL > 1 && print_r ($counts);
         $this->assertEquals (1, array_reduce ($counts, function ($a, $b) { return $a + $b; }, 0));
 
@@ -259,7 +259,7 @@ class WorkflowTest extends X2DbTestCase {
             'start' => 0,
             'end' => time (),
             'workflowId' => $workflow->id,
-        ), array ('range' => 'all'));
+        ));
         X2_TEST_DEBUG_LEVEL > 1 && print_r ($counts);
         $this->assertEquals (0, array_reduce ($counts, function ($a, $b) { return $a + $b; }, 0));
 
@@ -270,11 +270,45 @@ class WorkflowTest extends X2DbTestCase {
             'start' => 0,
             'end' => time (),
             'workflowId' => $workflow->id,
-        ), array ('range' => 'all'));
+        ));
         X2_TEST_DEBUG_LEVEL > 1 && print_r ($counts);
         $this->assertEquals (1, array_reduce ($counts, function ($a, $b) { return $a + $b; }, 0));
 
         TestingAuxLib::suLogin ('admin');
+    }
+    
+    
+    /**
+     * Basic test for get stage values
+     */
+    public function testGetStageValues(){
+        $workflow = $this->workflows ('workflow2'); 
+        $workflowStatus = Workflow::getWorkflowStatus($workflow->id);
+        $contact = $this->contacts('contact935');
+        
+        $values = Workflow::getStageValues($workflowStatus, array (
+            'start' => 0,
+            'end' => time (),
+            'workflowId' => $workflow->id,
+        ));
+        //Workflow only has one contact, and it is in the 4th stage
+        $this->assertEquals(0, $values[0]);
+        $this->assertEquals(0, $values[1]);
+        $this->assertEquals(0, $values[2]);
+        $this->assertEquals($contact->dealvalue, $values[3]);
+        
+        $workflow = $this->workflows('workflow3');
+        $workflowStatus = Workflow::getWorkflowStatus($workflow->id);
+        $values = Workflow::getStageValues($workflowStatus, array (
+            'start' => 0,
+            'end' => time (),
+            'workflowId' => $workflow->id,
+        ));
+        //Non-financial workflow should have null values
+        $this->assertNull($values[0]);
+        $this->assertNull($values[1]);
+        $this->assertNull($values[2]);
+        $this->assertNull($values[3]);
     }
 
     /**
@@ -318,7 +352,7 @@ class WorkflowTest extends X2DbTestCase {
             'start' => 0,
             'end' => time (),
             'workflowId' => $workflow->id,
-        ), array ('range' => 'all'));
+        ));
 
         X2_TEST_DEBUG_LEVEL > 1 && print_r ($counts);
 
@@ -334,7 +368,7 @@ class WorkflowTest extends X2DbTestCase {
                 'start' => 0,
                 'end' => time (),
                 'workflowId' => $workflow->id,
-            ), array ('range' => 'all'), $stageNumber, '');
+            ), $stageNumber, '');
 
         // ensure that number of record in dataproviders matches count
         // stage 0 should have no records in it

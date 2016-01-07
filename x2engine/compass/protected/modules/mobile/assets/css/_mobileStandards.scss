@@ -1,6 +1,6 @@
 /*****************************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2015 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2016 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -38,6 +38,32 @@
 
 @mixin dialog-box-shadow {
     @include box-shadow(0 3px 11px 0px gray);
+}
+
+@mixin btn-states($opacity: 0.1) {
+    &:hover { 
+        background: rgba(0,0,0, $opacity);
+    }
+    &:active { 
+        background: rgba(0,0,0, $opacity);
+        //background: rgba(0,0,0,0.15);
+    }
+}
+
+@mixin popup-menu {
+    ul {
+        background: $menuBackgroundColor;
+        color: $menuText;
+        .ui-popup {
+            border: none;
+        }
+        a {
+            color: $menuText;
+            border: none;
+            text-decoration: none;
+        }
+        box-shadow: 0px 3px 11px #2D2D2D;
+    }
 }
 
 /*
@@ -79,6 +105,30 @@ $itemHeight: 61px;
     margin-bottom: 5px;
 }
 
+@mixin rich-record-index {
+    .record-list-item {
+        background: white;
+        padding: 15px 0; 
+        cursor: default;
+        overflow-y: hidden;
+        height: auto;
+        margin-bottom: 10px;
+        border-top: 1px solid $lightGray;
+        @include box-shadow(0px 1px 2px lighten($borderColor, 3%));
+    }
+}
+
+@mixin photo-attachment {
+    .photo-attachment-container {
+        img {
+            max-width: 100%;
+            @media (min-width: 500px) {
+                max-width: 500px;
+            }
+        }
+    }
+}
+
 /*
 panel
 */
@@ -107,3 +157,54 @@ forms
 */
 
 $inputHeight: 46px;
+
+@mixin text-input {
+    .ui-input-text {
+        border: 1px solid $lightGray;   
+        border-radius: 3px;
+        height: $inputHeight;
+        input {
+            height: $inputHeight;
+            padding-top: 0;
+            padding-bottom: 0;
+        }
+        @include box-shadow(inset 0px 1px 3px $itemBorderColor);
+        .x2-autocomplete-results {
+            position: absolute;
+            left: 0;
+            right: 0;
+            width: 100%;
+            background: white;
+            z-index: 1000;
+        }
+        &.error {
+            border-color: $inputErrorBorder;
+            @include box-shadow(inset 0px 1px 3px lighten($inputErrorBorder,15%));
+            background: lighten($inputErrorBorder, 30%);
+            input.error {
+            }
+        }
+    }
+}
+
+/*
+users
+*/
+
+@mixin avatar($dimension:45px) {
+    .avatar {
+        .avatar-image {
+            border: 1px solid $borderColor;
+            border-radius: 50%;
+            width: $dimension;
+            height: $dimension;
+            line-height: $dimension;
+            text-align: center;
+            overflow: hidden;
+            &.default-avatar {
+                background: $lightGray;
+                color: darken($lightGray, 17%);
+            }
+        }
+    }
+}

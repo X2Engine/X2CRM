@@ -63,6 +63,12 @@ INSERT INTO `x2_modules`
 VALUES
 ('quotes', 'Quotes', 1, 14, 1, 1, 0, 0, 0);
 /*&*/
+INSERT INTO `x2_mobile_layouts`
+(`modelName`, `layout`, `defaultView`, `defaultForm`, `version`)
+VALUES
+('Quote', '["name","status","expirationDate","associatedContacts","accountName","probability","description","assignedTo"]', 1, 0, '5.4'),
+('Quote', '["name","status","expirationDate","associatedContacts","accountName","probability","description","assignedTo"]', 0, 1, '5.4');
+/*&*/
 INSERT INTO x2_fields
 (modelName, fieldName, attributeLabel, modified, custom, `type`, required, readOnly, linkType, searchable, isVirtual, relevance, uniqueConstraint, safe, keyType)
 VALUES

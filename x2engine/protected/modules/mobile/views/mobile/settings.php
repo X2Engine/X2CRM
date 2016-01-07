@@ -1,7 +1,7 @@
 <?php
 /*****************************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2015 X2Engine Inc.
+ * X2Engine, Inc. Copyright (C) 2011-2016 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -38,7 +38,7 @@
 Yii::app()->clientScript->registerScriptFile(
     Yii::app()->controller->module->assetsUrl.'/js/SettingsController.js');
 
-$this->onPageLoad ("function () {
+$this->onPageLoad ("
     x2.main.controllers['$this->pageId'] = new x2.SettingsController (".CJSON::encode (array (
         'translations' => array (
             'changeUrlMessage' => 
@@ -48,7 +48,7 @@ $this->onPageLoad ("function () {
             'changeUrlButtonCancel' => 'Back',
         ),
     )).");
-}");
+");
 
 ?>
 
