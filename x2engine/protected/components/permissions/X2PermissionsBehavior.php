@@ -269,8 +269,6 @@ class X2PermissionsBehavior extends ModelPermissionsBehavior {
         $accessLevel, $tableAlias = 't', $paramsNamespace = 'X2PermissionsBehavior',
         $showHidden = false) {
 
-        $user = Yii::app()->getSuModel()->username;
-        $userId = Yii::app()->getSuModel()->id;
         $assignmentAttr = $this->getAssignmentAttr();
         $visibilityAttr = $this->getVisibilityAttr();
         $ret = array();

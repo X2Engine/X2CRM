@@ -52,6 +52,21 @@ abstract class VisitAllPagesTest extends X2WebTestCase {
              
         );
     }
+    
+    public $fixtures = array(
+        'accounts' => 'Accounts',
+        'contacts' => 'Contacts',
+        'campaigns' => 'Campaigns',
+        'x2Leads' => 'X2Leads',
+        'opportunities' => 'Opportunities',
+        'services' => 'Services',
+        'docs' => 'Docs',
+        'workflow' => 'Workflow',
+        'products' => 'Products',
+        'quotes' => 'Quotes',
+        'media' => 'Media',
+        'groups' => 'Groups',
+    );
 
     public static function setUpBeforeClass () {
         Yii::app()->db->createCommand ("
@@ -164,10 +179,9 @@ abstract class VisitAllPagesTest extends X2WebTestCase {
 
     public $allPages = array(
         'contacts/index',
-        'contacts/id/1195',
-        'contacts/update/id/1195',
-        'contacts/shareContact/id/1195',
-        //'contacts/viewRelationships/id/1195',
+        'contacts/id/67890',
+        'contacts/update/id/67890',
+        'contacts/shareContact/id/67890',
         'contacts/lists',
         'contacts/myContacts',
         'contacts/createList',

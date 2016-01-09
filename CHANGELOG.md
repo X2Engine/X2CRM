@@ -1,3 +1,10 @@
+# 5.4.3 #
+1/9/2016
+* General Changelog / Developer Notes
+  * Fixed a bug with web lead capture
+  * Fixed a broken form layout in X2Touch
+  * Fixed a bug in Lists
+
 # 5.4.2 #
 1/7/2016
 * General Changelog / Developer Notes

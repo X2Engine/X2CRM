@@ -53,7 +53,7 @@ return array(
         'masterId' => NULL,
         'name' => 'Test Email Campaign',
         'nameId' => 'Test Email Campaign_5',
-        'assignedTo' => 'admin',
+        'assignedTo' => 'testuser',
         'listId' => 'Campaign Testing_16',
         'active' => '1',
         'description' => '',

@@ -307,27 +307,27 @@ class X2List extends X2Model {
                     switch($criterion->comparison){
                         case '=':
                             $subSearch = new CDbCriteria();
-                            $subSearch->compare($criterion->attribute, '>='.$thisDay, false, 'AND');
-                            $subSearch->compare($criterion->attribute, '<'.$nextDay, false, 'AND');
+                            $subSearch->compare('t.'.$criterion->attribute, '>='.$thisDay, false, 'AND');
+                            $subSearch->compare('t.'.$criterion->attribute, '<'.$nextDay, false, 'AND');
                             $search->mergeWith($subSearch, $logicMode);
                             break;
                         case '<>':
                             $subSearch = new CDbCriteria();
-                            $subSearch->compare($criterion->attribute, '<'.$thisDay, false, 'OR');
-                            $subSearch->compare($criterion->attribute, '>='.$nextDay, false, 'OR');
+                            $subSearch->compare('t.'.$criterion->attribute, '<'.$thisDay, false, 'OR');
+                            $subSearch->compare('t.'.$criterion->attribute, '>='.$nextDay, false, 'OR');
                             $search->mergeWith($subSearch, $logicMode);
                             break;
                         case '>':
-                            $search->compare($criterion->attribute, '>='.$thisDay, true, $logicMode);
+                            $search->compare('t.'.$criterion->attribute, '>='.$thisDay, true, $logicMode);
                             break;
                         case '<':
-                            $search->compare($criterion->attribute, '<'.$thisDay, true, $logicMode);
+                            $search->compare('t.'.$criterion->attribute, '<'.$thisDay, true, $logicMode);
                             break;
                         case 'notEmpty':
-                            $search->addCondition($criterion->attribute.' IS NOT NULL AND '.$criterion->attribute.'!=""', $logicMode);
+                            $search->addCondition('t.'.$criterion->attribute.' IS NOT NULL AND '.'t.'.$criterion->attribute.'!=""', $logicMode);
                             break;
                         case 'empty':
-                            $search->addCondition('('.$criterion->attribute.'="" OR '.$criterion->attribute.' IS NULL)', $logicMode);
+                            $search->addCondition('('.'t.'.$criterion->attribute.'="" OR '.'t.'.$criterion->attribute.' IS NULL)', $logicMode);
                             break;
                         //the following comparitors are not supported for dates
                         //case 'list':
@@ -338,36 +338,36 @@ class X2List extends X2Model {
                 }else{
                     switch($criterion->comparison){
                         case '=':
-                            $search->compare($criterion->attribute, $criterion->value, false, $logicMode);
+                            $search->compare('t.'.$criterion->attribute, $criterion->value, false, $logicMode);
                             break;
                         case '>':
-                            $search->compare($criterion->attribute, '>='.$criterion->value, true, $logicMode);
+                            $search->compare('t.'.$criterion->attribute, '>='.$criterion->value, true, $logicMode);
                             break;
                         case '<':
-                            $search->compare($criterion->attribute, '<='.$criterion->value, true, $logicMode);
+                            $search->compare('t.'.$criterion->attribute, '<='.$criterion->value, true, $logicMode);
                             break;
                         case '<>': // must test for != OR is null, because both mysql and yii are stupid
-                            $search->addCondition('('.$criterion->attribute.' IS NULL OR '.$criterion->attribute.'!='.CDbCriteria::PARAM_PREFIX.CDbCriteria::$paramCount.')', $logicMode);
+                            $search->addCondition('('.'t.'.$criterion->attribute.' IS NULL OR '.'t.'.$criterion->attribute.'!='.CDbCriteria::PARAM_PREFIX.CDbCriteria::$paramCount.')', $logicMode);
                             $search->params[CDbCriteria::PARAM_PREFIX.CDbCriteria::$paramCount++] = $criterion->value;
                             break;
                         case 'notEmpty':
-                            $search->addCondition($criterion->attribute.' IS NOT NULL AND '.$criterion->attribute.'!=""', $logicMode);
+                            $search->addCondition('t.'.$criterion->attribute.' IS NOT NULL AND '.'t.'.$criterion->attribute.'!=""', $logicMode);
                             break;
                         case 'empty':
-                            $search->addCondition('('.$criterion->attribute.'="" OR '.$criterion->attribute.' IS NULL)', $logicMode);
+                            $search->addCondition('('.'t.'.$criterion->attribute.'="" OR '.'t.'.$criterion->attribute.' IS NULL)', $logicMode);
                             break;
                         case 'list':
-                            $search->addInCondition($criterion->attribute, explode(',', $criterion->value), $logicMode);
+                            $search->addInCondition('t.'.$criterion->attribute, explode(',', $criterion->value), $logicMode);
                             break;
                         case 'notList':
-                            $search->addNotInCondition($criterion->attribute, explode(',', $criterion->value), $logicMode);
+                            $search->addNotInCondition('t.'.$criterion->attribute, explode(',', $criterion->value), $logicMode);
                             break;
                         case 'noContains':
-                            $search->compare($criterion->attribute, '<>'.$criterion->value, true, $logicMode);
+                            $search->compare('t.'.$criterion->attribute, '<>'.$criterion->value, true, $logicMode);
                             break;
                         case 'contains':
                         default:
-                            $search->compare($criterion->attribute, $criterion->value, true, $logicMode);
+                            $search->compare('t.'.$criterion->attribute, $criterion->value, true, $logicMode);
                     }
                 }
             }

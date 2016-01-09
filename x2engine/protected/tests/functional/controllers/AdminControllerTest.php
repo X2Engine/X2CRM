@@ -278,6 +278,9 @@ class AdminControllerTest extends X2WebTestCase {
      * the CSV contains valid records
      */
     public function testValidRecordImport() {
+        if($this->isChrome){
+            $this->markTestSkipped('Import tests do not function in Chrome.');
+        }
         foreach ($this->csvs as $modelName) {
             $this->prepareImport ($modelName, $modelName.'.csv');
             $expected = $this->stashModels ($modelName);
@@ -295,6 +298,9 @@ class AdminControllerTest extends X2WebTestCase {
      * correctly established
      */
     public function testImportRelations() {
+        if($this->isChrome){
+            $this->markTestSkipped('Import tests do not function in Chrome.');
+        }
         // Import the account, contact, and action
         $relationCsvs = array(
             'Accounts' => 'relations-accounts.csv',
@@ -336,6 +342,9 @@ class AdminControllerTest extends X2WebTestCase {
      * CSV is malformed
      */
     public function testImportValidationFailures() {
+        if($this->isChrome){
+            $this->markTestSkipped('Import tests do not function in Chrome.');
+        }
         $failureCsvs = array(
             'Contacts' => 'failure-contacts.csv',
         );
@@ -354,6 +363,9 @@ class AdminControllerTest extends X2WebTestCase {
      * The specified CSV has lines ending in: \r\n, \n, \r, and \r\n, respectively.
      */
     public function testImportLineEndings() {
+        if($this->isChrome){
+            $this->markTestSkipped('Import tests do not function in Chrome.');
+        }
         $csvFile = 'lineendings-contacts.csv';
         // Skip verification of uploaded CSV since it will be modified
         $this->prepareImport ('Contacts', $csvFile, false);
@@ -370,6 +382,9 @@ class AdminControllerTest extends X2WebTestCase {
      * field contains digits or strings
      */
     public function testImportVisibility() {
+        if($this->isChrome){
+            $this->markTestSkipped('Import tests do not function in Chrome.');
+        }
         $csvFile = 'contacts-visibility.csv';
         $this->prepareImport ('Contacts', $csvFile);
         $expected = $this->stashModels ('Contacts');
@@ -407,6 +422,9 @@ class AdminControllerTest extends X2WebTestCase {
      * Ensure that tags are handled accordinly on import
      */
     public function testImportTags() {
+        if($this->isChrome){
+            $this->markTestSkipped('Import tests do not function in Chrome.');
+        }
         $csvFile = 'tags-contacts.csv';
         $this->prepareImport ('Contacts', $csvFile);
         $expected = $this->stashModels ('Contacts');

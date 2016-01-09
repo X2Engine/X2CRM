@@ -199,6 +199,15 @@ abstract class WebTrackingTestBase extends X2WebTestCase {
             "!!window.navigator.userAgent.match(/opera/i)", 'isOpera');
         return $this->getExpression ('${isOpera}') === 'true';
     }
+    
+    /**
+     * @return bool true if browser that's currently being used is Opera, false otherwise
+     */
+    protected function isChrome () {
+        $this->storeEval (
+            "!!window.navigator.userAgent.match(/Chrome/i)", 'isChrome');
+        return $this->getExpression ('${isChrome}') === 'true';
+    }
 
      
 
@@ -215,18 +224,16 @@ abstract class WebTrackingTestBase extends X2WebTestCase {
         }
 
         // the waitFor condition doesn't seem to work on Opera, so just wait a fixed amount of time
-        if ($this->isOpera ()) sleep (5);
-        $this->waitForCondition (
-            "window.document.getElementsByName ('web-form-iframe').length && window.document.getElementsByName ('web-form-iframe')[0].contentWindow.document.readyState === 'complete'", 4000);
-
+        sleep (5);
+        
+        $this->selectFrame('web-form-iframe');
         $this->type("name=Contacts[firstName]", 'test');
         $this->type("name=Contacts[lastName]", 'test');
         $this->type("name=Contacts[email]", 'test@test.com');
         $this->click("css=#submit");
 
         // wait for iframe to load new page
-        $this->waitForCondition (
-            "window.document.getElementsByName ('web-form-iframe').length && window.document.getElementsByName ('web-form-iframe')[0].contentWindow.document.getElementById ('web-form-submit-message') !== null", 4000);
+        sleep(5);
     }
 
     /**

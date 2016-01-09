@@ -33,6 +33,7 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 
+
 @import "x2-icons";
 @import "icons";
 
@@ -44,10 +45,14 @@ $x2touch-icon-list-fa: (
     ("about" "info-circle")
 );
 
-div.x2touch-panel {
-   ul > li > a > i { 
-        @include generate-icons($icon-list-fa);
-        @include generate-icons($x2touch-icon-list-fa);
-        @include generate-icons($icon-list-x2, "x2");
-   }
+.x2-remote-page {
+
+    div.x2touch-panel {
+       ul > li > a > i { 
+            @include generate-icons($icon-list-fa);
+            @include generate-icons($x2touch-icon-list-fa);
+            @include generate-icons($icon-list-x2, "x2");
+       }
+    }
+
 }

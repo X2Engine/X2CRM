@@ -129,16 +129,12 @@ class WebLeadFormTest extends WebTrackingTestBase {
         $this->clearLead ();
 
         $this->openPublic('x2WebTrackingTestPages/webFormTestGenerateLead.html');
-        if ($this->isOpera ()) sleep (5);
-
+        sleep (5);
+        $this->selectFrame('web-form-iframe');
         $this->type("name=Contacts[firstName]", 'test');
         $this->type("name=Contacts[lastName]", 'test');
         $this->type("name=Contacts[email]", 'test@test.com');
         $this->click("css=#submit");
-        // wait for iframe to load new page
-        $this->waitForCondition (
-            "selenium.browserbot.getCurrentWindow(document.getElementsByName ('web-form-iframe').length && document.getElementsByName ('web-form-iframe')[0].contentWindow.document.getElementById ('web-form-submit-message') !== null)",
-            4000);
         sleep (5); // wait for iframe to load
 
         $this->assertContactCreated ();
@@ -156,16 +152,12 @@ class WebLeadFormTest extends WebTrackingTestBase {
         $this->clearLead ();
 
         $this->openPublic('x2WebTrackingTestPages/webFormTestDontGenerateLead.html');
-        if ($this->isOpera ()) sleep (5);
-
+        sleep (5);
+        $this->selectFrame('web-form-iframe');
         $this->type("name=Contacts[firstName]", 'test');
         $this->type("name=Contacts[lastName]", 'test');
         $this->type("name=Contacts[email]", 'test@test.com');
         $this->click("css=#submit");
-        // wait for iframe to load new page
-        $this->waitForCondition (
-            "selenium.browserbot.getCurrentWindow(document.getElementsByName ('web-form-iframe').length && document.getElementsByName ('web-form-iframe')[0].contentWindow.document.getElementById ('web-form-submit-message') !== null)",
-            4000);
         sleep (5); // wait for iframe to load
 
         $this->assertContactCreated ();

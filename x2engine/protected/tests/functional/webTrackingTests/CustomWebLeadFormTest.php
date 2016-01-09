@@ -88,6 +88,7 @@ class CustomWebLeadFormTest extends WebTrackingTestBase {
      */
     public function testSubmitCustomWebLeadForm () {
         $this->deleteAllVisibleCookies ();
+        $this->clearContact();
         $this->submitCustomWebForm ();
          
         $this->assertContactCreated ();

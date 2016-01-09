@@ -175,7 +175,7 @@ class MobileModule extends X2WebModule {
                     array (
                         'themes/x2engine/css/fontAwesome/css/font-awesome.css',
                         'themes/x2engine/css/css-loaders/load8.css',
-                        'themes/x2engine/css/x2IconsStandalone.css',
+                        //'themes/x2engine/css/x2IconsStandalone.css',
                         'themes/x2engine/css/x2touchIcons.css',
                          
                     ), 
