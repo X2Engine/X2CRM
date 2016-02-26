@@ -24,4 +24,6 @@
   'The username or password you entered is incorrect. Please try again.' => 'نام کاربری یا رمز وارد شده اشتباه است. لطفا دوباره تلاش کنید.',
   'Username and password cannot be left blank.' => 'نام کاربری و رمز عبور می تواند خالی بماند.',
   'Web Address' => 'آدرس وب',
+  'Add photo attachment' => 'اضافه کردن پیوست عکس',
+  'Add file attachment' => 'اضافه کردن فایل پیوست',
 );

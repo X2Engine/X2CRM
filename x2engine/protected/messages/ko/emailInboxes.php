@@ -60,4 +60,8 @@
   'Auto-log outbound emails' => '아웃 바운드 이메일을 자동 로그',
   'Auto-log inbound emails' => '인바운드 이메일을 자동 로그',
   'From' => '에서',
+  'Copy to Sent Folder' => '보낸 폴더로 복사',
+  'Disabled' => '장애인',
+  'Failed to associate message "{subject}" with {type} {model}' => '&quot;메시지를 연결하는 데 실패 {subject} 에&quot; {type} {model}',
+  'Message "{subject}" already associated with {type} {model}' => '메시지 &quot; {subject} &quot;이미와 관련된 {type} {model}',
 );

@@ -24,4 +24,6 @@
   'The username or password you entered is incorrect. Please try again.' => 'שם המשתמש או הסיסמה שהכנסת אינם נכונים. בבקשה נסה שוב.',
   'Username and password cannot be left blank.' => 'שם משתמש וסיסמא לא יכולים להישאר ריקים.',
   'Web Address' => 'כתובת אינטרנט',
+  'Add photo attachment' => 'להוסיף תמונה מצורפת',
+  'Add file attachment' => 'הוספת קובץ מצורף',
 );

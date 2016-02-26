@@ -247,7 +247,6 @@ class X2TranslationBehaviorTest extends X2TestCase {
     }
     
     public function testGetUntranslatedText(){
-        //$this->markTestSkipped();
         $cmpb = $this->instantiate();
         $message = 'This\'s a test of untranslated text.';
         
@@ -265,9 +264,11 @@ class X2TranslationBehaviorTest extends X2TestCase {
     }
     
     public function testTranslateMessage(){
-        $this->markTestSkipped('By default skip this test because it makes a call to a billable Google API');
+        if(!X2_THOROUGH_TESTING){
+            $this->markTestSkipped('By default skip this test because it makes a call to a billable Google API');
+        }
         if(!file_exists(Yii::app()->basePath .'/config/googleApiKey.php')){
-            $this->markTestSkipped();
+            $this->markTestIncomplete('Google API key required to run this test');
         }
         $cmpb = $this->instantiate();
         
@@ -328,9 +329,11 @@ class X2TranslationBehaviorTest extends X2TestCase {
     }
     
     public function testUpdateTranslations(){
-        $this->markTestSkipped('By default skip this test because it makes a call to a billable Google API');
+        if(!X2_THOROUGH_TESTING){
+            $this->markTestSkipped('By default skip this test because it makes a call to a billable Google API');
+        }
         if(!file_exists(Yii::app()->basePath .'/config/googleApiKey.php')){
-            $this->markTestSkipped();
+            $this->markTestIncomplete('Google API key required to run this test');
         }
         $cmpb = $this->instantiate();
         $appFile = Yii::app()->basePath.'/messages/ja/app.php';
@@ -396,7 +399,7 @@ class X2TranslationBehaviorTest extends X2TestCase {
      * once it's associated function is modified
      */
     public function testMergeCustomLanguagePack(){
-        $this->markTestSkipped();
+        $this->markTestIncomplete();
     }
     
     public function testMergeCustomTranslations(){

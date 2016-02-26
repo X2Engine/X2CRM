@@ -90,6 +90,7 @@ if(empty($data->type)){
     <div class="icon <?php echo $iconType; ?>">
     <div class="stacked-icon"></div>
     </div>
+<div class='history-content-container'>
     <div class="header">
 <?php
 
@@ -207,7 +208,7 @@ if(empty($data->type) || $data->type == 'weblead'){
     <div class="description">
 <?php
 if($type == 'attachment' && $data->completedBy != 'Email') {
-    echo Media::attachmentActionText(Yii::app()->controller->convertUrls($data->actionDescription), true, true);
+    echo Media::attachmentActionText($data, true, true);
 } else if($type == 'workflow'){
     if($data->complete == 'Yes'){
         echo ' <b>'.Yii::t('workflow', 'Completed').'</b> '.Formatter::formatLongDateTime($data->completeDate);
@@ -299,6 +300,8 @@ if($type == 'attachment' && $data->completedBy != 'Email') {
         }
         ?>
     </div>
+
+</div>
 
 </div>
 

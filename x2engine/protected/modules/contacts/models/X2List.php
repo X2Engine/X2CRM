@@ -868,12 +868,19 @@ class X2List extends X2Model {
         if($this->type == 'dynamic'){
             $this->criteriaInput = array();
             foreach(array('attribute', 'comparison', 'value') as $property){
-                if(isset($values[$property]))
+                if(isset($values[$property])){
                     $this->criteriaInput[$property] = $values[$property];
+                } else {
+                    $this->criteriaInput[$property] = array();
+                }
             }
-            $criteria = array_combine ($this->criteriaInput['attribute'], $this->criteriaInput['value']);
-            if (array_key_exists ('tags', $criteria) && empty($criteria['tags'])) {
-                $this->addError ('tags', Yii::t ('contacts', 'Tag list must be non-empty'));
+            if(count($this->criteriaInput['attribute']) !== count($this->criteriaInput['value'])){
+                $this->addError('', Yii::t('contacts','Invalid list criteria.'));
+            }else{
+                $criteria = array_combine ($this->criteriaInput['attribute'], $this->criteriaInput['value']);
+                if (array_key_exists ('tags', $criteria) && empty($criteria['tags'])) {
+                    $this->addError ('tags', Yii::t ('contacts', 'Tag list must be non-empty'));
+                }
             }
         }
         parent::setAttributes($values, $safeOnly);

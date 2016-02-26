@@ -64,4 +64,5 @@
   'Top Menu Bar Logo' => 'Top Menu Bar Λογότυπο',
   'Login Screen Logo' => 'Είσοδος λογότυπο οθόνης',
   'Tag list must be non-empty' => 'Λίστα ετικετών πρέπει να είναι μη-κενή',
+  'Invalid list criteria.' => 'Μη έγκυρη κριτήρια λίστα.',
 );

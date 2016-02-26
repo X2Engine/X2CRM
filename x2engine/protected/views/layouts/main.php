@@ -193,7 +193,7 @@ usort ($modules, function ($a, $b) {
 $defaultAction = 'index';
 
 foreach($modules as $moduleItem){
-    if(!(($isAdmin || $moduleItem->adminOnly == 0) && $moduleItem->name != 'users')){
+    if($isGuest || !(($isAdmin || $moduleItem->adminOnly == 0) && $moduleItem->name != 'users')){
         continue;
     }
     if ($moduleItem->name === 'document') { // legacy module type

@@ -8,7 +8,7 @@ if (file_exists(__DIR__ . DIRECTORY_SEPARATOR . 'vendor' . DIRECTORY_SEPARATOR .
 }
 $yiit=implode(DIRECTORY_SEPARATOR,array(__DIR__,'..','..','framework','yiit.php'));
 $config=require_once(implode(DIRECTORY_SEPARATOR,array(__DIR__,'..','config','test.php')));
-
+PHPUnit_Extensions_SeleniumTestCase::shareSession(true);
 // Some last-minute modifications (for unit testing only)
 $config['params']['noSession'] = true;
 require_once($yiit);

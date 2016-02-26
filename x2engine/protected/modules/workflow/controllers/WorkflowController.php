@@ -756,13 +756,16 @@ class WorkflowController extends x2base {
     public function actionGetStages() {
         if(isset($_GET['id'])) {
             $stages = Yii::app()->db->createCommand()
-                ->select('name')
+                ->select('id, name')
                 ->from('x2_workflow_stages')
                 ->where('workflowId=:id',array(':id'=>$_GET['id']))
                 ->order('id ASC')
-                ->queryColumn();
-
-            echo CJSON::encode($stages);
+                ->queryAll();
+            $ret = array();
+            foreach($stages as $stage){
+                $ret[$stage['id']] = $stage['name'];
+            }
+            echo CJSON::encode($ret);
         }
     }
     

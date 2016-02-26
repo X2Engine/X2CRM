@@ -54,8 +54,11 @@ $this->widget('zii.widgets.grid.CGridView', array(
 			'class'=>'x2-button right',
             'id' => 'clear-all-button',
 			'submit'=>array('/notifications/deleteAll'),
-			'confirm'=>Yii::t('app','Permanently delete all notifications?'
-		)))
+			'confirm'=>Yii::t('app','Permanently delete all notifications?'),
+			'params'=>array (
+                'YII_CSRF_TOKEN' => Yii::app()->request->csrfToken,
+            )
+		))
 		.'<div class="title-bar right">{summary}</div></div>{items}{pager}',
     'summaryText' => Yii::t('app', '<b>{start}&ndash;{end}</b> of <b>{count}</b>')
     .'<div class="form no-border" style="display:inline;"> '

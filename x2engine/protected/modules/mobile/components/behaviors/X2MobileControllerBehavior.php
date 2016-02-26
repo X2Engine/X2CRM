@@ -35,6 +35,7 @@
  *****************************************************************************************/
 
 Yii::import ('application.components.behaviors.*');
+Yii::import ('application.modules.mobile.components.behaviors.*');
 Yii::import ('application.modules.mobile.components.actions.*');
 Yii::import ('application.modules.mobile.*');
 Yii::import ('application.modules.mobile.models.*');
@@ -52,13 +53,36 @@ class X2MobileControllerBehavior extends X2ControllerBehavior {
     public $pathAliasBase = 'application.modules.mobile.';
 
     /**
-     * @var bool $includeActions
+     * @var bool $includeActions whether actions should be added to owner
      */
     public $includeActions = true; 
+
+    private $_pageDepth;
 
     public function hasMobileAction ($action) {
         $actions = $this->owner->actions ();
         return isset ($actions[$action]);
+    }
+
+    /**
+     * Depth along the application navigation tree. Used to determine whether a back button
+     * should be rendered in iOS.
+     */
+    public function getPageDepth () {
+        if (!isset ($this->_pageDepth)) {
+            $this->_pageDepth = isset ($this->owner->action->pageDepth) ? 
+                $this->owner->action->pageDepth : 0;
+        }
+        return $this->_pageDepth;
+    }
+
+    public function setPageDepth ($pageDepth) {
+        $this->_pageDepth = $pageDepth;
+    }
+
+    public function layoutHasTabs () {
+        return ((bool) $this->owner->asa ('X2MobileActionHistoryBehavior')) &&
+            $this->owner->action->getId () === 'mobileView';
     }
 
     private $_assetsUrl;
@@ -80,7 +104,7 @@ class X2MobileControllerBehavior extends X2ControllerBehavior {
 
     public function actions () {
         if ($this->owner instanceof MobileController || !$this->includeActions) return array ();
-        return array (
+        $actions = array (
             'mobileIndex' => array (
                 'class' => 'MobileIndexAction'
             ),
@@ -97,6 +121,14 @@ class X2MobileControllerBehavior extends X2ControllerBehavior {
                 'class' => 'MobileDeleteAction'
             ),
         );
+        foreach ($this->owner->behaviors () as $name => $config) {
+            if ($this->owner->asa ($name) && 
+                $this->owner->asa ($name) instanceof X2MobileExtraActionsBehavior) {
+                
+                $actions = array_merge ($actions, $this->owner->asa ($name)->extraActions ());
+            }
+        }
+        return $actions;
     }
 
     public function beforeAction ($action) {
@@ -111,7 +143,8 @@ class X2MobileControllerBehavior extends X2ControllerBehavior {
         Yii::app()->params->isMobileApp = true;
 
         // fix profile linkable behavior since model was instantiated before action
-        if (!preg_match (
+        if (Yii::app()->params->profile &&
+            !preg_match (
             '/\/mobileView$/',
             Yii::app()->params->profile->asa ('X2LinkableBehavior')->viewRoute)) {
 

@@ -44,14 +44,6 @@ Yii::import('application.components.util.*');
  * @author Demitri Morgan <demitri@x2engine.com>
  */
 class UpdaterBehaviorTest extends FileOperTestCase {
-    /**
-     * - Set to 0 to skip all tests that require reloading the database (fastest)
-     * - Set to 1 to perform backup/restore tests specifically, but no higher-level tests.
-     * - Set to 2 to perform all updater/upgrader tests (which run backup/restore
-     *      operations), but not backup tests specifically (it's assumed they work when
-     *      the test level is set to 2)
-     */
-    const TEST_LEVEL = 2;
 
     private $_admin;
 
@@ -412,166 +404,6 @@ class UpdaterBehaviorTest extends FileOperTestCase {
             // files don't end up multiplying like bunnies:
             $this->resetAfterChanges($ube,$e);
         }
-    }
-
-    /**
-     * Runs all the actions to perform tests on the database. Not named as a test
-     * method to allow easier disabling 
-     * "testEnactChanges" to make it easier to disable
-     *
-     * @todo UPDATE THIS ENTIRE FUNCTION SO THAT IT REFLECT THE CHANGES AS NECESSARY
-     *  THAT INCLUDES THE RUNNING OF UPDATE MIGRATION SCRIPTS
-     * 
-     * @throws PHPUnit_Framework_AssertionFailedError 
-     */
-    public function assertEnactChanges(){
-        $ube = $this->instantiateUBe(array(
-            'scenario'=>'update',
-            'version'=>'999',
-            'edition'=>'opensource'
-        ));
-        // We're going to construct it so that it just passes all the checks for
-        // compatibility and whatnot, because *those checks are covered by other
-        // test methods*.
-        $manifest = array(
-            'fromVersion' => '999',
-            'targetVersion' => '1000',
-            'updaterVersion' => '1000',
-            'buildDate' => '999999999999',
-            'fromEdition' => 'opensource',
-            'targetEdition' => 'opensource',
-            'fileList' => array(), // applyFiles is already covered in another
-            // test case and we don't want to deal with hunting down and
-            // resetting stray files that are modified by this test
-            'deletionList' => array(), // ditto
-            'scenario' => 'update',
-            'data' => array(
-                array(
-                    'fileList' => array(),
-                    'deletionList' => array(),
-                    'sqlList' => array(),
-                    'sqlForce' => array(),
-                    'version' => '1000',
-                    'edition' => 'opensource',
-                    'migrationScripts' => array(), // running migration scripts covered in testRunMigrationScripts
-                ),
-            )
-        );
-        $lockFile = $ube->lockFile;
-        if(file_exists($lockFile))
-            unlink($lockFile);
-        
-        // Prepare the database:
-        $this->setupTestTables();
-        $sqlToRun = array();
-        foreach($this->testTables as $type => $tables){ // Compose update SQL
-            if($type == 'new'){
-                foreach($tables as $table){
-                    $sqlToRun[] = $this->createTable($table);
-                }
-            }
-            if($type == 'drop'){
-                foreach($tables as $table){
-                    $sqlToRun[] = "DROP TABLE {$table['name']}";
-                }
-            }
-            foreach($tables as $table){
-                if(array_key_exists('newColumns', $table))
-                    $sqlToRun[] = $this->addColumns($table);
-            }
-        }
-
-        $sqlToRun[] = 'INVALID SQL INVALID SQL INVALID SQL';
-
-        $manifest['data'][0]['sqlList'] = $sqlToRun;
-        $ube->manifest = $manifest;
-        $ube->version = $manifest['fromVersion'];
-        $ube->edition = $manifest['fromEdition'];
-
-        // Back up configuration (it will be overwritten in the test, eventually)
-        $this->configFile = implode(DIRECTORY_SEPARATOR,array($ube->webRoot,'protected','config','X2Config.php'));
-        copy($this->configFile,"{$this->configFile}.bak");
-        $ube->regenerateConfig($manifest['fromVersion'],$manifest['updaterVersion'],$manifest['buildDate']);
-
-        // Make the backup (expected to happen before running enactChanges):
-        $ube->makeDatabaseBackup();
-
-        // Make a copy that won't get deleted until later (because we can use it
-        // to rewind after each test):
-        $dbBackupFile = implode(DIRECTORY_SEPARATOR,array($ube->webRoot,'protected','data',UpdaterBehavior::BAKFILE));
-        copy($dbBackupFile, "$dbBackupFile.bak");
-
-        // Test the database failure recovery mechanism (the last line of SQL
-        // currently in sqlList should fail).
-        //
-        // Fake the checksums (so it ignores the bad files; it will throw an 
-        // exception as it should, and we already know it works as it should in
-        // that regard; we just need to get it past that point)
-        $this->prereq($ube,'checksums with actual files');
-        $ube->checkSums = array_intersect_key($ube->checkSums,array('manifest.json'=>$ube->checkSums['manifest.json']));
-        
-        try{
-            $this->obStart();
-            $ube->enactChanges(true);
-            $this->obEndClean();
-        }catch(Exception $e){
-            $this->assertEquals(UpdaterBehavior::ERR_DATABASE, $e->getCode(),"Wrong error code thrown in an exception thrown by enactChanges. The message was: ".$e->getMessage());
-        }
-        $this->assertChangesReverted($ube);
-        $this->assertFileNotExists($lockFile, "Failed asserting that the lock file was deleted after a failed update.");
-
-        // Test exiting with a lock file. It should not exist at this point.
-        $now = time();
-        file_put_contents($lockFile, $now);
-        $exc = false;
-        try {
-            $this->obStart();
-            $ube->enactChanges(true);
-            $this->obEndClean();
-        } catch (Exception $e) {
-            $this->assertEquals(UpdaterBehavior::ERR_ISLOCKED,$e->getCode(),"enactChanges didn't throw an exception with the appropriate code. Message: ".$e->getMessage());
-            $exc = true;
-        }
-        $this->assertTrue($exc,'enactChanges did not throw exception upon finding the lockfile');
-        unlink($lockFile);
-
-        // Now, test the updater itself (going all the way through).
-        // Begin by removing the invalid SQL:
-        array_pop($manifest['data'][0]['sqlList']);
-        $ube->manifest = $manifest;
-
-        $this->obStart();
-        $ube->enactChanges(true);
-        $this->obEndClean();
-        $this->assertChangesApplied($ube);
-        $this->assertFileNotExists($lockFile, "Failed asserting that the lock file was deleted after a successful update.");
-        $this->resetAfterChanges($ube);
-
-        // Prepare files:
-        $ube->makeDatabaseBackup();
-        $this->removeTestDirs(false);
-
-        $this->prereq($ube,'checksums with actual files');
-        // Test successful upgrade (updates and upgrades are identical in the
-        // initial stage, where database changes are applied, and thus there
-        // is no need to test a second time whether the databse restore process
-        // works properly in an upgrade):
-        $admin = $this->getAdmin();
-        $edition = $admin->edition;
-        $unique_id = $admin->unique_id;
-        $this->obStart();
-        $ube->enactChanges(true);
-        $this->obEndClean();
-        $this->assertChangesApplied($ube);
-        $this->resetAfterChanges($ube);
-        // Reset edition/unique_id:
-        $admin->edition = $edition;
-        $admin->unique_id = $unique_id;
-        $admin->save();
-
-        // All done.
-        $this->dropTestTables();
-        $this->removeTestDirs();
     }
 
     /**
@@ -976,17 +808,161 @@ class UpdaterBehaviorTest extends FileOperTestCase {
     }
 
     /**
-     * Test the enactChanges method.
+     * Runs all the actions to perform tests on the database.
      *
-     * This is a very time-consuming test that involves dropping and reloading the
-     * database multiple times, and so only if {@link TEST_LEVEL} is set to 2 will
-     * the test actually run.
+     * @todo UPDATE THIS ENTIRE FUNCTION SO THAT IT REFLECT THE CHANGES AS NECESSARY
+     *  THAT INCLUDES THE RUNNING OF UPDATE MIGRATION SCRIPTS
+     * 
+     * @throws PHPUnit_Framework_AssertionFailedError 
      */
     public function testEnactChanges(){
-        if(self::TEST_LEVEL == 2)
-            $this->assertEnactChanges();
-        else
-            $this->markTestSkipped('Skipping; TEST_LEVEL not set to 2 (this is a very slow test).');
+        $ube = $this->instantiateUBe(array(
+            'scenario'=>'update',
+            'version'=>'999',
+            'edition'=>'opensource'
+        ));
+        // We're going to construct it so that it just passes all the checks for
+        // compatibility and whatnot, because *those checks are covered by other
+        // test methods*.
+        $manifest = array(
+            'fromVersion' => '999',
+            'targetVersion' => '1000',
+            'updaterVersion' => '1000',
+            'buildDate' => '999999999999',
+            'fromEdition' => 'opensource',
+            'targetEdition' => 'opensource',
+            'fileList' => array(), // applyFiles is already covered in another
+            // test case and we don't want to deal with hunting down and
+            // resetting stray files that are modified by this test
+            'deletionList' => array(), // ditto
+            'scenario' => 'update',
+            'data' => array(
+                array(
+                    'fileList' => array(),
+                    'deletionList' => array(),
+                    'sqlList' => array(),
+                    'sqlForce' => array(),
+                    'version' => '1000',
+                    'edition' => 'opensource',
+                    'migrationScripts' => array(), // running migration scripts covered in testRunMigrationScripts
+                ),
+            )
+        );
+        $lockFile = $ube->lockFile;
+        if(file_exists($lockFile))
+            unlink($lockFile);
+        
+        // Prepare the database:
+        $this->setupTestTables();
+        $sqlToRun = array();
+        foreach($this->testTables as $type => $tables){ // Compose update SQL
+            if($type == 'new'){
+                foreach($tables as $table){
+                    $sqlToRun[] = $this->createTable($table);
+                }
+            }
+            if($type == 'drop'){
+                foreach($tables as $table){
+                    $sqlToRun[] = "DROP TABLE {$table['name']}";
+                }
+            }
+            foreach($tables as $table){
+                if(array_key_exists('newColumns', $table))
+                    $sqlToRun[] = $this->addColumns($table);
+            }
+        }
+
+        $sqlToRun[] = 'INVALID SQL INVALID SQL INVALID SQL';
+
+        $manifest['data'][0]['sqlList'] = $sqlToRun;
+        $ube->manifest = $manifest;
+        $ube->version = $manifest['fromVersion'];
+        $ube->edition = $manifest['fromEdition'];
+
+        // Back up configuration (it will be overwritten in the test, eventually)
+        $this->configFile = implode(DIRECTORY_SEPARATOR,array($ube->webRoot,'protected','config','X2Config.php'));
+        copy($this->configFile,"{$this->configFile}.bak");
+        $ube->regenerateConfig($manifest['fromVersion'],$manifest['updaterVersion'],$manifest['buildDate']);
+
+        // Make the backup (expected to happen before running enactChanges):
+        $ube->makeDatabaseBackup();
+
+        // Make a copy that won't get deleted until later (because we can use it
+        // to rewind after each test):
+        $dbBackupFile = implode(DIRECTORY_SEPARATOR,array($ube->webRoot,'protected','data',UpdaterBehavior::BAKFILE));
+        copy($dbBackupFile, "$dbBackupFile.bak");
+
+        // Test the database failure recovery mechanism (the last line of SQL
+        // currently in sqlList should fail).
+        //
+        // Fake the checksums (so it ignores the bad files; it will throw an 
+        // exception as it should, and we already know it works as it should in
+        // that regard; we just need to get it past that point)
+        $this->prereq($ube,'checksums with actual files');
+        $ube->checkSums = array_intersect_key($ube->checkSums,array('manifest.json'=>$ube->checkSums['manifest.json']));
+        
+        try{
+            $this->obStart();
+            $ube->enactChanges(true);
+            $this->obEndClean();
+        }catch(Exception $e){
+            $this->assertEquals(UpdaterBehavior::ERR_DATABASE, $e->getCode(),"Wrong error code thrown in an exception thrown by enactChanges. The message was: ".$e->getMessage());
+        }
+        $this->assertChangesReverted($ube);
+        $this->assertFileNotExists($lockFile, "Failed asserting that the lock file was deleted after a failed update.");
+
+        // Test exiting with a lock file. It should not exist at this point.
+        $now = time();
+        file_put_contents($lockFile, $now);
+        $exc = false;
+        try {
+            $this->obStart();
+            $ube->enactChanges(true);
+            $this->obEndClean();
+        } catch (Exception $e) {
+            $this->assertEquals(UpdaterBehavior::ERR_ISLOCKED,$e->getCode(),"enactChanges didn't throw an exception with the appropriate code. Message: ".$e->getMessage());
+            $exc = true;
+        }
+        $this->assertTrue($exc,'enactChanges did not throw exception upon finding the lockfile');
+        unlink($lockFile);
+
+        // Now, test the updater itself (going all the way through).
+        // Begin by removing the invalid SQL:
+        array_pop($manifest['data'][0]['sqlList']);
+        $ube->manifest = $manifest;
+
+        $this->obStart();
+        $ube->enactChanges(true);
+        $this->obEndClean();
+        $this->assertChangesApplied($ube);
+        $this->assertFileNotExists($lockFile, "Failed asserting that the lock file was deleted after a successful update.");
+        $this->resetAfterChanges($ube);
+
+        // Prepare files:
+        $ube->makeDatabaseBackup();
+        $this->removeTestDirs(false);
+
+        $this->prereq($ube,'checksums with actual files');
+        // Test successful upgrade (updates and upgrades are identical in the
+        // initial stage, where database changes are applied, and thus there
+        // is no need to test a second time whether the databse restore process
+        // works properly in an upgrade):
+        $admin = $this->getAdmin();
+        $edition = $admin->edition;
+        $unique_id = $admin->unique_id;
+        $this->obStart();
+        $ube->enactChanges(true);
+        $this->obEndClean();
+        $this->assertChangesApplied($ube);
+        $this->resetAfterChanges($ube);
+        // Reset edition/unique_id:
+        $admin->edition = $edition;
+        $admin->unique_id = $unique_id;
+        $admin->save();
+
+        // All done.
+        $this->dropTestTables();
+        $this->removeTestDirs();
     }
 
     public function testEnactChangesFtp() {
@@ -1260,25 +1236,21 @@ class UpdaterBehaviorTest extends FileOperTestCase {
      */
     public function testMakeDatabaseBackup(){
         $ube = $this->instantiateUBe();
-        if(self::TEST_LEVEL == 1){
-            $this->setupTestTables();
-            $ube->makeDatabaseBackup();
-            foreach($this->testTables['new'] as $table)
-                Yii::app()->db->createCommand($this->createTable($table))->execute();
-            $ube->restoreDatabaseBackup();
-            foreach($this->testTables as $type => $tables){
-                if($type != 'new'){
-                    foreach($tables as $table)
-                        $this->assertTableExists($table['name']);
-                }else{
-                    foreach($tables as $table)
-                        $this->assertTableNotExists($table['name']);
-                }
+        $this->setupTestTables();
+        $ube->makeDatabaseBackup();
+        foreach($this->testTables['new'] as $table)
+            Yii::app()->db->createCommand($this->createTable($table))->execute();
+        $ube->restoreDatabaseBackup();
+        foreach($this->testTables as $type => $tables){
+            if($type != 'new'){
+                foreach($tables as $table)
+                    $this->assertTableExists($table['name']);
+            }else{
+                foreach($tables as $table)
+                    $this->assertTableNotExists($table['name']);
             }
-            $this->dropTestTables();
-        }else{
-            $this->markTestSkipped('Skipping; TEST_LEVEL not set to 1 (this is a slow test).');
         }
+        $this->dropTestTables();
 
     }
 

@@ -60,4 +60,8 @@
   'Auto-log outbound emails' => 'Авто-авторизуйтесь исходящих электронных писем',
   'Auto-log inbound emails' => 'Авто-авторизуйтесь входящие электронные письма',
   'From' => 'Из',
+  'Copy to Sent Folder' => 'Копировать в папку Отправленные',
+  'Disabled' => 'Отключено',
+  'Failed to associate message "{subject}" with {type} {model}' => 'Не удалось связать сообщение &quot; {subject} &quot; с {type} {model}',
+  'Message "{subject}" already associated with {type} {model}' => 'Сообщение &quot; {subject} &quot; уже связан с {type} {model}',
 );

@@ -448,7 +448,8 @@ class Formatter {
      * @param integer $start Beginning of the interval
      * @param integer $duration Length of the interval
      */
-    public static function formatTimeInterval($start,$end,$style=null) {
+    public static function formatTimeInterval(
+        $start,$end,$style=null, $dateFormat='long', $timeFormat='medium') {
         $duration = $end-$start;
         $decHours = $duration/3600;
         $intHours = (int) $decHours;
@@ -459,20 +460,22 @@ class Formatter {
         }
         // Custom format
         return strtr($style, array(
-                    '{decHours}' => sprintf('%0.2f', $decHours),
-                    '{hoursColMinutes}' => sprintf('%d:%d',$intHours,$intMinutes),
-                    '{hours}' => $intHours,
-                    '{minutes}' => $intMinutes,
-                    '{hoursMinutes}' => $intHours ? 
-                        sprintf('%d %s %d %s', $intHours, Yii::t('app', 'hours'), 
-                            $intMinutes, Yii::t('app', 'minutes')) : 
-                        sprintf('%d %s', $intMinutes, Yii::t('app', 'minutes')),
-                    '{quarterDecHours}' => sprintf(
-                        '%0.2f '.Yii::t('app', 'hours'), 
-                        round($duration / 900.0) * 0.25),
-                    '{start}' => self::formatCompleteDate($start),
-                    '{end}' => self::formatCompleteDate($end)
-                ));
+            '{decHours}' => sprintf('%0.2f', $decHours),
+            '{hoursColMinutes}' => sprintf('%d:%d',$intHours,$intMinutes),
+            '{hours}' => $intHours,
+            '{minutes}' => $intMinutes,
+            '{hoursMinutes}' => $intHours ? 
+                sprintf('%d %s %d %s', $intHours, Yii::t('app', 'hours'), 
+                    $intMinutes, Yii::t('app', 'minutes')) : 
+                sprintf('%d %s', $intMinutes, Yii::t('app', 'minutes')),
+            '{quarterDecHours}' => sprintf(
+                '%0.2f '.Yii::t('app', 'hours'), 
+                round($duration / 900.0) * 0.25),
+            '{start}' => Yii::app()->dateFormatter->formatDateTime(
+                $start, $dateFormat, $timeFormat),
+            '{end}' => Yii::app()->dateFormatter->formatDateTime(
+                $end, $dateFormat, $timeFormat),
+        ));
     }
 
     /**

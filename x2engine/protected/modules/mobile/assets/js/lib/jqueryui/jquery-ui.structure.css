@@ -91,6 +91,10 @@
 	width: 100%;
 	height: 100%;
 }
+.ui-draggable-handle {
+	-ms-touch-action: none;
+	touch-action: none;
+}
 .ui-datepicker {
 	width: 17em;
 	padding: .2em .2em 0;

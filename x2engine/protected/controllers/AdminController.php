@@ -2501,6 +2501,7 @@ class AdminController extends X2Controller {
         $auth->createOperation($moduleName . 'DeleteNote');  // Full Access
         $auth->createOperation($moduleName . 'Search');  // Minimum Requirements
 
+        $auth->createOperation($moduleName . 'MobileActionHistoryPublish'); 
         $auth->createOperation($moduleName . 'MobileView'); 
         $auth->createOperation($moduleName . 'MobileCreate'); 
         $auth->createOperation($moduleName . 'MobileUpdate'); 
@@ -2552,12 +2553,14 @@ class AdminController extends X2Controller {
         $roleReadOnlyAccess->addChild($moduleName . 'MobileView');
         $roleReadOnlyAccess->addChild($moduleName . 'QuickView');
         $roleReadOnlyAccess->addChild($moduleName . 'InlineEmail');
+        $roleReadOnlyAccess->addChild($moduleName . 'MobileActionHistoryPublish');
 
         // Private Read Only
         $rolePrivateReadOnlyAccess->addChild($moduleName . 'MinimumRequirements');
         $rolePrivateReadOnlyAccess->addChild($moduleName . 'ViewPrivate');
         $rolePrivateReadOnlyAccess->addChild($moduleName . 'QuickView');
         $rolePrivateReadOnlyAccess->addChild($moduleName . 'InlineEmail');
+        $rolePrivateReadOnlyAccess->addChild($moduleName . 'MobileActionHistoryPublish');
 
         // Basic Access
         $roleBasicAccess->addChild($moduleName . 'MinimumRequirements');
@@ -2847,6 +2850,7 @@ class AdminController extends X2Controller {
         $auth->removeAuthItem($ucName . 'DeletePrivate');
 
         $auth->removeAuthItem($ucName . 'MobileView');
+        $auth->removeAuthItem($ucName . 'MobileActionHistoryPublish');
         $auth->removeAuthItem($ucName . 'QuickView');
         $auth->removeAuthItem($ucName . 'MobileIndex');
         $auth->removeAuthItem($ucName . 'MobileCreate');
@@ -3328,6 +3332,7 @@ class AdminController extends X2Controller {
 
             
 
+            $this->recordsImported = 0;
             for ($i = 0; $i < $count; $i++) {
                 // Loop through and start importing
                 $csvLine = fgetcsv($fp, 0, $this->importDelimeter, $this->importEnclosure);
@@ -3368,7 +3373,7 @@ class AdminController extends X2Controller {
                         if (isset($importMap[$attribute]) &&
                                 ($model->hasAttribute($importMap[$attribute]) || $isActionText)) {
                             $model = $this->importRecordAttribute ($modelName, $model, $importMap[$attribute], $importAttributes[$attribute]);
-                            $_POST[$importMap[$attribute]] = $model->$importMap[$attribute];
+                            $_POST[$importMap[$attribute]] = $model->{$importMap[$attribute]};
                         }
                     }
                     $this->fixupImportedAttributes ($modelName, $model);
@@ -3377,6 +3382,7 @@ class AdminController extends X2Controller {
                         $importedIds = $this->saveImportedModel ($model, $modelName, $importedIds);
                     else
                         $this->markFailedRecord ($modelName, $model, $csvLine, $metaData);
+                    $this->recordsImported++;
                 } else {
                     $this->finishImportBatch ($modelName, $mappedId, true);
                     return;

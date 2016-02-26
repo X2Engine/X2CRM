@@ -60,4 +60,8 @@
   'Auto-log outbound emails' => 'Auto-log מיילים יוצאים',
   'Auto-log inbound emails' => 'Auto-log מיילים נכנסים',
   'From' => 'מִן',
+  'Copy to Sent Folder' => 'העתק כדי שנשלח',
+  'Disabled' => 'נָכֶה',
+  'Failed to associate message "{subject}" with {type} {model}' => 'נכשל נסיון לשייך הודעה &quot; {subject} &quot; עם {type} {model}',
+  'Message "{subject}" already associated with {type} {model}' => 'הודעה &quot; {subject} &quot; כבר הקשורים {type} {model}',
 );

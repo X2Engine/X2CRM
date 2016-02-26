@@ -45,7 +45,9 @@ function Main (argsDict) {
     var defaultArgs = {
         DEBUG: x2.DEBUG && false,
         controllers: {},
-        translations: {}
+        translations: {},
+        platform: 'Android',
+        pageDepth: 0
     };
     auxlib.applyArgs (this, defaultArgs, argsDict);
     this.prevPage$ = null;
@@ -82,11 +84,17 @@ Main.prototype.getController = function () {
 
 Main.prototype.updateHeader = function () {
     var that = this;
-    that.DEBUG && console.log ('activePage = ');
-    that.DEBUG && console.log ($.mobile.activePage.attr ('id'));
 
-    that.showLeftMenuButton$ = $('#header .show-left-menu-button');
-    that.showLeftMenuButton$.toggle (!x2.isGuest);
+    if (this.platform === 'iOS') {
+        that.showLeftMenuButton$ = $('#header .show-left-menu-button');
+        that.showLeftMenuButton$.toggle (!x2.isGuest && that.pageDepth === 0);
+        that.backButton$ = $('#header .header-back-button');
+        that.backButton$.toggle (that.pageDepth > 0);
+    } else {
+        that.showLeftMenuButton$ = $('#header .show-left-menu-button');
+        that.showLeftMenuButton$.toggle (!x2.isGuest);
+    }
+
 
     that.DEBUG && console.log ('that.getController () = ');
     that.DEBUG && console.log (that.getController ());
@@ -205,7 +213,12 @@ Main.prototype.refreshContent = function () {
         //console.log ('that.activePage$ = ');
         //console.log (activePage$);
 
-        var newContentInner$ = $(this).detach ().html ();
+        if ($(this).attr ('data-x2-replace-on-refresh')) {
+            var newContentInner$ = $(this).detach ();
+            newContentInner$.removeClass ('refresh-content');
+        } else {
+            var newContentInner$ = $(this).detach ().html ();
+        }
         //console.log ('newContentInner$ = ');
         //console.log (newContentInner$);
 
@@ -328,10 +341,15 @@ Main.prototype.footerFix = function () {
     // add margin to bottom of content in order to prevent fixed footer from obscuring page
     this.onPageShow (function () {
         $('.ui-content').on ('scroll.footerFix', function () {
-            if ($('#footer').length && $('#footer').is (':visible'))
+            if ($('#footer').length && $('#footer').is (':visible')) {
                 $(this).attr ('style', 'margin-bottom: ' + $('#footer').outerHeight () + 'px;');
-            $.mobile.activePage.find ('.nano-pane').attr ('style', 
-                'margin-bottom: ' + $('#footer').outerHeight () + 'px;');
+                $.mobile.activePage.find ('.nano-pane').attr ('style', 
+                    'margin-bottom: ' + $('#footer').outerHeight () + 'px;');
+            } else {
+                $(this).attr ('style', 'margin-bottom: 0px;');
+                $.mobile.activePage.find ('.nano-pane').attr ('style', 
+                    'margin-bottom: 0px;');
+            }
 //            var slider$ = $.mobile.activePage.find ('.nano-slider');
 //            if (!slider$.attr ('x2-slider-height')) {
 //                slider$.attr ('x2-slider-height', slider$.height ());
@@ -364,6 +382,10 @@ Main.prototype.alert = function (message, title) {
 };
 
 Main.prototype.confirm = function (message, title, buttons, callback) {
+    if (x2.UNIT_TESTING) {
+        callback ();
+        return;
+    }
      
         if (window.confirm (title + "\n" + message)) {
             callback ();
@@ -429,6 +451,23 @@ Main.prototype.getBaseUrl = function () {
      
 };
 
+/**
+ * Fixes fixed corner button rendering issues in iOS (related to scrolling) and more obscure 
+ * rendering issue on action history screen (button animation causes tab labels to disappear)
+ */
+Main.prototype.fixedCornerButtonFixes = function () {
+    this.onPageShow (function(){       
+        $.mobile.activePage.children ('.fixed-corner-button').remove ();
+        $.mobile.activePage.append ($.mobile.activePage.find ('.fixed-corner-button').detach ());
+    }); 
+};
+
+Main.prototype.setUpBackButton = function () {
+    $(document).on ('click', '#header .header-back-button', function () {
+        history.back (); 
+    });
+};
+
 Main.prototype.init = function () {
     var that = this;
     $(document).on ('pagecontainerbeforeload', function () {
@@ -443,6 +482,10 @@ Main.prototype.init = function () {
     this.setUpScrollBars (); 
     this.setUpOrientationChange (); 
     this.setUpLinkClick (); 
+    if (this.platform === 'iOS') {
+        this.setUpBackButton (); 
+    }
+    this.fixedCornerButtonFixes (); 
 };
 
 return Main;

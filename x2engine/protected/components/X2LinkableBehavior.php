@@ -88,15 +88,19 @@ class X2LinkableBehavior extends CActiveRecordBehavior {
         if (!isset($this->viewRoute)) {
             $this->viewRoute = $this->baseRoute;
         }
-        if (Yii::app()->params->isMobileApp) {
-            $this->viewRoute .= '/mobileView';
-        }
-
 
 		if(!isset($this->autoCompleteSource))
 			$this->autoCompleteSource = 
                 $this->baseRoute.'/getItems?modelType='.get_class ($this->owner);
 	}
+
+    public function getViewRoute () {
+        if (Yii::app()->params->isMobileApp) {
+            return $this->viewRoute . '/mobileView';
+        } else {
+            return $this->viewRoute;
+        }
+    }
 
     /**
      * Gets the {@link module} property.
@@ -121,10 +125,10 @@ class X2LinkableBehavior extends CActiveRecordBehavior {
         $url = null;
         // Use the controller
         if(Yii::app()->controller instanceof CController && !Yii::app()->controller instanceof ProfileController) {
-            $url = Yii::app()->controller->createAbsoluteUrl($this->viewRoute, array('id' => $this->owner->id));
+            $url = Yii::app()->controller->createAbsoluteUrl($this->getViewRoute (), array('id' => $this->owner->id));
         }
         if(empty($url)) { // Construct an absolute URL; no web request data available.
-            $url = Yii::app()->absoluteBaseUrl.'/index.php'.$this->viewRoute.'/'.$this->owner->id;
+            $url = Yii::app()->absoluteBaseUrl.'/index.php'.$this->getViewRoute ().'/'.$this->owner->id;
         }
         return $url;
     }
@@ -145,6 +149,7 @@ class X2LinkableBehavior extends CActiveRecordBehavior {
                 'Product',
                 'Quote',
                 'BugReports',
+                'Services',
             ), Yii::app()->db->createCommand ("
                 select name
                 from x2_modules

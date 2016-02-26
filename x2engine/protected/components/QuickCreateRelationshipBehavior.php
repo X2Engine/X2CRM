@@ -67,8 +67,7 @@ class QuickCreateRelationshipBehavior extends QuickCRUDBehavior {
         if (!isset (self::$_modelsWhichSupportQuickCreate)) {
             self::$_modelsWhichSupportQuickCreate = array_diff (
                 array_keys (X2Model::getModelNames()), 
-                    array ('Docs', 'Groups', 'Campaign', 'Media', 'Quote',
-                        'BugReports'));
+                    array ('Docs', 'Groups', 'Campaign', 'Media', 'Quote'));
             self::$_modelsWhichSupportQuickCreate[] = 'Actions';
         }
         $modelNames = self::$_modelsWhichSupportQuickCreate;

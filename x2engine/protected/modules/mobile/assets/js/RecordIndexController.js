@@ -72,10 +72,10 @@ RecordIndexController.prototype.setUpSearch = function () {
         }
     });
     searchInput$.focus (function () {
-        that.createButton$.hide ();
+        that.createButton$.parent ().hide ();
     });
     searchInput$.blur (function () {
-        that.createButton$.show ();
+        that.createButton$.parent ().show ();
     });
 
     searchBox$.find ('form').submit (function () {

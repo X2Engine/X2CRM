@@ -97,9 +97,10 @@
 				
 				// Create 'cancel' button
 				rater.append(
-                    /* x2modstart */          
+                    /* x2modstart */
 					control.cancel = $('<div class="rating-cancel"><a class="fa fa-minus-circle" title="' + control.cancel + '">' + '</a></div>')
-                    /* x2modend */ 
+                    /* x2modend */
+
 					.on('mouseover',function(){
 						$(this).rating('drain');
 						$(this).addClass('star-rating-hover');
@@ -119,12 +120,12 @@
 			}; // first element of group
 			
 			// insert rating star (thanks Jan Fanslau rev125 for blind support https://code.google.com/p/jquery-star-rating-plugin/issues/detail?id=125)
-            /* x2modstart */ 
+            /* x2modstart */
             // removed text value, added font awesome classes
 			var star = $('<div role="text" aria-label="'+ this.title +'" class="star-rating rater-'+ control.serial +'"><a class="fa fa-star-o" title="' + (this.title || this.value) + '">' + '</a></div>');
 			rater.append(star);
             /* x2modend */ 
-			
+
 			// inherit attributes from input element
 			if(this.id) star.attr('id', this.id);
 			if(this.className) star.addClass(this.className);
@@ -248,6 +249,7 @@
                 $(this).find ('a').removeClass ('fa-star-o');
             });
             /* x2modend */       
+
 		},// $.fn.rating.fill
 		
 		drain: function() { // drain all the stars.
@@ -271,6 +273,7 @@
 			// Set control value
 			var current = $( control.current );//? control.current.data('rating.input') : null );
 			var starson = current.length ? current.prevAll().addBack().filter('.rater-'+ control.serial) : null;
+
             /* x2modstart */ 
 			if(starson)	{
                 starson.addClass('star-rating-on');

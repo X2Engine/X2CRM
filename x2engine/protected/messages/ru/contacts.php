@@ -64,4 +64,5 @@
   'Top Menu Bar Logo' => 'Главное меню Бар Логотип',
   'Login Screen Logo' => 'Войти экране появляется логотип',
   'Tag list must be non-empty' => 'Список тегов должен быть не пустым',
+  'Invalid list criteria.' => 'Недействительные критерии список.',
 );

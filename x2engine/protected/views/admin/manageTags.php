@@ -55,7 +55,7 @@ $this->widget('zii.widgets.grid.CGridView', array(
             'name' => 'tag',
             'type' => 'raw',
             'value' => "CHtml::link(
-                \$data->tag, 
+                CHtml::encode(\$data->tag), 
                 array(
                     '/search/search',
                     'term'=>CHtml::encode (\$data->tag)

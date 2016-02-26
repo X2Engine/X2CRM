@@ -38,6 +38,7 @@ class MobileCreateAction extends MobileAction {
 
     public $pageClass = 'record-create';
     public $viewFile = 'recordCreate';
+    public $pageDepth = 1;
 
     public function run () {
         parent::beforeRun ();

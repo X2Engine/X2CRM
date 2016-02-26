@@ -86,13 +86,13 @@ class FileSystemObject {
 
     public function getLink() {
         if ($this->type === 'folder') {
-            return X2Html::link($this->name, '#', array(
+            return X2Html::link(CHtml::encode($this->name), '#', array(
                 'class'=>'folder-link pseudo-link',
                 'data-id'=>$this->objId,
             ));
         } else {
             return X2Html::link(
-                $this->name, 
+                CHtml::encode($this->name), 
                 Yii::app()->controller->createUrl('/docs/view', array('id' => $this->objId)));
         }
     }

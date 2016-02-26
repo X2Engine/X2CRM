@@ -523,8 +523,16 @@ class Profile extends X2ActiveRecord {
     // return $model->showSocialMedia;
     // }
 
-    public function getSignature($html = false){
 
+    public function getAttribute($name, $renderFlag = false, $makeLinks = false) {
+        if ($name === 'signature') {
+            return $this->getSignature ($renderFlag);
+        } else {
+            return parent::getAttribute ($name);
+        }
+    }
+
+    public function getSignature($html = false){
         $adminRule = Yii::app()->settings->emailUseSignature;
         $userRule = $this->emailUseSignature;
         $signature = '';

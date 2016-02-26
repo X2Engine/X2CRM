@@ -64,12 +64,11 @@ class X2CheckBoxColumn extends CCheckBoxColumn {
      * This method is Copyright (c) 2008-2014 by Yii Software LLC
      * http://www.yiiframework.com/license/ 
 	 */
-	public function renderHeaderCellContent()
+	public function getHeaderCellContent()
 	{
 		if(trim($this->headerTemplate)==='')
 		{
-			echo $this->grid->blankDisplay;
-			return;
+			return $this->grid->blankDisplay;
 		}
 
 		$item = '';
@@ -87,12 +86,10 @@ class X2CheckBoxColumn extends CCheckBoxColumn {
             /* x2modend */ 
 		else
 		{
-			ob_start();
-			parent::renderHeaderCellContent();
-			$item = ob_get_clean();
+			$item = parent::getHeaderCellContent();
 		}
 
-		echo strtr($this->headerTemplate,array(
+		return strtr($this->headerTemplate,array(
 			'{item}'=>$item,
 		));
 	}
@@ -101,12 +98,13 @@ class X2CheckBoxColumn extends CCheckBoxColumn {
 	 * Renders the data cell content.
 	 * This method renders a checkbox in the data cell.
 	 * @param integer $row the row number (zero-based)
-	 * @param mixed $data the data associated with the row
      * This method is Copyright (c) 2008-2014 by Yii Software LLC
      * http://www.yiiframework.com/license/ 
 	 */
-	protected function renderDataCellContent($row,$data)
+	public function getDataCellContent($row)
 	{
+
+		$data=$this->grid->dataProvider->data[$row];
 		if($this->value!==null)
 			$value=$this->evaluateExpression($this->value,array('data'=>$data,'row'=>$row));
 		elseif($this->name!==null)
@@ -134,7 +132,7 @@ class X2CheckBoxColumn extends CCheckBoxColumn {
         if (!isset ($options['id']))
         /* x2modend */ 
 		    $options['id']=$this->id.'_'.$row;
-		echo CHtml::checkBox($name,$checked,$options);
+		return CHtml::checkBox($name,$checked,$options);
 	}
 }
 

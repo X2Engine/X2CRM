@@ -55,4 +55,34 @@ $x2touch-icon-list-fa: (
        }
     }
 
+    $fa-map: (
+        ("action" "play-circle")
+        ("attachment" "paperclip")
+        ("complete" "play-circle")
+        ("email" "envelope")
+        ("email_quote" "envelope")
+        ("email_invoice" "envelope")
+        ("call" "phone")
+        ("note" "comment-o")
+        ("overdue" "" "exclamation")
+    );
+
+    $x2-map: (
+        ("workflow" "funnel")
+        ("time" "stopwatch")
+        ("quotes" "quotes")
+        ("campaignEmailOpened" "open-envelope")
+        ("emailOpened" "open-envelope")
+    );
+
+    $iconContainerWidth: 50px;
+    .action-history {
+        .record-list-item {
+            .icon {
+                @include generate-icons($fa-map);
+                @include generate-icons($x2-map, 'x2');
+            }
+        }
+    }
+
 }

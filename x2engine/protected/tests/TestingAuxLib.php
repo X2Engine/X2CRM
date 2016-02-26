@@ -79,19 +79,24 @@ class TestingAuxLib  {
     }
 
     public static function log ($str) {
+        $logMessage = print_r ($str, true);
         if(X2_TEST_DEBUG_LEVEL > 0){
-            /**/println("\n[".date ('H:i:s', time ())."] ".$str);
+            /**/println("\n[".date ('H:i:s', time ())."] ".$logMessage);
         }
+        Yii::log ($logMessage, 'info', 'system.test-output');
     }
 
     /**
      * Used to invoke methods which are protected or private.
      * @param string|object $classNameOrInstance
      * @param string $methodName 
-     * @return function Takes an array of arguments as a parameter and calls
-     *  the specified method with those arguments.
+     * @param function $wrapper will be passed reflection method and class name. Function should 
+     *  return another function which itself returns $method->invokeArgs (). Allows for more 
+     *  flexibile argument passing. Useful for cases where method expects references.
+     * @return function public, standalone version of specified method
      */
-    public static function setPublic ($classNameOrInstance, $methodName, $static=false) {
+    public static function setPublic (
+        $classNameOrInstance, $methodName, $static=false, $wrapper=null) {
         if (!$static && is_string ($classNameOrInstance)) {
             $class = new $classNameOrInstance ();
             $className = $classNameOrInstance;
@@ -104,9 +109,14 @@ class TestingAuxLib  {
         }
         $method = new ReflectionMethod ($className, $methodName);
         $method->setAccessible (TRUE);
-        return function () use ($method, $class) {
-            return $method->invokeArgs ($class, func_get_args ());
-        };
+
+        if ($wrapper) {
+            return $wrapper ($method, $class);
+        } else {
+            return function () use ($method, $class) {
+                return $method->invokeArgs ($class, func_get_args ());
+            };
+        }
     }
 
     public static function setPrivateProperty ($className, $propertyName, $value, $instance=null) {
@@ -119,6 +129,18 @@ class TestingAuxLib  {
             $reflectionProperty->setValue ($instance, $value);
         }
     }
+
+//    public static function getPrivateProperty ($className, $propertyName, $instance=null) {
+//        $relectionClass = new ReflectionClass ($className);
+//        $reflectionProperty = $relectionClass->getProperty ($propertyName);
+//        $reflectionProperty->setAccessible (true);
+//        if (!$instance) {
+//            return $reflectionProperty->getValue ();
+//        } else {
+//            return $reflectionProperty->getValue ($instance);
+//        }
+//    }
+
 
     /**
      * Log in with the specified credentials.
@@ -288,7 +310,18 @@ class TestingAuxLib  {
         self::setPrivateProperty (
             'CHttpRequest', '_scriptUrl', null, Yii::app()->request);
         self::setPrivateProperty (
+            'CHttpRequest', '_baseUrl', null, Yii::app()->request);
+        self::setPrivateProperty (
+            'CHttpRequest', '_hostInfo', null, Yii::app()->request);
+        self::setPrivateProperty (
             'CUrlManager', '_baseUrl', null, Yii::app()->getUrlManager ());
+        self::setPrivateProperty (
+            'ApplicationConfigBehavior', 
+            '_absoluteBaseUrl', 
+            Yii::app()->getBaseUrl (true),
+            // accesses app config behavior, which is indexed by 0 due to way that it's specified
+            // in main.php
+            Yii::app()->asa (0));
     }
 
     public static function restoreController () {
@@ -315,7 +348,7 @@ class TestingAuxLib  {
      * @param string $subject unique email subject
      * @param int $tries number of imap request attempts
      */
-    public function assertEmailReceived ($owner, Credentials $credentials, $subject, $tries = 1) {
+    public static function assertEmailReceived ($owner, Credentials $credentials, $subject, $tries = 1) {
         Yii::import ('application.tests.components.EmailTestingUtil');
         $emailTestUtil = new EmailTestingUtil;
         $emailTestUtil->credentials = $credentials;

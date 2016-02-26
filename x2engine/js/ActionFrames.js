@@ -174,12 +174,15 @@ Private instance methods
 /**
  * @param int id
  */
-ActionFrames.prototype.loadActionFrame = function (id){
+ActionFrames.prototype.loadActionFrame = function (id, type, textOnly){
+    textOnly = typeof textOnly === 'undefined' ? false : textOnly; 
+    type = typeof type === 'undefined' ? null : type; 
     var that = this;
 
     var publisher=($('#publisher-form').html()!=null);
     var frame='<iframe id="action-frame" style="width:99%;height:99%"' +
-        'src="'+yii.baseUrl+'/index.php/actions/viewAction?id='+id+'&publisher='+publisher+'" '+
+        'src="'+yii.baseUrl+'/index.php/actions/viewAction?id='+id+'&publisher='+publisher+''+
+        (textOnly ? '&textOnly=1' : '') + '" ' +
         'onload="x2.' + this.instanceName + '.createControls('+id+', true);"></iframe>';
 
     if(typeof that._frame !== 'undefined') {
@@ -196,8 +199,17 @@ ActionFrames.prototype.loadActionFrame = function (id){
 
     var isResizing = false;
     var iframeFix;
+    if (type === 'time') {
+        var title = 'View Comment';
+    } else if (type === 'call') {
+        var title = 'View Call Note';
+    } else if (type === 'note') {
+        var title = 'View Comment';
+    } else {
+        var title = 'View Action';
+    }
     that._frame.dialog({
-        title: 'View Action',
+        title: title,
         autoOpen: false,
         resizable: true,
         width: '650px',
@@ -343,8 +355,12 @@ ActionFrames.prototype._init = function () {
     $(document).on('ready',function(){
         $(document).on('click','.action-frame-link',function(evt){
             var id=$(this).attr('data-action-id');
+            var type=$(this).attr('data-action-type') ? 
+                $(this).attr('data-action-type') : null;
+            var textOnly=$(this).attr('data-text-only') ? 
+                (!!(Number.parseInt ($(this).attr('data-text-only'), 10))) : null;
             evt.preventDefault ();
-            that.loadActionFrame (id);
+            that.loadActionFrame (id, type, textOnly);
         });
     });
 

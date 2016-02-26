@@ -606,4 +606,5 @@
   'Okay' => '알았어',
   'Headquarters' => '본부',
   'Mailing Address' => '우편 주소',
+  'Details' => '세부',
 );

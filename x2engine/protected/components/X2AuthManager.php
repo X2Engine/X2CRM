@@ -269,40 +269,6 @@ class X2AuthManager extends CDbAuthManager {
         return isset($params['X2Model']) && $params['X2Model']->asa('permissions') && $params['X2Model']->isVisibleTo($this->_usernames[$params['userId']]);
     }
 
-    /**
-     * This method is Copyright (c) 2008-2014 by Yii Software LLC
-     * http://www.yiiframework.com/license/ 
-     */
-//	protected function checkAccessRecursive($itemName,$userId,$params,$assignments)
-//	{
-//		if(($item=$this->getAuthItem($itemName))===null)
-//			return false;
-//		Yii::trace('Checking permission "'.$item->getName().'"','system.web.auth.CDbAuthManager');
-//		if(!isset($params['userId']))
-//		    $params['userId'] = $userId;
-//		if($this->executeBizRule($item->getBizRule(),$params,$item->getData()))
-//		{
-//			if(in_array($itemName,$this->defaultRoles))
-//				return true;
-//			if(isset($assignments[$itemName]))
-//			{
-//				$assignment=$assignments[$itemName];
-//				if($this->executeBizRule($assignment->getBizRule(),$params,$assignment->getData()))
-//					return true;
-//			}
-//			$parents=$this->db->createCommand()
-//				->select('parent')
-//				->from($this->itemChildTable)
-//				->where('child=:name', array(':name'=>$itemName))
-//				->queryColumn();
-//			foreach($parents as $parent)
-//			{
-//				if($this->checkAccessRecursive($parent,$userId,$params,$assignments))
-//					return true;
-//			}
-//		}
-//		return false;
-//	}
 }
 
 ?>

@@ -116,11 +116,23 @@ MobileActiveForm.prototype.setUpPhotoSubmission = function () {
 
 };
 
+MobileActiveForm.prototype.setUpInteractions = function () {
+    var that = this;
+    this.form$ = $(this.formSelector);
+    this.form$.find (':input').change (function () {
+        $(that.submitButtonSelector).removeClass ('disabled');
+    });
+    this.form$.find ('input[type="text"]').keydown (function () {
+        $(that.submitButtonSelector).removeClass ('disabled');
+    });
+};
+
 MobileActiveForm.prototype._init = function () {
     x2.X2Form.prototype._init.call (this);
 
     var that = this;
     x2.main.getController ().documentEvents.push (x2.main.onPageShow (function () {
+        that.setUpInteractions ();
         that.setUpPhotoSubmission ();
     }, x2.main.getController ().constructor.name));
 };

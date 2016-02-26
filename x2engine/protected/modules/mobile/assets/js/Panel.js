@@ -91,12 +91,19 @@ Panel.prototype.close = function () {
     this.getElement ().closest ('.x2touch-panel').panel ('close');
 };
 
+Panel.prototype.swipedInTarget = function (start) {
+    var targetWidth = 50;
+    return start[0] < targetWidth;
+};
+
 Panel.prototype.configureSwipeOpen = function () {
     var that = this;
     $(document).off ('swiperight.configureSwipeOpen').
-        on ('swiperight.configureSwipeOpen', function () {
+        on ('swiperight.configureSwipeOpen', function (evt) {
 
-        if ($.mobile.activePage && $.mobile.activePage.jqmData ('panel') !== 'open') {
+        if (that.swipedInTarget (evt.swipestart.coords) &&
+            $.mobile.activePage && $.mobile.activePage.jqmData ('panel') !== 'open') {
+
             that.getElement ().closest ('.x2touch-panel').panel ('open');
         }
     });

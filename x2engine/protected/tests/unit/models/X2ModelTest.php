@@ -214,7 +214,19 @@ class X2ModelTest extends X2DbTestCase {
         $criteria = new CDbCriteria;
         $searchModel = new Contacts;
         $searchModel->leadSource = 'Google';
-        $compareAttribute = TestingAuxLib::setPublic ($searchModel, 'compareAttribute');
+        $compareAttribute = TestingAuxLib::setPublic (
+            $searchModel, 'compareAttribute', false, function ($method, $class) {
+
+                return function () use ($method, $class) {
+                    $args = func_get_args ();
+                    $args = array (
+                        &$args[0],
+                        $args[1],
+                    );
+                    return $method->invokeArgs ($class, $args);
+                };
+            });
+
         $compareAttribute ($criteria, $searchModel->getField ('leadSource'));
         $contacts = Contacts::model()->findAll ($criteria);
         $this->assertModelArrayEquality (array ($contact1), $contacts);
@@ -222,7 +234,18 @@ class X2ModelTest extends X2DbTestCase {
         $criteria = new CDbCriteria;
         $searchModel = new Contacts;
         $searchModel->leadSource = 'Facebook';
-        $compareAttribute = TestingAuxLib::setPublic ($searchModel, 'compareAttribute');
+        $compareAttribute = TestingAuxLib::setPublic (
+            $searchModel, 'compareAttribute', false, function ($method, $class) {
+
+                return function () use ($method, $class) {
+                    $args = func_get_args ();
+                    $args = array (
+                        &$args[0],
+                        $args[1],
+                    );
+                    return $method->invokeArgs ($class, $args);
+                };
+            });
         $compareAttribute ($criteria, $searchModel->getField ('leadSource'));
         $contacts = Contacts::model()->findAll ($criteria);
         $this->assertModelArrayEquality (array ($contact2), $contacts);
@@ -233,7 +256,18 @@ class X2ModelTest extends X2DbTestCase {
         $criteria = new CDbCriteria;
         $searchModel = new Contacts;
         $searchModel->leadSource = array ('Google');
-        $compareAttribute = TestingAuxLib::setPublic ($searchModel, 'compareAttribute');
+        $compareAttribute = TestingAuxLib::setPublic (
+            $searchModel, 'compareAttribute', false, function ($method, $class) {
+
+                return function () use ($method, $class) {
+                    $args = func_get_args ();
+                    $args = array (
+                        &$args[0],
+                        $args[1],
+                    );
+                    return $method->invokeArgs ($class, $args);
+                };
+            });
         $compareAttribute ($criteria, $searchModel->getField ('leadSource'));
         $contacts = Contacts::model()->findAll ($criteria);
         $this->assertModelArrayEquality (array ($contact1), $contacts);
@@ -241,7 +275,18 @@ class X2ModelTest extends X2DbTestCase {
         $criteria = new CDbCriteria;
         $searchModel = new Contacts;
         $searchModel->leadSource = array ('Facebook');
-        $compareAttribute = TestingAuxLib::setPublic ($searchModel, 'compareAttribute');
+        $compareAttribute = TestingAuxLib::setPublic (
+            $searchModel, 'compareAttribute', false, function ($method, $class) {
+
+                return function () use ($method, $class) {
+                    $args = func_get_args ();
+                    $args = array (
+                        &$args[0],
+                        $args[1],
+                    );
+                    return $method->invokeArgs ($class, $args);
+                };
+            });
         $compareAttribute ($criteria, $searchModel->getField ('leadSource'));
         $contacts = Contacts::model()->findAll ($criteria);
         $this->assertModelArrayEquality (array ($contact1, $contact2), $contacts);

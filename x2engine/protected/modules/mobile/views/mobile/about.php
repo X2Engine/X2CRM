@@ -34,9 +34,18 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 
+Yii::app()->clientScript->registerScriptFile(
+    Yii::app()->controller->assetsUrl.'/js/AboutController.js');
+
+
 echo X2Html::logo ('mobile', array (
     'id' => 'about-logo',
 ));
+
+$this->onPageLoad ("
+    x2.main.controllers['$this->pageId'] = new x2.AboutController ();
+", CClientScript::POS_END);
+
 
 ?>
 <div class='mobile-list-view'>

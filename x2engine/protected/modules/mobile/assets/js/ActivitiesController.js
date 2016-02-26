@@ -60,9 +60,10 @@ ActivitiesController.prototype.setUpEventClick = function () {
     this.feed$.find ('.record-list-item').click (function () {
         if (!clickedLink$) { 
             var comments$ = $(this).find ('.comments');
-            if (comments$.length)
+            if (comments$.length) {
                 $(':mobile-pagecontainer').pagecontainer (
                     'change', comments$.attr ('data-x2-url'), { transition: 'none' }); 
+            }
         } else {
             var url = clickedLink$.attr ('href');
             $(':mobile-pagecontainer').pagecontainer (

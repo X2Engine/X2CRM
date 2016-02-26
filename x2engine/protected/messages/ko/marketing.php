@@ -172,4 +172,5 @@
   '{recordType} has opened the email sent on ' => '{recordType} 이메일에 전송 열었다',
   'When this is enabled, all links in the email template will be replaced with links that will track when they have been clicked.' => '이 옵션을 사용하는 경우, 이메일 템플릿의 모든 링크들은 클릭되었을 때 추적합니다 링크로 대체됩니다.',
   'The {contact} you enter here will be used for variable replacement, i.e. for "John Doe" the token {firstName} will get replaced with "John"' => '{contact} 여기에 입력은 &quot;홍길동&quot;토큰 즉, 변수 대체에 사용됩니다 {firstName} &quot;존&quot;로 대체 얻을 것이다',
+  'Generate and export the web tracker JavaScript. This can be uploaded to your site in place of the standard web tracker embed code, which is useful when using tracking under SSL. Please note: the code that is generated is specific to your X2CRM installation.' => '생성하고 웹 추적기 자바 스크립트를 내보낼 수 있습니다. 이 SSL에서 추적 사용할 때 유용 표준 웹 추적기 소스 코드, 대신 귀하의 사이트에 업로드 할 수 있습니다. 참고 : 생성 된 코드가 X2CRM 설치에 따라 다릅니다.',
 );

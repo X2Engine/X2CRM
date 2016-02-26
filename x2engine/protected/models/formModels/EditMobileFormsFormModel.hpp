@@ -1,6 +1,6 @@
 <?php
 /***********************************************************************************
- * Copyright (C) 2011-2015 X2Engine Inc. All Rights Reserved.
+ * Copyright (C) 2011-2016 X2Engine Inc. All Rights Reserved.
  *
  * X2Engine Inc.
  * P.O. Box 66752

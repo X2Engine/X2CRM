@@ -59,7 +59,20 @@ class ProfileTest extends X2DbTestCase {
 
     public function testAddRemoveLayoutElements () {
         $profile = $this->profile('testProfile');
-        $fn = TestingAuxLib::setPublic ($profile, 'addRemoveLayoutElements');
+        $fn = TestingAuxLib::setPublic (
+            $profile, 'addRemoveLayoutElements', false, function ($method, $class) {
+
+                return function () use ($method, $class) {
+                    $args = func_get_args ();
+                    $args = array (
+                        $args[0],
+                        &$args[1],
+                        $args[2],
+                    );
+                    return $method->invokeArgs ($class, $args);
+                };
+            });
+
         $defaultLayout = $profile->initLayout ();
 
         // attempt to construct default layout from empty layout

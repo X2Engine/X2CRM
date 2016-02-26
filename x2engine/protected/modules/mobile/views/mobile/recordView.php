@@ -37,6 +37,8 @@
 Yii::app()->clientScript->registerScriptFile(
     Yii::app()->controller->assetsUrl.'/js/RecordViewController.js');
 
+$supportsActionHistory = (bool) $this->asa ('X2MobileActionHistoryBehavior');
+
 $authParams['X2Model'] = $model;
 
 $this->onPageLoad ("
@@ -48,7 +50,8 @@ $this->onPageLoad ("
             'deleteConfirm' => Yii::t('mobile', 'Are you sure you want to delete this record?'),
             'deleteConfirmOkay' => Yii::t('mobile', 'Okay'),
             'deleteConfirmCancel' => Yii::t('mobile', 'Cancel'),
-        )
+        ),
+        'supportsActionHistory' => $supportsActionHistory,
     )).");
 ", CClientScript::POS_END);
 
@@ -70,7 +73,7 @@ if ($model instanceof X2Model &&
                 <?php
                 echo CHtml::encode (
                     Yii::t('app', 'Are you sure you want to delete this {type}?', array (
-                        '{type}' => Modules::displayName (false, get_class ($model)), 
+                        '{type}' => lcfirst ($model->getDisplayName (false)),
                     )));
                 ?>
             </div>
@@ -117,8 +120,47 @@ if ($model instanceof X2Model) {
     }
 }
 
-$this->renderPartial ('application.modules.mobile.views.mobile._recordDetails', array (
-    'model' => $model
-));
+if ($supportsActionHistory) {
+?>
+<div class='record-view-tabs'>
+    <div data-role='navbar' class='record-view-tabs-nav-bar'>
+        <ul>
+            <li class='record-view-tab' data-x2-tab-name='record-details'>
+                <a href='<?php echo '#'.MobileHtml::namespaceId ('detail-view-outer'); ?>'><?php 
+                echo CHtml::encode (Yii::t('mobile', 'Details'));
+                ?>
+                </a>
+            </li>
+            <li class='record-view-tab' data-x2-tab-name='action-history'>
+                <a href='<?php echo '#'.MobileHtml::namespaceId ('action-history'); ?>'><?php 
+                //echo CHtml::encode (Yii::t('mobile', 'History'));
+                echo CHtml::encode (Yii::t('mobile', 'Attachments'));
+                ?>
+                </a>
+            </li>
+        </ul>
+    </div>
 
+    <div id='<?php echo MobileHtml::namespaceId ('detail-view-outer');?>'>
+    <?php
+}
+
+    $this->renderPartial ('application.modules.mobile.views.mobile._recordView', array (
+        'model' => $model
+    ));
+
+    if ($supportsActionHistory) {
+    ?>
+    </div>
+    <div id='<?php echo MobileHtml::namespaceId ('action-history');?>' class='action-history-outer'>
+
+    <?php
+        $this->renderPartial ('application.modules.mobile.views.mobile._actionHistory', array (
+            'model' => $model
+        ));
+    ?>
+    </div>
+</div>
+<?php
+    }
 ?>

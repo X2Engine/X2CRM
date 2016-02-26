@@ -46,6 +46,7 @@
  */
 class ImportExportBehavior extends CBehavior {
 
+    protected $recordsImported;
     private $importRelations = array();
     private $createdLinkedModels = array();
     private $modelContainer = array(
@@ -619,7 +620,7 @@ class ImportExportBehavior extends CBehavior {
                 $relationship->firstType = $modelName;
                 $relationship->secondType = $className;
                 $relationship->secondId = $importAttribute;
-                $this->importRelations[count($this->importRelations) - 1][] = $relationship->attributes;
+                $this->importRelations[$this->recordsImported][] = $relationship->attributes;
             }
         } else {
             $lookupAttr = isset($linkMatchAttribute) ? $linkMatchAttribute : 'name';
@@ -630,7 +631,7 @@ class ImportExportBehavior extends CBehavior {
                 $relationship->firstType = $modelName;
                 $relationship->secondType = $className;
                 $relationship->secondId = $lookup->id;
-                $this->importRelations[count($this->importRelations) - 1][] = $relationship->attributes;
+                $this->importRelations[$this->recordsImported][] = $relationship->attributes;
             } elseif (isset($_SESSION['createRecords']) && $_SESSION['createRecords'] == 1 &&
                     !($modelName === 'BugReports' && $fieldRecord->linkType === 'BugReports')) {
                 // Skip creating related bug reports; the created report wouldn't hold any useful info.
@@ -679,7 +680,7 @@ class ImportExportBehavior extends CBehavior {
                     $relationship = new Relationships;
                     $relationship->firstType = $modelName;
                     $relationship->secondType = $className;
-                    $this->importRelations[count($this->importRelations) - 1][] = $relationship->attributes;
+                    $this->importRelations[$this->recordsImported][] = $relationship->attributes;
                     $this->createdLinkedModels[] = $model->$fieldName;
                 }
             } else {

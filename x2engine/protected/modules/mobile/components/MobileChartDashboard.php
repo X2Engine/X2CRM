@@ -54,14 +54,19 @@ class MobileChartDashboard extends ChartDashboardBase {
 
 	    $layout = $profile->dataWidgetLayout;
 
+        $foundChart = false;
 	    // display profile widgets in order
 	    foreach ($layout as $widgetLayoutKey => $settings) {
             if($this->filterReport ($settings['chartId'])){
 
                 // $force = isset($this->report);
                 SortableWidget::instantiateWidget ($widgetLayoutKey, $profile, 'data');	
+                $foundChart = true;
 	        }
 	    }
+        if (!$foundChart) {
+            $this->render ('application.modules.mobile.components.views.emptyChartDashboard');
+        }
 	}
 
     public function init () {

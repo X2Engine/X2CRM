@@ -69,7 +69,7 @@ abstract class X2WebTestCase extends CWebTestCase {
     
     protected static $loadFixtures = X2_LOAD_FIXTURES;
     protected static $loadFixturesForClassOnly = X2_LOAD_FIXTURES_FOR_CLASS_ONLY;
-    protected $captureScreenshotOnFailure = true;
+    protected $captureScreenshotOnFailure = false;
     protected $screenshotPath = null;
     protected $screenshotUrl = null;
     protected static $skipAllTests = false;
@@ -137,8 +137,6 @@ abstract class X2WebTestCase extends CWebTestCase {
         $this->clickAndWait("css=#signin-button");
         // Finally, make sure the login succeeded
         X2_TEST_DEBUG_LEVEL > 1 && println ('login');
-        $this->waitForPageToLoad ();
-        $this->assertCorrectUser($login);
     }
 
     public function loginAs ($username, $password) {
@@ -149,7 +147,8 @@ abstract class X2WebTestCase extends CWebTestCase {
      * Logs out of the web app 
      */
     public function logout() {
-        $this->openX2('/site/logout');
+        $this->deleteAllVisibleCookies();
+        $this->openX2('site/logout');
     }
 
     /**
@@ -180,6 +179,11 @@ abstract class X2WebTestCase extends CWebTestCase {
      * value of {@link login}.
      */
     public function session() {
+        if(!$this->autoLogin){
+            $this->logout();
+            $this->firstLogin = true;
+            return 0;
+        }
         // Test if logged in, log in if not, log in.
         try {
             $this->assertElementPresent('css=ul#user-menu');
@@ -190,17 +194,17 @@ abstract class X2WebTestCase extends CWebTestCase {
              */
             if (!$this->firstLogin)
                 array_push($this->verificationErrors, $e->toString());
-            $this->firstLogin = false;
-            $this->login();
+                $this->firstLogin = false;
+                $this->login();
             return 0;
         }
         try {
             $this->assertCorrectUser();
         } catch (PHPUnit_Framework_AssertionFailedError $e) {
             // The browser is logged in but not as the correct user.
-            $this->logout();
-            $this->login();
-            $this->firstLogin = false;
+                $this->logout();
+                $this->login();
+                $this->firstLogin = false;
             return 0;
         }
         // Indicator of whether the session was already initialized properly
@@ -213,6 +217,15 @@ abstract class X2WebTestCase extends CWebTestCase {
     public function setSeleneseDir() {
         $theTestClass = new ReflectionClass(get_called_class());
         $this->localSeleneseDir = dirname($theTestClass->getFileName());
+    }
+    
+    /**
+     * @return bool true if browser that's currently being used is Chrome, false otherwise
+     */
+    protected function isChrome () {
+        $this->storeEval (
+            "!!window.navigator.userAgent.match(/Chrome/i)", 'isChrome');
+        return $this->getExpression ('${isChrome}') === 'true';
     }
     
     public static function setUpBeforeClass() {
@@ -302,10 +315,7 @@ abstract class X2WebTestCase extends CWebTestCase {
         //$this->screenshotUrl = rtrim(TEST_BASE_URL, 'index-test.php') . 'uploads/testing';
         $this->setBrowserUrl(TEST_BASE_URL);
         $this->prepareTestSession();
-        if ($this->autoLogin) {
-            $this->openX2('/site/login');
-            $this->session();
-        }
+        $this->session();
     }
     
     public function tearDown() {
@@ -335,27 +345,35 @@ abstract class X2WebTestCase extends CWebTestCase {
      * @param string $page URI of page
      */
     protected function assertNoErrors () {
-		$this->assertElementNotPresent('css=.xdebug-error');
-        // get stack trace and error message
-        $this->storeEval (
-            "window.document.querySelector ('#error-form') ? 
-                window.document.querySelector ('#error-form').innerHtml : null",
-            'errorInfo');
-        $errorMessage = $this->getExpression ('${errorInfo}');
-        // #error-form is always on site/bugReport
-        if ($errorMessage && $errorMessage !== 'null' && $this->_currentPage !== 'site/bugReport') {
-            println ($errorMessage);
+        if (YII_DEBUG)
+		    $this->assertElementNotPresent('css=.xdebug-error');
+        if (X2_TEST_DEBUG_LEVEL > 1) {
+            // get stack trace and error message
+            $this->storeEval (
+                "window.document.querySelector ('#error-form') ? 
+                    window.document.querySelector ('#error-form').innerHtml : null",
+                'errorInfo');
+            $errorMessage = $this->getExpression ('${errorInfo}');
+            // #error-form is always on site/bugReport
+            if ($errorMessage && $errorMessage !== 'null' && 
+                $this->_currentPage !== 'site/bugReport') {
+                println ($errorMessage);
+            }
         }
-		$this->assertElementNotPresent('css=#x2-php-error');
+        $this->assertElementNotPresent('css=#x2-php-error');
         $this->storeEval (
             "window.document.body.attributes['x2-js-error'] ? 'true' : 'false'", 
             'hasJsErrorAttr');
         $hasJsErrorAttr = $this->getExpression ('${hasJsErrorAttr}');
         if ($hasJsErrorAttr === 'true') {
-            $this->storeAttribute ('dom=document.body@x2-js-error', 'errorMessage');
-            $errorMessage = $this->getExpression ('${errorMessage}');
-            println ($errorMessage);
-            $this->assertTrue (false, $errorMessage);
+            if (X2_TEST_DEBUG_LEVEL > 1) {
+                $this->storeAttribute ('dom=document.body@x2-js-error', 'errorMessage');
+                $errorMessage = $this->getExpression ('${errorMessage}');
+                println ($errorMessage);
+                $this->assertTrue (false, $errorMessage);
+            } else {
+                $this->assertTrue (false, Yii::t('app', 'Encountered JS error'));
+            }
         } 
         $this->assertHttpOK ();
     }

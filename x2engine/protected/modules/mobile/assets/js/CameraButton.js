@@ -54,7 +54,7 @@ function CameraButton (argsDict) {
 
 CameraButton.prototype.setUpButtonBrowser = function () {
     var that = this;
-    this.element$.click (function () {
+    this.element$.off ('click.setUpButtonBrowser').on ('click.setUpButtonBrowser', function () {
         that.validate (function () {
              that.success (
              );

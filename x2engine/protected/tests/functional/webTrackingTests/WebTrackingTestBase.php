@@ -199,15 +199,6 @@ abstract class WebTrackingTestBase extends X2WebTestCase {
             "!!window.navigator.userAgent.match(/opera/i)", 'isOpera');
         return $this->getExpression ('${isOpera}') === 'true';
     }
-    
-    /**
-     * @return bool true if browser that's currently being used is Opera, false otherwise
-     */
-    protected function isChrome () {
-        $this->storeEval (
-            "!!window.navigator.userAgent.match(/Chrome/i)", 'isChrome');
-        return $this->getExpression ('${isChrome}') === 'true';
-    }
 
      
 

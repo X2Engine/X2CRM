@@ -48,10 +48,12 @@ $this->insertMenu($menuOptions, $model, $authParams);
 ?>
 <div class="page-title icon actions">
 	<h2><?php
-	if($model->associationName=='none')
-		echo Yii::t('actions','{action}', array('{action}' => Modules::displayName()));
-	else
-		echo '<span class="no-bold">',Yii::t('actions','{action}', array('{action}' => Modules::displayName())),':</span> '.CHtml::encode($model->associationName); ?>
+    if($model->associationName=='none')
+        echo Yii::t('actions','{action}', array('{action}' => Modules::displayName()));
+    else if ($model->isMultiassociated())
+        echo '<span class="no-bold">',Yii::t('actions','{action}', array('{action}' => Modules::displayName())),':</span> '.$model->renderMultiassociations (false);
+    else
+        echo '<span class="no-bold">',Yii::t('actions','{action}', array('{action}' => Modules::displayName())),':</span> '.CHtml::encode($model->associationName); ?>
 	</h2>
 </div>
 <?php

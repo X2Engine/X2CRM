@@ -561,8 +561,7 @@ class X2ClientScript extends NLSClientScript {
             $globalCssUrl = GlobalCSSFormModel::getGlobalCssUrl ();
             $html.=CHtml::cssFile($globalCssUrl.$this->getCacheBusterSuffix ($globalCssUrl))."\n";
         }
-
-        /* x2modend */ 
+/* x2modend */ 
 		if($this->enableJavaScript)
 		{
 			if(isset($this->scriptFiles[self::POS_HEAD]))
@@ -587,28 +586,6 @@ class X2ClientScript extends NLSClientScript {
 			else
 				$output=$html.$output;
 		}
-	}
-
-	public function registerScript($id,$script,$position=null,array $htmlOptions=array())
-	{
-		if($position===null)
-			$position=$this->defaultScriptPosition;
-		$this->hasScripts=true;
-		if(empty($htmlOptions))
-			$scriptValue=$script;
-		else
-		{
-			if($position==self::POS_LOAD || $position==self::POS_READY)
-				throw new CException(Yii::t('yii','Script HTML options are not allowed for "CClientScript::POS_LOAD" and "CClientScript::POS_READY".'));
-			$scriptValue=$htmlOptions;
-			$scriptValue['content']=$script;
-		}
-		$this->scripts[$position][$id]=$scriptValue;
-		if($position===self::POS_READY || $position===self::POS_LOAD)
-			$this->registerCoreScript('jquery');
-		$params=func_get_args();
-		$this->recordCachingAction('clientScript','registerScript',$params);
-		return $this;
 	}
 
     /**
@@ -921,9 +898,6 @@ class X2ClientScript extends NLSClientScript {
 
     private function registerTestingScripts () {
         if (YII_UNIT_TESTING) {
-//            $this->registerScriptFile (
-//                $baseUrl.'/js/qunit/qunit-1.15.0.js', CClientScript::POS_HEAD);
-//            $this->registerCssFile ($baseUrl.'/js/qunit/qunit-1.15.0.css');
             Yii::app()->clientScript->registerScript('unitTestingErrorHandler',"
             ;(function () {
                 if (typeof x2 === 'undefined') return;
@@ -1183,7 +1157,9 @@ class X2ClientScript extends NLSClientScript {
     }
 
     private function getJSPathname ($path) {
-        if (preg_match ('/\.min\.js$/', $path)) return $path;
+        if (preg_match('/(http|https):\/\//',$path) || preg_match ('/\.min\.js$/', $path)){
+            return $path;
+        }
         $fileName = str_replace('/',DIRECTORY_SEPARATOR, str_replace(Yii::app()->baseUrl, '', $path));
         $altPath = Yii::getRootPath ().preg_replace  ('/\.js(\?\d+)?$/', '.min.js', $fileName);
         if (!YII_DEBUG && file_exists ($altPath)) {
@@ -1194,7 +1170,9 @@ class X2ClientScript extends NLSClientScript {
     }
 
     private function getCSSPathname ($path) {
-        if (preg_match ('/\.min\.css$/', $path)) return $path;
+        if (preg_match('/(http|https):\/\//',$path) || preg_match ('/\.min\.css$/', $path)){
+            return $path;
+        }
         $fileName = str_replace('/',DIRECTORY_SEPARATOR, str_replace(Yii::app()->baseUrl, '', $path));
         $altPath = Yii::getRootPath ().preg_replace ('/\.css(\?\d+)?$/', '.min.css', $fileName);
         if (!YII_DEBUG && file_exists ($altPath)) {

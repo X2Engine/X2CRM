@@ -24,4 +24,6 @@
   'The username or password you entered is incorrect. Please try again.' => '사용자가 입력 한 사용자 이름 또는 암호가 올바르지 않습니다. 다시 시도하십시오.',
   'Username and password cannot be left blank.' => '사용자 이름과 암호는 비워 둘 수 없습니다.',
   'Web Address' => '웹 주소',
+  'Add photo attachment' => '사진 첨부 파일 추가',
+  'Add file attachment' => '첨부 파일 추가',
 );

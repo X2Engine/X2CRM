@@ -43,3 +43,13 @@ if ($url !== '') {
     echo '';
 }
 ?>" frameBorder="0" height="<?php echo $height; ?>" width="100%" style="background:#fff;" sandbox='allow-forms allow-popups allow-scripts'></iframe>
+<?php
+if (!$url) {
+?>
+<div class='default-text-container'>
+<a href='#'><?php echo Yii::t('app', '-Click Here to Add a Website-', array(
+)); ?></a>
+</div>
+<?php
+}
+

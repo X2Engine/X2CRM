@@ -606,4 +606,5 @@
   'Okay' => 'ok',
   'Headquarters' => 'Główna siedziba',
   'Mailing Address' => 'Adres pocztowy',
+  'Details' => 'Bliższe dane',
 );

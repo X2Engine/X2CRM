@@ -271,6 +271,7 @@ class X2PermissionsBehavior extends ModelPermissionsBehavior {
 
         $assignmentAttr = $this->getAssignmentAttr();
         $visibilityAttr = $this->getVisibilityAttr();
+
         $ret = array();
         $prefix = empty($tableAlias) ? '' : "$tableAlias.";
 
@@ -326,7 +327,7 @@ class X2PermissionsBehavior extends ModelPermissionsBehavior {
                 }
                 // Visible to user groups:
                 $groupRegex = self::getGroupIdRegex();
-                if (!empty($groupRegex)) {
+                if ($assignmentAttr && !empty($groupRegex)) {
                     $ret[] = array(
                         'condition' => "(" . $prefix . "$assignmentAttr REGEXP BINARY 
                             :" . $paramsNamespace . "visibilityGroupIdRegex)",

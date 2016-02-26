@@ -7,7 +7,6 @@
   'Comment Required' => 'Απραίτητο Σχόλιο',
   'Stage {n}' => 'Επίπεδο {n}',
   'Please summarize how this stage was completed.' => 'Περιγράψτε περιληπτικά πως ολοκληρώθηκε το επίπεδο.',
-  'Details' => 'Λεπτομέρειες',
   'Any stage' => 'Οποιοδήποτε Επίπεδο',
   'Process:' => 'Διαδικασία:',
   'record type(s)' => 'Τύπος εγγραφή (ες)',

@@ -24,4 +24,6 @@
   'The username or password you entered is incorrect. Please try again.' => 'Der eingegebene Benutzername oder das Passwort sind falsch. Bitte versuche es erneut.',
   'Username and password cannot be left blank.' => 'Benutzernamen und Passwort darf nicht leer sein.',
   'Web Address' => 'Webadresse',
+  'Add photo attachment' => 'In Fotoanhang',
+  'Add file attachment' => 'In Dateianhang',
 );

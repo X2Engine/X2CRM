@@ -699,3 +699,13 @@ CREATE TABLE `x2_events_to_media` (
     FOREIGN KEY (`eventsId`) REFERENCES x2_events(id) ON UPDATE CASCADE ON DELETE CASCADE,
 	UNIQUE (`eventsId`, `mediaId`)
 ) COLLATE = utf8_general_ci, ENGINE=INNODB;
+/*&*/
+DROP TABLE IF EXISTS `x2_actions_to_media`;
+/*&*/
+CREATE TABLE `x2_actions_to_media` (
+	`id`                             INT             NOT NULL AUTO_INCREMENT,
+    `actionsId`                       INT UNSIGNED    NOT NULL,
+    `mediaId`                        INT             NOT NULL,
+	PRIMARY KEY (`id`),
+	UNIQUE (`actionsId`, `mediaId`)
+) COLLATE = utf8_general_ci, ENGINE=INNODB;

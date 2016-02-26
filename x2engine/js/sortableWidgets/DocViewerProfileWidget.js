@@ -73,6 +73,7 @@ Private instance methods
 */
 
 DocViewerProfileWidget.prototype._setUpDefaultTextBehavior = function () {
+    if (this.docId !== '') return;
     var that = this;
     this.element.find ('.default-text-container a').click (function (evt) {
         evt.preventDefault ();
@@ -215,9 +216,7 @@ DocViewerProfileWidget.prototype._init = function () {
     this._iframeElem = this.contentContainer.find ('iframe');
     this._iframeSrc = '';
     this._setUpSelectADocBehavior ();
+    this._setUpDefaultTextBehavior ();
     this.element.find ('.default-text-container').show ();
 
-    if (this.docId === '') {
-        this._setUpDefaultTextBehavior ();
-    }
 };

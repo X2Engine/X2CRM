@@ -56,6 +56,8 @@ class Actions extends X2Model {
      */
     const ASSOCIATION_TYPE_MULTI = '__multiple__';
 
+    public $upload;
+
     public $skipActionTimers = false;
 
     public $supportsWorkflow = false;
@@ -140,6 +142,7 @@ class Actions extends X2Model {
     }
 
     public function behaviors(){
+        $that = $this;
         return array(
             'X2LinkableBehavior' => array(
                 'class' => 'X2LinkableBehavior',
@@ -154,7 +157,10 @@ class Actions extends X2Model {
                 'defaultStickOnClear' => false
             ),
             'permissions' => array('class' => Yii::app()->params->modelPermissions),
-            //'changelog' => array('class' => 'X2ChangeLogBehavior'),
+            'RelatedMediaBehavior' => array(
+                'class' => 'application.components.behaviors.RelatedMediaBehavior',
+                'fileAttribute' => 'upload'
+            ),
         );
     }
 
@@ -194,6 +200,8 @@ class Actions extends X2Model {
             'workflowStage' => array(self::BELONGS_TO, 'WorkflowStage', 'stageNumber'),
             'actionMetaData' => array(self::HAS_ONE, 'ActionMetaData', 'actionId'),
             'actionText' => array(self::HAS_ONE, 'ActionText', 'actionId'),
+            'media' => array (
+                self::MANY_MANY, 'Media', 'x2_actions_to_media(actionsId, mediaId)'),
             //'assignee' => array(self::BELONGS_TO,'User',array('assignedTo'=>'username')),
         ));
     }
@@ -275,6 +283,20 @@ class Actions extends X2Model {
         $this->associationType = self::ASSOCIATION_TYPE_MULTI;
         $success &= $this->save();
         return $success;
+    }
+
+    /**
+     * Retrieve a list of model links, indexed by model name
+     * @return array
+     */
+    public function getMultiassociationLinks() {
+        $multiAssociationLinks = array();
+        foreach ($this->getMultiassociations() as $type => $models) {
+            foreach ($models as $model) {
+                $multiAssociationLinks[$type][] = X2Model::getModelLink($model->id, $type);
+            }
+        }
+        return $multiAssociationLinks;
     }
 
     /**
@@ -1458,6 +1480,31 @@ class Actions extends X2Model {
             default:
                 return parent::renderInput($fieldName, $htmlOptions);
         }
+    }
+
+    public function isMultiassociated() {
+        return $this->associationType === self::ASSOCIATION_TYPE_MULTI;
+    }
+
+    public function renderMultiassociations($makeLinks = true) {
+        if ($makeLinks) {
+            $associations = $this->getMultiassociationLinks ();
+            // Flatten multi-dimensional array to comma separated list of links
+            $associatedModels = array_map (
+                function ($elem) {return implode(', ', $elem); },
+                $associations
+            );
+        } else {
+            $associations = $this->getMultiassociations();
+            $associatedModels = array();
+            foreach ($associations as $type => $models) {
+                $associatedModels = array_merge(
+                    $associatedModels,
+                    array_map (function($a) {return CHtml::encode($a->name);}, $models)
+                );
+            }
+        }
+        return implode(', ', array_values ($associatedModels));
     }
 
     private $_reminders;

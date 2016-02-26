@@ -36,24 +36,58 @@
 
 Yii::import ('application.modules.mobile.components.ThemeGenerator.*');
 
-
 $isGuest = Yii::app()->user->isGuest;
 $cs = Yii::app()->clientScript;
 $cs->useAbsolutePaths = true;
 $cs->scriptMap = array();
 $baseUrl = $this->assetsUrl;
+
 if ($this->includeDefaultJsAssets ()) { 
     $cs->registerCoreScript('jquery');
     $cs->registerPackage('jqueryMobileJs');
     $cs->registerPackage('x2TouchJs');
     $cs->registerPackage('x2TouchSupplementalJs');
-     
+
+    if (YII_UNIT_TESTING) {
+        Yii::app()->clientScript->registerScriptFile(
+            Yii::app()->getBaseUrl ().'/js/qunit/qunit-1.20.0.js', CClientScript::POS_HEAD);
+        Yii::app()->clientScript->registerScriptFile(
+            $this->assetsUrl.'/js/tests/functional/Main.js',
+            CClientScript::POS_END);
+        Yii::app()->clientScript->registerScriptFile(
+            $this->assetsUrl.'/js/tests/functional/login.js',
+            CClientScript::POS_END);
+        $excludedFiles = array (
+            'Main.js',
+            //'activityFeed.js',
+            'login.js'
+        );
+        foreach(scandir(Yii::getPathOfAlias(
+            'application.modules.mobile.assets.js.tests.functional')) as $file) {
+
+            if(!preg_match ('/\.js$/', $file) || in_array($file,$excludedFiles) || 
+                isset ($includedFiles) && !in_array($file, $includedFiles)) {
+
+                continue;
+            }
+            Yii::app()->clientScript->registerScriptFile(
+                $this->assetsUrl.'/js/tests/functional/'.$file,
+                CClientScript::POS_END);
+        }
+    }
 }
+
 if ($this->includeDefaultCssAssets ()) { 
     $cs->registerPackage('jqueryMobileCss');
     $cs->registerPackage('x2TouchCss');
     $cs->registerPackage('x2TouchSupplementalCss');
-         
+
+    if (YII_UNIT_TESTING) {
+        Yii::app()->clientScript->registerCssFile(
+            Yii::app()->getBaseUrl ().'/js/qunit/qunit-1.20.0.css');
+        Yii::app()->clientScript->registerCssFile(
+            $this->assetsUrl.'/css/functionalTests.css'); 
+    }
 }
 
 if (!$this->isAjaxRequest ()) {
@@ -68,7 +102,9 @@ if ($this->includeDefaultJsAssets ()) {
                     'translations' => array (
                         'confirmCancel' => Yii::t('app', 'Cancel'),
                         'confirmOkay' => Yii::t('app', 'Okay'),
-                    )
+                    ),
+                    'pageDepth' => $this->pageDepth,
+                    'platform' => MobileModule::getPlatform (),
                 )).");
             }
         });
@@ -82,6 +118,12 @@ $this->onPageLoad ("
                 'filetypeError' => Yii::t('app', '"{X}" is not an allowed filetype.'),
             ))."
         });
+    }
+    if (x2.main) {
+        var updateParams = ".CJSON::encode (array (
+            'pageDepth' => $this->pageDepth
+        )).";
+        $.extend (x2.main, updateParams);
     }
 ");
 
@@ -102,23 +144,29 @@ if (!$this->isAjaxRequest ()) {
 }
 ?>
 </head>
+
 <body class='mobile-body<?php 
-     
 ?>'> 
 <?php
 
-//if (Yii::app()->user->isGuest) {
-//    MobileLoginThemeHelper::init();
-//    MobileLoginThemeHelper::render();
-//} else {
-//    ThemeGenerator::render();
-//}
+if (YII_UNIT_TESTING) {
+    echo "<div id='qunit'></div>";
+    echo "<div id='qunit-fixture'></div>";
+}
 
 ?>
 
 <div id="<?php echo $this->pageId.'-'.$this->getUniquePageIdSuffix (); ?>" data-role="page" 
  data-page-id="<?php echo $this->pageId; ?>"
- class='<?php echo $this->pageId.' '.$this->pageClass; ?> x2-remote-page' 
+ class='<?php 
+    echo $this->pageId.' '.$this->pageClass; 
+    if ($this->layoutHasTabs ()) {
+        echo ' tabbed-layout';
+    }
+     
+        echo ' x2touch-browser';
+     
+?> x2-remote-page' 
  data-url="<?php echo $this->dataUrl; ?>/" data-theme="a">
 
 <div class='flashes-container'>
@@ -128,10 +176,24 @@ X2Html::getFlashes ();
 </div>
 
     <div id='header' data-role='header'>
-        <a href='#<?php echo $this->pageId; ?>-panel' style='display: none;' 
+        <a href='#<?php echo $this->pageId; ?>-panel' 
+          style='display: none;' 
           class='ui-btn-left ui-btn show-left-menu-button'>
             <i class='fa fa-bars'></i>
         </a>
+        <?php
+        if (MobileModule::getPlatform () === 'iOS') {
+        ?>
+        <div class='header-back-button'
+          style='display: none;'>
+            <i class='fa fa-chevron-left'></i>
+            <?php
+            echo CHtml::encode (Yii::t('app', 'Back'));
+            ?>
+        </div>
+        <?php
+        }
+        ?>
         <h1 class='page-title'>
         <?php
         echo CHtml::encode ($this->headerTitle);
@@ -150,7 +212,6 @@ X2Html::getFlashes ();
     <div data-role='panel' data-display='push' class='x2touch-panel no-scrollbar' 
      id='<?php echo $this->pageId; ?>-panel'>
         <?php
-        //if ($this->includeDefaultJsAssets ()) { 
         if (!Yii::app()->user->isGuest) { 
         ?>
         <div class='panel-contents'>
@@ -159,26 +220,17 @@ X2Html::getFlashes ();
         ?>
         </div>
         <?php
-        } else { // only the recent items need to be refreshed on ajax request
-        ?>
-        <div class='refresh-content' data-refresh-selector='.panel-recent-item'>
-        <?php
-        $panel = $this->createWidget ('application.modules.mobile.components.panel.Panel');
-        echo $panel->renderItems (function ($section) {
-            return $section === 'recentItems';
-        });
-        ?>
-        </div>
-        <?php
-        }
+        } 
         ?>
     </div>
+
 <script>
 if (typeof x2 === 'undefined') x2 = {};
 x2.isAjaxRequest = <?php echo $this->isAjaxRequest () ? 'true' : 'false'; ?>;
  
 x2.csrfToken = <?php echo CJSON::encode (Yii::app()->request->getCsrfToken ()); ?>;
 </script>
+
 <?php
 if ($this->isAjaxRequest ()) {
     // when the page is being updated via ajax, scripts must be registered inside body so that 
@@ -188,40 +240,22 @@ if ($this->isAjaxRequest ()) {
     echo $assets;
 }
 ?>
-		<div data-role="content">
-			<?php
-			echo $content;
-			?>
-		</div>
-        <?php
-        if (false) {
-        ?>
-		<div id='footer' data-role="footer" data-theme="a">
-			<p>&nbsp;&nbsp;&copy;<?php 
-                echo date('Y') . ' ' . CHtml::link('X2Engine Inc.', 'http://www.x2engine.com')." ";
-				echo Yii::t('app', 'Rights Reserved.'); 
-                 
-                    echo '&nbsp;';
-                    echo CHtml::link(
-                        Yii::t('mobile', 'Go to Full Site'),
-                        Yii::app()->getBaseUrl().'/index.php/site/index?mobile=false',
-                        array(
-                            'rel'=>'external',
-                            'onClick'=>'setMobileBrowserFalse()',
-                            'class'=>'full-site-link',
-                        )); 
-                 
-                ?>
-			</p>
-            <div id='logo-container'>
+		<div data-role="content" class='<?php echo MobileModule::getPlatform () === 'iOS' ? '' : 'innermost-content-container'; ?>'>
             <?php
-            //echo CHtml::image(Yii::app()->params->x2Power,'',array('id'=>'powered-by-x2engine')); 
+            // extra div needed for ios scrolling to work properly
+            if (MobileModule::getPlatform () === 'iOS') {
+                ?>
+		        <div class='content-inner<?php echo MobileModule::getPlatform () === 'iOS' ? ' innermost-content-container' : ''; ?>'>
+                <?php
+            }
+			echo $content;
+            if (MobileModule::getPlatform () === 'iOS') {
+                ?>
+                </div>
+                <?php
+            }
             ?>
-            </div>
 		</div>
-        <?php
-        }
-        ?>
 </div>
 </body>
 </html>

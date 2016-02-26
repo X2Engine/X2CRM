@@ -7,7 +7,6 @@
   'Comment Required' => 'תגובה נדרש',
   'Stage {n}' => 'שלב {n}',
   'Please summarize how this stage was completed.' => 'אנא לסכם כיצד שלב זה הושלם.',
-  'Details' => 'פרטים',
   'Any stage' => 'כל שלב',
   'Process:' => 'תהליך:',
   'record type(s)' => 'סוג רשומה (ים)',

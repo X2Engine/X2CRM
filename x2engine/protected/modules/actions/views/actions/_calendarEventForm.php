@@ -36,10 +36,12 @@
 
 $submitButton = isset ($submitButton) ? $submitButton : true;
 $htmlOptions = !isset ($htmlOptions) ? array () : $htmlOptions;
+$namespace = !isset ($namespace) ? null : $namespace;
 
 $form = $this->beginWidget ('CalendarEventActiveForm', array (
     'formModel' => $model,
     'htmlOptions' => $htmlOptions,
+    'namespace' => $namespace,
 ));
     echo $form->textArea ($model, 'actionDescription');
 

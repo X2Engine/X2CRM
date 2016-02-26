@@ -64,4 +64,5 @@
   'Top Menu Bar Logo' => 'לוגו שורת תפריטים העליונים',
   'Login Screen Logo' => 'לוגו מסך כניסה',
   'Tag list must be non-empty' => 'רשימת תג חייבת להיות שאינו ריקה',
+  'Invalid list criteria.' => 'קריטריוני רשימה לא חוקי.',
 );

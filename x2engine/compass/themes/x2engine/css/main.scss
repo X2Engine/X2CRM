@@ -521,89 +521,11 @@ div.loading-icon,
     color: black;
 }
 
-.action.list-view .view {
-    overflow: auto;
-    padding-left: 40px;
-    border-bottom: 1px solid #ddd;
-    &:last-child {
-        border-bottom: none;
-    }
-}
 
 .dashSubmit {
     float: right;
 }
 
-/*********************************
-* Action List (In history panel)
-********************************/
-.action.list-view {
-    .header {
-        a {
-            font-weight: normal;
-        }
-        display: block;
-        overflow: auto;
-        padding: 2px 5px 2px 0;
-        color: #666;
-        font-weight: bold;
-        @include border-radius(0 4px 0 0);
-    }
-
-    .buttons {
-        float: right;
-    }
-    .description {
-        color: #000;
-        padding: 0 0 5px 0;
-    }
-    .footer {
-        color: #666;
-        padding: 2px 5px;
-        font-size: 11px;
-    }
-    .icon {
-        display: block;
-        position: relative;
-        float: left;
-        height: 55px;
-        margin-left: -40px;
-        width: 50px;
-
-        text-align: center;
-
-        font-size: 35px;
-        color: $darkBlue;
-        /* @theme color link */
-
-        @include fa-icon('play-circle');
-        // background: url(../images/actions.png) 0 0px no-repeat transparent;
-
-        &:before {
-            font-size: 30px !important;
-        }
-
-        &.action-index {
-            display: block;
-            float: left;
-            height: 40px;
-            margin-left: -30px;
-            margin-top: 20px;
-            width: 30px;
-            /*     border: 1px solid #ddd;
-                    border-width: 1px 0 0 1px; */
-            @include border-radius(4px 0 0 0)
-        }
-        &.uncomplete-box {
-            background: url(../images/icons/Blue_box.png) 0 0px no-repeat transparent;
-        }
-        &.checkmark-overlay {
-            margin-top: -2px;
-            margin-left: -1px;
-            background: url(../images/icons/Complete.png) 0 0px no-repeat transparent;
-        }
-    }
-}
 
 
 /**
@@ -654,10 +576,6 @@ div.sticky-icon {
 }
 
 
-.action.list-view .items span.empty {
-    padding: 10px;
-    display: block;
-}
 
 div.list-actions {
     float: left;
@@ -721,10 +639,6 @@ div.date-box {
     display: block;
     float: left;
     @include border-radius(4px);
-}
-
-.action.list-view div.date-box {
-    margin: 5px 5px 5px -35px;
 }
 
 .list-view div.date-box {

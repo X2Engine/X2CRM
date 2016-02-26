@@ -200,7 +200,7 @@ class FileUploader extends X2Widget {
                     'viewParams' => $this->viewParams,
                     'acceptedFiles' => $this->acceptedFiles,
                     'maxFileSize' =>  
-                        floor (AppFileUtil::sizeToMb (ini_get('upload_max_filesize'))),
+                        AppFileUtil::sizeToMb (ini_get('upload_max_filesize'), false),
                 )
             );
         }

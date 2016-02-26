@@ -44,7 +44,11 @@ class MobileIndexAction extends MobileAction {
 
         $this->controller->pageClass = $this->pageClass;
 
-        $pageSize = 30;
+        if (YII_UNIT_TESTING)
+            $pageSize = 3; // simplify pagination testing
+        else 
+            $pageSize = 30;
+
         $modelClass = $this->controller->modelClass;
         $model = new $modelClass ('search', null, false, true); 
         $dataProvider = $model->search ($pageSize);

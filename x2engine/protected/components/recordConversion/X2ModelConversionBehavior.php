@@ -143,8 +143,10 @@ class X2ModelConversionBehavior extends CActiveRecordBehavior {
                         $attributes[] = $target;
                     }
                 }
-                $key = $associative ? $source : array_search ($source, $attributes);
-                unset ($attributes[$key]);
+                if ($source !== $target) {
+                    $key = $associative ? $source : array_search ($source, $attributes);
+                    unset ($attributes[$key]);
+                }
             }
         }
         return $attributes;

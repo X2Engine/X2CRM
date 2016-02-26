@@ -141,6 +141,7 @@ class Credentials extends CActiveRecord {
         'MandrillAccount',
         'MailjetAccount',
         'MailgunAccount',
+        'Office365EmailAccount',
         'OutlookEmailAccount',
         'SendgridAccount',
         'SESAccount',
@@ -156,6 +157,7 @@ class Credentials extends CActiveRecord {
     protected static $imapModels = array(
         'EmailAccount',
         'GMailAccount',
+        'Office365EmailAccount',
         'OutlookEmailAccount',
         'YahooEmailAccount',
     );
@@ -315,6 +317,7 @@ class Credentials extends CActiveRecord {
                 'MandrillAccount',
                 'MailjetAccount',
                 'MailgunAccount',
+                'Office365EmailAccount',
                 'OutlookEmailAccount',
                 'SendgridAccount',
                 'SESAccount',
@@ -336,6 +339,7 @@ class Credentials extends CActiveRecord {
 			'MandrillAccount' => array('email'),
 			'MailjetAccount' => array('email'),
 			'MailgunAccount' => array('email'),
+			'Office365EmailAccount' => array('email'),
 			'OutlookEmailAccount' => array('email'),
 			'SendgridAccount' => array('email'),
 			'SESAccount' => array('email'),

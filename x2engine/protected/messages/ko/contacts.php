@@ -64,4 +64,5 @@
   'Top Menu Bar Logo' => '상단 메뉴 표시 줄 로고',
   'Login Screen Logo' => '로그인 화면 로고',
   'Tag list must be non-empty' => '태그 목록은 비어 있어야합니다',
+  'Invalid list criteria.' => '잘못된 목록 기준.',
 );

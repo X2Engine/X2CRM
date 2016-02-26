@@ -34,14 +34,13 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 
-Yii::import ('application.modules.mobile.controllers.MobileController');
-
 /**
  * @package application.modules.mobile.components 
  */
 class MobileController extends X2Controller {
 
     const APP_VERSION_COOKIE_NAME = 'phoneGapAppVersionNumber';
+    const PLATFORM_COOKIE_NAME= 'phoneGapAppPlatform';
 
     public $layout = 'application.modules.mobile.views.layouts.main';
 
@@ -142,6 +141,7 @@ class MobileController extends X2Controller {
     }
 
     public function actionLicense () {
+        $this->pageDepth = 1;
         $this->headerTitle = Yii::t('mobile', 'License');
         $basePath = Yii::getRootPath ();
         $filename = implode (DIRECTORY_SEPARATOR, array ($basePath, 'LICENSE.txt'));
@@ -170,7 +170,7 @@ class MobileController extends X2Controller {
     /**
      * Used by PhoneGap mobile app to validate installation URL and ensure mutual app compatibility
      */
-    public function actionPing ($version) {
+    public function actionPing ($version, $platform='Android') {
         // for phonegap testing
         //if (YII_DEBUG) header('Access-Control-Allow-Origin: *'); 
 

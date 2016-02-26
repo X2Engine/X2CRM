@@ -7,7 +7,6 @@
   'Comment Required' => '必須コメント',
   'Stage {n}' => 'ステージ{n}',
   'Please summarize how this stage was completed.' => 'この段階が完了した方法をまとめてください。',
-  'Details' => '細部',
   'Any stage' => 'どの段階',
   'Process:' => 'プロセス：',
   'record type(s)' => 'レコードタイプ（S）',

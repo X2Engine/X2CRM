@@ -41,7 +41,15 @@ Yii::import ('application.modules.mobile.models.*');
 abstract class MobileAction extends CAction {
 
     public $pathAliasBase = 'application.modules.mobile.';
+    public $pageDepth = 0;
 
+    private $_model;
+    public function getModel ($id) {
+        if (!isset ($this->_model)) {
+            $this->_model = $this->controller->loadModel ($id);
+        }
+        return $this->_model;
+    }
 
     protected function beforeRun () {
     }

@@ -39,7 +39,7 @@ function ActiveDateRangeInput (argsDict) {
     var argsDict = typeof argsDict === 'undefined' ? {} : argsDict;
     var defaultArgs = {
         DEBUG: x2.DEBUG && false,
-        decrementStartDate: true
+        decrementStartDate: false
     };
     auxlib.applyArgs (this, defaultArgs, argsDict);
     x2.Widget.call (this, argsDict);

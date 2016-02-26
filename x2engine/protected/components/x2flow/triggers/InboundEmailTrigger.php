@@ -53,7 +53,7 @@ class InboundEmailTrigger extends X2FlowTrigger {
                     'name' => 'modelClass',
                     'label' => Yii::t('studio', 'Record Type'),
                     'type' => 'dropdown',
-                    'options' => X2Flow::getModelTypes(true)
+                    'options' => array('Contacts', 'Services'),
                 ),
                 array(
                     'name'=>'subject',

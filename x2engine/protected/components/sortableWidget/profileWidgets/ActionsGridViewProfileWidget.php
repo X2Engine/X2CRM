@@ -130,7 +130,7 @@ class ActionsGridViewProfileWidget extends ProfileGridViewWidget {
                 			'value'=>
                                 'CHtml::link(
                                     ($data->type=="attachment") ? 
-                                        Media::attachmentActionText($data->actionDescription) : 
+                                        Media::attachmentActionText($data) : 
                                         CHtml::encode(
                                             Formatter::trimText($data->actionDescription)),
                                     Yii::app()->controller->createUrl (

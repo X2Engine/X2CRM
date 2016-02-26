@@ -51,12 +51,14 @@ class X2UrlManager extends CUrlManager {
     public function createUrlWithoutBase($route, $params = array(), $ampersand = '&') {
         unset($params[$this->routeVar]);
         foreach ($params as $i => $param)
-                if ($param === null) $params[$i] = '';
+            if ($param === null) 
+                $params[$i] = '';
 
         if (isset($params['#'])) {
             $anchor = '#' . $params['#'];
             unset($params['#']);
-        } else $anchor = '';
+        } else 
+            $anchor = '';
         $route = trim($route, '/');
         foreach ($this->_rules as $i => $rule) {
             if (is_array($rule))
@@ -64,8 +66,9 @@ class X2UrlManager extends CUrlManager {
             if (($url = $rule->createUrl($this, $route, $params, $ampersand)) !== false) {
                 /* x2modstart */ 
                 if ($rule->hasHostInfo)
-                        return $url === '' ? '/' . $anchor : $url . $anchor;
-                else return '/' . $url . $anchor;
+                    return $url === '' ? '/' . $anchor : $url . $anchor;
+                else 
+                    return '/' . $url . $anchor;
                 /* x2modend */ 
             }
         }

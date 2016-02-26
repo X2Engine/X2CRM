@@ -134,6 +134,10 @@ class ContactsController extends x2base {
                 'class' => 
                     'application.modules.mobile.components.behaviors.X2MobileControllerBehavior'
             ),
+            'X2MobileActionHistoryBehavior' => array(
+                'class' => 
+                    'application.modules.mobile.components.behaviors.X2MobileActionHistoryBehavior'
+            ),
             'LeadRoutingBehavior' => array(
                 'class' => 'LeadRoutingBehavior'
             ),

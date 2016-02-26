@@ -82,7 +82,8 @@ class AssociatedMediaBehavior extends X2ActiveRecordBehavior {
         // file uploaded through form
         $tempName = $file->getTempName ();
         $media->setAttributes (array (
-            'associationType' => $this->associationType,
+            'associationType' => is_callable ($this->associationType) ? 
+                $this->associationType () : $this->associationType,
             'associationId' => $this->getAssociationId (),
             'uploadedBy' => $username,
             'createDate' => time(),
@@ -120,7 +121,8 @@ class AssociatedMediaBehavior extends X2ActiveRecordBehavior {
                 }
             }
             $associatedMedia = Media::model ()->findAllByAttributes (array (
-                'associationType' => $this->associationType,
+                'associationType' => is_callable ($this->associationType) ? 
+                    $this->associationType () : $this->associationType,
                 'associationId' => $this->getAssociationId (),
             ));
 

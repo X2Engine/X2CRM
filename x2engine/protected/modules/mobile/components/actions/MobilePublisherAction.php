@@ -35,6 +35,7 @@
  *****************************************************************************************/
 
 class MobilePublisherAction extends MobileAction {
+    public $pageDepth = 1;
 
     public function run () {
         $model = new EventPublisherFormModel;

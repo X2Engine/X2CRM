@@ -123,10 +123,10 @@ class X2DataColumn extends CDataColumn {
         }
     }
 
-    public function renderFilterCellContent() {
+    public function getFilterCellContent () {
         switch($this->fieldType){
             case 'boolean':
-                echo CHtml::activeDropdownList(
+                return CHtml::activeDropdownList(
                     $this->grid->filter, $this->name, 
                     array(
                         '' => '- '.Yii::t('app', 'Select').' -', 
@@ -149,7 +149,7 @@ class X2DataColumn extends CDataColumn {
                     }
                     //$selected = isset($options[$this->grid->filter->{$this->name}]) ? 
                         //$this->grid->filter->{$this->name} : '';
-                    echo CHtml::activeDropdownList(
+                    return CHtml::activeDropdownList(
                         $this->grid->filter, $this->name, $options,
                         array(
                             'class' => 'x2-minimal-select-filtercol'.
@@ -164,7 +164,7 @@ class X2DataColumn extends CDataColumn {
                 }
                 break;
             case 'visibility':
-                echo CHtml::activeDropDownList($this->grid->filter, $this->name,
+                return CHtml::activeDropDownList($this->grid->filter, $this->name,
                     array(
                         '' => '- '.Yii::t('app', 'Select').' -', 1 => Yii::t('app', 'Public'),
                         0 => Yii::t('app', 'Private'), 2 => Yii::t('app', 'User\'s Groups')),
@@ -192,13 +192,13 @@ class X2DataColumn extends CDataColumn {
                         ), true);
                 };
                 if ($this->grid->ajax) {
-                    X2Widget::ajaxRender ($renderWidget);
+                    return X2Widget::ajaxRender ($renderWidget, true);
                 } else {
-                    $renderWidget ();
+                    return $renderWidget ();
                 }
                 break;
             default:
-                parent::renderFilterCellContent();
+                return parent::getFilterCellContent ();
         }
     }
 }

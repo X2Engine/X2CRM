@@ -7,7 +7,6 @@
   'Comment Required' => 'Reactie Verplicht',
   'Stage {n}' => 'Stage {n}',
   'Please summarize how this stage was completed.' => 'Gelieve samengevat hoe deze fase is afgerond.',
-  'Details' => 'Details',
   'Any stage' => 'Elke fase',
   'Process:' => 'Proces:',
   'record type(s)' => 'type record (s)',

@@ -606,4 +606,5 @@
   'Okay' => 'אוקי',
   'Headquarters' => 'מַטֶה',
   'Mailing Address' => 'כתובת דואר',
+  'Details' => 'פרטים',
 );

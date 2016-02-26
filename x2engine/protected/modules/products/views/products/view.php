@@ -48,6 +48,7 @@ Yii::app()->clientScript->registerResponsiveCssFile(
 
 
 $themeUrl = Yii::app()->theme->getBaseUrl();
+$authParams['X2Model'] = $model;
 
 
 $menuOptions = array(
@@ -70,7 +71,9 @@ $(function() {
         <div class="page-title icon products">
             <h2><span class="no-bold"><?php echo Yii::t('products', '{module}:', array('{module}' => Modules::displayName(false))); ?></span> <?php echo CHtml::encode($model->name); ?></h2>
             <?php
-            echo X2Html::editRecordButton ($model);
+            if(Yii::app()->user->checkAccess('ProductsUpdate', $authParams)){
+                echo X2Html::editRecordButton ($model);
+            }
             ?>
         </div>
     </div>

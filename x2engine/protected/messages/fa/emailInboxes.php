@@ -60,4 +60,8 @@
   'Auto-log outbound emails' => 'خودکار ورود ایمیل های خروجی',
   'Auto-log inbound emails' => 'خودکار ورود ایمیل های ورودی',
   'From' => 'از',
+  'Copy to Sent Folder' => 'کپی کنید به پوشه فرستاده',
+  'Disabled' => 'معلول',
+  'Failed to associate message "{subject}" with {type} {model}' => 'به معاشرت پیام &quot;شکست خورده {subject} &quot; با {type} {model}',
+  'Message "{subject}" already associated with {type} {model}' => 'پیام &quot; {subject} &quot; در حال حاضر با همراه {type} {model}',
 );

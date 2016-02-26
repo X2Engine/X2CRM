@@ -150,7 +150,7 @@ class ActionsController extends x2base {
         }
     }
 
-    public function actionViewAction($id, $publisher = false){
+    public function actionViewAction($id, $publisher = false, $textOnly=false){
         $this->redirectOnNullModel = false;
         $this->throwOnNullModel = false;
         $model = $this->loadModel($id);
@@ -163,6 +163,7 @@ class ActionsController extends x2base {
             $this->renderPartial('_viewFrame', array(
                 'model' => $model,
                 'publisher' => $publisher,
+                'textOnly' => $textOnly,
             ));
         }else{
             echo "<b>Error: 404</b><br><br>Unable to find the requested action.";
@@ -875,7 +876,8 @@ class ActionsController extends x2base {
 
         if($type == 'open' && !$fromApp){
             $track = TrackEmail::model()->findByAttributes(array('uniqueId' => $uid));
-            $track->recordEmailOpen();
+            if ($track)
+                $track->recordEmailOpen();
         }
         //return a one pixel transparent png
         header('Content-Type: image/png');

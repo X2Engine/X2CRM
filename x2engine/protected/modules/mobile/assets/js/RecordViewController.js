@@ -44,7 +44,8 @@ function RecordViewController (argsDict) {
         hasSettingsMenu: true,
         modelName: null,
         modelId: null,
-        myProfileId: null
+        myProfileId: null,
+        supportsActionHistory: false
     };
     auxlib.applyArgs (this, defaultArgs, argsDict);
     x2.Controller.call (this, argsDict);
@@ -86,6 +87,57 @@ RecordViewController.prototype.setUpProfile = function () {
      
 };
 
+RecordViewController.prototype.swipedInTarget = function (start) {
+    return !x2.panel.swipedInTarget (start);
+};
+
+RecordViewController.prototype.setUpTabs = function () {
+    var that = this;
+    var tabs$ = $.mobile.activePage.find ('.record-view-tabs');
+    var navBar$ = tabs$.find ('.ui-navbar');
+    tabs$.tabs ({
+        // fixes mysterious bug which causes jQuery UI to attempt to fetch tabs via ajax when 
+        // tabs widget is instantiated. Bug only occurs when making an ajax transition to the
+        // record view page.
+        beforeLoad: function () { return false; },
+        beforeActivate: function (evt, ui) {
+            $.mobile.activePage.attr ('data-x2-tab-name', $(ui.newTab).attr ('data-x2-tab-name'));
+        },
+        activate: function () {
+//            if (x2.main.isPhoneGap) {
+//                x2.main.instantiateNano ($.mobile.activePage.find ('.ui-content'));
+//            }
+        }
+    });
+
+    // fix for ios. moves navbar one below body preventing display issues due to iOS handling of 
+    // fixed positioning
+    if (x2.main.platform === 'iOS') {
+        $('#header').after (navBar$.detach ());
+    }
+
+    function bindSwipe (direction) {
+        $(document).off ('swipe' + direction + '.setUpTabs').
+            on ('swipe' + direction + '.setUpTabs', function (evt) {
+
+            var pointerMethod = direction === 'left' ? 'next' : 'prev';
+
+            if (that.swipedInTarget (evt.swipestart.coords) &&
+                $.mobile.activePage.jqmData ('panel') !== 'open') {
+
+                var activeTab$ = navBar$.find ('.ui-state-active');
+                if (activeTab$[pointerMethod] ('li').length) {
+                    activeTab$[pointerMethod] ('li').find ('a').click ();
+                }
+            }
+        });
+    }
+
+    bindSwipe ('left');
+    bindSwipe ('right');
+
+};
+
 RecordViewController.prototype.init = function () {
     var that = this;
     this.documentEvents.push (x2.main.onPageShow (function () {
@@ -93,6 +145,9 @@ RecordViewController.prototype.init = function () {
         that.setUpDelete ();
         if (that.modelName === 'Profile') {
             that.setUpProfile ();
+        }
+        if (that.supportsActionHistory) {
+            that.setUpTabs ();
         }
     }, this.constructor.name));
 };

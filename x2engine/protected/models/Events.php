@@ -157,18 +157,39 @@ class Events extends X2ActiveRecord {
         }
     }
 
-    public function renderFrameLink ($htmlOptions) {
+    public function getAssociation () {
+        $modelName = X2Model::model2 ($this->associationType);
+        if ($modelName) {
+            return $modelName::model ()->findByPk ($this->associationId);
+        }
+    }
+
+    public function renderFrameLink ($htmlOptions, $text=null) {
         if (Yii::app()->params->isMobileApp &&
             !X2LinkableBehavior::isMobileLinkableRecordType ($this->associationType)) {
 
             return Events::parseModelName ($this->associationType);
         }
+        $association = $this->getAssociation ();
+        if (!$association) {
+            return Events::parseModelName ($this->associationType);
+        }
+        $htmlOptions = array_merge ($htmlOptions, array (
+            'class' => 'action-frame-link',
+            'data-action-id' => $this->associationId
+        ));
+        if ($association instanceof Actions &&
+            in_array ($association->type, array ('note', 'time', 'call'))) {
+
+            $name = Yii::t('app', 'comment');
+            $htmlOptions['data-action-type'] = $association->type;
+            $htmlOptions['data-text-only'] = 1;
+        } else {
+            $name = Events::parseModelName($this->associationType);
+        }
         return CHtml::link(
-            Events::parseModelName($this->associationType),
-            '#', array_merge($htmlOptions, array(
-                'class' => 'action-frame-link',
-                'data-action-id' => $this->associationId
-            ))
+            $text ? $text : $name,
+            '#', $htmlOptions
         );
     }
 
@@ -283,22 +304,26 @@ class Events extends X2ActiveRecord {
                                 Yii::t('app', 'Someone') : $authorText;
                             switch ($action->type) {
                                 case 'call':
-                                    $text = Yii::t('app', '{authorText} logged a call ({duration}) with {modelLink}.', array(
+                                    $text = Yii::t('app', '{authorText} logged a call ({duration}) with {modelLink}: {text}', array(
                                                 '{authorText}' => $authorText,
                                                 '{duration}' => empty($action->dueDate) || empty($action->completeDate) ? Yii::t('app', 'duration unknown') : Formatter::formatTimeInterval($action->dueDate, $action->completeDate, '{hoursMinutes}'),
+
+                                                '{text}' => $action->actionDescription,
                                                 '{modelLink}' => X2Model::getModelLink($action->associationId, ucfirst($action->associationType), $requireAbsoluteUrl)
                                     ));
                                     break;
                                 case 'note':
-                                    $text = Yii::t('app', '{authorText} posted a comment on {modelLink}.', array(
+                                    $text = Yii::t('app', '{authorText} posted a comment on {modelLink}: {text}', array(
                                                 '{authorText}' => $authorText,
+                                                '{text}' => $action->actionDescription,
                                                 '{modelLink}' => X2Model::getModelLink($action->associationId, ucfirst($action->associationType), $requireAbsoluteUrl)
                                     ));
                                     break;
                                 case 'time':
-                                    $text = Yii::t('app', '{authorText} logged {time} on {modelLink}.', array(
+                                    $text = Yii::t('app', '{authorText} logged {time} on {modelLink}: {text}', array(
                                                 '{authorText}' => $authorText,
                                                 '{time}' => Formatter::formatTimeInterval($action->dueDate, $action->dueDate + $action->timeSpent, '{hoursMinutes}'),
+                                                '{text}' => $action->actionDescription,
                                                 '{modelLink}' => X2Model::getModelLink($action->associationId, ucfirst($action->associationType))
                                     ));
                                     break;
@@ -697,29 +722,46 @@ class Events extends X2ActiveRecord {
             case 'email_from':
                 if (class_exists($this->associationType)) {
                     if (count(X2Model::model($this->associationType)->findAllByPk($this->associationId)) > 0) {
-                        $email = Yii::t('app', 'email');
                         if ($this->associationType === 'Actions' && $this->subtype = 'email') {
                             $action = X2Model::model('Actions')->findByPk ($this->associationId);
                             if ($action) {
-                                $multiAssociations = $action->getMultiassociations();
-                                if (isset($multiAssociations['Contacts'])) {
-                                    // Link to the first multiassociated Contact
-                                    $contact = $multiAssociations['Contacts'][0];
-                                    $modelName = Events::parseModelName('Contacts');
-                                    $emailLink = X2Model::getModelLink($action->id, 'Actions');
-                                    $modelLink = X2Model::getModelLink($contact->id, 'Contacts');
-                                    $email = Yii::t('app', 'email') . ' '. $emailLink;
+                                $emailLink = X2Model::getModelLink($action->id, 'Actions');
+                                $email = Yii::t('app', 'email') . ' '. $emailLink;
+                                $modelLinks = $action->getMultiassociationLinks();
+                                $text = $authorText . Yii::t('app', "received an {email} from ", array(
+                                    '{email}' => $email,
+                                ));
+                                // construct event text for multiassociated actions
+                                foreach (array('Contacts', 'Services') as $modelType) {
+                                    if (array_key_exists ($modelType, $modelLinks) && !empty($modelLinks[$modelType])) {
+                                        $multiple = count($modelLinks[$modelType]) > 1;
+                                        $modelDescription = lcfirst (Modules::displayName ($multiple, $modelType));
+                                        if ($multiple) $modelDescription .= ',';
+                                        $text .= Yii::t('app', 'the {transModelName} {modelLinks}', array(
+                                            '{transModelName}' => $modelDescription,
+                                            '{modelLinks}' => implode(', ', $modelLinks[$modelType]),
+                                        ));
+
+                                        if ($modelType === 'Contacts' && array_key_exists ('Services', $modelLinks) &&
+                                            !empty($modelLinks['Services'])) {
+
+                                                $text .= Yii::t('app', ', regarding ');
+                                        }
+                                    }
                                 }
+                            } else {
+                                $text = $authorText . Yii::t('app', "received an email from a {transModelName}, but that record could not be found.", array(
+                                            '{transModelName}' => Events::parseModelName($this->associationType)
+                                ));
                             }
                         } else {
                             $modelName = Events::parseModelName($this->associationType);
                             $modelLink = X2Model::getModelLink($this->associationId, $this->associationType);
+                            $text = $authorText . Yii::t('app', "received an email from a {transModelName}, {modelLink}", array(
+                                    '{transModelName}' => $modelName,
+                                    '{modelLink}' => $modelLink,
+                            ));
                         }
-                        $text = $authorText . Yii::t('app', "received an {email} from a {transModelName}, {modelLink}", array(
-                                '{email}' => $email,
-                                '{transModelName}' => $modelName,
-                                '{modelLink}' => $modelLink,
-                        ));
                     } else {
                         $deletionEvent = X2Model::model('Events')->findByAttributes(array('type' => 'record_deleted', 'associationType' => $this->associationType, 'associationId' => $this->associationId));
                         if (isset($deletionEvent)) {
@@ -1099,6 +1141,7 @@ class Events extends X2ActiveRecord {
             ->where($condition, array_merge ($params, $accessCriteria->params))
             ->order('timestamp DESC, id DESC')
             ->limit(1)
+            ->group('id')
             ->queryScalar();
         if (empty($lastTimestamp)) {
             $lastTimestamp = 0;
@@ -1396,8 +1439,9 @@ class Events extends X2ActiveRecord {
                 ->where('username=:user', array(':user' => $event->user))
                 ->queryScalar();
             if (!empty($avatar) && file_exists($avatar)) {
-                $avatar = Profile::renderAvatarImage($id, 45, 45);
+                $avatar = Profile::renderAvatarImage($userId, 45, 45);
             } else {
+                $dimensionLimit = 45;
                 $avatar = X2Html::x2icon('profile-large',
                                 array(
                             'class' => 'avatar-image default-avatar',

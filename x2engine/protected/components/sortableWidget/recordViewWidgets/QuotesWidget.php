@@ -97,10 +97,13 @@ class QuotesWidget extends TransactionalViewWidget {
                     'actionDescription'=>array(
                         'header'=>$this->getActionDescriptionHeader (),
                         'name'=>'actionDescription',
+                        // get the actions model so that the action description gets loaded
                         'value'=> '
-                            $data->type === "quotesDeleted" ? 
-                            $data->actionDescription :
-                            $data->renderInlineViewLink ()',
+                            ($data = Actions::model ()->findByPk ($data->id)) ?
+                                ($data->type === "quotesDeleted" ? 
+                                    $data->actionDescription :
+                                    $data->renderInlineViewLink ()) : null',
+
                         'type'=>'raw',
                         'filter' => false,
                     ),

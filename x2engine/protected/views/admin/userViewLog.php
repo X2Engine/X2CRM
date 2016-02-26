@@ -66,6 +66,7 @@ $this->widget('zii.widgets.grid.CGridView', array(
             'name'=>'recordType',
             'header'=>Yii::t('admin','Record Type'),
             'type'=>'raw',
+            'value'=>'CHtml::encode($data["recordType"])'
         ),
         array(
             'name'=>'recordId',

@@ -48,9 +48,9 @@ $this->widget('zii.widgets.grid.CGridView', array(
 
 			'name'=>'modelValue',
 			'header'=>Yii::t('admin','Condition'),
-			'value'=>'"When a(n) ".mb_substr($data->modelType,0,-1,"UTF-8")."\'s ".$data->modelField." is ".
-                            (($data->comparisonOperator=="change")?"changed":$data->comparisonOperator)
-                            ." ".$data->modelValue.", ".
+			'value'=>'"When a(n) ".CHtml::encode(mb_substr($data->modelType,0,-1,"UTF-8"))."\'s ".CHtml::encode($data->modelField)." is ".
+                            (($data->comparisonOperator=="change")?"changed":CHtml::encode($data->comparisonOperator))
+                            ." ".CHtml::encode($data->modelValue).", ".
                             (($data->type==\'notification\')?"notify":($data->type=="action"?"create an action for":($data->type=="assignment"?"assign to":"")))
                             ." ".User::getUserLinks($data->users)',
 			'type'=>'raw',

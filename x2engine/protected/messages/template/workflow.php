@@ -3,7 +3,6 @@
   'Comment Required' => '',
   'Stage {n}' => '',
   'Please summarize how this stage was completed.' => '',
-  'Details' => '',
   'You do not have permission to revert this stage.' => '',
   'You do not have permission to complete this stage.' => '',
   'All {processes}' => '',

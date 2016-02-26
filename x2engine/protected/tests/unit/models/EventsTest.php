@@ -69,7 +69,7 @@ class EventsTest extends X2DbTestCase {
          * return the same data, which may be true in some circumstances but depends
          * on the parameters passed to getEvents, which are currently incorrect. 
          */
-        $this->markTestSkipped('Test requires refactor');
+        $this->markTestIncomplete('Test requires refactor');
         TestingAuxLib::loadX2NonWebUser ();
         $testUser = $this->users ('testUser');
         TestingAuxLib::suLogin ($testUser->username);
@@ -117,7 +117,7 @@ class EventsTest extends X2DbTestCase {
          * more conditions applied to it than the findAllByAttributes it's being
          * compared against and so it is possible for them to not match up
          */
-        $this->markTestSkipped('Test requires refactor');
+        $this->markTestIncomplete('Test requires refactor');
         TestingAuxLib::loadX2NonWebUser ();
         TestingAuxLib::suLogin ('testuser');
 

@@ -60,4 +60,8 @@
   'Auto-log outbound emails' => 'Auto-log email in uscita',
   'Auto-log inbound emails' => 'Auto-log email in entrata',
   'From' => 'Da parte di',
+  'Copy to Sent Folder' => 'Copia nella cartella posta inviata',
+  'Disabled' => 'Disabilitato',
+  'Failed to associate message "{subject}" with {type} {model}' => 'Impossibile associare il messaggio &quot; {subject} &quot; con {type} {model}',
+  'Message "{subject}" already associated with {type} {model}' => 'Messaggio &quot; {subject} &quot; già associato a {type} {model}',
 );

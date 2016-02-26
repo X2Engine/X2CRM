@@ -802,10 +802,13 @@ abstract class x2base extends X2Controller {
         } else {
             $name=ucfirst(basename($this->getId()));
 
+             
+             /* x2modstart */ 
             // Try and load the configured module name
             $moduleName = Modules::displayName(true, $name);
             if (!empty($moduleName))
                 $name = $moduleName;
+            /* x2modend */ 
 
             if($this->getAction()!==null && 
                strcasecmp($this->getAction()->getId(),$this->defaultAction)) {
@@ -834,27 +837,36 @@ abstract class x2base extends X2Controller {
      * This method is Copyright (c) 2008-2014 by Yii Software LLC
      * http://www.yiiframework.com/license/
      */
-    public function widget($className,$properties=array(),$captureOutput=false,$run=true)
-    {
-        if($captureOutput)
-        {
-            ob_start();
-            ob_implicit_flush(false);
-            $widget=$this->createWidget($className,$properties);
+	public function widget($className,$properties=array(),$captureOutput=false,$run=true)
+	{
+		if($captureOutput)
+		{
+			ob_start();
+			ob_implicit_flush(false);
+			try
+			{
+				$widget=$this->createWidget($className,$properties);
+                /* x2modstart */ 
+                if ($run) $widget->run();
+                /* x2modend */ 
+			}
+			catch(Exception $e)
+			{
+				ob_end_clean();
+				throw $e;
+			}
+			return ob_get_clean();
+		}
+		else
+		{
+			$widget=$this->createWidget($className,$properties);
             /* x2modstart */ 
             if ($run) $widget->run();
             /* x2modend */ 
-            return ob_get_clean();
-        }
-        else
-        {
-            $widget=$this->createWidget($className,$properties);
-            /* x2modstart */ 
-            if ($run) $widget->run();
-            /* x2modend */ 
-            return $widget;
-        }
-    }
+			return $widget;
+		}
+	}
+
 
     public function actionQuickView ($id) {
         $model = $this->loadModel($id);

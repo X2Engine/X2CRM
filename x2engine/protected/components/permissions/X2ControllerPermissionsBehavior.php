@@ -124,7 +124,7 @@ class X2ControllerPermissionsBehavior extends ControllerPermissionsBehavior {
      * @param mixed $model The model in question (subclass of {@link CActiveRecord} or 
      *  {@link X2Model}
      * @param string $action
-     * @return boolean
+     * @return boolean|array
      */
     public function checkPermissions(&$model, $action = null) {
         if (Yii::app()->params->isAdmin) return true;

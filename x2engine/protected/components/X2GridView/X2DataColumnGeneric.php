@@ -107,29 +107,29 @@ class X2DataColumnGeneric extends CDataColumn {
      * This method is Copyright (c) 2008-2014 by Yii Software LLC
      * http://www.yiiframework.com/license/ 
 	 */
-	protected function renderFilterCellContent()
+	public function getFilterCellContent ()
 	{
 		if(is_string($this->filter)) {
-			echo $this->filter;
+			return $this->filter;
 		} elseif($this->filter!==false && $this->grid->filter!==null && $this->name!==null && 
             strpos($this->name,'.')===false) {
 
             /* x2modstart */ 
             if (isset ($this->filterType)) {
-                echo $this->renderFilterCellByType ();
+                return $this->renderFilterCellByType ();
             /* x2modend */ 
 			} elseif(is_array($this->filter)) {
                 /* x2modstart */ 
                 // removed prompt
-				echo CHtml::activeDropDownList(
+				return CHtml::activeDropDownList(
                     $this->grid->filter, $this->name, $this->filter,
                     array('id'=>false));
                 /* x2modend */
 			} elseif($this->filter===null) {
-				echo CHtml::activeTextField($this->grid->filter, $this->name, array('id'=>false));
+				return CHtml::activeTextField($this->grid->filter, $this->name, array('id'=>false));
             }
 		} else {
-			parent::renderFilterCellContent();
+			return parent::getFilterCellContent ();
         }
 	}
 

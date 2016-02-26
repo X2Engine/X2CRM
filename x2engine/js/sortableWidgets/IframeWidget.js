@@ -87,6 +87,16 @@ IframeWidget.prototype.onDragStop = function () {
 Private instance methods
 */
 
+IframeWidget.prototype._setUpDefaultTextBehavior = function () {
+    if (this.url) return;
+    var that = this;
+    this.element.find ('.default-text-container a').click (function (evt) {
+        evt.preventDefault ();
+        that._changeUrlButton.click ();
+        return false;
+    });
+};
+
 /**
  * Show dialog with doc selection form when settings menu item is clicked 
  */
@@ -131,10 +141,11 @@ IframeWidget.prototype._setUpChangeUrlBehavior = function () {
                             $(that._changeUrlDialog).find ('.iframe-url'));
 
                         if (url !== '') {
-                            if (!url.match (/^http:\//)) url = 'http://' + url;
+                            if (!url.match (/^https?:\/\//)) url = 'http://' + url;
                             that.element.find ('iframe').attr ('src', url);
                             that.setProperty ('url', url);
                             $(this).dialog ('close');
+                            that.element.find ('.default-text-container').remove ();
                         } else {
                             auxlib.createErrorFeedbackBox ({
                                 prevElem: $(that._changeUrlDialog).find ('.iframe-url'),
@@ -210,5 +221,6 @@ IframeWidget.prototype._init = function () {
     this._iframeElem = this.contentContainer.find ('iframe');
     this._iframeSrc = '';
     this._setUpChangeUrlBehavior ();
+    this._setUpDefaultTextBehavior ();
 };
 

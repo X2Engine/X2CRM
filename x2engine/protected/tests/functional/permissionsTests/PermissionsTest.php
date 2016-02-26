@@ -41,7 +41,10 @@ Yii::import("application.modules.groups.models.*");
 
 class PermissionsTest extends X2WebTestCase {
 
-    public $autoLogin = false; 
+    public $login = array(
+        'username'=>'testUser2',
+        'password'=>'password',
+    );
 
     public $fixtures = array(
         'contacts' => array ('Contacts', '.X2PermissionsBehaviorTest'),
@@ -124,8 +127,6 @@ class PermissionsTest extends X2WebTestCase {
      * TODO: add tests for create/update/delete
      */
     public function testReadAccessLevels () {
-        $this->clearSessions ();
-        $this->loginAs ('testUser2', 'password');
         $user = $this->users ('user2');
 
         $contactGroupmate = $this->contacts ('contactGroupmate');

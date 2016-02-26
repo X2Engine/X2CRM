@@ -38,6 +38,7 @@ class MobileUpdateAction extends MobileAction {
 
     public $pageClass = 'record-update';
     public $viewFile = 'recordUpdate';
+    public $pageDepth = 1;
 
     public function loadModel ($id) {
         return $this->controller->loadModel ($id);

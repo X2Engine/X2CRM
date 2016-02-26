@@ -33,11 +33,6 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 
-@import "standards";
-@import "colors";
-@import "login-shared";
-@import "mobileColors";
-
 .x2-remote-page {
 
 /* narrow header */
@@ -49,14 +44,6 @@
 
 /* style links in footer */
 /* remove text shadow from footer text */
-
-.ui-loader {
-	background: none !important;
-    border: none !important;
-	color: #fff;
-	font-size: 12px !important;
-	text-shadow: none !important;
-}
 
 .ui-input-text {
     box-sizing: border-box;

@@ -24,4 +24,6 @@
   'The username or password you entered is incorrect. Please try again.' => '您输入的用户名或密码不正确。请再试一次。',
   'Username and password cannot be left blank.' => '用户名和密码不能为空。',
   'Web Address' => '网址',
+  'Add photo attachment' => '添加照片附件',
+  'Add file attachment' => '添加文件附件',
 );

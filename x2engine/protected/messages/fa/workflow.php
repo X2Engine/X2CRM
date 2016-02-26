@@ -7,7 +7,6 @@
   'Comment Required' => 'اظهار نظر در مورد نیاز',
   'Stage {n}' => 'مرحله {n}',
   'Please summarize how this stage was completed.' => 'لطفا خلاصه این مرحله کامل شد.',
-  'Details' => 'جزئیات',
   'Any stage' => 'هر مرحله',
   'Process:' => 'فرآیند:',
   'record type(s)' => 'نوع رکورد (ها)',

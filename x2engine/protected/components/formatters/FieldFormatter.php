@@ -74,6 +74,8 @@ class FieldFormatter extends FieldFormatterBase {
 
         $renderByNameFn = 'render'.ucfirst ($field->fieldName);
         $renderByTypeFn = 'render'.ucfirst ($field->type);
+
+
         // first check for field-specific renderer. Exclude field names that match an existing
         // type 
         if (method_exists ($this, $renderByNameFn) && 
@@ -276,7 +278,9 @@ class FieldFormatter extends FieldFormatterBase {
 
     protected function renderLink ($field, $makeLinks, $textOnly, $encode) {
         $fieldName = $field->fieldName;
+        
         $linkedModel = $this->owner->getLinkedModel($fieldName, false);
+
         if ($linkedModel === null) {
             return $this->render ($this->owner->$fieldName, $encode);
         } else {
@@ -340,11 +344,11 @@ class FieldFormatter extends FieldFormatterBase {
         return $this->render($field->getDropdownValue ($this->owner->$fieldName), $encode);
     }
 
-    protected function renderParentCase ($field, $makeLinks, $textOnly, $encode) {
-        $fieldName = $field->fieldName;
-        return $this->render (
-            Yii::t(strtolower(Yii::app()->controller->id), $this->owner->$fieldName), $encode);
-    }
+//    protected function renderParentCase ($field, $makeLinks, $textOnly, $encode) {
+//        $fieldName = $field->fieldName;
+//        return $this->render (
+//            Yii::t(strtolower(Yii::app()->controller->id), $this->owner->$fieldName), $encode);
+//    }
 
     protected function renderText ($field, $makeLinks, $textOnly, $encode) {
         $fieldName = $field->fieldName;

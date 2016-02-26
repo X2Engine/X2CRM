@@ -43,6 +43,13 @@ class BugReportsController extends x2base {
                 'class' => 
                     'application.modules.mobile.components.behaviors.X2MobileControllerBehavior'
             ),
+            'X2MobileActionHistoryBehavior' => array(
+                'class' => 
+                    'application.modules.mobile.components.behaviors.X2MobileActionHistoryBehavior'
+            ),
+            'QuickCreateRelationshipBehavior' => array(
+                'class' => 'QuickCreateRelationshipBehavior',
+            ),
          ));
     }
 
@@ -80,14 +87,21 @@ class BugReportsController extends x2base {
         if(isset($_POST['BugReports'])) {
             $temp = $model->attributes;
             $model->setX2Fields($_POST['BugReports']);
-            parent::create($model, $temp, 0);
+            if (isset($_POST['x2ajax'])) {
+                $ajaxErrors = $this->quickCreate($model);
+            } else {
+                parent::create($model, $temp, 0);
+            }
         }
 
-        $this->render('create',array(
-            'model'=>$model,
-            'users'=>$users,
-        ));
-
+        if (isset($_POST['x2ajax'])) {
+            $this->renderInlineCreateForm($model, isset($ajaxErrors) ? $ajaxErrors : false);
+        } else {
+            $this->render('create', array(
+                'model' => $model,
+                'users' => $users,
+            ));
+        }
     }
 
     /**

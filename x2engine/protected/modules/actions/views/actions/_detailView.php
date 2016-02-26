@@ -65,7 +65,7 @@ if($model->type=='note' || $model->type=='attachment') {
 		<td colspan="3" class="text-field"><div class="spacer"></div>
 			<?php
 			if($model->type=='attachment')
-				echo Media::attachmentActionText($model->actionDescription,true,true);
+				echo Media::attachmentActionText($model,true,true);
 			else
 				echo $this->convertUrls(CHtml::encode($model->actionDescription));
 			?>
@@ -120,6 +120,8 @@ if ($model->associationType!="none") {
 			<?php
                             if ($model->associationType=="calendar")
                                 echo CHtml::link(Yii::t('calendar', "{calendar}", array('{calendar}' => Modules::displayName(false, "Calendar"))), array('/'.$model->associationType.'/'));
+                            else if ($model->isMultiassociated())
+                                echo $model->renderMultiassociations ();
                             else
                                 echo CHtml::link(CHtml::encode($model->associationName),array('/'.$model->associationType.'/'.$model->associationId));
                         ?>

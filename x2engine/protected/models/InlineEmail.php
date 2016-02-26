@@ -750,10 +750,12 @@ class InlineEmail extends CFormModel {
     }
 
     public static function extractTrackingUid($body) {
-        $pattern = self::insertedPattern('track', '(<img.*\/>)', 1, 'u');
-        if (preg_match ($pattern, $body, $matchImg)) {
-            if (preg_match (self::UIDREGEX, $matchImg[1], $matchId)) {
-                return $matchId[1];
+        $pattern = '/(<img[^>]*\/?>)/';
+        if (preg_match_all ($pattern, $body, $matchImg) && isset($matchImg[0])) {
+            foreach ($matchImg[0] as $match) {
+                if (preg_match (self::UIDREGEX, $match, $matchId)) {
+                    return $matchId[1];
+                }
             }
         }
     }
@@ -837,10 +839,22 @@ class InlineEmail extends CFormModel {
         $this->status = $this->deliver();
         if($this->status['code'] == '200') {
             $this->recordEmailSent($createEvent); // Save all the actions and events
+            
             $this->clearTemporaryFiles ($this->attachments);
+            if (isset($this->targetModel)) {
+                X2Flow::trigger ('OutboundEmailTrigger', array(
+                    'model' => $this->targetModel,
+                    'subject' => $this->subject,
+                    'body' => $this->message,
+                    'to' => $this->to,
+                    'from' => $this->from,
+                ));
+            }
         }
         return $this->status;
     }
+
+    
 
     /**
      * Save the tracking record for this email, but only if an image was inserted.

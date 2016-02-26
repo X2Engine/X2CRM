@@ -379,7 +379,7 @@ class WebFormAction extends CAction {
                         $emailBody = preg_replace('/\n|\r\n/', "<br>", $emailBody);
 
                         $uniqueId = md5(uniqid(rand(), true));
-                        $emailBody .= '<img src="'.$this->controller->createAbsoluteUrl(
+                        $emailBody .= '<img src="'.Yii::app()->createExternalUrl(
                             '/actions/actions/emailOpened', array('uid' => $uniqueId, 'type' => 'open')).'"/>';
 
                         $emailSubject = Yii::app()->settings->serviceCaseEmailSubject;

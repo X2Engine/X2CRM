@@ -7,7 +7,6 @@
   'Comment Required' => 'Kommentar erforderlich',
   'Stage {n}' => 'Stufe {n}',
   'Please summarize how this stage was completed.' => 'Bitte fassen Sie zusammen, wie diese Stufe abgeschlossen wurde.',
-  'Details' => 'Details',
   'Any stage' => 'Jede Stufe',
   'Process:' => 'Prozess:',
   'record type(s)' => 'Datensatz / Datensätze',

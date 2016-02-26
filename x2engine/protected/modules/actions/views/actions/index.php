@@ -34,7 +34,7 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 
-
+Yii::app()->clientScript->registerCssFile(Yii::app()->theme->baseUrl.'/css/actionHistory.css');
 Yii::app()->clientScript->registerResponsiveCss('responsiveActionsCss',"
 
 @media (max-width: 759px) {

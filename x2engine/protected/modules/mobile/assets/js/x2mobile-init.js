@@ -63,5 +63,5 @@ $(document).bind("mobileinit", function(){
     $.mobile.loader.prototype.options.text = "";
     $.mobile.loader.prototype.options.textVisible = false;
     $.mobile.loader.prototype.options.theme = "a";
-    $.mobile.loader.prototype.options.html = '<div class="x2-loading-icon load8 full-page-loader x2-loader"><div class="loader"></div></div><div class="x2-mobile-overlay"></div>'
+    $.mobile.loader.prototype.options.html = '<div class="x2-loading-icon load8 full-page-loader x2-loader"><div class="loader"></div></div>'
 });

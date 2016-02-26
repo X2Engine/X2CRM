@@ -80,6 +80,14 @@ class Accounts extends X2Model {
             'X2DuplicateBehavior' => array(
                 'class' => 'application.components.X2DuplicateBehavior',
             ),
+            'X2MergeableBehavior' => array(
+                'class' => 'X2MergeableBehavior',
+                'restrictedFields' => array (
+                    'id', 'nameId', 'dupeCheck', 
+                    // legacy field
+                    'associatedContacts'
+                )
+            ),
         ));
     }
 

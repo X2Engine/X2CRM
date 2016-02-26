@@ -10,7 +10,8 @@
  * @since 1.0
  */
 
-require(dirname(__FILE__).'/YiiBase.php');
+if(!class_exists('YiiBase', false))
+	require(dirname(__FILE__).'/YiiBase.php');
 
 /**
  * Yii is a helper class serving common framework functionalities.
@@ -251,7 +252,7 @@ class Yii extends YiiBase
 			else  // class name with namespace in PHP 5.3
 			{
 				$namespace=str_replace('\\','.',ltrim($className,'\\'));
-				if(($path=self::getPathOfAlias($namespace))!==false)
+                if(($path=self::getPathOfAlias($namespace))!==false && is_file($path.'.php'))
                     /* x2modstart */ 
 					include(self::getCustomPath ($path.'.php'));
                     /* x2modend */ 

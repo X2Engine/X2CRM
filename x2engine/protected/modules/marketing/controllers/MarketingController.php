@@ -766,6 +766,41 @@ class MarketingController extends x2base {
         $this->render('webTracker', array('admin' => $admin));
     }
 
+    /**
+     * Export the web tracker code to upload to your website
+     */
+    public function actionExportWebTracker() {
+        $srcFile = implode (DIRECTORY_SEPARATOR, array(Yii::app()->basePath, '..', 'webTracker.php'));
+        $dstFile = $this->attachBehavior('ImportExportBehavior', new ImportExportBehavior)
+            ->safePath('webTracker.js');
+
+        // Evaluate and capture webTracker.php
+        ob_start ();
+        require_once ($srcFile);
+        $trackerCode = ob_get_contents ();
+        ob_end_clean ();
+
+        // Adjust webListener URL as it would be generated in an incorrect context
+        $trackerCode = preg_replace ('/(index.php\/)?marketing\/exportWebTracker\//', '', $trackerCode);
+        $trackerCode = preg_replace ('/return \'https?:\/\//', 'return \'//', $trackerCode);
+
+        // Retrieve current license header
+        $headerLength = 24; // in lines
+        $fh = fopen ($srcFile, 'r');
+        fgets ($fh); // skip first line (open PHP tag)
+        $header = '';
+        for ($i = 0; $i < $headerLength; $i++)
+            $header .= fgets ($fh);
+        fclose ($fh);
+
+        // Write to temporary file and send to browser
+        $fh = fopen ($dstFile, 'w');
+        fwrite ($fh, $header);
+        fwrite ($fh, $trackerCode);
+        fclose ($fh);
+        $this->sendFile ('webTracker.js', @file_get_contents($dstFile), 'text/javascript');
+    }
+
 	
 
     /**

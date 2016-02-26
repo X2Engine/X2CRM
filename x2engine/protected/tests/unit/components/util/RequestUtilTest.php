@@ -58,7 +58,7 @@ class RequestUtilTest extends X2TestCase {
 
     public function testFileGetContentsRequest () {
         AppFileUtil::$neverCurl = true;
-        $url = Yii::app()->getUpdateServer ().'/installs/registry/getLicenseKeyInfo';
+        $url = X2_TESTING_UPDATE_SERVER . '/installs/registry/getLicenseKeyInfo';
         $this->assertFalse (AppFileUtil::tryCurl ($url));
         $response = CJSON::decode (RequestUtil::request (array (
             'url' => $url,
@@ -72,7 +72,7 @@ class RequestUtilTest extends X2TestCase {
 
     public function testFileGetContentsRequestGET () {
         AppFileUtil::$neverCurl = true;
-        $url = Yii::app()->getUpdateServer ().'/installs/updates/updateCheck';
+        $url = X2_TESTING_UPDATE_SERVER . '/installs/updates/updateCheck';
         $this->assertFalse (AppFileUtil::tryCurl ($url));
         $response = RequestUtil::request (array (
             'url' => $url,
@@ -84,7 +84,7 @@ class RequestUtilTest extends X2TestCase {
     public function testCurlRequest () {
         AppFileUtil::$neverCurl = false;
         AppFileUtil::$alwaysCurl = true;
-        $url = Yii::app()->getUpdateServer ().'/installs/registry/getLicenseKeyInfo';
+        $url = X2_TESTING_UPDATE_SERVER . '/installs/registry/getLicenseKeyInfo';
         $this->assertTrue (AppFileUtil::tryCurl ($url));
         $response = CJSON::decode (RequestUtil::request (array (
             'url' => $url,
@@ -99,7 +99,7 @@ class RequestUtilTest extends X2TestCase {
     public function testCurlRequestGET () {
         AppFileUtil::$neverCurl = false;
         AppFileUtil::$alwaysCurl = true;
-        $url = Yii::app()->getUpdateServer ().'/installs/updates/updateCheck';
+        $url = X2_TESTING_UPDATE_SERVER . '/installs/updates/updateCheck';
         $this->assertTrue (AppFileUtil::tryCurl ($url));
         $response = RequestUtil::request (array (
             'url' => $url,

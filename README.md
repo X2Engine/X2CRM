@@ -1,9 +1,29 @@
-# 5.4.3 #
-1/9/2016
+# 5.5 #
+2/26/2016
 * General Changelog / Developer Notes
-  * Fixed a bug with web lead capture
-  * Fixed a broken form layout in X2Touch
-  * Fixed a bug in Lists
+  * PHP7 compatibility
+  * Yii updated to 1.1.17
+  * PHPMailer updated to 5.2.14
+  * File attachment feature added to most X2Touch modules, including custom modules
+  * Added "Copy to Sent" dropdown to email client configuration to explicitly store sent messages
+  * Added "Reply All" button to email client
+  * New Office365 credentials type
+  * Added web tracker JavaScript code export functionality
+  * Fixed importer bug which created erroneous relationships
+  * Automated email logging bugfixes
+  * Fixed bug preventing records export download button from showing
+  * Fixed email client quota issue with Office365
+* Tracked Bug Fixes:  
+  * [3335](http://x2software.com/index.php/bugReports/3335): CDbCommand failed to execute the SQL statement: SQLSTATE[23000]: Integrity constraint violation: 1052 Column 'id' in where clause is ambiguous  
+  * [3336](http://x2software.com/index.php/bugReports/3336): Trying to get property of non-object  
+  * [3348](http://x2software.com/index.php/bugReports/3348): array_combine() expects parameter 1 to be array, null given  
+  * [3358](http://x2software.com/index.php/bugReports/3358): User Report  
+  * [3363](http://x2software.com/index.php/bugReports/3363): Undefined variable: id  
+  * [3367](http://x2software.com/index.php/bugReports/3367): Undefined index: dupeCheck  
+  * [3376](http://x2software.com/index.php/bugReports/3376): User Report  
+  * [3379](http://x2software.com/index.php/bugReports/3379): file_exists(): open_basedir restriction in effect. 
+  * [3383](http://x2software.com/index.php/bugReports/3383): User Report  
+  * [3643](http://x2software.com/index.php/bugReports/3643): User Report  
 
 
 # Introduction #

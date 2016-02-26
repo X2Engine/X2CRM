@@ -606,4 +606,5 @@
   'Okay' => '好',
   'Headquarters' => '司令部',
   'Mailing Address' => '邮寄地址',
+  'Details' => '详细信息',
 );

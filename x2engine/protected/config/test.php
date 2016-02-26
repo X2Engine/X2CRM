@@ -81,6 +81,12 @@ $debugLogRoutes = array(
 $config['components']['log']['routes'] = array_merge (array(
 	array(
 		'class' => 'CFileLogRoute',
+		'logFile' => 'test-results.log',
+        'levels' => 'error,warning,trace,info',
+        'categories' => 'system.test-output'
+	),
+	array(
+		'class' => 'CFileLogRoute',
 		'logFile' => php_sapi_name() == 'cli' ? 'system-test.log' : 'system-test-web.log',
         'levels' => 'error,warning,trace,info',
         'categories' => 'system.*'

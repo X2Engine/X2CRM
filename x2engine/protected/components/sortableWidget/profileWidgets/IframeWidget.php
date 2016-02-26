@@ -219,6 +219,7 @@ class IframeWidget extends SortableWidget {
                             top: 0;
                             right: 0;
                             bottom: 0;
+                            color: #222222 !important;
                         }
                     "
                 )

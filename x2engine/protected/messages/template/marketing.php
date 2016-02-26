@@ -173,4 +173,5 @@
   '{contacts} for {account} Report ({number})' => '',
   'Mailing for {account} Report ({number})' => '',
   'When this is enabled, all links in the email template will be replaced with links that will track when they have been clicked.' => '',
+  'Generate and export the web tracker JavaScript. This can be uploaded to your site in place of the standard web tracker embed code, which is useful when using tracking under SSL. Please note: the code that is generated is specific to your X2CRM installation.' => '',
 );

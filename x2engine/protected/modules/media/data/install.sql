@@ -22,6 +22,8 @@ CREATE TABLE x2_media(
 /*&*/
 ALTER TABLE `x2_events_to_media` ADD CONSTRAINT FOREIGN KEY (`mediaId`) REFERENCES x2_media(`id`) ON UPDATE CASCADE ON DELETE CASCADE;
 /*&*/
+ALTER TABLE `x2_actions_to_media` ADD CONSTRAINT FOREIGN KEY (`mediaId`) REFERENCES x2_media(`id`) ON UPDATE CASCADE ON DELETE CASCADE;
+/*&*/
 INSERT INTO `x2_modules`
 (`name`,    title,    visible,    menuPosition,    searchable,    editable,    adminOnly,    custom,    toggleable)
 VALUES

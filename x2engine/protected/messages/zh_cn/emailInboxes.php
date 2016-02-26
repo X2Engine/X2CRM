@@ -60,4 +60,8 @@
   'Auto-log outbound emails' => '自动登录站电子邮件',
   'Auto-log inbound emails' => '自动记录入站邮件',
   'From' => '从',
+  'Copy to Sent Folder' => '复制到文件夹发送',
+  'Disabled' => '残',
+  'Failed to associate message "{subject}" with {type} {model}' => '未能消息“关联{subject} ”与{type} {model}',
+  'Message "{subject}" already associated with {type} {model}' => '消息“ {subject} ”已经与相关{type} {model}',
 );

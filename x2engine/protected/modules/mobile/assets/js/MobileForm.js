@@ -44,6 +44,26 @@ function MobileForm (argsDict) {
     auxlib.applyArgs (this, defaultArgs, argsDict);
 }
 
+/**
+ * Submit file-input-containing form
+ */
+MobileForm.prototype.submitWithFiles = function (form$, success, failure) {
+    var formData = new FormData (form$.get (0));
+    $.ajax ({
+        url: form$.attr ('action'),
+        type: 'POST',
+        data: formData,
+        processData: false,
+        contentType: false,
+        success: function (data) {
+            success (data);
+        },
+        error: function () {
+            failure.call (null, Array.prototype.slice.call (arguments));
+        }
+    });
+};
+
  
 
 MobileForm.prototype.makePhotoAttachment = function (data) {

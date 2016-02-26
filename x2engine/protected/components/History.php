@@ -236,6 +236,9 @@ class History extends X2Widget {
             });
         ", CClientScript::POS_END);
 
+        Yii::app()->clientScript->registerCssFile(
+            Yii::app()->theme->baseUrl.'/css/actionHistory.css'); 
+
         $this->widget('application.components.X2ListView', array(
             'pager' => array(
                 'class' => 'CLinkPager',

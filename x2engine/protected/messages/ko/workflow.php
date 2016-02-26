@@ -7,7 +7,6 @@
   'Comment Required' => '필수 코멘트',
   'Stage {n}' => '스테이지 {n}',
   'Please summarize how this stage was completed.' => '이 단계가 완료된 방법을 요약하십시오.',
-  'Details' => '세부',
   'Any stage' => '모든 단계',
   'Process:' => '과정 :',
   'record type(s)' => '레코드 유형 (들)',

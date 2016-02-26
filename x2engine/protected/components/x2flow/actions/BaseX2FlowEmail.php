@@ -34,6 +34,7 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 
+Yii::import('application.components.x2flow.actions.X2FlowAction');
 /**
  * Base action class for email related x2flow actions
  *

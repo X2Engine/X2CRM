@@ -61,4 +61,8 @@
   'Invalid folder specified' => '',
   'Auto-log inbound emails' => '',
   'From' => '',
+  'Copy to Sent Folder' => '',
+  'Disabled' => '',
+  'Failed to associate message "{subject}" with {type} {model}' => '',
+  'Message "{subject}" already associated with {type} {model}' => '',
 );

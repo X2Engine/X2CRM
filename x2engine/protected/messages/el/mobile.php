@@ -24,4 +24,6 @@
   'The username or password you entered is incorrect. Please try again.' => 'Το όνομα χρήστη ή ο κωδικός πρόσβασης που εισάγατε δεν είναι σωστός. Παρακαλώ προσπάθησε ξανά.',
   'Username and password cannot be left blank.' => 'Το όνομα χρήστη και ο κωδικός πρόσβασης δεν μπορεί να μείνει κενό.',
   'Web Address' => 'Ηλεκτρονική διεύθυνση',
+  'Add photo attachment' => 'Προσθήκη συνημμένου φωτογραφία',
+  'Add file attachment' => 'Προσθήκη συνημμένου αρχείου',
 );

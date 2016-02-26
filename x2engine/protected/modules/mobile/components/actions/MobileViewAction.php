@@ -37,14 +37,7 @@
 class MobileViewAction extends MobileAction {
 
     public $pageClass = 'mobile-view';
-
-    private $_model;
-    public function getModel ($id) {
-        if (!isset ($this->_model)) {
-            $this->_model = $this->controller->loadModel ($id);
-        }
-        return $this->_model;
-    }
+    public $pageDepth = 1;
 
     public function run ($id) {
         parent::beforeRun ();

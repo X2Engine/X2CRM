@@ -87,21 +87,30 @@ MobileAutocomplete.prototype.populate = function (data) {
     }
 
     this.results$.append (options$);
-    this.results$.show ();
+    this.resultsContainer$.show ();
     this.results$.closest ('.ui-content').addClass ('autocomplete-shown');
-    this.results$.height ($(window).height () - this.results$.position ().top);
+    this.resultsContainer$.height ($(window).height () - this.results$.position ().top);
 
     this.results$.find ('.autocomplete-option').click (function () { 
         that.element$.val ($(this).text ());
         that.hiddenElem$.val ($(this).attr ('data-x2-val'));
         that.clear ();
     });
+    if (x2.main.isPhoneGap)
+        x2.main.instantiateNano (this.results$);
 
     this.container$.addClass ('has-focus');
 };
 
+MobileAutocomplete.prototype.resize = function () {
+    if (this.resultsContainer$.is (':visible')) {
+        this.resultsContainer$.height ($(window).height () - this.results$.position ().top);
+        //x2.main.instantiateNano (this.results$);
+    }
+};
+
 MobileAutocomplete.prototype.hide = function () {
-    this.results$.hide ();
+    this.resultsContainer$.hide ();
     this.results$.closest ('.ui-content').removeClass ('autocomplete-shown');
 };
 
@@ -135,10 +144,15 @@ MobileAutocomplete.prototype.setUpInteraction = function () {
 };
 
 MobileAutocomplete.prototype.buildAutocomplete = function () {
+    this.resultsContainer$ = $('<div>', {
+        'class': 'x2-autocomplete-results-container'
+    });
     this.results$ = $('<div>', {
         'class': 'x2-autocomplete-results'
     });
-    this.element$.closest ('.ui-input-text').append (this.results$);
+    this.resultsContainer$.append (this.results$);
+    this.resultsContainer$.hide ();
+    this.element$.closest ('.ui-input-text').append (this.resultsContainer$);
 };
 
 MobileAutocomplete.prototype.init = function () {
@@ -158,4 +172,12 @@ $(document).on ('pagecontainershow', function (evt, ui) {
             });
         }
     });
+});
+
+$(window).resize (function () {
+    if ($.mobile && $.mobile.activePage) {
+        $.mobile.activePage.find ('.x2-mobile-autocomplete').each (function () {
+            x2.Widget.getInstance ($(this)).resize ();
+        });
+    }
 });

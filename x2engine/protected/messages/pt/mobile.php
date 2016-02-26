@@ -24,4 +24,6 @@
   'The username or password you entered is incorrect. Please try again.' => 'O nome de usuário ou senha que você digitou está incorreto. Por favor, tente novamente.',
   'Username and password cannot be left blank.' => 'Nome de usuário e senha não pode ser deixado em branco.',
   'Web Address' => 'Endereço Web',
+  'Add photo attachment' => 'Adicionar anexo de foto',
+  'Add file attachment' => 'Adicionar anexo de arquivo',
 );

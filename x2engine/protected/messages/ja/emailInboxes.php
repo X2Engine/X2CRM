@@ -60,4 +60,8 @@
   'Auto-log outbound emails' => 'アウトバウンドメールを自動ログイン',
   'Auto-log inbound emails' => '受信メールの自動ログイン',
   'From' => 'から',
+  'Copy to Sent Folder' => '送信済みフォルダにコピーします',
+  'Disabled' => '使用禁止',
+  'Failed to associate message "{subject}" with {type} {model}' => '「メッセージを関連付けることができませんでした{subject}と「 {type} {model}',
+  'Message "{subject}" already associated with {type} {model}' => 'メッセージ「 {subject}すでに関連付けられている&quot; {type} {model}',
 );

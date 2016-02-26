@@ -58,6 +58,10 @@ class QuotesController extends x2base {
                     'application.modules.mobile.components.behaviors.'.
                     'X2MobileQuotesControllerBehavior'
             ),
+            'X2MobileActionHistoryBehavior' => array(
+                'class' => 
+                    'application.modules.mobile.components.behaviors.X2MobileActionHistoryBehavior'
+            ),
          ));
     }
 

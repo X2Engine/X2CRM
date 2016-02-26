@@ -454,8 +454,28 @@ class EmailDeliveryBehavior extends CBehavior {
             }
 
             $this->_mailer = $phpMail;
+            $this->_mailer->setLanguage (Yii::app()->language);
         }
         return $this->_mailer;
+    }
+
+    /**
+     * Retrieve the MIME-encoded message of the email
+     */
+    public function getSentMIMEMessage() {
+        try {
+            $phpMail = $this->mailer;
+        } catch (phpmailerException $e) {
+            // escalate error to force campaigns to halt
+            $escalated = new phpmailerException (
+                $e->getMessage (), PHPMailer::STOP_CRITICAL);
+            $this->status['code'] = '500';
+            $this->status['exception'] = $escalated;
+            $this->status['message'] = $e->getMessage ();
+            return false;
+        }
+
+        return $phpMail->getSentMIMEMessage();
     }
 
     /**

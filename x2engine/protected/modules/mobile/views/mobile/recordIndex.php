@@ -63,7 +63,7 @@ echo CHtml::encode ($title);
         <form action='<?php echo AuxLib::getRequestUrl (); ?>'>
             <input type='text' name='<?php 
                 $htmlOptions = array ();
-                $attr = 'name';
+                $attr = $model instanceof Profile ? 'fullName' : 'name';
                 CHtml::resolveNameId ($model, $attr, $htmlOptions);
                 echo $htmlOptions['name'];
             ?>'
@@ -98,8 +98,8 @@ if ($this->hasMobileAction ('mobileCreate') &&
     Yii::app()->user->checkAccess(ucfirst ($this->module->name).'Create')) {
 ?>
 
-<a href='<?php echo $this->createAbsoluteUrl ('mobileCreate'); ?>'>
-    <div class='record-create-button fixed-corner-button'>
+<a href='<?php echo $this->createAbsoluteUrl ('mobileCreate'); ?>' class='fixed-corner-button'>
+    <div class='record-create-button'>
     <?php
         echo X2Html::fa ('plus');
     ?>

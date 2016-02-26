@@ -88,8 +88,8 @@ $this->widget ('FormView', array(
 		// 'users'=>$users,
 		// 'modelName'=>'calendar',
 		// 'isQuickCreate'=>true, // let us create the CActiveForm in this file
-	)
-);
+//	)
+//);
 ?>
 
 

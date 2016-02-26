@@ -78,6 +78,13 @@ CREATE TABLE x2_auth_cache(
 INSERT INTO `x2_auth_item`
 (`name`,`type`,`description`,`bizrule`,`data`)
 VALUES
+('ContactsMobileActionHistoryPublish', 0, '', NULL, 'N;'),
+('AccountsMobileActionHistoryPublish', 0, '', NULL, 'N;'),
+('OpportunitiesMobileActionHistoryPublish', 0, '', NULL, 'N;'),
+('ProductsMobileActionHistoryPublish', 0, '', NULL, 'N;'),
+('ServicesMobileActionHistoryPublish', 0, '', NULL, 'N;'),
+('X2LeadsMobileActionHistoryPublish', 0, '', NULL, 'N;'),
+('BugReportsMobileActionHistoryPublish', 0, '', NULL, 'N;'),
 ('AccountsMobileCreate', 0, '', NULL, 'N;'),
 ('AccountsMobileUpdate', 0, '', NULL, 'N;'),
 ('ContactsMobileCreate', 0, '', NULL, 'N;'),
@@ -597,6 +604,7 @@ VALUES
 ('MarketingViewPrivate',1,'View their own records','return $this->checkAssignment($params);','N;'),
 ('MarketingWebLeadForm',0,'Edit the lead capture form.',NULL,'N;'),
 ('MarketingWebTracker',0,'View embed code for web tracker.',NULL,'N;'),
+('MarketingExportWebTracker',0,'Export code for web tracker.',NULL,'N;'),
 ('MarketingRemoveWebLeadFormCustomHtml',0,'View embed code for web tracker.',NULL,'N;'),
 ('MarketingSaveWebLeadFormCustomHtml',0,'View embed code for web tracker.',NULL,'N;'),
 ('MarketingGetCampaignChartData',0,'View embed code for web tracker.',NULL,'N;'),
@@ -994,6 +1002,13 @@ VALUES
 ('BugReportsDeletePrivate',1,'','return $this->checkAssignment($params);','N;');
 /*&*/
 INSERT INTO `x2_auth_item_child` (`parent`,`child`) VALUES
+('ContactsView', 'ContactsMobileActionHistoryPublish'),
+('AccountsView', 'AccountsMobileActionHistoryPublish'),
+('OpportunitiesView', 'OpportunitiesMobileActionHistoryPublish'),
+('ProductsView', 'ProductsMobileActionHistoryPublish'),
+('ServicesView', 'ServicesMobileActionHistoryPublish'),
+('X2LeadsView', 'X2LeadsMobileActionHistoryPublish'),
+('BugReportsView', 'BugReportsMobileActionHistoryPublish'),
 ('AccountsDelete','AccountsMobileDelete'),
 ('ContactsDelete','ContactsMobileDelete'),
 ('OpportunitiesDelete','OpportunitiesMobileDelete'),

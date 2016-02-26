@@ -44,7 +44,7 @@ class X2Html extends CHtml {
      // uncomment if needed
     public static function sanitizeAttribute ($value) {
         // overly restrictive, but safe, regex. 
-        return preg_replace ("/[^a-zA-Z0-9-]/", '', $value);
+        return preg_replace ("/[^a-zA-Z0-9-.]/", '', $value);
     }
 
     public static function clearfix () {

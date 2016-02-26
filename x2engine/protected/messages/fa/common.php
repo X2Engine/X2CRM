@@ -606,4 +606,5 @@
   'Okay' => 'باشه',
   'Headquarters' => 'مرکز فرماندهی',
   'Mailing Address' => 'آدرس پستی',
+  'Details' => 'جزئیات',
 );

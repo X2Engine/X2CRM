@@ -636,18 +636,26 @@ class Media extends X2Model {
      * Generates a description message with a link and optional preview image
      * for media items.
      *
-     * @param string $actionDescription
+     * @param string|Actions $actionDescription
      * @param boolean $makeLink
      * @param boolean $makeImage
      * @return string
      */
-    public static function attachmentActionText($actionDescription, $makeLink = false, $makeImage = false) {
+    public static function attachmentActionText($action, $makeLink = false, $makeImage = false) {
 
-        $data = explode(':', $actionDescription);
         $media = null;
-        if (count($data) == 2 && is_numeric($data[1])) // ensure data is formatted properly
-            $media = X2Model::model('Media')->findByPK($data[1]); // look for an entry in the media table
+        if ($action instanceof Actions) {
+            $media = $action->media;
+            if ($media) $media = array_pop ($media);
+        } 
+        if (!$media) { // handle legacy association format
 
+            $actionDescription = Yii::app()->controller->convertUrls($action->actionDescription);
+            $data = explode(':', $actionDescription);
+            $media = null;
+            if (count($data) == 2 && is_numeric($data[1])) // ensure data is formatted properly
+                $media = X2Model::model('Media')->findByPK($data[1]); // look for an entry in the media table
+        }
         if ($media) { // did we find an entry in the media table?
             if ($media->drive) {
                 $str = Yii::t('media', 'Google Drive:') . ' ';
@@ -673,7 +681,7 @@ class Media extends X2Model {
 
             return $str;
         } else
-            return $actionDescription;
+            return CHtml::encode (Yii::t('app', 'Attachment not found'));
     }
 
 }

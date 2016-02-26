@@ -230,6 +230,24 @@ DragAndDropViewManager.prototype._disableQTips = function (disable) {
     $('.stage-member-name a').qtip ('disable', disable);
 };
 
+DragAndDropViewManager.prototype._emptyColumnFix = function () {
+    var that = this;
+    // show empty column placeholder in all columns with no visible elements.
+    // accounts for bug in jQuery UI which causes sortable "over" event to trigger
+    // inconsistently
+    var emptyStages$;
+    if ((emptyStages$ = $(that.connectWithClass).filter (function () {
+        return !$(this).find ('.empty').is (':visible') &&
+            !$(this).find (that.memberContainerSelector).not ('.ui-sortable-helper').length;
+    })) && emptyStages$.length) {
+        emptyStages$.each (function () {
+            var stageNumber = that._getWorkflowStageNumber ($(this));
+            that._hideShowNoResultsDummyItem (stageNumber); 
+        });
+    } else {
+    }
+};
+
 /**
  * Sets up drag and drop feature. Allows records to be dragged from one stage to the next.
  */
@@ -242,6 +260,7 @@ DragAndDropViewManager.prototype._setUpDragAndDrop = function () {
         items: this.memberContainerSelector,
         connectWith: this.connectWithClass,
         tolerance: 'pointer',
+        dropOnEmpty: true,
         change: function (event, ui) {
             //console.log ('change');
             var stageMember = $(ui.item);
@@ -257,7 +276,8 @@ DragAndDropViewManager.prototype._setUpDragAndDrop = function () {
             if (that._listItemIsLocked ($(ui.item))) {
                 return false;
             }
-            //console.log ('sort');
+
+            that._emptyColumnFix ();
             //return false;
         },
         out: function (event, ui) {
@@ -309,10 +329,13 @@ DragAndDropViewManager.prototype._setUpDragAndDrop = function () {
             $(ui.item).removeClass ('stage-highlight'); 
 
             // lock record so that it can't be dragged until server response
-            that._lockStageListItem ($(ui.item));
-            $(ui.item).find ('.stage-member-button').hide (); 
             var stageMember = $(ui.item);
             var memberInfo = that._getStageMemberInfo (stageMember);
+
+            if (startStage === memberInfo['stageNumber']) return;
+
+            that._lockStageListItem ($(ui.item));
+            $(ui.item).find ('.stage-member-button').hide (); 
             return that._moveFromStageAToStageB (
                 startStage,
                 memberInfo['stageNumber'], 
@@ -1398,7 +1421,9 @@ DragAndDropViewManager.prototype._setUpAddADealButtonBehavior = function () {
                             that._getStageMemberListItemSelector (newDealId, newDealType);
                         that._startStage (
                             1, newDealId, newDealType, recordName, newDealSelector);
-                        x2.forms.clearForm ($form);
+                        // kludge to prevent clearForm from deselecting record type
+                        $('#new-deal-type').attr ('data-default', $('#new-deal-type').val ());
+                        x2.forms.clearForm ($form, true);
                         $(this).dialog ('close');
                     }
                 }
@@ -1436,7 +1461,7 @@ DragAndDropViewManager.prototype._setUpAddADealButtonBehavior = function () {
             }
         });
         
-    });
+    }).change ();
 };
 
 /**

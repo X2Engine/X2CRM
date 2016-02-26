@@ -173,8 +173,10 @@ class RelationshipsBehavior extends CActiveRecordBehavior {
                 $oldTarget = X2Model::model($field->linkType)->findByPk($oldNameAndId[1]);
                 $this->owner->deleteRelationship($oldTarget);
             }
-            $newTarget = X2Model::model($field->linkType)->findByPk($nameAndId[1]);
-            $this->owner->createRelationship($newTarget);
+            if (!empty($nameAndId[1])) {
+                $newTarget = X2Model::model($field->linkType)->findByPk($nameAndId[1]);
+                $this->owner->createRelationship($newTarget);
+            }
         }
         parent::afterSave($event);
     }

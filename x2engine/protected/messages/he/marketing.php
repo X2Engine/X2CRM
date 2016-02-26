@@ -172,4 +172,5 @@
   '{recordType} has opened the email sent on ' => '{recordType} פתח הדואר האלקטרוני שנשלח על',
   'When this is enabled, all links in the email template will be replaced with links that will track when they have been clicked.' => 'כאשר זה מופעל, כל הקישורים בתבנית הדואר האלקטרוני יוחלפו עם קישורים שיהיה לעקוב אחר כאשר הם כבר לחצו.',
   'The {contact} you enter here will be used for variable replacement, i.e. for "John Doe" the token {firstName} will get replaced with "John"' => '{contact} שתזין כאן ישמש להחלפה משתנה, כלומר ל&quot; John Doe &quot;האסימון {firstName} יקבל הוחלף ב&quot; ג&#39;ון&quot;',
+  'Generate and export the web tracker JavaScript. This can be uploaded to your site in place of the standard web tracker embed code, which is useful when using tracking under SSL. Please note: the code that is generated is specific to your X2CRM installation.' => 'צור ולייצא את גשש האינטרנט JavaScript. זה ניתן להעלות לאתר שלך במקום של קוד embed גשש אינטרנט סטנדרטי, וזה שימושי בעת השימוש במעקב תחת SSL. שים לב: את הקוד שנוצר הוא ספציפיים התקנת X2CRM שלך.',
 );

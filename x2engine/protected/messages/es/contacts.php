@@ -64,4 +64,5 @@
   'Top Menu Bar Logo' => 'Top Menu Bar Logo',
   'Login Screen Logo' => 'Entrar Logo Screen',
   'Tag list must be non-empty' => 'Lista de etiquetas debe ser no vacía',
+  'Invalid list criteria.' => 'criterios de la lista no válidos.',
 );

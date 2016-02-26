@@ -58,6 +58,7 @@ class X2ActiveForm extends CActiveForm {
 
     public function __construct ($owner=null) {
         $this->attachBehaviors ($this->behaviors ());
+        //$this->initNamespace ();
         parent::__construct ($owner);
     }
 

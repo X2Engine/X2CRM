@@ -153,7 +153,7 @@ $this->widget('X2GridView', array(
                 'CHtml::link(
                     ($data->actionDescription === "" ? Yii::t("actions", "View {action}", array("{action}"=>Modules::displayName(false, "Actions"))) :
                         (($data->type=="attachment") ? 
-                            Media::attachmentActionText($data->actionDescription) : 
+                            Media::attachmentActionText($data) : 
                             CHtml::encode(Formatter::trimText($data->actionDescription)))),
                     array("view","id"=>$data->id))',
 			'type'=>'raw',
@@ -165,14 +165,7 @@ $this->widget('X2GridView', array(
 			'header'=>Yii::t('actions','Association Name'),
 			'value'=>
                 'strcasecmp($data->associationName,"None") == 0 ? 
-                    Yii::t("app","None") : 
-                    CHtml::link(
-                        $data->associationName,
-                        array("/".$data->associationType . (($data->associationType === "product") ? "s" : "") .
-                              "/".$data->associationType . (($data->associationType === "product") ? "s" : "") .
-                              "/".$data->associationId),
-                        array("class"=>($data->associationType=="contacts" ? 
-                            "contact-name" : null)))',
+                    Yii::t("app","None") : $data->getAssociationLink()',
 			'type'=>'raw',
 		),
 	),

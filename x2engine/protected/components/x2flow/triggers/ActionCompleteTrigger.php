@@ -34,6 +34,7 @@
  * "Powered by X2Engine".
  *****************************************************************************************/
 
+Yii::import('application.components.x2flow.triggers.X2FlowTrigger');
 /**
  * X2FlowTrigger 
  * 

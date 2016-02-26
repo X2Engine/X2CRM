@@ -53,6 +53,8 @@ function ActivityFeed (argsDict) {
 
     auxlib.applyArgs (this, defaultArgs, argsDict);
 
+    this.element$ = $('#activity-feed-container');
+
     // used to clear timeout when editor resize animation is called
     this.timeout = null; 
 
@@ -462,7 +464,7 @@ ActivityFeed.prototype.setupActivityFeed = function  () {
             });
     }
 
-    $(document).on("click","#min-posts",function(e){
+    that.element$.find ("#min-posts").click (function(e){
         e.preventDefault();
         that.minimizePosts();
         x2.activityFeed.minimizeFeed = true;
@@ -470,7 +472,7 @@ ActivityFeed.prototype.setupActivityFeed = function  () {
         $(this).prev().show();
     });
 
-    $(document).on("click","#restore-posts",function(e){
+    that.element$.find ("#restore-posts").click (function(e){
         e.preventDefault();
         that.restorePosts();
         x2.activityFeed.minimizeFeed = false;
@@ -478,21 +480,12 @@ ActivityFeed.prototype.setupActivityFeed = function  () {
         $(this).next().show();
     });
 
-    $(document).on("click","#clear-filters-link",function(e){
-        e.preventDefault();
-        var str=window.location+"";
-        pieces = str.split("?");
-        var str2 = pieces[0];
-        pieces2 = str2.split("#");
-        window.location = pieces2[0]+"?filters=true&visibility=&users=&types=&subtypes=&default=false";
-    });
-
     if(x2.activityFeed.minimizeFeed === true){
         $("#min-posts").click();
     }
     $(".date-break.first").after("<div class='list-view'><div id='new-events' class='items' style='display:none;border-bottom:solid #BABABA;'></div></div>");
 
-    $(document).on("click","#toggle-all-comments",function(e){
+    that.element$.find ("#toggle-all-comments").click (function(e){
         e.preventDefault();
         x2.activityFeed.commentFlag = !x2.activityFeed.commentFlag;
         if(x2.activityFeed.commentFlag){
@@ -502,7 +495,7 @@ ActivityFeed.prototype.setupActivityFeed = function  () {
         }
     });
 
-    $(document).on("click",".comment-link",function(e){
+    $(document).on("click","#activity-feed-container .comment-link",function(e){
         e.preventDefault();
         var link = this;
         var pieces = $(this).attr("id").split("-");
@@ -523,7 +516,7 @@ ActivityFeed.prototype.setupActivityFeed = function  () {
         });
     });
 
-    $(document).on("click",".comment-hide-link",function(e){
+    $(document).on("click","#activity-feed-container .comment-hide-link",function(e){
         e.preventDefault();
         $(this).hide();
         $(this).prev().show();
@@ -1328,12 +1321,14 @@ ActivityFeed.prototype._setUpFilters = function () {
     });
     (function () {
         var checkedFlag;
-        if($(":checkbox:checked").length > ($(":checkbox").length)/2){
+        if (that.element$.find ('#feed-filters option:selected').length  >
+            that.element$.find ('#feed-filters option').length / 2) {
             checkedFlag = true;
         } else {
             checkedFlag = false;
-            $("#toggle-filters-link").html(that.translations["Select All"]);
-            $("#sidebar-toggle-filters-link").html(that.translations["Uncheck All"]);
+            $("#full-controls-button-container .toggle-filters-link")
+                .add('#sidebar-full-controls .toggle-filters-link')
+                .html(that.translations["Select All"]);
         }
 
         $(document).on("click",".toggle-filters-link",function(e){
@@ -1341,6 +1336,7 @@ ActivityFeed.prototype._setUpFilters = function () {
             checkedFlag =! checkedFlag;
             if(checkedFlag){
                 $('#full-controls-button-container .toggle-filters-link').
+                    add('#sidebar-full-controls .toggle-filters-link').
                     html(that.translations['Unselect All']);
                 $('#full-controls .x2-multiselect-dropdown').multiselect2 ('checkAll');
                 $('#sidebar-full-controls-button-container .toggle-filters-link').
@@ -1348,6 +1344,7 @@ ActivityFeed.prototype._setUpFilters = function () {
                 $(".filter-checkbox").attr("checked","checked");
             }else{
                 $('#full-controls-button-container .toggle-filters-link').
+                    add('#sidebar-full-controls .toggle-filters-link').
                     html(that.translations['Select All']);
                 $('#full-controls .x2-multiselect-dropdown').val ('').multiselect2 ('refresh');
                 $('#sidebar-full-controls-button-container .toggle-filters-link').

@@ -41,6 +41,8 @@ CREATE TABLE x2_actions (
     UNIQUE (associationType, associationId, workflowId, stageNumber)
 ) COLLATE = utf8_general_ci, ENGINE = INNODB;
 /*&*/
+ALTER TABLE `x2_actions_to_media` ADD CONSTRAINT FOREIGN KEY (`actionsId`) REFERENCES x2_actions(`id`) ON UPDATE CASCADE ON DELETE CASCADE;
+/*&*/
 CREATE TABLE x2_action_meta_data (
     id                        INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
     actionId                  INT UNSIGNED NOT NULL,

@@ -16,7 +16,7 @@ class NewContactTest extends X2WebTestCase {
 	);
 
     public function setUp () {
-        $this->markTestSkipped ();
+        $this->markTestIncomplete ();
     }
 	
 	public function testNewContactAndAccount() {

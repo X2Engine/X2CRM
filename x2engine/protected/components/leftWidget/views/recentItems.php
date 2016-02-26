@@ -52,7 +52,7 @@ foreach($recentItems as $item) {
                 $description = mb_substr($description,0,117,'UTF-8').'...';
 
             $link = '<strong>'.Yii::t('app','Due').': '.date("Y-m-d",$item['model']->dueDate).
-                '</strong><br />'.Media::attachmentActionText($description);
+                '</strong><br />'.Media::attachmentActionText($item['model']);
             //$link = '<strong>'.$item['model']->dueDate.'</strong><br />'.
             //  $item['model']->actionDescription;
             echo CHtml::link($link,'#',

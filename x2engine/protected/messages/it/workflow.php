@@ -7,7 +7,6 @@
   'Comment Required' => 'Commento Obbligatorio',
   'Stage {n}' => 'Fase {n}',
   'Please summarize how this stage was completed.' => 'Si prega di riassumere come questa fase è stata completata.',
-  'Details' => 'Dettagli',
   'Any stage' => 'Ogni fase',
   'Process:' => 'Processo:',
   'record type(s)' => 'tipo di record (s)',

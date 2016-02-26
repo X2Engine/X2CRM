@@ -41,11 +41,13 @@ $borderColor: darken($lightGray, 2%);
 $greenHighlight: #13A513;
 $backgroundColor: white;
 $text: lighten(black, 5%);
-$subduedTextColor: lighten($text, 50%);
+//$subduedTextColor: lighten($text, 50%);
+$subduedTextColor: gray;
 $linkColor: blue;
 $border: gray;
 $fontSize: 16px;
 $errorRed: lighten(red, 10%);
+$iconButtonColor: lighten(black,20%);
 
 // login
 $loginLinkColor: white;
@@ -61,6 +63,7 @@ $menuText: black;
 $headerBackground: darken($defaultBgColor, 3%);
 $headerText: lighten($headerBackground, 63%);
 $headerTextSize: 19px;
+$headerTextSecondary: lighten($headerBackground, 28%);
 
 // panel
 $panelBackgroundColor: #4E4E4E;
@@ -72,4 +75,5 @@ $inputErrorBorder: lighten(red,15%);
 
 // lists
 $itemBorderColor: $lightGray;
+$labelFontSize: 13px;
 

@@ -172,4 +172,5 @@
   '{recordType} has opened the email sent on ' => '{recordType}に送信された電子メールを開きました',
   'When this is enabled, all links in the email template will be replaced with links that will track when they have been clicked.' => 'これを有効にすると、電子メールテンプレート内のすべてのリンクは、彼らがクリックされたときに追跡するリンクに置き換えられます。',
   'The {contact} you enter here will be used for variable replacement, i.e. for "John Doe" the token {firstName} will get replaced with "John"' => '{contact}ここで入力するには、トークンすなわち「ジョン・ドウ」のために、変数置換のために使用される{firstName} 「ジョン」に置き換えられてしまいます',
+  'Generate and export the web tracker JavaScript. This can be uploaded to your site in place of the standard web tracker embed code, which is useful when using tracking under SSL. Please note: the code that is generated is specific to your X2CRM installation.' => 'ウェブトラッカーJavaScriptを生成し、エクスポートします。これは、SSLの下で追跡を使用する場合に便利です標準的なウェブトラッカー埋め込みコードの代わりにあなたのサイトにアップロードすることができます。ご注意：生成されたコードは、あなたのX2CRMのインストールに固有のものです。',
 );

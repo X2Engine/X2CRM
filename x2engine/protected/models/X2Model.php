@@ -430,9 +430,9 @@ abstract class X2Model extends X2ActiveRecord {
             $modelNames = array ();
             foreach ($modules as $module) {
                 if ($modelName = X2Model::getModelName($module->name))
-                    $modelNames [] = $modelName;
+                    $modelNames[] = $modelName;
                 else // Shouldn't happen since getModelName uses class_exists
-                    $modelNames [] = ucfirst($module->name);
+                    $modelNames[] = ucfirst($module->name);
             }
             self::$_moduleModelNames = $modelNames;
         }
@@ -1068,7 +1068,7 @@ abstract class X2Model extends X2ActiveRecord {
                         ->findByAttributes(array('username' => $this->$linkField));
 
                     if (isset($profRecord)) {
-                        return $profRecord->getAttribute($name, false);
+                        return $profRecord->getAttribute($name, $renderFlag);
                     }
                 }
             }
@@ -1637,7 +1637,7 @@ abstract class X2Model extends X2ActiveRecord {
 
     public static function renderModelInput(CModel $model, $field, $htmlOptions = array()) {
         if (!$field->asa ('CommonFieldsBehavior')) {
-            throw new Exception ('$field must have CommonFieldsBehavior');
+            throw new CException ('$field must have CommonFieldsBehavior');
         }
         if ($field->required) {
             if (isset($htmlOptions['class'])) {
@@ -2975,8 +2975,12 @@ abstract class X2Model extends X2ActiveRecord {
         if (empty($criteria->with)) {
             if (!$all)
                 $criteria->limit = 1;
+
+            /* x2modstart */
             $command = $this->getCommandBuilder()
                     ->createFindCommand($this->getTableSchema(), $criteria, $this->getTableAlias());
+            /* x2modend */ 
+
             /* x2modstart */
             if ($getCommand)
                 return $command;

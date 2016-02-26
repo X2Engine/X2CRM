@@ -87,7 +87,7 @@ class AdminControllerTest extends X2WebTestCase {
         'lastUpdated',
         'lastActivity',
     );
-
+    
     /**
      * Copy a module directory structure from the tests/data directory
      */
@@ -278,7 +278,7 @@ class AdminControllerTest extends X2WebTestCase {
      * the CSV contains valid records
      */
     public function testValidRecordImport() {
-        if($this->isChrome){
+        if($this->isChrome()){
             $this->markTestSkipped('Import tests do not function in Chrome.');
         }
         foreach ($this->csvs as $modelName) {
@@ -298,7 +298,7 @@ class AdminControllerTest extends X2WebTestCase {
      * correctly established
      */
     public function testImportRelations() {
-        if($this->isChrome){
+        if($this->isChrome()){
             $this->markTestSkipped('Import tests do not function in Chrome.');
         }
         // Import the account, contact, and action
@@ -342,7 +342,7 @@ class AdminControllerTest extends X2WebTestCase {
      * CSV is malformed
      */
     public function testImportValidationFailures() {
-        if($this->isChrome){
+        if($this->isChrome()){
             $this->markTestSkipped('Import tests do not function in Chrome.');
         }
         $failureCsvs = array(
@@ -363,7 +363,7 @@ class AdminControllerTest extends X2WebTestCase {
      * The specified CSV has lines ending in: \r\n, \n, \r, and \r\n, respectively.
      */
     public function testImportLineEndings() {
-        if($this->isChrome){
+        if($this->isChrome()){
             $this->markTestSkipped('Import tests do not function in Chrome.');
         }
         $csvFile = 'lineendings-contacts.csv';
@@ -382,7 +382,7 @@ class AdminControllerTest extends X2WebTestCase {
      * field contains digits or strings
      */
     public function testImportVisibility() {
-        if($this->isChrome){
+        if($this->isChrome()){
             $this->markTestSkipped('Import tests do not function in Chrome.');
         }
         $csvFile = 'contacts-visibility.csv';
@@ -422,7 +422,7 @@ class AdminControllerTest extends X2WebTestCase {
      * Ensure that tags are handled accordinly on import
      */
     public function testImportTags() {
-        if($this->isChrome){
+        if($this->isChrome()){
             $this->markTestSkipped('Import tests do not function in Chrome.');
         }
         $csvFile = 'tags-contacts.csv';

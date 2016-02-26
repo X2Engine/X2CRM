@@ -198,7 +198,7 @@ if(empty($data->type) || $data->type == 'weblead'){
     <div class="description">
 <?php
 if($type == 'attachment' && $data->completedBy != 'Email') {
-    echo Media::attachmentActionText(Yii::app()->controller->convertUrls($data->actionDescription), true, true);
+    echo Media::attachmentActionText($data, true, true);
 } else if($type == 'workflow'){
     if($data->complete == 'Yes') {
         echo ' <b>' . Yii::t('workflow', 'Completed') . '</b> ' . Formatter::formatLongDateTime($data->completeDate);

@@ -172,4 +172,5 @@
   '{recordType} has opened the email sent on ' => '{recordType}已经打开电子邮件发送的',
   'When this is enabled, all links in the email template will be replaced with links that will track when they have been clicked.' => '启用此功能后，在电子邮件模板中的所有链接将被替换为链接，将追踪他们已被点击时。',
   'The {contact} you enter here will be used for variable replacement, i.e. for "John Doe" the token {firstName} will get replaced with "John"' => '该{contact}您在此处输入将用于变量替换，即对于“李四”令 ​​牌{firstName}将被替换为“约翰”',
+  'Generate and export the web tracker JavaScript. This can be uploaded to your site in place of the standard web tracker embed code, which is useful when using tracking under SSL. Please note: the code that is generated is specific to your X2CRM installation.' => '生成并导出Web的JavaScript跟踪。这可代替标准的网络跟踪器嵌入代码，使用SSL下追踪时，这是非常有用的上传到您的网站。请注意：所生成的代码是特定于您的X2CRM安装。',
 );

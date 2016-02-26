@@ -36,6 +36,8 @@
 
 class MobileViewEventAction extends MobileAction {
 
+    public $pageDepth = 1;
+
     public function run ($id) {
         $formModel = new EventCommentPublisherFormModel;
         $profile = Yii::app()->params->profile;

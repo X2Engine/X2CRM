@@ -35,6 +35,7 @@
  *****************************************************************************************/
 
 Yii::import ('application.modules.mobile.components.*');
+Yii::import ('application.modules.mobile.controllers.MobileController');
 
 /**
  * All CSS for the mobile module should be specified in this file. Corresponding sass files
@@ -62,6 +63,13 @@ class MobileModule extends X2WebModule {
         $packages = self::getPackages (Yii::app()->controller->assetsUrl);
     }
 
+    public static function getPlatform () {
+        //return 'iOS';
+        if (isset ($_COOKIE[MobileController::PLATFORM_COOKIE_NAME])) {
+            return $_COOKIE[MobileController::PLATFORM_COOKIE_NAME];
+        } 
+    }
+
     public static function supportedModules (CDbCriteria $criteria = null) {
         $basicModules = array (
             'x2Activity',
@@ -85,7 +93,8 @@ class MobileModule extends X2WebModule {
             '(name in '.$qpg->bindArray ($basicModules, true).' or custom) and visible and 
              moduleType in ("module", "pseudoModule") and name != "document"';
         $newCriteria->params = $qpg->getParams ();
-        $newCriteria->order = 'menuPosition ASC';
+        // sort null values to the bottom by using max menuPosition
+        $newCriteria->order = '(CASE WHEN menuPosition IS NULL THEN '.pow(2,11).' ELSE menuPosition END) ASC';
         if ($criteria) {
             $newCriteria->mergeWith ($criteria);
             $criteria = $newCriteria;
@@ -110,9 +119,9 @@ class MobileModule extends X2WebModule {
             ),
             'jqueryMobileCss' => array(
                 'baseUrl' => $assetsUrl,
-                'css' => array(
+                'css' => (Yii::app()->params->isPhoneGap ? array () : array(
                     'css/jquery.mobile.structure-1.4.5.css',
-                ),
+                )),
                 'depends' => array('jquery', 'jquery-migrate'),
             ),
             'jqueryMobileJs' => array(
@@ -129,28 +138,48 @@ class MobileModule extends X2WebModule {
                     array_merge (array (
                         'js/lib/jqueryui/jquery-ui.structure.css',
                         'js/lib/datepicker/jquery.mobile.datepicker.css',
-                    ), Yii::app()->params->isPhoneGap ? array () : array ('css/shared.css')), 
-                    YII_DEBUG && !self::$useMergedCss ? array(
-                        'css/main.css',
-                        'css/forms.css',
-                        'css/jqueryMobileCssOverrides.css',
-                        'css/login.css',
-                        'css/passwordReset.css',
-                        'css/recordIndex.css',
-                        'css/topicsIndex.css',
-                        'css/recordView.css',
-                        'css/recordCreate.css',
-                        'css/topicsCreate.css',
-                        'css/topicsView.css',
-                        'css/activityFeed.css',
-                        'css/settings.css',
-                        'css/about.css',
-                        'css/license.css',
-                        'css/recentItems.css',
                          
-                    ) : array (
-                        'css/combined.css'
-                    )),
+                    ), 
+                    Yii::app()->params->isPhoneGap ? array () : array ('css/shared.css')), 
+
+                    // enables inclusion of individual css files. Speeds up scss compilation which
+                    // is important when making iterative scss changes.
+                    YII_DEBUG && !self::$useMergedCss ? array_map (function ($path) {
+                            if (preg_match ('/\/debug\//', $path)) {
+                                return 
+                                    preg_replace ('/\.css$/', '', $path) .
+                                    (MobileModule::getPlatform () === 'iOS' ? 'IOS' : '') .
+                                    '.css';
+                            } else {
+                                return $path;
+                            }
+                        }, array_merge (array(
+                            'css/debug/main.css',
+                            'css/debug/forms.css',
+                            'css/jqueryMobileCssOverrides.css',
+                            'css/debug/login.css',
+                            'css/debug/passwordReset.css',
+                            'css/debug/recordIndex.css',
+                            'css/debug/topicsIndex.css',
+                            'css/debug/recordView.css',
+                            'css/debug/recordCreate.css',
+                            'css/debug/topicsCreate.css',
+                            'css/debug/topicsView.css',
+                            'css/debug/activityFeed.css',
+                            'css/debug/settings.css',
+                            'css/debug/about.css',
+                            'css/debug/license.css',
+                            'css/debug/recentItems.css',
+                            
+                        ), self::getPlatform () === 'iOS' ? array (
+                            'css/iOS.css'
+                        ) : array ()
+                    )) : array (
+                        self::getPlatform () === 'iOS' ? 
+                            'css/zcombinediOS.css' : 
+                            'css/zcombined.css'
+                    )//,
+                ),
                 'depends' => array('jqueryMobileCss'),
             ),
             'x2TouchJs' => array (
@@ -165,6 +194,7 @@ class MobileModule extends X2WebModule {
                     'js/MobileAutocomplete.js',
                     'js/lib/jqueryui/jquery-ui.js',
                     'js/lib/datepicker/jquery.mobile.datepicker.js',
+                     
                 ),
                 'depends' => array('jqueryMobileJs', 'auxlib', 'bbq', 'X2Widget'),
             ),

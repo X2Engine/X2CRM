@@ -64,4 +64,5 @@
   'Top Menu Bar Logo' => 'Barra menù superiore Logo',
   'Login Screen Logo' => 'Login logo dello schermo',
   'Tag list must be non-empty' => 'Lista tag deve essere non-vuoto',
+  'Invalid list criteria.' => 'criteri della lista non validi.',
 );

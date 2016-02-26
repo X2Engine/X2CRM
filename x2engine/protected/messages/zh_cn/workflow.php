@@ -7,7 +7,6 @@
   'Comment Required' => '评论要求',
   'Stage {n}' => '第一阶段第{n}',
   'Please summarize how this stage was completed.' => '请您总结这个阶段完成。',
-  'Details' => '详细信息',
   'Any stage' => '任何阶段',
   'Process:' => '过程：',
   'record type(s)' => '记录类型（S）',

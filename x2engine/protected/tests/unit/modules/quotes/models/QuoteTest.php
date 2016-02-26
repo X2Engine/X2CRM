@@ -26,12 +26,6 @@ class QuoteTest extends X2DbTestCase {
             $quote = $this->quotes('lineItems');
             ob_start();
             try {
-                    $quote->lineItems = 1;
-                    $this->assertTrue(false, $errMsg);
-            } catch (Exception $e) {
-                    $this->assertTrue(true);
-            }
-            try {
                     $quote->lineItems = array(1);
                     $this->assertTrue(false, $errMsg);
             } catch (Exception $e) {

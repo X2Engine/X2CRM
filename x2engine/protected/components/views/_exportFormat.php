@@ -61,6 +61,8 @@ Yii::app()->clientScript->registerScript ('exportFormatControls', '
     // Build a parameter string of the format controls for the selected type
     x2.exportFormats.readExportFormatOptions = function() {
         var type = $("#targetType").children (":checked").val();
+        if (typeof type === "undefined")
+            type = "download";
         var compressOutput = $("#compressOutput").is(":checked");
         var params = $("#" + type + ".targetForm").serialize();
         var destination = "exportDestination=" + type;

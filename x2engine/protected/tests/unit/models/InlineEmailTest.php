@@ -160,6 +160,42 @@ class InlineEmailTest extends X2DbTestCase {
     }
 
     /**
+     */
+    public function testExtractTrackingUid(){
+        $expectations = array(
+            '1a60de0ab32e6fbef5af7313d0d990f7' => '<html>
+                <head>
+                    <title></title>
+                </head>
+                <body>Test<br />
+                <br />
+                <!--BeginSignature-->Chloe Greigo<br />
+                Campbell&#39;s Cloud Computing<br />
+                Sales Manager<br />
+                831.555.5555<!--EndSignature-->
+                <div>&nbsp;</div>
+                <!--BeginOpenedEmail--><img src="http://localhost/index.php/actions/actions/emailOpened/uid/1a60de0ab32e6fbef5af7313d0d990f7/type/open"/><!--EndOpenedEmail--></body>
+            </html>', // as sent from InlineEmail widget
+            '31ae6d10e27f76c952818c439af2905b' => '<html>
+                <body>
+                    <img alt="banner" />
+                    <blockquote cite="mid:97ea23b849b1c17b5859faff28d8c6@localhost"
+                    type="cite">Hello Test User,<br>
+                    <br>
+                    Just wanted to check in with you about the support case you
+                    created. It is number 1001. We will get back to you as soon as
+                    possible.<img moz-do-not-send="true"
+                    src="http://localhost/x2engine/index.php/actions/actions/emailOpened/uid/31ae6d10e27f76c952818c439af2905b/type/open"></blockquote>
+                    <br>
+                </body>
+            </html>', // from Thunderbird reply
+        );
+        foreach ($expectations as $key => $body) {
+            $this->assertEquals ($key, InlineEmail::extractTrackingUid ($body));
+        }
+    }
+
+    /**
      * To make tests faster, all the non-database intensive tests (i.e. body
      * insertion) are consolidated in here.
      *
@@ -272,7 +308,7 @@ class InlineEmailTest extends X2DbTestCase {
             try{
                 $this->eml->credId = $this->credentials('liveDeliveryTest')->id;
             }catch(Exception $e){
-                $this->markTestSkipped('You have not defined the liveDeliveryTest alias in protected/tests/fixtures/x2_credentials-local.php !');
+                $this->markTestIncomplete('You have not defined the liveDeliveryTest alias in protected/tests/fixtures/x2_credentials-local.php !');
             }
             $this->eml->userProfile = Profile::model()->findByAttributes(array('username' => 'testuser'));
             $this->eml->mailingList = $this->recipient;

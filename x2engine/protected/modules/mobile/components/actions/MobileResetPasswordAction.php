@@ -36,6 +36,8 @@
 
 class MobileResetPasswordAction extends MobileAction {
 
+    public $pageDepth = 1;
+
     public function run ($id = null) {
         $title = Yii::t('app', 'Reset Password');
         extract ($this->controller->resetPasswordHelper ($id, $title));

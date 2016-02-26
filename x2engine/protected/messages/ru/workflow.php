@@ -7,7 +7,6 @@
   'Comment Required' => 'Комментарий обязателен',
   'Stage {n}' => 'Этап {n}',
   'Please summarize how this stage was completed.' => 'Пожалуйста, кратко, как эта стадия была завершена.',
-  'Details' => 'Детали',
   'Any stage' => 'Любой этап',
   'Process:' => 'Процесс:',
   'record type(s)' => 'тип записи (ы)',

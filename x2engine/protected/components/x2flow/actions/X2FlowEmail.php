@@ -136,6 +136,10 @@ class X2FlowEmail extends BaseX2FlowEmail {
             $eml->message = InlineEmail::emptyBody($this->parseOption('body',
                                     $params));
             $prepared = $eml->prepareBody();
+
+//            $prepared = Docs::replaceVariables(
+//                $prepared, $eml->targetModel, 
+//                array('{signature}' => self::insertedPattern('signature', $eml->signature)));
             // $eml->insertSignature(array('<br /><br /><span style="font-family:Arial,Helvetica,sans-serif; font-size:0.8em">','</span>'));
         } elseif (!empty($options['template']['value'])) {
             $eml->scenario = 'template';

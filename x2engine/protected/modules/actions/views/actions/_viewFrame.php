@@ -187,6 +187,18 @@ $language = (Yii::app()->language == 'en') ? '' : Yii::app()->getLanguage();
     </head>
     <body>
         <?php
+        if ($textOnly) {
+        ?>
+        <div id='actions-frameUpdate-form' 
+         data-action-type='<?php echo X2Html::sanitizeAttribute ($model->type); ?>'>
+            <div class='content'>
+            <?php
+            echo CHtml::encode ($model->actionDescription);
+            ?>
+            </div>
+        </div>
+        <?php
+        } else {
         $form = $this->beginWidget('CActiveForm', array(
             'id' => 'actions-frameUpdate-form',
             'enableAjaxValidation' => false,
@@ -390,6 +402,9 @@ $language = (Yii::app()->language == 'en') ? '' : Yii::app()->getLanguage();
         </div>
         <div id="actionFooter">
         </div>
+        <?php
+        }
+        ?>
     </body>
 </html>
 <script>

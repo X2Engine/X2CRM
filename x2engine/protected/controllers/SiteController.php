@@ -1241,6 +1241,7 @@ class SiteController extends x2base {
                 $phpversion = phpversion();
                 $x2version = Yii::app()->params->version;
                 unset($error['traces']);
+                $error['trace'] = "{$error['type']} in {$error['file']}({$error['line']})\n{$error['trace']}";
                 $error['trace'] = CHtml::encode($error['trace']);
                 $phpInfoErrorReport = base64_encode(CJSON::encode(array_merge($error, array(
                             'request' => $request,
