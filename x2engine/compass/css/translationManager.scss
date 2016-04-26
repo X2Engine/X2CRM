@@ -101,7 +101,7 @@ div {
     -moz-border-radius: 4px;
     -webkit-border-radius: 4px;
     -o-border-radius: 4px;
-    border: 1px solid #ddd;
+    border: 1px solid #F5F5F5;
     padding: 5px;
   }
   &.scroll-box {
@@ -328,15 +328,15 @@ tr {
   margin: 0;
   padding: 0;
   &.entry td {
-    border-color: #ddd;
-    border-right: 1px solid #ddd;
+    border-color: #F5F5F5;
+    border-right: 1px solid #F5F5F5;
   }
 }
 
 /* line 249, ../compass/sass/css/translationManager.scss */
 
 /* tr.comment  td {
-	border-color:#ddd;
+	border-color:#F5F5F5;
 	padding:0 5px;
 	color:#aaa;
 } */
@@ -451,8 +451,8 @@ a.x2-button, input.x2-button, button.x2-button {
   padding: 0 8px;
   border: 1px solid #999 !important;
   background-color: #eee;
-  background: -webkit-gradient(linear, left top, left bottom, from(#f0f0f0), to(#dddddd));
-  background: -moz-linear-gradient(top, #f0f0f0, #dddddd);
+  background: -webkit-gradient(linear, left top, left bottom, from(#f0f0f0), to(#F5F5F5));
+  background: -moz-linear-gradient(top, #f0f0f0, #F5F5F5);
   color: #333;
   font-size: 11px !important;
   line-height: 24px;

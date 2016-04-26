@@ -119,4 +119,5 @@
   '<b>Reminder!</b> The following action is due: {action}' => '<b>! Promemoria</b> Il seguente azione è dovuta: {action}',
   'Event Subtype' => 'Sottotipo Evento',
   'Event Status' => 'Stato evento',
+  'Calendar Color' => 'Calendario colori',
 );

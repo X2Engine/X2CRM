@@ -19,4 +19,6 @@
   'Most Recent' => '最新',
   'Alphabetical' => '按英文字母顺序',
   'Most Popular' => '最受欢迎',
+  '{poster}posted a new reply to {topic}.' => '{poster}张贴到一个新的回复{topic} 。',
+  '{poster}posted a new reply to a topic, but that reply has been deleted.' => '{poster}贴到主题的新回复，但回复已被删除。',
 );

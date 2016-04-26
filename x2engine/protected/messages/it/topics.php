@@ -19,4 +19,6 @@
   'Most Recent' => 'Più recente',
   'Alphabetical' => 'Alfabetico',
   'Most Popular' => 'Più popolare',
+  '{poster}posted a new reply to {topic}.' => '{poster} pubblicato una nuova risposta a {topic} .',
+  '{poster}posted a new reply to a topic, but that reply has been deleted.' => '{poster} pubblicato una nuova risposta ad un argomento, ma la risposta è stata eliminata.',
 );

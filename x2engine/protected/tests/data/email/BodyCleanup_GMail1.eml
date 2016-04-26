@@ -1,0 +1,95 @@
+MIME-Version: 1.0
+Received: by XXX.XXX.XXX.XXX with HTTP; Tue, 29 Jan 2013 14:03:50 -0800 (PST)
+X-Originating-IP: [XXX.XXX.XXX.XXX]
+In-Reply-To: <581024580.137406.1359494480872.JavaMail.root@prospect.com>
+References: <10308ea7d64fc24901305a4574ea47b9@testdomain.com>
+	<581024580.137406.1359494480872.JavaMail.root@prospect.com>
+Date: Tue, 29 Jan 2013 14:03:50 -0800
+Delivered-To: sales@rep.com
+Message-ID: <CACwGMC0fOUxtTv0NuLaOP6gSSZ7XX48WvVK2q_J+ywhhMUHzPA@mail.gmail.com>
+Subject: Re: Email Dropbox
+From: Sales Rep <sales@rep.com>
+To: Test Contact <customer@prospect.com>
+Cc: dropbox@testdomain.com
+Content-Type: multipart/alternative; boundary=047d7b66f55f96971004d4749146
+
+--047d7b66f55f96971004d4749146
+Content-Type: text/plain; charset=ISO-8859-1
+
+Greetings, Test!
+
+Thank you for forwarding me that email; it allowed me to capture the raw
+format and generate a new pattern so that the forwarding use case will
+support Zimbra's attached forwarded message format. This pattern will
+formally be included in the next release, but I have taken the liberty of
+loading it into the database on your VPS so that it will be available right
+away.
+
+FYI, all VPS customers get the email dropbox functionality automatically
+set up for them during the provisioning process. As described in the
+installation
+wiki article<http://wiki.x2engine.com/wiki/Installation#Configuring_the_.22Email_Dropbox.22>on
+its setup, doing it manually involves a few extra server-end
+configuration steps. Not having to deal with that is one major advantage of
+our VPS hosting.
+
+To use the email dropbox:
+
+Method 1: Send an email *to* the contact and, in the CC field, put
+dropbox@testdomain.com, and it will be appended to the contact record
+as an email-type action. It's similar to what I'm doing with this email.
+Method 2: Forward an email sent *from* the contact directly to
+dropbox@testdomain.com, and it will be appended to the contact record
+as a note-type action ("contact sent email")
+
+If you have any suggestions or feature requests, or run into any problems,
+please do not hesitate to ask. You can email me at this address, or submit
+a support case, or ask on our forums (at x2community.com, where we'll grant
+you access to the private priority forum).
+
+-- 
+*Sincerely,*
+*Sales Rep*
+*Staff Engineer / Systems Administrator*
+*X2Engine Inc.*
+
+--047d7b66f55f96971004d4749146
+Content-Type: text/html; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
+
+<div dir=3D"ltr">Greetings, Test!<div><br></div><div style>Thank you for for=
+warding me that email; it allowed me to capture the raw format and generate=
+ a new pattern so that the forwarding use case will support Zimbra&#39;s at=
+tached forwarded message format. This pattern will formally be included in =
+the next release, but I have taken the liberty of loading it into the datab=
+ase on your VPS so that it will be available right away.</div>
+<div style><br></div><div style>FYI, all VPS customers get the email dropbo=
+x functionality automatically set up for them during the provisioning proce=
+ss. As described in the <a href=3D"http://wiki.x2engine.com/wiki/Installati=
+on#Configuring_the_.22Email_Dropbox.22">installation wiki article</a> on it=
+s setup, doing it manually involves a few extra server-end configuration st=
+eps. Not having to deal with that is one major advantage of our VPS hosting=
+.<br>
+</div><div style><br></div><div style>To use the email dropbox:</div><div s=
+tyle><br></div><div style>Method 1: Send an email <i>to</i> the contact and=
+, in the CC field, put <a href=3D"mailto:dropbox@tactibrand.x2vps.com">drop=
+box@tactibrand.x2vps.com</a>, and it will be appended to the contact record=
+ as an email-type action. It&#39;s similar to what I&#39;m doing with this =
+email.</div>
+<div style>Method 2: Forward an email sent <i>from</i>=A0the contact direct=
+ly to <a href=3D"mailto:dropbox@tactibrand.x2vps.com">dropbox@tactibrand.x2=
+vps.com</a>, and it will be appended to the contact record as a note-type a=
+ction (&quot;contact sent email&quot;)</div>
+<div style><br></div><div style>If you have any suggestions or feature requ=
+ests, or run into any problems, please do not hesitate to ask. You can emai=
+l me at this address, or submit a support case, or ask on our forums (at <a=
+ href=3D"http://x2community.com">x2community.com</a>, where we&#39;ll grant=
+ you access to the private priority forum).</div>
+<div class=3D"gmail_extra"><br></div><div class=3D"gmail_extra">--=A0<br><d=
+iv><i>Sincerely,</i></div><div><i><b>Sales Rep</b></i></div><div><i><f=
+ont color=3D"#006600">Staff Engineer / Systems Administrator</font></i></di=
+v><div>
+<i><font color=3D"#006600">X2Engine Inc.</font></i></div>
+</div></div>
+
+--047d7b66f55f96971004d4749146--

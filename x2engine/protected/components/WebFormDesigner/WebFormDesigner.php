@@ -1,6 +1,6 @@
 <?php
-/*****************************************************************************************
- * X2Engine Open Source Edition is a customer relationship management program developed by
+/***********************************************************************************
+ * X2CRM is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2016 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
@@ -21,7 +21,8 @@
  * 02110-1301 USA.
  * 
  * You can contact X2Engine, Inc. P.O. Box 66752, Scotts Valley,
- * California 95067, USA. or at email address contact@x2engine.com.
+ * California 95067, USA. on our website at www.x2crm.com, or at our
+ * email address: contact@x2engine.com.
  * 
  * The interactive user interfaces in modified source and object code versions
  * of this program must display Appropriate Legal Notices, as required under
@@ -32,7 +33,7 @@
  * X2Engine" logo. If the display of the logo is not reasonably feasible for
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2Engine".
- *****************************************************************************************/
+ **********************************************************************************/
 
 Yii::import('application.components.WebFormDesigner.views.*');
 
@@ -48,6 +49,13 @@ class WebFormDesigner extends X2Widget {
      */
     public $type;
 
+    
+    /**
+     * Edition for debuggin purposes
+     * either '', or 'pro'
+     * @var string
+     */
+    public $edition = '';
     
 
     /**
@@ -81,12 +89,21 @@ class WebFormDesigner extends X2Widget {
     public $defaultList = array();
 
     
+    public $excludeList = array();
+    
 
     public $modelName;
 
     public function init () {
         $this->JSClass = $this->protoName;
 
+        
+        if (Yii::app()->contEd('pro')) {
+            $this->edition = 'pro';
+            $this->JSClass .= 'Pro';
+        } else {
+            $this->edition = '';
+        }
         
 
         foreach ($this->forms as $form) {
@@ -105,10 +122,16 @@ class WebFormDesigner extends X2Widget {
         // Default Packages
         $this->_packages = array_merge ( parent::getPackages(), array(
                 
+                'CodeMirrorJS' => array (
+                    'baseUrl' => Yii::app()->baseUrl.'/js/lib/codemirror/', 
+                    'js' => array('codemirror.js', 'mode/css.js', 'mode/xml.js'),
+                    'css' => array('codemirror.css')
+                ),
+                
                 'WebFormDesignerJS' => array (
                     'baseUrl' => Yii::app()->baseUrl, 
                     'js' => array('js/WebFormDesigner/WebFormDesigner.js'),
-                    'depends' => array('auxlib')
+                    'depends' => array('auxlib', 'CodeMirrorJS')
                 ),
                 'WebFormDesignerCSS' => array (
                     'baseUrl' => Yii::app()->theme->baseUrl, 
@@ -179,6 +202,172 @@ class WebFormDesigner extends X2Widget {
         return '';
     }
 
+    
+    /*
+    Inserts a single custom field element into the DOM
+    */
+    public function displayCustomField ($field, $type, $item, $editable=false) {
+        echo '<li class="um-state-default" name="'.$field->fieldName.'">';
+        echo "<label class=\"$type\">".
+            Yii::t('services',$field->attributeLabel)."</label>";
+            echo '<span class="field-expander closed"></span>';
+            echo '<div class="field-settings">';
+        if($field->required) {
+            echo CHtml::checkbox(
+                $field->fieldName . '_checkbox', true,
+                array(
+                    'style'=>'margin-left: 5px;',
+                    //'onclick'=> ($editable ? '' : 'return false;'),
+                    'onclick'=> 'return false;',
+                    'onkeydown'=>'return false;'
+                )
+            );
+        } else if ($editable && $item == 'email') {
+            echo CHtml::checkbox(
+                $field->fieldName . '_checkbox', true,
+                array(
+                    'style'=>'margin-left: 5px;',
+                    'onchange'=>'x2.webFormDesigner._onFieldUpdate (); return false;'
+                )
+            );
+        } else {
+            echo CHtml::checkbox(
+                $field->fieldName . '_checkbox', false,
+                array(
+                    'style'=>'margin-left: 5px;',
+                    'onchange'=>'x2.webFormDesigner._onFieldUpdate (); return false;'
+                )
+            );
+        }
+
+        echo CHtml::label(
+            Yii::t('app','Required'),
+            $field->fieldName . '_checkbox',
+            array('style'=>'display: inline; padding-left: 3px',)
+        );
+        echo '<br />';
+        echo CHtml::label(
+            Yii::t('marketing','Label:').' ',
+            $field->fieldName . '_label',
+            array(
+                'style'=>'display: inline; padding: 0;',
+                'id'=>$field->fieldName.'_label_text',
+                'class' => 'field-value-label'
+            )
+        );
+        echo CHtml::textField(
+            $field->fieldName . '_label', '',
+            array('style'=>'width: 100px; padding: 0; margin: 0;')
+        );
+        echo CHtml::label(
+            Yii::t('marketing','Position:').' ',
+            $field->fieldName . '_label',
+            array('style'=>'display: inline; padding: 0;')
+        );
+        echo CHtml::dropDownList(
+            $field->fieldName . '_position', 'top',
+            array('top'=>Yii::t('app','top'), 'left'=>Yii::t('app','left')),
+            array(
+                'class'=>'field-position',
+                'onchange'=>'x2.webFormDesigner._onFieldUpdate (); return false;'
+            )
+        );
+        echo "<br>";
+        echo CHtml::label(
+            Yii::t('marketing','Type:').' ',
+            $field->fieldName . '_label',
+            array('style'=>'display: inline; padding: 0;')
+        );
+        echo CHtml::dropDownList(
+            $field->fieldName . '_type', 'normal',
+            array('normal'=>Yii::t('app','normal'), 'hidden'=>Yii::t('app','hidden')),
+            array(
+                'class'=>'field-type',
+                'onchange'=>
+                    'x2.webFormDesigner._onFieldUpdate ();
+                    if($(this).val()=="hidden"){
+                        $("#'.$field->fieldName.'_label_text").html("'.Yii::t('marketing',"Value:").'");
+                    }else{
+                        $("#'.$field->fieldName.'_label_text").html("'.Yii::t('marketing',"Label:").'");
+                    }'.
+                    'return false;'
+            )
+        );
+        echo '</div>';
+        echo '</li>';
+    }
+
+    /*
+    Used to construct the custom fields editor ui elements
+    */
+    public function buildSortableCustomFields (
+        $fields, $item=null, $editable=false) {
+
+        foreach($fields as &$field) {
+
+        if((!$editable &&
+            (!in_array($field->fieldName, $this->defaultList) &&
+             !in_array($field->fieldName, $this->excludeList) && $field->readOnly == false)) ||
+          ($editable &&
+           $field->fieldName == $item)) {
+                $type = '';
+                switch($field->type) {
+                    case 'email':
+                        $type = 'emailIcon';
+                        break;
+                    case 'phone':
+                        $type = 'phoneIcon';
+                        break;
+                    case 'boolean':
+                        $type = 'booleanIcon';
+                        break;
+                    case 'dropdown':
+                        $type = 'dropdownIcon';
+                        break;
+                    case 'date':
+                        $type = 'dateIcon';
+                        break;
+                    case 'text':
+                        $type = 'textIcon';
+                        break;
+                    default:
+                        $type = 'varcharIcon';
+                }
+                $this->displayCustomField ($field, $type, $item, $editable);
+            }
+        }
+    }
+
+    public function getFields ($modelName =null) {
+        if (!isset($modelName)) {
+            $modelName = $this->modelName;
+        }
+
+        $fields = Fields::model()->findAllByAttributes(
+            array(
+                'modelName'=> $modelName
+            ),
+            new CDbCriteria(array('order'=>'attributeLabel ASC'))
+        );
+    return $fields;
+    }
+    
+    public function getStoredFields ($fields=null){
+        if(!isset($fields)) {
+            $fields = $this->getFields();
+        }
+
+        $this->buildSortableCustomFields ($fields, null, false);
+    }
+    
+    public function getActiveFields ($fields=null) {
+        if(!isset($fields)) {
+            $fields = $this->getFields();
+        }
+        foreach($this->defaultList as $item) {
+            $this->buildSortableCustomFields ($fields, $item, true);
+        }
+    }
     
 
 

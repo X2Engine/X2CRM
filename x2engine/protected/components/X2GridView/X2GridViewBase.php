@@ -1,6 +1,6 @@
 <?php
-/*****************************************************************************************
- * X2Engine Open Source Edition is a customer relationship management program developed by
+/***********************************************************************************
+ * X2CRM is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2016 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
@@ -21,7 +21,8 @@
  * 02110-1301 USA.
  * 
  * You can contact X2Engine, Inc. P.O. Box 66752, Scotts Valley,
- * California 95067, USA. or at email address contact@x2engine.com.
+ * California 95067, USA. on our website at www.x2crm.com, or at our
+ * email address: contact@x2engine.com.
  * 
  * The interactive user interfaces in modified source and object code versions
  * of this program must display Appropriate Legal Notices, as required under
@@ -32,7 +33,7 @@
  * X2Engine" logo. If the display of the logo is not reasonably feasible for
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2Engine".
- *****************************************************************************************/
+ **********************************************************************************/
 
 Yii::import('zii.widgets.grid.CGridView');
 Yii::import('X2DataColumn');
@@ -163,7 +164,7 @@ abstract class X2GridViewBase extends CGridView {
 
     public function behaviors () {
         return array (
-            'X2BaseListViewBehavior' => 'application.components.X2GridView.X2BaseListViewBehavior'
+            'BaseListViewBehavior' => 'application.components.behaviors.BaseListViewBehavior'
         );
     }
 
@@ -1121,6 +1122,21 @@ Yii::app()->clientScript->registerScript(sprintf('%x', crc32(Yii::app()->name)),
                             'class'=>'fa fa-refresh fa-lg refresh-button x2-button'.
                                 $lastChildClass)
                         );
+                    break;
+                
+                case 'exportLogins':
+                    echo CHtml::link(
+                        X2Html::fa('fa-share fa-lg').Yii::t('app', 'Export'),
+                        array('/admin/exportLoginHistory'),
+                        array('class'=>'x2-button', 'id'=>'login-history-export')
+                    );
+                    break;
+                case 'exportFailedLogins':
+                    echo CHtml::link(
+                        X2Html::fa('fa-share fa-lg').Yii::t('app', 'Export'),
+                        array('/admin/exportLoginHistory', 'type' => 'failed'),
+                        array('class'=>'x2-button', 'id'=>'login-history-export')
+                    );
                     break;
                 
                 case 'showHidden':

@@ -1,6 +1,6 @@
 <?php
-/*****************************************************************************************
- * X2Engine Open Source Edition is a customer relationship management program developed by
+/***********************************************************************************
+ * X2CRM is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2016 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
@@ -21,7 +21,8 @@
  * 02110-1301 USA.
  * 
  * You can contact X2Engine, Inc. P.O. Box 66752, Scotts Valley,
- * California 95067, USA. or at email address contact@x2engine.com.
+ * California 95067, USA. on our website at www.x2crm.com, or at our
+ * email address: contact@x2engine.com.
  * 
  * The interactive user interfaces in modified source and object code versions
  * of this program must display Appropriate Legal Notices, as required under
@@ -32,7 +33,7 @@
  * X2Engine" logo. If the display of the logo is not reasonably feasible for
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2Engine".
- *****************************************************************************************/
+ **********************************************************************************/
 
 
 
@@ -224,5 +225,19 @@ if(isset($this->groupCalendars) && $this->groupCalendars !== null) {
                         $('#group-calendar .portlet-content').hide();
                 });",CClientScript::POS_HEAD);
         }
+}
+
+if ($this->action->id === 'index') {
+    $this->beginWidget('leftWidget',array(
+        'widgetLabel'=>Yii::t('calendar','Export {calendar}', array('{calendar}'=>Modules::displayName())),
+        'widgetName' => 'IcalExportUrl',
+        'id'=>'ical-export-url',
+    ));
+    echo '<input type="text" class="x2-textfield" name="ical-export-url-field" id="ical-export-url-field" style="width:50%;display:inline-block;"></input>&nbsp;';
+    echo '<a id="ical-export-url-link" href="#">['.Yii::t('calendar','link').']</a>&nbsp;';
+    echo X2Html::hint(Yii::t('admin',"This link is to a special URL that displays the current {calendar} in ICS format. It is useful for setting up the {calendar} in third-party programs such as Apple iCal.", array(
+            '{calendar}' => lcfirst(Modules::displayName()),
+    )),false,null,true); // text, superscript, id,brackets, encode
+    $this->endWidget();
 }
 

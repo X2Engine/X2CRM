@@ -119,4 +119,5 @@
   '<b>Reminder!</b> The following action is due: {action}' => '<b>! Υπενθύμιση Η</b> ακόλουθη δράση οφείλεται: {action}',
   'Event Subtype' => 'Δευτερεύων Εκδήλωση',
   'Event Status' => 'Κατάσταση Εκδήλωση',
+  'Calendar Color' => 'Ημερολόγιο χρώμα',
 );

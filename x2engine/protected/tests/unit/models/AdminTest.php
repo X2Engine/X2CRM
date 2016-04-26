@@ -1,7 +1,7 @@
 <?php
 
-/*****************************************************************************************
- * X2Engine Open Source Edition is a customer relationship management program developed by
+/***********************************************************************************
+ * X2CRM is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2016 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
@@ -22,7 +22,8 @@
  * 02110-1301 USA.
  * 
  * You can contact X2Engine, Inc. P.O. Box 66752, Scotts Valley,
- * California 95067, USA. or at email address contact@x2engine.com.
+ * California 95067, USA. on our website at www.x2crm.com, or at our
+ * email address: contact@x2engine.com.
  * 
  * The interactive user interfaces in modified source and object code versions
  * of this program must display Appropriate Legal Notices, as required under
@@ -33,7 +34,7 @@
  * X2Engine" logo. If the display of the logo is not reasonably feasible for
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2Engine".
- *****************************************************************************************/
+ **********************************************************************************/
 
 Yii::import ('application.modules.contacts.models.*');
 Yii::import ('application.modules.accounts.models.*');
@@ -103,6 +104,178 @@ class AdminTest extends X2DbTestCase {
         $this->assertTrue($admin->emailCountWillExceedLimit(2));
     }
 
+     
+    /**
+     * Ensure that invalid license key causes exception to be thrown
+     */
+    public function testGetLicenseKeyInfoCurlInvalid () {
+        Yii::app()->settings->unique_id = 'invalid';
+        AppFileUtil::$neverCurl = false;
+        AppFileUtil::$alwaysCurl = true;
+        $this->assertTrue (Yii::app()->cache2->flush ());
+        $this->assertEquals (array (
+            'errors' => 'invalid'
+        ), Yii::app()->settings->getLicenseKeyInfo (true)); // x2planet request
+        Yii::app()->settings->unique_id = VALID_LICENSE_KEY_PRO;
+        $this->assertEquals (array (
+            'errors' => 'invalid'
+        ), Yii::app()->settings->getLicenseKeyInfo (true)); // file cache check
+        $this->assertEquals (array (
+            'errors' => 'invalid'
+        ), Yii::app()->settings->getLicenseKeyInfo (false)); // property cache check
+    }
+
+    /**
+     * Ensure that invalid license key causes exception to be thrown
+     */
+    public function testGetLicenseKeyInfoFileGetContentsInvalid () {
+        Yii::app()->settings->unique_id = 'invalid';
+        AppFileUtil::$neverCurl = true;
+        AppFileUtil::$alwaysCurl = false;
+        $this->assertTrue (Yii::app()->cache2->flush ());
+        $this->assertEquals (array (
+            'errors' => 'invalid'
+        ), Yii::app()->settings->getLicenseKeyInfo (true));
+        Yii::app()->settings->unique_id = VALID_LICENSE_KEY_PRO;
+        $this->assertEquals (array (
+            'errors' => 'invalid'
+        ), Yii::app()->settings->getLicenseKeyInfo (true));
+        $this->assertEquals (array (
+            'errors' => 'invalid'
+        ), Yii::app()->settings->getLicenseKeyInfo (false));
+    }
+
+    public function testGetLicenseKeyInfoCurlMissing () {
+        Yii::app()->settings->unique_id = null;
+        AppFileUtil::$neverCurl = false;
+        AppFileUtil::$alwaysCurl = true;
+        $this->assertTrue (Yii::app()->cache2->flush ());
+        $this->assertEquals (array (), Yii::app()->settings->getLicenseKeyInfo (true));
+        Yii::app()->settings->unique_id = 'invalid';
+        $this->assertEquals (array (), Yii::app()->settings->getLicenseKeyInfo (true));
+        $this->assertEquals (array (), Yii::app()->settings->getLicenseKeyInfo (false));
+    }
+
+    /**
+     * Ensure that invalid license key causes exception to be thrown
+     */
+    public function testGetLicenseKeyInfoFileGetContentsMissing () {
+        Yii::app()->settings->unique_id = null;
+        AppFileUtil::$neverCurl = true;
+        AppFileUtil::$alwaysCurl = false;
+        $this->assertTrue (Yii::app()->cache2->flush ());
+        $this->assertEquals (array (), Yii::app()->settings->getLicenseKeyInfo (true));
+        Yii::app()->settings->unique_id = 'invalid';
+        $this->assertEquals (array (), Yii::app()->settings->getLicenseKeyInfo (true));
+        $this->assertEquals (array (), Yii::app()->settings->getLicenseKeyInfo (false));
+    }
+
+    /**
+     * Ensure that we can retrieve license key info with valid license keys
+     */
+    public function testGetLicenseKeyInfoValid () {
+        $url = X2_TESTING_UPDATE_SERVER . '/installs/registry/getLicenseKeyInfo';
+        foreach (array (false, true) as $useCurl) {
+            foreach (array (VALID_LICENSE_KEY_PRO, VALID_LICENSE_KEY_PLA) as $key) {
+                X2_TEST_DEBUG_LEVEL > 1 && 
+                    /**/println (
+                        'getting info for '.$key.' '.($useCurl ? '' : 'not ').'using curl');
+                AppFileUtil::$neverCurl = !$useCurl;
+                AppFileUtil::$alwaysCurl = $useCurl;
+                $this->assertEquals ($useCurl, AppFileUtil::tryCurl ($url));
+                Yii::app()->settings->unique_id = $key;
+                $this->assertTrue (Yii::app()->cache2->flush ());
+                $licenseKey = Yii::app()->settings->getLicenseKeyInfo (true);
+                X2_TEST_DEBUG_LEVEL > 1 && print_r ($licenseKey);
+                $this->assertTrue (isset ($licenseKey['dateExpires']));
+                $this->assertTrue (isset ($licenseKey['maxUsers']));
+                $this->assertTrue (is_numeric ($licenseKey['dateExpires']));
+                $this->assertTrue (is_numeric ($licenseKey['maxUsers']));
+
+                // now with caching
+                Yii::app()->settings->unique_id = null;
+                $licenseKey = Yii::app()->settings->getLicenseKeyInfo (true);
+                X2_TEST_DEBUG_LEVEL > 1 && print_r ($licenseKey);
+                $this->assertTrue (isset ($licenseKey['dateExpires']));
+                $this->assertTrue (isset ($licenseKey['maxUsers']));
+                $this->assertTrue (is_numeric ($licenseKey['dateExpires']));
+                $this->assertTrue (is_numeric ($licenseKey['maxUsers']));
+            }
+        }
+    }
+
+    /**
+     * Ensure that both valid and invalid license keys renders without error 
+     */
+    public function testLicenseKeyInfoRendering () {
+        $url = X2_TESTING_UPDATE_SERVER . '/installs/registry/getLicenseKeyInfo';
+        foreach (array (false, true) as $useCurl) {
+            foreach (array ('invalid', VALID_LICENSE_KEY_PRO, VALID_LICENSE_KEY_PLA) as $key) {
+                X2_TEST_DEBUG_LEVEL > 1 && 
+                    /**/println (
+                        'rendering info for '.$key.' '.($useCurl ? '' : 'not ').'using curl');
+                AppFileUtil::$neverCurl = !$useCurl;
+                AppFileUtil::$alwaysCurl = $useCurl;
+                $this->assertEquals ($useCurl, AppFileUtil::tryCurl ($url));
+                Yii::app()->settings->unique_id = $key;
+                $this->assertTrue (Yii::app()->cache2->flush ());
+                $this->assertTrue (
+                    is_string (
+                        $oldDate = Yii::app()->settings->renderProductKeyExpirationDate (true)));
+                $this->assertTrue (
+                    is_string ($oldMaxUsers = Yii::app()->settings->renderMaxUsers (true)));
+
+                if ($key !== 'invalid') {
+                    $this->assertEquals (1, preg_match ('/strong/', $oldMaxUsers));
+                    $this->assertEquals (1, preg_match ('/strong/', $oldDate));
+                    $this->assertEquals (0, preg_match ('/error-text/', $oldDate));
+                    Yii::app()->settings->unique_id = 'invalid';
+                } else {
+                    $this->assertEquals ('', $oldMaxUsers);
+                    $this->assertEquals (1, preg_match ('/error-text/', $oldDate));
+                    Yii::app()->settings->unique_id = VALID_LICENSE_KEY_PRO;
+                }
+
+                // now with caching
+                $this->assertEquals (
+                    $oldDate, Yii::app()->settings->renderProductKeyExpirationDate (true));
+                $this->assertEquals (
+                    $oldMaxUsers,Yii::app()->settings->renderMaxUsers (true));
+            }
+        }
+    }
+
+    /**
+     * Ensure that license key info cache behaves as expected 
+     */
+    public function testLicenseKeyInfoCaching () {
+        $admin = Admin::model ()->findByPk (1);
+        $this->assertTrue (Yii::app()->cache2->flush ());
+        $admin->unique_id = VALID_LICENSE_KEY_PRO;
+        $licenseKey = $admin->getLicenseKeyInfo (true);
+        X2_TEST_DEBUG_LEVEL > 1 && print_r ($licenseKey);
+        $this->assertTrue (isset ($licenseKey['dateExpires']));
+        $this->assertTrue (isset ($licenseKey['maxUsers']));
+        $this->assertTrue (is_numeric ($licenseKey['dateExpires']));
+        $this->assertTrue (is_numeric ($licenseKey['maxUsers']));
+
+        // cache is still valid since we haven't saved yet
+        $admin->unique_id = 'invalid';
+        $licenseKey = $admin->getLicenseKeyInfo (true);
+        X2_TEST_DEBUG_LEVEL > 1 && print_r ($licenseKey);
+        $this->assertTrue (isset ($licenseKey['dateExpires']));
+        $this->assertTrue (isset ($licenseKey['maxUsers']));
+        $this->assertTrue (is_numeric ($licenseKey['dateExpires']));
+        $this->assertTrue (is_numeric ($licenseKey['maxUsers']));
+
+        // saving a different license key should invalidate the cache
+        $this->assertSaves ($admin);
+        $licenseKey = $admin->getLicenseKeyInfo (true);
+        $this->assertTrue (!isset ($licenseKey['dateExpires']));
+        $this->assertTrue (!isset ($licenseKey['maxUsers']));
+        $this->assertTrue (isset ($licenseKey['errors']));
+        $this->assertEquals ('invalid', $licenseKey['errors']);
+    }
      
 
     public function testDisableAutomaticRecordTagging () {

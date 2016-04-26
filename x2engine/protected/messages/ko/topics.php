@@ -19,4 +19,6 @@
   'Most Recent' => '가장 최근',
   'Alphabetical' => '알파벳',
   'Most Popular' => '가장 인기 많은',
+  '{poster}posted a new reply to {topic}.' => '{poster} 에 대한 새로운 회신 게시 {topic} .',
+  '{poster}posted a new reply to a topic, but that reply has been deleted.' => '{poster} 주제에 새로운 답변을 게시하지만 응답이 삭제되었습니다.',
 );

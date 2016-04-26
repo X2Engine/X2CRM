@@ -1,0 +1,138 @@
+Delivered-To: dropbox@testdomain.com
+Received: by 10.217.60.195 with SMTP id g45csp24129wex;
+        Thu, 17 Jan 2013 10:37:18 -0800 (PST)
+X-Received: by 10.68.241.65 with SMTP id wg1mr16221927pbc.141.1358447837909;
+        Thu, 17 Jan 2013 10:37:17 -0800 (PST)
+Return-Path: <sales@rep.com>
+Received: from exprod6og105.redacted.com (exprod6og105.redacted.com [64.18.1.189])
+        by mx.google.com with SMTP id c9si2858084pax.336.2013.01.17.10.37.16;
+        Thu, 17 Jan 2013 10:37:17 -0800 (PST)
+Received-SPF: neutral (google.com: 64.18.1.189 is neither permitted nor denied by best guess record for domain of sales@rep.com) client-ip=64.18.1.189;
+Authentication-Results: mx.google.com;
+       spf=neutral (google.com: 64.18.1.189 is neither permitted nor denied by best guess record for domain of sales@rep.com) smtp.mail=sales@rep.com
+Received: from nixon.stl-distribution.com ([67.237.208.197]) (using TLSv1) by exprod6ob105.postini.com ([64.18.5.12]) with SMTP
+	ID DSNKUPhE3Of6DmBPChg3F0oqvNwM7DxW+03f@postini.com; Thu, 17 Jan 2013 10:37:17 PST
+Received: from NIXON.lighthouse.local ([::1]) by nixon.lighthouse.local
+ ([::1]) with mapi id 14.02.0318.001; Thu, 17 Jan 2013 13:38:32 -0500
+From: Sales Rep <sales@rep.com>
+To: dropbox@testdomain.com
+Subject: RE: FW: Dropbox compatibility test
+Thread-Topic: FW: Dropbox compatibility test
+Thread-Index: AQHN9N3FcbS5yAP0lU2pr+WRqH16Q5hN1LmQgABW9wD//63ggA==
+Date: Thu, 17 Jan 2013 18:38:31 +0000
+Message-ID: <71AFDD1F568DF44C88548F6E631E58972F6744@nixon.lighthouse.local>
+References: <71AFDD1F568DF44C88548F6E631E58972F670F@nixon.lighthouse.local>
+ <CACwGMC0VB4UT0zpimpjX4FjnMc91wvUgDd4G3-O6nCE1Y2kbVA@mail.gmail.com>
+In-Reply-To: <CACwGMC0VB4UT0zpimpjX4FjnMc91wvUgDd4G3-O6nCE1Y2kbVA@mail.gmail.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach:
+X-MS-TNEF-Correlator:
+x-originating-ip: [172.23.3.103]
+Content-Type: multipart/alternative;
+	boundary="_000_71AFDD1F568DF44C88548F6E631E58972F6744nixonlighthouselo_"
+MIME-Version: 1.0
+
+--_000_71AFDD1F568DF44C88548F6E631E58972F6744nixonlighthouselo_
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+
+Thank you Developer.  I am pleased to see your company responds so well to =
+user requests while still maintaining your own identity.  Your company is p=
+retty amazing!
+
+From: Test Contact [mailto:customer@prospect.com]
+Sent: Thursday, January 17, 2013 1:31 PM
+To: Sales Rep
+Subject: Re: FW: Dropbox compatibility test
+
+Hi Redacted,
+
+Thank you for responding, and I will be testing the forwarded message forma=
+t. I agree that your use case is very sensible. Originally, the request was=
+ to design it as a contact importer as well as an email importer, but the u=
+se case you described was not considered. I will try to fit the option to c=
+ontrol the behavior into the upcoming release. If not, you can expect it ve=
+ry soon; advanced self-service (but to begin with, a settings page) for the=
+ dropbox feature has been requested and in the works for some time.%123%
+
+
+On Thu, Jan 17, 2013 at 10:24 AM, Sales Rep <sales@rep.com> wrote:
+Hi Developer,
+
+I greatly appreciate your response.  Right now we are using Office Outlook =
+2007 as our email program and I believe we are using Exchange as our email =
+server.  One question I have is would it be possible to set up the dropbox =
+to not create new contacts if the email doesn't exist?  The reason I ask th=
+is is we are working with our hosting provider to set it up to where it wil=
+l automatically fill in the dropbox email address in the CC field so that w=
+ay our users won't have to remember to always put it in.  That way if it is=
+ sent to someone within our contact database it will automatically append t=
+o their contact info but if not it will just drop it.  Does that make sense=
+?
+
+Sincerely,
+
+Test Contact
+
+From: Developer Person [mailto:Developer@redacted.com<mailto:Developer@x2engine.c=
+om>]
+Sent: Thursday, January 17, 2013 1:08 PM
+To: Redacted RedactedLast
+Cc: dropbox@x2software.com<mailto:dropbox@x2software.com>
+Subject: Dropbox compatibility test
+
+Hi Redacted,
+
+I understand you have had some questions about the email dropbox feature av=
+ailable in X2Engine Professional Edition, and would like to clarify on a few p=
+oints.
+
+First, there are two methods of using the dropbox feature:
+
+1. Send an email to the contact, and CC the dropbox alias on your server (a=
+s I am doing in this email). The email will be attached to the contact reco=
+rd matching the addressee's email address (if the contact exists). If the c=
+ontact does not exist, the email parsing script will create it using the co=
+ntact information in the addressee field. If you send to multiple addresses=
+, it will do the same thing for all of them. This method is reliable and wo=
+rks with all email software.
+
+2. Forward an email sent from a contact to the dropbox alias. The email par=
+sing script will attempt to gather contact information from out of the forw=
+arded message's header, and attach the email / create the contact as it wou=
+ld using the first method. However, due to how different email programs for=
+mat attached forwarded messages differently, the script must be extended to=
+ add support for more email programs so that it can correctly recognize for=
+warded message headers.* Currently it supports GMail, Apple Mail, Outlook O=
+nline, and an older version of Outlook that one of our design partners uses=
+.
+
+I would thus like to offer to test your email software for compatibility, a=
+nd add support for it if it isn't already compatible. To do this, please fo=
+rward this email message back to me (instead of replying) and let me know t=
+he name of the email client program or webmail that you are using. I am off=
+ering to do this not only because you have expressed interest in purchasing=
+ X2Engine Professional, and I would like to ensure that the forwarded method w=
+orks properly for your software in the upcoming release, but because it wou=
+ld be generally advantageous to be able to support more types of email soft=
+ware.
+
+--
+Sincerely,
+Developer Person
+Staff Engineer / Systems Administrator
+X2Engine Inc.
+
+* Since there is not yet any 100% reliable heuristic for reconstructing ema=
+il threads, and this is still in fact a rather advanced topic in computer s=
+cience, the email dropbox simply uses regular expressions and uses the firs=
+t match for a forwarded message that it finds in the body.
+
+
+
+--
+Sincerely,
+Developer Person
+Staff Engineer / Systems Administrator
+X2Engine Inc.

@@ -1,0 +1,38 @@
+/*!*********************************************************************************
+ * X2CRM is a customer relationship management program developed by
+ * X2Engine, Inc. Copyright (C) 2011-2016 X2Engine Inc.
+ * 
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU Affero General Public License version 3 as published by the
+ * Free Software Foundation with the addition of the following permission added
+ * to Section 15 as permitted in Section 7(a): FOR ANY PART OF THE COVERED WORK
+ * IN WHICH THE COPYRIGHT IS OWNED BY X2ENGINE, X2ENGINE DISCLAIMS THE WARRANTY
+ * OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
+ * 
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.  See the GNU Affero General Public License for more
+ * details.
+ * 
+ * You should have received a copy of the GNU Affero General Public License along with
+ * this program; if not, see http://www.gnu.org/licenses or write to the Free
+ * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301 USA.
+ * 
+ * You can contact X2Engine, Inc. P.O. Box 66752, Scotts Valley,
+ * California 95067, USA. on our website at www.x2crm.com, or at our
+ * email address: contact@x2engine.com.
+ * 
+ * The interactive user interfaces in modified source and object code versions
+ * of this program must display Appropriate Legal Notices, as required under
+ * Section 5 of the GNU Affero General Public License version 3.
+ * 
+ * In accordance with Section 7(b) of the GNU Affero General Public License version 3,
+ * these Appropriate Legal Notices must retain the display of the "Powered by
+ * X2Engine" logo. If the display of the logo is not reasonably feasible for
+ * technical reasons, the Appropriate Legal Notices must display the words
+ * "Powered by X2Engine".
+ **********************************************************************************/.pseudo-link{cursor:pointer;color:#004baf;transition:color .1s}.pseudo-link:hover{color:#006cfc}.opacity-hover,.data-widget.sortable-widget-container .inline-report-container .inline-report-close{opacity:0.3}.opacity-hover:hover,.data-widget.sortable-widget-container .inline-report-container .inline-report-close:hover{opacity:1}/*!
+ *  Font Awesome 4.2.0 by @davegandy - http://fontawesome.io - @fontawesome
+ *  License - http://fontawesome.io/license (Font: SIL OFL 1.1, CSS: MIT License)
+ */.data-widget.sortable-widget-container .inline-report-container .inline-report-close:before{display:inline-block;font:normal normal normal 14px/1 FontAwesome;text-rendering:auto;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}.data-widget.sortable-widget-container .inline-report-container .pull-left.inline-report-close:before{margin-right:.3em}.data-widget.sortable-widget-container .inline-report-container .pull-right.inline-report-close:before{margin-left:.3em}.data-widget.sortable-widget-container .inline-report-container .inline-report-close:before{content:"\f00d"}.data-widget.sortable-widget-container{border-color:rgba(245,245,245,0)}.data-widget.sortable-widget-container:hover{border-color:rgba(69,69,69,0.5)}.data-widget.sortable-widget-container .add-to-dashboard,.data-widget.sortable-widget-container .go-to-report{display:none;float:right;padding:0px 11px;line-height:19px;margin:0px 10px;cursor:pointer}.data-widget.sortable-widget-container .add-to-dashboard.disabled-link,.data-widget.sortable-widget-container .go-to-report.disabled-link{opacity:0.5}.data-widget.sortable-widget-container:hover .add-to-dashboard,.data-widget.sortable-widget-container:hover .go-to-report{display:inline-block}.data-widget.sortable-widget-container .config-bar{text-align:center;display:none;padding:7px;border-bottom:1px solid #D9D9D9}.data-widget.sortable-widget-container .config-bar:after{clear:both}.data-widget.sortable-widget-container .config-bar-item{color:#9f9f9f;transition:color .2s;width:10px;margin:0px 5px;cursor:pointer;float:left}.data-widget.sortable-widget-container .config-bar-item:hover{color:#a6c7f4}.data-widget.sortable-widget-container .config-bar-item.active{color:#629ceb}.data-widget.sortable-widget-container .config-bar-item.spacer{width:30px;height:5px;display:inline-block;opacity:0;cursor:auto}.data-widget.sortable-widget-container .config-bar-item.right{float:right}.data-widget.sortable-widget-container .row{margin-bottom:5px}.data-widget.sortable-widget-container.dragging{transition:opacity 0.3s;opacity:0.75}.data-widget.sortable-widget-container .c3-tooltip{border-radius:2px}.data-widget.sortable-widget-container .c3-tooltip .value,.data-widget.sortable-widget-container .c3-tooltip .name,.data-widget.sortable-widget-container .c3-tooltip th{color:#454545 !important}.data-widget.sortable-widget-container .inline-report-container{display:none}.data-widget.sortable-widget-container .inline-report-container .inline-report-tabs{background:#D9D9D9;border-radius:0px}.data-widget.sortable-widget-container .inline-report-container .inline-report-tabs li a{color:white !important;text-decoration:none}.data-widget.sortable-widget-container .inline-report-container .inline-report-tabs li{padding:2px;margin:0px;border-radius:0px;border:none}.data-widget.sortable-widget-container .inline-report-container .inline-report-tabs li:hover{opacity:0.9}.data-widget.sortable-widget-container .inline-report-container .inline-report-header{text-align:center;line-height:200%;font-size:9pt;font-weight:bold;background:#629ceb;color:white}.data-widget.sortable-widget-container .inline-report-container .inline-report-close{float:right;cursor:pointer;margin-right:5px}.data-widget.sortable-widget-container .inline-report-container .inline-report-close:before{text-decoration:none}.data-widget.sortable-widget-container .inline-report-container .page-title .x2-button-group{display:none}.error-screen{width:100%;height:100%;min-height:100px;background:rgba(255,255,255,0.5);text-align:center;padding-top:100px}

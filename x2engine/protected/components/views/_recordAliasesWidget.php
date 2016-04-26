@@ -1,6 +1,6 @@
 <?php
-/*****************************************************************************************
- * X2Engine Open Source Edition is a customer relationship management program developed by
+/***********************************************************************************
+ * X2CRM is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2016 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
@@ -21,7 +21,8 @@
  * 02110-1301 USA.
  * 
  * You can contact X2Engine, Inc. P.O. Box 66752, Scotts Valley,
- * California 95067, USA. or at email address contact@x2engine.com.
+ * California 95067, USA. on our website at www.x2crm.com, or at our
+ * email address: contact@x2engine.com.
  * 
  * The interactive user interfaces in modified source and object code versions
  * of this program must display Appropriate Legal Notices, as required under
@@ -32,8 +33,10 @@
  * X2Engine" logo. If the display of the logo is not reasonably feasible for
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2Engine".
- *****************************************************************************************/
+ **********************************************************************************/
 
+ 
+Yii::import ('application.components.sortableWidget.components.GooglePlusResources');
  
 
 $aliasTypeOptions = RecordAliases::model ()->getAliasTypeOptions ();
@@ -51,6 +54,9 @@ $(function () {
         aliasTypeIcons: ".CJSON::encode ($aliasModel->getAllIcons ()).",
         baseUrl: yii.scriptUrl + 
             '/".Yii::app()->controller->module->name."/".Yii::app()->controller->module->name."',
+         
+        googlePlusIntegrationEnabled:".
+            (GooglePlusResources::integrationIsEnabled () ? 'true' : 'false').",
          
         translations: ".CJSON::encode (array (
             'dialogTitle' => Yii::t('app', 'Create Social Profile'),
@@ -109,6 +115,14 @@ echo CHtml::tag(
         ?></li>     
         </span>
         <?php
+         
+        if (GooglePlusResources::integrationIsEnabled ()) {
+        ?>
+        <li class='find-google-plus-profile x2-button'><?php 
+            echo CHtml::encode (Yii::t('app', 'Find Google+ Profile')) 
+        ?></li>     
+        <?php
+        }
          
         ?>
         <li class='new-alias-button x2-button'><?php 
@@ -174,5 +188,39 @@ echo CHtml::tag(
     ?>
 </div>
 <?php
+ 
+if (GooglePlusResources::integrationIsEnabled ()) {
+?>
+<form id='google-plus-profile-search-form' class='form2' style='display: none;'>
+    <input type='text' class='search-string'
+     placeholder='<?php echo CHtml::encode (Yii::t('app', 'Search Google+ Profiles')); ?>' 
+     value='<?php echo CHtml::encode ($this->model->name); ?>'/>
+    <?php
+    $aliasModel->aliasType = 'googlePlus';
+    echo CHtml::activeHiddenField ($aliasModel, 'aliasType', array ());
+    echo CHtml::activeHiddenField ($aliasModel, 'recordId');
+    ?>
+    <div class='search-results-container'></div>
+    <div class='search-result search-result-template' style='display: none;'>
+        <img class='search-result-profile-image' />
+        <?php
+        echo CHtml::activeHiddenField ($aliasModel, 'label', array (
+            'disabled' => 'disabled',
+            'class' => 'label-input',
+        ));
+        echo CHtml::activeHiddenField ($aliasModel, 'alias', array (
+            'disabled' => 'disabled',
+            'class' => 'alias-input'
+        ));
+        ?>
+        <a class='search-result-display-name pseudo-link' target='_blank'
+         title='<?php echo CHtml::encode (Yii::t('app', 'Visit Google+ Profile')); ?>'></a>
+    </div>
+    <?php
+    echo CHtml::errorSummary ($aliasModel);
+    ?>
+</form>
+<?php
+}
 
 ?>

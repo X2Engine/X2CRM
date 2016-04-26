@@ -1,6 +1,6 @@
 <?php
 return array(
-	// X2LinkableBehavior
+	// LinkableBehavior
 	'module',
 	'baseRoute',
 	'viewRoute',

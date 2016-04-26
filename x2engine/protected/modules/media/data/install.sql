@@ -77,7 +77,8 @@ INSERT INTO `x2_media` (`id`, `associationType`, `uploadedBy`, `fileName`, `desc
 ('-3', "theme",'admin','Twilight','{"themeName":"Twilight","background":"0C1021","content":"0C1021","text":"F7F7F7","link":"FBDE2D","highlight1":"303E49","highlight2":"FF6400"}',0),
 ('-4', "theme",'admin','Guava','{"themeName":"Guava","background":"F0AA81","content":"D6CCAD","text":"42282F","link":"2D4035","highlight1":"74A588","highlight2":"D6655A"}',0),
 ('-5', "theme",'admin','Archaic','{"themeName":"Archaic","background":"1E1E20","content":"2A2C2B","text":"FFFFFF","link":"D9CB9E","highlight1":"1E1E20","highlight2":"A5382B"}',0),
-('-6', "theme",'admin','Phosphor','{"themeName":"Phosphor","background":"050320","content":"1E1E20","text":"ECF4EA","link":"44FF24","highlight1":"131A19","highlight2":"226B15"}',0);
+('-6', "theme",'admin','Phosphor','{"themeName":"Phosphor","background":"050320","content":"1E1E20","text":"ECF4EA","link":"44FF24","highlight1":"131A19","highlight2":"226B15"}',0),
+('-7', "theme",'admin','Night','{"themeName":"Night","background":"252525","content":"252525","text":"E0E0E0","link":"E0E0E0","highlight1":"131A19","highlight2":"E0E0E0"}',0);
 /*&*/
 INSERT INTO x2_form_layouts 
 (id, model,version, scenario, layout,defaultView,defaultForm,createDate,lastUpdated) 

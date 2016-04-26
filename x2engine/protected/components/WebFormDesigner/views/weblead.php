@@ -1,6 +1,6 @@
 <?php
-/*****************************************************************************************
- * X2Engine Open Source Edition is a customer relationship management program developed by
+/***********************************************************************************
+ * X2CRM is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2016 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
@@ -21,7 +21,8 @@
  * 02110-1301 USA.
  * 
  * You can contact X2Engine, Inc. P.O. Box 66752, Scotts Valley,
- * California 95067, USA. or at email address contact@x2engine.com.
+ * California 95067, USA. on our website at www.x2crm.com, or at our
+ * email address: contact@x2engine.com.
  * 
  * The interactive user interfaces in modified source and object code versions
  * of this program must display Appropriate Legal Notices, as required under
@@ -32,7 +33,7 @@
  * X2Engine" logo. If the display of the logo is not reasonably feasible for
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2Engine".
- *****************************************************************************************/
+ **********************************************************************************/
 ?>
 <div class='webform-tab' id='generate-tab' data-title='<?php echo Yii::t('marketing','Generate Records'); ?>' >
     <div class='tab-content'>
@@ -78,4 +79,87 @@
     </div>
 </div>
 
-<?php  ?>
+<?php  
+if($this->edition == 'pro'):
+?>
+<div class="webform-tab" id="email-tab" data-title='<?php echo Yii::t('marketing','Email'); ?>'>
+    <div class='tab-content'>
+        <div class="cell">
+            <h4><?php echo Yii::t('marketing','Email') .':'; ?></h4>
+            <p class="fieldhelp" style="width: auto;">
+                <?php
+                echo Yii::t(
+                    'marketing','Select email templates to send to the new web lead and the {user} '.
+                    'assigned to the web lead.', array(
+                        '{user}' => strtolower(Modules::displayName(false, 'Users')),
+                    ));
+                ?>
+                <br />
+            </p>
+            <?php 
+            $templateList = array(''=>'------------') + Docs::getEmailTemplates('email', 'Contacts'); 
+            ?>
+            <div class="cell">
+                <?php echo CHtml::label(Yii::t('marketing','{user} Email', array(
+                    '{user}' => Modules::displayName(false, 'Users'),
+                )), ''); ?>
+                <?php echo CHtml::dropDownList('user-email-template', '', $templateList); ?>
+            </div>
+            <div class="cell">
+                <?php echo CHtml::label(Yii::t('marketing','Weblead Email'), ''); ?>
+                <?php echo CHtml::dropDownList('weblead-email-template', '', $templateList); ?>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class='webform-tab' id='tags-tab' data-title='<?php echo Yii::t('marketing','Add Tags'); ?>'>
+    <div class='tab-content'>
+        <div class="cell">
+            <h4><?php echo Yii::t('marketing','Tags') .':'; ?></h4>
+            <?php echo CHtml::textField('tags'); ?>
+            <p class="fieldhelp" style="width: auto;">
+                <em><?php echo Yii::t('marketing','Example') .': web,newlead,urgent'; ?></em>
+                <br/>
+                <?php
+                echo Yii::t(
+                    'marketing','These tags will be applied to any {contact} created by the form.', array(
+                        '{contact}' => strtolower(Modules::displayName(false, 'Contacts')),
+                    ));
+                ?>
+                <br />
+            </p>
+        </div>
+    </div>
+</div>
+
+<div class="row webform-tab-content" id="custom-html-input-container" data-tab='advanced-tab'>
+    <h4>
+        <?php echo Yii::t('marketing','Custom &lt;HEAD&gt;') .':'; ?>
+    </h4>
+    <p class="fieldhelp" style="width: 100%">
+        <?php echo Yii::t('marketing',
+            'Enter any HTML you would like inserted into the &lt;HEAD&gt; tag.'); ?>
+    </p>
+        <?php echo CHtml::textArea('header', '<!-- custom html -->', array(
+            'class'=> 'code', 
+            'id'=>'custom-html',
+            'data-mode' => 'xml'
+        )); ?>
+    <br/>
+</div>
+<div class="row webform-tab-content" id="redirect-url-container" data-tab='advanced-tab'>
+    <h4>
+        <?php echo Yii::t('marketing','Redirect URL') .':'; ?>
+    </h4>
+    <p class="fieldhelp" style="width: 100%">
+        <?php echo Yii::t('marketing',
+            'Enter a URL which the form will redirect to upon submission.'); ?>
+    </p>
+    <?php
+    echo CHtml::textField ('redirectUrl', '', array (
+        'id' => 'redirect-url'
+    ))
+    ?>
+</div>
+<?php endif;  ?>

@@ -65,4 +65,5 @@
   'Disabled' => '',
   'Failed to associate message "{subject}" with {type} {model}' => '',
   'Message "{subject}" already associated with {type} {model}' => '',
+  'Disable Quota Operations' => '',
 );

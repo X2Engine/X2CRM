@@ -94,6 +94,11 @@ Just wanted to check in with you about the support case you created. It is numbe
   'maxLoginHistory' => '5000',
   'performHostnameLookups' => '1',
      
+    'enableFingerprinting' => '0',
+    'identityThreshold' => '12',
+    'maxAnonContacts' => '5000',
+    'maxAnonActions' => '10000',
+     
     )
 );
 ?>

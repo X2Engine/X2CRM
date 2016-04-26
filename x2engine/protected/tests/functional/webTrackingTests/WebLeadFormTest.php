@@ -1,6 +1,6 @@
 <?php
-/*****************************************************************************************
- * X2Engine Open Source Edition is a customer relationship management program developed by
+/***********************************************************************************
+ * X2CRM is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2016 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
@@ -21,7 +21,8 @@
  * 02110-1301 USA.
  * 
  * You can contact X2Engine, Inc. P.O. Box 66752, Scotts Valley,
- * California 95067, USA. or at email address contact@x2engine.com.
+ * California 95067, USA. on our website at www.x2crm.com, or at our
+ * email address: contact@x2engine.com.
  * 
  * The interactive user interfaces in modified source and object code versions
  * of this program must display Appropriate Legal Notices, as required under
@@ -32,7 +33,7 @@
  * X2Engine" logo. If the display of the logo is not reasonably feasible for
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2Engine".
- *****************************************************************************************/
+ **********************************************************************************/
 
 Yii::import('application.tests.functional.webTrackingTests.WebTrackingTestBase');
 Yii::import('application.modules.contacts.models.Contacts');
@@ -52,6 +53,13 @@ class WebLeadFormTest extends WebTrackingTestBase {
         'webForms' => array ('WebForm', '.WebLeadFormTest'),
     );
 
+     
+    /**
+     * Assert that tracking cooldown is disabled 
+     */
+    public function testAssertDebugTrack () {
+        $this->assertDebugTrack ();
+    }
      
 
     protected function assertLeadCreated () {
@@ -111,13 +119,37 @@ class WebLeadFormTest extends WebTrackingTestBase {
     public function testSubmitWebLeadForm () {
         $this->deleteAllVisibleCookies ();
          
+        $this->assertNotCookie ('regexp:.*x2_key.*');
+         
 
         $this->submitWebForm ();
         sleep (5); // wait for iframe to load and for cookie to be set
          
+        $this->assertCookie ('regexp:.*x2_key.*');
+         
         $this->assertContactCreated ();
     }
 
+     
+    /**
+     * Test web lead form tracking by revisiting the page with the web lead form after submission
+     */
+    public function testWebLeadFormTracking () {
+        $this->deleteAllVisibleCookies ();
+        $this->assertNotCookie ('regexp:.*x2_key.*');
+
+        $this->submitWebForm ();
+        sleep (5); // wait for iframe to load and for cookie to be set
+        $this->assertCookie ('regexp:.*x2_key.*');
+        $this->assertContactCreated ();
+
+
+        $this->clearWebActivity ();
+        $this->openPublic('/x2WebTrackingTestPages/webFormTest.html');
+        sleep (5); // wait for iframe to load
+        $this->assertCookie ('regexp:.*x2_key.*');
+        $this->assertWebActivityGeneration ();
+    }
      
 
     /**
@@ -141,6 +173,24 @@ class WebLeadFormTest extends WebTrackingTestBase {
         $this->assertLeadCreated ();
     }
 
+     
+    public function testGenerateAccount () {
+        $this->clearContact ();
+        $this->clearAccount ();
+
+        $this->openPublic('x2WebTrackingTestPages/webFormTestGenerateAccount.html');
+        sleep (5);
+        $this->selectFrame('web-form-iframe');
+        $this->type("name=Contacts[firstName]", 'test');
+        $this->type("name=Contacts[lastName]", 'test');
+        $this->type("name=Contacts[email]", 'test@test.com');
+        $this->type("name=Contacts[company]", 'testAccount');
+        $this->click("css=#submit");
+        sleep (5); // wait for iframe to load
+
+        $this->assertContactCreated ();
+        $this->assertAccountCreated ();
+    }
      
 
     /**

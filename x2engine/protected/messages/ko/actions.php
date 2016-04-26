@@ -119,4 +119,5 @@
   '<b>Reminder!</b> The following action is due: {action}' => '<b>! 알림</b> 다음 조치는 때문이다 : {action}',
   'Event Subtype' => '이벤트 하위 유형',
   'Event Status' => '이벤트 상태',
+  'Calendar Color' => '달력 색상',
 );

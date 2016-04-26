@@ -1,6 +1,6 @@
 <?php
-/*****************************************************************************************
- * X2Engine Open Source Edition is a customer relationship management program developed by
+/***********************************************************************************
+ * X2CRM is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2016 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
@@ -21,7 +21,8 @@
  * 02110-1301 USA.
  * 
  * You can contact X2Engine, Inc. P.O. Box 66752, Scotts Valley,
- * California 95067, USA. or at email address contact@x2engine.com.
+ * California 95067, USA. on our website at www.x2crm.com, or at our
+ * email address: contact@x2engine.com.
  * 
  * The interactive user interfaces in modified source and object code versions
  * of this program must display Appropriate Legal Notices, as required under
@@ -32,7 +33,7 @@
  * X2Engine" logo. If the display of the logo is not reasonably feasible for
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2Engine".
- *****************************************************************************************/
+ **********************************************************************************/
 
 
 /**
@@ -164,6 +165,9 @@ class ProfileDashboardManager extends CWidget {
             'createProfileWidgetUrl' => 
                 Yii::app()->controller->createUrl ('/profile/createProfileWidget'),
             
+            'createChartingWidgetUrl' => 
+                Yii::app()->controller->createUrl ('/reports/addToDashboard'),
+            
         ));
 
         $script = "
@@ -183,6 +187,44 @@ class ProfileDashboardManager extends CWidget {
        
 	}
 
+	
+	/**
+	 * Creates a dropdown showing the different charts that can be created
+	 * The values of the options are a JSON string that give the proper fields
+	 * to call the action AddToDashboard in the charts controller.
+	 * @return string HTML for a dropdown
+	 */
+	public function getChartingWidgetDropdown () {
+		    $options = array();
+		    $reports = Reports::model()->findAll();
+		    foreach ($reports as $report) {
+		    	foreach ($report->dataWidgetLayout as $key => $value) {
+		    		list($class, $uid) = SortableWidget::parseWidgetLayoutKey ($key);
+		    		if (!$value['chartId']) {
+		    			continue;
+		    		}
+
+		    		$key = CJSON::encode(array(
+		    			'modelId' => $report->id,
+		    			'widgetClass' => $class,
+		    			'widgetUID' => $uid
+		     		));
+			    	$options[$key] = $value['label'];
+		    		
+		    	}
+		    }	
+		    if (count($options) == 0) {
+		    	$options['noCharts'] = Yii::t('charts', 'No charts have been created');
+		    }
+
+		    return CHtml::tag('span', 
+			    array ( 'style' => 'display:none', 
+			    		'id' => 'chart-name-container' ),
+			    CHtml::dropDownList ('chartName', '', $options).
+			    X2Html::hint(Yii::t('profile', 'You can create new charts in the reports module'))
+		    );
+
+	}
 	
 
 	/**

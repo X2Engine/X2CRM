@@ -1,6 +1,6 @@
 <?php
-/*****************************************************************************************
- * X2Engine Open Source Edition is a customer relationship management program developed by
+/***********************************************************************************
+ * X2CRM is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2016 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
@@ -21,7 +21,8 @@
  * 02110-1301 USA.
  * 
  * You can contact X2Engine, Inc. P.O. Box 66752, Scotts Valley,
- * California 95067, USA. or at email address contact@x2engine.com.
+ * California 95067, USA. on our website at www.x2crm.com, or at our
+ * email address: contact@x2engine.com.
  * 
  * The interactive user interfaces in modified source and object code versions
  * of this program must display Appropriate Legal Notices, as required under
@@ -32,7 +33,7 @@
  * X2Engine" logo. If the display of the logo is not reasonably feasible for
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2Engine".
- *****************************************************************************************/
+ **********************************************************************************/
 
 /**
  * @package application.controllers
@@ -55,6 +56,9 @@ class RelationshipsController extends x2base {
             array ('allow',
                 'actions' => array (
                     'addRelationship', 
+                      
+                    'graph', 'getRecordData', 'addNode', 'connectNodes', 
+                    'deleteEdges', 'viewInlineGraph', 'ajaxGetModelAutocomplete',
                      
                 ),
                 'users' => array ('@'),
@@ -112,6 +116,159 @@ class RelationshipsController extends x2base {
         }
     }
 
+     
+    public function actionAjaxGetModelAutocomplete ($modelType, $name=null) {
+        if (!Yii::app()->params->isAdmin) $this->denied ();
+        return parent::actionAjaxGetModelAutocomplete ($modelType, $name);
+    }
+
+    /**
+     * Display the relationships graph with initial focus given to the specified record
+     */
+    public function actionGraph ($recordId, $recordType) {
+        if (!Yii::app()->params->isAdmin) $this->denied ();
+        $model = $this->getModelFromTypeAndId ($recordType, $recordId);
+        if (!Yii::app()->controller->checkPermissions ($model, 'view')) {
+            $this->denied ();
+        }
+        $this->render ('graphFullScreen', array (
+            'model' => $model,
+        ));
+    }
+
+    /**
+     * Get information about the record and its neighbors 
+     */
+    public function actionGetRecordData ($recordId, $recordType) {
+        $model = $this->getModelFromTypeAndId ($recordType, $recordId);
+        if (!Yii::app()->controller->checkPermissions ($model, 'view')) {
+            $this->denied ();
+        }
+
+        $retArr = array ();
+        $neighborData = RelationshipsGraph::getNeighborData ($model);
+        $retArr['detailView'] = $this->renderPartial (
+            'application.components.views._relationshipsGraphRecordDetails', array (
+                'model' => $model,
+                'neighborData' => $neighborData,
+            ), true);
+        $retArr['neighborData'] = $neighborData;
+        echo CJSON::encode ($retArr);
+    }
+
+    /**
+     * Creates an edge between source node and all target nodes and echoes info about the new edges
+     */
+    public function actionAddNode ($recordId, $recordType, array $otherRecordInfo) {
+        $model = $this->getModelFromTypeAndId ($recordType, $recordId);
+        if (!Yii::app()->controller->checkPermissions ($model, 'edit')) {
+            $this->denied ();
+        }
+        $models = $this->getModelsFromTypeAndId ($otherRecordInfo);
+        $modelCount = count ($models);
+
+        // create relationships between new node and each target node
+        $edges = array (); // new edges with source and target specified by node uid
+        $modelA = $model;
+        for ($i = 0; $i < $modelCount; $i++) {
+            $modelB = $models[$i];
+            $typeA = get_class ($modelA);
+            $typeB = get_class ($modelB);
+            if ($modelA->createRelationship($modelB) === true) {
+                $edges[] = array (
+                    'source' => $typeA.$modelA->id,
+                    'target' => $typeB.$modelB->id,
+                );
+            }
+        }
+        echo CJSON::encode ($edges);
+    }
+
+    /**
+     * Creates an edge between all pairs of specified nodes and echoes info about the new edges
+     * @param array $recordInfo model type, model id pairs (max 4)
+     */
+    public function actionConnectNodes (array $recordInfo) {
+        $models = array ();
+        if (count ($recordInfo) > 4) {
+            throw new CHttpException (400, Yii::t('app', 'Too many records to connect')); 
+        }
+        $models = $this->getModelsFromTypeAndId ($recordInfo);
+        foreach ($models as $model) {
+            if (!Yii::app()->controller->checkPermissions ($model, 'edit')) {
+                $this->denied ();
+            }
+        }
+        $modelCount = count ($models);
+
+        // create relationships between each pair of models
+        $edges = array (); // new edges with source and target specified by node uid
+        for ($i = 0; $i < $modelCount; $i++) {
+            $modelA = $models[$i];
+            for ($j = $i + 1; $j < $modelCount; $j++) {
+                $modelB = $models[$j];
+                $typeA = get_class ($modelA);
+                $typeB = get_class ($modelB);
+                if ($modelA->createRelationship($modelB) === true) {
+                    $edges[] = array (
+                        'source' => $typeA.$modelA->id,
+                        'target' => $typeB.$modelB->id,
+                    );
+                }
+            }
+        }
+        echo CJSON::encode ($edges);
+    }
+
+    public function actionDeleteEdges (array $edgeData) {
+        $criteria = new CDbCriteria;
+        $qpg = new QueryParamGenerator (':actionDeleteEdges');
+        foreach ($edgeData as $edge) {
+            $firstType = $edge[0][0];
+            $firstId = $edge[0][1];
+            $secondType = $edge[1][0];
+            $secondId = $edge[1][1];
+            // deny access if user doesn't have edit permission for either node
+            if (!Yii::app()->params->isAdmin) {
+                $modelA = $this->getModelFromTypeAndId ($firstType, $firstId);
+                $modelB = $this->getModelFromTypeAndId ($secondType, $secondId);
+                if ((!Yii::app()->controller->checkPermissions ($modelA, 'edit')) &&
+                    (!Yii::app()->controller->checkPermissions ($modelB, 'edit'))) {
+
+                    $this->denied ();
+                }
+            }
+            $criteria->addCondition (
+                "firstType={$qpg->nextParam ($firstType)} AND
+                 firstId={$qpg->nextParam ($firstId)} AND
+                 secondType={$qpg->nextParam ($secondType)} AND
+                 secondId={$qpg->nextParam ($secondId)}", 'OR');
+            $criteria->addCondition (
+                "secondType={$qpg->nextParam ($secondId)} AND
+                 secondId={$qpg->nextParam ($secondType)} AND
+                 firstType={$qpg->nextParam ($firstType)} AND
+                 firstId={$qpg->nextParam ($firstId)}", 'OR');
+        }
+        $criteria->params = $qpg->getParams ();
+        if (Relationships::model ()->deleteAll ($criteria)) {
+            echo 'success';
+        }
+    }
+
+    public function actionViewInlineGraph ($recordId, $recordType, $height=null) {
+        $model = X2Model::getModelOfTypeWithId ($recordType, $recordId);
+        if (!$model) {
+            throw new CHttpException (400, Yii::t('app', 'Invalid record type or record id')); 
+        }
+        if (!Yii::app()->controller->checkPermissions ($model, 'view')) {
+            $this->denied ();
+        }
+
+        $this->renderPartial ('graphInline', array (
+            'model' => $model,
+            'height' => $height,
+        ), false, true);
+    }
      
 
 

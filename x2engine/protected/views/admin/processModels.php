@@ -1,7 +1,7 @@
 <?php
 
-/*****************************************************************************************
- * X2Engine Open Source Edition is a customer relationship management program developed by
+/***********************************************************************************
+ * X2CRM is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2016 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
@@ -22,7 +22,8 @@
  * 02110-1301 USA.
  * 
  * You can contact X2Engine, Inc. P.O. Box 66752, Scotts Valley,
- * California 95067, USA. or at email address contact@x2engine.com.
+ * California 95067, USA. on our website at www.x2crm.com, or at our
+ * email address: contact@x2engine.com.
  * 
  * The interactive user interfaces in modified source and object code versions
  * of this program must display Appropriate Legal Notices, as required under
@@ -33,7 +34,7 @@
  * X2Engine" logo. If the display of the logo is not reasonably feasible for
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2Engine".
- *****************************************************************************************/
+ **********************************************************************************/
 
 Yii::app()->clientScript->registerCssFile (Yii::app()->theme->baseUrl.'/css/importexport.css');
 ?>
@@ -154,6 +155,23 @@ if ($maxExecTime <= 30) {
     </div>
     <?php
      
+    if (Yii::app()->contEd ('pro')) {
+    ?>
+    <div class="row">
+        <div class="cell"><strong><?php echo Yii::t('admin','Update existing records?'); ?></strong></div>
+        <div class="cell"><?php echo X2Html::hint(Yii::t('admin',"An existing record with the same ID will have its fields updated instead of being overwritten."),false); ?></div>
+        <div class="cell"><?php echo CHtml::checkBox('update-records-box');?></div>
+
+        <div id="update-field-selector" class="row" style="display:none;">
+            <?php
+                echo CHtml::label (Yii::t('admin', 'Match Attribute'), 'update-field', array('style' => 'float:left; padding-top: 0.5em;'));
+                echo CHtml::dropdownList ('update-field', 'id', X2Model::model($model)->attributeLabels());
+            ?>
+        </div>
+    </div>
+    <?php
+    }
+     
     ?>
     <div class="row">
         <div class="cell"><strong><?php echo Yii::t('marketing','Tags'); ?></strong></div>
@@ -273,6 +291,11 @@ if ($maxExecTime <= 30) {
         'confirm' => Yii::t('admin', "You have mapped multiple columns to the same field, are you sure you would like to proceed? The following fields were mapped more than once: "),
         'aborting' => Yii::t('admin', "Import preparation failed.  Aborting import."),
         
+        'nonUniqueMatch' => Yii::t ('admin', 'You have selected to match on a '.
+                        'non-unique attribute to update existing records. This can result in '.
+                        'unintended changes to data. Are you sure you would like to proceed? '.
+                        'Match attribute was: '),
+        
         'nonUniqueAssocMatch' => Yii::t ('admin', 'You have selected to match link type fields on '.
                         'non-unique attributes. This can result in an association being '.
                         'formed with the incorrect record. Are you sure you would like to proceed? '.
@@ -330,6 +353,10 @@ if ($maxExecTime <= 30) {
         $('#fields').toggle();
     });
 
+     
+    $('#update-records-box').change(function(){
+        $('#update-field-selector').toggle();
+    });
      
 
     $('#log-comment-box').change(function(){

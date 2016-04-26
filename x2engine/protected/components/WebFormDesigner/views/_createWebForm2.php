@@ -1,6 +1,6 @@
 <?php
-/*****************************************************************************************
- * X2Engine Open Source Edition is a customer relationship management program developed by
+/***********************************************************************************
+ * X2CRM is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2016 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
@@ -21,7 +21,8 @@
  * 02110-1301 USA.
  * 
  * You can contact X2Engine, Inc. P.O. Box 66752, Scotts Valley,
- * California 95067, USA. or at email address contact@x2engine.com.
+ * California 95067, USA. on our website at www.x2crm.com, or at our
+ * email address: contact@x2engine.com.
  * 
  * The interactive user interfaces in modified source and object code versions
  * of this program must display Appropriate Legal Notices, as required under
@@ -32,7 +33,7 @@
  * X2Engine" logo. If the display of the logo is not reasonably feasible for
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2Engine".
- *****************************************************************************************/
+ **********************************************************************************/
 
 
 ?>
@@ -107,6 +108,48 @@
 
 <div class="row" style="overflow: visible;">
 <?php
+
+if ($this->edition == 'pro' && $this->type !== 'weblist'):
+?>
+
+    <div class="cell">
+        <h4><?php echo Yii::t('marketing','Fields') .':'; ?></h4>
+        <p class="fieldhelp" style="width: auto;">
+            <?php 
+            echo Yii::t('marketing', 'Drag and Drop fields from Fields List to Form.');
+            ?>
+        </p>
+        <div>
+            <div class="web-form-fields fields-container">
+                <div class="fieldListTitle">
+                    <?php echo Yii::t('marketing','Field List'); ?>
+                </div>
+                <div>
+                    <ul id="sortable1" class="connectedSortable fieldlist">
+                        <?php // get list of all fields, sort by attribute label alphabetically
+                        $this->getStoredFields();
+                        ?>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="web-form-fields">
+                <div class="fieldListTitle">
+                    <?php echo Yii::t('app','Form'); ?>
+                </div>
+                <div>
+                    <ul id="sortable2" class="connectedSortable fieldlist">
+                        <?php
+                        $this->getActiveFields();
+                        ?>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+<?php
+endif;
 
 ?>
 
@@ -197,7 +240,23 @@
         </div>
     </div>
 
-    <?php  ?>
+    <?php  if ($this->edition == 'pro' && $this->type != 'weblist'):  ?>
+    <div class="webform-tab" id='advanced-tab' data-title='<?php echo Yii::t('app','Advanced'); ?>'>
+        <div class='tab-content'>
+            <div class="row" id="custom-css-input-container">
+                <h4><?php echo Yii::t('marketing','CSS') .':'; ?></h4>
+                <p class="fieldhelp">
+                    <?php echo Yii::t('marketing','Enter custom css for the web form.'); ?>
+                </p>
+                <?php echo CHtml::textArea('css', '/* custom css */', array(
+                    'class' => 'code', 
+                    'id'=>'custom-css',
+                    'data-mode'=> 'css'
+                )); ?>
+            </div>
+        </div>
+    </div>
+    <?php endif;  ?>
 
     <input type="hidden" name="fieldList" id="fieldList">
 

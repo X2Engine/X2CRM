@@ -119,4 +119,5 @@
   '{User}\'s {Group}' => '',
   '{Action} Description' => '',
   'color' => '',
+  'Calendar Color' => '',
 );

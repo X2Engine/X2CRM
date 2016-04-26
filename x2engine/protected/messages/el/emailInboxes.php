@@ -64,4 +64,5 @@
   'Disabled' => 'Ανάπηρος',
   'Failed to associate message "{subject}" with {type} {model}' => 'Αποτυχία να συνδέσει το μήνυμα &quot; {subject} &quot; με {type} {model}',
   'Message "{subject}" already associated with {type} {model}' => 'Μήνυμα &quot; {subject} &quot; έχει ήδη συσχετιστεί με {type} {model}',
+  'Disable Quota Operations' => 'Απενεργοποίηση Λειτουργίας Ποσόστωση',
 );

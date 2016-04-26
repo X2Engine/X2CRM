@@ -1,0 +1,115 @@
+Delivered-To: dropbox@testdomain.com
+Received: by 10.194.206.98 with SMTP id ln2csp67513wjc;
+        Wed, 16 Oct 2013 15:03:35 -0700 (PDT)
+X-Received: by 10.68.203.34 with SMTP id kn2mr5032637pbc.82.1381961014438;
+        Wed, 16 Oct 2013 15:03:34 -0700 (PDT)
+Return-Path: <sales@rep.com>
+Received: from new1-smtp.messagingengine.com (new1-smtp.messagingengine.com. [66.111.4.221])
+        by mx.google.com with ESMTPS id fk10si58374430pab.116.1969.12.31.16.00.00
+        (version=TLSv1.2 cipher=ECDHE-RSA-RC4-SHA bits=128/128);
+        Wed, 16 Oct 2013 15:03:34 -0700 (PDT)
+Received-SPF: pass (google.com: domain of sales@rep.com designates 66.111.4.221 as permitted sender) client-ip=66.111.4.221;
+Authentication-Results: mx.google.com;
+       spf=pass (google.com: domain of sales@rep.com designates 66.111.4.221 as permitted sender) smtp.mail=sales@rep.com;
+       dkim=pass header.i=@fastmail.fm
+Received: from compute5.internal (compute5.nyi.mail.srv.osa [10.202.2.45])
+	by gateway1.nyi.mail.srv.osa (Postfix) with ESMTP id 139916D5
+	for <dropbox@testdomain.com>; Wed, 16 Oct 2013 18:03:33 -0400 (EDT)
+Received: from web5 ([10.202.2.215])
+  by compute5.internal (MEProxy); Wed, 16 Oct 2013 18:03:33 -0400
+DKIM-Signature: v=1; a=rsa-sha1; c=relaxed/relaxed; d=fastmail.fm; h=
+	message-id:from:to:mime-version:content-transfer-encoding
+	:content-type:references:subject:date; s=mesmtp; bh=bTqAbG8lWdAX
+	PLAjIiSdKI+GgnY=; b=CGzAn9BXEyr2GoxOtE0Dkq994+Aq+59EQEKnNnX9MFfg
+	xmAno7FG76e+Dn64dRgmW+2ZOp+unSEuYN0sEbTqGldWVO9Rauzz8DhRiuM4fYxm
+	60m+Tl5f9p7zV1QML3zEJZndgHA5/tf+iXT131jOIqnM6fV6FVoubRivlQRnNis=
+DKIM-Signature: v=1; a=rsa-sha1; c=relaxed/relaxed; d=
+	messagingengine.com; h=message-id:from:to:mime-version
+	:content-transfer-encoding:content-type:references:subject:date;
+	 s=smtpout; bh=bTqAbG8lWdAXPLAjIiSdKI+GgnY=; b=QlOTYj3ZVV+SnzV/a
+	IusnzIEA/46jcI1jZm61W3rUeaOk9vQapyjttadduzR9O2bueDzfYANsw1nns/gu
+	38W+Ri+LcqJ3XhcC2vrnIho+JxTqJ6Ly+4Ghg3FjpoTbRQx0jU/iNwF+syVbHm5G
+	ZsfgAXRrRgZKSm8YghV2D5+EpE=
+Received: by web5.nyi.mail.srv.osa (Postfix, from userid 99)
+	id B52A0A6AC76; Wed, 16 Oct 2013 18:03:32 -0400 (EDT)
+Message-Id: <1381961012.22697.34896009.38424DAE@webmail.messagingengine.com>
+X-Sasl-Enc: WNHL8myIy/VQFkzJXnekUr3drGjcM3fVilJAQ7DSajGSLA== 1381961012
+From: Sales Rep <sales@rep.com>
+To: dropbox@testdomain.com
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Content-Type: multipart/alternative; boundary="_----------=_1381961012226972";
+ charset="utf-8"
+X-Mailer: MessagingEngine.com Webmail Interface - ajax-ce174988
+References: <BAY169-W9694D16C20483FDC5CF875F3040@phx.gbl>
+Subject: Fwd: Testing Fastmail
+Date: Thu, 17 Oct 2013 09:03:32 +1100
+
+This is a multi-part message in MIME format.
+
+--_----------=_1381961012226972
+Content-Transfer-Encoding: 7bit
+Content-Type: text/plain
+
+
+
+
+
+--
+Master user for Hub Mill
+sales@rep.com
+
+
+
+
+
+----- Original message -----
+
+From: Test Contact <[1]customer@prospect.com>
+
+To: "[2]sales@rep.com"
+<[3]sales@rep.com>
+
+Subject: Testing Fastmail
+
+Date: Thu, 17 Oct 2013 08:34:52 +1100
+
+
+
+Fastmail body test%123%
+
+References
+
+1. mailto:customer@prospect.com
+2. mailto:sales@rep.com
+3. mailto:sales@rep.com
+
+--_----------=_1381961012226972
+Content-Transfer-Encoding: 7bit
+Content-Type: text/html
+
+<!DOCTYPE html>
+<html>
+<head>
+<title></title>
+</head>
+<body><div>&nbsp;</div>
+<div>&nbsp;</div>
+<div id="sig19827117"><div class="signature">-- <br></div>
+<div class="signature">  Master user for Hub Mill<br></div>
+<div class="signature">  sales@rep.com<br></div>
+<div class="signature">&nbsp;</div>
+</div>
+<div>&nbsp;</div>
+<div>&nbsp;</div>
+<div>----- Original message -----<br></div>
+<div>From: Test Contact &lt;<a href="mailto:customer@prospect.com">customer@prospect.com</a>&gt;<br></div>
+<div>To: "<a href="mailto:sales@rep.com">sales@rep.com</a>" &lt;<a href="mailto:sales@rep.com">sales@rep.com</a>&gt;<br></div>
+<div>Subject: Testing Fastmail<br></div>
+<div>Date: Thu, 17 Oct 2013 08:34:52 +1100<br></div>
+<div>&nbsp;</div>
+<div dir="ltr">Fastmail body test 		 	   		  <br></div>
+</body>
+</html>
+
+--_----------=_1381961012226972--

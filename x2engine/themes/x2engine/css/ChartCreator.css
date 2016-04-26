@@ -1,0 +1,35 @@
+/*!*********************************************************************************
+ * X2CRM is a customer relationship management program developed by
+ * X2Engine, Inc. Copyright (C) 2011-2016 X2Engine Inc.
+ * 
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU Affero General Public License version 3 as published by the
+ * Free Software Foundation with the addition of the following permission added
+ * to Section 15 as permitted in Section 7(a): FOR ANY PART OF THE COVERED WORK
+ * IN WHICH THE COPYRIGHT IS OWNED BY X2ENGINE, X2ENGINE DISCLAIMS THE WARRANTY
+ * OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
+ * 
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.  See the GNU Affero General Public License for more
+ * details.
+ * 
+ * You should have received a copy of the GNU Affero General Public License along with
+ * this program; if not, see http://www.gnu.org/licenses or write to the Free
+ * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301 USA.
+ * 
+ * You can contact X2Engine, Inc. P.O. Box 66752, Scotts Valley,
+ * California 95067, USA. on our website at www.x2crm.com, or at our
+ * email address: contact@x2engine.com.
+ * 
+ * The interactive user interfaces in modified source and object code versions
+ * of this program must display Appropriate Legal Notices, as required under
+ * Section 5 of the GNU Affero General Public License version 3.
+ * 
+ * In accordance with Section 7(b) of the GNU Affero General Public License version 3,
+ * these Appropriate Legal Notices must retain the display of the "Powered by
+ * X2Engine" logo. If the display of the logo is not reasonably feasible for
+ * technical reasons, the Appropriate Legal Notices must display the words
+ * "Powered by X2Engine".
+ **********************************************************************************/.pseudo-link,#chart-creator .clear-field{cursor:pointer;color:#004baf;transition:color .1s}.pseudo-link:hover,#chart-creator .clear-field:hover{color:#006cfc}.opacity-hover,#chart-creator .x2-hint{opacity:0.3}.opacity-hover:hover,#chart-creator .x2-hint:hover{opacity:1}#chart-creator{padding:10px}#chart-creator>div{margin-bottom:10px}#chart-creator .form-header{font-size:15pt}#chart-creator form{display:none;transition:all 1s linear}#chart-creator form.active{display:block}#chart-creator .chart-selector .choice{display:inline-block;height:55px;width:55px;margin-right:10px;border:1px solid #A3A3A3;border-radius:2px;background-color:white;background-repeat:no-repeat;background-size:120% auto;cursor:pointer;opacity:0.9}#chart-creator .chart-selector .choice:hover{opacity:0.8}#chart-creator .chart-selector .choice:active,#chart-creator .chart-selector .choice.active{border-color:#3F76BF;opacity:1.0}#chart-creator ::-webkit-input-placeholder{color:#144fa0}#chart-creator :-moz-placeholder{color:#144fa0}#chart-creator ::-moz-placeholder{color:#144fa0}#chart-creator :-ms-input-placeholder{color:#144fa0}#chart-creator .x2-hint{opacity:0.6;margin-top:8px;margin-left:10px;float:right}#chart-creator .axis-selector{box-sizing:border-box;padding:5px;text-align:center;background:#eaf2fc;border:1px dashed #144fa0;border-radius:3px;color:#144fa0;cursor:pointer;transition:all .3s}#chart-creator .axis-selector.in-selection,#chart-creator .axis-selector:hover{background:#fff}#chart-creator .axis-selector.in-selection{border-style:solid}#chart-creator .axis-selector.confirmed{background:#1a66cd;color:white;border-color:#144fa0}#chart-creator .axis-selector.confirmed:hover{background:#357fe5}#chart-creator .axis-selector.error{border-width:2px;border-style:solid}#chart-creator .clear-field{display:none;position:relative;top:1px;color:rgba(255,255,255,0.5);margin-left:-17px}#chart-creator .clear-field:hover{color:rgba(255,255,255,0.8)}#chart-creator .tip{display:none;opacity:0.5;vertical-align:middle;margin-left:10px;text-decoration:bold;font-size:85%}#chart-creator .error-summary-container{background:#f4b9b9;color:#454545;border-radius:3px;border-weight:1px}#chart-creator .error-summary-container ul{list-style-type:none}.hover-selection{background:#629ceb !important;cursor:pointer;color:white !important;border-color:white;text-decoration:bold;opacity:0.8}tr:nth-child(even)>.hover-selection{background:#629ceb !important}tr:nth-child(odd)>.hover-selection{background:#4b8ee8 !important}.confirmed-selection{background:green}

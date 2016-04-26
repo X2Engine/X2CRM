@@ -1,6 +1,6 @@
 <?php
-/*****************************************************************************************
- * X2Engine Open Source Edition is a customer relationship management program developed by
+/***********************************************************************************
+ * X2CRM is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2016 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
@@ -21,7 +21,8 @@
  * 02110-1301 USA.
  * 
  * You can contact X2Engine, Inc. P.O. Box 66752, Scotts Valley,
- * California 95067, USA. or at email address contact@x2engine.com.
+ * California 95067, USA. on our website at www.x2crm.com, or at our
+ * email address: contact@x2engine.com.
  * 
  * The interactive user interfaces in modified source and object code versions
  * of this program must display Appropriate Legal Notices, as required under
@@ -32,7 +33,7 @@
  * X2Engine" logo. If the display of the logo is not reasonably feasible for
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2Engine".
- *****************************************************************************************/
+ **********************************************************************************/
 
 /**
  * 2nd generation REST API for X2Engine.
@@ -311,20 +312,20 @@ class Api2Controller extends CController {
                 $saved = false;
                 if($method == 'POST') {
                     // Save new
-                    $saved = $this->model->save();
+                    $saved = $this->model->save( !$this->settings->rawInput );
                 } else {
                     // Update existing
                     $attributes = array_intersect(array_keys($this->jpost),
                             $this->staticModel->attributeNames());
-                    if($this->model->validate($attributes)) {
+                    if( $this->settings->rawInput || $this->model->validate($attributes)) {
 
-                        if ($this->model->asa('X2FlowTriggerBehavior') &&
-                                $this->model->asa('X2FlowTriggerBehavior')->enabled) {
+                        if ($this->model->asa('FlowTriggerBehavior') &&
+                                $this->model->asa('FlowTriggerBehavior')->enabled) {
                             $this->model->enableUpdateTrigger();
                         }
                         $saved = $this->model->update($attributes);
-                        if ($this->model->asa('X2FlowTriggerBehavior') &&
-                                $this->model->asa('X2FlowTriggerBehavior')->enabled) {
+                        if ($this->model->asa('FlowTriggerBehavior') &&
+                                $this->model->asa('FlowTriggerBehavior')->enabled) {
 
                             $this->model->disableUpdateTrigger();
                         }
@@ -727,6 +728,31 @@ class Api2Controller extends CController {
                 'Basic realm="X2Engine API v2"';
 
         
+        // Record this authentication failure in the cache, and permanently ban
+        // the client IP address if applicable
+        $ip = Yii::app()->request->userHostAddress;
+        if($this->settings->maxAuthFail > 0 && !$this->settings->bruteforceExempt($ip)){
+            // Count the authentication failure using the system cache
+            $cache = Yii::app()->cache;
+            $cacheId = 'n_api_authfail_'.$ip;
+            if(!($n_authfail = $cache->get($cacheId))) {
+                $n_authfail = 1;
+            } else {
+                $n_authfail++;
+            }
+
+            // Save the new failure count
+            $cache->set($cacheId,$n_authfail,$this->settings->lockoutTime);
+
+            // Append the IP address to the blacklist if it exceeds the maximum
+            // acceptable authentication failure count
+            if($this->settings->permaBan
+                    && $n_authfail >= $this->settings->maxAuthFail) {
+                $this->settings->banIP($ip);
+                Yii::app()->settings->save();
+            }
+        }
+        
 
         $this->send(401, $message);
     }
@@ -921,7 +947,7 @@ class Api2Controller extends CController {
         // on a model (as opposed to, say, querying all tags regardless of the
         // type of record they're attached to)
         if(isset($_GET['_class'])){
-            $linkable = $this->staticModel->asa('X2LinkableBehavior');
+            $linkable = $this->staticModel->asa('LinkableBehavior');
             $module = !empty($linkable) ? ucfirst($linkable->module) : $_GET['_class'];
             // Assignment/ownership as stored in the model should be
             // included in the RBAC parameters for business rules to execute
@@ -1001,10 +1027,59 @@ class Api2Controller extends CController {
     }
 
     
+    /**
+     * Additional pre-authentication access restrictions.
+     * 
+     * @param type $filterChain
+     */
+    public function filterRestrictions($filterChain){
+        $ip = Yii::app()->request->userHostAddress;
+        $cache = Yii::app()->cache;
+
+        // Enforce whitelist/blacklist:
+        if($this->settings->isIpBlocked($ip))
+            $this->send(403,'IP address blocked.');
+
+        // Enforce the authentication failure lockout setting:
+        if($this->settings->maxAuthFail > 0 && $this->settings->lockoutTime > 0){
+            $cache = Yii::app()->cache;
+            $cacheId = 'n_api_authfail_'.$ip;
+            if(($n_authfail = $cache->get($cacheId))
+                    && $n_authfail >= $this->settings->maxAuthFail)
+                $this->send(403, "You have been temporarily locked out due to "
+                        . "repeated authentication failures.");
+        }
+
+        // Enforce the "max requests per interval" setting
+        $reqInterval = $this->settings->requestInterval;
+        $maxRequests = $this->settings->maxRequests;
+        if($maxRequests > 0 && $reqInterval > 0){
+            $cache = Yii::app()->cache;
+            $cacheId = 'n_api_requests_'.$ip;
+            if(!($n_req = $cache->get($cacheId))){
+                $cache->set($cacheId, 1, $reqInterval);
+                $filterChain->run();
+            }
+            $n_req++;
+            $cache->set($cacheId, $n_req, $reqInterval);
+            if($n_req > $maxRequests) {
+                $this->response->httpHeader['Retry-After'] = $reqInterval;
+                $this->send(429, "You have made too many requests ($n_req). "
+                        ."Please wait at least $reqInterval "
+                        ."seconds before trying again.");
+            }
+        }
+
+
+        $filterChain->run();
+    }
+    
 
     public function filters() {
         return array(
             'available', // Application not locked
+            
+            'restrictions', // Pre-authentication restrictions
             
             'authenticate', // Valid user
             'methods', // Valid request method for the given action
@@ -1227,7 +1302,7 @@ class Api2Controller extends CController {
      * Returns {@link enabled}
      */
     public function getEnabled() {
-        return self::ENABLED ;
+        return self::ENABLED  && $this->settings->enabled ;
     }
 
 
@@ -1249,6 +1324,14 @@ class Api2Controller extends CController {
      *
      */
     public function getMaxPageSize() {
+        
+        if($this->settings->maxPageSize === null 
+                || $this->settings->maxPageSize === '') {
+            // Unspecified maximum page size
+            return self::MAX_PAGE_SIZE;
+        } else {
+            return $this->settings->maxPageSize;
+        }
         
         return self::MAX_PAGE_SIZE;
     }
@@ -1354,6 +1437,13 @@ class Api2Controller extends CController {
         );
     }
 
+    
+    /**
+     * Advanced API settings for Platinum Edition
+     */
+    public function getSettings() {
+        return Yii::app()->settings->api2;
+    }
     
 
     /////////////////////////////
@@ -1495,9 +1585,9 @@ class Api2Controller extends CController {
                     ? X2Model::$associationModels[$searchAttributes['associationType']]
                     : $searchAttributes['associationType'];
             $staticSearchModel = X2Model::model($associationClass);
-            $searchAttributes['associationType'] = $staticSearchModel->asa('X2LinkableBehavior') === null 
+            $searchAttributes['associationType'] = $staticSearchModel->asa('LinkableBehavior') === null 
                     ? lcfirst(get_class($staticSearchModel))
-                    : $staticSearchModel->asa('X2LinkableBehavior')->module;
+                    : $staticSearchModel->asa('LinkableBehavior')->module;
         }
     }
 
@@ -1586,6 +1676,19 @@ class Api2Controller extends CController {
     public function setModelAttributes($fields = array()) {
         if(empty($fields)) {
             $fields = $this->jpost;
+        }
+        
+        if($this->settings->rawInput) {
+            foreach(array('changelog', 'TimestampBehavior') as $behavior){
+                if(!$this->model->asa($behavior) instanceof CBehavior
+                        || !$this->model->asa($behavior)->enabled)
+                    continue;
+                $this->model->disableBehavior($behavior);
+            }
+            $this->model->setAttributes($fields,false);
+            if($this->model instanceof Actions && isset($fields['actionDescription']))
+                $this->model->actionDescription = $fields['actionDescription'];
+            return;
         }
         
 

@@ -1,5 +1,12 @@
+# 6.0 #
+4/26/2016
+* General Changelog / Developer Notes
+  * X2CRM is now fully open source
+  * UI tweaks and enhancements
+  * Miscellaneous bug fixes
+
 # 5.5 #
-2/26/2016
+2/25/2016
 * General Changelog / Developer Notes
   * PHP7 compatibility
   * Yii updated to 1.1.17

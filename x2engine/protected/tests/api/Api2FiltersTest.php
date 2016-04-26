@@ -1,7 +1,7 @@
 <?php
 
-/*****************************************************************************************
- * X2Engine Open Source Edition is a customer relationship management program developed by
+/***********************************************************************************
+ * X2CRM is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2016 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
@@ -22,7 +22,8 @@
  * 02110-1301 USA.
  * 
  * You can contact X2Engine, Inc. P.O. Box 66752, Scotts Valley,
- * California 95067, USA. or at email address contact@x2engine.com.
+ * California 95067, USA. on our website at www.x2crm.com, or at our
+ * email address: contact@x2engine.com.
  * 
  * The interactive user interfaces in modified source and object code versions
  * of this program must display Appropriate Legal Notices, as required under
@@ -33,7 +34,7 @@
  * X2Engine" logo. If the display of the logo is not reasonably feasible for
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2Engine".
- *****************************************************************************************/
+ **********************************************************************************/
 
 Yii::import('application.tests.api.Api2TestBase');
 
@@ -48,6 +49,41 @@ Yii::import('application.tests.api.Api2TestBase');
  */
 class Api2FiltersTest extends Api2TestBase {
 
+    
+    /**
+     * Default (built-in) {@link Api2Settings} attribute values
+     * @var array
+     */
+    public static $defaultSettings;
+    /**
+     * Currently-active {@link Api2Settings} in the database as of before test
+     * @var array
+     */
+    public static $oldSettings;
+
+    /**
+     * Reset the API settings to those given.
+     */
+    public static function settings($settings=null) {
+        if(!is_array($settings)) {
+            $settings = self::$defaultSettings;
+        }
+        Yii::app()->settings->api2->setAttributes($settings, false);
+        Yii::app()->settings->save();
+    }
+
+    public static function setUpBeforeClass(){
+        self::$oldSettings = Yii::app()->settings->api2->attributes;
+        $defaultSettings = new Api2Settings;
+        self::$defaultSettings = $defaultSettings->attributes;
+        self::settings();
+        parent::setUpBeforeClass();
+    }
+
+    public static function tearDownAfterClass(){
+        parent::tearDownAfterClass();
+        self::settings(self::$oldSettings);
+    }
     
 
     public function urlFormat(){
@@ -105,6 +141,70 @@ class Api2FiltersTest extends Api2TestBase {
         $this->assertResponseCodeIs(503, $ch);
         Yii::app()->locked = false;
         
+        
+        //////////////////////////////////////////////////////////
+        // PLATINUM-ONLY ADVANCED ACCESS CONTROL SETTINGS TESTS //
+        //////////////////////////////////////////////////////////
+
+        // Disabling the API via the settings
+        self::settings(array('enabled' => false));
+        $ch = $this->getCurlHandle('GET', $paramOk);
+        curl_exec($ch);
+        $this->assertResponseCodeIs(503, $ch);
+        
+        // TEST: filterRestrictions
+        //
+        // First we're going to need the client IP address, which could vary
+        // based on the test configuration. While doing this we can perform
+        // another few simple tests:
+        self::settings();
+        $response = $this->fetchAppInfo();
+        $clientIp = $response['clientAddress'];
+        // Plain old blacklisting of IP:
+        Yii::app()->settings->api2->banIP($clientIp);
+        Yii::app()->settings->save();
+        $this->fetchAppInfo(403);
+        Yii::app()->cache->flush();
+        // Lock-out from failed authentication attempts:
+        self::settings(array_merge(self::$defaultSettings, array(
+            'maxAuthFail' => 3, // 3 strikes and yer out
+            'lockoutTime' => 3600
+        )));
+
+        $this->failAtAuthenticating(3);
+        // There have been three unsuccessful authentications. The IP should be
+        // locked out by now:
+        $this->failAtAuthenticating(1,403);
+        // This resets the auth failure cooldown:
+        Yii::app()->cache->flush();
+        // This time, auto-ban!
+        self::settings(array(
+            'permaBan' => true
+        ));
+        $this->failAtAuthenticating(3);
+        $this->failAtAuthenticating(1,403);
+        // Check that this IP address has been blacklisted:
+        Yii::app()->settings->refresh();
+        $this->assertTrue(Yii::app()->settings->api2->isIpBlocked($clientIp));
+
+        // Test rate limiting:
+        Yii::app()->cache->flush();
+        self::settings(array_merge(self::$defaultSettings,array(
+            'maxRequests' => 3,
+            'requestInterval' => 3600
+         )));
+        foreach(range(1,3) as $i) {
+            $this->fetchAppInfo(200,"request number $i");
+        }
+        // On the fourth request there should be status 429
+        $this->fetchAppInfo(429);
+
+        Yii::app()->cache->flush();
+        self::settings();
+
+        /////////////////////////////
+        // END PLATINUM-ONLY TESTS //
+        /////////////////////////////
         
 
         // TEST: filterAuthenticate

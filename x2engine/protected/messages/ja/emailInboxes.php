@@ -64,4 +64,5 @@
   'Disabled' => '使用禁止',
   'Failed to associate message "{subject}" with {type} {model}' => '「メッセージを関連付けることができませんでした{subject}と「 {type} {model}',
   'Message "{subject}" already associated with {type} {model}' => 'メッセージ「 {subject}すでに関連付けられている&quot; {type} {model}',
+  'Disable Quota Operations' => 'クォータの操作を無効にします',
 );

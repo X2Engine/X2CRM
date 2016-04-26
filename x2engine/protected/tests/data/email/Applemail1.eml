@@ -1,0 +1,73 @@
+Delivered-To: dropbox@testdomain.com
+Received: by 10.216.208.78 with SMTP id p56csp143582weo;
+        Thu, 27 Sep 2012 16:38:29 -0700 (PDT)
+Received: by 10.68.204.132 with SMTP id ky4mr15329164pbc.164.1348789108159;
+        Thu, 27 Sep 2012 16:38:28 -0700 (PDT)
+Return-Path: <sales@rep.com>
+Received: from mail-pa0-f46.google.com (mail-pa0-f46.google.com [XXX.XX.XXX.XX])
+        by mx.google.com with ESMTPS id px6si8883222pbc.64.2012.09.27.16.38.27
+        (version=TLSv1/SSLv3 cipher=OTHER);
+        Thu, 27 Sep 2012 16:38:28 -0700 (PDT)
+Received-SPF: neutral (google.com: XXX.XX.XXX.XX is neither permitted nor denied by best guess record for domain of sales@rep.com) client-ip=XXX.XX.XXX.XX;
+Authentication-Results: mx.google.com; spf=neutral (google.com: XXX.XX.XXX.XX is neither permitted nor denied by best guess record for domain of sales@rep.com) smtp.mail=sales@rep.com
+Received: by padhz1 with SMTP id hz1so1757423pad.19
+        for <dropbox@testdomain.com>; Thu, 27 Sep 2012 16:38:27 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20120113;
+        h=from:content-type:message-id:mime-version:x-priority:subject:date
+         :references:to:x-mailer:x-gm-message-state;
+        bh=DFvoICFK/2MUsxj8rD7tPFu4Pm0xcTT59myPN1OSvAA=;
+        b=FeLQwEUwtsy23ymM9lOlg/3iALlQjMJizDmjpYDd9nbDVi+PyXSnn3Vk6aPJYrvsK2
+         X1KezHbj94ShY2u9jYQGGF9dd+Ko53efpoGycfHob+s7DdSKSAV32ed9qnPa1WSy4Hjh
+         VIesdhksfZmRb7uOWIaQx6rG1QXA2v5iXhLvalNt6qSyerghtSKWuWtbjZXKSaMgqW0E
+         fGSBhj6ZovhrIhHsTTKHcEoGy9KtKrND0J2EgXblTuDyXOFN+GUfzaPXFTGMv/krabq7
+         L8VnGq+PVPk1i47f7UqL9VHH+RWwVoBh+DO9i5z6nW1bUXuwPFicO04NqamBgwVbz+Xa
+         Wjdw==
+Received: by 10.68.222.40 with SMTP id qj8mr15386171pbc.139.1348789107185;
+        Thu, 27 Sep 2012 16:38:27 -0700 (PDT)
+Return-Path: <sales@rep.com>
+Received: from [192.168.1.108] (XX-XX-XX-XX-ip-static.hfc.comcastbusiness.net. [XX.XX.XX.XX])
+        by mx.google.com with ESMTPS id y2sm4442590pax.29.2012.09.27.16.38.25
+        (version=TLSv1/SSLv3 cipher=OTHER);
+        Thu, 27 Sep 2012 16:38:26 -0700 (PDT)
+From: Sales Rep <sales@rep.com>
+Content-Type: multipart/alternative; boundary="Apple-Mail=_499ECEB7-6E53-4AB7-9A0D-ADEBE8C4D523"
+Message-Id: <5BC32EB4-14C0-4DFA-B149-69808BE46B81@testdomain.com>
+Mime-Version: 1.0 (Mac OS X Mail 6.0 \(1486\))
+X-Priority: 1
+Subject: Fwd: Why we keep doors closed
+Date: Thu, 27 Sep 2012 16:38:23 -0700
+References: <897D198586747643B55CB29EBD04D3FE206C91DF@mbx023-e1-nj-6.exch023.domain.local>
+To: Drop Box <dropbox@testdomain.com>
+X-Mailer: Apple Mail (2.1486)
+X-Gm-Message-State: ALoCoQl72JHQWKY3hKXMxdGojSse3Bp4AiodPwR7G6ykQNhP1DmgvclY/6c9F6fXetvw4fJILV4T
+
+
+--Apple-Mail=_499ECEB7-6E53-4AB7-9A0D-ADEBE8C4D523
+Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain;
+	charset=us-ascii
+
+Ok, this is getting serious - see below. Lets keep the door locked now.=20=
+
+
+Developer, can you get the door camera working again.=20
+
+
+Begin forwarded message:
+
+> From: Test Contact <customer@prospect.com>
+> Subject: FW: Why we keep doors closed
+> Date: September 27, 2012 4:22:34 PM PDT
+> To: "sales@rep.com" <sales@rep.com>
+>=20
+> Redacted,
+>  %123%          I know that sometimes you prop your door open. Be =
+aware that Redacted were the victims of property getting stolen and =
+here is a picture from our camera. Just giving you the heads up. There =
+are thieves out there that are currently looking for open doors.%123%
+> =20
+> =20
+> Regards,
+> =20
+> Redacted

@@ -1,0 +1,6170 @@
+/*!
+ * Bootstrap v2.3.2
+ *
+ * Copyright 2013 Twitter, Inc
+ * Licensed under the Apache License v2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Designed and built with all the love in the world by @mdo and @fat.
+ *
+ * Modifications made by "Jake Houser" <jake@x2engine.com> to limit the scope
+ * of this file to only apply to our Image Gallery extension.
+ */
+
+.GalleryEditor .clearfix {
+  *zoom: 1;
+}
+
+.GalleryEditor .clearfix:before,
+.GalleryEditor .clearfix:after {
+  display: table;
+  line-height: 0;
+  content: "";
+}
+
+.GalleryEditor .clearfix:after {
+  clear: both;
+}
+
+.GalleryEditor .hide-text {
+  font: 0/0 a;
+  color: transparent;
+  text-shadow: none;
+  background-color: transparent;
+  border: 0;
+}
+
+.GalleryEditor .input-block-level {
+  display: block;
+  width: 100%;
+  min-height: 30px;
+  -webkit-box-sizing: border-box;
+     -moz-box-sizing: border-box;
+          box-sizing: border-box;
+}
+
+.GalleryEditor article,
+.GalleryEditor aside,
+.GalleryEditor details,
+.GalleryEditor figcaption,
+.GalleryEditor figure,
+.GalleryEditor footer,
+.GalleryEditor header,
+.GalleryEditor hgroup,
+.GalleryEditor nav,
+.GalleryEditor section {
+  display: block;
+}
+
+.GalleryEditor audio,
+.GalleryEditor canvas,
+.GalleryEditor video {
+  display: inline-block;
+  *display: inline;
+  *zoom: 1;
+}
+
+.GalleryEditor audio:not([controls]) {
+  display: none;
+}
+
+.GalleryEditor html {
+  font-size: 100%;
+  -webkit-text-size-adjust: 100%;
+      -ms-text-size-adjust: 100%;
+}
+
+.GalleryEditor a:focus {
+  outline: thin dotted #333;
+  outline: 5px auto -webkit-focus-ring-color;
+  outline-offset: -2px;
+}
+
+.GalleryEditor a:hover,
+.GalleryEditor a:active {
+  outline: 0;
+}
+
+.GalleryEditor sub,
+.GalleryEditor sup {
+  position: relative;
+  font-size: 75%;
+  line-height: 0;
+  vertical-align: baseline;
+}
+
+.GalleryEditor sup {
+  top: -0.5em;
+}
+
+.GalleryEditor sub {
+  bottom: -0.25em;
+}
+
+.GalleryEditor img {
+  width: auto\9;
+  height: auto;
+  max-width: 100%;
+  vertical-align: middle;
+  border: 0;
+  -ms-interpolation-mode: bicubic;
+}
+
+#map_canvas img,
+.GalleryEditor .google-maps img {
+  max-width: none;
+}
+
+.GalleryEditor button,
+.GalleryEditor input,
+.GalleryEditor select,
+.GalleryEditor textarea {
+  margin: 0;
+  font-size: 100%;
+  vertical-align: middle;
+}
+
+.GalleryEditor button,
+.GalleryEditor input {
+  *overflow: visible;
+  line-height: normal;
+}
+
+.GalleryEditor button::-moz-focus-inner,
+.GalleryEditor input::-moz-focus-inner {
+  padding: 0;
+  border: 0;
+}
+
+.GalleryEditor button,
+.GalleryEditor html input[type="button"],
+.GalleryEditor input[type="reset"],
+.GalleryEditor input[type="submit"] {
+  cursor: pointer;
+  -webkit-appearance: button;
+}
+
+.GalleryEditor label,
+.GalleryEditor select,
+.GalleryEditor button,
+.GalleryEditor input[type="button"],
+.GalleryEditor input[type="reset"],
+.GalleryEditor input[type="submit"],
+.GalleryEditor input[type="radio"],
+.GalleryEditor input[type="checkbox"] {
+  cursor: pointer;
+}
+
+.GalleryEditor input[type="search"] {
+  -webkit-box-sizing: content-box;
+     -moz-box-sizing: content-box;
+          box-sizing: content-box;
+  -webkit-appearance: textfield;
+}
+
+.GalleryEditor input[type="search"]::-webkit-search-decoration,
+.GalleryEditor input[type="search"]::-webkit-search-cancel-button {
+  -webkit-appearance: none;
+}
+
+.GalleryEditor textarea {
+  overflow: auto;
+  vertical-align: top;
+}
+
+@media print {
+  * {
+    color: #000 !important;
+    text-shadow: none !important;
+    background: transparent !important;
+    box-shadow: none !important;
+  }
+  a,
+  a:visited {
+    text-decoration: underline;
+  }
+  a[href]:after {
+    content: " (" attr(href) ")";
+  }
+  abbr[title]:after {
+    content: " (" attr(title) ")";
+  }
+  .ir a:after,
+  a[href^="javascript:"]:after,
+  a[href^="#"]:after {
+    content: "";
+  }
+  pre,
+  blockquote {
+    border: 1px solid #999;
+    page-break-inside: avoid;
+  }
+  thead {
+    display: table-header-group;
+  }
+  tr,
+  img {
+    page-break-inside: avoid;
+  }
+  img {
+    max-width: 100% !important;
+  }
+  @page  {
+    margin: 0.5cm;
+  }
+  p,
+  h2,
+  h3 {
+    orphans: 3;
+    widows: 3;
+  }
+  h2,
+  h3 {
+    page-break-after: avoid;
+  }
+}
+
+.GalleryEditor body {
+  margin: 0;
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-size: 14px;
+  line-height: 20px;
+  color: #333333;
+  background-color: #ffffff;
+}
+
+.GalleryEditor a {
+  color: #0088cc;
+  text-decoration: none;
+}
+
+.GalleryEditor a:hover,
+.GalleryEditor a:focus {
+  color: #005580;
+  text-decoration: underline;
+}
+
+.GalleryEditor .img-rounded {
+  -webkit-border-radius: 6px;
+     -moz-border-radius: 6px;
+          border-radius: 6px;
+}
+
+.GalleryEditor .img-polaroid {
+  padding: 4px;
+  background-color: #fff;
+  border: 1px solid #ccc;
+  border: 1px solid rgba(0, 0, 0, 0.2);
+  -webkit-box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+     -moz-box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+          box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.GalleryEditor .img-circle {
+  -webkit-border-radius: 500px;
+     -moz-border-radius: 500px;
+          border-radius: 500px;
+}
+
+.GalleryEditor .row {
+  margin-left: -20px;
+  *zoom: 1;
+}
+
+.GalleryEditor .row:before,
+.GalleryEditor .row:after {
+  display: table;
+  line-height: 0;
+  content: "";
+}
+
+.GalleryEditor .row:after {
+  clear: both;
+}
+
+[class*="span"] {
+  float: left;
+  min-height: 1px;
+  margin-left: 20px;
+}
+
+.GalleryEditor .container,
+.GalleryEditor .navbar-static-top .container,
+.GalleryEditor .navbar-fixed-top .container,
+.GalleryEditor .navbar-fixed-bottom .container {
+  width: 940px;
+}
+
+.GalleryEditor .span12 {
+  width: 940px;
+}
+
+.GalleryEditor .span11 {
+  width: 860px;
+}
+
+.GalleryEditor .span10 {
+  width: 780px;
+}
+
+.GalleryEditor .span9 {
+  width: 700px;
+}
+
+.GalleryEditor .span8 {
+  width: 620px;
+}
+
+.GalleryEditor .span7 {
+  width: 540px;
+}
+
+.GalleryEditor .span6 {
+  width: 460px;
+}
+
+.GalleryEditor .span5 {
+  width: 380px;
+}
+
+.GalleryEditor .span4 {
+  width: 300px;
+}
+
+.GalleryEditor .span3 {
+  width: 220px;
+}
+
+.GalleryEditor .span2 {
+  width: 140px;
+}
+
+.GalleryEditor .span1 {
+  width: 60px;
+}
+
+.GalleryEditor .offset12 {
+  margin-left: 980px;
+}
+
+.GalleryEditor .offset11 {
+  margin-left: 900px;
+}
+
+.GalleryEditor .offset10 {
+  margin-left: 820px;
+}
+
+.GalleryEditor .offset9 {
+  margin-left: 740px;
+}
+
+.GalleryEditor .offset8 {
+  margin-left: 660px;
+}
+
+.GalleryEditor .offset7 {
+  margin-left: 580px;
+}
+
+.GalleryEditor .offset6 {
+  margin-left: 500px;
+}
+
+.GalleryEditor .offset5 {
+  margin-left: 420px;
+}
+
+.GalleryEditor .offset4 {
+  margin-left: 340px;
+}
+
+.GalleryEditor .offset3 {
+  margin-left: 260px;
+}
+
+.GalleryEditor .offset2 {
+  margin-left: 180px;
+}
+
+.GalleryEditor .offset1 {
+  margin-left: 100px;
+}
+
+.GalleryEditor .row-fluid {
+  width: 100%;
+  *zoom: 1;
+}
+
+.GalleryEditor .row-fluid:before,
+.GalleryEditor .row-fluid:after {
+  display: table;
+  line-height: 0;
+  content: "";
+}
+
+.GalleryEditor .row-fluid:after {
+  clear: both;
+}
+
+.GalleryEditor .row-fluid [class*="span"] {
+  display: block;
+  float: left;
+  width: 100%;
+  min-height: 30px;
+  margin-left: 2.127659574468085%;
+  *margin-left: 2.074468085106383%;
+  -webkit-box-sizing: border-box;
+     -moz-box-sizing: border-box;
+          box-sizing: border-box;
+}
+
+.GalleryEditor .row-fluid [class*="span"]:first-child {
+  margin-left: 0;
+}
+
+.GalleryEditor .row-fluid .controls-row [class*="span"] + [class*="span"] {
+  margin-left: 2.127659574468085%;
+}
+
+.GalleryEditor .row-fluid .span12 {
+  width: 100%;
+  *width: 99.94680851063829%;
+}
+
+.GalleryEditor .row-fluid .span11 {
+  width: 91.48936170212765%;
+  *width: 91.43617021276594%;
+}
+
+.GalleryEditor .row-fluid .span10 {
+  width: 82.97872340425532%;
+  *width: 82.92553191489361%;
+}
+
+.GalleryEditor .row-fluid .span9 {
+  width: 74.46808510638297%;
+  *width: 74.41489361702126%;
+}
+
+.GalleryEditor .row-fluid .span8 {
+  width: 65.95744680851064%;
+  *width: 65.90425531914893%;
+}
+
+.GalleryEditor .row-fluid .span7 {
+  width: 57.44680851063829%;
+  *width: 57.39361702127659%;
+}
+
+.GalleryEditor .row-fluid .span6 {
+  width: 48.93617021276595%;
+  *width: 48.88297872340425%;
+}
+
+.GalleryEditor .row-fluid .span5 {
+  width: 40.42553191489362%;
+  *width: 40.37234042553192%;
+}
+
+.GalleryEditor .row-fluid .span4 {
+  width: 31.914893617021278%;
+  *width: 31.861702127659576%;
+}
+
+.GalleryEditor .row-fluid .span3 {
+  width: 23.404255319148934%;
+  *width: 23.351063829787233%;
+}
+
+.GalleryEditor .row-fluid .span2 {
+  width: 14.893617021276595%;
+  *width: 14.840425531914894%;
+}
+
+.GalleryEditor .row-fluid .span1 {
+  width: 6.382978723404255%;
+  *width: 6.329787234042553%;
+}
+
+.GalleryEditor .row-fluid .offset12 {
+  margin-left: 104.25531914893617%;
+  *margin-left: 104.14893617021275%;
+}
+
+.GalleryEditor .row-fluid .offset12:first-child {
+  margin-left: 102.12765957446808%;
+  *margin-left: 102.02127659574467%;
+}
+
+.GalleryEditor .row-fluid .offset11 {
+  margin-left: 95.74468085106382%;
+  *margin-left: 95.6382978723404%;
+}
+
+.GalleryEditor .row-fluid .offset11:first-child {
+  margin-left: 93.61702127659574%;
+  *margin-left: 93.51063829787232%;
+}
+
+.GalleryEditor .row-fluid .offset10 {
+  margin-left: 87.23404255319149%;
+  *margin-left: 87.12765957446807%;
+}
+
+.GalleryEditor .row-fluid .offset10:first-child {
+  margin-left: 85.1063829787234%;
+  *margin-left: 84.99999999999999%;
+}
+
+.GalleryEditor .row-fluid .offset9 {
+  margin-left: 78.72340425531914%;
+  *margin-left: 78.61702127659572%;
+}
+
+.GalleryEditor .row-fluid .offset9:first-child {
+  margin-left: 76.59574468085106%;
+  *margin-left: 76.48936170212764%;
+}
+
+.GalleryEditor .row-fluid .offset8 {
+  margin-left: 70.2127659574468%;
+  *margin-left: 70.10638297872339%;
+}
+
+.GalleryEditor .row-fluid .offset8:first-child {
+  margin-left: 68.08510638297872%;
+  *margin-left: 67.9787234042553%;
+}
+
+.GalleryEditor .row-fluid .offset7 {
+  margin-left: 61.70212765957446%;
+  *margin-left: 61.59574468085106%;
+}
+
+.GalleryEditor .row-fluid .offset7:first-child {
+  margin-left: 59.574468085106375%;
+  *margin-left: 59.46808510638297%;
+}
+
+.GalleryEditor .row-fluid .offset6 {
+  margin-left: 53.191489361702125%;
+  *margin-left: 53.085106382978715%;
+}
+
+.GalleryEditor .row-fluid .offset6:first-child {
+  margin-left: 51.063829787234035%;
+  *margin-left: 50.95744680851063%;
+}
+
+.GalleryEditor .row-fluid .offset5 {
+  margin-left: 44.68085106382979%;
+  *margin-left: 44.57446808510638%;
+}
+
+.GalleryEditor .row-fluid .offset5:first-child {
+  margin-left: 42.5531914893617%;
+  *margin-left: 42.4468085106383%;
+}
+
+.GalleryEditor .row-fluid .offset4 {
+  margin-left: 36.170212765957444%;
+  *margin-left: 36.06382978723405%;
+}
+
+.GalleryEditor .row-fluid .offset4:first-child {
+  margin-left: 34.04255319148936%;
+  *margin-left: 33.93617021276596%;
+}
+
+.GalleryEditor .row-fluid .offset3 {
+  margin-left: 27.659574468085104%;
+  *margin-left: 27.5531914893617%;
+}
+
+.GalleryEditor .row-fluid .offset3:first-child {
+  margin-left: 25.53191489361702%;
+  *margin-left: 25.425531914893618%;
+}
+
+.GalleryEditor .row-fluid .offset2 {
+  margin-left: 19.148936170212764%;
+  *margin-left: 19.04255319148936%;
+}
+
+.GalleryEditor .row-fluid .offset2:first-child {
+  margin-left: 17.02127659574468%;
+  *margin-left: 16.914893617021278%;
+}
+
+.GalleryEditor .row-fluid .offset1 {
+  margin-left: 10.638297872340425%;
+  *margin-left: 10.53191489361702%;
+}
+
+.GalleryEditor .row-fluid .offset1:first-child {
+  margin-left: 8.51063829787234%;
+  *margin-left: 8.404255319148938%;
+}
+
+[class*="span"].hide,
+.GalleryEditor .row-fluid [class*="span"].hide {
+  display: none;
+}
+
+[class*="span"].pull-right,
+.GalleryEditor .row-fluid [class*="span"].pull-right {
+  float: right;
+}
+
+.GalleryEditor .container {
+  margin-right: auto;
+  margin-left: auto;
+  *zoom: 1;
+}
+
+.GalleryEditor .container:before,
+.GalleryEditor .container:after {
+  display: table;
+  line-height: 0;
+  content: "";
+}
+
+.GalleryEditor .container:after {
+  clear: both;
+}
+
+.GalleryEditor .container-fluid {
+  padding-right: 20px;
+  padding-left: 20px;
+  *zoom: 1;
+}
+
+.GalleryEditor .container-fluid:before,
+.GalleryEditor .container-fluid:after {
+  display: table;
+  line-height: 0;
+  content: "";
+}
+
+.GalleryEditor .container-fluid:after {
+  clear: both;
+}
+
+.GalleryEditor p {
+  margin: 0 0 10px;
+}
+
+.GalleryEditor .lead {
+  margin-bottom: 20px;
+  font-size: 21px;
+  font-weight: 200;
+  line-height: 30px;
+}
+
+.GalleryEditor small {
+  font-size: 85%;
+}
+
+.GalleryEditor strong {
+  font-weight: bold;
+}
+
+.GalleryEditor em {
+  font-style: italic;
+}
+
+.GalleryEditor cite {
+  font-style: normal;
+}
+
+.GalleryEditor .muted {
+  color: #999999;
+}
+
+.GalleryEditor a.muted:hover,
+.GalleryEditor a.muted:focus {
+  color: #808080;
+}
+
+.GalleryEditor .text-warning {
+  color: #c09853;
+}
+
+.GalleryEditor a.text-warning:hover,
+.GalleryEditor a.text-warning:focus {
+  color: #a47e3c;
+}
+
+.GalleryEditor .text-error {
+  color: #b94a48;
+}
+
+.GalleryEditor a.text-error:hover,
+.GalleryEditor a.text-error:focus {
+  color: #953b39;
+}
+
+.GalleryEditor .text-info {
+  color: #3a87ad;
+}
+
+.GalleryEditor a.text-info:hover,
+.GalleryEditor a.text-info:focus {
+  color: #2d6987;
+}
+
+.GalleryEditor .text-success {
+  color: #468847;
+}
+
+.GalleryEditor a.text-success:hover,
+.GalleryEditor a.text-success:focus {
+  color: #356635;
+}
+
+.GalleryEditor .text-left {
+  text-align: left;
+}
+
+.GalleryEditor .text-right {
+  text-align: right;
+}
+
+.GalleryEditor .text-center {
+  text-align: center;
+}
+
+.GalleryEditor h1,
+.GalleryEditor h2,
+.GalleryEditor h3,
+.GalleryEditor h4,
+.GalleryEditor h5,
+.GalleryEditor h6 {
+  margin: 10px 0;
+  font-family: inherit;
+  font-weight: bold;
+  line-height: 20px;
+  color: inherit;
+  text-rendering: optimizelegibility;
+}
+
+.GalleryEditor h1 small,
+.GalleryEditor h2 small,
+.GalleryEditor h3 small,
+.GalleryEditor h4 small,
+.GalleryEditor h5 small,
+.GalleryEditor h6 small {
+  font-weight: normal;
+  line-height: 1;
+  color: #999999;
+}
+
+.GalleryEditor h1,
+.GalleryEditor h2,
+.GalleryEditor h3 {
+  line-height: 40px;
+}
+
+.GalleryEditor h1 {
+  font-size: 38.5px;
+}
+
+.GalleryEditor h2 {
+  font-size: 31.5px;
+}
+
+.GalleryEditor h3 {
+  font-size: 24.5px;
+}
+
+.GalleryEditor h4 {
+  font-size: 17.5px;
+}
+
+.GalleryEditor h5 {
+  font-size: 14px;
+}
+
+.GalleryEditor h6 {
+  font-size: 11.9px;
+}
+
+.GalleryEditor h1 small {
+  font-size: 24.5px;
+}
+
+.GalleryEditor h2 small {
+  font-size: 17.5px;
+}
+
+.GalleryEditor h3 small {
+  font-size: 14px;
+}
+
+.GalleryEditor h4 small {
+  font-size: 14px;
+}
+
+.GalleryEditor .page-header {
+  padding-bottom: 9px;
+  margin: 20px 0 30px;
+  border-bottom: 1px solid #eeeeee;
+}
+
+.GalleryEditor ul,
+.GalleryEditor ol {
+  padding: 0;
+  margin: 0 0 10px 25px;
+}
+
+.GalleryEditor ul ul,
+.GalleryEditor ul ol,
+.GalleryEditor ol ol,
+.GalleryEditor ol ul {
+  margin-bottom: 0;
+}
+
+.GalleryEditor li {
+  line-height: 20px;
+}
+
+.GalleryEditor ul.unstyled,
+.GalleryEditor ol.unstyled {
+  margin-left: 0;
+  list-style: none;
+}
+
+.GalleryEditor ul.inline,
+.GalleryEditor ol.inline {
+  margin-left: 0;
+  list-style: none;
+}
+
+.GalleryEditor ul.inline > li,
+.GalleryEditor ol.inline > li {
+  display: inline-block;
+  *display: inline;
+  padding-right: 5px;
+  padding-left: 5px;
+  *zoom: 1;
+}
+
+.GalleryEditor dl {
+  margin-bottom: 20px;
+}
+
+.GalleryEditor dt,
+.GalleryEditor dd {
+  line-height: 20px;
+}
+
+.GalleryEditor dt {
+  font-weight: bold;
+}
+
+.GalleryEditor dd {
+  margin-left: 10px;
+}
+
+.GalleryEditor .dl-horizontal {
+  *zoom: 1;
+}
+
+.GalleryEditor .dl-horizontal:before,
+.GalleryEditor .dl-horizontal:after {
+  display: table;
+  line-height: 0;
+  content: "";
+}
+
+.GalleryEditor .dl-horizontal:after {
+  clear: both;
+}
+
+.GalleryEditor .dl-horizontal dt {
+  float: left;
+  width: 160px;
+  overflow: hidden;
+  clear: left;
+  text-align: right;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.GalleryEditor .dl-horizontal dd {
+  margin-left: 180px;
+}
+
+.GalleryEditor hr {
+  margin: 20px 0;
+  border: 0;
+  border-top: 1px solid #eeeeee;
+  border-bottom: 1px solid #ffffff;
+}
+
+.GalleryEditor abbr[title],
+.GalleryEditor abbr[data-original-title] {
+  cursor: help;
+  border-bottom: 1px dotted #999999;
+}
+
+.GalleryEditor abbr.initialism {
+  font-size: 90%;
+  text-transform: uppercase;
+}
+
+.GalleryEditor blockquote {
+  padding: 0 0 0 15px;
+  margin: 0 0 20px;
+  border-left: 5px solid #eeeeee;
+}
+
+.GalleryEditor blockquote p {
+  margin-bottom: 0;
+  font-size: 17.5px;
+  font-weight: 300;
+  line-height: 1.25;
+}
+
+.GalleryEditor blockquote small {
+  display: block;
+  line-height: 20px;
+  color: #999999;
+}
+
+.GalleryEditor blockquote small:before {
+  content: '\2014 \00A0';
+}
+
+.GalleryEditor blockquote.pull-right {
+  float: right;
+  padding-right: 15px;
+  padding-left: 0;
+  border-right: 5px solid #eeeeee;
+  border-left: 0;
+}
+
+.GalleryEditor blockquote.pull-right p,
+.GalleryEditor blockquote.pull-right small {
+  text-align: right;
+}
+
+.GalleryEditor blockquote.pull-right small:before {
+  content: '';
+}
+
+.GalleryEditor blockquote.pull-right small:after {
+  content: '\00A0 \2014';
+}
+
+.GalleryEditor q:before,
+.GalleryEditor q:after,
+.GalleryEditor blockquote:before,
+.GalleryEditor blockquote:after {
+  content: "";
+}
+
+.GalleryEditor address {
+  display: block;
+  margin-bottom: 20px;
+  font-style: normal;
+  line-height: 20px;
+}
+
+.GalleryEditor code,
+.GalleryEditor pre {
+  padding: 0 3px 2px;
+  font-family: Monaco, Menlo, Consolas, "Courier New", monospace;
+  font-size: 12px;
+  color: #333333;
+  -webkit-border-radius: 3px;
+     -moz-border-radius: 3px;
+          border-radius: 3px;
+}
+
+.GalleryEditor code {
+  padding: 2px 4px;
+  color: #d14;
+  white-space: nowrap;
+  background-color: #f7f7f9;
+  border: 1px solid #e1e1e8;
+}
+
+.GalleryEditor pre {
+  display: block;
+  padding: 9.5px;
+  margin: 0 0 10px;
+  font-size: 13px;
+  line-height: 20px;
+  word-break: break-all;
+  word-wrap: break-word;
+  white-space: pre;
+  white-space: pre-wrap;
+  background-color: #f5f5f5;
+  border: 1px solid #ccc;
+  border: 1px solid rgba(0, 0, 0, 0.15);
+  -webkit-border-radius: 4px;
+     -moz-border-radius: 4px;
+          border-radius: 4px;
+}
+
+.GalleryEditor pre.prettyprint {
+  margin-bottom: 20px;
+}
+
+.GalleryEditor pre code {
+  padding: 0;
+  color: inherit;
+  white-space: pre;
+  white-space: pre-wrap;
+  background-color: transparent;
+  border: 0;
+}
+
+.GalleryEditor .pre-scrollable {
+  max-height: 340px;
+  overflow-y: scroll;
+}
+
+.GalleryEditor form {
+  margin: 0 0 20px;
+}
+
+.GalleryEditor fieldset {
+  padding: 0;
+  margin: 0;
+  border: 0;
+}
+
+.GalleryEditor legend {
+  display: block;
+  width: 100%;
+  padding: 0;
+  margin-bottom: 20px;
+  font-size: 21px;
+  line-height: 40px;
+  color: #333333;
+  border: 0;
+  border-bottom: 1px solid #e5e5e5;
+}
+
+.GalleryEditor legend small {
+  font-size: 15px;
+  color: #999999;
+}
+
+.GalleryEditor label,
+.GalleryEditor input,
+.GalleryEditor button,
+.GalleryEditor select,
+.GalleryEditor textarea {
+  font-size: 14px;
+  font-weight: normal;
+  line-height: 20px;
+}
+
+.GalleryEditor input,
+.GalleryEditor button,
+.GalleryEditor select,
+.GalleryEditor textarea {
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+
+.GalleryEditor label {
+  display: block;
+  margin-bottom: 5px;
+}
+
+.GalleryEditor select,
+.GalleryEditor textarea,
+.GalleryEditor input[type="text"],
+.GalleryEditor input[type="password"],
+.GalleryEditor input[type="datetime"],
+.GalleryEditor input[type="datetime-local"],
+.GalleryEditor input[type="date"],
+.GalleryEditor input[type="month"],
+.GalleryEditor input[type="time"],
+.GalleryEditor input[type="week"],
+.GalleryEditor input[type="number"],
+.GalleryEditor input[type="email"],
+.GalleryEditor input[type="url"],
+.GalleryEditor input[type="search"],
+.GalleryEditor input[type="tel"],
+.GalleryEditor input[type="color"],
+.GalleryEditor .uneditable-input {
+  display: inline-block;
+  height: 20px;
+  padding: 4px 6px;
+  margin-bottom: 10px;
+  font-size: 14px;
+  line-height: 20px;
+  color: #555555;
+  vertical-align: middle;
+  -webkit-border-radius: 4px;
+     -moz-border-radius: 4px;
+          border-radius: 4px;
+}
+
+.GalleryEditor input,
+.GalleryEditor textarea,
+.GalleryEditor .uneditable-input {
+  width: 206px;
+}
+
+.GalleryEditor textarea {
+  height: auto;
+}
+
+.GalleryEditor textarea,
+.GalleryEditor input[type="text"],
+.GalleryEditor input[type="password"],
+.GalleryEditor input[type="datetime"],
+.GalleryEditor input[type="datetime-local"],
+.GalleryEditor input[type="date"],
+.GalleryEditor input[type="month"],
+.GalleryEditor input[type="time"],
+.GalleryEditor input[type="week"],
+.GalleryEditor input[type="number"],
+.GalleryEditor input[type="email"],
+.GalleryEditor input[type="url"],
+.GalleryEditor input[type="search"],
+.GalleryEditor input[type="tel"],
+.GalleryEditor input[type="color"],
+.GalleryEditor .uneditable-input {
+  background-color: #ffffff;
+  border: 1px solid #cccccc;
+  -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
+     -moz-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
+          box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
+  -webkit-transition: border linear 0.2s, box-shadow linear 0.2s;
+     -moz-transition: border linear 0.2s, box-shadow linear 0.2s;
+       -o-transition: border linear 0.2s, box-shadow linear 0.2s;
+          transition: border linear 0.2s, box-shadow linear 0.2s;
+}
+
+.GalleryEditor textarea:focus,
+.GalleryEditor input[type="text"]:focus,
+.GalleryEditor input[type="password"]:focus,
+.GalleryEditor input[type="datetime"]:focus,
+.GalleryEditor input[type="datetime-local"]:focus,
+.GalleryEditor input[type="date"]:focus,
+.GalleryEditor input[type="month"]:focus,
+.GalleryEditor input[type="time"]:focus,
+.GalleryEditor input[type="week"]:focus,
+.GalleryEditor input[type="number"]:focus,
+.GalleryEditor input[type="email"]:focus,
+.GalleryEditor input[type="url"]:focus,
+.GalleryEditor input[type="search"]:focus,
+.GalleryEditor input[type="tel"]:focus,
+.GalleryEditor input[type="color"]:focus,
+.GalleryEditor .uneditable-input:focus {
+  border-color: rgba(82, 168, 236, 0.8);
+  outline: 0;
+  outline: thin dotted \9;
+  /* IE6-9 */
+
+  -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(82, 168, 236, 0.6);
+     -moz-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(82, 168, 236, 0.6);
+          box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(82, 168, 236, 0.6);
+}
+
+.GalleryEditor input[type="radio"],
+.GalleryEditor input[type="checkbox"] {
+  margin: 4px 0 0;
+  margin-top: 1px \9;
+  *margin-top: 0;
+  line-height: normal;
+}
+
+.GalleryEditor input[type="file"],
+.GalleryEditor input[type="image"],
+.GalleryEditor input[type="submit"],
+.GalleryEditor input[type="reset"],
+.GalleryEditor input[type="button"],
+.GalleryEditor input[type="radio"],
+.GalleryEditor input[type="checkbox"] {
+  width: auto;
+}
+
+.GalleryEditor select,
+.GalleryEditor input[type="file"] {
+  height: 30px;
+  /* In IE7, the height of the select element cannot be changed by height, only font-size */
+
+  *margin-top: 4px;
+  /* For IE7, add top margin to align select with labels */
+
+  line-height: 30px;
+}
+
+.GalleryEditor select {
+  width: 220px;
+  background-color: #ffffff;
+  border: 1px solid #cccccc;
+}
+
+.GalleryEditor select[multiple],
+.GalleryEditor select[size] {
+  height: auto;
+}
+
+.GalleryEditor select:focus,
+.GalleryEditor input[type="file"]:focus,
+.GalleryEditor input[type="radio"]:focus,
+.GalleryEditor input[type="checkbox"]:focus {
+  outline: thin dotted #333;
+  outline: 5px auto -webkit-focus-ring-color;
+  outline-offset: -2px;
+}
+
+.GalleryEditor .uneditable-input,
+.GalleryEditor .uneditable-textarea {
+  color: #999999;
+  cursor: not-allowed;
+  background-color: #fcfcfc;
+  border-color: #cccccc;
+  -webkit-box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.025);
+     -moz-box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.025);
+          box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.025);
+}
+
+.GalleryEditor .uneditable-input {
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.GalleryEditor .uneditable-textarea {
+  width: auto;
+  height: auto;
+}
+
+.GalleryEditor input:-moz-placeholder,
+.GalleryEditor textarea:-moz-placeholder {
+  color: #999999;
+}
+
+.GalleryEditor input:-ms-input-placeholder,
+.GalleryEditor textarea:-ms-input-placeholder {
+  color: #999999;
+}
+
+.GalleryEditor input::-webkit-input-placeholder,
+.GalleryEditor textarea::-webkit-input-placeholder {
+  color: #999999;
+}
+
+.GalleryEditor .radio,
+.GalleryEditor .checkbox {
+  min-height: 20px;
+  padding-left: 20px;
+}
+
+.GalleryEditor .radio input[type="radio"],
+.GalleryEditor .checkbox input[type="checkbox"] {
+  float: left;
+  margin-left: -20px;
+}
+
+.GalleryEditor .controls > .radio:first-child,
+.GalleryEditor .controls > .checkbox:first-child {
+  padding-top: 5px;
+}
+
+.GalleryEditor .radio.inline,
+.GalleryEditor .checkbox.inline {
+  display: inline-block;
+  padding-top: 5px;
+  margin-bottom: 0;
+  vertical-align: middle;
+}
+
+.GalleryEditor .radio.inline + .radio.inline,
+.GalleryEditor .checkbox.inline + .checkbox.inline {
+  margin-left: 10px;
+}
+
+.GalleryEditor .input-mini {
+  width: 60px;
+}
+
+.GalleryEditor .input-small {
+  width: 90px;
+}
+
+.GalleryEditor .input-medium {
+  width: 150px;
+}
+
+.GalleryEditor .input-large {
+  width: 210px;
+}
+
+.GalleryEditor .input-xlarge {
+  width: 270px;
+}
+
+.GalleryEditor .input-xxlarge {
+  width: 530px;
+}
+
+.GalleryEditor input[class*="span"],
+.GalleryEditor select[class*="span"],
+.GalleryEditor textarea[class*="span"],
+.GalleryEditor .uneditable-input[class*="span"],
+.GalleryEditor .row-fluid input[class*="span"],
+.GalleryEditor .row-fluid select[class*="span"],
+.GalleryEditor .row-fluid textarea[class*="span"],
+.GalleryEditor .row-fluid .uneditable-input[class*="span"] {
+  float: none;
+  margin-left: 0;
+}
+
+.GalleryEditor .input-append input[class*="span"],
+.GalleryEditor .input-append .uneditable-input[class*="span"],
+.GalleryEditor .input-prepend input[class*="span"],
+.GalleryEditor .input-prepend .uneditable-input[class*="span"],
+.GalleryEditor .row-fluid input[class*="span"],
+.GalleryEditor .row-fluid select[class*="span"],
+.GalleryEditor .row-fluid textarea[class*="span"],
+.GalleryEditor .row-fluid .uneditable-input[class*="span"],
+.GalleryEditor .row-fluid .input-prepend [class*="span"],
+.GalleryEditor .row-fluid .input-append [class*="span"] {
+  display: inline-block;
+}
+
+.GalleryEditor input,
+.GalleryEditor textarea,
+.GalleryEditor .uneditable-input {
+  margin-left: 0;
+}
+
+.GalleryEditor .controls-row [class*="span"] + [class*="span"] {
+  margin-left: 20px;
+}
+
+.GalleryEditor input.span12,
+.GalleryEditor textarea.span12,
+.GalleryEditor .uneditable-input.span12 {
+  width: 926px;
+}
+
+.GalleryEditor input.span11,
+.GalleryEditor textarea.span11,
+.GalleryEditor .uneditable-input.span11 {
+  width: 846px;
+}
+
+.GalleryEditor input.span10,
+.GalleryEditor textarea.span10,
+.GalleryEditor .uneditable-input.span10 {
+  width: 766px;
+}
+
+.GalleryEditor input.span9,
+.GalleryEditor textarea.span9,
+.GalleryEditor .uneditable-input.span9 {
+  width: 686px;
+}
+
+.GalleryEditor input.span8,
+.GalleryEditor textarea.span8,
+.GalleryEditor .uneditable-input.span8 {
+  width: 606px;
+}
+
+.GalleryEditor input.span7,
+.GalleryEditor textarea.span7,
+.GalleryEditor .uneditable-input.span7 {
+  width: 526px;
+}
+
+.GalleryEditor input.span6,
+.GalleryEditor textarea.span6,
+.GalleryEditor .uneditable-input.span6 {
+  width: 446px;
+}
+
+.GalleryEditor input.span5,
+.GalleryEditor textarea.span5,
+.GalleryEditor .uneditable-input.span5 {
+  width: 366px;
+}
+
+.GalleryEditor input.span4,
+.GalleryEditor textarea.span4,
+.GalleryEditor .uneditable-input.span4 {
+  width: 286px;
+}
+
+.GalleryEditor input.span3,
+.GalleryEditor textarea.span3,
+.GalleryEditor .uneditable-input.span3 {
+  width: 206px;
+}
+
+.GalleryEditor input.span2,
+.GalleryEditor textarea.span2,
+.GalleryEditor .uneditable-input.span2 {
+  width: 126px;
+}
+
+.GalleryEditor input.span1,
+.GalleryEditor textarea.span1,
+.GalleryEditor .uneditable-input.span1 {
+  width: 46px;
+}
+
+.GalleryEditor .controls-row {
+  *zoom: 1;
+}
+
+.GalleryEditor .controls-row:before,
+.GalleryEditor .controls-row:after {
+  display: table;
+  line-height: 0;
+  content: "";
+}
+
+.GalleryEditor .controls-row:after {
+  clear: both;
+}
+
+.GalleryEditor .controls-row [class*="span"],
+.GalleryEditor .row-fluid .controls-row [class*="span"] {
+  float: left;
+}
+
+.GalleryEditor .controls-row .checkbox[class*="span"],
+.GalleryEditor .controls-row .radio[class*="span"] {
+  padding-top: 5px;
+}
+
+.GalleryEditor input[disabled],
+.GalleryEditor select[disabled],
+.GalleryEditor textarea[disabled],
+.GalleryEditor input[readonly],
+.GalleryEditor select[readonly],
+.GalleryEditor textarea[readonly] {
+  cursor: not-allowed;
+  background-color: #eeeeee;
+}
+
+.GalleryEditor input[type="radio"][disabled],
+.GalleryEditor input[type="checkbox"][disabled],
+.GalleryEditor input[type="radio"][readonly],
+.GalleryEditor input[type="checkbox"][readonly] {
+  background-color: transparent;
+}
+
+.GalleryEditor .control-group.warning .control-label,
+.GalleryEditor .control-group.warning .help-block,
+.GalleryEditor .control-group.warning .help-inline {
+  color: #c09853;
+}
+
+.GalleryEditor .control-group.warning .checkbox,
+.GalleryEditor .control-group.warning .radio,
+.GalleryEditor .control-group.warning input,
+.GalleryEditor .control-group.warning select,
+.GalleryEditor .control-group.warning textarea {
+  color: #c09853;
+}
+
+.GalleryEditor .control-group.warning input,
+.GalleryEditor .control-group.warning select,
+.GalleryEditor .control-group.warning textarea {
+  border-color: #c09853;
+  -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
+     -moz-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
+          box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
+}
+
+.GalleryEditor .control-group.warning input:focus,
+.GalleryEditor .control-group.warning select:focus,
+.GalleryEditor .control-group.warning textarea:focus {
+  border-color: #a47e3c;
+  -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 6px #dbc59e;
+     -moz-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 6px #dbc59e;
+          box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 6px #dbc59e;
+}
+
+.GalleryEditor .control-group.warning .input-prepend .add-on,
+.GalleryEditor .control-group.warning .input-append .add-on {
+  color: #c09853;
+  background-color: #fcf8e3;
+  border-color: #c09853;
+}
+
+.GalleryEditor .control-group.error .control-label,
+.GalleryEditor .control-group.error .help-block,
+.GalleryEditor .control-group.error .help-inline {
+  color: #b94a48;
+}
+
+.GalleryEditor .control-group.error .checkbox,
+.GalleryEditor .control-group.error .radio,
+.GalleryEditor .control-group.error input,
+.GalleryEditor .control-group.error select,
+.GalleryEditor .control-group.error textarea {
+  color: #b94a48;
+}
+
+.GalleryEditor .control-group.error input,
+.GalleryEditor .control-group.error select,
+.GalleryEditor .control-group.error textarea {
+  border-color: #b94a48;
+  -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
+     -moz-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
+          box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
+}
+
+.GalleryEditor .control-group.error input:focus,
+.GalleryEditor .control-group.error select:focus,
+.GalleryEditor .control-group.error textarea:focus {
+  border-color: #953b39;
+  -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 6px #d59392;
+     -moz-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 6px #d59392;
+          box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 6px #d59392;
+}
+
+.GalleryEditor .control-group.error .input-prepend .add-on,
+.GalleryEditor .control-group.error .input-append .add-on {
+  color: #b94a48;
+  background-color: #f2dede;
+  border-color: #b94a48;
+}
+
+.GalleryEditor .control-group.success .control-label,
+.GalleryEditor .control-group.success .help-block,
+.GalleryEditor .control-group.success .help-inline {
+  color: #468847;
+}
+
+.GalleryEditor .control-group.success .checkbox,
+.GalleryEditor .control-group.success .radio,
+.GalleryEditor .control-group.success input,
+.GalleryEditor .control-group.success select,
+.GalleryEditor .control-group.success textarea {
+  color: #468847;
+}
+
+.GalleryEditor .control-group.success input,
+.GalleryEditor .control-group.success select,
+.GalleryEditor .control-group.success textarea {
+  border-color: #468847;
+  -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
+     -moz-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
+          box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
+}
+
+.GalleryEditor .control-group.success input:focus,
+.GalleryEditor .control-group.success select:focus,
+.GalleryEditor .control-group.success textarea:focus {
+  border-color: #356635;
+  -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 6px #7aba7b;
+     -moz-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 6px #7aba7b;
+          box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 6px #7aba7b;
+}
+
+.GalleryEditor .control-group.success .input-prepend .add-on,
+.GalleryEditor .control-group.success .input-append .add-on {
+  color: #468847;
+  background-color: #dff0d8;
+  border-color: #468847;
+}
+
+.GalleryEditor .control-group.info .control-label,
+.GalleryEditor .control-group.info .help-block,
+.GalleryEditor .control-group.info .help-inline {
+  color: #3a87ad;
+}
+
+.GalleryEditor .control-group.info .checkbox,
+.GalleryEditor .control-group.info .radio,
+.GalleryEditor .control-group.info input,
+.GalleryEditor .control-group.info select,
+.GalleryEditor .control-group.info textarea {
+  color: #3a87ad;
+}
+
+.GalleryEditor .control-group.info input,
+.GalleryEditor .control-group.info select,
+.GalleryEditor .control-group.info textarea {
+  border-color: #3a87ad;
+  -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
+     -moz-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
+          box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
+}
+
+.GalleryEditor .control-group.info input:focus,
+.GalleryEditor .control-group.info select:focus,
+.GalleryEditor .control-group.info textarea:focus {
+  border-color: #2d6987;
+  -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 6px #7ab5d3;
+     -moz-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 6px #7ab5d3;
+          box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 6px #7ab5d3;
+}
+
+.GalleryEditor .control-group.info .input-prepend .add-on,
+.GalleryEditor .control-group.info .input-append .add-on {
+  color: #3a87ad;
+  background-color: #d9edf7;
+  border-color: #3a87ad;
+}
+
+.GalleryEditor input:focus:invalid,
+.GalleryEditor textarea:focus:invalid,
+.GalleryEditor select:focus:invalid {
+  color: #b94a48;
+  border-color: #ee5f5b;
+}
+
+.GalleryEditor input:focus:invalid:focus,
+.GalleryEditor textarea:focus:invalid:focus,
+.GalleryEditor select:focus:invalid:focus {
+  border-color: #e9322d;
+  -webkit-box-shadow: 0 0 6px #f8b9b7;
+     -moz-box-shadow: 0 0 6px #f8b9b7;
+          box-shadow: 0 0 6px #f8b9b7;
+}
+
+.GalleryEditor .form-actions {
+  padding: 19px 20px 20px;
+  margin-top: 20px;
+  margin-bottom: 20px;
+  background-color: #f5f5f5;
+  border-top: 1px solid #e5e5e5;
+  *zoom: 1;
+}
+
+.GalleryEditor .form-actions:before,
+.GalleryEditor .form-actions:after {
+  display: table;
+  line-height: 0;
+  content: "";
+}
+
+.GalleryEditor .form-actions:after {
+  clear: both;
+}
+
+.GalleryEditor .help-block,
+.GalleryEditor .help-inline {
+  color: #595959;
+}
+
+.GalleryEditor .help-block {
+  display: block;
+  margin-bottom: 10px;
+}
+
+.GalleryEditor .help-inline {
+  display: inline-block;
+  *display: inline;
+  padding-left: 5px;
+  vertical-align: middle;
+  *zoom: 1;
+}
+
+.GalleryEditor .input-append,
+.GalleryEditor .input-prepend {
+  display: inline-block;
+  margin-bottom: 10px;
+  font-size: 0;
+  white-space: nowrap;
+  vertical-align: middle;
+}
+
+.GalleryEditor .input-append input,
+.GalleryEditor .input-prepend input,
+.GalleryEditor .input-append select,
+.GalleryEditor .input-prepend select,
+.GalleryEditor .input-append .uneditable-input,
+.GalleryEditor .input-prepend .uneditable-input,
+.GalleryEditor .input-append .dropdown-menu,
+.GalleryEditor .input-prepend .dropdown-menu,
+.GalleryEditor .input-append .popover,
+.GalleryEditor .input-prepend .popover {
+  font-size: 14px;
+}
+
+.GalleryEditor .input-append input,
+.GalleryEditor .input-prepend input,
+.GalleryEditor .input-append select,
+.GalleryEditor .input-prepend select,
+.GalleryEditor .input-append .uneditable-input,
+.GalleryEditor .input-prepend .uneditable-input {
+  position: relative;
+  margin-bottom: 0;
+  *margin-left: 0;
+  vertical-align: top;
+  -webkit-border-radius: 0 4px 4px 0;
+     -moz-border-radius: 0 4px 4px 0;
+          border-radius: 0 4px 4px 0;
+}
+
+.GalleryEditor .input-append input:focus,
+.GalleryEditor .input-prepend input:focus,
+.GalleryEditor .input-append select:focus,
+.GalleryEditor .input-prepend select:focus,
+.GalleryEditor .input-append .uneditable-input:focus,
+.GalleryEditor .input-prepend .uneditable-input:focus {
+  z-index: 2;
+}
+
+.GalleryEditor .input-append .add-on,
+.GalleryEditor .input-prepend .add-on {
+  display: inline-block;
+  width: auto;
+  height: 20px;
+  min-width: 16px;
+  padding: 4px 5px;
+  font-size: 14px;
+  font-weight: normal;
+  line-height: 20px;
+  text-align: center;
+  text-shadow: 0 1px 0 #ffffff;
+  background-color: #eeeeee;
+  border: 1px solid #ccc;
+}
+
+.GalleryEditor .input-append .add-on,
+.GalleryEditor .input-prepend .add-on,
+.GalleryEditor .input-append .btn,
+.GalleryEditor .input-prepend .btn,
+.GalleryEditor .input-append .btn-group > .dropdown-toggle,
+.GalleryEditor .input-prepend .btn-group > .dropdown-toggle {
+  vertical-align: top;
+  -webkit-border-radius: 0;
+     -moz-border-radius: 0;
+          border-radius: 0;
+}
+
+.GalleryEditor .input-append .active,
+.GalleryEditor .input-prepend .active {
+  background-color: #a9dba9;
+  border-color: #46a546;
+}
+
+.GalleryEditor .input-prepend .add-on,
+.GalleryEditor .input-prepend .btn {
+  margin-right: -1px;
+}
+
+.GalleryEditor .input-prepend .add-on:first-child,
+.GalleryEditor .input-prepend .btn:first-child {
+  -webkit-border-radius: 4px 0 0 4px;
+     -moz-border-radius: 4px 0 0 4px;
+          border-radius: 4px 0 0 4px;
+}
+
+.GalleryEditor .input-append input,
+.GalleryEditor .input-append select,
+.GalleryEditor .input-append .uneditable-input {
+  -webkit-border-radius: 4px 0 0 4px;
+     -moz-border-radius: 4px 0 0 4px;
+          border-radius: 4px 0 0 4px;
+}
+
+.GalleryEditor .input-append input + .btn-group .btn:last-child,
+.GalleryEditor .input-append select + .btn-group .btn:last-child,
+.GalleryEditor .input-append .uneditable-input + .btn-group .btn:last-child {
+  -webkit-border-radius: 0 4px 4px 0;
+     -moz-border-radius: 0 4px 4px 0;
+          border-radius: 0 4px 4px 0;
+}
+
+.GalleryEditor .input-append .add-on,
+.GalleryEditor .input-append .btn,
+.GalleryEditor .input-append .btn-group {
+  margin-left: -1px;
+}
+
+.GalleryEditor .input-append .add-on:last-child,
+.GalleryEditor .input-append .btn:last-child,
+.GalleryEditor .input-append .btn-group:last-child > .dropdown-toggle {
+  -webkit-border-radius: 0 4px 4px 0;
+     -moz-border-radius: 0 4px 4px 0;
+          border-radius: 0 4px 4px 0;
+}
+
+.GalleryEditor .input-prepend.input-append input,
+.GalleryEditor .input-prepend.input-append select,
+.GalleryEditor .input-prepend.input-append .uneditable-input {
+  -webkit-border-radius: 0;
+     -moz-border-radius: 0;
+          border-radius: 0;
+}
+
+.GalleryEditor .input-prepend.input-append input + .btn-group .btn,
+.GalleryEditor .input-prepend.input-append select + .btn-group .btn,
+.GalleryEditor .input-prepend.input-append .uneditable-input + .btn-group .btn {
+  -webkit-border-radius: 0 4px 4px 0;
+     -moz-border-radius: 0 4px 4px 0;
+          border-radius: 0 4px 4px 0;
+}
+
+.GalleryEditor .input-prepend.input-append .add-on:first-child,
+.GalleryEditor .input-prepend.input-append .btn:first-child {
+  margin-right: -1px;
+  -webkit-border-radius: 4px 0 0 4px;
+     -moz-border-radius: 4px 0 0 4px;
+          border-radius: 4px 0 0 4px;
+}
+
+.GalleryEditor .input-prepend.input-append .add-on:last-child,
+.GalleryEditor .input-prepend.input-append .btn:last-child {
+  margin-left: -1px;
+  -webkit-border-radius: 0 4px 4px 0;
+     -moz-border-radius: 0 4px 4px 0;
+          border-radius: 0 4px 4px 0;
+}
+
+.GalleryEditor .input-prepend.input-append .btn-group:first-child {
+  margin-left: 0;
+}
+
+.GalleryEditor input.search-query {
+  padding-right: 14px;
+  padding-right: 4px \9;
+  padding-left: 14px;
+  padding-left: 4px \9;
+  /* IE7-8 doesn't have border-radius, so don't indent the padding */
+
+  margin-bottom: 0;
+  -webkit-border-radius: 15px;
+     -moz-border-radius: 15px;
+          border-radius: 15px;
+}
+
+/* Allow for input prepend/append in search forms */
+
+.GalleryEditor .form-search .input-append .search-query,
+.GalleryEditor .form-search .input-prepend .search-query {
+  -webkit-border-radius: 0;
+     -moz-border-radius: 0;
+          border-radius: 0;
+}
+
+.GalleryEditor .form-search .input-append .search-query {
+  -webkit-border-radius: 14px 0 0 14px;
+     -moz-border-radius: 14px 0 0 14px;
+          border-radius: 14px 0 0 14px;
+}
+
+.GalleryEditor .form-search .input-append .btn {
+  -webkit-border-radius: 0 14px 14px 0;
+     -moz-border-radius: 0 14px 14px 0;
+          border-radius: 0 14px 14px 0;
+}
+
+.GalleryEditor .form-search .input-prepend .search-query {
+  -webkit-border-radius: 0 14px 14px 0;
+     -moz-border-radius: 0 14px 14px 0;
+          border-radius: 0 14px 14px 0;
+}
+
+.GalleryEditor .form-search .input-prepend .btn {
+  -webkit-border-radius: 14px 0 0 14px;
+     -moz-border-radius: 14px 0 0 14px;
+          border-radius: 14px 0 0 14px;
+}
+
+.GalleryEditor .form-search input,
+.GalleryEditor .form-inline input,
+.GalleryEditor .form-horizontal input,
+.GalleryEditor .form-search textarea,
+.GalleryEditor .form-inline textarea,
+.GalleryEditor .form-horizontal textarea,
+.GalleryEditor .form-search select,
+.GalleryEditor .form-inline select,
+.GalleryEditor .form-horizontal select,
+.GalleryEditor .form-search .help-inline,
+.GalleryEditor .form-inline .help-inline,
+.GalleryEditor .form-horizontal .help-inline,
+.GalleryEditor .form-search .uneditable-input,
+.GalleryEditor .form-inline .uneditable-input,
+.GalleryEditor .form-horizontal .uneditable-input,
+.GalleryEditor .form-search .input-prepend,
+.GalleryEditor .form-inline .input-prepend,
+.GalleryEditor .form-horizontal .input-prepend,
+.GalleryEditor .form-search .input-append,
+.GalleryEditor .form-inline .input-append,
+.GalleryEditor .form-horizontal .input-append {
+  display: inline-block;
+  *display: inline;
+  margin-bottom: 0;
+  vertical-align: middle;
+  *zoom: 1;
+}
+
+.GalleryEditor .form-search .hide,
+.GalleryEditor .form-inline .hide,
+.GalleryEditor .form-horizontal .hide {
+  display: none;
+}
+
+.GalleryEditor .form-search label,
+.GalleryEditor .form-inline label,
+.GalleryEditor .form-search .btn-group,
+.GalleryEditor .form-inline .btn-group {
+  display: inline-block;
+}
+
+.GalleryEditor .form-search .input-append,
+.GalleryEditor .form-inline .input-append,
+.GalleryEditor .form-search .input-prepend,
+.GalleryEditor .form-inline .input-prepend {
+  margin-bottom: 0;
+}
+
+.GalleryEditor .form-search .radio,
+.GalleryEditor .form-search .checkbox,
+.GalleryEditor .form-inline .radio,
+.GalleryEditor .form-inline .checkbox {
+  padding-left: 0;
+  margin-bottom: 0;
+  vertical-align: middle;
+}
+
+.GalleryEditor .form-search .radio input[type="radio"],
+.GalleryEditor .form-search .checkbox input[type="checkbox"],
+.GalleryEditor .form-inline .radio input[type="radio"],
+.GalleryEditor .form-inline .checkbox input[type="checkbox"] {
+  float: left;
+  margin-right: 3px;
+  margin-left: 0;
+}
+
+.GalleryEditor .control-group {
+  margin-bottom: 10px;
+}
+
+.GalleryEditor legend + .control-group {
+  margin-top: 20px;
+  -webkit-margin-top-collapse: separate;
+}
+
+.GalleryEditor .form-horizontal .control-group {
+  margin-bottom: 20px;
+  *zoom: 1;
+}
+
+.GalleryEditor .form-horizontal .control-group:before,
+.GalleryEditor .form-horizontal .control-group:after {
+  display: table;
+  line-height: 0;
+  content: "";
+}
+
+.GalleryEditor .form-horizontal .control-group:after {
+  clear: both;
+}
+
+.GalleryEditor .form-horizontal .control-label {
+  float: left;
+  width: 160px;
+  padding-top: 5px;
+  text-align: right;
+}
+
+.GalleryEditor .form-horizontal .controls {
+  *display: inline-block;
+  *padding-left: 20px;
+  margin-left: 180px;
+  *margin-left: 0;
+}
+
+.GalleryEditor .form-horizontal .controls:first-child {
+  *padding-left: 180px;
+}
+
+.GalleryEditor .form-horizontal .help-block {
+  margin-bottom: 0;
+}
+
+.GalleryEditor .form-horizontal input + .help-block,
+.GalleryEditor .form-horizontal select + .help-block,
+.GalleryEditor .form-horizontal textarea + .help-block,
+.GalleryEditor .form-horizontal .uneditable-input + .help-block,
+.GalleryEditor .form-horizontal .input-prepend + .help-block,
+.GalleryEditor .form-horizontal .input-append + .help-block {
+  margin-top: 10px;
+}
+
+.GalleryEditor .form-horizontal .form-actions {
+  padding-left: 180px;
+}
+
+.GalleryEditor table {
+  max-width: 100%;
+  background-color: transparent;
+  border-collapse: collapse;
+  border-spacing: 0;
+}
+
+.GalleryEditor .table {
+  width: 100%;
+  margin-bottom: 20px;
+}
+
+.GalleryEditor .table th,
+.GalleryEditor .table td {
+  padding: 8px;
+  line-height: 20px;
+  text-align: left;
+  vertical-align: top;
+  border-top: 1px solid #F5F5F5;
+}
+
+.GalleryEditor .table th {
+  font-weight: bold;
+}
+
+.GalleryEditor .table thead th {
+  vertical-align: bottom;
+}
+
+.GalleryEditor .table caption + thead tr:first-child th,
+.GalleryEditor .table caption + thead tr:first-child td,
+.GalleryEditor .table colgroup + thead tr:first-child th,
+.GalleryEditor .table colgroup + thead tr:first-child td,
+.GalleryEditor .table thead:first-child tr:first-child th,
+.GalleryEditor .table thead:first-child tr:first-child td {
+  border-top: 0;
+}
+
+.GalleryEditor .table tbody + tbody {
+  border-top: 2px solid #F5F5F5;
+}
+
+.GalleryEditor .table .table {
+  background-color: #ffffff;
+}
+
+.GalleryEditor .table-condensed th,
+.GalleryEditor .table-condensed td {
+  padding: 4px 5px;
+}
+
+.GalleryEditor .table-bordered {
+  border: 1px solid #F5F5F5;
+  border-collapse: separate;
+  *border-collapse: collapse;
+  border-left: 0;
+  -webkit-border-radius: 4px;
+     -moz-border-radius: 4px;
+          border-radius: 4px;
+}
+
+.GalleryEditor .table-bordered th,
+.GalleryEditor .table-bordered td {
+  border-left: 1px solid #F5F5F5;
+}
+
+.GalleryEditor .table-bordered caption + thead tr:first-child th,
+.GalleryEditor .table-bordered caption + tbody tr:first-child th,
+.GalleryEditor .table-bordered caption + tbody tr:first-child td,
+.GalleryEditor .table-bordered colgroup + thead tr:first-child th,
+.GalleryEditor .table-bordered colgroup + tbody tr:first-child th,
+.GalleryEditor .table-bordered colgroup + tbody tr:first-child td,
+.GalleryEditor .table-bordered thead:first-child tr:first-child th,
+.GalleryEditor .table-bordered tbody:first-child tr:first-child th,
+.GalleryEditor .table-bordered tbody:first-child tr:first-child td {
+  border-top: 0;
+}
+
+.GalleryEditor .table-bordered thead:first-child tr:first-child > th:first-child,
+.GalleryEditor .table-bordered tbody:first-child tr:first-child > td:first-child,
+.GalleryEditor .table-bordered tbody:first-child tr:first-child > th:first-child {
+  -webkit-border-top-left-radius: 4px;
+          border-top-left-radius: 4px;
+  -moz-border-radius-topleft: 4px;
+}
+
+.GalleryEditor .table-bordered thead:first-child tr:first-child > th:last-child,
+.GalleryEditor .table-bordered tbody:first-child tr:first-child > td:last-child,
+.GalleryEditor .table-bordered tbody:first-child tr:first-child > th:last-child {
+  -webkit-border-top-right-radius: 4px;
+          border-top-right-radius: 4px;
+  -moz-border-radius-topright: 4px;
+}
+
+.GalleryEditor .table-bordered thead:last-child tr:last-child > th:first-child,
+.GalleryEditor .table-bordered tbody:last-child tr:last-child > td:first-child,
+.GalleryEditor .table-bordered tbody:last-child tr:last-child > th:first-child,
+.GalleryEditor .table-bordered tfoot:last-child tr:last-child > td:first-child,
+.GalleryEditor .table-bordered tfoot:last-child tr:last-child > th:first-child {
+  -webkit-border-bottom-left-radius: 4px;
+          border-bottom-left-radius: 4px;
+  -moz-border-radius-bottomleft: 4px;
+}
+
+.GalleryEditor .table-bordered thead:last-child tr:last-child > th:last-child,
+.GalleryEditor .table-bordered tbody:last-child tr:last-child > td:last-child,
+.GalleryEditor .table-bordered tbody:last-child tr:last-child > th:last-child,
+.GalleryEditor .table-bordered tfoot:last-child tr:last-child > td:last-child,
+.GalleryEditor .table-bordered tfoot:last-child tr:last-child > th:last-child {
+  -webkit-border-bottom-right-radius: 4px;
+          border-bottom-right-radius: 4px;
+  -moz-border-radius-bottomright: 4px;
+}
+
+.GalleryEditor .table-bordered tfoot + tbody:last-child tr:last-child td:first-child {
+  -webkit-border-bottom-left-radius: 0;
+          border-bottom-left-radius: 0;
+  -moz-border-radius-bottomleft: 0;
+}
+
+.GalleryEditor .table-bordered tfoot + tbody:last-child tr:last-child td:last-child {
+  -webkit-border-bottom-right-radius: 0;
+          border-bottom-right-radius: 0;
+  -moz-border-radius-bottomright: 0;
+}
+
+.GalleryEditor .table-bordered caption + thead tr:first-child th:first-child,
+.GalleryEditor .table-bordered caption + tbody tr:first-child td:first-child,
+.GalleryEditor .table-bordered colgroup + thead tr:first-child th:first-child,
+.GalleryEditor .table-bordered colgroup + tbody tr:first-child td:first-child {
+  -webkit-border-top-left-radius: 4px;
+          border-top-left-radius: 4px;
+  -moz-border-radius-topleft: 4px;
+}
+
+.GalleryEditor .table-bordered caption + thead tr:first-child th:last-child,
+.GalleryEditor .table-bordered caption + tbody tr:first-child td:last-child,
+.GalleryEditor .table-bordered colgroup + thead tr:first-child th:last-child,
+.GalleryEditor .table-bordered colgroup + tbody tr:first-child td:last-child {
+  -webkit-border-top-right-radius: 4px;
+          border-top-right-radius: 4px;
+  -moz-border-radius-topright: 4px;
+}
+
+.GalleryEditor .table-striped tbody > tr:nth-child(odd) > td,
+.GalleryEditor .table-striped tbody > tr:nth-child(odd) > th {
+  background-color: #f9f9f9;
+}
+
+.GalleryEditor .table-hover tbody tr:hover > td,
+.GalleryEditor .table-hover tbody tr:hover > th {
+  background-color: #f5f5f5;
+}
+
+.GalleryEditor table td[class*="span"],
+.GalleryEditor table th[class*="span"],
+.GalleryEditor .row-fluid table td[class*="span"],
+.GalleryEditor .row-fluid table th[class*="span"] {
+  display: table-cell;
+  float: none;
+  margin-left: 0;
+}
+
+.GalleryEditor .table td.span1,
+.GalleryEditor .table th.span1 {
+  float: none;
+  width: 44px;
+  margin-left: 0;
+}
+
+.GalleryEditor .table td.span2,
+.GalleryEditor .table th.span2 {
+  float: none;
+  width: 124px;
+  margin-left: 0;
+}
+
+.GalleryEditor .table td.span3,
+.GalleryEditor .table th.span3 {
+  float: none;
+  width: 204px;
+  margin-left: 0;
+}
+
+.GalleryEditor .table td.span4,
+.GalleryEditor .table th.span4 {
+  float: none;
+  width: 284px;
+  margin-left: 0;
+}
+
+.GalleryEditor .table td.span5,
+.GalleryEditor .table th.span5 {
+  float: none;
+  width: 364px;
+  margin-left: 0;
+}
+
+.GalleryEditor .table td.span6,
+.GalleryEditor .table th.span6 {
+  float: none;
+  width: 444px;
+  margin-left: 0;
+}
+
+.GalleryEditor .table td.span7,
+.GalleryEditor .table th.span7 {
+  float: none;
+  width: 524px;
+  margin-left: 0;
+}
+
+.GalleryEditor .table td.span8,
+.GalleryEditor .table th.span8 {
+  float: none;
+  width: 604px;
+  margin-left: 0;
+}
+
+.GalleryEditor .table td.span9,
+.GalleryEditor .table th.span9 {
+  float: none;
+  width: 684px;
+  margin-left: 0;
+}
+
+.GalleryEditor .table td.span10,
+.GalleryEditor .table th.span10 {
+  float: none;
+  width: 764px;
+  margin-left: 0;
+}
+
+.GalleryEditor .table td.span11,
+.GalleryEditor .table th.span11 {
+  float: none;
+  width: 844px;
+  margin-left: 0;
+}
+
+.GalleryEditor .table td.span12,
+.GalleryEditor .table th.span12 {
+  float: none;
+  width: 924px;
+  margin-left: 0;
+}
+
+.GalleryEditor .table tbody tr.success > td {
+  background-color: #dff0d8;
+}
+
+.GalleryEditor .table tbody tr.error > td {
+  background-color: #f2dede;
+}
+
+.GalleryEditor .table tbody tr.warning > td {
+  background-color: #fcf8e3;
+}
+
+.GalleryEditor .table tbody tr.info > td {
+  background-color: #d9edf7;
+}
+
+.GalleryEditor .table-hover tbody tr.success:hover > td {
+  background-color: #d0e9c6;
+}
+
+.GalleryEditor .table-hover tbody tr.error:hover > td {
+  background-color: #ebcccc;
+}
+
+.GalleryEditor .table-hover tbody tr.warning:hover > td {
+  background-color: #faf2cc;
+}
+
+.GalleryEditor .table-hover tbody tr.info:hover > td {
+  background-color: #c4e3f3;
+}
+
+[class^="icon-"],
+[class*=" icon-"] {
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  margin-top: 1px;
+  *margin-right: .3em;
+  line-height: 14px;
+  vertical-align: text-top;
+  background-image: url("../img/glyphicons-halflings.png");
+  background-position: 14px 14px;
+  background-repeat: no-repeat;
+}
+
+/* White icons with optional class, or on hover/focus/active states of certain elements */
+
+.GalleryEditor .icon-white,
+.GalleryEditor .nav-pills > .active > a > [class^="icon-"],
+.GalleryEditor .nav-pills > .active > a > [class*=" icon-"],
+.GalleryEditor .nav-list > .active > a > [class^="icon-"],
+.GalleryEditor .nav-list > .active > a > [class*=" icon-"],
+.GalleryEditor .navbar-inverse .nav > .active > a > [class^="icon-"],
+.GalleryEditor .navbar-inverse .nav > .active > a > [class*=" icon-"],
+.GalleryEditor .dropdown-menu > li > a:hover > [class^="icon-"],
+.GalleryEditor .dropdown-menu > li > a:focus > [class^="icon-"],
+.GalleryEditor .dropdown-menu > li > a:hover > [class*=" icon-"],
+.GalleryEditor .dropdown-menu > li > a:focus > [class*=" icon-"],
+.GalleryEditor .dropdown-menu > .active > a > [class^="icon-"],
+.GalleryEditor .dropdown-menu > .active > a > [class*=" icon-"],
+.GalleryEditor .dropdown-submenu:hover > a > [class^="icon-"],
+.GalleryEditor .dropdown-submenu:focus > a > [class^="icon-"],
+.GalleryEditor .dropdown-submenu:hover > a > [class*=" icon-"],
+.GalleryEditor .dropdown-submenu:focus > a > [class*=" icon-"] {
+  background-image: url("../img/glyphicons-halflings-white.png");
+}
+
+.GalleryEditor .icon-glass {
+  background-position: 0      0;
+}
+
+.GalleryEditor .icon-music {
+  background-position: -24px 0;
+}
+
+.GalleryEditor .icon-search {
+  background-position: -48px 0;
+}
+
+.GalleryEditor .icon-envelope {
+  background-position: -72px 0;
+}
+
+.GalleryEditor .icon-heart {
+  background-position: -96px 0;
+}
+
+.GalleryEditor .icon-star {
+  background-position: -120px 0;
+}
+
+.GalleryEditor .icon-star-empty {
+  background-position: -144px 0;
+}
+
+.GalleryEditor .icon-user {
+  background-position: -168px 0;
+}
+
+.GalleryEditor .icon-film {
+  background-position: -192px 0;
+}
+
+.GalleryEditor .icon-th-large {
+  background-position: -216px 0;
+}
+
+.GalleryEditor .icon-th {
+  background-position: -240px 0;
+}
+
+.GalleryEditor .icon-th-list {
+  background-position: -264px 0;
+}
+
+.GalleryEditor .icon-ok {
+  background-position: -288px 0;
+}
+
+.GalleryEditor .icon-remove {
+  background-position: -312px 0;
+}
+
+.GalleryEditor .icon-zoom-in {
+  background-position: -336px 0;
+}
+
+.GalleryEditor .icon-zoom-out {
+  background-position: -360px 0;
+}
+
+.GalleryEditor .icon-off {
+  background-position: -384px 0;
+}
+
+.GalleryEditor .icon-signal {
+  background-position: -408px 0;
+}
+
+.GalleryEditor .icon-cog {
+  background-position: -432px 0;
+}
+
+.GalleryEditor .icon-trash {
+  background-position: -456px 0;
+}
+
+.GalleryEditor .icon-home {
+  background-position: 0 -24px;
+}
+
+.GalleryEditor .icon-file {
+  background-position: -24px -24px;
+}
+
+.GalleryEditor .icon-time {
+  background-position: -48px -24px;
+}
+
+.GalleryEditor .icon-road {
+  background-position: -72px -24px;
+}
+
+.GalleryEditor .icon-download-alt {
+  background-position: -96px -24px;
+}
+
+.GalleryEditor .icon-download {
+  background-position: -120px -24px;
+}
+
+.GalleryEditor .icon-upload {
+  background-position: -144px -24px;
+}
+
+.GalleryEditor .icon-inbox {
+  background-position: -168px -24px;
+}
+
+.GalleryEditor .icon-play-circle {
+  background-position: -192px -24px;
+}
+
+.GalleryEditor .icon-repeat {
+  background-position: -216px -24px;
+}
+
+.GalleryEditor .icon-refresh {
+  background-position: -240px -24px;
+}
+
+.GalleryEditor .icon-list-alt {
+  background-position: -264px -24px;
+}
+
+.GalleryEditor .icon-lock {
+  background-position: -287px -24px;
+}
+
+.GalleryEditor .icon-flag {
+  background-position: -312px -24px;
+}
+
+.GalleryEditor .icon-headphones {
+  background-position: -336px -24px;
+}
+
+.GalleryEditor .icon-volume-off {
+  background-position: -360px -24px;
+}
+
+.GalleryEditor .icon-volume-down {
+  background-position: -384px -24px;
+}
+
+.GalleryEditor .icon-volume-up {
+  background-position: -408px -24px;
+}
+
+.GalleryEditor .icon-qrcode {
+  background-position: -432px -24px;
+}
+
+.GalleryEditor .icon-barcode {
+  background-position: -456px -24px;
+}
+
+.GalleryEditor .icon-tag {
+  background-position: 0 -48px;
+}
+
+.GalleryEditor .icon-tags {
+  background-position: -25px -48px;
+}
+
+.GalleryEditor .icon-book {
+  background-position: -48px -48px;
+}
+
+.GalleryEditor .icon-bookmark {
+  background-position: -72px -48px;
+}
+
+.GalleryEditor .icon-print {
+  background-position: -96px -48px;
+}
+
+.GalleryEditor .icon-camera {
+  background-position: -120px -48px;
+}
+
+.GalleryEditor .icon-font {
+  background-position: -144px -48px;
+}
+
+.GalleryEditor .icon-bold {
+  background-position: -167px -48px;
+}
+
+.GalleryEditor .icon-italic {
+  background-position: -192px -48px;
+}
+
+.GalleryEditor .icon-text-height {
+  background-position: -216px -48px;
+}
+
+.GalleryEditor .icon-text-width {
+  background-position: -240px -48px;
+}
+
+.GalleryEditor .icon-align-left {
+  background-position: -264px -48px;
+}
+
+.GalleryEditor .icon-align-center {
+  background-position: -288px -48px;
+}
+
+.GalleryEditor .icon-align-right {
+  background-position: -312px -48px;
+}
+
+.GalleryEditor .icon-align-justify {
+  background-position: -336px -48px;
+}
+
+.GalleryEditor .icon-list {
+  background-position: -360px -48px;
+}
+
+.GalleryEditor .icon-indent-left {
+  background-position: -384px -48px;
+}
+
+.GalleryEditor .icon-indent-right {
+  background-position: -408px -48px;
+}
+
+.GalleryEditor .icon-facetime-video {
+  background-position: -432px -48px;
+}
+
+.GalleryEditor .icon-picture {
+  background-position: -456px -48px;
+}
+
+.GalleryEditor .icon-pencil {
+  background-position: 0 -72px;
+}
+
+.GalleryEditor .icon-map-marker {
+  background-position: -24px -72px;
+}
+
+.GalleryEditor .icon-adjust {
+  background-position: -48px -72px;
+}
+
+.GalleryEditor .icon-tint {
+  background-position: -72px -72px;
+}
+
+.GalleryEditor .icon-edit {
+  background-position: -96px -72px;
+}
+
+.GalleryEditor .icon-share {
+  background-position: -120px -72px;
+}
+
+.GalleryEditor .icon-check {
+  background-position: -144px -72px;
+}
+
+.GalleryEditor .icon-move {
+  background-position: -168px -72px;
+}
+
+.GalleryEditor .icon-step-backward {
+  background-position: -192px -72px;
+}
+
+.GalleryEditor .icon-fast-backward {
+  background-position: -216px -72px;
+}
+
+.GalleryEditor .icon-backward {
+  background-position: -240px -72px;
+}
+
+.GalleryEditor .icon-play {
+  background-position: -264px -72px;
+}
+
+.GalleryEditor .icon-pause {
+  background-position: -288px -72px;
+}
+
+.GalleryEditor .icon-stop {
+  background-position: -312px -72px;
+}
+
+.GalleryEditor .icon-forward {
+  background-position: -336px -72px;
+}
+
+.GalleryEditor .icon-fast-forward {
+  background-position: -360px -72px;
+}
+
+.GalleryEditor .icon-step-forward {
+  background-position: -384px -72px;
+}
+
+.GalleryEditor .icon-eject {
+  background-position: -408px -72px;
+}
+
+.GalleryEditor .icon-chevron-left {
+  background-position: -432px -72px;
+}
+
+.GalleryEditor .icon-chevron-right {
+  background-position: -456px -72px;
+}
+
+.GalleryEditor .icon-plus-sign {
+  background-position: 0 -96px;
+}
+
+.GalleryEditor .icon-minus-sign {
+  background-position: -24px -96px;
+}
+
+.GalleryEditor .icon-remove-sign {
+  background-position: -48px -96px;
+}
+
+.GalleryEditor .icon-ok-sign {
+  background-position: -72px -96px;
+}
+
+.GalleryEditor .icon-question-sign {
+  background-position: -96px -96px;
+}
+
+.GalleryEditor .icon-info-sign {
+  background-position: -120px -96px;
+}
+
+.GalleryEditor .icon-screenshot {
+  background-position: -144px -96px;
+}
+
+.GalleryEditor .icon-remove-circle {
+  background-position: -168px -96px;
+}
+
+.GalleryEditor .icon-ok-circle {
+  background-position: -192px -96px;
+}
+
+.GalleryEditor .icon-ban-circle {
+  background-position: -216px -96px;
+}
+
+.GalleryEditor .icon-arrow-left {
+  background-position: -240px -96px;
+}
+
+.GalleryEditor .icon-arrow-right {
+  background-position: -264px -96px;
+}
+
+.GalleryEditor .icon-arrow-up {
+  background-position: -289px -96px;
+}
+
+.GalleryEditor .icon-arrow-down {
+  background-position: -312px -96px;
+}
+
+.GalleryEditor .icon-share-alt {
+  background-position: -336px -96px;
+}
+
+.GalleryEditor .icon-resize-full {
+  background-position: -360px -96px;
+}
+
+.GalleryEditor .icon-resize-small {
+  background-position: -384px -96px;
+}
+
+.GalleryEditor .icon-plus {
+  background-position: -408px -96px;
+}
+
+.GalleryEditor .icon-minus {
+  background-position: -433px -96px;
+}
+
+.GalleryEditor .icon-asterisk {
+  background-position: -456px -96px;
+}
+
+.GalleryEditor .icon-exclamation-sign {
+  background-position: 0 -120px;
+}
+
+.GalleryEditor .icon-gift {
+  background-position: -24px -120px;
+}
+
+.GalleryEditor .icon-leaf {
+  background-position: -48px -120px;
+}
+
+.GalleryEditor .icon-fire {
+  background-position: -72px -120px;
+}
+
+.GalleryEditor .icon-eye-open {
+  background-position: -96px -120px;
+}
+
+.GalleryEditor .icon-eye-close {
+  background-position: -120px -120px;
+}
+
+.GalleryEditor .icon-warning-sign {
+  background-position: -144px -120px;
+}
+
+.GalleryEditor .icon-plane {
+  background-position: -168px -120px;
+}
+
+.GalleryEditor .icon-calendar {
+  background-position: -192px -120px;
+}
+
+.GalleryEditor .icon-random {
+  width: 16px;
+  background-position: -216px -120px;
+}
+
+.GalleryEditor .icon-comment {
+  background-position: -240px -120px;
+}
+
+.GalleryEditor .icon-magnet {
+  background-position: -264px -120px;
+}
+
+.GalleryEditor .icon-chevron-up {
+  background-position: -288px -120px;
+}
+
+.GalleryEditor .icon-chevron-down {
+  background-position: -313px -119px;
+}
+
+.GalleryEditor .icon-retweet {
+  background-position: -336px -120px;
+}
+
+.GalleryEditor .icon-shopping-cart {
+  background-position: -360px -120px;
+}
+
+.GalleryEditor .icon-folder-close {
+  width: 16px;
+  background-position: -384px -120px;
+}
+
+.GalleryEditor .icon-folder-open {
+  width: 16px;
+  background-position: -408px -120px;
+}
+
+.GalleryEditor .icon-resize-vertical {
+  background-position: -432px -119px;
+}
+
+.GalleryEditor .icon-resize-horizontal {
+  background-position: -456px -118px;
+}
+
+.GalleryEditor .icon-hdd {
+  background-position: 0 -144px;
+}
+
+.GalleryEditor .icon-bullhorn {
+  background-position: -24px -144px;
+}
+
+.GalleryEditor .icon-bell {
+  background-position: -48px -144px;
+}
+
+.GalleryEditor .icon-certificate {
+  background-position: -72px -144px;
+}
+
+.GalleryEditor .icon-thumbs-up {
+  background-position: -96px -144px;
+}
+
+.GalleryEditor .icon-thumbs-down {
+  background-position: -120px -144px;
+}
+
+.GalleryEditor .icon-hand-right {
+  background-position: -144px -144px;
+}
+
+.GalleryEditor .icon-hand-left {
+  background-position: -168px -144px;
+}
+
+.GalleryEditor .icon-hand-up {
+  background-position: -192px -144px;
+}
+
+.GalleryEditor .icon-hand-down {
+  background-position: -216px -144px;
+}
+
+.GalleryEditor .icon-circle-arrow-right {
+  background-position: -240px -144px;
+}
+
+.GalleryEditor .icon-circle-arrow-left {
+  background-position: -264px -144px;
+}
+
+.GalleryEditor .icon-circle-arrow-up {
+  background-position: -288px -144px;
+}
+
+.GalleryEditor .icon-circle-arrow-down {
+  background-position: -312px -144px;
+}
+
+.GalleryEditor .icon-globe {
+  background-position: -336px -144px;
+}
+
+.GalleryEditor .icon-wrench {
+  background-position: -360px -144px;
+}
+
+.GalleryEditor .icon-tasks {
+  background-position: -384px -144px;
+}
+
+.GalleryEditor .icon-filter {
+  background-position: -408px -144px;
+}
+
+.GalleryEditor .icon-briefcase {
+  background-position: -432px -144px;
+}
+
+.GalleryEditor .icon-fullscreen {
+  background-position: -456px -144px;
+}
+
+.GalleryEditor .dropup,
+.GalleryEditor .dropdown {
+  position: relative;
+}
+
+.GalleryEditor .dropdown-toggle {
+  *margin-bottom: -3px;
+}
+
+.GalleryEditor .dropdown-toggle:active,
+.GalleryEditor .open .dropdown-toggle {
+  outline: 0;
+}
+
+.GalleryEditor .caret {
+  display: inline-block;
+  width: 0;
+  height: 0;
+  vertical-align: top;
+  border-top: 4px solid #000000;
+  border-right: 4px solid transparent;
+  border-left: 4px solid transparent;
+  content: "";
+}
+
+.GalleryEditor .dropdown .caret {
+  margin-top: 8px;
+  margin-left: 2px;
+}
+
+.GalleryEditor .dropdown-menu {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  z-index: 1000;
+  display: none;
+  float: left;
+  min-width: 160px;
+  padding: 5px 0;
+  margin: 2px 0 0;
+  list-style: none;
+  background-color: #ffffff;
+  border: 1px solid #ccc;
+  border: 1px solid rgba(0, 0, 0, 0.2);
+  *border-right-width: 2px;
+  *border-bottom-width: 2px;
+  -webkit-border-radius: 6px;
+     -moz-border-radius: 6px;
+          border-radius: 6px;
+  -webkit-box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+     -moz-box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+          box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+  -webkit-background-clip: padding-box;
+     -moz-background-clip: padding;
+          background-clip: padding-box;
+}
+
+.GalleryEditor .dropdown-menu.pull-right {
+  right: 0;
+  left: auto;
+}
+
+.GalleryEditor .dropdown-menu .divider {
+  *width: 100%;
+  height: 1px;
+  margin: 9px 1px;
+  *margin: -5px 0 5px;
+  overflow: hidden;
+  background-color: #e5e5e5;
+  border-bottom: 1px solid #ffffff;
+}
+
+.GalleryEditor .dropdown-menu > li > a {
+  display: block;
+  padding: 3px 20px;
+  clear: both;
+  font-weight: normal;
+  line-height: 20px;
+  color: #333333;
+  white-space: nowrap;
+}
+
+.GalleryEditor .dropdown-menu > li > a:hover,
+.GalleryEditor .dropdown-menu > li > a:focus,
+.GalleryEditor .dropdown-submenu:hover > a,
+.GalleryEditor .dropdown-submenu:focus > a {
+  color: #ffffff;
+  text-decoration: none;
+  background-color: #0081c2;
+  background-image: -moz-linear-gradient(top, #0088cc, #0077b3);
+  background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#0088cc), to(#0077b3));
+  background-image: -webkit-linear-gradient(top, #0088cc, #0077b3);
+  background-image: -o-linear-gradient(top, #0088cc, #0077b3);
+  background-image: linear-gradient(to bottom, #0088cc, #0077b3);
+  background-repeat: repeat-x;
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ff0088cc', endColorstr='#ff0077b3', GradientType=0);
+}
+
+.GalleryEditor .dropdown-menu > .active > a,
+.GalleryEditor .dropdown-menu > .active > a:hover,
+.GalleryEditor .dropdown-menu > .active > a:focus {
+  color: #ffffff;
+  text-decoration: none;
+  background-color: #0081c2;
+  background-image: -moz-linear-gradient(top, #0088cc, #0077b3);
+  background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#0088cc), to(#0077b3));
+  background-image: -webkit-linear-gradient(top, #0088cc, #0077b3);
+  background-image: -o-linear-gradient(top, #0088cc, #0077b3);
+  background-image: linear-gradient(to bottom, #0088cc, #0077b3);
+  background-repeat: repeat-x;
+  outline: 0;
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ff0088cc', endColorstr='#ff0077b3', GradientType=0);
+}
+
+.GalleryEditor .dropdown-menu > .disabled > a,
+.GalleryEditor .dropdown-menu > .disabled > a:hover,
+.GalleryEditor .dropdown-menu > .disabled > a:focus {
+  color: #999999;
+}
+
+.GalleryEditor .dropdown-menu > .disabled > a:hover,
+.GalleryEditor .dropdown-menu > .disabled > a:focus {
+  text-decoration: none;
+  cursor: default;
+  background-color: transparent;
+  background-image: none;
+  filter: progid:DXImageTransform.Microsoft.gradient(enabled=false);
+}
+
+.GalleryEditor .open {
+  *z-index: 1000;
+}
+
+.GalleryEditor .open > .dropdown-menu {
+  display: block;
+}
+
+.GalleryEditor .dropdown-backdrop {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 990;
+}
+
+.GalleryEditor .pull-right > .dropdown-menu {
+  right: 0;
+  left: auto;
+}
+
+.GalleryEditor .dropup .caret,
+.GalleryEditor .navbar-fixed-bottom .dropdown .caret {
+  border-top: 0;
+  border-bottom: 4px solid #000000;
+  content: "";
+}
+
+.GalleryEditor .dropup .dropdown-menu,
+.GalleryEditor .navbar-fixed-bottom .dropdown .dropdown-menu {
+  top: auto;
+  bottom: 100%;
+  margin-bottom: 1px;
+}
+
+.GalleryEditor .dropdown-submenu {
+  position: relative;
+}
+
+.GalleryEditor .dropdown-submenu > .dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  -webkit-border-radius: 0 6px 6px 6px;
+     -moz-border-radius: 0 6px 6px 6px;
+          border-radius: 0 6px 6px 6px;
+}
+
+.GalleryEditor .dropdown-submenu:hover > .dropdown-menu {
+  display: block;
+}
+
+.GalleryEditor .dropup .dropdown-submenu > .dropdown-menu {
+  top: auto;
+  bottom: 0;
+  margin-top: 0;
+  margin-bottom: -2px;
+  -webkit-border-radius: 5px 5px 5px 0;
+     -moz-border-radius: 5px 5px 5px 0;
+          border-radius: 5px 5px 5px 0;
+}
+
+.GalleryEditor .dropdown-submenu > a:after {
+  display: block;
+  float: right;
+  width: 0;
+  height: 0;
+  margin-top: 5px;
+  margin-right: -10px;
+  border-color: transparent;
+  border-left-color: #cccccc;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  content: " ";
+}
+
+.GalleryEditor .dropdown-submenu:hover > a:after {
+  border-left-color: #ffffff;
+}
+
+.GalleryEditor .dropdown-submenu.pull-left {
+  float: none;
+}
+
+.GalleryEditor .dropdown-submenu.pull-left > .dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  -webkit-border-radius: 6px 0 6px 6px;
+     -moz-border-radius: 6px 0 6px 6px;
+          border-radius: 6px 0 6px 6px;
+}
+
+.GalleryEditor .dropdown .dropdown-menu .nav-header {
+  padding-right: 20px;
+  padding-left: 20px;
+}
+
+.GalleryEditor .typeahead {
+  z-index: 1051;
+  margin-top: 2px;
+  -webkit-border-radius: 4px;
+     -moz-border-radius: 4px;
+          border-radius: 4px;
+}
+
+.GalleryEditor .well {
+  min-height: 20px;
+  padding: 19px;
+  margin-bottom: 20px;
+  background-color: #f5f5f5;
+  border: 1px solid #e3e3e3;
+  -webkit-border-radius: 4px;
+     -moz-border-radius: 4px;
+          border-radius: 4px;
+  -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.05);
+     -moz-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.05);
+          box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.05);
+}
+
+.GalleryEditor .well blockquote {
+  border-color: #ddd;
+  border-color: rgba(0, 0, 0, 0.15);
+}
+
+.GalleryEditor .well-large {
+  padding: 24px;
+  -webkit-border-radius: 6px;
+     -moz-border-radius: 6px;
+          border-radius: 6px;
+}
+
+.GalleryEditor .well-small {
+  padding: 9px;
+  -webkit-border-radius: 3px;
+     -moz-border-radius: 3px;
+          border-radius: 3px;
+}
+
+.GalleryEditor .fade {
+  opacity: 0;
+  -webkit-transition: opacity 0.15s linear;
+     -moz-transition: opacity 0.15s linear;
+       -o-transition: opacity 0.15s linear;
+          transition: opacity 0.15s linear;
+}
+
+.GalleryEditor .fade.in {
+  opacity: 1;
+}
+
+.GalleryEditor .collapse {
+  position: relative;
+  height: 0;
+  overflow: hidden;
+  -webkit-transition: height 0.35s ease;
+     -moz-transition: height 0.35s ease;
+       -o-transition: height 0.35s ease;
+          transition: height 0.35s ease;
+}
+
+.GalleryEditor .collapse.in {
+  height: auto;
+}
+
+.GalleryEditor .close {
+  float: right;
+  font-size: 20px;
+  font-weight: bold;
+  line-height: 20px;
+  color: #000000;
+  text-shadow: 0 1px 0 #ffffff;
+  opacity: 0.2;
+  filter: alpha(opacity=20);
+}
+
+.GalleryEditor .close:hover,
+.GalleryEditor .close:focus {
+  color: #000000;
+  text-decoration: none;
+  cursor: pointer;
+  opacity: 0.4;
+  filter: alpha(opacity=40);
+}
+
+.GalleryEditor button.close {
+  padding: 0;
+  cursor: pointer;
+  background: transparent;
+  border: 0;
+  -webkit-appearance: none;
+}
+
+.GalleryEditor .btn {
+  display: inline-block;
+  *display: inline;
+  padding: 4px 12px;
+  margin-bottom: 0;
+  *margin-left: .3em;
+  font-size: 14px;
+  line-height: 20px;
+  color: #333333;
+  text-align: center;
+  text-shadow: 0 1px 1px rgba(255, 255, 255, 0.75);
+  vertical-align: middle;
+  cursor: pointer;
+  background-color: #f5f5f5;
+  *background-color: #e6e6e6;
+  background-image: -moz-linear-gradient(top, #ffffff, #e6e6e6);
+  background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#ffffff), to(#e6e6e6));
+  background-image: -webkit-linear-gradient(top, #ffffff, #e6e6e6);
+  background-image: -o-linear-gradient(top, #ffffff, #e6e6e6);
+  background-image: linear-gradient(to bottom, #ffffff, #e6e6e6);
+  background-repeat: repeat-x;
+  border: 1px solid #cccccc;
+  *border: 0;
+  border-color: #e6e6e6 #e6e6e6 #bfbfbf;
+  border-color: rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.25);
+  border-bottom-color: #b3b3b3;
+  -webkit-border-radius: 4px;
+     -moz-border-radius: 4px;
+          border-radius: 4px;
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ffffffff', endColorstr='#ffe6e6e6', GradientType=0);
+  filter: progid:DXImageTransform.Microsoft.gradient(enabled=false);
+  *zoom: 1;
+  -webkit-box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2), 0 1px 2px rgba(0, 0, 0, 0.05);
+     -moz-box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2), 0 1px 2px rgba(0, 0, 0, 0.05);
+          box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2), 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.GalleryEditor .btn:hover,
+.GalleryEditor .btn:focus,
+.GalleryEditor .btn:active,
+.GalleryEditor .btn.active,
+.GalleryEditor .btn.disabled,
+.GalleryEditor .btn[disabled] {
+  color: #333333;
+  background-color: #e6e6e6;
+  *background-color: #d9d9d9;
+}
+
+.GalleryEditor .btn:active,
+.GalleryEditor .btn.active {
+  background-color: #cccccc \9;
+}
+
+.GalleryEditor .btn:first-child {
+  *margin-left: 0;
+}
+
+.GalleryEditor .btn:hover,
+.GalleryEditor .btn:focus {
+  color: #333333;
+  text-decoration: none;
+  background-position: 0 -15px;
+  -webkit-transition: background-position 0.1s linear;
+     -moz-transition: background-position 0.1s linear;
+       -o-transition: background-position 0.1s linear;
+          transition: background-position 0.1s linear;
+}
+
+.GalleryEditor .btn:focus {
+  outline: thin dotted #333;
+  outline: 5px auto -webkit-focus-ring-color;
+  outline-offset: -2px;
+}
+
+.GalleryEditor .btn.active,
+.GalleryEditor .btn:active {
+  background-image: none;
+  outline: 0;
+  -webkit-box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.15), 0 1px 2px rgba(0, 0, 0, 0.05);
+     -moz-box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.15), 0 1px 2px rgba(0, 0, 0, 0.05);
+          box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.15), 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.GalleryEditor .btn.disabled,
+.GalleryEditor .btn[disabled] {
+  cursor: default;
+  background-image: none;
+  opacity: 0.65;
+  filter: alpha(opacity=65);
+  -webkit-box-shadow: none;
+     -moz-box-shadow: none;
+          box-shadow: none;
+}
+
+.GalleryEditor .btn-large {
+  padding: 11px 19px;
+  font-size: 17.5px;
+  -webkit-border-radius: 6px;
+     -moz-border-radius: 6px;
+          border-radius: 6px;
+}
+
+.GalleryEditor .btn-large [class^="icon-"],
+.GalleryEditor .btn-large [class*=" icon-"] {
+  margin-top: 4px;
+}
+
+.GalleryEditor .btn-small {
+  padding: 2px 10px;
+  font-size: 11.9px;
+  -webkit-border-radius: 3px;
+     -moz-border-radius: 3px;
+          border-radius: 3px;
+}
+
+.GalleryEditor .btn-small [class^="icon-"],
+.GalleryEditor .btn-small [class*=" icon-"] {
+  margin-top: 0;
+}
+
+.GalleryEditor .btn-mini [class^="icon-"],
+.GalleryEditor .btn-mini [class*=" icon-"] {
+  margin-top: -1px;
+}
+
+.GalleryEditor .btn-mini {
+  padding: 0 6px;
+  font-size: 10.5px;
+  -webkit-border-radius: 3px;
+     -moz-border-radius: 3px;
+          border-radius: 3px;
+}
+
+.GalleryEditor .btn-block {
+  display: block;
+  width: 100%;
+  padding-right: 0;
+  padding-left: 0;
+  -webkit-box-sizing: border-box;
+     -moz-box-sizing: border-box;
+          box-sizing: border-box;
+}
+
+.GalleryEditor .btn-block + .btn-block {
+  margin-top: 5px;
+}
+
+.GalleryEditor input[type="submit"].btn-block,
+.GalleryEditor input[type="reset"].btn-block,
+.GalleryEditor input[type="button"].btn-block {
+  width: 100%;
+}
+
+.GalleryEditor .btn-primary.active,
+.GalleryEditor .btn-warning.active,
+.GalleryEditor .btn-danger.active,
+.GalleryEditor .btn-success.active,
+.GalleryEditor .btn-info.active,
+.GalleryEditor .btn-inverse.active {
+  color: rgba(255, 255, 255, 0.75);
+}
+
+.GalleryEditor .btn-primary {
+  color: #ffffff;
+  text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.25);
+  background-color: #006dcc;
+  *background-color: #0044cc;
+  background-image: -moz-linear-gradient(top, #0088cc, #0044cc);
+  background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#0088cc), to(#0044cc));
+  background-image: -webkit-linear-gradient(top, #0088cc, #0044cc);
+  background-image: -o-linear-gradient(top, #0088cc, #0044cc);
+  background-image: linear-gradient(to bottom, #0088cc, #0044cc);
+  background-repeat: repeat-x;
+  border-color: #0044cc #0044cc #002a80;
+  border-color: rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.25);
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ff0088cc', endColorstr='#ff0044cc', GradientType=0);
+  filter: progid:DXImageTransform.Microsoft.gradient(enabled=false);
+}
+
+.GalleryEditor .btn-primary:hover,
+.GalleryEditor .btn-primary:focus,
+.GalleryEditor .btn-primary:active,
+.GalleryEditor .btn-primary.active,
+.GalleryEditor .btn-primary.disabled,
+.GalleryEditor .btn-primary[disabled] {
+  color: #ffffff;
+  background-color: #0044cc;
+  *background-color: #003bb3;
+}
+
+.GalleryEditor .btn-primary:active,
+.GalleryEditor .btn-primary.active {
+  background-color: #003399 \9;
+}
+
+.GalleryEditor .btn-warning {
+  color: #ffffff;
+  text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.25);
+  background-color: #faa732;
+  *background-color: #f89406;
+  background-image: -moz-linear-gradient(top, #fbb450, #f89406);
+  background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#fbb450), to(#f89406));
+  background-image: -webkit-linear-gradient(top, #fbb450, #f89406);
+  background-image: -o-linear-gradient(top, #fbb450, #f89406);
+  background-image: linear-gradient(to bottom, #fbb450, #f89406);
+  background-repeat: repeat-x;
+  border-color: #f89406 #f89406 #ad6704;
+  border-color: rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.25);
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#fffbb450', endColorstr='#fff89406', GradientType=0);
+  filter: progid:DXImageTransform.Microsoft.gradient(enabled=false);
+}
+
+.GalleryEditor .btn-warning:hover,
+.GalleryEditor .btn-warning:focus,
+.GalleryEditor .btn-warning:active,
+.GalleryEditor .btn-warning.active,
+.GalleryEditor .btn-warning.disabled,
+.GalleryEditor .btn-warning[disabled] {
+  color: #ffffff;
+  background-color: #f89406;
+  *background-color: #df8505;
+}
+
+.GalleryEditor .btn-warning:active,
+.GalleryEditor .btn-warning.active {
+  background-color: #c67605 \9;
+}
+
+.GalleryEditor .btn-danger {
+  color: #ffffff;
+  text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.25);
+  background-color: #da4f49;
+  *background-color: #bd362f;
+  background-image: -moz-linear-gradient(top, #ee5f5b, #bd362f);
+  background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#ee5f5b), to(#bd362f));
+  background-image: -webkit-linear-gradient(top, #ee5f5b, #bd362f);
+  background-image: -o-linear-gradient(top, #ee5f5b, #bd362f);
+  background-image: linear-gradient(to bottom, #ee5f5b, #bd362f);
+  background-repeat: repeat-x;
+  border-color: #bd362f #bd362f #802420;
+  border-color: rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.25);
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ffee5f5b', endColorstr='#ffbd362f', GradientType=0);
+  filter: progid:DXImageTransform.Microsoft.gradient(enabled=false);
+}
+
+.GalleryEditor .btn-danger:hover,
+.GalleryEditor .btn-danger:focus,
+.GalleryEditor .btn-danger:active,
+.GalleryEditor .btn-danger.active,
+.GalleryEditor .btn-danger.disabled,
+.GalleryEditor .btn-danger[disabled] {
+  color: #ffffff;
+  background-color: #bd362f;
+  *background-color: #a9302a;
+}
+
+.GalleryEditor .btn-danger:active,
+.GalleryEditor .btn-danger.active {
+  background-color: #942a25 \9;
+}
+
+.GalleryEditor .btn-success {
+  color: #ffffff;
+  text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.25);
+  background-color: #5bb75b;
+  *background-color: #51a351;
+  background-image: -moz-linear-gradient(top, #62c462, #51a351);
+  background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#62c462), to(#51a351));
+  background-image: -webkit-linear-gradient(top, #62c462, #51a351);
+  background-image: -o-linear-gradient(top, #62c462, #51a351);
+  background-image: linear-gradient(to bottom, #62c462, #51a351);
+  background-repeat: repeat-x;
+  border-color: #51a351 #51a351 #387038;
+  border-color: rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.25);
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ff62c462', endColorstr='#ff51a351', GradientType=0);
+  filter: progid:DXImageTransform.Microsoft.gradient(enabled=false);
+}
+
+.GalleryEditor .btn-success:hover,
+.GalleryEditor .btn-success:focus,
+.GalleryEditor .btn-success:active,
+.GalleryEditor .btn-success.active,
+.GalleryEditor .btn-success.disabled,
+.GalleryEditor .btn-success[disabled] {
+  color: #ffffff;
+  background-color: #51a351;
+  *background-color: #499249;
+}
+
+.GalleryEditor .btn-success:active,
+.GalleryEditor .btn-success.active {
+  background-color: #408140 \9;
+}
+
+.GalleryEditor .btn-info {
+  color: #ffffff;
+  text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.25);
+  background-color: #49afcd;
+  *background-color: #2f96b4;
+  background-image: -moz-linear-gradient(top, #5bc0de, #2f96b4);
+  background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#5bc0de), to(#2f96b4));
+  background-image: -webkit-linear-gradient(top, #5bc0de, #2f96b4);
+  background-image: -o-linear-gradient(top, #5bc0de, #2f96b4);
+  background-image: linear-gradient(to bottom, #5bc0de, #2f96b4);
+  background-repeat: repeat-x;
+  border-color: #2f96b4 #2f96b4 #1f6377;
+  border-color: rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.25);
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ff5bc0de', endColorstr='#ff2f96b4', GradientType=0);
+  filter: progid:DXImageTransform.Microsoft.gradient(enabled=false);
+}
+
+.GalleryEditor .btn-info:hover,
+.GalleryEditor .btn-info:focus,
+.GalleryEditor .btn-info:active,
+.GalleryEditor .btn-info.active,
+.GalleryEditor .btn-info.disabled,
+.GalleryEditor .btn-info[disabled] {
+  color: #ffffff;
+  background-color: #2f96b4;
+  *background-color: #2a85a0;
+}
+
+.GalleryEditor .btn-info:active,
+.GalleryEditor .btn-info.active {
+  background-color: #24748c \9;
+}
+
+.GalleryEditor .btn-inverse {
+  color: #ffffff;
+  text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.25);
+  background-color: #363636;
+  *background-color: #222222;
+  background-image: -moz-linear-gradient(top, #444444, #222222);
+  background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#444444), to(#222222));
+  background-image: -webkit-linear-gradient(top, #444444, #222222);
+  background-image: -o-linear-gradient(top, #444444, #222222);
+  background-image: linear-gradient(to bottom, #444444, #222222);
+  background-repeat: repeat-x;
+  border-color: #222222 #222222 #000000;
+  border-color: rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.25);
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ff444444', endColorstr='#ff222222', GradientType=0);
+  filter: progid:DXImageTransform.Microsoft.gradient(enabled=false);
+}
+
+.GalleryEditor .btn-inverse:hover,
+.GalleryEditor .btn-inverse:focus,
+.GalleryEditor .btn-inverse:active,
+.GalleryEditor .btn-inverse.active,
+.GalleryEditor .btn-inverse.disabled,
+.GalleryEditor .btn-inverse[disabled] {
+  color: #ffffff;
+  background-color: #222222;
+  *background-color: #151515;
+}
+
+.GalleryEditor .btn-inverse:active,
+.GalleryEditor .btn-inverse.active {
+  background-color: #080808 \9;
+}
+
+.GalleryEditor button.btn,
+.GalleryEditor input[type="submit"].btn {
+  *padding-top: 3px;
+  *padding-bottom: 3px;
+}
+
+.GalleryEditor button.btn::-moz-focus-inner,
+.GalleryEditor input[type="submit"].btn::-moz-focus-inner {
+  padding: 0;
+  border: 0;
+}
+
+.GalleryEditor button.btn.btn-large,
+.GalleryEditor input[type="submit"].btn.btn-large {
+  *padding-top: 7px;
+  *padding-bottom: 7px;
+}
+
+.GalleryEditor button.btn.btn-small,
+.GalleryEditor input[type="submit"].btn.btn-small {
+  *padding-top: 3px;
+  *padding-bottom: 3px;
+}
+
+.GalleryEditor button.btn.btn-mini,
+.GalleryEditor input[type="submit"].btn.btn-mini {
+  *padding-top: 1px;
+  *padding-bottom: 1px;
+}
+
+.GalleryEditor .btn-link,
+.GalleryEditor .btn-link:active,
+.GalleryEditor .btn-link[disabled] {
+  background-color: transparent;
+  background-image: none;
+  -webkit-box-shadow: none;
+     -moz-box-shadow: none;
+          box-shadow: none;
+}
+
+.GalleryEditor .btn-link {
+  color: #0088cc;
+  cursor: pointer;
+  border-color: transparent;
+  -webkit-border-radius: 0;
+     -moz-border-radius: 0;
+          border-radius: 0;
+}
+
+.GalleryEditor .btn-link:hover,
+.GalleryEditor .btn-link:focus {
+  color: #005580;
+  text-decoration: underline;
+  background-color: transparent;
+}
+
+.GalleryEditor .btn-link[disabled]:hover,
+.GalleryEditor .btn-link[disabled]:focus {
+  color: #333333;
+  text-decoration: none;
+}
+
+.GalleryEditor .btn-group {
+  position: relative;
+  display: inline-block;
+  *display: inline;
+  *margin-left: .3em;
+  font-size: 0;
+  white-space: nowrap;
+  vertical-align: middle;
+  *zoom: 1;
+}
+
+.GalleryEditor .btn-group:first-child {
+  *margin-left: 0;
+}
+
+.GalleryEditor .btn-group + .btn-group {
+  margin-left: 5px;
+}
+
+.GalleryEditor .btn-toolbar {
+  margin-top: 10px;
+  margin-bottom: 10px;
+  font-size: 0;
+}
+
+.GalleryEditor .btn-toolbar > .btn + .btn,
+.GalleryEditor .btn-toolbar > .btn-group + .btn,
+.GalleryEditor .btn-toolbar > .btn + .btn-group {
+  margin-left: 5px;
+}
+
+.GalleryEditor .btn-group > .btn {
+  position: relative;
+  -webkit-border-radius: 0;
+     -moz-border-radius: 0;
+          border-radius: 0;
+}
+
+.GalleryEditor .btn-group > .btn + .btn {
+  margin-left: -1px;
+}
+
+.GalleryEditor .btn-group > .btn,
+.GalleryEditor .btn-group > .dropdown-menu,
+.GalleryEditor .btn-group > .popover {
+  font-size: 14px;
+}
+
+.GalleryEditor .btn-group > .btn-mini {
+  font-size: 10.5px;
+}
+
+.GalleryEditor .btn-group > .btn-small {
+  font-size: 11.9px;
+}
+
+.GalleryEditor .btn-group > .btn-large {
+  font-size: 17.5px;
+}
+
+.GalleryEditor .btn-group > .btn:first-child {
+  margin-left: 0;
+  -webkit-border-bottom-left-radius: 4px;
+          border-bottom-left-radius: 4px;
+  -webkit-border-top-left-radius: 4px;
+          border-top-left-radius: 4px;
+  -moz-border-radius-bottomleft: 4px;
+  -moz-border-radius-topleft: 4px;
+}
+
+.GalleryEditor .btn-group > .btn:last-child,
+.GalleryEditor .btn-group > .dropdown-toggle {
+  -webkit-border-top-right-radius: 4px;
+          border-top-right-radius: 4px;
+  -webkit-border-bottom-right-radius: 4px;
+          border-bottom-right-radius: 4px;
+  -moz-border-radius-topright: 4px;
+  -moz-border-radius-bottomright: 4px;
+}
+
+.GalleryEditor .btn-group > .btn.large:first-child {
+  margin-left: 0;
+  -webkit-border-bottom-left-radius: 6px;
+          border-bottom-left-radius: 6px;
+  -webkit-border-top-left-radius: 6px;
+          border-top-left-radius: 6px;
+  -moz-border-radius-bottomleft: 6px;
+  -moz-border-radius-topleft: 6px;
+}
+
+.GalleryEditor .btn-group > .btn.large:last-child,
+.GalleryEditor .btn-group > .large.dropdown-toggle {
+  -webkit-border-top-right-radius: 6px;
+          border-top-right-radius: 6px;
+  -webkit-border-bottom-right-radius: 6px;
+          border-bottom-right-radius: 6px;
+  -moz-border-radius-topright: 6px;
+  -moz-border-radius-bottomright: 6px;
+}
+
+.GalleryEditor .btn-group > .btn:hover,
+.GalleryEditor .btn-group > .btn:focus,
+.GalleryEditor .btn-group > .btn:active,
+.GalleryEditor .btn-group > .btn.active {
+  z-index: 2;
+}
+
+.GalleryEditor .btn-group .dropdown-toggle:active,
+.GalleryEditor .btn-group.open .dropdown-toggle {
+  outline: 0;
+}
+
+.GalleryEditor .btn-group > .btn + .dropdown-toggle {
+  *padding-top: 5px;
+  padding-right: 8px;
+  *padding-bottom: 5px;
+  padding-left: 8px;
+  -webkit-box-shadow: inset 1px 0 0 rgba(255, 255, 255, 0.125), inset 0 1px 0 rgba(255, 255, 255, 0.2), 0 1px 2px rgba(0, 0, 0, 0.05);
+     -moz-box-shadow: inset 1px 0 0 rgba(255, 255, 255, 0.125), inset 0 1px 0 rgba(255, 255, 255, 0.2), 0 1px 2px rgba(0, 0, 0, 0.05);
+          box-shadow: inset 1px 0 0 rgba(255, 255, 255, 0.125), inset 0 1px 0 rgba(255, 255, 255, 0.2), 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.GalleryEditor .btn-group > .btn-mini + .dropdown-toggle {
+  *padding-top: 2px;
+  padding-right: 5px;
+  *padding-bottom: 2px;
+  padding-left: 5px;
+}
+
+.GalleryEditor .btn-group > .btn-small + .dropdown-toggle {
+  *padding-top: 5px;
+  *padding-bottom: 4px;
+}
+
+.GalleryEditor .btn-group > .btn-large + .dropdown-toggle {
+  *padding-top: 7px;
+  padding-right: 12px;
+  *padding-bottom: 7px;
+  padding-left: 12px;
+}
+
+.GalleryEditor .btn-group.open .dropdown-toggle {
+  background-image: none;
+  -webkit-box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.15), 0 1px 2px rgba(0, 0, 0, 0.05);
+     -moz-box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.15), 0 1px 2px rgba(0, 0, 0, 0.05);
+          box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.15), 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.GalleryEditor .btn-group.open .btn.dropdown-toggle {
+  background-color: #e6e6e6;
+}
+
+.GalleryEditor .btn-group.open .btn-primary.dropdown-toggle {
+  background-color: #0044cc;
+}
+
+.GalleryEditor .btn-group.open .btn-warning.dropdown-toggle {
+  background-color: #f89406;
+}
+
+.GalleryEditor .btn-group.open .btn-danger.dropdown-toggle {
+  background-color: #bd362f;
+}
+
+.GalleryEditor .btn-group.open .btn-success.dropdown-toggle {
+  background-color: #51a351;
+}
+
+.GalleryEditor .btn-group.open .btn-info.dropdown-toggle {
+  background-color: #2f96b4;
+}
+
+.GalleryEditor .btn-group.open .btn-inverse.dropdown-toggle {
+  background-color: #222222;
+}
+
+.GalleryEditor .btn .caret {
+  margin-top: 8px;
+  margin-left: 0;
+}
+
+.GalleryEditor .btn-large .caret {
+  margin-top: 6px;
+}
+
+.GalleryEditor .btn-large .caret {
+  border-top-width: 5px;
+  border-right-width: 5px;
+  border-left-width: 5px;
+}
+
+.GalleryEditor .btn-mini .caret,
+.GalleryEditor .btn-small .caret {
+  margin-top: 8px;
+}
+
+.GalleryEditor .dropup .btn-large .caret {
+  border-bottom-width: 5px;
+}
+
+.GalleryEditor .btn-primary .caret,
+.GalleryEditor .btn-warning .caret,
+.GalleryEditor .btn-danger .caret,
+.GalleryEditor .btn-info .caret,
+.GalleryEditor .btn-success .caret,
+.GalleryEditor .btn-inverse .caret {
+  border-top-color: #ffffff;
+  border-bottom-color: #ffffff;
+}
+
+.GalleryEditor .btn-group-vertical {
+  display: inline-block;
+  *display: inline;
+  /* IE7 inline-block hack */
+
+  *zoom: 1;
+}
+
+.GalleryEditor .btn-group-vertical > .btn {
+  display: block;
+  float: none;
+  max-width: 100%;
+  -webkit-border-radius: 0;
+     -moz-border-radius: 0;
+          border-radius: 0;
+}
+
+.GalleryEditor .btn-group-vertical > .btn + .btn {
+  margin-top: -1px;
+  margin-left: 0;
+}
+
+.GalleryEditor .btn-group-vertical > .btn:first-child {
+  -webkit-border-radius: 4px 4px 0 0;
+     -moz-border-radius: 4px 4px 0 0;
+          border-radius: 4px 4px 0 0;
+}
+
+.GalleryEditor .btn-group-vertical > .btn:last-child {
+  -webkit-border-radius: 0 0 4px 4px;
+     -moz-border-radius: 0 0 4px 4px;
+          border-radius: 0 0 4px 4px;
+}
+
+.GalleryEditor .btn-group-vertical > .btn-large:first-child {
+  -webkit-border-radius: 6px 6px 0 0;
+     -moz-border-radius: 6px 6px 0 0;
+          border-radius: 6px 6px 0 0;
+}
+
+.GalleryEditor .btn-group-vertical > .btn-large:last-child {
+  -webkit-border-radius: 0 0 6px 6px;
+     -moz-border-radius: 0 0 6px 6px;
+          border-radius: 0 0 6px 6px;
+}
+
+.GalleryEditor .alert {
+  padding: 8px 35px 8px 14px;
+  margin-bottom: 20px;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.5);
+  background-color: #fcf8e3;
+  border: 1px solid #fbeed5;
+  -webkit-border-radius: 4px;
+     -moz-border-radius: 4px;
+          border-radius: 4px;
+}
+
+.GalleryEditor .alert,
+.GalleryEditor .alert h4 {
+  color: #c09853;
+}
+
+.GalleryEditor .alert h4 {
+  margin: 0;
+}
+
+.GalleryEditor .alert .close {
+  position: relative;
+  top: -2px;
+  right: -21px;
+  line-height: 20px;
+}
+
+.GalleryEditor .alert-success {
+  color: #468847;
+  background-color: #dff0d8;
+  border-color: #d6e9c6;
+}
+
+.GalleryEditor .alert-success h4 {
+  color: #468847;
+}
+
+.GalleryEditor .alert-danger,
+.GalleryEditor .alert-error {
+  color: #b94a48;
+  background-color: #f2dede;
+  border-color: #eed3d7;
+}
+
+.GalleryEditor .alert-danger h4,
+.GalleryEditor .alert-error h4 {
+  color: #b94a48;
+}
+
+.GalleryEditor .alert-info {
+  color: #3a87ad;
+  background-color: #d9edf7;
+  border-color: #bce8f1;
+}
+
+.GalleryEditor .alert-info h4 {
+  color: #3a87ad;
+}
+
+.GalleryEditor .alert-block {
+  padding-top: 14px;
+  padding-bottom: 14px;
+}
+
+.GalleryEditor .alert-block > p,
+.GalleryEditor .alert-block > ul {
+  margin-bottom: 0;
+}
+
+.GalleryEditor .alert-block p + p {
+  margin-top: 5px;
+}
+
+.GalleryEditor .nav {
+  margin-bottom: 20px;
+  margin-left: 0;
+  list-style: none;
+}
+
+.GalleryEditor .nav > li > a {
+  display: block;
+}
+
+.GalleryEditor .nav > li > a:hover,
+.GalleryEditor .nav > li > a:focus {
+  text-decoration: none;
+  background-color: #eeeeee;
+}
+
+.GalleryEditor .nav > li > a > img {
+  max-width: none;
+}
+
+.GalleryEditor .nav > .pull-right {
+  float: right;
+}
+
+.GalleryEditor .nav-header {
+  display: block;
+  padding: 3px 15px;
+  font-size: 11px;
+  font-weight: bold;
+  line-height: 20px;
+  color: #999999;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.5);
+  text-transform: uppercase;
+}
+
+.GalleryEditor .nav li + .nav-header {
+  margin-top: 9px;
+}
+
+.GalleryEditor .nav-list {
+  padding-right: 15px;
+  padding-left: 15px;
+  margin-bottom: 0;
+}
+
+.GalleryEditor .nav-list > li > a,
+.GalleryEditor .nav-list .nav-header {
+  margin-right: -15px;
+  margin-left: -15px;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.5);
+}
+
+.GalleryEditor .nav-list > li > a {
+  padding: 3px 15px;
+}
+
+.GalleryEditor .nav-list > .active > a,
+.GalleryEditor .nav-list > .active > a:hover,
+.GalleryEditor .nav-list > .active > a:focus {
+  color: #ffffff;
+  text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.2);
+  background-color: #0088cc;
+}
+
+.GalleryEditor .nav-list [class^="icon-"],
+.GalleryEditor .nav-list [class*=" icon-"] {
+  margin-right: 2px;
+}
+
+.GalleryEditor .nav-list .divider {
+  *width: 100%;
+  height: 1px;
+  margin: 9px 1px;
+  *margin: -5px 0 5px;
+  overflow: hidden;
+  background-color: #e5e5e5;
+  border-bottom: 1px solid #ffffff;
+}
+
+.GalleryEditor .nav-tabs,
+.GalleryEditor .nav-pills {
+  *zoom: 1;
+}
+
+.GalleryEditor .nav-tabs:before,
+.GalleryEditor .nav-pills:before,
+.GalleryEditor .nav-tabs:after,
+.GalleryEditor .nav-pills:after {
+  display: table;
+  line-height: 0;
+  content: "";
+}
+
+.GalleryEditor .nav-tabs:after,
+.GalleryEditor .nav-pills:after {
+  clear: both;
+}
+
+.GalleryEditor .nav-tabs > li,
+.GalleryEditor .nav-pills > li {
+  float: left;
+}
+
+.GalleryEditor .nav-tabs > li > a,
+.GalleryEditor .nav-pills > li > a {
+  padding-right: 12px;
+  padding-left: 12px;
+  margin-right: 2px;
+  line-height: 14px;
+}
+
+.GalleryEditor .nav-tabs {
+  border-bottom: 1px solid #ddd;
+}
+
+.GalleryEditor .nav-tabs > li {
+  margin-bottom: -1px;
+}
+
+.GalleryEditor .nav-tabs > li > a {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  line-height: 20px;
+  border: 1px solid transparent;
+  -webkit-border-radius: 4px 4px 0 0;
+     -moz-border-radius: 4px 4px 0 0;
+          border-radius: 4px 4px 0 0;
+}
+
+.GalleryEditor .nav-tabs > li > a:hover,
+.GalleryEditor .nav-tabs > li > a:focus {
+  border-color: #eeeeee #eeeeee #F5F5F5;
+}
+
+.GalleryEditor .nav-tabs > .active > a,
+.GalleryEditor .nav-tabs > .active > a:hover,
+.GalleryEditor .nav-tabs > .active > a:focus {
+  color: #555555;
+  cursor: default;
+  background-color: #ffffff;
+  border: 1px solid #ddd;
+  border-bottom-color: transparent;
+}
+
+.GalleryEditor .nav-pills > li > a {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  margin-top: 2px;
+  margin-bottom: 2px;
+  -webkit-border-radius: 5px;
+     -moz-border-radius: 5px;
+          border-radius: 5px;
+}
+
+.GalleryEditor .nav-pills > .active > a,
+.GalleryEditor .nav-pills > .active > a:hover,
+.GalleryEditor .nav-pills > .active > a:focus {
+  color: #ffffff;
+  background-color: #0088cc;
+}
+
+.GalleryEditor .nav-stacked > li {
+  float: none;
+}
+
+.GalleryEditor .nav-stacked > li > a {
+  margin-right: 0;
+}
+
+.GalleryEditor .nav-tabs.nav-stacked {
+  border-bottom: 0;
+}
+
+.GalleryEditor .nav-tabs.nav-stacked > li > a {
+  border: 1px solid #ddd;
+  -webkit-border-radius: 0;
+     -moz-border-radius: 0;
+          border-radius: 0;
+}
+
+.GalleryEditor .nav-tabs.nav-stacked > li:first-child > a {
+  -webkit-border-top-right-radius: 4px;
+          border-top-right-radius: 4px;
+  -webkit-border-top-left-radius: 4px;
+          border-top-left-radius: 4px;
+  -moz-border-radius-topright: 4px;
+  -moz-border-radius-topleft: 4px;
+}
+
+.GalleryEditor .nav-tabs.nav-stacked > li:last-child > a {
+  -webkit-border-bottom-right-radius: 4px;
+          border-bottom-right-radius: 4px;
+  -webkit-border-bottom-left-radius: 4px;
+          border-bottom-left-radius: 4px;
+  -moz-border-radius-bottomright: 4px;
+  -moz-border-radius-bottomleft: 4px;
+}
+
+.GalleryEditor .nav-tabs.nav-stacked > li > a:hover,
+.GalleryEditor .nav-tabs.nav-stacked > li > a:focus {
+  z-index: 2;
+  border-color: #ddd;
+}
+
+.GalleryEditor .nav-pills.nav-stacked > li > a {
+  margin-bottom: 3px;
+}
+
+.GalleryEditor .nav-pills.nav-stacked > li:last-child > a {
+  margin-bottom: 1px;
+}
+
+.GalleryEditor .nav-tabs .dropdown-menu {
+  -webkit-border-radius: 0 0 6px 6px;
+     -moz-border-radius: 0 0 6px 6px;
+          border-radius: 0 0 6px 6px;
+}
+
+.GalleryEditor .nav-pills .dropdown-menu {
+  -webkit-border-radius: 6px;
+     -moz-border-radius: 6px;
+          border-radius: 6px;
+}
+
+.GalleryEditor .nav .dropdown-toggle .caret {
+  margin-top: 6px;
+  border-top-color: #0088cc;
+  border-bottom-color: #0088cc;
+}
+
+.GalleryEditor .nav .dropdown-toggle:hover .caret,
+.GalleryEditor .nav .dropdown-toggle:focus .caret {
+  border-top-color: #005580;
+  border-bottom-color: #005580;
+}
+
+/* move down carets for tabs */
+
+.GalleryEditor .nav-tabs .dropdown-toggle .caret {
+  margin-top: 8px;
+}
+
+.GalleryEditor .nav .active .dropdown-toggle .caret {
+  border-top-color: #fff;
+  border-bottom-color: #fff;
+}
+
+.GalleryEditor .nav-tabs .active .dropdown-toggle .caret {
+  border-top-color: #555555;
+  border-bottom-color: #555555;
+}
+
+.GalleryEditor .nav > .dropdown.active > a:hover,
+.GalleryEditor .nav > .dropdown.active > a:focus {
+  cursor: pointer;
+}
+
+.GalleryEditor .nav-tabs .open .dropdown-toggle,
+.GalleryEditor .nav-pills .open .dropdown-toggle,
+.GalleryEditor .nav > li.dropdown.open.active > a:hover,
+.GalleryEditor .nav > li.dropdown.open.active > a:focus {
+  color: #ffffff;
+  background-color: #999999;
+  border-color: #999999;
+}
+
+.GalleryEditor .nav li.dropdown.open .caret,
+.GalleryEditor .nav li.dropdown.open.active .caret,
+.GalleryEditor .nav li.dropdown.open a:hover .caret,
+.GalleryEditor .nav li.dropdown.open a:focus .caret {
+  border-top-color: #ffffff;
+  border-bottom-color: #ffffff;
+  opacity: 1;
+  filter: alpha(opacity=100);
+}
+
+.GalleryEditor .tabs-stacked .open > a:hover,
+.GalleryEditor .tabs-stacked .open > a:focus {
+  border-color: #999999;
+}
+
+.GalleryEditor .tabbable {
+  *zoom: 1;
+}
+
+.GalleryEditor .tabbable:before,
+.GalleryEditor .tabbable:after {
+  display: table;
+  line-height: 0;
+  content: "";
+}
+
+.GalleryEditor .tabbable:after {
+  clear: both;
+}
+
+.GalleryEditor .tab-content {
+  overflow: auto;
+}
+
+.GalleryEditor .tabs-below > .nav-tabs,
+.GalleryEditor .tabs-right > .nav-tabs,
+.GalleryEditor .tabs-left > .nav-tabs {
+  border-bottom: 0;
+}
+
+.GalleryEditor .tab-content > .tab-pane,
+.GalleryEditor .pill-content > .pill-pane {
+  display: none;
+}
+
+.GalleryEditor .tab-content > .active,
+.GalleryEditor .pill-content > .active {
+  display: block;
+}
+
+.GalleryEditor .tabs-below > .nav-tabs {
+  border-top: 1px solid #ddd;
+}
+
+.GalleryEditor .tabs-below > .nav-tabs > li {
+  margin-top: -1px;
+  margin-bottom: 0;
+}
+
+.GalleryEditor .tabs-below > .nav-tabs > li > a {
+  -webkit-border-radius: 0 0 4px 4px;
+     -moz-border-radius: 0 0 4px 4px;
+          border-radius: 0 0 4px 4px;
+}
+
+.GalleryEditor .tabs-below > .nav-tabs > li > a:hover,
+.GalleryEditor .tabs-below > .nav-tabs > li > a:focus {
+  border-top-color: #ddd;
+  border-bottom-color: transparent;
+}
+
+.GalleryEditor .tabs-below > .nav-tabs > .active > a,
+.GalleryEditor .tabs-below > .nav-tabs > .active > a:hover,
+.GalleryEditor .tabs-below > .nav-tabs > .active > a:focus {
+  border-color: transparent #ddd #ddd #ddd;
+}
+
+.GalleryEditor .tabs-left > .nav-tabs > li,
+.GalleryEditor .tabs-right > .nav-tabs > li {
+  float: none;
+}
+
+.GalleryEditor .tabs-left > .nav-tabs > li > a,
+.GalleryEditor .tabs-right > .nav-tabs > li > a {
+  min-width: 74px;
+  margin-right: 0;
+  margin-bottom: 3px;
+}
+
+.GalleryEditor .tabs-left > .nav-tabs {
+  float: left;
+  margin-right: 19px;
+  border-right: 1px solid #ddd;
+}
+
+.GalleryEditor .tabs-left > .nav-tabs > li > a {
+  margin-right: -1px;
+  -webkit-border-radius: 4px 0 0 4px;
+     -moz-border-radius: 4px 0 0 4px;
+          border-radius: 4px 0 0 4px;
+}
+
+.GalleryEditor .tabs-left > .nav-tabs > li > a:hover,
+.GalleryEditor .tabs-left > .nav-tabs > li > a:focus {
+  border-color: #eeeeee #F5F5F5 #eeeeee #eeeeee;
+}
+
+.GalleryEditor .tabs-left > .nav-tabs .active > a,
+.GalleryEditor .tabs-left > .nav-tabs .active > a:hover,
+.GalleryEditor .tabs-left > .nav-tabs .active > a:focus {
+  border-color: #ddd transparent #ddd #ddd;
+  *border-right-color: #ffffff;
+}
+
+.GalleryEditor .tabs-right > .nav-tabs {
+  float: right;
+  margin-left: 19px;
+  border-left: 1px solid #ddd;
+}
+
+.GalleryEditor .tabs-right > .nav-tabs > li > a {
+  margin-left: -1px;
+  -webkit-border-radius: 0 4px 4px 0;
+     -moz-border-radius: 0 4px 4px 0;
+          border-radius: 0 4px 4px 0;
+}
+
+.GalleryEditor .tabs-right > .nav-tabs > li > a:hover,
+.GalleryEditor .tabs-right > .nav-tabs > li > a:focus {
+  border-color: #eeeeee #eeeeee #eeeeee #F5F5F5;
+}
+
+.GalleryEditor .tabs-right > .nav-tabs .active > a,
+.GalleryEditor .tabs-right > .nav-tabs .active > a:hover,
+.GalleryEditor .tabs-right > .nav-tabs .active > a:focus {
+  border-color: #ddd #ddd #ddd transparent;
+  *border-left-color: #ffffff;
+}
+
+.GalleryEditor .nav > .disabled > a {
+  color: #999999;
+}
+
+.GalleryEditor .nav > .disabled > a:hover,
+.GalleryEditor .nav > .disabled > a:focus {
+  text-decoration: none;
+  cursor: default;
+  background-color: transparent;
+}
+
+.GalleryEditor .navbar {
+  *position: relative;
+  *z-index: 2;
+  margin-bottom: 20px;
+  overflow: visible;
+}
+
+.GalleryEditor .navbar-inner {
+  min-height: 40px;
+  padding-right: 20px;
+  padding-left: 20px;
+  background-color: #fafafa;
+  background-image: -moz-linear-gradient(top, #ffffff, #f2f2f2);
+  background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#ffffff), to(#f2f2f2));
+  background-image: -webkit-linear-gradient(top, #ffffff, #f2f2f2);
+  background-image: -o-linear-gradient(top, #ffffff, #f2f2f2);
+  background-image: linear-gradient(to bottom, #ffffff, #f2f2f2);
+  background-repeat: repeat-x;
+  border: 1px solid #d4d4d4;
+  -webkit-border-radius: 4px;
+     -moz-border-radius: 4px;
+          border-radius: 4px;
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ffffffff', endColorstr='#fff2f2f2', GradientType=0);
+  *zoom: 1;
+  -webkit-box-shadow: 0 1px 4px rgba(0, 0, 0, 0.065);
+     -moz-box-shadow: 0 1px 4px rgba(0, 0, 0, 0.065);
+          box-shadow: 0 1px 4px rgba(0, 0, 0, 0.065);
+}
+
+.GalleryEditor .navbar-inner:before,
+.GalleryEditor .navbar-inner:after {
+  display: table;
+  line-height: 0;
+  content: "";
+}
+
+.GalleryEditor .navbar-inner:after {
+  clear: both;
+}
+
+.GalleryEditor .navbar .container {
+  width: auto;
+}
+
+.GalleryEditor .nav-collapse.collapse {
+  height: auto;
+  overflow: visible;
+}
+
+.GalleryEditor .navbar .brand {
+  display: block;
+  float: left;
+  padding: 10px 20px 10px;
+  margin-left: -20px;
+  font-size: 20px;
+  font-weight: 200;
+  color: #777777;
+  text-shadow: 0 1px 0 #ffffff;
+}
+
+.GalleryEditor .navbar .brand:hover,
+.GalleryEditor .navbar .brand:focus {
+  text-decoration: none;
+}
+
+.GalleryEditor .navbar-text {
+  margin-bottom: 0;
+  line-height: 40px;
+  color: #777777;
+}
+
+.GalleryEditor .navbar-link {
+  color: #777777;
+}
+
+.GalleryEditor .navbar-link:hover,
+.GalleryEditor .navbar-link:focus {
+  color: #333333;
+}
+
+.GalleryEditor .navbar .divider-vertical {
+  height: 40px;
+  margin: 0 9px;
+  border-right: 1px solid #ffffff;
+  border-left: 1px solid #f2f2f2;
+}
+
+.GalleryEditor .navbar .btn,
+.GalleryEditor .navbar .btn-group {
+  margin-top: 5px;
+}
+
+.GalleryEditor .navbar .btn-group .btn,
+.GalleryEditor .navbar .input-prepend .btn,
+.GalleryEditor .navbar .input-append .btn,
+.GalleryEditor .navbar .input-prepend .btn-group,
+.GalleryEditor .navbar .input-append .btn-group {
+  margin-top: 0;
+}
+
+.GalleryEditor .navbar-form {
+  margin-bottom: 0;
+  *zoom: 1;
+}
+
+.GalleryEditor .navbar-form:before,
+.GalleryEditor .navbar-form:after {
+  display: table;
+  line-height: 0;
+  content: "";
+}
+
+.GalleryEditor .navbar-form:after {
+  clear: both;
+}
+
+.GalleryEditor .navbar-form input,
+.GalleryEditor .navbar-form select,
+.GalleryEditor .navbar-form .radio,
+.GalleryEditor .navbar-form .checkbox {
+  margin-top: 5px;
+}
+
+.GalleryEditor .navbar-form input,
+.GalleryEditor .navbar-form select,
+.GalleryEditor .navbar-form .btn {
+  display: inline-block;
+  margin-bottom: 0;
+}
+
+.GalleryEditor .navbar-form input[type="image"],
+.GalleryEditor .navbar-form input[type="checkbox"],
+.GalleryEditor .navbar-form input[type="radio"] {
+  margin-top: 3px;
+}
+
+.GalleryEditor .navbar-form .input-append,
+.GalleryEditor .navbar-form .input-prepend {
+  margin-top: 5px;
+  white-space: nowrap;
+}
+
+.GalleryEditor .navbar-form .input-append input,
+.GalleryEditor .navbar-form .input-prepend input {
+  margin-top: 0;
+}
+
+.GalleryEditor .navbar-search {
+  position: relative;
+  float: left;
+  margin-top: 5px;
+  margin-bottom: 0;
+}
+
+.GalleryEditor .navbar-search .search-query {
+  padding: 4px 14px;
+  margin-bottom: 0;
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-size: 13px;
+  font-weight: normal;
+  line-height: 1;
+  -webkit-border-radius: 15px;
+     -moz-border-radius: 15px;
+          border-radius: 15px;
+}
+
+.GalleryEditor .navbar-static-top {
+  position: static;
+  margin-bottom: 0;
+}
+
+.GalleryEditor .navbar-static-top .navbar-inner {
+  -webkit-border-radius: 0;
+     -moz-border-radius: 0;
+          border-radius: 0;
+}
+
+.GalleryEditor .navbar-fixed-top,
+.GalleryEditor .navbar-fixed-bottom {
+  position: fixed;
+  right: 0;
+  left: 0;
+  z-index: 1030;
+  margin-bottom: 0;
+}
+
+.GalleryEditor .navbar-fixed-top .navbar-inner,
+.GalleryEditor .navbar-static-top .navbar-inner {
+  border-width: 0 0 1px;
+}
+
+.GalleryEditor .navbar-fixed-bottom .navbar-inner {
+  border-width: 1px 0 0;
+}
+
+.GalleryEditor .navbar-fixed-top .navbar-inner,
+.GalleryEditor .navbar-fixed-bottom .navbar-inner {
+  padding-right: 0;
+  padding-left: 0;
+  -webkit-border-radius: 0;
+     -moz-border-radius: 0;
+          border-radius: 0;
+}
+
+.GalleryEditor .navbar-static-top .container,
+.GalleryEditor .navbar-fixed-top .container,
+.GalleryEditor .navbar-fixed-bottom .container {
+  width: 940px;
+}
+
+.GalleryEditor .navbar-fixed-top {
+  top: 0;
+}
+
+.GalleryEditor .navbar-fixed-top .navbar-inner,
+.GalleryEditor .navbar-static-top .navbar-inner {
+  -webkit-box-shadow: 0 1px 10px rgba(0, 0, 0, 0.1);
+     -moz-box-shadow: 0 1px 10px rgba(0, 0, 0, 0.1);
+          box-shadow: 0 1px 10px rgba(0, 0, 0, 0.1);
+}
+
+.GalleryEditor .navbar-fixed-bottom {
+  bottom: 0;
+}
+
+.GalleryEditor .navbar-fixed-bottom .navbar-inner {
+  -webkit-box-shadow: 0 -1px 10px rgba(0, 0, 0, 0.1);
+     -moz-box-shadow: 0 -1px 10px rgba(0, 0, 0, 0.1);
+          box-shadow: 0 -1px 10px rgba(0, 0, 0, 0.1);
+}
+
+.GalleryEditor .navbar .nav {
+  position: relative;
+  left: 0;
+  display: block;
+  float: left;
+  margin: 0 10px 0 0;
+}
+
+.GalleryEditor .navbar .nav.pull-right {
+  float: right;
+  margin-right: 0;
+}
+
+.GalleryEditor .navbar .nav > li {
+  float: left;
+}
+
+.GalleryEditor .navbar .nav > li > a {
+  float: none;
+  padding: 10px 15px 10px;
+  color: #777777;
+  text-decoration: none;
+  text-shadow: 0 1px 0 #ffffff;
+}
+
+.GalleryEditor .navbar .nav .dropdown-toggle .caret {
+  margin-top: 8px;
+}
+
+.GalleryEditor .navbar .nav > li > a:focus,
+.GalleryEditor .navbar .nav > li > a:hover {
+  color: #333333;
+  text-decoration: none;
+  background-color: transparent;
+}
+
+.GalleryEditor .navbar .nav > .active > a,
+.GalleryEditor .navbar .nav > .active > a:hover,
+.GalleryEditor .navbar .nav > .active > a:focus {
+  color: #555555;
+  text-decoration: none;
+  background-color: #e5e5e5;
+  -webkit-box-shadow: inset 0 3px 8px rgba(0, 0, 0, 0.125);
+     -moz-box-shadow: inset 0 3px 8px rgba(0, 0, 0, 0.125);
+          box-shadow: inset 0 3px 8px rgba(0, 0, 0, 0.125);
+}
+
+.GalleryEditor .navbar .btn-navbar {
+  display: none;
+  float: right;
+  padding: 7px 10px;
+  margin-right: 5px;
+  margin-left: 5px;
+  color: #ffffff;
+  text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.25);
+  background-color: #ededed;
+  *background-color: #e5e5e5;
+  background-image: -moz-linear-gradient(top, #f2f2f2, #e5e5e5);
+  background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#f2f2f2), to(#e5e5e5));
+  background-image: -webkit-linear-gradient(top, #f2f2f2, #e5e5e5);
+  background-image: -o-linear-gradient(top, #f2f2f2, #e5e5e5);
+  background-image: linear-gradient(to bottom, #f2f2f2, #e5e5e5);
+  background-repeat: repeat-x;
+  border-color: #e5e5e5 #e5e5e5 #bfbfbf;
+  border-color: rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.25);
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#fff2f2f2', endColorstr='#ffe5e5e5', GradientType=0);
+  filter: progid:DXImageTransform.Microsoft.gradient(enabled=false);
+  -webkit-box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1), 0 1px 0 rgba(255, 255, 255, 0.075);
+     -moz-box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1), 0 1px 0 rgba(255, 255, 255, 0.075);
+          box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1), 0 1px 0 rgba(255, 255, 255, 0.075);
+}
+
+.GalleryEditor .navbar .btn-navbar:hover,
+.GalleryEditor .navbar .btn-navbar:focus,
+.GalleryEditor .navbar .btn-navbar:active,
+.GalleryEditor .navbar .btn-navbar.active,
+.GalleryEditor .navbar .btn-navbar.disabled,
+.GalleryEditor .navbar .btn-navbar[disabled] {
+  color: #ffffff;
+  background-color: #e5e5e5;
+  *background-color: #d9d9d9;
+}
+
+.GalleryEditor .navbar .btn-navbar:active,
+.GalleryEditor .navbar .btn-navbar.active {
+  background-color: #cccccc \9;
+}
+
+.GalleryEditor .navbar .btn-navbar .icon-bar {
+  display: block;
+  width: 18px;
+  height: 2px;
+  background-color: #f5f5f5;
+  -webkit-border-radius: 1px;
+     -moz-border-radius: 1px;
+          border-radius: 1px;
+  -webkit-box-shadow: 0 1px 0 rgba(0, 0, 0, 0.25);
+     -moz-box-shadow: 0 1px 0 rgba(0, 0, 0, 0.25);
+          box-shadow: 0 1px 0 rgba(0, 0, 0, 0.25);
+}
+
+.GalleryEditor .btn-navbar .icon-bar + .icon-bar {
+  margin-top: 3px;
+}
+
+.GalleryEditor .navbar .nav > li > .dropdown-menu:before {
+  position: absolute;
+  top: -7px;
+  left: 9px;
+  display: inline-block;
+  border-right: 7px solid transparent;
+  border-bottom: 7px solid #ccc;
+  border-left: 7px solid transparent;
+  border-bottom-color: rgba(0, 0, 0, 0.2);
+  content: '';
+}
+
+.GalleryEditor .navbar .nav > li > .dropdown-menu:after {
+  position: absolute;
+  top: -6px;
+  left: 10px;
+  display: inline-block;
+  border-right: 6px solid transparent;
+  border-bottom: 6px solid #ffffff;
+  border-left: 6px solid transparent;
+  content: '';
+}
+
+.GalleryEditor .navbar-fixed-bottom .nav > li > .dropdown-menu:before {
+  top: auto;
+  bottom: -7px;
+  border-top: 7px solid #ccc;
+  border-bottom: 0;
+  border-top-color: rgba(0, 0, 0, 0.2);
+}
+
+.GalleryEditor .navbar-fixed-bottom .nav > li > .dropdown-menu:after {
+  top: auto;
+  bottom: -6px;
+  border-top: 6px solid #ffffff;
+  border-bottom: 0;
+}
+
+.GalleryEditor .navbar .nav li.dropdown > a:hover .caret,
+.GalleryEditor .navbar .nav li.dropdown > a:focus .caret {
+  border-top-color: #333333;
+  border-bottom-color: #333333;
+}
+
+.GalleryEditor .navbar .nav li.dropdown.open > .dropdown-toggle,
+.GalleryEditor .navbar .nav li.dropdown.active > .dropdown-toggle,
+.GalleryEditor .navbar .nav li.dropdown.open.active > .dropdown-toggle {
+  color: #555555;
+  background-color: #e5e5e5;
+}
+
+.GalleryEditor .navbar .nav li.dropdown > .dropdown-toggle .caret {
+  border-top-color: #777777;
+  border-bottom-color: #777777;
+}
+
+.GalleryEditor .navbar .nav li.dropdown.open > .dropdown-toggle .caret,
+.GalleryEditor .navbar .nav li.dropdown.active > .dropdown-toggle .caret,
+.GalleryEditor .navbar .nav li.dropdown.open.active > .dropdown-toggle .caret {
+  border-top-color: #555555;
+  border-bottom-color: #555555;
+}
+
+.GalleryEditor .navbar .pull-right > li > .dropdown-menu,
+.GalleryEditor .navbar .nav > li > .dropdown-menu.pull-right {
+  right: 0;
+  left: auto;
+}
+
+.GalleryEditor .navbar .pull-right > li > .dropdown-menu:before,
+.GalleryEditor .navbar .nav > li > .dropdown-menu.pull-right:before {
+  right: 12px;
+  left: auto;
+}
+
+.GalleryEditor .navbar .pull-right > li > .dropdown-menu:after,
+.GalleryEditor .navbar .nav > li > .dropdown-menu.pull-right:after {
+  right: 13px;
+  left: auto;
+}
+
+.GalleryEditor .navbar .pull-right > li > .dropdown-menu .dropdown-menu,
+.GalleryEditor .navbar .nav > li > .dropdown-menu.pull-right .dropdown-menu {
+  right: 100%;
+  left: auto;
+  margin-right: -1px;
+  margin-left: 0;
+  -webkit-border-radius: 6px 0 6px 6px;
+     -moz-border-radius: 6px 0 6px 6px;
+          border-radius: 6px 0 6px 6px;
+}
+
+.GalleryEditor .navbar-inverse .navbar-inner {
+  background-color: #1b1b1b;
+  background-image: -moz-linear-gradient(top, #222222, #111111);
+  background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#222222), to(#111111));
+  background-image: -webkit-linear-gradient(top, #222222, #111111);
+  background-image: -o-linear-gradient(top, #222222, #111111);
+  background-image: linear-gradient(to bottom, #222222, #111111);
+  background-repeat: repeat-x;
+  border-color: #252525;
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ff222222', endColorstr='#ff111111', GradientType=0);
+}
+
+.GalleryEditor .navbar-inverse .brand,
+.GalleryEditor .navbar-inverse .nav > li > a {
+  color: #999999;
+  text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.25);
+}
+
+.GalleryEditor .navbar-inverse .brand:hover,
+.GalleryEditor .navbar-inverse .nav > li > a:hover,
+.GalleryEditor .navbar-inverse .brand:focus,
+.GalleryEditor .navbar-inverse .nav > li > a:focus {
+  color: #ffffff;
+}
+
+.GalleryEditor .navbar-inverse .brand {
+  color: #999999;
+}
+
+.GalleryEditor .navbar-inverse .navbar-text {
+  color: #999999;
+}
+
+.GalleryEditor .navbar-inverse .nav > li > a:focus,
+.GalleryEditor .navbar-inverse .nav > li > a:hover {
+  color: #ffffff;
+  background-color: transparent;
+}
+
+.GalleryEditor .navbar-inverse .nav .active > a,
+.GalleryEditor .navbar-inverse .nav .active > a:hover,
+.GalleryEditor .navbar-inverse .nav .active > a:focus {
+  color: #ffffff;
+  background-color: #111111;
+}
+
+.GalleryEditor .navbar-inverse .navbar-link {
+  color: #999999;
+}
+
+.GalleryEditor .navbar-inverse .navbar-link:hover,
+.GalleryEditor .navbar-inverse .navbar-link:focus {
+  color: #ffffff;
+}
+
+.GalleryEditor .navbar-inverse .divider-vertical {
+  border-right-color: #222222;
+  border-left-color: #111111;
+}
+
+.GalleryEditor .navbar-inverse .nav li.dropdown.open > .dropdown-toggle,
+.GalleryEditor .navbar-inverse .nav li.dropdown.active > .dropdown-toggle,
+.GalleryEditor .navbar-inverse .nav li.dropdown.open.active > .dropdown-toggle {
+  color: #ffffff;
+  background-color: #111111;
+}
+
+.GalleryEditor .navbar-inverse .nav li.dropdown > a:hover .caret,
+.GalleryEditor .navbar-inverse .nav li.dropdown > a:focus .caret {
+  border-top-color: #ffffff;
+  border-bottom-color: #ffffff;
+}
+
+.GalleryEditor .navbar-inverse .nav li.dropdown > .dropdown-toggle .caret {
+  border-top-color: #999999;
+  border-bottom-color: #999999;
+}
+
+.GalleryEditor .navbar-inverse .nav li.dropdown.open > .dropdown-toggle .caret,
+.GalleryEditor .navbar-inverse .nav li.dropdown.active > .dropdown-toggle .caret,
+.GalleryEditor .navbar-inverse .nav li.dropdown.open.active > .dropdown-toggle .caret {
+  border-top-color: #ffffff;
+  border-bottom-color: #ffffff;
+}
+
+.GalleryEditor .navbar-inverse .navbar-search .search-query {
+  color: #ffffff;
+  background-color: #515151;
+  border-color: #111111;
+  -webkit-box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1), 0 1px 0 rgba(255, 255, 255, 0.15);
+     -moz-box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1), 0 1px 0 rgba(255, 255, 255, 0.15);
+          box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1), 0 1px 0 rgba(255, 255, 255, 0.15);
+  -webkit-transition: none;
+     -moz-transition: none;
+       -o-transition: none;
+          transition: none;
+}
+
+.GalleryEditor .navbar-inverse .navbar-search .search-query:-moz-placeholder {
+  color: #cccccc;
+}
+
+.GalleryEditor .navbar-inverse .navbar-search .search-query:-ms-input-placeholder {
+  color: #cccccc;
+}
+
+.GalleryEditor .navbar-inverse .navbar-search .search-query::-webkit-input-placeholder {
+  color: #cccccc;
+}
+
+.GalleryEditor .navbar-inverse .navbar-search .search-query:focus,
+.GalleryEditor .navbar-inverse .navbar-search .search-query.focused {
+  padding: 5px 15px;
+  color: #333333;
+  text-shadow: 0 1px 0 #ffffff;
+  background-color: #ffffff;
+  border: 0;
+  outline: 0;
+  -webkit-box-shadow: 0 0 3px rgba(0, 0, 0, 0.15);
+     -moz-box-shadow: 0 0 3px rgba(0, 0, 0, 0.15);
+          box-shadow: 0 0 3px rgba(0, 0, 0, 0.15);
+}
+
+.GalleryEditor .navbar-inverse .btn-navbar {
+  color: #ffffff;
+  text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.25);
+  background-color: #0e0e0e;
+  *background-color: #040404;
+  background-image: -moz-linear-gradient(top, #151515, #040404);
+  background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#151515), to(#040404));
+  background-image: -webkit-linear-gradient(top, #151515, #040404);
+  background-image: -o-linear-gradient(top, #151515, #040404);
+  background-image: linear-gradient(to bottom, #151515, #040404);
+  background-repeat: repeat-x;
+  border-color: #040404 #040404 #000000;
+  border-color: rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.25);
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ff151515', endColorstr='#ff040404', GradientType=0);
+  filter: progid:DXImageTransform.Microsoft.gradient(enabled=false);
+}
+
+.GalleryEditor .navbar-inverse .btn-navbar:hover,
+.GalleryEditor .navbar-inverse .btn-navbar:focus,
+.GalleryEditor .navbar-inverse .btn-navbar:active,
+.GalleryEditor .navbar-inverse .btn-navbar.active,
+.GalleryEditor .navbar-inverse .btn-navbar.disabled,
+.GalleryEditor .navbar-inverse .btn-navbar[disabled] {
+  color: #ffffff;
+  background-color: #040404;
+  *background-color: #000000;
+}
+
+.GalleryEditor .navbar-inverse .btn-navbar:active,
+.GalleryEditor .navbar-inverse .btn-navbar.active {
+  background-color: #000000 \9;
+}
+
+.GalleryEditor .breadcrumb {
+  padding: 8px 15px;
+  margin: 0 0 20px;
+  list-style: none;
+  background-color: #f5f5f5;
+  -webkit-border-radius: 4px;
+     -moz-border-radius: 4px;
+          border-radius: 4px;
+}
+
+.GalleryEditor .breadcrumb > li {
+  display: inline-block;
+  *display: inline;
+  text-shadow: 0 1px 0 #ffffff;
+  *zoom: 1;
+}
+
+.GalleryEditor .breadcrumb > li > .divider {
+  padding: 0 5px;
+  color: #ccc;
+}
+
+.GalleryEditor .breadcrumb > .active {
+  color: #999999;
+}
+
+.GalleryEditor .pagination {
+  margin: 20px 0;
+}
+
+.GalleryEditor .pagination ul {
+  display: inline-block;
+  *display: inline;
+  margin-bottom: 0;
+  margin-left: 0;
+  -webkit-border-radius: 4px;
+     -moz-border-radius: 4px;
+          border-radius: 4px;
+  *zoom: 1;
+  -webkit-box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+     -moz-box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+          box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.GalleryEditor .pagination ul > li {
+  display: inline;
+}
+
+.GalleryEditor .pagination ul > li > a,
+.GalleryEditor .pagination ul > li > span {
+  float: left;
+  padding: 4px 12px;
+  line-height: 20px;
+  text-decoration: none;
+  background-color: #ffffff;
+  border: 1px solid #F5F5F5;
+  border-left-width: 0;
+}
+
+.GalleryEditor .pagination ul > li > a:hover,
+.GalleryEditor .pagination ul > li > a:focus,
+.GalleryEditor .pagination ul > .active > a,
+.GalleryEditor .pagination ul > .active > span {
+  background-color: #f5f5f5;
+}
+
+.GalleryEditor .pagination ul > .active > a,
+.GalleryEditor .pagination ul > .active > span {
+  color: #999999;
+  cursor: default;
+}
+
+.GalleryEditor .pagination ul > .disabled > span,
+.GalleryEditor .pagination ul > .disabled > a,
+.GalleryEditor .pagination ul > .disabled > a:hover,
+.GalleryEditor .pagination ul > .disabled > a:focus {
+  color: #999999;
+  cursor: default;
+  background-color: transparent;
+}
+
+.GalleryEditor .pagination ul > li:first-child > a,
+.GalleryEditor .pagination ul > li:first-child > span {
+  border-left-width: 1px;
+  -webkit-border-bottom-left-radius: 4px;
+          border-bottom-left-radius: 4px;
+  -webkit-border-top-left-radius: 4px;
+          border-top-left-radius: 4px;
+  -moz-border-radius-bottomleft: 4px;
+  -moz-border-radius-topleft: 4px;
+}
+
+.GalleryEditor .pagination ul > li:last-child > a,
+.GalleryEditor .pagination ul > li:last-child > span {
+  -webkit-border-top-right-radius: 4px;
+          border-top-right-radius: 4px;
+  -webkit-border-bottom-right-radius: 4px;
+          border-bottom-right-radius: 4px;
+  -moz-border-radius-topright: 4px;
+  -moz-border-radius-bottomright: 4px;
+}
+
+.GalleryEditor .pagination-centered {
+  text-align: center;
+}
+
+.GalleryEditor .pagination-right {
+  text-align: right;
+}
+
+.GalleryEditor .pagination-large ul > li > a,
+.GalleryEditor .pagination-large ul > li > span {
+  padding: 11px 19px;
+  font-size: 17.5px;
+}
+
+.GalleryEditor .pagination-large ul > li:first-child > a,
+.GalleryEditor .pagination-large ul > li:first-child > span {
+  -webkit-border-bottom-left-radius: 6px;
+          border-bottom-left-radius: 6px;
+  -webkit-border-top-left-radius: 6px;
+          border-top-left-radius: 6px;
+  -moz-border-radius-bottomleft: 6px;
+  -moz-border-radius-topleft: 6px;
+}
+
+.GalleryEditor .pagination-large ul > li:last-child > a,
+.GalleryEditor .pagination-large ul > li:last-child > span {
+  -webkit-border-top-right-radius: 6px;
+          border-top-right-radius: 6px;
+  -webkit-border-bottom-right-radius: 6px;
+          border-bottom-right-radius: 6px;
+  -moz-border-radius-topright: 6px;
+  -moz-border-radius-bottomright: 6px;
+}
+
+.GalleryEditor .pagination-mini ul > li:first-child > a,
+.GalleryEditor .pagination-small ul > li:first-child > a,
+.GalleryEditor .pagination-mini ul > li:first-child > span,
+.GalleryEditor .pagination-small ul > li:first-child > span {
+  -webkit-border-bottom-left-radius: 3px;
+          border-bottom-left-radius: 3px;
+  -webkit-border-top-left-radius: 3px;
+          border-top-left-radius: 3px;
+  -moz-border-radius-bottomleft: 3px;
+  -moz-border-radius-topleft: 3px;
+}
+
+.GalleryEditor .pagination-mini ul > li:last-child > a,
+.GalleryEditor .pagination-small ul > li:last-child > a,
+.GalleryEditor .pagination-mini ul > li:last-child > span,
+.GalleryEditor .pagination-small ul > li:last-child > span {
+  -webkit-border-top-right-radius: 3px;
+          border-top-right-radius: 3px;
+  -webkit-border-bottom-right-radius: 3px;
+          border-bottom-right-radius: 3px;
+  -moz-border-radius-topright: 3px;
+  -moz-border-radius-bottomright: 3px;
+}
+
+.GalleryEditor .pagination-small ul > li > a,
+.GalleryEditor .pagination-small ul > li > span {
+  padding: 2px 10px;
+  font-size: 11.9px;
+}
+
+.GalleryEditor .pagination-mini ul > li > a,
+.GalleryEditor .pagination-mini ul > li > span {
+  padding: 0 6px;
+  font-size: 10.5px;
+}
+
+.GalleryEditor .pager {
+  margin: 20px 0;
+  text-align: center;
+  list-style: none;
+  *zoom: 1;
+}
+
+.GalleryEditor .pager:before,
+.GalleryEditor .pager:after {
+  display: table;
+  line-height: 0;
+  content: "";
+}
+
+.GalleryEditor .pager:after {
+  clear: both;
+}
+
+.GalleryEditor .pager li {
+  display: inline;
+}
+
+.GalleryEditor .pager li > a,
+.GalleryEditor .pager li > span {
+  display: inline-block;
+  padding: 5px 14px;
+  background-color: #fff;
+  border: 1px solid #ddd;
+  -webkit-border-radius: 15px;
+     -moz-border-radius: 15px;
+          border-radius: 15px;
+}
+
+.GalleryEditor .pager li > a:hover,
+.GalleryEditor .pager li > a:focus {
+  text-decoration: none;
+  background-color: #f5f5f5;
+}
+
+.GalleryEditor .pager .next > a,
+.GalleryEditor .pager .next > span {
+  float: right;
+}
+
+.GalleryEditor .pager .previous > a,
+.GalleryEditor .pager .previous > span {
+  float: left;
+}
+
+.GalleryEditor .pager .disabled > a,
+.GalleryEditor .pager .disabled > a:hover,
+.GalleryEditor .pager .disabled > a:focus,
+.GalleryEditor .pager .disabled > span {
+  color: #999999;
+  cursor: default;
+  background-color: #fff;
+}
+
+.modal-backdrop {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 1040;
+  background-color: #000000;
+}
+
+.modal-backdrop.fade {
+  opacity: 0;
+}
+
+.modal-backdrop,
+.modal-backdrop.fade.in {
+  opacity: 0.8;
+  filter: alpha(opacity=80);
+}
+
+.GalleryEditor .modal {
+  position: fixed;
+  top: 10%;
+  left: 50%;
+  z-index: 1050;
+  width: 560px;
+  margin-left: -280px;
+  background-color: #ffffff;
+  border: 1px solid #999;
+  border: 1px solid rgba(0, 0, 0, 0.3);
+  *border: 1px solid #999;
+  -webkit-border-radius: 6px;
+     -moz-border-radius: 6px;
+          border-radius: 6px;
+  outline: none;
+  -webkit-box-shadow: 0 3px 7px rgba(0, 0, 0, 0.3);
+     -moz-box-shadow: 0 3px 7px rgba(0, 0, 0, 0.3);
+          box-shadow: 0 3px 7px rgba(0, 0, 0, 0.3);
+  -webkit-background-clip: padding-box;
+     -moz-background-clip: padding-box;
+          background-clip: padding-box;
+}
+
+.GalleryEditor .modal.fade {
+  top: -25%;
+  -webkit-transition: opacity 0.3s linear, top 0.3s ease-out;
+     -moz-transition: opacity 0.3s linear, top 0.3s ease-out;
+       -o-transition: opacity 0.3s linear, top 0.3s ease-out;
+          transition: opacity 0.3s linear, top 0.3s ease-out;
+}
+
+.GalleryEditor .modal.fade.in {
+  top: 10%;
+}
+
+.GalleryEditor .modal-header {
+  padding: 9px 15px;
+  border-bottom: 1px solid #eee;
+}
+
+.GalleryEditor .modal-header .close {
+  margin-top: 2px;
+}
+
+.GalleryEditor .modal-header h3 {
+  margin: 0;
+  line-height: 30px;
+}
+
+.GalleryEditor .modal-body {
+  position: relative;
+  max-height: 400px;
+  padding: 15px;
+  overflow-y: auto;
+}
+
+.GalleryEditor .modal-form {
+  margin-bottom: 0;
+}
+
+.GalleryEditor .modal-footer {
+  padding: 14px 15px 15px;
+  margin-bottom: 0;
+  text-align: right;
+  background-color: #f5f5f5;
+  border-top: 1px solid #ddd;
+  -webkit-border-radius: 0 0 6px 6px;
+     -moz-border-radius: 0 0 6px 6px;
+          border-radius: 0 0 6px 6px;
+  *zoom: 1;
+  -webkit-box-shadow: inset 0 1px 0 #ffffff;
+     -moz-box-shadow: inset 0 1px 0 #ffffff;
+          box-shadow: inset 0 1px 0 #ffffff;
+}
+
+.GalleryEditor .modal-footer:before,
+.GalleryEditor .modal-footer:after {
+  display: table;
+  line-height: 0;
+  content: "";
+}
+
+.GalleryEditor .modal-footer:after {
+  clear: both;
+}
+
+.GalleryEditor .modal-footer .btn + .btn {
+  margin-bottom: 0;
+  margin-left: 5px;
+}
+
+.GalleryEditor .modal-footer .btn-group .btn + .btn {
+  margin-left: -1px;
+}
+
+.GalleryEditor .modal-footer .btn-block + .btn-block {
+  margin-left: 0;
+}
+
+.GalleryEditor .tooltip {
+  position: absolute;
+  z-index: 1030;
+  display: block;
+  font-size: 11px;
+  line-height: 1.4;
+  opacity: 0;
+  filter: alpha(opacity=0);
+  visibility: visible;
+}
+
+.GalleryEditor .tooltip.in {
+  opacity: 0.8;
+  filter: alpha(opacity=80);
+}
+
+.GalleryEditor .tooltip.top {
+  padding: 5px 0;
+  margin-top: -3px;
+}
+
+.GalleryEditor .tooltip.right {
+  padding: 0 5px;
+  margin-left: 3px;
+}
+
+.GalleryEditor .tooltip.bottom {
+  padding: 5px 0;
+  margin-top: 3px;
+}
+
+.GalleryEditor .tooltip.left {
+  padding: 0 5px;
+  margin-left: -3px;
+}
+
+.GalleryEditor .tooltip-inner {
+  max-width: 200px;
+  padding: 8px;
+  color: #ffffff;
+  text-align: center;
+  text-decoration: none;
+  background-color: #000000;
+  -webkit-border-radius: 4px;
+     -moz-border-radius: 4px;
+          border-radius: 4px;
+}
+
+.GalleryEditor .tooltip-arrow {
+  position: absolute;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+}
+
+.GalleryEditor .tooltip.top .tooltip-arrow {
+  bottom: 0;
+  left: 50%;
+  margin-left: -5px;
+  border-top-color: #000000;
+  border-width: 5px 5px 0;
+}
+
+.GalleryEditor .tooltip.right .tooltip-arrow {
+  top: 50%;
+  left: 0;
+  margin-top: -5px;
+  border-right-color: #000000;
+  border-width: 5px 5px 5px 0;
+}
+
+.GalleryEditor .tooltip.left .tooltip-arrow {
+  top: 50%;
+  right: 0;
+  margin-top: -5px;
+  border-left-color: #000000;
+  border-width: 5px 0 5px 5px;
+}
+
+.GalleryEditor .tooltip.bottom .tooltip-arrow {
+  top: 0;
+  left: 50%;
+  margin-left: -5px;
+  border-bottom-color: #000000;
+  border-width: 0 5px 5px;
+}
+
+.GalleryEditor .popover {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 1010;
+  display: none;
+  max-width: 276px;
+  padding: 1px;
+  text-align: left;
+  white-space: normal;
+  background-color: #ffffff;
+  border: 1px solid #ccc;
+  border: 1px solid rgba(0, 0, 0, 0.2);
+  -webkit-border-radius: 6px;
+     -moz-border-radius: 6px;
+          border-radius: 6px;
+  -webkit-box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+     -moz-box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+          box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+  -webkit-background-clip: padding-box;
+     -moz-background-clip: padding;
+          background-clip: padding-box;
+}
+
+.GalleryEditor .popover.top {
+  margin-top: -10px;
+}
+
+.GalleryEditor .popover.right {
+  margin-left: 10px;
+}
+
+.GalleryEditor .popover.bottom {
+  margin-top: 10px;
+}
+
+.GalleryEditor .popover.left {
+  margin-left: -10px;
+}
+
+.GalleryEditor .popover-title {
+  padding: 8px 14px;
+  margin: 0;
+  font-size: 14px;
+  font-weight: normal;
+  line-height: 18px;
+  background-color: #f7f7f7;
+  border-bottom: 1px solid #ebebeb;
+  -webkit-border-radius: 5px 5px 0 0;
+     -moz-border-radius: 5px 5px 0 0;
+          border-radius: 5px 5px 0 0;
+}
+
+.GalleryEditor .popover-title:empty {
+  display: none;
+}
+
+.GalleryEditor .popover-content {
+  padding: 9px 14px;
+}
+
+.GalleryEditor .popover .arrow,
+.GalleryEditor .popover .arrow:after {
+  position: absolute;
+  display: block;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+}
+
+.GalleryEditor .popover .arrow {
+  border-width: 11px;
+}
+
+.GalleryEditor .popover .arrow:after {
+  border-width: 10px;
+  content: "";
+}
+
+.GalleryEditor .popover.top .arrow {
+  bottom: -11px;
+  left: 50%;
+  margin-left: -11px;
+  border-top-color: #999;
+  border-top-color: rgba(0, 0, 0, 0.25);
+  border-bottom-width: 0;
+}
+
+.GalleryEditor .popover.top .arrow:after {
+  bottom: 1px;
+  margin-left: -10px;
+  border-top-color: #ffffff;
+  border-bottom-width: 0;
+}
+
+.GalleryEditor .popover.right .arrow {
+  top: 50%;
+  left: -11px;
+  margin-top: -11px;
+  border-right-color: #999;
+  border-right-color: rgba(0, 0, 0, 0.25);
+  border-left-width: 0;
+}
+
+.GalleryEditor .popover.right .arrow:after {
+  bottom: -10px;
+  left: 1px;
+  border-right-color: #ffffff;
+  border-left-width: 0;
+}
+
+.GalleryEditor .popover.bottom .arrow {
+  top: -11px;
+  left: 50%;
+  margin-left: -11px;
+  border-bottom-color: #999;
+  border-bottom-color: rgba(0, 0, 0, 0.25);
+  border-top-width: 0;
+}
+
+.GalleryEditor .popover.bottom .arrow:after {
+  top: 1px;
+  margin-left: -10px;
+  border-bottom-color: #ffffff;
+  border-top-width: 0;
+}
+
+.GalleryEditor .popover.left .arrow {
+  top: 50%;
+  right: -11px;
+  margin-top: -11px;
+  border-left-color: #999;
+  border-left-color: rgba(0, 0, 0, 0.25);
+  border-right-width: 0;
+}
+
+.GalleryEditor .popover.left .arrow:after {
+  right: 1px;
+  bottom: -10px;
+  border-left-color: #ffffff;
+  border-right-width: 0;
+}
+
+.GalleryEditor .thumbnails {
+  margin-left: -20px;
+  list-style: none;
+  *zoom: 1;
+}
+
+.GalleryEditor .thumbnails:before,
+.GalleryEditor .thumbnails:after {
+  display: table;
+  line-height: 0;
+  content: "";
+}
+
+.GalleryEditor .thumbnails:after {
+  clear: both;
+}
+
+.GalleryEditor .row-fluid .thumbnails {
+  margin-left: 0;
+}
+
+.GalleryEditor .thumbnails > li {
+  float: left;
+  margin-bottom: 20px;
+  margin-left: 20px;
+}
+
+.GalleryEditor .thumbnail {
+  display: block;
+  padding: 4px;
+  line-height: 20px;
+  border: 1px solid #ddd;
+  -webkit-border-radius: 4px;
+     -moz-border-radius: 4px;
+          border-radius: 4px;
+  -webkit-box-shadow: 0 1px 3px rgba(0, 0, 0, 0.055);
+     -moz-box-shadow: 0 1px 3px rgba(0, 0, 0, 0.055);
+          box-shadow: 0 1px 3px rgba(0, 0, 0, 0.055);
+  -webkit-transition: all 0.2s ease-in-out;
+     -moz-transition: all 0.2s ease-in-out;
+       -o-transition: all 0.2s ease-in-out;
+          transition: all 0.2s ease-in-out;
+}
+
+.GalleryEditor a.thumbnail:hover,
+.GalleryEditor a.thumbnail:focus {
+  border-color: #0088cc;
+  -webkit-box-shadow: 0 1px 4px rgba(0, 105, 214, 0.25);
+     -moz-box-shadow: 0 1px 4px rgba(0, 105, 214, 0.25);
+          box-shadow: 0 1px 4px rgba(0, 105, 214, 0.25);
+}
+
+.GalleryEditor .thumbnail > img {
+  display: block;
+  max-width: 100%;
+  margin-right: auto;
+  margin-left: auto;
+}
+
+.GalleryEditor .thumbnail .caption {
+  padding: 9px;
+  color: #555555;
+}
+
+.GalleryEditor .media,
+.GalleryEditor .media-body {
+  overflow: hidden;
+  *overflow: visible;
+  zoom: 1;
+}
+
+.GalleryEditor .media,
+.GalleryEditor .media .media {
+  margin-top: 15px;
+}
+
+.GalleryEditor .media:first-child {
+  margin-top: 0;
+}
+
+.GalleryEditor .media-object {
+  display: block;
+}
+
+.GalleryEditor .media-heading {
+  margin: 0 0 5px;
+}
+
+.GalleryEditor .media > .pull-left {
+  margin-right: 10px;
+}
+
+.GalleryEditor .media > .pull-right {
+  margin-left: 10px;
+}
+
+.GalleryEditor .media-list {
+  margin-left: 0;
+  list-style: none;
+}
+
+.GalleryEditor .label,
+.GalleryEditor .badge {
+  display: inline-block;
+  padding: 2px 4px;
+  font-size: 11.844px;
+  font-weight: bold;
+  line-height: 14px;
+  color: #ffffff;
+  text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.25);
+  white-space: nowrap;
+  vertical-align: baseline;
+  background-color: #999999;
+}
+
+.GalleryEditor .label {
+  -webkit-border-radius: 3px;
+     -moz-border-radius: 3px;
+          border-radius: 3px;
+}
+
+.GalleryEditor .badge {
+  padding-right: 9px;
+  padding-left: 9px;
+  -webkit-border-radius: 9px;
+     -moz-border-radius: 9px;
+          border-radius: 9px;
+}
+
+.GalleryEditor .label:empty,
+.GalleryEditor .badge:empty {
+  display: none;
+}
+
+.GalleryEditor a.label:hover,
+.GalleryEditor a.label:focus,
+.GalleryEditor a.badge:hover,
+.GalleryEditor a.badge:focus {
+  color: #ffffff;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.GalleryEditor .label-important,
+.GalleryEditor .badge-important {
+  background-color: #b94a48;
+}
+
+.GalleryEditor .label-important[href],
+.GalleryEditor .badge-important[href] {
+  background-color: #953b39;
+}
+
+.GalleryEditor .label-warning,
+.GalleryEditor .badge-warning {
+  background-color: #f89406;
+}
+
+.GalleryEditor .label-warning[href],
+.GalleryEditor .badge-warning[href] {
+  background-color: #c67605;
+}
+
+.GalleryEditor .label-success,
+.GalleryEditor .badge-success {
+  background-color: #468847;
+}
+
+.GalleryEditor .label-success[href],
+.GalleryEditor .badge-success[href] {
+  background-color: #356635;
+}
+
+.GalleryEditor .label-info,
+.GalleryEditor .badge-info {
+  background-color: #3a87ad;
+}
+
+.GalleryEditor .label-info[href],
+.GalleryEditor .badge-info[href] {
+  background-color: #2d6987;
+}
+
+.GalleryEditor .label-inverse,
+.GalleryEditor .badge-inverse {
+  background-color: #333333;
+}
+
+.GalleryEditor .label-inverse[href],
+.GalleryEditor .badge-inverse[href] {
+  background-color: #1a1a1a;
+}
+
+.GalleryEditor .btn .label,
+.GalleryEditor .btn .badge {
+  position: relative;
+  top: -1px;
+}
+
+.GalleryEditor .btn-mini .label,
+.GalleryEditor .btn-mini .badge {
+  top: 0;
+}
+
+@-webkit-keyframes progress-bar-stripes {
+  from {
+    background-position: 40px 0;
+  }
+  to {
+    background-position: 0 0;
+  }
+}
+
+@-moz-keyframes progress-bar-stripes {
+  from {
+    background-position: 40px 0;
+  }
+  to {
+    background-position: 0 0;
+  }
+}
+
+@-ms-keyframes progress-bar-stripes {
+  from {
+    background-position: 40px 0;
+  }
+  to {
+    background-position: 0 0;
+  }
+}
+
+@-o-keyframes progress-bar-stripes {
+  from {
+    background-position: 0 0;
+  }
+  to {
+    background-position: 40px 0;
+  }
+}
+
+@keyframes progress-bar-stripes {
+  from {
+    background-position: 40px 0;
+  }
+  to {
+    background-position: 0 0;
+  }
+}
+
+.GalleryEditor .progress {
+  height: 20px;
+  margin-bottom: 20px;
+  overflow: hidden;
+  background-color: #f7f7f7;
+  background-image: -moz-linear-gradient(top, #f5f5f5, #f9f9f9);
+  background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#f5f5f5), to(#f9f9f9));
+  background-image: -webkit-linear-gradient(top, #f5f5f5, #f9f9f9);
+  background-image: -o-linear-gradient(top, #f5f5f5, #f9f9f9);
+  background-image: linear-gradient(to bottom, #f5f5f5, #f9f9f9);
+  background-repeat: repeat-x;
+  -webkit-border-radius: 4px;
+     -moz-border-radius: 4px;
+          border-radius: 4px;
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#fff5f5f5', endColorstr='#fff9f9f9', GradientType=0);
+  -webkit-box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1);
+     -moz-box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1);
+          box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.GalleryEditor .progress .bar {
+  float: left;
+  width: 0;
+  height: 100%;
+  font-size: 12px;
+  color: #ffffff;
+  text-align: center;
+  text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.25);
+  background-color: #0e90d2;
+  background-image: -moz-linear-gradient(top, #149bdf, #0480be);
+  background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#149bdf), to(#0480be));
+  background-image: -webkit-linear-gradient(top, #149bdf, #0480be);
+  background-image: -o-linear-gradient(top, #149bdf, #0480be);
+  background-image: linear-gradient(to bottom, #149bdf, #0480be);
+  background-repeat: repeat-x;
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ff149bdf', endColorstr='#ff0480be', GradientType=0);
+  -webkit-box-shadow: inset 0 -1px 0 rgba(0, 0, 0, 0.15);
+     -moz-box-shadow: inset 0 -1px 0 rgba(0, 0, 0, 0.15);
+          box-shadow: inset 0 -1px 0 rgba(0, 0, 0, 0.15);
+  -webkit-box-sizing: border-box;
+     -moz-box-sizing: border-box;
+          box-sizing: border-box;
+  -webkit-transition: width 0.6s ease;
+     -moz-transition: width 0.6s ease;
+       -o-transition: width 0.6s ease;
+          transition: width 0.6s ease;
+}
+
+.GalleryEditor .progress .bar + .bar {
+  -webkit-box-shadow: inset 1px 0 0 rgba(0, 0, 0, 0.15), inset 0 -1px 0 rgba(0, 0, 0, 0.15);
+     -moz-box-shadow: inset 1px 0 0 rgba(0, 0, 0, 0.15), inset 0 -1px 0 rgba(0, 0, 0, 0.15);
+          box-shadow: inset 1px 0 0 rgba(0, 0, 0, 0.15), inset 0 -1px 0 rgba(0, 0, 0, 0.15);
+}
+
+.GalleryEditor .progress-striped .bar {
+  background-color: #149bdf;
+  background-image: -webkit-gradient(linear, 0 100%, 100% 0, color-stop(0.25, rgba(255, 255, 255, 0.15)), color-stop(0.25, transparent), color-stop(0.5, transparent), color-stop(0.5, rgba(255, 255, 255, 0.15)), color-stop(0.75, rgba(255, 255, 255, 0.15)), color-stop(0.75, transparent), to(transparent));
+  background-image: -webkit-linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.15) 50%, rgba(255, 255, 255, 0.15) 75%, transparent 75%, transparent);
+  background-image: -moz-linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.15) 50%, rgba(255, 255, 255, 0.15) 75%, transparent 75%, transparent);
+  background-image: -o-linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.15) 50%, rgba(255, 255, 255, 0.15) 75%, transparent 75%, transparent);
+  background-image: linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.15) 50%, rgba(255, 255, 255, 0.15) 75%, transparent 75%, transparent);
+  -webkit-background-size: 40px 40px;
+     -moz-background-size: 40px 40px;
+       -o-background-size: 40px 40px;
+          background-size: 40px 40px;
+}
+
+.GalleryEditor .progress.active .bar {
+  -webkit-animation: progress-bar-stripes 2s linear infinite;
+     -moz-animation: progress-bar-stripes 2s linear infinite;
+      -ms-animation: progress-bar-stripes 2s linear infinite;
+       -o-animation: progress-bar-stripes 2s linear infinite;
+          animation: progress-bar-stripes 2s linear infinite;
+}
+
+.GalleryEditor .progress-danger .bar,
+.GalleryEditor .progress .bar-danger {
+  background-color: #dd514c;
+  background-image: -moz-linear-gradient(top, #ee5f5b, #c43c35);
+  background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#ee5f5b), to(#c43c35));
+  background-image: -webkit-linear-gradient(top, #ee5f5b, #c43c35);
+  background-image: -o-linear-gradient(top, #ee5f5b, #c43c35);
+  background-image: linear-gradient(to bottom, #ee5f5b, #c43c35);
+  background-repeat: repeat-x;
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ffee5f5b', endColorstr='#ffc43c35', GradientType=0);
+}
+
+.GalleryEditor .progress-danger.progress-striped .bar,
+.GalleryEditor .progress-striped .bar-danger {
+  background-color: #ee5f5b;
+  background-image: -webkit-gradient(linear, 0 100%, 100% 0, color-stop(0.25, rgba(255, 255, 255, 0.15)), color-stop(0.25, transparent), color-stop(0.5, transparent), color-stop(0.5, rgba(255, 255, 255, 0.15)), color-stop(0.75, rgba(255, 255, 255, 0.15)), color-stop(0.75, transparent), to(transparent));
+  background-image: -webkit-linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.15) 50%, rgba(255, 255, 255, 0.15) 75%, transparent 75%, transparent);
+  background-image: -moz-linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.15) 50%, rgba(255, 255, 255, 0.15) 75%, transparent 75%, transparent);
+  background-image: -o-linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.15) 50%, rgba(255, 255, 255, 0.15) 75%, transparent 75%, transparent);
+  background-image: linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.15) 50%, rgba(255, 255, 255, 0.15) 75%, transparent 75%, transparent);
+}
+
+.GalleryEditor .progress-success .bar,
+.GalleryEditor .progress .bar-success {
+  background-color: #5eb95e;
+  background-image: -moz-linear-gradient(top, #62c462, #57a957);
+  background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#62c462), to(#57a957));
+  background-image: -webkit-linear-gradient(top, #62c462, #57a957);
+  background-image: -o-linear-gradient(top, #62c462, #57a957);
+  background-image: linear-gradient(to bottom, #62c462, #57a957);
+  background-repeat: repeat-x;
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ff62c462', endColorstr='#ff57a957', GradientType=0);
+}
+
+.GalleryEditor .progress-success.progress-striped .bar,
+.GalleryEditor .progress-striped .bar-success {
+  background-color: #62c462;
+  background-image: -webkit-gradient(linear, 0 100%, 100% 0, color-stop(0.25, rgba(255, 255, 255, 0.15)), color-stop(0.25, transparent), color-stop(0.5, transparent), color-stop(0.5, rgba(255, 255, 255, 0.15)), color-stop(0.75, rgba(255, 255, 255, 0.15)), color-stop(0.75, transparent), to(transparent));
+  background-image: -webkit-linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.15) 50%, rgba(255, 255, 255, 0.15) 75%, transparent 75%, transparent);
+  background-image: -moz-linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.15) 50%, rgba(255, 255, 255, 0.15) 75%, transparent 75%, transparent);
+  background-image: -o-linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.15) 50%, rgba(255, 255, 255, 0.15) 75%, transparent 75%, transparent);
+  background-image: linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.15) 50%, rgba(255, 255, 255, 0.15) 75%, transparent 75%, transparent);
+}
+
+.GalleryEditor .progress-info .bar,
+.GalleryEditor .progress .bar-info {
+  background-color: #4bb1cf;
+  background-image: -moz-linear-gradient(top, #5bc0de, #339bb9);
+  background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#5bc0de), to(#339bb9));
+  background-image: -webkit-linear-gradient(top, #5bc0de, #339bb9);
+  background-image: -o-linear-gradient(top, #5bc0de, #339bb9);
+  background-image: linear-gradient(to bottom, #5bc0de, #339bb9);
+  background-repeat: repeat-x;
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ff5bc0de', endColorstr='#ff339bb9', GradientType=0);
+}
+
+.GalleryEditor .progress-info.progress-striped .bar,
+.GalleryEditor .progress-striped .bar-info {
+  background-color: #5bc0de;
+  background-image: -webkit-gradient(linear, 0 100%, 100% 0, color-stop(0.25, rgba(255, 255, 255, 0.15)), color-stop(0.25, transparent), color-stop(0.5, transparent), color-stop(0.5, rgba(255, 255, 255, 0.15)), color-stop(0.75, rgba(255, 255, 255, 0.15)), color-stop(0.75, transparent), to(transparent));
+  background-image: -webkit-linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.15) 50%, rgba(255, 255, 255, 0.15) 75%, transparent 75%, transparent);
+  background-image: -moz-linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.15) 50%, rgba(255, 255, 255, 0.15) 75%, transparent 75%, transparent);
+  background-image: -o-linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.15) 50%, rgba(255, 255, 255, 0.15) 75%, transparent 75%, transparent);
+  background-image: linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.15) 50%, rgba(255, 255, 255, 0.15) 75%, transparent 75%, transparent);
+}
+
+.GalleryEditor .progress-warning .bar,
+.GalleryEditor .progress .bar-warning {
+  background-color: #faa732;
+  background-image: -moz-linear-gradient(top, #fbb450, #f89406);
+  background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#fbb450), to(#f89406));
+  background-image: -webkit-linear-gradient(top, #fbb450, #f89406);
+  background-image: -o-linear-gradient(top, #fbb450, #f89406);
+  background-image: linear-gradient(to bottom, #fbb450, #f89406);
+  background-repeat: repeat-x;
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#fffbb450', endColorstr='#fff89406', GradientType=0);
+}
+
+.GalleryEditor .progress-warning.progress-striped .bar,
+.GalleryEditor .progress-striped .bar-warning {
+  background-color: #fbb450;
+  background-image: -webkit-gradient(linear, 0 100%, 100% 0, color-stop(0.25, rgba(255, 255, 255, 0.15)), color-stop(0.25, transparent), color-stop(0.5, transparent), color-stop(0.5, rgba(255, 255, 255, 0.15)), color-stop(0.75, rgba(255, 255, 255, 0.15)), color-stop(0.75, transparent), to(transparent));
+  background-image: -webkit-linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.15) 50%, rgba(255, 255, 255, 0.15) 75%, transparent 75%, transparent);
+  background-image: -moz-linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.15) 50%, rgba(255, 255, 255, 0.15) 75%, transparent 75%, transparent);
+  background-image: -o-linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.15) 50%, rgba(255, 255, 255, 0.15) 75%, transparent 75%, transparent);
+  background-image: linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.15) 50%, rgba(255, 255, 255, 0.15) 75%, transparent 75%, transparent);
+}
+
+.GalleryEditor .accordion {
+  margin-bottom: 20px;
+}
+
+.GalleryEditor .accordion-group {
+  margin-bottom: 2px;
+  border: 1px solid #e5e5e5;
+  -webkit-border-radius: 4px;
+     -moz-border-radius: 4px;
+          border-radius: 4px;
+}
+
+.GalleryEditor .accordion-heading {
+  border-bottom: 0;
+}
+
+.GalleryEditor .accordion-heading .accordion-toggle {
+  display: block;
+  padding: 8px 15px;
+}
+
+.GalleryEditor .accordion-toggle {
+  cursor: pointer;
+}
+
+.GalleryEditor .accordion-inner {
+  padding: 9px 15px;
+  border-top: 1px solid #e5e5e5;
+}
+
+.GalleryEditor .carousel {
+  position: relative;
+  margin-bottom: 20px;
+  line-height: 1;
+}
+
+.GalleryEditor .carousel-inner {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+}
+
+.GalleryEditor .carousel-inner > .item {
+  position: relative;
+  display: none;
+  -webkit-transition: 0.6s ease-in-out left;
+     -moz-transition: 0.6s ease-in-out left;
+       -o-transition: 0.6s ease-in-out left;
+          transition: 0.6s ease-in-out left;
+}
+
+.GalleryEditor .carousel-inner > .item > img,
+.GalleryEditor .carousel-inner > .item > a > img {
+  display: block;
+  line-height: 1;
+}
+
+.GalleryEditor .carousel-inner > .active,
+.GalleryEditor .carousel-inner > .next,
+.GalleryEditor .carousel-inner > .prev {
+  display: block;
+}
+
+.GalleryEditor .carousel-inner > .active {
+  left: 0;
+}
+
+.GalleryEditor .carousel-inner > .next,
+.GalleryEditor .carousel-inner > .prev {
+  position: absolute;
+  top: 0;
+  width: 100%;
+}
+
+.GalleryEditor .carousel-inner > .next {
+  left: 100%;
+}
+
+.GalleryEditor .carousel-inner > .prev {
+  left: -100%;
+}
+
+.GalleryEditor .carousel-inner > .next.left,
+.GalleryEditor .carousel-inner > .prev.right {
+  left: 0;
+}
+
+.GalleryEditor .carousel-inner > .active.left {
+  left: -100%;
+}
+
+.GalleryEditor .carousel-inner > .active.right {
+  left: 100%;
+}
+
+.GalleryEditor .carousel-control {
+  position: absolute;
+  top: 40%;
+  left: 15px;
+  width: 40px;
+  height: 40px;
+  margin-top: -20px;
+  font-size: 60px;
+  font-weight: 100;
+  line-height: 30px;
+  color: #ffffff;
+  text-align: center;
+  background: #222222;
+  border: 3px solid #ffffff;
+  -webkit-border-radius: 23px;
+     -moz-border-radius: 23px;
+          border-radius: 23px;
+  opacity: 0.5;
+  filter: alpha(opacity=50);
+}
+
+.GalleryEditor .carousel-control.right {
+  right: 15px;
+  left: auto;
+}
+
+.GalleryEditor .carousel-control:hover,
+.GalleryEditor .carousel-control:focus {
+  color: #ffffff;
+  text-decoration: none;
+  opacity: 0.9;
+  filter: alpha(opacity=90);
+}
+
+.GalleryEditor .carousel-indicators {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  z-index: 5;
+  margin: 0;
+  list-style: none;
+}
+
+.GalleryEditor .carousel-indicators li {
+  display: block;
+  float: left;
+  width: 10px;
+  height: 10px;
+  margin-left: 5px;
+  text-indent: -999px;
+  background-color: #ccc;
+  background-color: rgba(255, 255, 255, 0.25);
+  border-radius: 5px;
+}
+
+.GalleryEditor .carousel-indicators .active {
+  background-color: #fff;
+}
+
+.GalleryEditor .carousel-caption {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  padding: 15px;
+  background: #333333;
+  background: rgba(0, 0, 0, 0.75);
+}
+
+.GalleryEditor .carousel-caption h4,
+.GalleryEditor .carousel-caption p {
+  line-height: 20px;
+  color: #ffffff;
+}
+
+.GalleryEditor .carousel-caption h4 {
+  margin: 0 0 5px;
+}
+
+.GalleryEditor .carousel-caption p {
+  margin-bottom: 0;
+}
+
+.GalleryEditor .hero-unit {
+  padding: 60px;
+  margin-bottom: 30px;
+  font-size: 18px;
+  font-weight: 200;
+  line-height: 30px;
+  color: inherit;
+  background-color: #eeeeee;
+  -webkit-border-radius: 6px;
+     -moz-border-radius: 6px;
+          border-radius: 6px;
+}
+
+.GalleryEditor .hero-unit h1 {
+  margin-bottom: 0;
+  font-size: 60px;
+  line-height: 1;
+  letter-spacing: -1px;
+  color: inherit;
+}
+
+.GalleryEditor .hero-unit li {
+  line-height: 30px;
+}
+
+.GalleryEditor .pull-right {
+  float: right;
+}
+
+.GalleryEditor .pull-left {
+  float: left;
+}
+
+.GalleryEditor .hide {
+  display: none;
+}
+
+.GalleryEditor .show {
+  display: block;
+}
+
+.GalleryEditor .invisible {
+  visibility: hidden;
+}
+
+.GalleryEditor .affix {
+  position: fixed;
+}

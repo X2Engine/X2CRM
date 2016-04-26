@@ -1,6 +1,6 @@
 <?php
-/*****************************************************************************************
- * X2Engine Open Source Edition is a customer relationship management program developed by
+/***********************************************************************************
+ * X2CRM is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2016 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
@@ -21,7 +21,8 @@
  * 02110-1301 USA.
  * 
  * You can contact X2Engine, Inc. P.O. Box 66752, Scotts Valley,
- * California 95067, USA. or at email address contact@x2engine.com.
+ * California 95067, USA. on our website at www.x2crm.com, or at our
+ * email address: contact@x2engine.com.
  * 
  * The interactive user interfaces in modified source and object code versions
  * of this program must display Appropriate Legal Notices, as required under
@@ -32,7 +33,7 @@
  * X2Engine" logo. If the display of the logo is not reasonably feasible for
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2Engine".
- *****************************************************************************************/
+ **********************************************************************************/
 
 class GoogleProject extends JSONEmbeddedModel implements AdminOwnedCredentials {
 
@@ -51,6 +52,11 @@ class GoogleProject extends JSONEmbeddedModel implements AdminOwnedCredentials {
     public $clientSecret = '';
 
      
+    /**
+     *  @var string Used for Google+ integration
+     */
+    public $apiKey = '';
+     
 
     // pseudo-attributes which belong to Admin. These don't get enrypted with the other attributes,
     // but do get rendered in the same form
@@ -58,7 +64,7 @@ class GoogleProject extends JSONEmbeddedModel implements AdminOwnedCredentials {
     private $_gaTracking_public;
 
     public function getProtectedFields () {
-        return array ('clientId', 'clientSecret');
+        return array ('clientId', 'clientSecret', 'apiKey');
     }
 
     public function renderForm () {
@@ -78,6 +84,8 @@ class GoogleProject extends JSONEmbeddedModel implements AdminOwnedCredentials {
 
     public function rules(){
         return array(
+             
+            array('apiKey', 'safe'),
              
             array('clientId,clientSecret', 'safe'),
         );
@@ -123,6 +131,8 @@ class GoogleProject extends JSONEmbeddedModel implements AdminOwnedCredentials {
         return array(
             'clientId' => Yii::t('app','Client ID'),
             'clientSecret' => Yii::t('app','Client Secret'),
+             
+            'apiKey' => Yii::t('app','API Key'),
              
             'gaTracking_public' => Yii::t('app','Google Analytics Property ID (public)'),
             'gaTracking_internal' => Yii::t('app','Google Analytics Property ID (internal)'),

@@ -1,5 +1,5 @@
-/*****************************************************************************************
- * X2Engine Open Source Edition is a customer relationship management program developed by
+/***********************************************************************************
+ * X2CRM is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2016 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
@@ -20,7 +20,8 @@
  * 02110-1301 USA.
  * 
  * You can contact X2Engine, Inc. P.O. Box 66752, Scotts Valley,
- * California 95067, USA. or at email address contact@x2engine.com.
+ * California 95067, USA. on our website at www.x2crm.com, or at our
+ * email address: contact@x2engine.com.
  * 
  * The interactive user interfaces in modified source and object code versions
  * of this program must display Appropriate Legal Notices, as required under
@@ -31,7 +32,7 @@
  * X2Engine" logo. If the display of the logo is not reasonably feasible for
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2Engine".
- *****************************************************************************************/
+ **********************************************************************************/
 
 x2.MobileActionHistory = (function () {
 
@@ -47,6 +48,44 @@ function MobileActionHistory (argsDict) {
 
 MobileActionHistory.prototype = auxlib.create (x2.Widget.prototype);
 
+ 
+MobileActionHistory.prototype.setUpPhotoUpload = function () {
+    var that = this;
+    var form$ = $.mobile.activePage.find ('.publisher-photo-upload-form');
+    var publisher$ = $.mobile.activePage.find ('.publisher-menu');
+    var buttons$ = publisher$.find ('ul li');
+    var togglePublisher$ = $.mobile.activePage.find ('.publisher-menu-button');
+    new x2.CameraButton ({
+        element$: buttons$.filter ('.photo-attachment-button'),
+        success: function (data) {
+            var attachment$ = x2.mobileForm.makePhotoAttachment (data);
+            attachment$.hide ();
+            form$.find ('.' + x2.mobileForm.photoAttachmentClass).remove ();
+            form$.append (attachment$);
+            $.mobile.loading ('show');
+            x2.mobileForm.submitWithPhotos (
+                form$.attr ('action'), 
+                form$, 
+                'Actions[upload]',
+                function (response) {
+                    if (response.responseCode == 200)  {
+                        if (that.publisherIsActive) togglePublisher$.click ();
+                        $.mobile.activePage.append ($(response.response).find ('.refresh-content'));
+                        x2.main.refreshContent ();
+                        $.mobile.loading ('hide');
+                    } else {
+                        $.mobile.loading ('hide');
+                        x2.main.alert ('Upload failed', 'Error');
+                    }
+                },
+                function (error) {
+                    $.mobile.loading ('hide');
+                    x2.main.alert (error.body, 'Error');
+                }
+            );
+        }
+    });
+};
  
 
 MobileActionHistory.prototype.setUpFileUpload = function () {
@@ -97,6 +136,8 @@ MobileActionHistory.prototype.setUpPublisher = function () {
         return false;
     });
 
+     
+    that.setUpPhotoUpload (); 
      
     that.setUpFileUpload (); 
 };

@@ -27,8 +27,8 @@ class ProductFeature extends X2Model {
 
 	public function behaviors() {
 		return array_merge(parent::behaviors(),array(
-			'X2LinkableBehavior'=>array(
-				'class'=>'X2LinkableBehavior',
+			'LinkableBehavior'=>array(
+				'class'=>'LinkableBehavior',
 				'baseRoute'=>'/products/products/productFeature'
 			)
 		));

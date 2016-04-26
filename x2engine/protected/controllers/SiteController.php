@@ -1,7 +1,7 @@
 <?php
 
-/*****************************************************************************************
- * X2Engine Open Source Edition is a customer relationship management program developed by
+/***********************************************************************************
+ * X2CRM is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2016 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
@@ -22,7 +22,8 @@
  * 02110-1301 USA.
  * 
  * You can contact X2Engine, Inc. P.O. Box 66752, Scotts Valley,
- * California 95067, USA. or at email address contact@x2engine.com.
+ * California 95067, USA. on our website at www.x2crm.com, or at our
+ * email address: contact@x2engine.com.
  * 
  * The interactive user interfaces in modified source and object code versions
  * of this program must display Appropriate Legal Notices, as required under
@@ -33,7 +34,7 @@
  * X2Engine" logo. If the display of the logo is not reasonably feasible for
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2Engine".
- *****************************************************************************************/
+ **********************************************************************************/
 
 /**
  * Primary/default controller for the web application.
@@ -57,13 +58,13 @@ class SiteController extends x2base {
 
     public function behaviors() {
         return array_merge(parent::behaviors(), array(
-            'X2MobileControllerBehavior' => array(
+            'MobileControllerBehavior' => array(
                 'class' => 
                     'application.modules.mobile.components.behaviors.'.
-                        'X2MobileSiteControllerBehavior'
+                        'MobileSiteControllerBehavior'
             ),
             'CommonSiteControllerBehavior' => array(
-                'class' => 'application.components.CommonSiteControllerBehavior'),
+                'class' => 'application.components.behaviors.CommonSiteControllerBehavior'),
         ));
     }
 
@@ -1422,6 +1423,8 @@ class SiteController extends x2base {
         if (Yii::app()->isMobileApp ()) $this->redirect ('/mobile/login');
 
         
+        $this->verifyIpAccess ($this->getRealIp());
+        
         $model = new LoginForm;
         $model->useCaptcha = false;
         if ($this->loginRequiresCaptcha()) {
@@ -2212,7 +2215,7 @@ class SiteController extends x2base {
         } else {
             $model = X2Model::model($modelName)->findByPk($id);
         }
-        if ($model->asa('X2DuplicateBehavior')) {
+        if ($model->asa('DuplicateBehavior')) {
             $this->render('duplicateCheck', array(
                 'count' => $model->countDuplicates(),
                 'newRecord' => $model,
@@ -2264,6 +2267,28 @@ class SiteController extends x2base {
                     $model = X2Model::model($modelName)->findByPk($attributes['id']);
                     $model->markAsDuplicate('delete');
                 }
+            }  elseif ($action === 'mergeRecords' && isset($_POST['data'])) {
+                $attributes = json_decode($_POST['data'], true);
+                if ($ref == 'create') {
+                    $model = new $modelName;
+                    foreach ($attributes as $key => $value) {
+                        if ($key !== 'id') {
+                            $model->$key = $value;
+                        }
+                    }
+                    $model->save();
+                    $id = $model->id;
+                } else {
+                    $id = $attributes['id'];
+                    $model = X2Model::model($modelName)->findByPk($id);
+                }
+                $duplicates = $model->getDuplicates(true);
+                $idArray = array($id);
+                foreach ($duplicates as $dupe) {
+                    $idArray[] = $dupe->id;
+                }
+                echo http_build_query(array('idArray' => $idArray));
+                return;
             }  elseif (empty($action) && isset($_POST['data'])) {
                 $attributes = json_decode($_POST['data'], true);
                 $model = X2Model::model($modelName)->findByPk($attributes['id']);
@@ -2291,6 +2316,71 @@ class SiteController extends x2base {
 
     public function actionGetSkypeLink(array $usernames) {
         echo X2Html::renderSkypeLink($usernames);
+    }
+
+    
+
+    public function actionMergeRecords($modelName) {
+        $idArray = filter_input(INPUT_GET, 'idArray', FILTER_DEFAULT, FILTER_REQUIRE_ARRAY);
+        $data = filter_input(INPUT_POST, $modelName, FILTER_DEFAULT, FILTER_REQUIRE_ARRAY);
+        if (!empty($data)) {
+            $fields = X2Model::model($modelName)->getFields(true);
+            $models = array();
+            $model = new $modelName;
+            foreach ($idArray as $id) {
+                $models[$id] = X2Model::model($modelName)->findByPk($id);
+            }
+            $model->setMergedCreateDate($models);
+            foreach ($data as $fieldName => $value) {
+                $field = $fields[$fieldName];
+                if (!empty($value)) {
+                    if ($field->type === 'text') {
+                        $model->$fieldName = $value;
+                    } else {
+                        $model->$fieldName = $models[$value]->$fieldName;
+                        if ($field->uniqueConstraint) {
+                            $models[$value]->$fieldName = null;
+                            $models[$value]->update(array($fieldName));
+                        }
+                    }
+                }
+            }
+            $missingFields = array_diff(array_keys($model->attributes), array_keys($data));
+            foreach($missingFields as $attr){
+                if(!in_array($attr, $model->MergeableBehavior->restrictedFields)){
+                    $model->MergeableBehavior->setMergedField($fields[$attr], $models);
+                }
+            }
+            
+            if ($model->hasAttribute('visibility') && is_null($model->visibility)) {
+                $model->visibility = 1;
+            }
+            if ($model->hasAttribute('dupeCheck')) {
+                $model->dupeCheck = 1;
+            }
+            if ($model->save()) {
+                $model->massMergeRelatedRecords($models, true);
+                $this->redirect(array(
+                    strtolower(X2Model::getModuleName($modelName)) . '/view', 'id' => $model->id));
+            } else {
+                /**/printR($model->getErrors(), true);
+            }
+        } else {
+            if (!empty($idArray)) {
+                if (!Yii::app()->user->checkAccess(
+                    X2Model::getModuleName($modelName) . 'Update')) {
+                    $this->denied();
+                }
+                $model = X2Model::model($modelName)->findByPk($idArray[0]);
+                if (isset($model)) {
+                    $this->render('mergeRecords', array(
+                        'model' => $model,
+                        'modelName' => $modelName,
+                        'idArray' => $idArray,
+                    ));
+                }
+            }
+        }
     }
 
     

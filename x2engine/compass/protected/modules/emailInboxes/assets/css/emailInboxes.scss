@@ -1,0 +1,712 @@
+/*!*********************************************************************************
+ * X2CRM is a customer relationship management program developed by
+ * X2Engine, Inc. Copyright (C) 2011-2016 X2Engine Inc.
+ * 
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU Affero General Public License version 3 as published by the
+ * Free Software Foundation with the addition of the following permission added
+ * to Section 15 as permitted in Section 7(a): FOR ANY PART OF THE COVERED WORK
+ * IN WHICH THE COPYRIGHT IS OWNED BY X2ENGINE, X2ENGINE DISCLAIMS THE WARRANTY
+ * OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
+ * 
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.  See the GNU Affero General Public License for more
+ * details.
+ * 
+ * You should have received a copy of the GNU Affero General Public License along with
+ * this program; if not, see http://www.gnu.org/licenses or write to the Free
+ * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301 USA.
+ * 
+ * You can contact X2Engine, Inc. P.O. Box 66752, Scotts Valley,
+ * California 95067, USA. on our website at www.x2crm.com, or at our
+ * email address: contact@x2engine.com.
+ * 
+ * The interactive user interfaces in modified source and object code versions
+ * of this program must display Appropriate Legal Notices, as required under
+ * Section 5 of the GNU Affero General Public License version 3.
+ * 
+ * In accordance with Section 7(b) of the GNU Affero General Public License version 3,
+ * these Appropriate Legal Notices must retain the display of the "Powered by
+ * X2Engine" logo. If the display of the logo is not reasonably feasible for
+ * technical reasons, the Appropriate Legal Notices must display the words
+ * "Powered by X2Engine".
+ **********************************************************************************/
+
+
+
+@import "colors.scss";
+@import "forms.scss";
+
+#inline-email-form .email-sync-check-box-container {
+    overflow-y: hidden;
+    display: inline-block;
+    height: 22px;
+    line-height: 35px;
+    margin-left: 12px;
+    margin-right: 4px;
+}
+
+#inline-email-form .email-sync-check-box-container label {
+    @include dark-label;
+    margin-right: 2px;
+    width: auto !important;
+}
+
+#content {
+    background: none !important;
+    border: none !important;
+}
+
+#my-email-inbox-set-up-instructions-container, 
+#my-email-inbox-reconfigure-instructions-container {
+    margin: auto;
+    text-align: center;
+    /* height: 20px; */
+    width: 500px;
+    position: absolute;
+    top: -138px;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 57px;
+    background: $darkGray;
+    border: 1px solid $gray;
+    border-radius: 4px;
+    padding: 13px 5px 33px 5px;
+    & > div {
+        h2, ul {
+            margin: 0;
+        }
+        border: 1px solid $gray;
+        border-radius: 4px;
+        padding: 10px 10px 20px 10px;
+        background: $darkGray;
+        .imap-error-msg {
+            text-align: left;
+            border: 1px solid $gray;
+            color: red;
+            font-size: small;
+        }
+    }
+}
+
+#email-inboxes-error-message {
+    margin: auto;
+    text-align: center;
+    /* height: 20px; */
+    width: 500px;
+    position: absolute;
+    top: -138px;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 57px;
+    background: $darkGray;
+    border: 1px solid $gray;
+    border-radius: 4px;
+    padding: 13px 5px 33px 5px;
+    & > div {
+        position: absolute;
+        left: 0;
+        right: 0;
+        top: 0;
+        bottom: 0;
+        /* line-height: 112px; */
+        height: 25%;
+        margin: auto;
+    }
+}
+
+#my-email-inbox-reconfigure-instructions-container {
+    height: 140px;
+}
+
+#email-quota {
+    display: inline-block;
+    position: relative;
+    top: -22px;
+    margin-left: 9px;
+}
+
+#content .contact-name {
+    text-decoration: none;
+}
+
+.email-inbox-grid .email-inbox-tabs-multiselect {
+    width: 460px;
+    height: 200px;
+}
+
+.x2-multiselect-ui-element .irremovable-option {
+    background: #eee !important;
+    border: none !important;
+    > a > span {
+        background: none !important;
+    }
+}
+
+/***********************************************************************
+* qtips 
+***********************************************************************/
+
+.x2-qtip {
+        .contact-details {
+                padding: 3px 5px;
+        }
+        .fa.fa-plus {
+                margin-right: 2px;
+        }
+}
+
+.email-inboxes-qtip > .qtip-content {
+    padding: 0 !important;
+}
+
+.non-contact-qtip > .qtip-content {
+    padding: 0 !important;
+    > div:first-child {
+        padding: 10px;
+    }
+    .x2-button {
+        width: 100%;
+        box-sizing: border-box;
+        border-left: none;
+        border-right: none;
+        border-bottom: none;
+        border-radius: 0;
+        cursor: pointer;
+        font-size: 10px;
+        margin: 0;
+    }
+}
+
+/***********************************************************************
+* inbox menu 
+***********************************************************************/
+
+#new-message-button {
+    margin: auto;
+    margin-top: 5px;
+    min-width: 99px;
+    margin-bottom: 4px;
+    color: white;
+}
+
+#email-inbox-menu > div.portlet-content {
+    padding: 0;
+}
+
+#inbox-menu {
+    padding-bottom: 5px;
+    .folder-link {
+        text-decoration: none;
+        color: black;
+        padding-top: 3px;
+        padding-bottom: 3px;
+        padding-left: 10px;
+        display: block;
+        &:first-child {
+            margin-top: 0;
+        }
+        &.current-folder, &:hover {
+            background: #E9E9E9;
+        }
+    }
+}
+
+/***********************************************************************
+* reply page
+***********************************************************************/
+
+#reply-form .widget-title-bar {
+    padding: 0 5px;
+    line-height: 23px;
+    height: 23px;
+}
+
+/***********************************************************************
+* email message    
+***********************************************************************/
+
+#message-container {
+    border: 1px solid $gray;
+    border-radius: 3px;
+    padding: 7px;
+    padding-bottom: 37px;
+    background: white;
+    .message-attachments {
+        padding-top: 9px;
+        border-top: 1px solid $lightGray;
+        > div {
+            display: inline-block;
+            min-width: 300px;
+            background: white;
+            border: 1px solid $gray;
+            line-height: 30px;
+            padding: 0 5px;
+            margin-bottom: 4px;
+            > .attachment-download-link {
+                float: right;
+                padding: 2px 8px;
+                margin: 0;
+                margin-top: 5px;
+            }
+        }
+    }
+    .from-field {
+        font-weight: bold;
+    }
+    .real-button-group {
+        float: right;
+    }
+    .message-reply-more-button {
+        border-radius: 0 3px 3px 0;
+        border-left: none;
+        height: 27px;
+        margin-top: 0;
+        width: 14px;
+        padding: 0 3px;
+        margin-bottom: 0;
+    }
+    .reply-more-menu {
+        width: 89px;
+        border-top: 1px solid #b3b3b3;
+        > li {
+            padding-left: 25px;
+            > span {
+                left: -1px;
+            }
+        }
+    }
+    .message-reply-button {
+        height: 27px;
+        /* width: 1px; */
+        border-radius: 3px 0 0 3px;
+        padding: 1px 12px;
+        margin-top: 0;
+        margin-right: 0px;
+    }
+    .date-field {
+        float: right;
+    }
+    .to-field, .cc-field {
+        clear: both;
+        margin-top: 4px;
+        > span:first-child {
+            color: gray;
+        }
+    }
+    .message-subject {
+        font-size: 20px;
+    }
+    > hr {
+        margin-bottom: 4px;
+    }
+}
+
+iframe.message-body {
+    width: 100%;
+    border: none;
+    margin-top: 12px;
+    margin-bottom: 27px;
+}
+
+/***********************************************************************
+* search form 
+***********************************************************************/
+
+#advanced-search-form {
+    label {
+        display: inline-block;
+    }
+    position: absolute;
+    z-index: 99;
+    background: #fff;
+    border: 1px solid #999;
+    -moz-box-shadow: 0 0 15px 0 rgba(0, 0, 0, 0.5);
+    -webkit-box-shadow: 0 0 15px 0 rgba(0, 0, 0, 0.5);
+    box-shadow: 0 0 15px 0 rgba(0, 0, 0, 0.5);
+    padding: 5px 10px 5px 10px;
+    clip: rect(0px, 1000px, 1000px, -10px);
+    border-radius: 0px;
+    top: 37px;
+    box-sizing: border-box;
+    width: 50%;
+    max-width: 400px;
+    min-width: 200px;
+}
+
+#open-advanced-search-form-button {
+    > img {
+        height: 6px;
+        opacity: 0.7;
+        position: relative;
+        top: 4px;
+    }
+    &:hover > img {
+        opacity: 1;
+    }
+    position: relative;
+    left: -66px;
+    cursor: pointer;
+    display: inline-block;
+    width: 19px;
+    height: 25px;
+    top: -5px;
+}
+
+#email-advanced-search-submit {
+    margin-left: 0;
+}
+
+/***********************************************************************
+* tabs 
+***********************************************************************/
+
+#email-inbox-tabs {
+    margin-bottom: 0;
+    padding-left: 0;
+}
+
+.email-inbox-tab {
+    list-style: none;
+    display: inline-block;
+    list-style: none;
+    display: inline-block;
+    background: rgb(240, 240, 240);
+    border: 1px solid $gray;
+    border-bottom: none;
+    padding: 3px 12px 3px 12px;
+    border-radius: 4px 4px 0 0;
+    cursor: pointer;
+    &:hover {
+        background: rgb(250, 250, 250);
+    }
+    &.selected-tab {
+        background: white;
+        cursor: default;
+        &:hover {
+            background: white;
+            cursor: default;
+        }
+    }
+    a {
+        text-decoration: none;
+        font-size: 17px;
+        color: rgb(73, 73, 73);
+        &:hover {
+            text-decoration: none;
+            font-size: 17px;
+            color: rgb(73, 73, 73);
+        }
+    }
+}
+
+#email-inbox-tab-plus {
+    border-radius: 3px;
+    border-bottom: 1px solid $gray;
+    height: 21px;
+    position: relative;
+    top: 0px;
+    width: 14px;
+    text-align: center;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/***********************************************************************
+* Inbox Body 
+***********************************************************************/
+
+.inbox-body-container {
+    min-height: 700px;
+    background: none;
+    /*border: 1px solid rgb(227, 227, 227);*/
+    position: relative;
+    border-radius: 0px 4px 4px 4px;
+    .x2grid-body-container {       
+        overflow-x: hidden !important;
+    }
+}
+
+/***********************************************************************
+* inbox grid view 
+***********************************************************************/
+
+.email-inbox-grid .mailbox-back-button {
+        height: 26px;
+        width: 36px;
+        margin: 0;
+        margin-right: 5px;
+        position: relative;
+        top: -2px;
+}
+
+.email-inbox-grid {
+    .empty-text-progress-bar {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        height: 2px;
+        width: 0;
+        display: inline-block;
+        background: rgb(0, 248, 255);
+        + span {
+            position: absolute;
+        }
+    }
+    .mailbox-refresh-button {
+        height: 26px;
+        display: inline-block;
+        width: 35px;
+        /* margin-top: 0px; */
+        position: relative;
+        top: -1px;
+        opacity: 0.9;
+        padding-top: 1px;
+    }
+}
+
+#emaillistC_gvCheckbox_all {
+    margin-top: 11px;
+}
+
+.mailbox-controls > .bs-row + .bs-row {
+    height: 35px;
+}
+
+.email-inbox-grid .x2-gridview-mass-action-outer {
+    margin-top: 9px;
+    height: 24px;
+    display: inline-block;
+    & > div {
+        display: inline-block !important;
+        visibility: hidden;
+    }
+}
+
+#mail-list-mass-action-buttons > .x2-button {
+    margin: -1px 0px 0 0;
+}
+
+.x2-gridview > .mailbox-controls {
+    border: 1px solid $gray;
+    padding: 10px;
+    padding-bottom: 5px;
+    border-radius: 3px;
+    margin-bottom: 5px;
+    background: white;
+}
+
+.email-inbox-grid.grid-view {
+
+    .x2grid-body-container {
+        width: 100%;
+        border: 1px solid $gray;
+        box-sizing: border-box;
+        border-bottom: none;
+    }
+
+    table.items {
+        border: none;
+        > tbody > tr {
+            background: white;
+            cursor: pointer;
+            > td {
+                /* get rid of extra space along right edge of rightmost column */
+                border-right: none;
+                position: relative;
+                border-right: none;
+                padding: 6px 2px 6px 11px;
+                border-bottom: 1px solid $lightGray;
+            }
+        }
+    }
+    .summary {
+        margin-top: 13px;
+    }
+}
+
+.email-inbox-grid.grid-view {
+    td {
+        &.from-cell {
+            width: 180px;
+        }
+        &.subject-cell {
+            width: 100%;
+        }
+        &.date-cell {
+            width: 80px;
+            text-align: right;
+            padding-right: 12px !important;
+        }
+        &.check-box-cell {
+            width: 26px;
+            padding-left: 11px !important;
+        }
+        &.flagged-cell {
+            width: 29px;
+        }
+    }
+
+    tr {
+        &.unseen-message-row > td {
+            font-weight: bold;
+        }
+        &.seen-message-row > td {
+            background: rgb(247, 247, 247);
+        }
+    }
+
+    tr:hover > td.check-box-cell::before {
+        content: ' ';
+        background-color: rgb(238, 238, 238);
+        width: 7px;
+        height: 29px;
+        display: inline-block;
+        position: absolute;
+        top: -1px;
+        left: 0px;
+        border-right: 1px solid rgb(205, 205, 205);
+    }
+
+    .flagged-toggle {
+        font-weight: normal;
+        vertical-align: middle;
+        display: inline-block;
+    }
+}
+
+.email-inbox-grid > .pager.empty-pager {
+    height: 16px;
+}
+
+
+.email-inbox-grid {
+    .pager {
+        border: 1px solid $gray;
+        border-radius: 0 0 3px 3px;
+        border-top: none;
+        margin-top: -1px;
+    }
+    .x2-gridview-top-pager {
+        position: relative;
+        top: 9px;
+    }
+}
+
+/***********************************************************************
+* search bar 
+***********************************************************************/
+
+#email-search-submit {
+    border-radius: 0 3px 3px 0;
+    display: inline-block;
+    margin-left: 0;
+    margin-top: 0;
+    border-left: none;
+}
+
+#email-search-box {
+    height: 27px;
+    border-radius: 3px 0 0 3px;
+    border: 1px solid rgb(181, 181, 181);
+    padding: 8px;
+    box-sizing: border-box;
+    width: 50%;
+    max-width: 400px;
+    min-width: 200px;
+}
+
+/***********************************************************************
+* star icon 
+***********************************************************************/
+
+.flagged-toggle::before {
+    content: '\2605';
+    display: inline-block;
+    position: absolute;
+    width: 3px;
+    height: 0px;
+    top: 2px;
+    font-size: 20px;
+    left: 10px;
+    color: rgb(183, 183, 183);
+}
+
+/* adjust contrast for rows with white background */
+
+.unseen-message-row .flagged-toggle::before {
+    /*color: rgb(186, 186, 186);*/
+}
+
+.flagged-toggle {
+    &.flagged::before {
+        color: rgb(231, 197, 72);
+    }
+    &::after {
+        content: '\2605';
+        display: inline-block;
+        position: absolute;
+        width: 3px;
+        height: 0px;
+        top: 7px;
+        font-size: 13px;
+        left: 13px;
+        color: rgb(236, 236, 236);
+    }
+    &.flagged::after {
+        color: rgb(255, 230, 135);
+    }
+    &:hover::after {
+        color: rgb(246, 246, 246);
+    }
+    &.flagged:hover::after {
+        color: rgb(255, 242, 191);
+    }
+}
+
+/***********************************************************************
+* flag icon 
+***********************************************************************/
+
+/*.flagged-toggle::before {
+    content: ' ';
+    display: inline-block;
+    position: absolute;
+    width: 3px;
+    height: 0px;
+    top: 8px;
+    left: 11px;
+    border: 6px solid rgb(219, 219, 219);
+    border-right: 6px solid transparent;
+}
+.flagged-toggle.flagged::before {
+    border: 6px solid rgb(240, 209, 93);
+    border-right: 6px solid transparent;
+}
+.flagged-toggle::after {
+    content: ' ';
+    display: inline-block;
+    position: absolute;
+    width: 0px;
+    height: 0px;
+    top: 10px;
+    left: 13px;
+    border: 4px solid rgb(236, 236, 236);
+    border-right: 4px solid transparent;
+}
+.flagged-toggle.flagged::after {
+    border: 4px solid rgb(255, 230, 135);
+    border-right: 4px solid transparent;
+}
+.flagged-toggle:hover::after {
+    border: 4px solid rgb(246, 246, 246);
+    border-right: 4px solid transparent;
+}
+.flagged-toggle.flagged:hover::after {
+    border: 4px solid rgb(255, 242, 191);
+    border-right: 4px solid transparent;
+}*/

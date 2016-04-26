@@ -1,0 +1,82 @@
+Delivered-To: dropbox@testdomain.com
+Received: by 10.194.206.98 with SMTP id ln2csp65399wjc;
+        Wed, 16 Oct 2013 14:23:02 -0700 (PDT)
+X-Received: by 10.68.98.229 with SMTP id el5mr4893377pbb.164.1381958582065;
+        Wed, 16 Oct 2013 14:23:02 -0700 (PDT)
+Return-Path: <director@rep.com>
+Received: from zimbra-in01.hubmill.net ([180.179.212.45])
+        by mx.google.com with ESMTP id u7si6633737pau.310.1969.12.31.16.00.00;
+        Wed, 16 Oct 2013 14:23:01 -0700 (PDT)
+Received-SPF: neutral (google.com: 180.179.212.45 is neither permitted nor denied by best guess record for domain of director@rep.com) client-ip=180.179.212.45;
+Authentication-Results: mx.google.com;
+       spf=neutral (google.com: 180.179.212.45 is neither permitted nor denied by best guess record for domain of director@rep.com) smtp.mail=director@rep.com
+Received: from localhost (localhost [127.0.0.1])
+	by zimbra-in01.hubmill.net (Postfix) with ESMTP id 36799FA956
+	for <dropbox@testdomain.com>; Wed, 16 Oct 2013 22:21:57 +0100 (BST)
+Received: from zimbra-in01.hubmill.net ([127.0.0.1])
+	by localhost (zimbra-in01.hubmill.net [127.0.0.1]) (amavisd-new, port 10032)
+	with ESMTP id wC9fgv30FfKU for <dropbox@testdomain.com>;
+	Wed, 16 Oct 2013 22:21:36 +0100 (BST)
+Received: from localhost (localhost [127.0.0.1])
+	by zimbra-in01.hubmill.net (Postfix) with ESMTP id 36727FA953
+	for <dropbox@testdomain.com>; Wed, 16 Oct 2013 22:21:36 +0100 (BST)
+X-Virus-Scanned: amavisd-new at zimbra-in01.hubmill.net
+Received: from zimbra-in01.hubmill.net ([127.0.0.1])
+	by localhost (zimbra-in01.hubmill.net [127.0.0.1]) (amavisd-new, port 10026)
+	with ESMTP id iVh-4_jzdV97 for <dropbox@testdomain.com>;
+	Wed, 16 Oct 2013 22:21:36 +0100 (BST)
+Received: from zimbra-in01.hubmill.net (zimbra-in01.hubmill.net [180.179.212.45])
+	by zimbra-in01.hubmill.net (Postfix) with ESMTP id 0D490FA957
+	for <dropbox@testdomain.com>; Wed, 16 Oct 2013 22:21:36 +0100 (BST)
+Date: Wed, 16 Oct 2013 22:21:35 +0100 (BST)
+From: Sales Rep <sales@rep.com>
+Reply-To: Sales Rep <sales@rep.com>
+To: dropbox@testdomain.com
+Message-ID: <208697768.12602.1381958495620.JavaMail.zimbra@testdomain.com>
+In-Reply-To: <BAY170-W9275461F82D2024AEBA2DBC6040@phx.gbl>
+References: <33392758.351.1381385804823.JavaMail.Owner@WSG-Work-2> <BAY170-W1964C75E3B992D770FFE5FC61F0@phx.gbl> <383630528.293.1381548301905.JavaMail.zimbra@rep.com> <BAY170-W9275461F82D2024AEBA2DBC6040@phx.gbl>
+Subject: Fwd: Website
+MIME-Version: 1.0
+Content-Type: multipart/alternative;
+	boundary="----=_Part_12601_1552839737.1381958495619"
+X-Originating-IP: [220.237.3.146]
+X-Mailer: Zimbra 8.0.4_GA_5737 (ZimbraWebClient - FF24 (Win)/8.0.4_GA_5737)
+Thread-Topic: Website
+Thread-Index: dFjZa9jycAfSP5EfPUwi5pfUVxjGiQ==
+
+------=_Part_12601_1552839737.1381958495619
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
+
+
+----- Forwarded Message -----
+
+From: "Test Contact" <customer@prospect.com>
+To: "Sales Rep" <sales@rep.com>
+Sent: Wednesday, 16 October, 2013 3:41:15 PM
+Subject: RE: Website
+
+Hi Sales,
+
+Test test test test test test, test test test. Test.%123%   
+
+Regards
+
+Test
+
+
+Date: Sat, 12 Oct 2013 04:25:01 +0100
+From: sales@rep.com
+To: customer@prospect.com
+Subject: Re: Website
+
+Hi Test,
+
+test test test, test test test
+
+Regards,
+
+- Sales.
+
+
+

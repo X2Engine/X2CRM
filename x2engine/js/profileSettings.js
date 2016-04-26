@@ -1,5 +1,5 @@
-/*****************************************************************************************
- * X2Engine Open Source Edition is a customer relationship management program developed by
+/***********************************************************************************
+ * X2CRM is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2016 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
@@ -20,7 +20,8 @@
  * 02110-1301 USA.
  * 
  * You can contact X2Engine, Inc. P.O. Box 66752, Scotts Valley,
- * California 95067, USA. or at email address contact@x2engine.com.
+ * California 95067, USA. on our website at www.x2crm.com, or at our
+ * email address: contact@x2engine.com.
  * 
  * The interactive user interfaces in modified source and object code versions
  * of this program must display Appropriate Legal Notices, as required under
@@ -31,7 +32,7 @@
  * X2Engine" logo. If the display of the logo is not reasonably feasible for
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2Engine".
- *****************************************************************************************/
+ **********************************************************************************/
 
 (function () {
 
@@ -753,11 +754,17 @@ function showHideThemeSaveButton () {
     if (currentPredefTheme === 'Custom') {
         // $('#prefs-save-theme-button').hide (); 
          
+        // $('#prefs-export-theme-button').hide (); 
+         
     } else if (checkPredefThemeEditPermissions ()) {
         $('#prefs-save-theme-button').show (); 
         $('#prefs-save-theme-hint').show (); 
          
+        $('#prefs-export-theme-button').show (); 
+         
     } else {
+         
+        // $('#prefs-export-theme-button').hide (); 
          
         // $('#prefs-save-theme-button').hide (); 
         // $('#prefs-save-theme-hint').hide (); 
@@ -809,6 +816,8 @@ function setupThemeSelection () {
         if ($(this).find (':selected').attr ('id') === 'custom-theme-option') {
             $('#prefs-save-theme-button').hide (); 
              
+            $('#prefs-export-theme-button').hide (); 
+             
             $('#prefs-save-theme-hint').hide (); 
             return;
         }
@@ -819,6 +828,43 @@ function setupThemeSelection () {
 
 }
 
+
+function setupThemeExport () {
+    $('#prefs-export-theme-button').click (function () {
+        $.ajax ({
+            url: 'ajaxExportTheme', 
+            data: {
+                'themeId': $('#themeName').val ()
+            },
+            dataType: 'json',
+            success: function (data) {
+                if (typeof data['downloadUrl'] !== 'undefined') {
+                    var url = data['downloadUrl'];
+                    window.location.href = url;
+                }
+            }
+        });
+    });
+}
+
+function setupThemeImport () {
+    $('#prefs-import-theme-button').click (function () {
+        if ($('#theme-import-form').closest ('.ui-dialog').length) {
+            $('#theme-import-form').dialog ('open');
+        }
+        $('#theme-import-form').dialog ({
+            title: x2.profileSettings.translations['themeImportDialogTitle'],
+            autoOpen: true,
+            width: 500,
+            buttons: [
+                {
+                    text: x2.profileSettings.translations['close'],
+                    click: function () { $(this).dialog ('close'); }
+                }
+            ]
+        });
+    });
+}
 
 
 function setupDeleteThemeButton(){
@@ -863,6 +909,9 @@ $(document).ready(function profileSettingsMain () {
     setupThemeCreation ();
     setupThemeSaving ();
     setupDeleteThemeButton();
+     
+    setupThemeExport ();
+    setupThemeImport ();
      
 
     showHideThemeSaveButton ();

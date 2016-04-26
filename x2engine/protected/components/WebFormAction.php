@@ -1,6 +1,6 @@
 <?php
-/*****************************************************************************************
- * X2Engine Open Source Edition is a customer relationship management program developed by
+/***********************************************************************************
+ * X2CRM is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2016 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
@@ -21,7 +21,8 @@
  * 02110-1301 USA.
  * 
  * You can contact X2Engine, Inc. P.O. Box 66752, Scotts Valley,
- * California 95067, USA. or at email address contact@x2engine.com.
+ * California 95067, USA. on our website at www.x2crm.com, or at our
+ * email address: contact@x2engine.com.
  * 
  * The interactive user interfaces in modified source and object code versions
  * of this program must display Appropriate Legal Notices, as required under
@@ -32,7 +33,7 @@
  * X2Engine" logo. If the display of the logo is not reasonably feasible for
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2Engine".
- *****************************************************************************************/
+ **********************************************************************************/
 
 
 class WebFormAction extends CAction {
@@ -77,7 +78,51 @@ class WebFormAction extends CAction {
     }
 
     
+    /*
+    Helper funtion for run ().
+    */
+    private static function formatEmailBodyAttrs ($emailBody, $model) {
+        // set the template variables
+        $matches = array();
 
+        // find all the things
+        preg_match_all('/{\w+}/', $emailBody, $matches);
+
+        if(isset($matches[0])){     // loop through the things
+            foreach($matches[0] as $match){
+                $match = substr($match, 1, -1); // remove { and }
+
+                if($model->hasAttribute($match)){
+
+                    // get the correctly formatted attribute
+                    $value = $model->renderAttribute($match, false, true);
+                    $emailBody = preg_replace(
+                        '/{'.$match.'}/', $value, $emailBody);
+                }
+            }
+        }
+        return $emailBody;
+    }
+    
+
+    
+    /**
+     * Sets tracking key of contact model. First looks for the key generated on client (this key
+     * allows the visitor to be tracked on a domain other than the one on which the crm is
+     * running) then, if no key exists, generates a new key.
+     *
+     * $model object the contact model
+     */
+    private function setNewWebleadTrackingKey ($model) {
+        if (empty($model->trackingKey)) { 
+            if(isset($_COOKIE['x2_key']) && ctype_alnum($_COOKIE['x2_key'])) { 
+                $model->trackingKey = $_COOKIE['x2_key'];
+            } else {
+                $model->trackingKey = Contacts::getNewTrackingKey();
+            }
+
+        }
+    }
     
 
     private function handleWebleadFormSubmission (X2Model $model, $extractedParams) {
@@ -96,6 +141,16 @@ class WebFormAction extends CAction {
             $now = time();
 
             
+            if (Yii::app()->contEd('pro')) {
+                foreach($extractedParams['fieldList'] as $field){
+                    if($field['required'] &&
+                       (!isset($model->{$field['fieldName']}) || $model->{$field['fieldName']} == '')){
+
+                        $model->addError($field['fieldName'], Yii::t('app', 'Cannot be blank.'));
+                    }
+                }
+            }
+            
             $model->visibility = 1;
 
             $model->validate (null, false);
@@ -104,14 +159,18 @@ class WebFormAction extends CAction {
                 $model->updatedBy = 'admin';
 
                 
+                if(Yii::app()->contEd('pro')) {
+                    $this->setNewWebleadTrackingKey ($model);
+                }
                 
-                if($model->asa('X2DuplicateBehavior') && $model->checkForDuplicates()){
+                
+                if($model->asa('DuplicateBehavior') && $model->checkForDuplicates()){
                     $duplicates = $model->getDuplicates();
                     $oldest = $duplicates[0];
                     $fields = $model->getFields(true);
                     foreach ($fields as $field) {
                         if (!in_array($field->fieldName,
-                                        $model->X2MergeableBehavior->restrictedFields)
+                                        $model->MergeableBehavior->restrictedFields)
                                 && !is_null($model->{$field->fieldName})) {
                             if ($field->type === 'text' && !empty($oldest->{$field->fieldName})) {
                                 $oldest->{$field->fieldName} .= "\n--\n" . $model->{$field->fieldName};
@@ -130,6 +189,26 @@ class WebFormAction extends CAction {
                 
                 $success = $model->save();
                 
+                
+                if (Yii::app()->contEd('pla') && Yii::app()->settings->enableFingerprinting &&
+                    isset ($_POST['fingerprint'])) {
+
+                    $attributes = (isset($_POST['fingerprintAttributes']))? 
+                        json_decode($_POST['fingerprintAttributes'], true) : array();
+
+                    $anonContact = AnonContact::model ()
+                        ->findByFingerprint ($_POST['fingerprint'], $attributes); 
+
+                    // if there's not an anonyomous contact, then the fingerprint match
+                    // was for an actual contact. 
+                    if ($anonContact !== null) {
+                        $model->mergeWithAnonContact ($anonContact);
+                    } else {
+                        $model->setFingerprint ($_POST['fingerprint'], $attributes);
+                    }
+
+                    $success = $success && $model->save();
+                }
                 
 
                 //TODO: upload profile picture url from webleadfb
@@ -171,6 +250,17 @@ class WebFormAction extends CAction {
                     $event->save();
 
                     
+                    if (Yii::app()->contEd('pro')) {
+                        // email to send from
+                        $emailFrom = Credentials::model()->getDefaultUserAccount(
+                            Credentials::$sysUseId['systemResponseEmail'], 'email');
+                        if($emailFrom == Credentials::LEGACY_ID)
+                            $emailFrom = array(
+                                'name' => Yii::app()->settings->emailFromName,
+                                'address' => Yii::app()->settings->emailFromAddr
+                            );
+                    }
+                    
 
                     if($model->assignedTo != 'Anyone' && $model->assignedTo != '') {
 
@@ -191,6 +281,66 @@ class WebFormAction extends CAction {
                         if($profile !== null && !empty($profile->emailAddress)){
 
                             
+                            if (Yii::app()->contEd('pro') && 
+                                $extractedParams['userEmailTemplate']) {
+
+                                /* We'll be using the user's own email account to send the
+                                web lead response (since the contact has been assigned) and
+                                additionally, if no system notification account is available,
+                                as the account for sending the notification to the user of
+                                the new web lead (since $emailFrom is going to be modified,
+                                and it will be that way when this code block is exited and the
+                                time comes to send the "welcome aboard" email to the web lead)*/
+                                $emailFrom = Credentials::model()->getDefaultUserAccount(
+                                    $profile->user->id, 'email');
+                                if($emailFrom == Credentials::LEGACY_ID)
+                                    $emailFrom = array(
+                                        'name' => $profile->fullName,
+                                        'address' => $profile->emailAddress
+                                    );
+
+                                /* Security Check: ensure that at least one webform is using this
+                                email template */
+                                /* if(!empty($userEmailTemplate) &&
+                                CActiveRecord::model('WebForm')->exists(
+                                    'userEmailTemplate=:template',array(
+                                        ':template'=>$userEmailTemplate))) { */
+
+                                $template = X2Model::model('Docs')->findByPk(
+                                    $extractedParams['userEmailTemplate']);
+                                if($template){
+                                    $emailBody = $template->text;
+
+                                    $subject = '';
+                                    if($template->subject){
+                                        $subject = $template->subject;
+                                    }
+
+                                    $emailBody = self::formatEmailBodyAttrs ($emailBody, $model);
+
+                                    $address = array(
+                                        'to' => array(array('', $profile->emailAddress)));
+
+                                    $notifEmailFrom = Credentials::model()->getDefaultUserAccount(
+                                        Credentials::$sysUseId['systemNotificationEmail'], 'email');
+
+                                    /* Use the same sender as web lead response if notification
+                                    emailer not available */
+                                    if($notifEmailFrom == Credentials::LEGACY_ID)
+                                        $notifEmailFrom = $emailFrom;
+
+                                    // send user template email
+                                    $status = $this->controller->sendUserEmail(
+                                        $address, $subject, $emailBody, null, $notifEmailFrom);
+
+                                    if ($status['code'] !== '200') {
+                                        /**/AuxLib::debugLog (
+                                            'Error: sendUserEmail: '.$status['message']);
+                                    }
+
+                                }
+                                // }
+                            } else { 
                                 $subject = Yii::t('marketing', 'New Web Lead');
                                 $message =
                                     Yii::t('marketing',
@@ -210,10 +360,64 @@ class WebFormAction extends CAction {
                                 $status = $this->controller->sendUserEmail(
                                     $address, $subject, $message, null, $emailFrom);
                             
+                            }
+                            
                         }
 
                     }
 
+                    
+                    /* send new weblead an email if we have their email address and this web
+                    form has a weblead email template */
+                    if(Yii::app()->contEd('pro') && $extractedParams['webleadEmailTemplate'] &&
+                       !empty($model->email)) {
+
+                        /* Security Check: ensure that at least one webform is using this
+                        email template */
+                        /* if(CActiveRecord::model('WebForm')->exists(
+                            'webleadEmailTemplate=:template',array(
+                                ':template'=>$webleadEmailTemplate))){ */
+                        $template = X2Model::model('Docs')->findByPk(
+                            $extractedParams['webleadEmailTemplate']);
+                        if($template !== null){
+                            $emailBody = $template->text;
+
+                            $subject = '';
+                            if($template->subject){
+                                $subject = $template->subject;
+                            }
+
+                            $emailBody = self::formatEmailBodyAttrs ($emailBody, $model);
+
+                            $address = array('to' => array(array((isset($model->firstName) ?
+                                $model->firstName : '').' '.
+                                    (isset($model->lastName) ? $model->lastName :
+                                ''), $model->email)));
+
+                            // send user template email
+                            $status = $this->controller->sendUserEmail(
+                                $address, $subject, $emailBody, null, $emailFrom);
+                            
+                            if ($status['code'] !== '200') {
+                                /**/AuxLib::debugLog (
+                                    'Error: sendUserEmail: '.$status['message']);
+                            }
+                        }
+                        // }
+                    }
+
+                    if (Yii::app()->contEd('pro')) {
+                        if(class_exists('WebListenerAction') && $model->trackingKey !== null) {
+                            WebListenerAction::setKey($model->trackingKey);
+                        }
+
+                        if(!empty($tags)){
+                            X2Flow::trigger('RecordTagAddTrigger', array(
+                                'model' => $model,
+                                'tags' => $tags,
+                            ));
+                        }
+                    }
                     
                 } else {
                     $errMsg = 'Error: WebListenerAction.php: model failed to save';
@@ -230,16 +434,38 @@ class WebFormAction extends CAction {
 
                 Yii::app()->end(); // success!
             }
+        } elseif (Yii::app()->contEd('pro') && class_exists('WebListenerAction')){
+            if (isset ($_COOKIE['x2_key']))  {
+                if (isset ($_SERVER['HTTP_REFERER'])) {
+                    // since the web tracking script passes the website url in the web request,
+                    // the web listener expects the website url to be in the $_GET superglobal
+                    $_GET['url'] = $_SERVER['HTTP_REFERER'];
+                }
+                WebListenerAction::track();
+            }
         } 
 
         $sanitizedGetParams = self::sanitizeGetParams ();
 
+        
+        if (Yii::app()->contEd('pro')) {
+            $viewParams = array_merge (array (
+                'model' => $model,
+                'type' => 'weblead',
+                'fieldList' => $extractedParams['fieldList'],
+                'css' => $extractedParams['css'], 
+                'header' => $extractedParams['header']
+            ), $sanitizedGetParams);
+            $this->controller->renderPartial('application.components.views.webForm', $viewParams);
+        } else {
         
             $this->controller->renderPartial(
                 'application.components.views.webForm', 
                 array_merge (array(
                     'type' => 'weblead'
                 ), $sanitizedGetParams));
+        
+        }
         
 
     }
@@ -271,6 +497,10 @@ class WebFormAction extends CAction {
                 $description = $_POST['Services']['description'];
             }
 
+            
+            if (Yii::app()->contEd('pro')) {
+                $model->setX2Fields($_POST['Services'],true);
+            }
             
 
             // Extra sanitizing
@@ -320,6 +550,29 @@ class WebFormAction extends CAction {
             if (isset ($description))
                 $model->description = CHtml::encode($description);
 
+            
+            if (Yii::app()->contEd('pro')) {
+                $contactFields = array('firstName', 'lastName', 'email', 'phone');
+                foreach($extractedParams['fieldList'] as $field){
+                    if(in_array($field['fieldName'], $contactFields)){
+                        if($field['required'] &&
+                           (!isset($_POST['Services'][$field['fieldName']]) ||
+                            $_POST['Services'][$field['fieldName']] == '')){
+
+                            $model->addError(
+                                $field['fieldName'], Yii::t('app', 'Cannot be blank.'));
+                        }
+                    }else{
+                        if($field['required'] &&
+                           (!isset($model->{$field['fieldName']}) || 
+                            $model->{$field['fieldName']} == '')) {
+
+                            $model->addError(
+                                $field['fieldName'], Yii::t('app', 'Cannot be blank.'));
+                        }
+                    }
+                }
+            }
             
             $model->validate (null, false);
 
@@ -467,11 +720,23 @@ class WebFormAction extends CAction {
         $sanitizedGetParams = self::sanitizeGetParams ();
 
         
+        if (Yii::app()->contEd('pro')) {
+            $viewParams = array_merge (array (
+                'model' => $model,
+                'type' => 'service',
+                'fieldList' => $extractedParams['fieldList'],
+                'css' => $extractedParams['css']
+            ), $sanitizedGetParams);
+            $this->controller->renderPartial('application.components.views.webForm', $viewParams);
+        } else {
+        
             $this->controller->renderPartial (
                 'application.components.views.webForm',
                 array_merge (array(
                     'model' => $model, 'type' => 'service'
                 ), $sanitizedGetParams));
+        
+        }
         
     }
 
@@ -522,6 +787,58 @@ class WebFormAction extends CAction {
                 $extractedParams['redirectUrl'] = $webForm->redirectUrl;
         }
 
+        
+        if (Yii::app()->contEd('pro')) {
+
+            // retrieve list of fields (if any)
+            $fieldList = array ();
+            if (isset ($webForm))
+                $fieldList = CJSON::decode ($webForm->fields);
+
+            // purify fields
+            $purifier = new CHtmlPurifier ();
+            if (is_array ($fieldList) && sizeof ($fieldList) > 0) {
+                foreach($fieldList as &$field){
+                    $tempField = array();
+                    foreach($field as $key => $val){
+                        $key=$purifier->purify($key);
+                        $tempField[$key] = $purifier->purify($val);
+                    }
+                    $field = $tempField;
+                }
+            }
+
+            if (!is_array($fieldList)) $fieldList = array ();
+            $extractedParams['fieldList'] = $fieldList;
+
+            $css = '';
+            if(isset($_GET['css'])){
+                $css = $purifier->purify($_GET['css']);
+            }
+            $extractedParams['css'] = $css;
+
+            if ($modelClass === 'Contacts') {
+                $extractedParams['header'] = '';
+                $extractedParams['userEmailTemplate'] = null;
+                $extractedParams['webleadEmailTemplate'] = null;
+
+                if (isset ($webForm)) { // new method
+                    if (!empty ($webForm->header)) 
+                        $extractedParams['header'] = $webForm->header;
+                    if (!empty ($webForm->userEmailTemplate)) 
+                        $extractedParams['userEmailTemplate'] = $webForm->userEmailTemplate;
+                    if (!empty ($webForm->webleadEmailTemplate)) 
+                        $extractedParams['webleadEmailTemplate'] = $webForm->webleadEmailTemplate;
+                } else { // legacy method
+                    if(isset($_GET['header'])){ 
+                        $webFormLegacy = WebForm::model()->findByPk($_GET['header']);
+                        if($webFormLegacy){
+                            $extractedParams['header'] = $webFormLegacy->header;
+                        }
+                    }
+                }
+            }
+        }
         
 
         if ($modelClass === 'Contacts') {

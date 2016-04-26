@@ -1,0 +1,265 @@
+/* Photo Gallery */
+/* line 3, ../../../../compass/sass/protected/extensions/gallerymanager/assets/galleryManager.scss */
+/* line 4, ../../../../compass/sass/protected/extensions/gallerymanager/assets/galleryManager.scss */
+.GalleryEditor {
+  position: relative;
+  margin-top: 5px;
+}
+/* line 7, ../../../../compass/sass/protected/extensions/gallerymanager/assets/galleryManager.scss */
+.GalleryEditor div.gform {
+  margin: 0;
+}
+/* line 9, ../../../../compass/sass/protected/extensions/gallerymanager/assets/galleryManager.scss */
+.GalleryEditor div.gform > .btn:first-child {
+  margin-left: 4px;
+}
+/* line 12, ../../../../compass/sass/protected/extensions/gallerymanager/assets/galleryManager.scss */
+.GalleryEditor div.gform .btn {
+  /* x2modstart */
+  /*padding: 4px 8px;*/
+  /* x2modend */
+}
+/* line 18, ../../../../compass/sass/protected/extensions/gallerymanager/assets/galleryManager.scss */
+.GalleryEditor .photo {
+  position: relative;
+  float: left;
+  background-color: #fff;
+  margin: 4px;
+  height: 178px;
+  width: 140px;
+  display: block;
+  padding: 4px;
+  line-height: 1;
+  border: 1px solid #F5F5F5;
+  -webkit-border-radius: 4px;
+  -moz-border-radius: 4px;
+  border-radius: 4px;
+  -webkit-box-shadow: 0 1px 1px rgba(0, 0, 0, 0.075);
+  -moz-box-shadow: 0 1px 1px rgba(0, 0, 0, 0.075);
+  box-shadow: 0 1px 1px rgba(0, 0, 0, 0.075);
+}
+/* line 35, ../../../../compass/sass/protected/extensions/gallerymanager/assets/galleryManager.scss */
+.GalleryEditor .photo img {
+  width: 140px;
+  height: auto;
+}
+/* line 39, ../../../../compass/sass/protected/extensions/gallerymanager/assets/galleryManager.scss */
+.GalleryEditor .photo a {
+  padding-left: 8px;
+}
+/* line 42, ../../../../compass/sass/protected/extensions/gallerymanager/assets/galleryManager.scss */
+.GalleryEditor .photo .actions {
+  float: right;
+  position: absolute;
+  bottom: 4px;
+  right: 4px;
+}
+/* line 49, ../../../../compass/sass/protected/extensions/gallerymanager/assets/galleryManager.scss */
+.GalleryEditor hr {
+  margin: 0 4px;
+}
+/* line 52, ../../../../compass/sass/protected/extensions/gallerymanager/assets/galleryManager.scss */
+.GalleryEditor .fileinput-button {
+  position: relative;
+  overflow: hidden;
+  margin-left: 8px;
+  margin-top: 4px;
+  margin-bottom: 4px;
+}
+/* line 58, ../../../../compass/sass/protected/extensions/gallerymanager/assets/galleryManager.scss */
+.GalleryEditor .fileinput-button input {
+  position: absolute;
+  top: 0;
+  right: 0;
+  margin: 0;
+  transform: translate(-300px, 0) scale(4);
+  font-size: 23px;
+  opacity: 0;
+  filter: alpha(opacity=0);
+  -moz-transform: translate(-300px, 0) scale(4);
+  direction: ltr;
+  cursor: pointer;
+}
+/* line 72, ../../../../compass/sass/protected/extensions/gallerymanager/assets/galleryManager.scss */
+.GalleryEditor .preview {
+  overflow: hidden;
+  width: 200px;
+  height: 156px;
+  margin-right: 10px;
+  overflow: hidden;
+  float: left;
+}
+/* line 79, ../../../../compass/sass/protected/extensions/gallerymanager/assets/galleryManager.scss */
+.GalleryEditor .preview img {
+  width: 200px;
+}
+/* line 83, ../../../../compass/sass/protected/extensions/gallerymanager/assets/galleryManager.scss */
+.GalleryEditor .photo-editor {
+  min-height: 156px;
+  margin-bottom: 4px;
+  padding: 4px;
+  border: 1px solid #F5F5F5;
+  -webkit-border-radius: 4px;
+  -moz-border-radius: 4px;
+  border-radius: 4px;
+  -webkit-box-shadow: 0 1px 1px rgba(0, 0, 0, 0.075);
+  -moz-box-shadow: 0 1px 1px rgba(0, 0, 0, 0.075);
+  box-shadow: 0 1px 1px rgba(0, 0, 0, 0.075);
+}
+
+/* line 6, ../../../../compass/sass/protected/extensions/gallerymanager/assets/galleryManager.scss */
+/* line 8, ../../../../compass/sass/protected/extensions/gallerymanager/assets/galleryManager.scss */
+/* line 11, ../../../../compass/sass/protected/extensions/gallerymanager/assets/galleryManager.scss */
+/* line 17, ../../../../compass/sass/protected/extensions/gallerymanager/assets/galleryManager.scss */
+/* line 34, ../../../../compass/sass/protected/extensions/gallerymanager/assets/galleryManager.scss */
+/* line 38, ../../../../compass/sass/protected/extensions/gallerymanager/assets/galleryManager.scss */
+/* line 41, ../../../../compass/sass/protected/extensions/gallerymanager/assets/galleryManager.scss */
+/* line 48, ../../../../compass/sass/protected/extensions/gallerymanager/assets/galleryManager.scss */
+/* line 51, ../../../../compass/sass/protected/extensions/gallerymanager/assets/galleryManager.scss */
+/* line 57, ../../../../compass/sass/protected/extensions/gallerymanager/assets/galleryManager.scss */
+/* line 71, ../../../../compass/sass/protected/extensions/gallerymanager/assets/galleryManager.scss */
+/* line 78, ../../../../compass/sass/protected/extensions/gallerymanager/assets/galleryManager.scss */
+/* line 82, ../../../../compass/sass/protected/extensions/gallerymanager/assets/galleryManager.scss */
+/* modal styles*/
+/* line 98, ../../../../compass/sass/protected/extensions/gallerymanager/assets/galleryManager.scss */
+/* line 126, ../../../../compass/sass/protected/extensions/gallerymanager/assets/galleryManager.scss */
+.photo-editor form {
+  margin-bottom: 0;
+}
+
+/* line 104, ../../../../compass/sass/protected/extensions/gallerymanager/assets/galleryManager.scss */
+/* line 134, ../../../../compass/sass/protected/extensions/gallerymanager/assets/galleryManager.scss */
+.GalleryEditor .caption h5 {
+  margin: 0;
+  font-size: 13px;
+  white-space: nowrap;
+  overflow: hidden;
+}
+/* line 140, ../../../../compass/sass/protected/extensions/gallerymanager/assets/galleryManager.scss */
+.GalleryEditor .caption p {
+  height: 3em;
+  overflow: hidden;
+  font-size: 13px;
+}
+/* line 146, ../../../../compass/sass/protected/extensions/gallerymanager/assets/galleryManager.scss */
+.GalleryEditor.no-desc .photo {
+  height: 138px;
+}
+/* line 149, ../../../../compass/sass/protected/extensions/gallerymanager/assets/galleryManager.scss */
+.GalleryEditor.no-name .photo {
+  height: 160px;
+}
+/* line 152, ../../../../compass/sass/protected/extensions/gallerymanager/assets/galleryManager.scss */
+.GalleryEditor.no-name-no-desc .photo {
+  height: 120px;
+}
+/* line 155, ../../../../compass/sass/protected/extensions/gallerymanager/assets/galleryManager.scss */
+.GalleryEditor .image-preview {
+  height: 88px;
+  overflow: hidden;
+  cursor: pointer;
+}
+/* line 160, ../../../../compass/sass/protected/extensions/gallerymanager/assets/galleryManager.scss */
+.GalleryEditor .photo-select {
+  position: absolute;
+  bottom: 8px;
+  left: 8px;
+}
+/* line 165, ../../../../compass/sass/protected/extensions/gallerymanager/assets/galleryManager.scss */
+.GalleryEditor .photo.selected {
+  background-color: #cef;
+  border-color: blue;
+}
+/* line 169, ../../../../compass/sass/protected/extensions/gallerymanager/assets/galleryManager.scss */
+.GalleryEditor .overlay {
+  display: none;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+/* line 177, ../../../../compass/sass/protected/extensions/gallerymanager/assets/galleryManager.scss */
+.GalleryEditor .overlay-bg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  background-color: #efefef;
+  opacity: .5;
+  width: 100%;
+  height: 100%;
+}
+/* line 186, ../../../../compass/sass/protected/extensions/gallerymanager/assets/galleryManager.scss */
+.GalleryEditor.over .overlay {
+  display: block;
+}
+/* line 189, ../../../../compass/sass/protected/extensions/gallerymanager/assets/galleryManager.scss */
+.GalleryEditor .drop-hint {
+  background-color: #efefef;
+  border: 2px #777 dashed;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  height: 100px;
+  width: 50%;
+  margin: -50px 0 0 -25%;
+  text-align: center;
+}
+/* line 200, ../../../../compass/sass/protected/extensions/gallerymanager/assets/galleryManager.scss */
+.GalleryEditor .drop-hint-info {
+  color: #777;
+  font-weight: bold;
+  font-size: 30px;
+  margin-top: 35px;
+  vertical-align: middle;
+  display: inline-block;
+}
+/* line 208, ../../../../compass/sass/protected/extensions/gallerymanager/assets/galleryManager.scss */
+.GalleryEditor .progress-overlay {
+  display: none;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+/* line 215, ../../../../compass/sass/protected/extensions/gallerymanager/assets/galleryManager.scss */
+.GalleryEditor .progress-overlay .modal {
+  position: relative;
+  top: 80px;
+}
+/* line 221, ../../../../compass/sass/protected/extensions/gallerymanager/assets/galleryManager.scss */
+.GalleryEditor a.btn, .GalleryEditor a.close {
+  text-decoration: none;
+}
+/* line 225, ../../../../compass/sass/protected/extensions/gallerymanager/assets/galleryManager.scss */
+.GalleryEditor .preview-modal {
+  width: 720px;
+  left: 42%;
+}
+/* line 228, ../../../../compass/sass/protected/extensions/gallerymanager/assets/galleryManager.scss */
+.GalleryEditor .preview-modal .modal-body {
+  max-height: none;
+}
+
+/* line 110, ../../../../compass/sass/protected/extensions/gallerymanager/assets/galleryManager.scss */
+/* line 116, ../../../../compass/sass/protected/extensions/gallerymanager/assets/galleryManager.scss */
+/* line 119, ../../../../compass/sass/protected/extensions/gallerymanager/assets/galleryManager.scss */
+/* line 122, ../../../../compass/sass/protected/extensions/gallerymanager/assets/galleryManager.scss */
+/* line 125, ../../../../compass/sass/protected/extensions/gallerymanager/assets/galleryManager.scss */
+/* line 130, ../../../../compass/sass/protected/extensions/gallerymanager/assets/galleryManager.scss */
+/* line 135, ../../../../compass/sass/protected/extensions/gallerymanager/assets/galleryManager.scss */
+/* line 139, ../../../../compass/sass/protected/extensions/gallerymanager/assets/galleryManager.scss */
+/* line 147, ../../../../compass/sass/protected/extensions/gallerymanager/assets/galleryManager.scss */
+/* line 156, ../../../../compass/sass/protected/extensions/gallerymanager/assets/galleryManager.scss */
+/* line 159, ../../../../compass/sass/protected/extensions/gallerymanager/assets/galleryManager.scss */
+/* line 170, ../../../../compass/sass/protected/extensions/gallerymanager/assets/galleryManager.scss */
+/* line 178, ../../../../compass/sass/protected/extensions/gallerymanager/assets/galleryManager.scss */
+/* line 185, ../../../../compass/sass/protected/extensions/gallerymanager/assets/galleryManager.scss */
+/* line 191, ../../../../compass/sass/protected/extensions/gallerymanager/assets/galleryManager.scss */
+/* line 195, ../../../../compass/sass/protected/extensions/gallerymanager/assets/galleryManager.scss */
+/* line 198, ../../../../compass/sass/protected/extensions/gallerymanager/assets/galleryManager.scss */
+/* fixed thumbnail sizes */
+/* item selection */
+/* drag & drop hint above gallery */
+/* upload progress */

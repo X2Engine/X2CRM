@@ -1,6 +1,6 @@
 <?php
-/*****************************************************************************************
- * X2Engine Open Source Edition is a customer relationship management program developed by
+/***********************************************************************************
+ * X2CRM is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2016 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
@@ -21,7 +21,8 @@
  * 02110-1301 USA.
  * 
  * You can contact X2Engine, Inc. P.O. Box 66752, Scotts Valley,
- * California 95067, USA. or at email address contact@x2engine.com.
+ * California 95067, USA. on our website at www.x2crm.com, or at our
+ * email address: contact@x2engine.com.
  * 
  * The interactive user interfaces in modified source and object code versions
  * of this program must display Appropriate Legal Notices, as required under
@@ -32,7 +33,7 @@
  * X2Engine" logo. If the display of the logo is not reasonably feasible for
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2Engine".
- *****************************************************************************************/
+ **********************************************************************************/
 
 /**
  * @package application.modules.mobile.components 
@@ -59,12 +60,12 @@ class MobileController extends X2Controller {
 
 	public function behaviors() {
 		return array_merge (parent::behaviors (), array(
-			'CommonSiteControllerBehavior' => array('class' => 'application.components.CommonSiteControllerBehavior'),
+			'CommonSiteControllerBehavior' => array('class' => 'application.components.behaviors.CommonSiteControllerBehavior'),
 			'CommonControllerBehavior' => array(
-                'class' => 'application.components.CommonControllerBehavior'),
-			'X2MobileControllerBehavior' => array(
+                'class' => 'application.components.behaviors.CommonControllerBehavior'),
+			'MobileControllerBehavior' => array(
                 'class' => 
-                    'application.modules.mobile.components.behaviors.X2MobileControllerBehavior')
+                    'application.modules.mobile.components.behaviors.MobileControllerBehavior')
 		));
 	}
 
@@ -179,7 +180,23 @@ class MobileController extends X2Controller {
         if (Yii::app()->edition === 'opensource') {
             $response['error'] = 'wrongEdition';
             $response['requiresEdition'] = 'pro';
-        }  
+        }  elseif (version_compare ($version, $requiresVersion, '<')) {
+            $response['error'] = 'wrongVersion';
+            $response['requiresVersion'] = $requiresVersion;
+        } else {
+            $cookie = new CHttpCookie(self::APP_VERSION_COOKIE_NAME, $version); 
+            $cookie->expire = 2147483647; // max expiration time
+            Yii::app()->request->cookies[self::APP_VERSION_COOKIE_NAME] = $cookie; 
+            $cookie = new CHttpCookie(self::PLATFORM_COOKIE_NAME, $platform); 
+            $cookie->expire = 2147483647; // max expiration time
+            Yii::app()->request->cookies[self::PLATFORM_COOKIE_NAME] = $cookie; 
+            $response['success'] = true;
+            $response['appInfo'] = array (
+                'version' => Yii::app ()->params->version,
+                'edition' => Yii::app ()->edition,
+            );
+        }
+         
         echo CJSON::encode ($response);
     }
 
@@ -327,6 +344,12 @@ class MobileController extends X2Controller {
         $params = array ();
         if (isset ($_GET['x2ajax'])) $params['x2ajax'] = $_GET['x2ajax'];
         if (isset ($_GET['isMobileApp'])) $params['isMobileApp'] = $_GET['isMobileApp'];
+         
+        if (isset ($_GET['isPhoneGap'])) $params['isPhoneGap'] = $_GET['isPhoneGap'];
+        if (isset ($_GET['includeX2TouchJsAssets'])) 
+            $params['includeX2TouchJsAssets'] = $_GET['includeX2TouchJsAssets'];
+        if (isset ($_GET['includeX2TouchCssAssets'])) 
+            $params['includeX2TouchCssAssets'] = $_GET['includeX2TouchCssAssets'];
           
         $url = UrlUtil::mergeParams ($url, $params);
         return parent::redirect ($url, $terminate, $statusCode);

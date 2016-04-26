@@ -1,7 +1,7 @@
 <?php
 
-/*****************************************************************************************
- * X2Engine Open Source Edition is a customer relationship management program developed by
+/***********************************************************************************
+ * X2CRM is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2016 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
@@ -22,7 +22,8 @@
  * 02110-1301 USA.
  * 
  * You can contact X2Engine, Inc. P.O. Box 66752, Scotts Valley,
- * California 95067, USA. or at email address contact@x2engine.com.
+ * California 95067, USA. on our website at www.x2crm.com, or at our
+ * email address: contact@x2engine.com.
  * 
  * The interactive user interfaces in modified source and object code versions
  * of this program must display Appropriate Legal Notices, as required under
@@ -33,7 +34,7 @@
  * X2Engine" logo. If the display of the logo is not reasonably feasible for
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2Engine".
- *****************************************************************************************/
+ **********************************************************************************/
 
 Yii::import('application.modules.contacts.models.Contacts');
 Yii::import('application.modules.actions.models.*');
@@ -45,11 +46,12 @@ Yii::import('application.modules.accounts.models.Accounts');
  */
 abstract class BaseVisitAllPagesTest extends X2WebTestCase {
     
-    protected abstract function visitPages ($pages);
-    
     public static function referenceFixtures(){
         return array(
             'actions' => array ('Actions', '.VisitAllPagesTest'),
+             
+            'flows' => array ('X2Flow', '.VisitAllPagesTest'),
+            'triggerLogs' => 'TriggerLog',
              
         );
     }
@@ -77,6 +79,9 @@ abstract class BaseVisitAllPagesTest extends X2WebTestCase {
                 ('DefaultRole', 'GroupsUpdateAccess'),
                 ('DefaultRole', 'GroupsFullAccess');
         ")->execute ();
+        Yii::app()->db->createCommand('ALTER TABLE x2_contacts ADD COLUMN badField VARCHAR(255);');
+        Yii::app()->db->createCommand('INSERT INTO x2_fields (id, modelName, fieldName, attributeLabel, type) '
+                .'VALUES (-999, "Contacts", "badField", "Bad\'s Field", "varchar");');
         Yii::app()->authCache->clear ();
         return parent::setUpBeforeClass ();
     }
@@ -89,6 +94,8 @@ abstract class BaseVisitAllPagesTest extends X2WebTestCase {
                 parent='DefaultRole' and child='GroupsUpdateAccess' or
                 parent='DefaultRole' and child='GroupsBasicAccess';
         ")->execute ();
+        Yii::app()->db->createCommand('DELETE FROM x2_fields WHERE id = -999');
+        Yii::app()->db->createCommand('ALTER TABLE x2_contacts DROP COLUMN badField;');
         Yii::app()->authCache->clear ();
         return parent::tearDownAfterClass ();
     }
@@ -113,6 +120,9 @@ abstract class BaseVisitAllPagesTest extends X2WebTestCase {
         'marketing/5',
         'marketing/update/id/5',
 
+         
+        'weblist/index',
+        'weblist/view?id=18',
          
 
         'x2Leads/index',
@@ -169,6 +179,15 @@ abstract class BaseVisitAllPagesTest extends X2WebTestCase {
         'quotes/update/id/1',
 
          
+        'reports/gridReport',
+        'reports/leadPerformance',
+        'reports/savedReports',
+        'reports/workflow',
+        'reports/activityReport',
+        'reports/chartDashboard',
+        'reports/rowsAndColumnsReport',
+        'reports/summationReport',
+         
 
         'media/index',
         'media/1',
@@ -207,12 +226,28 @@ abstract class BaseVisitAllPagesTest extends X2WebTestCase {
         'calendar/userCalendarPermissions/id/1',
         
          
+        'weblist/update?id=18',
+         
 
         'marketing/webleadForm',
          
-
+        'marketing/webTracker',
          
 
+         
+        'accounts/accountsReport',
+         
+
+         
+        // studio
+        'studio/flowIndex',
+        'studio/flowDesigner',
+        'studio/triggerLogs',
+         
+        'studio/importFlow',
+        'studio/exportFlow?flowId=1',
+         
+        'studio/flowDesigner/1',
          
         'users/admin',
         'users/1',
@@ -229,13 +264,17 @@ abstract class BaseVisitAllPagesTest extends X2WebTestCase {
         'admin/createPage',
         'admin/deleteModule',
         'admin/editor',
+        
         'admin/editRoleAccess',
         'admin/emailDropboxSettings',
+        
         'admin/emailSetup',
         'admin/export',
         'admin/exportModels',
         'admin/exportModels?model=Actions',
         'admin/exportModule',
+         
+        'admin/flowSettings',
          
         'admin/googleIntegration',
         'admin/import',
@@ -249,9 +288,10 @@ abstract class BaseVisitAllPagesTest extends X2WebTestCase {
         'admin/importModels?model=X2Leads',
         'admin/importModule',
         'admin/index',
-        'admin/index?translateMode=1',
+        
         'admin/lockApp',
         'admin/manageActionPublisherTabs',
+        
         'admin/manageDropDowns',
         'admin/manageFields',
         'admin/manageModules',
@@ -259,11 +299,15 @@ abstract class BaseVisitAllPagesTest extends X2WebTestCase {
         'admin/manageSessions',
         'admin/manageTags',
          
+        'admin/packager',
+         
         'admin/publicInfo',
         'admin/renameModules',
         'admin/rollbackImport',
         'admin/roundRobinRules',
+        
         'admin/setDefaultTheme',
+        
         'admin/setLeadRouting',
         'admin/setServiceRouting',
         'admin/translationManager',
@@ -273,9 +317,25 @@ abstract class BaseVisitAllPagesTest extends X2WebTestCase {
         'admin/userViewLog',
         'admin/viewChangelog',
         'admin/workflowSettings',
-        'admin/x2CronSettings',
          
+        'admin/x2CronSettings',
+        'admin/flowSettings',
+         
+         
+        'admin/securitySettings',
+        'admin/api2Settings',
          
     );
+    
+    /**
+     * @param array $pages array of URIs 
+     */
+    protected function visitPages ($pages) {
+        foreach ($pages as $page) {
+            X2_TEST_DEBUG_LEVEL > 1 && print ('visiting page ' .$page."\n");
+            $this->openX2($page);
+            $this->assertNoErrors ($page);
+        }
+    }
 }
 

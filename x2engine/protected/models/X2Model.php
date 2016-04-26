@@ -1,7 +1,7 @@
 <?php
 
-/*****************************************************************************************
- * X2Engine Open Source Edition is a customer relationship management program developed by
+/***********************************************************************************
+ * X2CRM is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2016 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
@@ -22,7 +22,8 @@
  * 02110-1301 USA.
  * 
  * You can contact X2Engine, Inc. P.O. Box 66752, Scotts Valley,
- * California 95067, USA. or at email address contact@x2engine.com.
+ * California 95067, USA. on our website at www.x2crm.com, or at our
+ * email address: contact@x2engine.com.
  * 
  * The interactive user interfaces in modified source and object code versions
  * of this program must display Appropriate Legal Notices, as required under
@@ -33,14 +34,16 @@
  * X2Engine" logo. If the display of the logo is not reasonably feasible for
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2Engine".
- *****************************************************************************************/
+ **********************************************************************************/
 
 
-Yii::import('application.components.X2LinkableBehavior');
-Yii::import('application.components.X2ChangeLogBehavior');
-Yii::import('application.components.x2flow.X2FlowTriggerBehavior');
-Yii::import('application.components.X2TimestampBehavior');
-Yii::import('application.components.TagBehavior');
+Yii::import('application.components.behaviors.LinkableBehavior');
+Yii::import('application.components.behaviors.ChangeLogBehavior');
+Yii::import('application.components.behaviors.FlowTriggerBehavior');
+Yii::import('application.components.behaviors.TimestampBehavior');
+Yii::import('application.components.behaviors.TagBehavior');
+
+Yii::import('application.components.behaviors.FingerprintBehavior');
 
 Yii::import('application.modules.actions.models.Actions');
 Yii::import('application.modules.users.models.*');
@@ -129,6 +132,8 @@ abstract class X2Model extends X2ActiveRecord {
         'services' => 'Services',
         'users' => 'User',
         
+        'anoncontact' => 'AnonContact',
+        
         '' => ''
     );
 
@@ -140,6 +145,9 @@ abstract class X2Model extends X2ActiveRecord {
         'Actions' => 'Actions',
         'BugReports' => 'BugReports',
         'Campaign' => 'Marketing', 
+        'Fingerprint' => 'Marketing',
+        'AnonContact' => 'Marketing',
+         
         'Contacts' => 'Contacts',
         'X2List' => 'Contacts',
         'Groups' => 'Groups',
@@ -147,6 +155,7 @@ abstract class X2Model extends X2ActiveRecord {
         'Media' => 'Media',
         'Opportunity' => 'Opportunities',
         'Quote' => 'Quotes', 
+        'Reports' => 'Reports', 
         'Services' => 'Services',
         'User' => 'Users',
         'WebForm' => 'Marketing',
@@ -168,11 +177,14 @@ abstract class X2Model extends X2ActiveRecord {
 //        'Media' => 'Media',
 //        'Opportunity' => 'Opportunities',
 //        'Quote' => 'Quotes', 
+//        'Reports' => 'Reports', 
 //        'Services' => 'Services',
 //        'User' => 'Users',
 //        'WebForm' => 'Web Forms',
 //        'Workflow' => 'Processes',
 //        'X2Calendar' => 'Calendars', 
+//        'AnonContact' => 'Anonymous Contacts',
+//        'Fingerprint' => 'Fingerprints', 
 //    );
 
     public static $translatedModelTitles = array();
@@ -477,6 +489,9 @@ abstract class X2Model extends X2ActiveRecord {
     public static function getAssociationTypeOptions() {
         $modelNames = array_keys(self::getModelNames());
         
+        if (Yii::app()->user->checkAccess('MarketingAdminAccess'))
+            $modelNames[] = 'AnonContact';
+        
 
         $associationTypes = array();
         foreach ($modelNames as $modelName) {
@@ -567,7 +582,7 @@ abstract class X2Model extends X2ActiveRecord {
         Yii::import('application.modules.actions.models.*');
         $modelName = empty($modelName) ? get_called_class() : $modelName;
         $model = self::model($modelName)->findByPk($modelId);
-        if (empty($model) || $model->asa('X2LinkableBehavior') == null)
+        if (empty($model) || $model->asa('LinkableBehavior') == null)
             return;
         // All fields of type "timerSum":
         $fields = array_filter($model->fields, function($f) {
@@ -636,7 +651,7 @@ abstract class X2Model extends X2ActiveRecord {
             }
         }
         $criteria->params = $params;
-        if($this->asa('X2DuplicateBehavior')){
+        if($this->asa('DuplicateBehavior')){
             $criteria->addCondition($this->getHiddenCondition(), 'AND');
         }
         return self::model(get_class($this))->find($criteria);
@@ -652,7 +667,7 @@ abstract class X2Model extends X2ActiveRecord {
     }
     
     public function findByAttributes($attributes, $condition = '', $params = array()) {
-        if ($this->asa('X2DuplicateBehavior')) {
+        if ($this->asa('DuplicateBehavior')) {
             $hiddenCondition = $this->getHiddenCondition();
             if (empty($condition)) {
                 $condition = $hiddenCondition;
@@ -749,13 +764,13 @@ abstract class X2Model extends X2ActiveRecord {
      */
     public function behaviors() {
         $behaviors = array(
-            'X2LinkableBehavior' => array('class' => 'X2LinkableBehavior'),
-            'X2TimestampBehavior' => array('class' => 'X2TimestampBehavior'),
-            'X2FlowTriggerBehavior' => array('class' => 'X2FlowTriggerBehavior'),
+            'LinkableBehavior' => array('class' => 'LinkableBehavior'),
+            'TimestampBehavior' => array('class' => 'TimestampBehavior'),
+            'FlowTriggerBehavior' => array('class' => 'FlowTriggerBehavior'),
             'TagBehavior' => array('class' => 'TagBehavior'),
-            'changelog' => array('class' => 'X2ChangeLogBehavior'),
+            'changelog' => array('class' => 'ChangeLogBehavior'),
             'permissions' => array('class' => Yii::app()->params->modelPermissions),
-            'X2MergeableBehavior' => array('class' => 'X2MergeableBehavior'),
+            'MergeableBehavior' => array('class' => 'MergeableBehavior'),
             'relationships' => array('class' => 'RelationshipsBehavior'),
         );
         if (Yii::app()->contEd('pro')) {
@@ -888,14 +903,14 @@ abstract class X2Model extends X2ActiveRecord {
     public function save($runValidation = true, $attributes = null) {
         if (!$runValidation || $this->validate($attributes)) {
             /* x2modstart */
-            if ($this->asa('X2FlowTriggerBehavior') &&
-                    $this->asa('X2FlowTriggerBehavior')->enabled) {
+            if ($this->asa('FlowTriggerBehavior') &&
+                    $this->asa('FlowTriggerBehavior')->enabled) {
                 $this->enableUpdateTrigger();
             }
             $retVal = $this->getIsNewRecord() ?
                     $this->insert($attributes) : $this->update($attributes);
-            if ($this->asa('X2FlowTriggerBehavior') &&
-                    $this->asa('X2FlowTriggerBehavior')->enabled) {
+            if ($this->asa('FlowTriggerBehavior') &&
+                    $this->asa('FlowTriggerBehavior')->enabled) {
 
                 $this->disableUpdateTrigger();
             }
@@ -954,7 +969,7 @@ abstract class X2Model extends X2ActiveRecord {
             }
         }
 
-        parent::afterSave(); // raise onAfterSave event for behaviors, such as X2ChangeLogBehavior
+        parent::afterSave(); // raise onAfterSave event for behaviors, such as ChangeLogBehavior
     }
 
     /**
@@ -1187,7 +1202,7 @@ abstract class X2Model extends X2ActiveRecord {
         } catch (CHttpException $e) {
             $model = null;
         }
-        if (isset($model) && !is_null($model->asa('X2LinkableBehavior'))) {
+        if (isset($model) && !is_null($model->asa('LinkableBehavior'))) {
             if (isset(Yii::app()->controller) && method_exists(Yii::app()->controller, 'checkPermissions')) {
                 if (Yii::app()->controller->checkPermissions($model, 'view')) {
                     if ($requireAbsoluteUrl) {
@@ -1237,7 +1252,7 @@ abstract class X2Model extends X2ActiveRecord {
     public static function getModelLinkMock($modelClass, $nameId, $htmlOptions = array()) {
         list($name, $id) = Fields::nameAndId($nameId);
         $model = self::getLinkedModelMock($modelClass, $name, $id);
-        if ($model instanceof X2Model && !is_null($model->asa('X2LinkableBehavior'))) {
+        if ($model instanceof X2Model && !is_null($model->asa('LinkableBehavior'))) {
             return $model->getLink($htmlOptions);
         } else {
             return CHtml::encode($name);
@@ -1344,7 +1359,7 @@ abstract class X2Model extends X2ActiveRecord {
      * @return type
      */
     public function translatedAttributeLabel($label) {
-        return Yii::t((bool) $this->asa('X2LinkableBehavior') ? 
+        return Yii::t((bool) $this->asa('LinkableBehavior') ? 
             (empty($this->module) ? 'app' : $this->module) : 'app', $label);
     }
 
@@ -1785,7 +1800,7 @@ abstract class X2Model extends X2ActiveRecord {
                     } else {
                         $linkModel = X2Model::model($field->linkType);
                     }
-                    if ($linkModel instanceof X2Model && $linkModel->asa('X2LinkableBehavior') instanceof X2LinkableBehavior) {
+                    if ($linkModel instanceof X2Model && $linkModel->asa('LinkableBehavior') instanceof LinkableBehavior) {
                         $linkSource = Yii::app()->controller->createUrl($linkModel->autoCompleteSource);
                         $linkId = $linkModel->id;
                         $oldLinkFieldVal = $model->$fieldName; 
@@ -2459,7 +2474,7 @@ abstract class X2Model extends X2ActiveRecord {
         $this->nameId = Fields::nameId($this->name, $this->id);
         if ($save) {
             $that = $this;
-            $this->runWithoutBehavior('X2FlowTriggerBehavior', function () use ($that) {
+            $this->runWithoutBehavior('FlowTriggerBehavior', function () use ($that) {
                 $that->updateByPk($that->id, array('nameId' => $that->nameId));
             });
         }
@@ -2815,7 +2830,7 @@ abstract class X2Model extends X2ActiveRecord {
 
         $modelClass = self::getModelName ($modelClass);
 
-        if (!class_exists($modelClass) || !$modelClass::model()->asa('X2LinkableBehavior')) {
+        if (!class_exists($modelClass) || !$modelClass::model()->asa('LinkableBehavior')) {
             if ($ajax) {
                 echo 'failure';
                 return;
@@ -2825,7 +2840,7 @@ abstract class X2Model extends X2ActiveRecord {
             /* throw new CException (
               Yii::t('app',
               'Error: renderModelAutocomplete: {modelClass} does not have '.
-              'X2LinkableBehavior', array ('{modelClass}' => $modelClass))); */
+              'LinkableBehavior', array ('{modelClass}' => $modelClass))); */
         }
 
         if ($ajax)

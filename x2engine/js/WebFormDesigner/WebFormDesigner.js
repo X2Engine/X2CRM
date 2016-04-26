@@ -1,5 +1,5 @@
-/*****************************************************************************************
- * X2Engine Open Source Edition is a customer relationship management program developed by
+/***********************************************************************************
+ * X2CRM is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2016 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
@@ -20,7 +20,8 @@
  * 02110-1301 USA.
  * 
  * You can contact X2Engine, Inc. P.O. Box 66752, Scotts Valley,
- * California 95067, USA. or at email address contact@x2engine.com.
+ * California 95067, USA. on our website at www.x2crm.com, or at our
+ * email address: contact@x2engine.com.
  * 
  * The interactive user interfaces in modified source and object code versions
  * of this program must display Appropriate Legal Notices, as required under
@@ -31,7 +32,7 @@
  * X2Engine" logo. If the display of the logo is not reasonably feasible for
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2Engine".
- *****************************************************************************************/
+ **********************************************************************************/
 
 x2.WebFormDesigner = (function() {
 
@@ -123,6 +124,18 @@ x2.WebFormDesigner = (function() {
             });
             
 
+            // Reset Field Container
+            $('#sortable2 li')
+            .not('[name=firstName], [name=lastName]')
+            .not('[name=backgroundInfo], [name=email]')
+            .prependTo($('#sortable1'));
+
+            // Clear Code mirror stuff
+            for (var i in that.codemirror) {
+                that.codemirror[i].setValue('');
+            }
+            
+
             // Wipe inputs
             $('#web-form-designer-form :input')
              .not(':button, :submit, :reset, [type="hidden"]')
@@ -200,6 +213,8 @@ x2.WebFormDesigner = (function() {
                     params: that.defaultJSON,
                 });
                 
+                $('#sortable2 li').appendTo($('#sortable1'));
+                
                 
                 $('#web-form-inner').hide();
             }
@@ -218,6 +233,10 @@ x2.WebFormDesigner = (function() {
             // extra behaviors set in child prototype
             that._afterSavedFormsChange ();
 
+            
+            for (var i in that.codemirror) {
+                that.codemirror[i].setValue(that.codemirror[i].getTextArea().value);
+            }
             
         });
 
@@ -263,6 +282,17 @@ x2.WebFormDesigner = (function() {
         this.formName = '';
 
         
+        this.codemirror = []
+        // Syntax Highlighting
+        $('.code').each(function(){
+            var cm = CodeMirror.fromTextArea($(this)[0], {
+                mode: $(this).data('mode'),
+                showCursorWhenSelecting: true
+            });
+
+            that.codemirror.push(cm);
+        });
+        
 
         that._setUpTabs();
 
@@ -293,6 +323,17 @@ x2.WebFormDesigner = (function() {
             $(this).appendTo('#'+id+' .tab-content');
         });
 
+        
+        // Set up a refresh for advanced tab
+        // The timeout seems necessary, so its fully loaded
+        // before refreshing
+        $('[href=#advanced-tab]').click(function(){
+            setTimeout(function(){
+                for (var i in that.codemirror) {
+                    that.codemirror[i].refresh();
+                }
+            }, 50);
+        });
         
 
         tabs.tabs();
@@ -444,6 +485,9 @@ x2.WebFormDesigner = (function() {
             }
         }
 
+         
+        // add web form id to GET params so that fields can be retrieved
+        query += '&webFormId=' + encodeURIComponent($('#saved-forms').val());
         
 
         query = this._appendToQuery (query);
@@ -452,11 +496,40 @@ x2.WebFormDesigner = (function() {
     };
 
     
+    /*
+    Returns a dictionary containing custom fields form input values
+    */
+    WebFormDesigner.prototype._getFieldList = function (form) {
+
+        var fieldList = [];
+        $('#sortable2').find('li').each(function() {
+            var f = new Object;
+            f['fieldName'] = $(this).attr('name');
+            f['required'] = $(this).find('input[type="checkbox"]').is(':checked');
+            f['label'] = $(this).find('input[type="text"]').val();
+            f['position'] = $(this).find('select.field-position').val();
+            f['type'] = $(this).find('select.field-type').val();
+            fieldList.push(f);
+        });
+        return fieldList;
+    };
+    
 
     /**
      * Use to refresh form data before submission
      */
     WebFormDesigner.prototype._refreshForm = function () {
+         
+        var that = this;
+
+        var fieldList = this._getFieldList ();
+
+        for(var i in that.codemirror) {
+            that.codemirror[i].save();
+        }
+
+        // set POST data for saving weblead form
+        $('#fieldList').val(encodeURIComponent(JSON.stringify(fieldList))); 
          
     };
 
@@ -507,13 +580,117 @@ x2.WebFormDesigner = (function() {
     };
 
     
+    WebFormDesigner._enableTabsForCustomCss = function () {
 
+        // enable tabs for CSS textarea
+        $(document).delegate('#custom-css, #custom-html', 'keydown', function(e) {
+          var keyCode = e.keyCode || e.which;
+
+          if (keyCode == 9) {
+            e.preventDefault();
+            var start = $(this).get(0).selectionStart;
+            var end = $(this).get(0).selectionEnd;
+
+            // set textarea value to: text before caret + tab + text after caret
+            $(this).val($(this).val().substring(0, start)
+                        + "\t"
+                        + $(this).val().substring(end));
+
+            // put caret at right position again
+            //$(this).get(0).selectionStart =
+            $(this).get(0).selectionEnd = start + 1;
+          }
+        });
+    };
     
 
+    
+    WebFormDesigner.prototype._onFieldUpdate = function () {
+        var that = this;
+        var fieldList = that._getFieldList ();
+        $('#fieldList').val(encodeURIComponent(JSON.stringify(fieldList))); 
+        $('#web-form-save-button').addClass ('highlight');
+    };
+    
+
+    
+    /*
+    Make custom fields containes sortable, set up their behavior
+    */
+    WebFormDesigner.prototype._setUpSortableCustomFieldsBehavior = function () {
+        var that = this;
+        $( "#sortable1" ).sortable({
+            placeholder: "ui-state-highlight",
+            connectWith: ".connectedSortable",
+            receive: function(event, ui) {
+                // ui.item.find('.field-settings').toggleClass('closed', false);
+                that._onFieldUpdate ();
+            },
+            update: function(event, ui) {
+                that._onFieldUpdate ();
+            }
+        });
+        $( "#sortable2" ).sortable({
+            placeholder: "ui-state-highlight",
+            connectWith: ".connectedSortable",
+            receive: function(event, ui) {
+                // ui.item.find('.field-settings').toggleClass('closed', true);
+                that._onFieldUpdate ();
+            },
+            update: function(event, ui) {
+                that._onFieldUpdate ();
+            }
+        });
+
+        $('#sortable2, #sortable1').find('li > label').add('.field-expander').click(function(){
+            $(this).closest('li').find('.field-settings').slideToggle();
+            $(this).closest('li').find('.field-expander').toggleClass('closed');
+        });
+    };
     
 
     // override in child prototype
     WebFormDesigner.prototype._updateCustomFields = function (form) {
+         
+        if(typeof form.fields != 'undefined' && form.fields != null) {
+            try {
+                var savedFieldList = JSON.parse(decodeURIComponent(form.fields));
+            } catch (e) {
+                return;
+            }
+            var fieldList = $('.connectedSortable li');
+
+            // clear form fields
+            $('#sortable2 li').each(function() {
+                $(this).prependTo('#sortable1');
+                $(this).find('div').css('display', 'none');
+            });
+
+            // load form fields from saved form
+            var savedField;
+            for(var i=0; i<savedFieldList.length; i++) {
+                savedField = savedFieldList[i];
+                if (savedField.type === 'tags') { // tag field uses a separate input
+                    $('#tags').val (savedField.label);
+                    continue;
+                }
+                var f = $('#sortable1 li[name="' + savedField.fieldName + '"]');
+                f.appendTo('#sortable2');
+                f.find('.field-settings').css('display', 'none');
+                f.find('.field-expander').toggleClass('closed',true);
+                f.find('input[type="checkbox"]').prop('checked', savedField.required);
+                f.find('input[type="text"]').val(savedField.label);
+                f.find('.field-position').val(savedField.position);
+                f.find('.field-type').val(savedField.type);
+
+                // Update the label to either 'Value:' or 'Label'
+                if (savedField.type == 'hidden') {
+                    f.find('.field-value-label').html(this.translations['Value:']);
+                } else {
+                    f.find('.field-value-label').html(this.translations['Label:']);
+                }
+            }
+        }
          
     };
 

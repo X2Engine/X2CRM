@@ -19,4 +19,6 @@
   'Most Recent' => 'Πρόσφατα',
   'Alphabetical' => 'Αλφαβητικά',
   'Most Popular' => 'Δημοφιλέστερος',
+  '{poster}posted a new reply to {topic}.' => '{poster} δημοσιεύτηκε μια νέα απάντηση στην {topic} .',
+  '{poster}posted a new reply to a topic, but that reply has been deleted.' => '{poster} δημοσιεύτηκε μια νέα απάντηση σε ένα θέμα, αλλά η απάντηση έχει διαγραφεί.',
 );

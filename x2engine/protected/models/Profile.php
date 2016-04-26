@@ -1,6 +1,6 @@
 <?php
-/*****************************************************************************************
- * X2Engine Open Source Edition is a customer relationship management program developed by
+/***********************************************************************************
+ * X2CRM is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2016 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
@@ -21,7 +21,8 @@
  * 02110-1301 USA.
  * 
  * You can contact X2Engine, Inc. P.O. Box 66752, Scotts Valley,
- * California 95067, USA. or at email address contact@x2engine.com.
+ * California 95067, USA. on our website at www.x2crm.com, or at our
+ * email address: contact@x2engine.com.
  * 
  * The interactive user interfaces in modified source and object code versions
  * of this program must display Appropriate Legal Notices, as required under
@@ -32,13 +33,13 @@
  * X2Engine" logo. If the display of the logo is not reasonably feasible for
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2Engine".
- *****************************************************************************************/
+ **********************************************************************************/
 
-Yii::import('application.components.X2LinkableBehavior');
+Yii::import('application.components.behaviors.LinkableBehavior');
 Yii::import('application.modules.users.models.*');
-Yii::import('application.components.NormalizedJSONFieldsBehavior');
-Yii::import('application.components.WidgetLayoutJSONFieldsBehavior');
-Yii::import('application.components.X2SmartSearchModelBehavior');
+Yii::import('application.components.behaviors.NormalizedJSONFieldsBehavior');
+Yii::import('application.components.behaviors.WidgetLayoutJSONFieldsBehavior');
+Yii::import('application.components.behaviors.SmartSearchModelBehavior');
 Yii::import('application.components.sortableWidget.SortableWidget');
 
 /**
@@ -155,7 +156,7 @@ class Profile extends X2ActiveRecord {
     }
 
     public function behaviors(){
-        Yii::import ('application.components.X2ActiveRecordBehavior');
+        Yii::import ('application.components.behaviors.ActiveRecordBehavior');
         Yii::import ('application.components.behaviors.FileFieldBehavior');
         // Skip loading theme settins if this request isn't associated with a session, eg API
         $theme = (Yii::app()->params->noSession ? array() :
@@ -163,8 +164,8 @@ class Profile extends X2ActiveRecord {
 
         $that = $this;
         return array(
-            'X2StaticFieldsBehavior' => array(
-                'class' => 'application.components.behaviors.X2StaticFieldsBehavior',
+            'StaticFieldsBehavior' => array(
+                'class' => 'application.components.behaviors.StaticFieldsBehavior',
                 'translationCategory' => 'profile',
                 'fields' => array (
                     array (
@@ -226,19 +227,19 @@ class Profile extends X2ActiveRecord {
                     return 'uploads/protected/'.$name.'.'.$file->getExtensionName ();
                 }
             ),
-            'X2LinkableBehavior' => array(
-                'class' => 'X2LinkableBehavior',
+            'LinkableBehavior' => array(
+                'class' => 'LinkableBehavior',
                 'baseRoute' => '/profile',
                 'autoCompleteSource' => null,
                 'module' => 'profile'
             ),
             'ERememberFiltersBehavior' => array(
-                'class' => 'application.components.ERememberFiltersBehavior',
+                'class' => 'application.components.behaviors.ERememberFiltersBehavior',
                 'defaults' => array(),
                 'defaultStickOnClear' => false
             ),
             'NormalizedJSONFieldsBehavior' => array(
-                'class' => 'application.components.NormalizedJSONFieldsBehavior',
+                'class' => 'application.components.behaviors.NormalizedJSONFieldsBehavior',
                 'transformAttributes' => array(
                     'theme' => array_merge($theme, array(
                         'backgroundColor', 'menuBgColor', 'menuTextColor', 'pageHeaderBgColor',
@@ -250,7 +251,7 @@ class Profile extends X2ActiveRecord {
                 ),
             ),
             'JSONFieldsDefaultValuesBehavior' => array(
-                'class' => 'application.components.JSONFieldsDefaultValuesBehavior',
+                'class' => 'application.components.behaviors.JSONFieldsDefaultValuesBehavior',
                 'transformAttributes' => array(
                     'miscLayoutSettings' => array(
                         'themeSectionExpanded'=>true, // preferences theme sub section
@@ -268,8 +269,8 @@ class Profile extends X2ActiveRecord {
                 ),
                 'maintainCurrentFieldsOrder' => true
             ),
-            'X2SmartSearchModelBehavior' => array (
-                'class' => 'application.components.X2SmartSearchModelBehavior',
+            'SmartSearchModelBehavior' => array (
+                'class' => 'application.components.behaviors.SmartSearchModelBehavior',
             )
         );
     }
@@ -300,6 +301,14 @@ class Profile extends X2ActiveRecord {
         $this->getWidgetLayout ('TopicsWidgetLayout')->settings->attributes = $layout;
     }
 
+     
+    public function getDataWidgetLayout () {
+        return $this->getWidgetLayout ('DataWidgetLayout')->settings->attributes;
+    }
+
+    public function setDataWidgetLayout ($layout) {
+        $this->getWidgetLayout ('DataWidgetLayout')->settings->attributes = $layout;
+    }
      
 
     public function getRecordViewWidgetLayout () {
@@ -401,7 +410,7 @@ class Profile extends X2ActiveRecord {
     }
 
     /**
-     * Masks method in X2SmartSearchModelBehavior. Enables sorting by lastLogin and isActive.
+     * Masks method in SmartSearchModelBehavior. Enables sorting by lastLogin and isActive.
      */
     public function getSort () {
         $attributes = array();
@@ -1469,12 +1478,44 @@ class Profile extends X2ActiveRecord {
     }
 
      
+    /**
+     * Checks for a valid enforced default theme and returns it if it exists. 
+     * @return mixed theme array or null if no valid default theme exists
+     */
+    public function getDefaultTheme () {
+        $admin = Yii::app()->settings;
+        $theme = Media::model()->findByPk ($admin->defaultTheme);
+        if ($theme) {
+            $themeDecoded = CJSON::decode ($theme->description);
+            if (is_array ($themeDecoded)) {
+                /*
+                This is a dependency on the internal behavior of NormalizedJSONFieldsBehavior. To eliminate
+                this dependency, profile's theme attribute and the media model's description
+                attribute should be refactored to use JSONEmbeddedModelBehavior so that they
+                share the same JSON structure.
+                */
+                $behaviors = $this->behaviors ();
+                return ArrayUtil::normalizeToArrayR (array_map (function ($a) {
+                        return null;
+                    }, array_flip (
+                        $behaviors['NormalizedJSONFieldsBehavior']['transformAttributes']['theme'])),
+                    $themeDecoded);
+            }
+        } 
+        return null;
+    }
+     
 
     /**
      * Return theme after checking for an enforced default 
      */
     public function getTheme () {
         $admin = Yii::app()->settings;
+         
+        if ($admin->enforceDefaultTheme && $admin->defaultTheme !== null) {
+            $theme = $this->getDefaultTheme ();
+            if ($theme) return $theme;
+        } 
          
         return $this->theme;
     }
@@ -1515,6 +1556,45 @@ class Profile extends X2ActiveRecord {
     }
 
     
+    /**
+     * Retrieve email inboxes that this user has selected to have displayed
+     * @return array email inbox models indexed by name
+     */
+    public function getEmailInboxes () {
+        if (!(Yii::app()->controller instanceof EmailInboxesController)) {
+            return array ();
+        }
+        if (!isset ($this->emailInboxes)) 
+            return array ();
+        $emailInboxIds = CJSON::decode ($this->emailInboxes);
+        if (!is_array ($emailInboxIds)) 
+            return array();
+        $emailInboxes = array ();
+        $newEmailInboxIds = array ();
+        foreach ($emailInboxIds as $id) {
+            $emailInbox = EmailInboxes::Model ()->findByPk ($id);
+            if ($emailInbox && 
+                Yii::app()->controller->checkPermissions ($emailInbox, 'view')) {
+
+                $emailInboxes[$emailInbox->name] = $emailInbox;
+                $newEmailInboxIds[] = $id;
+            } 
+        }
+        // remove ids for nonexistent inboxes and inboxes for which the user lacks view permissions
+        if (count (array_diff ($emailInboxIds, $newEmailInboxIds))) {
+            $this->emailInboxes = CJSON::encode ($newEmailInboxIds);
+            $this->update ('emailInboxes');
+        }
+        return $emailInboxes;
+    }
+
+    /**
+     * @param array $inboxIds ids of EmailInboxes records
+     */
+    public function setEmailInboxes (array $inboxIds) {
+        $this->emailInboxes = CJSON::encode ($inboxIds);
+    }
+    
 
     /**
      * @return Profile 
@@ -1529,6 +1609,8 @@ class Profile extends X2ActiveRecord {
      */
     private $_widgetLayouts = array (
         'ProfileWidgetLayout' => null,
+         
+        'DataWidgetLayout' => null,
          
         'RecordViewWidgetLayout' => null,
         'TopicsWidgetLayout' => null,

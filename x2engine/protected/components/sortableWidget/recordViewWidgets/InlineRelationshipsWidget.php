@@ -1,6 +1,6 @@
 <?php
-/*****************************************************************************************
- * X2Engine Open Source Edition is a customer relationship management program developed by
+/***********************************************************************************
+ * X2CRM is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2016 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
@@ -21,7 +21,8 @@
  * 02110-1301 USA.
  * 
  * You can contact X2Engine, Inc. P.O. Box 66752, Scotts Valley,
- * California 95067, USA. or at email address contact@x2engine.com.
+ * California 95067, USA. on our website at www.x2crm.com, or at our
+ * email address: contact@x2engine.com.
  * 
  * The interactive user interfaces in modified source and object code versions
  * of this program must display Appropriate Legal Notices, as required under
@@ -32,7 +33,7 @@
  * X2Engine" logo. If the display of the logo is not reasonably feasible for
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2Engine".
- *****************************************************************************************/
+ **********************************************************************************/
 
 /**
  * Widget class for the relationships form.
@@ -141,6 +142,32 @@ class InlineRelationshipsWidget extends GridViewWidget {
                 "</a>";
         }
          
+        $displayMode = $this->getWidgetProperty ('displayMode');
+        $lastChild = Yii::app()->params->isAdmin ? '' : 'x2-last-child';
+        echo 
+            "<a class='x2-button rel-title-bar-button $lastChild' id='inline-graph-view-button'
+              title='".Yii::t('app', 'Inline Graph')."'
+              style='".($displayMode === 'graph' ? 'display: none;' : '')."'>".
+                X2Html::fa ('fa-share-alt', array (
+                )).
+            "</a>";
+        echo 
+            "<a class='x2-button rel-title-bar-button $lastChild' id='rel-grid-view-button'
+              title='".Yii::t('app', 'Grid')."'
+              style='".($displayMode === 'grid' ? 'display: none;' : '')."'>".
+                X2Html::fa ('fa-th-list', array (
+                )).
+            "</a>";
+        if (Yii::app()->params->isAdmin) {
+            echo "<a href='".Yii::app()->createUrl ('/relationships/graph', array (
+                'recordType' => get_class ($this->model),
+                'recordId' => $this->model->id,
+            ))."' class='x2-button rel-title-bar-button' title='".Yii::t('app', 'Full Graph')."'>".
+                X2Html::fa ('fa-share-alt-square', array (
+            )).
+            "</a>";
+        }
+         
         echo '</div>';
     }
 
@@ -242,6 +269,10 @@ class InlineRelationshipsWidget extends GridViewWidget {
             $linkableModels = Relationships::getRelationshipTypeOptions ();
             asort ($linkableModels);
              
+            if(!Yii::app()->user->checkAccess('MarketingAdminAccess')) {
+                unset ($linkableModels['AnonContact']);
+            }
+             
 
             // used to instantiate html dropdown
             $linkableModelsOptions = $linkableModels;
@@ -255,6 +286,8 @@ class InlineRelationshipsWidget extends GridViewWidget {
                     'modelName' => get_class ($this->model),
                     'linkableModelsOptions' => $linkableModelsOptions,
                     'hasUpdatePermissions' => $hasUpdatePermissions,
+                     
+                    'displayMode' => $this->getWidgetProperty ('displayMode'),
                      
                     'height' => $this->getWidgetProperty ('height'),
                 )

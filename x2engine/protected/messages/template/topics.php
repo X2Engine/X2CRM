@@ -19,4 +19,6 @@
   'Most Recent' => '',
   'Alphabetical' => '',
   'Most Popular' => '',
+  '{poster}posted a new reply to {topic}.' => '',
+  '{poster}posted a new reply to a topic, but that reply has been deleted.' => '',
 );

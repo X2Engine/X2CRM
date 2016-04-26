@@ -1,6 +1,6 @@
 <?php
-/*****************************************************************************************
- * X2Engine Open Source Edition is a customer relationship management program developed by
+/***********************************************************************************
+ * X2CRM is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2016 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
@@ -21,7 +21,8 @@
  * 02110-1301 USA.
  * 
  * You can contact X2Engine, Inc. P.O. Box 66752, Scotts Valley,
- * California 95067, USA. or at email address contact@x2engine.com.
+ * California 95067, USA. on our website at www.x2crm.com, or at our
+ * email address: contact@x2engine.com.
  * 
  * The interactive user interfaces in modified source and object code versions
  * of this program must display Appropriate Legal Notices, as required under
@@ -32,7 +33,7 @@
  * X2Engine" logo. If the display of the logo is not reasonably feasible for
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2Engine".
- *****************************************************************************************/
+ **********************************************************************************/
 
 Yii::import('application.models.X2Model');
 
@@ -75,6 +76,11 @@ class Actions extends X2Model {
     private $metaDataTemp = array (
         'eventSubtype' => null,
         'eventStatus' => null,
+        
+        'emailImapUid' => null,
+        'emailInboxId' => null,
+        'emailFolderName' => null,
+        'emailUidValidity' => null,
         
     );
 
@@ -144,15 +150,15 @@ class Actions extends X2Model {
     public function behaviors(){
         $that = $this;
         return array(
-            'X2LinkableBehavior' => array(
-                'class' => 'X2LinkableBehavior',
+            'LinkableBehavior' => array(
+                'class' => 'LinkableBehavior',
                 'module' => 'actions'
             ),
-            'X2TimestampBehavior' => array('class' => 'X2TimestampBehavior'),
-            'X2FlowTriggerBehavior' => array('class' => 'X2FlowTriggerBehavior'),
+            'TimestampBehavior' => array('class' => 'TimestampBehavior'),
+            'FlowTriggerBehavior' => array('class' => 'FlowTriggerBehavior'),
             'TagBehavior' => array('class' => 'TagBehavior'),
             'ERememberFiltersBehavior' => array(
-                'class' => 'application.components.ERememberFiltersBehavior',
+                'class' => 'application.components.behaviors.ERememberFiltersBehavior',
                 'defaults' => array(),
                 'defaultStickOnClear' => false
             ),
@@ -200,6 +206,7 @@ class Actions extends X2Model {
             'workflowStage' => array(self::BELONGS_TO, 'WorkflowStage', 'stageNumber'),
             'actionMetaData' => array(self::HAS_ONE, 'ActionMetaData', 'actionId'),
             'actionText' => array(self::HAS_ONE, 'ActionText', 'actionId'),
+            'timers' => array(self::HAS_MANY,'ActionTimer','actionId'),
             'media' => array (
                 self::MANY_MANY, 'Media', 'x2_actions_to_media(actionsId, mediaId)'),
             //'assignee' => array(self::BELONGS_TO,'User',array('assignedTo'=>'username')),
@@ -417,7 +424,7 @@ class Actions extends X2Model {
             }else{
                 if($association->hasAttribute('name'))
                     $this->associationName = $association->name;
-                if($association->asa('X2TimestampBehavior') !== null) {
+                if($association->asa('TimestampBehavior') !== null) {
                     if($association->asa('changelog') !== null
                             && Yii::app()->getSuName() == 'Guest')
                         $association->disableBehavior('changelog');
@@ -435,16 +442,51 @@ class Actions extends X2Model {
         // Whether this is a "timed" action record:
         $timed = $this->isTimedType;
         
+        $timeSpent = 0;
+        if(!$this->isNewRecord && $timed) {
+            $timeSpent = ActionTimer::actionTimeSpent($this->id);
+            // If the above value is zero, the next conditional statement will
+            // be entered into, thus setting the time spent appropriately based
+            // on beginning and end times.
+            $this->timeSpent = $timeSpent;
+        }
+        
         if(empty($timeSpent) && !empty($this->completeDate) && !empty($this->dueDate) && $timed) {
             $this->timeSpent = $this->completeDate - $this->dueDate;
         }
 
+        
+        if (Yii::app()->contEd('pla') && $this->associationType === 'AnonContact') {
+            $maxAnonActions = Yii::app()->settings->maxAnonActions;
+            $count = Yii::app()->db->createCommand()
+                ->select('COUNT(*)')
+                ->where(
+                    'associationType="AnonContact" AND associationId=:id',
+                    array(':id'=>$this->associationId))
+                ->from('x2_actions')
+                ->queryScalar();
+            if ($count >= $maxAnonActions) {
+                // Remove the last modified Actions associated with this AnonContact
+                // if the limit has been reached.
+                $lastModifiedId = Yii::app()->db->createCommand()
+                    ->select('id')
+                    ->from('x2_actions')
+                    ->where(
+                        'associationType="anoncontact" AND associationId=:id',
+                        array(':id'=>$this->associationId))
+                    ->order('lastUpdated ASC')
+                    ->queryScalar();
+                X2Model::model('Actions')->deleteByPk($lastModifiedId);
+            }
+        }
         
 
         return parent::beforeSave();
     }
 
     public function beforeDelete() {
+        
+        ActionTimer::model()->deleteAllByAttributes(array('actionId'=>$this->id));
         
         return parent::beforeDelete();
     }
@@ -524,6 +566,23 @@ class Actions extends X2Model {
         }
 
         
+        
+        $this->saveActionLineItems ();
+        // Create a new action timer for this action with start/end time, if it
+        // is necessary, and one doesn't already exist:
+        $timers = $this->getRelated('timers');
+        if($this->isTimedType && $this->timeSpent > 0 && empty($timers) && 
+            !$this->skipActionTimers) {
+
+            $timer = new ActionTimer;
+            $timer->userId = Yii::app()->getSuID ();
+            $timer->actionId = $this->id;
+            $timer->associationType = X2Model::getModelName($this->associationType);
+            $timer->associationId = $this->associationId;
+            $timer->timestamp = $this->dueDate;
+            $timer->endtime = $this->completeDate;
+            $timer->save();
+        }
         
 
         parent::afterSave();
@@ -660,6 +719,34 @@ class Actions extends X2Model {
         }
 
          
+        // Adjust the time according to timers given and associate all
+        // timer records with this action
+        if(!empty($this->_timerIds)){
+            $timerIds = explode(',', $this->_timerIds);
+            $params = array();
+            foreach($timerIds as $id){
+                $params[":timer$id"] = $id;
+            }
+            $wherein = '('.implode(',', array_keys($params)).')';
+            Yii::app()->db->createCommand()
+                ->update(
+                    ActionTimer::model()->tableName(), 
+                    array('actionId' => $this->id),
+                    "`id` IN ".$wherein, $params);
+            $timeSpent = ActionTimer::actionTimeSpent($this->id);
+            if($timeSpent > 0){
+                $this->timeSpent = $timeSpent;
+                $this->update(array('timeSpent'));
+            }
+        }
+
+        if ($this->associationType !== Actions::ASSOCIATION_TYPE_MULTI) {
+            $associationModelName =  X2Model::getModelName($this->associationType);
+            if (class_exists ($associationModelName, false))
+                self::updateTimerTotals(
+                    $this->associationId, X2Model::getModelName($this->associationType));
+        }
+         
 
         parent::afterCreate();
     }
@@ -671,6 +758,9 @@ class Actions extends X2Model {
     public function afterDelete(){
         X2Model::model('Events')->deleteAllByAttributes(array('associationType' => 'Actions', 'associationId' => $this->id, 'type' => 'action_reminder'));
         X2Model::model('ActionText')->deleteByPk($this->id);
+         
+        if ($this->quoteId && $this->type === 'products') 
+            Quote::model()->deleteByPk ($this->quoteId);
          
         parent::afterDelete();
     }
@@ -687,6 +777,22 @@ class Actions extends X2Model {
     }
 
      
+    public function setEmailImapUid ($value) {
+        $this->metaDataTemp['emailImapUid'] = $value;
+    }
+
+    public function setEmailInboxId ($value) {
+        $this->metaDataTemp['emailInboxId'] = $value;
+    }
+
+    public function setEmailFolderName ($value) {
+        $this->metaDataTemp['emailFolderName'] = $value;
+    }
+
+    public function setEmailUidValidity ($value) {
+        $this->metaDataTemp['emailUidValidity'] = $value;
+    }
+     
 
     public function setActionDescription($value){
         // Magic setter stores value in actionDescriptionTemp until saved
@@ -701,6 +807,22 @@ class Actions extends X2Model {
         return $this->metaDataTemp['eventStatus'];
     }
 
+     
+    public function getEmailImapUid () {
+        return $this->metaDataTemp['emailImapUid'];
+    }
+
+    public function getEmailInboxId () {
+        return $this->metaDataTemp['emailInboxId'];
+    }
+
+    public function getEmailFolderName () {
+        return $this->metaDataTemp['emailFolderName'];
+    }
+
+    public function getEmailUidValidity() {
+        return $this->metaDataTemp['emailUidValidity'];
+    }
      
 
     public function getActionDescription(){
@@ -1279,6 +1401,56 @@ class Actions extends X2Model {
         return $this->type == 'time' || $this->type == 'call';
     }
 
+     // used for products actions
+    /**
+     * Returns dummy quote model which can be used to retrieve the products action line items.
+     * @return object
+     */
+    private $_actionsDummyQuote;
+    public function getActionsDummyQuote () {
+        if (!isset ($this->_actionsDummyQuote)) {
+            $quote = Quote::model ()->findByPk ($this->quoteId);
+            if (!$quote) {
+                $quote = new Quote;
+                $quote->name = 'dummyQuote';
+                $quote->type = 'dummyQuote';
+            }
+            $this->_actionsDummyQuote = $quote;
+        }
+        return $this->_actionsDummyQuote;
+    }
+
+    /**
+     * Associate this action with line items.   
+     * For products type actions. Allows line items to be associated with an action. In order to
+     * reuse the code used in the Quotes module for handling line items, a dummy quote model is
+     * used whose sole purpose is to manage the line items associated with the action.
+     * @param array $lineItems
+     */
+    public function setActionLineItems ($lineItems) {
+        $dummyQuote = $this->getActionsDummyQuote ();
+        $dummyQuote->setLineItems ($lineItems);
+    }
+
+    /**
+     * Save line items attached to dummy quote and associate quote with action
+     */
+    public function saveActionLineItems () {
+        if ($this->type === 'products') {
+            $dummyQuote = $this->getActionsDummyQuote ();
+            if (!$dummyQuote->hasLineItemErrors && 
+                $dummyQuote->save ()) {
+
+                $dummyQuote->disableBehavior ('changelog');
+                $dummyQuote->saveLineItems ();
+                // use updateByPk to prevent infinite looping (this method is called from
+                // afterSave, which is itself called by update and save)
+                $this->updateByPk ($this->id, array (
+                    'quoteId' => $dummyQuote->id,
+                ));
+            }
+        }
+    }
       
 
     /**

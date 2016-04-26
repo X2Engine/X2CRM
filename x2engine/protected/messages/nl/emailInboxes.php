@@ -64,4 +64,5 @@
   'Disabled' => 'invalide',
   'Failed to associate message "{subject}" with {type} {model}' => 'Mislukt bericht associëren &quot; {subject} &quot; met {type} {model}',
   'Message "{subject}" already associated with {type} {model}' => 'Message &quot; {subject} &quot; reeds in verband met {type} {model}',
+  'Disable Quota Operations' => 'Uitschakelen Quota Operations',
 );

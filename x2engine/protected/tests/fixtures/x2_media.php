@@ -12,6 +12,7 @@ return array(
 		'private' => NULL,
 		'description' => NULL,
 		'mimetype' => NULL,
+                'accessKey' => 'd84e7834f79223ad17981fe3f9e61b12ae5c012345cbc29bcfe1d7b982edc9b9',
 	),
 	'image' => array(
 		'id' => '14',

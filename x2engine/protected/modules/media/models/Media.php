@@ -1,6 +1,6 @@
 <?php
-/*****************************************************************************************
- * X2Engine Open Source Edition is a customer relationship management program developed by
+/*************************************************************************************
+ * X2CRM is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2016 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
@@ -21,7 +21,8 @@
  * 02110-1301 USA.
  * 
  * You can contact X2Engine, Inc. P.O. Box 66752, Scotts Valley,
- * California 95067, USA. or at email address contact@x2engine.com.
+ * California 95067, USA. on our website at www.x2crm.com, or at our
+ * email address: contact@x2engine.com.
  * 
  * The interactive user interfaces in modified source and object code versions
  * of this program must display Appropriate Legal Notices, as required under
@@ -32,7 +33,7 @@
  * X2Engine" logo. If the display of the logo is not reasonably feasible for
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2Engine".
- *****************************************************************************************/
+ **********************************************************************************/
 
 /**
  * This is the model class for table "x2_media".
@@ -60,6 +61,18 @@ class Media extends X2Model {
         return parent::model($className);
     }
 
+     
+    private static $_loginLogo;
+    public static function getLoginLogo () {
+        if (!isset (self::$_loginLogo)) {
+            $logo = Media::model()->findByAttributes(array(
+                'associationId' => 1,
+                'associationType' => 'loginLogo'
+            ));
+            self::$_loginLogo = $logo;
+        }
+        return self::$_loginLogo;
+    }
      
 
     private static $_menuLogo;
@@ -155,13 +168,13 @@ class Media extends X2Model {
 
     public function behaviors() {
         $behaviors = array_merge(parent::behaviors(), array(
-            'X2LinkableBehavior' => array(
-                'class' => 'X2LinkableBehavior',
+            'LinkableBehavior' => array(
+                'class' => 'LinkableBehavior',
                 'module' => 'media',
                 'autoCompleteSource' => null
             ),
             'ERememberFiltersBehavior' => array(
-                'class' => 'application.components.ERememberFiltersBehavior',
+                'class' => 'application.components.behaviors.ERememberFiltersBehavior',
                 'defaults' => array(),
                 'defaultStickOnClear' => false
             )
@@ -301,7 +314,7 @@ class Media extends X2Model {
      */
     public function getPath() {
         if (!isset($this->_path)) {
-            if ($this->associationType === 'logo') { // an exception for logos, fileName equals path name
+            if ($this->associationType === 'logo' || $this->associationType === 'loginLogo') { // an exception for logos, fileName equals path name
                 $this->_path = $this->fileName;
             } else {
                 $pathFmt = array(
@@ -594,8 +607,15 @@ class Media extends X2Model {
 
     public function getDownloadLink($text = null, $htmlOptions = array()) {
         $text = !isset($text) ? '[' . CHtml::encode(Yii::t('media', 'Download')) . ']' : $text;
+             
+        if (Yii::app()->params->isPhoneGap) {
+            $url = Yii::app()->createAbsoluteUrl (
+                '/media/media/download', array ('id' => $this->id));
+        } else {
          
             $url = Yii::app()->createUrl ('/media/media/download', array ('id' => $this->id));
+         
+        }
          
         return CHtml::link ($text, $url, $htmlOptions);
     }

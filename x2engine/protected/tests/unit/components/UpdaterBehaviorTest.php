@@ -1,7 +1,7 @@
 <?php
 
-/*****************************************************************************************
- * X2Engine Open Source Edition is a customer relationship management program developed by
+/***********************************************************************************
+ * X2CRM is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2016 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
@@ -22,7 +22,8 @@
  * 02110-1301 USA.
  * 
  * You can contact X2Engine, Inc. P.O. Box 66752, Scotts Valley,
- * California 95067, USA. or at email address contact@x2engine.com.
+ * California 95067, USA. on our website at www.x2crm.com, or at our
+ * email address: contact@x2engine.com.
  * 
  * The interactive user interfaces in modified source and object code versions
  * of this program must display Appropriate Legal Notices, as required under
@@ -33,7 +34,7 @@
  * X2Engine" logo. If the display of the logo is not reasonably feasible for
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2Engine".
- *****************************************************************************************/
+ **********************************************************************************/
 
 Yii::import('application.components.util.*');
 
@@ -767,6 +768,24 @@ class UpdaterBehaviorTest extends FileOperTestCase {
 
     }
 
+    
+    /**
+     * No longer used after edition change.
+     * @deprecated
+     */
+    /*
+    public function testCheckPartner() {
+        
+        $ube = $this->instantiateUBe();
+        $expected = array(
+            'about' => '3ba18b7816cfbae73f59c1a86a860f1d',
+            'footer' => '75c98b390e04c0f48dd7d8b948da2905',
+            'login' => '0c9b402dbca317a1cee1a9a85b19b559',
+        );
+        $this->assertEquals($expected,$ube->checkPartner());
+    }
+     * 
+     */
     
 
     public function testCheckUpdates() {

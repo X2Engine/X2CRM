@@ -1,0 +1,90 @@
+Delivered-To: dropbox@testdomain.com
+Received: by 10.112.60.137 with SMTP id h9csp143139lbr;
+        Thu, 19 Jul 2012 11:28:43 -0700 (PDT)
+Received: by 10.236.173.9 with SMTP id u9mr2491966yhl.129.1342722522683;
+        Thu, 19 Jul 2012 11:28:42 -0700 (PDT)
+Return-Path: <sales@rep.com>
+Received: from aimailbox.com (aimailbox.com. [72.158.135.204])
+        by mx.google.com with ESMTP id s62si2630519yhm.25.2012.07.19.11.28.37;
+        Thu, 19 Jul 2012 11:28:42 -0700 (PDT)
+Received-SPF: neutral (google.com: 72.158.135.204 is neither permitted nor denied by best guess record for domain of sales@rep.com) client-ip=72.158.135.204;
+Authentication-Results: mx.google.com; spf=neutral (google.com: 72.158.135.204 is neither permitted nor denied by best guess record for domain of sales@rep.com) smtp.mail=sales@rep.com
+Received: from localhost (localhost.localdomain [127.0.0.1])
+	by aimailbox.com (Postfix) with ESMTP id A801CC8D8034
+	for <dropbox@testdomain.com>; Thu, 19 Jul 2012 14:11:52 -0400 (EDT)
+X-Virus-Scanned: amavisd-new at aimailbox.com
+Received: from aimailbox.com ([127.0.0.1])
+	by localhost (aimailbox.com [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id uuSbuRQvFd94 for <dropbox@testdomain.com>;
+	Thu, 19 Jul 2012 14:11:46 -0400 (EDT)
+Received: from [192.168.1.100] (c-71-226-161-52.hsd1.sc.comcast.net [71.226.161.52])
+	by aimailbox.com (Postfix) with ESMTPSA id 68773C1F80A0
+	for <dropbox@testdomain.com>; Thu, 19 Jul 2012 14:11:44 -0400 (EDT)
+Message-ID: <500851D9.9090400@redacted.com>
+Date: Thu, 19 Jul 2012 14:28:41 -0400
+From: Sales Rep <sales@rep.com>
+Organization: Redacted Firm
+User-Agent: Mozilla/5.0 (Windows NT 6.0; rv:14.0) Gecko/20120713 Thunderbird/14.0
+MIME-Version: 1.0
+To: Drop Box <dropbox@testdomain.com>
+Subject: Fwd: Building an email parsing feature for X2Engine
+References: <CACwGMC0YTp-RaqETGrvqQwC3XV_JqSpevsYWT9mTG3=DgQApxg@mail.gmail.com>
+In-Reply-To: <CACwGMC0YTp-RaqETGrvqQwC3XV_JqSpevsYWT9mTG3=DgQApxg@mail.gmail.com>
+X-Forwarded-Message-Id: <CACwGMC0YTp-RaqETGrvqQwC3XV_JqSpevsYWT9mTG3=DgQApxg@mail.gmail.com>
+Content-Type: multipart/alternative;
+ boundary="------------050907060308030104060803"
+
+This is a multi-part message in MIME format.
+--------------050907060308030104060803
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
+
+Hi Developer
+Thanks, this sounds great! One issue I have is setting up my email and using
+crm. I use thunderbird for my email, wish gmail was free for businesses.
+
+Everything is good. I have been out for almost 10 days with packing, moving
+and unpacking. We relocated to South Carolina, right outside of Charleston.
+%123%
+
+Starting to get back in the swing.
+
+Best Regards,
+
+sales@rep.com
+www.redacted.com
+
+
+
+
+-------- Original Message --------
+Subject: 	Building an email parsing feature for X2Engine
+Date: 	Wed, 18 Jul 2012 15:50:34 -0700
+From: 	Test Contact <customer@prospect.com>
+To: 	Sales Rep <sales@rep.com>
+
+
+
+Hello Redacted,
+%123%
+I am currently working on an email parser that will allow you to import 
+emails and contacts directly into X2Engine by sending emails to a mail 
+alias on the server. As it stands, it's capable of  creating contacts 
+(if they don't already exist) and associated email-type actions 
+(including the body of the email) by CC-ing 
+"dropbox@crm.redacted.com 
+<mailto:dropbox@crm.redacted.com>" whenever you email a lead. 
+However, I'll soon make it possible to directly forward email from a 
+lead to the alias, and have the parser do the same thing but without 
+having to send email back to the lead. To finish this part, I will need 
+you to forward this email back to me using your email software of 
+choice. That will allow me to get a good look at the format of the 
+forwarded/attached email so that I can adjust the parser to accommodate 
+it and it can work properly on your VPS. In time, more advanced features 
+will be added as well.
+
+Sincerely,
+- Developer
+
+P.S. How have things been going?
+--

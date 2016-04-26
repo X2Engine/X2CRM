@@ -64,4 +64,5 @@
   'Disabled' => 'Niepełnosprawny',
   'Failed to associate message "{subject}" with {type} {model}' => 'Nie udało się powiązać komunikat &quot; {subject} &quot; z {type} {model}',
   'Message "{subject}" already associated with {type} {model}' => 'Wiadomość &quot; {subject} &quot; już związane z {type} {model}',
+  'Disable Quota Operations' => 'Wyłącz operacje przydziałów',
 );

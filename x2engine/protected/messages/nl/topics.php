@@ -19,4 +19,6 @@
   'Most Recent' => 'Meest recente',
   'Alphabetical' => 'Alfabetische',
   'Most Popular' => 'Meest populair',
+  '{poster}posted a new reply to {topic}.' => '{poster} plaatste een nieuwe reactie op {topic} .',
+  '{poster}posted a new reply to a topic, but that reply has been deleted.' => '{poster} postte een nieuw antwoord op een onderwerp, maar dat antwoord is verwijderd.',
 );

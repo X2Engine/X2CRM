@@ -1,5 +1,5 @@
-/*****************************************************************************************
- * X2Engine Open Source Edition is a customer relationship management program developed by
+/***********************************************************************************
+ * X2CRM is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2016 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
@@ -20,7 +20,8 @@
  * 02110-1301 USA.
  * 
  * You can contact X2Engine, Inc. P.O. Box 66752, Scotts Valley,
- * California 95067, USA. or at email address contact@x2engine.com.
+ * California 95067, USA. on our website at www.x2crm.com, or at our
+ * email address: contact@x2engine.com.
  * 
  * The interactive user interfaces in modified source and object code versions
  * of this program must display Appropriate Legal Notices, as required under
@@ -31,7 +32,7 @@
  * X2Engine" logo. If the display of the logo is not reasonably feasible for
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2Engine".
- *****************************************************************************************/
+ **********************************************************************************/
 
 /**
  * Manages behavior of profile widgets as a set. Behavior of individual profile widgets is managed
@@ -49,6 +50,8 @@ function ProfileWidgetManager (argsDict) {
         widgetType: 'profile',
         connectedContainerSelector: '', // class shared by all columns containing sortable widgets
         createProfileWidgetUrl: '',
+        
+        createChartingWidgetUrl: ''
         
     };
     auxlib.applyArgs (this, defaultArgs, argsDict);
@@ -130,6 +133,39 @@ ProfileWidgetManager.prototype._createProfileWidget = function (widgetType, call
 };
 
 
+/**
+ * Creates a charting widget on the dashboard. 
+ * Since the options are the charting layouts in reports, 
+ * We use all the information necessary to call add to dashbaord
+ * in the reports controller
+ */
+ProfileWidgetManager.prototype._createChartingWidget = function (settings,callback) {
+    var that = this;
+
+    $.ajax ({
+        url: this.createChartingWidgetUrl,
+        data: {
+            widgetClass: settings['widgetClass'],
+            widgetUID: settings['widgetUID'],
+            destination: 'profile',
+            widgetType: 'data',
+            settingsModelName: 'Reports',
+            settingsModelId: settings['modelId']
+        },
+        type: 'GET',
+        dataType: 'json',
+        success: function (data) {
+            if (data !== 'failure') {
+                $(that._widgetsBoxSelector).append (data.widget);
+                hideShowHiddenWidgetSubmenuDividers ();
+                that._afterShowWidgetContents ();
+                callback ();
+            }
+        }
+    });
+};
+
+
 
 ProfileWidgetManager.prototype._setUpCreateWidgetDialog = function () {
     var that = this;
@@ -153,6 +189,14 @@ ProfileWidgetManager.prototype._setUpCreateWidgetDialog = function () {
                         dialog$.dialog ('close'); }; 
 
                     
+                    // Create a special case for a datawidget
+                    if (widgetType == 'DataWidget') {
+                        var settings = JSON.parse($(this).find('#chartName').val());
+                        that._createChartingWidget(settings, callback);
+                        return;
+                    }
+
+                    
 
                     that._createProfileWidget (widgetType, callback);
                 }
@@ -160,6 +204,10 @@ ProfileWidgetManager.prototype._setUpCreateWidgetDialog = function () {
         ]
     });
 
+    
+    dialog$.find('#widgetType').change(function (){
+        dialog$.find('#chart-name-container').toggle ($(this).val() == 'DataWidget');
+    })
     
 
     // create-profile-widget-button

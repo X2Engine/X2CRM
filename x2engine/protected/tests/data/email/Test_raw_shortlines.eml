@@ -1,0 +1,11 @@
+From: "Sales Rep" <sales@rep.com>
+Reply-to: "Sales Rep" <sales@rep.com>
+Subject: Testing short lines collapse
+To: "Test Contact" <customer@prospect.com>
+CC: dropbox@testdomain.com
+
+Testing testing 123.
+
+This is a test of the email dropbox.
+
+These lines should be separate!

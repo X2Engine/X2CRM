@@ -1,6 +1,6 @@
 <?php
-/*****************************************************************************************
- * X2Engine Open Source Edition is a customer relationship management program developed by
+/***********************************************************************************
+ * X2CRM is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2016 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
@@ -21,7 +21,8 @@
  * 02110-1301 USA.
  * 
  * You can contact X2Engine, Inc. P.O. Box 66752, Scotts Valley,
- * California 95067, USA. or at email address contact@x2engine.com.
+ * California 95067, USA. on our website at www.x2crm.com, or at our
+ * email address: contact@x2engine.com.
  * 
  * The interactive user interfaces in modified source and object code versions
  * of this program must display Appropriate Legal Notices, as required under
@@ -32,7 +33,7 @@
  * X2Engine" logo. If the display of the logo is not reasonably feasible for
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2Engine".
- *****************************************************************************************/
+ **********************************************************************************/
 
 Yii::app()->clientScript->registerCssFile(
     Yii::app()->theme->baseUrl.'/css/views/profile/googleProjectForm.css');
@@ -52,6 +53,8 @@ echo X2Html::unorderedList (array (
     CHtml::encode (Yii::t('app', 'Google sign in')),
     CHtml::encode (Yii::t('app', 'Google Calendar sync')),
     CHtml::encode (Yii::t('app', 'Google Drive access')),
+     
+    CHtml::encode (Yii::t('app', 'Google+ Profile widget and profile search')),
      
 ));
 
@@ -112,6 +115,29 @@ echo X2Html::orderedList (array (
             )),
         ), array ('style' => 'list-style-type: lower-latin;')),
      
+    Yii::t('app', 'To configure Google integration for the Google+ widget:').
+        X2Html::orderedList (array (
+            CHtml::encode (
+                Yii::t('app', 'From the "APIs & auth" section in the left sidebar, select "APIs."')
+            ),
+            CHtml::encode (
+                Yii::t('app', 'Search for and enable the Google+ API.')
+            ),
+            CHtml::encode (
+                Yii::t('app', 'From the "APIs & auth" section in the left sidebar, select '.
+                    '"Credentials."')
+            ),
+            CHtml::encode (
+                Yii::t('app', 'Create an API key.')
+            ),
+            CHtml::encode (
+                Yii::t('app', 'When asked for key type, select "Server key."')
+            ),
+            Yii::t('app', 'Copy the API key into the Google+ Integration section {below}.', array (
+                '{below}' => CHtml::link (Yii::t('app', 'below'), '#api-key')
+            )),
+        ), array ('style' => 'list-style-type: lower-latin;')),
+     
 ), array ('class' => 'config-instructions'));
 
 echo X2Html::fragmentTarget ('oauth-2.0');
@@ -127,6 +153,12 @@ $model->renderProtectedInput ('clientId');
 echo CHtml::activeLabel($model, 'clientSecret');
 $model->renderProtectedInput ('clientSecret');
 
+ 
+echo X2Html::fragmentTarget ('api-key');
+echo CHtml::tag ('h3', array (), Yii::t('app', 'Google+ Integration'));
+echo '<hr />';
+echo CHtml::activeLabel($model, 'apiKey');
+$model->renderProtectedInput ('apiKey');
  
 
 echo CHtml::tag ('h3', array (), Yii::t('app', 'Google Analytics Integration'));

@@ -240,6 +240,8 @@ class Modules extends CActiveRecord {
         $skipModules = array(
             'Calendar', 'Charts', 'Groups', 'Reports', 'Media', 'Users', 'Workflow');
         
+        $skipModules[] = 'EmailInboxes';
+        
         foreach($modules as $module){
             $name = ucfirst($module->name);
             if (in_array($name, $skipModules)) {

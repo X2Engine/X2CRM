@@ -1,6 +1,6 @@
 <?php
-/*****************************************************************************************
- * X2Engine Open Source Edition is a customer relationship management program developed by
+/***********************************************************************************
+ * X2CRM is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2016 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
@@ -21,7 +21,8 @@
  * 02110-1301 USA.
  * 
  * You can contact X2Engine, Inc. P.O. Box 66752, Scotts Valley,
- * California 95067, USA. or at email address contact@x2engine.com.
+ * California 95067, USA. on our website at www.x2crm.com, or at our
+ * email address: contact@x2engine.com.
  * 
  * The interactive user interfaces in modified source and object code versions
  * of this program must display Appropriate Legal Notices, as required under
@@ -32,7 +33,7 @@
  * X2Engine" logo. If the display of the logo is not reasonably feasible for
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2Engine".
- *****************************************************************************************/
+ **********************************************************************************/
 
 Yii::import('application.components.Ical');
 
@@ -137,6 +138,41 @@ class CalendarController extends x2base {
         }
     }
 
+    
+
+    /**
+     * Formats calendars in iCal format, for third-party calendar software.
+     * @param type $user
+     * @param type $key
+     */
+    public function actionIcal($user,$key,$calendars=null,$daysAhead=30,$daysBehind=30) {
+        $user = User::model()->findByAlias($user);
+        if(!($user instanceof User) || $user->calendarKey != $key) {
+            header('Status: 401 Forbidden');
+            Yii::app()->end();
+        }
+        $this->_currentUser = $user;
+        Yii::app()->setSuModel($user);
+        // It may be necessary to instead use 'text/calendar' as the
+        // content type in some instances, e.g., Google.
+        header('Content-Type: text/plain');
+
+        $calendars = isset($_GET['calendars'])? explode(',',$_GET['calendars']) : array($user->username);
+        $start = (isset($_GET['start']))? $_GET['start'] : time() - 86400 * $daysBehind;
+        $end = (isset($_GET['end']))? $_GET['end'] : time() + 86400 * $daysAhead;
+        $calendarActions = array();
+
+        // Retrieve relevent actions
+        foreach ($calendars as $cal) {
+            $userCal = self::calendarActions($cal, $start, $end);
+            if ($userCal != null && is_array($userCal))
+                $calendarActions = array_merge($calendarActions, $userCal);
+        }
+
+        $ical = new Ical;
+        $ical->setActions($calendarActions);
+        $ical->render();
+    }
     
 
     /**

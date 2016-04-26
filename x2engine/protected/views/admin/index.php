@@ -1,6 +1,6 @@
 <?php
-/*****************************************************************************************
- * X2Engine Open Source Edition is a customer relationship management program developed by
+/***********************************************************************************
+ * X2CRM is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2016 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
@@ -21,7 +21,8 @@
  * 02110-1301 USA.
  * 
  * You can contact X2Engine, Inc. P.O. Box 66752, Scotts Valley,
- * California 95067, USA. or at email address contact@x2engine.com.
+ * California 95067, USA. on our website at www.x2crm.com, or at our
+ * email address: contact@x2engine.com.
  * 
  * The interactive user interfaces in modified source and object code versions
  * of this program must display Appropriate Legal Notices, as required under
@@ -32,7 +33,7 @@
  * X2Engine" logo. If the display of the logo is not reasonably feasible for
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2Engine".
- *****************************************************************************************/
+ **********************************************************************************/
 
 Yii::app()->clientScript->registerCssFile(Yii::app()->theme->baseUrl.'/css/views/admin/index.css');
 
@@ -63,6 +64,12 @@ $editionEnd = function($edition) {
     <h2 style="padding-left:0"><?php echo Yii::t('app','Administration Tools'); ?></h2>
     <?php
     
+    if(X2_PARTNER_DISPLAY_BRANDING){
+        $partnerAbout = Yii::getPathOfAlias('application.partner').DIRECTORY_SEPARATOR.'aboutPartner.php';
+        $partnerAboutExample = Yii::getPathOfAlias('application.partner').DIRECTORY_SEPARATOR.'aboutPartner_example.php';
+        echo CHtml::link(Yii::t('app', 'About {product}', array('{product}' => CHtml::encode(X2_PARTNER_PRODUCT_NAME))), array('/site/page', 'view' => 'aboutPartner'), array('class' => 'x2-button right'));
+    }
+    
     echo CHtml::link(Yii::t('admin','About X2Engine'),array('/site/page','view'=>'about'),array('class'=>'x2-button right'));
     ?>
 </div>
@@ -80,22 +87,17 @@ if(Yii::app()->session['versionCheck']==false && $admin->updateInterval > -1 && 
 ?>
 <div class="form x2-layout-island license-info-section">
     <div class="row">
-        <div class='cell span-9'>
-	        <b><?php echo Yii::app()->getEditionLabel(true); ?></b><br>
+        <div class='cell span-10'>
+	        <b>X2CRM | X2Engine - Enterprise CRM for Small Business</b><br>
         </div>
         <div class='cell span-9'>
             <b><?php echo Yii::t('app','Version')." ".Yii::app()->params->version;?></b><br>
         </div>
     </div>
-<?php
- 
-?>
-    <?php if (Yii::app()->edition != 'pla') { ?>
     <div class="row">
-        <div class="cell span-9" title="<?php echo CHtml::encode (Yii::t('admin','Upgrade X2CRM to get exclusive features and service. License key and registration info required.')); ?>"><?php echo CHtml::link(Yii::t('admin','Upgrade X2CRM'),array('/admin/updater','scenario'=>'upgrade')); ?>
-        </div>
+        <?php echo Yii::t('app','Web: {website}',array('{website}'=>CHtml::link('www.x2crm.com','https://www.x2crm.com'))); ?> | 
+        <?php echo Yii::t('app','Email: {email}',array('{email}' => CHtml::link('contact@x2engine.com','mailto:contact@x2engine.com')));?>
     </div>
-    <?php } ?>
 </div>
 <div class="form x2-layout-island">
     <h2 id="admin-support"><?php echo Yii::t('admin','Customer Support'); ?></h2>
@@ -114,9 +116,6 @@ if(Yii::app()->session['versionCheck']==false && $admin->updateInterval > -1 && 
             <br><?php 
             echo CHtml::link ('www.x2crm.com/support', 'http://www.x2crm.com/support'); 
             ?>
-            <br>
-            <?php
-            echo CHtml::link('831-222-5333', 'callto:8312225333'); ?>&nbsp;California PST
         </div>
         <?php
         $editionEnd ('pro');
@@ -238,8 +237,14 @@ if(Yii::app()->session['versionCheck']==false && $admin->updateInterval > -1 && 
     <div class="row">
         <div class="cell span-6"><?php echo CHtml::link(Yii::t('admin','Edit Global CSS'),array('/admin/editGlobalCss')); ?><br><?php echo Yii::t('admin','Edit globally-applied stylesheet');?></div>
         <div class="cell span-6"><?php echo CHtml::link(Yii::t('admin','Mobile App Form Editor'),array('/admin/editMobileForms')); ?><br><?php 
+             
+        if (Yii::app()->contEd ('pro')) {
+            echo Yii::t('admin', 'Edit form layouts for X2Touch.');
+        } else {
          
             echo Yii::t('admin', 'Edit form layouts for X2Touch.');
+         
+        }
          
         ?></div>
     </div>

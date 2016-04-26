@@ -64,4 +64,5 @@
   'Disabled' => '장애인',
   'Failed to associate message "{subject}" with {type} {model}' => '&quot;메시지를 연결하는 데 실패 {subject} 에&quot; {type} {model}',
   'Message "{subject}" already associated with {type} {model}' => '메시지 &quot; {subject} &quot;이미와 관련된 {type} {model}',
+  'Disable Quota Operations' => '할당량 작업을 사용하지 않도록 설정',
 );

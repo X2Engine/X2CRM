@@ -2,6 +2,9 @@
 if(file_exists($customContstants = __DIR__.DIRECTORY_SEPARATOR.'constants-custom.php'))
     require_once $customContstants;
 
+if(file_exists($brandingConstants = implode(DIRECTORY_SEPARATOR, array(__DIR__,'protected','partner','branding_constants.php'))))
+    require_once $brandingConstants;
+
 
 
 // remove the following lines when in production mode

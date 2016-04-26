@@ -1,6 +1,6 @@
 <?php
-/*****************************************************************************************
- * X2Engine Open Source Edition is a customer relationship management program developed by
+/***********************************************************************************
+ * X2CRM is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2016 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
@@ -21,7 +21,8 @@
  * 02110-1301 USA.
  * 
  * You can contact X2Engine, Inc. P.O. Box 66752, Scotts Valley,
- * California 95067, USA. or at email address contact@x2engine.com.
+ * California 95067, USA. on our website at www.x2crm.com, or at our
+ * email address: contact@x2engine.com.
  * 
  * The interactive user interfaces in modified source and object code versions
  * of this program must display Appropriate Legal Notices, as required under
@@ -32,7 +33,7 @@
  * X2Engine" logo. If the display of the logo is not reasonably feasible for
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2Engine".
- *****************************************************************************************/
+ **********************************************************************************/
 
 $isGuest = Yii::app()->user->isGuest;
 $auth = Yii::app()->authManager;
@@ -68,6 +69,35 @@ if ($isAdmin && file_exists(
     Yii::app()->session['alertUpdate'] = false;
 }
 
+
+// Warn the administrator if their license key has expired
+$expirationDate = Yii::app()->settings->getProductKeyExpirationDate ();
+if ($isAdmin && isset($expirationDate)) {
+    $supportLink = CHtml::link ('X2Engine', 'http://www.x2crm.com');
+    
+    if (X2_PARTNER_DISPLAY_BRANDING) {
+        $supportLink = CHtml::link (X2_PARTNER_PRODUCT_NAME, X2_PARTNER_RENEWAL_LINK_URL);
+    }
+    
+
+    if ($expirationDate === 'invalid') {
+        Yii::app()->user->setFlash ('admin.licenseError', Yii::t ('admin', 'Your license is invalid. Please contact {link} to purchase a new license.', array(
+            '{link}' => $supportLink,
+        )));
+    } else if ($expirationDate < time()) {
+        $dateString = Yii::app()->dateFormatter->formatDateTime ($expirationDate,'long',null);
+        Yii::app()->user->setFlash ('admin.licenseError', Yii::t ('admin', 'Your license is expired as of {date}. Please contact {link} to complete your renewal.', array(
+            '{date}' => $dateString,
+            '{link}' => $supportLink,
+        )));
+    } else if ($expirationDate < time() + (7 * 24 * 60 * 60)) {
+        $dateString = Yii::app()->dateFormatter->formatDateTime ($expirationDate,'long',null);
+        Yii::app()->user->setFlash ('admin.licenseWarning', Yii::t ('admin', 'Your license is about to expire on {date}. Please contact {link} to complete your renewal.', array(
+            '{date}' => $dateString,
+            '{link}' => $supportLink,
+        )));
+    }
+}
 
 
 if(is_int(Yii::app()->locked)) {
@@ -210,7 +240,21 @@ foreach($modules as $moduleItem){
             'url' => array("/profile/activity"),
             'active' => (strtolower($module) == strtolower($name)) ? true : null);
         continue;
-    }  
+    }  elseif ($name === 'charts') { 
+        if (!(Yii::app()->params->isAdmin || 
+            Yii::app()->user->checkAccess('ReportsChartDashboard'))) { 
+
+            continue;
+        }
+
+        $menuItems[$name] = array(
+            'label' => Yii::t('app', $title), 
+            'itemOptions' => array ('class' => 'top-bar-module-link'),
+            'url' => array("/reports/chartDashboard"),
+            'active' => (strtolower($module) == 'reports' &&
+                Yii::app()->controller->getAction ()->getId () === 'chartDashboard') ? true : null);
+        continue;
+    } 
 
     if ($moduleItem->moduleType === 'module') { 
         $file = Yii::app()->file->set('protected/controllers/'.ucfirst($name).'Controller.php');
@@ -233,6 +277,11 @@ foreach($modules as $moduleItem){
             if($permission){
                 $active = (strtolower($module) == strtolower($name) && 
                     (!isset($_GET['static']) || $_GET['static'] != 'true')) ? true : null;
+                 
+                if ($module === 'reports' && 
+                    Yii::app()->controller->getAction ()->getId () === 'chartDashboard') {
+                    $active = false;
+                }
                  
                 $menuItems[] = array(
                     'label' => Yii::t('app', $title), 
@@ -269,7 +318,7 @@ foreach($modules as $moduleItem){
         if (isset ($moduleItem->linkRecordType) && isset ($moduleItem->linkRecordId) &&
             ($model = X2Model::model2 ($moduleItem->linkRecordType)) && 
             ($record = $model->findByPk ($moduleItem->linkRecordId)) &&
-            $record->asa ('X2LinkableBehavior') &&
+            $record->asa ('LinkableBehavior') &&
             $record->isVisibleTo (Yii::app()->params->profile->user)) {
 
             $menuItems[] = array (
@@ -398,8 +447,14 @@ $userMenuItems = array(
         'label' => Yii::t('help', 'Help'),
         'url' => 
          
+            Yii::app()->contEd ('pla') ? X2_PARTNER_HELP_LINK_URL :
+         
             'http://www.x2crm.com/reference_guide',
         'linkOptions' => array('target' => '_blank')),
+    array(
+        'label' => Yii::t('app','About'),
+        'url' => array('/site/page','view'=>'about'),
+    ),
     array(
         'label' => Yii::t('app', 'Report A Bug'),
         'url' => array('/site/bugReport')),
@@ -418,6 +473,15 @@ $userMenuItems = array(
     array('label' => Yii::t('app', 'Logout'), 'url' => array('/site/logout'))
 );
 
+
+if(X2_PARTNER_DISPLAY_BRANDING && Yii::app()->contEd('pla')){
+    $menuPt1 = array_slice($userMenuItems,0,7);
+    $menuPt2 = array_slice($userMenuItems,7);
+    $userMenuItems = array_merge($menuPt1,array(array(
+        'label' => Yii::t('app','About {product}',array('{product}'=>CHtml::encode(X2_PARTNER_PRODUCT_NAME))),
+        'url' => array('/site/page','view'=>'aboutPartner')
+    )),$menuPt2);
+}
 
 if(!$isGuest){
     $userMenu2 = array(

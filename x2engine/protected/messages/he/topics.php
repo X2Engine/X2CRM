@@ -19,4 +19,6 @@
   'Most Recent' => 'הכי עדכני',
   'Alphabetical' => 'אלפביתי',
   'Most Popular' => 'הכי פופולארי',
+  '{poster}posted a new reply to {topic}.' => '{poster} פרסמה תגובה חדשה כדי {topic} .',
+  '{poster}posted a new reply to a topic, but that reply has been deleted.' => '{poster} פרסמה תגובה חדשה לנושא, אבל התשובה שנמחקה.',
 );

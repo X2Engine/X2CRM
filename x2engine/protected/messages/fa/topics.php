@@ -19,4 +19,6 @@
   'Most Recent' => 'اخیرا',
   'Alphabetical' => 'بر اساس حروف الفبا',
   'Most Popular' => 'محبوبترین',
+  '{poster}posted a new reply to {topic}.' => '{poster} نوشته شده پاسخ جدید به {topic} .',
+  '{poster}posted a new reply to a topic, but that reply has been deleted.' => '{poster} نوشته شده پاسخ جدید به یک موضوع، اما این پاسخ حذف شده است.',
 );

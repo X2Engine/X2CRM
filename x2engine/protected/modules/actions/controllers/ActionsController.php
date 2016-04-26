@@ -1,7 +1,7 @@
 <?php
 
-/*****************************************************************************************
- * X2Engine Open Source Edition is a customer relationship management program developed by
+/***********************************************************************************
+ * X2CRM is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2016 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
@@ -22,7 +22,8 @@
  * 02110-1301 USA.
  * 
  * You can contact X2Engine, Inc. P.O. Box 66752, Scotts Valley,
- * California 95067, USA. or at email address contact@x2engine.com.
+ * California 95067, USA. on our website at www.x2crm.com, or at our
+ * email address: contact@x2engine.com.
  * 
  * The interactive user interfaces in modified source and object code versions
  * of this program must display Appropriate Legal Notices, as required under
@@ -33,7 +34,7 @@
  * X2Engine" logo. If the display of the logo is not reasonably feasible for
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2Engine".
- *****************************************************************************************/
+ **********************************************************************************/
 
 /**
  * @package application.modules.actions.controllers
@@ -360,6 +361,10 @@ class ActionsController extends x2base {
 
 //            if($association){
 //                
+//                if (Yii::app()->contEd('pla') && $model->associationType === 'anoncontact')
+//                    $model->associationName = "Anonymous Contact #".$model->associationId;
+//                else
+//                
 //                $model->associationName = $association->name;
 //                if($association->hasAttribute('lastActivity')){
 //                    $association->lastActivity = time();
@@ -374,7 +379,7 @@ class ActionsController extends x2base {
 //            if($model->associationName == 'None' && $model->associationType != 'none')
 //                $model->associationName = ucfirst($model->associationType);
 
-//            if(in_array($_POST['SelectedTab'],array('log-a-call','new-comment','log-time-spent'))){
+//            if(in_array($_POST['SelectedTab'],array('products','log-a-call','new-comment','log-time-spent'))){
 //                // Set the complete date accordingly:
 //                if(!empty($_POST[get_class($model)]['completeDate'])) {
 //                    $model->completeDate = Formatter::parseDateTime(
@@ -397,6 +402,9 @@ class ActionsController extends x2base {
 ////                } elseif($_POST['SelectedTab'] == 'log-time-spent') {
 ////                    $model->type = 'time';
 ////                 
+////                } elseif($_POST['SelectedTab'] == 'products') {
+////                    $model->type = 'products';
+////                 
 ////                } else {
 ////                    $model->type = 'note';
 ////                }
@@ -416,6 +424,10 @@ class ActionsController extends x2base {
 //                $model->disableBehavior('changelog');
 //
 //            
+//            if(!empty($_POST['timers'])) {
+//                $model->skipActionTimers = true;
+//            }
+//            
             if($model->save()){ // action saved to database *
 //                if(isset($_POST['Actions']['reminder']) && $_POST['Actions']['reminder']){
 //                    $model->createNotifications(
@@ -423,6 +435,29 @@ class ActionsController extends x2base {
 //                            $model->dueDate - ($_POST['notificationTime'] * 60),
 //                            'action_reminder');
 //                }
+                
+//                // Adjust the time according to timers given and associate all
+//                // timer records with this action
+//                if(!empty($_POST['timers'])){
+//                    $timerIds = explode(',', $_POST['timers']);
+//                    $params = array();
+//                    foreach($timerIds as $id){
+//                        $params[":timer$id"] = $id;
+//                    }
+//                    $wherein = '('.implode(',', array_keys($params)).')';
+//                    Yii::app()->db->createCommand()
+//                            ->update(ActionTimer::model()->tableName(), 
+//                                     array('actionId' => $model->id),
+//                                     "`id` IN ".$wherein, $params);
+//                    $timeSpent = ActionTimer::actionTimeSpent($model->id);
+//                    if($timeSpent > 0){
+//                        $model->timeSpent = $timeSpent;
+//                        $model->update(array('timeSpent'));
+//                    }
+//                }
+                if (isset ($_POST['lineitem'])) {
+                   $model->setActionLineItems ($_POST['lineitem']);
+                }
                 
 //                X2Model::updateTimerTotals(
 //                    $model->associationId,X2Model::getModelName($model->associationType));
@@ -606,7 +641,7 @@ class ActionsController extends x2base {
             $oldAttributes = $model->attributes;
             $model->setX2Fields($_POST['Actions']);
             if($model->lastUpdated != $oldAttributes['lastUpdated']){
-                $model->disableBehavior('X2TimestampBehavior');
+                $model->disableBehavior('TimestampBehavior');
             }
             if($model->dueDate != $oldAttributes['dueDate']){
                 $event = CActiveRecord::model('Events')
@@ -621,6 +656,41 @@ class ActionsController extends x2base {
                 }
             }
 
+            
+            if(isset($_POST['ActionTimer'])) {
+                // Update the action timers according to the form data
+                $oldTimers = $model->timers;
+                $timersById = array();
+                foreach($oldTimers as $timer) {
+                    $timersById[$timer->id] = $timer;
+                    $oldTimerIDs[] = $timer->id;
+                }
+                $newTimerIDs = $_POST['ActionTimer']['id'];
+                
+                // If they were deleted from the form they won't show up in form data
+                $dateTimeFormat = Yii::app()->locale->getDateFormat('medium')
+                    .' '.Yii::app()->locale->getTimeFormat('medium');
+                foreach($newTimerIDs as $ind => $id) {
+                    foreach(array('timestamp','endtime') as $attr) {
+                        $timersById[$id]->$attr = CDateTimeParser::parse(
+                            $_POST['ActionTimer'][$attr][$ind],
+                            $dateTimeFormat
+                        );
+                    }
+                    $timersById[$id]->type = $_POST['ActionTimer']['type'][$ind];
+                    $timersById[$id]->save();
+                }
+
+                // Delete all timer records that were removed from the form:
+                $delCriteria = new CDbCriteria();
+                $delCriteria->addInCondition('id',array_diff($oldTimerIDs,$newTimerIDs));
+                ActionTimer::model()->deleteAll($delCriteria);
+                X2Model::updateTimerTotals(
+                    $model->associationId,X2Model::getModelName($model->associationType));
+            }
+            if (isset ($_POST['lineitem'])) {
+               $model->setActionLineItems ($_POST['lineitem']);
+            }
             
 
             // $this->update($model,$oldAttributes,'0');
@@ -1015,7 +1085,7 @@ class ActionsController extends x2base {
 
 
     public function actionGetItems($term){
-        X2LinkableBehavior::getItems ($term, 'subject');
+        LinkableBehavior::getItems ($term, 'subject');
     }
 
     /**

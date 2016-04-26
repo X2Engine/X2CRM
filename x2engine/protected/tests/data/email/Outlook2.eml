@@ -1,0 +1,264 @@
+Delivered-To: dropbox@testdomain.com
+Received: by 10.112.60.137 with SMTP id h9csp29813lbr;
+        Fri, 20 Jul 2012 11:26:35 -0700 (PDT)
+Received: by 10.220.21.80 with SMTP id i16mr5256756vcb.70.1342808794757;
+        Fri, 20 Jul 2012 11:26:34 -0700 (PDT)
+Return-Path: <sales@rep.com>
+Received: from hub023-nj-1.exch023.serverdata.net (hub023-nj-1.exch023.serverdata.net. [206.225.165.108])
+        by mx.google.com with ESMTPS id nq6si1568811vcb.79.2012.07.20.11.26.32
+        (version=TLSv1/SSLv3 cipher=OTHER);
+        Fri, 20 Jul 2012 11:26:33 -0700 (PDT)
+Received-SPF: neutral (google.com: 206.225.165.108 is neither permitted nor denied by domain of sales@rep.com) client-ip=206.225.165.108;
+Authentication-Results: mx.google.com; spf=neutral (google.com: 206.225.165.108 is neither permitted nor denied by domain of sales@rep.com) smtp.mail=sales@rep.com
+Received: from MBX023-E1-NJ-4.exch023.domain.local ([10.240.8.54]) by
+ HUB023-NJ-1.exch023.domain.local ([10.240.8.30]) with mapi id 14.02.0309.002;
+ Fri, 20 Jul 2012 11:26:32 -0700
+From: Sales Rep <sales@rep.com>
+To: "Drop Box (dropbox@testdomain.com)" <dropbox@testdomain.com>
+Subject: FW: Email capturing feature for X2Engine VPS
+Thread-Topic: Email capturing feature for X2Engine VPS
+Thread-Index: AQHNZkgTBsPb4qTZK0qV2aCtXNTNh5cybyMwgAB9H4D//5FgYA==
+Date: Fri, 20 Jul 2012 18:26:31 +0000
+Message-ID: <BF6AA7800F7FC747BAAAE568816BE693017FB0AE@mbx023-e1-nj-4.exch023.domain.local>
+References: <CACwGMC0QPQ8PgokzvZZzhfeRcb7qHT19zSPWrUivSNSX7zd58A@mail.gmail.com>
+	<BF6AA7800F7FC747BAAAE568816BE693017FB016@mbx023-e1-nj-4.exch023.domain.local>
+ <CACwGMC0xd-4+bJCcAuBpHtfxHXi_JM9ghqRueAbgVWHV5gh0UA@mail.gmail.com>
+In-Reply-To: <CACwGMC0xd-4+bJCcAuBpHtfxHXi_JM9ghqRueAbgVWHV5gh0UA@mail.gmail.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach:
+X-MS-TNEF-Correlator:
+x-originating-ip: [63.249.68.130]
+Content-Type: multipart/alternative;
+	boundary="_000_BF6AA7800F7FC747BAAAE568816BE693017FB0AEmbx023e1nj4exch_"
+MIME-Version: 1.0
+
+--_000_BF6AA7800F7FC747BAAAE568816BE693017FB0AEmbx023e1nj4exch_
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+
+Hopefully this will suffice? We all use the same version of Outlook or Gmai=
+l.
+
+Thanks, Developer!
+
+Test Person
+Marketing Coordinator
+Redacted, Inc.
+Place
+Address
+City, State zip
+Email: sales@rep.com<mailto:sales@rep.com>
+Phone: redacted
+Fax: redacted
+
+From: Test Contact [mailto:customer@prospect.com]
+Sent: Friday, July 20, 2012 11:02 AM
+To: Sales Rep
+Subject: RE: Email capturing feature for X2Engine VPS
+
+
+Just one forward for each type of email software to be used with it will su=
+ffice, so if all reps use the same thing, just one should be enough. I only=
+ need to see the structure of the forwarded email so that I can add regex t=
+o match that pattern. Currently the capture supports Gmail and two versions=
+ of Outlook(?) used by other VPS tenants. %123%
+
+Another way you could do it is instruct the team to test it with their resp=
+ective email programs. I added instructions to the error message of the PHP=
+ exception that gets thrown every time a forwarded message isn't recognized=
+, so the mail service should send an auto reply with the error message in i=
+t, which instructs the user to forward that reply to me.
+On Jul 20, 2012 10:34 AM, "Sales Rep" <sales@rep.com<mailto:sales@r=
+ep.com>> wrote:
+HI Developer,
+
+This feature seems great! Do you first need me & my team to forward you a b=
+unch of emails?
+
+Thanks,
+
+Test Person
+Marketing Coordinator
+Redacted, Inc.
+Place
+Address
+City, State zip
+Email: sales@rep.com<mailto:sales@rep.com>
+Phone: redacted
+Fax: redacted
+
+
+--_000_BF6AA7800F7FC747BAAAE568816BE693017FB0AEmbx023e1nj4exch_
+Content-Type: text/html; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+
+<html xmlns:v=3D"urn:schemas-microsoft-com:vml" xmlns:o=3D"urn:schemas-micr=
+osoft-com:office:office" xmlns:w=3D"urn:schemas-microsoft-com:office:word" =
+xmlns:x=3D"urn:schemas-microsoft-com:office:excel" xmlns:m=3D"http://schema=
+s.microsoft.com/office/2004/12/omml" xmlns=3D"http://www.w3.org/TR/REC-html=
+40">
+<head>
+<meta http-equiv=3D"Content-Type" content=3D"text/html; charset=3Dus-ascii"=
+>
+<meta name=3D"Generator" content=3D"Microsoft Word 14 (filtered medium)">
+<style><!--
+/* Font Definitions */
+@font-face
+	{font-family:Calibri;
+	panose-1:2 15 5 2 2 2 4 3 2 4;}
+@font-face
+	{font-family:Tahoma;
+	panose-1:2 11 6 4 3 5 4 4 2 4;}
+/* Style Definitions */
+p.MsoNormal, li.MsoNormal, div.MsoNormal
+	{margin:0in;
+	margin-bottom:.0001pt;
+	font-size:12.0pt;
+	font-family:"Times New Roman","serif";}
+a:link, span.MsoHyperlink
+	{mso-style-priority:99;
+	color:blue;
+	text-decoration:underline;}
+a:visited, span.MsoHyperlinkFollowed
+	{mso-style-priority:99;
+	color:purple;
+	text-decoration:underline;}
+p
+	{mso-style-priority:99;
+	mso-margin-top-alt:auto;
+	margin-right:0in;
+	mso-margin-bottom-alt:auto;
+	margin-left:0in;
+	font-size:12.0pt;
+	font-family:"Times New Roman","serif";}
+p.MsoAcetate, li.MsoAcetate, div.MsoAcetate
+	{mso-style-priority:99;
+	mso-style-link:"Balloon Text Char";
+	margin:0in;
+	margin-bottom:.0001pt;
+	font-size:8.0pt;
+	font-family:"Tahoma","sans-serif";}
+span.EmailStyle18
+	{mso-style-type:personal-reply;
+	font-family:"Calibri","sans-serif";
+	color:#1F497D;}
+span.BalloonTextChar
+	{mso-style-name:"Balloon Text Char";
+	mso-style-priority:99;
+	mso-style-link:"Balloon Text";
+	font-family:"Tahoma","sans-serif";}
+.MsoChpDefault
+	{mso-style-type:export-only;
+	font-family:"Calibri","sans-serif";}
+@page WordSection1
+	{size:8.5in 11.0in;
+	margin:1.0in 1.0in 1.0in 1.0in;}
+div.WordSection1
+	{page:WordSection1;}
+--></style><!--[if gte mso 9]><xml>
+<o:shapedefaults v:ext=3D"edit" spidmax=3D"1026" />
+</xml><![endif]--><!--[if gte mso 9]><xml>
+<o:shapelayout v:ext=3D"edit">
+<o:idmap v:ext=3D"edit" data=3D"1" />
+</o:shapelayout></xml><![endif]-->
+</head>
+<body lang=3D"EN-US" link=3D"blue" vlink=3D"purple">
+<div class=3D"WordSection1">
+<p class=3D"MsoNormal"><span style=3D"font-size:11.0pt;font-family:&quot;Ca=
+libri&quot;,&quot;sans-serif&quot;;color:#1F497D">Hopefully this will suffi=
+ce? We all use the same version of Outlook or Gmail.<o:p></o:p></span></p>
+<p class=3D"MsoNormal"><span style=3D"font-size:11.0pt;font-family:&quot;Ca=
+libri&quot;,&quot;sans-serif&quot;;color:#1F497D"><o:p>&nbsp;</o:p></span><=
+/p>
+<p class=3D"MsoNormal"><span style=3D"font-size:11.0pt;font-family:&quot;Ca=
+libri&quot;,&quot;sans-serif&quot;;color:#1F497D">Thanks, Developer!<o:p></o:=
+p></span></p>
+<p class=3D"MsoNormal"><span style=3D"font-size:11.0pt;font-family:&quot;Ca=
+libri&quot;,&quot;sans-serif&quot;;color:#1F497D"><o:p>&nbsp;</o:p></span><=
+/p>
+<p class=3D"MsoNormal"><b><span style=3D"font-size:11.0pt;font-family:&quot=
+;Calibri&quot;,&quot;sans-serif&quot;;color:#215868">Sales Rep<br>
+Marketing Coordinator<br>
+</span></b><span style=3D"font-size:9.0pt;font-family:&quot;Calibri&quot;,&=
+quot;sans-serif&quot;;color:#215868">Redacted, Inc.<br>
+University Town Center<br>
+1101 Pacific Ave, Suite 250<br>
+Santa Cruz, CA 95060</span><b><span style=3D"font-size:11.0pt;font-family:&=
+quot;Calibri&quot;,&quot;sans-serif&quot;;color:#215868"><br>
+</span></b><span style=3D"font-size:9.0pt;font-family:&quot;Calibri&quot;,&=
+quot;sans-serif&quot;;color:#1F497D">Email:
+<a href=3D"mailto:sales@rep.com">sales@rep.com</a><o:p></o:p>=
+</span></p>
+<p class=3D"MsoNormal"><span style=3D"font-size:9.0pt;font-family:&quot;Cal=
+ibri&quot;,&quot;sans-serif&quot;;color:#1F497D">Phone: redactedphone</span>=
+<b><span style=3D"font-size:11.0pt;font-family:&quot;Calibri&quot;,&quot;sa=
+ns-serif&quot;;color:#215868"><br>
+</span></b><span style=3D"font-size:9.0pt;font-family:&quot;Calibri&quot;,&=
+quot;sans-serif&quot;;color:#1F497D">Fax:
+</span><span style=3D"font-size:9.0pt;font-family:&quot;Calibri&quot;,&quot=
+;sans-serif&quot;;color:#244061">redactedphone</span><span style=3D"font-siz=
+e:9.0pt;font-family:&quot;Calibri&quot;,&quot;sans-serif&quot;;color:#21586=
+8"><o:p></o:p></span></p>
+<p class=3D"MsoNormal"><span style=3D"font-size:11.0pt;font-family:&quot;Ca=
+libri&quot;,&quot;sans-serif&quot;;color:#1F497D"><o:p>&nbsp;</o:p></span><=
+/p>
+<p class=3D"MsoNormal"><b><span style=3D"font-size:10.0pt;font-family:&quot=
+;Tahoma&quot;,&quot;sans-serif&quot;">From:</span></b><span style=3D"font-s=
+ize:10.0pt;font-family:&quot;Tahoma&quot;,&quot;sans-serif&quot;"> Drop    =
+Box [mailto:dropbox@testdomain.com]
+<br>
+<b>Sent:</b> Friday, July 20, 2012 11:02 AM<br>
+<b>To:</b> Sales Rep<br>
+<b>Subject:</b> RE: Email capturing feature for X2Engine VPS<o:p></o:p></sp=
+an></p>
+<p class=3D"MsoNormal"><o:p>&nbsp;</o:p></p>
+<p>Just one forward for each type of email software to be used with it will=
+ suffice, so if all reps use the same thing, just one should be enough. I o=
+nly need to see the structure of the forwarded email so that I can add rege=
+x to match that pattern. Currently
+ the capture supports Gmail and two versions of Outlook(?) used by other VP=
+S tenants.<o:p></o:p></p>
+<p>Another way you could do it is instruct the team to test it with their r=
+espective email programs. I added instructions to the error message of the =
+PHP exception that gets thrown every time a forwarded message isn't recogni=
+zed, so the mail service should
+ send an auto reply with the error message in it, which instructs the user =
+to forward that reply to me.<o:p></o:p></p>
+<div>
+<p class=3D"MsoNormal">On Jul 20, 2012 10:34 AM, &quot;Sales Rep&quot; &lt;=
+<a href=3D"mailto:sales@rep.com">sales@rep.com</a>&gt; wrote:=
+<o:p></o:p></p>
+<div>
+<div>
+<p class=3D"MsoNormal" style=3D"mso-margin-top-alt:auto;mso-margin-bottom-a=
+lt:auto"><span style=3D"font-size:11.0pt;font-family:&quot;Calibri&quot;,&q=
+uot;sans-serif&quot;;color:#1F497D">HI Developer,</span><o:p></o:p></p>
+<p class=3D"MsoNormal" style=3D"mso-margin-top-alt:auto;mso-margin-bottom-a=
+lt:auto"><span style=3D"font-size:11.0pt;font-family:&quot;Calibri&quot;,&q=
+uot;sans-serif&quot;;color:#1F497D">&nbsp;</span><o:p></o:p></p>
+<p class=3D"MsoNormal" style=3D"mso-margin-top-alt:auto;mso-margin-bottom-a=
+lt:auto"><span style=3D"font-size:11.0pt;font-family:&quot;Calibri&quot;,&q=
+uot;sans-serif&quot;;color:#1F497D">This feature seems great! Do you first =
+need me &amp; my team to forward you a bunch of emails?</span><o:p></o:p></=
+p>
+<p class=3D"MsoNormal" style=3D"mso-margin-top-alt:auto;mso-margin-bottom-a=
+lt:auto"><span style=3D"font-size:11.0pt;font-family:&quot;Calibri&quot;,&q=
+uot;sans-serif&quot;;color:#1F497D">&nbsp;</span><o:p></o:p></p>
+<p class=3D"MsoNormal" style=3D"mso-margin-top-alt:auto;mso-margin-bottom-a=
+lt:auto"><span style=3D"font-size:11.0pt;font-family:&quot;Calibri&quot;,&q=
+uot;sans-serif&quot;;color:#1F497D">Thanks,</span><o:p></o:p></p>
+<p class=3D"MsoNormal" style=3D"mso-margin-top-alt:auto;mso-margin-bottom-a=
+lt:auto"><span style=3D"font-size:11.0pt;font-family:&quot;Calibri&quot;,&q=
+uot;sans-serif&quot;;color:#1F497D">&nbsp;</span><o:p></o:p></p>
+<p class=3D"MsoNormal" style=3D"mso-margin-top-alt:auto;mso-margin-bottom-a=
+lt:auto"><b><span style=3D"font-size:11.0pt;font-family:&quot;Calibri&quot;=
+,&quot;sans-serif&quot;;color:#215868">Sales Rep<br>
+Marketing Coordinator<br>
+</span></b><span style=3D"font-size:9.0pt;font-family:&quot;Calibri&quot;,&=
+quot;sans-serif&quot;;color:#215868">Redacted, Inc.<br>
+
+</body>
+</html>
+
+--_000_BF6AA7800F7FC747BAAAE568816BE693017FB0AEmbx023e1nj4exch_--

@@ -1,6 +1,6 @@
 <?php
-/*****************************************************************************************
- * X2Engine Open Source Edition is a customer relationship management program developed by
+/***********************************************************************************
+ * X2CRM is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2016 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
@@ -21,7 +21,8 @@
  * 02110-1301 USA.
  * 
  * You can contact X2Engine, Inc. P.O. Box 66752, Scotts Valley,
- * California 95067, USA. or at email address contact@x2engine.com.
+ * California 95067, USA. on our website at www.x2crm.com, or at our
+ * email address: contact@x2engine.com.
  * 
  * The interactive user interfaces in modified source and object code versions
  * of this program must display Appropriate Legal Notices, as required under
@@ -32,22 +33,33 @@
  * X2Engine" logo. If the display of the logo is not reasonably feasible for
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2Engine".
- *****************************************************************************************/
+ **********************************************************************************/
 ?>
 <div id="footer">
 
     <!-- 
-    Powered by X2Engine -->
+    Powered by X2Engine  -->
+    <?php
+    if(X2_PARTNER_DISPLAY_BRANDING){
+        $brandingFile = Yii::getPathOfAlias('application.partner').DIRECTORY_SEPARATOR.'footer.php';
+        $brandingFileTemplate = Yii::getPathOfAlias('application.partner').DIRECTORY_SEPARATOR.'footer_example.php';
+        if(file_exists($brandingFile)){
+            require_once $brandingFile;
+            echo "<br /><br /><hr />";
+        }else{
+            require_once $brandingFileTemplate;
+            echo "<br /><br /><hr />";
+        }
+    }
+    ?><!-- -->
 	<b>X2CRM <?php echo Yii::app()->params->version; ?>
-	<?php echo Yii::app()->editionLabel; ?></b> |
+	</b> |
 	<a href="http://www.x2crm.com/">Powered by X2Engine</a> |  
-	<?php echo CHtml::link(Yii::t('app','About'),array('/site/page','view'=>'about')); ?> | 
-    <?php echo CHtml::link('X2Touch',array('/x2touch')); ?> 
+	<?php echo CHtml::link('X2Touch',array('/x2touch')); ?>  | 
+        <?php echo CHtml::link(Yii::t('app','About'),array('/site/page','view'=>'about')); ?>
     <br>
     Copyright &copy; 2011-<?php echo date('Y'); ?> X2Engine Inc.
-	<?php if(Yii::app()->edition==='opensource') { ?>
-		Released as free software without warranties under the <a href="<?php echo Yii::app()->getBaseUrl(); ?>/LICENSE.txt" title="GNU Affero General Public License version 3">GNU Affero GPL v3</a>.
-	<?php } ?>
+		Released as free software under the <a href="<?php echo Yii::app()->getBaseUrl(); ?>/LICENSE.txt" title="GNU Affero General Public License version 3">GNU Affero GPL v3</a>
 	<br>
 	<?php
     echo CHtml::link(

@@ -64,4 +64,5 @@
   'Disabled' => 'Behindert',
   'Failed to associate message "{subject}" with {type} {model}' => 'Nachricht konnte nicht zugeordnet werden &quot; {subject} &quot; mit {type} {model}',
   'Message "{subject}" already associated with {type} {model}' => 'Message &quot; {subject} &quot; bereits im Zusammenhang mit {type} {model}',
+  'Disable Quota Operations' => 'Deaktivieren Quote Operationen',
 );

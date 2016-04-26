@@ -1,6 +1,6 @@
 <?php
-/*****************************************************************************************
- * X2Engine Open Source Edition is a customer relationship management program developed by
+/***********************************************************************************
+ * X2CRM is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2016 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
@@ -21,7 +21,8 @@
  * 02110-1301 USA.
  * 
  * You can contact X2Engine, Inc. P.O. Box 66752, Scotts Valley,
- * California 95067, USA. or at email address contact@x2engine.com.
+ * California 95067, USA. on our website at www.x2crm.com, or at our
+ * email address: contact@x2engine.com.
  * 
  * The interactive user interfaces in modified source and object code versions
  * of this program must display Appropriate Legal Notices, as required under
@@ -32,7 +33,7 @@
  * X2Engine" logo. If the display of the logo is not reasonably feasible for
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2Engine".
- *****************************************************************************************/
+ **********************************************************************************/
 
 Yii::import('application.components.WebFormDesigner.*');
 class WebLeadFormDesigner extends WebFormDesigner {
@@ -71,6 +72,10 @@ class WebLeadFormDesigner extends WebFormDesigner {
         );
 
         
+        if ($this->edition=='pro') {
+            $packages[] = 'js/WebFormDesigner/WebleadFormDesignerPro.js';
+        }
+        
 
         // Default Packages
         $this->_packages = array_merge ( parent::getPackages(), array(
@@ -85,6 +90,16 @@ class WebLeadFormDesigner extends WebFormDesigner {
         return $this->_packages;
     }
 
+    
+    public function getTranslations () {
+        return array_merge(parent::getTranslations(), array(
+            "Custom HTML cannot be added to the web form until it has been saved." => 
+            Yii::t('marketing', "Custom HTML cannot be added to the web form until it has been saved."),
+            "HTML cannot be empty." => Yii::t('marketing', "HTML cannot be empty."),
+            "HTML saved" => Yii::t('marketing', "HTML saved"),
+            "HTML removed" => Yii::t('marketing', "HTML removed")
+        ));
+    }
     
 
     public function getDescription() {

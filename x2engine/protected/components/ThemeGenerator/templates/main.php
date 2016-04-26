@@ -40,7 +40,7 @@ a {
     color: $colors[smart_text]
 }
 
-a.text-link, a.text-link:hover {
+#login-form a.text-link, a.text-link:hover {
     color: $colors[text]
 }
 

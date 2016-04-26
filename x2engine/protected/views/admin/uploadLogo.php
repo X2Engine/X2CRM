@@ -1,6 +1,6 @@
 <?php
-/*****************************************************************************************
- * X2Engine Open Source Edition is a customer relationship management program developed by
+/***********************************************************************************
+ * X2CRM is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2016 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
@@ -21,7 +21,8 @@
  * 02110-1301 USA.
  * 
  * You can contact X2Engine, Inc. P.O. Box 66752, Scotts Valley,
- * California 95067, USA. or at email address contact@x2engine.com.
+ * California 95067, USA. on our website at www.x2crm.com, or at our
+ * email address: contact@x2engine.com.
  * 
  * The interactive user interfaces in modified source and object code versions
  * of this program must display Appropriate Legal Notices, as required under
@@ -32,7 +33,7 @@
  * X2Engine" logo. If the display of the logo is not reasonably feasible for
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2Engine".
- *****************************************************************************************/
+ **********************************************************************************/
 
 Yii::app()->clientScript->registerCssFile(
     Yii::app()->theme->baseUrl.'/css/views/admin/uploadLogo.css');
@@ -64,6 +65,22 @@ echo CHtml::error ($formModel, 'menuLogoUpload');
 
 ?><br>
 <?php
+
+if (Yii::app()->contEd ('pro')) { 
+?>
+<h3><?php echo Yii::t('contacts','Login Screen Logo'); ?></h3>
+<?php 
+echo X2Html::hint2 (Yii::t('admin', 'The expected height of this image is 70 pixels'));
+echo '<br>';
+echo CHtml::activeFileField($formModel, 'loginLogoUpload'); 
+echo CHtml::link(
+    Yii::t('admin','Restore Default Logo'),
+    array('/admin/toggleDefaultLogo?logoType=loginLogo'),
+    array ('class' => 'x2-button'));
+echo CHtml::error ($formModel, 'loginLogoUpload');
+?><br>
+<?php
+}
 
 echo '<br>';
 echo CHtml::submitButton(Yii::t('app','Submit'),array('class'=>'x2-button')); 

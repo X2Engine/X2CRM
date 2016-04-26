@@ -1,6 +1,6 @@
 <?php
-/*****************************************************************************************
- * X2Engine Open Source Edition is a customer relationship management program developed by
+/***********************************************************************************
+ * X2CRM is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2016 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
@@ -21,7 +21,8 @@
  * 02110-1301 USA.
  * 
  * You can contact X2Engine, Inc. P.O. Box 66752, Scotts Valley,
- * California 95067, USA. or at email address contact@x2engine.com.
+ * California 95067, USA. on our website at www.x2crm.com, or at our
+ * email address: contact@x2engine.com.
  * 
  * The interactive user interfaces in modified source and object code versions
  * of this program must display Appropriate Legal Notices, as required under
@@ -32,7 +33,7 @@
  * X2Engine" logo. If the display of the logo is not reasonably feasible for
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2Engine".
- *****************************************************************************************/
+ **********************************************************************************/
 
 class X2ActiveForm extends CActiveForm {
 
@@ -64,15 +65,15 @@ class X2ActiveForm extends CActiveForm {
 
     public function behaviors () {
         return array (
-            'X2WidgetBehavior' => array (
-                'class' => 'application.components.behaviors.X2WidgetBehavior'
+            'WidgetBehavior' => array (
+                'class' => 'application.components.behaviors.WidgetBehavior'
             ),
         );
     }
 
     public function getJSClassParams () {
         return array_merge (
-            $this->asa ('X2WidgetBehavior')->getJSClassParams (),
+            $this->asa ('WidgetBehavior')->getJSClassParams (),
             array (
                 'formSelector' => '#'.$this->id,
                 'submitUrl' => $this->action ? $this->action : '',
@@ -83,7 +84,7 @@ class X2ActiveForm extends CActiveForm {
 
     public function getPackages () {
         if (!isset ($this->_packages)) {
-            $this->_packages = array_merge ($this->asa ('X2WidgetBehavior')->getPackages (), array(
+            $this->_packages = array_merge ($this->asa ('WidgetBehavior')->getPackages (), array(
                 'X2FormJS' => array(
                     'baseUrl' => Yii::app()->baseUrl,
                     'js' => array(
@@ -134,7 +135,7 @@ class X2ActiveForm extends CActiveForm {
         }
 
         parent::init ();
-        echo CHtml::hiddenField (X2WidgetBehavior::NAMESPACE_KEY, $this->namespace);
+        echo CHtml::hiddenField (WidgetBehavior::NAMESPACE_KEY, $this->namespace);
     }
 
 }

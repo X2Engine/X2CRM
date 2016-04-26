@@ -1,0 +1,323 @@
+/*!*********************************************************************************
+ * X2CRM is a customer relationship management program developed by
+ * X2Engine, Inc. Copyright (C) 2011-2016 X2Engine Inc.
+ * 
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU Affero General Public License version 3 as published by the
+ * Free Software Foundation with the addition of the following permission added
+ * to Section 15 as permitted in Section 7(a): FOR ANY PART OF THE COVERED WORK
+ * IN WHICH THE COPYRIGHT IS OWNED BY X2ENGINE, X2ENGINE DISCLAIMS THE WARRANTY
+ * OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
+ * 
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.  See the GNU Affero General Public License for more
+ * details.
+ * 
+ * You should have received a copy of the GNU Affero General Public License along with
+ * this program; if not, see http://www.gnu.org/licenses or write to the Free
+ * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301 USA.
+ * 
+ * You can contact X2Engine, Inc. P.O. Box 66752, Scotts Valley,
+ * California 95067, USA. on our website at www.x2crm.com, or at our
+ * email address: contact@x2engine.com.
+ * 
+ * The interactive user interfaces in modified source and object code versions
+ * of this program must display Appropriate Legal Notices, as required under
+ * Section 5 of the GNU Affero General Public License version 3.
+ * 
+ * In accordance with Section 7(b) of the GNU Affero General Public License version 3,
+ * these Appropriate Legal Notices must retain the display of the "Powered by
+ * X2Engine" logo. If the display of the logo is not reasonably feasible for
+ * technical reasons, the Appropriate Legal Notices must display the words
+ * "Powered by X2Engine".
+ **********************************************************************************/
+
+@import "colors.scss";
+
+#content {
+    max-width: 100%;
+    min-height: 800px;
+    padding-bottom: 0 !important;
+}
+
+#relationships-graph-container {
+    width: auto;
+    overflow: hidden;
+    min-height: 816px;
+    &.inline-graph {
+        min-height: 0;
+    }
+    & > svg {
+        &.hide-labels {
+            .label {
+                display: none;
+            }
+        }
+        .node, .edge {
+            cursor: pointer;
+        }
+        .edge + line {
+            cursor: pointer;
+        }
+        .edge.active {
+            stroke: black;
+        }
+        .node.active {
+            stroke: black;
+            stroke-width: 3px;
+        }
+        .label {
+            cursor: pointer;
+            &.active {
+                rect {
+                    opacity: 0.9;
+                    stroke: black;
+                    stroke-width: 1px;
+                }
+                text {
+                    font-weight: bold;
+                }
+            }
+            rect {
+                stroke-width: 0.5px;
+                fill: white;
+                opacity: 0.8;
+                &.hover {
+                    fill: darken($lightestGray, 10%);
+                }
+            }
+            text {
+                opacity: 1;
+                fill: black;
+                stroke: none;
+                font-family: Verdana;
+            }
+        }
+    }
+}
+
+.x2-qtip {
+    .qtip-content {
+        padding: 0;
+        .graph-qtip-inner {
+            min-width: 100px;
+        }
+        .qtip-record-details {
+            padding: 3px 5px;
+        }
+        .view-record-button {
+            display: block;
+            margin: 0;
+            border-left: none;
+            border-right: none;
+            border-bottom: none;
+            border-radius: 0; 
+        }
+    }
+}
+
+#hints-show-button {
+    $color: rgba(0, 0, 255, 0.53);
+    position: fixed;
+    right: 230px;
+    top: 45px;
+    font-size: 20px;
+    color: $color;
+    cursor: pointer;
+    &:hover {
+        color: lighten($color, 15%);
+    }
+}
+
+#relationships-graph-toolbar {
+    padding: 8px;
+    position: relative;
+    float: right;
+    width: 200px;
+    height: 100%;
+    min-height: 803px;
+    background: #E3E3E3;
+    .button-container {
+        text-align: center;
+        button {
+            display: inline-block;
+            width: 94px;
+            padding: 0;
+        }
+    }
+    .toolbar-box {
+        background: lighten($lightestGray, 2%);
+        border: 1px solid $gray;
+        margin-bottom: 5px;
+    }
+    .add-node-box {
+        margin-top: 16px;
+        margin-bottom: 11px;
+        background: none;
+        padding: 9px 5px;
+        select {
+            width: 100%;
+        }
+        input {
+            box-sizing: border-box;
+            width: 100%;
+        }
+        input, button {
+            margin-top: 4px;
+        }
+        button {
+            margin-bottom: 0;
+            width: 100%;
+        }
+    }
+    .graph-hints-box {
+        padding: 7px 5px;
+        background: $lightGray;
+        h2 {
+            color: black;
+            margin: 0;
+            float: left;
+        }
+        .hints-close-button {
+            float: right;
+            cursor: pointer;
+        }
+        ul {
+            margin-right: 0;
+            font-size: 12px;
+            margin-top: 6px;
+        }
+    }
+    .toolbar-spacer {
+        margin-bottom: 30px;
+    }
+    .record-detail-box {
+        height: 240px;
+        overflow-y: auto;
+        .record-details {
+            .title {
+                font-weight: bold;
+                color: #222;
+            }
+            background: none;
+            padding: 7px 5px;
+            h2 {
+                margin: 0;
+                a {
+                    text-decoration: none;
+                }
+            }
+            label {
+                min-width: 45px;
+                display: inline-block;
+            }
+        }
+    }
+    & .x2-button {
+        margin: 0;
+        width: 95%;
+        margin: auto;
+        margin-bottom: 5px;
+    }
+    .graph-legend {
+        overflow: auto;
+        padding: 7px;
+        padding-left: 15px;
+        margin-top: 12px;
+        max-height: 142px;
+        ul {
+            padding: 0;
+            list-style-type: none;
+            margin: 0;
+            margin-bottom: 15px;
+            li {
+                cursor: pointer;
+                padding: 0px 2px;
+                .legend-swatch {
+                    position: relative;
+                    top: -1px;
+                    display: inline-block;
+                    height: 7px;
+                    width: 7px;
+                    border-radius: 7px;
+                }
+                &:hover {
+                    background: darken($lightestGray, 5%);
+                }
+            }
+        }
+    }
+}
+
+#graph-nav-controls {
+    position: absolute;
+    right: 227px;
+    bottom: 8px;
+    width: 100px;
+    height: 62px;
+    border: 2px solid $lightGray;
+    background: rgba(255, 255, 255, 0.46);
+    border-radius: 3px;
+    .icon-button {
+        cursor: pointer;
+        position: absolute;
+        color: gray;
+        &:hover {
+            color: darken(gray, 10%);
+        }
+    }
+    .panning-buttons-container {
+        position: relative;
+        .pan-up-button {
+            left: 24px;
+            top: 7px;
+        }
+        .pan-down-button {
+            top: 40px;
+            left: 24px;
+        }
+        .pan-left-button {
+            top: 25px;
+            left: 9px;
+        }
+        .pan-right-button {
+            top: 25px;
+            left: 43px;
+        }
+        height: 57px;
+        width: 57px;
+        float: left;
+    }
+    .zoom-buttons-container {
+        position: relative;
+        width: 21px;
+        float: right;
+        .zoom-in-button {
+            top: 11px;
+            right: 11px;
+        }
+        .zoom-out-button {
+            top: 36px;
+            right: 11px;
+        }
+    }
+}
+
+#relationships-graph-resize-handle {
+    cursor: se-resize;
+    display: block;
+    height: 0px;
+    width: 0px;
+    float: right;
+    position: relative;
+    margin-bottom: -12px;
+    top: -16px;
+    margin-right: 4px;
+    border: 6px solid $gray;
+    box-sizing: border-box;
+    border-left: 6px solid transparent;
+    border-top: 6px solid transparent;
+    background: transparent;
+}

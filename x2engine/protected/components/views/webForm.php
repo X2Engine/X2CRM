@@ -1,6 +1,6 @@
 <?php
-/*****************************************************************************************
- * X2Engine Open Source Edition is a customer relationship management program developed by
+/***********************************************************************************
+ * X2CRM is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2016 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
@@ -21,7 +21,8 @@
  * 02110-1301 USA.
  * 
  * You can contact X2Engine, Inc. P.O. Box 66752, Scotts Valley,
- * California 95067, USA. or at email address contact@x2engine.com.
+ * California 95067, USA. on our website at www.x2crm.com, or at our
+ * email address: contact@x2engine.com.
  * 
  * The interactive user interfaces in modified source and object code versions
  * of this program must display Appropriate Legal Notices, as required under
@@ -32,12 +33,18 @@
  * X2Engine" logo. If the display of the logo is not reasonably feasible for
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2Engine".
- *****************************************************************************************/
+ **********************************************************************************/
 
 /*
 Parameters:
     type - string, the web form type ('weblead' | 'weblist' | 'service')
     model - the model associated with the form, set to Contacts by default
+*/
+
+/*
+Additional Parameters (Pro only):
+    fieldList - array of arrays - child arrays correspond to a field which should be displayed in
+        the web form. Defaults to null.
 */
 
 
@@ -47,17 +54,28 @@ Yii::app()->params->profile = Profile::model()->findByPk(1);
 if (empty($type)) $type = 'weblead';
 if (empty($model)) $model = Contacts::model ();
 
+if (empty($fieldList)) $fieldList = null;
+
 
 
 if ($type === 'service') {
     $modelName = 'Services';
-} else if ($type === 'weblead')  {
+} else if ($type === 'weblead' || $type === 'weblist')  {
     $modelName = 'Contacts';
 }
 
 
 $defaultFields;
-if ($type === 'weblead') {
+
+if ($type === 'weblist') {
+    $defaultFields = array (
+        array (
+            'fieldName' => 'email',
+            'position' => 'top',
+            'required' => 1
+        )
+    );
+} else if ($type === 'weblead') {
     $defaultFields = array (
         array (
             'fieldName' => 'firstName',
@@ -118,8 +136,12 @@ if ($type === 'weblead') {
 $useDefaults = false;
 
 
+if(Yii::app()->edition == 'opensource' || $fieldList === null) {
+
     $fieldList = $defaultFields;
     $useDefaults = true;
+
+}
 
 
 $fieldTypes = array_map (function ($elem) { 
@@ -148,6 +170,34 @@ if ($type === 'service') {
 
 <?php
 
+if (Yii::app()->contEd('pro') && $type !== 'weblist') {
+?>
+    <link rel="stylesheet" type="text/css"
+     href="<?php echo Yii::app()->clientScript->coreScriptUrl . '/jui/css/base/jquery-ui.css'; ?>"
+    />
+    <script type="text/javascript"
+        src="<?php echo Yii::app()->clientScript->coreScriptUrl . '/jui/js/jquery-ui.min.js'; ?>">
+    </script>
+    <script type="text/javascript"
+        src="<?php echo Yii::app()->clientScript->coreScriptUrl .
+            '/jui/js/jquery-ui-i18n.min.js'; ?>">
+    </script>
+    <?php
+}
+
+
+if (Yii::app()->contEd('pla')) {
+    if (Yii::app()->settings->enableFingerprinting && (!isset ($_SERVER['HTTP_DNT']) || $_SERVER['HTTP_DNT'] != 1) && $model instanceof Contacts) {
+    ?>
+    <script type="text/javascript"
+        src="<?php echo Yii::app()->getBaseUrl().'/js/fontdetect.js'; ?>">
+    </script>
+    <script type="text/javascript"
+        src="<?php echo Yii::app()->getBaseUrl().'/js/X2Identity.js'; ?>">
+    </script>
+<?php
+    }
+}
 
 ?>
 
@@ -247,10 +297,30 @@ input[type="text"] {
 }
 <?php
 
+if (Yii::app()->contEd('pro') && $type !== 'weblist') {
+?>
+div.error label, label.error, span.error, div.error, label.error + .asterisk, .errorMessage {
+    color:#C00;
+}
+div.error input, div.error textarea, div.error select, input.error{
+    background:#FEE !important;
+    border-color:#C00 !important;
+}
+div.checkboxWrapper {
+    display: inline;
+}
+<?php 
+echo $css; 
+}
+
 ?>
 </style>
 
 <?php
+
+if (Yii::app()->contEd('pro') && $type === 'weblead') {
+    echo $header; 
+}
 
 ?>
 </head>
@@ -310,7 +380,18 @@ function renderFields ($fieldList, $type, $form, $model, $contactFields=null) {
                 ));
             } else {
                 
+                $f = $model->getField($field['fieldName']);
+                // if date field: indicate this field needs javascript to add a date picker
+                if ($f && $f->type == 'date') {  ?>
+                <span class="needsDatePicker">
+                    <?php echo $model->renderInput($field['fieldName']); ?>
+                </span>
+                <?php
+                } else {
+                
                     echo $model->renderInput($field['fieldName']);
+                
+                }
                 
             } ?>
             </div>
@@ -328,6 +409,20 @@ function renderFields ($fieldList, $type, $form, $model, $contactFields=null) {
 
 renderFields ($fieldList, $type, $form, $model, $contactFields);
 
+
+if ($type !== 'service' && Yii::app()->settings->enableFingerprinting && (!isset ($_SERVER['HTTP_DNT']) || $_SERVER['HTTP_DNT'] != 1)) {
+?>
+    <input type="hidden" name="fingerprint" id="fingerprint"></input>
+    <input type="hidden" name="fingerprintAttributes" id="fingerprintAttributes"></input>
+    <script>
+        (function () {
+            var fingerprintData = x2Identity.fingerprint();
+            $("#fingerprint").val(fingerprintData["fingerprint"]);
+            $("#fingerprintAttributes").val(JSON.stringify (fingerprintData["attributes"]));
+        }) ();
+    </script>
+<?php
+}
 
 
 ?>
@@ -351,6 +446,26 @@ $this->endWidget();
 
 <?php
 
+
+if (Yii::app()->contEd('pro') && $type !== 'weblist') {
+// TODO: move web form html into a layout so that this JS gets registered automatically by CJuiDateTimePicker
+?>
+$(function() {
+    $('span.needsDatePicker input').datepicker(
+        jQuery.extend(
+            {showMonthAfterYear:false},
+            jQuery.datepicker.regional[
+                '<?php echo (Yii::app()->language == 'en') ? '' : Yii::app()->getLanguage(); ?>'],
+            {
+                'dateFormat':'<?php echo Formatter::formatDatePicker(); ?>',
+                'changeMonth':true,
+                'changeYear':true
+            }
+        )
+    );
+});
+<?php
+}
 
 ?>
 </script>

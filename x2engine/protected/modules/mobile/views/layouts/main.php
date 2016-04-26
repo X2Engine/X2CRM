@@ -1,6 +1,6 @@
 <?php
-/*****************************************************************************************
- * X2Engine Open Source Edition is a customer relationship management program developed by
+/***********************************************************************************
+ * X2CRM is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2016 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
@@ -21,7 +21,8 @@
  * 02110-1301 USA.
  * 
  * You can contact X2Engine, Inc. P.O. Box 66752, Scotts Valley,
- * California 95067, USA. or at email address contact@x2engine.com.
+ * California 95067, USA. on our website at www.x2crm.com, or at our
+ * email address: contact@x2engine.com.
  * 
  * The interactive user interfaces in modified source and object code versions
  * of this program must display Appropriate Legal Notices, as required under
@@ -32,7 +33,7 @@
  * X2Engine" logo. If the display of the logo is not reasonably feasible for
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2Engine".
- *****************************************************************************************/
+ **********************************************************************************/
 
 Yii::import ('application.modules.mobile.components.ThemeGenerator.*');
 
@@ -90,7 +91,7 @@ if ($this->includeDefaultCssAssets ()) {
     }
 }
 
-if (!$this->isAjaxRequest ()) {
+if (!$this->isAjaxRequest () && !Yii::app()->params->isPhoneGap) {
     $cs->registerScriptFile($baseUrl . '/js/x2mobile.js', CClientScript::POS_READY);
 }
 
@@ -164,7 +165,18 @@ if (YII_UNIT_TESTING) {
         echo ' tabbed-layout';
     }
      
+    if (Yii::app()->params->isPhoneGap) {
+        echo ' x2-phone-gap';
+        if (MobileModule::getPlatform () === 'iOS') {
+            echo ' x2touch-ios';
+        } else {
+            echo ' x2touch-android';
+        }
+    } else {
+     
         echo ' x2touch-browser';
+     
+    }
      
 ?> x2-remote-page' 
  data-url="<?php echo $this->dataUrl; ?>/" data-theme="a">
@@ -227,6 +239,8 @@ X2Html::getFlashes ();
 <script>
 if (typeof x2 === 'undefined') x2 = {};
 x2.isAjaxRequest = <?php echo $this->isAjaxRequest () ? 'true' : 'false'; ?>;
+ 
+x2.nlscCacheBuster = <?php echo CJSON::encode (Yii::app()->clientScript->getCacheBuster ()); ?>;
  
 x2.csrfToken = <?php echo CJSON::encode (Yii::app()->request->getCsrfToken ()); ?>;
 </script>

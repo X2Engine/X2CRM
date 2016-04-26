@@ -1,0 +1,199 @@
+/*!*********************************************************************************
+ * X2CRM is a customer relationship management program developed by
+ * X2Engine, Inc. Copyright (C) 2011-2016 X2Engine Inc.
+ * 
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU Affero General Public License version 3 as published by the
+ * Free Software Foundation with the addition of the following permission added
+ * to Section 15 as permitted in Section 7(a): FOR ANY PART OF THE COVERED WORK
+ * IN WHICH THE COPYRIGHT IS OWNED BY X2ENGINE, X2ENGINE DISCLAIMS THE WARRANTY
+ * OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
+ * 
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.  See the GNU Affero General Public License for more
+ * details.
+ * 
+ * You should have received a copy of the GNU Affero General Public License along with
+ * this program; if not, see http://www.gnu.org/licenses or write to the Free
+ * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301 USA.
+ * 
+ * You can contact X2Engine, Inc. P.O. Box 66752, Scotts Valley,
+ * California 95067, USA. on our website at www.x2crm.com, or at our
+ * email address: contact@x2engine.com.
+ * 
+ * The interactive user interfaces in modified source and object code versions
+ * of this program must display Appropriate Legal Notices, as required under
+ * Section 5 of the GNU Affero General Public License version 3.
+ * 
+ * In accordance with Section 7(b) of the GNU Affero General Public License version 3,
+ * these Appropriate Legal Notices must retain the display of the "Powered by
+ * X2Engine" logo. If the display of the logo is not reasonably feasible for
+ * technical reasons, the Appropriate Legal Notices must display the words
+ * "Powered by X2Engine".
+ **********************************************************************************/
+
+
+
+@import 'colors';
+@import 'standards';
+@import 'font-awesome';
+
+$height: 50px;
+$padding: 7px;
+
+$font-color: darken($gray, $contrast);
+
+.data-widget.sortable-widget-container {
+	border-color: rgba($darkGray, 0);
+
+	&:hover {
+		border-color: rgba($nearBlack, 0.5);
+	}
+
+	.add-to-dashboard, .go-to-report {
+		display: none;
+		float: right;
+		padding: 0px 11px;
+		line-height: 19px;
+		margin: 0px 10px;
+		cursor: pointer;
+
+		&.disabled-link {
+			opacity: 0.5;
+		}
+	}
+
+	&:hover .add-to-dashboard ,
+	&:hover .go-to-report {
+		display: inline-block;
+	}
+
+	/*********************************
+	* Config Bar CSS
+	********************************/
+	.config-bar {
+		text-align: center;
+		display: none;
+		padding: $padding;
+		border-bottom: 1px solid $lightGray;
+
+		&:after {
+			clear: both;
+		}
+	}
+
+	.config-bar-item {
+		color: $font-color;
+		transition: color .2s;
+
+		// height: 100%;
+		// font-size: $height;
+		width: 10px;
+		margin: 0px 5px;
+		cursor: pointer;
+
+		float: left;
+
+		&:hover {
+			color: lighten($lightBlue, $contrast);
+		}
+		
+		&.active {
+			color: $lightBlue;
+		}
+
+		&.spacer {
+			width: 30px;
+			height: 5px;
+			display: inline-block;
+			opacity: 0;
+			cursor: auto;
+		}
+
+		&.right {
+			float: right;
+		}	
+
+	}
+
+	.row {
+		margin-bottom: 5px;
+	}
+
+	&.dragging{
+		transition: opacity 0.3s;
+		opacity: 0.75;
+	}
+
+	.c3-tooltip {
+		border-radius: 2px;
+
+		.value, .name, th {
+			color: $nearBlack !important;
+		}
+	}
+
+	.inline-report-container {
+		display: none;
+
+		.inline-report-tabs {
+
+			background: $lightGray;
+
+			/* @theme background: light_content */
+			border-radius: 0px;
+
+			li a {
+				color: white !important;
+				text-decoration: none;
+			}
+
+			li {
+				padding: 2px;
+				margin: 0px;
+				border-radius: 0px;
+				border: none;
+				&:hover {
+					opacity: 0.9;
+				} 
+			}
+		}
+
+		.inline-report-header {
+			text-align: center;
+			line-height: 200%;
+			font-size: 9pt;
+			font-weight: bold;
+			background: $lightBlue;
+			color: white;
+		}
+
+		.inline-report-close {
+			@include fa-icon('times');
+			@extend .opacity-hover;
+			float: right;
+			cursor: pointer;
+			margin-right: 5px
+		}
+
+		.page-title {
+			// display: none;
+			.x2-button-group {
+				display: none;
+			}
+		}
+		
+	}
+
+}
+
+.error-screen {
+  width: 100%;
+  height: 100%;
+  min-height: 100px;
+  background: rgba(255, 255, 255, 0.5);
+  text-align: center;
+  padding-top: 100px;
+}

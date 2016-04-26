@@ -1,6 +1,6 @@
 <?php
-/*****************************************************************************************
- * X2Engine Open Source Edition is a customer relationship management program developed by
+/***********************************************************************************
+ * X2CRM is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2016 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
@@ -21,7 +21,8 @@
  * 02110-1301 USA.
  * 
  * You can contact X2Engine, Inc. P.O. Box 66752, Scotts Valley,
- * California 95067, USA. or at email address contact@x2engine.com.
+ * California 95067, USA. on our website at www.x2crm.com, or at our
+ * email address: contact@x2engine.com.
  * 
  * The interactive user interfaces in modified source and object code versions
  * of this program must display Appropriate Legal Notices, as required under
@@ -32,7 +33,7 @@
  * X2Engine" logo. If the display of the logo is not reasonably feasible for
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2Engine".
- *****************************************************************************************/
+ **********************************************************************************/
 
 Yii::import('application.tests.WebTestCase');
 Yii::import('application.controllers.AdminController');
@@ -356,6 +357,63 @@ class AdminControllerTest extends X2WebTestCase {
         }
     }
 
+        
+    /**
+     * Verify that preexisting records are correctly updated without clobbering
+     * unmapped fields
+     */
+    public function testUpdateExistingImports() {
+        if($this->isChrome()){
+            $this->markTestSkipped('Import tests do not function in Chrome.');
+        }
+        $firstUpdateCsv = 'contacts-update.csv';
+        $secondUpdateCsv = 'contacts-update2.csv';
+
+        // First ensure updates can be performed when matching on id (default)
+        $this->prepareImport ('Contacts', $firstUpdateCsv);
+        $this->click ('update-records-box');
+        $this->beginImport();
+
+        // Assert that each model had only the requested fields updated
+        $this->assertContactUpdated ('one', array(
+            'leadscore' => 0,
+            'doNotCall' => 0,
+            'doNotEmail' => 1,
+        ));
+        $this->assertContactUpdated ('two', array(
+            'leadscore' => 4,
+            'doNotCall' => 1,
+            'doNotEmail' => 0,
+        ));
+        $this->assertContactUpdated ('three', array(
+            'leadscore' => 2,
+            'doNotCall' => 0,
+            'doNotEmail' => 1,
+        ));
+
+        // Now ensure updates can be performed when matching another attribute
+        $this->prepareImport ('Contacts', $secondUpdateCsv);
+        $this->click ('update-records-box');
+        $this->select ('update-field', 'value=email');
+        $this->beginImport();
+
+        // Assert that each model had only the requested fields updated
+        $this->assertContactUpdated ('one', array(
+            'leadscore' => 3,
+            'doNotCall' => 1,
+            'doNotEmail' => 0,
+        ));
+        $this->assertContactUpdated ('two', array(
+            'leadscore' => 4,
+            'doNotCall' => 0,
+            'doNotEmail' => 1,
+        ));
+        $this->assertContactUpdated ('three', array(
+            'leadscore' => 2,
+            'doNotCall' => 1,
+            'doNotEmail' => 1,
+        ));
+    }
       
 
     /**

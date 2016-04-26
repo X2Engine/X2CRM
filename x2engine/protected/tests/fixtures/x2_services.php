@@ -22,7 +22,7 @@ return array(
         'resolution' => NULL,
         'subIssue' => NULL,
         'origin' => 'Web',
-        'escalatedTo' => NULL,
+        'escalatedTo' => 'testuser',
         'lastActivity' => NULL,
         'parentCase' => NULL,
     ),

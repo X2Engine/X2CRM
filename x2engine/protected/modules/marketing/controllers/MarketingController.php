@@ -1,6 +1,6 @@
 <?php
-/*****************************************************************************************
- * X2Engine Open Source Edition is a customer relationship management program developed by
+/***********************************************************************************
+ * X2CRM is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2016 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
@@ -21,7 +21,8 @@
  * 02110-1301 USA.
  * 
  * You can contact X2Engine, Inc. P.O. Box 66752, Scotts Valley,
- * California 95067, USA. or at email address contact@x2engine.com.
+ * California 95067, USA. on our website at www.x2crm.com, or at our
+ * email address: contact@x2engine.com.
  * 
  * The interactive user interfaces in modified source and object code versions
  * of this program must display Appropriate Legal Notices, as required under
@@ -32,7 +33,7 @@
  * X2Engine" logo. If the display of the logo is not reasonably feasible for
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2Engine".
- *****************************************************************************************/
+ **********************************************************************************/
 
 /**
  * Controller to handle creating and mailing campaigns.
@@ -61,7 +62,7 @@ class MarketingController extends x2base {
 					'index', 'view', 'create', 'createFromTag', 'update', 'search', 'delete', 
                     'launch', 
 					'toggle', 'complete', 'getItems', 'inlineEmail', 'mail', 'deleteWebForm',
-					'webleadForm'),
+					'webleadForm', 'getCampaignChartData'),
                 'users' => array('@'),
             ),
             array('allow', // allow admin user to perform 'admin' action
@@ -105,6 +106,48 @@ class MarketingController extends x2base {
     }
 
     
+    /**
+     * View anonymous contacts that have been spotted by
+     * the tracker
+     */
+    public function actionAnonContactIndex() {
+        $model = new AnonContact('search');
+        $this->render('anonContactIndex', array('model'=>$model));
+    }
+
+    /**
+     * View a single AnonContact record
+     * @param integer $id of the AnonContact to view
+     */
+    public function actionAnonContactView($id) {
+        $model = X2Model::model('AnonContact')->findByPk($id);
+        if (!isset($model))
+            throw new CHttpException(404, "The requested page does not exist.");
+        $this->render('anonContactView', array(
+            'model'=>$model,
+            'modelName'=>'AnonContact',
+        ));
+    }
+
+    public function actionAnonContactDelete ($id) {
+        $model = X2Model::model('AnonContact')->findByPk($id);
+        if(!isset($model)){
+            Yii::app()->user->setFlash(
+                'error', Yii::t('app', 'The requested page does not exist.'));
+            $this->redirect(array('anonContactIndex'));
+        }
+        $model->delete ();
+        $this->redirect(array('anonContactIndex'));
+    }
+
+    /**
+     * View all fingerprints
+     */
+    public function actionFingerprintIndex() {
+        $model = new Fingerprint('search');
+        $this->render('fingerprintIndex', array('model'=>$model));
+    }
+    
 
     /**
      * Returns a JSON array of the names of all campaigns filtered by a search term.
@@ -114,7 +157,18 @@ class MarketingController extends x2base {
     public function actionGetItems($modelType){
         $term = $_GET['term'].'%';
          
-            X2LinkableBehavior::getItems ($term);
+        if ($modelType === 'AnonContact') {
+		    if(Yii::app()->user->checkAccess('MarketingAdminAccess')) {
+                LinkableBehavior::getItems ($term, 'id', 'id', 'AnonContact');
+            } else {
+                throw new CHttpException (403, Yii::t('marketing', 'You do no have permission to'.
+                    ' perform this action'));
+            }
+        } else {
+         
+            LinkableBehavior::getItems ($term);
+         
+        }
          
     }
     
@@ -350,7 +404,7 @@ class MarketingController extends x2base {
                 Yii::app()->user->setFlash('error', Yii::t('app', 'The requested page does not exist.'));
                 $this->redirect(array('index'));
             }
-            // now in X2ChangeLogBehavior
+            // now in ChangeLogBehavior
             // $event=new Events;
             // $event->type='record_deleted';
             // $event->associationType=$this->modelClass;
@@ -761,6 +815,20 @@ class MarketingController extends x2base {
             $admin->enableWebTracker = $_POST['Admin']['enableWebTracker'];
             $admin->webTrackerCooldown = $_POST['Admin']['webTrackerCooldown'];
             
+            if (Yii::app()->contEd('pla')) {
+                $settings = array(
+                    'enableFingerprinting',
+                    'identityThreshold',
+                    'maxAnonContacts',
+                    'maxAnonActions',
+                    'performHostnameLookups',
+                );
+                foreach ($settings as $setting) {
+                    if (isset($_POST['Admin'][$setting]))
+                        $admin->$setting = $_POST['Admin'][$setting];
+                }
+            }
+            
             $admin->save();
         }
         $this->render('webTracker', array('admin' => $admin));
@@ -802,6 +870,12 @@ class MarketingController extends x2base {
     }
 
 	
+	public function actionGetCampaignChartData(
+		$id, $modelName, $startTimestamp, $endTimestamp) {
+        echo CJSON::encode(CampaignChartWidget::getChartData (
+			$id, $modelName, $startTimestamp, $endTimestamp));
+    }
+	
 
     /**
      * Create a menu for Marketing
@@ -820,6 +894,14 @@ class MarketingController extends x2base {
          *     'all', 'create', 'view', 'edit', 'delete', 'lists', 'import', 'export',
          *     'newsletters', 'weblead', 'webtracker', 'x2flow', 'email',
          * );
+         */
+        
+        /**
+         * Additionally, the following platinum options can be used:
+         * $plaOptions = array(
+         *     'viewAnon', 'deleteAnon', 'anoncontacts', 'fingerprints'
+         * );
+         * $menuOptions = array_merge($menuOptions, $plaOptions);
          */
         
 
@@ -891,6 +973,19 @@ class MarketingController extends x2base {
                 'label' => Yii::t('marketing', 'Web Tracker'),
                 'url' => array('webTracker'),
                 'visible' => (Yii::app()->contEd('pro'))
+            ),
+        
+            array(
+                'name'=>'anoncontacts',
+                'label' => Yii::t('marketing', 'Anonymous Contacts'),
+                'url'=>array('anonContactIndex'),
+                'visible' => $marketingAdmin && Yii::app()->contEd('pla')
+            ),
+            array(
+                'name'=>'fingerprints',
+                'label' => Yii::t('marketing', 'Fingerprints'),
+                'url' => array('fingerprintIndex'),
+                'visible' => $marketingAdmin && Yii::app()->contEd('pla')
             ),
         
             array(

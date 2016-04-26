@@ -1,6 +1,6 @@
 <?php
-/*****************************************************************************************
- * X2Engine Open Source Edition is a customer relationship management program developed by
+/***********************************************************************************
+ * X2CRM is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2016 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
@@ -21,7 +21,8 @@
  * 02110-1301 USA.
  * 
  * You can contact X2Engine, Inc. P.O. Box 66752, Scotts Valley,
- * California 95067, USA. or at email address contact@x2engine.com.
+ * California 95067, USA. on our website at www.x2crm.com, or at our
+ * email address: contact@x2engine.com.
  * 
  * The interactive user interfaces in modified source and object code versions
  * of this program must display Appropriate Legal Notices, as required under
@@ -32,7 +33,7 @@
  * X2Engine" logo. If the display of the logo is not reasonably feasible for
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2Engine".
- *****************************************************************************************/
+ **********************************************************************************/
 
 
 Yii::app()->clientScript->registerCss('filterControlsCss',"
@@ -327,6 +328,13 @@ echo CHtml::link(
 echo "</div>";
 echo "<br>";
 
+echo "<div id='sidebar-full-controls-button-container'>";
+echo CHtml::link(
+        Yii::t('app','Create Report'),'#',
+        array('class'=>'x2-button x2-hint','style'=>'color:#000','id'=>'sidebar-create-activity-report',
+            'title'=>Yii::t('app','Create an email report using the selected filters which will be mailed to you periodically.')));
+echo "</div>";
+
 $this->endWidget();
 echo "</div>";
 
@@ -428,6 +436,47 @@ Yii::app()->clientScript->registerScript('feed-filters','
         var str2=pieces[0];
         pieces2=str2.split("#");
         window.location= pieces2[0] + "?filters=true&visibility=" + visibility + 
+            "&users=" + users+"&types=" + eventTypes +"&subtypes=" + subtypes + 
+            "&default=" + defaultFilters;
+        return false;
+    });
+    
+    $("#sidebar-create-activity-report").click(function(e){
+        e.preventDefault();
+        var visibility=new Array();
+        $.each($(".visibility.filter-checkbox"),function(){
+            if(typeof $(this).attr("checked")=="undefined"){
+                visibility.push($(this).attr("name"));
+            }
+        });
+
+        var users=new Array();
+        $.each($(".users.filter-checkbox"),function(){
+            if(typeof $(this).attr("checked")=="undefined"){
+                users.push($(this).attr("name"));
+            }
+        });
+
+        var eventTypes=new Array();
+        $.each($(".event-type.filter-checkbox"),function(){
+            if(typeof $(this).attr("checked")=="undefined"){
+                eventTypes.push($(this).attr("name"));
+            }
+        });
+
+        var subtypes=new Array();
+        $.each($(".subtypes.filter-checkbox"),function(){
+            if(typeof $(this).attr("checked")=="undefined"){
+                subtypes.push($(this).attr("name"));
+            }
+        });
+
+        var defaultCheckbox=$("#sidebar-filter-default");
+        var defaultFilters=false;
+        if($(defaultCheckbox).attr("checked")=="checked"){
+            defaultFilters=true;
+        }
+        window.location= "createActivityReport" + "?filters=true&visibility=" + visibility + 
             "&users=" + users+"&types=" + eventTypes +"&subtypes=" + subtypes + 
             "&default=" + defaultFilters;
         return false;

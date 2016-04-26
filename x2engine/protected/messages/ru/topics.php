@@ -19,4 +19,6 @@
   'Most Recent' => 'Самое новое',
   'Alphabetical' => 'Алфавитный',
   'Most Popular' => 'Самый популярный',
+  '{poster}posted a new reply to {topic}.' => '{poster} размещен новый ответ {topic} .',
+  '{poster}posted a new reply to a topic, but that reply has been deleted.' => '{poster} размещен новый ответ на тему, но этот ответ был удален.',
 );

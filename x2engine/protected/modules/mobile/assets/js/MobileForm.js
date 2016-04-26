@@ -1,5 +1,5 @@
-/*****************************************************************************************
- * X2Engine Open Source Edition is a customer relationship management program developed by
+/***********************************************************************************
+ * X2CRM is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2016 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
@@ -20,7 +20,8 @@
  * 02110-1301 USA.
  * 
  * You can contact X2Engine, Inc. P.O. Box 66752, Scotts Valley,
- * California 95067, USA. or at email address contact@x2engine.com.
+ * California 95067, USA. on our website at www.x2crm.com, or at our
+ * email address: contact@x2engine.com.
  * 
  * The interactive user interfaces in modified source and object code versions
  * of this program must display Appropriate Legal Notices, as required under
@@ -31,7 +32,7 @@
  * X2Engine" logo. If the display of the logo is not reasonably feasible for
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2Engine".
- *****************************************************************************************/
+ **********************************************************************************/
 
 x2.mobileForm = (function () {
 
@@ -64,6 +65,39 @@ MobileForm.prototype.submitWithFiles = function (form$, success, failure) {
     });
 };
 
+
+MobileForm.prototype.submitWithPhotos = function (
+    photoUploadUrl, form$, fileKey, success, failure) {
+
+    if (!x2.main.isPhoneGap) 
+        throw new Error ('MobileForm::submitWithPhotos is not browser compatible');
+
+    var params = {};
+    form$.find (':input').not (':disabled').each (function () {
+        params[$(this).attr ('name')] = $(this).val ();
+    });
+
+// TODO: add support for multiple upload (but don't use file upload directly. make calls to 
+// x2touch.API instead).
+//    form$.find ('.' + this.photoAttachmentClass).each (function () {
+//        var options = new FileUploadOptions ();
+//        options.fileKey = fileKey;
+//        options.mimeType = 'image/jpeg';
+//        options.params = params;
+//        var ft = new FileTransfer ();
+//        ft.upload (
+//            $(this).attr ('data-x2-file-url'), 
+//            encodeURI (photoUploadUrl),
+//            function () {},
+//            function () {},
+//            options);
+//    });
+    
+    var photo$ = form$.find ('.' + this.photoAttachmentClass);
+    var fileUrl = photo$.attr ('src');
+    //console.log ([fileUrl, photoUploadUrl, fileKey, params, success, failure]);
+    x2touch.API.uploadFile (fileUrl, photoUploadUrl, fileKey, params, success, failure);
+};
  
 
 MobileForm.prototype.makePhotoAttachment = function (data) {

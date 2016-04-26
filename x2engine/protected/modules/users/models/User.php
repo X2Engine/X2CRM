@@ -1,6 +1,6 @@
 <?php
-/*****************************************************************************************
- * X2Engine Open Source Edition is a customer relationship management program developed by
+/***********************************************************************************
+ * X2CRM is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2016 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
@@ -21,7 +21,8 @@
  * 02110-1301 USA.
  * 
  * You can contact X2Engine, Inc. P.O. Box 66752, Scotts Valley,
- * California 95067, USA. or at email address contact@x2engine.com.
+ * California 95067, USA. on our website at www.x2crm.com, or at our
+ * email address: contact@x2engine.com.
  * 
  * The interactive user interfaces in modified source and object code versions
  * of this program must display Appropriate Legal Notices, as required under
@@ -32,7 +33,7 @@
  * X2Engine" logo. If the display of the logo is not reasonably feasible for
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2Engine".
- *****************************************************************************************/
+ **********************************************************************************/
 
 // Yii::import('application.models.X2Model');
 
@@ -57,6 +58,8 @@ class User extends CActiveRecord {
         'b' => 'BugReports',
         'c' => 'Contacts',
         'd' => 'Docs',
+          
+        'f' => 'X2Flow',
          
         'g' => 'Groups',
         'l' => 'X2Leads',
@@ -67,6 +70,8 @@ class User extends CActiveRecord {
         'r' => 'Product',
         's' => 'Services',
         't' => 'Actions',
+         
+        'u' => 'Reports',
          
         'w' => 'Workflow',
     );
@@ -104,13 +109,13 @@ class User extends CActiveRecord {
             $viewRoute = '/profile/view';
         }
         return array_merge(parent::behaviors(), array(
-            'X2LinkableBehavior' => array(
-                'class' => 'X2LinkableBehavior',
+            'LinkableBehavior' => array(
+                'class' => 'LinkableBehavior',
                 'module' => 'users',
                 'viewRoute' => $viewRoute,
             ),
             'ERememberFiltersBehavior' => array(
-                'class' => 'application.components.ERememberFiltersBehavior',
+                'class' => 'application.components.behaviors.ERememberFiltersBehavior',
                 'defaults' => array(),
                 'defaultStickOnClear' => false
             )
@@ -166,6 +171,15 @@ class User extends CActiveRecord {
             // Please remove those attributes that should not be searched.
             array('id, firstName, lastName, username, password, title, department, officePhone, cellPhone, homePhone, address, backgroundInfo, emailAddress, status, lastUpdated, updatedBy, recentItems, topContacts, lastLogin, login', 'safe', 'on' => 'search'),
         );
+        
+        $passwordRule = array('password', 'application.components.X2PasswordValidator', 'on' => 'insert,update');
+        $passwordRequirements = Yii::app()->settings->passwordRequirements;
+        $passwordRule['min'] = $passwordRequirements['minLength'];
+        $passwordRule['requireNumeric'] = $passwordRequirements['requireNumeric'];
+        $passwordRule['requireMixedCase'] = $passwordRequirements['requireMixedCase'];
+        $passwordRule['requireSpecial'] = $passwordRequirements['requireSpecial'];
+        $passwordRule['requireCharClasses'] = $passwordRequirements['requireCharClasses'];
+        $userRules[] = $passwordRule;
         
         return $userRules;
     }

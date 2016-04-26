@@ -1,0 +1,99 @@
+Delivered-To: dropbox@testdomain.com
+Received: by 10.194.206.99 with SMTP id ln3csp43211wjc;
+        Fri, 14 Mar 2014 10:17:09 -0700 (PDT)
+X-Received: by 10.112.150.233 with SMTP id ul9mr5976146lbb.2.1394817429615;
+        Fri, 14 Mar 2014 10:17:09 -0700 (PDT)
+Return-Path: <x2cs+bncBD65DMEUUYFBBFHTRSMQKGQEG36BH4A@x2engine.com>
+Received: from mail-la0-f70.google.com (mail-la0-f70.google.com [XXX.XX.XXX.XX])
+        by mx.google.com with ESMTPS id g7si4490841lag.102.2014.03.14.10.17.09
+        for <dropbox@testdomain.com>
+        (version=TLSv1 cipher=ECDHE-RSA-RC4-SHA bits=128/128);
+        Fri, 14 Mar 2014 10:17:09 -0700 (PDT)
+Received-SPF: softfail (google.com: domain of transitioning x2cs+bncBD65DMEUUYFBBFHTRSMQKGQEG36BH4A@x2engine.com does not designate XX.XXX.XXX.XXX as permitted sender) client-ip=XX.XXX.XXX.XXX;
+Authentication-Results: mx.google.com;
+       spf=softfail (google.com: domain of transitioning x2cs+bncBD65DMEUUYFBBFHTRSMQKGQEG36BH4A@x2engine.com does not designate XX.XXX.XXX.XXX as permitted sender) smtp.mail=x2cs+bncBD65DMEUUYFBBFHTRSMQKGQEG36BH4A@x2engine.com
+Received: by mail-la0-f70.google.com with SMTP id hr13sf3891459lab.1
+        for <dropbox@testdomain.com>; Fri, 14 Mar 2014 10:17:08 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20130820;
+        h=x-gm-message-state:from:message-id:mime-version:subject:date
+         :references:to:x-original-sender:x-original-authentication-results
+         :precedence:mailing-list:list-id:list-help:content-type;
+        bh=UWK9+cPdnKTATVeUQO5SXQgNbKiKX5HSli46ddBGsTI=;
+        b=JGd1i2uWk3CsWPoFvLWw9XVGiBj6NtwRAaOaX2PvWaGgvAAkzqrG+oCNTIcFQz4ouF
+         8tfEwyobhY7+C7UmyOSPZEM9c2v2fuAZYrgJ6ajC47vQ/66S8gRQczfqt1KIb7MIlp9d
+         8+XC33v5RpYNvVoS3C1kW+v8bNSfibmwEUHhmbIX/DBYiIBaC1+WB9sFUiS3wIEbxYxU
+         VZfarxudPeUOijEFam2kRvKHSXGpwwtJO5VE0xfiJdYAtydHi7BdxMFeYmubg+AEEY4L
+         4vc/v/9xuAl7siq+euzgdnwSv6hukj35r6nRTV3n+UNetPK6Ic8Zucd7nvhrfDe4tDa8
+         jwgA==
+X-Gm-Message-State: ALoCoQmCUk4NrweAPhruh8B2j8o7vnEK0D6VUFulRYj4p6WuJ5c8AOwFlg90BXOO90Ezmualgu7V
+X-Received: by XX.XXX.XXX.XX with SMTP id ev3mr3787969wib.6.1394817428728;
+        Fri, 14 Mar 2014 10:17:08 -0700 (PDT)
+X-BeenThere: x2cs@x2engine.com
+Received: by 10.180.98.105 with SMTP id eh9ls674398wib.28.canary; Fri, 14 Mar
+ 2014 10:17:08 -0700 (PDT)
+X-Received: by 10.194.87.195 with SMTP id ba3mr2854280wjb.53.1394817428452;
+        Fri, 14 Mar 2014 10:17:08 -0700 (PDT)
+Received: from host.testdomain.com ([XX.XXX.XXX.XXX])
+        by mx.google.com with ESMTPS id cb8si4667041wib.78.2014.03.14.10.17.08
+        for <customersupport@x2engine.com>
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Fri, 14 Mar 2014 10:17:08 -0700 (PDT)
+Received-SPF: pass (google.com: domain of sales@rep.com designates XX.XXX.XXX.XXX as permitted sender) client-ip=XX.XXX.XXX.XXX;
+Received: from xxxxx-xxxxx-x-x-xxxxxxx.xxxx.xxxxx.xxxxxxx.net ([XX.XXX.XX.XXX]:52479 helo=[192.168.5.12])
+	by host.testdomain.com with esmtpsa (TLSv1:AES128-SHA:128)
+	(Exim 4.82)
+	(envelope-from <sales@rep.com>)
+	id 1WOVjH-0004aS-TE
+	for customersupport@x2engine.com; Fri, 14 Mar 2014 17:17:07 +0000
+From: Sales Rep <sales@rep.com>
+Message-Id: <54102997-5D43-480A-BAA8-F30BA85D0E4E@fueclinics.com>
+Mime-Version: 1.0 (Mac OS X Mail 7.2 \(1874\))
+X-Priority: 3
+Subject: Fwd: Unrecognized forwarded email format
+Date: Fri, 14 Mar 2014 17:17:09 +0000
+References: <bab66bb50f3494e9d158bf29ca81b134@localhost.localdomain>
+To: dropbox@testdomain.com
+X-Mailer: Apple Mail (2.1874)
+X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
+X-AntiAbuse: Primary Hostname - host.testdomain.com
+X-AntiAbuse: Original Domain - x2engine.com
+X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
+X-AntiAbuse: Sender Address Domain - fueclinics.com
+X-Get-Message-Sender-Via: host.testdomain.com: authenticated_id: sales@rep.com
+X-Original-Sender: sales@rep.com
+X-Original-Authentication-Results: mx.google.com;       spf=pass (google.com:
+ domain of sales@rep.com designates XX.XXX.XXX.XXX as permitted
+ sender) smtp.mail=sales@rep.com;       dkim=pass header.i=@fueclinics.com
+Precedence: list
+Mailing-list: list x2cs@x2engine.com; contact x2cs+owners@x2engine.com
+List-ID: <x2cs.x2engine.com>
+X-Google-Group-Id: 920685133249
+List-Help: <http://support.google.com/a/x2engine.com/bin/topic.py&topic=25838>,
+ <mailto:x2cs+help@x2engine.com>
+Content-Type: multipart/alternative; boundary="Apple-Mail=_520E9082-4A89-4371-AE86-36A1702A9D98"
+
+--Apple-Mail=_520E9082-4A89-4371-AE86-36A1702A9D98
+Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain;
+	charset=us-ascii
+
+
+
+Begin forwarded message:
+
+> From: Test Contact <customer@prospect.com>
+> Subject: Unrecognized forwarded email format
+> Date: 14 March 2014 17:14:19 GMT
+> To: sales@rep.com
+> Reply-To: Test Contact <customer@prospect.com>
+>=20
+> The email capture script was not able to recognize the format of the =
+forwarded message, and thus was not able to obtain contact data. Note =
+also that if email is sent directly to the email capture address, it =
+requires that the body contain a forwarded message.
+>=20
+> Please forward this email, using the email client program that caused =
+the error, to X2Engine Customer Support at customersupport@x2engine.com =
+so that support for the format can be added. You may redact any =
+information you wish from the original message.%123%

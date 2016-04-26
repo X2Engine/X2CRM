@@ -1,0 +1,28 @@
+MIME-Version: 1.0
+Received: by 10.216.208.78 with HTTP; Mon, 22 Oct 2012 17:17:06 -0700 (PDT)
+X-Originating-IP: [XX.XX.XX.XX]
+In-Reply-To: <BF6AA7800F7FC747BAAAE568816BE693097FB06C@mbx023-e1-nj-4.exch023.domain.local>
+References: <BF6AA7800F7FC747BAAAE568816BE693097FB06C@mbx023-e1-nj-4.exch023.domain.local>
+Date: Mon, 22 Oct 2012 17:17:06 -0700
+Delivered-To: dropbox@testdomain.com
+Message-ID: <CACwGMC0z6OMDUQusNi3h7OW_ES5S+k+VSBtLHRYUGApxrNiD9g@mail.gmail.com>
+Subject: Fwd: X2 Issues
+From: Sales Rep <sales@rep.com>
+To: dropbox <dropbox@testdomain.com>
+Content-Type: multipart/alternative; boundary=0016e6d6261bdb1b9f04ccaee3e1
+
+--0016e6d6261bdb1b9f04ccaee3e1
+Content-Type: text/plain; charset=ISO-8859-1
+
+---------- Forwarded message ----------
+From: Contact, Test <customer@prospect.com>
+Date: Wed, May 14, 2014 at 11:12 AM
+Subject: calendar editing
+To: Sales Rep <sales@rep.com>
+
+
+ I have set both roles for a user to Calendar=Full Access. I have had the
+ user log out and log back in. She is still unable to edit the description
+ for a calendar event. She can drag and drop for time, but not description.
+ The action's id is %123%.
+

@@ -1,5 +1,5 @@
-/*****************************************************************************************
- * X2Engine Open Source Edition is a customer relationship management program developed by
+/***********************************************************************************
+ * X2CRM is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2016 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
@@ -20,7 +20,8 @@
  * 02110-1301 USA.
  * 
  * You can contact X2Engine, Inc. P.O. Box 66752, Scotts Valley,
- * California 95067, USA. or at email address contact@x2engine.com.
+ * California 95067, USA. on our website at www.x2crm.com, or at our
+ * email address: contact@x2engine.com.
  * 
  * The interactive user interfaces in modified source and object code versions
  * of this program must display Appropriate Legal Notices, as required under
@@ -31,7 +32,7 @@
  * X2Engine" logo. If the display of the logo is not reasonably feasible for
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2Engine".
- *****************************************************************************************/
+ **********************************************************************************/
 
 x2.LoginThemeHelper = (function(){
 
@@ -98,7 +99,7 @@ x2.LoginThemeHelper = (function(){
         },
         {
             "colors": [
-                "#D5D5D5"
+                "#E0E0E0"
             ],
             "name": "white"
         },
@@ -118,7 +119,9 @@ x2.LoginThemeHelper = (function(){
 			themeColorCookie: '', // the name of the associated widget class
 			cookieLength: '', // the url used to call the set profile widget property action
 			open: false,
-			currentColor: themes[0].name, 
+                        loginFormDark: false,
+			loginFormDarkCookie: '',
+			currentColor: themes[7].name, 
 			currentThemeBG: ['#252525', '#010101', '#131313']
 		};
 		auxlib.applyArgs (this, defaultArgs, argsDict);
@@ -133,7 +136,7 @@ x2.LoginThemeHelper = (function(){
 		this.form$ = $(this.formSelector);
 
 		for(var i in themes) {
-            if (themes.hasOwnProperty (i)) this.appendTheme(themes[i]);
+            		if (themes.hasOwnProperty (i)) this.appendTheme(themes[i]);
 		}
 
 		this.setUpClickBehavior();
@@ -148,6 +151,7 @@ x2.LoginThemeHelper = (function(){
 			this.element$.show();
 		}
 
+               
 	}
 
 	LoginThemeHelper.prototype.appendTheme = function(theme) {
@@ -179,21 +183,22 @@ x2.LoginThemeHelper = (function(){
 
 		// Special case for the white color to have blue buttons
 		if (name == 'white') {
-			colors = themes[0].colors;
+			colors = themes[7].colors;
 		}
 
 		$('.x2-blue').attr ('style', x2.css.stringify ({
-			'border-color': colors[0]
+			'border-color': '#8d8d8d'
 		}) + ';' + x2.css.linearGradient (
-            tinycolor (colors[0]).lighten (8).toString (), colors[0]));
+            tinycolor ('#8d8d8d').lighten (8).toString (), '#8d8d8d'));
 
 		$('#login-form-logo').css({
-			color: colors[0],
-        });
+			color: themes[0].colors[0],
+                });
 
 		$('a').not ('.x2-button').css({
-			color: colors[0]
+			color: colors[0],
 		});
+
 	}
 
 	LoginThemeHelper.prototype.setUpClickBehavior = function(){
@@ -221,6 +226,7 @@ x2.LoginThemeHelper = (function(){
 
 	}
 
+       
 	LoginThemeHelper.prototype.setUpFade = function () {
 		$('#signin-button').click(function() {
 //			$('#login-page').css({

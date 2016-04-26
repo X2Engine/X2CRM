@@ -119,4 +119,5 @@
   '<b>Reminder!</b> The following action is due: {action}' => '<b>！提示</b>下操作的原因{action}',
   'Event Subtype' => '事件亚型',
   'Event Status' => '事件状态',
+  'Calendar Color' => '日历颜色',
 );

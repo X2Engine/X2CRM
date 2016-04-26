@@ -1,0 +1,75 @@
+Delivered-To: dropbox@testdomain.com
+Received: by 10.194.135.208 with SMTP id pu16csp43481wjb;
+        Tue, 29 Jan 2013 13:21:23 -0800 (PST)
+X-Received: by 10.50.47.227 with SMTP id g3mr1981158ign.94.1359494482517;
+        Tue, 29 Jan 2013 13:21:22 -0800 (PST)
+Return-Path: <prvs=ray=73493fbb4@rep.com>
+Received: from ironport-01.sms.scalar.ca (mx.scalarmail.ca. [98.158.95.75])
+        by mx.google.com with ESMTPS id s2si13074692icj.72.2013.01.29.13.21.21
+        (version=TLSv1 cipher=RC4-SHA bits=128/128);
+        Tue, 29 Jan 2013 13:21:22 -0800 (PST)
+Received-SPF: pass (google.com: domain of prvs=ray=73493fbb4@rep.com designates 98.158.95.75 as permitted sender) client-ip=98.158.95.75;
+Authentication-Results: mx.google.com;
+       spf=pass (google.com: domain of prvs=ray=73493fbb4@rep.com designates 98.158.95.75 as permitted sender) smtp.mail=prvs=ray=73493fbb4@rep.com
+Received: from unknown (HELO sms-zimbra-mta-01.sms.scalar.ca) ([192.168.32.56])
+  by ironport-01.sms.scalar.ca with ESMTP; 29 Jan 2013 16:21:21 -0500
+Received: from localhost (localhost.localdomain [127.0.0.1])
+	by sms-zimbra-mta-01.sms.scalar.ca (Postfix) with ESMTP id 3DFB2DBAF0
+	for <dropbox@testdomain.com>; Tue, 29 Jan 2013 16:21:21 -0500 (EST)
+Received: from sms-zimbra-mta-01.sms.scalar.ca ([127.0.0.1])
+	by localhost (sms-zimbra-mta-01.sms.scalar.ca [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id SVL8weVGkpPd for <dropbox@testdomain.com>;
+	Tue, 29 Jan 2013 16:21:21 -0500 (EST)
+Received: from sms-zimbra-message-store-02.sms.scalar.ca (unknown [172.17.19.202])
+	by sms-zimbra-mta-01.sms.scalar.ca (Postfix) with ESMTP id 0A243DBAEF
+	for <dropbox@testdomain.com>; Tue, 29 Jan 2013 16:21:21 -0500 (EST)
+Date: Tue, 29 Jan 2013 16:21:20 -0500 (EST)
+From: Sales Rep <sales@rep.com>
+Reply-To: Sales Rep <sales@rep.com>
+To: dropbox@testdomain.com
+Message-ID: <581024580.137406.1359494480872.JavaMail.root@rep.com>
+In-Reply-To: <10308ea7d64fc24901305a4574ea47b9@x2software.com>
+Subject: Fwd: Email Dropbox
+MIME-Version: 1.0
+Content-Type: multipart/alternative; 
+	boundary="----=_Part_137405_1609593177.1359494480871"
+X-Originating-IP: [172.17.19.111]
+X-Mailer: Zimbra 7.2.1_GA_2790 (ZimbraWebClient - FF3.0 (Win)/7.2.1_GA_2790)
+
+------=_Part_137405_1609593177.1359494480871
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
+
+Hi Dropbox, 
+
+Forwarding this email at Test's request. Looking to setup an X2 email dropbox. Currently using an email client called Zimbra which serves email from a remote VPS and a Zimbra server. The Zimbra email client is pretty robust and, so far anyway, there isn't much it has not been able to do for us. It's possible we will move to Outlook on Office 365 down the road but both a CRM implementation and email client change at the same time seemed like a little to much for us to chew off. 
+
+We are relatively technical here and have web developer and PHP coders and we have a couple of VPS servers we manage for websites and applications so if there is something we can do to facilitate X2 Dropbox I'm open to helping out. (LOVE the product so far) 
+
+Thanks, 
+Ray 
+
+
+
+
+Sales Rep 
+
+
+TactiBrand helps business owners and entrepreneurs spearhead their success through exceptional Branding and Marketing 
+
+
+----- Original Message -----
+
+From: "Test Contact" <customer@prospect.com> 
+To: "Sales Rep" <sales@rep.com> 
+Sent: Tuesday, January 29, 2013 4:07:21 PM 
+Subject: Email Dropbox 
+
+
+Hello Ray!%123%
+
+My apologies! I should have included this information in my previous email. Our dropbox is not actually associated with the service 'Dropbox.' We will set up the X2 email dropbox for you on our end. What email client do you use? Different email programs format attached forwarded messaged differently, thus the script must be extended to add support for more email programs so taht it can correctly recognize forwarded message headers. Currently we support GMail, Apple Mail, Outlook Online and an older version of Outlook that one of our partners uses. 
+
+In order to test your email software for compatibility, and add support if it isn't already compatible, please forward this email message to Demitri Morgan at dropbox@testdomain.com and let him know the name of the email client program or webmail that you are using. 
+
+Test Contact 

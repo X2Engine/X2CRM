@@ -64,4 +64,5 @@
   'Disabled' => 'معلول',
   'Failed to associate message "{subject}" with {type} {model}' => 'به معاشرت پیام &quot;شکست خورده {subject} &quot; با {type} {model}',
   'Message "{subject}" already associated with {type} {model}' => 'پیام &quot; {subject} &quot; در حال حاضر با همراه {type} {model}',
+  'Disable Quota Operations' => 'غیر فعال کردن عملیات سهمیه',
 );

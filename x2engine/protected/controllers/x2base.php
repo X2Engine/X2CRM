@@ -1,6 +1,6 @@
 <?php
-/*****************************************************************************************
- * X2Engine Open Source Edition is a customer relationship management program developed by
+/***********************************************************************************
+ * X2CRM is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2016 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
@@ -21,7 +21,8 @@
  * 02110-1301 USA.
  * 
  * You can contact X2Engine, Inc. P.O. Box 66752, Scotts Valley,
- * California 95067, USA. or at email address contact@x2engine.com.
+ * California 95067, USA. on our website at www.x2crm.com, or at our
+ * email address: contact@x2engine.com.
  * 
  * The interactive user interfaces in modified source and object code versions
  * of this program must display Appropriate Legal Notices, as required under
@@ -32,7 +33,7 @@
  * X2Engine" logo. If the display of the logo is not reasonably feasible for
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2Engine".
- *****************************************************************************************/
+ **********************************************************************************/
 
 /**
  * Base controller for all application controllers with CRUD operations
@@ -99,14 +100,14 @@ abstract class x2base extends X2Controller {
     public function behaviors() {
         return array(
             'CommonControllerBehavior' => array(
-                'class' => 'application.components.CommonControllerBehavior'),
-            'PermissionsBehavior' => array(
+                'class' => 'application.components.behaviors.CommonControllerBehavior'),
+            'X2PermissionsBehavior' => array(
                 'class' => 'application.components.permissions.'.Yii::app()->params->controllerPermissions),
         );
     }
 
     protected function beforeAction($action = null) {
-        return $this->PermissionsBehavior->beforeAction($action) && parent::beforeAction ($action);
+        return $this->X2PermissionsBehavior->beforeAction($action) && parent::beforeAction ($action);
     }
 
     public function appLockout() {
@@ -156,8 +157,8 @@ abstract class x2base extends X2Controller {
         }
         if ($this->modelClass !== '') {
             $modelClass = $this->modelClass;
-            if ($modelClass::model ()->asa ('X2ModelConversionBehavior')) {
-                $actions = array_merge ($actions, X2ModelConversionBehavior::getActions ());
+            if ($modelClass::model ()->asa ('ModelConversionBehavior')) {
+                $actions = array_merge ($actions, ModelConversionBehavior::getActions ());
             }
         }
         return $actions;
@@ -224,7 +225,7 @@ abstract class x2base extends X2Controller {
      * @return boolean
      */
     public function checkPermissions(&$model, $action = null) {
-        return $this->PermissionsBehavior->checkPermissions($model, $action);
+        return $this->X2PermissionsBehavior->checkPermissions($model, $action);
     }
 
     /**
@@ -241,8 +242,8 @@ abstract class x2base extends X2Controller {
     public function view(&$model,$type=null,$params=array()) {
         $this->noBackdrop = true;
 
-        // should only happen when the model is known to have X2LinkableBehavior
-        if($type === null)    // && $model->asa('X2LinkableBehavior') !== null)    
+        // should only happen when the model is known to have LinkableBehavior
+        if($type === null)    // && $model->asa('LinkableBehavior') !== null)    
             $type = $model->module;
 
         if(!isset($_GET['ajax'])){
@@ -888,7 +889,7 @@ abstract class x2base extends X2Controller {
     }
 
     /**
-     * DUMMY METHOD: left to avoid breaking old custom modules (now done in X2ChangeLogBehavior)
+     * DUMMY METHOD: left to avoid breaking old custom modules (now done in ChangeLogBehavior)
      * @deprecated
      */
     protected function updateChangelog($model, $changes) {
@@ -896,7 +897,7 @@ abstract class x2base extends X2Controller {
     }
 
     /**
-     * DUMMY METHOD: left to avoid breaking old custom modules (now done in X2ChangeLogBehavior)
+     * DUMMY METHOD: left to avoid breaking old custom modules (now done in ChangeLogBehavior)
      * @deprecated
      */
     protected function calculateChanges($old, $new, &$model = null) {

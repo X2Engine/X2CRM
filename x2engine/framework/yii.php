@@ -246,7 +246,7 @@ class Yii extends YiiBase
 				}
 				else
                     /* x2modstart */ 
-					include(self::getCustomPath ($className.'.php'));
+					@include(self::getCustomPath ($className.'.php'));
                     /* x2modend */ 
 			}
 			else  // class name with namespace in PHP 5.3
@@ -285,3 +285,5 @@ class Yii extends YiiBase
     }
 
 }
+
+spl_autoload_register(array('Yii','x2_autoload'));

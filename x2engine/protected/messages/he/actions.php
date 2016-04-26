@@ -119,4 +119,5 @@
   '<b>Reminder!</b> The following action is due: {action}' => '<b>! תזכורת</b> הפעולה הבאה נובעת: {action}',
   'Event Subtype' => 'סוג משנה אירוע',
   'Event Status' => 'סטטוס אירוע',
+  'Calendar Color' => 'צבע לוח שנה',
 );

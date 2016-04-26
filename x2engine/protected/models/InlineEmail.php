@@ -1,7 +1,7 @@
 <?php
 
-/*****************************************************************************************
- * X2Engine Open Source Edition is a customer relationship management program developed by
+/***********************************************************************************
+ * X2CRM is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2016 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
@@ -22,7 +22,8 @@
  * 02110-1301 USA.
  * 
  * You can contact X2Engine, Inc. P.O. Box 66752, Scotts Valley,
- * California 95067, USA. or at email address contact@x2engine.com.
+ * California 95067, USA. on our website at www.x2crm.com, or at our
+ * email address: contact@x2engine.com.
  * 
  * The interactive user interfaces in modified source and object code versions
  * of this program must display Appropriate Legal Notices, as required under
@@ -33,7 +34,7 @@
  * X2Engine" logo. If the display of the logo is not reasonably feasible for
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2Engine".
- *****************************************************************************************/
+ **********************************************************************************/
 
 Yii::import('application.modules.docs.models.*');
 Yii::import('application.modules.actions.models.*');
@@ -160,6 +161,11 @@ class InlineEmail extends CFormModel {
     public $requireSubjectOnCustom = true; 
 
 
+      
+    /**
+     * @var bool $emailInboxesEmailSync If true, new action weiloutbound email
+     */
+    public $emailInboxesEmailSync = true; 
      
 
 
@@ -226,6 +232,8 @@ class InlineEmail extends CFormModel {
             array('emailSendTime', 'date', 'allowEmpty' => true, 'timestampAttribute' => 'emailSendTimeParsed'),
             array('to, cc, credId, bcc, message, template, modelId, modelName, subject', 'safe'),
              
+            array('emailInboxesEmailSync', 'safe'),
+             
         );
         if ($this->requireSubjectOnCustom) {
             $rules[] = array('subject', 'required', 'on' => 'custom');
@@ -256,12 +264,14 @@ class InlineEmail extends CFormModel {
             'modelId' => Yii::t('app', 'Model ID'),
 			'credId' => Yii::t('app','Send As:'),
              
+			'emailInboxesEmailSync' => Yii::t('app','Log email'),
+             
         );
     }
 
     public function behaviors() {
         return array(
-            'emailDelivery' => array('class' => 'application.components.EmailDeliveryBehavior')
+            'emailDelivery' => array('class' => 'application.components.behaviors.EmailDeliveryBehavior')
         );
     }
 
@@ -840,6 +850,8 @@ class InlineEmail extends CFormModel {
         if($this->status['code'] == '200') {
             $this->recordEmailSent($createEvent); // Save all the actions and events
             
+            $this->copyToSent();
+            
             $this->clearTemporaryFiles ($this->attachments);
             if (isset($this->targetModel)) {
                 X2Flow::trigger ('OutboundEmailTrigger', array(
@@ -854,6 +866,23 @@ class InlineEmail extends CFormModel {
         return $this->status;
     }
 
+    
+    /**
+     * Copy a sent message to the specified sent folder if associated with an inbox
+     * @return bool success
+     */
+    public function copyToSent() {
+        if ($this->credentials) {
+            $inbox = EmailInboxes::model()->findByAttributes (array(
+                'credentialId' => $this->credentials->id,
+                'assignedTo' => Yii::app()->user->getName(),
+            ));
+            if ($inbox && !empty ($inbox->settings['copyToSent']))
+                return $inbox->copyToSent ($this->asa('emailDelivery')->getSentMIMEMessage ());
+        } else {
+            return false;
+        }
+    }
     
 
     /**
@@ -884,6 +913,11 @@ class InlineEmail extends CFormModel {
      */
     public function recordEmailSent($makeEvent = true){
          
+        if (!$this->emailInboxesEmailSync) {
+            // don't log outbound email user unset emailInboxesEmailSync
+            return;
+        } 
+         
 
         // The email record, with action header for display purposes:
         $emailRecordBody = $this->insertInBody(self::insertedPattern('ah', $this->actionHeader), 1, 1);
@@ -909,6 +943,40 @@ class InlineEmail extends CFormModel {
             $action->completeDate = $now;
             $action->complete = 'Yes';
             $action->actionDescription = $emailRecordBody;
+            
+            if ($this->credentials && !empty($this->credentials->modelClass)) {
+                // Check if the current user has an enabled inbox, then infer the sent folder
+                // name and retrieve the UIDVALIDITY
+                $user = User::model()->findByPk (Yii::app()->user->getId());
+                $inbox = EmailInboxes::model()->findAllByAttributes (array(
+                    'credentialId' => $this->credentials->id,
+                ));
+                $inbox = array_filter ($inbox, function($i) use($user) {return $i->isVisibleTo ($user);});
+
+                if (count($inbox) > 0) {
+                    // Select the first inbox: if multiple inboxes were found, they are associated with
+                    // the same logical email account, so log once to the first inbox
+                    $inbox = $inbox[0];
+                    $emailFolderName = ($this->credentials->modelClass === 'GMailAccount') ? '[Gmail]/Sent Mail' : 'Sent';
+                    if (!empty ($inbox->settings['copyToSent']))
+                        $emailFolderName = $inbox->settings['copyToSent'];
+
+                    try {
+                        $folders = $inbox->getFolders ();
+                    } catch (EmailConfigException $e) {
+                        $folders = array();
+                    }
+                    if (in_array ($emailFolderName, $folders)) {
+                        // Mark the inboxId, sent folder name, and folder's UIDVALIDITY
+                        $action->emailFolderName = $emailFolderName;
+                        $action->emailInboxId = $inbox->id;
+                        // $action->emailImapUid = ;
+                        $status = $inbox->status();
+                        $uidValidity = property_exists ($status, 'uidvalidity') ? $status->uidvalidity : null;
+                        $action->emailUidValidity = $uidValidity;
+                    }
+                }
+            }
             
 
             // These attributes are context-sensitive and subject to change:

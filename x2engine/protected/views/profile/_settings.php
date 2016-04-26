@@ -1,6 +1,6 @@
 <?php
-/*****************************************************************************************
- * X2Engine Open Source Edition is a customer relationship management program developed by
+/***********************************************************************************
+ * X2CRM is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2016 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
@@ -21,7 +21,8 @@
  * 02110-1301 USA.
  * 
  * You can contact X2Engine, Inc. P.O. Box 66752, Scotts Valley,
- * California 95067, USA. or at email address contact@x2engine.com.
+ * California 95067, USA. on our website at www.x2crm.com, or at our
+ * email address: contact@x2engine.com.
  * 
  * The interactive user interfaces in modified source and object code versions
  * of this program must display Appropriate Legal Notices, as required under
@@ -32,7 +33,7 @@
  * X2Engine" logo. If the display of the logo is not reasonably feasible for
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2Engine".
- *****************************************************************************************/
+ **********************************************************************************/
 
 Yii::app()->clientScript->registerPackage ('X2CSS');
 Yii::app()->clientScript->registerScriptFile(
@@ -256,7 +257,8 @@ $form = $this->beginWidget('X2ActiveForm', array(
     </div>
 </div>
 <div id="theme-attributes" class='form preferences-section<?php 
-    echo ''; 
+    echo ($displayThemeEditor ? 
+        ' no-theme-editor': '')/* x2plaend */; 
     ?>'>
     <div id="theme-attributes-title-bar" class="row prefs-title-bar">
         <h3 class="left"><?php echo Yii::t('app', 'Theme'); ?></h3>
@@ -292,6 +294,18 @@ $form = $this->beginWidget('X2ActiveForm', array(
                             <?php echo Yii::t('profile', 'Delete'); ?>
                 </button>
                 <?php  ?>
+                <button type='button' class='x2-button x2-small-button'
+                        id='prefs-import-theme-button'>
+                            <?php echo X2Html::fa("fa-download") ?>
+                            <?php echo Yii::t('profile', 'Import'); ?>
+                </button>
+                <button type='button' class='x2-button x2-small-button'
+                        id='prefs-export-theme-button'>
+                            <?php echo X2Html::fa("fa-upload") ?>
+                            <?php echo Yii::t('profile', 'Export'); ?>
+                </button>
+            </div>
+            <?php  ?>
             <div style="clear:both"></div>
 
             <?php $this->renderPartial('_themeSettings', array(
@@ -550,5 +564,7 @@ $form = $this->beginWidget('X2ActiveForm', array(
 </div>
 
 <?php
+
+$this->renderPartial ('_themeImportForm');
 
 ?>

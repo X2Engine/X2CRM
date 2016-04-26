@@ -1,5 +1,5 @@
-/*****************************************************************************************
- * X2Engine Open Source Edition is a customer relationship management program developed by
+/***********************************************************************************
+ * X2CRM is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2016 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
@@ -20,7 +20,8 @@
  * 02110-1301 USA.
  * 
  * You can contact X2Engine, Inc. P.O. Box 66752, Scotts Valley,
- * California 95067, USA. or at email address contact@x2engine.com.
+ * California 95067, USA. on our website at www.x2crm.com, or at our
+ * email address: contact@x2engine.com.
  * 
  * The interactive user interfaces in modified source and object code versions
  * of this program must display Appropriate Legal Notices, as required under
@@ -31,7 +32,7 @@
  * X2Engine" logo. If the display of the logo is not reasonably feasible for
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2Engine".
- *****************************************************************************************/
+ **********************************************************************************/
 
 x2.RecordAliasesWidget = (function () {
 
@@ -44,6 +45,8 @@ function RecordAliasesWidget (argsDict) {
         aliasOptions: {},
         aliasTypeIcons: {},
         recordId: null,
+         
+        googlePlusIntegrationEnabled: false,
          
         translations: {
         }
@@ -313,6 +316,194 @@ RecordAliasesWidget.prototype._setUpSkypeLinks = function () {
     });
 };
 
+
+
+RecordAliasesWidget.prototype._refreshGooglePlusWidget = function (alias, label) {
+    var googlePlusWidget = x2.GooglePlusProfileWidget;
+    if (!googlePlusWidget) return;
+    googlePlusWidget.addProfile (alias, label);
+};
+
+/**
+ * Sets up Google+ profile search dialog
+ */
+RecordAliasesWidget.prototype._setUpGooglePlusIntegration = function () {
+    var that = this;
+    var searchProfileButton$ = this.element$.find ('.find-google-plus-profile');
+    var profileSearchForm$ = $('#google-plus-profile-search-form');
+    this.profileSearchForm$ = profileSearchForm$;
+    var searchResultsContainer$ = profileSearchForm$.find ('.search-results-container');
+    var searchInput$ = profileSearchForm$.find ('.search-string');
+    var oldSearchVal = null;
+
+    profileSearchForm$.dialog ({
+        title: this.translations.googleSearchdialogTitle,
+        autoOpen: false,
+        width: 500,
+        buttons: [
+            {
+                text: this.translations.cancel,
+                click: function () {
+                    $(this).dialog ('close');
+                }
+            },
+            {
+                text: this.translations.createProfile,
+                click: function () {
+                    var selected$ = profileSearchForm$.find ('.selected'); 
+                    if (!selected$.length) {
+                        x2.forms.errorSummaryAppend (profileSearchForm$, [
+                            'Please select a profile.'
+                        ]); 
+                    } else {
+                        that._createAlias (function (alias, id, label, rawAlias) {
+                            that._refreshGooglePlusWidget (rawAlias, label);
+                        }, profileSearchForm$);
+                    }
+                },
+                'class': 'create-profile-button'
+            }
+        ], 
+        open: function () {
+            searchInput$.blur ();
+        },
+        close: function () {
+            that._clearGoogleProfileSelection (profileSearchForm$, searchResultsContainer$);
+            profileSearchForm$.closest ('.ui-dialog').find ('.create-profile-button').
+                removeClass ('highlight');
+        }
+    });
+
+    searchProfileButton$.click (function () {
+        profileSearchForm$.dialog ('open'); 
+    });
+
+    // set up profile fetch
+    var nextPageToken = null;
+    searchInput$.blur (function () {
+        if (searchInput$.val () === oldSearchVal) {
+            return;
+        }
+        oldSearchVal = searchInput$.val ();
+        // request profiles matching search string and render them inside options container
+        that._searchGooglePlusProfiles ($(this).val (), function (data) { 
+            searchResultsContainer$.empty ();
+            nextPageToken = data.nextPageToken;
+            that._updateGoogleProfileOptions (
+                searchResultsContainer$, profileSearchForm$, data.profiles);
+        });
+    });
+
+    // set up infinity scroll. New pages of profile options should be fetched as user scrolls 
+    // downwards
+    var searching = false;
+    var infScroll = new x2.InfinityScroll ({
+        element: searchResultsContainer$,
+        callback: function (next) {
+            if (!next || searching) return;
+
+            if (nextPageToken) {
+                searching = true;
+                that._searchGooglePlusProfiles (searchInput$.val (), function (data) {
+                    nextPageToken = data.nextPageToken;
+                    that._updateGoogleProfileOptions (
+                        searchResultsContainer$, profileSearchForm$, data.profiles);
+                    searching = false;
+                }, nextPageToken);
+            }
+        }
+    });
+        
+    this._setUpGoogleProfileSelection (profileSearchForm$, searchResultsContainer$);
+};
+
+/**
+ * Update options with profiles fetched from the Google+ API
+ */
+RecordAliasesWidget.prototype._updateGoogleProfileOptions = function (
+    searchResultsContainer$, profileSearchForm$, profiles) {
+
+    var template$ = profileSearchForm$.find ('.search-result-template');
+    for (var i in profiles) { 
+        var result = profiles[i];
+        var option$ = template$.clone ()
+            .removeClass ('search-result-template')
+            .show ();
+        option$.find ('.label-input').val (result.displayName);
+        option$.find ('.alias-input').val (result.id);
+        option$.find ('img').attr ('src', result.image);
+        option$.find ('.search-result-display-name').text (result.displayName).
+            attr ('href', result.url);
+        searchResultsContainer$.append (option$);
+    }
+};
+
+/**
+ * Set up behavior of Google+ profile option selection
+ */
+RecordAliasesWidget.prototype._setUpGoogleProfileSelection = function (
+    profileSearchForm$, searchResultsContainer$) {
+
+    var that = this;
+    this.prevGoogleProfileOption$ = null;
+    searchResultsContainer$.on ('click', '.search-result', function () {
+        var selected$; 
+        x2.forms.clearErrorMessages (profileSearchForm$);
+
+        profileSearchForm$.closest ('.ui-dialog').find ('.create-profile-button').
+            addClass ('highlight');
+
+        that._clearGoogleProfileSelection (profileSearchForm$, searchResultsContainer$);
+
+        profileSearchForm$.find ('.search-result').removeClass ('selected'); 
+        that.prevGoogleProfileOption$ = $(this).prev ();
+        selected$ = $(this).addClass ('selected').detach ();
+        searchResultsContainer$.before (selected$);
+        selected$.find ('input').removeAttr ('disabled');
+    });
+};
+
+RecordAliasesWidget.prototype._clearGoogleProfileSelection = function (
+    profileSearchForm$, searchResultsContainer$) {
+
+    var that = this;
+    if (profileSearchForm$.find ('.selected').length) {
+        selected$ = profileSearchForm$.find ('.selected').detach ();
+        selected$.find ('input').attr ('disabled', 'disabled');
+        if (that.prevGoogleProfileOption$.length) {
+            that.prevGoogleProfileOption$.after (selected$);
+        } else {
+            searchResultsContainer$.prepend (selected$);
+        }
+    }
+};
+
+/**
+ * Request Google+ profiles matching search string
+ */
+RecordAliasesWidget.prototype._searchGooglePlusProfiles = function (
+    searchString, callback, nextPageToken) {
+
+    nextPageToken = typeof nextPageToken === 'undefined' ? null : nextPageToken; 
+    var that = this;
+    $.ajax ({
+        url: yii.scriptUrl + '/googlePlus/search',
+        data: { 
+            searchString: searchString,
+            nextPageToken: nextPageToken
+        },
+        type: 'GET',
+        dataType: 'JSON',
+        success: function (data) {
+            callback (data);
+        },
+        error: function (data) {
+            x2.forms.errorSummaryAppend (that.profileSearchForm$, [
+                data.responseText 
+            ]); 
+        }
+    });
+};
  
 
 RecordAliasesWidget.prototype._init = function () {
@@ -321,6 +512,8 @@ RecordAliasesWidget.prototype._init = function () {
     this._setUpAliasDeletion ();
     this._bindFormEvents ();
     this._setUpSkypeLinks ();
+     
+    this._setUpGooglePlusIntegration ();
      
 };
 

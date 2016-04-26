@@ -64,4 +64,5 @@
   'Disabled' => '残',
   'Failed to associate message "{subject}" with {type} {model}' => '未能消息“关联{subject} ”与{type} {model}',
   'Message "{subject}" already associated with {type} {model}' => '消息“ {subject} ”已经与相关{type} {model}',
+  'Disable Quota Operations' => '禁用配额操作',
 );

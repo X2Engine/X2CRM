@@ -1,0 +1,33 @@
+Delivered-To: customer@prospect.com
+Received: by xx.xxx.xxx.xxx with SMTP id y51csp816259weo;
+        Mon, 7 Jan 2013 11:14:02 -0800 (PST)
+X-Received: by xx.xx.xxx.xxx with SMTP id kx7mr190726727pbc.33.1357586042108;
+        Mon, 07 Jan 2013 11:14:02 -0800 (PST)
+Return-Path: <chames@localhost>
+Received: from localhost (XX-XX-XX-XX-ip-static.hfc.comcastbusiness.net. [xx.xx.xx.xx])
+        by mx.google.com with ESMTP id xg10si60141533pbc.147.2013.01.07.11.14.01;
+        Mon, 07 Jan 2013 11:14:02 -0800 (PST)
+Received-SPF: neutral (google.com: xx.xx.xx.xx is neither permitted nor denied by best guess record for domain of sales@rep.com) client-ip=xx.xx.xx.xx;
+Authentication-Results: mx.google.com; spf=neutral (google.com: xx.xx.xx.xx is neither permitted nor denied by best guess record for domain of chames@localhost) smtp.mail=chames@localhost
+Received: by localhost (Postfix, from userid 0)
+	id 231401200D3; Mon,  7 Jan 2013 11:14:01 -0800 (PST)
+From: sales@rep.com
+Subject: second dropbox test
+To: "Testfirstname Testlastname" <contact@test.com>
+Message-Id: <1357586041.12898@localhost>
+Cc: dropbox@testdomain.com
+X-Originating-IP: 127.0.0.1
+X-Mailer: Webmin 1.610
+Date: Mon, 07 Jan 2013 11:14:01 -0800 (PST)
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="bound1357586041"
+
+This is a multi-part message in MIME format.
+
+--bound1357586041
+Content-Type: text/plain
+Content-Transfer-Encoding: 7bit
+
+another dropbox test. %456%
+
+--bound1357586041--

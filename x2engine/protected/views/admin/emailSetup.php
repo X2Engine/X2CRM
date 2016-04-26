@@ -1,6 +1,6 @@
 <?php
-/*****************************************************************************************
- * X2Engine Open Source Edition is a customer relationship management program developed by
+/***********************************************************************************
+ * X2CRM is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2016 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
@@ -21,7 +21,8 @@
  * 02110-1301 USA.
  * 
  * You can contact X2Engine, Inc. P.O. Box 66752, Scotts Valley,
- * California 95067, USA. or at email address contact@x2engine.com.
+ * California 95067, USA. on our website at www.x2crm.com, or at our
+ * email address: contact@x2engine.com.
  * 
  * The interactive user interfaces in modified source and object code versions
  * of this program must display Appropriate Legal Notices, as required under
@@ -32,7 +33,7 @@
  * X2Engine" logo. If the display of the logo is not reasonably feasible for
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2Engine".
- *****************************************************************************************/
+ **********************************************************************************/
 
 Yii::app()->clientScript->registerScript('toggleAuthInfo', "
     $('#Admin_emailUseAuth').change(function() {
@@ -90,6 +91,42 @@ Yii::app()->clientScript->registerScript('toggleAuthInfo', "
         echo $form->errorSummary($model);
         ?>
 
+        <?php  ?>
+        <h4><?php echo Yii::t('admin', 'Email Client Settings'); ?></h4>
+        <p><?php echo Yii::t('admin',
+            'Configure timeout settings for IMAP functionality in the email client'
+        ); ?></p>
+        <div class="row">
+            <?php
+            echo $form->labelEx(
+                $model, 'imapPollTimeout', array('class' => 'left'));
+            echo X2Html::hint (
+                Yii::t('admin', 'Set the duration between requests for new '.
+                'emails, in minutes'), false, null, true);
+            echo '<br/>';
+            $this->widget('zii.widgets.jui.CJuiSlider', array(
+                'value' => $model->imapPollTimeout,
+                'options' => array(
+                    'min' => 5,
+                    'max' => 30,
+                    'step' => 1,
+                    'change' => "js:function(event,ui) {
+                        $('#imap-poll-timeout').val(ui.value);
+                        $('#save-button').addClass('highlight');
+                    }",
+                    'slide' => "js:function(event,ui) {
+                        $('#imap-poll-timeout').val(ui.value);
+                    }",
+                ),
+                'htmlOptions' => array(
+                    'id' => 'imap-poll-slider',
+                    'style' => 'margin:10px 0;',
+                    'class'=>'x2-wide-slider'
+                ),
+            ));
+            echo $form->textField ($model, 'imapPollTimeout', array('id' => 'imap-poll-timeout'));
+            ?>
+        </div>
         <?php  ?>
 
         <h4><?php echo Yii::t('admin', 'Default Email Delivery Method'); ?></h4>
@@ -278,6 +315,25 @@ Yii::app()->clientScript->registerScript('toggleAuthInfo', "
         <br/>
         <hr/>
         <?php  
+             
+        ?> 
+        <h4><?php echo Yii::t('admin', 'X2Workflow Email Settings'); ?></h4>
+        <br/>
+        <div class="row">
+            <div class="cell">
+                <?php
+                echo $form->checkbox($model, 'x2FlowRespectsDoNotEmail', array ('class' => 'left')); 
+                echo $form->labelEx(
+                    $model, 'x2FlowRespectsDoNotEmail', array ('class' => 'left')); 
+                echo X2Html::hint (
+                    Yii::t('admin', 'If checked, emails will not be sent from X2Workflow to contacts '.
+                        'that have their "Do Not Email" fields checked.'), false, null, true);
+                ?>
+            </div>
+        </div>
+        <br/>
+        <hr/>
+        <?php
          
         ?>
         <h4><?php echo Yii::t('admin', '"Do Not Email" Link Configuration'); ?></h4>

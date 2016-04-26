@@ -119,4 +119,5 @@
   '<b>Reminder!</b> The following action is due: {action}' => '<b>リマインダー</b>次のアクションが原因です{action}',
   'Event Subtype' => 'イベントサブタイプ',
   'Event Status' => 'イベントステータス',
+  'Calendar Color' => 'カレンダーの色',
 );

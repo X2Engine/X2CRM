@@ -1,7 +1,7 @@
 <?php
 
-/*****************************************************************************************
- * X2Engine Open Source Edition is a customer relationship management program developed by
+/***********************************************************************************
+ * X2CRM is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2016 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
@@ -22,7 +22,8 @@
  * 02110-1301 USA.
  * 
  * You can contact X2Engine, Inc. P.O. Box 66752, Scotts Valley,
- * California 95067, USA. or at email address contact@x2engine.com.
+ * California 95067, USA. on our website at www.x2crm.com, or at our
+ * email address: contact@x2engine.com.
  * 
  * The interactive user interfaces in modified source and object code versions
  * of this program must display Appropriate Legal Notices, as required under
@@ -33,7 +34,7 @@
  * X2Engine" logo. If the display of the logo is not reasonably feasible for
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2Engine".
- *****************************************************************************************/
+ **********************************************************************************/
 
 Yii::import('application.components.util.*');
 
@@ -61,10 +62,11 @@ class AdminController extends X2Controller {
      * @var array
      */
     public static $behaviorClasses = array(
-        'LeadRoutingBehavior',
-        'UpdaterBehavior',
-        'CommonControllerBehavior',
-        'ImportExportBehavior',
+        'LeadRoutingBehavior'=>'behaviors/LeadRoutingBehavior', 
+        'UpdaterBehavior'=>'UpdaterBehavior',
+        'CommonControllerBehavior'=>'behaviors/CommonControllerBehavior',
+        'ImportExportBehavior'=>'behaviors/ImportExportBehavior',
+        'S3Behavior'=>'behaviors/S3Behavior',
         
     );
 
@@ -104,6 +106,33 @@ class AdminController extends X2Controller {
             'ajaxGetModelAutocomplete' => array(
                 'class' => 'application.components.actions.AjaxGetModelAutocompleteAction',
             ),
+            
+            // Helper method for professional edition role manager
+            'getRoleAccess' => array(
+                'class' => 'GetRoleAccessAction',
+            ),
+            // The professional edition role manager
+            'editRoleAccess' => array(
+                'class' => 'EditRoleAccessAction',
+            ),
+            // Email capture settings
+            'emailDropboxSettings' => array(
+                'class' => 'EmailDropboxSettingsAction',
+            ),
+            // Application lock options page
+            'lockApp' => array(
+                'class' => 'LockAppAction',
+            ),
+            // Cron table manager
+            'x2CronSettings' => array(
+                'class' => 'X2CronSettingsAction',
+            ),
+            
+            // Advanced API settings page
+            'api2Settings' => array(
+                'class' => 'application.components.actions.Api2SettingsAction',
+            ),
+            
             
             'viewLog' => array(
                 'class' => 'LogViewerAction',
@@ -213,6 +242,11 @@ class AdminController extends X2Controller {
             'BugReportsController' =>
                 'application.modules.bugReports.controllers.BugReportsController',
             
+            'WeblistController' => 'application.modules.marketing.controllers.WeblistController',
+            'ReportsController' => 'application.modules.reports.controllers.ReportsController',
+            'EmailInboxesController' =>
+                'application.modules.emailInboxes.controllers.EmailInboxesController',
+            
         );
         $missingPermissions = array();
         $auth = Yii::app()->authManager;
@@ -274,6 +308,163 @@ class AdminController extends X2Controller {
      */
     public function actionFindMissingPermissions() {
         /**/printR(self::findMissingPermissions());
+    }
+
+    
+
+    public function actionDisableUser($username) {
+        // First ensure this is an actual user
+        $id = Yii::app()->db->createCommand()
+                ->select('id')
+                ->from('x2_users')
+                ->where('username = :user', array(':user' => $username))
+                ->queryScalar();
+        $query = 'UPDATE x2_users SET status = 0 ' .
+                'WHERE username = :user AND id = :id';
+        $params = array(
+            ':id' => $id,
+            ':user' => $username,
+        );
+        Yii::app()->db->createCommand($query)
+                ->execute($params);
+        $this->redirect('securitySettings');
+    }
+
+    /**
+     * Append an IP address to the blacklist
+     * @param string $ip The IP address to blacklist
+     */
+    public function actionBanIp($ip) {
+        $this->addToIpList('blacklist', $ip);
+    }
+
+    /**
+     * Append an IP address to the whitelist
+     * @param string $ip The IP address to whitelist
+     */
+    public function actionWhitelistIp($ip) {
+        $this->addToIpList('whitelist', $ip);
+    }
+
+    /**
+     * Private helper function to modify an IP Access Control List
+     * @param string $list The ACL to append the IP to, either whitelist or blacklist
+     * @param string $ip The IP address to append
+     */
+    private function addToIpList($list, $ip) {
+        $list = 'ip' . ucfirst($list);
+        $admin = Yii::app()->settings;
+        $json = $admin->$list;
+        if (empty($json))
+            $ips = array();
+        else
+            $ips = CJSON::decode($json);
+
+        $ips[] = $ip;
+        $admin->$list = CJSON::encode(array_unique($ips));
+        $admin->save();
+        $this->redirect('securitySettings');
+    }
+
+    /**
+     * Initiate a download for the login history in CSV format
+     */
+    public function actionExportLoginHistory($type = 'successful') {
+        $csv = $this->safePath('login_history.csv');
+        $fp = fopen($csv, 'w+');
+        switch ($type) {
+        case 'successful':
+            $loginHistory = Yii::app()->db->createCommand()
+                ->select('username, IP, timestamp')
+                ->from('x2_login_history')
+                ->queryAll();
+            $meta = array('username', 'IP', 'timestamp');
+            break;
+        case 'failed':
+            $loginHistory = Yii::app()->db->createCommand()
+                ->select('IP, attempts, lastAttempt, active')
+                ->from('x2_failed_logins')
+                ->queryAll();
+            $meta = array('IP', 'attempts', 'lastAttempt', 'active');
+            break;
+        default:
+            throw new CHttpException(400, Yii::t ('admin', 'Invalid login history type'));
+        }
+        fputcsv($fp, $meta);
+        foreach ($loginHistory as $login) {
+            fputcsv($fp, $login);
+        }
+        fclose($fp);
+        $this->sendFile('login_history.csv', true);
+    }
+
+    /**
+     * Page for firewall configuration
+     */
+    public function actionSecuritySettings() {
+        $admin = &Yii::app()->settings;
+        $firewallSettings = array(
+            'accessControlMethod',
+            'ipWhitelist',
+            'ipBlacklist',
+            'loginTimeout',
+            'failedLoginsBeforeCaptcha',
+            'maxFailedLogins',
+            'maxLoginHistory',
+        );
+        $jsonFields = array(
+            'ipWhitelist',
+            'ipBlacklist',
+        );
+
+        if (isset($_POST['Admin'])) {
+            $passwordSettings = array();
+            foreach (array('minLength', 'requireMixedCase', 'requireNumeric', 'requireSpecial', 'requireCharClasses') as $req)
+                if (isset($_POST[$req]))
+                    $passwordSettings[$req] = $_POST[$req];
+            $admin->passwordRequirements = $passwordSettings;
+
+            foreach ($firewallSettings as $setting) {
+                if (isset($_POST['Admin'][$setting])) {
+                    $admin->$setting = $_POST['Admin'][$setting];
+
+                    if (in_array($setting, $jsonFields)) {
+                        // JSON Encode the data and substitute wildcards before storing
+                        $addresses = explode("\r\n", $admin->$setting);
+                        foreach ($addresses as $i => $address) {
+                            if (empty($address)) {
+                                unset($addresses[$i]);
+                                continue;
+                            }
+                            if (preg_match('/\*/', $address)) {
+                                $xlated = X2IPAddress::wildcardToCidr($address);
+                                if ($xlated)
+                                    $addresses[$i] = $xlated;
+                            }
+                        }
+                        $admin->$setting = $addresses;
+                    }
+                }
+            }
+            $admin->save();
+        }
+
+        foreach ($jsonFields as $field)
+            if (is_array ($admin->$field))
+                $admin->$field = implode("\r\n", $admin->$field);
+
+        $loginHistoryDataProvider  = new CActiveDataProvider ('SuccessfulLogins', array(
+            'sort' => array('defaultOrder' => 'timestamp DESC'),
+        ));
+        $failedLoginsDataProvider = new CActiveDataProvider ('FailedLogins', array(
+            'sort' => array('defaultOrder' => 'lastAttempt DESC'),
+        ));
+
+        $this->render ('securitySettings', array(
+            'model' => $admin,
+            'failedLoginsDataProvider' => $failedLoginsDataProvider,
+            'loginHistoryDataProvider' => $loginHistoryDataProvider,
+        ));
     }
 
     
@@ -412,11 +603,15 @@ class AdminController extends X2Controller {
             $maxTries = 3;
             $GithubUrl = 'https://raw.github.com/X2Engine/X2Engine/master/x2engine/protected';
             $x2planUrl = 'https://x2planet.com/updates/x2engine/protected'; // NOT using UpdaterBehavior.updateServer because that behavior may not yet exist
-            $files = array_merge(array_fill_keys(self::$behaviorClasses, 'behavior'), array_fill_keys(self::$dependencies, 'dependency'));
+            $files = array_merge(array_fill_keys(array_keys(self::$behaviorClasses), 'behavior'), array_fill_keys(self::$dependencies, 'dependency'));
             $tryCurl = in_array(ini_get('allow_url_fopen'), array(0, 'Off', 'off'));
             foreach ($files as $class => $type) {
                 // First try to download from the X2Engine update server...
-                $path = "components/$class.php";
+		if($type == 'behavior'){
+		    $path = "components/".self::$behaviorClasses[$class].".php";
+		}else{
+                    $path = "components/$class.php";
+		}
                 $absPath = Yii::app()->basePath . "/$path";
                 if (!file_exists($absPath)) {
                     if (!is_dir(dirname($absPath))) {
@@ -619,6 +814,985 @@ class AdminController extends X2Controller {
         }
     }
 
+    
+    /*****************************************************************
+     * Begin X2Packager Methods
+     ****************************************************************/
+
+    /**
+     * Used by an AJAX request from the X2Packager page upon exporting
+     */
+    public function actionExportPackage() {
+        $packageComponents = array(
+            'Contacts',
+            'Docs',
+            'Dropdowns',
+            'Fields',
+            'FormLayout',
+            'Media',
+            'Modules',
+            'Roles',
+            'RoleToPermission',
+            'AuthItem',
+            'AuthItemChild',
+            'Workflow',
+            'WorkflowStage',
+            'X2Flow',
+        );
+
+        if (isset($_POST['packageName']) && !empty($_POST['packageName'])) {
+            $packageName = $_POST['packageName'];
+        } else {
+            echo CJSON::encode(array(
+                "failure",
+                'message' => Yii::t('admin', 'You must specify a package name'),
+            ));
+            Yii::app()->end();
+        }
+        $packageDescription = '';
+        if (isset($_POST['packageDescription']) && !empty($_POST['packageDescription']))
+            $packageDescription = $_POST['packageDescription'];
+
+        $exportIds = $this->collectPackagerExportIds ($packageComponents);
+
+        // Prepare package export
+        $csvFile = $this->safePath(implode(DIRECTORY_SEPARATOR, array(
+            $packageName, 'records.csv'
+        )));
+        $this->preparePackageExport($packageName, $csvFile);
+        $packageDir = $this->safePath($packageName);
+
+        // Copy over each module
+        $modules = array();
+        if (array_key_exists('Modules', $exportIds)) {
+            foreach ($exportIds['Modules'] as $moduleId) {
+                $module = Modules::model()->findByPk($moduleId);
+                $src = implode(DIRECTORY_SEPARATOR, array(
+                    'protected', 'modules', $module->name
+                ));
+                if (is_dir($src)) {
+                    $modules[] = $module->name;
+                    $dest = implode(DIRECTORY_SEPARATOR, array(
+                        $packageDir, 'modules', $module->name
+                    ));
+                    FileUtil::ccopy($src, $dest);
+                    $sql = $this->generateModuleSqlData($module->name);
+                    $sqlFile = Yii::app()->file->set($dest . DIRECTORY_SEPARATOR . 'sqlData.sql');
+                    $sqlFile->create();
+                    $sqlFile->setContents($sql);
+                }
+            }
+        }
+
+        // Copy over requested Media
+        if (array_key_exists('Media', $exportIds)) {
+            foreach ($exportIds['Media'] as $mediaId) {
+                $media = X2Model::model('Media')->findByPk($mediaId);
+                if (is_file($media->path)) {
+                    $dest = implode(DIRECTORY_SEPARATOR, array(
+                        $packageDir, 'media', $media->fileName
+                    ));
+                    FileUtil::ccopy($media->path, $dest);
+                }
+            }
+        }
+
+        // Retrieve the selected models and write the CSV file
+        foreach ($packageComponents as $component)
+            if (array_key_exists($component, $exportIds) && $component !== 'Modules')
+                $this->generatePackageExportCsv($exportIds[$component], $component, $csvFile);
+
+        // Collect a list of role names
+        $roles = array();
+        foreach ($exportIds['Roles'] as $roleId) {
+            $roles[] = Roles::model()->findByPk ($roleId)->name;
+        }
+
+        // Generate a manifest containing the information and contents of the package
+        $this->renderPackageManifest($packageName, array(
+            'description' => $packageDescription,
+            'contacts' => !empty($exportIds['Contacts']),
+            'modules' => $modules,
+            'roles' => $roles,
+        ));
+
+        // Package the CSV, media files, and modules
+        $zip = Yii::app()->zip;
+        $zipPath = $this->safePath('X2Package-' . $packageName . '.zip');
+        $zip->makeZip($packageDir, $zipPath);
+        echo CJSON::encode(array("success"));
+
+        // After packaging, clean up the source files
+        FileUtil::rrmdir($packageDir);
+    }
+
+    /**
+     * Write a Packages JSON manifest to disk
+     * @param string $packageName
+     * @return array of export ids, indexed by type
+     */
+    private function collectPackagerExportIds($packageComponents) {
+        $exportIds = array();
+
+        // Fetch a list of contact IDs if requested
+        if (isset($_POST['includeContacts']) && $_POST['includeContacts'] === 'true') {
+            $contactIds = Yii::app()->db->createCommand()
+                    ->select('id')
+                    ->from('x2_contacts')
+                    ->queryColumn();
+            if (is_array($contactIds) && !empty($contactIds))
+                $exportIds['Contacts'] = $contactIds;
+        }
+
+        // Collect model IDs
+        foreach ($packageComponents as $component) {
+            if (isset($_POST['selected' . $component]) && is_array($_POST['selected' . $component]))
+                $exportIds[$component] = $_POST['selected' . $component];
+            if ($component === 'Workflow' && !empty($exportIds['Workflow'])) {
+                // Gather process stages
+                $exportIds['WorkflowStage'] = Yii::app()->db->createCommand()
+                        ->select('id')
+                        ->from('x2_workflow_stages')
+                        ->where(array('in', 'id', $exportIds['Workflow']))
+                        ->queryColumn();
+            } else if ($component === 'Fields' && !empty($exportIds['Fields'])) {
+                // Gather associated dropdown options
+                $exportIds['Dropdowns'] = Yii::app()->db->createCommand()
+                        ->select('linkType')
+                        ->from('x2_fields')
+                        ->where(array('in', 'id', $exportIds['Fields']))
+                        ->andWhere('type = "dropdown"')
+                        ->queryColumn();
+            } else if ($component === 'Roles' && !empty($exportIds['Roles'])) {
+                $moduleIds = isset($exportIds['Modules']) ? $exportIds['Modules'] : array();
+
+                // Gather associated role to permission mappings for default modules, then
+                // for selected custom modules
+                $exportIds['RoleToPermission'] = Yii::app()->db->createCommand()
+                    ->select ('r.id')
+                    ->from ('x2_role_to_permission r')
+                    ->join ('x2_fields f', array('and', 'r.fieldId = f.id', array('in', 'r.roleId', $exportIds['Roles'])))
+                    ->join ('x2_modules m', 'f.modelName = m.name')
+                    ->where (array('in', 'm.id', $moduleIds))
+                    ->orWhere ('m.custom != 1')
+                    ->queryColumn();
+
+                // Gather associated auth items
+                $exportIds['AuthItem'] = Yii::app()->db->createCommand()
+                    ->select ('a.name')
+                    ->from ('x2_auth_item a')
+                    ->naturalJoin ('x2_roles r')
+                    ->where (array('in', 'r.id', $exportIds['Roles']))
+                    ->queryColumn();
+
+                // Gather AuthItemChild entries for any default modules and selected custom modules
+                $ignoreAuthChildren = $this->findIrrelevantAuthChildren ($moduleIds);
+                $exportIds['AuthItemChild'] = Yii::app()->db->createCommand()
+                    ->select ('a.parent, a.child')
+                    ->from ('x2_auth_item_child a')
+                    ->join ('x2_roles r', 'r.name = a.parent')
+                    ->where (array('in', 'r.id', $exportIds['Roles']))
+                    ->andWhere (array('not in', 'a.child', $ignoreAuthChildren))
+                    ->queryAll();
+            }
+        }
+        return $exportIds;
+    }
+
+    private function findIrrelevantAuthChildren($moduleIds) {
+        $permissionTypes = array(
+            'AdminAccess',
+            'BasicAccess',
+            'DeletePrivate',
+            'FullAccess',
+            'MinimumRequirements',
+            'PrivateFullAccess',
+            'PrivateReadOnlyAccess',
+            'PrivateUpdateAccess',
+            'ReadOnlyAccess',
+            'UpdateAccess',
+            'UpdatePrivate',
+            'ViewPrivate',
+        );
+        $customModules = Yii::app()->db->createCommand()
+            ->select('id, name')
+            ->from ('x2_modules')
+            ->where ('custom = 1')
+            ->queryAll();
+
+        $ignoreAuthChildren = array();
+        foreach ($customModules as $module) {
+            if (!in_array ($module['id'], $moduleIds)) {
+                foreach ($permissionTypes as $permType)
+                    $ignoreAuthChildren[] = ucfirst($module['name']) . $permType;
+            }
+        }
+        return $ignoreAuthChildren;
+    }
+
+    /**
+     * Write a Packages JSON manifest to disk
+     * @param string $packageName
+     * @param array $components
+     */
+    private function renderPackageManifest($packageName, array $components) {
+        $hasContactData = false;
+        if (array_key_exists('contacts', $components) && $components['contacts'])
+            $hasContactData = true;
+
+        $modules = array();
+        if (array_key_exists('modules', $components) && is_array($components['modules']))
+            $modules = $components['modules'];
+
+        $roles = array();
+        if (array_key_exists('roles', $components) && is_array($components['roles']))
+            $roles = $components['roles'];
+
+        $description = '';
+        if (array_key_exists('description', $components))
+            $description = $components['description'];
+
+        $manifestFile = $this->safePath(implode(DIRECTORY_SEPARATOR, array(
+            $packageName, 'manifest.json'
+        )));
+        $manifestContents = array(
+            'name' => $packageName,
+            'description' => $description,
+            'version' => Yii::app()->params->version,
+            'edition' => Yii::app()->edition,
+            'timestamp' => time(),
+            'contacts' => $hasContactData,
+            'modules' => $modules,
+            'roles' => $roles,
+        );
+        $manifest = fopen($manifestFile, 'w+');
+        fwrite($manifest, CJSON::encode($manifestContents));
+        fclose($manifest);
+    }
+
+    /**
+     * Private helper method to create the necessary files and directory structure
+     * to export package components
+     * @param string $packageName Name of the package
+     * @param string $csvFile Path to records CSV file
+     */
+    private function preparePackageExport($packageName, $csvFile) {
+        // Prepare the package directory structure
+        $packageDir = $this->safePath($packageName);
+        if (is_dir($packageDir)) {
+            // Ensure that a directory for this package doesn't already exist
+            echo CJSON::encode(array(
+                "failure",
+                'message' => Yii::t('admin', 'The target package directory already already exists'),
+            ));
+            Yii::app()->end();
+        } else {
+            mkdir($packageDir);
+            mkdir($packageDir . DIRECTORY_SEPARATOR . 'modules');
+            mkdir($packageDir . DIRECTORY_SEPARATOR . 'media');
+        }
+
+        // Create the manifest and CSV
+        touch($csvFile);
+        $manifestFile = $this->safePath(implode(DIRECTORY_SEPARATOR, array(
+            $packageName, 'manifest.json'
+        )));
+        touch($manifestFile);
+    }
+
+    /**
+     * Private helper function for generating a CSV of the selected data
+     * This was adapted from the global export tool
+     * @param array $ids Array of model IDs
+     * @param string $model Model name
+     * @param string $file CSV file name
+     */
+    private function generatePackageExportCsv($ids, $model, $file) {
+        if (empty($ids))
+            return;
+        ini_set('memory_limit', -1);
+        $fp = fopen($file, 'a+');
+        if (class_exists($model)) {
+            $tempModel = X2Model::model($model);
+            $meta = array_keys($tempModel->attributes);
+            $meta[] = $model;
+            fputcsv($fp, $meta); // Add model metadata
+            $records = $model::model()->findAllByPk($ids);
+
+            foreach ($records as $record) {
+                // Kludge for importing dropdowns. Since the id field isn't present and
+                // won't be reliable on import, we need another way to keep track of the
+                // associated dropdown.
+                if ($model === 'Fields' && $record->type === 'dropdown') {
+                    $dropdown = Dropdowns::model()->findByPk($record->linkType);
+                    if ($dropdown && $dropdown->name)
+                        $record->linkType = $dropdown->name;
+                }
+
+                // Re-pack all unpacked attributes for writing to a file, so that
+                // they can be interpolated as strings:
+                foreach ($record->behaviors() as $name => $config) {
+                    $behavior = $record->asa($name);
+                    if ($behavior instanceof TransformedFieldStorageBehavior) {
+                        $behavior->packAll();
+                        $record->disableBehavior($name);
+                    }
+                }
+
+                $tempAttributes = $tempModel->attributes;
+                $tempAttributes = array_merge($tempAttributes, $record->attributes);
+                $tempAttributes[] = $model;
+                fputcsv($fp, $tempAttributes); // Export the data to CSV
+            }
+            unset($tempModel, $dp);
+        } else if ($model === 'AuthItem') {
+            $meta = array(
+                'name', 'type', 'description', 'bizrule', 'data',
+            );
+            fputcsv($fp, array_merge($meta, array('AuthItem'))); // Add model metadata
+            foreach ($ids as $authItemName) {
+                $authItem = Yii::app()->db->createCommand()
+                    ->select (implode (', ', $meta))
+                    ->from ('x2_auth_item')
+                    ->where ('name = :name', array(':name' => $authItemName))
+                    ->queryRow();
+                fputcsv ($fp, array_merge(array_values ($authItem), array('AuthItem')));
+            }
+        } else if ($model === 'AuthItemChild') {
+            $meta = array(
+                'parent', 'child', 'AuthItemChild'
+            );
+            fputcsv($fp, $meta); // Add model metadata
+            foreach ($ids as $authItemChild) {
+                $row = array(
+                    $authItemChild['parent'],
+                    $authItemChild['child'],
+                    'AuthItemChild'
+                );
+                fputcsv ($fp, $row);
+            }
+        }
+        fclose($fp);
+    }
+
+    /**
+     * Helper function to render a selection of checkboxes for package components
+     * @param string $title Package component title
+     * @param string $namespace Checkbox and label id namespace
+     * @param closure $label Function to use to render the label contents
+     * @param array $items Array of items to render checkboxes
+     */
+    protected function renderPackageComponentSelection($title, $namespace, $label, $items, $namespacePlural = null, array $htmlOptions = array()) {
+
+        if (!$namespacePlural)
+            $namespacePlural = $namespace;
+
+        echo X2Html::openTag('div', $htmlOptions);
+
+        echo '<h4>' . $title . '</h4>';
+        if (!empty($items)) {
+            $style = 'overflow: auto; ';
+            if (count($items) > 10)
+                $style .= 'height: 200px;';
+            echo "<div style='$style'>\n";
+            foreach ($items as $item) {
+                echo '<div class="row">';
+                echo '<div class="cell">' . CHtml::checkbox($namespace . '-' . $item->id, false, array(
+                    'class' => 'exportable-' . $namespace
+                )) . '</div>';
+                echo '<div class="cell" style="padding-top:4px">' .
+                CHtml::label(
+                        CHtml::encode($label($item)), $namespace . '-' . $item->id
+                ) . '</div>';
+                echo "</div>\n";
+            }
+            echo "</div><br />\n";
+
+            echo '<div class="row">';
+            echo '<div class="cell">' .
+            CHtml::checkbox('selectall-' . $namespace, false, array(
+                'class' => 'selectall'));
+            echo '</div>';
+            echo '<div class="cell" style="padding-top:4px">' .
+            CHtml::label(Yii::t('admin', 'Select all {type}', array(
+                        '{type}' => $namespacePlural
+                    )), 'selectall-' . $namespace) . '</div>';
+            echo '</div>';
+        } else {
+            echo Yii::t('admin', 'No {title} to export', array(
+                '{title}' => strtolower($title),
+            ));
+        }
+        echo X2Html::closeTag('div');
+    }
+
+    /**
+     * Verify the extracted package structure
+     * @param string $packageDir Path to package directory
+     */
+    private function verifyPackageStructure($packageDir) {
+        if (!is_dir($packageDir)) {
+            Yii::app()->user->setFlash('error', Yii::t('admin', 'Failed to locate extracted package!'));
+            $this->redirect('packager');
+        }
+        $packageContents = glob($packageDir . DIRECTORY_SEPARATOR . '*');
+        $expectedStructure = array(
+            'manifest.json',
+            'media',
+            'modules',
+            'records.csv',
+        );
+        $actualStructure = array();
+        foreach ($packageContents as $file) {
+            $actualStructure[] = basename($file);
+        }
+        if ($actualStructure != $expectedStructure) {
+            Yii::app()->user->setFlash('error', Yii::t('admin', 'Receieved malformed update package: please ensure the directory ' .
+                            'structure in the package is as expected.'));
+            $this->redirect('packager');
+        }
+    }
+
+    /**
+     * Load the manifest and ensure the version is compatible
+     * @param string $packageDir Path to package directory
+     * @return string Manifest contents
+     */
+    private function loadPackageManifest($packageDir) {
+        $manifestContents = array(
+            'name' => '',
+            'description' => '',
+            'timestamp' => time(),
+            'version' => '',
+            'edition' => '',
+            'contacts' => false,
+            'modules' => array(),
+            'roles' => array(),
+        );
+        $manifest = fopen($packageDir . DIRECTORY_SEPARATOR . 'manifest.json', 'r');
+        $readManifest = CJSON::decode(fread($manifest, 1024));
+        fclose($manifest);
+        if (!$readManifest) {
+            // Redirect if the package manifest was corrupt
+            Yii::app()->user->setFlash('error', Yii::t('admin', 'Recieved a corrupt manifest!'));
+            $this->redirect('packager');
+        } else {
+            // Otherwise read the appropriate values
+            foreach ($manifestContents as $key => $val) {
+                if (array_key_exists($key, $readManifest))
+                    $manifestContents[$key] = $readManifest[$key];
+            }
+        }
+
+        // Warn if incompatible versions are found
+        if (version_compare($manifestContents['version'], Yii::app()->params->version, 'gt')) {
+            Yii::app()->user->setFlash('error', Yii::t('admin', 'Package is incompatible with this version. This package was ' .
+                            'intended for version {v}', array(
+                        '{v}' => $manifestContents['version'],
+            )));
+            $this->redirect('packager');
+        }
+
+        // Warn if incompatible editions are found
+        $ed = Yii::app()->edition;
+        if (!Yii::app()->contEd($manifestContents['edition'])) {
+            Yii::app()->user->setFlash('error', Yii::t('admin', 'Warning: This Package was intended for the {e} edition. ' .
+                            'Compatibility issues may arise if this package is applied. ' .
+                            'It is recommended to make backups before proceeding.', array(
+                        '{e}' => $manifestContents['edition'],
+            )));
+        }
+        return $manifestContents;
+    }
+
+    /**
+     * Private helper method to import package records from a CSV
+     * @param string $packageDir Path to package directory
+     * @return array (number of records imported, errors)
+     */
+    private function importPackageRecords($packageDir) {
+        $recordsFile = $packageDir . DIRECTORY_SEPARATOR . 'records.csv';
+        $currentModel = null;
+        $meta = null;
+        $now = time();
+        $count = 0;
+        $importedContacts = false; // if Contacts were included in this package
+        $errors = array();
+
+        $csv = fopen($recordsFile, 'r');
+        while (false !== ($arr = fgetcsv($csv)) && !is_null($arr)) {
+            while ("" === end($arr)) { // Remove blank space from the end
+                array_pop($arr);
+            }
+            $newType = array_pop($arr); // Pull the last column to check the model type
+            if ($currentModel !== $newType) {
+                $currentModel = $newType;
+                $meta = $arr;
+                if ($currentModel === 'Contacts')
+                    $importedContacts = true;
+            } else {
+                $skipImportRecord = false;
+                $attributes = array_combine($meta, $arr);
+                if (class_exists($currentModel)) {
+                    $model = new $currentModel;
+                    foreach ($attributes as $key => $value) {
+                        if ($model->hasAttribute($key) && isset($value)) {
+                            if ($value == "")
+                                $value = null;
+                            $model->$key = $value;
+                        }
+                    }
+
+                    if ($currentModel === 'Fields') {
+                        if ($model->type === 'dropdown') {
+                            // Update the linkType field to the id of the new dropdown.
+                            // The dropdown will have already been imported at this point,
+                            // since the export was done in lexical order of models
+                            $dropdownId = Dropdowns::model()->findByAttributes(array(
+                                'name' => $model->linkType,
+                            ));
+                            $model->linkType = ($dropdownId ? $dropdownId->id : 0);
+                        }
+
+                        if ($model->custom === '0' || $model->modified === '1') {
+                            // Update an existing field
+                            $existing = Fields::model()->findByAttributes(array(
+                                'modelName' => $model->modelName,
+                                'fieldName' => $model->fieldName,
+                            ));
+                            if ($existing) {
+                                $existing->attributes = $model->attributes;
+                                $model = $existing;
+                                $skipImportRecord = true;
+                            }
+                        }
+                    } else if ($currentModel === 'FormLayout') {
+                        // Handle clearing present defaults if the default view
+                        // or form flag is set on this layout
+                        if ($model->defaultView)
+                            FormLayout::clearDefaultFormLayouts('view', $model->model);
+                        if ($model->defaultForm)
+                            FormLayout::clearDefaultFormLayouts('form', $model->model);
+                    }
+
+                    $model->disableBehavior('changelog');
+                    $model->disableBehavior('TimestampBehavior');
+                    $model->disableBehavior('FlowTriggerBehavior');
+                    if ($model->save()) {
+                        // Generate a new "Imports" model in case of rollback
+                        if (!$skipImportRecord) {
+                            $importLink = new Imports;
+                            $importLink->modelType = $currentModel;
+                            $importLink->modelId = $model->id;
+                            $importLink->importId = $_SESSION['importId'];
+                            $importLink->timestamp = $now;
+                            $importLink->save();
+                            $count++;
+                        }
+                    } else {
+                        foreach ($model->getErrors() as $field => $error)
+                            $errors[] = $field .'('.implode(', ', $error).')';
+                    }
+                } else if ($currentModel === 'AuthItem' || $currentModel === 'AuthItemChild') {
+                    $table = ($currentModel === 'AuthItem' ? 'x2_auth_item' : 'x2_auth_item_child');
+                    $numRows = Yii::app()->db->createCommand()
+                        ->insert ($table, $attributes);
+                    if ($numRows > 0) {
+                        $count++;
+                    } else {
+                        $errors[] = Yii::t('admin', 'Failed to import RBAC information from package');
+                    }
+                }
+            }
+        }
+        fclose($csv);
+        if ($importedContacts)
+            X2Model::massUpdateNameId('Contacts');
+        if (!empty($errors)) {
+            $errors = Yii::t('admin', 'Some records failed validation and were ignored. Errors: ').
+                implode (', ', $errors);
+        }
+        return array($count, $errors);
+    }
+
+    /**
+     * Action to be called with AJAX to import a package
+     * @param string $pacakge Package Name
+     */
+    public function actionImportPackage($package) {
+        if (Yii::app()->request->isPostRequest) {
+            $errors = array();
+
+            $admin = Admin::model()->findByPk (1);
+            $appliedPackages = $admin->appliedPackages;
+            if (!$appliedPackages)
+                $appliedPackages = array();
+
+            // Prepare the extracted package for import
+            $packageDir = $this->safePath($package);
+            $this->verifyPackageStructure($packageDir);
+            $manifestContents = $this->loadPackageManifest($packageDir);
+
+            // Ensure this package hasn't already been applied
+            foreach ($appliedPackages as $pkg) {
+                if ($pkg['name'] === $package) {
+                    Yii::app()->user->setFlash('error', Yii::t('admin', 'A package with the same name has already been applied'));
+                    throw new CHttpException(500);
+                }
+            }
+
+            FileUtil::ccopy($packageDir . DIRECTORY_SEPARATOR . 'records.csv', $this->safePath());
+            $_SESSION['overwriteFailure'] = array();
+
+            $mediaNames = $this->installPackageMedia($packageDir);
+            $moduleNames = $this->installPackageModules($packageDir);
+
+            $lastImportId = Yii::app()->db->createCommand()
+                    ->select('max(importId)')
+                    ->from('x2_imports')
+                    ->queryScalar();
+            $_SESSION['importId'] = $lastImportId + 1;
+            list($numRecords, $error) = $this->importPackageRecords($packageDir);
+            if ($error)
+                $errors[] = $error;
+
+            // Record this package as applied
+            $appliedPackages[] = array(
+                'name' => $package,
+                'timestamp' => $manifestContents['timestamp'],
+                'modules' => $moduleNames,
+                'roles' => $manifestContents['roles'],
+                'media' => $mediaNames,
+                'importId' => $_SESSION['importId'],
+                'count' => $numRecords,
+            );
+            $admin->appliedPackages = $appliedPackages;
+            $admin->save();
+
+            if (empty($errors)) {
+                Yii::app()->user->setFlash('success', Yii::t('admin', 'Finished importing X2Package!'));
+                Yii::app()->end();
+            } else {
+                throw new CHttpException(500, implode(', ', $errors));
+            }
+        } else {
+            throw new CHttpException(403);
+        }
+    }
+
+    /**
+     * Private helper method to install each of the packaged media
+     * @param string $packageDir Path to package directory
+     * @return array of media names
+     */
+    private function installPackageMedia($packageDir) {
+        // Copy media files
+        $mediaFiles = glob(implode(DIRECTORY_SEPARATOR, array(
+            $packageDir, 'media', '*'
+        )));
+        $mediaNames = array();
+        foreach ($mediaFiles as $file) {
+            $media = null;
+            $filename = basename($file);
+            $mediaNames[] = $filename;
+            $media = X2Model::model('Media')->findByAttributes(array(
+                'fileName' => $filename,
+            ));
+            if ($media) {
+                if (!empty($media->uploadedBy)) {
+                    FileUtil::ccopy($file, implode(DIRECTORY_SEPARATOR, array(
+                        'uploads', 'media', $media->uploadedBy, $media->fileName
+                    )));
+                } else {
+                    FileUtil::ccopy($file, implode(DIRECTORY_SEPARATOR, array(
+                        'uploads', $media->fileName
+                    )));
+                }
+            }
+        }
+        return $mediaNames;
+    }
+
+    /**
+     * Private helper method to install each packaged module
+     * @param string $packageDir Path to package directory
+     * @return array of module names
+     */
+    private function installPackageModules($packageDir) {
+        // Copy and install modules
+        $moduleFiles = glob(implode(DIRECTORY_SEPARATOR, array(
+            $packageDir, 'modules', '*'
+        )));
+        $moduleNames = array();
+
+        foreach ($moduleFiles as $file) {
+            // Install each module
+            $moduleName = basename($file);
+            $moduleNames[] = $moduleName;
+            FileUtil::ccopy($file, implode(DIRECTORY_SEPARATOR, array(
+                'protected', 'modules', $moduleName
+            )));
+            $this->loadModuleData($moduleName);
+            $this->createDefaultModulePermissions(ucfirst($moduleName));
+            // Import the model to allow CActiveRecord object usage of imported records
+            Yii::import('application.modules.' . $moduleName . '.models.*');
+        }
+
+        $this->fixupImportedModuleDropdowns($moduleNames);
+        return $moduleNames;
+    }
+
+    /**
+     * Retrieve the applied package metadata
+     */
+    private function loadPackageMeta($name) {
+        $admin = Admin::model()->findByPk(1);
+        $appliedPackages = $admin->appliedPackages;
+        if (!$appliedPackages)
+            $appliedPackages = array();
+        $package = null;
+        foreach ($appliedPackages as $pkg)
+            if ($pkg['name'] === $name)
+                $package = $pkg;
+        return $package;
+    }
+
+    /**
+     * Action to be called via ajax to start reverting a package
+     * @param string $name Package name
+     */
+    public function actionBeginPackageRevert($name) {
+        if (Yii::app()->request->isPostRequest) {
+            $package = $this->loadPackageMeta($name);
+            if (!$package) {
+                Yii::app()->user->setFlash('error', Yii::t('admin', 'Failed to locate package {name}!', array('{name}' => $name)));
+                $this->redirect(array('packager'));
+            }
+
+            // Remove role AuthItem information
+            if (isset ($package['roles'])) {
+                foreach ($package['roles'] as $role) {
+                    Yii::app()->db->createCommand()
+                        ->delete ('x2_auth_item', 'name = :name', array(':name' => $role));
+                    Yii::app()->db->createCommand()
+                        ->delete ('x2_auth_item_child', 'parent = :parent', array(':parent' => $role));
+                }
+            }
+
+            // Remove modules
+            foreach ($package['modules'] as $module)
+                $this->deleteModuleData($module);
+
+            // Remove Media
+            foreach ($package['media'] as $media) {
+                $record = X2Model::model('Media')->findByAttributes(array(
+                    'fileName' => $media,
+                ));
+                if ($record && is_file($record->path))
+                    unlink($record->path);
+            }
+        } else {
+            throw new CHttpException(404, Yii::t('admin', 'Your request is invalid. ' .
+                    'Please do not repeat this request.'));
+        }
+    }
+
+    /**
+     * Action to be called via ajax to finalize a package revert
+     * @param string $name Package name
+     */
+    public function actionFinishPackageRevert($name) {
+        if (Yii::app()->request->isPostRequest) {
+            $admin = Admin::model()->findByPk(1);
+            $appliedPackages = $admin->appliedPackages;
+            if (!$appliedPackages)
+                $appliedPackages = array();
+            $remaining = array();
+            $selectedPackage = null;
+            foreach ($appliedPackages as $package) {
+                if ($package['name'] === $name)
+                    $selectedPackage = $package;
+                else
+                    $remaining[] = $package;
+            }
+
+            $admin->appliedPackages = $remaining;
+            $admin->save();
+            Yii::app()->user->setFlash('success', Yii::t('admin', 'Finished reverting package {name}!', array('{name}' => $name)));
+            $this->redirect('packager');
+        } else {
+            throw new CHttpException(404, Yii::t('admin', 'Your request is invalid. ' .
+                    'Please do not repeat this request.'));
+        }
+    }
+
+    /**
+     * Render a page with controls to begin reverting a package
+     */
+    public function actionRevertPackage($name) {
+        $package = $this->loadPackageMeta($name);
+        if (!$package) {
+            Yii::app()->user->setFlash('error', Yii::t('admin', 'Failed to locate package {name}!', array('{name}' => $name)));
+            $this->redirect(array('packager'));
+        }
+
+        $types = Yii::app()->db->createCommand()
+                ->select('modelType')
+                ->from('x2_imports')
+                ->group('modelType')
+                ->where('importId=:importId', array(':importId' => $package['importId']))
+                ->queryColumn();
+
+        $this->render('revertPackage', array(
+            'package' => $package,
+            'typeArray' => $types,
+        ));
+    }
+
+    /**
+     * Extract an X2Packager zip archive, verify the integrity, and retrieve the
+     * package metadata
+     * @param CFile object $package
+     * @return array Package metadata
+     */
+    private function extractPackage(CFile $package) {
+        // First ensure the package can be properly extracted
+        if (!$package->exists || !$package->isFile || $package->size <= 0) {
+            $maxUploadSize = ini_get('upload_max_filesize');
+            $msg = 'There was an error uploading the package.';
+            if ($maxUploadSize <= 2)
+                $msg .= ' This can be caused when a package is larger than the ' .
+                        'maximum upload size. This server is currently configured ' .
+                        'to allow {maxUpload}.';
+            Yii::app()->user->setFlash('error', Yii::t('admin', $msg, array('{maxUpload}' => $maxUploadSize)));
+            $this->redirect('packager');
+        }
+
+        if ($package->extension !== 'zip') {
+            Yii::app()->user->setFlash('error', Yii::t('admin', 'There was an error uploading the package. ' .
+                            'Please select a valid zip archive.'));
+            $this->redirect('packager');
+        }
+
+        $filename = $this->safePath($package->filename . ".zip");
+        if ($package->copy($filename) === false || !file_exists($filename)) {
+            Yii::app()->user->setFlash('error', Yii::t('admin', "There was an error saving the package."));
+            $this->redirect('packager');
+        }
+
+        $zip = Yii::app()->zip;
+        if ($zip->extractZip($filename, 'protected/data/') === false) {
+            Yii::app()->user->setFlash('error', Yii::t('admin', "There was an error unzipping the package. " .
+                            "Please ensure the zip archive is not corrupt."));
+            $this->redirect('packager');
+        }
+
+        $packageName = str_replace('X2Package-', '', $package->filename);
+        $admin = Admin::model()->findByPk(1);
+        $appliedPackages = $admin->appliedPackages;
+        if (!$appliedPackages)
+            $appliedPackages = array();
+
+        // Prepare the extracted package for import
+        $packageDir = $this->safePath($packageName);
+        $this->verifyPackageStructure($packageDir);
+        $manifestContents = $this->loadPackageManifest($packageDir);
+
+        // Ensure this package hasn't already been applied
+        foreach ($appliedPackages as $pkg) {
+            if ($pkg['name'] === $package) {
+                Yii::app()->user->setFlash('error', Yii::t('admin', 'A package with the same name has already been applied'));
+                return;
+            }
+        }
+        return $manifestContents;
+    }
+
+    /**
+     * Render an intermediary landing page after extracting  the zipped package
+     * to display package details
+     */
+    public function actionPreviewPackageImport() {
+        // Handle import
+        if (Yii::app()->request->isPostRequest) {
+            if (isset($_FILES['data'])) {
+                // Verify the package to import was uploaded and can be unpacked
+                // before importing
+                $package = Yii::app()->file->set('data');
+
+                $manifest = array();
+                if ($package)
+                    $manifest = $this->extractPackage($package);
+                else {
+                    Yii::app()->user->setFlash('error', Yii::t('admin', 'Failed to upload package'));
+                    $this->redirect('packager');
+                }
+
+                $this->render('previewPackage', array(
+                    'manifest' => $manifest,
+                ));
+                Yii::app()->end();
+            }
+        } else {
+            throw new CHttpException(403);
+        }
+    }
+
+    /**
+     * Render a page to manage the import/export of packages for X2Packager
+     */
+    public function actionPackager() {
+        // Retrieve a list of currently applied packages
+        $appliedPackages = Admin::model()->findByPk(1)->appliedPackages;
+        if (!$appliedPackages)
+            $appliedPackages = array();
+
+        // Retrieve a list of each possible package component
+        $modules = Modules::model()->findAllBySql(
+                'SELECT * FROM x2_modules WHERE custom = 1'
+        );
+        $customModuleNames = Yii::app()->db->createCommand()
+                ->select('name')
+                ->from('x2_modules')
+                ->where('custom = 1')
+                ->queryColumn();
+        $fields = Fields::model()->findAllBySql(
+                'SELECT * FROM x2_fields WHERE (custom = 1 OR modified = 1) ' .
+                'AND modelName NOT IN (:customModules)', array(
+            ':customModules' => implode(',', $customModuleNames),
+                )
+        );
+        $forms = FormLayout::model()->findAll();
+        $flows = X2Flow::model()->findAll();
+        $processes = X2Model::model('Workflow')->findAll();
+        $templates = X2Model::model('Docs')->findAllBySql(
+                'SELECT * FROM x2_docs WHERE type = "email" OR type = "quote"'
+        );
+        $themes = X2Model::model('Media')->findAllBySql(
+                'SELECT * FROM x2_media WHERE associationType = "theme" AND id > 0'
+        );
+        $media = X2Model::model('Media')->findAllBySql(
+                'SELECT * FROM x2_media WHERE associationType != "theme"'
+        );
+        $roles = Roles::model()->findAll();
+
+        $this->render('packager', array(
+            'appliedPackages' => $appliedPackages,
+            'themes' => $themes,
+            'modules' => $modules,
+            'fields' => $fields,
+            'forms' => $forms,
+            'flows' => $flows,
+            'media' => $media,
+            'processes' => $processes,
+            'templates' => $templates,
+            'roles' => $roles,
+        ));
+    }
+
+    /*     * ***************************************************************
+     * End X2Packager Methods
+     * ************************************************************** */
     
 
     /**
@@ -1976,6 +3150,87 @@ class AdminController extends X2Controller {
     
 
     /**
+     * Helper method for actionManageActionPublisherTabs.
+     * @param array $submittedTabs tab post data  
+     */
+    private function savePublisherTabSettings($submittedTabs) {
+        $actionPublisherTabs = Yii::app()->settings->actionPublisherTabs;
+        $tabClassNames = array_keys($actionPublisherTabs);
+        $submittedTabs = $_POST['actionPublisherTabs'];
+
+        if (!sizeof($submittedTabs)) {
+            Yii::app()->user->setFlash(
+                    'error', Yii::t('admin', 'At least one tab must be selected.'));
+            return false;
+        }
+
+        if (!is_array($submittedTabs)) {
+            throw new CHttpException(400, Yii::t('app', 'Bad Request.'));
+        }
+
+        // format tab settings array
+        $hiddenTabs = array_diff($tabClassNames, $submittedTabs);
+        Yii::app()->settings->setActionPublisherTabs(array_merge(
+                        array_map(function ($a) {
+                            return true;
+                        }, array_flip($submittedTabs)), array_map(function ($a) {
+                            return false;
+                        }, array_flip($hiddenTabs))));
+
+        Yii::app()->user->setFlash(
+                'success', Yii::t('admin', 'Tab settings saved'));
+        return true;
+    }
+
+    /**
+     * Manage publisher action tabs from the manageActionPublisherTabs general settings page 
+     */
+    public function actionManageActionPublisherTabs() {
+        if (isset($_POST['actionPublisherTabs'])) {
+            self::savePublisherTabSettings($_POST['actionPublisherTabs']);
+        }
+        // get current tab settings
+        $actionPublisherTabs = Yii::app()->settings->actionPublisherTabs;
+        $tabClassNames = array_keys($actionPublisherTabs);
+
+        // get tab titles indexed by tab class name
+        $tabOptions = array_combine($tabClassNames, array_map(function ($className) {
+                    $tmp = new $className ();
+                    return $tmp->title;
+                }, $tabClassNames));
+
+        // get visible tabs
+        $selectedTabs = array_keys(array_filter($actionPublisherTabs, function ($shown) {
+                    return $shown;
+                }));
+
+        $this->render('manageActionPublisherTabs', array(
+            'tabOptions' => $tabOptions,
+            'selectedTabs' => $selectedTabs
+        ));
+    }
+
+    public function actionFlowSettings() {
+        $admin = Yii::app()->settings;
+        if (isset($_POST['Admin']['triggerLogMax'])) {
+            if (isset($_POST['disableLogLimit']) && $_POST['disableLogLimit']) {
+                $admin->triggerLogMax = null;
+            } else {
+                $admin->triggerLogMax = $_POST['Admin']['triggerLogMax'];
+            }
+            if ($admin->save()) {
+                Yii::app()->user->setFlash('success', Yii::t('admin', 'X2Flow settings saved'));
+            }
+        }
+
+        $this->render('flowSettings', array(
+            'model' => $admin,
+        ));
+    }
+
+    
+
+    /**
      * Re-arrange the top bar menu.
      *
      * This form allows for the admin to change the order and visibility of top bar
@@ -2063,10 +3318,14 @@ class AdminController extends X2Controller {
             $formModel->setAttributes($_POST['UploadLogoFormModel']);
             $formModel->menuLogoUpload = CUploadedFile::getInstance($formModel, 'menuLogoUpload');
              
+            $formModel->loginLogoUpload = CUploadedFile::getInstance(
+                $formModel, 'loginLogoUpload');
+             
             $uploaded = false;
             if ($formModel->validate ()) {
                 foreach (array (
-                    'menuLogoUpload') as $upload) {
+                    'menuLogoUpload', 
+                    'loginLogoUpload') as $upload) {
 
                     if ($formModel->$upload) {
                         $fileName = 'uploads/protected/logos/' . $formModel->$upload->getName ();
@@ -2114,7 +3373,7 @@ class AdminController extends X2Controller {
      * Reverts the logo back to X2Engine.
      */
     public function actionToggleDefaultLogo($logoType) {
-        if (!in_array ($logoType, array ('logo'))) {
+        if (!in_array ($logoType, array ('logo', 'loginLogo'))) {
             throw new CHttpException (400, Yii::t('admin', 'Bad request'));
         }
 
@@ -3331,6 +4590,12 @@ class AdminController extends X2Controller {
             }
 
             
+            if (isset($_SESSION['matchAttribute']) && $_SESSION['updateRecords']) {
+                foreach ($importMap as $csvField => $x2Field)
+                    if ($x2Field === $_SESSION['matchAttribute'])
+                        $matchAttribute = $csvField;
+            }
+            
 
             $this->recordsImported = 0;
             for ($i = 0; $i < $count; $i++) {
@@ -3357,7 +4622,20 @@ class AdminController extends X2Controller {
                         continue;
 
                     
+                    // Locate an existing model to update, if requested, otherwise create
+                    // a new model to populate
+                    if (isset($matchAttribute) && $_SESSION['updateRecords']) {
+                        $model = X2Model::model($modelName)->findByAttributes (array(
+                            $_SESSION['matchAttribute'] => $importAttributes[$matchAttribute]
+                        ));
+                        // Create a new record if a match was not found
+                        if (is_null($model))
+                            $model = new $modelName;
+                    } else {
+                    
                         $model = new $modelName;
+                    
+                    }
                     
 
                     foreach ($metaData as $attribute) {
@@ -3411,6 +4689,16 @@ class AdminController extends X2Controller {
             }
 
             $moduleName = $module->filename;
+            
+            if (preg_match ('/^X2Package-/', $moduleName)) {
+                Yii::app()->user->setFlash(
+                    'error',
+                    Yii::t('admin', 'It appears that you are attempting to upload a package. '.
+                        'Please use X2Packager to import the package ').
+                        CHtml::link(Yii::t('admin','here'), array('admin/packager')).'.'
+                );
+                $this->redirect('importModule');
+            }
             
             if (X2Model::model('Modules')->findByAttributes(array('name' => $moduleName))) {
                 Yii::app()->user->setFlash('error', Yii::t('admin', 'Unable to upload module. A module with this name already exists.'));
@@ -4322,6 +5610,9 @@ class AdminController extends X2Controller {
             }
             // Whether to update existing records
              
+            $_SESSION['updateRecords'] = $_POST['updateRecords'] == "checked" ? "1" : "0";
+            $_SESSION['matchAttribute'] = isset($_POST['matchAttribute'])? $_POST['matchAttribute'] : 'id';
+             
             $_SESSION['createRecords'] = $_POST['createRecords'] == "checked" ? "1" : "0";
             $_SESSION['linkMatchMap'] = empty($_POST['linkMatchMap']) ? array() : $_POST['linkMatchMap'];
             $_SESSION['imported'] = 0;
@@ -4331,6 +5622,12 @@ class AdminController extends X2Controller {
                 $keys = array_keys($_SESSION['importMap']);
                 $attributes = array_values($_SESSION['importMap']);
             }
+             
+            $matchField = Fields::model()->findByAttributes (array(
+                'fieldName' => $_SESSION['matchAttribute'],
+                'modelName' => $model,
+                'uniqueConstraint' => 0,
+            ));
             
             // Check for any non-unique fields used to match link type fields
             $nonUniqueLinkMatches = array();
@@ -4352,6 +5649,11 @@ class AdminController extends X2Controller {
                     $nonUniqueLinkMatches[$model.'.'.$attr] = $linkedModel.'.'.$matchField->fieldName;
             }
             $mappingResult = $this->verifyImportMap($model, $keys, $attributes);
+             
+            if ($_SESSION['updateRecords'] && $matchField) {
+                // Warn the user that they are updating on a non-unique field
+                $mappingResult['nonUniqMatchAttr'] = $_SESSION['matchAttribute'];
+            }
              
             if (!empty($nonUniqueLinkMatches)) {
                 // Warn the user that they are associating links on a non-unique field
@@ -4475,7 +5777,7 @@ class AdminController extends X2Controller {
                         // Don't make a changelog record.
                         $model->disableBehavior('changelog');
                         // Don't manually set the timestamp fields
-                        $model->disableBehavior('X2TimestampBehavior');
+                        $model->disableBehavior('TimestampBehavior');
                         if ($model instanceof User || $model instanceof Profile) {
                             if ($model->id == '1') {
                                 /*
@@ -5025,6 +6327,71 @@ class AdminController extends X2Controller {
     
 
     /**
+     * Set a default theme for all users 
+     */
+    public function actionSetDefaultTheme() {
+        $model = Admin::model()->findByPk(1);
+
+        if (isset($_FILES['themeImport']) && isset($_POST['private'])) {
+            // import theme
+
+            Yii::import('application.controllers.ProfileController');
+            if (ProfileController::importTheme($_POST['private'])) {
+                Yii::app()->user->setFlash(
+                        'success', Yii::t('profile', 'Theme imported successfully'));
+            }
+        } else if (isset($_POST['theme'])) {
+            if (isset($_POST['setDefaultTheme']) && $_POST['setDefaultTheme']) {
+                // set default theme
+
+                $enforceDefaultTheme = isset($_POST['enforceDefaultTheme']) &&
+                        $_POST['enforceDefaultTheme'];
+
+                $theme = Media::model()->findByPk($_POST['theme']);
+
+                if (!$theme)
+                    throw new CHttpException(404, Yii::t('admin', 'Resource not found.'));
+
+                $model->defaultTheme = $theme->id;
+
+                $model->enforceDefaultTheme = $enforceDefaultTheme;
+                $model->save();
+                Yii::app()->user->setFlash(
+                        'success', Yii::t('admin', 'A default theme is now set.'));
+            } else { // unset default theme
+                $hadDefaultTheme = (bool) $model->defaultTheme;
+                $model->defaultTheme = null;
+                $model->enforceDefaultTheme = false;
+                $model->save();
+                if ($hadDefaultTheme)
+                    Yii::app()->user->setFlash(
+                            'success', Yii::t('admin', 'You are no longer using a default theme.'));
+            }
+        }
+
+        $defaultTheme = $model->defaultTheme;
+        $enforceDefaultTheme = $model->enforceDefaultTheme;
+
+        $themeProvider = new CActiveDataProvider('Media', array(
+            'criteria' => array(
+                'condition' => "associationType='theme'",
+                'order' => 'createDate DESC'
+            ),
+        ));
+        $themeOptions = array();
+        foreach ($themeProvider->data as $theme) {
+            $themeOptions[$theme->id] = $theme->fileName;
+        }
+        $this->render('setDefaultTheme', array(
+            'themeOptions' => $themeOptions,
+            'defaultTheme' => $defaultTheme,
+            'enforceDefaultTheme' => $enforceDefaultTheme,
+        ));
+    }
+
+    
+
+    /**
      * Echo a list of model attributes as a dropdown.
      *
      * This method is called via AJAX as a part of creating notification criteria.
@@ -5066,6 +6433,62 @@ class AdminController extends X2Controller {
     }
 
     
+
+    public function actionUndoMerge() {
+
+        if (Yii::app()->request->isAjaxRequest) {
+            if (isset($_POST['mergeModelId'], $_POST['modelType'])) {
+                $model = X2Model::model($_POST['modelType'])->findByPk($_POST['mergeModelId']);
+                if (isset($model)) {
+                    $model->revertMerge();
+                }
+            }
+        }
+        $filtersForm = new FiltersForm;
+        if (isset($_GET['FiltersForm'])) {
+            $filtersForm->filters = $_GET['FiltersForm'];
+        }
+        $data = array();
+        $i = 0;
+        $merges = Yii::app()->db->createCommand()
+                ->select('*, COUNT(modelId) as recordCount')
+                ->from('x2_merge_log')
+                ->group('mergeModelId')
+                ->order('mergeDate DESC')
+                ->queryAll();
+        foreach ($merges as $mergeLog) {
+            $model = X2Model::model($mergeLog['modelType'])->findByPk($mergeLog['mergeModelId']);
+            if (isset($model)) {
+                $data[$i]['id'] = $i + 1;
+                $data[$i]['modelType'] = $mergeLog['modelType'];
+                $data[$i]['modelLink'] = '<a href="' . $model->getUrl() . '" target="_blank">[link]</a>';
+                $data[$i]['mergeModelId'] = $mergeLog['mergeModelId'];
+                $data[$i]['mergeModel'] = $model->name;
+                $data[$i]['recordCount'] = $mergeLog['recordCount'];
+                $data[$i]['mergeDate'] = $mergeLog['mergeDate'];
+                $data[$i]['invalidUndo'] = Yii::app()->db->createCommand()
+                                ->select('COUNT(id)')
+                                ->from('x2_merge_log')
+                                ->where('modelType = :modelType AND modelId = :id', array(
+                                    ':modelType'=>$mergeLog['modelType'],
+                                    ':id' => $mergeLog['mergeModelId']))
+                                ->queryScalar() > 0;
+                $i++;
+            }
+        }
+        $filteredData = $filtersForm->filter($data);
+        $dataProvider = new CArrayDataProvider($filteredData, array('sort' => array(
+                'attributes' => array(
+                    'mergeModel', 'modelType', 'recordCount', 'mergeDate',
+                ),
+        )));
+        $this->render('undoMerge', array(
+            'filtersForm' => $filtersForm,
+            'dataProvider' => $dataProvider,
+        ));
+    }
+
+    
     
     /**
      * Fix email templates broken by the 5.1->5.2/5.3 media module changes.
@@ -5103,6 +6526,121 @@ class AdminController extends X2Controller {
         ));
     }
     
+    
+    /**
+     * Detect all possible duplicate records within the database and present an interface
+     * for administrative users to resolve them in bulk.
+     * @param boolean $showAll Show only unresolved records or all duplicates
+     */
+    public function actionMassDedupe($showAll = false) {
+        $modules = Modules::model()->findAll();
+        $modelTypes = array();
+        foreach ($modules as $module) {
+            $modelType = X2Model::getModelName($module->name);
+            if (!empty($modelType)) {
+                $tmpModel = X2Model::model($modelType);
+                // Only include model types which can be flagged as duplicates
+                if ($tmpModel->asa('DuplicateBehavior')) {
+                    $modelTypes[$modelType] = $tmpModel;
+                }
+            }
+        }
+        $dupeCheckCondition = '';
+        if(!$showAll){
+            $dupeCheckCondition = 'a.dupeCheck = 0 AND ';
+        }
+        $dataProviders = array();
+        $columns = array();
+        foreach ($modelTypes as $type => $model) {
+            $columns[$type] = array();
+            $duplicateFields = $model->duplicateFields();
+            $fieldConditions = array();
+            foreach ($duplicateFields as $fieldName) {
+                // All fields which can be used to detect duplicates should be rendered in the grid
+                $columns[$type][] = array(
+                    'name' => $fieldName,
+                    'header' => Yii::t('admin', $model->getAttributeLabel($fieldName)),
+                    'type' => 'raw',
+                    'value' => '$data["' . $fieldName . '"]',
+                );
+                $fieldConditions[] = '(a.' . $fieldName . '=b.' . $fieldName . ' AND a.' . $fieldName . ' IS NOT NULL AND a.' . $fieldName . '!="")';
+            }
+            //Condition will define records which are duplicates and also not hidden.
+            $condition = $dupeCheckCondition.'a.id!=b.id AND (' . implode(' OR ', $fieldConditions) . ') '
+                    . 'AND ((a.visibility!=0 OR a.assignedTo!="Anyone") AND (b.visibility!=0 OR b.assignedTo!="Anyone"))';
+            $cmd = Yii::app()->db->createCommand()
+                    ->selectDistinct('a.*')
+                    ->from(array($model->tableName() . ' a', $model->tableName() . ' b'))
+                    ->where($condition);
+            $count = Yii::app()->db->createCommand()
+                    ->select('COUNT(DISTINCT a.id)')
+                    ->from(array($model->tableName() . ' a', $model->tableName() . ' b'))
+                    ->where($condition)
+                    ->queryScalar();
+            $dataProviders[$type] = new CSqlDataProvider($cmd, array(
+                'totalItemCount' => $count,
+                'sort' => array(
+                    'attributes' => array('createDate','lastUpdated','id'),
+                ),
+                'pagination' => array(
+                    'pageSize' => Profile::getResultsPerPage(),
+                )
+            ));
+        }
+        $this->render('massDedupe', array(
+            'dataProviders' => $dataProviders,
+            'columns' => $columns,
+            'showAll' => $showAll,
+        ));
+    }
+    
+    /**
+     * Function called by AJAX to mass auto-merge duplicate records.
+     */
+    public function actionAutoMergeDuplicates() {
+        $modules = Modules::model()->findAll();
+        $modelTypes = array();
+        foreach ($modules as $module) {
+            $modelType = X2Model::getModelName($module->name);
+            if (!empty($modelType)) {
+                $tmpModel = X2Model::model($modelType);
+                if ($tmpModel->asa('DuplicateBehavior')) {
+                    $modelTypes[$modelType] = $tmpModel;
+                }
+            }
+        }
+        foreach ($modelTypes as $type => $model) {
+            $duplicateFields = $model->duplicateFields();
+            $fieldConditions = array();
+            foreach ($duplicateFields as $fieldName) {
+                $fieldConditions[] = '(a.' . $fieldName . '=b.' . $fieldName . ' AND a.' . $fieldName . ' IS NOT NULL AND a.' . $fieldName . '!="")';
+            }
+            //AND instead of OR in the implode to have conservative merging
+            $condition = 'a.id!=b.id AND (' . implode(' AND ', $fieldConditions) . ') '
+                    . 'AND ((a.visibility!=0 OR a.assignedTo!="Anyone") AND (b.visibility!=0 OR b.assignedTo!="Anyone"))';
+            $cmd = Yii::app()->db->createCommand()
+                    ->selectDistinct('a.id')
+                    ->from(array($model->tableName() . ' a', $model->tableName() . ' b'))
+                    ->where($condition);
+            $count = Yii::app()->db->createCommand()
+                    ->select('COUNT(DISTINCT a.id)')
+                    ->from(array($model->tableName() . ' a', $model->tableName() . ' b'))
+                    ->where($condition)
+                    ->queryScalar();
+            if ($count > 0) {
+                $row = $cmd->queryRow();
+                $model = X2Model::model($type)->findByPk($row['id']);
+                $duplicates = $model->getDuplicates(true, true);
+                $mergedModel = new $type;
+                $mergedModel->autoMergeDuplicates(array_merge(array($model), $duplicates));
+                //Indicate that we resolved a cluster of duplicates but there may be more.
+                echo -1;
+                return;
+            }
+        }
+        //No valid duplicate clusters found
+        echo 1;
+    }
     
 
     

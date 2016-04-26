@@ -1,6 +1,6 @@
 <?php
-/*****************************************************************************************
- * X2Engine Open Source Edition is a customer relationship management program developed by
+/***********************************************************************************
+ * X2CRM is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2016 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
@@ -21,7 +21,8 @@
  * 02110-1301 USA.
  * 
  * You can contact X2Engine, Inc. P.O. Box 66752, Scotts Valley,
- * California 95067, USA. or at email address contact@x2engine.com.
+ * California 95067, USA. on our website at www.x2crm.com, or at our
+ * email address: contact@x2engine.com.
  * 
  * The interactive user interfaces in modified source and object code versions
  * of this program must display Appropriate Legal Notices, as required under
@@ -32,7 +33,7 @@
  * X2Engine" logo. If the display of the logo is not reasonably feasible for
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2Engine".
- *****************************************************************************************/
+ **********************************************************************************/
 
 /**
  * User profiles controller
@@ -83,10 +84,10 @@ class ProfileController extends x2base {
 
     public function behaviors() {
         return array_merge(parent::behaviors(), array(
-            'X2MobileControllerBehavior' => array(
+            'MobileControllerBehavior' => array(
                 'class' => 
                     'application.modules.mobile.components.behaviors.'.
-                        'X2MobileProfileControllerBehavior'
+                        'MobileProfileControllerBehavior'
             ),
             'ImportExportBehavior' => array('class' => 'ImportExportBehavior'),
                 )
@@ -318,11 +319,117 @@ class ProfileController extends x2base {
     
 
     /**
+     * Exports theme as .json file and prompts download
+     */
+    public function actionAjaxExportTheme($themeId) {
+        // $theme = Media::model()->findByPk($themeId);
+        $theme = Media::model()->findByAttributes(array('associationType' => 'theme', 'fileName' => $themeId));
+
+        // permissions check. this should be refactored into checkPermissions
+        if ($theme &&
+                ($theme->private === 0 ||
+                ($theme->uploadedBy === Yii::app()->user->name))) {
+
+            $themeName = $theme->fileName;
+            $themeJSON = $theme->description;
+            $encodedTheme = CJSON::encode(array(
+                        'themeJSON' => $themeJSON,
+                        'themeName' => $themeName,
+            ));
+            $file = $themeName.'.json';
+            $filePath = $this->safePath($file);
+            file_put_contents($filePath, $encodedTheme);
+            echo CJSON::encode(array(
+                'downloadUrl' => $this->createUrl('/admin/downloadData', array(
+                    'file' => $file
+                ))
+            ));
+        } else {
+            throw new CHttpException(
+            404, Yii::t('app', 'Theme does not exist or you do not have permissions to view it.'));
+        }
+    }
+
+    /**
+     * @return mixed array containing theme name and theme json or false if a validation error
+     *  occured
+     */
+    public static function parseImportedTheme($themeImport) {
+        if (is_array($themeImport) &&
+                isset($themeImport['themeName']) &&
+                isset($themeImport['themeJSON'])) {
+
+            $theme = $themeImport['themeJSON'];
+            $themeName = $themeImport['themeName'];
+            return array('themeName' => $themeName, 'theme' => $theme);
+        }
+        return false;
+    }
+
+    /**
+     * Import a theme 
+     * @param bool $private
+     * @return bool true if error occured, false otherwise
+     */
+    public static function importTheme($private) {
+        $errors = array();
+        if (AuxLib::checkFileUploadError('themeImport')) {
+            throw new CException(
+            AuxLib::getFileUploadErrorMessage($_FILES['themeImport']['error']));
+        }
+        $fileName = $_FILES['themeImport']['name'];
+        $ext = pathinfo($fileName, PATHINFO_EXTENSION);
+        if ($ext !== 'json') {
+            throw new CException(Yii::t('studio', 'Invalid file type'));
+        }
+        $data = file_get_contents($_FILES['themeImport']['tmp_name']);
+
+        $themeImport = CJSON::decode($data);
+        $retVal = self::parseImportedTheme($themeImport);
+        if (is_array($retVal)) {
+            $theme = $retVal['theme'];
+            $themeName = $retVal['themeName'];
+            $model = new Media;
+
+
+            $model->setScenario('themeCreate');
+            $model->setAttributes(array(
+                'fileName' => $themeName,
+                'associationType' => 'theme',
+                'uploadedBy' => Yii::app()->user->name,
+                'description' => $theme,
+                'private' => $private
+                    ), false);
+            if ($model->save()) {
+                Yii::app()->user->setFlash(
+                        'success', Yii::t('profile', 'Theme imported successfully'));
+            } else {
+                foreach ($model->getAllErrorMessages() as $message) {
+                    Yii::app()->user->setFlash(
+                            'error', $message);
+                }
+            }
+        } else {
+            Yii::app()->user->setFlash('error', Yii::t('app', 'Invalid theme file.'));
+        }
+        return false;
+    }
+
+    
+
+    /**
      * Display/set user profile settings.
      */
     public function actionSettings() {
         $model = $this->loadModel(Yii::app()->user->getId());
 
+        
+        if (isset($_FILES['themeImport']) && isset($_POST['private'])) {
+            if (self::importTheme($_POST['private'])) {
+                Yii::app()->user->setFlash(
+                    'success', Yii::t('profile', 'Theme imported successfully'));
+            }
+        }
         
 
         if (isset($_POST['Profile']) || isset($_POST['preferences'])) {
@@ -433,6 +540,8 @@ class ProfileController extends x2base {
             'menuItems' => $menuItems,
             'allTags' => $allTags,
             
+            'displayThemeEditor' => $admin->enforceDefaultTheme,
+                
         ));
     }
 
@@ -583,6 +692,26 @@ class ProfileController extends x2base {
             throw new CHttpException(404);
         if (!Yii::app()->user->checkAccess('CredentialsDelete', array('model' => $cred)))
             $this->denied();
+        
+        if (Yii::app()->contEd ('pro')) {
+            // Remove the associated email inboxes
+            $inboxes = EmailInboxes::model()->findAllByAttributes (array(
+                'credentialId' => $id,
+            ));
+            foreach ($inboxes as $inbox) {
+                // Remove this inbox from each profiles tab settings
+                foreach (Profile::model()->findAll() as $profile) {
+                    if (!empty($profile->emailInboxes)) {
+                        $tabs = CJSON::decode ($profile->emailInboxes);
+                        if (is_array($tabs) && in_array($id, $tabs)) {
+                            $tabs = array_diff ($tabs, array($id));
+                            $profile->emailInboxes = CJSON::encode ($tabs);
+                            $profile->save();
+                        }
+                    }
+                }
+            }
+        }
         
         $cred->delete();
         $this->redirect(array('/profile/manageCredentials'));
@@ -1275,6 +1404,155 @@ class ProfileController extends x2base {
 
     
 
+    public function actionManageEmailReports() {
+        $dataProvider = new CActiveDataProvider('EmailReport', array(
+            'criteria' => array(
+                'condition' => 'user=:user',
+                'params' => array(':user' => Yii::app()->user->getName()),
+            )
+        ));
+        $this->render('activityReports', array(
+            'dataProvider' => $dataProvider,
+        ));
+    }
+
+    public function actionDeleteActivityReport($id, $deleteKey) {
+        $event = X2Model::model('CronEvent')->findByPk($id);
+        $eventData = json_decode($event->data, true);
+        if ($deleteKey == $eventData['deleteKey']) {
+            $report = X2Model::model('EmailReport')->findByAttributes(array('cronId' => $id));
+            $event->delete();
+            if (isset($report)) {
+                $report->delete();
+            }
+            echo Yii::t('profile', 'You will no longer receive this activity feed report.');
+        } else {
+            echo Yii::t('profile', 'You do not have permission to delete this activity feed report.');
+        }
+    }
+
+    public function actionToggleEmailReport($id) {
+        $report = X2Model::model('EmailReport')->findByPk($id);
+        if (isset($report)) {
+            $report->cronEvent->recurring = !$report->cronEvent->recurring;
+            $report->cronEvent->save();
+            echo $report->cronEvent->recurring ? 0 : 1;
+        }
+    }
+
+    public function actionDeleteEmailReport($id) {
+        $report = X2Model::model('EmailReport')->findByPk($id);
+        if (isset($report)) {
+            $report->cronEvent->delete();
+            $report->delete();
+        }
+    }
+
+    public function actionSendTestActivityReport($filters, $userId) {
+        $filters = json_decode($filters, true);
+        $range = 'daily';
+        $limit = 10;
+        $eventId = 0;
+        $deleteKey = '';
+        $message = Events::generateFeedEmail($filters, $userId, $range, $limit, $eventId, $deleteKey);
+        $eml = new InlineEmail;
+        $emailFrom = Credentials::model()->getDefaultUserAccount(Credentials::$sysUseId['systemNotificationEmail'], 'email');
+        if ($emailFrom == Credentials::LEGACY_ID) {
+            $eml->from = array(
+                'name' => 'X2Engine Email Capture',
+                'address' => Yii::app()->settings->emailFromAddr,
+            );
+        } else {
+            $eml->credId = $emailFrom;
+        }
+        $mail = $eml->mailer;
+        $mail->FromName = 'X2Engine';
+        $mail->Subject = 'X2Engine Activity Feed Report';
+        $mail->MsgHTML($message);
+        $profRecord = Profile::model()->findByPk($userId);
+        if (isset($profRecord)) {
+            $mail->addAddress($profRecord->emailAddress);
+            $mail->send();
+        } else {
+            
+        }
+    }
+
+    public function actionCreateActivityReport($filters) {
+        $filters = json_encode($_GET);
+        if (isset($_POST['userId'])) {
+            $hour = $_POST['hour'];
+            $filters = $_POST['filters'];
+            $userId = $_POST['userId'];
+            $limit = $_POST['limit'];
+            $range = $_POST['range'];
+            $interval = 0;
+            $oldHour = $hour;
+            switch ($range) {
+                case 'daily':
+                    $interval = 24 * 60 * 60;
+                    if ((int) date ('H', time () < (int) $hour)) { // scheduled for later today
+                        $hour = strtotime($hour);
+                    } else { // scheduled for tomorrow
+                        $hour = strtotime('+1 day ' . $hour);
+                    }
+                    break;
+                case 'weekly':
+                    $interval = 7 * 24 * 60 * 60;
+                    if ((int) date ('H', time () < (int) $hour)) { // scheduled for later today
+                        $hour = strtotime($hour);
+                    } else { // scheduled for next week
+                        $hour = strtotime('+1 week ' . $hour);
+                    }
+                    break;
+                case 'monthly':
+                    $interval = 30 * 24 * 60 * 60;
+                    if ((int) date ('H', time () < (int) $hour)) { // scheduled for later today
+                        $hour = strtotime($hour);
+                    } else { // scheduled for next month
+                        $hour = strtotime('+1 month ' . $hour);
+                    }
+                    break;
+                default:
+                    throw new CHttpException(400, Yii::t('profile', 'Bad request'));
+            }
+            $data = json_encode(array(
+                'userId' => $userId,
+                'range' => $range,
+                'limit' => $limit,
+                'filters' => $filters,
+                'deleteKey' => sha1(microtime(true) . mt_rand(10000, 90000)),
+            ));
+            Yii::app()->db->createCommand()
+                ->insert('x2_cron_events', array(
+                    'type' => 'activity_report',
+                    'recurring' => 1,
+                    'time' => $hour,
+                    'interval' => $interval,
+                    'data' => $data,
+                    'createDate' => time(),
+            ));
+            $cronId = Yii::app()->db->createCommand()
+                    ->select('id')
+                    ->from('x2_cron_events')
+                    ->where('data=:data', array(':data' => $data))
+                    ->queryScalar();
+            Yii::app()->db->createCommand()
+                    ->insert('x2_email_reports', array(
+                        'name' => $_POST['reportName'],
+                        'user' => Yii::app()->user->getName(),
+                        'cronId' => $cronId,
+                        'schedule' => ucfirst($range) . ' at ' . $oldHour,
+            ));
+            $this->redirect('manageEmailReports');
+        }
+        $this->render('createActivityReport', array(
+            'filters' => $filters
+        ));
+    }
+
+    
+
     public function actionActivity() {
         $id = Yii::app()->params->profile->id;
         $params = $this->getActivityFeedViewParams($id, false);
@@ -1858,6 +2136,12 @@ class ProfileController extends x2base {
                 'label' => Yii::t('profile', 'Manage Apps'), 
                 'url' => array('manageCredentials')
                 ),
+            
+            array(
+                'name' => 'manageEmailReports', 
+                'label' => Yii::t('profile', 'Manage Email Reports'), 
+                'url' => array('manageEmailReports')
+            ),
             
         );
 

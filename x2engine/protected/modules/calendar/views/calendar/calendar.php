@@ -1,6 +1,6 @@
 <?php
-/*****************************************************************************************
- * X2Engine Open Source Edition is a customer relationship management program developed by
+/***********************************************************************************
+ * X2CRM is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2016 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
@@ -21,7 +21,8 @@
  * 02110-1301 USA.
  * 
  * You can contact X2Engine, Inc. P.O. Box 66752, Scotts Valley,
- * California 95067, USA. or at email address contact@x2engine.com.
+ * California 95067, USA. on our website at www.x2crm.com, or at our
+ * email address: contact@x2engine.com.
  * 
  * The interactive user interfaces in modified source and object code versions
  * of this program must display Appropriate Legal Notices, as required under
@@ -32,7 +33,7 @@
  * X2Engine" logo. If the display of the logo is not reasonably feasible for
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2Engine".
- *****************************************************************************************/
+ **********************************************************************************/
 
 $this->noBackdrop = true;
 
@@ -666,7 +667,51 @@ $(function() {
 
     });
 
+     /* Begin: calendar export code (generates URL for third-party ical format reader) */
+    x2CalendarExporter = {'users':<?php echo json_encode(array_merge($userCalendars,$groupCalendars)); ?>};
+    // Adds or removes a user from the calendar export URL
+    x2CalendarExporter.toggleUser = function(user,add) {
+        // New list of user/group calendars
+        var newList = [];
+        var found = false;
+        if(add) {
+            for (var i=0;i<this.users.length;i++) {
+                newList.push(this.users[i]);
+                if (this.users[i] == user)
+                    found = true;
+            }
+            if(!found)
+                newList.push(user);
+        } else {
+            for (var i=0;i<this.users.length;i++) {
+                if (this.users[i] != user)
+                    newList.push(this.users[i]);
+            }
+        }
+        this.users = newList;
+        this.updateUrl();
+    };
     
+    x2CalendarExporter.updateUrl = function() {
+        <?php
+        $userModel = Yii::app()->suModel;
+        if($userModel->calendarKey == '') {
+            // Set a calendar key if one hasn't already been set
+            $userModel->calendarKey = EncryptUtil::secureUniqueIdHash64();
+            $userModel->update(array('calendarKey'));
+        }
+        ?>
+        var url = <?php echo json_encode($this->createAbsoluteUrl('/calendar/calendar/ical',array(
+            'user'=>Yii::app()->user->name,
+            'key' => $userModel->calendarKey
+        ))); ?>+'?calendars='+this.users.join(',');
+        var container = $('#ical-export-url');
+        container.find('a#ical-export-url-link').attr('href',url);
+        container.find('input#ical-export-url-field').val(url);
+    };
+
+    x2CalendarExporter.updateUrl();
+    /* End calendar export code */ 
 
     // view/hide actions associated with a user
     function toggleUserCalendarSource(user, on) {
@@ -688,7 +733,7 @@ $(function() {
             });
         }
         // Update the calendar share/export URL:
-        
+         x2CalendarExporter.toggleUser(user,on); 
 
         $.post('<?php echo $urls['saveCheckedCalendar']; ?>', {
             Calendar: user, Checked: on, Type: 'user'
@@ -711,7 +756,7 @@ $(function() {
                 }
             });
         }
-        
+         x2CalendarExporter.toggleUser(groupId,on); 
         $.post('<?php echo $urls['saveCheckedCalendar']; ?>', {
             Calendar: groupId, 
             Checked: on, 

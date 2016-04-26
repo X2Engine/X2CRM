@@ -1,6 +1,6 @@
 <?php
-/*****************************************************************************************
- * X2Engine Open Source Edition is a customer relationship management program developed by
+/***********************************************************************************
+ * X2CRM is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2016 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
@@ -21,7 +21,8 @@
  * 02110-1301 USA.
  * 
  * You can contact X2Engine, Inc. P.O. Box 66752, Scotts Valley,
- * California 95067, USA. or at email address contact@x2engine.com.
+ * California 95067, USA. on our website at www.x2crm.com, or at our
+ * email address: contact@x2engine.com.
  * 
  * The interactive user interfaces in modified source and object code versions
  * of this program must display Appropriate Legal Notices, as required under
@@ -32,9 +33,9 @@
  * X2Engine" logo. If the display of the logo is not reasonably feasible for
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2Engine".
- *****************************************************************************************/
+ **********************************************************************************/
 
-Yii::import('application.components.ApplicationConfigBehavior');
+Yii::import('application.components.behaviors.ApplicationConfigBehavior');
 Yii::import('application.tests.functional.pageCrawlers.BaseVisitAllPagesTest');
 
 /**
@@ -91,7 +92,7 @@ class VisitAllPagesWithInjectionsTest extends BaseVisitAllPagesTest {
             'x2_gallery_to_model', 'x2_list_criteria', 'x2_list_items', 'x2_trigger_logs',
             'x2_password_reset', 'x2_timezones', 'x2_workflow_stages', 'x2_sessions',// 'x2_profile',
             'x2_action_to_record', 'x2_role_to_workflow', 'x2_failed_logins', 'x2_credentials',
-            'x2_events_to_media', 'x2_topic_replies', 'x2_role_to_permission',
+            'x2_events_to_media', 'x2_topic_replies', 'x2_role_to_permission', 'x2_actions_to_media',
         );
         $ignoreFields = array(
             'nameId', 'actionDescription', 'actionId', 'existingProducts', 'products',

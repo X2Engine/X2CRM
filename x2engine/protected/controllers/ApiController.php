@@ -1,6 +1,6 @@
 <?php
-/*****************************************************************************************
- * X2Engine Open Source Edition is a customer relationship management program developed by
+/***********************************************************************************
+ * X2CRM is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2016 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
@@ -21,7 +21,8 @@
  * 02110-1301 USA.
  * 
  * You can contact X2Engine, Inc. P.O. Box 66752, Scotts Valley,
- * California 95067, USA. or at email address contact@x2engine.com.
+ * California 95067, USA. on our website at www.x2crm.com, or at our
+ * email address: contact@x2engine.com.
  * 
  * The interactive user interfaces in modified source and object code versions
  * of this program must display Appropriate Legal Notices, as required under
@@ -32,7 +33,7 @@
  * X2Engine" logo. If the display of the logo is not reasonably feasible for
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2Engine".
- *****************************************************************************************/
+ **********************************************************************************/
 
 Yii::import('application.modules.users.models.*');
 
@@ -71,7 +72,7 @@ class ApiController extends x2base {
 				'longErrorTrace' => false,
 			),
             'CommonControllerBehavior' => array(
-                'class' => 'application.components.CommonControllerBehavior',
+                'class' => 'application.components.behaviors.CommonControllerBehavior',
                 'redirectOnNullModel' => false,
                 'throwOnNullModel' => false
             ),
@@ -745,6 +746,10 @@ class ApiController extends x2base {
             $this->_sendResponse(503,"X2Engine is currently undergoing maintenance. Please try again later.");
         }
         
+        if(Yii::app()->settings->api2->disableLegacy) {
+            $this->_sendResponse(503,"The legacy web API has been disabled.");
+        }
+        
         $filterChain->run();
     }
 
@@ -818,7 +823,7 @@ class ApiController extends x2base {
 	 * automatically)
 	 */
 	public function modelSetUsernameFields(&$model) {
-		X2ChangeLogBehavior::usernameFieldsSet($model,$this->user->username);
+		ChangeLogBehavior::usernameFieldsSet($model,$this->user->username);
 
 		if($model->hasAttribute('assignedTo')){
 			if(array_key_exists('assignedTo', $_POST)){

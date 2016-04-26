@@ -1,6 +1,6 @@
 <?php
-/*****************************************************************************************
- * X2Engine Open Source Edition is a customer relationship management program developed by
+/***********************************************************************************
+ * X2CRM is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2016 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
@@ -21,7 +21,8 @@
  * 02110-1301 USA.
  * 
  * You can contact X2Engine, Inc. P.O. Box 66752, Scotts Valley,
- * California 95067, USA. or at email address contact@x2engine.com.
+ * California 95067, USA. on our website at www.x2crm.com, or at our
+ * email address: contact@x2engine.com.
  * 
  * The interactive user interfaces in modified source and object code versions
  * of this program must display Appropriate Legal Notices, as required under
@@ -32,7 +33,7 @@
  * X2Engine" logo. If the display of the logo is not reasonably feasible for
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2Engine".
- *****************************************************************************************/
+ **********************************************************************************/
 
 /*
 Parameters:
@@ -78,6 +79,9 @@ Yii::app()->clientScript->registerResponsiveCss ('massActionsCssResponsive', "
 // destroy mass action dialogs, save checks so that can be preserved through grid update
 $beforeUpdateJSString = "
     x2.DEBUG && console.log ('beforeUpdateJSString');
+     
+    if ($.inArray ('tag', x2.".$namespacePrefix."MassActionsManager._massActions) !== -1) 
+        x2.".$namespacePrefix."MassActionsManager.tagContainer.destructor ();
     
     
     $('.mass-action-dialog').each (function () {
@@ -121,6 +125,9 @@ Yii::app()->clientScript->registerScript($namespacePrefix.'massActionsInitScript
             fixedHeader: ".($fixedHeader ? 'true' : 'false').",
             massActionUrl: '".Yii::app()->request->getScriptUrl () . '/' . 
                 lcfirst ($gridObj->moduleName) .  '/x2GridViewMassAction'."',
+             
+            updateFieldInputUrl: '".Yii::app()->request->getScriptUrl () . '/' . 
+                lcfirst ($gridObj->moduleName) .  '/getX2ModelInput'."',
              
             modelName: '".$modelName."',
             paramsByClass: ".CJSON::encode (array_combine (

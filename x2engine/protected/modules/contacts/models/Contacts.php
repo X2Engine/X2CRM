@@ -1,7 +1,7 @@
 <?php
 
-/*****************************************************************************************
- * X2Engine Open Source Edition is a customer relationship management program developed by
+/***********************************************************************************
+ * X2CRM is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2016 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
@@ -22,7 +22,8 @@
  * 02110-1301 USA.
  * 
  * You can contact X2Engine, Inc. P.O. Box 66752, Scotts Valley,
- * California 95067, USA. or at email address contact@x2engine.com.
+ * California 95067, USA. on our website at www.x2crm.com, or at our
+ * email address: contact@x2engine.com.
  * 
  * The interactive user interfaces in modified source and object code versions
  * of this program must display Appropriate Legal Notices, as required under
@@ -33,7 +34,7 @@
  * X2Engine" logo. If the display of the logo is not reasonably feasible for
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2Engine".
- *****************************************************************************************/
+ **********************************************************************************/
 
 Yii::import('application.models.X2Model');
 
@@ -62,6 +63,8 @@ class Contacts extends X2Model {
         // class name for the relations automatically generated below.
         return array_merge(parent::relations(), array(
             
+            'fingerprint' => array(self::BELONGS_TO, 'Fingerprint', 'fingerprintId'),
+            
         ));
     }
 
@@ -74,24 +77,28 @@ class Contacts extends X2Model {
 
     public function behaviors() {
         return array_merge(parent::behaviors(), array(
-            'X2LinkableBehavior' => array(
-                'class' => 'X2LinkableBehavior',
+            'LinkableBehavior' => array(
+                'class' => 'LinkableBehavior',
                 'module' => 'contacts',
             ),
             
+            'FingerprintBehavior' => array(
+                'class' => 'FingerprintBehavior',
+            ),
+            
             'ERememberFiltersBehavior' => array(
-                'class' => 'application.components.ERememberFiltersBehavior',
+                'class' => 'application.components.behaviors.ERememberFiltersBehavior',
                 'defaults' => array(),
                 'defaultStickOnClear' => false
             ),
-            'X2AddressBehavior' => array(
-                'class' => 'application.components.X2AddressBehavior',
+            'AddressBehavior' => array(
+                'class' => 'application.components.behaviors.AddressBehavior',
             ),
-            'X2DuplicateBehavior' => array(
-                'class' => 'application.components.X2DuplicateBehavior',
+            'DuplicateBehavior' => array(
+                'class' => 'application.components.behaviors.DuplicateBehavior',
             ),
             'ContactsNameBehavior' => array(
-                'class' => 'application.components.ContactsNameBehavior',
+                'class' => 'application.components.behaviors.ContactsNameBehavior',
             ),
         ));
     }
@@ -363,6 +370,38 @@ class Contacts extends X2Model {
                 return $key;
         }
         return null;
+    }
+
+    
+
+    /**
+     * Sets values of attributes with values of corresponding attributes in the anon contact record.
+     * Also migrates over actions and notifications associated with the anon contact. Finally,
+     * the anonymous contact is deleted.
+     * @param AnonContact $anonContact The anonymous contact record whose attributes will be
+     *  merged in with this contact
+     */
+    public function mergeWithAnonContact(AnonContact $anonContact) {
+        $fingerprintRecord = $anonContact->fingerprint;
+
+        // Migrate over existing AnonContact data
+        if (!isset($this->leadscore)) {
+            $this->leadscore = $anonContact->leadscore;
+        }
+        if (!isset($this->email)) {
+            $this->email = $anonContact->email;
+        }
+        if (!isset($this->reverseIp)) {
+            $this->reverseIp = $anonContact->reverseIp;
+        }
+        $fingerprintRecord->anonymous = false;
+        $fingerprintRecord->update('anonymous');
+        $this->mergeRelatedRecords($anonContact);
+        $this->fingerprintId = $fingerprintRecord->id;
+        // Update the fingerprintId so that the Fingerprint is not deleted
+        // by afterDelete() when the AnonContact is deleted.
+        $this->update(array('fingerprintId'));
+        $anonContact->delete();
     }
 
     

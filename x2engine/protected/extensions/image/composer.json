@@ -1,0 +1,16 @@
+{
+    "name": "z_bodya/yii-image",
+    "description": "Port of Kohana Image Library to Yii",
+    "keywords": ["image"],
+    "type": "yii-extension",
+    "extra": {
+        "installer-name": "image"
+    },
+    "license": "BSD-3-Clause",
+    "authors": [
+        {
+            "name": "Bogdan Savluk",
+            "email": "savluk.bogdan@gmail.com"
+        }
+    ]
+}

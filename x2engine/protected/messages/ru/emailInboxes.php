@@ -64,4 +64,5 @@
   'Disabled' => 'Отключено',
   'Failed to associate message "{subject}" with {type} {model}' => 'Не удалось связать сообщение &quot; {subject} &quot; с {type} {model}',
   'Message "{subject}" already associated with {type} {model}' => 'Сообщение &quot; {subject} &quot; уже связан с {type} {model}',
+  'Disable Quota Operations' => 'Отключить квотах Операции',
 );

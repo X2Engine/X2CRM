@@ -119,4 +119,5 @@
   '<b>Reminder!</b> The following action is due: {action}' => '<b>! یادآوری</b> اقدامات زیر است که به علت: {action}',
   'Event Subtype' => 'رویداد زیر گروه',
   'Event Status' => 'رویداد وضعیت',
+  'Calendar Color' => 'تقویم رنگ',
 );

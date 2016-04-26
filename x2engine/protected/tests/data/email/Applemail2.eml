@@ -1,0 +1,74 @@
+Delivered-To: dropbox@testdomain.com
+Received: by 10.217.60.195 with SMTP id g45csp228857wex;
+        Tue, 22 Jan 2013 11:49:43 -0800 (PST)
+X-Received: by 10.66.73.105 with SMTP id k9mr59193502pav.37.1358884182507;
+        Tue, 22 Jan 2013 11:49:42 -0800 (PST)
+Return-Path: <sales@rep.com>
+Received: from mail-da0-f44.google.com (mail-da0-f44.google.com [209.85.210.44])
+        by mx.google.com with ESMTPS id y1si18289387pav.74.2013.01.22.11.49.41
+        (version=TLSv1 cipher=ECDHE-RSA-RC4-SHA bits=128/128);
+        Tue, 22 Jan 2013 11:49:42 -0800 (PST)
+Received-SPF: neutral (google.com: 209.85.210.44 is neither permitted nor denied by best guess record for domain of sales@rep.com) client-ip=209.85.210.44;
+Authentication-Results: mx.google.com;
+       spf=neutral (google.com: 209.85.210.44 is neither permitted nor denied by best guess record for domain of sales@rep.com) smtp.mail=sales@rep.com
+Received: by mail-da0-f44.google.com with SMTP id z20so3401965dae.17
+        for <dropbox@testdomain.com>; Tue, 22 Jan 2013 11:49:41 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20120113;
+        h=x-received:from:content-type:message-id:mime-version:x-priority
+         :subject:date:references:to:x-mailer:x-gm-message-state;
+        bh=CrJRYewbjTyN0vgfpNtyDwUrPmFlulJt0SpXlxVfVdc=;
+        b=GVNZQCvqnnvgVb942uiEbBDoo60SXOYuh8AovbsPmgRIIXwbHpsKKcojpGBLOXjXA+
+         wt7H2bMQBQI1aHXBuX/rpwE2/64IichmxO7bfIxUwKuIUlbPCnsnVJKCHfM2te2zx+WK
+         +4Wa7IWq55zqyrvUILKICdv8d873Fn2VMNt44Tuxvgqh1IHjf8lo+/JLiwjuWorq2LAN
+         Y6s5Sp0VppBUwiVlsy3yAqyWFZpc+1/DtiMX6QitGrM0xZCa2p7db16bZ8+kETS+TXIA
+         0oc6W5Cy5QpzQQvjegOg/y3mYYCK3ETF/x6H2OQDDvrLn8/fqORASriIifhc4EMRYQ4r
+         np7A==
+X-Received: by 10.68.217.98 with SMTP id ox2mr42155839pbc.96.1358884181321;
+        Tue, 22 Jan 2013 11:49:41 -0800 (PST)
+Return-Path: <sales@rep.com>
+Received: from [192.168.1.117] (XX-XX-XX-XX-ip-static.hfc.comcastbusiness.net. [XX.XX.XX.XX])
+        by mx.google.com with ESMTPS id im5sm11258197pbc.55.2013.01.22.11.49.40
+        (version=TLSv1 cipher=ECDHE-RSA-RC4-SHA bits=128/128);
+        Tue, 22 Jan 2013 11:49:40 -0800 (PST)
+From: Sales Rep <sales@rep.com>
+Content-Type: multipart/alternative; boundary="Apple-Mail=_3AFD5397-E824-45FA-A866-A8A6B2331080"
+Message-Id: <FFCF34CA-0AAF-4EFC-8250-0ED07C7E37C3@testdomain.com>
+Mime-Version: 1.0 (Mac OS X Mail 6.2 \(1499\))
+X-Priority: 3
+Subject: Fwd: Unrecognized forwarded email format
+Date: Tue, 22 Jan 2013 11:49:39 -0800
+References: <3ceb645c50a257e7dbbd55cbc2bde0ea@localhost.localdomain>
+To: dropbox@testdomain.com
+X-Mailer: Apple Mail (2.1499)
+X-Gm-Message-State: ALoCoQkjK7NllIU6qfT7awDR6LDRd+IhGDcR5qTrUOm3RCln1KgNcbsdWq2xPpQG7qRC73zFZmPh
+
+
+--Apple-Mail=_3AFD5397-E824-45FA-A866-A8A6B2331080
+Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain;
+	charset=us-ascii
+
+
+
+
+Begin forwarded message:
+
+> From: Test Contact <customer@prospect.com>
+> Subject: Unrecognized forwarded email format
+> Date: January 22, 2013 11:48:28 AM PST
+> To: sales@rep.com
+>=20
+> The email capture script was not able to recognize the format of the =
+forwarded message, and thus was not able to obtain contact data. Note =
+also that if email is sent directly to the email capture address, it =
+requires that the body contain a forwarded message.
+>=20
+> Please forward this email, using the email client program that caused =
+the error, to X2Engine Customer Support with the subject "Unrecognized =
+forwarded email format" so that support for the format can be added. You =
+may redact any information you wish from the original message.
+>=20
+> The original email's contents were as follows:%123%
+>=20
+>=20

@@ -1,6 +1,6 @@
 <?php
-/*****************************************************************************************
- * X2Engine Open Source Edition is a customer relationship management program developed by
+/***********************************************************************************
+ * X2CRM is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2016 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
@@ -21,7 +21,8 @@
  * 02110-1301 USA.
  * 
  * You can contact X2Engine, Inc. P.O. Box 66752, Scotts Valley,
- * California 95067, USA. or at email address contact@x2engine.com.
+ * California 95067, USA. on our website at www.x2crm.com, or at our
+ * email address: contact@x2engine.com.
  * 
  * The interactive user interfaces in modified source and object code versions
  * of this program must display Appropriate Legal Notices, as required under
@@ -32,7 +33,7 @@
  * X2Engine" logo. If the display of the logo is not reasonably feasible for
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2Engine".
- *****************************************************************************************/
+ **********************************************************************************/
 
 /*
 View file for weblead and service web form desginer (both pro and open source).
@@ -46,20 +47,29 @@ Parameters:
 if (YII_DEBUG &&
     (!isset ($webFormType) ||
      $webFormType !== 'service' &&
-     $webFormType !== 'weblead')) {
+     $webFormType !== 'weblead' &&
+     $webFormType !== 'weblist')) {
 
     /**/AuxLib::debugLog ('Error: _createWebForm.php: invalid $webFormType type '.$webFormType);
 }
 
 
 
+if ($webFormType === 'weblist') {
+    $height = 100;
+} else {
+
     $height = 325;
+
+}
 
 
 if ($webFormType === 'weblead') {
     $url = '/contacts/contacts/weblead';
 } else if ($webFormType === 'service') {
     $url = '/services/services/webForm';
+} else if ($webFormType === 'weblist') {
+    $url = '/marketing/weblist/weblist';
 }
 
 
@@ -78,6 +88,16 @@ $translations = array (
 );
 
 
+if ($webFormType === 'weblead' && Yii::app()->contEd('pro')) {
+    $translations = array_merge ($translations, array (
+        "Custom HTML cannot be added to the web form until it has been saved." =>
+            "Custom HTML cannot be added to the web form until it has been saved.",
+        "HTML cannot be empty." => "HTML cannot be empty.",
+        "HTML saved" => "HTML saved",
+        "HTML removed" => "HTML removed"
+    ));
+}
+
 
 AuxLib::registerTranslationsScript ('webFormDesigner', $translations, 'marketing');
 
@@ -87,13 +107,28 @@ Yii::app()->clientScript->registerCssFile(
 Yii::app()->clientScript->registerScriptFile(
     Yii::app()->getBaseUrl().'/js/WebFormDesigner/WebFormDesigner.js',CClientScript::POS_END);
 
+if (Yii::app()->contEd('pro') && $webFormType !== 'weblist') {
     if ($webFormType === 'weblead') {
+        Yii::app()->clientScript->registerScriptFile(
+            Yii::app()->getBaseUrl().'/js/WebFormDesigner/WebleadFormDesigner.js',CClientScript::POS_END);
+        Yii::app()->clientScript->registerScriptFile(
+            Yii::app()->getBaseUrl().'/js/WebFormDesigner/WebleadFormDesignerPro.js',CClientScript::POS_END);
+    } else if ($webFormType === 'service') {
+        Yii::app()->clientScript->registerScriptFile(
+            Yii::app()->getBaseUrl().'/js/WebFormDesigner/ServiceWebFormDesignerPro.js',CClientScript::POS_END);
+    }
+} else {
+
+    if ($webFormType === 'weblead' ||
+        $webFormType === 'weblist') {
         Yii::app()->clientScript->registerScriptFile(
             Yii::app()->getBaseUrl().'/js/WebFormDesigner/WebleadFormDesigner.js',CClientScript::POS_END);
     } else if ($webFormType === 'service') {
         Yii::app()->clientScript->registerScriptFile(
             Yii::app()->getBaseUrl().'/js/WebFormDesigner/ServiceWebFormDesigner.js',CClientScript::POS_END);
     }
+
+}
 
 
 $webFormDesignerProtoName;
@@ -103,6 +138,10 @@ if ($webFormType === 'weblead' || $webFormType === 'weblist') {
     $webFormDesignerProtoName = 'ServiceWebFormDesigner';
 }
 
+
+if (Yii::app()->contEd('pro') && $webFormType !== 'weblist') {
+    $webFormDesignerProtoName .= 'Pro';
+}
 
 
 ?>
@@ -117,7 +156,8 @@ if ($webFormType === 'weblead' || $webFormType === 'weblist') {
 $saveUrl = '';
 if ($webFormType === 'sevice') {
     $saveUrl = Yii::app()->createAbsoluteUrl('/services/createWebForm');
-} elseif ($webFormType === 'weblead') {
+} elseif ($webFormType === 'weblead' ||
+    $webFormType === 'weblist') {
 
     $saveUrl = Yii::app()->createAbsoluteUrl('/marketing/marketing/webleadForm');
 }
@@ -328,12 +368,331 @@ if ($webFormType === 'weblead') {
 
 <?php
 
+if (Yii::app()->contEd('pro') && $webFormType !== 'weblist') {
+?>
+
+<div class="row">
+    <div class="cell" id="custom-css-input-container">
+        <h4><?php echo Yii::t('marketing','CSS') .':'; ?></h4>
+        <p class="fieldhelp">
+            <?php echo Yii::t('marketing','Enter custom css for the web form.'); ?>
+        </p>
+        <?php echo CHtml::textArea('css', '', array('id'=>'custom-css')); ?>
+    </div>
+</div>
+
+<?php
+if ($webFormType === 'weblead') {
+?>
+
+<div class="row">
+    <div class="cell" id="custom-html-input-container">
+        <h4>
+            <?php echo Yii::t('marketing','Custom &lt;HEAD&gt;') .':'; ?>
+        </h4>
+        <span id='custom-html-hint'>
+        <p class="fieldhelp" style="width: 580px;">
+            <?php echo Yii::t('marketing',
+                'Enter any HTML you would like inserted into the &lt;HEAD&gt; tag.'); ?>
+        </p>
+            <?php echo CHtml::textArea('header', '', array('id'=>'custom-html')); ?>
+        <br/>
+    </div>
+</div>
+
+<div class="row">
+    <div class="cell">
+        <h4><?php echo Yii::t('marketing','Email') .':'; ?></h4>
+        <p class="fieldhelp" style="width: auto;">
+            <?php
+            echo Yii::t(
+                'marketing','Select email templates to send to the new web lead and the {user} '.
+                'assigned to the web lead.', array(
+                    '{user}' => strtolower(Modules::displayName(false, 'Users')),
+                ));
+            ?>
+            <br />
+            <?php
+            echo Yii::t(
+                'marketing', 'NOTE: The web lead form must be saved for these emails to be sent.');
+            ?>
+        </p>
+        <?php 
+        $templateList = array(''=>'------------') + Docs::getEmailTemplates('email', 'Contacts'); 
+        ?>
+        <div class="cell">
+            <?php echo CHtml::label(Yii::t('marketing','{user} Email', array(
+                '{user}' => Modules::displayName(false, 'Users'),
+            )), ''); ?>
+            <?php echo CHtml::dropDownList('user-email-template', '', $templateList); ?>
+        </div>
+        <div class="cell">
+            <?php echo CHtml::label(Yii::t('marketing','Weblead Email'), ''); ?>
+            <?php echo CHtml::dropDownList('weblead-email-template', '', $templateList); ?>
+        </div>
+    </div>
+</div>
+<div class='row' <?php if ($webFormType !== 'weblead') echo 'style="display: none;"'; ?>>
+    <div class="cell">
+        <h4><?php echo Yii::t('marketing','Tags') .':'; ?></h4>
+        <?php echo CHtml::textField('tags'); ?>
+        <p class="fieldhelp" style="width: auto;">
+            <em><?php echo Yii::t('marketing','Example') .': web,newlead,urgent'; ?></em>
+            <br/>
+            <?php
+            echo Yii::t(
+                'marketing','These tags will be applied to any {contact} created by the form.', array(
+                    '{contact}' => strtolower(Modules::displayName(false, 'Contacts')),
+                ));
+            ?>
+            <br />
+            <?php
+            echo Yii::t(
+                'marketing', 'NOTE: The web lead form must be saved for these tags to be applied.');
+            ?>
+        </p>
+    </div>
+</div>
+
+<?php
+}
+?>
+
+<input type="hidden" name="fieldList" id="fieldList">
+
+<?php
+}
+
 ?>
 
 <?php echo CHtml::endForm(); ?>
 
 
 <?php
+
+if (Yii::app()->contEd('pro') && $webFormType !== 'weblist') {
+?>
+
+<?php
+
+if ($webFormType === 'weblead') {
+    $defaultList = array('firstName', 'lastName', 'email', 'phone', 'backgroundInfo');
+    $exclude = array('account', 'assignedTo', 'dupeCheck', 'id', 'visibility', 'trackingKey');
+} else if ($webFormType === 'service') {
+    $defaultList = array('firstName', 'lastName', 'email', 'phone');
+    $exclude = array('description');
+}
+
+
+/*
+Inserts a single custom field element into the DOM
+*/
+function displayCustomField ($field, $type, $item, $editable=false) {
+    echo '<li class="um-state-default" name="'.$field->fieldName.'">';
+    echo "<label class=\"$type\">".
+        Yii::t('services',$field->attributeLabel)."</label>";
+    if ($editable) {
+        echo '<div style="display: inline;">';
+    } else {
+        echo '<div style="display: none;">';
+    }
+    if($field->required) {
+        echo CHtml::checkbox(
+            $field->fieldName . '_checkbox', true,
+            array(
+                'style'=>'margin-left: 5px;',
+                //'onclick'=> ($editable ? '' : 'return false;'),
+                'onclick'=> 'return false;',
+                'onkeydown'=>'return false;'
+            )
+        );
+    } else if ($editable && $item == 'email') {
+        echo CHtml::checkbox(
+            $field->fieldName . '_checkbox', true,
+            array(
+                'style'=>'margin-left: 5px;',
+                'onchange'=>'x2.WebFormDesigner._onFieldUpdate (); return false;'
+            )
+        );
+    } else {
+        echo CHtml::checkbox(
+            $field->fieldName . '_checkbox', false,
+            array(
+                'style'=>'margin-left: 5px;',
+                'onchange'=>'x2.WebFormDesigner._onFieldUpdate (); return false;'
+            )
+        );
+    }
+
+    echo CHtml::label(
+        Yii::t('app','Required'),
+        $field->fieldName . '_checkbox',
+        array('style'=>'display: inline; padding-left: 3px',)
+    );
+    echo '<br />';
+    echo CHtml::label(
+        Yii::t('marketing','Label:').' ',
+        $field->fieldName . '_label',
+        array(
+            'style'=>'display: inline; padding: 0;',
+            'id'=>$field->fieldName.'_label_text'
+        )
+    );
+    echo CHtml::textField(
+        $field->fieldName . '_label', '',
+        array('style'=>'width: 100px; padding: 0; margin: 0;')
+    );
+    echo CHtml::label(
+        Yii::t('marketing','Position:').' ',
+        $field->fieldName . '_label',
+        array('style'=>'display: inline; padding: 0;')
+    );
+    echo CHtml::dropDownList(
+        $field->fieldName . '_position', 'top',
+        array('top'=>Yii::t('app','top'), 'left'=>Yii::t('app','left')),
+        array(
+            'class'=>'field-position',
+            'onchange'=>'x2.WebFormDesigner._onFieldUpdate (); return false;'
+        )
+    );
+    echo "<br>";
+    echo CHtml::label(
+        Yii::t('marketing','Type:').' ',
+        $field->fieldName . '_label',
+        array('style'=>'display: inline; padding: 0;')
+    );
+    echo CHtml::dropDownList(
+        $field->fieldName . '_type', 'normal',
+        array('normal'=>Yii::t('app','normal'), 'hidden'=>Yii::t('app','hidden')),
+        array(
+            'class'=>'field-type',
+            'onchange'=>
+                'x2.WebFormDesigner._onFieldUpdate ();
+                if($(this).val()=="hidden"){
+                    $("#'.$field->fieldName.'_label_text").html("'.Yii::t('marketing',"Value:").'");
+                }else{
+                    $("#'.$field->fieldName.'_label_text").html("'.Yii::t('marketing',"Label:").'");
+                }'.
+                'return false;'
+        )
+    );
+    echo '</div>';
+    echo '</li>';
+}
+
+/*
+Used to construct the custom fields editor ui elements
+*/
+function buildSortableCustomFields (
+    $fields, $item=null, $editable=false, $defaultList=null, $exclude=null) {
+
+    foreach($fields as &$field) {
+
+    if((!$editable &&
+        (!in_array($field->fieldName, $defaultList) &&
+         !in_array($field->fieldName, $exclude) && $field->readOnly == false)) ||
+      ($editable &&
+       $field->fieldName == $item)) {
+            $type = '';
+            switch($field->type) {
+                case 'email':
+                    $type = 'emailIcon';
+                    break;
+                case 'phone':
+                    $type = 'phoneIcon';
+                    break;
+                case 'boolean':
+                    $type = 'booleanIcon';
+                    break;
+                case 'dropdown':
+                    $type = 'dropdownIcon';
+                    break;
+                case 'date':
+                    $type = 'dateIcon';
+                    break;
+                case 'text':
+                    $type = 'textIcon';
+                    break;
+                default:
+                    $type = 'varcharIcon';
+            }
+            displayCustomField ($field, $type, $item, $editable);
+        }
+    }
+}
+
+?>
+
+<br />
+<div class="row" style="overflow: visible;">
+
+    <div class="cell">
+        <h4><?php echo Yii::t('marketing','Fields') .':'; ?></h4>
+        <p class="fieldhelp" style="width: auto;">
+            <?php echo Yii::t('marketing', 'Drag and Drop fields from Fields List to Form.'); 
+            ?>
+        </p>
+        <div>
+            <div class="web-form-fields fields-container">
+                <div class="fieldListTitle">
+					<?php echo Yii::t('marketing','Field List'); ?>
+                </div>
+                <div>
+                    <ul id="sortable1" class="connectedSortable fieldlist">
+                        <?php // get list of all fields, sort by attribute label alphabetically
+                        if ($webFormType === 'weblead') {
+                            $modelName = 'Contacts';
+                        } else if ($webFormType === 'service') {
+                            $modelName = 'Services';
+                        }
+                        $fields = Fields::model()->findAllByAttributes(
+                            array(
+                                'modelName'=> $modelName
+                            ),
+                            new CDbCriteria(array('order'=>'attributeLabel ASC'))
+                        );
+                        buildSortableCustomFields ($fields, null, false, $defaultList, $exclude);
+                        ?>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="web-form-fields">
+                <div class="fieldListTitle">
+					<?php echo Yii::t('app','Form'); ?>
+                </div>
+                <div>
+                    <ul id="sortable2" class="connectedSortable fieldlist">
+                        <?php
+
+                        if ($webFormType === 'service') {
+                            $fields = Fields::model()->findAllByAttributes(
+                                array('modelName'=>'Contacts'),
+                                new CDbCriteria(array('order'=>'attributeLabel ASC'))
+                            );
+                        }
+                        foreach($defaultList as $item) {
+                            buildSortableCustomFields ($fields, $item, true);
+                        }
+
+                        if ($webFormType === 'service') {
+                            $field = Fields::model()->findAllByAttributes(
+                                array('modelName'=>'Services', 'fieldName'=>'description'));
+                            $field = $field[0];
+                            $type = 'textIcon';
+                            displayCustomField ($field, $type, $item, true);
+                        }
+                        ?>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="cell">
+
+<?php
+}
 
 ?>
 <?php
@@ -367,6 +726,15 @@ if ($webFormType === 'service') {
     </div>
 
 <?php
+
+if (Yii::app()->contEd('pro') && $webFormType !== 'weblist') {
+?>
+
+    </div>
+</div>
+
+<?php
+}
 
 ?>
 </div>

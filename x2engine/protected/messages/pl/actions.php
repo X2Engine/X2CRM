@@ -119,4 +119,5 @@
   '<b>Reminder!</b> The following action is due: {action}' => '<b>! Przypomnienie</b> Następujące działania jest wynikiem: {action}',
   'Event Subtype' => 'Podtyp wydarzenie',
   'Event Status' => 'Zdarzenia',
+  'Calendar Color' => 'Kalendarz Kolor',
 );

@@ -1,6 +1,6 @@
 <?php
-/*****************************************************************************************
- * X2Engine Open Source Edition is a customer relationship management program developed by
+/***********************************************************************************
+ * X2CRM is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2016 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
@@ -21,7 +21,8 @@
  * 02110-1301 USA.
  * 
  * You can contact X2Engine, Inc. P.O. Box 66752, Scotts Valley,
- * California 95067, USA. or at email address contact@x2engine.com.
+ * California 95067, USA. on our website at www.x2crm.com, or at our
+ * email address: contact@x2engine.com.
  * 
  * The interactive user interfaces in modified source and object code versions
  * of this program must display Appropriate Legal Notices, as required under
@@ -32,7 +33,7 @@
  * X2Engine" logo. If the display of the logo is not reasonably feasible for
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2Engine".
- *****************************************************************************************/
+ **********************************************************************************/
 
 Yii::import('application.components.x2flow.X2FlowItem');
 Yii::import('application.components.x2flow.actions.*');
@@ -175,7 +176,7 @@ class StudioController extends x2base {
 
             if($field->type === 'link') {
                 $staticLinkModel = X2Model::model($field->linkType);
-                if(array_key_exists('X2LinkableBehavior', $staticLinkModel->behaviors())) {
+                if(array_key_exists('LinkableBehavior', $staticLinkModel->behaviors())) {
                     $data['linkType'] = $field->linkType;
                     $data['linkSource'] = Yii::app()->controller->createUrl(
                         $staticLinkModel->autoCompleteSource);
@@ -228,7 +229,113 @@ class StudioController extends x2base {
     }
     
     
+    public function actionExecuteMacro() {
+        if (Yii::app()->request->isAjaxRequest) {
+            $id = filter_input(INPUT_POST, 'flowId', FILTER_SANITIZE_NUMBER_INT);
+            $modelType = filter_input(INPUT_POST, 'modelType', FILTER_DEFAULT);
+            $modelId = filter_input(INPUT_POST, 'modelId', FILTER_DEFAULT);
 
+            if (empty($modelType) || empty($modelId)) {
+                throw new CHttpException(400, 'Your request is invalid.');
+            }
+            $flow = X2Flow::model()->findByPk($id);
+            if (empty($id) || !isset($flow) || $flow->modelClass !== $modelType) {
+                throw new CHttpException(400, 'Please select a valid workflow.');
+            }
+            if ($flow->triggerType !== 'MacroTrigger') {
+                throw new CHttpException(400, 'Selected flow must use the Macro Trigger.');
+            }
+            $model = X2Model::model($modelType)->findByPk($modelId);
+            if (!isset($model)) {
+                throw new CHttpException(400, 'Macros must be executed on an existing model.');
+            }
+            if (!$this->X2PermissionsBehavior->checkPermissions($model, 'view')) {
+                throw new CHttpException(403, 'You are not authorized to view this record.');
+            }
+            $params['modelClass'] = $modelType;
+            $params['model'] = $model;
+            X2Flow::executeFlow($flow, $params, null);
+        }
+    }
+    
+
+     
+    /**
+     * Simple validation function for imported flow. A more sophisticated validation method
+     * is needed but this, at least, ensures that the flow can be saved.
+     * @param string $flow Decoded imported flow file contents
+     * @return bool
+     */
+    public function validateImportedFlow ($flow) {
+        if (!is_array ($flow) ||
+            !isset ($flow['flowName']) ||
+            !isset ($flow['trigger']) ||
+            !is_array ($flow['trigger']) ||
+            !isset ($flow['trigger']['type']))  {
+
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * Import a flow which was exported with the flow export tool 
+     */
+    public function actionImportFlow () {
+        $model = null;
+        if (isset ($_FILES['flowImport'])) {
+            if (AuxLib::checkFileUploadError ('flowImport')) {
+                throw new CException (
+                    AuxLib::getFileUploadErrorMessage ($_FILES['flowImport']['error']));
+            }
+            $fileName = $_FILES['flowImport']['name'];
+            $ext = pathinfo ($fileName, PATHINFO_EXTENSION);
+            if ($ext !== 'json') {
+                throw new CException (Yii::t('studio', 'Invalid file type'));
+            }
+            $data = file_get_contents($_FILES['flowImport']['tmp_name']);
+           
+            $flow = CJSON::decode ($data);
+            if ($this->validateImportedFlow ($flow)) {
+                $model = new X2Flow;
+                $model->name = $flow['flowName'];
+                $model->triggerType = $flow['trigger']['type'];
+                $model->flow = CJSON::encode ($flow);
+                $model->active = false;
+                if ($model->save ()) {
+                    $this->redirect(
+                        $this->createUrl ('/studio/flowDesigner', array ('id' => $model->id)));
+                } 
+            }
+            Yii::app()->user->setFlash ('error', Yii::t('studio', 'Invalid file contents'));
+        }
+
+        $this->render ('importFlow', array (
+            'model' => $model,
+        ));
+    }
+
+    /**
+     * Exports flow json as .json file and provides a download link 
+     */
+    public function actionExportFlow ($flowId) {
+        $flowId = $_GET['flowId'];
+        $flow = X2Flow::model()->findByPk ($flowId);
+        $download = false;
+        $_SESSION['flowExportFile'] = '';
+        if (isset ($_GET['export'])) {
+            $flowJSON = $flow->flow; 
+            $file = 'flow.json'; 
+            $filePath = $this->safePath($file);
+            file_put_contents ($filePath, $flowJSON);
+            $_SESSION['flowExportFile'] = $file;
+            $download = true;
+        } 
+        $this->render ('exportFlow', array (
+            'flow' => $flow,
+            'download' => $download
+        ));
+    }
      
 
 }

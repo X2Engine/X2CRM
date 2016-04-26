@@ -1,0 +1,21 @@
+{
+    "name": "z_bodya/yii-gallery-manager",
+    "description": "Extension for yii, that allows to manage image galleries",
+    "keywords": ["image", "gallery"],
+    "type": "yii-extension",
+    "extra": {
+        "installer-name": "galleryManager"
+    },
+    "license": "BSD-3-Clause",
+
+    "authors": [
+        {
+            "name": "Bogdan Savluk",
+            "email": "savluk.bogdan@gmail.com"
+        }
+    ],
+
+    "require": {
+        "z_bodya/yii-image": "dev-default"
+    }
+}

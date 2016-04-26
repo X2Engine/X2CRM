@@ -1,6 +1,6 @@
 <?php
-/*****************************************************************************************
- * X2Engine Open Source Edition is a customer relationship management program developed by
+/***********************************************************************************
+ * X2CRM is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2016 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
@@ -21,7 +21,8 @@
  * 02110-1301 USA.
  * 
  * You can contact X2Engine, Inc. P.O. Box 66752, Scotts Valley,
- * California 95067, USA. or at email address contact@x2engine.com.
+ * California 95067, USA. on our website at www.x2crm.com, or at our
+ * email address: contact@x2engine.com.
  * 
  * The interactive user interfaces in modified source and object code versions
  * of this program must display Appropriate Legal Notices, as required under
@@ -32,7 +33,7 @@
  * X2Engine" logo. If the display of the logo is not reasonably feasible for
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2Engine".
- *****************************************************************************************/
+ **********************************************************************************/
 ?>
 <style>
     a.show-duplicate-link{
@@ -112,5 +113,43 @@
         echo "</div><br>";
     }
     ?>
+    <?php  ?>
+    <?php Yii::app()->clientScript->registerScript('auto-merge-function', '
+            $("#auto-merge-button").on("click",function(){
+                if(window.confirm("' . Yii::t('admin', 'Are you sure you want to attempt an automated merge?') . '")){
+                    x2.forms.inputLoading($("#auto-merge-button"));
+                    autoMerge();
+                }
+            });
+            var clusters = 0;
+            autoMerge = function(){
+                $.ajax({
+                    url: "autoMergeDuplicates",
+                    success: function(data){
+                        if(data === "-1"){
+                            clusters++;
+                            autoMerge();
+                        }else{
+                            x2.forms.inputLoadingStop($("#auto-merge-button"));
+                            $("#auto-merge-status-box").html(clusters+" cluster(s) of duplicates automatically merged.").show();
+                            $.fn.yiiGridView.update("Accounts-dedupe-grid");
+                            $.fn.yiiGridView.update("Contacts-dedupe-grid");
+                        }
+                    }
+                });
+            }
+            ', CClientScript::POS_READY); ?>
+    <h2><?php echo Yii::t('admin', 'Automatically Merge Records'); ?></h2>
+    <div style="max-width:630px;">
+        <?php echo Yii::t('admin', 'This tool will allow you to perform a conservative automatic merge of potential duplicate records.'); ?>
+        <?php echo Yii::t('admin', 'Records will be considered duplicates only if they match all criteria (e.g. both name and email) rather than the standard method of detection which checks if they match any.'); ?><br><br>
+        <?php echo Yii::t('admin', 'If two or more records conflict on the value of a field, the one with the most recent "Last Updated" field will be used.'); ?>
+        <?php echo Yii::t('admin', 'Because of this strict comparison, this merge tool will act upon all records--not just unresolved ones.'); ?>
+        <?php echo Yii::t('admin', 'Any duplicates remaining on this page after the merge will need to be dealt with manually.'); ?><br><br>
+        <?php echo Yii::t('admin', 'Any merge performed here can be undone by visiting the "Revert Merges" link in the Admin tab.'); ?><br><br>
+        <?php echo X2Html::button(Yii::t('admin','Merge Records'), array('id' => 'auto-merge-button', 'class' => 'x2-button')); ?>
+        <br>
+        <div id="auto-merge-status-box" style="display:none;color:green"></div>
+    </div>
     <?php  ?>
 </div>

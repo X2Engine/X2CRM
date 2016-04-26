@@ -1,5 +1,5 @@
-/*****************************************************************************************
- * X2Engine Open Source Edition is a customer relationship management program developed by
+/***********************************************************************************
+ * X2CRM is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2016 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
@@ -20,7 +20,8 @@
  * 02110-1301 USA.
  * 
  * You can contact X2Engine, Inc. P.O. Box 66752, Scotts Valley,
- * California 95067, USA. or at email address contact@x2engine.com.
+ * California 95067, USA. on our website at www.x2crm.com, or at our
+ * email address: contact@x2engine.com.
  * 
  * The interactive user interfaces in modified source and object code versions
  * of this program must display Appropriate Legal Notices, as required under
@@ -31,7 +32,7 @@
  * X2Engine" logo. If the display of the logo is not reasonably feasible for
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2Engine".
- *****************************************************************************************/
+ **********************************************************************************/
 
 if (typeof x2 === 'undefined') x2 = {};
 
@@ -84,6 +85,49 @@ RecordViewController.prototype.setUpDelete = function () {
 };
 
 RecordViewController.prototype.setUpProfile = function () {
+     
+    if (this.myProfileId !== this.modelId) return;
+    var that = this;
+    if (x2.main.isPhoneGap) {
+        var avatar$ = $.mobile.activePage.find ('.avatar-image');
+        var uploadLink$ = $.mobile.activePage.find ('.photo-upload-link');
+        new x2.CameraButton ({
+            element$: avatar$.add (uploadLink$),
+            //direction: 1, // front-facing
+            enableCrop: true,
+            validate: function (callback) {
+                x2.main.confirm (
+                    "Upload a new profile photo?", ' ', ['Okay', 'Cancel'], callback);
+            },
+            success: function (data) {
+                var attachment$ = x2.mobileForm.makePhotoAttachment (data);
+                attachment$.hide ();
+                avatar$.parent ().find ('.' + x2.mobileForm.photoAttachmentClass).remove ();
+                avatar$.parent ().append (attachment$);
+                var form$ = avatar$.closest ('form');
+                x2.mobileForm.submitWithPhotos (
+                    form$.attr ('action'), 
+                    form$, 
+                    'Profile[photo]',
+                    function (response) {
+                        if (response.responseCode == 200)  {
+                            $.mobile.activePage.append (response.response);
+                            x2.main.refreshContent ();
+                            that.setUpProfile ();
+                        } else {
+                            x2.main.alert ('Upload failed', 'Error');
+                        }
+                    },
+                    function (error) {
+                        x2.main.alert (error.body, 'Error');
+                    }
+                );
+            },
+            failure: function (message) {
+
+            }
+        });
+    }
      
 };
 

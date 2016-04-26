@@ -19,4 +19,6 @@
   'Most Recent' => '最も最近の',
   'Alphabetical' => 'アルファベット順',
   'Most Popular' => 'もっとも人気のある',
+  '{poster}posted a new reply to {topic}.' => '{poster}への新しい返信投稿{topic} 。',
+  '{poster}posted a new reply to a topic, but that reply has been deleted.' => '{poster}トピックに新しい回答を掲載したが、その応答は削除されました。',
 );

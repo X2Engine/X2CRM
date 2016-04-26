@@ -1,0 +1,106 @@
+<?php
+/***********************************************************************************
+ * X2CRM is a customer relationship management program developed by
+ * X2Engine, Inc. Copyright (C) 2011-2016 X2Engine Inc.
+ * 
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU Affero General Public License version 3 as published by the
+ * Free Software Foundation with the addition of the following permission added
+ * to Section 15 as permitted in Section 7(a): FOR ANY PART OF THE COVERED WORK
+ * IN WHICH THE COPYRIGHT IS OWNED BY X2ENGINE, X2ENGINE DISCLAIMS THE WARRANTY
+ * OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
+ * 
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.  See the GNU Affero General Public License for more
+ * details.
+ * 
+ * You should have received a copy of the GNU Affero General Public License along with
+ * this program; if not, see http://www.gnu.org/licenses or write to the Free
+ * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301 USA.
+ * 
+ * You can contact X2Engine, Inc. P.O. Box 66752, Scotts Valley,
+ * California 95067, USA. on our website at www.x2crm.com, or at our
+ * email address: contact@x2engine.com.
+ * 
+ * The interactive user interfaces in modified source and object code versions
+ * of this program must display Appropriate Legal Notices, as required under
+ * Section 5 of the GNU Affero General Public License version 3.
+ * 
+ * In accordance with Section 7(b) of the GNU Affero General Public License version 3,
+ * these Appropriate Legal Notices must retain the display of the "Powered by
+ * X2Engine" logo. If the display of the logo is not reasonably feasible for
+ * technical reasons, the Appropriate Legal Notices must display the words
+ * "Powered by X2Engine".
+ **********************************************************************************/
+
+Yii::import ('zii.widgets.grid.CGridView');
+
+class PrintableReportsGridView extends CGridView {
+
+	/**
+	 * Renders the key values of the data in a hidden tag.
+     * This method is Copyright (c) 2008-2014 by Yii Software LLC
+     * http://www.yiiframework.com/license/ 
+	 */
+	public function renderKeys()
+	{
+//		echo CHtml::openTag('div',array(
+//			'class'=>'keys',
+//			'style'=>'display:none',
+//			'title'=>Yii::app()->getRequest()->getUrl(),
+//		));
+//		foreach($this->dataProvider->getKeys() as $key)
+//			echo "<span>".CHtml::encode($key)."</span>";
+//		echo "</div>\n";
+	}
+
+    /**
+     * Creates column objects and initializes them. Overrides {@link parent::initColumns}, 
+     * swapping hard coded reference to CDataColumn with the value of a public property.
+     *
+     * This method is Copyright (c) 2008-2014 by Yii Software LLC
+     * http://www.yiiframework.com/license/
+     */
+    protected function initColumns() {
+        if($this->columns===array()) {
+            if($this->dataProvider instanceof CActiveDataProvider) {
+                $this->columns=$this->dataProvider->model->attributeNames();
+            } elseif($this->dataProvider instanceof IDataProvider) {
+                // use the keys of the first row of data as the default columns
+                $data=$this->dataProvider->getData();
+                if(isset($data[0]) && is_array($data[0]))
+                    $this->columns=array_keys($data[0]);
+            }
+        }
+        $id=$this->getId();
+
+        foreach($this->columns as $i=>$column) {
+            if(is_string($column)) {
+                $column=$this->createDataColumn($column);
+            } else {
+                if(!isset($column['class'])) {
+                    /* x2modstart */ 
+                    $column['class']='ReportDataColumn';
+                    /* x2modend */ 
+                }
+                $column=Yii::createComponent($column, $this);
+            }
+            if(!$column->visible) {
+                unset($this->columns[$i]);
+                continue;
+            }
+            if($column->id===null) {
+                $column->id=$id.'_c'.$i;
+            }
+            $this->columns[$i]=$column;
+        }
+
+        foreach($this->columns as $column) {
+            $column->init();
+        }
+    }
+}
+
+?>

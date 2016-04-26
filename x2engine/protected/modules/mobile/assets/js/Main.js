@@ -1,5 +1,5 @@
-/*****************************************************************************************
- * X2Engine Open Source Edition is a customer relationship management program developed by
+/***********************************************************************************
+ * X2CRM is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2016 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
@@ -20,7 +20,8 @@
  * 02110-1301 USA.
  * 
  * You can contact X2Engine, Inc. P.O. Box 66752, Scotts Valley,
- * California 95067, USA. or at email address contact@x2engine.com.
+ * California 95067, USA. on our website at www.x2crm.com, or at our
+ * email address: contact@x2engine.com.
  * 
  * The interactive user interfaces in modified source and object code versions
  * of this program must display Appropriate Legal Notices, as required under
@@ -31,7 +32,7 @@
  * X2Engine" logo. If the display of the logo is not reasonably feasible for
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2Engine".
- *****************************************************************************************/
+ **********************************************************************************/
 
 
 if (typeof x2 === 'undefined') x2 = {};
@@ -362,9 +363,33 @@ Main.prototype.footerFix = function () {
 };
 
 
+Main.prototype.instantiateNano = function (elem$) {
+    //if (elem$.parent ().hasClass ('nano')) return;
+    elem$.parent ().addClass ('nano');
+    elem$.addClass ('nano-content');
+
+    elem$.parent ().nanoScroller({
+        iOSNativeScrolling: this.platform === 'iOS',
+        preventPageScrolling: this.platform === 'iOS'
+    });
+    elem$.scrollstart (function () {
+        $(this).closest ('.nano').addClass ('hover');
+    });
+    elem$.scrollstop (function () {
+        $(this).closest ('.nano').removeClass ('hover');
+    });
+};
+
 
 Main.prototype.setUpScrollBars = function () {
     var that = this;
+     
+    if (this.isPhoneGap) {
+        this.onPageShow (function () {
+            var activePage$ = $.mobile.activePage;
+            that.instantiateNano (activePage$.find ('.innermost-content-container'));
+        });
+    }
      
 };
 
@@ -376,7 +401,15 @@ Main.prototype.setUpOrientationChange = function () {
 
 Main.prototype.alert = function (message, title) {
      
+    if (this.isPhoneGap) {
+        x2touch.API.alert (
+            message, title
+        );
+    } else {
+     
         window.alert (message);
+     
+    }
      
 
 };
@@ -387,9 +420,22 @@ Main.prototype.confirm = function (message, title, buttons, callback) {
         return;
     }
      
+    if (this.isPhoneGap) {
+        x2touch.API.confirm (
+            message,
+            title,
+            buttons,
+            function (index) {
+                if (index === 1) callback ();
+            }
+        );
+    } else {
+     
         if (window.confirm (title + "\n" + message)) {
             callback ();
         }
+     
+    }
      
 };
 
@@ -405,7 +451,13 @@ Main.prototype.checkForExternalLink = function (a$, url) {
          !url.match (urlRegex))) {
 
          
+        if (that.isPhoneGap) { 
+            x2touch.API.openExternalLink (url);
+        } else {
+         
             window.open (url, '_blank');
+         
+        }
          
         return false;
     } 
@@ -437,7 +489,18 @@ Main.prototype.setUpLinkClick = function () {
 
         if ($(this).hasClass ('file-download-link')) {
              
+            if (that.isPhoneGap) {
+                x2touch.API.downloadFile (
+                    href, $.trim ($(this).attr ('data-x2-filename')), function () {
+                }, function () {
+                }, {
+                    includeSessionId: true
+                });
+            } else {
+             
                 window.location = href;
+             
+            }
              
             return false;
         }
@@ -447,7 +510,13 @@ Main.prototype.setUpLinkClick = function () {
 
 Main.prototype.getBaseUrl = function () {
      
+    if (this.isPhoneGap) {
+        return x2touch.API.getBaseUrl ();
+    } else {
+     
         return yii.absoluteBaseUrl;
+     
+    }
      
 };
 

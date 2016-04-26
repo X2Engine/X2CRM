@@ -1,5 +1,5 @@
-/*****************************************************************************************
- * X2Engine Open Source Edition is a customer relationship management program developed by
+/***********************************************************************************
+ * X2CRM is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2016 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
@@ -20,7 +20,8 @@
  * 02110-1301 USA.
  * 
  * You can contact X2Engine, Inc. P.O. Box 66752, Scotts Valley,
- * California 95067, USA. or at email address contact@x2engine.com.
+ * California 95067, USA. on our website at www.x2crm.com, or at our
+ * email address: contact@x2engine.com.
  * 
  * The interactive user interfaces in modified source and object code versions
  * of this program must display Appropriate Legal Notices, as required under
@@ -31,7 +32,7 @@
  * X2Engine" logo. If the display of the logo is not reasonably feasible for
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2Engine".
- *****************************************************************************************/
+ **********************************************************************************/
 
 if (typeof x2 === 'undefined') x2 = {};
 
@@ -57,6 +58,10 @@ function InlineRelationshipsWidget (argsDict) {
         modelsWhichSupportQuickCreate: []
     };
     this._relationshipsGridContainer$ = $('#relationships-form');
+     
+    this._relationshipsGraph = null;
+    this._inlineGraphContainer$ = $('#inline-relationships-graph-container');
+    this._inlineGraphViewButton$ = $('#inline-graph-view-button');
      
     this._gridViewButton$ = $('#rel-grid-view-button');
     this._form$ = $('#new-relationship-form');
@@ -179,6 +184,11 @@ InlineRelationshipsWidget.prototype._submitCreateRelationshipForm = function () 
                 $('#firstLabel').val('');
                 $('#secondLabel').val('');
                  
+                if (that._graphLoaded ()) {
+                    that._relationshipsGraph.connectNodeToInitialFocus (
+                        recordType, recordId, recordName);
+                }
+                 
             }
         }
     });
@@ -222,10 +232,25 @@ InlineRelationshipsWidget.prototype._setUpModeSelection = function () {
 };
 
 
+InlineRelationshipsWidget.prototype._displayInlineGraph = function () {
+    this._inlineGraphContainer$.show ();
+    this._relationshipsGridContainer$.hide ();
+    this._inlineGraphViewButton$.hide ();
+    this._gridViewButton$.show ();
+    this.element.find ('.ui-resizable-handle').show ();
+    this.setProperty ('displayMode', 'graph');
+    this.displayMode = 'graph';
+    this._setUpResizeBehavior ();
+};
+
 
 InlineRelationshipsWidget.prototype._displayGrid = function () {
      
+    this._inlineGraphContainer$.hide ();
+     
     this._relationshipsGridContainer$.show ();
+     
+    this._inlineGraphViewButton$.show ();
      
     this._gridViewButton$.hide ();
     this.element.find ('.ui-resizable-handle').hide ();
@@ -235,9 +260,48 @@ InlineRelationshipsWidget.prototype._displayGrid = function () {
 };
 
 
+InlineRelationshipsWidget.prototype._graphLoaded = function () {
+    if ($.trim (this._inlineGraphContainer$.html ()) !== '') {
+        this._relationshipsGraph = x2.relationshipsGraph;
+        return true;
+    }
+    return false;
+};
 
 
 
+InlineRelationshipsWidget.prototype._getInlineGraph = function () {
+    if (this._graphLoaded ()) {
+        this._displayInlineGraph ();
+        return;
+    }
+    var that = this;
+    $.ajax ({
+        url: yii.scriptUrl + '/relationships/viewInlineGraph',
+        data: {
+            recordId: this.recordId,
+            recordType: this.recordType,
+            height: that.height
+        },
+        success: function (data) {
+            that._inlineGraphContainer$.html (data);
+            that._relationshipsGraph = x2.relationshipsGraph;
+            that._displayInlineGraph ();
+        }
+    });
+};
+
+
+
+InlineRelationshipsWidget.prototype._setUpGraphViewButton = function () {
+    var that = this;
+    this._inlineGraphViewButton$.click (function () {
+        that._getInlineGraph ();
+    });
+    this._gridViewButton$.click (function () {
+        that._displayGrid ();
+    });
+};
 
 
 InlineRelationshipsWidget.prototype._afterStop = function () {
@@ -248,6 +312,16 @@ InlineRelationshipsWidget.prototype._afterStop = function () {
     that.setProperty ('height', savedHeight);
 };
 
+
+InlineRelationshipsWidget.prototype._resizeEvent = function () {
+    var that = this;
+    if (that.displayMode === 'graph') {
+        var newHeight = $(this.contentContainer).height ();
+        if (this._form$.is (':visible'))
+            newHeight -= this._form$.height () + 12;
+        $('#relationships-graph-container').height (newHeight);
+    }
+};
 
 
 InlineRelationshipsWidget.prototype._setUpNewRelationshipsForm = function () {
@@ -283,6 +357,34 @@ InlineRelationshipsWidget.prototype._setUpNewRelationshipsForm = function () {
 };
 
 
+/**
+ * Sets up widget resize behavior 
+ */
+InlineRelationshipsWidget.prototype._setUpResizeBehavior = function () {
+    if (this._setUpResizeBehavior.setUp) return;
+    this.resizeHandle = $('#relationships-graph-resize-handle');
+    if (!this.resizeHandle.length) return;
+
+    this._setUpResizeBehavior.setUp = true;
+    var that = this; 
+    this.resizeHandle.addClass ('ui-resizable-handle');
+    this.resizeHandle.addClass ('ui-resizable-s');
+    $(this.contentContainer).resizable ({
+        handles: {
+            s: $('#relationships-graph-resize-handle')
+        },
+        minHeight: 50,
+        start: function () {
+            $('body').attr ('style', 'cursor: se-resize');
+        },
+        stop: function () {
+            that._afterStop ();
+            $('body').attr ('style', '');
+        },
+        resize: function () { that._resizeEvent (); }
+    });
+};
+
 
 InlineRelationshipsWidget.prototype._setUpInlineViewButtons = function () {
     var that = this;
@@ -316,6 +418,8 @@ InlineRelationshipsWidget.prototype._init = function () {
     //this._setUpInlineViewButtons ();
     this._setUpDetailViewToggle ();
 
+     
+    this._setUpGraphViewButton ();
      
 
     if (this.hasUpdatePermissions) this._setUpNewRelationshipsForm ();

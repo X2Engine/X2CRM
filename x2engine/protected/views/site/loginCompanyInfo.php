@@ -1,6 +1,6 @@
 <?php
-/*****************************************************************************************
- * X2Engine Open Source Edition is a customer relationship management program developed by
+/***********************************************************************************
+ * X2CRM is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2016 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
@@ -21,7 +21,8 @@
  * 02110-1301 USA.
  * 
  * You can contact X2Engine, Inc. P.O. Box 66752, Scotts Valley,
- * California 95067, USA. or at email address contact@x2engine.com.
+ * California 95067, USA. on our website at www.x2crm.com, or at our
+ * email address: contact@x2engine.com.
  * 
  * The interactive user interfaces in modified source and object code versions
  * of this program must display Appropriate Legal Notices, as required under
@@ -32,11 +33,27 @@
  * X2Engine" logo. If the display of the logo is not reasonably feasible for
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2Engine".
- *****************************************************************************************/
+ **********************************************************************************/
 
+
+if (X2_PARTNER_DISPLAY_BRANDING) {
+?>
+<div id="login-x2engine-partner-content">
+    <?php
+        $brandingFile = Yii::getPathOfAlias('application.partner').DIRECTORY_SEPARATOR.'login.php';
+        $brandingFileTemplate = Yii::getPathOfAlias('application.partner').DIRECTORY_SEPARATOR.'login_example.php';
+        if(file_exists($brandingFile)){
+            require_once $brandingFile;
+        }else{
+            require_once $brandingFileTemplate;
+        }
+    ?>
+</div>
+<?php
+}
 
 ?>
-<div id="login-x2engine"<?php  ?> >
+<div id="login-x2engine"<?php echo (X2_PARTNER_DISPLAY_BRANDING ? 'class="with-partner-branding"' : ''); ?> >
     <div class="cell company-logo-cell">
         <?php echo CHtml::image(Yii::app()->loginLogoUrl, 'X2Engine', array('id' => 'login-logo', 'width' => 60, 'height' => 60)); ?>
     </div>

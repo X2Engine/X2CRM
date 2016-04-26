@@ -1,7 +1,7 @@
 <?php
 
-/*****************************************************************************************
- * X2Engine Open Source Edition is a customer relationship management program developed by
+/***********************************************************************************
+ * X2CRM is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2016 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
@@ -22,7 +22,8 @@
  * 02110-1301 USA.
  * 
  * You can contact X2Engine, Inc. P.O. Box 66752, Scotts Valley,
- * California 95067, USA. or at email address contact@x2engine.com.
+ * California 95067, USA. on our website at www.x2crm.com, or at our
+ * email address: contact@x2engine.com.
  * 
  * The interactive user interfaces in modified source and object code versions
  * of this program must display Appropriate Legal Notices, as required under
@@ -33,7 +34,7 @@
  * X2Engine" logo. If the display of the logo is not reasonably feasible for
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2Engine".
- *****************************************************************************************/
+ **********************************************************************************/
 
 /**
  * @package application.modules.contacts.controllers
@@ -130,13 +131,13 @@ class ContactsController extends x2base {
      */
     public function behaviors() {
         return array_merge(parent::behaviors(), array(
-            'X2MobileControllerBehavior' => array(
+            'MobileControllerBehavior' => array(
                 'class' => 
-                    'application.modules.mobile.components.behaviors.X2MobileControllerBehavior'
+                    'application.modules.mobile.components.behaviors.MobileControllerBehavior'
             ),
-            'X2MobileActionHistoryBehavior' => array(
+            'MobileActionHistoryBehavior' => array(
                 'class' => 
-                    'application.modules.mobile.components.behaviors.X2MobileActionHistoryBehavior'
+                    'application.modules.mobile.components.behaviors.MobileActionHistoryBehavior'
             ),
             'LeadRoutingBehavior' => array(
                 'class' => 'LeadRoutingBehavior'
@@ -463,7 +464,7 @@ class ContactsController extends x2base {
                 $model = X2Model::model('Contacts')->findByPk($id);
             }
             $model->dupeCheck = 1;
-            $model->disableBehavior('X2TimestampBehavior');
+            $model->disableBehavior('TimestampBehavior');
             if ($model->save()) {
                 
             }
@@ -531,7 +532,7 @@ class ContactsController extends x2base {
             } elseif ($ref == 'create') {
                 $oldRecord = X2Model::model('Contacts')->findByPk($oldId);
                 if (isset($oldRecord)) {
-                    $oldRecord->disableBehavior('X2TimestampBehavior');
+                    $oldRecord->disableBehavior('TimestampBehavior');
                     Relationships::model()->deleteAllByAttributes(array('firstType' => 'Contacts', 'firstId' => $oldRecord->id));
                     Relationships::model()->deleteAllByAttributes(array('secondType' => 'Contacts', 'secondId' => $oldRecord->id));
                     if ($action == 'hideThis') {
@@ -558,9 +559,9 @@ class ContactsController extends x2base {
             } elseif (isset($_POST['newId'])) {
                 $newId = $_POST['newId'];
                 $oldRecord = X2Model::model('Contacts')->findByPk($oldId);
-                $oldRecord->disableBehavior('X2TimestampBehavior');
+                $oldRecord->disableBehavior('TimestampBehavior');
                 $newRecord = Contacts::model()->findByPk($newId);
-                $newRecord->disableBehavior('X2TimestampBehavior');
+                $newRecord->disableBehavior('TimestampBehavior');
                 $newRecord->dupeCheck = 1;
                 $newRecord->save();
                 if ($action === '') {
@@ -885,7 +886,7 @@ class ContactsController extends x2base {
         Yii::app()->user->setState('vcr-list', $id);
         $dataProvider = $model->searchList($id);
         $list->count = $dataProvider->totalItemCount;
-        $list->runWithoutBehavior('X2FlowTriggerBehavior', function () use ($list) {
+        $list->runWithoutBehavior('FlowTriggerBehavior', function () use ($list) {
             $list->save();
         });
 

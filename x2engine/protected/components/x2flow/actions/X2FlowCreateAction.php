@@ -1,6 +1,6 @@
 <?php
-/*****************************************************************************************
- * X2Engine Open Source Edition is a customer relationship management program developed by
+/***********************************************************************************
+ * X2CRM is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2016 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
@@ -21,7 +21,8 @@
  * 02110-1301 USA.
  * 
  * You can contact X2Engine, Inc. P.O. Box 66752, Scotts Valley,
- * California 95067, USA. or at email address contact@x2engine.com.
+ * California 95067, USA. on our website at www.x2crm.com, or at our
+ * email address: contact@x2engine.com.
  * 
  * The interactive user interfaces in modified source and object code versions
  * of this program must display Appropriate Legal Notices, as required under
@@ -32,7 +33,7 @@
  * X2Engine" logo. If the display of the logo is not reasonably feasible for
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2Engine".
- *****************************************************************************************/
+ **********************************************************************************/
 
 /**
  * X2FlowAction that creates a new action
@@ -55,7 +56,7 @@ class X2FlowCreateAction extends X2FlowAction {
 		);
 		// $assignmentOptions = array('{assignedTo}'=>'{'.Yii::t('studio','Owner of Record').'}') + X2Model::getAssignmentOptions(false,true);	// '{assignedTo}', groups, no 'anyone'
 		$assignmentOptions = array('{assignedTo}' => '{'.Yii::t('studio', 'Owner of Record').'}') + X2Model::getAssignmentOptions(false, true);	// '{assignedTo}', groups, no 'anyone'
-
+                $colorOptions = Dropdowns::getItems(Actions::COLORS_DROPDOWN_ID);
 		return array_merge (parent::paramRules (), array (
 			'title' => Yii::t('studio',$this->title),
 			'options' => array(
@@ -66,6 +67,7 @@ class X2FlowCreateAction extends X2FlowAction {
 				array('name'=>'assignedTo','label'=>Yii::t('actions','Assigned To'),'type'=>'dropdown','options'=>$assignmentOptions),
 				array('name'=>'priority','label'=>Yii::t('actions','Priority'),'type'=>'dropdown','options'=>$priorityOptions),
 				array('name'=>'visibility','label'=>Yii::t('actions','Visibility'),'type'=>'dropdown','options'=>$visOptions),
+                                array('name'=>'color','label'=>Yii::t('actions','Calendar Color'),'type'=>'dropdown','options'=>$colorOptions),
 				// array('name'=>'reminder','label'=>Yii::t('actions','Remind Me'),'type'=>'checkbox','default'=>false),
 			)));
 	}
@@ -76,11 +78,12 @@ class X2FlowCreateAction extends X2FlowAction {
 		$action = new Actions;
 
 		$action->subject = $this->parseOption('subject',$params);
-        $action->dueDate = $this->parseOption('dueDate',$params);
+                $action->dueDate = $this->parseOption('dueDate',$params);
 		$action->actionDescription = $this->parseOption('description',$params);
 		$action->priority = $this->parseOption('priority',$params);
 		$action->visibility = $this->parseOption('visibility',$params);
-
+                $action->color = $this->parseOption('color', $params);
+                
 		if(isset($params['model']))
 			$action->assignedTo = $this->parseOption('assignedTo',$params);
 

@@ -1,0 +1,46 @@
+MIME-Version: 1.0
+Received: by 10.216.208.78 with HTTP; Mon, 22 Oct 2012 17:17:06 -0700 (PDT)
+X-Originating-IP: [XX.XX.XX.XX]
+In-Reply-To: <BF6AA7800F7FC747BAAAE568816BE693097FB06C@mbx023-e1-nj-4.exch023.domain.local>
+References: <BF6AA7800F7FC747BAAAE568816BE693097FB06C@mbx023-e1-nj-4.exch023.domain.local>
+Date: Mon, 22 Oct 2012 17:17:06 -0700
+Delivered-To: dropbox@testdomain.com
+Message-ID: <CACwGMC0z6OMDUQusNi3h7OW_ES5S+k+VSBtLHRYUGApxrNiD9g@mail.gmail.com>
+Subject: Fwd: X2 Issues
+From: Sales Rep <sales@rep.com>
+To: dropbox <dropbox@testdomain.com>
+Content-Type: multipart/alternative; boundary=0016e6d6261bdb1b9f04ccaee3e1
+
+--0016e6d6261bdb1b9f04ccaee3e1
+Content-Type: text/plain; charset=ISO-8859-1
+
+---------- Forwarded message ----------
+From: Test Contact <customer@prospect.com>
+Date: Mon, Oct 22, 2012 at 4:59 PM
+Subject: Email dropbox test subject.
+To: dropbox <dropbox@testdomain.com>
+
+Email dropbox test body paragraph 1.
+%123%
+Email dropbox test body paragraph 2.
+
+--0016e6d6261bdb1b9f04ccaee3e1
+Content-Type: text/html; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
+
+<br><div class=3D"gmail_quote">---------- Forwarded message ----------<br>F=
+rom: <b class=3D"gmail_sendername">Test Contact</b> <span dir=3D"ltr">&lt;<a h=
+ref=3D"mailto:customer@prospect.com">customer@prospect.com</a>&gt;</span><br>=
+Date: Mon, Oct 22, 2012 at 4:59 PM<br>
+Subject: forwarded junk<br>To: Other Person &lt;<a href=3D"mailto:other@perso=
+n@test.com">otherperson@test.com</a>&gt;<br>
+<br><br>
+
+<div>
+<div style=3D"direction:ltr;font-size:10pt;font-family:Tahoma">I&#39;m gett=
+ing reports of a lot of latency in terms of loading, and a search results i=
+n 500 Error.</div>
+</div>
+
+
+--0016e6d6261bdb1b9f04ccaee3e1--

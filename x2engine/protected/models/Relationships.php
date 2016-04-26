@@ -1,6 +1,6 @@
 <?php
-/*****************************************************************************************
- * X2Engine Open Source Edition is a customer relationship management program developed by
+/***********************************************************************************
+ * X2CRM is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2016 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
@@ -21,7 +21,8 @@
  * 02110-1301 USA.
  * 
  * You can contact X2Engine, Inc. P.O. Box 66752, Scotts Valley,
- * California 95067, USA. or at email address contact@x2engine.com.
+ * California 95067, USA. on our website at www.x2crm.com, or at our
+ * email address: contact@x2engine.com.
  * 
  * The interactive user interfaces in modified source and object code versions
  * of this program must display Appropriate Legal Notices, as required under
@@ -32,7 +33,7 @@
  * X2Engine" logo. If the display of the logo is not reasonably feasible for
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2Engine".
- *****************************************************************************************/
+ **********************************************************************************/
 
 /**
  * This is the model class for table "x2_relationships".
@@ -271,7 +272,7 @@ class Relationships extends X2ActiveRecord {
         $staticModel = CActiveRecord::model($this->$attribute);
         $has = false;
         foreach($staticModel->behaviors() as $name=>$config){
-            if($config['class'] == 'X2LinkableBehavior'){
+            if($config['class'] == 'LinkableBehavior'){
                 $has = true;
                 break;
             }
@@ -279,7 +280,7 @@ class Relationships extends X2ActiveRecord {
         if(!$has)
             $this->addError(
                 $attribute,
-                Yii::t('app','Class "{class}" specified for {attribute} does not have X2LinkableBehavior, and thus cannot be used with relationships.',array('{class}'=>$this->$attribute)));
+                Yii::t('app','Class "{class}" specified for {attribute} does not have LinkableBehavior, and thus cannot be used with relationships.',array('{class}'=>$this->$attribute)));
 
         $model = $staticModel->findByPk($attribute=='firstType' ? $this->firstId : $this->secondId);
         if(!$model)

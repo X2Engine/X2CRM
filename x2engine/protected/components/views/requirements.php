@@ -1,6 +1,6 @@
 <?php
-/*****************************************************************************************
- * X2Engine Open Source Edition is a customer relationship management program developed by
+/***********************************************************************************
+ * X2CRM is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2016 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
@@ -21,7 +21,8 @@
  * 02110-1301 USA.
  * 
  * You can contact X2Engine, Inc. P.O. Box 66752, Scotts Valley,
- * California 95067, USA. or at email address contact@x2engine.com.
+ * California 95067, USA. on our website at www.x2crm.com, or at our
+ * email address: contact@x2engine.com.
  * 
  * The interactive user interfaces in modified source and object code versions
  * of this program must display Appropriate Legal Notices, as required under
@@ -32,7 +33,7 @@
  * X2Engine" logo. If the display of the logo is not reasonably feasible for
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2Engine".
- *****************************************************************************************/
+ **********************************************************************************/
 
 /**
  * @file protected/components/views/requirements.php
@@ -46,7 +47,7 @@
 /////////////////
 // SET GLOBALS //
 /////////////////
-$document = '<html><header><title>X2Engine System Requirements Check</title>{headerContent}</head><body><div style="width: 680px; border:1px solid #DDD; margin: 25px auto 25px auto; padding: 20px;font-family:sans-serif;">{bodyContent}</div></body></html>';
+$document = '<html><header><title>X2Engine System Requirements Check</title>{headerContent}</head><body><div style="width: 680px; border:1px solid #F5F5F5; margin: 25px auto 25px auto; padding: 20px;font-family:sans-serif;">{bodyContent}</div></body></html>';
 $totalFailure = array(
 	"<h1>This server definitely, most certainly cannot run X2Engine.</h1><p>Not even the system requirements checker script itself could run properly on this server. It encountered the following {scenario}:</p>\n<pre style=\"overflow-x:auto;margin:5px;padding:5px;border:1px red dashed;\">\n",
 	"\n</pre>"
@@ -674,6 +675,11 @@ if(!($requirements['extensions']['fileinfo']=extension_loaded('fileinfo'))){
 // Check for GD exension
 if(!($requirements['extensions']['gd']=extension_loaded('gd'))){
 	$reqMessages[1][] = '<a href="http://php.net/manual/book.image.php">GD</a>: '.$rbm.'. '.installer_t('Security captchas will not work, and the media module will not be able to detect or display the dimensions of uploaded images.');
+}
+
+// Check for IMAP extension:
+if(!($requirements['extensions']['imap']=extension_loaded('imap'))){
+	$reqMessages[1][] = '<a href="http://www.php.net/manual/book.imap.php">imap extension</a>: '.$rbm.'. '.installer_t('The email manager module requires the IMAP extension to function.');
 }
 
 // Check for SSH2 extension

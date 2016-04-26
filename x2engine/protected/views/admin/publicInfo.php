@@ -1,7 +1,7 @@
 <?php
 
-/*****************************************************************************************
- * X2Engine Open Source Edition is a customer relationship management program developed by
+/***********************************************************************************
+ * X2CRM is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2016 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
@@ -22,7 +22,8 @@
  * 02110-1301 USA.
  * 
  * You can contact X2Engine, Inc. P.O. Box 66752, Scotts Valley,
- * California 95067, USA. or at email address contact@x2engine.com.
+ * California 95067, USA. on our website at www.x2crm.com, or at our
+ * email address: contact@x2engine.com.
  * 
  * The interactive user interfaces in modified source and object code versions
  * of this program must display Appropriate Legal Notices, as required under
@@ -33,8 +34,25 @@
  * X2Engine" logo. If the display of the logo is not reasonably feasible for
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2Engine".
- *****************************************************************************************/
+ **********************************************************************************/
 
+
+Yii::app()->clientScript->registerCss('publicInfoCss',"
+#domain-alias-explanation {
+    background-color: rgb(223, 223, 223);
+    padding: 11px;
+    border-radius: 4px;
+    -moz-border-radius: 4px;
+    -webkit-border-radius: 4px;
+    -o-border-radius: 4px;
+    border: 1px solid #C0C0C0;
+    margin:10px;
+}
+#cname-record-example td {
+    border-bottom: 1px solid rgb(194,194,194);
+    padding: 4px;
+}
+");
 
 
 ?>
@@ -55,9 +73,20 @@
         ?></p>
         <?php
 
+        ?>
+        <p><?php 
+        echo Yii::t('admin','If you want to track contacts on a website with a domain that is '.
+            'different from the domain on which X2 is hosted, you\'ll have to set this to your '.
+            'website domain alias (see below for information on setting up a domain alias).');
+        ?>
+        </p>
+<?php
+
 ?>
         <p><?php 
         echo Yii::t('admin', 'You ');
+          
+        echo Yii::t('admin', ' also ');
          
         echo Yii::t('admin', 'should use this if the CRM is behind a firewall and you access X2Engine using a different URL than one would use to access it from the internet (i.e. a host name / IP address on a private subnet or VPN).'); 
         ?></p>
@@ -74,6 +103,41 @@
         )) ?></p>
         <?php echo $form->textField($model,'externalBaseUri'); ?>
         <?php echo CHtml::error($model, 'externalBaseUri');?>
+<?php
+
+?>
+        <div id="domain-alias-explanation">
+            <p><?php
+        echo Yii::t('admin','To set up a website domain alias for tracking, you\'ll need to create a'.
+            ' CNAME DNS resource record through your domain name registrar. Your CNAME record\'s name should'. 
+            ' refer to a subdomain of your website and should point to the domain of your CRM.'); ?>
+            </p>
+            <p>
+        <?php
+        echo Yii::t('admin','For example, '.
+            'if your website is on the domain {websiteDomain}, your domain alias could be {domainAlias}.'.
+            ' If your CRM is hosted at {crmDomain}, {domainAlias} would be an alias for '.
+            '{crmDomain}. Your CNAME record would then look as follows:', array (
+                '{websiteDomain}' => 'www.example.com',  
+                '{crmDomain}' => 'www.examplecrm.com',  
+                '{domainAlias}' => 'www2.example.com',  
+            )); ?>
+            </p>
+            <p>
+              <table id="cname-record-example">
+                  <tr>
+                      <td>Name</td>
+                      <td>Type</td>
+                      <td>Value</td>
+                  </tr>
+                  <tr>
+                      <td>www2.example.com</td>
+                      <td>CNAME</td>
+                      <td>www.examplecrm.com</td>
+                  </tr>
+              </table>
+            </p>
+        </div>
 <?php
 
         echo CHtml::label(Yii::t('admin', 'Asset Domain Sharding'), 'Admin_enableAssetDomains'); ?><br />

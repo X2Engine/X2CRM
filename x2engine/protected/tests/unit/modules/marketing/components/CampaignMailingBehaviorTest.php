@@ -1,7 +1,7 @@
 <?php
 
-/*****************************************************************************************
- * X2Engine Open Source Edition is a customer relationship management program developed by
+/***********************************************************************************
+ * X2CRM is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2016 X2Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
@@ -22,7 +22,8 @@
  * 02110-1301 USA.
  * 
  * You can contact X2Engine, Inc. P.O. Box 66752, Scotts Valley,
- * California 95067, USA. or at email address contact@x2engine.com.
+ * California 95067, USA. on our website at www.x2crm.com, or at our
+ * email address: contact@x2engine.com.
  * 
  * The interactive user interfaces in modified source and object code versions
  * of this program must display Appropriate Legal Notices, as required under
@@ -33,7 +34,7 @@
  * X2Engine" logo. If the display of the logo is not reasonably feasible for
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2Engine".
- *****************************************************************************************/
+ **********************************************************************************/
 
 Yii::import('application.modules.actions.models.*');
 Yii::import('application.modules.contacts.models.*');
@@ -187,6 +188,62 @@ class CampaignMailingBehaviorTest extends X2DbTestCase {
             $this->campaign('redirectLinkGeneration'), $contact, false);
     }
 
+     
+    public function testPrepareEmail() {
+
+        // get app config behavior to generate generate links correctly
+        TestingAuxLib::loadControllerMock ('examplecrm.com', '/X2Engine/index-test.php');
+
+        $cmb = $this->instantiate();
+        $contact = $this->contacts('testUser_unsent');
+        $recipientAddress = $contact->email;
+        $admin = Yii::app()->settings;
+        $admin->doNotEmailLinkText = 'unsubscribe';
+        // Set URL/URI to verify proper link generation:
+        $admin->externalBaseUrl = 'http://examplecrm.com';
+        $admin->externalBaseUri = '/X2Engine';
+        list($subject,$message,$uniqueId) = $cmb->prepareEmail(
+            $this->campaign('testUser'),$contact);
+        $email = $cmb->recipient->email;
+        
+        $this->assertEquals($recipientAddress,$email);
+        $this->assertEquals(
+            str_replace('{firstName}',$contact->firstName,$this->campaign('testUser')->subject),
+            $subject);
+        // Find the contact's name and tracking key:
+        $replaceVars = array(
+            '{firstName}' => $contact->firstName,
+            '{signature}' => $this->users('testUser')->profile->signature,
+            '{trackingKey}' => $uniqueId
+        );
+        $this->assertRegExp(
+            '/'.preg_quote(strtr($this->campaign('testUser')->content,$replaceVars),'/').'/',
+            $message,'Variable replacement didn\'t take place');
+        // Find the tracking image:
+        $trackImgUrl = Yii::app()->createExternalUrl('/marketing/marketing/click', array(
+            'uid' => $uniqueId
+        ));
+        $this->assertRegExp(
+            '/'.preg_quote(
+                '<img src="'.$trackImgUrl,'/').'/',
+            $message,'Tracking image not inserted');
+        // Find the unsubscribe link:
+        $unsubUrl = Yii::app()->createExternalUrl('/marketing/marketing/click', array(
+            'uid' => $uniqueId,
+            'type' => 'unsub',
+            'email' => $recipientAddress
+        ));
+        $this->assertRegExp(
+            '/'.preg_quote(
+                'To stop receiving these messages, click here: '.
+                '<a href="'.$unsubUrl.'">'.
+                'unsubscribe</a>','/').'/',
+            $message,'Unsubscribe link not inserted');
+        // Find the tracking key:
+        $this->assertRegExp(
+            '/'.preg_quote('visit http://example.com/?x2_key=','/').$uniqueId.'/',
+            $message,'Tracking key not inserted!');
+    }
      
 
     public function testRecordEmailSent() {
