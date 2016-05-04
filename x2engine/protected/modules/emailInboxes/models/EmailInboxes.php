@@ -1094,6 +1094,7 @@ class EmailInboxes extends X2Model {
                 'outlook.office365.com',
                 'imap-mail.outlook.com',
                 'imap.mail.yahoo.com',
+                'imap.secureserver.net',
             );
             if (!($this->settings['disableQuota'] ||
                in_array($this->credentials->auth->imapServer, $incompatibleImapServers))) {
