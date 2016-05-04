@@ -1461,15 +1461,17 @@ class Profile extends X2ActiveRecord {
     
     public static function renderAvatarImage($id, $width, $height, array $htmlOptions = array ()){
         $model = Profile::model ()->findByPk ($id);
-        $file = Yii::app()->file->set($model->avatar);
-        if ($file->exists) {
-            return CHtml::tag ('img', X2Html::mergeHtmlOptions (array (
-                'id'=>"avatar-image",
-                'class'=>"avatar-upload", 
-                'width'=>$width, 
-                'height'=>$height,
-                'src'=>"data:image/x-icon;base64,".base64_encode($file->getContents()),
-            ), $htmlOptions));
+        if(!empty($model->avatar)){
+            $file = Yii::app()->file->set($model->avatar);
+            if ($file->exists) {
+                return CHtml::tag ('img', X2Html::mergeHtmlOptions (array (
+                    'id'=>"avatar-image",
+                    'class'=>"avatar-upload", 
+                    'width'=>$width, 
+                    'height'=>$height,
+                    'src'=>"data:image/x-icon;base64,".base64_encode($file->getContents()),
+                ), $htmlOptions));
+            }
         }
     }
 
