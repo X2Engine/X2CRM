@@ -114,7 +114,12 @@ class RelatedMediaBehavior extends ActiveRecordBehavior {
         // file attribute value is expected to be either an id of old associated media or
         // an instance of CUploadedFile. Can also be an array containing either.
         $fileAttribute = $this->fileAttribute;
-        $transaction = Yii::app()->db->beginTransaction ();
+        $transaction = Yii::app()->db->getCurrentTransaction ();
+        $commit = false;
+        if (is_null($transaction)) {
+            $transaction = Yii::app()->db->beginTransaction ();
+            $commit = true;
+        }
         try {
             $files = ArrayUtil::coerceToArray ($this->owner->$fileAttribute); 
 
@@ -123,7 +128,8 @@ class RelatedMediaBehavior extends ActiveRecordBehavior {
                 $this->saveAssociatedMedia ($file);
             }
 
-            $transaction->commit ();
+            if ($commit)
+                $transaction->commit ();
         } catch (CException $e) {
             $transaction->rollback ();
         }
