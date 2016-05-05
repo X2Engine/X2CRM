@@ -95,7 +95,7 @@ $(function() {
         <div class="page-title templates">
             <h2>
                 <?php echo Yii::t('module', 'View {X}', array('{X}' => Modules::itemDisplayName())); ?>: <?php
-                echo $model->name;
+                echo $model->renderAttribute ('name');
                 ?>
             </h2>
             <?php

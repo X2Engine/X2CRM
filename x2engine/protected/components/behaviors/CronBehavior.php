@@ -156,7 +156,11 @@ class CronBehavior extends CBehavior {
                 $profRecord = Profile::model()->findByPk($userId);
                 if (isset($profRecord)) {
                     $mail->addAddress($profRecord->emailAddress);
-                    $mail->send();
+                    try{
+                        $mail->send();
+                    } catch (Exception $e){
+                        $this->log("Failed to send Activity Feed Report email for user: {$profRecord->username}");
+                    }
                     $event->recur();
                 } else {
                     // Corrupt event

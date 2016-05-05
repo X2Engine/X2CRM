@@ -206,7 +206,7 @@ class WeblistController extends x2base {
 
 			//we just can't get a list, very unlikely
 			if (!isset($list)) {
-				$this->renderPartial('application.modules.contacts.views.contacts.webleadSubmit',
+				$this->renderPartial('application.components.views.webFormSubmit',
 					array('error'=>Yii::t('contacts','This request cannot be made at this time.')));
 				return;
 			}
@@ -214,7 +214,7 @@ class WeblistController extends x2base {
 			//require email field, check format
 			$email = $_POST['Contacts']['email'];
 			if (preg_match("/[a-zA-Z0-9._%-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}/", $email) == 0) {
-				$this->renderPartial('application.modules.contacts.views.contacts.webleadSubmit',
+				$this->renderPartial('application.components.views.webFormSubmit',
 					array('error'=>Yii::t('contacts','Invalid Email Address')));
 				return;
 			}
