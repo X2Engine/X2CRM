@@ -1519,6 +1519,11 @@ class SiteController extends x2base {
                             $sessionId = $_SESSION['sessionId'];
                         else
                             $sessionId = $_SESSION['sessionId'] = session_id();
+                        
+                        if (isset($_COOKIE['sessionToken']))
+                            $sessionToken = $_SESSION['sessionToken'];
+                        else
+                            $sessionToken = $_SESSION['sessionToken'] = session_id();
 
                         $session = X2Model::model('Session')->findByPk($sessionId);
 
@@ -1533,17 +1538,20 @@ class SiteController extends x2base {
                         } else {
                             $session->lastUpdated = time();
                         }
-                        // x2base::cleanUpSessions();
-                        // $session = X2Model::model('Session')->findByAttributes(array('user'=>$userRecord->username,'IP'=>$ip));
-                        // if(isset($session)) {
-                        // $session->lastUpdated = time();
-                        // } else {
-                        // $session = new Session;
-                        // $session->user = $model->username;
-                        // $session->lastUpdated = time();
-                        // $session->status = 1;
-                        // $session->IP = $ip;
-                        // }
+
+                        $sessionToken = X2Model::model('SessionToken')->findByAttributes(array('user'=>$userRecord->username,'IP'=>$ip));
+                        if(isset($sessionToken)) {
+                            $sessionToken->lastUpdated = time();
+                        } else {
+                            $sessionToken = new SessionToken;
+                            $sessionToken->user = $model->username;
+                            $session->id = $sessionId;
+                            $sessionToken->lastUpdated = time();
+                            $sessionToken->status = 1;
+                            $sessionToken->IP = $ip;
+                        }
+                        
+                        
                         $session->save();
                         SessionLog::logSession($userRecord->username, $sessionId, 'googleLogin');
                         $userRecord->login = time();
