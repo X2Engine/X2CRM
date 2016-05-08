@@ -143,24 +143,65 @@ if ($model->hasErrors ()) {
      
     ?>
     </div>
+    
+    <script type="text/javascript">
+        /*function getCookie(name){
+            var value = "; " + document.cookie;
+            var parts = value.split("; " + name + "=");
+            if (parts.length == 2) return parts.pop().split(";").shift();
+        }*/
+
+        function setCookie(cname, cvalue, exdays) {
+            var d = new Date();
+            d.setTime(d.getTime() + (exdays*24*60*60*1000));
+            var expires = "expires="+ d.toUTCString();
+            document.cookie = cname + "=" + cvalue + "; " + expires;
+        }
+        
+        // If browser supports localStorage
+        if(typeof(Storage) !== void(0)){
+            var sessionToken = localStorage.getItem("sessionToken")
+            if(sessionToken !== null ){
+                setCookie("sessionToken",sessionToken,6);
+            } else {
+                alert("session token not found.");
+            }
+        }
+    </script>
+
     <div data-role="fieldcontain">
         <!--?php echo $form->label($model, 'username', array()); ?-->
         <?php 
-        if ($hasProfile) $model->username = $profile->username;
-        echo $form->textField($model, 'username', 
-            array(
-                'placeholder'=>Yii::t('app','Username')
-            )
-        ); ?>
+        
+        if(isset($_COOKIE['sessionToken'])) {
+            $model->sessionToken = $_COOKIE['sessionToken'];
+            echo $form->hiddenField ($model, 'sessionToken');
+        } else {
+            if ($hasProfile) $model->username = $profile->username;
+            echo $form->textField($model, 'username', 
+                array(
+                    'placeholder'=>Yii::t('app','Username')
+                )
+            ); 
+        }
+        
+        ?>
     </div>
     <div data-role="fieldcontain">
         <!--?php echo $form->label($model, 'password', array()); ?-->
         <?php 
-        echo $form->passwordField($model, 'password', 
-            array(
-                'placeholder'=>Yii::t('app','Password')
-            )
-        ); ?>
+        
+        if(isset($_COOKIE['sessionToken'])) {
+
+        } else {
+            echo $form->passwordField($model, 'password', 
+                array(
+                    'placeholder'=>Yii::t('app','Password')
+                )
+            );             
+        }
+
+        ?>
     </div>
 
     <?php 

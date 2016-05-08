@@ -30,3 +30,4 @@
 /x2engine/protected/commands/TestRunnerCommand.php
 /logs
 /.tags
+/x2engine/nbproject/private/

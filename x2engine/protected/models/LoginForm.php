@@ -52,6 +52,7 @@ class LoginForm extends X2FormModel {
     public $rememberMe;
     public $verifyCode;
     public $useCaptcha;
+    public $sessionToken;
     private $_identity;
 
     /**
@@ -85,6 +86,7 @@ class LoginForm extends X2FormModel {
             'password' => Yii::t('app', 'Password'),
             'rememberMe' => Yii::t('app', 'Remember me'),
             'verifyCode' => Yii::t('app', 'Verification Code'),
+            'sessionToken' => Yii::t('app', 'Session Token'),
         );
     }
 
