@@ -131,10 +131,16 @@ $modTitles = array(
 <?php echo Yii::t('marketing','Paste this code into the body section of every page of your '.
     'website.'); ?><br>
 
+<?php
+// Append a slash to the external base URL if one is not already present
+$absBaseUrl = Yii::app()->getExternalAbsoluteBaseUrl ();
+if ($absBaseUrl[strlen($absBaseUrl)-1] !== '/')
+    $absBaseUrl .= '/';
+?>
 <textarea id="embedcode" style="background:#eee" class='x2-extra-wide-input'>
 <script src="<?php 
     //echo Yii::app()->request->getHostInfo (),Yii::app()->getBaseUrl (); 
-    echo Yii::app()->getExternalAbsoluteBaseUrl ();
+    echo $absBaseUrl;
     ?>webTracker.php"></script>
 </textarea>
 <?php

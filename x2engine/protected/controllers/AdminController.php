@@ -904,8 +904,10 @@ class AdminController extends X2Controller {
 
         // Collect a list of role names
         $roles = array();
-        foreach ($exportIds['Roles'] as $roleId) {
-            $roles[] = Roles::model()->findByPk ($roleId)->name;
+        if (array_key_exists('Roles', $exportIds)) {
+            foreach ($exportIds['Roles'] as $roleId) {
+                $roles[] = Roles::model()->findByPk ($roleId)->name;
+            }
         }
 
         // Generate a manifest containing the information and contents of the package
