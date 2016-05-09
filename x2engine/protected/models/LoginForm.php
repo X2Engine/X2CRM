@@ -120,24 +120,24 @@ class LoginForm extends X2FormModel {
     public function login($google = false) {
         if(!isset($this->_identity))
             $this->getIdentity()->authenticate($google);
-		if($this->getIdentity()->errorCode === UserIdentity::ERROR_NONE) {
+        if($this->getIdentity()->errorCode === UserIdentity::ERROR_NONE) {
 			$duration = $this->rememberMe ? 2592000 : 0; //60*60*24*30 = 30 days
 			Yii::app()->user->login($this->_identity, $duration);
 
 			// update lastLogin time
 			$user = User::model()->findByPk(Yii::app()->user->getId());
-            Yii::app()->setSuModel($user);
-			$user->lastLogin = $user->login;
-			$user->login = time();
-			$user->update(array('lastLogin','login'));
+                        Yii::app()->setSuModel($user);
+            $user->lastLogin = $user->login;
+            $user->login = time();
+            $user->update(array('lastLogin','login'));
 			
-			Yii::app()->session['loginTime'] = time();
+            Yii::app()->session['loginTime'] = time();
 			
-			return true;
-		}
-		
-		return false;
+            return true;
 	}
+		
+        return false;
+    }
 
     /**
      * User identity component.

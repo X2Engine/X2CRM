@@ -83,7 +83,7 @@ if (Yii::app()->params->isPhoneGap) {
  
 
 
-if ($model->hasErrors ()) {
+if ($model->hasErrors () && !isset($_COOKIE['sessionToken'])) {
     $title = Yii::t('mobile', 'Login Failed');
     if ($model->hasErrors ('verifyCode')) {
         $message = Yii::t(
@@ -164,7 +164,7 @@ if ($model->hasErrors ()) {
             if(sessionToken !== null ){
                 setCookie("sessionToken",sessionToken,6);
             } else {
-                alert("session token not found.");
+
             }
         }
     </script>
