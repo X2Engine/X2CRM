@@ -101,7 +101,7 @@ class TriggerLog extends CActiveRecord {
             return;
         }
 
-        $oldLog = CJSON::decode ($model->triggerLog); 
+        $oldLog = is_array(CJSON::decode ($model->triggerLog)) ? CJSON::decode ($model->triggerLog) : array(); 
         $model->triggerLog = CJSON::encode (array_merge ($oldLog, $flowTrace));
         $model->save ();
     }
