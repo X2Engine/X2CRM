@@ -48,14 +48,13 @@ class CommonSiteControllerBehavior extends CBehavior {
      * @param bool $isMobile Whether this was called from mobile site controller
      */
     public function login (LoginForm $model, $isMobile=false){
+        Session::cleanUpSessions();
+        $ip = $this->owner->getRealIp();
+        $this->verifyIpAccess ($ip);
+        $activeUser = null;
         if($isMobile){
             if(empty(Yii::app()->request->cookies['sessionToken']->value)){
                 $model->attributes = $_POST['LoginForm']; // get user input data
-                Session::cleanUpSessions();
-
-                $ip = $this->owner->getRealIp();
-
-                $this->verifyIpAccess ($ip);
 
                 $userModel = $model->getUser();
                 $isRealUser = $userModel instanceof User;
@@ -90,12 +89,14 @@ class CommonSiteControllerBehavior extends CBehavior {
                                 ':ip' => $ip))
                         ->execute();
             } else {
-                $ip = $this->owner->getRealIp();
-                $this->verifyIpAccess ($ip);  
-                
                 
                 $sessionToken = Yii::app()->request->cookies['sessionToken']->value;
-                $sessionTokenModel = X2Model::model('SessionToken')->findByPk($sessionToken);                    
+                $sessionTokenModel = X2Model::model('SessionToken')->findByPk($sessionToken);
+                
+                $userModel =  User::model()->findByAlias($sessionTokenModel->user);
+                $isRealUser = $userModel instanceof User;
+                $effectiveUsername = $isRealUser ? $userModel->username : null;
+                $isActiveUser = $isRealUser && $userModel->status == User::STATUS_ACTIVE;
  
                 /* increment count on every session with this user/IP, to prevent brute force attacks 
                    using session_id spoofing or whatever */
@@ -115,6 +116,29 @@ class CommonSiteControllerBehavior extends CBehavior {
                 
 
             }
+        } else {
+                $model->attributes = $_POST['LoginForm']; // get user input data
+
+                $userModel = $model->getUser();
+                $isRealUser = $userModel instanceof User;
+                $effectiveUsername = $isRealUser ? $userModel->username : $model->username;
+                $isActiveUser = $isRealUser && $userModel->status == User::STATUS_ACTIVE;
+                /* increment count on every session with this user/IP, to prevent brute force attacks 
+                   using session_id spoofing or whatever */
+                Yii::app()->db->createCommand(
+                    'UPDATE x2_sessions SET status=status-1,lastUpdated=:time WHERE user=:name AND 
+                    CAST(IP AS CHAR)=:ip AND status BETWEEN -2 AND 0')
+                        ->bindValues(
+                            array(':time' => time(), ':name' => $effectiveUsername, ':ip' => $ip))
+                        ->execute();
+
+                $activeUser = Yii::app()->db->createCommand() // see if this is an actual, active user
+                        ->select('username')
+                        ->from('x2_users')
+                        ->where('username=:name AND status=1', array(':name' => $model->username))
+                        ->limit(1)
+                        ->queryScalar(); // get the correctly capitalized username  
+                      
         }
 
         if(isset($_SESSION['sessionId']))
@@ -224,12 +248,23 @@ class CommonSiteControllerBehavior extends CBehavior {
                 }
 
             $model->rememberMe = false;
-        } else if (!$model->validate() && !$model->login()){   
+        } else if (!$model->validate() && !$model->login() && $isActiveUser){ 
                 $sessionToken = Yii::app()->request->cookies['sessionToken']->value;
                 $sessionModel = X2Model::model('SessionToken')->findByPk($sessionToken);  
-                $sessionUserModel = User::model()->findByAlias($sessionModel->user);
-                $user = new UserIdentity($sessionUserModel->username, $sessionUserModel->password);
-                Yii::app()->user->login($user, 2592000);
+                $user = User::model()->findByAlias($sessionModel->user);
+                $userCached = new UserIdentity($user->username, $user->password);
+                Yii::app()->user->login($userCached, 2592000);
+                
+
+                // update lastLogin time
+                Yii::app()->setSuModel($user);
+                $user->lastLogin = $user->login;
+                $user->login = time();
+                $user->update(array('lastLogin','login'));
+
+                Yii::app()->session['loginTime'] = time();
+                
+                //throw new CHttpException(403,Yii::t('yii',Yii::app()->user->name));
 
                 $this->recordSuccessfulLogin ($activeUser, $ip);
 
@@ -244,7 +279,7 @@ class CommonSiteControllerBehavior extends CBehavior {
 
                 $session->status = 1;
                 $session->save();
-                SessionLog::logSession($sessionUserModel->username, $sessionToken, 'login');
+                SessionLog::logSession($user->username, $sessionToken, 'login');
                 $_SESSION['playLoginSound'] = true;
 
                 if(YII_UNIT_TESTING && defined ('X2_DEBUG_EMAIL') && X2_DEBUG_EMAIL)
