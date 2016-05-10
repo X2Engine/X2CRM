@@ -8,7 +8,7 @@
  * Free Software Foundation with the addition of the following permission added
  * to Section 15 as permitted in Section 7(a): FOR ANY PART OF THE COVERED WORK
  * IN WHICH THE COPYRIGHT IS OWNED BY X2ENGINE, X2ENGINE DISCLAIMS THE WARRANTY
- * OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
+ * OF NON INFRINGEMENT OF THIRD PARTY RsIGHTS.
  * 
  * This program is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
@@ -202,7 +202,7 @@ class CommonSiteControllerBehavior extends CBehavior {
                         Yii::app()->request->cookies[$cookieName] = $cookie; // save cookie
                     }
                 }else{
-                    foreach(array('username','rememberMe','sessionToken') as $attr) {
+                    foreach(array('username','rememberMe') as $attr) {
                         // Remove the cookie if they unchecked the box
                         AuxLib::clearCookie(CHtml::resolveName($model, $attr));
                     }
@@ -253,9 +253,10 @@ class CommonSiteControllerBehavior extends CBehavior {
                 $sessionModel = X2Model::model('SessionToken')->findByPk($sessionToken);  
                 $user = User::model()->findByAlias($sessionModel->user);
                 $userCached = new UserIdentity($user->username, $user->password);
+                $userCached->authenticate(true);
                 Yii::app()->user->login($userCached, 2592000);
-                
 
+                
                 // update lastLogin time
                 Yii::app()->setSuModel($user);
                 $user->lastLogin = $user->login;

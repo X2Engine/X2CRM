@@ -333,6 +333,9 @@ class MobileController extends X2Controller {
         }
         if (isset($_SESSION['access_token']))
             unset($_SESSION['access_token']);
+        
+        //unset(Yii::app()->request->cookies['sessionToken']);
+                    
 
         $this->redirect($this->createAbsoluteUrl('login'));
     }
