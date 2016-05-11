@@ -265,7 +265,7 @@ class ImportExportBehavior extends CBehavior {
                     ->from('x2_fields')
                     ->where('modelName = :model AND required = 1', array(
                         ':model' => str_replace(' ', '', $model)))
-                    ->query();
+                    ->queryAll();
             $missingAttrs = array();
             foreach ($requiredAttrs as $attr) {
                 // Skip visibility, it can be set for them

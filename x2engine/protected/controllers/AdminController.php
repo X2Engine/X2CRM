@@ -4586,8 +4586,7 @@ class AdminController extends X2Controller {
             fseek($fp, $_SESSION['offset']); // Seek to the right file offset
             $mappedId = false; // Whether the user has mapped the ID field
 
-            // validate meta data
-            if (!ArrayUtil::setEquals (array_keys ($importMap), $metaData)) {
+            if (empty($importMap)) {
                 throw new CHttpException (400, Yii::t('app', 'Bad import map'));
             }
 
@@ -5620,10 +5619,6 @@ class AdminController extends X2Controller {
             $_SESSION['imported'] = 0;
             $_SESSION['failed'] = 0;
             $_SESSION['created'] = array();
-            if ($preselectedMap) {
-                $keys = array_keys($_SESSION['importMap']);
-                $attributes = array_values($_SESSION['importMap']);
-            }
              
             $matchField = Fields::model()->findByAttributes (array(
                 'fieldName' => $_SESSION['matchAttribute'],
