@@ -137,12 +137,12 @@ class SessionToken extends CActiveRecord {
                 ->queryAll();
         foreach($users as $user){
             $timeout = Roles::getUserTimeout($user['id']);
-            $sessions = X2Model::model('Session')->findAllByAttributes(
+            $sessions = X2Model::model('SessionToken')->findAllByAttributes(
                     array('user' => $user['username']), 
                     'lastUpdated < :cutoff', 
                     array(':cutoff' => time() - $timeout));
             foreach($sessions as $session){
-                SessionLog::logSession($session->user, $session->id, 'passiveTimeout');
+                SessionLog::logSession($session->user, $session->id, 'passiveTimeoutToken');
                 $session->delete();
             }
         }

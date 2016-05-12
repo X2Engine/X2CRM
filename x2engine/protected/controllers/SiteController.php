@@ -1515,6 +1515,7 @@ class SiteController extends x2base {
                         $ip = $this->getRealIp();
 
                         Session::cleanUpSessions();
+                        SessionToken::cleanUpSessions();
                         if (isset($_SESSION['sessionId']))
                             $sessionId = $_SESSION['sessionId'];
                         else

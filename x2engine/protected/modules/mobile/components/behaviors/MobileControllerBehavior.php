@@ -156,9 +156,9 @@ class MobileControllerBehavior extends ControllerBehavior {
         $this->pageId = lcfirst (preg_replace ('/Controller$/', '', get_class ($this->owner))).'-'.
             $action->getId ();
 
-        $cookie = new CHttpCookie('isMobileApp', 'true'); // create cookie
-        $cookie->expire = 2147483647; // max expiration time
-        Yii::app()->request->cookies['isMobileApp'] = $cookie; // save cookie
+        //$cookie = new CHttpCookie('isMobileApp', 'true'); // create cookie
+        //$cookie->expire = 2147483647; // max expiration time
+        //Yii::app()->request->cookies['isMobileApp'] = $cookie; // save cookie
 
          
         if (isset ($_GET['isPhoneGap'])) {

@@ -138,6 +138,40 @@ class LoginForm extends X2FormModel {
 		
         return false;
     }
+    
+	/**
+	 * Logs in the user using the given sesson token in the model.
+	 * 
+	 * @param boolean $google Whether or not Google is being used for the login
+	 * @return boolean whether login is successful
+	 */
+    public function loginSessionToken($google = false) {
+        if(!empty(Yii::app()->request->cookies['sessionToken']->value))
+            $sessionToken = Yii::app()->request->cookies['sessionToken']->value;
+        else
+            return false;
+        $sessionModel = X2Model::model('SessionToken')->findByPk($sessionToken);  
+        $user = User::model()->findByAlias($sessionModel->user);
+        $userCached = new UserIdentity($user->username, $user->password);
+        $userCached->authenticate(true);
+        if($userCached->errorCode === UserIdentity::ERROR_NONE) {
+            $duration = $this->rememberMe ? 2592000 : 0; //60*60*24*30 = 30 days
+            Yii::app()->user->login($userCached, $duration);
+
+            // update lastLogin time
+            $user = User::model()->findByPk(Yii::app()->user->getId());
+            Yii::app()->setSuModel($user);
+            $user->lastLogin = $user->login;
+            $user->login = time();
+            $user->update(array('lastLogin','login'));
+			
+            Yii::app()->session['loginTime'] = time();
+			
+            return true;
+	}
+		
+        return false;
+    }
 
     /**
      * User identity component.

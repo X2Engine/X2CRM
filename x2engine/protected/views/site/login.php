@@ -174,6 +174,7 @@ $('#mobile-signin-button').click (function () {
                             'placeholder' => Yii::t('app', 'Username')
                         ));
                 }
+                setcookie('isMobileApp','false'); // save cookie
                 ?>
                 </div>
                 <div class='row'>

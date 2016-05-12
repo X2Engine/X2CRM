@@ -242,7 +242,8 @@ if ($model->hasErrors () && !isset($_COOKIE['sessionToken'])) {
     ?>
     <div data-role="fieldcontain" class='full-app-link'>
         <a href='<?php echo $this->createAbsoluteUrl ('/site/login'); ?>' rel='external'><?php 
-            echo CHtml::encode (Yii::t('app', 'Desktop version')); ?>
+            echo CHtml::encode (Yii::t('app', 'Desktop version')); 
+            setcookie('isMobileApp','true'); // save cookie?>
         </a>
     </div>
     <?php
