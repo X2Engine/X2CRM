@@ -103,10 +103,10 @@ class CommonSiteControllerBehavior extends CBehavior {
                    using session_id spoofing or whatever */
                 if($sessionTokenModel !== null){
                     Yii::app()->db->createCommand(
-                        'UPDATE x2_sessions_token SET status=status-1,lastUpdated=:time WHERE user=:name AND 
+                        'UPDATE x2_sessions_token SET status=status-1 WHERE user=:name AND 
                         CAST(IP AS CHAR)=:ip AND status BETWEEN -2 AND 0')
                             ->bindValues(
-                                array(':time' => time(), ':name' => $sessionTokenModel->user, ':ip' => $ip))
+                                array(':name' => $sessionTokenModel->user, ':ip' => $ip))
                             ->execute();
                 }
 

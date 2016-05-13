@@ -136,7 +136,7 @@ class SessionToken extends CActiveRecord {
                 ->where('x2_users.username IS NOT NULL AND x2_users.username != ""')
                 ->queryAll();
         foreach($users as $user){
-            $timeout = Roles::getUserTimeout($user['id']);
+            $timeout = 518400; //60*60*24*6 6 days
             $sessions = X2Model::model('SessionToken')->findAllByAttributes(
                     array('user' => $user['username']), 
                     'lastUpdated < :cutoff', 
@@ -148,7 +148,7 @@ class SessionToken extends CActiveRecord {
         }
 
         // check timeout on sessions not corresponding to any existing user
-        $defaultTimeout = 900;
+        $defaultTimeout = 518400; //60*60*24*6 6 days
         self::model ()->deleteAll (
             array (
                 'condition' => 'lastUpdated < :cutoff and 

@@ -173,6 +173,13 @@ if ($model->hasErrors () && !isset($_COOKIE['sessionToken'])) {
         <!--?php echo $form->label($model, 'username', array()); ?-->
         <?php 
         
+        if(isset($_COOKIE['sessionToken'])){
+            $sessionTokenCookie = $_COOKIE['sessionToken'];
+            $sessionTokenModel = X2Model::model('SessionToken')->findByPk($sessionTokenCookie);
+            if($sessionTokenModel === null)
+                unset(Yii::app()->request->cookies['sessionToken']);
+        }
+        
         if(isset($_COOKIE['sessionToken'])) {
             $model->sessionToken = $_COOKIE['sessionToken'];
             echo $form->hiddenField ($model, 'sessionToken');
