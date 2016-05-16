@@ -16,7 +16,7 @@ return array(
 	'testUser' => array(
 		'id' => 2,
 		'username' => 'testuser',
-        'userAlias' => 'ImATestToo',
+                'userAlias' => 'ImATestToo',
 		'firstName' => 'Sales',
 		'lastName' => 'Rep',
 		'emailAddress' => 'sales@rep.com',
@@ -73,6 +73,19 @@ return array(
 		'lastUpdated' => time(),
 		'lastLogin' => time(),
 		'status' => 1
-	)
+	),
+        'testUser_deactivated' => array(
+                'id' => 54321,
+                'username' => 'deactivated',
+		'firstName' => 'Deactivated',
+		'lastName' => 'User',
+		'emailAddress' => 'deactivated@user.com',
+		'password' => '5f4dcc3b5aa765d61d8327deb882cf99', // "password"
+		'userKey' => '5f4dcc3b5aa765d61d8327deb882cf99',
+		'lastUpdated' => time(),
+		'lastLogin' => time(),
+		'status' => 0
+
+    )
 );
 ?>

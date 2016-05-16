@@ -146,12 +146,15 @@ class LoginForm extends X2FormModel {
 	 * @return boolean whether login is successful
 	 */
     public function loginSessionToken($google = false) {
-        if(!empty(Yii::app()->request->cookies['sessionToken']->value))
-            $sessionToken = Yii::app()->request->cookies['sessionToken']->value;
-        else
+        $sessionToken = Yii::app()->request->cookies['sessionToken']->value;
+        if(empty(Yii::app()->request->cookies['sessionToken']->value))
             return false;
-        $sessionModel = X2Model::model('SessionToken')->findByPk($sessionToken);  
+        $sessionModel = X2Model::model('SessionToken')->findByPk($sessionToken); 
+        if($sessionModel === null)
+            return false;
         $user = User::model()->findByAlias($sessionModel->user);
+        if($user === null)
+            return false;
         $userCached = new UserIdentity($user->username, $user->password);
         $userCached->authenticate(true);
         if($userCached->errorCode === UserIdentity::ERROR_NONE) {
