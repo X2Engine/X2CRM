@@ -189,9 +189,9 @@ class CommonSiteControllerBehavior extends CBehavior {
                 
             $this->recordSuccessfulLogin ($activeUser, $ip);
             if($isMobile){
-                //$cookie = new CHttpCookie('sessionToken', $sessionIdToken);
-                //$cookie->expire = time () + 518400; // //60*60*24*6 = 6 days
-                //Yii::app()->request->cookies['sessionToken'] = $cookie;
+                $cookie = new CHttpCookie('sessionToken', $sessionIdToken);
+                $cookie->expire = time () + 518400; // //60*60*24*6 = 6 days
+                Yii::app()->request->cookies['sessionToken'] = $cookie;
                 echo "<script type=\"text/javascript\">
                         window.localStorage.setItem(\"sessionToken\","+$sessionIdToken +");
                         </script>";
