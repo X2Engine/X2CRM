@@ -50,7 +50,7 @@ var record=0;
 <div style="width:600px">
 <?php
 if ($preselectedMap) {
-    echo Yii::t('admin', 'You have selected to upload and use the following import mapping: ').$_SESSION['mapName']."<br><br>";
+    echo Yii::t('admin', 'You have selected to use the following import mapping: ').$_SESSION['mapName']."<br><br>";
     ?>
     <table id="importMapSummary">
     <tr>
@@ -60,7 +60,7 @@ if ($preselectedMap) {
     <?php foreach ($importMap as $key => $val) { ?>
         <tr>
             <td style='width: 50%'><?php echo $key; ?></td>
-            <td style='width: 50%'><?php echo $val; ?></td>
+            <td style='width: 50%'><?php echo (empty($val) ? Yii::t('admin', 'DO NOT MAP'): $val); ?></td>
         </tr>
     <?php
     }
