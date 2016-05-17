@@ -1311,6 +1311,7 @@ INSERT INTO `x2_auth_item_child` (`parent`,`child`) VALUES
 ('ContactsPrivateUpdateAccess','ContactsMinimumRequirements'),
 ('ContactsUpdateAccess','ContactsMinimumRequirements'),
 ('ContactsUpdateAccess','ContactsCreateRecordAlias'),
+('ContactsPrivateUpdateAccess','ContactsCreateRecordAlias'),
 ('ContactsBasicAccess','ContactsCreate'),
 ('ContactsBasicAccess','ContactsCreateList'),
 ('ContactsBasicAccess','ContactsCreateListFromSelection'),
