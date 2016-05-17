@@ -161,6 +161,10 @@ class Session extends CActiveRecord {
             }
         }
 
+        Yii::app()->db->createCommand(
+            'DELETE FROM x2_sessions WHERE user IS NULL')
+                            ->execute();
+              
         // check timeout on sessions not corresponding to any existing user
         $defaultTimeout = 900;
         self::model ()->deleteAll (
