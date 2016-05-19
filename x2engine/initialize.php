@@ -239,7 +239,7 @@ if (isset($_POST['testDb'])) {
 
     ResponseUtil::respond(installer_t("Connection successful!"));
 } elseif (isset($_POST['testCron'])) {
-    require_once 'protected/components/util/CommandUtil.php';
+    require_once implode(DIRECTORY_SEPARATOR, array(__DIR__, 'protected','components','util','CommandUtil.php'));
     $command = new CommandUtil();
     try {
         $command->loadCrontab();
@@ -264,7 +264,7 @@ if (isset($_POST['testDb'])) {
  */
 function baseConfig() {
     global $config, $confKeys, $confMap;
-    $confFile = realpath('protected/config/X2Config.php');
+    $confFile = realpath(implode(DIRECTORY_SEPARATOR, array(__DIR__, 'protected','config','X2Config.php')));
     if ($confFile) {
         include($confFile);
         foreach ($confMap as $name2 => $name1) {
@@ -290,8 +290,8 @@ function baseConfig() {
  */
 function installConfig() {
     global $config, $confMap, $confKeys;
-    if (file_exists('installConfig.php')) {
-        require('installConfig.php');
+    if (file_exists(__DIR__.DIRECTORY_SEPARATOR.'installConfig.php')) {
+        require(__DIR__.DIRECTORY_SEPARATOR.'installConfig.php');
     } else
         RIP('Error: Installer config file not found.');
 
@@ -412,7 +412,7 @@ function installModule($module, $respond = True) {
         return;
     global $dbo;
     $moduleName = installer_t($module);
-    $regPath = "protected/modules/$module/register.php";
+    $regPath = implode(DIRECTORY_SEPARATOR, array(__DIR__, 'protected','modules',$module,'register.php'));
     $regFile = realpath($regPath);
     if ($regFile) {
         $install = require_once($regFile);
@@ -514,9 +514,9 @@ function installStage($stage) {
             $config['time'] = time();
             foreach ($dbKeys as $property)
                 $dbConfig['{' . $property . '}'] = $config[$property];
-            $contents = file_get_contents('webConfig.php');
+            $contents = file_get_contents(__DIR__.DIRECTORY_SEPARATOR.'webConfig.php');
             $contents = preg_replace('/\$url\s*=\s*\'\'/', "\$url=" . var_export($config['baseUrl'].$config['baseUri'], 1), $contents);
-            file_put_contents('webConfig.php', $contents);
+            file_put_contents(__DIR__.DIRECTORY_SEPARATOR.'webConfig.php', $contents);
             if ($config['test_db']) {
                 $filename = implode(DIRECTORY_SEPARATOR, array(__DIR__, 'protected', 'config', 'X2Config-test.php'));
                 if (!empty($config['test_url'])) {
@@ -554,7 +554,10 @@ function installStage($stage) {
 
             // Create an encryption key for credential storage:
             if (extension_loaded('openssl') && extension_loaded('mcrypt')) {
-                $encryption = new EncryptUtil('protected/config/encryption.key', 'protected/config/encryption.iv');
+                $encryption = new EncryptUtil(
+                        implode(DIRECTORY_SEPARATOR, array(__DIR__, 'protected','config','encryption.key')),
+                        implode(DIRECTORY_SEPARATOR, array(__DIR__, 'protected','config','encryption.iv'))
+                    );
                 $encryption->saveNew();
             }
 
@@ -562,7 +565,7 @@ function installStage($stage) {
             $dbConfig['{adminUserKey}'] = $config['adminUserKey'];
             try {
                 foreach (array('', '-pro', '-pla') as $suffix) {
-                    $sqlPath = "protected/data/config$suffix.sql";
+                    $sqlPath = implode(DIRECTORY_SEPARATOR, array(__DIR__,'protected','data',"config$suffix.sql"));
                     $sqlFile = realpath($sqlPath);
                     if ($sqlFile) {
                         $sql = explode('/*&*/', strtr(file_get_contents($sqlFile), $dbConfig));
@@ -585,12 +588,12 @@ function installStage($stage) {
              * Look for additional initialization files and perform final tasks
              */
             foreach ($editions as $ed) // Add editional prefixes as necessary
-                if (file_exists("initialize_$ed.php"))
-                    include("initialize_$ed.php");
+                if (file_exists(__DIR__.DIRECTORY_SEPARATOR."initialize_$ed.php"))
+                    include(__DIR__.DIRECTORY_SEPARATOR."initialize_$ed.php");
             break;
         default:
             // Look for a named SQL file and run it:
-            $stagePath = "protected/data/$stage.sql";
+            $stagePath = implode(DIRECTORY_SEPARATOR, array(__DIR__,'protected','data',"$stage.sql"));
             if ($stage == 'dummy_data')
                 $stageLabels['dummy_data'] = sprintf($stageLabels['dummy_data'], $config['dummy_data'] ? 'insert' : 'delete');
             if ((bool) ((int) $config['dummy_data']) || $stage != 'dummy_data') {
@@ -607,7 +610,7 @@ function installStage($stage) {
                     }
                     // Hunt for init SQL files associated with other editions:
                     foreach ($editions as $ed) {
-                        if ($sqlFile = realpath("protected/data/$stage-$ed.sql")) {
+                        if ($sqlFile = realpath(implode(DIRECTORY_SEPARATOR, array(__DIR__,'protected','data',"$stage-$ed.sql")))) {
                             $sql = explode('/*&*/', file_get_contents($sqlFile));
                             foreach ($sql as $sqlLine) {
                                 $statement = $dbo->prepare($sqlLine);
@@ -623,7 +626,7 @@ function installStage($stage) {
 
                     if ($stage == 'dummy_data') {
                         // Need to update the timestamp fields on all the sample data that has been inserted.
-                        $dateGen = @file_get_contents(realpath("protected/data/dummy_data_date")) or RIP("Sample data generation date not set.");
+                        $dateGen = @file_get_contents(realpath(implode(DIRECTORY_SEPARATOR, array(__DIR__,'protected','data','dummy_data_date')))) or RIP("Sample data generation date not set.");
                         $time = time();
                         $time2 = $time * 2;
                         $timeDiff = $time - (int) trim($dateGen);
@@ -669,7 +672,7 @@ function installStage($stage) {
                 // This is the dummy data stage, and we need to clear out all unneeded files.
                 // However, we should leave the files alone if this is a testing database reinstall.
                 $stageLabels[$stage] = sprintf($stageLabels[$stage], 'remove');
-                if (($paths = @require_once(realpath('protected/data/dummy_data_files.php'))) && !$config['test_db']) {
+                if (($paths = @require_once(realpath(implode(DIRECTORY_SEPARATOR, array(__DIR__,'protected','data','dummy_data_files.php'))))) && !$config['test_db']) {
                     foreach ($paths as $pathClear) {
                         if ($path = realpath($pathClear)) {
                             FileUtil::rrmdir($path, '/\.htaccess$/');
@@ -683,8 +686,8 @@ function installStage($stage) {
         ResponseUtil::respond(installer_tr("Completed: {stage}", array('{stage}' => $stageLabels[$stage])));
 }
 
-require_once('protected/components/util/FileUtil.php');
-require_once('protected/components/util/EncryptUtil.php');
+require_once(implode(DIRECTORY_SEPARATOR, array(__DIR__,'protected','components','util','FileUtil.php')));
+require_once(implode(DIRECTORY_SEPARATOR, array(__DIR__,'protected','components','util','EncryptUtil.php')));
 
 
 //////////////////////////////////
@@ -697,11 +700,11 @@ foreach ($confKeys as $key) {
 }
 // Load static app configuration files:
 $staticConfig = array(
-    'stageLabels' => 'protected/data/installStageLabels.php',
-    'enabledModules' => 'protected/data/enabledModules.php',
-    'dateFields' => 'protected/data/dateFields.php',
-    'nonFreeTables' => 'protected/data/nonFreeTables.php',
-    'editionHierarchy' => 'protected/data/editionHierarchy.php',
+    'stageLabels' => implode(DIRECTORY_SEPARATOR, array(__DIR__,'protected','data','installStageLabels.php')),
+    'enabledModules' => implode(DIRECTORY_SEPARATOR, array(__DIR__,'protected','data','enabledModules.php')),
+    'dateFields' => implode(DIRECTORY_SEPARATOR, array(__DIR__,'protected','data','dateFields.php')),
+    'nonFreeTables' => implode(DIRECTORY_SEPARATOR, array(__DIR__,'protected','data','nonFreeTables.php')),
+    'editionHierarchy' => implode(DIRECTORY_SEPARATOR, array(__DIR__,'protected','data','editionHierarchy.php')),
 );
 foreach ($staticConfig as $varName => $path) {
     $realpath = realpath($path);
@@ -775,7 +778,7 @@ $config['adminUserKey'] = substr(str_shuffle(str_repeat('ABCDEFGHIJKLMNOPQRSTUVW
 // Set up language & translations:
 if (empty($config['language']))
     $config['language'] = 'en';
-$installMessageFile = "protected/messages/{$config['language']}/install.php";
+$installMessageFile = implode(DIRECTORY_SEPARATOR, array(__DIR__,'protected','messages',$config['language'],'install.php'));
 $installMessages = array();
 if (isset($installMessageFile) && file_exists($installMessageFile)) { // attempt to load installer messages
     $installMessages = include($installMessageFile);  // from the chosen language
@@ -864,7 +867,7 @@ if (!$complete || $silent) {
         $errors[] = 'MySQL Error: ' . $sqlError;
     outputErrors();
     $installTime = time();
-    file_put_contents(implode(DIRECTORY_SEPARATOR, array(realpath('protected/data'), 'install_timestamp')), $installTime);
+    file_put_contents(implode(DIRECTORY_SEPARATOR, array(realpath('protected'.DIRECTORY_SEPARATOR.'data'), 'install_timestamp')), $installTime);
     ResponseUtil::respond(installer_tr('Installation completed {time}.', array('{time}' => strftime('%D %T', $installTime))));
     if ($silent && function_exists('curl_init') && $config['type'] != 'Testing') {
         foreach ($sendArgs as $urlKey) {
@@ -931,9 +934,17 @@ if (!$silent && $complete):
     <?php
 endif;
 // Delete install files
-foreach (array('install.php', 'installConfig.php', 'initialize_pro.php') as $file)
-    if (file_exists($file))
+foreach (array(
+    __DIR__.DIRECTORY_SEPARATOR.'install.php', 
+    __DIR__.DIRECTORY_SEPARATOR.'installConfig.php', 
+    __DIR__.DIRECTORY_SEPARATOR.'initialize_pro.php') as $file){
+    if (file_exists($file)){
         unlink($file);
+    }
+}
 // Delete self
 unlink(__FILE__);
 ?>
+
+
+
