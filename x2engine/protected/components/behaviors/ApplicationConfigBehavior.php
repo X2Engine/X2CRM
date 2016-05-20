@@ -39,6 +39,7 @@
 Yii::import('application.models.Admin');
 Yii::import('application.models.Modules');
 Yii::import('application.components.util.FileUtil');
+Yii::import('application.components.util.ResponseUtil');
 Yii::import('application.modules.users.models.*');
 Yii::import('application.modules.media.models.Media');
 

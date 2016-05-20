@@ -904,8 +904,10 @@ class AdminController extends X2Controller {
 
         // Collect a list of role names
         $roles = array();
-        foreach ($exportIds['Roles'] as $roleId) {
-            $roles[] = Roles::model()->findByPk ($roleId)->name;
+        if (array_key_exists('Roles', $exportIds)) {
+            foreach ($exportIds['Roles'] as $roleId) {
+                $roles[] = Roles::model()->findByPk ($roleId)->name;
+            }
         }
 
         // Generate a manifest containing the information and contents of the package
@@ -4584,8 +4586,7 @@ class AdminController extends X2Controller {
             fseek($fp, $_SESSION['offset']); // Seek to the right file offset
             $mappedId = false; // Whether the user has mapped the ID field
 
-            // validate meta data
-            if (!ArrayUtil::setEquals (array_keys ($importMap), $metaData)) {
+            if (empty($importMap)) {
                 throw new CHttpException (400, Yii::t('app', 'Bad import map'));
             }
 
@@ -5618,10 +5619,6 @@ class AdminController extends X2Controller {
             $_SESSION['imported'] = 0;
             $_SESSION['failed'] = 0;
             $_SESSION['created'] = array();
-            if ($preselectedMap) {
-                $keys = array_keys($_SESSION['importMap']);
-                $attributes = array_values($_SESSION['importMap']);
-            }
              
             $matchField = Fields::model()->findByAttributes (array(
                 'fieldName' => $_SESSION['matchAttribute'],

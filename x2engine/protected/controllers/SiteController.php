@@ -2347,7 +2347,7 @@ class SiteController extends x2base {
             }
             $missingFields = array_diff(array_keys($model->attributes), array_keys($data));
             foreach($missingFields as $attr){
-                if(!in_array($attr, $model->MergeableBehavior->restrictedFields)){
+                if(in_array($attr, array_keys($fields)) && !in_array($attr, $model->MergeableBehavior->restrictedFields)){
                     $model->MergeableBehavior->setMergedField($fields[$attr], $models);
                 }
             }

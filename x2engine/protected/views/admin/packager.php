@@ -177,12 +177,12 @@ Yii::app()->clientScript->registerCssFile(Yii::app()->theme->baseUrl.'/css/packa
     ), 'includeContacts').'</div>';
     echo '</div><br />';
 
+    echo '<div id="export-loading"></div><br />';
     echo '<br /><div id="status-box"></div><br />';
     echo CHtml::button(Yii::t('admin', 'Export'), array(
         'class' => 'x2-button',
         'id' => 'export-button'
     ));
-    echo '<div id="export-loading"></div>';
     echo CHtml::button(Yii::t('admin', 'Download'), array(
         'class' => 'x2-button',
         'id' => 'download-link',
@@ -211,7 +211,7 @@ Yii::app()->clientScript->registerCssFile(Yii::app()->theme->baseUrl.'/css/packa
                 "selectedRoles": collectExportables("roles"),
                 "selectedMedia": collectExportables("media"),
                 "selectedThemes": collectExportables("themes"),
-                "includeContacts": $("#includeContacts").attr("checked")=="checked"?"true":"false",
+                "includeContacts": $("#includeContacts").is(":checked") ? "true" : "false",
                 "packageName": $("#packageName").val(),
                 "packageDescription": $("#packageDescription").val()
             }
@@ -223,7 +223,8 @@ Yii::app()->clientScript->registerCssFile(Yii::app()->theme->baseUrl.'/css/packa
                     exportComponents["selectedDocs"].length == 0 &&
                     exportComponents["selectedMedia"].length == 0 &&
                     exportComponents["selectedRoles"].length == 0 &&
-                    exportComponents["selectedThemes"].length == 0) {
+                    exportComponents["selectedThemes"].length == 0 &&
+                    exportComponents["includeContacts"] == "false") {
                 alert("'.CHtml::encode (Yii::t('admin', 'Nothing selected to package!')).'");
                 return false;
             }
@@ -256,6 +257,7 @@ Yii::app()->clientScript->registerCssFile(Yii::app()->theme->baseUrl.'/css/packa
                 type: "post",
                 data: exportComponents,
                 success: function(data) {
+                    auxlib.containerLoadingStop($("#export-loading"));
                     data = JSON.parse(data);
                     if (data[0] == "success") {
                         $("#status-box").append ("<br />'.Yii::t('admin', 'Export complete').'");
@@ -266,7 +268,6 @@ Yii::app()->clientScript->registerCssFile(Yii::app()->theme->baseUrl.'/css/packa
                         $("#status-box").css ("color", "red");
                         $("#export-button").show();
                     }
-                    $("#export-loading").children().remove();
                 }
             });
         });

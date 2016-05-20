@@ -891,8 +891,8 @@ class Events extends X2ActiveRecord {
                 }
             }
             $img = $avatar;
-            if (file_exists(Yii::app()->theme->getBasePath() . '/images/eventIcons/' . $typeFile . '.png')) {
-                $imgFile = Yii::app()->getAbsoluteBaseUrl() . '/themes/' . Yii::app()->theme->getName() . '/images/eventIcons/' . $typeFile . '.png';
+            if (file_exists(Yii::app()->getAbsoluteBaseUrl() . '/themes/x2engine/images/eventIcons/' . $typeFile . '.png')) {
+                $imgFile = Yii::app()->getAbsoluteBaseUrl() . '/themes/x2engine/images/eventIcons/' . $typeFile . '.png';
                 $img = CHtml::image($imgFile, '',
                                 array(
                             'style' => 'width:45px;height:45px;float:left;margin-right:5px;',
