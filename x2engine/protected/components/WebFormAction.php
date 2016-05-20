@@ -77,54 +77,6 @@ class WebFormAction extends CAction {
         }
     }
 
-    
-    /*
-    Helper funtion for run ().
-    */
-    private static function formatEmailBodyAttrs ($emailBody, $model) {
-        // set the template variables
-        $matches = array();
-
-        // find all the things
-        preg_match_all('/{\w+}/', $emailBody, $matches);
-
-        if(isset($matches[0])){     // loop through the things
-            foreach($matches[0] as $match){
-                $match = substr($match, 1, -1); // remove { and }
-
-                if($model->hasAttribute($match)){
-
-                    // get the correctly formatted attribute
-                    $value = $model->renderAttribute($match, false, true);
-                    $emailBody = preg_replace(
-                        '/{'.$match.'}/', $value, $emailBody);
-                }
-            }
-        }
-        return $emailBody;
-    }
-    
-
-    
-    /**
-     * Sets tracking key of contact model. First looks for the key generated on client (this key
-     * allows the visitor to be tracked on a domain other than the one on which the crm is
-     * running) then, if no key exists, generates a new key.
-     *
-     * $model object the contact model
-     */
-    private function setNewWebleadTrackingKey ($model) {
-        if (empty($model->trackingKey)) { 
-            if(isset($_COOKIE['x2_key']) && ctype_alnum($_COOKIE['x2_key'])) { 
-                $model->trackingKey = $_COOKIE['x2_key'];
-            } else {
-                $model->trackingKey = Contacts::getNewTrackingKey();
-            }
-
-        }
-    }
-    
-
     private function handleWebleadFormSubmission (X2Model $model, $extractedParams) {
         $newRecord = $model->isNewRecord;
         if(isset($_POST['Contacts'])) {
@@ -160,7 +112,7 @@ class WebFormAction extends CAction {
 
                 
                 if(Yii::app()->contEd('pro')) {
-                    $this->setNewWebleadTrackingKey ($model);
+                    $this->controller->setNewWebleadTrackingKey ($model);
                 }
                 
                 
@@ -215,9 +167,9 @@ class WebFormAction extends CAction {
                 
                 if($success){
                     if ($extractedParams['generateLead'])
-                        self::generateLead ($model, $extractedParams['leadSource']);
+                        call_user_func(array($this->controller, 'generateLead'),$model, $extractedParams['leadSource']);
                     if ($extractedParams['generateAccount'])
-                        self::generateAccount ($model);
+                        call_user_func(array($this->controller, 'generateAccount'),$model);
 
                     self::addTags ($model);
                     $tags = ((!isset($_POST['tags']) || empty($_POST['tags'])) ? 
@@ -228,27 +180,8 @@ class WebFormAction extends CAction {
                     }
 
                     //use the submitted info to create an action
-                    Actions::associateAction ($model, array (
-                        'actionDescription' => 
-                            Yii::t('contacts', 'Web Lead')
-                                ."\n\n".Yii::t('contacts', 'Name').': '.
-                                CHtml::decode($model->firstName)." ".
-                                CHtml::decode($model->lastName)."\n".Yii::t('contacts', 'Email').
-                                ": ".CHtml::decode($model->email)."\n".Yii::t('contacts', 'Phone').
-                                ": ".CHtml::decode($model->phone)."\n".
-                                Yii::t('contacts', 'Background Info').": ".
-                                CHtml::decode($model->backgroundInfo),
-                        'type' => 'note',
-                    ));
-
-                    // create a notification if the record is assigned to someone
-                    $event = new Events;
-                    $event->associationType = 'Contacts';
-                    $event->associationId = $model->id;
-                    $event->user = $model->assignedTo;
-                    $event->type = 'weblead_create';
-                    $event->save();
-
+                    $this->controller->createWebleadAction($model);
+                    $this->controller->createWebleadEvent($model);
                     
                     if (Yii::app()->contEd('pro')) {
                         // email to send from
@@ -264,14 +197,7 @@ class WebFormAction extends CAction {
 
                     if($model->assignedTo != 'Anyone' && $model->assignedTo != '') {
 
-                        $notif = new Notification;
-                        $notif->user = $model->assignedTo;
-                        $notif->createdBy = 'API';
-                        $notif->createDate = time();
-                        $notif->type = 'weblead';
-                        $notif->modelType = 'Contacts';
-                        $notif->modelId = $model->id;
-                        $notif->save();
+                        $this->controller->createWebleadNotification($model);
 
                         $profile = Profile::model()->findByAttributes(
                             array('username' => $model->assignedTo));
@@ -306,49 +232,11 @@ class WebFormAction extends CAction {
                                     'userEmailTemplate=:template',array(
                                         ':template'=>$userEmailTemplate))) { */
 
-                                $template = X2Model::model('Docs')->findByPk(
-                                    $extractedParams['userEmailTemplate']);
-                                if($template){
-                                    $emailBody = $template->text;
-
-                                    $subject = '';
-                                    if($template->subject){
-                                        $subject = $template->subject;
-                                    }
-
-                                    $emailBody = self::formatEmailBodyAttrs ($emailBody, $model);
-
-                                    $address = array(
-                                        'to' => array(array('', $profile->emailAddress)));
-
-                                    $notifEmailFrom = Credentials::model()->getDefaultUserAccount(
-                                        Credentials::$sysUseId['systemNotificationEmail'], 'email');
-
-                                    /* Use the same sender as web lead response if notification
-                                    emailer not available */
-                                    if($notifEmailFrom == Credentials::LEGACY_ID)
-                                        $notifEmailFrom = $emailFrom;
-
-                                    // send user template email
-                                    $status = $this->controller->sendUserEmail(
-                                        $address, $subject, $emailBody, null, $notifEmailFrom);
-
-                                    if ($status['code'] !== '200') {
-                                        /**/AuxLib::debugLog (
-                                            'Error: sendUserEmail: '.$status['message']);
-                                    }
-
-                                }
+                                //$address = array(
+                                //    'to' => array(array('', $profile->emailAddress)));
+                                $this->controller->sendUserNotificationEmail($model, $profile->emailAddress, $emailFrom, $extractedParams['userEmailTemplate']);
                                 // }
                             } else { 
-                                $subject = Yii::t('marketing', 'New Web Lead');
-                                $message =
-                                    Yii::t('marketing',
-                                        'A new web lead has been assigned to you: ').
-                                    CHtml::link(
-                                        $model->firstName.' '.$model->lastName,
-                                        array('/contacts/contacts/view', 'id' => $model->id)).'.';
-                                $address = array('to' => array(array('', $profile->emailAddress)));
                                 $emailFrom = Credentials::model()->getDefaultUserAccount(
                                     Credentials::$sysUseId['systemNotificationEmail'], 'email');
                                 if($emailFrom == Credentials::LEGACY_ID)
@@ -356,10 +244,7 @@ class WebFormAction extends CAction {
                                         'name' => $profile->fullName,
                                         'address' => $profile->emailAddress
                                     );
-
-                                $status = $this->controller->sendUserEmail(
-                                    $address, $subject, $message, null, $emailFrom);
-                            
+                                $this->controller->sendLegacyUserNotificationEmail($model, $profile->emailAddress, $emailFrom);
                             }
                             
                         }
@@ -377,32 +262,7 @@ class WebFormAction extends CAction {
                         /* if(CActiveRecord::model('WebForm')->exists(
                             'webleadEmailTemplate=:template',array(
                                 ':template'=>$webleadEmailTemplate))){ */
-                        $template = X2Model::model('Docs')->findByPk(
-                            $extractedParams['webleadEmailTemplate']);
-                        if($template !== null){
-                            $emailBody = $template->text;
-
-                            $subject = '';
-                            if($template->subject){
-                                $subject = $template->subject;
-                            }
-
-                            $emailBody = self::formatEmailBodyAttrs ($emailBody, $model);
-
-                            $address = array('to' => array(array((isset($model->firstName) ?
-                                $model->firstName : '').' '.
-                                    (isset($model->lastName) ? $model->lastName :
-                                ''), $model->email)));
-
-                            // send user template email
-                            $status = $this->controller->sendUserEmail(
-                                $address, $subject, $emailBody, null, $emailFrom);
-                            
-                            if ($status['code'] !== '200') {
-                                /**/AuxLib::debugLog (
-                                    'Error: sendUserEmail: '.$status['message']);
-                            }
-                        }
+                        $this->controller->sendWebleadNotificationEmail($model, $emailFrom, $extractedParams['webleadEmailTemplate']);
                         // }
                     }
 
@@ -848,39 +708,6 @@ class WebFormAction extends CAction {
         }
 
     }
-
-    /**
-     * Creates a new lead and associates it with the contact
-     * @param Contacts $contact
-     * @param null|string $leadSource
-     */
-    private static function generateLead (Contacts $contact, $leadSource=null) {
-        $lead = new X2Leads ('webForm');
-        $lead->firstName = $contact->firstName;
-        $lead->lastName = $contact->lastName;
-        $lead->leadSource = $leadSource;
-        // disable validation to prevent saving from failing if leadSource isn't set
-        if ($lead->save (false)) {
-            $lead->createRelationship($contact);
-        }
-
-    }
-
-    /**
-     * Generates an account from the contact's company field, if that field has a value 
-     */
-    private static function generateAccount (Contacts $contact) {
-        if (isset ($contact->company)) {
-            $account = new Accounts ();
-            $account->name = $contact->company;
-            if ($account->save ()) {
-                $account->refresh ();
-                $contact->company = $account->nameId;
-                $contact->update ();
-            }
-        }
-    }
-
 }
 
 ?>

@@ -157,6 +157,9 @@ class ContactsController extends x2base {
                     )
                 )
             ),
+            'WebFormBehavior' => array(
+                'class' => 'WebFormBehavior'
+            ),
         ));
     }
 
