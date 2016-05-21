@@ -157,6 +157,7 @@ class SessionToken extends CActiveRecord {
             )
         );
         
+        
         if(!empty(Yii::app()->request->cookies['sessionToken'])){
             $sessionTokenCookie = Yii::app()->request->cookies['sessionToken']->value;
             $activeUser = Yii::app()->db->createCommand(
@@ -168,6 +169,26 @@ class SessionToken extends CActiveRecord {
                 return true;
             }
             return false;
+        }
+    }
+    
+    /**
+     * 
+     * cap a limit on the amount of tokens a user can possess in the database
+     * and refresh all the user's tokens.
+     */
+    public static function cleanUpUserTokens ($user) {
+        $userTokenCount = Yii::app()->db->createCommand(
+            'SELECT COUNT(*) FROM x2_sessions_token WHERE user=:user')
+                ->bindValues(
+                    array(':user' => $user))
+                ->execute(); 
+        if($userTokenCount > 50) {
+            $sessions = X2Model::model('SessionToken')->findAllByAttributes(
+                    array('user' => '$user'));
+            foreach($sessions as $session){
+                $session->delete();
+            }
         }
     }
 }

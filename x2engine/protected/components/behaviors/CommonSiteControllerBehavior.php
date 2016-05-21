@@ -251,8 +251,8 @@ class CommonSiteControllerBehavior extends CBehavior {
             $model->rememberMe = false;
         } else if ($model->loginSessionToken() && $isActiveUser){ 
                 
-            //throw new CHttpException(403,Yii::t('yii',Yii::app()->user->name));
-
+            //refresh the number of tokens a user owns
+            SessionToken::cleanUpUserTokens (Yii::app()->user->name);
             $this->recordSuccessfulLogin ($activeUser, $ip);
 
             // We're not using the isAdmin parameter of the application
