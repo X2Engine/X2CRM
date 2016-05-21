@@ -156,5 +156,18 @@ class SessionToken extends CActiveRecord {
                 'params' => array (':cutoff' => time () - $defaultTimeout)
             )
         );
+        
+        if(!empty(Yii::app()->request->cookies['sessionToken'])){
+            $sessionTokenCookie = Yii::app()->request->cookies['sessionToken']->value;
+            $activeUser = Yii::app()->db->createCommand(
+                'SELECT user FROM x2_sessions_token WHERE id=:id')
+                    ->bindValues(
+                        array(':id' => $sessionTokenCookie))
+                    ->execute();
+            if($activeUser === 0){
+                return true;
+            }
+            return false;
+        }
     }
 }

@@ -49,7 +49,12 @@ class CommonSiteControllerBehavior extends CBehavior {
      */
     public function login (LoginForm $model, $isMobile=false){
         Session::cleanUpSessions();
-        SessionToken::cleanUpSessions();
+        if(SessionToken::cleanUpSessions()) {
+            unset(Yii::app()->request->cookies['sessionToken']);
+            setcookie("sessionToken", "", time() - 3600);
+            $this->owner->redirect($this->owner->createUrl('/mobile/login'));
+            return;
+        }
         $ip = $this->owner->getRealIp();
         $this->verifyIpAccess ($ip);
         $activeUser = null;
