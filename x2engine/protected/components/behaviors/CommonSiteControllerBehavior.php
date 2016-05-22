@@ -48,13 +48,14 @@ class CommonSiteControllerBehavior extends CBehavior {
      * @param bool $isMobile Whether this was called from mobile site controller
      */
     public function login (LoginForm $model, $isMobile=false){
-        Session::cleanUpSessions();
-        if(SessionToken::cleanUpSessions()) {
+        if(SessionToken::cleanSessionTokenCookie()) {
             unset(Yii::app()->request->cookies['sessionToken']);
             setcookie("sessionToken", "", time() - 3600);
             $this->owner->redirect($this->owner->createUrl('/mobile/login'));
             return;
         }
+        Session::cleanUpSessions();
+        SessionToken::cleanUpSessions();
         $ip = $this->owner->getRealIp();
         $this->verifyIpAccess ($ip);
         $activeUser = null;
@@ -227,8 +228,10 @@ class CommonSiteControllerBehavior extends CBehavior {
 
             $session->status = 1;
             $session->save();
-            if($isMobile)
-                $sessionToken->save();
+            if($isMobile){
+                $sessionToken->status = 1;
+                $sessionToken->save();                
+            }
             SessionLog::logSession($model->username, $sessionId, 'login');
             $_SESSION['playLoginSound'] = true;
 

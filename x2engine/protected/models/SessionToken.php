@@ -157,7 +157,12 @@ class SessionToken extends CActiveRecord {
             )
         );
         
-        
+    }
+    
+    /*
+     * Clean up 'sessionToken' cookie
+     */
+    public static function cleanSessionTokenCookie () {
         if(!empty(Yii::app()->request->cookies['sessionToken'])){
             $sessionTokenCookie = Yii::app()->request->cookies['sessionToken']->value;
             $activeUser = Yii::app()->db->createCommand(
@@ -168,8 +173,8 @@ class SessionToken extends CActiveRecord {
             if($activeUser === 0){
                 return true;
             }
-            return false;
         }
+        return false;
     }
     
     /**
