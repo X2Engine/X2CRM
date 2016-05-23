@@ -287,8 +287,9 @@ class CommonSiteControllerBehavior extends CBehavior {
     public function isBannedIp($ip) {
         $admin = Yii::app()->settings;
         $bannedIps = $admin->ipBlacklist;
-        if (!$bannedIps)
+        if (!$bannedIps || !is_array($bannedIps)){
             return false;
+        }
 
         return $this->checkIpList($bannedIps, $ip);
     }
@@ -302,8 +303,9 @@ class CommonSiteControllerBehavior extends CBehavior {
         $admin = Yii::app()->settings;
         $allowedIps = $admin->ipWhitelist;
         // No whitelist available: allow connections to prevent lockout
-        if (!$allowedIps)
+        if (!$allowedIps || !is_array($allowedIps)){
             return true;
+        }
 
         return $this->checkIpList($allowedIps, $ip);
     }
