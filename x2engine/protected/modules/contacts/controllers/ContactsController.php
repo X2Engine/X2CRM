@@ -923,17 +923,15 @@ class ContactsController extends x2base {
                 if (count($attributes) > 0 && count($attributes) == count($comparisons) && count($comparisons) == count($values)) {
                     $list->modelName = 'Contacts';
                     $list->lastUpdated = time();
-
-                    
                 }
             }
             if (!$list->hasErrors() && $list->save()) {
-                        if ($ajax) {
-                            echo CJSON::encode($list->attributes);
-                            return;
-                        }
-                        $this->redirect(array('/contacts/contacts/list', 'id' => $list->id));
-                    }
+                if ($ajax) {
+                    echo CJSON::encode($list->attributes);
+                    return;
+                }
+                $this->redirect(array('/contacts/contacts/list', 'id' => $list->id));
+            }
         }
 
         if (empty($criteriaModels)) {
