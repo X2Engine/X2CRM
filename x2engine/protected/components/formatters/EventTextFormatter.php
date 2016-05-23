@@ -342,7 +342,7 @@ class EventTextFormatter {
     private static function formatWorkflow_start($event, $params, $htmlOptions) {
         $authorText = static::getAuthorText($event, $htmlOptions);
         $action = X2Model::model('Actions')->findByPk($event->associationId);
-        if (isset($action)) {
+        if (isset($action) && isset($action->workflowStage)) {
             $record = X2Model::model(ucfirst($action->associationType))->findByPk($action->associationId);
             if (isset($record)) {
                 return $authorText . Yii::t('app',
