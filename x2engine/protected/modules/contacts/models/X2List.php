@@ -93,7 +93,7 @@ class X2List extends X2Model {
         // NOTE: you should only define rules for those attributes that
         // will receive user inputs.
         return array(
-            array('name, createDate, lastUpdated, modelName', 'required'),
+            array('name, type, createDate, lastUpdated, modelName', 'required'),
             array('id, count, visibility, createDate, lastUpdated', 'numerical', 'integerOnly' => true),
             array('name, modelName', 'length', 'max' => 100),
             array('description', 'length', 'max' => 250),

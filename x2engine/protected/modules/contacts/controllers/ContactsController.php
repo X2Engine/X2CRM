@@ -908,7 +908,7 @@ class ContactsController extends x2base {
         $contactModel = new Contacts;
         $comparisonList = X2List::getComparisonList();
         if (isset($_POST['X2List'])) {
-
+            $list->type = $_POST['X2List']['type'];
             $list->attributes = $_POST['X2List'];
             $list->modelName = 'Contacts';
             $list->createDate = time();
@@ -924,15 +924,16 @@ class ContactsController extends x2base {
                     $list->modelName = 'Contacts';
                     $list->lastUpdated = time();
 
-                    if (!$list->hasErrors() && $list->save()) {
+                    
+                }
+            }
+            if (!$list->hasErrors() && $list->save()) {
                         if ($ajax) {
                             echo CJSON::encode($list->attributes);
                             return;
                         }
                         $this->redirect(array('/contacts/contacts/list', 'id' => $list->id));
                     }
-                }
-            }
         }
 
         if (empty($criteriaModels)) {
