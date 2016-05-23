@@ -384,6 +384,12 @@ Etiam eget iaculis nisl. Duis id malesuada orci. Mauris imperdiet ut elit rhoncu
         $this->assertNotEmpty($noActionText);
         $this->assertEquals('<a href="http://localhost/index-test.php/profile/id/1">You</a> started a process stage, but the process record could not be found.',
                 $noActionText);
+        
+        $event4 = $this->events('workflowStartWorkflowActionNoStage');
+        $noStageText = $event4->getText();
+        $this->assertNotEmpty($noStageText);
+        $this->assertEquals('<a href="http://localhost/index-test.php/profile/id/1">You</a> started a process stage, but the process record could not be found.',
+                $noStageText);
     }
 
     public function testFormatWorkflowComplete() {
