@@ -155,8 +155,11 @@ class Campaign extends X2Model {
     }
 
     public static function getValidContactLists () {
+        $list = new X2List;
+        $criteria = $list->getAccessCriteria();
+        $criteria->addCondition("type!='campaign'");
     	$lists = X2Model::model('ContactList')->findAllByAttributes (array(), 
-    		"type!='campaign'"
+    		$criteria
     	);
     	return $lists;
     }

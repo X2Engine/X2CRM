@@ -243,9 +243,11 @@ class Docs extends X2Model {
     }
 
     public static function getEmailTemplates2() {
+        $doc = new Docs;
+        $criteria = $doc->getAccessCriteria();
         return self::model()->findAllByAttributes(array(
             'type' => 'email',
-        ));
+        ), $criteria);
     }
 
     /**
