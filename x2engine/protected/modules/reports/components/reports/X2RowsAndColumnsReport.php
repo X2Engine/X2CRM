@@ -331,7 +331,6 @@ class X2RowsAndColumnsReport extends X2Report {
         }
 
         $rowCount = count ($data);
-        $colCount = count ($data[0]);
         for ($i = 0; $i < $rowCount; $i++) {
             $row = &$data[$i];
             $j = 0;
