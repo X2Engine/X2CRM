@@ -136,14 +136,6 @@ if ($type === 'weblist') {
 $useDefaults = false;
 
 
-if(Yii::app()->edition == 'opensource' || $fieldList === null) {
-
-    $fieldList = $defaultFields;
-    $useDefaults = true;
-
-}
-
-
 $fieldTypes = array_map (function ($elem) { 
     if ($elem['required']) return $elem['fieldName']; }, $fieldList);
 
