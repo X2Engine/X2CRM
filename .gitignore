@@ -1,4 +1,4 @@
-/nbproject/
+x2engine/nbproject/
 /x2engine/x2WebTrackingTestPages/
 /x2engine/protected/runtime/
 /x2engine/assets/
@@ -30,3 +30,4 @@
 /x2engine/protected/commands/TestRunnerCommand.php
 /logs
 /.tags
+/x2engine/nbproject/private/

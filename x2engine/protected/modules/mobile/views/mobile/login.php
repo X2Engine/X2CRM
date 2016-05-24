@@ -83,7 +83,7 @@ if (Yii::app()->params->isPhoneGap) {
  
 
 
-if ($model->hasErrors ()) {
+if ($model->hasErrors () && !isset($_COOKIE['sessionToken'])) {
     $title = Yii::t('mobile', 'Login Failed');
     if ($model->hasErrors ('verifyCode')) {
         $message = Yii::t(
@@ -143,24 +143,72 @@ if ($model->hasErrors ()) {
      
     ?>
     </div>
+    
+    <script type="text/javascript">
+        /*function getCookie(name){
+            var value = "; " + document.cookie;
+            var parts = value.split("; " + name + "=");
+            if (parts.length == 2) return parts.pop().split(";").shift();
+        }*/
+
+        function setCookie(cname, cvalue, exdays) {
+            var d = new Date();
+            d.setTime(d.getTime() + (exdays*24*60*60*1000));
+            var expires = "expires="+ d.toUTCString();
+            document.cookie = cname + "=" + cvalue + "; " + expires;
+        }
+        
+        // If browser supports localStorage
+        if(typeof(Storage) !== void(0)){
+            var sessionToken = localStorage.getItem("sessionToken")
+            if(sessionToken !== null ){
+                setCookie("sessionToken",sessionToken,6);
+            } else {
+
+            }
+        }
+    </script>
+
     <div data-role="fieldcontain">
         <!--?php echo $form->label($model, 'username', array()); ?-->
         <?php 
-        if ($hasProfile) $model->username = $profile->username;
-        echo $form->textField($model, 'username', 
-            array(
-                'placeholder'=>Yii::t('app','Username')
-            )
-        ); ?>
+        
+        if(isset($_COOKIE['sessionToken'])){
+            $sessionTokenCookie = $_COOKIE['sessionToken'];
+            $sessionTokenModel = X2Model::model('SessionToken')->findByPk($sessionTokenCookie);
+            if($sessionTokenModel === null)
+                unset(Yii::app()->request->cookies['sessionToken']);
+        }
+        
+        if(isset($_COOKIE['sessionToken'])) {
+            $model->sessionToken = $_COOKIE['sessionToken'];
+            echo $form->hiddenField ($model, 'sessionToken');
+        } else {
+            if ($hasProfile) $model->username = $profile->username;
+            echo $form->textField($model, 'username', 
+                array(
+                    'placeholder'=>Yii::t('app','Username')
+                )
+            ); 
+        }
+        
+        ?>
     </div>
     <div data-role="fieldcontain">
         <!--?php echo $form->label($model, 'password', array()); ?-->
         <?php 
-        echo $form->passwordField($model, 'password', 
-            array(
-                'placeholder'=>Yii::t('app','Password')
-            )
-        ); ?>
+        
+        if(isset($_COOKIE['sessionToken'])) {
+
+        } else {
+            echo $form->passwordField($model, 'password', 
+                array(
+                    'placeholder'=>Yii::t('app','Password')
+                )
+            );             
+        }
+
+        ?>
     </div>
 
     <?php 
@@ -201,7 +249,8 @@ if ($model->hasErrors ()) {
     ?>
     <div data-role="fieldcontain" class='full-app-link'>
         <a href='<?php echo $this->createAbsoluteUrl ('/site/login'); ?>' rel='external'><?php 
-            echo CHtml::encode (Yii::t('app', 'Desktop version')); ?>
+            echo CHtml::encode (Yii::t('app', 'Desktop version')); 
+            setcookie('isMobileApp','true'); // save cookie?>
         </a>
     </div>
     <?php

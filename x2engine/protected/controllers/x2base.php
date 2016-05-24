@@ -103,6 +103,8 @@ abstract class x2base extends X2Controller {
                 'class' => 'application.components.behaviors.CommonControllerBehavior'),
             'X2PermissionsBehavior' => array(
                 'class' => 'application.components.permissions.'.Yii::app()->params->controllerPermissions),
+            'UserMailerBehavior' => array(
+                'class' => 'UserMailerBehavior'),
         );
     }
 
@@ -514,45 +516,6 @@ abstract class x2base extends X2Controller {
 
     public function throwException($message) {
         throw new Exception($message);
-    }
-
-    /**
-     * Send an email from X2Engine, returns an array with status code/message
-     *
-     * @param array addresses
-     * @param string $subject the subject for the email
-     * @param string $message the body of the email
-     * @param array $attachments array of attachments to send
-     * @param array|integer $from from and reply to address for the email array(name, address)
-     *     or, if integer, the ID of a email credentials record to use for delivery.
-     * @return array
-     */
-    public function sendUserEmail($addresses, $subject, $message, $attachments = null, $from = null){
-        $eml = new InlineEmail();
-        if(is_array($addresses) ? count($addresses)==0 : true)
-            throw new Exception('Invalid argument 1 sent to x2base.sendUserEmail(); expected a non-empty array, got instead: '.var_export($addresses,1));
-        // Set recipients:
-        if(array_key_exists('to',$addresses) || array_key_exists('cc',$addresses) || array_key_exists('bcc',$addresses)) {
-            $eml->mailingList = $addresses;
-        } else
-            return array('code'=>500,'message'=>'No recipients specified for email; array given for argument 1 of x2base.sendUserEmail does not have a "to", "cc" or "bcc" key.');
-        // Resolve sender (use stored email credentials or system default):
-        if($from === null || in_array($from,Credentials::$sysUseId)) {
-            $from = (int) Credentials::model()->getDefaultUserAccount($from);
-            // Set to the user's name/email if no valid defaults found:
-            if($from == Credentials::LEGACY_ID)
-                $from = array('name' => Yii::app()->params->profile->fullName, 'address'=> Yii::app()->params->profile->emailAddress);
-        }
-
-        if(is_numeric($from))
-            $eml->credId = $from;
-        else
-            $eml->from = $from;
-        // Set other attributes
-        $eml->subject = $subject;
-        $eml->message = $message;
-        $eml->attachments = $attachments;
-        return $eml->deliver();
     }
 
     public function parseEmailTo($string) {

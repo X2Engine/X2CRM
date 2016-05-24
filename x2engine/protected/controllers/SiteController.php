@@ -1515,6 +1515,7 @@ class SiteController extends x2base {
                         $ip = $this->getRealIp();
 
                         Session::cleanUpSessions();
+                        SessionToken::cleanUpSessions();
                         if (isset($_SESSION['sessionId']))
                             $sessionId = $_SESSION['sessionId'];
                         else
@@ -1533,17 +1534,7 @@ class SiteController extends x2base {
                         } else {
                             $session->lastUpdated = time();
                         }
-                        // x2base::cleanUpSessions();
-                        // $session = X2Model::model('Session')->findByAttributes(array('user'=>$userRecord->username,'IP'=>$ip));
-                        // if(isset($session)) {
-                        // $session->lastUpdated = time();
-                        // } else {
-                        // $session = new Session;
-                        // $session->user = $model->username;
-                        // $session->lastUpdated = time();
-                        // $session->status = 1;
-                        // $session->IP = $ip;
-                        // }
+                        
                         $session->save();
                         SessionLog::logSession($userRecord->username, $sessionId, 'googleLogin');
                         $userRecord->login = time();

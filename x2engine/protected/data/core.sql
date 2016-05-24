@@ -483,6 +483,16 @@ CREATE TABLE x2_sessions(
 	status					TINYINT			NOT NULL DEFAULT 0
 ) COLLATE = utf8_general_ci;
 /*&*/
+DROP TABLE IF EXISTS x2_sessions_token;
+/*&*/
+CREATE TABLE x2_sessions_token(
+	id						CHAR(128)		PRIMARY KEY,
+	user					VARCHAR(255),
+	lastUpdated				BIGINT,
+	IP						VARCHAR(40)		NOT NULL,
+	status					TINYINT			NOT NULL DEFAULT 0
+) COLLATE = utf8_general_ci;
+/*&*/
 DROP TABLE IF EXISTS x2_session_log;
 /*&*/
 CREATE TABLE x2_session_log(

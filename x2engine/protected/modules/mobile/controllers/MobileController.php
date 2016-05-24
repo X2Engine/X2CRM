@@ -333,6 +333,15 @@ class MobileController extends X2Controller {
         }
         if (isset($_SESSION['access_token']))
             unset($_SESSION['access_token']);
+        
+            if (isset($_COOKIE['sessionToken'])) {
+                $sessionCookie = $_COOKIE['sessionToken'];
+                //unset($sessionCookie);
+                X2Model::model('SessionToken')->deleteByPk($sessionCookie);
+            } else {
+                X2Model::model('SessionToken')->deleteAllByAttributes(array('IP' => $this->getRealIp()));
+            }
+                    
 
         $this->redirect($this->createAbsoluteUrl('login'));
     }
