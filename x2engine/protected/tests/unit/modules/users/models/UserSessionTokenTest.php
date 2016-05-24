@@ -83,7 +83,7 @@ class UserSessionTokenTest extends X2DbTestCase {
         $sessionIdToken = session_id();
         $sessionToken = new SessionToken;
         $sessionToken->id = $sessionIdToken;
-        $sessionToken->user = 'TestUser';
+        $sessionToken->user = 'testuser';
         $sessionToken->lastUpdated = time();
         $sessionToken->status = 0;
         $sessionToken->IP = '1.0.0.0';
@@ -91,6 +91,7 @@ class UserSessionTokenTest extends X2DbTestCase {
         $sessionModel = X2Model::model('SessionToken')->findByPk($sessionIdToken); 
         $this->assertEquals($sessionToken->user,$sessionModel->user);
         $user = User::model()->findByAlias($sessionToken->user);
+        $this->assertInstanceOf('User', $user);
         $this->assertEquals($sessionToken->user,$user->username);
         $this->assertEquals($sessionModel->user,$user->username);
     }
