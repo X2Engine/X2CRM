@@ -803,7 +803,7 @@ class UpdaterBehaviorTest extends FileOperTestCase {
 
     public function testDownloadPackage() {
         $ube = $this->instantiateUBe(array('scenario' => 'update'));
-        $ube->downloadPackage('3.5','TTTT-TTTTT-TTTTT','pro');
+        $ube->downloadPackage('6.0',null,'opensource');
         $this->assertFileExists($ube->updatePackage);
     }
 
