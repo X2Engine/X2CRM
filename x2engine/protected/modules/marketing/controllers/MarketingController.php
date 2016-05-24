@@ -853,7 +853,7 @@ class MarketingController extends x2base {
         $trackerCode = preg_replace ('/return \'https?:\/\//', 'return \'//', $trackerCode);
 
         // Retrieve current license header
-        $headerLength = 34; // in lines
+        $headerLength = 35; // in lines
         $fh = fopen ($srcFile, 'r');
         fgets ($fh); // skip first line (open PHP tag)
         $header = '';

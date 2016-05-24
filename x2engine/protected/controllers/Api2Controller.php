@@ -614,6 +614,190 @@ class Api2Controller extends CController {
     }
 
     /**
+     * Weblead form API endpoint to allow weblead submission integration when
+     * using API-based webforms, including lead routing, tracking, weblead and
+     * assigned user email notifications, duplicate detection, and new
+     * weblead X2Workflow triggering.
+     *
+     * The body sent to this method in POST should be a JSON-encoded array.
+     */
+    public function actionWeblead() {
+        // Set staticModel and model properties for Contact creation, then assign attributes
+        $this->_staticModel = X2Model::model ('Contacts');
+        $this->model = new $this->_staticModel;
+        $webForm = null;
+        if (isset ($this->jpost['webFormId'])) {
+            // Prepare webform parameters
+            $webForm = WebForm::model()->findByPk($this->jpost['webFormId']);
+            $extractedParams['leadSource'] = $webForm->leadSource;
+            $extractedParams['generateLead'] = $webForm->generateLead;
+            $extractedParams['generateAccount'] = $webForm->generateAccount;
+            $extractedParams['userEmailTemplate'] = $webForm->userEmailTemplate;
+            $extractedParams['webleadEmailTemplate'] = $webForm->webleadEmailTemplate;
+        }
+        $this->setModelAttributes();
+        if (empty($this->model->trackingKey)) {
+            $this->model->trackingKey = Contacts::getNewTrackingKey();
+        }
+
+        $newRecord = true;
+        if($this->model->asa('DuplicateBehavior') && $this->model->checkForDuplicates()){
+            $duplicates = $this->model->getDuplicates();
+            $oldest = $duplicates[0];
+            $fields = $this->model->getFields(true);
+            foreach ($fields as $field) {
+                if (!in_array($field->fieldName,
+                                $this->model->MergeableBehavior->restrictedFields)
+                        && !is_null($this->model->{$field->fieldName})) {
+                    if ($field->fieldName === 'assignedTo' &&
+                            !in_array($oldest->{$field->fieldName}, array('Anyone', ''))) {
+                        // Don't resassign if the duplicate was already assigned
+                        continue;
+                    }
+                    if ($field->type === 'text' && !empty($oldest->{$field->fieldName})) {
+                        $oldest->{$field->fieldName} .= "\n--\n" . $this->model->{$field->fieldName};
+                    } else {
+                        $oldest->{$field->fieldName} = $this->model->{$field->fieldName};
+                    }
+                }
+            }
+            $this->model = $oldest;
+            $newRecord = $this->model->isNewRecord;
+        }
+        if($newRecord){
+            $this->model->createDate = $now;
+            if (!isset($this->jpost['assignedTo'])) {
+                // Allow assignedTo to be directly set if desired, otherwise use lead routing
+                $this->model->assignedTo = $this->getNextAssignee();
+            }
+        }
+
+        // Save the model, check for errors, and respond if necessary.
+        $saved = $this->model->save( !$this->settings->rawInput );
+        if($this->model->hasErrors()) {
+            $this->response['errors'] = $this->model->errors;
+            $this->send(422,"Model failed validation.");
+        }
+
+        // Check for fingerprint and attributes
+        // if there's not an anonyomous contact, then the fingerprint match
+        // was for an actual contact.
+        if (Yii::app()->contEd('pla') && Yii::app()->settings->enableFingerprinting &&
+            isset ($this->jpost['fingerprint'])) {
+            $attributes = (isset($this->jpost['fingerprintAttributes']))?
+                json_decode($this->jpost['fingerprintAttributes'], true) : array();
+            $anonContact = AnonContact::model ()
+                ->findByFingerprint ($this->jpost['fingerprint'], $attributes);
+            if ($anonContact !== null) {
+                $this->model->mergeWithAnonContact ($anonContact);
+            } else {
+                $this->model->setFingerprint ($this->jpost['fingerprint'], $attributes);
+            }
+        }
+
+        if ($extractedParams['generateLead'])
+            self::generateLead ($this->model, $extractedParams['leadSource']);
+        if ($extractedParams['generateAccount'])
+            self::generateAccount ($this->model);
+
+        // Create an Action, Event, Notification for the new web lead
+        $this->createWebleadAction($this->model);
+        $this->createWebleadEvent($this->model);
+
+        if($this->model->assignedTo != 'Anyone' && $this->model->assignedTo != '') {
+            $this->createWebleadNotification($this->model);
+        }
+
+        // Read selected Tags and trigger X2Workflows on new weblead
+        if (!isset($this->jpost['tags']) || empty($this->jpost['tags']))
+            $tags = array();
+        else
+            $tags = explode(',', $this->jpost['tags']);
+
+        X2Flow::trigger('WebleadTrigger', array(
+            'model' => $this->model,
+            'tags' => $tags,
+        ));
+
+        if (Yii::app()->contEd('pro')) {
+            // email to send from
+            $emailFrom = Credentials::model()->getDefaultUserAccount(
+                Credentials::$sysUseId['systemResponseEmail'], 'email');
+            if($emailFrom == Credentials::LEGACY_ID)
+                $emailFrom = array(
+                    'name' => Yii::app()->settings->emailFromName,
+                    'address' => Yii::app()->settings->emailFromAddr
+                );
+        }
+
+        if($this->model->assignedTo != 'Anyone' && $this->model->assignedTo != '') {
+            $profile = Profile::model()->findByAttributes(
+                array('username' => $this->model->assignedTo));
+
+            /* send user that's assigned to this weblead an email if the user's email
+            address is set and this weblead has a user email template */
+            if($profile !== null && !empty($profile->emailAddress)){
+
+                if (Yii::app()->contEd('pro') &&
+                    $extractedParams['userEmailTemplate']) {
+
+                    /* We'll be using the user's own email account to send the
+                    web lead response (since the contact has been assigned) and
+                    additionally, if no system notification account is available,
+                    as the account for sending the notification to the user of
+                    the new web lead (since $emailFrom is going to be modified,
+                    and it will be that way when this code block is exited and the
+                    time comes to send the "welcome aboard" email to the web lead)*/
+                    $emailFrom = Credentials::model()->getDefaultUserAccount(
+                        $profile->user->id, 'email');
+                    if($emailFrom == Credentials::LEGACY_ID)
+                        $emailFrom = array(
+                            'name' => $profile->fullName,
+                            'address' => $profile->emailAddress
+                        );
+
+                    $this->sendUserNotificationEmail($this->model, $profile->emailAddress, $emailFrom, $extractedParams['userEmailTemplate']);
+                } else {
+                    $emailFrom = Credentials::model()->getDefaultUserAccount(
+                        Credentials::$sysUseId['systemNotificationEmail'], 'email');
+                    if($emailFrom == Credentials::LEGACY_ID)
+                        $emailFrom = array(
+                            'name' => $profile->fullName,
+                            'address' => $profile->emailAddress
+                        );
+                    $this->sendLegacyUserNotificationEmail($this->model, $profile->emailAddress, $emailFrom);
+                }
+            }
+
+        }
+
+        /* send new weblead an email if we have their email address and this web
+        form has a weblead email template */
+        if(Yii::app()->contEd('pro') && $extractedParams['webleadEmailTemplate'] &&
+           !empty($this->model->email)) {
+            $this->sendWebleadNotificationEmail($this->model, $emailFrom, $extractedParams['webleadEmailTemplate']);
+        }
+
+        if (!empty($tags)){
+            X2Flow::trigger('RecordTagAddTrigger', array(
+                'model' => $this->model,
+                'tags' => $tags,
+            ));
+        }
+
+        // Set body
+        $this->responseBody = $this->model;
+
+        // Add resource location header for a newly created record
+        // and send with 201 status
+        $this->response->httpHeader['Location'] = $this->createAbsoluteUrl('/api2/model', array(
+            '_class' => 'Contacts',
+            '_id' => $this->model->id
+        ));
+        $this->send(201,"Model of class \"$class\" created successfully.");
+    }
+
+    /**
      * Returns a list of fields in the format required by Zapier's custom action
      * fields feature.
      *
@@ -775,7 +959,16 @@ class Api2Controller extends CController {
                 'handleErrors' => true,
                 'handleExceptions' => false,
                 'errorCode' => 500
-            )
+            ),
+            'UserMailerBehavior' => array(
+                'class' => 'UserMailerBehavior'
+            ),
+            'LeadRoutingBehavior' => array(
+                'class' => 'LeadRoutingBehavior'
+            ),
+            'WebFormBehavior' => array(
+                'class' => 'WebFormBehavior'
+            ),
         );
     }
 
@@ -1014,6 +1207,9 @@ class Api2Controller extends CController {
                         }
                         break;
                 }
+                break;
+            case 'weblead':
+                $action = "ContactsUpdate";
                 break;
         }
 
@@ -1625,6 +1821,7 @@ class Api2Controller extends CController {
             'models' => 'GET',
             'relationships' => 'DELETE,GET,PATCH,POST,PUT',
             'tags' => 'GET,POST,DELETE',
+            'weblead' => 'POST',
             'users' => 'GET',
             'zapierFields' => 'GET'
         );
