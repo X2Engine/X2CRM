@@ -55,19 +55,19 @@ class UserSessionTokenTest extends X2DbTestCase {
         // Test that deleting expired tokens works and that invalid tokens return false:
         $expiredId = $this->tokens('testUser_expired')->id;
         $oldTokenCount = SessionToken::model()->count();
-        $this->assertFalse(LoginForm::loginSessionToken(),'should have returned false; token id/data is invalid');
         $newTestForm = new LoginForm;
-        LoginForm::login(newTestForm);
+        $this->assertFalse($newTestForm->loginSessionToken(),'should have returned false; token id/data is invalid');
+        $newTestForm->login();
         $this->assertFalse(X2Model::model('SessionToken')->findByPk($expiredId),'Expired token should get deleted upon call to LoginForm::login(...)');
         //Test if more than one record got deleted
         //$this->assertEquals($oldTokenCount-1,SessionToken::model()->count(),'More than one record got deleted. This should not happen according to the fixture data.');
         // Deleted user:
         $expiredId = $this->tokens('testNotExistsUser')->id;
-        $this->assertFalse(LoginForm::loginSessionToken(),'should have returned false; user does not exist');
+        $this->assertFalse($newTestForm->loginSessionToken(),'should have returned false; user does not exist');
         $this->assertFalse(User::model()->findByAlias($expiredId),'token corresponding to nonexistent user should have been deleted');
         // Deactivated user:
         $expiredId = $this->tokens('testDeactivatedUser')->id;
-        $this->assertFalse(LoginForm::loginSessionToken(),'should have returned false; user has been deactivated');
+        $this->assertFalse($newTestForm->loginSessionToken(),'should have returned false; user has been deactivated');
         $this->assertFalse(User::model()->findByAlias($expiredId), 'token corresponding to deactivated user should have been deleted');
         // User logged in multiple times:
         //$expiredId = $this->tokens('testBruteforceUser')->id;
@@ -75,7 +75,7 @@ class UserSessionTokenTest extends X2DbTestCase {
         //$this->assertGreaterThan(-5,$this->tokens('testDeactivatedUser')->token);
         // Correct token:
         $expiredId = $this->tokens('testWorkingUser')->id;
-        $this->assertTrue(LoginForm::loginSessionToken(),'should have returned true; correct session token, valid user');
+        $this->assertTrue($newTestForm->loginSessionToken(),'should have returned true; correct session token, valid user');
 
     }
 
@@ -88,7 +88,7 @@ class UserSessionTokenTest extends X2DbTestCase {
         $sessionToken->status = 0;
         $sessionToken->IP = '1.0.0.0';
         $this->assertTrue((bool) $sessionToken->save());
-        $sessionModel = X2Model::model('SessionToken')->findByPk($sessionToken); 
+        $sessionModel = X2Model::model('SessionToken')->findByPk($sessionIdToken); 
         $this->assertEquals($sessionToken->user,$sessionModel->user);
         $user = User::model()->findByAlias($sessionToken->user);
         $this->assertEquals($sessionToken->user,$user->username);
