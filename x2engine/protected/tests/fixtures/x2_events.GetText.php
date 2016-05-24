@@ -1,4 +1,4 @@
-<?php
+f<?php
 
 return array(
     'longEvent' => array(
@@ -367,7 +367,7 @@ Etiam eget iaculis nisl. Duis id malesuada orci. Mauris imperdiet ut elit rhoncu
         'lastUpdated' => 1359485241,
         'important' => 0
     ),
-    'workflowStartActionNoStage' => array(
+    'workflowStartWorkflowActionNoStage' => array(
         'type' => 'workflow_start',
         'subtype' => null,
         'level' => null,
