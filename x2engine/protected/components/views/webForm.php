@@ -54,10 +54,6 @@ Yii::app()->params->profile = Profile::model()->findByPk(1);
 if (empty($type)) $type = 'weblead';
 if (empty($model)) $model = Contacts::model ();
 
-if (empty($fieldList)) $fieldList = array();
-
-
-
 if ($type === 'service') {
     $modelName = 'Services';
 } else if ($type === 'weblead' || $type === 'weblist')  {
@@ -134,7 +130,10 @@ if ($type === 'weblist') {
 }
 
 $useDefaults = false;
-
+if(empty($fieldList)){
+    $useDefaults = true;
+    $fieldList = $defaultFields;
+}
 
 $fieldTypes = array_map (function ($elem) { 
     if ($elem['required']) return $elem['fieldName']; }, $fieldList);
