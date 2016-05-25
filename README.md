@@ -1,10 +1,9 @@
-# 6.0 #
-4/26/2016
+# 6.0.1 #
+{releaseDate}
 * General Changelog / Developer Notes
-  * X2CRM is now fully open source
-  * UI tweaks and enhancements
+  * X2Touch now supports persistent sessions
+  * Improvements to web capture API
   * Miscellaneous bug fixes
-
 
 # Introduction #
 Welcome to X2CRM!
