@@ -170,7 +170,7 @@ class SessionToken extends CActiveRecord {
                     ->bindValues(
                         array(':id' => $sessionTokenCookie))
                     ->execute();
-            if($activeUser === 0){
+            if(intval($activeUser) == 0){
                 return true;
             }
         }

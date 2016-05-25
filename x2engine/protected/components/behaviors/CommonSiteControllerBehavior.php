@@ -51,6 +51,9 @@ class CommonSiteControllerBehavior extends CBehavior {
         if(SessionToken::cleanSessionTokenCookie()) {
             unset(Yii::app()->request->cookies['sessionToken']);
             setcookie("sessionToken", "", time() - 3600);
+           echo "<script type=\"text/javascript\">
+                window.localStorage.removeItem(\"sessionToken\");
+                </script>";
             $this->owner->redirect($this->owner->createUrl('/mobile/login'));
             return;
         }
