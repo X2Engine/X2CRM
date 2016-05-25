@@ -1,4 +1,4 @@
-f<?php
+<?php
 
 return array(
     'longEvent' => array(
