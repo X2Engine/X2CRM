@@ -48,7 +48,7 @@ class CommonSiteControllerBehavior extends CBehavior {
      * @param bool $isMobile Whether this was called from mobile site controller
      */
     public function login (LoginForm $model, $isMobile=false){
-        if(SessionToken::cleanSessionTokenCookie()) {
+        if($isMobile && SessionToken::cleanSessionTokenCookie()) {
             unset(Yii::app()->request->cookies['sessionToken']);
             setcookie("sessionToken", "", time() - 3600);
            echo "<script type=\"text/javascript\">
@@ -89,7 +89,7 @@ class CommonSiteControllerBehavior extends CBehavior {
                         ->queryScalar(); // get the correctly capitalized username  
  
                 //create new sessionToken and save to server
-                $sessionIdToken = session_id();
+                $sessionIdToken = uniqid();
                 
                 $sessionToken = new SessionToken;
                 $sessionToken->id = $sessionIdToken;
@@ -242,7 +242,7 @@ class CommonSiteControllerBehavior extends CBehavior {
                 Yii::app()->session['debugEmailWarning'] = 1;
 
             LoginThemeHelper::login();
-
+            
             if ($isMobile) {
                 $this->owner->redirect($this->owner->createUrl('/mobile/home'));
             } else {
