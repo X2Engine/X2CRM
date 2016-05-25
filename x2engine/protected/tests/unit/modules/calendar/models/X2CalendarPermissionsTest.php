@@ -55,6 +55,7 @@ class X2CalendarPermissionsTest extends X2DbTestCase {
             array ('Anyone'), Yii::app()->db->createCommand ("
                 SELECT username
                 FROM x2_users
+                WHERE status = 1
             ")->queryColumn ()), 
             ArrayUtil::sort ($viewable));
 
