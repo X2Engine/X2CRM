@@ -146,32 +146,34 @@ class LoginForm extends X2FormModel {
 	 * @return boolean whether login is successful
 	 */
     public function loginSessionToken($google = false) {
-        $sessionToken = Yii::app()->request->cookies['sessionToken']->value;
-        if(empty(Yii::app()->request->cookies['sessionToken']->value))
-            return false;
-        $sessionModel = X2Model::model('SessionToken')->findByPk($sessionToken); 
-        if($sessionModel === null)
-            return false;
-        $user = User::model()->findByAlias($sessionModel->user);
-        if($user === null)
-            return false;
-        $userCached = new UserIdentity($user->username, $user->password);
-        $userCached->authenticate(true);
-        if($userCached->errorCode === UserIdentity::ERROR_NONE) {
-            $duration = $this->rememberMe ? 2592000 : 0; //60*60*24*30 = 30 days
-            Yii::app()->user->login($userCached, $duration);
+        if(isset(Yii::app()->request->cookies['sessionToken'])){
+            $sessionToken = Yii::app()->request->cookies['sessionToken']->value;
+            if(empty(Yii::app()->request->cookies['sessionToken']->value))
+                return false;
+            $sessionModel = X2Model::model('SessionToken')->findByPk($sessionToken); 
+            if($sessionModel === null)
+                return false;
+            $user = User::model()->findByAlias($sessionModel->user);
+            if($user === null)
+                return false;
+            $userCached = new UserIdentity($user->username, $user->password);
+            $userCached->authenticate(true);
+            if($userCached->errorCode === UserIdentity::ERROR_NONE) {
+                $duration = $this->rememberMe ? 2592000 : 0; //60*60*24*30 = 30 days
+                Yii::app()->user->login($userCached, $duration);
 
-            // update lastLogin time
-            $user = User::model()->findByPk(Yii::app()->user->getId());
-            Yii::app()->setSuModel($user);
-            $user->lastLogin = $user->login;
-            $user->login = time();
-            $user->update(array('lastLogin','login'));
-			
-            Yii::app()->session['loginTime'] = time();
-			
-            return true;
-	}
+                // update lastLogin time
+                $user = User::model()->findByPk(Yii::app()->user->getId());
+                Yii::app()->setSuModel($user);
+                $user->lastLogin = $user->login;
+                $user->login = time();
+                $user->update(array('lastLogin','login'));
+
+                Yii::app()->session['loginTime'] = time();
+
+                return true;
+            }
+        }
 		
         return false;
     }

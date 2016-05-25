@@ -53,28 +53,34 @@ class UserSessionTokenTest extends X2DbTestCase {
 
     public function testAuthenticate() {
         // Test that deleting expired tokens works and that invalid tokens return false:
-        $expiredId = $this->tokens('testUser_expired')->id;
+        
         $oldTokenCount = SessionToken::model()->count();
         $newTestForm = new LoginForm;
         $this->assertFalse($newTestForm->loginSessionToken(),'should have returned false; token id/data is invalid');
-        $newTestForm->login();
+        
+        $expiredId = $this->tokens('testUser_expired')->id;
+        Yii::app()->request->cookies['sessionToken'] = new CHttpCookie('sessionToken', $expiredId);
+        $newTestForm->loginSessionToken();
         $this->assertFalse(X2Model::model('SessionToken')->findByPk($expiredId),'Expired token should get deleted upon call to LoginForm::login(...)');
         //Test if more than one record got deleted
         //$this->assertEquals($oldTokenCount-1,SessionToken::model()->count(),'More than one record got deleted. This should not happen according to the fixture data.');
         // Deleted user:
-        $expiredId = $this->tokens('testNotExistsUser')->id;
+        $nonExistentId = $this->tokens('testNotExistsUser')->id;
+        Yii::app()->request->cookies['sessionToken'] = new CHttpCookie('sessionToken', $nonExistentId);
         $this->assertFalse($newTestForm->loginSessionToken(),'should have returned false; user does not exist');
-        $this->assertFalse(User::model()->findByAlias($expiredId),'token corresponding to nonexistent user should have been deleted');
+        $this->assertFalse(User::model()->findByAlias($nonExistentId),'token corresponding to nonexistent user should have been deleted');
         // Deactivated user:
-        $expiredId = $this->tokens('testDeactivatedUser')->id;
+        $deactivatedId = $this->tokens('testDeactivatedUser')->id;
+        Yii::app()->request->cookies['sessionToken'] = new CHttpCookie('sessionToken', $deactivatedId);
         $this->assertFalse($newTestForm->loginSessionToken(),'should have returned false; user has been deactivated');
-        $this->assertFalse(User::model()->findByAlias($expiredId), 'token corresponding to deactivated user should have been deleted');
+        $this->assertFalse(User::model()->findByAlias($deactivatedId), 'token corresponding to deactivated user should have been deleted');
         // User logged in multiple times:
         //$expiredId = $this->tokens('testBruteforceUser')->id;
         //$this->assertFalse(LoginForm::loginSessionToken(),'should have returned false; wrong token key');
         //$this->assertGreaterThan(-5,$this->tokens('testDeactivatedUser')->token);
         // Correct token:
-        $expiredId = $this->tokens('testWorkingUser')->id;
+        $validId = $this->tokens('testWorkingUser')->id;
+        Yii::app()->request->cookies['sessionToken'] = new CHttpCookie('sessionToken', $validId);
         $this->assertTrue($newTestForm->loginSessionToken(),'should have returned true; correct session token, valid user');
 
     }
