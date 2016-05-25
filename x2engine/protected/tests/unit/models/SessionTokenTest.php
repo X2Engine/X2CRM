@@ -47,7 +47,7 @@ Yii::import('application.modules.users.models.*');
 class SessionTokenTest extends X2DbTestCase {
 
     public $fixtures = array(
-        'session' => array('Session','_1'),
+        'session' => 'SessionToken',
     );
 
     public static function referenceFixtures() {
@@ -62,9 +62,9 @@ class SessionTokenTest extends X2DbTestCase {
         Yii::app()->cache->flush();
         // Prepare expected data:
         $sessionCounts = array(
-            'session1' => 1,
-            'session2' => 1,
-            'session3' => 0,
+            'testWorkingUser' => 1,
+            'testDeactivatedUser' => 0,
+            'testUser_expired' => 0,
         );
         foreach(array_keys($sessionCounts) as $alias) {
             $sessionIds[$alias] = $this->session($alias)->id;
@@ -77,7 +77,6 @@ class SessionTokenTest extends X2DbTestCase {
         // Session 1 shoud still be there
         // Sessions 2 and 3 should be gone
         foreach($sessionCounts as $alias => $count){
-            // Session 2 is not being deleted correctly.
             $this->assertEquals((integer)$count, SessionToken::model()->countByAttributes(array('id'=>$sessionIds[$alias])),"$alias did not get deleted");
         }
     }
