@@ -63,7 +63,7 @@ class SessionTokenTest extends X2DbTestCase {
         // Prepare expected data:
         $sessionCounts = array(
             'testWorkingUser' => 1,
-            'testDeactivatedUser' => 0,
+            'testDeactivatedUser' => 1,
             'testUser_expired' => 0,
         );
         foreach(array_keys($sessionCounts) as $alias) {
@@ -74,8 +74,8 @@ class SessionTokenTest extends X2DbTestCase {
         Yii::app()->settings->timeout = $defaultTimeout;
         
         SessionToken::cleanUpSessions();
-        // Session 1 shoud still be there
-        // Sessions 2 and 3 should be gone
+        // Sessions 1 and 2 should still be there
+        // Session 3 should be gone
         foreach($sessionCounts as $alias => $count){
             $this->assertEquals((integer)$count, SessionToken::model()->countByAttributes(array('id'=>$sessionIds[$alias])),"$alias did not get deleted");
         }
