@@ -1,7 +1,7 @@
 <?php
 
 $now = time();
-$expired = $now - 518400; 
+$expired = $now - 528400; 
 $recent = $now - 100;
 
 return array(
