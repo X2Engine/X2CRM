@@ -177,6 +177,10 @@ class MobileController extends X2Controller {
 
         $response = array ();
         $requiresVersion = '0.0.2';
+        if (version_compare ($version, $requiresVersion, '<')) {
+            $response['error'] = 'wrongVersion';
+            $response['requiresVersion'] = $requiresVersion;
+        } else {
         $cookie = new CHttpCookie(self::APP_VERSION_COOKIE_NAME, $version); 
         $cookie->expire = 2147483647; // max expiration time
         Yii::app()->request->cookies[self::APP_VERSION_COOKIE_NAME] = $cookie; 
