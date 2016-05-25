@@ -69,10 +69,10 @@ class X2CalendarPermissionsTest extends X2DbTestCase {
                  */
                 SELECT distinct(username)
                 FROM x2_users as t, x2_calendar_permissions
-                WHERE other_user_id=:userId OR t.id NOT in (
+                WHERE t.status = 1 AND (other_user_id=:userId OR t.id NOT in (
                     SELECT distinct(user_id)
                     FROM x2_calendar_permissions
-                )
+                ))
             ")->queryColumn (array (':userId' => $user->id))));
         $this->assertEquals (ArrayUtil::sort ($grantedUsers), 
             ArrayUtil::sort ($viewable));
