@@ -181,18 +181,19 @@ class MobileController extends X2Controller {
             $response['error'] = 'wrongVersion';
             $response['requiresVersion'] = $requiresVersion;
         } else {
-        $cookie = new CHttpCookie(self::APP_VERSION_COOKIE_NAME, $version); 
-        $cookie->expire = 2147483647; // max expiration time
-        Yii::app()->request->cookies[self::APP_VERSION_COOKIE_NAME] = $cookie; 
-        $cookie = new CHttpCookie(self::PLATFORM_COOKIE_NAME, $platform); 
-        $cookie->expire = 2147483647; // max expiration time
-        Yii::app()->request->cookies[self::PLATFORM_COOKIE_NAME] = $cookie; 
-        $response['success'] = true;
-        $response['appInfo'] = array (
-            'version' => Yii::app ()->params->version,
-            'edition' => Yii::app ()->edition,
-        );
-         
+            $cookie = new CHttpCookie(self::APP_VERSION_COOKIE_NAME, $version); 
+            $cookie->expire = 2147483647; // max expiration time
+            Yii::app()->request->cookies[self::APP_VERSION_COOKIE_NAME] = $cookie; 
+            $cookie = new CHttpCookie(self::PLATFORM_COOKIE_NAME, $platform); 
+            $cookie->expire = 2147483647; // max expiration time
+            Yii::app()->request->cookies[self::PLATFORM_COOKIE_NAME] = $cookie; 
+            $response['success'] = true;
+            $response['appInfo'] = array (
+                'version' => Yii::app ()->params->version,
+                'edition' => Yii::app ()->edition,
+            );
+        }
+        
         echo CJSON::encode ($response);
     }
 
