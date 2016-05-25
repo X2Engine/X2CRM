@@ -54,7 +54,7 @@ Yii::app()->params->profile = Profile::model()->findByPk(1);
 if (empty($type)) $type = 'weblead';
 if (empty($model)) $model = Contacts::model ();
 
-if (empty($fieldList)) $fieldList = null;
+if (empty($fieldList)) $fieldList = array();
 
 
 
