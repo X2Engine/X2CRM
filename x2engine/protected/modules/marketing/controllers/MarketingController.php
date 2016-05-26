@@ -547,12 +547,6 @@ class MarketingController extends x2base {
         $this->redirect(array('view', 'id' => $id));
     }
 
-    /**
-     * Sends an individual email to an item in a campaign/newsletter list.
-     *
-     * @param type $campaignId
-     * @param type $itemId
-     */
     public function actionMailIndividual($campaignId,$itemId) {
         $this->itemId = $itemId;
         $this->campaign = Campaign::model()->findByPk($campaignId);

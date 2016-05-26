@@ -209,6 +209,13 @@ class EmailDeliveryBehavior extends CBehavior {
      * @return array
      */
     public function deliverEmail($addresses, $subject, $message, $attachments = array(), $unsubLink = null){
+        // Bypass everything (so the demo server cannot be used to send email) 
+        // and just return the status that would be returned if the email were
+        // actually sent:
+        $this->status['code'] = '200';
+        $this->status['message'] = Yii::t('app', 'Email Sent!');
+        return $this->status;
+
         if(YII_UNIT_TESTING && defined ('X2_DEBUG_EMAIL') && X2_DEBUG_EMAIL) {
             // Fake a successful send
             /**/AuxLib::debugLog(

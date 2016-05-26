@@ -58,6 +58,7 @@ Yii::app()->clientScript->registerScript('manageCredentialsScript', "
     <h2><?php echo Yii::t('profile', 'Manage Passwords for Third-Party Applications'); ?></h2>
 </div>
 <div class="credentials-storage">
+<strong style="color:red">This feature of the application is shown here for demonstration purposes only. Do NOT enter any actual passwords into this demo server.</strong>
 <?php
 $crit = new CDbCriteria(array(
     'condition' => '(userId=:uid OR userId=-1) AND modelClass != "TwitterApp" AND 

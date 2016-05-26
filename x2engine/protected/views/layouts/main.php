@@ -72,7 +72,7 @@ if ($isAdmin && file_exists(
 
 // Warn the administrator if their license key has expired
 $expirationDate = Yii::app()->settings->getProductKeyExpirationDate ();
-if ($isAdmin && isset($expirationDate)) {
+if (false && $isAdmin && isset($expirationDate)) {
     $supportLink = CHtml::link ('X2Engine', 'http://www.x2crm.com');
     
     if (X2_PARTNER_DISPLAY_BRANDING) {
@@ -101,12 +101,9 @@ if ($isAdmin && isset($expirationDate)) {
 
 
 if(is_int(Yii::app()->locked)) {
-    $lockMsg = '<strong>'.Yii::t('admin','The application is currently locked.').'</strong>';
-    if(file_exists(
-        implode(
-            DIRECTORY_SEPARATOR,array(Yii::app()->basePath,'components','LockAppAction.php')))) {
-        $lockMsg .= ' '.CHtml::link(
-            Yii::t('admin','Unlock X2Engine'),array('/admin/lockApp','toggle'=>0));
+    $lockMsg = '<strong>'.Yii::t('admin','The application is currently locked.').'</strong> (Simulation; full feature disabled on demo server)';
+    if(file_exists(implode(DIRECTORY_SEPARATOR,array(Yii::app()->basePath,'components','LockAppAction.php')))) {
+        $lockMsg .= ' '.CHtml::link(Yii::t('admin','Unlock X2Engine'),array('/admin/lockApp','toggle'=>0));
     } else {
         $lockMsg .= Yii::t('admin', 'You can manually unlock the application by deleting the file {file}', array('{file}' => '<em>"X2Engine.lock"</em> in protected/config'));
     }
@@ -521,9 +518,20 @@ if(!$isGuest){
 <link rel="stylesheet" type="text/css" href="<?php echo $themeUrl; ?>/css/ie.css" media="screen, projection">
 <![endif]-->
 <title><?php echo CHtml::encode($this->pageTitle); ?></title>
+<script type="text/javascript">
+		
+	var _gaq = _gaq || [];
+	_gaq.push(['_setAccount', 'UA-38081192-1']);
+	_gaq.push(['_trackPageview']);
+		
+	(function() {
+		var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+		ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+		var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+	})();
+		
+</script>
 <?php
-if(method_exists($this,'renderGaCode'))
-    $this->renderGaCode('internal');
 
 if (AuxLib::getLayoutType () === 'responsive') {
 ?>

@@ -53,6 +53,7 @@ $this->actionMenu = array(
 X2Html::getFlashes ();
 ?>
 <div style="padding:10px; display:inline-block;">
+<strong style="color:red">This feature of the application is shown here for demonstration purposes only. Do NOT enter any of your passwords here.</strong>
 <?php
 $this->renderPartial(
     '_credentialsForm', 

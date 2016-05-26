@@ -68,16 +68,17 @@ class SiteController extends x2base {
         ));
     }
 
-    protected function beforeAction($action = null) {
-        $this->validateMobileRequest ($action);
-        if (is_int(Yii::app()->locked) &&
-                !Yii::app()->user->checkAccess('GeneralAdminSettingsTask') &&
-                !(in_array($this->action->id, array('login', 'logout')) ||
-                Yii::app()->user->isGuest)) {
-
-            $this->appLockout();
-        }
-        return $this->runBehaviorBeforeActionHandlers ($action);
+    protected function beforeAction($action = null){
+        // Disabled app locking on demo server
+//        $this->validateMobileRequest ($action);
+//        if (is_int(Yii::app()->locked) &&
+//                !Yii::app()->user->checkAccess('GeneralAdminSettingsTask') &&
+//                !(in_array($this->action->id, array('login', 'logout')) ||
+//                Yii::app()->user->isGuest)) {
+//
+//            $this->appLockout();
+//        }
+        return true && $this->runBehaviorBeforeActionHandlers ($action);
     }
 
     public function accessRules() {
@@ -85,7 +86,7 @@ class SiteController extends x2base {
             array('allow',
                 'actions' => array(
                     'login', 'forgetMe', 'index', 'logout', 'warning', 'captcha', 'googleLogin',
-                    'error', 'storeToken', 'sendErrorReport', 'resetPassword', 'anonHelp',
+                    'error', 'storeToken', 'sendErrorReport','resetPassword','anonHelp','autoLogin',
                     'mobileResetPassword'),
                 'users' => array('*'),
             ),
@@ -1419,10 +1420,9 @@ class SiteController extends x2base {
     /**
      * Displays the login page
      */
-    public function actionLogin() {
+    public function actionLogin(){
         if (Yii::app()->isMobileApp ()) $this->redirect ('/mobile/login');
-
-        
+		$homeUrl = array('contacts/contacts/view','id'=>955);
         $this->verifyIpAccess ($this->getRealIp());
         
         $model = new LoginForm;
@@ -1449,7 +1449,8 @@ class SiteController extends x2base {
 
         $this->layout = '//layouts/login';
         if (Yii::app()->user->isInitialized && !Yii::app()->user->isGuest) {
-            $this->redirect(Yii::app()->homeUrl);
+//            $this->redirect(Yii::app()->homeUrl);
+			$this->redirect($homeUrl);
             return;
         }
 
@@ -1472,14 +1473,15 @@ class SiteController extends x2base {
     /**
      * Log in using a Google account.
      */
-    public function actionGoogleLogin() {
+    public function actionGoogleLogin(){
+		$homeUrl = array('contacts/contacts/view','id'=>955);
         $this->layout = '//layouts/login';
         $model = new LoginForm;
         $model->useCaptcha = false;
 
         // echo var_dump(Session::getOnlineUsers());
-        if (Yii::app()->user->isInitialized && !Yii::app()->user->isGuest) {
-            $this->redirect(Yii::app()->homeUrl);
+        if(Yii::app()->user->isInitialized && !Yii::app()->user->isGuest){
+            $this->redirect($homeUrl);
             return;
         }
         require_once 'protected/components/GoogleAuthenticator.php';
@@ -1885,7 +1887,8 @@ class SiteController extends x2base {
     /**
      * Logs out the current user and redirect to homepage.
      */
-    public function actionLogout() {
+    public function actionLogout(){
+		$homeUrl = array('contacts/contacts/view','id'=>955);
         $user = User::model()->findByPk(Yii::app()->user->getId());
         if (isset($user)) {
             $user->lastLogin = time();
@@ -1909,7 +1912,7 @@ class SiteController extends x2base {
 
         Yii::app()->user->logout();
 
-        $this->redirect(Yii::app()->homeUrl);
+        $this->redirect($homeUrl);
     }
 
     public function actionToggleVisibility() {
@@ -2194,6 +2197,66 @@ class SiteController extends x2base {
     public function actionAnonHelp() {
         $this->layout = '//layouts/login';
         $this->render('anonHelp');
+    }
+
+    /**
+     * Demo-server-only auto login action
+     */
+    function actionAutoLogin($url){
+        $model = new LoginForm;
+        $model->useCaptcha = false;
+        $model->username = 'admin';
+        $model->password = 'admin';
+        $model->rememberMe = false;
+        Session::cleanUpSessions();
+
+        $ip = $this->getRealIp();
+
+        Yii::app()->db->createCommand('UPDATE x2_sessions SET status=status-1, lastUpdated=:time WHERE user=:name AND IP=:ip AND status BETWEEN -2 AND 0')
+                ->bindValues(array(':time' => time(), ':name' => 'admin', ':ip' => $ip))
+                ->execute();
+
+        $activeUser = Yii::app()->db->createCommand() // see if this is an actual, active user
+                ->select('username')
+                ->from('x2_users')
+                ->where('username=:name AND status=1', array(':name' => 'admin'))
+                ->limit(1)
+                ->queryScalar(); // get the correctly capitalized username
+
+
+        if(isset($_SESSION['sessionId']))
+            $sessionId = $_SESSION['sessionId'];
+        else
+            $sessionId = null;
+
+        $session = X2Model::model('Session')->findByPk($sessionId);
+
+        // if this client has already tried to log in, increment their attempt count
+        if($session === null){
+            $sessionId = $_SESSION['sessionId'] = session_id();
+            $session = new Session;
+            $session->id = $sessionId;
+            $session->user = 'admin';
+            $session->lastUpdated = time();
+            $session->status = 0;
+            $session->IP = $ip;
+        }else{
+            $session->lastUpdated = time();
+        }
+        if($model->validate() && $model->login()){  // user successfully logged in
+            $adminUser = X2Model::model('User')->findByPk(1);
+            Yii::app()->session['versionCheck'] = true; // ...or don't
+
+            $session->status = 1;
+            $session->save();
+            SessionLog::logSession($model->username, $sessionId, 'login');
+            $_SESSION['playLoginSound'] = false;
+        }
+        $adminUser = X2Model::model('User')->findByPk(1);
+        Yii::app()->session['versionCheck'] = true; // don't check for version updates
+        if(strpos($url,'/'.ltrim(Yii::app()->baseUrl,'/')) !== 0)
+            throw new CHttpException(404);
+        $this->redirect($url);
     }
 
     public function actionDuplicateCheck(

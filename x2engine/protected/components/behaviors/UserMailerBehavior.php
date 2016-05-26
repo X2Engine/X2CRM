@@ -78,7 +78,11 @@ class UserMailerBehavior extends CBehavior {
         $eml->subject = $subject;
         $eml->message = $message;
         $eml->attachments = $attachments;
-        return $eml->deliver();
+        //return $eml->deliver();
+		/* x2modstart */ 
+		return array('message'=>Yii::t('app','Email sent!'),'code'=>'200');
+		/* x2modend */ 
+
     }
 }
 ?>

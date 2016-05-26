@@ -118,6 +118,9 @@ class Formatter {
      *  whether execution succeeded, the second, the value returned by the formula.
      */
     public static function parseFormula($input, array $params = array()){
+        /* x2modstart */ 
+        return $input;
+        /* x2modend */ 
         if(strpos($input,'=') !== 0) {
             return array(false,Yii::t('admin','Formula does not begin with "="'));
         }
