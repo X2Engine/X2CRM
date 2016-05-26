@@ -225,6 +225,15 @@ $('#mobile-signin-button').click (function () {
                     </button>-->
                     <div class='clearfix'></div>
                 </div>
+<style>#pre-made-users strong { width: 80px; display: inline-block;}</style>
+<div style='width: 100%; text-align: center;'>
+<div style="background-color:transparent; margin: auto; display: inline-block;padding:10px; padding-bottom: 19px;text-align:left;" id='pre-made-users'>
+<strong>user:</strong> admin<br>
+<strong>password:</strong> admin<br>
+<strong>other users:</strong> chames, ncordova<br>
+<strong>password:</strong> password
+</div>
+</div>
                 <div class='row remember-me-row'>
                     <div class="cell remember-me-cell">
                         <?php

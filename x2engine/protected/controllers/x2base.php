@@ -274,7 +274,6 @@ abstract class x2base extends X2Controller {
      * @return CActiveDataProvider
      */
     public function getHistory(&$model, $type = null) {
-
         if (!isset($type))
             $type = get_class($model);
 
@@ -295,7 +294,7 @@ abstract class x2base extends X2Controller {
                 'condition'=>'associationId='.$model->id.' AND associationType="'.$type.'" '.$filters[$history].' AND (visibility="1" OR assignedTo="admin" OR assignedTo="'.Yii::app()->user->getName().'")'
             )
         ));
-    }
+	}
 
     /**
      * Obtains the current worflow for a model of given type and id.
@@ -305,15 +304,15 @@ abstract class x2base extends X2Controller {
      * @return int the ID of the current workflow (0 if none are found)
      */
     public function getCurrentWorkflow($id, $type) {
-        $currentWorkflow = Yii::app()->db->createCommand()
-            ->select('workflowId,completeDate,createDate')
-            ->from('x2_actions')
-            ->where(
-                'type="workflow" AND associationType=:type AND associationId=:id',
-                array(':type'=>$type,':id'=>$id))
-            ->order('IF(completeDate = 0 OR completeDate IS NULL,1,0) DESC, createDate DESC')
-            ->limit(1)
-            ->queryRow(false);
+		$currentWorkflow = Yii::app()->db->createCommand()
+			->select('workflowId,completeDate,createDate')
+			->from('x2_actions')
+            /* x2modstart */ 
+			->where('type="workflow" AND associationType=:type AND associationId=:id',array(':type'=>$type,':id'=>($type=='Contacts'?1:$id)))
+            /* x2modend */ 
+			->order('IF(completeDate = 0 OR completeDate IS NULL,1,0) DESC, createDate DESC')
+			->limit(1)
+			->queryRow(false);
 
         if($currentWorkflow === false || !isset($currentWorkflow[0])) {
             $defaultWorkflow = Yii::app()->db->createCommand("
@@ -518,6 +517,7 @@ abstract class x2base extends X2Controller {
         throw new Exception($message);
     }
 
+      
     public function parseEmailTo($string) {
 
         if (empty($string))
