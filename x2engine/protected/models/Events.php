@@ -570,7 +570,7 @@ class Events extends X2ActiveRecord {
             $lastTimestamp = 0;
         }
         if (isset($_SESSION['lastEventId'])) {
-            $condition.=" AND id <= :lastEventId AND sticky = 0";
+            $condition.=" AND id <= :lastEventId";
             $params[':lastEventId'] = $_SESSION['lastEventId'];
         }
 
@@ -584,7 +584,7 @@ class Events extends X2ActiveRecord {
         $dataProvider = new CActiveDataProvider('Events', array(
             'criteria' => array(
                 'condition' => $condition,
-                'order' => 'timestamp DESC, id DESC',
+                'order' => 'sticky DESC, timestamp DESC, id DESC',
                 'params' => array_merge ($params, $accessCriteria->params),
             ),
             'pagination' => array(
@@ -705,7 +705,7 @@ class Events extends X2ActiveRecord {
             $prefix . 'username' => $user,
             $prefix . 'maxTimestamp' => time(),
         );
-        $parameters = array('order' => 'timestamp DESC, id DESC');
+        $parameters = array('order' => 'sticky DESC, timestamp DESC, id DESC');
         if (!is_null($limit) && is_numeric($limit)) {
             $parameters['limit'] = $limit;
         }
