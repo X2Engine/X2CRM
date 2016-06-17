@@ -28,6 +28,7 @@ before_script:
   - mysql -e "DROP DATABASE IF EXISTS x2engine; CREATE DATABASE x2engine;" -u root;
 
   #install x2crm
+  - cp build/constants.php x2engine/constants.php
   - cp build/installConfig.php x2engine/installConfig.php
   - php x2engine/initialize.php silent
 
