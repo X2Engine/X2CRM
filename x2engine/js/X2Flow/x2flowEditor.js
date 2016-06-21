@@ -1464,6 +1464,15 @@ window.flowEditor = {
     loadLinkAttributes:function(){
         var that = this;
         var modelClass = this.getModelClass();
+        x2.fieldUtils.getModelAttributes(modelClass, 'link', function(attributeList) { 
+            options = [];
+            for(var i in attributeList){
+                options[attributeList[i]['name']] = attributeList[i]['label'];
+            }
+            x2.fieldUtils.createInput({
+                "type":"dropdown","name":"attribute","options":options,"value":null
+            });
+        });
     },
     
     /**
