@@ -560,7 +560,7 @@ window.flowEditor = {
                 var modelClass = flowEditor.getModelClass();
                 if(modelClass !== null) {
                     that.lockConfig ();
-                    x2.fieldUtils.getModelAttributes(modelClass, function(attributes) {
+                    x2.fieldUtils.getModelAttributes(modelClass, 'all', function(attributes) {
                         that.unlockConfig ();  
                         x2.fieldUtils.createAttrListItem(modelClass, attributes)
                             // mark as a multiselect so it can be toggled back and forth later
@@ -608,7 +608,7 @@ window.flowEditor = {
         $("#x2flow-add-attribute").click(function() {
             var modelClass = flowEditor.getModelClass();
             that.lockConfig ();
-            x2.fieldUtils.getModelAttributes(modelClass, function(attributeList) {
+            x2.fieldUtils.getModelAttributes(modelClass, 'all', function(attributeList) {
                 that.unlockConfig ();
                 if(modelClass === "API_params") {
                     $('#x2flow-attributes .x2flow-api-attributes-section-header').show ();
@@ -632,7 +632,7 @@ window.flowEditor = {
         $("#x2flow-add-header").click(function() {
             var modelClass = flowEditor.getModelClass();
             that.lockConfig ();
-            x2.fieldUtils.getModelAttributes(modelClass, function(attributeList) {
+            x2.fieldUtils.getModelAttributes(modelClass, 'all', function(attributeList) {
                 that.unlockConfig ();
                 $('#x2flow-headers .x2flow-api-attributes-section-header').show ();
                 flowEditor.createApiParam(attributeList[0].name, attributeList[0].value, false)
@@ -1460,6 +1460,12 @@ window.flowEditor = {
             $(this).closest('li').attr('data-value', $(this).val());
         });
     },
+    
+    loadLinkAttributes:function(){
+        var that = this;
+        var modelClass = this.getModelClass();
+    },
+    
     /**
      * Creates an attribute entry in #x2flow-attributes for each attribute in the list provided
      */
@@ -1473,7 +1479,7 @@ window.flowEditor = {
 
         // loop through any saved attributes
         this.lockConfig ();
-        x2.fieldUtils.getModelAttributes(modelClass, function(attributeList) {    
+        x2.fieldUtils.getModelAttributes(modelClass, 'all', function(attributeList) {    
             that.unlockConfig ();
 
             for(var i in attributes) {
@@ -1522,7 +1528,7 @@ window.flowEditor = {
                 var modelClass = that.getModelClass();
                 if(modelClass !== null) {
                     that.lockConfig ();
-                    x2.fieldUtils.getModelAttributes(modelClass, function(attributeList) {
+                    x2.fieldUtils.getModelAttributes(modelClass, 'all', function(attributeList) {
                         that.unlockConfig (); 
                         // console.debug(condition);
                         x2.fieldUtils.createAttrListItem(

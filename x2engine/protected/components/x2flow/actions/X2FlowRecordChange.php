@@ -42,7 +42,7 @@
  */
 class X2FlowRecordChange extends X2FlowAction {
 	public $title = 'Change Record';
-	public $info = 'Switch which record this flow is acting on based on link-type fields.';
+	public $info = 'Switch which record this flow is acting on based on link-type fields. All record changes are relative to the triggering model.';
 	
 	public function paramRules() {
 		return array_merge (parent::paramRules (), array (
@@ -54,7 +54,11 @@ class X2FlowRecordChange extends X2FlowAction {
 	}
 	
 	public function execute(&$params) {
-            
+            // Need way to reset back to original model
+            if(!isset($params['originalModel'])){
+                // This is the first time we're making a switch and need to remember the original
+                $params['originalModel'] = $params['model'];
+            }
             // $params['model'] = $newmodel;
 	}
 }
