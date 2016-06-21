@@ -45,12 +45,19 @@ class X2FlowRecordChange extends X2FlowAction {
 	public $info = 'Switch which record this flow is acting on based on link-type fields. All record changes are relative to the triggering model.';
 	
 	public function paramRules() {
-		return array_merge (parent::paramRules (), array (
-			'title' => Yii::t('studio',$this->title),
-			'info' => Yii::t('studio',$this->info),
-			'modelRequired' => 1,
-			'options' => array()
-		));
+            return array_merge (parent::paramRules (), array (
+                'title' => Yii::t('studio', $this->title),
+                'info' => Yii::t('studio', $this->info),
+                'modelRequired' => 1,
+                'options' => array(
+                    array(
+                        'name' => 'linkField',
+                        'label' => Yii::t('studio', 'Link Field'),
+                        'type' => 'dropdown',
+                        'defaultVal' => '',
+                        'options' => array(),
+                    ),
+                )));
 	}
 	
 	public function execute(&$params) {

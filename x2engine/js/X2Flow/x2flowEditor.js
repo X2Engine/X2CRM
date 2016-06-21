@@ -1371,6 +1371,10 @@ window.flowEditor = {
         if (params['class'] === 'X2FlowRecordEmail' || params['class'] === 'X2FlowEmail') {
             this.setUpEmailForm (form);
         }
+        
+        if (params['class'] === 'X2FlowRecordChange'){
+            this.loadLinkAttributes();
+        }
 
         return form;
     },
@@ -1467,11 +1471,14 @@ window.flowEditor = {
         x2.fieldUtils.getModelAttributes(modelClass, 'link', function(attributeList) { 
             options = [];
             for(var i in attributeList){
-                options[attributeList[i]['name']] = attributeList[i]['label'];
+                options[i] = [
+                    attributeList[i]['name'],
+                    attributeList[i]['label']
+                ]
             }
-            x2.fieldUtils.createInput({
-                "type":"dropdown","name":"attribute","options":options,"value":null
-            });
+            $('fieldset[name="linkField"] .x2fields-value').html(x2.fieldUtils.createInput({
+                "type":"dropdown","name":"linkField","options":options,"value":null
+            }));
         });
     },
     
