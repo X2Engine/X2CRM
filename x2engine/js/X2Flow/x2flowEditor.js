@@ -1373,7 +1373,8 @@ window.flowEditor = {
         }
         
         if (params['class'] === 'X2FlowRecordChange'){
-            this.loadLinkAttributes();
+            var config = this.currentItem.data("config");
+            this.loadLinkAttributes(config);
         }
 
         return form;
@@ -1465,20 +1466,30 @@ window.flowEditor = {
         });
     },
     
-    loadLinkAttributes:function(){
+    loadLinkAttributes:function(config){
         var that = this;
         var modelClass = this.getModelClass();
-        x2.fieldUtils.getModelAttributes(modelClass, 'link', function(attributeList) { 
-            options = [];
+        var selectedField = null;
+        if(typeof config.options.linkField !== 'undefined' 
+                && typeof config.options.linkField.value !== 'undefined'){
+            selectedField = config.options.linkField.value;
+        }
+        this.lockConfig();
+        x2.fieldUtils.getModelAttributes(modelClass, 'link', function(attributeList) {
+            that.unlockConfig();
+            $('fieldset[name="linkField"] select').empty();
+            console.log($('fieldset[name="linkField"] select'));
             for(var i in attributeList){
-                options[i] = [
-                    attributeList[i]['name'],
-                    attributeList[i]['label']
-                ]
+                if(typeof attributeList[i]['name'] !== 'undefined' 
+                        && typeof attributeList[i]['label'] !== 'undefined'){
+                    var option = $('<option></option>').attr('value',attributeList[i]['name']).text(attributeList[i]['label']);
+                    if(selectedField === attributeList[i]['name']){
+                        option.attr('selected','selected');
+                    }
+                    $('fieldset[name="linkField"] select').append(option);
+                }
             }
-            $('fieldset[name="linkField"] .x2fields-value').html(x2.fieldUtils.createInput({
-                "type":"dropdown","name":"linkField","options":options,"value":null
-            }));
+            
         });
     },
     
