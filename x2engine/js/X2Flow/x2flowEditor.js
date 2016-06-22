@@ -1177,7 +1177,8 @@ window.flowEditor = {
                 // $("#x2flow-main-config select").change();    // trigger modelClass event, etc
 
                 // create attribute and/or generic condition lists
-                flowEditor.loadAttributes(config.attributes);    
+                flowEditor.loadAttributes(config.attributes);
+                flowEditor.loadLinkAttributes(config);
                 if (itemType === 'X2FlowApiCall') {
                     flowEditor.loadHeaders(config.headerRows);    
                 }
@@ -1371,11 +1372,6 @@ window.flowEditor = {
         if (params['class'] === 'X2FlowRecordEmail' || params['class'] === 'X2FlowEmail') {
             this.setUpEmailForm (form);
         }
-        
-        if (params['class'] === 'X2FlowRecordChange'){
-            var config = this.currentItem.data("config");
-            this.loadLinkAttributes(config);
-        }
 
         return form;
     },
@@ -1478,7 +1474,6 @@ window.flowEditor = {
         x2.fieldUtils.getModelAttributes(modelClass, 'link', function(attributeList) {
             that.unlockConfig();
             $('fieldset[name="linkField"] select').empty();
-            console.log($('fieldset[name="linkField"] select'));
             for(var i in attributeList){
                 if(typeof attributeList[i]['name'] !== 'undefined' 
                         && typeof attributeList[i]['label'] !== 'undefined'){
