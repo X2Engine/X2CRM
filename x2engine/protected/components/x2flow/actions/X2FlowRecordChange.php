@@ -49,6 +49,7 @@ class X2FlowRecordChange extends X2FlowAction {
                 'title' => Yii::t('studio', $this->title),
                 'info' => Yii::t('studio', $this->info),
                 'modelRequired' => 1,
+                'linkType' => null,
                 'options' => array(
                     array(
                         'name' => 'linkField',

@@ -918,7 +918,12 @@ window.flowEditor = {
         // console.debug(config);
         if(config !== undefined && config.modelClass !== undefined)
             return config.modelClass;
-        this.findNearestRecordChange((item === undefined)? this.currentItem : item);
+        if(config.type !== 'X2FlowRecordChange'){
+            var linkType = this.findNearestRecordChange((item === undefined)? this.currentItem : item);
+            if(linkType !== null){
+                return linkType;
+            }
+        }
         var triggerConfig = flowEditor.trigger.data("config");
         if(triggerConfig !== undefined && triggerConfig.modelClass !== undefined)
             return triggerConfig.modelClass;
@@ -930,24 +935,20 @@ window.flowEditor = {
      */
     findNearestRecordChange:function(item){
         if(item.is('#trigger')){
-            console.log('Bottomed out!');
             return null;    
         }
         var prevNode = item.closest('.x2flow-node').prev();
         if(prevNode.hasClass('X2FlowRecordChange')){
-            console.log('Found it!');
-            console.log(prevNode.data("config"));
+            return prevNode.data("config").linkType;
         } else if (prevNode.hasClass('bracket')){
             var branch = prevNode.parent('.x2flow-branch');
             if(branch.prev().hasClass('x2flow-node')){
                 var branchNode = branch.prev();
             } else{
                 var branchNode = prevNode.parents('.x2flow-node');
-            }   
-            console.log('Need to go up a level!');
+            }
             this.findNearestRecordChange(branchNode);
         } else{
-            console.log('Need to keep going!');
             this.findNearestRecordChange(prevNode);
         }
     },
@@ -1505,14 +1506,23 @@ window.flowEditor = {
             for(var i in attributeList){
                 if(typeof attributeList[i]['name'] !== 'undefined' 
                         && typeof attributeList[i]['label'] !== 'undefined'){
-                    var option = $('<option></option>').attr('value',attributeList[i]['name']).text(attributeList[i]['label']);
+                    if(i == 0 && config.type == 'X2FlowRecordChange'){
+                        config.linkType = attributeList[i]['linkType'];
+                    }
+                    var option = $('<option></option>').attr('value',attributeList[i]['name']).attr('data-value', attributeList[i]['linkType']).text(attributeList[i]['label']);
                     if(selectedField === attributeList[i]['name']){
+                        if(config.type == 'X2FlowRecordChange'){
+                            config.linkType = attributeList[i]['linkType'];
+                        }
                         option.attr('selected','selected');
                     }
                     $('fieldset[name="linkField"] select').append(option);
                 }
             }
-            
+        });
+        $("#x2flow-main-config").on("change", "fieldset[name='linkField'] select", function(e) {
+            var selectedOption = $("option:selected", this);
+            flowEditor.currentItem.data("config").linkType = $(selectedOption).attr('data-value');
         });
     },
     
