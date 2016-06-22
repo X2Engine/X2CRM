@@ -1,3 +1,0 @@
-id,firstName,lastName,name,accountName,quoteAmount,salesStage,expectedCloseDate,probability,leadSource,description,assignedTo,createDate,visibility,associatedContacts,lastUpdated,lastActivity,updatedBy
-1,Lead,One,Lead One,,450.00,Working,,85,Google,"Probably lead",admin,"September 17, 2014 12:03:20 AM",Public,,"September 17, 2014 12:03:20 AM","September 17, 2014 12:03:20 AM",admin
-2,Lead,Two,Lead Two,,890.00,Working,"Tue Sep 23 17:00:00 PDT 2014",45,Facebook,,admin,"September 17, 2014 12:03:56 AM",Public,,"September 17, 2014 12:03:56 AM","September 17, 2014 12:03:56 AM",admin

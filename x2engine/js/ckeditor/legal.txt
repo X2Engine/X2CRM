@@ -1,3 +1,0 @@
-License choice:
- - GNU Lesser General Public License Version 3 (the "LGPL")
-   http://www.gnu.org/licenses/lgpl.html
