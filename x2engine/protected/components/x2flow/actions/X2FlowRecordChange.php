@@ -66,6 +66,12 @@ class X2FlowRecordChange extends X2FlowAction {
                 // This is the first time we're making a switch and need to remember the original
                 $params['originalModel'] = $params['model'];
             }
-            // $params['model'] = $newmodel;
+            $options = &$this->config['options'];
+            if(!empty($options['linkField'])){
+                $newModel = $params['originalModel']->{$options['linkField'].'Model'};
+                if($newModel instanceof X2Model){
+                    $params['model'] = $newModel;
+                }
+            }
 	}
 }
