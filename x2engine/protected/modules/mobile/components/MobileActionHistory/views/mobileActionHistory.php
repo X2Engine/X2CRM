@@ -116,7 +116,7 @@ if (!$this->refresh && $hasCreateAccess) {
 </a>
 
 <?php
- 
+ /*
 $this->beginWidget ('MobileActiveForm', array (
     'htmlOptions' => array (
         'class' => 'publisher-photo-upload-form'
@@ -127,7 +127,7 @@ $this->beginWidget ('MobileActiveForm', array (
         ))
 ));
 $this->endWidget ();
- 
+ */
 
 }
 ?>

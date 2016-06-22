@@ -79,7 +79,6 @@ class MobileActionHistoryPublishAction extends MobileAction {
                 throw new CHttpException (500, Yii::t('app', 'Upload failed'));
             }
         }
-        return parent::run ($id);
     }
 
 }
