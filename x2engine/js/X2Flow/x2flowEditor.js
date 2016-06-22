@@ -918,10 +918,38 @@ window.flowEditor = {
         // console.debug(config);
         if(config !== undefined && config.modelClass !== undefined)
             return config.modelClass;
+        this.findNearestRecordChange((item === undefined)? this.currentItem : item);
         var triggerConfig = flowEditor.trigger.data("config");
         if(triggerConfig !== undefined && triggerConfig.modelClass !== undefined)
             return triggerConfig.modelClass;
         return null;
+    },
+    /**
+     * Finds the nearest Record Change action to determine the model class of
+     * a flow item, or stops at the trigger
+     */
+    findNearestRecordChange:function(item){
+        if(item.is('#trigger')){
+            console.log('Bottomed out!');
+            return null;    
+        }
+        var prevNode = item.closest('.x2flow-node').prev();
+        if(prevNode.hasClass('X2FlowRecordChange')){
+            console.log('Found it!');
+            console.log(prevNode.data("config"));
+        } else if (prevNode.hasClass('bracket')){
+            var branch = prevNode.parent('.x2flow-branch');
+            if(branch.prev().hasClass('x2flow-node')){
+                var branchNode = branch.prev();
+            } else{
+                var branchNode = prevNode.parents('.x2flow-node');
+            }   
+            console.log('Need to go up a level!');
+            this.findNearestRecordChange(branchNode);
+        } else{
+            console.log('Need to keep going!');
+            this.findNearestRecordChange(prevNode);
+        }
     },
     queryItemParams:function(itemType, callback) {
         var self = this;
