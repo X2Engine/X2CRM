@@ -704,9 +704,16 @@ window.flowEditor = {
                 // if this item doens't define its own model class,
                 if(typeof itemConfig.modelClass === 'undefined') {
                     // the attributes must refer to the trigger so they're now invalid
-                    delete itemConfig.attributes;            
+                    delete itemConfig.attributes;
+                    delete itemConfig.conditions;
                 }
             });
+        });
+        
+        $("#x2flow-main-config").on("change", "fieldset[name='linkField'] select", function(e) {
+            var selectedOption = $("option:selected", this);
+            flowEditor.currentItem.data("config").linkType = $(selectedOption).attr('data-value');
+            flowEditor.clearFutureNodeAttributes(flowEditor.currentItem.next());
         });
 
 
@@ -947,9 +954,35 @@ window.flowEditor = {
             } else{
                 var branchNode = prevNode.parents('.x2flow-node');
             }
-            this.findNearestRecordChange(branchNode);
+            return this.findNearestRecordChange(branchNode);
         } else{
-            this.findNearestRecordChange(prevNode);
+            return this.findNearestRecordChange(prevNode);
+        }
+    },
+    /**
+     * After a change to X2RecordChange nodes, we have to traverse the tree going
+     * forwards to clear any conditions or attributes that are dependent on the 
+     * modelClass set by a record change node
+     */
+    clearFutureNodeAttributes:function(item){
+        var that = this;
+        var itemConfig = $(item).data("config");
+        if(typeof itemConfig === 'undefined' || $(item).hasClass('X2FlowRecordChange')){
+            //Stop when we reach the end of a branch or another record change
+            return;   
+        }
+        // if this item doens't define its own model class,
+        if(typeof itemConfig.modelClass === 'undefined') {
+            // the attributes must refer to the trigger so they're now invalid
+            delete itemConfig.attributes;  
+            delete itemConfig.conditions;
+        }
+        if($(item).hasClass('X2FlowSwitch') || $(item).hasClass('X2FlowSplitter')){
+            $.each($(item).find('.x2flow-branch'),function(i, branch){
+                that.clearFutureNodeAttributes($('.x2flow-node:first', branch));
+            });
+        }else{
+            this.clearFutureNodeAttributes($(item).next());
         }
     },
     queryItemParams:function(itemType, callback) {
@@ -1519,10 +1552,6 @@ window.flowEditor = {
                     $('fieldset[name="linkField"] select').append(option);
                 }
             }
-        });
-        $("#x2flow-main-config").on("change", "fieldset[name='linkField'] select", function(e) {
-            var selectedOption = $("option:selected", this);
-            flowEditor.currentItem.data("config").linkType = $(selectedOption).attr('data-value');
         });
     },
     
