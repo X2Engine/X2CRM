@@ -1,7 +1,7 @@
 <?php return array (
-  'Edit Lead' => 'Редактировать Ведущий',
-  'View Lead' => 'Посмотреть Ведущий',
-  'Leads:' => 'Объявления:',
+  'Edit Lead' => 'Редактировать кандидата',
+  'View Lead' => 'Посмотреть кандидата',
+  'Leads:' => 'Кандидаты:',
   '{leads} List' => '{leads} Список',
   'Create {lead}' => 'Создать {lead}',
   'Edit {lead}' => 'Редактировать {lead}',
@@ -11,7 +11,7 @@
   'Import {leads}' => 'Импорт {leads}',
   'Export {leads}' => 'Экспорт {leads}',
   'Conversion Date' => 'Дата конверсии',
-  'Converted' => 'Переделанный',
-  'Converted To' => 'Конвертировано в',
-  'This record has been converted. To view the new record, click {here}.' => 'Эта запись была преобразована. Для просмотра новый рекорд, нажмите {here}',
+  'Converted' => 'Преобразовано',
+  'Converted To' => 'Преобразовано в',
+  'This record has been converted. To view the new record, click {here}.' => 'Эта запись была преобразована. Для просмотра новый записи, нажмите {here}',
 );
