@@ -1,0 +1,17 @@
+<?php return array (
+  'Edit Lead' => 'Редактировать Ведущий',
+  'View Lead' => 'Посмотреть Ведущий',
+  'Leads:' => 'Объявления:',
+  '{leads} List' => '{leads} Список',
+  'Create {lead}' => 'Создать {lead}',
+  'Edit {lead}' => 'Редактировать {lead}',
+  'Delete {lead}' => 'Удалить {lead}',
+  'Convert to {contact}' => 'Преобразовать в {contact}',
+  'Convert to {opportunity}' => 'Преобразовать в {opportunity}',
+  'Import {leads}' => 'Импорт {leads}',
+  'Export {leads}' => 'Экспорт {leads}',
+  'Conversion Date' => 'Дата конверсии',
+  'Converted' => 'Переделанный',
+  'Converted To' => 'Конвертировано в',
+  'This record has been converted. To view the new record, click {here}.' => 'Эта запись была преобразована. Для просмотра новый рекорд, нажмите {here}',
+);
