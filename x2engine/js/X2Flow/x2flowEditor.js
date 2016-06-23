@@ -920,7 +920,7 @@ window.flowEditor = {
             return config.modelClass;
         if(config.type !== 'X2FlowRecordChange'){
             var linkType = this.findNearestRecordChange((item === undefined)? this.currentItem : item);
-            if(linkType !== null){
+            if(linkType !== undefined && linkType !== null){
                 return linkType;
             }
         }
