@@ -53,7 +53,10 @@ class X2FlowRecordChange extends X2FlowAction {
                 'options' => array(
                     array(
                         'name' => 'linkField',
-                        'label' => Yii::t('studio', 'Link Field'),
+                        'label' => Yii::t('studio', 'Link Field')."&nbsp;".X2Html::hint2 (
+                        Yii::t('studio', 'If you want to use this action with a splitter, '.
+                            'place one of these at the start of each splitter branch '.
+                                'to ensure the branch acts on the correct record.')),
                         'type' => 'dropdown',
                         'defaultVal' => '',
                         'options' => array(),
@@ -69,10 +72,10 @@ class X2FlowRecordChange extends X2FlowAction {
             }
             $options = &$this->config['options'];
             if(!empty($options['linkField'])){
-                if($options['linkField'] === 'original'){
+                if($options['linkField']['value'] === 'original'){
                     $newModel = $params['originalModel'];
                 }else{
-                    $newModel = $params['originalModel']->{$options['linkField'].'Model'};
+                    $newModel = $params['originalModel']->{$options['linkField']['value'].'Model'};
                 }
                 if($newModel instanceof X2Model){
                     $params['model'] = $newModel;
