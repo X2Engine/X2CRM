@@ -45,6 +45,8 @@
  * @property integer $result
  */
 class X2ListItem extends CActiveRecord {
+    public $verifyCode; // CAPTCHA for weblead form
+
 	/**
 	 * Returns the static model of the specified AR class.
 	 * @return ContactListItem the static model class
@@ -77,6 +79,9 @@ class X2ListItem extends CActiveRecord {
 			// The following rule is used by search().
 			// Please remove those attributes that should not be searched.
 			array('contactId, listId, uniqueId, result, opened', 'safe', 'on'=>'search'),
+            array(
+                'verifyCode', 'captcha', 'allowEmpty' => !CCaptcha::checkRequirements(),
+                    'on' => 'webForm', 'captchaAction' => 'site/webleadCaptcha')
 		);
 	}
 

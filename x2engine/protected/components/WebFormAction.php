@@ -102,6 +102,10 @@ class WebFormAction extends CAction {
                     }
                 }
             }
+
+            if ($extractedParams['requireCaptcha'] && CCaptcha::checkRequirements() &&
+                array_key_exists('verifyCode', $_POST['Contacts']))
+                    $model->verifyCode = $_POST['Contacts']['verifyCode'];
             
             $model->visibility = 1;
 
@@ -307,26 +311,15 @@ class WebFormAction extends CAction {
 
         $sanitizedGetParams = self::sanitizeGetParams ();
 
-        
-        if (Yii::app()->contEd('pro')) {
-            $viewParams = array_merge (array (
-                'model' => $model,
-                'type' => 'weblead',
-                'fieldList' => $extractedParams['fieldList'],
-                'css' => $extractedParams['css'], 
-                'header' => $extractedParams['header']
-            ), $sanitizedGetParams);
-            $this->controller->renderPartial('application.components.views.webForm', $viewParams);
-        } else {
-        
-            $this->controller->renderPartial(
-                'application.components.views.webForm', 
-                array_merge (array(
-                    'type' => 'weblead'
-                ), $sanitizedGetParams));
-        
-        }
-        
+        $viewParams = array_merge (array (
+            'model' => $model,
+            'type' => 'weblead',
+            'fieldList' => $extractedParams['fieldList'],
+            'css' => $extractedParams['css'],
+            'header' => $extractedParams['header'],
+            'requireCaptcha' => $extractedParams['requireCaptcha'],
+        ), $sanitizedGetParams);
+        $this->controller->renderPartial('application.components.views.webForm', $viewParams);
 
     }
 
@@ -434,6 +427,10 @@ class WebFormAction extends CAction {
                 }
             }
             
+            if ($extractedParams['requireCaptcha'] && CCaptcha::checkRequirements() &&
+                array_key_exists('verifyCode', $_POST['Services']))
+                    $model->verifyCode = $_POST['Services']['verifyCode'];
+
             $model->validate (null, false);
 
             if(!$model->hasErrors()){
@@ -580,23 +577,14 @@ class WebFormAction extends CAction {
         $sanitizedGetParams = self::sanitizeGetParams ();
 
         
-        if (Yii::app()->contEd('pro')) {
-            $viewParams = array_merge (array (
-                'model' => $model,
-                'type' => 'service',
-                'fieldList' => $extractedParams['fieldList'],
-                'css' => $extractedParams['css']
-            ), $sanitizedGetParams);
-            $this->controller->renderPartial('application.components.views.webForm', $viewParams);
-        } else {
-        
-            $this->controller->renderPartial (
-                'application.components.views.webForm',
-                array_merge (array(
-                    'model' => $model, 'type' => 'service'
-                ), $sanitizedGetParams));
-        
-        }
+        $viewParams = array_merge (array (
+            'model' => $model,
+            'type' => 'service',
+            'fieldList' => $extractedParams['fieldList'],
+            'css' => $extractedParams['css'],
+            'requireCaptcha' => $extractedParams['requireCaptcha'],
+        ), $sanitizedGetParams);
+        $this->controller->renderPartial('application.components.views.webForm', $viewParams);
         
     }
 
@@ -636,6 +624,7 @@ class WebFormAction extends CAction {
         $extractedParams['generateLead'] = false;
         $extractedParams['generateAccount'] = false;
         $extractedParams['redirectUrl'] = null;
+        $extractedParams['requireCaptcha'] = false;
         if (isset ($webForm)) { // new method
             if (!empty ($webForm->leadSource)) 
                 $extractedParams['leadSource'] = $webForm->leadSource;
@@ -643,6 +632,8 @@ class WebFormAction extends CAction {
                 $extractedParams['generateLead'] = $webForm->generateLead;
             if (!empty ($webForm->generateAccount)) 
                 $extractedParams['generateAccount'] = $webForm->generateAccount;
+            if (!empty ($webForm->requireCaptcha))
+                $extractedParams['requireCaptcha'] = $webForm->requireCaptcha;
             if (!empty ($webForm->redirectUrl)) 
                 $extractedParams['redirectUrl'] = $webForm->redirectUrl;
         }

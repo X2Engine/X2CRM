@@ -47,6 +47,8 @@ class Contacts extends X2Model {
 
     public $name;
 
+    public $verifyCode; // CAPTCHA for weblead form
+
     /**
      * Returns the static model of the specified AR class.
      * @return Contacts the static model class
@@ -104,8 +106,12 @@ class Contacts extends X2Model {
     }
 
     public function rules() {
-        $parentRules = parent::rules();
-        return $parentRules;
+        $rules = array_merge(parent::rules (), array(
+            array(
+                'verifyCode', 'captcha', 'allowEmpty' => !CCaptcha::checkRequirements(),
+                    'on' => 'webForm', 'captchaAction' => 'site/webleadCaptcha')
+        ));
+        return $rules;
     }
 
     public function duplicateFields() {

@@ -265,6 +265,10 @@ input[type="text"] {
 input[type="text"] {
     width: 100%;
 }
+#captcha-image {
+    margin-left: auto;
+    margin-right: auto;
+}
 #contact-header{
     color:white;
     text-align:center;
@@ -400,6 +404,20 @@ function renderFields ($fieldList, $type, $form, $model, $contactFields=null) {
 
 renderFields ($fieldList, $type, $form, $model, $contactFields);
 
+// Render CAPTCHA if requested
+if (isset($requireCaptcha) && $requireCaptcha && CCaptcha::checkRequirements()) {
+    echo '<div id="captcha-container">';
+    $form->widget('CCaptcha', array(
+        'captchaAction' => 'site/webleadCaptcha',
+        'imageOptions' => array(
+            'id' => 'captcha-image',
+            'style' => 'display:block',
+        )
+    )); echo '</div>';
+    echo '<p class="hint">'.Yii::t('app', 'Please enter the letters in the image above.').'</p>';
+    echo $form->error($model, 'verifyCode');
+    echo $form->textField($model, 'verifyCode');
+}
 
 if ($type !== 'service' && Yii::app()->settings->enableFingerprinting && (!isset ($_SERVER['HTTP_DNT']) || $_SERVER['HTTP_DNT'] != 1)) {
 ?>

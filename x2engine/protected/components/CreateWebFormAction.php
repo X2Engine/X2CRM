@@ -109,6 +109,11 @@ class CreateWebFormAction extends CAction {
             } else {
                 $model->generateAccount = 0;
             }
+            if (isset ($_POST['requireCaptcha'])) {
+                $model->requireCaptcha = 1;
+            } else {
+                $model->requireCaptcha = 0;
+            }
             if(isset($_POST['redirectUrl'])) {
                 $model->redirectUrl = $_POST['redirectUrl'];
             }
