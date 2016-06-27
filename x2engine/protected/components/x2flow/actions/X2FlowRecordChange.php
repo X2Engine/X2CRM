@@ -54,7 +54,7 @@ class X2FlowRecordChange extends X2FlowAction {
                     array(
                         'name' => 'linkField',
                         'label' => Yii::t('studio', 'Link Field')."&nbsp;".X2Html::hint2 (
-                        Yii::t('studio', 'If you want to use this action with a splitter, '.
+                        Yii::t('studio', 'If you want to use this action inside a splitter, '.
                             'place one of these at the start of each splitter branch '.
                                 'to ensure the branch acts on the correct record.')),
                         'type' => 'dropdown',
