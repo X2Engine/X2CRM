@@ -1536,6 +1536,8 @@ window.flowEditor = {
         x2.fieldUtils.getModelAttributes(modelClass, 'link', function(attributeList) {
             that.unlockConfig();
             $('fieldset[name="linkField"] select').empty();
+            var triggerConfig = flowEditor.trigger.data("config");
+            $('fieldset[name="linkField"] select').append($('<option></option>').attr('value','original').attr('data-value', triggerConfig.modelClass).text('Original Record'));
             for(var i in attributeList){
                 if(typeof attributeList[i]['name'] !== 'undefined' 
                         && typeof attributeList[i]['label'] !== 'undefined'){
