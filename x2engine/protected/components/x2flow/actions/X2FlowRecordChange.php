@@ -79,7 +79,12 @@ class X2FlowRecordChange extends X2FlowAction {
                 }
                 if($newModel instanceof X2Model){
                     $params['model'] = $newModel;
+                    return array(true, Yii::t('studio','Changed to {recordLink}.',array(
+                        '{recordLink}' => $newModel->getLink(),
+                    )));
                 }
+                return array(false, Yii::t('studio','Unable to change record.'));
             }
+            return array(false, Yii::t('studio','Invalid configuration.'));
 	}
 }
