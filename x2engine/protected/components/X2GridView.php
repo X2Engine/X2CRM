@@ -77,7 +77,7 @@ class X2GridView extends X2ActiveGridView {
      
     public function getMassActions () {
         if (!isset ($this->_massActions)) {
-            $this->_massActions = array ('MassDelete', 'MassUpdateFields');
+            $this->_massActions = array ('MassDelete', 'MassUpdateFields', 'MassExecuteMacro');
             $model = $this->getModel ();
             if ($this->model->asa('relationships')) {
                 $this->_massActions[] = 'MassAddRelationship';
@@ -93,6 +93,9 @@ class X2GridView extends X2ActiveGridView {
                 $this->_massActions = array_merge ($this->_massActions, array (
                     'MassPublishNote', 'MassPublishCall', 'MassPublishTime', 'MassPublishAction',
                 ));
+            }
+            if($this->model->asa('MergeableBehavior')){
+                $this->_massActions[] = 'MergeRecords';
             }
         }
         return $this->_massActions;
