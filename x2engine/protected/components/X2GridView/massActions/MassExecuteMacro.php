@@ -57,13 +57,37 @@ class MassExecuteMacro extends MassAction {
              style='display: none;'>
                 <div class='form'>
                     <span class=''>".CHtml::encode(Yii::t('app','Select a macro from the list:'))."</span>
-                    ".CHtml::dropDownList('macros','',$macros,array('empty'=>Yii::t('app','Select a macro')))."
+                    ".CHtml::dropDownList('macro' , '', $macros, array('empty'=>Yii::t('app','Select a macro')))."
                 </div>
             </div>";
     }
     
     public function execute(array $gvSelection) {
+        $macroId = filter_input(INPUT_POST, 'macro', FILTER_SANITIZE_NUMBER_INT);
+        $modelType = filter_input(INPUT_POST, 'modelType', FILTER_DEFAULT);
+        if(empty($macroId)){
+            throw new CHttpException(400, Yii::t('app','Bad request.'));
+        }
         
+        $flow = X2Flow::model()->findByPk($macroId);
+        if (!isset($flow) || $flow->triggerType !== 'MacroTrigger' || $flow->modelClass !== $modelType) {
+            throw new CHttpException(400, 'Invalid flow selected.');
+        }
+        $params = array('modelClass' => $modelType);
+        $macrosExecuted = 0;
+        foreach ($gvSelection as $recordId){
+            $model = X2Model::model($modelType)->findByPk($recordId);
+            if(isset($model)){
+                if(Yii::app()->controller->X2PermissionsBehavior->checkPermissions($model, 'view')){
+                    $params['model'] = $model;
+                    X2Flow::executeFlow($flow, $params, null);
+                    $macrosExecuted++;
+                }else{
+                    $this->addNoticeFlash($recordId);
+                }
+            }
+        }
+        $this->addSuccessFlash($macrosExecuted);
     }
     
     public function getPackages () {
@@ -76,6 +100,23 @@ class MassExecuteMacro extends MassAction {
                 'depends' => array ('X2MassAction'),
             ),
         ));
+    }
+    
+    private function addSuccessFlash($macrosExecuted) {
+        self::$successFlashes[] = Yii::t(
+                        'app', 'Macro executed on {n} record.|Macro executed on {n} records.',
+                        array($macrosExecuted)
+        );
+    }
+
+    private function addNoticeFlash ($recordId) {
+        self::$noticeFlashes[] = Yii::t(
+            'app', 'Unable to execute macro on record {recordId}. You may not '.
+                'have permission to view this record.', 
+            array (
+                '{recordId}' => $recordId
+            )
+        );
     }
     
     private function getMacros($modelType) {

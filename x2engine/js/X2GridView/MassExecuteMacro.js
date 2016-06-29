@@ -50,6 +50,13 @@ function MassExecuteMacro (argsDict) {
 }
 
 MassExecuteMacro.prototype = auxlib.create (x2.MassAction.prototype);
+
+MassExecuteMacro.prototype.getExecuteParams = function () {
+    var params = x2.MassAction.prototype.getExecuteParams.call (this);
+    params['modelType'] = this.massActionsManager.modelName;
+    params['macro'] = $('#macro').val();
+    return params;
+};
     
 return MassExecuteMacro;
 })();
