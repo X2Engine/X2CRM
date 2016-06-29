@@ -41,11 +41,25 @@
  */
 class MassExecuteMacro extends MassAction {
     
+    private $_macros;
+    
     public function getLabel() {
         if (!isset ($this->_label)) {
             $this->_label = Yii::t('app', 'Execute macro');
         }
         return $this->_label;
+    }
+    
+    public function renderDialog ($gridId, $modelName) {
+        list($macros, $descriptions) = $this->getMacros($modelName);
+        echo "
+            <div class='mass-action-dialog' id='".$this->getDialogId ($gridId)."' 
+             style='display: none;'>
+                <div class='form'>
+                    <span class=''>".CHtml::encode(Yii::t('app','Select a macro from the list:'))."</span>
+                    ".CHtml::dropDownList('macros','',$macros,array('empty'=>Yii::t('app','Select a macro')))."
+                </div>
+            </div>";
     }
     
     public function execute(array $gvSelection) {
@@ -62,6 +76,28 @@ class MassExecuteMacro extends MassAction {
                 'depends' => array ('X2MassAction'),
             ),
         ));
+    }
+    
+    private function getMacros($modelType) {
+        if(isset($this->_macros)){
+            return $this->_macros;
+        }
+        $macros = array();
+        $descriptions = array();
+
+        $flows = Yii::app()->db->createCommand()
+                ->select('id, name, description')
+                ->from('x2_flows')
+                ->where('triggerType = :type AND modelClass = :model',array(':type'=>'MacroTrigger', ':model'=>$modelType))
+                ->queryAll();
+        foreach($flows as $row){
+            $macros[$row['id']] = $row['name'];
+            $descriptions[$row['id']] = $row['description'];
+        }
+        
+        $ret = array($macros, $descriptions);
+        $this->_macros = $ret;
+        return $ret;
     }
     
 }

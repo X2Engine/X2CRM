@@ -44,6 +44,9 @@ function MassExecuteMacro (argsDict) {
     };
     auxlib.applyArgs (this, defaultArgs, argsDict);
     x2.MassAction.call (this, argsDict);
+    this.progressBarLabel = this.translations['executed'];
+    this.dialogTitle = this.massActionsManager.translations['macroExecute'];
+    this.goButtonLabel = this.massActionsManager.translations['execute'];
 }
 
 MassExecuteMacro.prototype = auxlib.create (x2.MassAction.prototype);
