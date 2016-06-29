@@ -184,6 +184,7 @@ Yii::app()->clientScript->registerScript($namespacePrefix.'massActionsInitScript
                 'updateField' => Yii::t('app', 'Update fields of selected'),
                 'emptyTagError' => Yii::t('app', 'At least one tag must be included'),
                 'emptyUntagError' => Yii::t('app', 'At least one tag must be specified'),
+                'emptyMacroError' => Yii::t('app','You must select a macro to be executed'),
                 'add' => Yii::t('app', 'Add'),
                 'MassPublishActionDialogTitle' => Yii::t('app', 'Add Action'),
                 'MassPublishActionGoButton' => Yii::t('app', 'Add'),

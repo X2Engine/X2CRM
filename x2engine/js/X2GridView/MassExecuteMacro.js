@@ -51,6 +51,17 @@ function MassExecuteMacro (argsDict) {
 
 MassExecuteMacro.prototype = auxlib.create (x2.MassAction.prototype);
 
+MassExecuteMacro.prototype.validateMassActionDialogForm = function () {
+  var that = this;
+  var macro = $('#macro').val();
+  if(macro === ''){
+      this.dialogElem$.append (
+            auxlib.createErrorBox ('', [that.massActionsManager.translations.emptyMacroError]));
+      return false;
+  }
+  return true;
+};
+
 MassExecuteMacro.prototype.getExecuteParams = function () {
     var params = x2.MassAction.prototype.getExecuteParams.call (this);
     params['modelType'] = this.massActionsManager.modelName;
