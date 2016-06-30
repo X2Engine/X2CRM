@@ -60,11 +60,11 @@ class MassExecuteMacroTest  extends X2DbTestCase {
         $_SERVER['SERVER_NAME'] = 'localhost';
         Yii::app()->controller = new ContactsController (
             'contacts', new ContactsModule ('contacts', null));
-        $gvSelection = range (0, 2);
+        $gvSelection = range (1, 3);
         
         $originalLeadScores = array();
         foreach($gvSelection as $id){
-            $model = $this->contacts($id);
+            $model = $this->contacts($id-1);
             $originalLeadScores[$id] = $model->leadscore;
         }
         
@@ -72,7 +72,7 @@ class MassExecuteMacroTest  extends X2DbTestCase {
         
         //Verify that macro executed correctly
         foreach($gvSelection as $id){
-            $model = Contacts::model()->findByPk($id+1);
+            $model = Contacts::model()->findByPk($id);
             $this->assertEquals($originalLeadScores[$id]+1, $model->leadscore);
         }
     }
