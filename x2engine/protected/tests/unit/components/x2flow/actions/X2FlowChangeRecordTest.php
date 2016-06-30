@@ -73,6 +73,9 @@ class X2FlowChangeRecordTest  extends X2FlowTestBase  {
         // assert flow executed without errors
         $this->assertTrue ($this->checkTrace ($retVal['trace']));
         
+        $account->refresh();
+        $contact->refresh();
+        
         $this->assertEquals('Test 1', $account->name);
         $this->assertEquals('Test 2', $contact->firstName);
     }
