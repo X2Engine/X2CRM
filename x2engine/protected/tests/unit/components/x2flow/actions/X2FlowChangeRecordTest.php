@@ -54,7 +54,7 @@ class X2FlowChangeRecordTest  extends X2FlowTestBase  {
         $contact = $this->contacts('testAnyone');
         
         $account->primaryContact = $contact->id;
-        $account->save();
+        $account->update();
         $account->refresh();
         
         $params = array (
@@ -66,7 +66,7 @@ class X2FlowChangeRecordTest  extends X2FlowTestBase  {
         $this->assertNotEquals($contact->firstName, 'Test 2');
         $this->assertTrue($params['model'] instanceof Accounts);
         
-        $retVal = $this->executeFlow ($flow, $params);
+        $retVal = $this->executeFlow ($this->x2flow('flow1'), $params);
         X2_TEST_DEBUG_LEVEL > 1 && print_r ($retVal['trace']);
 
         // assert flow executed without errors
