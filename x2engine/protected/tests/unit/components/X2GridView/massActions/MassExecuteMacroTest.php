@@ -47,7 +47,6 @@ class MassExecuteMacroTest  extends X2DbTestCase {
     public $fixtures = array (
         'contacts' => array ('Contacts', '.MassDeleteTest'),
         'flows' => array('X2Flow','.MassExecuteMacroTest'),
-        'accounts' => 'Accounts',
     );
     
     public function testExecute(){
@@ -55,7 +54,7 @@ class MassExecuteMacroTest  extends X2DbTestCase {
         $executeMacro = new MassExecuteMacro;
         
         $_POST['modelType'] = 'Contacts';
-        $_POST['macroId'] = 1;
+        $_POST['macro'] = 1;
         $_SERVER['REQUEST_METHOD'] = 'POST';
         $_SERVER['SERVER_NAME'] = 'localhost';
         Yii::app()->controller = new ContactsController (
@@ -70,6 +69,7 @@ class MassExecuteMacroTest  extends X2DbTestCase {
         
         $executeMacro->execute($gvSelection);
         
+        //Verify that macro executed correctly
         foreach($gvSelection as $id){
             $model = Contacts::model()->findByPk($id);
             $this->assertEquals($originalLeadScores[$id]+1, $model->leadscore);
