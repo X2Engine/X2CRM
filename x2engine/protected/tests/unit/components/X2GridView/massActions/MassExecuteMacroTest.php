@@ -37,6 +37,7 @@
  **********************************************************************************/
 
 Yii::import ('application.modules.contacts.*');
+Yii::import ('application.modules.contacts.controllers.*');
 Yii::import ('application.components.X2GridView.massActions.*');
 
 /**
@@ -71,7 +72,7 @@ class MassExecuteMacroTest  extends X2DbTestCase {
         
         //Verify that macro executed correctly
         foreach($gvSelection as $id){
-            $model = Contacts::model()->findByPk($id);
+            $model = Contacts::model()->findByPk($id+1);
             $this->assertEquals($originalLeadScores[$id]+1, $model->leadscore);
         }
     }

@@ -67,8 +67,8 @@ class MassExecuteMacro extends MassAction {
     }
     
     public function execute(array $gvSelection) {
-        $macroId = filter_input(INPUT_POST, 'macro', FILTER_SANITIZE_NUMBER_INT);
-        $modelType = filter_input(INPUT_POST, 'modelType', FILTER_DEFAULT);
+        $macroId = $_POST['macro'];
+        $modelType = $_POST['modelType'];
         if(empty($macroId)){
             throw new CHttpException(400, Yii::t('app','Bad request.'));
         }
