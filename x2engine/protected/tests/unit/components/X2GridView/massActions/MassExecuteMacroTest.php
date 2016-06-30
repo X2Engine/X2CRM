@@ -63,7 +63,7 @@ class MassExecuteMacroTest  extends X2DbTestCase {
         $gvSelection = range (0, 2);
         
         $originalLeadScores = array();
-        foreach($gvSeleciton as $id){
+        foreach($gvSelection as $id){
             $model = $this->contacts($id);
             $originalLeadScores[$id] = $model->leadscore;
         }
