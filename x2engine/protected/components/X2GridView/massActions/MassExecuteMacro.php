@@ -57,9 +57,13 @@ class MassExecuteMacro extends MassAction {
              style='display: none;'>
                 <div class='form'>
                     <span class=''>".CHtml::encode(Yii::t('app','Select a macro from the list:'))."</span>
-                    ".CHtml::dropDownList('macro' , '', $macros, array('empty'=>Yii::t('app','Select a macro')))."
+                    ".CHtml::dropDownList('macro' , '', $macros, array('empty'=>Yii::t('app','Select a macro'), 'id'=>'mass-action-macro-selection'))."
                 </div>
-            </div>";
+                <div id='mass-action-macro-description' class='form'></div>
+            </div>
+            <script>
+            x2.MassExecuteMacro.macroDescriptions = ".CJSON::encode(array(''=>'')+$descriptions).";
+            </script>";
     }
     
     public function execute(array $gvSelection) {

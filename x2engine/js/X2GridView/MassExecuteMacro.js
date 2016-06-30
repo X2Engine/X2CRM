@@ -47,13 +47,26 @@ function MassExecuteMacro (argsDict) {
     this.progressBarLabel = this.translations['executed'];
     this.dialogTitle = this.massActionsManager.translations['macroExecute'];
     this.goButtonLabel = this.massActionsManager.translations['execute'];
+    this.macroDescriptions = {'': ''};
+    this.dropdownSelector = '#mass-action-macro-selection';
+    this._init();
 }
 
 MassExecuteMacro.prototype = auxlib.create (x2.MassAction.prototype);
 
+MassExecuteMacro.prototype._init = function () {
+    var that = this;
+    $('.mass-action-dialog').on('change',this.dropdownSelector,function(e){
+        if(typeof x2.MassExecuteMacro.macroDescriptions[$(that.dropdownSelector).val()] !== 'undefined'){
+            console.log(x2.MassExecuteMacro.macroDescriptions[$(that.dropdownSelector).val()]);
+            $('#mass-action-macro-description').html(x2.MassExecuteMacro.macroDescriptions[$(that.dropdownSelector).val()]);
+        }
+    });
+};
+
 MassExecuteMacro.prototype.validateMassActionDialogForm = function () {
   var that = this;
-  var macro = $('#macro').val();
+  var macro = $(this.dropdownSelector).val();
   if(macro === ''){
       this.dialogElem$.append (
             auxlib.createErrorBox ('', [that.massActionsManager.translations.emptyMacroError]));
@@ -65,7 +78,7 @@ MassExecuteMacro.prototype.validateMassActionDialogForm = function () {
 MassExecuteMacro.prototype.getExecuteParams = function () {
     var params = x2.MassAction.prototype.getExecuteParams.call (this);
     params['modelType'] = this.massActionsManager.modelName;
-    params['macro'] = $('#macro').val();
+    params['macro'] = $(this.dropdownSelector).val();
     return params;
 };
     
