@@ -68,13 +68,22 @@ class MobileActionHistoryListPublishAction extends MobileAction {
 
             if ($action->save ()) {
 
+                $pageClass = 'mobile-view';
+                $model = $this->getModel ($id);
+                $this->controller->pageClass = $pageClass;
+                $this->controller->dataUrl = $model->getUrl ();
+                $this->controller->pageId .= '-'.$model->id;
+
+                User::addRecentItem (get_class ($model), $id); 
+
                 $this->controller->render (
-                    $this->pathAliasBase.'views.mobile.recordView', array (
+                    $this->pathAliasBase.'views.mobile.recordView',
+                    array (
                         'model' => $model,
-                        'refresh' => true,
                     )
                 );
 
+                //todo: why doesn't this work?
                 /*$this->controller->renderPartial (
                    'application.modules.mobile.views.mobile._actionHistoryList', array (
                     'model' => $model,
