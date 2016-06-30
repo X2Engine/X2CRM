@@ -53,18 +53,19 @@ class X2FlowChangeRecordTest  extends X2FlowTestBase  {
         $account = $this->accounts ('testQuote');
         $contact = $this->contacts('testAnyone');
         
-        $account->primaryContact = $contact->id;
-        $account->update();
+        $account->primaryContact = $contact->nameId;
+        $account->disableBehavior('FlowTriggerBehavior');
+        $account->save();
         $account->refresh();
+        $account->enableBehavior('FlowTriggerBehavior');
         
         $params = array (
             'model' => $account,
             'modelClass' => 'Accounts',
         );
         
-        $this->assertNotEquals($account->name,'Test 1');
-        $this->assertNotEquals($contact->firstName, 'Test 2');
-        $this->assertTrue($params['model'] instanceof Accounts);
+        $this->assertNotEquals('Test 1', $account->name);
+        $this->assertNotEquals('Test 2', $contact->firstName);
         
         $retVal = $this->executeFlow ($this->x2flow('flow1'), $params);
         X2_TEST_DEBUG_LEVEL > 1 && print_r ($retVal['trace']);
@@ -72,9 +73,8 @@ class X2FlowChangeRecordTest  extends X2FlowTestBase  {
         // assert flow executed without errors
         $this->assertTrue ($this->checkTrace ($retVal['trace']));
         
-        $this->assertEquals($account->name,'Test 1');
-        $this->assertEquals($contact->firstName, 'Test 2');
-        $this->assertTrue($params['model'] instanceof Contacts);
+        $this->assertEquals('Test 1', $account->name);
+        $this->assertEquals('Test 2', $contact->firstName);
     }
     
 }
