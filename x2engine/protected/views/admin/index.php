@@ -210,6 +210,17 @@ if(Yii::app()->session['versionCheck']==false && $admin->updateInterval > -1 && 
         <?php if(Yii::app()->settings->sessionLog){ ?>
             <div class="cell span-6"><?php echo CHtml::link(Yii::t('admin','View Session Log'),array('/admin/viewSessionLog')); ?><br><?php echo Yii::t('admin','View a log of user sessions with timestamps and statuses');?></div>
         <?php } ?>
+    </div><br>
+    <div class="row">
+    <div class="cell span-6">
+            <?php 
+            echo CHtml::link(Yii::t('users','User Login History'),array('admin/userHistory')); 
+            ?>
+            <br>
+            <?php
+            echo Yii::t('app', 'Manage X2CRM user account history, including failed and successful logins');
+            ?>
+        </div>
     </div>
 </div>
 <div class="form x2-layout-island">

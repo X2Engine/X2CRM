@@ -287,6 +287,12 @@ class User extends CActiveRecord {
         parent::afterDelete ();
     }
 
+    public function beforeSave () {
+        if ($this->isNewRecord) {
+            $this->createDate = time();
+        }
+        return parent::beforeSave ();
+    }
 
     public static function hasRole($user, $role){
         if(is_numeric($role)){

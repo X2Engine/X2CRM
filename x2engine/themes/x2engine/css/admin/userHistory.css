@@ -1,5 +1,4 @@
-<?php
-/***********************************************************************************
+/*!*********************************************************************************
  * X2CRM is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2016 X2Engine Inc.
  * 
@@ -34,49 +33,11 @@
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2Engine".
  **********************************************************************************/
-?>
-<div class="view">
-
-	<b>Full Name:</b>
-	<?php echo CHtml::link(CHtml::encode($data->firstName." ".$data->lastName), array('view', 'id'=>$data->id)); ?>
-	<br />
-
-	<b><?php echo CHtml::encode($data->getAttributeLabel('username')); ?>:</b>
-	<?php echo CHtml::encode($data->username); ?>
-	<br />
-
-	<b><?php echo CHtml::encode($data->getAttributeLabel('title')); ?>:</b>
-	<?php echo CHtml::encode($data->title); ?>
-	<br />
-
-	<b><?php echo CHtml::encode($data->getAttributeLabel('department')); ?>:</b>
-	<?php echo CHtml::encode($data->department); ?>
-	<br />
-	
-	<b><?php echo CHtml::encode($data->getAttributeLabel('officePhone')); ?>:</b>
-	<?php echo CHtml::encode($data->officePhone); ?>
-	<br />
-
-	<b><?php echo CHtml::encode($data->getAttributeLabel('cellPhone')); ?>:</b>
-	<?php echo CHtml::encode($data->cellPhone); ?>
-	<br />
-
-	<b><?php echo CHtml::encode($data->getAttributeLabel('homePhone')); ?>:</b>
-	<?php echo CHtml::encode($data->homePhone); ?>
-	<br />
-
-	<b><?php echo CHtml::encode($data->getAttributeLabel('address')); ?>:</b>
-	<?php echo CHtml::encode($data->address); ?>
-	<br />
-
-	<b><?php echo CHtml::encode($data->getAttributeLabel('emailAddress')); ?>:</b>
-	<?php echo CHtml::encode($data->emailAddress); ?>
-	<br />
-	<?php /*
-	<b><?php echo CHtml::encode($data->getAttributeLabel('status')); ?>:</b>
-	<?php echo CHtml::encode($data->status); ?>
-	<br />
-	*/ ?>
-
-
-</div>
+/* line 37, ../../../../compass/themes/x2engine/css/admin/userHistory.scss */
+a#login-history-export {
+  width: 70px;
+}
+/* line 39, ../../../../compass/themes/x2engine/css/admin/userHistory.scss */
+a#login-history-export i {
+  padding-right: 4px;
+}

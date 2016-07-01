@@ -399,6 +399,23 @@ class AdminController extends X2Controller {
     }
 
     /**
+     * Page for User History
+     */
+    public function actionUserHistory() {
+        $loginHistoryDataProvider  = new CActiveDataProvider ('SuccessfulLogins', array(
+            'sort' => array('defaultOrder' => 'timestamp DESC'),
+        ));
+        $failedLoginsDataProvider = new CActiveDataProvider ('FailedLogins', array(
+            'sort' => array('defaultOrder' => 'lastAttempt DESC'),
+        ));
+
+        $this->render ('userHistory', array(
+            'failedLoginsDataProvider' => $failedLoginsDataProvider,
+            'loginHistoryDataProvider' => $loginHistoryDataProvider,
+        ));
+    }
+
+    /**
      * Page for firewall configuration
      */
     public function actionSecuritySettings() {
@@ -453,17 +470,8 @@ class AdminController extends X2Controller {
             if (is_array ($admin->$field))
                 $admin->$field = implode("\r\n", $admin->$field);
 
-        $loginHistoryDataProvider  = new CActiveDataProvider ('SuccessfulLogins', array(
-            'sort' => array('defaultOrder' => 'timestamp DESC'),
-        ));
-        $failedLoginsDataProvider = new CActiveDataProvider ('FailedLogins', array(
-            'sort' => array('defaultOrder' => 'lastAttempt DESC'),
-        ));
-
         $this->render ('securitySettings', array(
             'model' => $admin,
-            'failedLoginsDataProvider' => $failedLoginsDataProvider,
-            'loginHistoryDataProvider' => $loginHistoryDataProvider,
         ));
     }
 
