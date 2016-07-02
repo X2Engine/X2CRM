@@ -133,16 +133,16 @@ if ($supportsActionHistory) {
                 </a>
             </li>
             <li class='record-view-tab' data-x2-tab-name='action-history'>
-                <a href='<?php echo '#'.MobileHtml::namespaceId ('action-history'); ?>'><?php 
+                <a href='<?php echo '#'.MobileHtml::namespaceId ('action-history-chart'); ?>'><?php 
                 //echo CHtml::encode (Yii::t('mobile', 'History'));
-                echo CHtml::encode (Yii::t('mobile', 'Attachments'));
+                echo CHtml::encode (Yii::t('mobile', 'Action History'));
                 ?>
                 </a>
             </li>
             <li class='record-view-tab' data-x2-tab-name='action-history'>
-                <a href='<?php echo '#'.MobileHtml::namespaceId ('action-history-chart'); ?>'><?php 
+                <a href='<?php echo '#'.MobileHtml::namespaceId ('action-history'); ?>'><?php 
                 //echo CHtml::encode (Yii::t('mobile', 'History'));
-                echo CHtml::encode (Yii::t('mobile', 'Action History'));
+                echo CHtml::encode (Yii::t('mobile', 'Attachments'));
                 ?>
                 </a>
             </li>
