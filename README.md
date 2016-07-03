@@ -1,5 +1,5 @@
 # 6.0.1 #
-{releaseDate}
+5/26/2016
 * General Changelog / Developer Notes
   * X2Touch now supports persistent sessions
   * Improvements to web capture API

@@ -47,10 +47,15 @@ Yii::app()->clientScript->registerCssFile(Yii::app()->theme->baseUrl.'/css/impor
     echo Yii::t('admin', 'Available Models')."</h2>";
 
     foreach($modelList as $model => $array){
-        echo "<div><label style='display:inline-block;'>".$array['name']." ".Yii::t('admin','({n} records)',array('{n}'=>$array['count']))."</label>";
-        echo CHtml::checkBox("$model", true, array('class' => 'model-checkbox','style'=>'margin-left:5px;'));
+        echo "<div>";
+        echo CHtml::checkBox("$model", true, array('class' => 'model-checkbox','style'=>'margin-right:5px;'));
+        echo "<label style='display:inline-block;'>".$array['name']." ".Yii::t('admin','({n} records)',array('{n}'=>$array['count']))."</label>";
         echo "</div>";
     }
+
+    echo "<br />";
+    echo CHtml::checkBox('select-all', true, array('id' => 'toggle-checkbox', 'style'=>'margin-right:5px;'));
+    echo CHtml::label(Yii::t("admin", "Select All"), 'select-all', array('style'=>'display:inline-block;'));
 ?>
 
     <h3><?php echo Yii::t('admin', 'Customize CSV') .
@@ -166,6 +171,18 @@ Yii::app()->clientScript->registerCssFile(Yii::app()->theme->baseUrl.'/css/impor
         });
         return models;
     }
+
+    x2.export.toggleAll = function (elem) {
+        if ($(elem).is(':checked')) {
+            $('.model-checkbox').attr('checked', 'checked');
+        } else {
+            $('.model-checkbox').removeAttr('checked');
+        }
+    }
+
+    $('#toggle-checkbox').change (function(){
+        x2.export.toggleAll($(this));
+    });
 
     $('#export-button').click (function(){
         $(this).hide();

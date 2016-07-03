@@ -43,8 +43,13 @@ $aliasTypeOptions = RecordAliases::model ()->getAliasTypeOptions ();
 
 Yii::app()->clientScript->registerCssFile(
     Yii::app()->theme->baseUrl.'/css/components/views/recordAliasesWidget.css');
-Yii::app()->clientScript->registerScriptFile(
-    'http://www.skypeassets.com/i/scom/js/skype-uri.js');
+if (Yii::app()->request->isSecureConnection) {
+    Yii::app()->clientScript->registerScriptFile(
+        'https://secure.skypeassets.com/i/scom/js/skype-uri.js');
+} else {
+    Yii::app()->clientScript->registerScriptFile(
+        'http://www.skypeassets.com/i/scom/js/skype-uri.js');
+}
 Yii::app()->clientScript->registerScript('recordAliasesWidgetJS',"
 
 $(function () {
