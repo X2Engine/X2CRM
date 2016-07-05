@@ -403,7 +403,7 @@ class AdminController extends X2Controller {
      */
     public function actionSecuritySettings() {
         $admin = &Yii::app()->settings;
-        $firewallSettings = array(
+        $securitySettings = array(
             'accessControlMethod',
             'ipWhitelist',
             'ipBlacklist',
@@ -411,6 +411,7 @@ class AdminController extends X2Controller {
             'failedLoginsBeforeCaptcha',
             'maxFailedLogins',
             'maxLoginHistory',
+            'scanUploads',
         );
         $jsonFields = array(
             'ipWhitelist',
@@ -424,7 +425,7 @@ class AdminController extends X2Controller {
                     $passwordSettings[$req] = $_POST[$req];
             $admin->passwordRequirements = $passwordSettings;
 
-            foreach ($firewallSettings as $setting) {
+            foreach ($securitySettings as $setting) {
                 if (isset($_POST['Admin'][$setting])) {
                     $admin->$setting = $_POST['Admin'][$setting];
 

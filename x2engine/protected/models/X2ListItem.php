@@ -81,7 +81,7 @@ class X2ListItem extends CActiveRecord {
 			array('contactId, listId, uniqueId, result, opened', 'safe', 'on'=>'search'),
             array(
                 'verifyCode', 'captcha', 'allowEmpty' => !CCaptcha::checkRequirements(),
-                    'on' => 'webForm', 'captchaAction' => 'site/webleadCaptcha')
+                    'on' => 'webFormWithCaptcha', 'captchaAction' => 'site/webleadCaptcha')
 		);
 	}
 

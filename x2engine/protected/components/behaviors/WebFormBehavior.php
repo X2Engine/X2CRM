@@ -227,4 +227,53 @@ class WebFormBehavior extends CBehavior {
         }
         return $emailBody;
     }
+
+    /**
+     * Handle associated Media upload
+     */
+    protected function uploadAssociatedMedia($model) {
+        $modelName = get_class($model);
+
+        foreach ($model->getMediaLookupFields() as $field) {
+            $fieldName = $field->fieldName;
+            $associatedMedia = Yii::app()->file->set($modelName.'['.$fieldName.']');
+
+            if ($associatedMedia->exists) {
+                $username = Yii::app()->user->name;
+                $userFolderPath = 'uploads/protected/media/' . $username;
+                // if user folder doesn't exit, try to create it
+                if (!(file_exists($userFolderPath) && is_dir($userFolderPath))) {
+                    if (!@mkdir($userFolderPath, 0777, true)) { // make dir with edit permission
+                        throw new CHttpException(500, "Couldn't create user folder $userFolderPath");
+                    }
+                }
+                $dstPath = $userFolderPath . '/' . $associatedMedia->basename;
+
+                if ($associatedMedia->rename($dstPath)) {
+                    $media = new Media;
+                    $media->fileName = $associatedMedia->basename;
+                    $media->createDate = time();
+                    $media->lastUpdated = time();
+                    $media->uploadedBy = $username;
+                    $media->associationType = X2Model::getAssociationType($modelName);
+                    $media->associationId = $model->id;
+                    if ($media->save()) {
+                        $createdRelationship = $model->createRelationship($media);
+                        $model->$fieldName = $media->nameId;
+                        $savedModel = $model->save();
+                        //AuxLib::debugLogR(array($createdRelationship, $savedModel));
+                        return $savedModel && $createdRelationship;
+                        //return true;
+                    } else {
+                        foreach ($media->errors as $error) {
+                            $model->addError($fieldName, implode(',', $error));
+                        }
+                        return false;
+                    }
+                } else {
+                    return false;
+                }
+            }
+        }
+    }
 }

@@ -83,7 +83,7 @@ class Services extends X2Model {
         $rules = array_merge(parent::rules (), array(
             array(
                 'verifyCode', 'captcha', 'allowEmpty' => !CCaptcha::checkRequirements(),
-                    'on' => 'webForm', 'captchaAction' => 'site/webleadCaptcha')
+                    'on' => 'webFormWithCaptcha', 'captchaAction' => 'site/webleadCaptcha')
         ));
         return $rules;
     }

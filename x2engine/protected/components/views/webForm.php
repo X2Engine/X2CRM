@@ -265,6 +265,9 @@ input[type="text"] {
 input[type="text"] {
     width: 100%;
 }
+input[type="file"] {
+    width: 100%;
+}
 #captcha-image {
     margin-left: auto;
     margin-right: auto;
@@ -330,6 +333,7 @@ $form = $this->beginWidget('CActiveForm', array(
     'id'=>$type,
     'enableAjaxValidation'=>false,
     'htmlOptions'=>array(
+        'enctype' => 'multipart/form-data'
     ),
 ));
 

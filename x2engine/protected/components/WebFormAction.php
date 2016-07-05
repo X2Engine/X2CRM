@@ -136,6 +136,7 @@ class WebFormAction extends CAction {
                         }
                     }
                     $model = $oldest;
+                    $model->scenario = $extractedParams['requireCaptcha'] ? 'webFormWithCaptcha' : 'webForm';
                     $newRecord = $model->isNewRecord;
                 }
                 if($newRecord){
@@ -164,8 +165,16 @@ class WebFormAction extends CAction {
                     }
 
                     $success = $success && $model->save();
+                    //AuxLib::debugLogR($success);
+                    //AuxLib::debugLogR($model->errors);
+                    $model->scenario = $extractedParams['requireCaptcha'] ? 'webFormWithCaptcha' : 'webForm';
                 }
                 
+                if (!empty($model->getMediaLookupFields())) {
+                    $uploaded = $this->controller->uploadAssociatedMedia($model);
+                    if (!is_null($uploaded))
+                        $success = $success && $uploaded;
+                }
 
                 //TODO: upload profile picture url from webleadfb
                 
@@ -197,7 +206,6 @@ class WebFormAction extends CAction {
                                 'address' => Yii::app()->settings->emailFromAddr
                             );
                     }
-                    
 
                     if($model->assignedTo != 'Anyone' && $model->assignedTo != '') {
 
@@ -278,25 +286,22 @@ class WebFormAction extends CAction {
                         if(!empty($tags)){
                             X2Flow::trigger('RecordTagAddTrigger', array(
                                 'model' => $model,
-                                'tags' => $tags,
+                               'tags' => $tags,
                             ));
                         }
                     }
                     
+                    $this->controller->renderPartial('application.components.views.webFormSubmit',
+                        array (
+                            'type' => 'weblead',
+                            'redirectUrl' => $extractedParams['redirectUrl']
+                        )
+                    );
+
+                    return; // to commit transaction
                 } else {
-                    $errMsg = 'Error: WebListenerAction.php: model failed to save';
-                    /**/AuxLib::debugLog ($errMsg);
-                    Yii::log ($errMsg, '', 'application.debug');
+                    AuxLib::debugLog ('Error: WebListenerAction.php: model failed to save');
                 }
-
-                $this->controller->renderPartial('application.components.views.webFormSubmit',
-                    array (
-                        'type' => 'weblead',
-                        'redirectUrl' => $extractedParams['redirectUrl']
-                    )
-                );
-
-                Yii::app()->end(); // success!
             }
         } elseif (Yii::app()->contEd('pro') && class_exists('WebListenerAction')){
             if (isset ($_COOKIE['x2_key']))  {
@@ -321,6 +326,9 @@ class WebFormAction extends CAction {
         ), $sanitizedGetParams);
         $this->controller->renderPartial('application.components.views.webForm', $viewParams);
 
+        if (isset($success) && $success === false) {
+            throw new WebFormException;
+        }
     }
 
 
@@ -437,7 +445,14 @@ class WebFormAction extends CAction {
 
                 if($model->save()){
                     $model->name = $model->id;
+                    // reset scenario for webForms after saving
+                    $model->scenario = $extractedParams['requireCaptcha'] ? 'webFormWithCaptcha' : 'webForm';
                     $model->update(array('name'));
+                    if (!empty($model->getMediaLookupFields())) {
+                        $uploaded = $this->controller->uploadAssociatedMedia($model);
+                        if (!is_null($uploaded))
+                            $success = $success && $uploaded;
+                    }
 
                     self::addTags ($model);
 
@@ -464,7 +479,7 @@ class WebFormAction extends CAction {
                     $action->updatedBy = 'admin';
                     $action->save();
 
-                    if(isset($email)){
+                    if($success && isset($email)){
 
                         //send email
                         $emailBody = Yii::t('services', 'Hello').' '.$fullName.",<br><br>";
@@ -566,10 +581,12 @@ class WebFormAction extends CAction {
                             Yii::log ($errMsg, '', 'application.debug');
                         }
                     }
-                    $this->controller->renderPartial('application.components.views.webFormSubmit',
-                        array('type' => 'service', 'caseNumber' => $model->id));
+                    if ($success) {
+                        $this->controller->renderPartial('application.components.views.webFormSubmit',
+                            array('type' => 'service', 'caseNumber' => $model->id));
 
-                    Yii::app()->end(); // success!
+                        return; // to commit transaction
+                    }
                 }
             }
         }
@@ -586,6 +603,9 @@ class WebFormAction extends CAction {
         ), $sanitizedGetParams);
         $this->controller->renderPartial('application.components.views.webForm', $viewParams);
         
+        if (isset($success) && $success === false) {
+            throw new WebFormException;
+        }
     }
 
 
@@ -632,8 +652,12 @@ class WebFormAction extends CAction {
                 $extractedParams['generateLead'] = $webForm->generateLead;
             if (!empty ($webForm->generateAccount)) 
                 $extractedParams['generateAccount'] = $webForm->generateAccount;
-            if (!empty ($webForm->requireCaptcha))
+            if (!empty ($webForm->requireCaptcha)) {
                 $extractedParams['requireCaptcha'] = $webForm->requireCaptcha;
+                if ($webForm->requireCaptcha) {
+                    $model->scenario = 'webFormWithCaptcha';
+                }
+            }
             if (!empty ($webForm->redirectUrl)) 
                 $extractedParams['redirectUrl'] = $webForm->redirectUrl;
         }
@@ -692,13 +716,25 @@ class WebFormAction extends CAction {
         }
         
 
-        if ($modelClass === 'Contacts') {
-            $this->handleWebleadFormSubmission ($model, $extractedParams);
-        } else if ($modelClass === 'Services') {
-            $this->handleServiceFormSubmission ($model, $extractedParams);
-        }
+        $transaction = Yii::app()->db->beginTransaction();
+        try {
+            if ($modelClass === 'Contacts') {
+                $this->handleWebleadFormSubmission ($model, $extractedParams);
+            } else if ($modelClass === 'Services') {
+                $this->handleServiceFormSubmission ($model, $extractedParams);
+            }
+            $transaction->commit();
+        } catch(WebFormException $e) {
+            AuxLib::debugLog ('Failed to save webform, rolling back transaction');
+            $transaction->rollback();
 
+        }
+        Yii::app()->end();
     }
+}
+
+// Exception for triggering transaction rollback
+class WebFormException extends CException {
 }
 
 ?>
