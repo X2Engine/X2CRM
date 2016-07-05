@@ -29,6 +29,9 @@ before_script:
   - cp build/installConfig.php x2engine/installConfig.php
   - php x2engine/initialize.php silent
 
+  #configure tests
+  - cp build/WebTestConfig.php x2engine/protected/tests/WebTestConfig.php
+
 # run tests
 script: 
   # unit tests
