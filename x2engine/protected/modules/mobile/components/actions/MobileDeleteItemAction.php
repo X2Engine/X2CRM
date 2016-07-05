@@ -35,68 +35,28 @@
  * "Powered by X2Engine".
  **********************************************************************************/
 
-class MobileHistoryItem extends CComponent {
-    public $action; // Actions model
+class MobileDeleteItemAction extends MobileAction {
 
-    public function getTemplate () {
-        return '<div class="record-list-item" data-x2-action-type="'.
-            X2Html::sanitizeAttribute ($this->action['type']).'">
-                <div class="icon-container">
-                    {icon}
-                </div>
-                <div class="history-item-content-container-outer">
-                    <div class="history-item-date-line"> 
-                        {dateLine} {deleteItem}
-                    </div>
-                    <div class="history-item-content"> 
-                        {content}
-                    </div>
-                    <div class="history-item-author"> 
-                        {author}
-                    </div>
-                </div>
-        </div>';
-    }
+    public function run ($id) {
+        parent::beforeRun ();
 
-	public function __construct () {
-        $this->attachBehaviors ($this->behaviors ());
-	}
-
-    public function behaviors () {
-        return array (
-            'WidgetTemplateBehavior' => array (
-                'class' => 'application.components.behaviors.WidgetTemplateBehavior'
-            ),
-        );
-    }
-
-    public function renderDeleteItem () {
-        return '<a href="'.Yii::app()->createAbsoluteUrl ('actions/mobileDelete',
-                        array('id'=>$this->action->id,)).'">'
-                        .X2Html::fa ("fa-trash").'</a>';
-    }
-    
-    public function renderDateLine () {
-        return Yii::app()->dateFormatter->formatDateTime (
-            $this->action->createDate, 'medium', 'short');
-    }
-
-    public function renderAuthor () {
-        return $this->action->renderAttribute ('completedBy', true, false, false);
-    }
-
-    public function renderContent () {
-        return $this->action->actionDescription;
-    }
-
-    public function renderIcon () {
-        return '
-            <div class="icon '.$this->action->type.'">
-            <div class="stacked-icon"></div></div>';
-    }
-
-    public function render () {
-        return $this->renderTemplate ();
+        $model = $this->controller->loadModel ($id);
+        $modelClass = $this->controller->modelClass;
+        if ($this->controller->checkPermissions($model, 'delete')) {
+            if ($model->delete ()) {
+                Yii::app()->user->setFlash ('success', Yii::t('app', 'Record deleted')); 
+                $this->controller->render (
+                    'application.modules.mobile.views.mobile.recordView',
+                    array (
+                        'model' => $model,
+                    )
+                );
+            } else {
+                throw new CHttpException (500, Yii::t('app', 'Failed to delete record.'));
+            }
+        } else {
+            $this->controller->denied ();
+        }
     }
 
 }
