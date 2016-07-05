@@ -1386,6 +1386,7 @@ class UpdaterBehaviorTest extends FileOperTestCase {
      * specified, and won't otherwise
      */
     public function testRecoveryFromFailedMigration() {
+		$this->markTestSkipped();
         // Prepare for the test
         $ube = $this->instantiateUBe();
         $this->prereq($ube,'sourceDir');
