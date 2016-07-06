@@ -50,8 +50,9 @@ class X2FlowApiCallTest extends X2FlowTestBase {
 
     public static function setUpBeforeClass () {
         // replace token in flow with base 64 encoded auth info
-        $template = 'fixtures/x2_flows.X2FlowApiCallTestTemplate.php';
-        $file = 'fixtures/x2_flows.X2FlowApiCallTest.php';
+        $fixtureDir = implode(DIRECTORY_SEPARATOR, array(__DIR__,'..','..','..','..','fixtures'));
+        $template = $fixtureDir.DIRECTORY_SEPARATOR.'x2_flows.X2FlowApiCallTestTemplate.php';
+        $file = $fixtureDir.DIRECTORY_SEPARATOR.'x2_flows.X2FlowApiCallTest.php';
         $username = 'admin';
         $userKey = User::model ()->findByPk (1)->userKey;
         X2_TEST_DEBUG_LEVEL > 1 && println ($userKey);
@@ -67,8 +68,9 @@ class X2FlowApiCallTest extends X2FlowTestBase {
 
     public static function tearDownAfterClass () {
         parent::tearDownAfterClass();
-        if(file_exists('fixtures/x2_flows.X2FlowApiCallTest.php')) {
-            unlink('fixtures/x2_flows.X2FlowApiCallTest.php');
+        $fixtureDir = implode(DIRECTORY_SEPARATOR, array(__DIR__,'..','..','..','..','fixtures'));
+        if(file_exists($fixtureDir.DIRECTORY_SEPARATOR.'x2_flows.X2FlowApiCallTest.php')) {
+            unlink($fixtureDir.DIRECTORY_SEPARATOR.'x2_flows.X2FlowApiCallTest.php');
         }
     }
 
