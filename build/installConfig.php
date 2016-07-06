@@ -1,5 +1,5 @@
 <?php
-$host = '127.0.0.1';
+$host = '127.0.01';
 $db='x2engine';
 $user='root';
 $pass='';
@@ -11,8 +11,8 @@ $adminEmail = 'x2crm@x2contact.com';
 $adminPassword = 'admin';
 $adminUsername = 'admin';
 $dummyData = 1;
-$baseUrl = 'http://localhost';
-$baseUri = '/x2engine';
+$baseUrl = 'http://127.0.0.1';
+$baseUri = '';
 $unique_id = 'TTTT-TTTTT-TTTTT';
 // Default visible modules (set manually to a comma-delineated list as desired)
 $visibleModules = implode(',',(array) require(dirname(__FILE__).implode(DIRECTORY_SEPARATOR,array('','protected','data','')).'enabledModules.php'));
@@ -20,7 +20,7 @@ $visibleModules = implode(',',(array) require(dirname(__FILE__).implode(DIRECTOR
 // implemented yet; edit protected/tests/phpunit.xml as desired for Selenium 
 // configuration)
 $test_db = 1;
-$test_url = 'http://localhost/x2engine/index-test.php';
+$test_url = 'http://127.0.0.1/x2engine/index.php';
 $installType = 'Silent';
 // Cron settings. 
 //
