@@ -27,7 +27,7 @@ before_script:
   #install x2crm
   - cp build/constants.php x2engine/constants.php
   - cp build/installConfig.php x2engine/installConfig.php
-  - cd x2engine && php initialize.php silent
+  - cd x2engine && php initialize.php silent && cd ..
 
   #configure tests
   - cp build/WebTestConfig.php x2engine/protected/tests/WebTestConfig.php
