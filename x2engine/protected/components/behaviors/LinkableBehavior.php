@@ -131,6 +131,7 @@ class LinkableBehavior extends CActiveRecordBehavior {
         if(empty($url)) { // Construct an absolute URL; no web request data available.
             $url = Yii::app()->absoluteBaseUrl.'/index.php'.$this->getViewRoute ().'/'.$this->owner->id;
         }
+        println($url);
         return $url;
     }
 
