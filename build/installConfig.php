@@ -1,5 +1,5 @@
 <?php
-$host = '127.0.01';
+$host = '127.0.0.1';
 $db='x2engine';
 $user='root';
 $pass='';
@@ -20,7 +20,7 @@ $visibleModules = implode(',',(array) require(dirname(__FILE__).implode(DIRECTOR
 // implemented yet; edit protected/tests/phpunit.xml as desired for Selenium 
 // configuration)
 $test_db = 1;
-$test_url = 'http://127.0.0.1/x2engine/index.php';
+$test_url = 'http://127.0.0.1/x2engine/index-test.php';
 $installType = 'Silent';
 // Cron settings. 
 //

@@ -127,9 +127,13 @@ class LinkableBehavior extends CActiveRecordBehavior {
         // Use the controller
         if(Yii::app()->controller instanceof CController && !Yii::app()->controller instanceof ProfileController) {
             $url = Yii::app()->controller->createAbsoluteUrl($this->getViewRoute (), array('id' => $this->owner->id));
+        
+            println('Controller: '.$url);
         }
         if(empty($url)) { // Construct an absolute URL; no web request data available.
             $url = Yii::app()->absoluteBaseUrl.'/index.php'.$this->getViewRoute ().'/'.$this->owner->id;
+        
+            println('No controller: '.$url);
         }
         return $url;
     }
