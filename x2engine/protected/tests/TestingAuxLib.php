@@ -326,12 +326,12 @@ class TestingAuxLib  {
     }
 
     public static function restoreController () {
-        if(isset(self::$_oldController)){
+        //if(isset(self::$_oldController)){
             Yii::app()->controller = self::$_oldController;
-        }
-        if(isset(self::$_oldServerVals)){
+        //}
+        //if(isset(self::$_oldServerVals)){
             $_SERVER = self::$_oldServerVals;
-        }
+        //}
     }
 
     public static function setConstant ($constName, $val) {
