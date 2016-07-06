@@ -36,24 +36,29 @@
  **********************************************************************************/
 
 class MobileDeleteItemAction extends MobileAction {
+    
 
     public function run ($id) {
         parent::beforeRun ();
-
+            
         $model = $this->controller->loadModel ($id);
         $modelClass = $this->controller->modelClass;
-        if ($this->controller->checkPermissions($model, 'delete')) {
-            if ($model->delete ()) {
-                Yii::app()->user->setFlash ('success', Yii::t('app', 'Record deleted')); 
-                $this->controller->render (
-                    'application.modules.mobile.views.mobile.recordView',
-                    array (
-                        'model' => $model,
-                    )
-                );
-            } else {
-                throw new CHttpException (500, Yii::t('app', 'Failed to delete record.'));
-            }
+        $authParams['X2Model'] = $model;
+        if ($this->controller->checkPermissions($model, 'delete') && 
+            $model instanceof X2Model &&
+            $this->controller->hasMobileAction ('mobileDelete') &&
+            Yii::app()->user->checkAccess(ucfirst ($this->controller->module->name).'Delete', $authParams)) {
+                if ($model->delete ()) {
+                    Yii::app()->user->setFlash ('success', Yii::t('app', 'Record deleted')); 
+                    $this->controller->render (
+                        'application.modules.mobile.views.mobile.recordView',
+                        array (
+                            'model' => $model,
+                        )
+                    );
+                } else {
+                    throw new CHttpException (500, Yii::t('app', 'Failed to delete record.'));
+                }
         } else {
             $this->controller->denied ();
         }

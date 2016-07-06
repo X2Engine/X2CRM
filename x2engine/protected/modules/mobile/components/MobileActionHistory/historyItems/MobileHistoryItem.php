@@ -71,9 +71,13 @@ class MobileHistoryItem extends CComponent {
     }
 
     public function renderDeleteItem () {
-        return '<a href="'.Yii::app()->createAbsoluteUrl ('actions/mobileDelete',
-                        array('id'=>$this->action->id,)).'">'
-                        .X2Html::fa ("fa-trash").'</a>';
+        return '<a class="delete-button requires-confirmation" '
+            . 'href="'.Yii::app()->createAbsoluteUrl ('actions/mobileDelete',
+            array('id'=>$this->action->id,)).'">'.X2Html::fa ("fa-trash").'</a>'
+            .            '<div class="confirmation-text" style="display: none;">
+
+                Are you sure you want to delete this?
+            </div>';
     }
     
     public function renderDateLine () {

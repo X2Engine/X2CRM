@@ -58,7 +58,7 @@ $this->onPageLoad ("
 
 
 if ($model instanceof X2Model &&
-    $this->hasMobileAction ('mobileDelete') &&
+    $this->hasMobileAction ('mobileDelete') && $this->hasMobileAction ('mobileUpdate') &&
     Yii::app()->user->checkAccess(ucfirst ($this->module->name).'Delete', $authParams)) {
 ?>
 

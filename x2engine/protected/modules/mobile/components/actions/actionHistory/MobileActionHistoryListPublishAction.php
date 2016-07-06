@@ -75,9 +75,9 @@ class MobileActionHistoryListPublishAction extends MobileAction {
                 $this->controller->pageId .= '-'.$model->id;
 
                 User::addRecentItem (get_class ($model), $id); 
-
+                
                 $this->controller->render (
-                    $this->pathAliasBase.'views.mobile.recordView',
+                    'application.modules.mobile.views.mobile._actionHistoryList',
                     array (
                         'model' => $model,
                     )
