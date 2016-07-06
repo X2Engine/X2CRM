@@ -283,5 +283,7 @@ class RelationshipsBehaviorTest extends X2DbTestCase {
         $this->assertInstanceOf(get_class($otherContact), $visibleRelatedModels[0]);
         $this->assertEquals($otherContact->id, $visibleRelatedModels[0]->id);
         $this->assertEmpty($contact->relationships->getVisibleRelatedX2Models(true));
+        
+        TestingAuxLib::restoreController();
     }
 }
