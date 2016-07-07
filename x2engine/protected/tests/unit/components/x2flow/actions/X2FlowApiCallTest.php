@@ -223,6 +223,7 @@ class X2FlowApiCallTest extends X2FlowTestBase {
         $debugMessage = $this->getApiCallDebugMessage ('flow3');
         $this->assertEquals (
             TEST_BASE_URL.'api2/Contacts', $debugMessage['url']);
+        TestingAuxLib::restoreController();
     }
 
 //    /**

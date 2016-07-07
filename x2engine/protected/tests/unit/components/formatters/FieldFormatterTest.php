@@ -83,6 +83,11 @@ class FieldFormatterTest extends X2DbTestCase {
         TestingAuxLib::loadControllerMock ();
         return parent::setUp ();
     }
+    
+    public function tearDown(){
+        TestingAuxLib::restoreController();
+        parent::tearDown();
+    }
 
     private static function tryAddCol ($model, $col, $type) {
         if (!Fields::model ()->findByAttributes (array (
