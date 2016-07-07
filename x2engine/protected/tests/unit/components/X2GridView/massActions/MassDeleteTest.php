@@ -46,6 +46,21 @@ class MassDeleteTest extends X2DbTestCase {
     public $fixtures = array (
         'contacts' => array ('Contacts', '.MassDeleteTest'),
     );
+    
+    private $_oldServer;
+    private $_oldController;
+    
+    public function setUp(){
+        $this->_oldServer = $_SERVER;
+        $this->_oldController = Yii::app()->controller;
+        return parent::setUp();
+    }
+    
+    public function tearDown(){
+        $_SERVER = $this->_oldServer;
+        Yii::app()->controller = $this->_oldController;
+        parent::tearDown();
+    }
 
     /**
      * Attempt to mass delete range of records in fixture file
