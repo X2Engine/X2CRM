@@ -97,6 +97,7 @@ $this->widget('X2GridViewGeneric', array(
         'username' => 90,
         'firstName' => 90,
         'lastName' => 90,
+        'createDate' => 90,
         'login' => 90,
         'emailAddress' => 60
     ),
@@ -111,6 +112,11 @@ $this->widget('X2GridViewGeneric', array(
         ),
         array (
             'name' => 'lastName',
+        ),
+        array(
+            'name' => 'createDate',
+            'value' => '$data->createDate ? Formatter::formatDate($data->createDate) : "n/a"',
+            'type' => 'raw',
         ),
         array(
             'name' => 'login',

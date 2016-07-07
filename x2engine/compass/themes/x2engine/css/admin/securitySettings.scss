@@ -32,4 +32,32 @@
  * X2Engine" logo. If the display of the logo is not reasonably feasible for
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2Engine".
- **********************************************************************************/#security-settings-form .grid-view{border:1px solid #c5c5c5;border-radius:3px}#security-settings-form .grid-view .x2-grid-view-controls-buttons a{position:relative;top:-3px}a#login-history-export{width:70px}a#login-history-export i{padding-right:4px}#password-settings-form label{width:148px;display:inline-block}#password-settings-form input[type="number"]{width:32px}#password-settings-form input[type="checkbox"]{top:0px}
+ **********************************************************************************/
+
+
+
+@import "colors.scss";
+
+#security-settings-form {
+    .grid-view {
+        border: 1px solid $gray;
+        border-radius: 3px;
+        .x2-grid-view-controls-buttons a {
+            position: relative;
+            top: -3px;
+        }
+    }
+}
+
+#password-settings-form {
+    label {
+        width: 148px;
+        display: inline-block;
+    }
+    input[type="number"] {
+        width: 32px;
+    }
+    input[type="checkbox"] {
+        top: 0px;
+    }
+}

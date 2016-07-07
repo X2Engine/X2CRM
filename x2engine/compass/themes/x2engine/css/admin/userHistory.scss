@@ -34,35 +34,8 @@
  * "Powered by X2Engine".
  **********************************************************************************/
 
-
-
-@import "colors.scss";
-
-#security-settings-form {
-    .grid-view {
-        border: 1px solid $gray;
-        border-radius: 3px;
-        .x2-grid-view-controls-buttons a {
-            position: relative;
-            top: -3px;
-        }
-    }
-}
-
 a#login-history-export {
     width: 70px;
     i { padding-right: 4px; }
 }
 
-#password-settings-form {
-    label {
-        width: 148px;
-        display: inline-block;
-    }
-    input[type="number"] {
-        width: 32px;
-    }
-    input[type="checkbox"] {
-        top: 0px;
-    }
-}
