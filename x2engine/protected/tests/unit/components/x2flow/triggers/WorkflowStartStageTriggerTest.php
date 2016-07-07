@@ -61,7 +61,7 @@ class WorkflowStartStageTriggerTest extends X2FlowTestBase {
     }
     
     public function tearDown(){
-        TestingAuxLib::tearDown();
+        TestingAuxLib::restoreController();
         parent::tearDown();
     }
 
