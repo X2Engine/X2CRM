@@ -123,6 +123,40 @@ class WebFormAction extends CAction {
                 if($model->asa('DuplicateBehavior') && $model->checkForDuplicates()){
                     $duplicates = $model->getDuplicates();
                     $oldest = $duplicates[0];
+                }
+
+                if (Yii::app()->settings->enableFingerprinting && isset ($_POST['fingerprint'])) {
+                    $attributes = (isset($_POST['fingerprintAttributes']))?
+                        json_decode($_POST['fingerprintAttributes'], true) : array();
+
+                    $anonContact = AnonContact::model ()
+                        ->findByFingerprint ($_POST['fingerprint'], $attributes);
+
+                    // if there's not an anonyomous contact, then the fingerprint match
+                    // was for an actual contact.
+                    if ($anonContact !== null) {
+                        if ($model->isNewRecord) {
+                            // save new contact for subsequent update() when merging AnonContact
+                            $model->save();
+                        }
+                        $model->mergeWithAnonContact ($anonContact);
+                    } else {
+                        $fingerprint = Fingerprint::model()->findByAttributes(array(
+                            'fingerprint' => $_POST['fingerprint'],
+                        ));
+                        if (is_null($fingerprint)) {
+                            $model->setFingerprint ($_POST['fingerprint'], $attributes);
+                        } else if ($fingerprint->anonymous === '0') {
+                            $oldest = X2Model::model('Contacts')->findByAttributes (array(
+                                'fingerprintId' => $fingerprint->id,
+                            ));
+                        }
+                    }
+                }
+
+                // Merge in previous fields if an existing contact is located by duplicate
+                // detection or fingerprinting
+                if (isset($oldest) && $oldest) {
                     $fields = $model->getFields(true);
                     foreach ($fields as $field) {
                         if (!in_array($field->fieldName,
@@ -136,39 +170,16 @@ class WebFormAction extends CAction {
                         }
                     }
                     $model = $oldest;
-                    $model->scenario = $extractedParams['requireCaptcha'] ? 'webFormWithCaptcha' : 'webForm';
                     $newRecord = $model->isNewRecord;
                 }
+
                 if($newRecord){
                     $model->createDate = $now;
                     $model->assignedTo = $this->controller->getNextAssignee();
                 }
-                
+
                 $success = $model->save();
-                
-                
-                if (Yii::app()->contEd('pla') && Yii::app()->settings->enableFingerprinting &&
-                    isset ($_POST['fingerprint'])) {
-
-                    $attributes = (isset($_POST['fingerprintAttributes']))? 
-                        json_decode($_POST['fingerprintAttributes'], true) : array();
-
-                    $anonContact = AnonContact::model ()
-                        ->findByFingerprint ($_POST['fingerprint'], $attributes); 
-
-                    // if there's not an anonyomous contact, then the fingerprint match
-                    // was for an actual contact. 
-                    if ($anonContact !== null) {
-                        $model->mergeWithAnonContact ($anonContact);
-                    } else {
-                        $model->setFingerprint ($_POST['fingerprint'], $attributes);
-                    }
-
-                    $success = $success && $model->save();
-                    //AuxLib::debugLogR($success);
-                    //AuxLib::debugLogR($model->errors);
-                    $model->scenario = $extractedParams['requireCaptcha'] ? 'webFormWithCaptcha' : 'webForm';
-                }
+                $model->scenario = $extractedParams['requireCaptcha'] ? 'webFormWithCaptcha' : 'webForm';
                 
                 if (!empty($model->getMediaLookupFields())) {
                     $uploaded = $this->controller->uploadAssociatedMedia($model);
