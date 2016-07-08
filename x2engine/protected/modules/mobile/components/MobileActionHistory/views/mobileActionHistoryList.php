@@ -62,6 +62,7 @@ $this->widget('application.modules.mobile.components.MobileActionHistoryListView
         'application.modules.mobile.components.MobileActionHistory.views._mobileActionHistoryItem',
     'template' => '{items}{moreButton}',
     'htmlOptions' => $htmlOptions,
+    'modelid' => $this->model->id,
 ));
 
 $hasCreateAccess = Yii::app()->params->isAdmin || Yii::app()->user->checkAccess ('ActionsCreate');

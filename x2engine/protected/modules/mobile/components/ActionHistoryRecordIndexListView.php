@@ -51,8 +51,16 @@ class ActionHistoryRecordIndexListView extends CListView {
         //$href = UrlUtil::mergeParams (Yii::app()->request->url, array (
         //));
         if ($currentPage + 1 < $pageCount) {
+            $trueUrl = $pager->createPageUrl ($currentPage + 1);
+            $splitUrl =  explode("page=", $trueUrl);
+            $pageNum = $splitUrl[1];
+            $newUrl = Yii::app()->createAbsoluteUrl ('contacts/mobileView',
+            array('id'=>$this->modelid,));
+            $newUrl .= "?page=";
+            $newUrl .= $pageNum;
+            //$newUrl = $pager->createPageUrl ($currentPage + 1);
             $html = CHtml::openTag ('a', array (
-                'href' => $pager->createPageUrl ($currentPage + 1),
+                'href' => $newUrl,
                 'class' => 'more-button record-list-item' 
             ));
             $html .= '<div class="record-list-item " >
@@ -65,7 +73,7 @@ class ActionHistoryRecordIndexListView extends CListView {
                  
                     </div>
                     <div class=" history-item-date-line"> '.
-                        '<span>'.CHtml::encode (Yii::t('app', 'More')).'</span>'.'
+                        '<span>'.CHtml::encode (Yii::t('app', 'Next Page')).'</span>'.'
                     </div>
                     <div class="history-item-author" > 
                       

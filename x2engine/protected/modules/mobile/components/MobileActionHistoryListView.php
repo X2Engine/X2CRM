@@ -36,7 +36,7 @@
  **********************************************************************************/
 
 class MobileActionHistoryListView extends ActionHistoryRecordIndexListView {
-
+    public $modelid;
 
 }
 
