@@ -173,16 +173,22 @@ class WeblistController extends x2base {
 		 * - Each entry is always associated with a list, using a default when no other specified
 		 * - The web list form only takes email address as input
 		 */
+        if (!empty($_GET['webFormId']) && ctype_digit((string)$_GET['webFormId'])) {
+            $webFormId = $_GET['webFormId'];
+            $webForm = WebForm::model()->findByPk($webFormId);
+        }
+        $requireCaptcha = isset($webForm) ? $webForm->requireCaptcha : false;
+
 		if (Yii::app()->request->isPostRequest) {
             Yii::app()->params->noSession = true;
 			$now = time();
-			$list = null;
+            $list = null;
 
-			//look up list by id
-			if (!empty($_GET['lid']) && ctype_digit((string)$_GET['lid'])) {
-				$listId = $_GET['lid'];
-				$list = X2List::model()->findByPk($listId, 'type="weblist"');
-			}
+            //look up list by id
+            if (!empty($_GET['lid']) && ctype_digit((string)$_GET['lid'])) {
+                $listId = $_GET['lid'];
+                $list = X2List::model()->findByPk($listId, 'type="weblist"');
+            }
 
 			//look for "Default Newsletter"
 			if (!isset($list)) {
@@ -214,9 +220,9 @@ class WeblistController extends x2base {
 			//require email field, check format
 			$email = $_POST['Contacts']['email'];
 			if (preg_match("/[a-zA-Z0-9._%-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}/", $email) == 0) {
-				$this->renderPartial('application.components.views.webFormSubmit',
-					array('error'=>Yii::t('contacts','Invalid Email Address')));
-				return;
+				Yii::app()->user->setFlash(
+                    'error', Yii::t('contacts','Could not sign up') .': '. Yii::t('contacts','Invalid Email Address'));
+				$this->refresh();
 			}
 
 			//see if that email has already signed up
@@ -224,11 +230,15 @@ class WeblistController extends x2base {
                 array('emailAddress'=>$email, 'listId'=>$list->id));
 
 			if (!isset($listItem)) {
-				$listItem = new X2ListItem;
+				$listItem = new X2ListItem('WebForm');
 				$listItem->listId = $list->id;
 				$listItem->emailAddress = $email;
 				$list->count++;
 			}
+
+            if ($requireCaptcha && CCaptcha::checkRequirements() &&
+                array_key_exists('verifyCode', $_POST['Contacts']))
+                    $listItem->verifyCode = $_POST['Contacts']['verifyCode'];
 
 			//use the submitted info to create an action
 			$action = new Actions;
@@ -252,9 +262,7 @@ class WeblistController extends x2base {
 				//add contact to the list
 				$listItem->contactId = $contact->id;
 
-                
                 $contact->recordAddress ();
-                
 
 				//create second action for contact record
 				$contactAction = new Actions;
@@ -266,33 +274,33 @@ class WeblistController extends x2base {
 				$contactAction->associationName = $contact->firstName ." ". $contact->lastName;
 				$contactAction->assignedTo = $contact->assignedTo;
 				$contactAction->visibility = $contact->visibility;
-			}  else if (Yii::app()->contEd('pla')) {
-                            // Otherwise, search for or create an anonymous contact
-                            $fingerprint = (isset($_POST['fingerprint']))? $_POST['fingerprint'] : null;
-                            $attributes = (isset($_POST['fingerprintAttributes']))? json_decode($_POST['fingerprintAttributes'], true) : array();
+            } else {
+                // Otherwise, search for or create an anonymous contact
+                $fingerprint = (isset($_POST['fingerprint']))? $_POST['fingerprint'] : null;
+                $attributes = (isset($_POST['fingerprintAttributes']))? json_decode($_POST['fingerprintAttributes'], true) : array();
 
-                            $contact = X2Model::model('AnonContact')->findByAttributes(array('email'=>$email));
-                            if ($contact === null) {
-                                $fingerprintRecord = X2Model::model('Fingerprint')->findByAttributes(array('fingerprint'=>$fingerprint));
-                                if ($fingerprintRecord !== null) {
-                                    // Locate the Contact of AnonContact associated with this fingerprint
-                                    $type = ($fingerprintRecord->anonymous) ? 'AnonContact' : 'Contacts';
-                                    $contact = X2Model::model($type)->findByAttributes(array('fingerprintId'=>$fingerprintRecord->id));
-                                } else
-                                    list($contact, $bits) = Fingerprint::partialMatch($attributes);
-                                if (!isset($contact)) {
-                                    $contact = new AnonContact();
-                                    $contact->createDate = $now;
-                                    $contact->trackingKey = Contacts::getNewTrackingKey();
-                                }
-                            }
+                $contact = X2Model::model('AnonContact')->findByAttributes(array('email'=>$email));
+                if ($contact === null) {
+                    $fingerprintRecord = X2Model::model('Fingerprint')->findByAttributes(array('fingerprint'=>$fingerprint));
+                    if ($fingerprintRecord !== null) {
+                        // Locate the Contact of AnonContact associated with this fingerprint
+                        $type = ($fingerprintRecord->anonymous) ? 'AnonContact' : 'Contacts';
+                        $contact = X2Model::model($type)->findByAttributes(array('fingerprintId'=>$fingerprintRecord->id));
+                    } else
+                        list($contact, $bits) = Fingerprint::partialMatch($attributes);
+                    if (!isset($contact)) {
+                        $contact = new AnonContact();
+                        $contact->createDate = $now;
+                        $contact->trackingKey = Contacts::getNewTrackingKey();
+                    }
+                }
 
-                            $contact->email = $email;
-                            $contact->lastUpdated = $now;
-                            $contact->setFingerprint($fingerprint, $attributes);
-                            $contact->save();
-                            $contact->recordAddress ();
-                        } 
+                $contact->email = $email;
+                $contact->lastUpdated = $now;
+                $contact->setFingerprint($fingerprint, $attributes);
+                $contact->save();
+                $contact->recordAddress ();
+            }
 
 			$transaction = Yii::app()->db->beginTransaction();
 			try {
@@ -314,15 +322,18 @@ class WeblistController extends x2base {
 				$transaction->rollBack();
 				Yii::app()->user->setFlash(
                     'error', Yii::t('contacts','Could not sign up') .': '. $e->getMessage());
-				$this->redirect($this->createUrl('', array('lid'=>$list->id)));
+				$this->refresh();
+				//$this->redirect($this->createUrl('', array('lid'=>$list->id)));
 			}
 		} else {
             $sanitizedGetParams = WebFormAction::sanitizeGetParams ();
-
 			$this->renderPartial(
                 'application.components.views.webForm', 
                 array_merge (
-                    array('type'=>'weblist'),
+                    array(
+                        'type'=>'weblist',
+                        'requireCaptcha' => $requireCaptcha,
+                    ),
                     $sanitizedGetParams
                 )
             );

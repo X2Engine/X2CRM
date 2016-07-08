@@ -626,6 +626,15 @@ abstract class X2Model extends X2ActiveRecord {
             }, $fields));
     }
 
+    public function getMediaLookupFields() {
+        $fields = Fields::model()->findAllByAttributes(array(
+            'type' => 'link',
+            'linkType' => 'Media',
+            'modelName' => X2Model::getModelName(get_class($this)),
+        ));
+        return $fields;
+    }
+
     /**
      * Hides record from all but admin users who have "Show Hidden" turned on
      */
@@ -1792,78 +1801,83 @@ abstract class X2Model extends X2ActiveRecord {
                 $linkId = '';
                 $name = '';
 
-                if (class_exists($field->linkType)) {
-                    // Create a model for autocompletion:
-                    if (!empty($model->$fieldName)) {
-                        list($name, $linkId) = Fields::nameAndId($model->$fieldName);
-                        $linkModel = X2Model::getLinkedModelMock($field->linkType, $name, $linkId, true);
-                    } else {
-                        $linkModel = X2Model::model($field->linkType);
+                if ($field->linkType === 'Media' && in_array($model->scenario, array('webForm', 'webFormWithCaptcha'))) {
+                    // Render an upload form for link type fields to Media
+                    $input = CHtml::fileField($field->modelName . '[' . $fieldName .']');
+                } else {
+                    if (class_exists($field->linkType)) {
+                        // Create a model for autocompletion:
+                        if (!empty($model->$fieldName)) {
+                            list($name, $linkId) = Fields::nameAndId($model->$fieldName);
+                            $linkModel = X2Model::getLinkedModelMock($field->linkType, $name, $linkId, true);
+                        } else {
+                            $linkModel = X2Model::model($field->linkType);
+                        }
+                        if ($linkModel instanceof X2Model && $linkModel->asa('LinkableBehavior') instanceof LinkableBehavior) {
+                            $linkSource = Yii::app()->controller->createUrl($linkModel->autoCompleteSource);
+                            $linkId = $linkModel->id;
+                            $oldLinkFieldVal = $model->$fieldName; 
+                            $model->$fieldName = $name;
+                        }
                     }
-                    if ($linkModel instanceof X2Model && $linkModel->asa('LinkableBehavior') instanceof LinkableBehavior) {
-                        $linkSource = Yii::app()->controller->createUrl($linkModel->autoCompleteSource);
-                        $linkId = $linkModel->id;
-                        $oldLinkFieldVal = $model->$fieldName; 
-                        $model->$fieldName = $name;
-                    }
-                }
 
-                static $linkInputCounter = 0;
-                $hiddenInputId = $field->modelName . '_' . $fieldName . "_id".$linkInputCounter++;
-                $input = CHtml::hiddenField(
-                    $field->modelName . '[' . $fieldName . '_id]', $linkId, 
-                    array('id' => $hiddenInputId))
-                        .Yii::app()->controller->widget('zii.widgets.jui.CJuiAutoComplete', array(
-                            'model' => $model,
-                            'attribute' => $fieldName,
-                            // 'name'=>'autoselect_'.$fieldName,
-                            'source' => $linkSource,
-                            'value' => $name,
-                            'options' => array(
-                                'minLength' => '1',
-                                'select' => 'js:function( event, ui ) {
-                                    $("#'.$hiddenInputId.'").
-                                        val(ui.item.id);
-                                    $(this).val(ui.item.value);
-                                    return false;
-                            }',
-                            'create' => $field->linkType == 'Contacts' ? 
-                                'js:function(event, ui) {
+                    static $linkInputCounter = 0;
+                    $hiddenInputId = $field->modelName . '_' . $fieldName . "_id".$linkInputCounter++;
+                    $input = CHtml::hiddenField(
+                        $field->modelName . '[' . $fieldName . '_id]', $linkId, 
+                        array('id' => $hiddenInputId))
+                            .Yii::app()->controller->widget('zii.widgets.jui.CJuiAutoComplete', array(
+                                'model' => $model,
+                                'attribute' => $fieldName,
+                                // 'name'=>'autoselect_'.$fieldName,
+                                'source' => $linkSource,
+                                'value' => $name,
+                                'options' => array(
+                                    'minLength' => '1',
+                                    'select' => 'js:function( event, ui ) {
+                                        $("#'.$hiddenInputId.'").
+                                            val(ui.item.id);
+                                        $(this).val(ui.item.value);
+                                        return false;
+                                }',
+                                'create' => $field->linkType == 'Contacts' ? 
+                                    'js:function(event, ui) {
+                                        $(this).data( "uiAutocomplete" )._renderItem = 
+                                            function(ul,item) {
+                                                return $("<li>").data("item.autocomplete",item).
+                                                    append(x2.forms.renderContactLookup(item)).
+                                                    appendTo(ul);
+                                            };
+                                }' : ($field->linkType == 'BugReports' ? 'js:function(event, ui) {
                                     $(this).data( "uiAutocomplete" )._renderItem = 
-                                        function(ul,item) {
-                                            return $("<li>").data("item.autocomplete",item).
-                                                append(x2.forms.renderContactLookup(item)).
-                                                appendTo(ul);
-                                        };
-                            }' : ($field->linkType == 'BugReports' ? 'js:function(event, ui) {
-                                $(this).data( "uiAutocomplete" )._renderItem = 
-                                    function( ul, item ) {
+                                        function( ul, item ) {
 
-                                    var label = "<a style=\"line-height: 1;\">" + item.label;
+                                        var label = "<a style=\"line-height: 1;\">" + item.label;
 
-                                    label += "<span style=\"font-size: 0.6em;\">";
+                                        label += "<span style=\"font-size: 0.6em;\">";
 
-                                    // add email if defined
-                                    if(item.subject) {
-                                        label += "<br>";
-                                        label += item.subject;
-                                    }
+                                        // add email if defined
+                                        if(item.subject) {
+                                            label += "<br>";
+                                            label += item.subject;
+                                        }
 
-                                    label += "</span>";
-                                    label += "</a>";
+                                        label += "</span>";
+                                        label += "</a>";
 
-                                    return $( "<li>" )
-                                        .data( "item.autocomplete", item )
-                                        .append( label )
-                                        .appendTo( ul );
-                                };
-                            }' : ''),
-                            ),
-                            'htmlOptions' => array_merge(array(
-                                'title' => $field->attributeLabel,
-                                    ), $htmlOptions)
-                                ), true);
-                if (isset ($oldLinkFieldVal)) $model->$fieldName = $oldLinkFieldVal;
+                                        return $( "<li>" )
+                                            .data( "item.autocomplete", item )
+                                            .append( label )
+                                            .appendTo( ul );
+                                    };
+                                }' : ''),
+                                ),
+                                'htmlOptions' => array_merge(array(
+                                    'title' => $field->attributeLabel,
+                                        ), $htmlOptions)
+                                    ), true);
+                    if (isset ($oldLinkFieldVal)) $model->$fieldName = $oldLinkFieldVal;
+                }
                 return $input;
             case 'rating':
                 return Yii::app()->controller->widget('X2StarRating', array(

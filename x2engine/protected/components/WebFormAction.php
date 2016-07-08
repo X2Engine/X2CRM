@@ -102,6 +102,10 @@ class WebFormAction extends CAction {
                     }
                 }
             }
+
+            if ($extractedParams['requireCaptcha'] && CCaptcha::checkRequirements() &&
+                array_key_exists('verifyCode', $_POST['Contacts']))
+                    $model->verifyCode = $_POST['Contacts']['verifyCode'];
             
             $model->visibility = 1;
 
@@ -119,6 +123,40 @@ class WebFormAction extends CAction {
                 if($model->asa('DuplicateBehavior') && $model->checkForDuplicates()){
                     $duplicates = $model->getDuplicates();
                     $oldest = $duplicates[0];
+                }
+
+                if (Yii::app()->settings->enableFingerprinting && isset ($_POST['fingerprint'])) {
+                    $attributes = (isset($_POST['fingerprintAttributes']))?
+                        json_decode($_POST['fingerprintAttributes'], true) : array();
+
+                    $anonContact = AnonContact::model ()
+                        ->findByFingerprint ($_POST['fingerprint'], $attributes);
+
+                    // if there's not an anonyomous contact, then the fingerprint match
+                    // was for an actual contact.
+                    if ($anonContact !== null) {
+                        if ($model->isNewRecord) {
+                            // save new contact for subsequent update() when merging AnonContact
+                            $model->save();
+                        }
+                        $model->mergeWithAnonContact ($anonContact);
+                    } else {
+                        $fingerprint = Fingerprint::model()->findByAttributes(array(
+                            'fingerprint' => $_POST['fingerprint'],
+                        ));
+                        if (is_null($fingerprint)) {
+                            $model->setFingerprint ($_POST['fingerprint'], $attributes);
+                        } else if ($fingerprint->anonymous === '0') {
+                            $oldest = X2Model::model('Contacts')->findByAttributes (array(
+                                'fingerprintId' => $fingerprint->id,
+                            ));
+                        }
+                    }
+                }
+
+                // Merge in previous fields if an existing contact is located by duplicate
+                // detection or fingerprinting
+                if (isset($oldest) && $oldest) {
                     $fields = $model->getFields(true);
                     foreach ($fields as $field) {
                         if (!in_array($field->fieldName,
@@ -132,36 +170,26 @@ class WebFormAction extends CAction {
                         }
                     }
                     $model = $oldest;
+                    $model->scenario = $extractedParams['requireCaptcha'] ? 'webFormWithCaptcha' : 'webForm';
+                    if ($extractedParams['requireCaptcha'] && CCaptcha::checkRequirements() &&
+                        array_key_exists('verifyCode', $_POST['Contacts']))
+                            $model->verifyCode = $_POST['Contacts']['verifyCode'];
                     $newRecord = $model->isNewRecord;
                 }
+
                 if($newRecord){
                     $model->createDate = $now;
                     $model->assignedTo = $this->controller->getNextAssignee();
                 }
-                
+
                 $success = $model->save();
+                $model->scenario = $extractedParams['requireCaptcha'] ? 'webFormWithCaptcha' : 'webForm';
                 
-                
-                if (Yii::app()->contEd('pla') && Yii::app()->settings->enableFingerprinting &&
-                    isset ($_POST['fingerprint'])) {
-
-                    $attributes = (isset($_POST['fingerprintAttributes']))? 
-                        json_decode($_POST['fingerprintAttributes'], true) : array();
-
-                    $anonContact = AnonContact::model ()
-                        ->findByFingerprint ($_POST['fingerprint'], $attributes); 
-
-                    // if there's not an anonyomous contact, then the fingerprint match
-                    // was for an actual contact. 
-                    if ($anonContact !== null) {
-                        $model->mergeWithAnonContact ($anonContact);
-                    } else {
-                        $model->setFingerprint ($_POST['fingerprint'], $attributes);
-                    }
-
-                    $success = $success && $model->save();
+                if (!empty($model->getMediaLookupFields())) {
+                    $uploaded = $this->controller->uploadAssociatedMedia($model);
+                    if (!is_null($uploaded))
+                        $success = $success && $uploaded;
                 }
-                
 
                 //TODO: upload profile picture url from webleadfb
                 
@@ -193,7 +221,6 @@ class WebFormAction extends CAction {
                                 'address' => Yii::app()->settings->emailFromAddr
                             );
                     }
-                    
 
                     if($model->assignedTo != 'Anyone' && $model->assignedTo != '') {
 
@@ -274,25 +301,22 @@ class WebFormAction extends CAction {
                         if(!empty($tags)){
                             X2Flow::trigger('RecordTagAddTrigger', array(
                                 'model' => $model,
-                                'tags' => $tags,
+                               'tags' => $tags,
                             ));
                         }
                     }
                     
+                    $this->controller->renderPartial('application.components.views.webFormSubmit',
+                        array (
+                            'type' => 'weblead',
+                            'redirectUrl' => $extractedParams['redirectUrl']
+                        )
+                    );
+
+                    return; // to commit transaction
                 } else {
-                    $errMsg = 'Error: WebListenerAction.php: model failed to save';
-                    /**/AuxLib::debugLog ($errMsg);
-                    Yii::log ($errMsg, '', 'application.debug');
+                    AuxLib::debugLog ('Error: WebListenerAction.php: model failed to save');
                 }
-
-                $this->controller->renderPartial('application.components.views.webFormSubmit',
-                    array (
-                        'type' => 'weblead',
-                        'redirectUrl' => $extractedParams['redirectUrl']
-                    )
-                );
-
-                Yii::app()->end(); // success!
             }
         } elseif (Yii::app()->contEd('pro') && class_exists('WebListenerAction')){
             if (isset ($_COOKIE['x2_key']))  {
@@ -307,27 +331,19 @@ class WebFormAction extends CAction {
 
         $sanitizedGetParams = self::sanitizeGetParams ();
 
-        
-        if (Yii::app()->contEd('pro')) {
-            $viewParams = array_merge (array (
-                'model' => $model,
-                'type' => 'weblead',
-                'fieldList' => $extractedParams['fieldList'],
-                'css' => $extractedParams['css'], 
-                'header' => $extractedParams['header']
-            ), $sanitizedGetParams);
-            $this->controller->renderPartial('application.components.views.webForm', $viewParams);
-        } else {
-        
-            $this->controller->renderPartial(
-                'application.components.views.webForm', 
-                array_merge (array(
-                    'type' => 'weblead'
-                ), $sanitizedGetParams));
-        
-        }
-        
+        $viewParams = array_merge (array (
+            'model' => $model,
+            'type' => 'weblead',
+            'fieldList' => $extractedParams['fieldList'],
+            'css' => $extractedParams['css'],
+            'header' => $extractedParams['header'],
+            'requireCaptcha' => $extractedParams['requireCaptcha'],
+        ), $sanitizedGetParams);
+        $this->controller->renderPartial('application.components.views.webForm', $viewParams);
 
+        if (isset($success) && $success === false) {
+            throw new WebFormException;
+        }
     }
 
 
@@ -434,13 +450,24 @@ class WebFormAction extends CAction {
                 }
             }
             
+            if ($extractedParams['requireCaptcha'] && CCaptcha::checkRequirements() &&
+                array_key_exists('verifyCode', $_POST['Services']))
+                    $model->verifyCode = $_POST['Services']['verifyCode'];
+
             $model->validate (null, false);
 
             if(!$model->hasErrors()){
 
                 if($model->save()){
                     $model->name = $model->id;
+                    // reset scenario for webForms after saving
+                    $model->scenario = $extractedParams['requireCaptcha'] ? 'webFormWithCaptcha' : 'webForm';
                     $model->update(array('name'));
+                    if (!empty($model->getMediaLookupFields())) {
+                        $uploaded = $this->controller->uploadAssociatedMedia($model);
+                        if (!is_null($uploaded))
+                            $success = $success && $uploaded;
+                    }
 
                     self::addTags ($model);
 
@@ -467,7 +494,7 @@ class WebFormAction extends CAction {
                     $action->updatedBy = 'admin';
                     $action->save();
 
-                    if(isset($email)){
+                    if($success && isset($email)){
 
                         //send email
                         $emailBody = Yii::t('services', 'Hello').' '.$fullName.",<br><br>";
@@ -569,10 +596,12 @@ class WebFormAction extends CAction {
                             Yii::log ($errMsg, '', 'application.debug');
                         }
                     }
-                    $this->controller->renderPartial('application.components.views.webFormSubmit',
-                        array('type' => 'service', 'caseNumber' => $model->id));
+                    if ($success) {
+                        $this->controller->renderPartial('application.components.views.webFormSubmit',
+                            array('type' => 'service', 'caseNumber' => $model->id));
 
-                    Yii::app()->end(); // success!
+                        return; // to commit transaction
+                    }
                 }
             }
         }
@@ -580,24 +609,18 @@ class WebFormAction extends CAction {
         $sanitizedGetParams = self::sanitizeGetParams ();
 
         
-        if (Yii::app()->contEd('pro')) {
-            $viewParams = array_merge (array (
-                'model' => $model,
-                'type' => 'service',
-                'fieldList' => $extractedParams['fieldList'],
-                'css' => $extractedParams['css']
-            ), $sanitizedGetParams);
-            $this->controller->renderPartial('application.components.views.webForm', $viewParams);
-        } else {
+        $viewParams = array_merge (array (
+            'model' => $model,
+            'type' => 'service',
+            'fieldList' => $extractedParams['fieldList'],
+            'css' => $extractedParams['css'],
+            'requireCaptcha' => $extractedParams['requireCaptcha'],
+        ), $sanitizedGetParams);
+        $this->controller->renderPartial('application.components.views.webForm', $viewParams);
         
-            $this->controller->renderPartial (
-                'application.components.views.webForm',
-                array_merge (array(
-                    'model' => $model, 'type' => 'service'
-                ), $sanitizedGetParams));
-        
+        if (isset($success) && $success === false) {
+            throw new WebFormException;
         }
-        
     }
 
 
@@ -636,6 +659,7 @@ class WebFormAction extends CAction {
         $extractedParams['generateLead'] = false;
         $extractedParams['generateAccount'] = false;
         $extractedParams['redirectUrl'] = null;
+        $extractedParams['requireCaptcha'] = false;
         if (isset ($webForm)) { // new method
             if (!empty ($webForm->leadSource)) 
                 $extractedParams['leadSource'] = $webForm->leadSource;
@@ -643,6 +667,12 @@ class WebFormAction extends CAction {
                 $extractedParams['generateLead'] = $webForm->generateLead;
             if (!empty ($webForm->generateAccount)) 
                 $extractedParams['generateAccount'] = $webForm->generateAccount;
+            if (!empty ($webForm->requireCaptcha)) {
+                $extractedParams['requireCaptcha'] = $webForm->requireCaptcha;
+                if ($webForm->requireCaptcha) {
+                    $model->scenario = 'webFormWithCaptcha';
+                }
+            }
             if (!empty ($webForm->redirectUrl)) 
                 $extractedParams['redirectUrl'] = $webForm->redirectUrl;
         }
@@ -701,13 +731,25 @@ class WebFormAction extends CAction {
         }
         
 
-        if ($modelClass === 'Contacts') {
-            $this->handleWebleadFormSubmission ($model, $extractedParams);
-        } else if ($modelClass === 'Services') {
-            $this->handleServiceFormSubmission ($model, $extractedParams);
-        }
+        $transaction = Yii::app()->db->beginTransaction();
+        try {
+            if ($modelClass === 'Contacts') {
+                $this->handleWebleadFormSubmission ($model, $extractedParams);
+            } else if ($modelClass === 'Services') {
+                $this->handleServiceFormSubmission ($model, $extractedParams);
+            }
+            $transaction->commit();
+        } catch(WebFormException $e) {
+            AuxLib::debugLog ('Failed to save webform, rolling back transaction');
+            $transaction->rollback();
 
+        }
+        Yii::app()->end();
     }
+}
+
+// Exception for triggering transaction rollback
+class WebFormException extends CException {
 }
 
 ?>
