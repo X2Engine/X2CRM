@@ -49,7 +49,7 @@ class MobileActionHistoryList extends X2Widget {
 
     public $JSClass = 'MobileActionHistory';
 
-    private $pageSize = 10;
+    private $pageSize = 30;
 
 
     protected $_packages;
