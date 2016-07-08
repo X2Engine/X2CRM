@@ -170,6 +170,10 @@ class WebFormAction extends CAction {
                         }
                     }
                     $model = $oldest;
+                    $model->scenario = $extractedParams['requireCaptcha'] ? 'webFormWithCaptcha' : 'webForm';
+                    if ($extractedParams['requireCaptcha'] && CCaptcha::checkRequirements() &&
+                        array_key_exists('verifyCode', $_POST['Contacts']))
+                            $model->verifyCode = $_POST['Contacts']['verifyCode'];
                     $newRecord = $model->isNewRecord;
                 }
 
