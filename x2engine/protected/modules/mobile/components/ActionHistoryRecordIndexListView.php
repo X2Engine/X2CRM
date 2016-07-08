@@ -35,8 +35,47 @@
  * "Powered by X2Engine".
  **********************************************************************************/
 
-class MobileActionHistoryListView extends ActionHistoryRecordIndexListView {
+Yii::import ('zii.widgets.CListView');
 
+class ActionHistoryRecordIndexListView extends CListView {
+
+    public function renderMoreButton () {
+        $pager = Yii::createComponent (array (
+            'class' => 
+                Yii::app()->controller->pathAliasBase.'components.MobileRecordIndexPager',
+            'pages' => $this->dataProvider->getPagination ()
+        ));
+        $currentPage = $pager->getCurrentPage (false);
+        $pageCount = $pager->getPageCount ();
+        //$href = $pager->createPageUrl ($currentPage + 1),
+        //$href = UrlUtil::mergeParams (Yii::app()->request->url, array (
+        //));
+        if ($currentPage + 1 < $pageCount) {
+            $html = CHtml::openTag ('a', array (
+                'href' => $pager->createPageUrl ($currentPage + 1),
+                'class' => 'more-button record-list-item' 
+            ));
+            $html .= '<div class="record-list-item " >
+                <div class="icon-container">
+                    <div class="fa fa-ellipsis-h">
+                    <div class="stacked-icon"></div></div>
+                </div>
+                <div class="history-item-content-container-outer">
+                    <div class="history-item-content" > 
+                 
+                    </div>
+                    <div class=" history-item-date-line"> '.
+                        '<span>'.CHtml::encode (Yii::t('app', 'More')).'</span>'.'
+                    </div>
+                    <div class="history-item-author" > 
+                      
+                    </div>
+                </div>
+        </div>';
+            $html .= "</a>";
+            echo $html;
+        }
+    }
 
 }
 
