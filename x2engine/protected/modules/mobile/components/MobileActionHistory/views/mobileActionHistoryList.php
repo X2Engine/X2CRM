@@ -34,22 +34,25 @@
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2Engine".
  **********************************************************************************/
- 
+Yii::app()->clientScript->registerScriptFile(
+    Yii::app()->controller->assetsUrl.'/js/RecordIndexControllerBase.js');
+Yii::app()->clientScript->registerScriptFile(
+    Yii::app()->controller->assetsUrl.'/js/RecordIndexController.js');
 
 $htmlOptions = array (
 );
 
 if ($this->refresh) {
     $htmlOptions = X2Html::mergeHtmlOptions ($htmlOptions, array (
-        'class' => 'refresh-content',
+        'class' => 'refresh-content action list-view record-index-list-view',
         'data-refresh-selector' => '#action-history-list-view',
         'data-x2-replace-on-refresh' => '1',
     ));
 }
 
 
-//$this->widget('application.modules.mobile.components.MobileActionHistoryListView', array(
-$this->widget('zii.widgets.CListView', array(
+$this->widget('application.modules.mobile.components.MobileActionHistoryListView', array(
+//$this->widget('zii.widgets.CListView', array(
     'id' => 'action-history-list-view',
     'dataProvider' => $dataProvider,
     'viewData' => array (
@@ -57,7 +60,7 @@ $this->widget('zii.widgets.CListView', array(
     ),
     'itemView' => 
         'application.modules.mobile.components.MobileActionHistory.views._mobileActionHistoryItem',
-    'template' => '{items}',
+    'template' => '{items}{moreButton}',
     'htmlOptions' => $htmlOptions,
 ));
 
