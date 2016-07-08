@@ -163,6 +163,13 @@ class Media extends X2Model {
 
         $this->getPath();
 
+        // Scan uploaded media for viruses if requested
+        if ($this->isNewRecord && Yii::app()->settings->scanUploads === '1' &&
+                !$this->clamScan()) {
+                    FileUtil::rrmdir($this->path);
+                    return false;
+        }
+
         return parent::beforeSave();
     }
 
@@ -177,6 +184,10 @@ class Media extends X2Model {
                 'class' => 'application.components.behaviors.ERememberFiltersBehavior',
                 'defaults' => array(),
                 'defaultStickOnClear' => false
+            ),
+            'ClamScanBehavior' => array(
+                'class' => 'application.components.behaviors.ClamScanBehavior',
+                'pathAttribute' => 'path',
             )
         ));
         unset($behaviors['changelog']);

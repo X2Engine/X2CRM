@@ -559,6 +559,7 @@ x2.WebFormDesigner = (function() {
         that.DEBUG && console.log (form.params);
         $('#web-form-name').val(form.name);
         that.formName = form.name;
+
         if (form.params) {
             $.each(form.params, function(key, value) {
                 if ($.inArray(key, that.fields) != -1) {
@@ -568,6 +569,15 @@ x2.WebFormDesigner = (function() {
                     $('#'+key).spectrum ("set", $('#'+key).val ());
                 }
             });
+        }
+
+        if (typeof form.requireCaptcha !== 'undefined') {
+            if (parseInt (form.requireCaptcha, 10) === 1) {
+                $('#require-captcha-checkbox').prop ('checked', true);
+            } else {
+                $('#require-captcha-checkbox').prop ('checked', false);
+            }
+            $('#generate-lead-checkbox').change ();
         }
 
         this._updateExtraFields (form);

@@ -1,3 +1,5 @@
+<?php
+
 /***********************************************************************************
  * X2CRM is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2016 X2Engine Inc.
@@ -35,31 +37,12 @@
  **********************************************************************************/
 
 
-ALTER TABLE x2_admin ADD COLUMN api2 TEXT;
-/*&*/
-ALTER TABLE x2_admin ADD accessControlMethod VARCHAR(15) DEFAULT 'blacklist';
-/*&*/
-ALTER TABLE x2_admin ADD ipWhitelist TEXT NULL;
-/*&*/
-ALTER TABLE x2_admin ADD ipBlacklist TEXT NULL;
-/*&*/
-ALTER TABLE x2_admin ADD loginTimeout INT DEFAULT 900;
-/*&*/
-ALTER TABLE x2_admin ADD failedLoginsBeforeCaptcha INT DEFAULT 5;
-/*&*/
-ALTER TABLE x2_admin ADD maxFailedLogins INT DEFAULT 100;
-/*&*/
-ALTER TABLE x2_admin ADD maxLoginHistory INT DEFAULT 5000;
-/*&*/
-ALTER TABLE x2_admin ADD maxFailedLoginHistory INT DEFAULT 5000;
-/*&*/
-ALTER TABLE x2_admin ADD scanUploads TINYINT DEFAULT 0;
-/*&*/
-DROP TABLE IF EXISTS `x2_login_history`;
-/*&*/
-CREATE TABLE x2_login_history (
-    id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-	username				VARCHAR(50)		NOT NULL,
-	IP VARCHAR(40),
-	timestamp BIGINT DEFAULT NULL
-) COLLATE = utf8_general_ci, ENGINE=INNODB;
+/**
+ * @package application.components
+ */
+class WebFormCaptchaAction extends CCaptchaAction {
+    protected function getSessionKey() {
+        return self::SESSION_VAR_PREFIX . '.' . 'weblead';
+    } 
+
+}

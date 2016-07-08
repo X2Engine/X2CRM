@@ -41,7 +41,7 @@ Yii::app()->clientScript->registerCssFile(Yii::app()->theme->baseUrl.'/css/admin
 
 ?>
 
-<div class="page-title"><h2><?php echo Yii::t('admin', 'Firewall Settings'); ?></h2></div>
+<div class="page-title"><h2><?php echo Yii::t('admin', 'Security Settings'); ?></h2></div>
 <div id='security-settings-form' class="form">
 <div class='admin-form-container'>
     <?php
@@ -50,6 +50,13 @@ Yii::app()->clientScript->registerCssFile(Yii::app()->theme->baseUrl.'/css/admin
         'id' => 'settings-form',
         'enableAjaxValidation' => false,
     ));
+
+    // Anti virus scanning settings
+    echo '<h3>'.Yii::t('admin', 'Anti Virus Scanning').'</h3>';
+    echo Yii::t ('admin', 'Configure whether to scan uploaded Media. Note: this requires that '.
+                          'the clamav utility is installed on the system.<br /><br />');
+    echo $form->labelEx ($model, 'scanUploads', array('style'=>'display:inline-block;margin-right:5px;'));
+    echo $form->checkbox ($model, 'scanUploads').'<br />';
 
     // IP Whitelist/Blacklist settings
     $hint = Yii::t('admin', 'You may enter entire address blocks here, either using '.
