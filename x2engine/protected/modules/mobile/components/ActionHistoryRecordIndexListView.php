@@ -35,26 +35,54 @@
  * "Powered by X2Engine".
  **********************************************************************************/
 
-Yii::import ('application.modules.mobile.components.actions.actionHistory.*');
+Yii::import ('zii.widgets.CListView');
 
-class MobileActionHistoryBehavior extends MobileExtraActionsBehavior {
+class ActionHistoryRecordIndexListView extends CListView {
 
-    public function attach ($owner) {
-        call_user_func_array ('parent::'.__FUNCTION__, func_get_args ()); 
-        if (!$this->owner->asa ('MobileControllerBehavior')) {
-            throw new CException (get_called_class () .' depends on MobileControllerBehavior');
+    public function renderMoreButton () {
+        $pager = Yii::createComponent (array (
+            'class' => 
+                Yii::app()->controller->pathAliasBase.'components.MobileRecordIndexPager',
+            'pages' => $this->dataProvider->getPagination ()
+        ));
+        $currentPage = $pager->getCurrentPage (false);
+        $pageCount = $pager->getPageCount ();
+        //$href = $pager->createPageUrl ($currentPage + 1),
+        //$href = UrlUtil::mergeParams (Yii::app()->request->url, array (
+        //));
+        if ($currentPage + 1 < $pageCount) {
+            $trueUrl = $pager->createPageUrl ($currentPage + 1);
+            $splitUrl =  explode("page=", $trueUrl);
+            $pageNum = $splitUrl[1];
+            $newUrl = Yii::app()->createAbsoluteUrl ('contacts/mobileView',
+            array('id'=>$this->modelid,));
+            $newUrl .= "?page=";
+            $newUrl .= $pageNum;
+            //$newUrl = $pager->createPageUrl ($currentPage + 1);
+            $html = CHtml::openTag ('a', array (
+                'href' => $newUrl,
+                'class' => 'more-button record-list-item' 
+            ));
+            $html .= '<div class="record-list-item " >
+                <div class="icon-container">
+                    <div class="fa fa-ellipsis-h">
+                    <div class="stacked-icon"></div></div>
+                </div>
+                <div class="history-item-content-container-outer">
+                    <div class="history-item-content" > 
+                 
+                    </div>
+                    <div class=" history-item-date-line"> '.
+                        '<span>'.CHtml::encode (Yii::t('app', 'Next Page')).'</span>'.'
+                    </div>
+                    <div class="history-item-author" > 
+                      
+                    </div>
+                </div>
+        </div>';
+            $html .= "</a>";
+            echo $html;
         }
-    }
-
-    public function extraActions () {
-        return array (
-            'mobileActionHistoryPublish' => array (
-                'class' => 'MobileActionHistoryPublishAction'
-            ),
-            'mobileActionHistoryPublishList' => array (
-                'class' => 'MobileActionHistoryListPublishAction'
-            ),
-        );
     }
 
 }

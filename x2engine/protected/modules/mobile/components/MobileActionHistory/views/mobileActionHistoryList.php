@@ -34,7 +34,6 @@
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2Engine".
  **********************************************************************************/
-
 Yii::app()->clientScript->registerScriptFile(
     Yii::app()->controller->assetsUrl.'/js/RecordIndexControllerBase.js');
 Yii::app()->clientScript->registerScriptFile(
@@ -63,6 +62,7 @@ $this->widget('application.modules.mobile.components.MobileActionHistoryListView
         'application.modules.mobile.components.MobileActionHistory.views._mobileActionHistoryItem',
     'template' => '{items}{moreButton}',
     'htmlOptions' => $htmlOptions,
+    'modelid' => $this->model->id,
 ));
 
 $hasCreateAccess = Yii::app()->params->isAdmin || Yii::app()->user->checkAccess ('ActionsCreate');
@@ -87,25 +87,19 @@ if (!$this->refresh && $hasCreateAccess) {
         <?php
          
         ?>
-        <li class='file-attachment-button'>
-            <span><?php echo X2Html::fa ('file'); ?></span>
-            <div>
-                <?php
-                echo CHtml::encode (Yii::t('mobile', 'Add file attachment'));
-                ?>
-            </div>
+        <li class='note-attachment-button'>
+            <span><?php echo X2Html::fa ('text'); ?></span>
             <?php
                 $action = new Actions;
                 $form = $this->beginWidget ('MobileActiveForm', array (
-                    'htmlOptions' => array (
-                        'class' => 'publisher-file-upload-form'
-                    ),
                     'action' => Yii::app()->controller->createAbsoluteUrl (
-                        'mobileActionHistoryPublish', array (
+                        'mobileActionHistoryPublishList', array (
                             'id' => $this->model->id
                         ))
                 ));
-                    echo $form->fileField ($action, 'upload');
+                echo $form->textField ($action, 'actionDescription', array (
+                    'placeholder' => 'Add a reply...',
+                ));
                 $this->endWidget ();
             ?>
         </li>
@@ -123,11 +117,8 @@ if (!$this->refresh && $hasCreateAccess) {
 <?php
  /*
 $this->beginWidget ('MobileActiveForm', array (
-    'htmlOptions' => array (
-        'class' => 'publisher-photo-upload-form'
-    ),
     'action' => Yii::app()->controller->createAbsoluteUrl (
-        'mobileActionHistoryPublish', array (
+        'mobileActionHistoryPublishList', array (
             'id' => $this->model->id
         ))
 ));

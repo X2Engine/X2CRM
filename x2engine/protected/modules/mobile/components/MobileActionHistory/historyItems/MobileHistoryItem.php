@@ -46,7 +46,7 @@ class MobileHistoryItem extends CComponent {
                 </div>
                 <div class="history-item-content-container-outer">
                     <div class="history-item-date-line"> 
-                        {dateLine}
+                        {dateLine} {deleteItem}
                     </div>
                     <div class="history-item-content"> 
                         {content}
@@ -70,6 +70,16 @@ class MobileHistoryItem extends CComponent {
         );
     }
 
+    public function renderDeleteItem () {
+        return '<a class="delete-button requires-confirmation" '
+            . 'href="'.Yii::app()->createAbsoluteUrl ('actions/mobileDelete',
+            array('id'=>$this->action->id,)).'">'.X2Html::fa ("fa-trash").'</a>'
+            .            '<div class="confirmation-text" style="display: none;">
+
+                Are you sure you want to delete this?
+            </div>';
+    }
+    
     public function renderDateLine () {
         return Yii::app()->dateFormatter->formatDateTime (
             $this->action->createDate, 'medium', 'short');

@@ -545,32 +545,34 @@ class Events extends X2ActiveRecord {
         $condition .= ' AND ('.$accessCriteria->condition.')';
 
         if (!isset($_SESSION['lastEventId'])) {
-
             $lastId = Yii::app()->db->createCommand()
                 ->select('id')
                 ->from('x2_events')
                 ->where($condition, array_merge ($params, $accessCriteria->params))
                 ->order('timestamp DESC, id DESC')
                 ->limit(1)
-                ->queryScalar();
-
+                ->queryScalar();                          
             $_SESSION['lastEventId'] = $lastId;
         } else {
             $lastId = $_SESSION['lastEventId'];
         }
-        $lastTimestamp = Yii::app()->db->createCommand()
-            ->select('MAX(timestamp)')
-            ->from('x2_events')
-            ->where($condition, array_merge ($params, $accessCriteria->params))
-            ->order('timestamp DESC, id DESC')
-            ->limit(1)
-            ->group('id')
-            ->queryScalar();
+            $lastTimestamp = Yii::app()->db->createCommand()
+                ->select('MAX(timestamp)')
+                ->from('x2_events')
+                ->where($condition, array_merge ($params, $accessCriteria->params))
+                ->order('timestamp DESC, id DESC')
+                ->limit(1)
+                ->group('id')
+                ->queryScalar();            
         if (empty($lastTimestamp)) {
             $lastTimestamp = 0;
         }
         if (isset($_SESSION['lastEventId'])) {
-            $condition.=" AND id <= :lastEventId AND sticky = 0";
+            if (!Yii::app()->params->isMobileApp) {
+                $condition.=" AND id <= :lastEventId AND sticky = 0";
+            } else {
+                $condition.=" AND id <= :lastEventId";
+            } 
             $params[':lastEventId'] = $_SESSION['lastEventId'];
         }
 
@@ -580,18 +582,18 @@ class Events extends X2ActiveRecord {
         if (Yii::app()->params->isPhoneGap) {
             $paginationClass = 'MobilePagination';
         }
-         
+
         $dataProvider = new CActiveDataProvider('Events', array(
-            'criteria' => array(
+                'criteria' => array(
                 'condition' => $condition,
-                'order' => 'timestamp DESC, id DESC',
+                'order' => 'sticky DESC, timestamp DESC, id DESC',
                 'params' => array_merge ($params, $accessCriteria->params),
-            ),
+             ),
             'pagination' => array(
                 'class' => $paginationClass,
                 'pageSize' => 20
             ),
-        ));
+        ));            
 
         return array(
             'dataProvider' => $dataProvider,
@@ -705,7 +707,7 @@ class Events extends X2ActiveRecord {
             $prefix . 'username' => $user,
             $prefix . 'maxTimestamp' => time(),
         );
-        $parameters = array('order' => 'timestamp DESC, id DESC');
+        $parameters = array('order' => 'sticky DESC, timestamp DESC, id DESC');        
         if (!is_null($limit) && is_numeric($limit)) {
             $parameters['limit'] = $limit;
         }

@@ -35,49 +35,77 @@
  * "Powered by X2Engine".
  **********************************************************************************/
 
-class MobileChartDashboard extends ChartDashboardBase {
+Yii::import ('application.modules.mobile.components.MobileActionHistory.historyItems.*');
 
-    private $_packages;
+class MobileActionHistoryList extends X2Widget {
+
+    public $model;
+    
+    public $refresh = false;
+
+    public $instantiateJSClassOnInit = true;
+
+    public $checkIfJSClassIsDefined = true;
+
+    public $JSClass = 'MobileActionHistory';
+
+    private $pageSize = 30;
+
+
+    protected $_packages;
     public function getPackages () {
         if (!isset ($this->_packages)) {
-            return array_merge (parent::getPackages (), array (
+            $this->_packages = array_merge (parent::getPackages (), array (
+                'MobileActionHistoryList' => array(
+                    'baseUrl' => Yii::app()->controller->asa ('MobileControllerBehavior')
+                        ->assetsUrl,
+                    'js' => array(
+                        'js/MobileActionHistory.js',
+                    ),
+                    'depends' => array ('X2Widget')
+                ),
             ));
         }
         return $this->_packages;
     }
 
-	public function displayWidgets () {
-		if ($this->report) {
-			$profile = $this->report;
-		} else {
-		    $profile = Yii::app()->params->profile;
-		}
+    public function getHistoryItem (array $data) {
+        $className = 'Mobile'.ucfirst ($data['type']).'Item';
 
-	    $layout = $profile->dataWidgetLayout;
+        $action = Actions::model()->findByPk($data['id']);
+        if (!$action ||
+            !class_exists ($className) || 
+            !is_subclass_of ($className, 'MobileHistoryItem')) {
 
-            $foundChart = false;
-	    // display profile widgets in order
-	    foreach ($layout as $widgetLayoutKey => $settings) {
-            if($this->filterReport ($settings['chartId'])){
-
-                // $force = isset($this->report);
-                SortableWidget::instantiateWidget ($widgetLayoutKey, $profile, 'data');	
-                $foundChart = true;
-	        }
-	    }
-            if (!$foundChart) {
-                $this->render ('application.modules.mobile.components.views.emptyChartDashboard');
-            }
-	}
-
-    public function init () {
-        $this->registerPackages ();
-        return parent::init ();
+            return false;
+        } else {
+            $item = new $className;
+            $item->action = $action;
+            return $item;
+        }
     }
 
     public function run () {
-        parent::run ();
-        $this->render ('application.modules.mobile.views.mobile._charts');
+        $ret = call_user_func_array ('parent::'.__FUNCTION__, func_get_args ());  
+        $this->render ('mobileActionHistoryList', array (
+            'dataProvider' => $this->getDataProvider (),
+        ));
+        return $ret;
+    }
+
+    private function getDataProvider () {
+        $retArr = History::getCriteria (
+            $this->model->id, 
+            X2Model::getAssociationType (get_class ($this->model)), 
+            false, 'all');
+        return new CSqlDataProvider($retArr['cmd'], array(
+            'totalItemCount' => $retArr['count'],
+            'params' => $retArr['params'],
+            'pagination' => array(
+                'pageSize' => $this->pageSize,
+            ),
+        ));
+
     }
 
 }

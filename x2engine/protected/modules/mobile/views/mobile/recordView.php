@@ -58,7 +58,7 @@ $this->onPageLoad ("
 
 
 if ($model instanceof X2Model &&
-    $this->hasMobileAction ('mobileDelete') &&
+    $this->hasMobileAction ('mobileDelete') && $this->hasMobileAction ('mobileUpdate') &&
     Yii::app()->user->checkAccess(ucfirst ($this->module->name).'Delete', $authParams)) {
 ?>
 
@@ -133,6 +133,13 @@ if ($supportsActionHistory) {
                 </a>
             </li>
             <li class='record-view-tab' data-x2-tab-name='action-history'>
+                <a href='<?php echo '#'.MobileHtml::namespaceId ('action-history-chart'); ?>'><?php 
+                //echo CHtml::encode (Yii::t('mobile', 'History'));
+                echo CHtml::encode (Yii::t('mobile', 'Action History'));
+                ?>
+                </a>
+            </li>
+            <li class='record-view-tab' data-x2-tab-name='action-history'>
                 <a href='<?php echo '#'.MobileHtml::namespaceId ('action-history'); ?>'><?php 
                 //echo CHtml::encode (Yii::t('mobile', 'History'));
                 echo CHtml::encode (Yii::t('mobile', 'Attachments'));
@@ -145,7 +152,7 @@ if ($supportsActionHistory) {
     <div id='<?php echo MobileHtml::namespaceId ('detail-view-outer');?>'>
     <?php
 }
-
+    
     $this->renderPartial ('application.modules.mobile.views.mobile._recordView', array (
         'model' => $model
     ));
@@ -158,6 +165,14 @@ if ($supportsActionHistory) {
     <?php
         $this->renderPartial ('application.modules.mobile.views.mobile._actionHistory', array (
             'model' => $model
+        ));
+    ?>
+    </div>
+    <div id='<?php echo MobileHtml::namespaceId ('action-history-chart');?>' class='action-history-outer'>
+
+    <?php
+        $this->renderPartial ('application.modules.mobile.views.mobile._actionHistoryList', array (
+            'model' => $model,
         ));
     ?>
     </div>

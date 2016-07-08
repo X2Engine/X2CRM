@@ -35,26 +35,33 @@
  * "Powered by X2Engine".
  **********************************************************************************/
 
-Yii::import ('application.modules.mobile.components.actions.actionHistory.*');
+class MobileDeleteItemAction extends MobileAction {
+    
 
-class MobileActionHistoryBehavior extends MobileExtraActionsBehavior {
-
-    public function attach ($owner) {
-        call_user_func_array ('parent::'.__FUNCTION__, func_get_args ()); 
-        if (!$this->owner->asa ('MobileControllerBehavior')) {
-            throw new CException (get_called_class () .' depends on MobileControllerBehavior');
+    public function run ($id) {
+        parent::beforeRun ();
+            
+        $model = $this->controller->loadModel ($id);
+        $modelClass = $this->controller->modelClass;
+        $authParams['X2Model'] = $model;
+        if ($this->controller->checkPermissions($model, 'delete') && 
+            $model instanceof X2Model &&
+            $this->controller->hasMobileAction ('mobileDelete') &&
+            Yii::app()->user->checkAccess(ucfirst ($this->controller->module->name).'Delete', $authParams)) {
+                if ($model->delete ()) {
+                    Yii::app()->user->setFlash ('success', Yii::t('app', 'Record deleted')); 
+                    $this->controller->render (
+                        'application.modules.mobile.views.mobile.recordView',
+                        array (
+                            'model' => $model,
+                        )
+                    );
+                } else {
+                    throw new CHttpException (500, Yii::t('app', 'Failed to delete record.'));
+                }
+        } else {
+            $this->controller->denied ();
         }
-    }
-
-    public function extraActions () {
-        return array (
-            'mobileActionHistoryPublish' => array (
-                'class' => 'MobileActionHistoryPublishAction'
-            ),
-            'mobileActionHistoryPublishList' => array (
-                'class' => 'MobileActionHistoryListPublishAction'
-            ),
-        );
     }
 
 }

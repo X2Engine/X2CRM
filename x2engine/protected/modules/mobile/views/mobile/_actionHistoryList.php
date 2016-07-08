@@ -35,28 +35,21 @@
  * "Powered by X2Engine".
  **********************************************************************************/
 
-Yii::import ('application.modules.mobile.components.actions.actionHistory.*');
+$refresh = !isset ($refresh) ? false : $refresh;
 
-class MobileActionHistoryBehavior extends MobileExtraActionsBehavior {
+$htmlOptions = array (
+    'class' => 'action-history',
+);
 
-    public function attach ($owner) {
-        call_user_func_array ('parent::'.__FUNCTION__, func_get_args ()); 
-        if (!$this->owner->asa ('MobileControllerBehavior')) {
-            throw new CException (get_called_class () .' depends on MobileControllerBehavior');
-        }
-    }
 
-    public function extraActions () {
-        return array (
-            'mobileActionHistoryPublish' => array (
-                'class' => 'MobileActionHistoryPublishAction'
-            ),
-            'mobileActionHistoryPublishList' => array (
-                'class' => 'MobileActionHistoryListPublishAction'
-            ),
-        );
-    }
+echo X2Html::openTag ('div', $htmlOptions);
 
-}
+$this->widget ('application.modules.mobile.components.MobileActionHistory.MobileActionHistoryList', array (
+    'model' => $model,
+    'refresh' => $refresh,
+));
+
+
 
 ?>
+</div>

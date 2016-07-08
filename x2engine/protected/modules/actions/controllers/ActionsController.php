@@ -46,6 +46,10 @@ class ActionsController extends x2base {
 
     public function behaviors() {
         return array_merge(parent::behaviors(), array(
+            'MobileControllerBehavior' => array(
+                'class' => 
+                    'application.modules.mobile.components.behaviors.MobileActionHistoryItemBehavior'
+            ),
             'ActionsQuickCreateRelationshipBehavior' => array(
                 'class' => 'ActionsQuickCreateRelationshipBehavior',
                 'attributesOfNewRecordToUpdate' => array(

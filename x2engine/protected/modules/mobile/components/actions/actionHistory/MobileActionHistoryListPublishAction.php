@@ -35,7 +35,7 @@
  * "Powered by X2Engine".
  **********************************************************************************/
 
-class MobileActionHistoryPublishAction extends MobileAction {
+class MobileActionHistoryListPublishAction extends MobileAction {
 
     /**
      * @param int $id id of record to which to attach published action
@@ -44,7 +44,6 @@ class MobileActionHistoryPublishAction extends MobileAction {
         if (!Yii::app()->params->isAdmin && !Yii::app()->user->checkAccess ('ActionsCreate')) {
             $this->controller->denied ();
         }
-
         $model = $this->getModel ($id);
 
         if (!$this->controller->checkPermissions ($model, 'view')) {
@@ -62,24 +61,46 @@ class MobileActionHistoryPublishAction extends MobileAction {
             'completedBy' => Yii::app()->user->getName (),
             'private' => 0,
         ), false);
-        if (isset ($_FILES['Actions'])) {
-            $action->upload = CUploadedFile::getInstance ($action, 'upload'); 
-            $action->type = 'attachment';
+        if (isset ($_POST['Actions'])) {
+            $actionPost = Yii::app()->request->getPost('Actions');
+            $action->actionDescription = $actionPost['actionDescription'];
+            $action->type = 'note';
 
             if ($action->save ()) {
-                $this->controller->renderPartial (
-                    'application.modules.mobile.views.mobile._actionHistory', array (
 
+                $pageClass = 'mobile-view';
+                $model = $this->getModel ($id);
+                $this->controller->pageClass = $pageClass;
+                $this->controller->dataUrl = $model->getUrl ();
+                $this->controller->pageId .= '-'.$model->id;
+
+                User::addRecentItem (get_class ($model), $id); 
+                
+                $this->controller->render (
+                    'application.modules.mobile.views.mobile._actionHistoryList',
+                    array (
+                        'model' => $model,
+                    )
+                );
+
+                //todo: why doesn't this work?
+                /*$this->controller->renderPartial (
+                   'application.modules.mobile.views.mobile._actionHistoryList', array (
                     'model' => $model,
-                    'refresh' => true
-                ), false, true);
+                    'refresh' => true,
+                ), false, true);*/
 
                 Yii::app()->end ();
+                 
             } else {
-                throw new CHttpException (500, Yii::t('app', 'Upload failed'));
+                throw new CHttpException (500, Yii::t('app', 'comment failed'));
             }
         }
+       
+   
+
     }
+
 
 }
 
