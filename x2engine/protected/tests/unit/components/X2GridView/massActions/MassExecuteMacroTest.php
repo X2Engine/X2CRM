@@ -1,3 +1,5 @@
+<?php
+
 /***********************************************************************************
  * X2CRM is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2016 X2Engine Inc.
@@ -34,59 +36,45 @@
  * "Powered by X2Engine".
  **********************************************************************************/
 
+Yii::import ('application.modules.contacts.*');
+Yii::import ('application.modules.contacts.controllers.*');
+Yii::import ('application.components.X2GridView.massActions.*');
 
-
-x2.FlowFields = (function () {
-
-function FlowFields (argsDict) {
-    x2.Fields.call (this, argsDict);
-    var argsDict = typeof argsDict === 'undefined' ? {} : argsDict;
-    var defaultArgs = {
-        DEBUG: x2.DEBUG && false
-    };
-    auxlib.applyArgs (this, defaultArgs, argsDict);
-    this.templates.workflowStatusConditionForm = $("#workflow-condition-template li");
-}
-
-FlowFields.prototype = auxlib.create (x2.Fields.prototype);
-
-/*
-Public static methods
-*/
-
-/*
-Private static methods
-*/
-
-/*
-Public instance methods
-*/
-
-FlowFields.prototype.getModelAttributes = function(modelClass,type,callback) {
-    var that = this;
-    if(modelClass === "API_params") {
-        callback([{type: "API_params"}]);
-    } else if(this.attributeCache[modelClass+"_"+type]) {
-        callback(this.attributeCache[modelClass+"_"+type]);
-    } else {
-        $.ajax({
-            url: yii.scriptUrl+"/studio/getFields",
-            data: {model: modelClass, type: type},
-            dataType: "json",
-            success: function(response) {
-                that.attributeCache[modelClass+"_"+type] = response;
-                // console.debug(response);
-                callback(response);
-            }
-        });
+/**
+ * 
+ */
+class MassExecuteMacroTest  extends X2DbTestCase {
+    
+    public $fixtures = array (
+        'contacts' => array ('Contacts', '.MassDeleteTest'),
+        'flows' => array('X2Flow','.MassExecuteMacroTest'),
+    );
+    
+    public function testExecute(){
+        TestingAuxLib::suLogin ('admin');
+        $executeMacro = new MassExecuteMacro;
+        
+        $_POST['modelType'] = 'Contacts';
+        $_POST['macro'] = 1;
+        $_SERVER['REQUEST_METHOD'] = 'POST';
+        $_SERVER['SERVER_NAME'] = 'localhost';
+        Yii::app()->controller = new ContactsController (
+            'contacts', new ContactsModule ('contacts', null));
+        $gvSelection = range (1, 3);
+        
+        $originalLeadScores = array();
+        foreach($gvSelection as $id){
+            $model = $this->contacts($id-1);
+            $originalLeadScores[$id] = $model->leadscore;
+        }
+        
+        $executeMacro->execute($gvSelection);
+        
+        //Verify that macro executed correctly
+        foreach($gvSelection as $id){
+            $model = Contacts::model()->findByPk($id);
+            $this->assertEquals($originalLeadScores[$id]+1, $model->leadscore);
+        }
     }
-};
-
-/*
-Private instance methods
-*/
-
-return FlowFields;
-
-}) ();
-
+    
+}

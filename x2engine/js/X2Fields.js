@@ -73,7 +73,7 @@ Fields.prototype.addChangeListener = function(elem, callback) {
         .on("change",".x2fields-attribute select",function() {
             var fieldset = $(this).closest("fieldset");
             // getModelAttributes() should already have been called so we can assume this is cached
-            that.updateAttrListItem(fieldset,that.attributeCache[fieldset.data("modelClass")]);    
+            that.updateAttrListItem(fieldset,that.attributeCache[fieldset.data("modelClass")+"_all"]);    
             callback ();
         });
 

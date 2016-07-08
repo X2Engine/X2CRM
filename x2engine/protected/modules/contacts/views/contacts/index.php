@@ -146,7 +146,7 @@ $this->widget('X2GridView', array(
         'MassDelete', 'MassTag', 'MassTagRemove', 'MassUpdateFields', 
         'MergeRecords', 'MassPublishNote', 'MassPublishCall', 'MassPublishTime', 
         'MassPublishAction', 'MassAddRelationship', 
-        'MassAddToList', 'NewListFromSelection'
+        'MassAddToList', 'NewListFromSelection', 'MassExecuteMacro'
     ),
     'enableControls' => true,
     'enableTags' => true,

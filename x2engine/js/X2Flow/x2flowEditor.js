@@ -560,7 +560,7 @@ window.flowEditor = {
                 var modelClass = flowEditor.getModelClass();
                 if(modelClass !== null) {
                     that.lockConfig ();
-                    x2.fieldUtils.getModelAttributes(modelClass, function(attributes) {
+                    x2.fieldUtils.getModelAttributes(modelClass, 'all', function(attributes) {
                         that.unlockConfig ();  
                         x2.fieldUtils.createAttrListItem(modelClass, attributes)
                             // mark as a multiselect so it can be toggled back and forth later
@@ -608,7 +608,7 @@ window.flowEditor = {
         $("#x2flow-add-attribute").click(function() {
             var modelClass = flowEditor.getModelClass();
             that.lockConfig ();
-            x2.fieldUtils.getModelAttributes(modelClass, function(attributeList) {
+            x2.fieldUtils.getModelAttributes(modelClass, 'all', function(attributeList) {
                 that.unlockConfig ();
                 if(modelClass === "API_params") {
                     $('#x2flow-attributes .x2flow-api-attributes-section-header').show ();
@@ -632,7 +632,7 @@ window.flowEditor = {
         $("#x2flow-add-header").click(function() {
             var modelClass = flowEditor.getModelClass();
             that.lockConfig ();
-            x2.fieldUtils.getModelAttributes(modelClass, function(attributeList) {
+            x2.fieldUtils.getModelAttributes(modelClass, 'all', function(attributeList) {
                 that.unlockConfig ();
                 $('#x2flow-headers .x2flow-api-attributes-section-header').show ();
                 flowEditor.createApiParam(attributeList[0].name, attributeList[0].value, false)
@@ -704,9 +704,16 @@ window.flowEditor = {
                 // if this item doens't define its own model class,
                 if(typeof itemConfig.modelClass === 'undefined') {
                     // the attributes must refer to the trigger so they're now invalid
-                    delete itemConfig.attributes;            
+                    delete itemConfig.attributes;
+                    delete itemConfig.conditions;
                 }
             });
+        });
+        
+        $("#x2flow-main-config").on("change", "fieldset[name='linkField'] select", function(e) {
+            var selectedOption = $("option:selected", this);
+            flowEditor.currentItem.data("config").linkType = $(selectedOption).attr('data-value');
+            flowEditor.clearFutureNodeAttributes(flowEditor.currentItem.next());
         });
 
 
@@ -918,10 +925,65 @@ window.flowEditor = {
         // console.debug(config);
         if(config !== undefined && config.modelClass !== undefined)
             return config.modelClass;
+        if(config.type !== 'X2FlowRecordChange'){
+            var linkType = this.findNearestRecordChange((item === undefined)? this.currentItem : item);
+            if(linkType !== undefined && linkType !== null){
+                return linkType;
+            }
+        }
         var triggerConfig = flowEditor.trigger.data("config");
         if(triggerConfig !== undefined && triggerConfig.modelClass !== undefined)
             return triggerConfig.modelClass;
         return null;
+    },
+    /**
+     * Finds the nearest Record Change action to determine the model class of
+     * a flow item, or stops at the trigger
+     */
+    findNearestRecordChange:function(item){
+        if(item.is('#trigger')){
+            return null;    
+        }
+        var prevNode = item.closest('.x2flow-node').prev();
+        if(prevNode.hasClass('X2FlowRecordChange')){
+            return prevNode.data("config").linkType;
+        } else if (prevNode.hasClass('bracket')){
+            var branch = prevNode.parent('.x2flow-branch');
+            if(branch.prev().hasClass('x2flow-node')){
+                var branchNode = branch.prev();
+            } else{
+                var branchNode = prevNode.parents('.x2flow-node');
+            }
+            return this.findNearestRecordChange(branchNode);
+        } else{
+            return this.findNearestRecordChange(prevNode);
+        }
+    },
+    /**
+     * After a change to X2RecordChange nodes, we have to traverse the tree going
+     * forwards to clear any conditions or attributes that are dependent on the 
+     * modelClass set by a record change node
+     */
+    clearFutureNodeAttributes:function(item){
+        var that = this;
+        var itemConfig = $(item).data("config");
+        if(typeof itemConfig === 'undefined' || $(item).hasClass('X2FlowRecordChange')){
+            //Stop when we reach the end of a branch or another record change
+            return;   
+        }
+        // if this item doens't define its own model class,
+        if(typeof itemConfig.modelClass === 'undefined') {
+            // the attributes must refer to the trigger so they're now invalid
+            delete itemConfig.attributes;  
+            delete itemConfig.conditions;
+        }
+        if($(item).hasClass('X2FlowSwitch') || $(item).hasClass('X2FlowSplitter')){
+            $.each($(item).find('.x2flow-branch'),function(i, branch){
+                that.clearFutureNodeAttributes($('.x2flow-node:first', branch));
+            });
+        }else{
+            this.clearFutureNodeAttributes($(item).next());
+        }
     },
     queryItemParams:function(itemType, callback) {
         var self = this;
@@ -1177,7 +1239,8 @@ window.flowEditor = {
                 // $("#x2flow-main-config select").change();    // trigger modelClass event, etc
 
                 // create attribute and/or generic condition lists
-                flowEditor.loadAttributes(config.attributes);    
+                flowEditor.loadAttributes(config.attributes);
+                flowEditor.loadLinkAttributes(config);
                 if (itemType === 'X2FlowApiCall') {
                     flowEditor.loadHeaders(config.headerRows);    
                 }
@@ -1460,6 +1523,40 @@ window.flowEditor = {
             $(this).closest('li').attr('data-value', $(this).val());
         });
     },
+    
+    loadLinkAttributes:function(config){
+        var that = this;
+        var modelClass = this.getModelClass();
+        var selectedField = null;
+        if(typeof config.options.linkField !== 'undefined' 
+                && typeof config.options.linkField.value !== 'undefined'){
+            selectedField = config.options.linkField.value;
+        }
+        this.lockConfig();
+        x2.fieldUtils.getModelAttributes(modelClass, 'link', function(attributeList) {
+            that.unlockConfig();
+            $('fieldset[name="linkField"] select').empty();
+            var triggerConfig = flowEditor.trigger.data("config");
+            $('fieldset[name="linkField"] select').append($('<option></option>').attr('value','original').attr('data-value', triggerConfig.modelClass).text('Original Record'));
+            for(var i in attributeList){
+                if(typeof attributeList[i]['name'] !== 'undefined' 
+                        && typeof attributeList[i]['label'] !== 'undefined'){
+                    if(i == 0 && config.type == 'X2FlowRecordChange'){
+                        config.linkType = attributeList[i]['linkType'];
+                    }
+                    var option = $('<option></option>').attr('value',attributeList[i]['name']).attr('data-value', attributeList[i]['linkType']).text(attributeList[i]['label']);
+                    if(selectedField === attributeList[i]['name']){
+                        if(config.type == 'X2FlowRecordChange'){
+                            config.linkType = attributeList[i]['linkType'];
+                        }
+                        option.attr('selected','selected');
+                    }
+                    $('fieldset[name="linkField"] select').append(option);
+                }
+            }
+        });
+    },
+    
     /**
      * Creates an attribute entry in #x2flow-attributes for each attribute in the list provided
      */
@@ -1473,7 +1570,7 @@ window.flowEditor = {
 
         // loop through any saved attributes
         this.lockConfig ();
-        x2.fieldUtils.getModelAttributes(modelClass, function(attributeList) {    
+        x2.fieldUtils.getModelAttributes(modelClass, 'all', function(attributeList) {    
             that.unlockConfig ();
 
             for(var i in attributes) {
@@ -1522,7 +1619,7 @@ window.flowEditor = {
                 var modelClass = that.getModelClass();
                 if(modelClass !== null) {
                     that.lockConfig ();
-                    x2.fieldUtils.getModelAttributes(modelClass, function(attributeList) {
+                    x2.fieldUtils.getModelAttributes(modelClass, 'all', function(attributeList) {
                         that.unlockConfig (); 
                         // console.debug(condition);
                         x2.fieldUtils.createAttrListItem(

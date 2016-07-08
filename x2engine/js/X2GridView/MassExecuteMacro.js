@@ -34,59 +34,53 @@
  * "Powered by X2Engine".
  **********************************************************************************/
 
-
-
-x2.FlowFields = (function () {
-
-function FlowFields (argsDict) {
-    x2.Fields.call (this, argsDict);
+x2.MassExecuteMacro = (function(){
+    
+function MassExecuteMacro (argsDict) {
     var argsDict = typeof argsDict === 'undefined' ? {} : argsDict;
     var defaultArgs = {
-        DEBUG: x2.DEBUG && false
+        DEBUG: x2.DEBUG && false,
+        massActionName: 'massExecuteMacro'
     };
     auxlib.applyArgs (this, defaultArgs, argsDict);
-    this.templates.workflowStatusConditionForm = $("#workflow-condition-template li");
+    x2.MassAction.call (this, argsDict);
+    this.progressBarLabel = this.translations['executed'];
+    this.dialogTitle = this.massActionsManager.translations['macroExecute'];
+    this.goButtonLabel = this.massActionsManager.translations['execute'];
+    this.macroDescriptions = {'': ''};
+    this.dropdownSelector = '#mass-action-macro-selection';
+    this._init();
 }
 
-FlowFields.prototype = auxlib.create (x2.Fields.prototype);
+MassExecuteMacro.prototype = auxlib.create (x2.MassAction.prototype);
 
-/*
-Public static methods
-*/
-
-/*
-Private static methods
-*/
-
-/*
-Public instance methods
-*/
-
-FlowFields.prototype.getModelAttributes = function(modelClass,type,callback) {
+MassExecuteMacro.prototype._init = function () {
     var that = this;
-    if(modelClass === "API_params") {
-        callback([{type: "API_params"}]);
-    } else if(this.attributeCache[modelClass+"_"+type]) {
-        callback(this.attributeCache[modelClass+"_"+type]);
-    } else {
-        $.ajax({
-            url: yii.scriptUrl+"/studio/getFields",
-            data: {model: modelClass, type: type},
-            dataType: "json",
-            success: function(response) {
-                that.attributeCache[modelClass+"_"+type] = response;
-                // console.debug(response);
-                callback(response);
-            }
-        });
-    }
+    $('.mass-action-dialog').on('change',this.dropdownSelector,function(e){
+        if(typeof x2.MassExecuteMacro.macroDescriptions[$(that.dropdownSelector).val()] !== 'undefined'){
+            console.log(x2.MassExecuteMacro.macroDescriptions[$(that.dropdownSelector).val()]);
+            $('#mass-action-macro-description').html(x2.MassExecuteMacro.macroDescriptions[$(that.dropdownSelector).val()]);
+        }
+    });
 };
 
-/*
-Private instance methods
-*/
+MassExecuteMacro.prototype.validateMassActionDialogForm = function () {
+  var that = this;
+  var macro = $(this.dropdownSelector).val();
+  if(macro === ''){
+      this.dialogElem$.append (
+            auxlib.createErrorBox ('', [that.massActionsManager.translations.emptyMacroError]));
+      return false;
+  }
+  return true;
+};
 
-return FlowFields;
-
-}) ();
-
+MassExecuteMacro.prototype.getExecuteParams = function () {
+    var params = x2.MassAction.prototype.getExecuteParams.call (this);
+    params['modelType'] = this.massActionsManager.modelName;
+    params['macro'] = $(this.dropdownSelector).val();
+    return params;
+};
+    
+return MassExecuteMacro;
+})();

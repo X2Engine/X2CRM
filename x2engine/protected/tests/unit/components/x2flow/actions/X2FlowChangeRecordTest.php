@@ -1,3 +1,4 @@
+<?php
 /***********************************************************************************
  * X2CRM is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2016 X2Engine Inc.
@@ -34,59 +35,49 @@
  * "Powered by X2Engine".
  **********************************************************************************/
 
+/**
+ * 
+ */
+class X2FlowChangeRecordTest  extends X2FlowTestBase  {
+    
+    public $fixtures = array (
+        'x2flow' => array ('X2Flow', '.RecordChange'),
+        'accounts' => 'Accounts',
+        'contacts' => 'Contacts',
+    );
+    
+    public function testRecordChange(){
+        TestingAuxLib::suLogin ('admin');
+        $flow = $this->getFlow ($this,'flow1');
+        
+        $account = $this->accounts ('testQuote');
+        $contact = $this->contacts('testAnyone');
+        
+        $account->primaryContact = $contact->nameId;
+        $account->disableBehavior('FlowTriggerBehavior');
+        $account->save();
+        $account->refresh();
+        $account->enableBehavior('FlowTriggerBehavior');
+        
+        $params = array (
+            'model' => $account,
+            'modelClass' => 'Accounts',
+        );
+        
+        $this->assertNotEquals('Test 1', $account->name);
+        $this->assertNotEquals('Test 2', $contact->firstName);
+        
+        $retVal = $this->executeFlow ($this->x2flow('flow1'), $params);
+        X2_TEST_DEBUG_LEVEL > 1 && print_r ($retVal['trace']);
 
-
-x2.FlowFields = (function () {
-
-function FlowFields (argsDict) {
-    x2.Fields.call (this, argsDict);
-    var argsDict = typeof argsDict === 'undefined' ? {} : argsDict;
-    var defaultArgs = {
-        DEBUG: x2.DEBUG && false
-    };
-    auxlib.applyArgs (this, defaultArgs, argsDict);
-    this.templates.workflowStatusConditionForm = $("#workflow-condition-template li");
-}
-
-FlowFields.prototype = auxlib.create (x2.Fields.prototype);
-
-/*
-Public static methods
-*/
-
-/*
-Private static methods
-*/
-
-/*
-Public instance methods
-*/
-
-FlowFields.prototype.getModelAttributes = function(modelClass,type,callback) {
-    var that = this;
-    if(modelClass === "API_params") {
-        callback([{type: "API_params"}]);
-    } else if(this.attributeCache[modelClass+"_"+type]) {
-        callback(this.attributeCache[modelClass+"_"+type]);
-    } else {
-        $.ajax({
-            url: yii.scriptUrl+"/studio/getFields",
-            data: {model: modelClass, type: type},
-            dataType: "json",
-            success: function(response) {
-                that.attributeCache[modelClass+"_"+type] = response;
-                // console.debug(response);
-                callback(response);
-            }
-        });
+        // assert flow executed without errors
+        $this->assertTrue ($this->checkTrace ($retVal['trace']));
+        
+        $account->refresh();
+        $contact->refresh();
+        
+        $this->assertEquals('Test 1', $account->name);
+        $this->assertEquals('Test 2', $contact->firstName);
     }
-};
-
-/*
-Private instance methods
-*/
-
-return FlowFields;
-
-}) ();
-
+    
+}

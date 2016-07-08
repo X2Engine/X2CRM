@@ -100,5 +100,10 @@ return array(
         if (isset ($params["returnValue"]) && is_scalar ($params["returnValue"])) 
             return $params["returnValue"];
     ',
+    'originalRecord'=>'
+        if(isset($params["originalModel"]) && $params["originalModel"] instanceof X2Model){
+            return $params["originalModel"];
+        }
+    '
 );
 ?>

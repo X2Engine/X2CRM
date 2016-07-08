@@ -140,12 +140,16 @@ class StudioController extends x2base {
     }
 
     // reports TODO
-    public function actionGetFields($model) {
+    public function actionGetFields($model, $type = 'all') {
         if(!class_exists($model)) {
             echo 'false';
             return;
         }
-        $fieldModels = X2Model::model($model)->getFields();
+        $filterFn = function($field){ return true; };
+        if($type !== 'all'){
+            $filterFn = function($field) use ($type) { return $field->type === $type; };
+        }
+        $fieldModels = X2Model::model($model)->getFields(false, $filterFn);
         $fields = array();
 
         foreach($fieldModels as &$field) {
