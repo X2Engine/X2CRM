@@ -464,7 +464,8 @@ class WebFormAction extends CAction {
                     // reset scenario for webForms after saving
                     $model->scenario = $extractedParams['requireCaptcha'] ? 'webFormWithCaptcha' : 'webForm';
                     $model->update(array('name'));
-                    if (!empty($model->getMediaLookupFields())) {
+                    $mediaLookups = $model->getMediaLookupFields();
+                    if (!empty($mediaLookups)) {
                         $uploaded = $this->controller->uploadAssociatedMedia($model);
                         if (!is_null($uploaded))
                             $success = $success && $uploaded;
