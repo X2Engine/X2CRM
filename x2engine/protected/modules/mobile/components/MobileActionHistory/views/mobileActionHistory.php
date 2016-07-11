@@ -46,7 +46,7 @@ $htmlOptions = array (
 if ($this->refresh) {
     $htmlOptions = X2Html::mergeHtmlOptions ($htmlOptions, array (
         'class' => 'refresh-content action list-view record-index-list-view',
-        'data-refresh-selector' => '#action-history-list-view',
+        'data-refresh-selector' => '#action-history-attachment-view',
         'data-x2-replace-on-refresh' => '1',
     ));
 }
@@ -54,7 +54,7 @@ if ($this->refresh) {
 
 $this->widget('application.modules.mobile.components.MobileActionHistoryListView', array(
 //$this->widget('zii.widgets.CListView', array(
-    'id' => 'action-history-list-view',
+    'id' => 'action-history-attachment-view',
     'dataProvider' => $dataProvider,
     'viewData' => array (
         'actionHistory' => $this,

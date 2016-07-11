@@ -76,19 +76,19 @@ class MobileActionHistoryListPublishAction extends MobileAction {
 
                 User::addRecentItem (get_class ($model), $id); 
                 
-                $this->controller->render (
+                /*$this->controller->render (
                     'application.modules.mobile.views.mobile._actionHistoryList',
                     array (
                         'model' => $model,
                     )
-                );
+                );*/
 
                 //todo: why doesn't this work?
-                /*$this->controller->renderPartial (
+                $this->controller->renderPartial (
                    'application.modules.mobile.views.mobile._actionHistoryList', array (
                     'model' => $model,
                     'refresh' => true,
-                ), false, true);*/
+                ), false, true);
 
                 Yii::app()->end ();
                  

@@ -109,6 +109,31 @@ MobileActionHistory.prototype.setUpFileUpload = function () {
         });
 };
 
+MobileActionHistory.prototype.setUpCommentPublish = function () {
+    var that = this;
+    var form$ = $.mobile.activePage.find ('.publisher-comment-form');
+    var togglePublisher$ = $.mobile.activePage.find ('.publisher-menu-button');
+    
+    form$.off ('change.setUpCommentPublish').on ('change.setUpCommentPublish', function () {
+        $.mobile.loading ('show');
+        x2.mobileForm.submitWithFiles (
+            form$, 
+            function (data) {
+                if (that.publisherIsActive) togglePublisher$.click ();
+                $.mobile.activePage.append ($(data).find ('.refresh-content'));
+                x2.main.refreshContent ();
+                form$.find ('input[type="text"]').val ('');
+                $.mobile.loading ('hide');
+            }, function (jqXHR, textStatus, errorThrown) {
+                $.mobile.loading ('hide');
+                x2.main.alert (textStatus, 'Error');
+            });
+        });
+    form$.on('submit',function(e){
+        e.preventDefault();
+    });
+};
+
 MobileActionHistory.prototype.setUpPublisher = function () {
     var that = this;
     var publisher$ = $.mobile.activePage.find ('.publisher-menu');
@@ -138,8 +163,10 @@ MobileActionHistory.prototype.setUpPublisher = function () {
 
      
     that.setUpPhotoUpload (); 
-     
+    
     that.setUpFileUpload (); 
+    
+    that.setUpCommentPublish ();
 };
 
 MobileActionHistory.prototype.init = function () {
