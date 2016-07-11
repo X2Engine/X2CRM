@@ -73,57 +73,56 @@ if (!$this->refresh && $hasCreateAccess) {
 
 <div id='footer' data-role="footer" class='fixed-footer publisher-menu'>
     <ul>
-        <?php
-         
-        ?>
         <li class='photo-attachment-button'>
-            <span><?php echo X2Html::fa ('camera'); ?></span>
+            <span><?php echo X2Html::fa('camera'); ?></span>
             <div>
                 <?php
-                echo CHtml::encode (Yii::t('mobile', 'Add photo attachment'));
+                echo CHtml::encode(Yii::t('mobile', 'Add photo attachment'));
                 ?>
             </div>
         </li>
         <?php
-if($type === 'attachments'){
-        ?>
-        <li class='file-attachment-button'>
-            <span><?php echo X2Html::fa ('file'); ?></span>
-            <div>
-                <?php
-                echo CHtml::encode (Yii::t('mobile', 'Add file attachment'));
-                ?>
-            </div>
-            <?php } ?>
-            <?php
-                $action = new Actions;
-                $form = $this->beginWidget ('MobileActiveForm', array (
-                    'htmlOptions' => array (
-                        'class' => $type === 'attachments'?'publisher-file-upload-form':'publisher-comment-form'
-                    ),
-                    'action' => Yii::app()->controller->createAbsoluteUrl (
-                        'mobileActionHistoryPublish', array (
-                            'id' => $this->model->id,
-                            'type' => $type
-                        ))
-                ));
-                if($type === 'attachments'){
-                    echo $form->fileField ($action, 'upload');
-                }else{
-                    echo $form->textField ($action, 'actionDescription', array (
-                    'placeholder' => 'Add a comment...',
-                ));
-                }
-                $this->endWidget ();
+        if ($type === 'attachments') {
             ?>
+            <li class='file-attachment-button'>
+                <span><?php echo X2Html::fa('file'); ?></span>
+                <div>
                     <?php
-if($type === 'attachments'){
-        ?>
-        </li>
-<?php } ?>
+                    echo CHtml::encode(Yii::t('mobile',
+                                    'Add file attachment'));
+                    ?>
+                </div>
+                <?php
+        }
+        $action = new Actions;
+        $form = $this->beginWidget('MobileActiveForm',
+                array(
+            'htmlOptions' => array(
+                'class' => $type === 'attachments' ? 'publisher-file-upload-form'
+                            : 'publisher-comment-form'
+            ),
+            'action' => Yii::app()->controller->createAbsoluteUrl(
+                    'mobileActionHistoryPublish',
+                    array(
+                'id' => $this->model->id,
+                'type' => $type
+            ))
+        ));
+        if ($type === 'attachments') {
+            echo $form->fileField($action, 'upload');
+        } else {
+            echo $form->textField($action, 'actionDescription',
+                    array(
+                'placeholder' => 'Add a comment...',
+            ));
+        }
+        $this->endWidget();
+        if ($type === 'attachments') {?>
+            </li>
+        <?php } ?>
 
-    </ul>
-</div>
+        </ul>
+    </div>
 <?php 
     echo CHtml::link(X2Html::fa('plus'),'#',array(
         'class' => 'fixed-corner-button publisher-menu-button',
