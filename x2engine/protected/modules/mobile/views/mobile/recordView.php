@@ -133,14 +133,14 @@ if ($supportsActionHistory) {
                 </a>
             </li>
             <li class='record-view-tab' data-x2-tab-name='action-history'>
-                <a href='<?php echo '#'.MobileHtml::namespaceId ('action-history-chart'); ?>'><?php 
+                <a id='history-tab-link' href='<?php echo '#'.MobileHtml::namespaceId ('action-history'); ?>'><?php 
                 //echo CHtml::encode (Yii::t('mobile', 'History'));
                 echo CHtml::encode (Yii::t('mobile', 'Action History'));
                 ?>
                 </a>
             </li>
             <li class='record-view-tab' data-x2-tab-name='action-history'>
-                <a href='<?php echo '#'.MobileHtml::namespaceId ('action-history'); ?>'><?php 
+                <a id='attachment-tab-link' href='<?php echo '#'.MobileHtml::namespaceId ('action-history-attachments'); ?>'><?php 
                 //echo CHtml::encode (Yii::t('mobile', 'History'));
                 echo CHtml::encode (Yii::t('mobile', 'Attachments'));
                 ?>
@@ -160,22 +160,35 @@ if ($supportsActionHistory) {
     if ($supportsActionHistory) {
     ?>
     </div>
-    <div id='<?php echo MobileHtml::namespaceId ('action-history');?>' class='action-history-outer'>
+    <div id='<?php echo MobileHtml::namespaceId ('action-history-attachments');?>' class='action-history-outer'>
 
     <?php
         $this->renderPartial ('application.modules.mobile.views.mobile._actionHistory', array (
             'model' => $model,
             'type' => 'attachments',
         ));
+        Yii::app()->clientScript->registerScript('hideUploadButton','
+            $("#history-tab-link").on("click",function(){
+                $("#file-upload-menu-button").attr("style", "display: none !important");
+                $("#comment-menu-button").show();
+            });
+        ');
+        
     ?>
     </div>
-    <div id='<?php echo MobileHtml::namespaceId ('action-history-chart');?>' class='action-history-outer'>
+    <div id='<?php echo MobileHtml::namespaceId ('action-history');?>' class='action-history-outer'>
 
     <?php
         $this->renderPartial ('application.modules.mobile.views.mobile._actionHistory', array (
             'model' => $model,
             'type' => 'all',
         ));
+        Yii::app()->clientScript->registerScript('hidePublishButton','
+            $("#attachment-tab-link").on("click",function(){
+                $("#file-upload-menu-button").show();
+                $("#comment-menu-button").attr("style", "display: none !important");
+            });
+        ');
     ?>
     </div>
 </div>

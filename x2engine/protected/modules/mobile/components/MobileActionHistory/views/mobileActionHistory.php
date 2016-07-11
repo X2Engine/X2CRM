@@ -73,17 +73,18 @@ if (!$this->refresh && $hasCreateAccess) {
 
 <div id='footer' data-role="footer" class='fixed-footer publisher-menu'>
     <ul>
-        <li class='photo-attachment-button'>
-            <span><?php echo X2Html::fa('camera'); ?></span>
-            <div>
-                <?php
-                echo CHtml::encode(Yii::t('mobile', 'Add photo attachment'));
-                ?>
-            </div>
-        </li>
+        
         <?php
         if ($type === 'attachments') {
             ?>
+            <li class='photo-attachment-button'>
+                <span><?php echo X2Html::fa('camera'); ?></span>
+                <div>
+                    <?php
+                    echo CHtml::encode(Yii::t('mobile', 'Add photo attachment'));
+                    ?>
+                </div>
+            </li>
             <li class='file-attachment-button'>
                 <span><?php echo X2Html::fa('file'); ?></span>
                 <div>
