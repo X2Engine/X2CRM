@@ -46,7 +46,7 @@ $htmlOptions = array (
 if ($this->refresh) {
     $htmlOptions = X2Html::mergeHtmlOptions ($htmlOptions, array (
         'class' => 'refresh-content action list-view record-index-list-view',
-        'data-refresh-selector' => '#action-history-attachment-view',
+        'data-refresh-selector' => '#action-history-'.$type.'-view',
         'data-x2-replace-on-refresh' => '1',
     ));
 }
@@ -54,7 +54,7 @@ if ($this->refresh) {
 
 $this->widget('application.modules.mobile.components.MobileActionHistoryListView', array(
 //$this->widget('zii.widgets.CListView', array(
-    'id' => 'action-history-attachment-view',
+    'id' => 'action-history-'.$type.'-view',
     'dataProvider' => $dataProvider,
     'viewData' => array (
         'actionHistory' => $this,
@@ -85,7 +85,7 @@ if (!$this->refresh && $hasCreateAccess) {
             </div>
         </li>
         <?php
-         
+if($type === 'attachments'){
         ?>
         <li class='file-attachment-button'>
             <span><?php echo X2Html::fa ('file'); ?></span>
@@ -94,31 +94,43 @@ if (!$this->refresh && $hasCreateAccess) {
                 echo CHtml::encode (Yii::t('mobile', 'Add file attachment'));
                 ?>
             </div>
+            <?php } ?>
             <?php
                 $action = new Actions;
                 $form = $this->beginWidget ('MobileActiveForm', array (
                     'htmlOptions' => array (
-                        'class' => 'publisher-file-upload-form'
+                        'class' => $type === 'attachments'?'publisher-file-upload-form':'publisher-comment-form'
                     ),
                     'action' => Yii::app()->controller->createAbsoluteUrl (
                         'mobileActionHistoryPublish', array (
-                            'id' => $this->model->id
+                            'id' => $this->model->id,
+                            'type' => $type
                         ))
                 ));
+                if($type === 'attachments'){
                     echo $form->fileField ($action, 'upload');
+                }else{
+                    echo $form->textField ($action, 'actionDescription', array (
+                    'placeholder' => 'Add a comment...',
+                ));
+                }
                 $this->endWidget ();
             ?>
+                    <?php
+if($type === 'attachments'){
+        ?>
         </li>
+<?php } ?>
+
     </ul>
 </div>
+<?php 
+    echo CHtml::link(X2Html::fa('plus'),'#',array(
+        'class' => 'fixed-corner-button publisher-menu-button',
+        'id' => $type==='attachments'?'file-upload-menu-button':'comment-menu-button',
+    ));
+?>
 
-<a href='#' class='fixed-corner-button publisher-menu-button'>
-    <div>
-    <?php
-        echo X2Html::fa ('plus');
-    ?>
-    </div>
-</a>
 
 <?php
  /*

@@ -164,15 +164,17 @@ if ($supportsActionHistory) {
 
     <?php
         $this->renderPartial ('application.modules.mobile.views.mobile._actionHistory', array (
-            'model' => $model
+            'model' => $model,
+            'type' => 'attachments',
         ));
     ?>
     </div>
     <div id='<?php echo MobileHtml::namespaceId ('action-history-chart');?>' class='action-history-outer'>
 
     <?php
-        $this->renderPartial ('application.modules.mobile.views.mobile._actionHistoryList', array (
+        $this->renderPartial ('application.modules.mobile.views.mobile._actionHistory', array (
             'model' => $model,
+            'type' => 'all',
         ));
     ?>
     </div>

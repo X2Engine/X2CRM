@@ -44,9 +44,10 @@ $htmlOptions = array (
 
 echo X2Html::openTag ('div', $htmlOptions);
 
-$this->widget ('application.modules.mobile.components.MobileActionHistory.MobileActionHistoryList', array (
+$this->widget ('application.modules.mobile.components.MobileActionHistory.MobileActionHistory', array (
     'model' => $model,
     'refresh' => $refresh,
+    'type' => 'all',
 ));
 
 

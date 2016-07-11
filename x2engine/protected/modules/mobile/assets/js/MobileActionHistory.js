@@ -54,7 +54,7 @@ MobileActionHistory.prototype.setUpPhotoUpload = function () {
     var form$ = $.mobile.activePage.find ('.publisher-photo-upload-form');
     var publisher$ = $.mobile.activePage.find ('.publisher-menu');
     var buttons$ = publisher$.find ('ul li');
-    var togglePublisher$ = $.mobile.activePage.find ('.publisher-menu-button');
+    var togglePublisher$ = $.mobile.activePage.find ('#file-upload-menu-button');
     new x2.CameraButton ({
         element$: buttons$.filter ('.photo-attachment-button'),
         success: function (data) {
@@ -91,7 +91,7 @@ MobileActionHistory.prototype.setUpPhotoUpload = function () {
 MobileActionHistory.prototype.setUpFileUpload = function () {
     var that = this;
     var form$ = $.mobile.activePage.find ('.publisher-file-upload-form');
-    var togglePublisher$ = $.mobile.activePage.find ('.publisher-menu-button');
+    var togglePublisher$ = $.mobile.activePage.find ('#file-upload-menu-button');
     form$.off ('change.setUpFileUpload').on ('change.setUpFileUpload', function () {
         $.mobile.loading ('show');
         x2.mobileForm.submitWithFiles (
@@ -112,7 +112,7 @@ MobileActionHistory.prototype.setUpFileUpload = function () {
 MobileActionHistory.prototype.setUpCommentPublish = function () {
     var that = this;
     var form$ = $.mobile.activePage.find ('.publisher-comment-form');
-    var togglePublisher$ = $.mobile.activePage.find ('.publisher-menu-button');
+    var togglePublisher$ = $.mobile.activePage.find ('#comment-menu-button');
     
     form$.off ('change.setUpCommentPublish').on ('change.setUpCommentPublish', function () {
         $.mobile.loading ('show');
