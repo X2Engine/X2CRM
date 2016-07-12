@@ -607,4 +607,6 @@
   'Headquarters' => '司令部',
   'Mailing Address' => '邮寄地址',
   'Details' => '详细信息',
+  'Select All' => '',
+  'User Login History' => '',
 );

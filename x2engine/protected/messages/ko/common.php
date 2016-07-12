@@ -607,4 +607,6 @@
   'Headquarters' => '본부',
   'Mailing Address' => '우편 주소',
   'Details' => '세부',
+  'Select All' => '',
+  'User Login History' => '',
 );

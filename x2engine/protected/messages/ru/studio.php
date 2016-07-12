@@ -191,4 +191,9 @@
   'Triggers when a new contact fills out your web lead capture form.' => 'Триггеры, когда новый контакт заполняет ваш веб-свинцовую форму захвата.',
   'Process Status' => 'Процесс Статус',
   'The following condition did not pass: {name} {operator} {value}' => 'Следующее условие не пройти: {name} {operator} {value}',
+  'Link Field' => '',
+  'If you want to use this action inside a splitter, place one of these at the start of each splitter branch to ensure the branch acts on the correct record.' => '',
+  'Changed to {recordLink}.' => '',
+  'Unable to change record.' => '',
+  'Invalid configuration.' => '',
 );

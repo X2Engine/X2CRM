@@ -191,4 +191,9 @@
   'Triggers when a new contact fills out your web lead capture form.' => '当触发一个新的联系人填写您的网页导致捕获形式。',
   'Process Status' => '进程状态',
   'The following condition did not pass: {name} {operator} {value}' => '下列条件未通过{name} {operator} {value}',
+  'Link Field' => '',
+  'If you want to use this action inside a splitter, place one of these at the start of each splitter branch to ensure the branch acts on the correct record.' => '',
+  'Changed to {recordLink}.' => '',
+  'Unable to change record.' => '',
+  'Invalid configuration.' => '',
 );

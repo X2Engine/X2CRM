@@ -191,4 +191,9 @@
   'Triggers when a new contact fills out your web lead capture form.' => 'Trigger quando un nuovo contatto compila il modulo di acquisizione web di piombo.',
   'Process Status' => 'Stato processo',
   'The following condition did not pass: {name} {operator} {value}' => 'La seguente condizione non è passata: {name} {operator} {value}',
+  'Link Field' => '',
+  'If you want to use this action inside a splitter, place one of these at the start of each splitter branch to ensure the branch acts on the correct record.' => '',
+  'Changed to {recordLink}.' => '',
+  'Unable to change record.' => '',
+  'Invalid configuration.' => '',
 );

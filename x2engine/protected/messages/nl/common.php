@@ -607,4 +607,6 @@
   'Headquarters' => 'Hoofdkwartier',
   'Mailing Address' => 'Postadres',
   'Details' => 'Details',
+  'Select All' => '',
+  'User Login History' => '',
 );

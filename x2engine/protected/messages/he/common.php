@@ -607,4 +607,6 @@
   'Headquarters' => 'מַטֶה',
   'Mailing Address' => 'כתובת דואר',
   'Details' => 'פרטים',
+  'Select All' => '',
+  'User Login History' => '',
 );

@@ -191,4 +191,9 @@
   'Triggers when a new contact fills out your web lead capture form.' => '새 연락처는 웹 리드 캡처 양식을 채우고 때 트리거합니다.',
   'Process Status' => '프로세스 상태',
   'The following condition did not pass: {name} {operator} {value}' => '다음과 같은 조건을 통과하지 못한 : {name} {operator} {value}',
+  'Link Field' => '',
+  'If you want to use this action inside a splitter, place one of these at the start of each splitter branch to ensure the branch acts on the correct record.' => '',
+  'Changed to {recordLink}.' => '',
+  'Unable to change record.' => '',
+  'Invalid configuration.' => '',
 );

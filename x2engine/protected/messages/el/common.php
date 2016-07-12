@@ -607,4 +607,6 @@
   'Headquarters' => 'Αρχηγείο',
   'Mailing Address' => 'Ταχυδρομική διεύθυνση',
   'Details' => 'Καθέκαστα',
+  'Select All' => '',
+  'User Login History' => '',
 );
