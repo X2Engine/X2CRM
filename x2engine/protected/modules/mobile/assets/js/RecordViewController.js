@@ -189,7 +189,6 @@ RecordViewController.prototype.setUpHistoryPagination = function () {
     
     this.listView$.each(function(index){
         var moreButton = $(this).find ('.more-button');
-        var listView = this;
         if(moreButton.length > 0){
             that.moreButton$[index] = moreButton;
             moreButton.unbind ('click.setUpHistoryPagination').bind ('click.setUpHistoryPagination', function () {

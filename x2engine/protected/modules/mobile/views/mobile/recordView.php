@@ -127,7 +127,7 @@ if ($supportsActionHistory) {
     <div data-role='navbar' class='record-view-tabs-nav-bar'>
         <ul>
             <li class='record-view-tab' data-x2-tab-name='record-details'>
-                <a href='<?php echo '#'.MobileHtml::namespaceId ('detail-view-outer'); ?>'><?php 
+                <a id="detail-tab-link" href='<?php echo '#'.MobileHtml::namespaceId ('detail-view-outer'); ?>'><?php 
                 echo CHtml::encode (Yii::t('mobile', 'Details'));
                 ?>
                 </a>
@@ -156,8 +156,15 @@ if ($supportsActionHistory) {
     $this->renderPartial ('application.modules.mobile.views.mobile._recordView', array (
         'model' => $model
     ));
+    
 
     if ($supportsActionHistory) {
+        Yii::app()->clientScript->registerScript('hideBothPublisherButtons','
+            $("#detail-tab-link").on("click",function(){
+                $("#file-upload-menu-button").attr("style", "display: none !important");
+                $("#comment-menu-button").attr("style", "display: none !important");
+            });
+        ');
     ?>
     </div>
     <div id='<?php echo MobileHtml::namespaceId ('action-history-attachments');?>' class='action-history-outer'>

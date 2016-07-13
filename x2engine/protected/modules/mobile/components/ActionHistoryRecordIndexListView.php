@@ -57,23 +57,19 @@ class ActionHistoryRecordIndexListView extends CListView {
             $splitUrl =  explode("page=", $trueUrl);
             $pageNum = $splitUrl[1];
             
-            $newUrl = Yii::app()->controller->createUrl('mobileView',array(
+            $newUrl = Yii::app()->controller->createAbsoluteUrl('mobileView',array(
                 'id' => $this->model->id,
                 'page' => $pageNum,
             ));
             
                 $html = CHtml::openTag ('a', array (
-                    'href' => $pager->createPageUrl ($currentPage + 1),
+                    'href' => $newUrl,
                     'class' => 'more-button record-list-item' 
                 ));
                 $html .= X2Html::fa ('ellipsis-h');
                 $html .= '<span>'.CHtml::encode (Yii::t('app', 'More')).'</span>';
                 $html .= "</a>";
                 echo $html;
-            $html = CHtml::openTag ('a', array (
-                'href' => $newUrl,
-                'class' => 'more-button record-list-item' 
-            ));
         }
     }
 
