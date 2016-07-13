@@ -194,6 +194,6 @@
   'Link Field' => 'Lien Champ',
   'If you want to use this action inside a splitter, place one of these at the start of each splitter branch to ensure the branch acts on the correct record.' => 'Si vous souhaitez utiliser cette action à l&#39;intérieur d&#39;un séparateur, placez un de ces au début de chaque branche de séparation pour assurer la branche agit sur l&#39;enregistrement correct.',
   'Changed to {recordLink}.' => 'Changé pour {recordLink} .',
-  'Unable to change record.' => '',
+  'Unable to change record.' => 'Impossible de modifier l&#39;enregistrement.',
   'Invalid configuration.' => 'Configuration non valide.',
 );

@@ -195,5 +195,5 @@
   'If you want to use this action inside a splitter, place one of these at the start of each splitter branch to ensure the branch acts on the correct record.' => 'Αν θέλετε να χρησιμοποιήσετε αυτήν την ενέργεια μέσα σε ένα διαχωριστή, τοποθετήστε ένα από αυτά κατά την έναρξη του κάθε κλάδου splitter για να εξασφαλίσει τα κλάδο πράξεις για τη σωστή ρεκόρ.',
   'Changed to {recordLink}.' => 'Άλλαξε σε {recordLink} .',
   'Unable to change record.' => 'Δεν μπορείτε να αλλάξετε ρεκόρ.',
-  'Invalid configuration.' => '',
+  'Invalid configuration.' => 'Μη έγκυρη διαμόρφωση.',
 );

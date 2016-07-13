@@ -194,6 +194,6 @@
   'Link Field' => 'vínculo de campo',
   'If you want to use this action inside a splitter, place one of these at the start of each splitter branch to ensure the branch acts on the correct record.' => 'Si desea utilizar esta acción dentro de un divisor, colocar una de ellas en el inicio de cada rama divisor para asegurar que los actos de la ramificación en el registro correcto.',
   'Changed to {recordLink}.' => 'Cambiado a {recordLink} .',
-  'Unable to change record.' => '',
+  'Unable to change record.' => 'No se puede cambiar de registro.',
   'Invalid configuration.' => 'Configuración no válida.',
 );

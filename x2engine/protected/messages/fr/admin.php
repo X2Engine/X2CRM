@@ -1093,9 +1093,9 @@
   'Warning: custom module with id :id exists without a "name." Skipping...' => 'Attention: module personnalisé avec id: id existe sans un «nom». Saut...',
   'Unable to perform anti virus scan; the "clamscan" utility is not available on this system.' => 'Impossible d&#39;effectuer un balayage anti-virus; l&#39;utilitaire &quot;clamscan&quot; ne sont pas disponibles sur ce système.',
   'You have selected to use the following import mapping: ' => 'Vous avez choisi d&#39;utiliser le mappage d&#39;importation suivant:',
-  'Anti Virus Scanning' => '',
+  'Anti Virus Scanning' => 'Numérisation Anti Virus',
   'Configure whether to scan uploaded Media. Note: this requires that the clamav utility is installed on the system.<br /><br />' => 'Configurer la numérisation des médias téléchargés. Remarque: cela nécessite que l&#39;utilitaire de clamav est installé sur le système. <br /> <br />',
-  'Configure the timeout in between failed login attempts, and the number of failed login attempts before the IP address is banned. To view a record of failed and successful login attempts, please visit the {link} page.' => '',
+  'Configure the timeout in between failed login attempts, and the number of failed login attempts before the IP address is banned. To view a record of failed and successful login attempts, please visit the {link} page.' => 'Configurer le délai d&#39;attente entre les tentatives de connexion infructueuses, et le nombre de tentatives de connexion infructueuses avant que l&#39;adresse IP est interdite. Pour afficher un enregistrement de l&#39; échec et de succès des tentatives de connexion, s&#39;il vous plaît visitez le {link} page.',
   'User History' => 'Histoire de l&#39;utilisateur',
   'To manage user login settings, including failed logins before CAPTCHA and failed logins before ban, please visit the {link} page.' => 'Pour gérer les paramètres de connexion des utilisateurs, y compris les connexions qui ont échoué avant CAPTCHA et connexions qui ont échoué avant l&#39; interdiction, s&#39;il vous plaît visitez le {link} page.',
 );

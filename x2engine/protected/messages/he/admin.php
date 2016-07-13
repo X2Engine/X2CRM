@@ -1092,10 +1092,10 @@
   'Edit form layouts for X2Touch.' => 'פריסות ערוך טופס לX2Touch.',
   'Warning: custom module with id :id exists without a "name." Skipping...' => 'אזהרה: מודול המותאם אישית עם id: id קיים בלי &quot;שם&quot;. דילוג ...',
   'Unable to perform anti virus scan; the "clamscan" utility is not available on this system.' => 'אין אפשרות לבצע סריקת וירוסים אנטי; &quot;התכנית האנטי-הווירוס&quot; השירות אינו זמין במערכת זו.',
-  'You have selected to use the following import mapping: ' => '',
+  'You have selected to use the following import mapping: ' => 'בחרת להשתמש במיפוי היבוא הבא:',
   'Anti Virus Scanning' => 'סריקה אנטי וירוס',
   'Configure whether to scan uploaded Media. Note: this requires that the clamav utility is installed on the system.<br /><br />' => 'גדר אם לסרוק מדיה נטענת. הערה: זה דורש כי שירות ClamAV מותקן על המערכת. <br /> <br />',
-  'Configure the timeout in between failed login attempts, and the number of failed login attempts before the IP address is banned. To view a record of failed and successful login attempts, please visit the {link} page.' => '',
-  'User History' => '',
+  'Configure the timeout in between failed login attempts, and the number of failed login attempts before the IP address is banned. To view a record of failed and successful login attempts, please visit the {link} page.' => 'הגדר את פסק הזמן בין ניסיונות כניסה כושלים, ומספר ניסיונות כניסה כושלים לפני אסורה את כתובת ה- IP. כדי להציג תיעוד של ניסיונות כניסה כושלים ומוצלחים, בקר {link} הדף.',
+  'User History' => 'היסטוריית משתמש',
   'To manage user login settings, including failed logins before CAPTCHA and failed logins before ban, please visit the {link} page.' => 'כדי לנהל את הגדרות משתמש, כולל שמות משתמש נכשל לפני CAPTCHA ו כושלים לפני האיסור, בקר {link} הדף.',
 );

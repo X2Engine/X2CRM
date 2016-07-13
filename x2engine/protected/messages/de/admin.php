@@ -1095,7 +1095,7 @@
   'You have selected to use the following import mapping: ' => 'Sie haben die folgende Import-Mapping zu verwenden, ausgewählt:',
   'Anti Virus Scanning' => 'Anti Virus Scanning',
   'Configure whether to scan uploaded Media. Note: this requires that the clamav utility is installed on the system.<br /><br />' => 'Konfigurieren Sie, ob hochgeladen Medien zu scannen. Hinweis: Dies erfordert, dass die ClamAV-Dienstprogramm auf dem System installiert ist. <br /> <br />',
-  'Configure the timeout in between failed login attempts, and the number of failed login attempts before the IP address is banned. To view a record of failed and successful login attempts, please visit the {link} page.' => '',
+  'Configure the timeout in between failed login attempts, and the number of failed login attempts before the IP address is banned. To view a record of failed and successful login attempts, please visit the {link} page.' => 'Konfigurieren des Timeout zwischen fehlgeschlagenen Anmeldeversuchen und die Anzahl fehlgeschlagener Anmeldeversuche, bevor die IP-Adresse ist verboten. Um einen Eintrag zu der fehlgeschlagenen und erfolgreichen Anmeldeversuche zu sehen, besuchen Sie bitte die {link} Seite.',
   'User History' => 'User History',
   'To manage user login settings, including failed logins before CAPTCHA and failed logins before ban, please visit the {link} page.' => 'Zum Verwalten von Einstellungen der Benutzeranmeldung, einschließlich fehlgeschlagenen Anmeldungen vor CAPTCHA und fehlgeschlagene Anmeldungen vor Verbot, besuchen Sie bitte die {link} Seite.',
 );

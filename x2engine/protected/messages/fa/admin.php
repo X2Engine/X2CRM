@@ -1094,8 +1094,8 @@
   'Unable to perform anti virus scan; the "clamscan" utility is not available on this system.' => 'قادر به انجام اسکن آنتی ویروس. ابزار &quot;clamscan&quot; در این سیستم در دسترس نیست.',
   'You have selected to use the following import mapping: ' => 'شما انتخاب کرده اید به استفاده از نقشه برداری واردات زیر است:',
   'Anti Virus Scanning' => 'اسکن آنتی ویروس',
-  'Configure whether to scan uploaded Media. Note: this requires that the clamav utility is installed on the system.<br /><br />' => '',
-  'Configure the timeout in between failed login attempts, and the number of failed login attempts before the IP address is banned. To view a record of failed and successful login attempts, please visit the {link} page.' => '',
+  'Configure whether to scan uploaded Media. Note: this requires that the clamav utility is installed on the system.<br /><br />' => 'پیکربندی کنید که برای اسکن رسانه ارسال می شود. توجه: این مستلزم آن است که ابزار ClamAV درحال است بر روی سیستم نصب شده است. <br /> <br />',
+  'Configure the timeout in between failed login attempts, and the number of failed login attempts before the IP address is banned. To view a record of failed and successful login attempts, please visit the {link} page.' => 'پیکربندی ایست در بین ورود ناموفق، و تعداد ورود ناموفق قبل از آدرس IP ممنوع است. برای مشاهده یک رکورد از ورود ناموفق و موفق، لطفا بازدید {link} صفحه.',
   'User History' => 'تاریخچه کاربر',
   'To manage user login settings, including failed logins before CAPTCHA and failed logins before ban, please visit the {link} page.' => 'برای مدیریت تنظیمات کاربر ورود به سیستم، از جمله باری شکست خورده قبل از CAPTCHA و باری شکست خورده قبل از ممنوعیت، لطفا بازدید {link} صفحه.',
 );

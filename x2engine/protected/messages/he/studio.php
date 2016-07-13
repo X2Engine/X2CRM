@@ -195,5 +195,5 @@
   'If you want to use this action inside a splitter, place one of these at the start of each splitter branch to ensure the branch acts on the correct record.' => 'אם אתה רוצה להשתמש בפעולה זו בתוך מפצל, להציב את אחד אלה בתחילת כל סניף ספליטר להבטיח המעשים הסניף על שיא הנכון.',
   'Changed to {recordLink}.' => 'שונתה, וכעת היא {recordLink} .',
   'Unable to change record.' => 'לא ניתן לשנות את השיא.',
-  'Invalid configuration.' => '',
+  'Invalid configuration.' => 'תצורה לא חוקי.',
 );

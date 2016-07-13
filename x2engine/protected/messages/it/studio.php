@@ -195,5 +195,5 @@
   'If you want to use this action inside a splitter, place one of these at the start of each splitter branch to ensure the branch acts on the correct record.' => 'Se si desidera utilizzare questa azione all&#39;interno di uno splitter, mettere uno di questi, all&#39;inizio di ogni ramo splitter per garantire gli atti filiali sul record corretto.',
   'Changed to {recordLink}.' => 'Cambiato in {recordLink} .',
   'Unable to change record.' => 'Impossibile modificare record.',
-  'Invalid configuration.' => '',
+  'Invalid configuration.' => 'Configurazione non valida.',
 );

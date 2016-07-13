@@ -1092,10 +1092,10 @@
   'Edit form layouts for X2Touch.' => 'Formulario Editar diseños para X2Touch.',
   'Warning: custom module with id :id exists without a "name." Skipping...' => 'Advertencia: módulo personalizado con id: Identificación existe sin un &quot;nombre&quot;. Salto a la comba...',
   'Unable to perform anti virus scan; the "clamscan" utility is not available on this system.' => 'No se ha podido realizar la exploración anti-virus; la utilidad &quot;clamscan&quot; no está disponible en este sistema.',
-  'You have selected to use the following import mapping: ' => '',
+  'You have selected to use the following import mapping: ' => 'Ha seleccionado para usar el siguiente mapeo de importación:',
   'Anti Virus Scanning' => 'Lucha contra el Virus Scanning',
   'Configure whether to scan uploaded Media. Note: this requires that the clamav utility is installed on the system.<br /><br />' => 'Configure si desea escanear los archivos subidos. Nota: esto requiere que la utilidad clamav está instalado en el sistema. <br /> <br />',
-  'Configure the timeout in between failed login attempts, and the number of failed login attempts before the IP address is banned. To view a record of failed and successful login attempts, please visit the {link} page.' => '',
-  'User History' => '',
+  'Configure the timeout in between failed login attempts, and the number of failed login attempts before the IP address is banned. To view a record of failed and successful login attempts, please visit the {link} page.' => 'Configurar el tiempo de espera entre intentos de acceso fallidos, y el número de intentos de conexión fallidos antes de que se prohibió la dirección IP. Para ver un registro de los intentos de acceso fallidos y exitosos, por favor visite el {link} página.',
+  'User History' => 'Historial del usuario',
   'To manage user login settings, including failed logins before CAPTCHA and failed logins before ban, please visit the {link} page.' => 'Para administrar la configuración de inicio de sesión de usuario, incluyendo los inicios de sesión fallidos antes de CAPTCHA e inicios de sesión fallidos antes de la prohibición, por favor visite el {link} página.',
 );
