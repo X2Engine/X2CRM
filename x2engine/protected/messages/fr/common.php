@@ -608,5 +608,5 @@
   'Mailing Address' => 'Adresse mail',
   'Details' => 'Détails',
   'Select All' => '',
-  'User Login History' => '',
+  'User Login History' => 'Login Utilisateur Histoire',
 );

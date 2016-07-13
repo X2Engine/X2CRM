@@ -607,6 +607,6 @@
   'Headquarters' => 'Hauptsitz',
   'Mailing Address' => 'Postanschrift',
   'Details' => 'Details',
-  'Select All' => '',
-  'User Login History' => '',
+  'Select All' => 'Alles auswählen',
+  'User Login History' => 'User Login Geschichte',
 );

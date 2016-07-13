@@ -191,9 +191,9 @@
   'Triggers when a new contact fills out your web lead capture form.' => 'מפעיל כאשר איש קשר חדש ממלא את הטופס ללכוד להוביל אינטרנט שלך.',
   'Process Status' => 'סטטוס תהליך',
   'The following condition did not pass: {name} {operator} {value}' => 'המצב הבא לא עבר: {name} {operator} {value}',
-  'Link Field' => '',
-  'If you want to use this action inside a splitter, place one of these at the start of each splitter branch to ensure the branch acts on the correct record.' => '',
-  'Changed to {recordLink}.' => '',
-  'Unable to change record.' => '',
+  'Link Field' => 'שדה הקישור',
+  'If you want to use this action inside a splitter, place one of these at the start of each splitter branch to ensure the branch acts on the correct record.' => 'אם אתה רוצה להשתמש בפעולה זו בתוך מפצל, להציב את אחד אלה בתחילת כל סניף ספליטר להבטיח המעשים הסניף על שיא הנכון.',
+  'Changed to {recordLink}.' => 'שונתה, וכעת היא {recordLink} .',
+  'Unable to change record.' => 'לא ניתן לשנות את השיא.',
   'Invalid configuration.' => '',
 );

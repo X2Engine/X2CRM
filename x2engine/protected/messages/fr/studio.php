@@ -191,9 +191,9 @@
   'Triggers when a new contact fills out your web lead capture form.' => 'Déclenche quand un nouveau contact remplit votre formulaire de capture Web de plomb.',
   'Process Status' => 'État du processus',
   'The following condition did not pass: {name} {operator} {value}' => 'La condition suivante ne passe pas: {name} {operator} {value}',
-  'Link Field' => '',
-  'If you want to use this action inside a splitter, place one of these at the start of each splitter branch to ensure the branch acts on the correct record.' => '',
-  'Changed to {recordLink}.' => '',
+  'Link Field' => 'Lien Champ',
+  'If you want to use this action inside a splitter, place one of these at the start of each splitter branch to ensure the branch acts on the correct record.' => 'Si vous souhaitez utiliser cette action à l&#39;intérieur d&#39;un séparateur, placez un de ces au début de chaque branche de séparation pour assurer la branche agit sur l&#39;enregistrement correct.',
+  'Changed to {recordLink}.' => 'Changé pour {recordLink} .',
   'Unable to change record.' => '',
-  'Invalid configuration.' => '',
+  'Invalid configuration.' => 'Configuration non valide.',
 );

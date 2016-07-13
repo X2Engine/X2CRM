@@ -607,6 +607,6 @@
   'Headquarters' => 'مرکز فرماندهی',
   'Mailing Address' => 'آدرس پستی',
   'Details' => 'جزئیات',
-  'Select All' => '',
-  'User Login History' => '',
+  'Select All' => 'انتخاب همه',
+  'User Login History' => 'ورود کاربر تاریخ',
 );

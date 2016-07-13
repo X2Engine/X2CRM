@@ -608,5 +608,5 @@
   'Mailing Address' => 'כתובת דואר',
   'Details' => 'פרטים',
   'Select All' => '',
-  'User Login History' => '',
+  'User Login History' => 'היסטוריה משתמש כניסה',
 );
