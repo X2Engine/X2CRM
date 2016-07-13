@@ -182,6 +182,51 @@ RecordViewController.prototype.setUpTabs = function () {
 
 };
 
+RecordViewController.prototype.setUpHistoryPagination = function () {
+    var that = this;
+    this.listView$ = x2.main.activePage$.find ('.record-index-list-view');
+    this.moreButton$ = {};
+    
+    this.listView$.each(function(index){
+        var moreButton = $(this).find ('.more-button');
+        var listView = this;
+        if(moreButton.length > 0){
+            that.moreButton$[index] = moreButton;
+            moreButton.unbind ('click.setUpHistoryPagination').bind ('click.setUpHistoryPagination', function () {
+                that.fetchHistoryPage (index, $(this).attr ('href'));
+                return false;
+            });
+        }
+    });
+    
+
+    
+};
+
+/**
+ * Fetch next page of records and append to the list view. Also replace the more button and rebind
+ * its click event handler.
+ */
+RecordViewController.prototype.fetchHistoryPage = function (index, url) {
+    var that = this;
+    var listView$;
+    
+    $.mobile.loading ('show');
+    $.ajax ({
+        method: 'GET', 
+        url: url,
+        success: function (data) {
+            $.mobile.loading ('hide');
+            if (listView$ = $(data).find ('.record-index-list-view').eq(index)) {
+                that.listView$.eq(index).find ('.items').append (listView$.find ('.items'));
+                that.moreButton$[index].replaceWith (listView$.find ('.more-button'));
+                that.setUpHistoryPagination ();
+            }
+        }
+    });
+};
+
+
 RecordViewController.prototype.init = function () {
     var that = this;
     this.documentEvents.push (x2.main.onPageShow (function () {
@@ -192,6 +237,7 @@ RecordViewController.prototype.init = function () {
         }
         if (that.supportsActionHistory) {
             that.setUpTabs ();
+            that.setUpHistoryPagination ();
         }
     }, this.constructor.name));
 };

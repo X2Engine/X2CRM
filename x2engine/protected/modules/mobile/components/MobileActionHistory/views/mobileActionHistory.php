@@ -35,12 +35,8 @@
  * "Powered by X2Engine".
  **********************************************************************************/
 
-Yii::app()->clientScript->registerScriptFile(
-    Yii::app()->controller->assetsUrl.'/js/RecordIndexControllerBase.js');
-Yii::app()->clientScript->registerScriptFile(
-    Yii::app()->controller->assetsUrl.'/js/RecordIndexController.js');
-
 $htmlOptions = array (
+    'class' => 'record-index-list-view',
 );
 
 if ($this->refresh) {
@@ -56,6 +52,7 @@ $this->widget('application.modules.mobile.components.MobileActionHistoryListView
 //$this->widget('zii.widgets.CListView', array(
     'id' => 'action-history-'.$type.'-view',
     'dataProvider' => $dataProvider,
+    'model' => $this->model,
     'viewData' => array (
         'actionHistory' => $this,
     ),

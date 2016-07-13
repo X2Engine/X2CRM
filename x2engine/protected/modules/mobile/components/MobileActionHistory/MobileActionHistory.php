@@ -75,11 +75,14 @@ class MobileActionHistory extends X2Widget {
         $className = 'Mobile'.ucfirst ($data['type']).'Item';
 
         $action = Actions::model()->findByPk($data['id']);
-        if (!$action ||
-            !class_exists ($className) || 
-            !is_subclass_of ($className, 'MobileHistoryItem')) {
-
+        if(!$action){
             return false;
+        }
+        if (!class_exists ($className) || 
+            !is_subclass_of ($className, 'MobileHistoryItem')) {
+            $item = new MobileHistoryItem;
+            $item->action = $action;
+            return $item;
         } else {
             $item = new $className;
             $item->action = $action;
@@ -88,6 +91,8 @@ class MobileActionHistory extends X2Widget {
     }
 
     public function run () {
+        Yii::app()->clientScript->registerCssFile(
+            Yii::app()->theme->baseUrl.'/css/actionHistory.css'); 
         $ret = call_user_func_array ('parent::'.__FUNCTION__, func_get_args ()); 
         $this->render ('mobileActionHistory', array (
             'type' => $this->type,

@@ -86,7 +86,11 @@ class MobileHistoryItem extends CComponent {
     }
 
     public function renderAuthor () {
-        return $this->action->renderAttribute ('completedBy', true, false, false);
+        if($this->action->complete == 'Yes'){
+            return $this->action->renderAttribute ('completedBy', true, false, false);
+        } else {
+            return $this->action->renderAttribute ('assignedTo', true, false, false);
+        }
     }
 
     public function renderContent () {
@@ -94,8 +98,21 @@ class MobileHistoryItem extends CComponent {
     }
 
     public function renderIcon () {
+        if (empty($this->action->type)) {
+            if ($this->action->complete == 'Yes') {
+                $type = 'complete';
+            } else {
+                $type = 'action';
+            }
+        } else {
+            if ($this->action->type === 'emailFrom') {
+                $type = 'email';
+            } else {
+                $type = $this->action->type;
+            }
+        }
         return '
-            <div class="icon '.$this->action->type.'">
+            <div class="icon '.$type.'">
             <div class="stacked-icon"></div></div>';
     }
 

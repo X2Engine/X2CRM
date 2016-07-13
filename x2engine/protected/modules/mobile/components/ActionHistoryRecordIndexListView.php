@@ -38,6 +38,8 @@
 Yii::import ('zii.widgets.CListView');
 
 class ActionHistoryRecordIndexListView extends CListView {
+    
+    public $model;
 
     public function renderMoreButton () {
         $pager = Yii::createComponent (array (
@@ -54,34 +56,24 @@ class ActionHistoryRecordIndexListView extends CListView {
             $trueUrl = $pager->createPageUrl ($currentPage + 1);
             $splitUrl =  explode("page=", $trueUrl);
             $pageNum = $splitUrl[1];
-            $newUrl = Yii::app()->createAbsoluteUrl ('contacts/mobileView',
-            array('id'=>$this->modelid,));
-            $newUrl .= "?page=";
-            $newUrl .= $pageNum;
-            //$newUrl = $pager->createPageUrl ($currentPage + 1);
+            
+            $newUrl = Yii::app()->controller->createUrl('mobileView',array(
+                'id' => $this->model->id,
+                'page' => $pageNum,
+            ));
+            
+                $html = CHtml::openTag ('a', array (
+                    'href' => $pager->createPageUrl ($currentPage + 1),
+                    'class' => 'more-button record-list-item' 
+                ));
+                $html .= X2Html::fa ('ellipsis-h');
+                $html .= '<span>'.CHtml::encode (Yii::t('app', 'More')).'</span>';
+                $html .= "</a>";
+                echo $html;
             $html = CHtml::openTag ('a', array (
                 'href' => $newUrl,
                 'class' => 'more-button record-list-item' 
             ));
-            $html .= '<div class="record-list-item " >
-                <div class="icon-container">
-                    <div class="fa fa-ellipsis-h">
-                    <div class="stacked-icon"></div></div>
-                </div>
-                <div class="history-item-content-container-outer">
-                    <div class="history-item-content" > 
-                 
-                    </div>
-                    <div class=" history-item-date-line"> '.
-                        '<span>'.CHtml::encode (Yii::t('app', 'Next Page')).'</span>'.'
-                    </div>
-                    <div class="history-item-author" > 
-                      
-                    </div>
-                </div>
-        </div>';
-            $html .= "</a>";
-            echo $html;
         }
     }
 
