@@ -74,7 +74,7 @@ class MobileActionHistoryPublishAction extends MobileAction {
             $action->actionDescription = $_POST['Actions']['actionDescription'];
             $action->type = 'note';
         }
-        Yii::log('Action saved: '.$type, CLogger::LEVEL_INFO, 'application.debug');
+        
         if ($valid && $action->save ()) {
                 $this->controller->renderPartial (
                     'application.modules.mobile.views.mobile._actionHistory', array (
