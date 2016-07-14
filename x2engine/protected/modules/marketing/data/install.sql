@@ -60,6 +60,7 @@ CREATE TABLE x2_web_forms(
     redirectUrl          VARCHAR(255),
     generateLead         TINYINT DEFAULT 0,
     generateAccount      TINYINT DEFAULT 0,
+    requireCaptcha       TINYINT DEFAULT 0,
     PRIMARY KEY (id)
 ) COLLATE = utf8_general_ci;
 /*&*/

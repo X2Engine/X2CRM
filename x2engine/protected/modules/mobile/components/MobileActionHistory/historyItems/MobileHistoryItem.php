@@ -46,7 +46,7 @@ class MobileHistoryItem extends CComponent {
                 </div>
                 <div class="history-item-content-container-outer">
                     <div class="history-item-date-line"> 
-                        {dateLine}
+                        {dateLine} {deleteItem}
                     </div>
                     <div class="history-item-content"> 
                         {content}
@@ -70,13 +70,27 @@ class MobileHistoryItem extends CComponent {
         );
     }
 
+    public function renderDeleteItem () {
+        return '<a class="delete-button requires-confirmation" '
+            . 'href="'.Yii::app()->createAbsoluteUrl ('actions/mobileDelete',
+            array('id'=>$this->action->id,)).'">'.X2Html::fa ("fa-trash").'</a>'
+            .            '<div class="confirmation-text" style="display: none;">
+
+                Are you sure you want to delete this?
+            </div>';
+    }
+    
     public function renderDateLine () {
         return Yii::app()->dateFormatter->formatDateTime (
             $this->action->createDate, 'medium', 'short');
     }
 
     public function renderAuthor () {
-        return $this->action->renderAttribute ('completedBy', true, false, false);
+        if($this->action->complete == 'Yes'){
+            return $this->action->renderAttribute ('completedBy', true, false, false);
+        } else {
+            return $this->action->renderAttribute ('assignedTo', true, false, false);
+        }
     }
 
     public function renderContent () {
@@ -84,8 +98,21 @@ class MobileHistoryItem extends CComponent {
     }
 
     public function renderIcon () {
+        if (empty($this->action->type)) {
+            if ($this->action->complete == 'Yes') {
+                $type = 'complete';
+            } else {
+                $type = 'action';
+            }
+        } else {
+            if ($this->action->type === 'emailFrom') {
+                $type = 'email';
+            } else {
+                $type = $this->action->type;
+            }
+        }
         return '
-            <div class="icon '.$this->action->type.'">
+            <div class="icon '.$type.'">
             <div class="stacked-icon"></div></div>';
     }
 

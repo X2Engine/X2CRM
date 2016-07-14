@@ -191,4 +191,9 @@
   'Triggers when a new contact fills out your web lead capture form.' => 'Wyzwala, gdy nowy kontakt wypełnia swoją wiodącą internetową formę przechwytywania.',
   'Process Status' => 'Stan procesu',
   'The following condition did not pass: {name} {operator} {value}' => 'Następujący warunek nie przechodzą: {name} {operator} {value}',
+  'Link Field' => 'Łącze Pole',
+  'If you want to use this action inside a splitter, place one of these at the start of each splitter branch to ensure the branch acts on the correct record.' => 'Jeśli chcesz korzystać z tej czynności wewnątrz rozdzielacza, należy umieścić jeden z nich na początku każdej gałęzi łuparka do zapewnienia aktów oddział na właściwej płycie.',
+  'Changed to {recordLink}.' => 'Zmieniono {recordLink} .',
+  'Unable to change record.' => 'Nie można zmienić rekord.',
+  'Invalid configuration.' => 'Nieprawidłowa konfiguracja.',
 );

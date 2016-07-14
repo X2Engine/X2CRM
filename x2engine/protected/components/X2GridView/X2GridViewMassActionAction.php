@@ -67,6 +67,7 @@ class X2GridViewMassActionAction extends CAction {
         'MassTagRemove',
         'MassUpdateFields',
         'MergeRecords',
+        'MassExecuteMacro',
          
     );
 

@@ -1,4 +1,4 @@
-/*!*********************************************************************************
+/***********************************************************************************
  * X2CRM is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2016 X2Engine Inc.
  * 
@@ -34,35 +34,53 @@
  * "Powered by X2Engine".
  **********************************************************************************/
 
+x2.MassExecuteMacro = (function(){
+    
+function MassExecuteMacro (argsDict) {
+    var argsDict = typeof argsDict === 'undefined' ? {} : argsDict;
+    var defaultArgs = {
+        DEBUG: x2.DEBUG && false,
+        massActionName: 'massExecuteMacro'
+    };
+    auxlib.applyArgs (this, defaultArgs, argsDict);
+    x2.MassAction.call (this, argsDict);
+    this.progressBarLabel = this.translations['executed'];
+    this.dialogTitle = this.massActionsManager.translations['macroExecute'];
+    this.goButtonLabel = this.massActionsManager.translations['execute'];
+    this.macroDescriptions = {'': ''};
+    this.dropdownSelector = '#mass-action-macro-selection';
+    this._init();
+}
 
+MassExecuteMacro.prototype = auxlib.create (x2.MassAction.prototype);
 
-@import "colors.scss";
-
-#security-settings-form {
-    .grid-view {
-        border: 1px solid $gray;
-        border-radius: 3px;
-        .x2-grid-view-controls-buttons a {
-            position: relative;
-            top: -3px;
+MassExecuteMacro.prototype._init = function () {
+    var that = this;
+    $('.mass-action-dialog').on('change',this.dropdownSelector,function(e){
+        if(typeof x2.MassExecuteMacro.macroDescriptions[$(that.dropdownSelector).val()] !== 'undefined'){
+            console.log(x2.MassExecuteMacro.macroDescriptions[$(that.dropdownSelector).val()]);
+            $('#mass-action-macro-description').html(x2.MassExecuteMacro.macroDescriptions[$(that.dropdownSelector).val()]);
         }
-    }
-}
+    });
+};
 
-a#login-history-export {
-    width: 70px;
-    i { padding-right: 4px; }
-}
+MassExecuteMacro.prototype.validateMassActionDialogForm = function () {
+  var that = this;
+  var macro = $(this.dropdownSelector).val();
+  if(macro === ''){
+      this.dialogElem$.append (
+            auxlib.createErrorBox ('', [that.massActionsManager.translations.emptyMacroError]));
+      return false;
+  }
+  return true;
+};
 
-#password-settings-form {
-    label {
-        width: 148px;
-        display: inline-block;
-    }
-    input[type="number"] {
-        width: 32px;
-    }
-    input[type="checkbox"] {
-        top: 0px;
-    }
-}
+MassExecuteMacro.prototype.getExecuteParams = function () {
+    var params = x2.MassAction.prototype.getExecuteParams.call (this);
+    params['modelType'] = this.massActionsManager.modelName;
+    params['macro'] = $(this.dropdownSelector).val();
+    return params;
+};
+    
+return MassExecuteMacro;
+})();

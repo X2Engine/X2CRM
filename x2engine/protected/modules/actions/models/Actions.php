@@ -479,7 +479,12 @@ class Actions extends X2Model {
                 X2Model::model('Actions')->deleteByPk($lastModifiedId);
             }
         }
-        
+
+        // Adjust pluralization on required models
+        if ($this->isNewRecord && !empty($this->associationType) &&
+            in_array($this->associationType, array('Opportunity', 'Product', 'Quote'))) {
+                $this->associationType = X2Model::getAssociationType($this->associationType);
+        }
 
         return parent::beforeSave();
     }

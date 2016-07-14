@@ -42,6 +42,8 @@ class MobileActionHistory extends X2Widget {
     public $model;
 
     public $refresh = false;
+    
+    public $type = 'all';
 
     public $instantiateJSClassOnInit = true;
 
@@ -73,11 +75,14 @@ class MobileActionHistory extends X2Widget {
         $className = 'Mobile'.ucfirst ($data['type']).'Item';
 
         $action = Actions::model()->findByPk($data['id']);
-        if (!$action ||
-            !class_exists ($className) || 
-            !is_subclass_of ($className, 'MobileHistoryItem')) {
-
+        if(!$action){
             return false;
+        }
+        if (!class_exists ($className) || 
+            !is_subclass_of ($className, 'MobileHistoryItem')) {
+            $item = new MobileHistoryItem;
+            $item->action = $action;
+            return $item;
         } else {
             $item = new $className;
             $item->action = $action;
@@ -86,8 +91,11 @@ class MobileActionHistory extends X2Widget {
     }
 
     public function run () {
-        $ret = call_user_func_array ('parent::'.__FUNCTION__, func_get_args ());  
+        Yii::app()->clientScript->registerCssFile(
+            Yii::app()->theme->baseUrl.'/css/actionHistory.css'); 
+        $ret = call_user_func_array ('parent::'.__FUNCTION__, func_get_args ()); 
         $this->render ('mobileActionHistory', array (
+            'type' => $this->type,
             'dataProvider' => $this->getDataProvider (),
         ));
         return $ret;
@@ -97,7 +105,7 @@ class MobileActionHistory extends X2Widget {
         $retArr = History::getCriteria (
             $this->model->id, 
             X2Model::getAssociationType (get_class ($this->model)), 
-            false, 'attachments');
+            false, $this->type);
         return new CSqlDataProvider($retArr['cmd'], array(
             'totalItemCount' => $retArr['count'],
             'params' => $retArr['params'],
