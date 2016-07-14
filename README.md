@@ -1,5 +1,5 @@
 # 6.0.2 #
-{releaseDate}
+7/14/2016
 * General Changelog / Developer Notes
   * Action history is now accessible from mobile
   * New "Change Record" flow action allows workflows to execute on related records
