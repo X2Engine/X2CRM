@@ -57,6 +57,13 @@ $editionEnd = function($edition) {
     echo $section;
 };
 
+$loginHistoryDataProvider  = new CActiveDataProvider ('SuccessfulLogins', array(
+    'sort' => array('defaultOrder' => 'timestamp DESC'),
+));
+$failedLoginsDataProvider = new CActiveDataProvider ('FailedLogins', array(
+    'sort' => array('defaultOrder' => 'lastAttempt DESC'),
+));
+
 
 ?>
 <div class="x2-layout-island">    
@@ -408,19 +415,46 @@ $editionEnd = function($edition) {
             </div>
         </div>
         <div class="span-10 cell admin-screen">
-            <div class="page-title x2-layout-island">
-                <h2 style="padding-left:0"><?php echo Yii::t('app','Administration Panel'); ?></h2>
+            <div class="form x2-layout-island">
+                <h2 id="admin-users"><?php echo Yii::t('admin','User Management'); ?></h2>
+                    <?php 
+                        echo CHtml::link(Yii::t('users','User Login History'),array('admin/userHistory')); 
+                        ?>
+                        <br>
+                        <?php
+                        echo Yii::t('app', 'Manage X2CRM user account history, including failed and successful logins');
+                        ?>
+                        <div class="row">
+                         <?php
+                        echo CHtml::link(Yii::t('users','Manage Users'),array('/users/users/admin')); 
+                        ?>
+                <br>
                 <?php
-
-                if(X2_PARTNER_DISPLAY_BRANDING){
-                    $partnerAbout = Yii::getPathOfAlias('application.partner').DIRECTORY_SEPARATOR.'aboutPartner.php';
-                    $partnerAboutExample = Yii::getPathOfAlias('application.partner').DIRECTORY_SEPARATOR.'aboutPartner_example.php';
-                    echo CHtml::link(Yii::t('app', 'About {product}', array('{product}' => CHtml::encode(X2_PARTNER_PRODUCT_NAME))), array('/site/page', 'view' => 'aboutPartner'), array('class' => 'x2-button right'));
-                }
-
-                echo CHtml::link(Yii::t('admin','About X2Engine'),array('/site/page','view'=>'about'),array('class'=>'x2-button right'));
-
+                echo CHtml::encode (Yii::t('app', 'Manage X2CRM user accounts'));
                 ?>
+                </div>
+
+            </div>
+        </div>  
+        <div class="span-10 cell admin-screen">
+            <div class="form x2-layout-island">
+                <h2 id="admin-users"><?php echo Yii::t('admin','User Management'); ?></h2>
+                    <?php 
+                        echo CHtml::link(Yii::t('users','User Login History'),array('admin/userHistory')); 
+                        ?>
+                        <br>
+                        <?php
+                        echo Yii::t('app', 'Manage X2CRM user account history, including failed and successful logins');
+                        ?>
+                        <div class="row">
+                         <?php
+                        echo CHtml::link(Yii::t('users','Manage Users'),array('/users/users/admin')); 
+                        ?>
+                <br>
+                <?php
+                echo CHtml::encode (Yii::t('app', 'Manage X2CRM user accounts'));
+                ?>
+                </div>
 
             </div>
         </div> 
@@ -445,7 +479,122 @@ $editionEnd = function($edition) {
                 </div>
 
             </div>
-        </div>  
+        </div>
+        <div class="span-10 cell admin-screen">
+            <div class="form x2-layout-island">
+                <h2 id="admin-users"><?php echo Yii::t('admin','User Management'); ?></h2>
+                <?php
+
+                    // Display a grid of failed login attempts
+                    $this->widget('X2GridViewGeneric', array(
+                        'id' => 'failed-logins-grid',
+                            'title'=>Yii::t('admin', 'Failed Login Attempts'),
+                        'dataProvider' => $failedLoginsDataProvider,
+                            'baseScriptUrl'=>  
+                            Yii::app()->request->baseUrl.'/themes/'.Yii::app()->theme->name.'/css/gridview',
+                            'template'=> '<div class="page-title">{title}'
+                                    .'{buttons}{summary}</div>{items}{pager}',
+                        'buttons' => array ('autoResize', 'exportFailedLogins'),
+                        'defaultGvSettings' => array (
+                            'IP' => 100,
+                            'attempts' => 120,
+                            'active' => 20,
+                            'lastAttempt' => 200,
+                            'aclControls' => '50',
+                        ), 
+                        'gvSettingsName' => 'failed-logins-grid',
+                        'columns'=>array(
+                                array (
+                                'name' => 'IP',
+                                'header' => Yii::t('admin','IP Address'),
+                            ),
+                                array (
+                                'name' => 'attempts',
+                                'header' => Yii::t('admin','Last Failed Attempts'),
+                            ),
+                            array(
+                                'name' => 'active',
+                                'header' => Yii::t('admin','Active?'),
+                                'type' => 'raw',
+                                'value' => 'X2Html::fa ($data->active ? "check" : "times")',
+                            ),
+                            array(
+                                'name' => 'lastAttempt',
+                                'header' => Yii::t('admin','Last Failed Login Attempt'),
+                                'type' => 'raw',
+                                'value' => 'Formatter::formatCompleteDate($data->lastAttempt)',
+                            ),
+                            array(
+                                'name' => 'aclControls',
+                                'header' => '',
+                                'type' => 'raw',
+                                'value' => 'Admin::renderACLControl ("blacklist", $data["IP"])',
+                            ),
+                            ),
+                    ));
+
+                    echo '<br /><br />';
+
+                    // Display a grid of user login history
+                    $this->widget('X2GridViewGeneric', array(
+                        'id' => 'login-history-grid',
+                            'title'=>Yii::t('admin', 'User Login History'),
+                        'dataProvider' => $loginHistoryDataProvider,
+                            'baseScriptUrl'=>  
+                            Yii::app()->request->baseUrl.'/themes/'.Yii::app()->theme->name.'/css/gridview',
+                            'template'=> '<div class="page-title">{title}'
+                                    .'{buttons}{summary}</div>{items}{pager}',
+                        'buttons' => array ('autoResize', 'exportLogins'),
+                        'defaultGvSettings' => array (
+                            'username' => 100,
+                            'emailAddress' => 100,
+                            'IP' => 100,
+                            'timestamp' => 180,
+                            'aclControls' => 150,
+                        ),
+                        'gvSettingsName' => 'login-history-grid',
+                        'columns'=>array(
+                                array (
+                                'name' => 'username',
+                                'header' => Yii::t('admin','User'),
+                                'type' => 'raw',
+                                'value' => '$data->userLink',
+                            ),
+                                array (
+                                'name' => 'emailAddress',
+                                'header' => Yii::t('admin','Email'),
+                                'type' => 'raw',
+                                'value' => '$data->email',
+                            ),
+                                array (
+                                'name' => 'timestamp',
+                                'header' => Yii::t('admin','Login Time'),
+                                'type' => 'raw',
+                                'value' => 'Formatter::formatCompleteDate($data["timestamp"])',
+                            ),
+                                array (
+                                'name' => 'IP',
+                                'header' => Yii::t('admin','IP Address'),
+                            ),
+                            array(
+                                'name' => 'aclControls',
+                                'header' => '',
+                                'type' => 'raw',
+                                'value' => 
+                                    '"<div class=\"x2-button-group\">".
+                                        Admin::renderACLControl ("blacklist", $data["IP"]).
+                                        Admin::renderACLControl ("whitelist", $data["IP"]).
+                                        Admin::renderACLControl ("disable", $data["username"]).
+                                    "</div>"',
+                            ),
+                            ),
+                    ));
+                    ?>
+                </div>
+
+            </div>
+        </div>
+
     </div>
 </div>
 <br><br>
