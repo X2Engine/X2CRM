@@ -191,4 +191,9 @@
   'Triggers when a new contact fills out your web lead capture form.' => 'باعث هنگامی که یک تماس جدید پر کردن فرم ضبط وب شما شود.',
   'Process Status' => 'روند وضعیت',
   'The following condition did not pass: {name} {operator} {value}' => 'شرایط زیر را انجام نمی دهد: {name} {operator} {value}',
+  'Link Field' => 'لینک درست',
+  'If you want to use this action inside a splitter, place one of these at the start of each splitter branch to ensure the branch acts on the correct record.' => 'اگر شما می خواهید به استفاده از این عمل در داخل یک شکاف، یکی از این در آغاز هر شاخه شکاف برای اطمینان از اعمال شعبه در ضبط درست است.',
+  'Changed to {recordLink}.' => 'تغییر به {recordLink} .',
+  'Unable to change record.' => 'قادر به تغییر رکورد.',
+  'Invalid configuration.' => 'پیکربندی نامعتبر است.',
 );

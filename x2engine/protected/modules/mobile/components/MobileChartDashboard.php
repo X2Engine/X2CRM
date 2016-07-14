@@ -55,7 +55,7 @@ class MobileChartDashboard extends ChartDashboardBase {
 
 	    $layout = $profile->dataWidgetLayout;
 
-        $foundChart = false;
+            $foundChart = false;
 	    // display profile widgets in order
 	    foreach ($layout as $widgetLayoutKey => $settings) {
             if($this->filterReport ($settings['chartId'])){
@@ -65,9 +65,9 @@ class MobileChartDashboard extends ChartDashboardBase {
                 $foundChart = true;
 	        }
 	    }
-        if (!$foundChart) {
-            $this->render ('application.modules.mobile.components.views.emptyChartDashboard');
-        }
+            if (!$foundChart) {
+                $this->render ('application.modules.mobile.components.views.emptyChartDashboard');
+            }
 	}
 
     public function init () {

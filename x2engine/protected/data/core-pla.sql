@@ -53,6 +53,8 @@ ALTER TABLE x2_admin ADD maxLoginHistory INT DEFAULT 5000;
 /*&*/
 ALTER TABLE x2_admin ADD maxFailedLoginHistory INT DEFAULT 5000;
 /*&*/
+ALTER TABLE x2_admin ADD scanUploads TINYINT DEFAULT 0;
+/*&*/
 DROP TABLE IF EXISTS `x2_login_history`;
 /*&*/
 CREATE TABLE x2_login_history (

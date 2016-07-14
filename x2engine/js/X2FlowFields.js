@@ -62,19 +62,19 @@ Private static methods
 Public instance methods
 */
 
-FlowFields.prototype.getModelAttributes = function(modelClass,callback) {
+FlowFields.prototype.getModelAttributes = function(modelClass,type,callback) {
     var that = this;
     if(modelClass === "API_params") {
         callback([{type: "API_params"}]);
-    } else if(this.attributeCache[modelClass]) {
-        callback(this.attributeCache[modelClass]);
+    } else if(this.attributeCache[modelClass+"_"+type]) {
+        callback(this.attributeCache[modelClass+"_"+type]);
     } else {
         $.ajax({
             url: yii.scriptUrl+"/studio/getFields",
-            data: {model: modelClass},
+            data: {model: modelClass, type: type},
             dataType: "json",
             success: function(response) {
-                that.attributeCache[modelClass] = response;
+                that.attributeCache[modelClass+"_"+type] = response;
                 // console.debug(response);
                 callback(response);
             }

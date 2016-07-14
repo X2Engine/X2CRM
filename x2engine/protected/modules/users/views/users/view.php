@@ -61,6 +61,11 @@ $this->insertMenu($menuOptions, $model);
 		'homePhone',
 		'address',
 		'backgroundInfo',
+		array(
+			'name'=>'createDate',
+			'type'=>'raw',
+			'value'=>$model->createDate ? Formatter::formatDate($model->createDate) : "n/a",
+		),
 		'emailAddress',
 		array(
 			'name'=>'status',

@@ -18,6 +18,7 @@ CREATE TABLE x2_users (
     status                 TINYINT NOT NULL,
     temporary              TINYINT DEFAULT 0,
     lastUpdated            VARCHAR(50),
+    createDate             BIGINT,
     updatedBy              VARCHAR(50),
     recentItems            VARCHAR(100),
     topContacts            VARCHAR(100),

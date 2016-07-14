@@ -240,20 +240,29 @@ endif;
         </div>
     </div>
 
-    <?php  if ($this->edition == 'pro' && $this->type != 'weblist'):  ?>
+    <?php  if ($this->edition == 'pro'):  ?>
     <div class="webform-tab" id='advanced-tab' data-title='<?php echo Yii::t('app','Advanced'); ?>'>
         <div class='tab-content'>
-            <div class="row" id="custom-css-input-container">
-                <h4><?php echo Yii::t('marketing','CSS') .':'; ?></h4>
-                <p class="fieldhelp">
-                    <?php echo Yii::t('marketing','Enter custom css for the web form.'); ?>
-                </p>
-                <?php echo CHtml::textArea('css', '/* custom css */', array(
-                    'class' => 'code', 
-                    'id'=>'custom-css',
-                    'data-mode'=> 'css'
-                )); ?>
+            <div class="row">
+                <label class='left-label' for='requireCaptcha'>
+                    <?php echo Yii::t('app', 'Require CAPTCHA: '); ?>
+                </label>
+                <input id='require-captcha-checkbox' type='checkbox'  name='requireCaptcha'>
             </div>
+
+            <?php if ($this->type != 'weblist'): ?>
+                <div class="row" id="custom-css-input-container">
+                    <h4><?php echo Yii::t('marketing','CSS') .':'; ?></h4>
+                    <p class="fieldhelp">
+                        <?php echo Yii::t('marketing','Enter custom css for the web form.'); ?>
+                    </p>
+                    <?php echo CHtml::textArea('css', '/* custom css */', array(
+                        'class' => 'code',
+                        'id'=>'custom-css',
+                        'data-mode'=> 'css'
+                    )); ?>
+                </div>
+            <?php endif; ?>
         </div>
     </div>
     <?php endif;  ?>

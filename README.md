@@ -1,8 +1,10 @@
-# 6.0.1 #
-5/26/2016
+# 6.0.2 #
+7/14/2016
 * General Changelog / Developer Notes
-  * X2Touch now supports persistent sessions
-  * Improvements to web capture API
+  * Action history is now accessible from mobile
+  * New "Change Record" flow action allows workflows to execute on related records
+  * New "Mass Execute Macro" mass action allows execution of macro type workflows from the grids
+  * More improvements to web capture API, including file upload fields
   * Miscellaneous bug fixes
 
 # Introduction #

@@ -607,4 +607,6 @@
   'Headquarters' => '本部',
   'Mailing Address' => '送り先',
   'Details' => '細部',
+  'Select All' => 'すべて選択',
+  'User Login History' => 'ユーザーログイン履歴',
 );

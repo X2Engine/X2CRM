@@ -86,7 +86,7 @@ class SiteController extends x2base {
                 'actions' => array(
                     'login', 'forgetMe', 'index', 'logout', 'warning', 'captcha', 'googleLogin',
                     'error', 'storeToken', 'sendErrorReport', 'resetPassword', 'anonHelp',
-                    'mobileResetPassword'),
+                    'mobileResetPassword', 'webleadCaptcha'),
                 'users' => array('*'),
             ),
             array('allow', // allow authenticated user to perform 'create' and 'update' actions
@@ -126,6 +126,9 @@ class SiteController extends x2base {
                 'class' => 'CCaptchaAction',
                 'backColor' => 0xFFFFFF,
                 'testLimit' => 1,
+            ),
+            'webleadCaptcha' => array(
+                'class' => 'WebFormCaptchaAction',
             ),
             // page action renders "static" pages stored under 'protected/views/site/pages'
             // They can be accessed via: index.php?r=site/page&view=FileName

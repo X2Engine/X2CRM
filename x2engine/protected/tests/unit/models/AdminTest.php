@@ -103,72 +103,7 @@ class AdminTest extends X2DbTestCase {
         // Two more will exceed the limit
         $this->assertTrue($admin->emailCountWillExceedLimit(2));
     }
-
-     
-    /**
-     * Ensure that invalid license key causes exception to be thrown
-     */
-    public function testGetLicenseKeyInfoCurlInvalid () {
-        Yii::app()->settings->unique_id = 'invalid';
-        AppFileUtil::$neverCurl = false;
-        AppFileUtil::$alwaysCurl = true;
-        $this->assertTrue (Yii::app()->cache2->flush ());
-        $this->assertEquals (array (
-            'errors' => 'invalid'
-        ), Yii::app()->settings->getLicenseKeyInfo (true)); // x2planet request
-        Yii::app()->settings->unique_id = VALID_LICENSE_KEY_PRO;
-        $this->assertEquals (array (
-            'errors' => 'invalid'
-        ), Yii::app()->settings->getLicenseKeyInfo (true)); // file cache check
-        $this->assertEquals (array (
-            'errors' => 'invalid'
-        ), Yii::app()->settings->getLicenseKeyInfo (false)); // property cache check
-    }
-
-    /**
-     * Ensure that invalid license key causes exception to be thrown
-     */
-    public function testGetLicenseKeyInfoFileGetContentsInvalid () {
-        Yii::app()->settings->unique_id = 'invalid';
-        AppFileUtil::$neverCurl = true;
-        AppFileUtil::$alwaysCurl = false;
-        $this->assertTrue (Yii::app()->cache2->flush ());
-        $this->assertEquals (array (
-            'errors' => 'invalid'
-        ), Yii::app()->settings->getLicenseKeyInfo (true));
-        Yii::app()->settings->unique_id = VALID_LICENSE_KEY_PRO;
-        $this->assertEquals (array (
-            'errors' => 'invalid'
-        ), Yii::app()->settings->getLicenseKeyInfo (true));
-        $this->assertEquals (array (
-            'errors' => 'invalid'
-        ), Yii::app()->settings->getLicenseKeyInfo (false));
-    }
-
-    public function testGetLicenseKeyInfoCurlMissing () {
-        Yii::app()->settings->unique_id = null;
-        AppFileUtil::$neverCurl = false;
-        AppFileUtil::$alwaysCurl = true;
-        $this->assertTrue (Yii::app()->cache2->flush ());
-        $this->assertEquals (array (), Yii::app()->settings->getLicenseKeyInfo (true));
-        Yii::app()->settings->unique_id = 'invalid';
-        $this->assertEquals (array (), Yii::app()->settings->getLicenseKeyInfo (true));
-        $this->assertEquals (array (), Yii::app()->settings->getLicenseKeyInfo (false));
-    }
-
-    /**
-     * Ensure that invalid license key causes exception to be thrown
-     */
-    public function testGetLicenseKeyInfoFileGetContentsMissing () {
-        Yii::app()->settings->unique_id = null;
-        AppFileUtil::$neverCurl = true;
-        AppFileUtil::$alwaysCurl = false;
-        $this->assertTrue (Yii::app()->cache2->flush ());
-        $this->assertEquals (array (), Yii::app()->settings->getLicenseKeyInfo (true));
-        Yii::app()->settings->unique_id = 'invalid';
-        $this->assertEquals (array (), Yii::app()->settings->getLicenseKeyInfo (true));
-        $this->assertEquals (array (), Yii::app()->settings->getLicenseKeyInfo (false));
-    }
+    
 
     /**
      * Ensure that we can retrieve license key info with valid license keys
@@ -224,17 +159,10 @@ class AdminTest extends X2DbTestCase {
                         $oldDate = Yii::app()->settings->renderProductKeyExpirationDate (true)));
                 $this->assertTrue (
                     is_string ($oldMaxUsers = Yii::app()->settings->renderMaxUsers (true)));
-
-                if ($key !== 'invalid') {
                     $this->assertEquals (1, preg_match ('/strong/', $oldMaxUsers));
                     $this->assertEquals (1, preg_match ('/strong/', $oldDate));
                     $this->assertEquals (0, preg_match ('/error-text/', $oldDate));
                     Yii::app()->settings->unique_id = 'invalid';
-                } else {
-                    $this->assertEquals ('', $oldMaxUsers);
-                    $this->assertEquals (1, preg_match ('/error-text/', $oldDate));
-                    Yii::app()->settings->unique_id = VALID_LICENSE_KEY_PRO;
-                }
 
                 // now with caching
                 $this->assertEquals (
@@ -244,39 +172,6 @@ class AdminTest extends X2DbTestCase {
             }
         }
     }
-
-    /**
-     * Ensure that license key info cache behaves as expected 
-     */
-    public function testLicenseKeyInfoCaching () {
-        $admin = Admin::model ()->findByPk (1);
-        $this->assertTrue (Yii::app()->cache2->flush ());
-        $admin->unique_id = VALID_LICENSE_KEY_PRO;
-        $licenseKey = $admin->getLicenseKeyInfo (true);
-        X2_TEST_DEBUG_LEVEL > 1 && print_r ($licenseKey);
-        $this->assertTrue (isset ($licenseKey['dateExpires']));
-        $this->assertTrue (isset ($licenseKey['maxUsers']));
-        $this->assertTrue (is_numeric ($licenseKey['dateExpires']));
-        $this->assertTrue (is_numeric ($licenseKey['maxUsers']));
-
-        // cache is still valid since we haven't saved yet
-        $admin->unique_id = 'invalid';
-        $licenseKey = $admin->getLicenseKeyInfo (true);
-        X2_TEST_DEBUG_LEVEL > 1 && print_r ($licenseKey);
-        $this->assertTrue (isset ($licenseKey['dateExpires']));
-        $this->assertTrue (isset ($licenseKey['maxUsers']));
-        $this->assertTrue (is_numeric ($licenseKey['dateExpires']));
-        $this->assertTrue (is_numeric ($licenseKey['maxUsers']));
-
-        // saving a different license key should invalidate the cache
-        $this->assertSaves ($admin);
-        $licenseKey = $admin->getLicenseKeyInfo (true);
-        $this->assertTrue (!isset ($licenseKey['dateExpires']));
-        $this->assertTrue (!isset ($licenseKey['maxUsers']));
-        $this->assertTrue (isset ($licenseKey['errors']));
-        $this->assertEquals ('invalid', $licenseKey['errors']);
-    }
-     
 
     public function testDisableAutomaticRecordTagging () {
         Yii::app()->db->createCommand ("delete from x2_tags where 1");
