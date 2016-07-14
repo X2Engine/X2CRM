@@ -68,7 +68,8 @@ class RequestUtilTest extends X2TestCase {
                 'unique_id' => 'invalid',
             )
         )));
-        $this->assertEquals (array ('errors' => 'invalid'), $response);
+        $this->assertTrue(array_key_exists('dateExpires',$response));
+        $this->assertTrue(array_key_exists('maxUsers',$response));
     }
 
     public function testFileGetContentsRequestGET () {
@@ -94,7 +95,8 @@ class RequestUtilTest extends X2TestCase {
                 'unique_id' => 'invalid',
             )
         )));
-        $this->assertEquals (array ('errors' => 'invalid'), $response);
+        $this->assertTrue(array_key_exists('dateExpires',$response));
+        $this->assertTrue(array_key_exists('maxUsers',$response));
     }
 
     public function testCurlRequestGET () {

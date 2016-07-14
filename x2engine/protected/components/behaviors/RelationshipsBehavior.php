@@ -170,9 +170,11 @@ class RelationshipsBehavior extends CActiveRecordBehavior {
             $oldNameAndId = Fields::nameAndId(
                     isset($oldAttributes[$field->fieldName]) 
                     ? $oldAttributes[$field->fieldName] : '');
-            if(!empty($oldNameAndId[1]) && $nameAndId[1] !== $oldNameAndId[1]){
-                $oldTarget = X2Model::model($field->linkType)->findByPk($oldNameAndId[1]);
-                $this->owner->deleteRelationship($oldTarget);
+            // Remove previous relationship unless we are in the context of a webform upload
+            if(!empty($oldNameAndId[1]) && $nameAndId[1] !== $oldNameAndId[1] &&
+                !in_array($this->owner->scenario, array('webForm', 'webFormWithCaptcha'))){
+                    $oldTarget = X2Model::model($field->linkType)->findByPk($oldNameAndId[1]);
+                    $this->owner->deleteRelationship($oldTarget);
             }
             if (!empty($nameAndId[1])) {
                 $newTarget = X2Model::model($field->linkType)->findByPk($nameAndId[1]);

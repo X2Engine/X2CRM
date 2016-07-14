@@ -79,6 +79,11 @@ Yii::app()->clientScript->registerCssFile(
 									<?php echo Yii::t('media', 'Forbidden File Extensions:') . ' ' . Media::forbiddenFileTypes(); ?>
 								</span>
 							</div>
+                            <?php if ($model->hasErrors('path')) { ?>
+                            <div>
+                                <?php echo X2Html::fa('warning') .$form->error($model,'path', array('style'=>'display:inline-block')); ?>
+                            </div>
+                            <?php } ?>
 						</td>
 					</tr>
 				</tbody>

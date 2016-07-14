@@ -233,9 +233,16 @@ if ($model->hasErrors () && !isset($_COOKIE['sessionToken'])) {
     ?>
     <div data-role="fieldcontain">
     <?php
-    echo CHtml::submitButton(Yii::t('app', 'Sign in'), array (
-        'class' => 'no-css-override',
-    )); 
+        if(isset($_COOKIE['sessionToken'])) {
+            $model = new LoginForm;
+            $this->login ($model, true);
+       
+        } else {
+            echo CHtml::submitButton(Yii::t('app', 'Sign in'), array (
+                'class' => 'no-css-override',
+            ));             
+        }
+
     ?>
     </div>
     <div data-role="fieldcontain" class='password-help-container'>

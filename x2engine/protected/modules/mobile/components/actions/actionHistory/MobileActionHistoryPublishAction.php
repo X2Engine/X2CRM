@@ -40,7 +40,7 @@ class MobileActionHistoryPublishAction extends MobileAction {
     /**
      * @param int $id id of record to which to attach published action
      */
-    public function run ($id) {
+    public function run ($id, $type) {
         if (!Yii::app()->params->isAdmin && !Yii::app()->user->checkAccess ('ActionsCreate')) {
             $this->controller->denied ();
         }
@@ -62,24 +62,32 @@ class MobileActionHistoryPublishAction extends MobileAction {
             'completedBy' => Yii::app()->user->getName (),
             'private' => 0,
         ), false);
-        if (isset ($_FILES['Actions'])) {
+        $valid = false;
+        if ($type ==='attachments' && isset ($_FILES['Actions'])) {
+            $valid = true;
             $action->upload = CUploadedFile::getInstance ($action, 'upload'); 
             $action->type = 'attachment';
 
-            if ($action->save ()) {
+            
+        } elseif ($type === 'all' && isset($_POST['Actions'])){
+            $valid = true;
+            $action->actionDescription = $_POST['Actions']['actionDescription'];
+            $action->type = 'note';
+        }
+        
+        if ($valid && $action->save ()) {
                 $this->controller->renderPartial (
                     'application.modules.mobile.views.mobile._actionHistory', array (
 
                     'model' => $model,
-                    'refresh' => true
+                    'refresh' => true,
+                    'type'=>$type,
                 ), false, true);
 
                 Yii::app()->end ();
             } else {
-                throw new CHttpException (500, Yii::t('app', 'Upload failed'));
+                throw new CHttpException (500, Yii::t('app', 'Publish failed'));
             }
-        }
-        return parent::run ($id);
     }
 
 }

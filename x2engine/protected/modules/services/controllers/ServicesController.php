@@ -100,6 +100,9 @@ class ServicesController extends x2base {
             'QuickCreateRelationshipBehavior' => array(
                 'class' => 'QuickCreateRelationshipBehavior',
             ),
+            'WebFormBehavior' => array(
+                'class' => 'WebFormBehavior'
+            ),
         ));
     }
 

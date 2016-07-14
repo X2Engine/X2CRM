@@ -399,11 +399,28 @@ class AdminController extends X2Controller {
     }
 
     /**
+     * Page for User History
+     */
+    public function actionUserHistory() {
+        $loginHistoryDataProvider  = new CActiveDataProvider ('SuccessfulLogins', array(
+            'sort' => array('defaultOrder' => 'timestamp DESC'),
+        ));
+        $failedLoginsDataProvider = new CActiveDataProvider ('FailedLogins', array(
+            'sort' => array('defaultOrder' => 'lastAttempt DESC'),
+        ));
+
+        $this->render ('userHistory', array(
+            'failedLoginsDataProvider' => $failedLoginsDataProvider,
+            'loginHistoryDataProvider' => $loginHistoryDataProvider,
+        ));
+    }
+
+    /**
      * Page for firewall configuration
      */
     public function actionSecuritySettings() {
         $admin = &Yii::app()->settings;
-        $firewallSettings = array(
+        $securitySettings = array(
             'accessControlMethod',
             'ipWhitelist',
             'ipBlacklist',
@@ -411,6 +428,7 @@ class AdminController extends X2Controller {
             'failedLoginsBeforeCaptcha',
             'maxFailedLogins',
             'maxLoginHistory',
+            'scanUploads',
         );
         $jsonFields = array(
             'ipWhitelist',
@@ -424,7 +442,7 @@ class AdminController extends X2Controller {
                     $passwordSettings[$req] = $_POST[$req];
             $admin->passwordRequirements = $passwordSettings;
 
-            foreach ($firewallSettings as $setting) {
+            foreach ($securitySettings as $setting) {
                 if (isset($_POST['Admin'][$setting])) {
                     $admin->$setting = $_POST['Admin'][$setting];
 
@@ -453,17 +471,8 @@ class AdminController extends X2Controller {
             if (is_array ($admin->$field))
                 $admin->$field = implode("\r\n", $admin->$field);
 
-        $loginHistoryDataProvider  = new CActiveDataProvider ('SuccessfulLogins', array(
-            'sort' => array('defaultOrder' => 'timestamp DESC'),
-        ));
-        $failedLoginsDataProvider = new CActiveDataProvider ('FailedLogins', array(
-            'sort' => array('defaultOrder' => 'lastAttempt DESC'),
-        ));
-
         $this->render ('securitySettings', array(
             'model' => $admin,
-            'failedLoginsDataProvider' => $failedLoginsDataProvider,
-            'loginHistoryDataProvider' => $loginHistoryDataProvider,
         ));
     }
 

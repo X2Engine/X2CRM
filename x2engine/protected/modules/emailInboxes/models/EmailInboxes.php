@@ -1490,8 +1490,6 @@ class EmailInboxes extends X2Model {
         } else {
             $message->body = $body['plain'];
         }
-        if (!empty($message->body) && (mb_detect_encoding ($message->body, 'ISO-8859-1') === 'ISO-8859-1'))
-            $message->body = utf8_encode ($message->body);
     }
 
     public function getBodyPart ($uid, $structure, $part) {

@@ -58,7 +58,7 @@ $this->onPageLoad ("
 
 
 if ($model instanceof X2Model &&
-    $this->hasMobileAction ('mobileDelete') &&
+    $this->hasMobileAction ('mobileDelete') && $this->hasMobileAction ('mobileUpdate') &&
     Yii::app()->user->checkAccess(ucfirst ($this->module->name).'Delete', $authParams)) {
 ?>
 
@@ -127,13 +127,20 @@ if ($supportsActionHistory) {
     <div data-role='navbar' class='record-view-tabs-nav-bar'>
         <ul>
             <li class='record-view-tab' data-x2-tab-name='record-details'>
-                <a href='<?php echo '#'.MobileHtml::namespaceId ('detail-view-outer'); ?>'><?php 
+                <a id="detail-tab-link" href='<?php echo '#'.MobileHtml::namespaceId ('detail-view-outer'); ?>'><?php 
                 echo CHtml::encode (Yii::t('mobile', 'Details'));
                 ?>
                 </a>
             </li>
             <li class='record-view-tab' data-x2-tab-name='action-history'>
-                <a href='<?php echo '#'.MobileHtml::namespaceId ('action-history'); ?>'><?php 
+                <a id='history-tab-link' href='<?php echo '#'.MobileHtml::namespaceId ('action-history'); ?>'><?php 
+                //echo CHtml::encode (Yii::t('mobile', 'History'));
+                echo CHtml::encode (Yii::t('mobile', 'Action History'));
+                ?>
+                </a>
+            </li>
+            <li class='record-view-tab' data-x2-tab-name='action-history'>
+                <a id='attachment-tab-link' href='<?php echo '#'.MobileHtml::namespaceId ('action-history-attachments'); ?>'><?php 
                 //echo CHtml::encode (Yii::t('mobile', 'History'));
                 echo CHtml::encode (Yii::t('mobile', 'Attachments'));
                 ?>
@@ -145,20 +152,50 @@ if ($supportsActionHistory) {
     <div id='<?php echo MobileHtml::namespaceId ('detail-view-outer');?>'>
     <?php
 }
-
+    
     $this->renderPartial ('application.modules.mobile.views.mobile._recordView', array (
         'model' => $model
     ));
+    
 
     if ($supportsActionHistory) {
+        Yii::app()->clientScript->registerScript('hideBothPublisherButtons','
+            $("#detail-tab-link").on("click",function(){
+                $("#file-upload-menu-button").attr("style", "display: none !important");
+                $("#comment-menu-button").attr("style", "display: none !important");
+            });
+        ');
+    ?>
+    </div>
+    <div id='<?php echo MobileHtml::namespaceId ('action-history-attachments');?>' class='action-history-outer'>
+
+    <?php
+        $this->renderPartial ('application.modules.mobile.views.mobile._actionHistory', array (
+            'model' => $model,
+            'type' => 'attachments',
+        ));
+        Yii::app()->clientScript->registerScript('hideUploadButton','
+            $("#history-tab-link").on("click",function(){
+                $("#file-upload-menu-button").attr("style", "display: none !important");
+                $("#comment-menu-button").show();
+            });
+        ');
+        
     ?>
     </div>
     <div id='<?php echo MobileHtml::namespaceId ('action-history');?>' class='action-history-outer'>
 
     <?php
         $this->renderPartial ('application.modules.mobile.views.mobile._actionHistory', array (
-            'model' => $model
+            'model' => $model,
+            'type' => 'all',
         ));
+        Yii::app()->clientScript->registerScript('hidePublishButton','
+            $("#attachment-tab-link").on("click",function(){
+                $("#file-upload-menu-button").show();
+                $("#comment-menu-button").attr("style", "display: none !important");
+            });
+        ');
     ?>
     </div>
 </div>
