@@ -35,31 +35,30 @@
  * "Powered by X2Engine".
  **********************************************************************************/
 
-Yii::import ('application.modules.mobile.components.behaviors.*');
+class MobileDeleteEventAction extends MobileAction {
 
-class MobileProfileControllerBehavior extends MobileControllerBehavior {
+    public $pageDepth = 1;
 
-    public function actions () {
-        return array (
-            'mobilePublisher' => array (
-                'class' => 'MobilePublisherAction'
-            ),
-            'mobileActivity' => array (
-                'class' => 'MobileActivityAction'
-            ),
-            'mobileViewEvent' => array (
-                'class' => 'MobileViewEventAction'
-            ),
-            'mobileDeleteEvent' => array (
-                'class' => 'MobileDeleteEventAction'
-            ),
-            'mobileView' => array (
-                'class' => 'MobileProfileViewAction'
-            ),
-            'mobileIndex' => array (
-                'class' => 'MobileIndexAction'
-            )
-        );
+    public function run ($id) {
+        $formModel = new EventCommentPublisherFormModel;
+        $profile = Yii::app()->params->profile;
+        $model = $this->controller->lookUpModel ($id, 'Events');
+        $this->controller->dataUrl = Yii::app()->request->url;
+
+        if ($model->checkPermissions ('delete')) {
+            if ($model->delete ()) {
+                Yii::app()->user->setFlash ('success', Yii::t('app', 'Record deleted')); 
+                // todo: ajax call to return to activity's comments if a activity's comment is deleted
+                // but redirect to 'mobileActivity' if the activity itself is deleted 
+                $this->controller->redirect (array ('mobileActivity'));
+           
+            } else {
+                throw new CHttpException (500, Yii::t('app', 'Failed to delete record.'));
+            } 
+            
+        } else {
+            $this->controller->denied ();
+        }
     }
 
 }

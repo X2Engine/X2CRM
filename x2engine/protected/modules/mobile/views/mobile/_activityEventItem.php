@@ -85,6 +85,22 @@ echo CHtml::openTag ('div', array_merge (array (
         echo MobileActivityFeed::getText ($data);
     ?>
     </div>
+    <?php
+        $currentUrl = Yii::app()->request->url;
+        if (strpos($currentUrl, '/profile/mobileViewEvent/id/') !== false 
+                && $this->hasMobileAction ('mobileDeleteEvent')) {
+    ?>
+            <a class="delete-button requires-confirmation" 
+               href="<?php echo Yii::app()->createAbsoluteUrl ('profile/mobileDeleteEvent',
+                    array('id'=>$data->id,)); ?>">
+                <?php echo X2Html::fa ("fa-trash"); ?>
+            </a>
+            <div class="confirmation-text" style="display: none;">
+                Are you sure you want to delete this?
+            </div>
+    <?php
+        }
+    ?>
     <div class='event-attachments'>
     <?php
         foreach ($data->media as $media) {
