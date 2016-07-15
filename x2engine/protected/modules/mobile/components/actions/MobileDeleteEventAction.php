@@ -48,7 +48,7 @@ class MobileDeleteEventAction extends MobileAction {
         if ($model->checkPermissions ('delete')) {
             if ($model->delete ()) {
                 Yii::app()->user->setFlash ('success', Yii::t('app', 'Record deleted')); 
-                // todo: ajax call to return to activity's comments if a activity's comment is deleted
+                // X2TODO: ajax call to return to activity's comments if a activity's comment is deleted
                 // but redirect to 'mobileActivity' if the activity itself is deleted 
                 $this->controller->redirect (array ('mobileActivity'));
            

@@ -35,9 +35,11 @@
  * "Powered by X2Engine".
  **********************************************************************************/
 
+/*
+ * 
+ */
 class MobileDeleteItemAction extends MobileAction {
     
-
     public function run ($id) {
         parent::beforeRun ();
             
@@ -50,6 +52,7 @@ class MobileDeleteItemAction extends MobileAction {
             Yii::app()->user->checkAccess(ucfirst ($this->controller->module->name).'Delete', $authParams)) {
                 if ($model->delete ()) {
                     Yii::app()->user->setFlash ('success', Yii::t('app', 'Record deleted')); 
+                    // X2TODO: ajax call to re-render action history list after deletion of an action
                     $this->controller->render (
                         'application.modules.mobile.views.mobile.recordView',
                         array (
