@@ -193,6 +193,11 @@ X2Html::getFlashes ();
           class='ui-btn-left ui-btn show-left-menu-button'>
             <i class='fa fa-bars'></i>
         </a>
+        <a href='<?php echo Yii::app()->createAbsoluteUrl ('profile/mobileActivity'); ?>' 
+          style='margin-left: 50px;' 
+          class='ui-btn-left ui-btn show-left-menu-button-right'>
+            <i class='fa fa-home'></i>
+        </a>
         <?php
         if (MobileModule::getPlatform () === 'iOS') {
         ?>
