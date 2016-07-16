@@ -32,4 +32,19 @@
  * X2Engine" logo. If the display of the logo is not reasonably feasible for
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2Engine".
- **********************************************************************************/.admin-screen .license-info-section{padding-top:10px}.form.x2-layout-island{padding-bottom:10px !important}.page-title h2{line-height:36px !important}#content{border:none;background:none}#content .cell{margin-right:15px;margin-bottom:5px}.admin-screen .page-title{margin-bottom:5px}
+ **********************************************************************************/
+.admin-screen 
+
+.license-info-section{padding-top:10px}
+
+.form.x2-layout-island{padding-bottom:10px !important}
+
+.page-title h2{line-height:36px !important}
+
+#content{border:none;background:none}
+
+#content .cell{margin-right:15px;margin-bottom:5px}
+
+.admin-screen 
+
+.page-title{margin-bottom:5px}
