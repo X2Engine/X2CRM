@@ -144,6 +144,9 @@ class Roles extends CActiveRecord {
 
         // Combine all the roles, remove duplicates:
         $userRoles = array_unique($userRoles + $groupRoles);
+        
+        echo "Role array\n";
+        var_dump($userRoles);
 
         // Cache/store:
         self::$_userRoles[$userId] = $userRoles;
