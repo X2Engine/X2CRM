@@ -36,7 +36,7 @@
  **********************************************************************************/
 
 /*
- * 
+ * Action that deletes an Action History item
  */
 class MobileDeleteItemAction extends MobileAction {
     
