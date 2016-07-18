@@ -108,8 +108,9 @@ class MassActionTest extends X2DbTestCase {
         while (true) {
             $this->obStart ();
             $massUpdate->superExecute ($uid, $filteredRecordsCount, $idChecksum);
+            $raw = ob_get_contents();
             $retVal = CJSON::decode (ob_get_contents ()); $this->obEndClean ();
-
+            var_dump($raw);
             $uid = $retVal['uid'];
 
             $_GET = array_merge ($filters, array ($modelName => $fields));
