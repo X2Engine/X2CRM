@@ -408,7 +408,8 @@ abstract class MassAction extends CComponent {
             $batch[] = array_pop ($selectedRecords);
         }
         $_SESSION[self::SESSION_KEY_PREFIX.$uid] = $selectedRecords;
-
+        echo "Test session array.\n";
+        var_dump($_SESSION);
         // execute mass action on batch
         $successes = $this->execute ($batch);
 
