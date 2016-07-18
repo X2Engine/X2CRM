@@ -5,7 +5,6 @@
   <Directory "%TRAVIS_BUILD_DIR%">
     Options Indexes FollowSymLinks MultiViews ExecCGI
     AllowOverride All
-	Require all granted
     Order deny,allow
     Allow from all
   </Directory>
