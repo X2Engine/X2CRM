@@ -35,50 +35,8 @@
  * "Powered by X2Engine".
  **********************************************************************************/
 
-class MobileChartDashboard extends ChartDashboardBase {
-
-    private $_packages;
-    public function getPackages () {
-        if (!isset ($this->_packages)) {
-            return array_merge (parent::getPackages (), array (
-            ));
-        }
-        return $this->_packages;
-    }
-
-	public function displayWidgets () {
-		if ($this->report) {
-			$profile = $this->report;
-		} else {
-		    $profile = Yii::app()->params->profile;
-		}
-
-	    $layout = $profile->dataWidgetLayout;
-
-            $foundChart = false;
-	    // display profile widgets in order
-	    foreach ($layout as $widgetLayoutKey => $settings) {
-            if($this->filterReport ($settings['chartId'])){
-
-                // $force = isset($this->report);
-                SortableWidget::instantiateWidget ($widgetLayoutKey, $profile, 'data');	
-                $foundChart = true;
-	        }
-	    }
-            if (!$foundChart) {
-                $this->render ('application.modules.mobile.components.views.emptyChartDashboard');
-            }
-	}
-
-    public function init () {
-        $this->registerPackages ();
-        return parent::init ();
-    }
-
-    public function run () {
-        parent::run ();
-        $this->render ('application.modules.mobile.views.mobile._charts');
-    }
+class MobileActionHistoryListView extends ActionHistoryRecordIndexListView {
+    public $modelid;
 
 }
 

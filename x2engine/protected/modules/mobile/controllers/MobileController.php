@@ -317,6 +317,9 @@ class MobileController extends X2Controller {
      */
     public function actionLogout() {
         $user = User::model()->findByPk(Yii::app()->user->getId());
+        if (isset($_COOKIE['sessionToken'])) {
+            unset(Yii::app()->request->cookies['sessionToken']);
+        }
         if (isset($user)) {
             $user->lastLogin = time();
             $user->save();

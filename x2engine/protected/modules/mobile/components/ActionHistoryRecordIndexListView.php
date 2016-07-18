@@ -35,49 +35,42 @@
  * "Powered by X2Engine".
  **********************************************************************************/
 
-class MobileChartDashboard extends ChartDashboardBase {
+Yii::import ('zii.widgets.CListView');
 
-    private $_packages;
-    public function getPackages () {
-        if (!isset ($this->_packages)) {
-            return array_merge (parent::getPackages (), array (
+class ActionHistoryRecordIndexListView extends CListView {
+    
+    public $model;
+
+    public function renderMoreButton () {
+        $pager = Yii::createComponent (array (
+            'class' => 
+                Yii::app()->controller->pathAliasBase.'components.MobileRecordIndexPager',
+            'pages' => $this->dataProvider->getPagination ()
+        ));
+        $currentPage = $pager->getCurrentPage (false);
+        $pageCount = $pager->getPageCount ();
+        //$href = $pager->createPageUrl ($currentPage + 1),
+        //$href = UrlUtil::mergeParams (Yii::app()->request->url, array (
+        //));
+        if ($currentPage + 1 < $pageCount) {
+            $trueUrl = $pager->createPageUrl ($currentPage + 1);
+            $splitUrl =  explode("page=", $trueUrl);
+            $pageNum = $splitUrl[1];
+            
+            $newUrl = Yii::app()->controller->createAbsoluteUrl('mobileView',array(
+                'id' => $this->model->id,
+                'page' => $pageNum,
             ));
+            
+                $html = CHtml::openTag ('a', array (
+                    'href' => $newUrl,
+                    'class' => 'more-button record-list-item' 
+                ));
+                $html .= X2Html::fa ('ellipsis-h');
+                $html .= '<span>'.CHtml::encode (Yii::t('app', 'More')).'</span>';
+                $html .= "</a>";
+                echo $html;
         }
-        return $this->_packages;
-    }
-
-	public function displayWidgets () {
-		if ($this->report) {
-			$profile = $this->report;
-		} else {
-		    $profile = Yii::app()->params->profile;
-		}
-
-	    $layout = $profile->dataWidgetLayout;
-
-            $foundChart = false;
-	    // display profile widgets in order
-	    foreach ($layout as $widgetLayoutKey => $settings) {
-            if($this->filterReport ($settings['chartId'])){
-
-                // $force = isset($this->report);
-                SortableWidget::instantiateWidget ($widgetLayoutKey, $profile, 'data');	
-                $foundChart = true;
-	        }
-	    }
-            if (!$foundChart) {
-                $this->render ('application.modules.mobile.components.views.emptyChartDashboard');
-            }
-	}
-
-    public function init () {
-        $this->registerPackages ();
-        return parent::init ();
-    }
-
-    public function run () {
-        parent::run ();
-        $this->render ('application.modules.mobile.views.mobile._charts');
     }
 
 }

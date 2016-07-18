@@ -35,49 +35,33 @@
  * "Powered by X2Engine".
  **********************************************************************************/
 
-class MobileChartDashboard extends ChartDashboardBase {
+class MobileDeleteItemAction extends MobileAction {
+    
 
-    private $_packages;
-    public function getPackages () {
-        if (!isset ($this->_packages)) {
-            return array_merge (parent::getPackages (), array (
-            ));
+    public function run ($id) {
+        parent::beforeRun ();
+            
+        $model = $this->controller->loadModel ($id);
+        $modelClass = $this->controller->modelClass;
+        $authParams['X2Model'] = $model;
+        if ($this->controller->checkPermissions($model, 'delete') && 
+            $model instanceof X2Model &&
+            $this->controller->hasMobileAction ('mobileDelete') &&
+            Yii::app()->user->checkAccess(ucfirst ($this->controller->module->name).'Delete', $authParams)) {
+                if ($model->delete ()) {
+                    Yii::app()->user->setFlash ('success', Yii::t('app', 'Record deleted')); 
+                    $this->controller->render (
+                        'application.modules.mobile.views.mobile.recordView',
+                        array (
+                            'model' => $model,
+                        )
+                    );
+                } else {
+                    throw new CHttpException (500, Yii::t('app', 'Failed to delete record.'));
+                }
+        } else {
+            $this->controller->denied ();
         }
-        return $this->_packages;
-    }
-
-	public function displayWidgets () {
-		if ($this->report) {
-			$profile = $this->report;
-		} else {
-		    $profile = Yii::app()->params->profile;
-		}
-
-	    $layout = $profile->dataWidgetLayout;
-
-            $foundChart = false;
-	    // display profile widgets in order
-	    foreach ($layout as $widgetLayoutKey => $settings) {
-            if($this->filterReport ($settings['chartId'])){
-
-                // $force = isset($this->report);
-                SortableWidget::instantiateWidget ($widgetLayoutKey, $profile, 'data');	
-                $foundChart = true;
-	        }
-	    }
-            if (!$foundChart) {
-                $this->render ('application.modules.mobile.components.views.emptyChartDashboard');
-            }
-	}
-
-    public function init () {
-        $this->registerPackages ();
-        return parent::init ();
-    }
-
-    public function run () {
-        parent::run ();
-        $this->render ('application.modules.mobile.views.mobile._charts');
     }
 
 }

@@ -1,3 +1,12 @@
+# 6.0.2 #
+{releaseDate}
+* General Changelog / Developer Notes
+  * Action history is now accessible from mobile
+  * New "Change Record" flow action allows workflows to execute on related records
+  * New "Mass Execute Macro" mass action allows execution of macro type workflows from the grids
+  * More improvements to web capture API, including file upload fields
+  * Miscellaneous bug fixes
+
 # 6.0.1 #
 5/26/2016
 * General Changelog / Developer Notes

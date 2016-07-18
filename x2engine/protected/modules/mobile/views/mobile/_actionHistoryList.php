@@ -35,51 +35,22 @@
  * "Powered by X2Engine".
  **********************************************************************************/
 
-class MobileChartDashboard extends ChartDashboardBase {
+$refresh = !isset ($refresh) ? false : $refresh;
 
-    private $_packages;
-    public function getPackages () {
-        if (!isset ($this->_packages)) {
-            return array_merge (parent::getPackages (), array (
-            ));
-        }
-        return $this->_packages;
-    }
+$htmlOptions = array (
+    'class' => 'action-history',
+);
 
-	public function displayWidgets () {
-		if ($this->report) {
-			$profile = $this->report;
-		} else {
-		    $profile = Yii::app()->params->profile;
-		}
 
-	    $layout = $profile->dataWidgetLayout;
+echo X2Html::openTag ('div', $htmlOptions);
 
-            $foundChart = false;
-	    // display profile widgets in order
-	    foreach ($layout as $widgetLayoutKey => $settings) {
-            if($this->filterReport ($settings['chartId'])){
+$this->widget ('application.modules.mobile.components.MobileActionHistory.MobileActionHistory', array (
+    'model' => $model,
+    'refresh' => $refresh,
+    'type' => 'all',
+));
 
-                // $force = isset($this->report);
-                SortableWidget::instantiateWidget ($widgetLayoutKey, $profile, 'data');	
-                $foundChart = true;
-	        }
-	    }
-            if (!$foundChart) {
-                $this->render ('application.modules.mobile.components.views.emptyChartDashboard');
-            }
-	}
 
-    public function init () {
-        $this->registerPackages ();
-        return parent::init ();
-    }
-
-    public function run () {
-        parent::run ();
-        $this->render ('application.modules.mobile.views.mobile._charts');
-    }
-
-}
 
 ?>
+</div>

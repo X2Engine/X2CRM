@@ -191,4 +191,9 @@
   'Triggers when a new contact fills out your web lead capture form.' => 'Activeert wanneer een nieuwe contactpersoon vult uw web-leads vorm.',
   'Process Status' => 'Proces Status',
   'The following condition did not pass: {name} {operator} {value}' => 'De volgende voorwaarde niet voorbij: {name} {operator} {value}',
+  'Link Field' => 'Link Field',
+  'If you want to use this action inside a splitter, place one of these at the start of each splitter branch to ensure the branch acts on the correct record.' => 'Wilt u deze actie te gebruiken in een splitter, plaatst een van deze aan het begin van elke splitter tak om ervoor te zorgen de branche werkt op de juiste record.',
+  'Changed to {recordLink}.' => 'Gewijzigd in {recordLink} .',
+  'Unable to change record.' => 'Niet in staat om op te nemen veranderen.',
+  'Invalid configuration.' => 'Ongeldige configuratie.',
 );

@@ -607,4 +607,6 @@
   'Headquarters' => 'Główna siedziba',
   'Mailing Address' => 'Adres pocztowy',
   'Details' => 'Bliższe dane',
+  'Select All' => 'Zaznacz wszystko',
+  'User Login History' => 'Logowanie użytkownika Historia',
 );

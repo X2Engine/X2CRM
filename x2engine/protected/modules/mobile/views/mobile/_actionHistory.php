@@ -36,6 +36,7 @@
  **********************************************************************************/
 
 $refresh = !isset ($refresh) ? false : $refresh;
+$type = !isset($type) ? 'attachments' : $type;
 
 $htmlOptions = array (
     'class' => 'action-history',
@@ -46,6 +47,7 @@ echo X2Html::openTag ('div', $htmlOptions);
 $this->widget ('application.modules.mobile.components.MobileActionHistory.MobileActionHistory', array (
     'model' => $model,
     'refresh' => $refresh,
+    'type' => $type,
 ));
 
 ?>

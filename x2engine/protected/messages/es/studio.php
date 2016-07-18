@@ -191,4 +191,9 @@
   'Triggers when a new contact fills out your web lead capture form.' => 'Dispara cuando un nuevo contacto rellena el formulario de captura de plomo web.',
   'Process Status' => 'Estado del Proceso',
   'The following condition did not pass: {name} {operator} {value}' => 'La siguiente condición no pasó: {name} {operator} {value}',
+  'Link Field' => 'vínculo de campo',
+  'If you want to use this action inside a splitter, place one of these at the start of each splitter branch to ensure the branch acts on the correct record.' => 'Si desea utilizar esta acción dentro de un divisor, colocar una de ellas en el inicio de cada rama divisor para asegurar que los actos de la ramificación en el registro correcto.',
+  'Changed to {recordLink}.' => 'Cambiado a {recordLink} .',
+  'Unable to change record.' => 'No se puede cambiar de registro.',
+  'Invalid configuration.' => 'Configuración no válida.',
 );

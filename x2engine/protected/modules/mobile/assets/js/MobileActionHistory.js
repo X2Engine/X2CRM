@@ -54,7 +54,7 @@ MobileActionHistory.prototype.setUpPhotoUpload = function () {
     var form$ = $.mobile.activePage.find ('.publisher-photo-upload-form');
     var publisher$ = $.mobile.activePage.find ('.publisher-menu');
     var buttons$ = publisher$.find ('ul li');
-    var togglePublisher$ = $.mobile.activePage.find ('.publisher-menu-button');
+    var togglePublisher$ = $.mobile.activePage.find ('#file-upload-menu-button');
     new x2.CameraButton ({
         element$: buttons$.filter ('.photo-attachment-button'),
         success: function (data) {
@@ -91,7 +91,7 @@ MobileActionHistory.prototype.setUpPhotoUpload = function () {
 MobileActionHistory.prototype.setUpFileUpload = function () {
     var that = this;
     var form$ = $.mobile.activePage.find ('.publisher-file-upload-form');
-    var togglePublisher$ = $.mobile.activePage.find ('.publisher-menu-button');
+    var togglePublisher$ = $.mobile.activePage.find ('#file-upload-menu-button');
     form$.off ('change.setUpFileUpload').on ('change.setUpFileUpload', function () {
         $.mobile.loading ('show');
         x2.mobileForm.submitWithFiles (
@@ -107,6 +107,31 @@ MobileActionHistory.prototype.setUpFileUpload = function () {
                 x2.main.alert (textStatus, 'Error');
             });
         });
+};
+
+MobileActionHistory.prototype.setUpCommentPublish = function () {
+    var that = this;
+    var form$ = $.mobile.activePage.find ('.publisher-comment-form');
+    var togglePublisher$ = $.mobile.activePage.find ('#comment-menu-button');
+    
+    form$.off ('change.setUpCommentPublish').on ('change.setUpCommentPublish', function () {
+        $.mobile.loading ('show');
+        x2.mobileForm.submitWithFiles (
+            form$, 
+            function (data) {
+                if (that.publisherIsActive) togglePublisher$.click ();
+                $.mobile.activePage.append ($(data).find ('.refresh-content'));
+                x2.main.refreshContent ();
+                form$.find ('input[type="text"]').val ('');
+                $.mobile.loading ('hide');
+            }, function (jqXHR, textStatus, errorThrown) {
+                $.mobile.loading ('hide');
+                x2.main.alert (textStatus, 'Error');
+            });
+        });
+    form$.on('submit',function(e){
+        e.preventDefault();
+    });
 };
 
 MobileActionHistory.prototype.setUpPublisher = function () {
@@ -138,8 +163,10 @@ MobileActionHistory.prototype.setUpPublisher = function () {
 
      
     that.setUpPhotoUpload (); 
-     
+    
     that.setUpFileUpload (); 
+    
+    that.setUpCommentPublish ();
 };
 
 MobileActionHistory.prototype.init = function () {
