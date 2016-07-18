@@ -453,7 +453,7 @@ class AppFileUtil {
             } 
 
             // Use the usual copy method
-            return @file_get_contents($source, $use_include_path, $context);
+            return file_get_contents($source, $use_include_path, $context);
         }
     }
 
