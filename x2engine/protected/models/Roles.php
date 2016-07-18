@@ -116,6 +116,8 @@ class Roles extends CActiveRecord {
         // check the app cache for user's roles
         if ($cache === true && ($userRoles = self::getCachedUserRoles($userId)) !== false) {
             self::$_userRoles[$userId] = $userRoles;
+            echo "Role array\n";
+            var_dump($userRoles);
             return $userRoles;
         }
         $userRoles = array();
@@ -145,9 +147,6 @@ class Roles extends CActiveRecord {
         // Combine all the roles, remove duplicates:
         $userRoles = array_unique($userRoles + $groupRoles);
         
-        echo "Role array\n";
-        var_dump($userRoles);
-
         // Cache/store:
         self::$_userRoles[$userId] = $userRoles;
         if ($cache === true)
