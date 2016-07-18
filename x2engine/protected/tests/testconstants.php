@@ -27,7 +27,7 @@ defined('X2_SCP_USER') or define('X2_SCP_USER', 'root');
 defined('X2_SCP_PASS') or define('X2_SCP_PASS', '');
 
 //Location of testing X2Planet installation for tests which reference the licensing server
-defined('X2_TESTING_UPDATE_SERVER') or define('X2_TESTING_UPDATE_SERVER', 'https:///x2planet.com');
+defined('X2_TESTING_UPDATE_SERVER') or define('X2_TESTING_UPDATE_SERVER', 'https://x2planet.com');
 
 // if set to false, prevents all fixtures from being loaded, unless X2_LOAD_FIXTURES_FOR_CLASS_ONLY
 // is set to true
