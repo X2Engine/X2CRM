@@ -981,7 +981,7 @@ class InlineEmail extends CFormModel {
 
             // These attributes are context-sensitive and subject to change:
             $action->associationId = $model->id;
-            $action->associationType = $model->module;
+            $action->associationType = ucfirst($model->module);
             $action->type = 'email';
             $action->visibility = isset($model->visibility) ? $model->visibility : 1;
             $action->assignedTo = $this->userProfile->username;
