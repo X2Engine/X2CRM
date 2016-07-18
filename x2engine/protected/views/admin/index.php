@@ -72,6 +72,11 @@ $failedLoginsDataProvider = new CActiveDataProvider ('FailedLogins', array(
         $( "#tabs" ).tabs();
     } );
 </script>
+<style>
+    .ui-widget-content a {
+        color: #004BAF;
+    }
+</style>
 <div class="x2-layout-island">    
     <div class="row">
         <div class="span-20 cell admin-screen">
