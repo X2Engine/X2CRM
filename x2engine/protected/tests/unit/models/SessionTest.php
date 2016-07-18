@@ -62,7 +62,7 @@ class SessionTest extends X2DbTestCase {
         // Prepare expected data:
         $sessionCounts = array(
             'session1' => 1,
-            'session2' => 1,
+            'session2' => 0,
             'session3' => 0,
         );
         foreach(array_keys($sessionCounts) as $alias) {
@@ -76,7 +76,6 @@ class SessionTest extends X2DbTestCase {
         // Session 1 shoud still be there
         // Sessions 2 and 3 should be gone
         foreach($sessionCounts as $alias => $count){
-            // Session 2 is not being deleted correctly.
             $this->assertEquals((integer)$count, Session::model()->countByAttributes(array('id'=>$sessionIds[$alias])),"$alias did not get deleted");
         }
     }
