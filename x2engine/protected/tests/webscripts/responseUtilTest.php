@@ -90,7 +90,7 @@ switch ($case) {
         }
         break;
     case 'respondFatalErrorMessage':
-        fastcgi_finish_request('ResponseUtil::respondFatalErrorMessage');
+        register_shutdown_function('ResponseUtil::respondFatalErrorMessage');
         switch($subcase){
             case 'parse':
                 $e = 'a';
