@@ -345,7 +345,7 @@ class FileUtilTest extends FileOperTestCase {
         // Specifying only one path. The return value should originate from
         // index.php's directory!
         $relpath = FileUtil::relpath($file);
-        $this->assertEquals('../../framework/YiiBase.php', $relpath);
+        $this->assertEquals('x2engine/framework/YiiBase.php', $relpath);
         // Test on Windows!
         $startPoint = 'C:\\Program Files (x86)\\Something\\SomethingElse\\..\\something.exe';
         $endPoint = 'C:\\Windows\\Something\\..\\Something\\SomethingMore/library.dll';
