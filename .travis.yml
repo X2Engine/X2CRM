@@ -42,4 +42,6 @@ script:
   # functional tests
   #- phpunit --configuration build/phpunit_functional.xml x2engine/protected/tests/functional
 
-
+after_script:
+  # capture apache error log
+  - sudo cat /var/log/apache2/error.log
