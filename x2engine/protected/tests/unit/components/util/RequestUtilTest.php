@@ -68,6 +68,9 @@ class RequestUtilTest extends X2TestCase {
                 'unique_id' => 'invalid',
             )
         )));
+        if(X2_TEST_DEBUG_LEVEL > 1) {
+            var_dump($response);
+        }
         $this->assertTrue(array_key_exists('dateExpires',$response));
         $this->assertTrue(array_key_exists('maxUsers',$response));
     }
@@ -80,6 +83,9 @@ class RequestUtilTest extends X2TestCase {
             'url' => $url,
             'method' => 'GET',
         ));
+        if(X2_TEST_DEBUG_LEVEL > 1) {
+            var_dump($response);
+        }
         $this->assertEquals (1, preg_match ('/^\d(\.\d)*$/', $response));
     }
 
@@ -95,6 +101,9 @@ class RequestUtilTest extends X2TestCase {
                 'unique_id' => 'invalid',
             )
         )));
+        if(X2_TEST_DEBUG_LEVEL > 1) {
+            var_dump($response);
+        }
         $this->assertTrue(array_key_exists('dateExpires',$response));
         $this->assertTrue(array_key_exists('maxUsers',$response));
     }
@@ -108,6 +117,9 @@ class RequestUtilTest extends X2TestCase {
             'url' => $url,
             'method' => 'GET',
         ));
+        if(X2_TEST_DEBUG_LEVEL > 1) {
+            var_dump($response);
+        }
         $this->assertEquals (1, preg_match ('/^\d(\.\d)*$/', $response));
     }
 
