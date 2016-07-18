@@ -110,6 +110,7 @@ class MassActionTest extends X2DbTestCase {
             $massUpdate->superExecute ($uid, $filteredRecordsCount, $idChecksum);
             $raw = ob_get_contents();
             $retVal = CJSON::decode (ob_get_contents ()); $this->obEndClean ();
+            echo "Raw output\n";
             var_dump($raw);
             $uid = $retVal['uid'];
 
