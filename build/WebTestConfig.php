@@ -1,8 +1,8 @@
 <?php
 
 // For web tests, i.e. Selenium functional tests or API tests via CURL
-defined('TEST_BASE_URL') or define('TEST_BASE_URL','http://127.0.0.1:9000/x2engine/index-test.php/');
-defined('TEST_WEBROOT_URL') or define('TEST_WEBROOT_URL','http://127.0.0.1:9000/x2engine/');
+defined('TEST_BASE_URL') or define('TEST_BASE_URL','http://localhost/x2engine/index-test.php/');
+defined('TEST_WEBROOT_URL') or define('TEST_WEBROOT_URL','http://localhost/x2engine/');
 
 // For web tracking related Selenium functional tests
 defined ('TEST_BASE_URL_ALIAS_1') or define('TEST_BASE_URL_ALIAS_1','');
