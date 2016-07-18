@@ -74,11 +74,12 @@ $failedLoginsDataProvider = new CActiveDataProvider ('FailedLogins', array(
 </script>
 <style>
     .ui-widget-content a {
-        color: #004BAF;
+        color: #004baf;
     }
-</style>
-<div class="x2-layout-island">    
-    <div class="row">
+    a:focus, a:hover {
+        color: #006cfc;
+    }
+</style> 
         <div class="span-20 cell admin-screen">
             <div class="page-title x2-layout-island">
                 <h2 style="padding-left:0"><?php echo Yii::t('app','Administration Tools'); ?></h2>
@@ -119,7 +120,7 @@ $failedLoginsDataProvider = new CActiveDataProvider ('FailedLogins', array(
                     <?php echo Yii::t('app','Email: {email}',array('{email}' => CHtml::link('contact@x2engine.com','mailto:contact@x2engine.com')));?>
                 </div>
             </div>
-            <div id="tabs">
+            <div id="tabs" >
                 <ul>
                     <li><a href="#tabs-1">Customer Support</a></li>
                     <li><a href="#tabs-2">Documentation & Videos</a></li>
@@ -458,73 +459,8 @@ $failedLoginsDataProvider = new CActiveDataProvider ('FailedLogins', array(
             </div>
         </div>
         
-        <div class="span-10 cell admin-screen">
-            <div class="form x2-layout-island">
-                <h2 id="admin-users"><?php echo Yii::t('admin','User Management'); ?></h2>
-                    <?php 
-                        echo CHtml::link(Yii::t('users','User Login History'),array('admin/userHistory')); 
-                        ?>
-                        <br>
-                        <?php
-                        echo Yii::t('app', 'Manage X2CRM user account history, including failed and successful logins');
-                        ?>
-                        <div class="row">
-                         <?php
-                        echo CHtml::link(Yii::t('users','Manage Users'),array('/users/users/admin')); 
-                        ?>
-                <br>
-                <?php
-                echo CHtml::encode (Yii::t('app', 'Manage X2CRM user accounts'));
-                ?>
-                </div>
 
-            </div>
-        </div>  
-        <div class="span-10 cell admin-screen">
-            <div class="form x2-layout-island">
-                <h2 id="admin-users"><?php echo Yii::t('admin','User Management'); ?></h2>
-                    <?php 
-                        echo CHtml::link(Yii::t('users','User Login History'),array('admin/userHistory')); 
-                        ?>
-                        <br>
-                        <?php
-                        echo Yii::t('app', 'Manage X2CRM user account history, including failed and successful logins');
-                        ?>
-                        <div class="row">
-                         <?php
-                        echo CHtml::link(Yii::t('users','Manage Users'),array('/users/users/admin')); 
-                        ?>
-                <br>
-                <?php
-                echo CHtml::encode (Yii::t('app', 'Manage X2CRM user accounts'));
-                ?>
-                </div>
-
-            </div>
-        </div> 
-        <div class="span-10 cell admin-screen">
-            <div class="form x2-layout-island">
-                <h2 id="admin-users"><?php echo Yii::t('admin','User Management'); ?></h2>
-                    <?php 
-                        echo CHtml::link(Yii::t('users','User Login History'),array('admin/userHistory')); 
-                        ?>
-                        <br>
-                        <?php
-                        echo Yii::t('app', 'Manage X2CRM user account history, including failed and successful logins');
-                        ?>
-                        <div class="row">
-                         <?php
-                        echo CHtml::link(Yii::t('users','Manage Users'),array('/users/users/admin')); 
-                        ?>
-                <br>
-                <?php
-                echo CHtml::encode (Yii::t('app', 'Manage X2CRM user accounts'));
-                ?>
-                </div>
-
-            </div>
-        </div>
-        <div class="span-10 cell admin-screen">
+        <div class="span-20 cell admin-screen">
             <div class="form x2-layout-island">
                 <h2 id="admin-users"><?php echo Yii::t('admin','User Management'); ?></h2>
                 <?php
@@ -634,13 +570,12 @@ $failedLoginsDataProvider = new CActiveDataProvider ('FailedLogins', array(
                             ),
                     ));
                     ?>
-                </div>
-
             </div>
+
         </div>
 
-    </div>
-</div>
+
+
 <br><br>
 <style>
     .cell a{
