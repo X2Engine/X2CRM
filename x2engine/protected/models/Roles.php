@@ -111,16 +111,12 @@ class Roles extends CActiveRecord {
      * @return Array array of roleIds
      */
     public static function getUserRoles($userId, $cache = true) {
-        if (isset(self::$_userRoles[$userId])){
-            echo "Class role array\n";
-            var_dump(self::$_userRoles[$userId]);
+        if ($cache && isset(self::$_userRoles[$userId])){
             return self::$_userRoles[$userId];
         }
         // check the app cache for user's roles
         if ($cache === true && ($userRoles = self::getCachedUserRoles($userId)) !== false) {
             self::$_userRoles[$userId] = $userRoles;
-            echo "Cached role array\n";
-            var_dump($userRoles);
             return $userRoles;
         }
         $userRoles = array();
@@ -149,8 +145,6 @@ class Roles extends CActiveRecord {
 
         // Combine all the roles, remove duplicates:
         $userRoles = array_unique($userRoles + $groupRoles);
-        echo "Fresh role array\n";
-        var_dump($userRoles);
         
         // Cache/store:
         self::$_userRoles[$userId] = $userRoles;
@@ -173,7 +167,7 @@ class Roles extends CActiveRecord {
             return $timeout;
 
 
-        $userRoles = Roles::getUserRoles($userId);
+        $userRoles = Roles::getUserRoles($userId, $cache);
         $availableTimeouts = array();
         foreach ($userRoles as $role) {
             $timeout = Yii::app()->db->createCommand()
