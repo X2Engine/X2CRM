@@ -11,7 +11,7 @@ $adminEmail = 'x2crm@x2contact.com';
 $adminPassword = 'admin';
 $adminUsername = 'admin';
 $dummyData = 1;
-$baseUrl = 'http://127.0.0.1';
+$baseUrl = 'http://localhost';
 $baseUri = '';
 $unique_id = 'TTTT-TTTTT-TTTTT';
 // Default visible modules (set manually to a comma-delineated list as desired)
