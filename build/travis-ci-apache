@@ -1,8 +1,8 @@
 <VirtualHost *:80>
 
-  DocumentRoot %TRAVIS_BUILD_DIR%
+  DocumentRoot %TRAVIS_BUILD_DIR%/x2engine
 
-  <Directory "%TRAVIS_BUILD_DIR%">
+  <Directory "%TRAVIS_BUILD_DIR%/x2engine">
     Options Indexes FollowSymLinks MultiViews ExecCGI
     AllowOverride All
     Order deny,allow
