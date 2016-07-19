@@ -50,24 +50,6 @@ if ($model instanceof X2Model &&
 ?>
 
 
-<ul data-role='listview' data-inset='true'>
-    <li>
-        <a class='delete-button requires-confirmation' 
-            href='<?php echo $this->createAbsoluteUrl ('mobileDelete', array (
-                'id' => $model->id,
-            )); ?>'><?php 
-            echo CHtml::encode (Yii::t('mobile', 'Delete')); ?>
-        </a>
-        <div class='confirmation-text' style='display: none;'>
-            <?php
-            echo CHtml::encode (
-                Yii::t('app', 'Are you sure you want to delete this {type}?', array (
-                    '{type}' => lcfirst ($model->getDisplayName (false)),
-                )));
-            ?>
-        </div>
-    </li>
-</ul>
 
 
 <?php
@@ -91,3 +73,21 @@ $this->renderPartial ('application.modules.mobile.views.mobile._recordForm', arr
 ));
 
 ?>
+<ul data-role='listview' data-inset='true'>
+    <li>
+        <a class='delete-button requires-confirmation' style="color:red;"
+            href='<?php echo $this->createAbsoluteUrl ('mobileDelete', array (
+                'id' => $model->id,
+            )); ?>'><?php 
+            echo CHtml::encode (Yii::t('mobile', 'Delete Record')); ?>
+        </a>
+        <div class='confirmation-text' style='display: none;'>
+            <?php
+            echo CHtml::encode (
+                Yii::t('app', 'Are you sure you want to delete this {type}?', array (
+                    '{type}' => lcfirst ($model->getDisplayName (false)),
+                )));
+            ?>
+        </div>
+    </li>
+</ul>
