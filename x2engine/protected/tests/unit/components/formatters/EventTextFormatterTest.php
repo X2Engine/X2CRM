@@ -49,8 +49,6 @@ Yii::import('application.modules.services.models.Services');
 Yii::import('application.modules.workflow.models.*');
 
 class EventTextFormatterTest extends X2DbTestCase {
-    
-    private $_oldController;
 
     public static function referenceFixtures() {
         return array(
@@ -79,14 +77,11 @@ class EventTextFormatterTest extends X2DbTestCase {
     }
 
     public function setUp() {
-        $this->_oldController = Yii::app()->controller;
-        Yii::app()->controller = new ProfileController (
-            'profile');
+        TestingAuxLib::loadControllerMock();
         parent::setUp();
     }
 
     public function tearDown() {
-        Yii::app()->controller = $this->_oldController;
         Yii::app()->params->isMobileApp = false;
         TestingAuxLib::restoreController();
         parent::tearDown();
