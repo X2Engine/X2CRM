@@ -101,7 +101,7 @@ Etiam eget iaculis nisl. Duis id malesuada orci. Mauris imperdiet ut elit rhoncu
 
         $truncatedText = $event->getText(array('truncated' => true));
         $this->assertNotEmpty($truncatedText);
-        $this->assertEquals('<a href="http://localhost/index-test.php/profile/1">You</a> : Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas maximus dui et dolor convallis malesuada. Nulla aliquam congue mi, in vestibulum enim dictum in. Nullam in nulla vitae ...',
+        $this->assertEquals('<a href="http://localhost/index-test.php/profile/1">You</a> : Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas maximus dui et dolor convallis malesuada. Nulla aliquam congue mi, in vestibulum enim dictum in. Nullam in nulla vitae ex ...',
                 $truncatedText);
     }
 
@@ -258,7 +258,7 @@ Etiam eget iaculis nisl. Duis id malesuada orci. Mauris imperdiet ut elit rhoncu
         $event3 = $this->events('recordCreateActionCall');
         $callActionText = $event3->getText();
         $this->assertNotEmpty($callActionText);
-        $this->assertEquals('<a style="text-decoration:none;" href="http://localhost/index-test.php/profile/1"><span>Web Admin</span></a> logged a call (duration unknown) with <a class="contact-name" href="http://localhost/index-test.php/contacts/12345"><span>Testfirstname Testlastname</span></a>: Test call action',
+        $this->assertEquals('<a style="text-decoration:none;" href="http://localhost/index-test.php/profile/view/1"><span>Web Admin</span></a> logged a call (duration unknown) with <a class="contact-name" href="http://localhost/index-test.php/contacts/12345"><span>Testfirstname Testlastname</span></a>: Test call action',
                 $callActionText);
 
         $event4 = $this->events('recordCreateActionCall2');
@@ -454,7 +454,7 @@ Etiam eget iaculis nisl. Duis id malesuada orci. Mauris imperdiet ut elit rhoncu
         $event2 = $this->events('structuredFeedEvent2');
         $text2 = $event2->getText();
         $this->assertNotEmpty($text2);
-        $this->assertEquals('<a style="text-decoration:none;" href="http://localhost/index-test.php/profile/2"><span>Sales Rep</span></a>  &raquo; <a style="text-decoration:none;" href="http://localhost/index-test.php/profile/view/3"><span>Sales2 Rep2</span></a>: Targeted social post',
+        $this->assertEquals('<a style="text-decoration:none;" href="http://localhost/index-test.php/profile/view/2"><span>Sales Rep</span></a>  &raquo; <a style="text-decoration:none;" href="http://localhost/index-test.php/profile/view/3"><span>Sales2 Rep2</span></a>: Targeted social post',
                 $text2);
     }
 
@@ -472,7 +472,7 @@ Etiam eget iaculis nisl. Duis id malesuada orci. Mauris imperdiet ut elit rhoncu
         $event2 = $this->events('feedEvent2');
         $text2 = $event2->getText();
         $this->assertNotEmpty($text2);
-        $this->assertEquals('<a style="text-decoration:none;" href="http://localhost/index-test.php/profile/2"><span>Sales Rep</span></a>  &raquo; <a style="text-decoration:none;" href="http://localhost/index-test.php/profile/view/3"><span>Sales2 Rep2</span></a>: Targeted social post',
+        $this->assertEquals('<a style="text-decoration:none;" href="http://localhost/index-test.php/profile/view/2"><span>Sales Rep</span></a>  &raquo; <a style="text-decoration:none;" href="http://localhost/index-test.php/profile/view/3"><span>Sales2 Rep2</span></a>: Targeted social post',
                 $text2);
     }
 
@@ -828,12 +828,12 @@ Etiam eget iaculis nisl. Duis id malesuada orci. Mauris imperdiet ut elit rhoncu
         $event = $this->events('media');
         $text = $event->getText();
         $this->assertNotEmpty($text);
-        $this->assertEquals('<a href="http://localhost/index-test.php/profile/1">You</a>: <br>File: <a href="/index-test.php/media/1">Divers.jpg</a><br><img class="attachment-img" src="http://localhost/index-test.php/media/media/getFile/1/key/d84e7834f79223ad17981fe3f9e61b12ae5c012345cbc29bcfe1d7b982edc9b9" alt="" />',
+        $this->assertEquals('<a href="http://localhost/index-test.php/profile/1">You</a>: <br>File: <a href="http://localhost/index-test.php/media/media/1">Divers.jpg</a><br><img class="attachment-img" src="http://localhost/index-test.php/media/media/getFile/1/key/d84e7834f79223ad17981fe3f9e61b12ae5c012345cbc29bcfe1d7b982edc9b9" alt="" />',
                 $text);
 
         $truncatedText = $event->getText(array('truncated' => true));
         $this->assertNotEmpty($truncatedText);
-        $this->assertEquals('<a href="http://localhost/index-test.php/profile/1">You</a>: <br>File: <a href="/index-test.php/media/1">Divers.jpg</a>',
+        $this->assertEquals('<a href="http://localhost/index-test.php/profile/1">You</a>: <br>File: <a href="http://localhost/index-test.php/media/media/1">Divers.jpg</a>',
                 $truncatedText);
 
         $event2 = $this->events('mediaNoRecord');
@@ -852,7 +852,7 @@ Etiam eget iaculis nisl. Duis id malesuada orci. Mauris imperdiet ut elit rhoncu
         $event = $this->events('topicReply');
         $text = $event->getText();
         $this->assertNotEmpty($text);
-        $this->assertEquals('<a href="http://localhost/index-test.php/profile/1">You</a> posted a new reply to <a href="/index-test.php/topics/1?replyId=1">Test Topic</a>.',
+        $this->assertEquals('<a href="http://localhost/index-test.php/profile/1">You</a> posted a new reply to <a href="http://localhost/index-test.php/topics/1?replyId=1">Test Topic</a>.',
                 $text);
 
         $event2 = $this->events('topicReplyNoRecord');
