@@ -268,7 +268,7 @@ class Media extends X2Model {
 
     // return an img tag of this file
     // return '' if file is not an image
-    public function getImage($link = false, array $htmlOptions=array ()) {
+    public function getImage($link = false, array $htmlOptions=array ('encode'=>false)) {
         if (!$this->fileExists() || !$this->isImage()) {
             return '';
         }
