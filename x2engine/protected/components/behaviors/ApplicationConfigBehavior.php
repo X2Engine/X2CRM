@@ -592,6 +592,7 @@ Yii::app()->clientScript->registerScript(sprintf('%x', crc32(Yii::app()->name)),
             return rtrim($this->externalAbsoluteBaseUrl,'/') . $requestUrl;
                 
         }else{ // Offline URL generation
+            var_dump($params);
             return rtrim($this->externalAbsoluteBaseUrl,'/') .
                 (YII_UNIT_TESTING ? '/index-test.php/' : '/index.php/').
                 trim($route, '/').'?'.http_build_query($params, '', '&');
