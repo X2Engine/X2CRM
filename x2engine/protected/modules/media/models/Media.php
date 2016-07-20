@@ -504,8 +504,16 @@ class Media extends X2Model {
         } else {
             $name = $this->fileName;
         }
-        return CHtml::link(
-            $this->fileName, Yii::app()->controller->createUrl('/media/', array('view' => $this->id)));
+        if (!ResponseUtil::isCli()) {
+            return CHtml::link(
+                            $this->fileName,
+                            Yii::app()->controller->createUrl('/media/',
+                                    array('view' => $this->id)));
+        } else {
+            return CHtml::link($this->fileName,
+                            Yii::app()->absoluteBaseUrl . (YII_UNIT_TESTING ? '/index-test.php'
+                                        : '/index.php') . '/media/media/view/' . $this->id);
+        }
     }
     
     //

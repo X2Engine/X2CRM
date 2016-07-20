@@ -120,7 +120,7 @@ Etiam eget iaculis nisl. Duis id malesuada orci. Mauris imperdiet ut elit rhoncu
         $event2 = $this->events('feedEvent2');
         $otherAuthorText = EventTextFormatter::getAuthorText($event2);
         $this->assertNotEmpty($otherAuthorText);
-        $this->assertEquals('<a style="text-decoration:none;" href="http://localhost/index-test.php/profile/2"><span>Sales Rep</span></a> ',
+        $this->assertEquals('<a style="text-decoration:none;" href="http://localhost/index-test.php/profile/view/2"><span>Sales Rep</span></a> ',
                 $otherAuthorText);
 
         TestingAuxLib::suLogin('testuser');
@@ -132,7 +132,7 @@ Etiam eget iaculis nisl. Duis id malesuada orci. Mauris imperdiet ut elit rhoncu
 
         $testUserAdminAuthorText = EventTextFormatter::getAuthorText($event);
         $this->assertNotEmpty($testUserAdminAuthorText);
-        $this->assertEquals('<a style="text-decoration:none;" href="http://localhost/index-test.php/profile/1"><span>Web Admin</span></a> ',
+        $this->assertEquals('<a style="text-decoration:none;" href="http://localhost/index-test.php/profile/view/1"><span>Web Admin</span></a> ',
                 $testUserAdminAuthorText);
     }
 
@@ -246,7 +246,7 @@ Etiam eget iaculis nisl. Duis id malesuada orci. Mauris imperdiet ut elit rhoncu
         $event = $this->events('recordCreateAction');
         $actionText = $event->getText();
         $this->assertNotEmpty($actionText);
-        $this->assertEquals('A new <a class="action-frame-link" data-action-id="1" href="#">action</a> associated with the contact <a class="contact-name" href="http://localhost/index-test.php/contacts/12345"><span>Testfirstname Testlastname</span></a> has been assigned to <a style="text-decoration:none;" href="http://localhost/index-test.php/profile/1"><span>Web Admin</span></a>',
+        $this->assertEquals('A new <a class="action-frame-link" data-action-id="1" href="#">action</a> associated with the contact <a class="contact-name" href="http://localhost/index-test.php/contacts/12345"><span>Testfirstname Testlastname</span></a> has been assigned to <a style="text-decoration:none;" href="http://localhost/index-test.php/profile/view/1"><span>Web Admin</span></a>',
                 $actionText);
 
         $event2 = $this->events('recordCreateActionUnassigned');
@@ -300,7 +300,7 @@ Etiam eget iaculis nisl. Duis id malesuada orci. Mauris imperdiet ut elit rhoncu
         $event10 = $this->events('recordCreateAccountAction2');
         $targetedAccountActionText = $event10->getText();
         $this->assertNotEmpty($targetedAccountActionText);
-        $this->assertEquals('<a style="text-decoration:none;" href="http://localhost/index-test.php/profile/1"><span>Web Admin</span></a> created a new action for <a style="text-decoration:none;" href="http://localhost/index-test.php/profile/2"><span>Sales Rep</span></a>, <a class="action-frame-link" data-action-id="10" href="#">test</a>',
+        $this->assertEquals('<a style="text-decoration:none;" href="http://localhost/index-test.php/profile/1"><span>Web Admin</span></a> created a new action for <a style="text-decoration:none;" href="http://localhost/index-test.php/profile/view/2"><span>Sales Rep</span></a>, <a class="action-frame-link" data-action-id="10" href="#">test</a>',
                 $targetedAccountActionText);
 
         $event11 = $this->events('recordCreateAccountAction3');
@@ -454,7 +454,7 @@ Etiam eget iaculis nisl. Duis id malesuada orci. Mauris imperdiet ut elit rhoncu
         $event2 = $this->events('structuredFeedEvent2');
         $text2 = $event2->getText();
         $this->assertNotEmpty($text2);
-        $this->assertEquals('<a style="text-decoration:none;" href="http://localhost/index-test.php/profile/2"><span>Sales Rep</span></a>  &raquo; <a style="text-decoration:none;" href="http://localhost/index-test.php/profile/3"><span>Sales2 Rep2</span></a>: Targeted social post',
+        $this->assertEquals('<a style="text-decoration:none;" href="http://localhost/index-test.php/profile/2"><span>Sales Rep</span></a>  &raquo; <a style="text-decoration:none;" href="http://localhost/index-test.php/profile/view/3"><span>Sales2 Rep2</span></a>: Targeted social post',
                 $text2);
     }
 
@@ -472,7 +472,7 @@ Etiam eget iaculis nisl. Duis id malesuada orci. Mauris imperdiet ut elit rhoncu
         $event2 = $this->events('feedEvent2');
         $text2 = $event2->getText();
         $this->assertNotEmpty($text2);
-        $this->assertEquals('<a style="text-decoration:none;" href="http://localhost/index-test.php/profile/2"><span>Sales Rep</span></a>  &raquo; <a style="text-decoration:none;" href="http://localhost/index-test.php/profile/3"><span>Sales2 Rep2</span></a>: Targeted social post',
+        $this->assertEquals('<a style="text-decoration:none;" href="http://localhost/index-test.php/profile/2"><span>Sales Rep</span></a>  &raquo; <a style="text-decoration:none;" href="http://localhost/index-test.php/profile/view/3"><span>Sales2 Rep2</span></a>: Targeted social post',
                 $text2);
     }
 
@@ -644,7 +644,7 @@ Etiam eget iaculis nisl. Duis id malesuada orci. Mauris imperdiet ut elit rhoncu
         $event3 = $this->events('webActivityAnonContact');
         $webActivityAnonContactText = $event3->getText();
         $this->assertNotEmpty($webActivityAnonContactText);
-        $this->assertEquals('Anonymous contact <a href="http://localhost/index-test.php/marketing/anonContactView/1"><span>1</span></a> is currently on your website!',
+        $this->assertEquals('Anonymous contact <a href="http://localhost/index-test.php/marketing/marketing/anonContactView/1"><span>1</span></a> is currently on your website!',
                 $webActivityAnonContactText);
         
     }
@@ -657,7 +657,7 @@ Etiam eget iaculis nisl. Duis id malesuada orci. Mauris imperdiet ut elit rhoncu
         $event = $this->events('caseEscalated');
         $text = $event->getText();
         $this->assertNotEmpty($text);
-        $this->assertEquals('<a href="http://localhost/index-test.php/profile/1">You</a> escalated service case <a href="http://localhost/index-test.php/services/1"><span>1</span></a> to <a style="text-decoration:none;" href="http://localhost/index-test.php/profile/2"><span>Sales Rep</span></a>',
+        $this->assertEquals('<a href="http://localhost/index-test.php/profile/1">You</a> escalated service case <a href="http://localhost/index-test.php/services/1"><span>1</span></a> to <a style="text-decoration:none;" href="http://localhost/index-test.php/profile/view/2"><span>Sales Rep</span></a>',
                 $text);
 
         $event2 = $this->events('caseEscalated2');

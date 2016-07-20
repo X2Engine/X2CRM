@@ -811,11 +811,17 @@ class EventTextFormatter {
         $reply = TopicReplies::model()->findByPk($event->associationId);
         if (isset($reply)) {
             if (!Yii::app()->params->isMobileApp) {
+                if (!ResponseUtil::isCli()) {
+                    $url = Yii::app()->controller->createUrl(
+                            '/topics/topics/view',
+                            array('id' => $reply->topic->id, 'replyId' => $reply->id));
+                } else {
+                    $url = Yii::app()->absoluteBaseUrl . (YII_UNIT_TESTING ? '/index-test.php'
+                                        : '/index.php') . '/topics/topics/view/' . $reply->topic->id . '?replyId=' . $reply->id;
+                }
                 $topicLink = X2Html::link(
                                 $reply->topic->name,
-                                Yii::app()->controller->createUrl(
-                                        '/topics/topics/view',
-                                        array('id' => $reply->topic->id, 'replyId' => $reply->id)));
+                                $url);
             } else {
                 $topicLink = $reply->topic->name;
             }
