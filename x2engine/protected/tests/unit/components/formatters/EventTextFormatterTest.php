@@ -72,7 +72,8 @@ class EventTextFormatterTest extends X2DbTestCase {
             'services' => 'Services',
             'media' => 'Media',
             'topics' => 'Topics',
-            'topicReplies' => 'TopicReplies'
+            'topicReplies' => 'TopicReplies',
+            'docs' => 'Docs'
         );
     }
 
@@ -270,7 +271,7 @@ Etiam eget iaculis nisl. Duis id malesuada orci. Mauris imperdiet ut elit rhoncu
         $event5 = $this->events('recordCreateActionNote');
         $noteActionText = $event5->getText();
         $this->assertNotEmpty($noteActionText);
-        $this->assertEquals('<a style="text-decoration:none;" href="http://localhost/index-test.php/profile/1"><span>Web Admin</span></a> posted a comment on <a class="contact-name" href="http://localhost/index-test.php/contacts/12345"><span>Testfirstname Testlastname</span></a>: Test note action',
+        $this->assertEquals('<a style="text-decoration:none;" href="http://localhost/index-test.php/profile/view/1"><span>Web Admin</span></a> posted a comment on <a class="contact-name" href="http://localhost/index-test.php/contacts/12345"><span>Testfirstname Testlastname</span></a>: Test note action',
                 $noteActionText);
 
         $event6 = $this->events('recordCreateActionNote2');
@@ -282,7 +283,7 @@ Etiam eget iaculis nisl. Duis id malesuada orci. Mauris imperdiet ut elit rhoncu
         $event7 = $this->events('recordCreateActionTime');
         $timeActionText = $event7->getText();
         $this->assertNotEmpty($timeActionText);
-        $this->assertEquals('<a style="text-decoration:none;" href="http://localhost/index-test.php/profile/1"><span>Web Admin</span></a> logged 0 minutes on <a class="contact-name" href="http://localhost/index-test.php/contacts/12345"><span>Testfirstname Testlastname</span></a>: Test time action',
+        $this->assertEquals('<a style="text-decoration:none;" href="http://localhost/index-test.php/profile/view/1"><span>Web Admin</span></a> logged 0 minutes on <a class="contact-name" href="http://localhost/index-test.php/contacts/12345"><span>Testfirstname Testlastname</span></a>: Test time action',
                 $timeActionText);
 
         $event8 = $this->events('recordCreateActionTime2');
@@ -294,13 +295,13 @@ Etiam eget iaculis nisl. Duis id malesuada orci. Mauris imperdiet ut elit rhoncu
         $event9 = $this->events('recordCreateAccountAction');
         $accountActionText = $event9->getText();
         $this->assertNotEmpty($accountActionText);
-        $this->assertEquals('<a style="text-decoration:none;" href="http://localhost/index-test.php/profile/1"><span>Web Admin</span></a> created a new action, <a class="action-frame-link" data-action-id="9" href="#">test</a>',
+        $this->assertEquals('<a style="text-decoration:none;" href="http://localhost/index-test.php/profile/view/1"><span>Web Admin</span></a> created a new action, <a class="action-frame-link" data-action-id="9" href="#">test</a>',
                 $accountActionText);
 
         $event10 = $this->events('recordCreateAccountAction2');
         $targetedAccountActionText = $event10->getText();
         $this->assertNotEmpty($targetedAccountActionText);
-        $this->assertEquals('<a style="text-decoration:none;" href="http://localhost/index-test.php/profile/1"><span>Web Admin</span></a> created a new action for <a style="text-decoration:none;" href="http://localhost/index-test.php/profile/view/2"><span>Sales Rep</span></a>, <a class="action-frame-link" data-action-id="10" href="#">test</a>',
+        $this->assertEquals('<a style="text-decoration:none;" href="http://localhost/index-test.php/profile/view/1"><span>Web Admin</span></a> created a new action for <a style="text-decoration:none;" href="http://localhost/index-test.php/profile/view/2"><span>Sales Rep</span></a>, <a class="action-frame-link" data-action-id="10" href="#">test</a>',
                 $targetedAccountActionText);
 
         $event11 = $this->events('recordCreateAccountAction3');
@@ -828,12 +829,12 @@ Etiam eget iaculis nisl. Duis id malesuada orci. Mauris imperdiet ut elit rhoncu
         $event = $this->events('media');
         $text = $event->getText();
         $this->assertNotEmpty($text);
-        $this->assertEquals('<a href="http://localhost/index-test.php/profile/1">You</a>: <br>File: <a href="http://localhost/index-test.php/media/media/1">Divers.jpg</a><br><img class="attachment-img" src="http://localhost/index-test.php/media/media/getFile/1/key/d84e7834f79223ad17981fe3f9e61b12ae5c012345cbc29bcfe1d7b982edc9b9" alt="" />',
+        $this->assertEquals('<a href="http://localhost/index-test.php/profile/1">You</a>: <br>File: <a href="http://localhost/index-test.php/media/media/view/1">Divers.jpg</a><br><img class="attachment-img" src="http://localhost/index-test.php/media/media/getFile/1/key/d84e7834f79223ad17981fe3f9e61b12ae5c012345cbc29bcfe1d7b982edc9b9" alt="" />',
                 $text);
 
         $truncatedText = $event->getText(array('truncated' => true));
         $this->assertNotEmpty($truncatedText);
-        $this->assertEquals('<a href="http://localhost/index-test.php/profile/1">You</a>: <br>File: <a href="http://localhost/index-test.php/media/media/1">Divers.jpg</a>',
+        $this->assertEquals('<a href="http://localhost/index-test.php/profile/1">You</a>: <br>File: <a href="http://localhost/index-test.php/media/media/view/1">Divers.jpg</a>',
                 $truncatedText);
 
         $event2 = $this->events('mediaNoRecord');
@@ -852,7 +853,7 @@ Etiam eget iaculis nisl. Duis id malesuada orci. Mauris imperdiet ut elit rhoncu
         $event = $this->events('topicReply');
         $text = $event->getText();
         $this->assertNotEmpty($text);
-        $this->assertEquals('<a href="http://localhost/index-test.php/profile/1">You</a> posted a new reply to <a href="http://localhost/index-test.php/topics/1?replyId=1">Test Topic</a>.',
+        $this->assertEquals('<a href="http://localhost/index-test.php/profile/1">You</a> posted a new reply to <a href="http://localhost/index-test.php/topics/topics/view/1?replyId=1">Test Topic</a>.',
                 $text);
 
         $event2 = $this->events('topicReplyNoRecord');
