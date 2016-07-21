@@ -9,7 +9,7 @@
  */
 
 Yii::import('system.test.CTestCase');
-require_once('SeleniumTestCase.php');
+require_once('PHPUnit/Extensions/SeleniumTestCase.php');
 
 /**
  * CWebTestCase is the base class for Web-based functional test case classes.
