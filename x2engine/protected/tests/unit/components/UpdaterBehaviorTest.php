@@ -835,7 +835,6 @@ class UpdaterBehaviorTest extends FileOperTestCase {
      * @throws PHPUnit_Framework_AssertionFailedError 
      */
     public function testEnactChanges(){
-		$this->markTestSkipped();
         $ube = $this->instantiateUBe(array(
             'scenario'=>'update',
             'version'=>'999',
