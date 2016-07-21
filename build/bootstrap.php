@@ -10,10 +10,10 @@ if (file_exists($testDir . DIRECTORY_SEPARATOR . 'vendor' . DIRECTORY_SEPARATOR 
 }
 $yiit=implode(DIRECTORY_SEPARATOR,array($testDir,'..','..','framework','yiit.php'));
 $config=require_once(implode(DIRECTORY_SEPARATOR,array($testDir,'..','config','test.php')));
-PHPUnit_Extensions_SeleniumTestCase::shareSession(true);
 // Some last-minute modifications (for unit testing only)
 $config['params']['noSession'] = true;
 require_once($yiit);
+PHPUnit_Extensions_SeleniumTestCase::shareSession(true);
 // Automatically write logs immediately so that framework assertion errors don't
 // cause important debugging messages to be lost
 Yii::getLogger()->autoFlush = 1;
