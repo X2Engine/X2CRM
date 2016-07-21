@@ -372,7 +372,7 @@ class ImportExportBehavior extends CBehavior {
         }
         if (empty($meta)) {
             $_SESSION['errors'] = Yii::t('admin', "Empty CSV or no metadata specified");
-            $this->redirect('importModels');
+            $this->owner->redirect('importModels');
         }
 
         // Add the import failures column to the failed records meta
@@ -1250,7 +1250,7 @@ class ImportExportBehavior extends CBehavior {
         $importMap = json_decode($importMap, true);
         if ($importMap === null) {
             $_SESSION['errors'] = Yii::t('admin', 'Invalid JSON string specified');
-            $this->redirect('importModels');
+            $this->owner->redirect('importModels');
         }
         $_SESSION['importMap'] = $importMap;
 
