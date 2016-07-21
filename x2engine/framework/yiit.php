@@ -20,3 +20,4 @@ require_once(dirname(__FILE__).'/yii.php');
 Yii::import('system.test.CTestCase');
 Yii::import('system.test.CDbTestCase');
 Yii::import('system.test.CWebTestCase');
+Yii::import('system.test.SeleniumTestCase');
