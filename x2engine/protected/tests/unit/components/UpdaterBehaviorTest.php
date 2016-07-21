@@ -1255,7 +1255,6 @@ class UpdaterBehaviorTest extends FileOperTestCase {
      * This won't be necessary most of the time. It is a time-consuming test.
      */
     public function testMakeDatabaseBackup(){
-		$this->markTestSkipped();
         $ube = $this->instantiateUBe();
         $this->setupTestTables();
         $ube->makeDatabaseBackup();
