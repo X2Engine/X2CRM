@@ -193,21 +193,28 @@ X2Html::getFlashes ();
           class='ui-btn-left ui-btn show-left-menu-button'>
             <i class='fa fa-bars'></i>
         </a>
-        <a href='<?php echo Yii::app()->createAbsoluteUrl ('profile/mobileActivity'); ?>' 
-          style='margin-left: 50px;' 
-          class='ui-btn-left ui-btn show-left-menu-button-right'>
-            <i class='fa fa-home'></i>
-        </a>
+        <?php
+        $currentUrl = Yii::app()->request->url;
+        if (strpos($currentUrl, '/mobile/login') == false){
+        ?>
+            <a href='<?php echo Yii::app()->createAbsoluteUrl ('profile/mobileActivity'); ?>' 
+              style='margin-left: 50px;' 
+              class='ui-btn-left ui-btn show-left-menu-button-right'>
+                <i class='fa fa-home'></i>
+            </a>
+        <?php
+        }
+        ?>
         <?php
         if (MobileModule::getPlatform () === 'iOS') {
         ?>
-        <div class='header-back-button'
-          style='display: none;'>
-            <i class='fa fa-chevron-left'></i>
-            <?php
-            echo CHtml::encode (Yii::t('app', 'Back'));
-            ?>
-        </div>
+            <div class='header-back-button'
+              style='display: none;'>
+                <i class='fa fa-chevron-left'></i>
+                <?php
+                echo CHtml::encode (Yii::t('app', 'Back'));
+                ?>
+            </div>
         <?php
         }
         ?>
