@@ -872,9 +872,6 @@ class UpdaterBehaviorTest extends FileOperTestCase {
             unlink($lockFile);
         
         // Prepare the database:
-        if(X2_TEST_DEBUG_LEVEL > 1){
-            echo "Setting up test tables...\n";
-        }
         $this->setupTestTables();
         $sqlToRun = array();
         foreach($this->testTables as $type => $tables){ // Compose update SQL
@@ -902,17 +899,11 @@ class UpdaterBehaviorTest extends FileOperTestCase {
         $ube->edition = $manifest['fromEdition'];
 
         // Back up configuration (it will be overwritten in the test, eventually)
-        if(X2_TEST_DEBUG_LEVEL > 1){
-            echo "Backing up config files...\n";
-        }
         $this->configFile = implode(DIRECTORY_SEPARATOR,array($ube->webRoot,'protected','config','X2Config.php'));
         copy($this->configFile,"{$this->configFile}.bak");
         $ube->regenerateConfig($manifest['fromVersion'],$manifest['updaterVersion'],$manifest['buildDate']);
 
         // Make the backup (expected to happen before running enactChanges):
-        if(X2_TEST_DEBUG_LEVEL > 1){
-            echo "Making database backup...\n";
-        }
         $ube->makeDatabaseBackup();
 
         // Make a copy that won't get deleted until later (because we can use it
@@ -929,9 +920,6 @@ class UpdaterBehaviorTest extends FileOperTestCase {
         $this->prereq($ube,'checksums with actual files');
         $ube->checkSums = array_intersect_key($ube->checkSums,array('manifest.json'=>$ube->checkSums['manifest.json']));
         
-        if(X2_TEST_DEBUG_LEVEL > 1){
-            echo "Testing failure database recovery...\n";
-        }
         try{
             $this->obStart();
             $ube->enactChanges(true);
@@ -962,9 +950,6 @@ class UpdaterBehaviorTest extends FileOperTestCase {
         array_pop($manifest['data'][0]['sqlList']);
         $ube->manifest = $manifest;
 
-        if(X2_TEST_DEBUG_LEVEL > 1){
-            echo "Test enacting changes...\n";
-        }
         $this->obStart();
         $ube->enactChanges(true);
         $this->obEndClean();
@@ -995,9 +980,6 @@ class UpdaterBehaviorTest extends FileOperTestCase {
         $admin->save();
 
         // All done.
-        if(X2_TEST_DEBUG_LEVEL > 1){
-            echo "Cleaning up...\n";
-        }
         $this->dropTestTables();
         $this->removeTestDirs();
     }
