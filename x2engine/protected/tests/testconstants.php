@@ -5,7 +5,7 @@
  * 1 = Output names of test classes and statuses of tests
  * 2 = Output names of test classes and methods and detailed information within tests
  */
-defined('X2_TEST_DEBUG_LEVEL') or define('X2_TEST_DEBUG_LEVEL',2);
+defined('X2_TEST_DEBUG_LEVEL') or define('X2_TEST_DEBUG_LEVEL',0);
 
 /*
  * Constant for running either costly or otherwise prohibitive tests. If false,
