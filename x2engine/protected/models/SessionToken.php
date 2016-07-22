@@ -129,6 +129,8 @@ class SessionToken extends CActiveRecord {
     public static function cleanUpSessions () {
         // Only select users with active sessions to clear out, in case there are
         // dozens of inactive users, to make things more efficient:
+        // code for putting an expiration date on tokens
+        /*
         $users = Yii::app()->db->createCommand()
                 ->select('x2_users.id,x2_users.username')
                 ->from('x2_users')
@@ -146,14 +148,23 @@ class SessionToken extends CActiveRecord {
                 $session->delete();
             }
         }
-
+        */
+        
+        // code for putting an expiration date on tokens
         // check timeout on sessions not corresponding to any existing user
-        $defaultTimeout = 518400; //60*60*24*6 6 days
+        /* 
+         * $defaultTimeout = 518400; //60*60*24*6 6 days
         self::model ()->deleteAll (
             array (
                 'condition' => 'lastUpdated < :cutoff and 
                     user not in (select distinct (username) from x2_users)',
                 'params' => array (':cutoff' => time () - $defaultTimeout)
+            )
+        );
+         */
+        self::model ()->deleteAll (
+            array (
+                'condition' => 'user not in (select distinct (username) from x2_users)',
             )
         );
         
