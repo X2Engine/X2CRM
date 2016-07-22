@@ -1408,7 +1408,12 @@ class UpdaterBehavior extends ResponseBehavior {
                     else
                         $prog = 'mysql.exe';
                 }
-                $this->_dbCommand = $prog." -h{$this->dbParams['dbhost']} -u{$this->dbParams['dbuser']} -p{$this->dbParams['dbpass']} {$this->dbParams['dbname']}";
+                $passArg = '';
+                if(!empty($this->dbParams['dbpass'])){
+                    $quotedPass = escapeshellarg($this->dbParams['dbpass']);
+                    $passArg = " -p{$quotedPass}";
+                }
+                $this->_dbCommand = $prog." -h{$this->dbParams['dbhost']} -u{$this->dbParams['dbuser']}$passArg {$this->dbParams['dbname']}";
             } else{ // no other DB types supported yet..
                 return null;
             }
