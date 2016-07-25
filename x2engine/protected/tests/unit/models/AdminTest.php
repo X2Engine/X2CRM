@@ -71,6 +71,7 @@ class AdminTest extends X2DbTestCase {
     }
 
     public function testCountEmail() {
+		$this->assertTrue(false);
         $admin = Yii::app()->settings;
         $admin->emailCount = 0;
         $admin->emailInterval = 2;
