@@ -49,6 +49,11 @@ script:
   # functional tests
   #- phpunit --configuration build/phpunit_functional.xml x2engine/protected/tests/functional
 
-after_script:
+after_failure:
   # capture apache error log
   - sudo cat /var/log/apache2/error.log
+
+notifications:
+  slack:
+      secure: ieB8oa5aV1vIY1cQdk/eBHoFqOOrXfbjPs5YzstWoAC5WS3WO619ObpNjTiaZL/9/Ygr/b53eJ7ntAf6BRwwpbdJsxzk9HQy6/oHtvJxRwCJcmR3D64CAnKdeAQr64ohAXkNEHHVS8prFXy07tICntErvs00B9hnM9hjID0fOM6RbKP9Vqnw3Y7icC1JWgNOsxGrXB7AGA2smQNtEiiQmBNkg2RjpqtjaNdQXMk0/tzjEfwakn4SlwkKt6aRxJSWH+ezvP+5erFLqOFb5bSvjZcodDTWdOZVBS9NvUMusdvXItxo09Ynbv1qKUn1VzJG15bw2Id7pAtVwUg4hiT/0W8E8AoXfBO9Ag44r9SqQpelT33GzodgNjHx+N/jO/7nTlldZQ+P4KO/KavJcx/kfGVC+H2C1vjiAR1z4VHQdkifTjJUKdsm6MePRbACT8n69eW/05TYvQfKwkRcDsOVvntvrsyn+dKQWUnUWAYp+GaTLcfxsawF+uypltQ4aXDwAVdCLksTGBy+LLzYMCHRJRIFjHmgOSQ96Qs1iTMP0QYGQM3dJE6uGAJI8/rUlI1v+5cD+GdzABXjt0zulPLeCh8q2ROHVYWvMXmwXN1Xw+BjMQeeISTko9XiM2tWNU6JBFXFPNaxbIf0F4xfrS3dXkqpsXIj4pJacGNZghHsX4Y=
+
