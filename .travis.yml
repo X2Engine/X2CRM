@@ -45,7 +45,7 @@ before_script:
 # run tests
 script: 
   # unit tests
-  - phpunit --configuration build/phpunit_unit.xml x2engine/protected/tests/unit
+  - phpunit --configuration build/phpunit_unit.xml --coverage-text x2engine/protected/tests/unit
   # functional tests
   #- phpunit --configuration build/phpunit_functional.xml x2engine/protected/tests/functional
 
