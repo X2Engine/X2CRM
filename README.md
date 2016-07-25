@@ -1,6 +1,8 @@
 # X2CRM-ru
 Локализация на русский X2CRM Open Source CRM - PHP
 
+Мастер ветка перевода - X2CRM-ru
+
 
 accounts.php		14\14
 
