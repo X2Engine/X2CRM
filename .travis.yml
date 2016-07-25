@@ -31,6 +31,10 @@ before_script:
   - ~/.phpenv/versions/$(phpenv version-name)/sbin/php-fpm
   - sudo service apache2 restart
 
+  # prep for coverage output
+  - composer require satooshi/php-coveralls:~0.6@stable
+  - mkdir -p build/logs
+
   # create mysql database
   - mysql -e "DROP DATABASE IF EXISTS x2engine; CREATE DATABASE x2engine;" -u root;
 
@@ -45,13 +49,16 @@ before_script:
 # run tests
 script: 
   # unit tests
-  - phpunit --configuration build/phpunit_unit.xml x2engine/protected/tests/unit
+  - phpunit --configuration build/phpunit_unit.xml --coverage-clover build/logs/clover.xml x2engine/protected/tests/unit
   # functional tests
   #- phpunit --configuration build/phpunit_functional.xml x2engine/protected/tests/functional
 
 after_failure:
   # capture apache error log
   - sudo cat /var/log/apache2/error.log
+
+after_succes:
+  - php vendor/bin/coveralls -v
 
 notifications:
   slack:
