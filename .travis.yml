@@ -6,6 +6,19 @@ php:
   - '5.6'
   - '7.0'
 
+matrix:
+  include: 
+    - php: 5.3
+      env: COVERAGE='--coverage-clover build/logs/clover.xml'
+    - php: 5.4
+      env: COVERAGE=''
+    - php: 5.5
+      env: COVERAGE=''
+    - php: 5.6
+      env: COVERAGE=''
+    - php: 7.0
+      env: COVERAGE=''
+
 # blacklist
 branches:
   only:
@@ -32,7 +45,7 @@ before_script:
   - sudo service apache2 restart
 
   # prep for coverage output
-  - composer require satooshi/php-coveralls:~0.6@stable
+  - composer require satooshi/php-coveralls '~1.0'
   - mkdir -p build/logs
 
   # create mysql database
@@ -49,7 +62,7 @@ before_script:
 # run tests
 script: 
   # unit tests
-  - phpunit --configuration build/phpunit_unit.xml --coverage-clover build/logs/clover.xml x2engine/protected/tests/unit
+  - phpunit --configuration build/phpunit_unit.xml $COVERAGE x2engine/protected/tests/unit
   # functional tests
   #- phpunit --configuration build/phpunit_functional.xml x2engine/protected/tests/functional
 
@@ -58,7 +71,7 @@ after_failure:
   - sudo cat /var/log/apache2/error.log
 
 after_succes:
-  - php vendor/bin/coveralls -v
+  - if [[ ${TRAVIS_PHP_VERSION:0:3} == "5.3" ]]; then php vendor/bin/coveralls -v; fi
 
 notifications:
   slack:
