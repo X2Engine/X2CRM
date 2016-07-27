@@ -6,30 +6,30 @@
                 stopOnFailure="false">
 <filter>
   <whitelist processUncoveredFilesFromWhitelist="true">
-    <directory suffix=".php">../components</directory>
-    <directory suffix=".php">../models</directory>
-    <directory suffix=".php">../modules</directory>
+    <directory suffix=".php">../x2engine/protected/components</directory>
+    <directory suffix=".php">../x2engine/protected/models</directory>
+    <directory suffix=".php">../x2engine/protected/modules</directory>
     <exclude>
-      <file>../components/GoogleAuthenticator.php</file>
-      <file>../components/x2flow/shortcodes.php</file>
-      <file>../components/TranslationManager.php</file>
-      <file>../models/formModels/MobileFormEditor.php</file>
-      <directory suffix=".php">../components/ThemeGenerator/templates</directory>
-      <directory suffix=".php">../components/phpMailer</directory>
-      <directory suffix=".php">../components/sortableWidget/views</directory>
-      <directory suffix=".php">../components/views</directory>
-      <directory suffix=".php">../components/WebFormDesigner/views</directory>
-      <directory suffix=".php">../components/LGPL</directory>
-      <directory suffix=".php">../components/TwitterAPI</directory>
-      <directory suffix=".php">../components/leftWidget/views</directory>
-      <directory suffix=".php">../components/x2flow/actions/incomplete</directory>
-      <directory suffix=".php">../components/x2flow/triggers/incomplete</directory>
-      <directory suffix=".php">../modules/*/controllers</directory>
-      <directory suffix=".php">../modules/*/views</directory>
-      <directory suffix=".php">../modules/*/components/views</directory>
-      <directory suffix=".php">../modules/*/components/actions</directory>
-      <directory suffix=".php">../modules/mobile/*</directory>
-      <directory suffix=".php">../modules/*/components/reports</directory>
+      <file>../x2engine/protected/components/GoogleAuthenticator.php</file>
+      <file>../x2engine/protected/components/x2flow/shortcodes.php</file>
+      <file>../x2engine/protected/components/TranslationManager.php</file>
+      <file>../x2engine/protected/models/formModels/MobileFormEditor.php</file>
+      <directory suffix=".php">../x2engine/protected/components/ThemeGenerator/templates</directory>
+      <directory suffix=".php">../x2engine/protected/components/phpMailer</directory>
+      <directory suffix=".php">../x2engine/protected/components/sortableWidget/views</directory>
+      <directory suffix=".php">../x2engine/protected/components/views</directory>
+      <directory suffix=".php">../x2engine/protected/components/WebFormDesigner/views</directory>
+      <directory suffix=".php">../x2engine/protected/components/LGPL</directory>
+      <directory suffix=".php">../x2engine/protected/components/TwitterAPI</directory>
+      <directory suffix=".php">../x2engine/protected/components/leftWidget/views</directory>
+      <directory suffix=".php">../x2engine/protected/components/x2flow/actions/incomplete</directory>
+      <directory suffix=".php">../x2engine/protected/components/x2flow/triggers/incomplete</directory>
+      <directory suffix=".php">../x2engine/protected/modules/*/controllers</directory>
+      <directory suffix=".php">../x2engine/protected/modules/*/views</directory>
+      <directory suffix=".php">../x2engine/protected/modules/*/components/views</directory>
+      <directory suffix=".php">../x2engine/protected/modules/*/components/actions</directory>
+      <directory suffix=".php">../x2engine/protected/modules/mobile/*</directory>
+      <directory suffix=".php">../x2engine/protected/modules/*/components/reports</directory>
     </exclude>
   </whitelist>
 </filter>
