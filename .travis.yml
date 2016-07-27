@@ -15,8 +15,8 @@ matrix:
 # blacklist
 branches:
   except:
-	- DemoServer
-	- TrialServer
+    - DemoServer
+    - TrialServer
 
 before_script:
   - sudo apt-get update
