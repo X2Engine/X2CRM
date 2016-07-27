@@ -9,8 +9,6 @@ php:
 # blacklist
 branches:
   except:
-    # master has no active development on it
-    - master
 	- DemoServer
 	- TrialServer
 
