@@ -67,20 +67,48 @@ $failedLoginsDataProvider = new CActiveDataProvider ('FailedLogins', array(
 
 ?>
 
-<script>
+  <script>
+  $( function() {
+    $( "#tabs" ).tabs().addClass( "ui-tabs-vertical ui-helper-clearfix" );
+    $( "#tabs li" ).removeClass( "ui-corner-top" ).addClass( "ui-corner-left" );
+  } );
     $( function() {
-        $( "#tabs" ).tabs();
-    } );
-</script>
+    var tabs = $( "#tabs" ).tabs();
+    tabs.find( ".ui-tabs-nav" ).sortable({
+        axis: "y",
+        update: function(event, ui) {
+          // This will trigger after a sort is completed
+          var ordering = "";
+          var $columns = $(".ui-tabs-nav");
+          $columns.each(function() {
+            ordering += this.id + "=" + $columns.index(this) + ";";
+          });
+          $.cookie("ordering", ordering);
+        },
+        stop: function() {
+          tabs.tabs( "refresh" );
+        }
+    });
+  } );
+  </script>
+  <style>
+  .ui-tabs-vertical { width: 55em; }
+  .ui-tabs-vertical .ui-tabs-nav { padding: .2em .1em .2em .2em; float: left; width: 20em; }
+  .ui-tabs-vertical .ui-tabs-nav li {height: 3.2em; clear: left; width: 100%; border-bottom-width: 1px !important; border-right-width: 0 !important; margin: 0 -1px .2em 0; }
+  .ui-tabs-vertical .ui-tabs-nav li a { display:block; width: 90%; height: 60%; }
+  .ui-tabs-vertical .ui-tabs-nav li.ui-tabs-active { padding-bottom: 0; padding-right: .1em; border-right-width: 1px; }
+  .ui-tabs-vertical .ui-tabs-panel { padding: 1em; float: right; width: 40em;}
+  </style>
 <style>
     .ui-widget-content a {
-        color: #004baf;
+        color: #004BAF;
     }
     a:focus, a:hover {
-        color: #006cfc;
+        color: #006CFC;
     }
+
 </style> 
-        <div class="span-20 cell admin-screen">
+        <div class="spanMax cell admin-screen">
             <div class="page-title x2-layout-island">
                 <h2 style="padding-left:0"><?php echo Yii::t('app','Administration Tools'); ?></h2>
                 <?php
@@ -120,7 +148,7 @@ $failedLoginsDataProvider = new CActiveDataProvider ('FailedLogins', array(
                     <?php echo Yii::t('app','Email: {email}',array('{email}' => CHtml::link('contact@x2engine.com','mailto:contact@x2engine.com')));?>
                 </div>
             </div>
-            <div id="tabs" >
+            <div id="tabs" class="form">
                 <ul>
                     <li><a href="#tabs-1">Customer Support</a></li>
                     <li><a href="#tabs-2">Documentation & Videos</a></li>
@@ -460,9 +488,8 @@ $failedLoginsDataProvider = new CActiveDataProvider ('FailedLogins', array(
         </div>
         
 
-        <div class="span-20 cell admin-screen">
+        <div class="spanMax cell admin-screen">
             <div class="form x2-layout-island">
-                <h2 id="admin-users"><?php echo Yii::t('admin','User Management'); ?></h2>
                 <?php
 
                     // Display a grid of failed login attempts
@@ -577,8 +604,4 @@ $failedLoginsDataProvider = new CActiveDataProvider ('FailedLogins', array(
 
 
 <br><br>
-<style>
-    .cell a{
-        text-decoration:none;
-    }
-</style>
+

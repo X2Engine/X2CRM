@@ -86,6 +86,24 @@
 }
 
 
+.ui-tabs-vertical { width: 55em; }
+.ui-tabs-vertical .ui-tabs-nav { padding: .2em .1em .2em .2em; float: left; width: 20em; }
+.ui-tabs-vertical .ui-tabs-nav li {height: 3.2em; clear: left; width: 100%; border-bottom-width: 1px !important; border-right-width: 0 !important; margin: 0 -1px .2em 0; }
+.ui-tabs-vertical .ui-tabs-nav li a { display:block; width: 90%; height: 60%; }
+.ui-tabs-vertical .ui-tabs-nav li.ui-tabs-active { padding-bottom: 0; padding-right: .1em; border-right-width: 1px; }
+.ui-tabs-vertical .ui-tabs-panel { padding: 1em; float: right; width: 40em;}
 
 
+.spanMax {
+    width: 890px;
+    height: 620px
+}
+#tabs .ui-tabs-active {
+  background: #D3D3D3;
+}
+
+
+.cell a{
+    text-decoration:none;
+}
 
