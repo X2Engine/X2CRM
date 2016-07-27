@@ -8,8 +8,11 @@ php:
 
 # blacklist
 branches:
-  only:
-    - jake_travis_ci 
+  except:
+    # master has no active development on it
+    - master
+	- DemoServer
+	- TrialServer
 
 before_script:
   - sudo apt-get update
