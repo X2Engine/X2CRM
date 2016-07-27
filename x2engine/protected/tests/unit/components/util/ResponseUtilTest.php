@@ -130,6 +130,9 @@ class ResponseUtilTest extends CURLTestCase {
         // A basic web response, without error:
         $ch = $this->getCurlHandle(array('{case}'=>'respond.errFalse'));
         $response = json_decode(curl_exec($ch),1);
+        if(X2_TEST_DEBUG_LEVEL > 1) {
+            var_dump($response);
+        }
         $this->assertTrue(is_array($response));
         $this->assertFalse($response['error']);
         $this->assertEquals('errFalse', $response['message']);
@@ -137,12 +140,18 @@ class ResponseUtilTest extends CURLTestCase {
         // With error:
         $ch = $this->getCurlHandle(array('{case}'=>'respond.errTrue'));
         $response = json_decode(curl_exec($ch),1);
+        if(X2_TEST_DEBUG_LEVEL > 1) {
+            var_dump($response);
+        }
         $this->assertTrue(is_array($response));
         $this->assertTrue($response['error']);
         $this->assertEquals('errTrue', $response['message']);
         $this->assertResponseCodeIs(400, $ch);
         // With extra attribute:
         $ch = $this->getCurlHandle(array('{case}'=>'respond.property'));
+        if(X2_TEST_DEBUG_LEVEL > 1) {
+            var_dump($response);
+        }
         $response = json_decode(curl_exec($ch),1);
         $this->assertResponseCodeIs(200, $ch);
         $this->assertArrayHasKey('property', $response);

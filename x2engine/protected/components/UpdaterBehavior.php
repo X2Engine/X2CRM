@@ -1357,8 +1357,12 @@ class UpdaterBehavior extends ResponseBehavior {
                     else
                         $prog = 'mysqldump.exe';
                 }
-                $quotedPass = escapeshellarg($this->dbParams['dbpass']);
-                $this->_dbBackupCommand = $prog." -h{$this->dbParams['dbhost']} -u{$this->dbParams['dbuser']} -p{$quotedPass} {$this->dbParams['dbname']}";
+                $passArg = '';
+                if(!empty($this->dbParams['dbpass'])){
+                    $quotedPass = escapeshellarg($this->dbParams['dbpass']);
+                    $passArg = " -p{$quotedPass}";
+                }
+                $this->_dbBackupCommand = $prog." -h{$this->dbParams['dbhost']} -u{$this->dbParams['dbuser']}$passArg {$this->dbParams['dbname']}";
             } else{ // no other database types supported yet...
                 return null;
             }
@@ -1404,7 +1408,12 @@ class UpdaterBehavior extends ResponseBehavior {
                     else
                         $prog = 'mysql.exe';
                 }
-                $this->_dbCommand = $prog." -h{$this->dbParams['dbhost']} -u{$this->dbParams['dbuser']} -p{$this->dbParams['dbpass']} {$this->dbParams['dbname']}";
+                $passArg = '';
+                if(!empty($this->dbParams['dbpass'])){
+                    $quotedPass = escapeshellarg($this->dbParams['dbpass']);
+                    $passArg = " -p{$quotedPass}";
+                }
+                $this->_dbCommand = $prog." -h{$this->dbParams['dbhost']} -u{$this->dbParams['dbuser']}$passArg {$this->dbParams['dbname']}";
             } else{ // no other DB types supported yet..
                 return null;
             }

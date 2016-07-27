@@ -83,6 +83,7 @@ class CampaignMailingBehaviorTest extends X2DbTestCase {
     }
 
     public function tearDown () {
+        TestingAuxLib::restoreController();
         self::restoreIniSettings ();
         return parent::tearDown ();
     }

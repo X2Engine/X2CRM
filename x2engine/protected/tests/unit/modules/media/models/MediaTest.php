@@ -82,6 +82,7 @@ class MediaTest extends X2DbTestCase {
         $expected = '<img class="attachment-img" src="'.$image->getPublicUrl ().'" alt="" />';
         $imageTag = $image->getImage();
         $this->assertEquals($expected, $imageTag);
+        TestingAuxLib::restoreController();
     }
         
     public function testGetPath() {

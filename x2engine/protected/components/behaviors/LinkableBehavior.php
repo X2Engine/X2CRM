@@ -125,11 +125,11 @@ class LinkableBehavior extends CActiveRecordBehavior {
     public function getUrl(){
         $url = null;
         // Use the controller
-        if(Yii::app()->controller instanceof CController && !Yii::app()->controller instanceof ProfileController) {
+        if(!ResponseUtil::isCli() && Yii::app()->controller instanceof CController && !Yii::app()->controller instanceof ProfileController) {
             $url = Yii::app()->controller->createAbsoluteUrl($this->getViewRoute (), array('id' => $this->owner->id));
         }
         if(empty($url)) { // Construct an absolute URL; no web request data available.
-            $url = Yii::app()->absoluteBaseUrl.'/index.php'.$this->getViewRoute ().'/'.$this->owner->id;
+            $url = Yii::app()->absoluteBaseUrl.(YII_UNIT_TESTING?'/index-test.php':'/index.php').$this->getViewRoute ().'/'.$this->owner->id;
         }
         return $url;
     }

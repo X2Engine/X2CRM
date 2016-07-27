@@ -54,12 +54,19 @@ class FieldFormatterTest extends X2DbTestCase {
             'contacts' => 'Contacts',
         );
     }
+    
+    private static $_oldServer;
+    private static $_oldController;
 
     /**
      * Add columns for custom fields
      */
     public static function setUpBeforeClass () {
         parent::setUpBeforeClass ();
+        
+        self::$_oldServer = $_SERVER;
+        self::$_oldController = Yii::app()->controller;
+        
         Yii::app()->controller = new ContactsController (
             'contacts', new ContactsModule ('contacts', null));
         $_SERVER['SERVER_NAME'] = 'http://localhost';
@@ -82,6 +89,11 @@ class FieldFormatterTest extends X2DbTestCase {
     public function setUp () {
         TestingAuxLib::loadControllerMock ();
         return parent::setUp ();
+    }
+    
+    public function tearDown(){
+        TestingAuxLib::restoreController();
+        parent::tearDown();
     }
 
     private static function tryAddCol ($model, $col, $type) {
@@ -132,7 +144,10 @@ class FieldFormatterTest extends X2DbTestCase {
         Contacts::model ()->resetFieldsPropertyCache ();
        AuxLib::debugLogR ('Contacts::model ()->getAttributes () = ');
         AuxLib::debugLogR (Contacts::model ()->getAttributes ());
-
+        
+        $_SERVER = self::$_oldServer;
+        Yii::app()->controller = self::$_oldController;
+        
         parent::tearDownAfterClass ();
     }
 
