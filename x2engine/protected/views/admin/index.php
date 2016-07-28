@@ -67,11 +67,13 @@ $failedLoginsDataProvider = new CActiveDataProvider ('FailedLogins', array(
 
 ?>
 
-  <script>
+<script>
   $( function() {
     $( "#tabs" ).tabs().addClass( "ui-tabs-vertical ui-helper-clearfix" );
     $( "#tabs li" ).removeClass( "ui-corner-top" ).addClass( "ui-corner-left" );
   } );
+  //Makes tabs sortable widgets
+  //X2TODO: Save sortable tabs
     $( function() {
     var tabs = $( "#tabs" ).tabs();
     tabs.find( ".ui-tabs-nav" ).sortable({
@@ -90,15 +92,7 @@ $failedLoginsDataProvider = new CActiveDataProvider ('FailedLogins', array(
         }
     });
   } );
-  </script>
-  <style>
-  .ui-tabs-vertical { width: 55em; }
-  .ui-tabs-vertical .ui-tabs-nav { padding: .2em .1em .2em .2em; float: left; width: 20em; }
-  .ui-tabs-vertical .ui-tabs-nav li {height: 3.2em; clear: left; width: 100%; border-bottom-width: 1px !important; border-right-width: 0 !important; margin: 0 -1px .2em 0; }
-  .ui-tabs-vertical .ui-tabs-nav li a { display:block; width: 90%; height: 60%; }
-  .ui-tabs-vertical .ui-tabs-nav li.ui-tabs-active { padding-bottom: 0; padding-right: .1em; border-right-width: 1px; }
-  .ui-tabs-vertical .ui-tabs-panel { padding: 1em; float: right; width: 40em;}
-  </style>
+</script>
 <style>
     .ui-widget-content a {
         color: #004BAF;
@@ -106,22 +100,72 @@ $failedLoginsDataProvider = new CActiveDataProvider ('FailedLogins', array(
     a:focus, a:hover {
         color: #006CFC;
     }
+    .spanMax {
+        width: 890px;
+        height: 600px
+    }
+    
+.ui-tabs-vertical {
+     width: 55em; 
+ }
+ 
+ .ui-tabs-vertical .ui-tabs-nav { 
+     padding: .2em .1em .2em .2em; float: left; width: 20em; 
+ }
+ 
+ .ui-tabs-vertical .ui-tabs-nav li {
+     height: 3.2em; 
+     clear: left; 
+     width: 100%; 
+     border-bottom-width: 1px !important; 
+     border-right-width: 0 !important; 
+     margin: 0 -1px .2em 0; 
+ }
+ 
+  .ui-tabs-vertical .ui-tabs-nav li a{ 
+     display:block;
+     width: 80%; 
+     height: 60%; 
+ }
+ 
+ .ui-tabs-vertical .ui-tabs-nav li.ui-tabs-active { 
+     padding-bottom: 0; 
+     padding-right: .1em; 
+     border-right-width: 1px; 
+ }
+    .ui-tabs-vertical .ui-tabs-panel { 
+        padding: 1em; 
+        float: right; 
+        width: 38em;
+        height: 35em;
+    }
+ .ui-tabs-vertical .ui-tabs-nav { 
+     padding: .2em .1em .2em .2em; float: left; width: 20em; 
+     background: #FFFFFF;
+ }
+ .ui-tabs .ui-tabs-nav>li {
+    background: #FFF;
+    font-size: 12.5px;
+    margin: 0 2px 0 0;
+    font-family: Verdana,Arial,sans-serif;
+    border-color: #FFF !important;
+
+}
+
+.ui-tabs .ui-tabs-nav li.ui-tabs-active a {
+    color: #007fff;
+}
+
+#tabs .ui-tabs-active {
+  background: #F1F1F1;
+}
+.page-title h2 {
+    line-height: 36px !important;
+    margin-top: 0px;
+}
 
 </style> 
         <div class="spanMax cell admin-screen">
-            <div class="page-title x2-layout-island">
-                <h2 style="padding-left:0"><?php echo Yii::t('app','Administration Tools'); ?></h2>
-                <?php
-
-                if(X2_PARTNER_DISPLAY_BRANDING){
-                    $partnerAbout = Yii::getPathOfAlias('application.partner').DIRECTORY_SEPARATOR.'aboutPartner.php';
-                    $partnerAboutExample = Yii::getPathOfAlias('application.partner').DIRECTORY_SEPARATOR.'aboutPartner_example.php';
-                    echo CHtml::link(Yii::t('app', 'About {product}', array('{product}' => CHtml::encode(X2_PARTNER_PRODUCT_NAME))), array('/site/page', 'view' => 'aboutPartner'), array('class' => 'x2-button right'));
-                }
-
-                echo CHtml::link(Yii::t('admin','About X2Engine'),array('/site/page','view'=>'about'),array('class'=>'x2-button right'));
-                ?>
-            </div>
 
             <?php //echo Yii::t('app','Welcome to the administration tool set.'); ?>
             <?php
@@ -135,7 +179,7 @@ $failedLoginsDataProvider = new CActiveDataProvider ('FailedLogins', array(
 
             ?>
             <div class="form x2-layout-island license-info-section">
-                <div class="row">
+                <div class="row" style="margin-left: 0px;">
                     <div class='cell span-10'>
                             <b>X2CRM | X2Engine - Enterprise CRM for Small Business</b><br>
                     </div>
@@ -148,22 +192,36 @@ $failedLoginsDataProvider = new CActiveDataProvider ('FailedLogins', array(
                     <?php echo Yii::t('app','Email: {email}',array('{email}' => CHtml::link('contact@x2engine.com','mailto:contact@x2engine.com')));?>
                 </div>
             </div>
+            <div class="page-title x2-layout-island">
+                <h2 style="padding-left:0"><?php echo Yii::t('app','Administration Tools'); ?></h2>
+                <?php
+
+                if(X2_PARTNER_DISPLAY_BRANDING){
+                    $partnerAbout = Yii::getPathOfAlias('application.partner').DIRECTORY_SEPARATOR.'aboutPartner.php';
+                    $partnerAboutExample = Yii::getPathOfAlias('application.partner').DIRECTORY_SEPARATOR.'aboutPartner_example.php';
+                    echo CHtml::link(Yii::t('app', 'About {product}', array('{product}' => CHtml::encode(X2_PARTNER_PRODUCT_NAME))), array('/site/page', 'view' => 'aboutPartner'), array('class' => 'x2-button right'));
+                }
+
+                echo CHtml::link(Yii::t('admin','About X2Engine'),array('/site/page','view'=>'about'),array('class'=>'x2-button right'));
+                ?>
+            </div>
+            <div class=" x2-layout-island">
             <div id="tabs" class="form">
                 <ul>
-                    <li><a href="#tabs-1">Customer Support</a></li>
-                    <li><a href="#tabs-2">Documentation & Videos</a></li>
-                    <li><a href="#tabs-3">User Management</a></li>
-                    <li><a href="#tabs-4">User Interface Settings</a></li>
-                    <li><a href="#tabs-5">Web Lead Capture and Routing</a></li>
-                    <li><a href="#tabs-6">Workflow & Process Tools</a></li>
-                    <li><a href="#tabs-7">Email Configuration & 3rd Party Connectors</a></li>
-                    <li><a href="#tabs-8">Data Import & Export Utilities</a></li>
-                    <li><a href="#tabs-9">X2Studio Module Customization Tools</a></li>
-                    <li><a href="#tabs-10">System Settings</a></li>
-                    <li><a href="#tabs-11">Security Settings</a></li>
+                    <li><div id="admin-support"><a href="#tabs-1">Customer Support</a></div></li>
+                    <li><div id="admin-doc-and-videos"> <a href="#tabs-2">Documentation & Videos</a></div></li>
+                    <li><div id="admin-users"><a href="#tabs-3">User Management</a></div></li>
+                    <li><div id="admin-ui-settings"><a href="#tabs-4">User Interface Settings</a></div></li>
+                    <li><div id="admin-lead-capture"><a href="#tabs-5">Web Lead Capture and Routing</a></div></li>
+                    <li><div id="admin-workflow"><a href="#tabs-6">Workflow & Process Tools</a></div></li>
+                    <li><div id="admin-email"><a href="#tabs-7">Email Configuration & Connectors</a></div></li>
+                    <li><div id="admin-import-export"><a href="#tabs-8">Data Import & Export Utilities</a></div></li>
+                    <li><div id="admin-x2studio"><a href="#tabs-9">X2Studio Customization Tools</a></div></li>
+                    <li><div id="admin-settings"><a href="#tabs-10">System Settings</a></div></li>
+                    <li><div id="admin-security"><a href="#tabs-11">Security Settings</a></div></li>
                 </ul>
                 <div id="tabs-1">
-                    <div class="form x2-layout-island">
+                    
                         <h2 id="admin-support"><?php echo Yii::t('admin','Customer Support'); ?></h2>
                         <div class="row">
                             <div class="cell span-6"><?php 
@@ -184,6 +242,8 @@ $failedLoginsDataProvider = new CActiveDataProvider ('FailedLogins', array(
                             <?php
                             $editionEnd ('pro');
                             ?>
+                        </div><br>
+                        <div class="row">
                             <div class="cell span-6"><?php 
                                 echo CHtml::encode(Yii::t('admin','X2CRM Open Source Support')); 
                                 ?>
@@ -194,10 +254,10 @@ $failedLoginsDataProvider = new CActiveDataProvider ('FailedLogins', array(
                             <?php
                             ?>
                         </div>
-                    </div>
+                    
                 </div>
                 <div id="tabs-2">
-                    <div class="form x2-layout-island">
+                    
                         <h2 id="admin-doc-and-videos"><?php echo Yii::t('admin','Documentation & Videos'); ?></h2>
                         <div class="row">
                             <div class="cell span-6"><?php 
@@ -225,7 +285,9 @@ $failedLoginsDataProvider = new CActiveDataProvider ('FailedLogins', array(
                                 echo CHtml::encode(
                                     Yii::t('admin','User and admin tutorial videos'));
                                 ?>
-                            </div>
+                            </div><br>
+                        </div><br>
+                        <div class="row">
                             <div class="cell span-6"><?php 
                                 echo CHtml::encode(
                                     Yii::t('admin','X2CRM Technical Documentation'));
@@ -240,12 +302,12 @@ $failedLoginsDataProvider = new CActiveDataProvider ('FailedLogins', array(
                                     Yii::t('admin','Class Reference'),
                                     'http://doc.x2crm.com'); 
                                 ?>
-                            </div>
+                            </div><br>
                         </div>
-                    </div>
+                    
                 </div>
                 <div id="tabs-3">
-                    <div class="form x2-layout-island">
+                    
                         <div class="row">
                             <h2 id="admin-users"><?php echo Yii::t('admin','User Management'); ?></h2>
                             <div class="cell span-6"><?php 
@@ -269,6 +331,8 @@ $failedLoginsDataProvider = new CActiveDataProvider ('FailedLogins', array(
                         <div class="row">
                             <div class="cell span-6"><?php $editionStart('pro'); ?><?php echo CHtml::link(Yii::t('admin','Edit User Permissions & Access Rules'),array('/admin/editRoleAccess')); ?><br><?php echo Yii::t('admin','Change access rules for roles');?><?php $editionEnd('pro'); ?></div>
                             <div class="cell span-6"><?php echo CHtml::link(Yii::t('admin','Manage Roles'),array('/admin/manageRoles')); ?><br><?php echo Yii::t('admin','Create and manage user roles');?></div>
+                        </div>
+                        <div class="row">
                             <div class="cell span-6"><?php echo CHtml::link(Yii::t('app','Groups'),array('/groups/groups/index')); ?><br><?php echo Yii::t('admin','Create and manage user groups');?></div>
                         </div><br>
                         <div class="row">
@@ -278,8 +342,8 @@ $failedLoginsDataProvider = new CActiveDataProvider ('FailedLogins', array(
                             <?php if(Yii::app()->settings->sessionLog){ ?>
                                 <div class="cell span-6"><?php echo CHtml::link(Yii::t('admin','View Session Log'),array('/admin/viewSessionLog')); ?><br><?php echo Yii::t('admin','View a log of user sessions with timestamps and statuses');?></div>
                             <?php } ?>
-                        </div><br>
-                        <div class="row">
+                        
+                        
                             <div class="cell span-6">
                                 <?php 
                                 echo CHtml::link(Yii::t('users','User Login History'),array('admin/userHistory')); 
@@ -290,10 +354,10 @@ $failedLoginsDataProvider = new CActiveDataProvider ('FailedLogins', array(
                                 ?>
                             </div>
                         </div>
-                    </div>
+                    
                 </div>
                 <div id="tabs-4">
-                    <div class="form x2-layout-island">
+                    
                         <div class="row">
                             <h2 id="admin-ui-settings"><?php echo Yii::t('admin','User Interface Settings'); ?></h2>
                             <div class="cell span-6">
@@ -309,12 +373,12 @@ $failedLoginsDataProvider = new CActiveDataProvider ('FailedLogins', array(
                                 <?php echo CHtml::link(Yii::t('admin','Manage Action Publisher Tabs'),array('/admin/manageActionPublisherTabs')); ?><br><?php echo Yii::t('admin','Enable or disable tabs in the action publisher');?>
                             </div><!-- .cell.span-6 -->
                             <?php $editionEnd('pro'); ?>
-                        </div>
+                        </div><br>
                         <div class="row">
                             <div class="cell span-6"><?php echo CHtml::link(Yii::t('admin','Manage Menu Items'),array('/admin/manageModules')); ?><br><?php echo Yii::t('admin','Re-order, add, or remove top bar links');?></div>
                             <div class="cell span-6"><?php echo CHtml::link(Yii::t('admin','Upload Your Logo'),array('/admin/uploadLogo')); ?><br><?php echo Yii::t('admin','Upload your own logo for the top menu bar and login screen');?></div>
                             <div class="cell span-6"><?php echo CHtml::link(Yii::t('admin','Add Top Bar Link'),array('/admin/createPage')); ?><br><?php echo Yii::t('admin','Add a link to the top bar');?></div>
-                        </div>
+                        </div><br>
                         <div class="row">
                             <div class="cell span-6"><?php echo CHtml::link(Yii::t('admin','Edit Global CSS'),array('/admin/editGlobalCss')); ?><br><?php echo Yii::t('admin','Edit globally-applied stylesheet');?></div>
                             <div class="cell span-6"><?php echo CHtml::link(Yii::t('admin','Mobile App Form Editor'),array('/admin/editMobileForms')); ?><br><?php 
@@ -329,10 +393,10 @@ $failedLoginsDataProvider = new CActiveDataProvider ('FailedLogins', array(
 
                             ?></div>
                         </div>
-                    </div>
+                    
                 </div>
                 <div id="tabs-5">
-                    <div class="form x2-layout-island">
+                    
                         <div class="row">
                             <h2 id="admin-lead-capture"><?php 
                                 echo Yii::t('admin','Web Lead Capture and Routing'); ?></h2>
@@ -345,10 +409,10 @@ $failedLoginsDataProvider = new CActiveDataProvider ('FailedLogins', array(
                             <div class="cell span-6"><?php echo CHtml::link(Yii::t('admin','Set Service Case Distribution'),array('/admin/setServiceRouting')); ?><br><?php echo Yii::t('admin','Change how service cases are distributed');?></div>
                             <div class="cell span-6"><?php $editionStart('pro'); ?><?php echo CHtml::link(Yii::t('admin','Web Tracker Setup'),array('/marketing/marketing/webTracker')); ?><br><?php echo Yii::t('admin','Configure and embed visitor tracking on your website');?><?php $editionEnd('pro'); ?></div>
                         </div><br>
-                    </div>
+                    
                 </div>
                 <div id="tabs-6">
-                    <div class="form x2-layout-island">
+                    
                         <div class="row">
                             <h2 id="admin-workflow"><?php echo Yii::t('admin','Workflow & Process Tools'); ?></h2>
                             <?php $editionStart('pro'); ?>
@@ -356,7 +420,7 @@ $failedLoginsDataProvider = new CActiveDataProvider ('FailedLogins', array(
                             <?php $editionEnd('pro'); ?>
                             <div class="cell span-6"><?php echo CHtml::link(Yii::t('admin','Manage Sales & Service Processes'),array('/workflow/index')); ?><br><?php echo Yii::t('admin','Create and manage processes for Sales, Service, or Custom modules');?></div>
                             <div class="cell span-6"><?php echo CHtml::link(Yii::t('admin','Process Settings'),array('/admin/workflowSettings')); ?><br><?php echo Yii::t('admin','Change advanced process settings');?></div>
-                        </div>
+                        </div><br>
                         <div class="row">
                             <?php $editionStart('pro'); ?>
                             <div class="cell span-6"><?php echo CHtml::link(Yii::t('admin','X2Workflow Settings'),array('/admin/flowSettings')); ?><br><?php echo Yii::t('admin','X2Workflow configuration options');?></div>
@@ -366,43 +430,45 @@ $failedLoginsDataProvider = new CActiveDataProvider ('FailedLogins', array(
                             <?php $editionEnd('pla'); ?>
                             <div class="cell span-6"><?php echo CHtml::link(Yii::t('admin','Manage Notification Criteria'),array('/admin/addCriteria')); ?><br><?php echo Yii::t('admin','Manage which events will trigger user notifications');?></div>
                         </div>
-                    </div>
+                    
                 </div>
                 <div id="tabs-7">
-                    <div class="form x2-layout-island">
+                    
                         <div class="row">
                             <h2 id="admin-email"><?php echo Yii::t('admin','Email Configuration & 3rd Party Connectors'); ?></h2>
                             <div class="cell span-6"><?php echo CHtml::link(Yii::t('admin','Email Settings'),array('/admin/emailSetup')); ?><br><?php echo Yii::t('admin','Configure X2CRM\'s email settings');?></div>
                             <div class="cell span-6"><?php echo CHtml::link(Yii::t('admin','Create Email Campaign'),array('/marketing/marketing/create')); ?><br><?php echo Yii::t('admin','Create an email marketing campaign');?></div>
                             <div class="cell span-6"><?php echo CHtml::link(Yii::t('admin','Manage Campaigns'),array('/marketing/marketing/index')); ?><br><?php echo Yii::t('admin','Manage your marketing campaigns');?></div>
-                        </div>
+                        </div><br>
                         <div class="row">
                             <?php $editionStart('pro'); ?>
                             <div class="cell span-6"><?php echo CHtml::link(Yii::t('admin','Email Capture'),array('/admin/emailDropboxSettings')); ?><br><?php echo Yii::t('admin','Settings for the "email dropbox", which allows X2CRM to receive and record email');?></div>
                             <?php $editionEnd('pro'); ?>
                             <div class="cell span-6"><?php echo CHtml::link(Yii::t('admin','Convert Template Images'),array('/admin/convertEmailTemplates')); ?><br><?php echo Yii::t('admin','Fix dead image links in email templates resulting from the 5.2/5.3 media module change');?></div>
                             <div class="cell span-6"><?php echo CHtml::link(Yii::t('admin','Google Integration'),array('/admin/googleIntegration')); ?><br><?php echo Yii::t('admin','Configure and enable Google integration');?></div>
-                        </div>
+                        </div><br>
                         <div class="row">
                             <div class="cell span-6"><?php echo CHtml::link(Yii::t('admin','Twitter Integration'),array('/admin/twitterIntegration')); ?><br><?php echo Yii::t('admin','Enter your Twitter app settings for Twitter widget');?></div>
                         </div>
-                    </div>
+                    
                 </div>
                 <div id="tabs-8">
-                    <div class="form x2-layout-island">
+                    
                         <div class="row">
                             <h2 id="admin-import-export"><?php 
                                 echo Yii::t('admin','Data Import & Export Utilities'); ?></h2>
                             <div class="cell span-6"><?php echo CHtml::link(Yii::t('admin','Import Records'),array('/admin/importModels')); ?><br><?php echo Yii::t('admin','Import records using a CSV template');?></div>
                             <div class="cell span-6"><?php echo CHtml::link(Yii::t('admin','Export Records'),array('/admin/exportModels')); ?><br><?php echo Yii::t('admin','Export records to a CSV file');?></div>
                             <div class="cell span-6"><?php /* echo CHtml::link(Yii::t('admin','X2Translations'),array('/admin/translationManager')); ?><br><?php echo Yii::t('admin','Add, remove and update message translations in the X2CRM language packs'); */?></div>
-                            <div class="cell span-6"><?php echo CHtml::link(Yii::t('admin','Import All Data'),array('/admin/import')); ?><br><?php echo Yii::t('admin','Import from a global export file');?></div>
                         </div>
+                        <div class="row">
+                            <div class="cell span-6"><?php echo CHtml::link(Yii::t('admin','Import All Data'),array('/admin/import')); ?><br><?php echo Yii::t('admin','Import from a global export file');?></div>
+                        </div><br>
                         <div class="row">
                             <div class="cell span-6"><?php echo CHtml::link(Yii::t('admin','Export All Data'),array('/admin/export')); ?><br><?php echo Yii::t('admin','Export all data (useful for making backups)');?></div>
                             <div class="cell span-6"><?php echo CHtml::link(Yii::t('admin','Tag Manager'),array('/admin/manageTags')); ?><br><?php echo Yii::t('admin','View a list of all used tags with options for deletion');?></div>
                             <div class="cell span-6"><?php echo CHtml::link(Yii::t('admin','Rollback Import'),array('/admin/rollbackImport')); ?><br><?php echo Yii::t('admin','Delete all records created by a previous import');?></div>
-                        </div>
+                        </div><br>
                         <div class="row">
                             <?php $editionStart('pro'); ?>
                             <div class="cell span-6"><?php echo CHtml::link(Yii::t('admin','Revert Merges'),array('/admin/undoMerge')); ?><br><?php echo Yii::t('admin','Revert record merges which users have performed in the app'); ?></div>
@@ -414,10 +480,10 @@ $failedLoginsDataProvider = new CActiveDataProvider ('FailedLogins', array(
                                     echo Yii::t('admin','View a list of all duplicates in the system and resolve them in bulk.');?></div>
                             <?php $editionEnd('pro'); ?>
                         </div>
-                    </div>
+                    
                 </div>
                 <div id="tabs-9">
-                    <div class="form x2-layout-island">
+                    
                         <div class="row">
                             <h2 id="admin-x2studio"><?php 
                                 echo Yii::t('admin','X2Studio Module Customization Tools'); ?></h2>
@@ -427,45 +493,45 @@ $failedLoginsDataProvider = new CActiveDataProvider ('FailedLogins', array(
                             <?php $editionStart('pro'); ?>
                             <div class="cell span-6"><?php echo CHtml::link(Yii::t('admin','X2Packager'),array('/admin/packager')); ?><br><?php echo Yii::t('admin','Import and Export packages to easily share and use system customizations');?></div>
                             <?php $editionEnd('pro'); ?>
-                        </div>
+                        </div><br>
                         <div class="row">
                             <div class="cell span-6"><?php echo CHtml::link(Yii::t('admin','Form Editor'),array('/admin/editor')); ?><br><?php echo Yii::t('admin','Drag and drop editor for forms');?></div>
                             <div class="cell span-6"><?php echo CHtml::link(Yii::t('admin','Delete a module or Page'),array('/admin/deleteModule')); ?><br><?php echo Yii::t('admin','Remove a custom module or page');?></div>
                             <div class="cell span-6"><?php echo CHtml::link(Yii::t('admin','Convert Modules'),array('/admin/convertCustomModules')); ?><br><?php echo Yii::t('admin','Convert your custom modules to be compatible with the latest version');?></div>
-                        </div>
+                        </div><br>
                         <div class="row">
                             <div class="cell span-6"><?php echo CHtml::link(Yii::t('admin','Import a module'),array('/admin/importModule')); ?><br><?php echo Yii::t('admin','Import a .zip of a module');?></div>
                             <div class="cell span-6"><?php echo CHtml::link(Yii::t('admin','Export a module'),array('/admin/exportModule')); ?><br><?php echo Yii::t('admin','Export one of your custom modules to a .zip');?></div>
                             <div class="cell span-6"><?php echo CHtml::link(Yii::t('admin','Manage Fields'),array('/admin/manageFields')); ?><br><?php echo Yii::t('admin','Customize fields for the modules');?></div>
-                        </div>
-                        <div class="row">
+
+
                             <div class="cell span-6"><?php echo CHtml::link(Yii::t('admin','Dropdown Editor'),array('/admin/manageDropDowns')); ?><br><?php echo Yii::t('admin','Manage dropdowns for custom fields');?></div>
                         </div>
-                    </div>
+                    
                 </div>
                 <div id="tabs-10">
-                    <div class="form x2-layout-island">
+                   
                         <div class="row">
                             <h2 id="admin-settings"><?php echo Yii::t('admin','System Settings'); ?></h2>
                             <div class="cell span-6"><?php echo CHtml::link(Yii::t('admin','Updater Settings'),array('/admin/updaterSettings')); ?><br><?php echo Yii::t('admin','Configure automatic updates and registration');?></div>
-                            <div class="cell span-6"><?php echo CHtml::link(Yii::t('admin','Update X2CRM'),array('/admin/updater')); ?><br><?php echo Yii::t('admin','The X2CRM remote update utility.');?></div>
-                            <div class="cell span-6"><?php echo CHtml::link(Yii::t('admin','General Settings'),array('/admin/appSettings')); ?><br><?php echo Yii::t('admin','Configure session timeout and chat poll rate.');?></div>
-                        </div>
+                            <div class="cell span-6"><?php echo CHtml::link(Yii::t('admin','Update X2CRM'),array('/admin/updater')); ?><br><?php echo Yii::t('admin','The X2CRM remote update utility.');?></div><br>
+                            <div class="cell span-6"><?php echo CHtml::link(Yii::t('admin','General Settings'),array('/admin/appSettings')); ?><br><?php echo Yii::t('admin','Configure session timeout and chat poll rate.');?></div><br>
+                        </div><br>
                         <div class="row">
                             <div class="cell span-6"><?php echo CHtml::link(Yii::t('admin','Activity Feed Settings'),array('/admin/activitySettings')); ?><br><?php echo Yii::t('admin','Configure global settings for the activity feed');?></div>
                             <div class="cell span-6">
                                 <?php echo CHtml::link(Yii::t('admin','Public Info Settings'),array('/admin/publicInfo')); ?><br><?php echo Yii::t('admin','Miscellaneous settings that control publicly-visible data'); ?>
-                            </div>
+                            </div><br>
                             <?php $editionStart('pro'); ?>
                             <div class="cell span-6">
                                 <?php echo CHtml::link(Yii::t('admin', 'Cron Table'), array('/admin/x2CronSettings')); ?><br><?php echo Yii::t('admin', 'Control the interval at which X2CRM will check for and run scheduled tasks'); ?>
                             </div>
                             <?php $editionEnd('pro'); ?>
                         </div>
-                    </div>
+                    
                 </div>
                 <div id="tabs-11">
-                    <div class="form x2-layout-island">
+                    
                         <div class="row">
                             <h2 id="admin-security"><?php echo Yii::t('admin', 'Security Settings'); ?></h2>
                             <?php $editionStart('pro'); ?>
@@ -479,17 +545,20 @@ $failedLoginsDataProvider = new CActiveDataProvider ('FailedLogins', array(
                             </div>
                             <?php $editionEnd('pla'); ?>
                             <?php $editionStart('pla'); ?>
+                        </div><br>
+                        <div class="row">
                             <div class="cell span-6"><?php echo CHtml::link(Yii::t('admin','Advanced Security Settings'),array('/admin/securitySettings')); ?><br><?php echo Yii::t('admin','Configure IP access control, failed login penalties, and user password requirements to help prevent unauthorized access to the system');?></div>
                             <?php $editionEnd('pla'); ?>
                         </div>
-                    </div>
+                    
                 </div>
+            </div>
             </div>
         </div>
         
-
+        
         <div class="spanMax cell admin-screen">
-            <div class="form x2-layout-island">
+            <div class="form x2-layout-island" style="margin-top: 38px;">
                 <?php
 
                     // Display a grid of failed login attempts
@@ -600,7 +669,7 @@ $failedLoginsDataProvider = new CActiveDataProvider ('FailedLogins', array(
             </div>
 
         </div>
-
+        
 
 
 <br><br>
