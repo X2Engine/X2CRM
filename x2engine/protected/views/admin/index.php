@@ -67,33 +67,6 @@ $failedLoginsDataProvider = new CActiveDataProvider ('FailedLogins', array(
 
 ?>
 
-<script>
-  $( function() {
-    $( "#tabs" ).tabs().addClass( "ui-tabs-vertical ui-helper-clearfix" );
-    $( "#tabs li" ).removeClass( "ui-corner-top" ).addClass( "ui-corner-left" );
-  } );
-  //Makes tabs sortable widgets
-  //X2TODO: Save sortable tabs
-    $( function() {
-    var tabs = $( "#tabs" ).tabs();
-    tabs.find( ".ui-tabs-nav" ).sortable({
-        axis: "y",
-        update: function(event, ui) {
-          // This will trigger after a sort is completed
-          var ordering = "";
-          var $columns = $(".ui-tabs-nav");
-          $columns.each(function() {
-            ordering += this.id + "=" + $columns.index(this) + ";";
-          });
-          $.cookie("ordering", ordering);
-        },
-        stop: function() {
-          tabs.tabs( "refresh" );
-        }
-    });
-  } );
-</script>
-
         <div class="spanMax cell admin-screen">
 
             <?php //echo Yii::t('app','Welcome to the administration tool set.'); ?>
@@ -137,17 +110,17 @@ $failedLoginsDataProvider = new CActiveDataProvider ('FailedLogins', array(
             <div class=" x2-layout-island">
             <div id="tabs" class="form">
                 <ul>
-                    <li><div id="admin-support"><a href="#tabs-1">Customer Support</a></div></li>
-                    <li><div id="admin-doc-and-videos"> <a href="#tabs-2">Documentation & Videos</a></div></li>
-                    <li><div id="admin-users"><a href="#tabs-3">User Management</a></div></li>
-                    <li><div id="admin-ui-settings"><a href="#tabs-4">User Interface Settings</a></div></li>
-                    <li><div id="admin-lead-capture"><a href="#tabs-5">Web Lead Capture and Routing</a></div></li>
-                    <li><div id="admin-workflow"><a href="#tabs-6">Workflow & Process Tools</a></div></li>
-                    <li><div id="admin-email"><a href="#tabs-7">Email Configuration & Connectors</a></div></li>
-                    <li><div id="admin-import-export"><a href="#tabs-8">Data Import & Export Utilities</a></div></li>
-                    <li><div id="admin-x2studio"><a href="#tabs-9">X2Studio Customization Tools</a></div></li>
-                    <li><div id="admin-settings"><a href="#tabs-10">System Settings</a></div></li>
-                    <li><div id="admin-security"><a href="#tabs-11">Security Settings</a></div></li>
+                    <li data-attr="tabs-1"><div id="admin-support"><a href="#tabs-1"><?php echo Yii::t('admin','Customer Support'); ?></a></div></li>
+                    <li data-attr="tabs-2"><div id="admin-doc-and-videos"> <a href="#tabs-2"><?php echo Yii::t('admin','Documentation & Videos'); ?></a></div></li>
+                    <li data-attr="tabs-3"><div id="admin-users"><a href="#tabs-3"><?php echo Yii::t('admin','User Management'); ?></a></div></li>
+                    <li data-attr="tabs-4"><div id="admin-ui-settings"><a href="#tabs-4"><?php echo Yii::t('admin','User Interface Settings'); ?></a></div></li>
+                    <li data-attr="tabs-5"><div id="admin-lead-capture"><a href="#tabs-5"><?php echo Yii::t('admin','Web Lead Capture and Routing'); ?></a></div></li>
+                    <li data-attr="tabs-6"><div id="admin-workflow"><a href="#tabs-6"><?php echo Yii::t('admin','Workflow & Process Tools'); ?></a></div></li>
+                    <li data-attr="tabs-7"><div id="admin-email"><a href="#tabs-7"><?php echo Yii::t('admin','Email Configuration & Connectors'); ?></a></div></li>
+                    <li data-attr="tabs-8"><div id="admin-import-export"><a href="#tabs-8"><?php echo Yii::t('admin','Data Import & Export Utilities'); ?></a></div></li>
+                    <li data-attr="tabs-9"><div id="admin-x2studio"><a href="#tabs-9"><?php echo Yii::t('admin','X2Studio Customization Tools'); ?></a></div></li>
+                    <li data-attr="tabs-10"><div id="admin-settings"><a href="#tabs-10"><?php echo Yii::t('admin','System Settings'); ?></a></div></li>
+                    <li data-attr="tabs-11"><div id="admin-security"><a href="#tabs-11"><?php echo Yii::t('admin','Security Settings'); ?></a></div></li>
                 </ul>
                 <div id="tabs-1">
                     
@@ -485,4 +458,41 @@ $failedLoginsDataProvider = new CActiveDataProvider ('FailedLogins', array(
             </div>
         </div>     
 <br><br>
-
+<script>
+  $( function() {
+    $( "#tabs" ).tabs().addClass( "ui-tabs-vertical ui-helper-clearfix" );
+    $( "#tabs li" ).removeClass( "ui-corner-top" ).addClass( "ui-corner-left" );
+    var ordering = $.cookie('admin-tab-ordering');
+    if (ordering !== null){
+        ordering = JSON.parse(ordering);
+        var $ul = $("#tabs ul");
+        var reordered = [];
+        for(var i = ordering.length-1; i >= 0; i--){
+            reordered.push($ul.find("[data-attr='"+ordering[i]+"']"));
+        }
+        $ul.empty();
+        for(var i = 0; i < reordered.length; i++){
+            $ul.prepend(reordered[i]);
+        }
+    }
+  } );
+  //Makes tabs sortable widgets
+    $( function() {
+    var tabs = $( "#tabs" ).tabs();
+    tabs.find( ".ui-tabs-nav" ).sortable({
+        axis: "y",
+        update: function(event, ui) {
+          // This will trigger after a sort is completed
+          var ordering = [];
+          var $columns = $(".ui-tabs-nav li");
+          $columns.each(function(index, column) {
+            ordering.push($(column).attr("data-attr"));
+          });
+          $.cookie("admin-tab-ordering", JSON.stringify(ordering));
+        },
+        stop: function() {
+          tabs.tabs( "refresh" );
+        }
+    });
+  } );
+</script>
