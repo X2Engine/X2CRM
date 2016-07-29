@@ -47,62 +47,63 @@ $this->onPageLoad ("
 
 
 <div class='event-view'>
-<?php
-
-$this->renderPartial (
-    $this->pathAliasBase.'views.mobile._activityEventItem', array (
-        'data' => $model,
-        'showComments' => false,
-    )
-);
-
-$this->widget (
-    'application.modules.mobile.components.RecordIndexListView', 
-    array (
-        'dataProvider' => $dataProvider,
-        'template' => '{items}{moreButton}',
-        'itemView' => 'application.modules.mobile.views.mobile._activityEventItem',
-        'viewData' => array (
-            'showComments' => false,
-            'showRecipient' => false,
-        ),
-        'htmlOptions' => array (
-            'class' => 'record-index-list-view comment-list-view'
-        ),
-    ));
-
-?>
-
-<div id='footer' data-role="footer" class='comment-publisher fixed-footer control-panel'>
     <?php
-    $form = $this->beginWidget ('MobileActiveForm', array (
-        'htmlOptions' => array (
-            'class' => 'comment-publisher-form',
-        ),
-        'jSClassParams' => array (
-            'validate' => 'js:function () {
-                return $.trim (this.form$.find ("input[type=\'text\']").val ());
-            }',
+
+    $this->renderPartial (
+        $this->pathAliasBase.'views.mobile._activityEventItem', array (
+            'data' => $model,
+            'showComments' => false,
         )
-    ));
+    );
+
+    $this->widget (
+        'application.modules.mobile.components.RecordIndexListView', 
+        array (
+            'dataProvider' => $dataProvider,
+            'template' => '{items}{moreButton}',
+            'itemView' => 'application.modules.mobile.views.mobile._activityEventItem',
+            'viewData' => array (
+                'showComments' => false,
+                'showRecipient' => false,
+            ),
+            'htmlOptions' => array (
+                'class' => 'record-index-list-view comment-list-view'
+            ),
+        ));
+
     ?>
-        <div class='photo-attachments-container'>
-        </div>
-        <div class='photo-attach-button icon-button'>
+
+    <div id='footer' data-role="footer" class='comment-publisher fixed-footer control-panel'>
         <?php
-        echo X2Html::fa ('camera');
-        ?>
-        </div>
-        <?php
-        echo $form->textField ($formModel, 'text', array (
-            'placeholder' => 'Add a reply...',
-            'class' => 'reply-box',
+        $form = $this->beginWidget ('MobileActiveForm', array (
+            'htmlOptions' => array (
+                'class' => 'comment-publisher-form',
+            ),
+            'jSClassParams' => array (
+                'validate' => 'js:function () {
+                    return $.trim (this.form$.find ("input[type=\'text\']").val ());
+                }',
+            )
         ));
         ?>
-         <div class='submit-button disabled'><?php  
-            echo CHtml::encode (Yii::t('mobile', 'Post'));
-         ?></div>
-    <?php
-    $this->endWidget ();    
-    ?>
+            <div class='photo-attachments-container'>
+            </div>
+            <div class='photo-attach-button icon-button'>
+            <?php
+            echo X2Html::fa ('camera');
+            ?>
+            </div>
+            <?php
+            echo $form->textField ($formModel, 'text', array (
+                'placeholder' => 'Add a reply...',
+                'class' => 'reply-box',
+            ));
+            ?>
+             <div class='submit-button disabled'><?php  
+                echo CHtml::encode (Yii::t('mobile', 'Post'));
+             ?></div>
+        <?php
+        $this->endWidget ();    
+        ?>
+    </div>
 </div>

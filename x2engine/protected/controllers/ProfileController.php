@@ -73,7 +73,7 @@ class ProfileController extends x2base {
                     'toggleEmailReport', 'deleteEmailReport', 'sendTestActivityReport',
                     'createProfileWidget','deleteSortableWidget','deleteTheme','previewTheme', 
                     'resetTours', 'disableTours', 'mobileIndex', 'mobileView', 'mobileActivity', 
-                    'mobileViewEvent', 'mobilePublisher'),
+                    'mobileViewEvent', 'mobileDeleteEvent','mobilePublisher'),
                 'users' => array('@'),
             ),
             array('deny', // deny all users

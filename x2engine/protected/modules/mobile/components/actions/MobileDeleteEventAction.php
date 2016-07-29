@@ -35,33 +35,27 @@
  * "Powered by X2Engine".
  **********************************************************************************/
 
-/*
- * Action that deletes an Action History item
- */
-class MobileDeleteItemAction extends MobileAction {
-    
+class MobileDeleteEventAction extends MobileAction {
+
+    public $pageDepth = 1;
+
     public function run ($id) {
-        parent::beforeRun ();
+        $formModel = new EventCommentPublisherFormModel;
+        $profile = Yii::app()->params->profile;
+        $model = $this->controller->lookUpModel ($id, 'Events');
+        $this->controller->dataUrl = Yii::app()->request->url;
+
+        if ($model->checkPermissions ('delete')) {
+            if ($model->delete ()) {
+                Yii::app()->user->setFlash ('success', Yii::t('app', 'Record deleted')); 
+                // X2TODO: ajax call to return to activity's comments if a activity's comment is deleted
+                // but redirect to 'mobileActivity' if the activity itself is deleted 
+                $this->controller->redirect (array ('mobileActivity'));
+           
+            } else {
+                throw new CHttpException (500, Yii::t('app', 'Failed to delete record.'));
+            } 
             
-        $model = $this->controller->loadModel ($id);
-        $modelClass = $this->controller->modelClass;
-        $authParams['X2Model'] = $model;
-        if ($this->controller->checkPermissions($model, 'delete') && 
-            $model instanceof X2Model &&
-            $this->controller->hasMobileAction ('mobileDelete') &&
-            Yii::app()->user->checkAccess(ucfirst ($this->controller->module->name).'Delete', $authParams)) {
-                if ($model->delete ()) {
-                    Yii::app()->user->setFlash ('success', Yii::t('app', 'Record deleted')); 
-                    // X2TODO: ajax call to re-render action history list after deletion of an action
-                    $this->controller->render (
-                        'application.modules.mobile.views.mobile.recordView',
-                        array (
-                            'model' => $model,
-                        )
-                    );
-                } else {
-                    throw new CHttpException (500, Yii::t('app', 'Failed to delete record.'));
-                }
         } else {
             $this->controller->denied ();
         }
