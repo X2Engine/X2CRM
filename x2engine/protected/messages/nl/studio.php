@@ -39,7 +39,6 @@
   'Create Popup Notification' => 'Maak Popup Notification',
   'Create Record' => 'Record maken',
   'Create Action for Record' => 'Maak Actie voor Record',
-  'Delete Record' => 'Record verwijderen',
   'Email Contact' => 'E-mail Contact',
   'Add to List' => 'Voeg toe aan lijst',
   'Remove from List' => 'Verwijderen uit lijst',

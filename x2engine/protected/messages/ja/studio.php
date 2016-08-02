@@ -39,7 +39,6 @@
   'Create Popup Notification' => 'ポップアップ通知の作成',
   'Create Record' => 'レコードの作成',
   'Create Action for Record' => '録音のためのアクションを作成します。',
-  'Delete Record' => 'レコードを削除する',
   'Email Contact' => 'Eメールでお問い合わせ',
   'Add to List' => 'リストに追加',
   'Remove from List' => 'リストから削除',

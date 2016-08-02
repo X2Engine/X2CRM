@@ -39,7 +39,6 @@
   'Create Popup Notification' => 'Δημιουργία Popup Κοινοποίηση',
   'Create Record' => 'Δημιουργία εγγραφής',
   'Create Action for Record' => 'Δημιουργία Δράσης για Εγγραφή',
-  'Delete Record' => 'Διαγραφή εγγραφής',
   'Email Contact' => 'Στείλτε e-mail Επικοινωνία',
   'Add to List' => 'Προσθήκη στη λίστα',
   'Remove from List' => 'Αφαιρέστε από τη λίστα',

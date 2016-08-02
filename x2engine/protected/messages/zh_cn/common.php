@@ -609,4 +609,5 @@
   'Details' => '详细信息',
   'Select All' => '全选',
   'User Login History' => '用户登录历史',
+  'Delete Record' => '删除记录',
 );

@@ -1098,4 +1098,6 @@
   'Configure the timeout in between failed login attempts, and the number of failed login attempts before the IP address is banned. To view a record of failed and successful login attempts, please visit the {link} page.' => 'Διαμορφώστε το χρονικό όριο στο μεταξύ αποτυχημένες προσπάθειες σύνδεσης, καθώς και τον αριθμό των αποτυχημένων προσπαθειών σύνδεσης, πριν απαγορευτεί η διεύθυνση IP. Για να δείτε ένα αρχείο απέτυχε και επιτυχημένες προσπάθειες σύνδεσης, παρακαλούμε επισκεφθείτε το {link} σελίδα.',
   'User History' => 'Ιστορία του χρήστη',
   'To manage user login settings, including failed logins before CAPTCHA and failed logins before ban, please visit the {link} page.' => 'Για να διαχειριστείτε τις ρυθμίσεις σύνδεσης του χρήστη, συμπεριλαμβανομένων των logins απέτυχε πριν CAPTCHA και απέτυχε συνδέσεις πριν από την απαγόρευση, παρακαλούμε επισκεφθείτε το {link} σελίδα.',
+  'Email Configuration & Connectors' => 'Διαμόρφωση email &amp; Συνδέσεις',
+  'X2Studio Customization Tools' => 'X2Studio Εργαλεία Προσαρμογή',
 );

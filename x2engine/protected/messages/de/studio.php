@@ -39,7 +39,6 @@
   'Create Popup Notification' => 'Erstellen Sie eine Popup-Benachrichtigung',
   'Create Record' => 'Datensatz erstellen',
   'Create Action for Record' => 'Aufgabe für Datensatz erstellen',
-  'Delete Record' => 'Datensatz löschen',
   'Email Contact' => 'E-Mail Kontakt',
   'Add to List' => 'Zur Liste hinzufügen',
   'Remove from List' => 'Aus Liste entfernen',

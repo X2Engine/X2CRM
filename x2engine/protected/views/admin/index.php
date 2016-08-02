@@ -460,8 +460,6 @@ $failedLoginsDataProvider = new CActiveDataProvider ('FailedLogins', array(
 <br><br>
 <script>
   $( function() {
-    $( "#tabs" ).tabs().addClass( "ui-tabs-vertical ui-helper-clearfix" );
-    $( "#tabs li" ).removeClass( "ui-corner-top" ).addClass( "ui-corner-left" );
     var ordering = $.cookie('admin-tab-ordering');
     if (ordering !== null){
         ordering = JSON.parse(ordering);
@@ -475,6 +473,8 @@ $failedLoginsDataProvider = new CActiveDataProvider ('FailedLogins', array(
             $ul.prepend(reordered[i]);
         }
     }
+    $( "#tabs" ).tabs().addClass( "ui-tabs-vertical ui-helper-clearfix" );
+    $( "#tabs li" ).removeClass( "ui-corner-top" ).addClass( "ui-corner-left" );
   } );
   //Makes tabs sortable widgets
     $( function() {
