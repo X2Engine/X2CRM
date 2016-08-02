@@ -1098,4 +1098,6 @@
   'Configure the timeout in between failed login attempts, and the number of failed login attempts before the IP address is banned. To view a record of failed and successful login attempts, please visit the {link} page.' => 'پیکربندی ایست در بین ورود ناموفق، و تعداد ورود ناموفق قبل از آدرس IP ممنوع است. برای مشاهده یک رکورد از ورود ناموفق و موفق، لطفا بازدید {link} صفحه.',
   'User History' => 'تاریخچه کاربر',
   'To manage user login settings, including failed logins before CAPTCHA and failed logins before ban, please visit the {link} page.' => 'برای مدیریت تنظیمات کاربر ورود به سیستم، از جمله باری شکست خورده قبل از CAPTCHA و باری شکست خورده قبل از ممنوعیت، لطفا بازدید {link} صفحه.',
+  'Email Configuration & Connectors' => 'پیکربندی ایمیل و اتصال دهنده ها',
+  'X2Studio Customization Tools' => 'X2Studio سفارشی کردن ابزار',
 );

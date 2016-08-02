@@ -39,7 +39,6 @@
   'Create Popup Notification' => '创建弹出通知',
   'Create Record' => '创建记录',
   'Create Action for Record' => '创建记录行动',
-  'Delete Record' => '删除记录',
   'Email Contact' => '电子邮件联系',
   'Add to List' => '添加到列表',
   'Remove from List' => '从列表中删除',

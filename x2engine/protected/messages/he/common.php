@@ -609,4 +609,5 @@
   'Details' => 'פרטים',
   'Select All' => 'בחר הכל',
   'User Login History' => 'היסטוריה משתמש כניסה',
+  'Delete Record' => 'מחק רשום',
 );

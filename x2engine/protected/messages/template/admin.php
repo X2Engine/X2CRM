@@ -1098,4 +1098,6 @@
   'Configure the timeout in between failed login attempts, and the number of failed login attempts before the IP address is banned. To view a record of failed and successful login attempts, please visit the {link} page.' => '',
   'User History' => '',
   'To manage user login settings, including failed logins before CAPTCHA and failed logins before ban, please visit the {link} page.' => '',
+  'Email Configuration & Connectors' => '',
+  'X2Studio Customization Tools' => '',
 );

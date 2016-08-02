@@ -36,7 +36,6 @@
   'Create Action for Record' => '',
   'Create Popup Notification' => '',
   'Create Record' => '',
-  'Delete Record' => '',
   'Email Contact' => '',
   'Post to Activity Feed' => '',
   'Push Web Content' => '',

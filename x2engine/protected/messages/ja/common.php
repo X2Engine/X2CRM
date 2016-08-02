@@ -609,4 +609,5 @@
   'Details' => '細部',
   'Select All' => 'すべて選択',
   'User Login History' => 'ユーザーログイン履歴',
+  'Delete Record' => 'レコードを削除します',
 );

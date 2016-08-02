@@ -39,7 +39,6 @@
   'Create Popup Notification' => 'Creare Notifica Popup',
   'Create Record' => 'Crea record',
   'Create Action for Record' => 'Crea azione per il record',
-  'Delete Record' => 'Elimina Record',
   'Email Contact' => 'Mail di contatto',
   'Add to List' => 'Aggiungi alla Lista',
   'Remove from List' => 'Cancella dalla lista',
