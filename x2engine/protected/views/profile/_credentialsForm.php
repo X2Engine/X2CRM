@@ -147,6 +147,10 @@ $defaultSecurity = CJSON::encode($modelClass->security);
             if ($('#Credentials_auth_user').length && $('#Credentials_auth_user').val ()) 
                 email = $('#Credentials_auth_user').val();
             var password = $("[name='Credentials[auth][password]']").val();
+            if (password.length < 1) {
+                alert("<?php echo Yii::t('app', 'Please enter a password to verify'); ?>");
+                return;
+            }
 
             // server, port, and security are not specified in the form for provider-specific
             // account types, such as GMail accounts
