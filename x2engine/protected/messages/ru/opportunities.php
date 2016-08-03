@@ -1,6 +1,6 @@
 <?php return array (
-  'Opportunity Record Details' => 'Подробнее Продажа Запись',
-  'Opportunities Stage' => 'Возможности Стадия',
+  'Opportunity Record Details' => 'Детализация сделки',
+  'Opportunities Stage' => 'Стадия сделки',
   'Create {opportunity}' => 'Создать {opportunity}',
   '{opportunity}:' => '{opportunity}',
   '{opportunities} List' => '{opportunities} Список',
