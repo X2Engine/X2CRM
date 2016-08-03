@@ -576,7 +576,7 @@ Yii::app()->clientScript->registerScript(sprintf('%x', crc32(Yii::app()->name)),
      * @param array $params Query parameters
      */
     public function createExternalUrl($route, $params = array()){
-        if($this->owner->controller instanceof CController){ 
+        if(!ResponseUtil::isCli() && $this->owner->controller instanceof CController){ 
             // Standard in-web-request URL generation
 
             if ($route === '') {

@@ -50,6 +50,9 @@ class MobileProfileControllerBehavior extends MobileControllerBehavior {
             'mobileViewEvent' => array (
                 'class' => 'MobileViewEventAction'
             ),
+            'mobileDeleteEvent' => array (
+                'class' => 'MobileDeleteEventAction'
+            ),
             'mobileView' => array (
                 'class' => 'MobileProfileViewAction'
             ),

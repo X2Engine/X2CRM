@@ -66,7 +66,8 @@ class CommonSiteControllerBehavior extends CBehavior {
         $sessionIdToken = null;
         if($isMobile){
             if(empty(Yii::app()->request->cookies['sessionToken']->value)){
-                $model->attributes = $_POST['LoginForm']; // get user input data
+                if(isset($_POST['LoginForm']))
+                    $model->attributes = $_POST['LoginForm']; // get user input data
 
                 $userModel = $model->getUser();
                 $isRealUser = $userModel instanceof User;
@@ -129,6 +130,7 @@ class CommonSiteControllerBehavior extends CBehavior {
 
             }
         } else {
+            if(isset($_POST['LoginForm']))
                 $model->attributes = $_POST['LoginForm']; // get user input data
 
                 $userModel = $model->getUser();

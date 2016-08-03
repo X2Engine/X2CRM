@@ -1098,4 +1098,6 @@
   'Configure the timeout in between failed login attempts, and the number of failed login attempts before the IP address is banned. To view a record of failed and successful login attempts, please visit the {link} page.' => 'IP 주소가 금지되기 전에 실패한 로그인 시도 사이의 시간 제한 및 실패한 로그인 시도 횟수를 구성합니다. 실패와 성공 로그인 시도의 기록을 보려면 방문하시기 바랍니다 {link} 페이지를.',
   'User History' => '사용자의 역사',
   'To manage user login settings, including failed logins before CAPTCHA and failed logins before ban, please visit the {link} page.' => 'CAPTCHA 전에 실패한 로그인 및 금지 전에 로그인 실패를 포함하여 사용자 로그인 설정을 관리하려면 방문하시기 바랍니다 {link} 페이지를.',
+  'Email Configuration & Connectors' => '전자 메일 구성 및 커넥터',
+  'X2Studio Customization Tools' => 'X2Studio 사용자 정의 도구',
 );

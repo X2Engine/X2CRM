@@ -495,6 +495,65 @@ div.form .background-row {
             @include fa-icon('shield');
         }
     }
+    
+    div {
+        
+        padding-top: 5px;
+        margin-left: 10px;
+
+        &::after, &::before {
+            font-size: 25px !important;
+            text-align: center;
+            vertical-align: middle;
+            float: left;
+        }
+
+        &#admin-ui-settings {
+            @include fa-icon('desktop', 'before');
+            //@include fa-icon('paint-brush', 'after');
+            &::after {
+                float: left;
+                width: 0;
+                font-size: 23px !important;
+                position: relative;
+                left: 29px;
+                top: -6px;
+            }
+        }
+        &#admin-import-export {
+            @include fa-icon('download');
+        }
+        &#admin-lead-capture {
+            @include fa-icon('check-square-o');
+        }
+        &#admin-doc-and-videos {
+            @include fa-icon('book');
+        }
+        &#admin-email {
+            @include fa-icon('envelope-o');
+        }
+        &#admin-settings {
+            @include fa-icon('gears');
+        }
+        &#admin-x2studio {
+            @include fa-icon('pencil');
+        }
+        &#admin-support {
+            @include x2-icon('service');
+        }
+        &#admin-users {
+            @include fa-icon('users');
+        }
+        &#admin-utilities {
+            @include fa-icon('wrench');
+        }
+        &#admin-workflow {
+            @include fa-icon('refresh');
+        }
+        &#admin-security {
+            @include fa-icon('shield');
+        }
+    }
 }
 
 div {

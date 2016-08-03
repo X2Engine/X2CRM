@@ -39,7 +39,6 @@
   'Create Popup Notification' => 'ליצור הודעה קופצת',
   'Create Record' => 'צור את הרשומה',
   'Create Action for Record' => 'צור פעולה לשיא',
-  'Delete Record' => 'למחוק את הרשומה',
   'Email Contact' => 'דוא"ל ליצירת קשר',
   'Add to List' => 'הוסף לרשימה',
   'Remove from List' => 'הסר מרשימה',

@@ -609,4 +609,5 @@
   'Details' => '세부',
   'Select All' => '모두 선택',
   'User Login History' => '사용자 로그인 기록',
+  'Delete Record' => '기록 삭제',
 );

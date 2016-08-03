@@ -608,4 +608,5 @@
   'Details' => 'Детали',
   'Select All' => 'Выбрать все',
   'User Login History' => 'Пользователь Войти История',
+  'Delete Record' => 'Удалить запись',
 );

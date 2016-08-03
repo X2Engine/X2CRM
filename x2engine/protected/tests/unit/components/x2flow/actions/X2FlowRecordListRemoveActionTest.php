@@ -49,6 +49,16 @@ class X2FlowRecordListRemoveActionText extends X2FlowTestBase {
         'listItems' => 'X2ListItem',
         'contacts' => 'Contacts',
     );
+    
+    public function setUp(){
+        TestingAuxLib::loadControllerMock();
+        return parent::setUp();
+    }
+    
+    public function tearDown(){
+        TestingAuxLib::restoreController();
+        parent::tearDown();
+    }
 
     /**
      * Ensure that contact is correctly removed from list by flow

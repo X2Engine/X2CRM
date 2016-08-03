@@ -39,7 +39,6 @@
   'Create Popup Notification' => 'ایجاد هشدار از طریق بالاپر',
   'Create Record' => 'ایجاد رکورد',
   'Create Action for Record' => 'اقدام برای ایجاد رکورد',
-  'Delete Record' => 'حذف رکورد',
   'Email Contact' => 'تماس با ایمیل',
   'Add to List' => 'افزودن به لیست',
   'Remove from List' => 'حذف از فهرست',

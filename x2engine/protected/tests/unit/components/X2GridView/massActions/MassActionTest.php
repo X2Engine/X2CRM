@@ -54,6 +54,21 @@ class MassActionTest extends X2DbTestCase {
         'tags' => array ('Tags', '.MassActionTest'),
     );
     
+    private $_oldServer;
+    private $_oldController;
+    
+    public function setUp(){
+        $this->_oldServer = $_SERVER;
+        $this->_oldController = Yii::app()->controller;
+        return parent::setUp();
+    }
+    
+    public function tearDown(){
+        $_SERVER = $this->_oldServer;
+        Yii::app()->controller = $this->_oldController;
+        parent::tearDown();
+    }
+    
     
     /**
      * @param array $filters grid filters
@@ -94,7 +109,6 @@ class MassActionTest extends X2DbTestCase {
             $this->obStart ();
             $massUpdate->superExecute ($uid, $filteredRecordsCount, $idChecksum);
             $retVal = CJSON::decode (ob_get_contents ()); $this->obEndClean ();
-
             $uid = $retVal['uid'];
 
             $_GET = array_merge ($filters, array ($modelName => $fields));

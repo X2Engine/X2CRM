@@ -1,0 +1,73 @@
+language: php
+matrix:
+  include: 
+    - php: 5.3
+      env: COVERAGE='--coverage-clover build/logs/clover.xml'
+    - php: 5.4
+      env: COVERAGE=''
+    - php: 5.5
+      env: COVERAGE=''
+    - php: 5.6
+      env: COVERAGE=''
+    - php: 7.0
+      env: COVERAGE=''
+
+# blacklist
+branches:
+  except:
+    - DemoServer
+    - TrialServer
+
+before_script:
+  - sudo apt-get update
+  - sudo apt-get install apache2 libapache2-mod-fastcgi
+  # install phpunit 4.8
+  - curl -s -o $HOME/.phpenv/versions/$(phpenv version-name)/bin/phpunit https://phar.phpunit.de/phpunit-4.8.9.phar
+  - chmod +x $HOME/.phpenv/versions/$(phpenv version-name)/bin/phpunit
+  # enable php-fpm
+  - sudo cp ~/.phpenv/versions/$(phpenv version-name)/etc/php-fpm.conf.default ~/.phpenv/versions/$(phpenv version-name)/etc/php-fpm.conf
+  - sudo cp ~/.phpenv/versions/$(phpenv version-name)/etc/php-fpm.d/www.conf.default ~/.phpenv/versions/$(phpenv version-name)/etc/php-fpm.d/www.conf 2>/dev/null || true
+  - sudo a2enmod rewrite actions fastcgi alias
+  - echo "cgi.fix_pathinfo = 1" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini
+  # configure php ini file
+  - echo 'date.timezone = "America/Los_Angeles"' >> ~/.phpenv/versions/$(phpenv version-name)/etc/conf.d/travis.ini
+  - echo 'allow_url_fopen = on' >> ~/.phpenv/versions/$(phpenv version-name)/etc/conf.d/travis.ini
+  # configure apache virtual hosts
+  - sudo cp -f build/travis-ci-apache /etc/apache2/sites-available/default
+  - sudo sed -e "s?%TRAVIS_BUILD_DIR%?$(pwd)?g" --in-place /etc/apache2/sites-available/default
+  - ~/.phpenv/versions/$(phpenv version-name)/sbin/php-fpm
+  - sudo service apache2 restart
+
+  # prep for coverage output
+  - composer require satooshi/php-coveralls '~1.0'
+  - mkdir -p build/logs
+
+  # create mysql database
+  - mysql -e "DROP DATABASE IF EXISTS x2engine; CREATE DATABASE x2engine;" -u root;
+
+  #install x2crm
+  - cp build/constants.php x2engine/constants.php
+  - cp build/installConfig.php x2engine/installConfig.php
+  - cd x2engine && php initialize.php silent && cd ..
+
+  #configure tests
+  - cp build/WebTestConfig.php x2engine/protected/tests/WebTestConfig.php
+
+# run tests
+script: 
+  # unit tests
+  - phpunit --configuration build/phpunit_unit.xml $COVERAGE x2engine/protected/tests/unit
+  # functional tests
+  #- phpunit --configuration build/phpunit_functional.xml x2engine/protected/tests/functional
+
+after_failure:
+  # capture apache error log
+  - sudo cat /var/log/apache2/error.log
+
+after_success:
+  - if [[ ${TRAVIS_PHP_VERSION:0:3} == "5.3" ]]; then php vendor/bin/coveralls -v; fi
+
+notifications:
+  slack:
+      secure: ieB8oa5aV1vIY1cQdk/eBHoFqOOrXfbjPs5YzstWoAC5WS3WO619ObpNjTiaZL/9/Ygr/b53eJ7ntAf6BRwwpbdJsxzk9HQy6/oHtvJxRwCJcmR3D64CAnKdeAQr64ohAXkNEHHVS8prFXy07tICntErvs00B9hnM9hjID0fOM6RbKP9Vqnw3Y7icC1JWgNOsxGrXB7AGA2smQNtEiiQmBNkg2RjpqtjaNdQXMk0/tzjEfwakn4SlwkKt6aRxJSWH+ezvP+5erFLqOFb5bSvjZcodDTWdOZVBS9NvUMusdvXItxo09Ynbv1qKUn1VzJG15bw2Id7pAtVwUg4hiT/0W8E8AoXfBO9Ag44r9SqQpelT33GzodgNjHx+N/jO/7nTlldZQ+P4KO/KavJcx/kfGVC+H2C1vjiAR1z4VHQdkifTjJUKdsm6MePRbACT8n69eW/05TYvQfKwkRcDsOVvntvrsyn+dKQWUnUWAYp+GaTLcfxsawF+uypltQ4aXDwAVdCLksTGBy+LLzYMCHRJRIFjHmgOSQ96Qs1iTMP0QYGQM3dJE6uGAJI8/rUlI1v+5cD+GdzABXjt0zulPLeCh8q2ROHVYWvMXmwXN1Xw+BjMQeeISTko9XiM2tWNU6JBFXFPNaxbIf0F4xfrS3dXkqpsXIj4pJacGNZghHsX4Y=
+

@@ -64,7 +64,7 @@ class SessionTokenTest extends X2DbTestCase {
         $sessionCounts = array(
             'testWorkingUser' => 1,
             'testDeactivatedUser' => 1,
-            'testUser_expired' => 0,
+            'testNotExistsUser' => 0,
         );
         foreach(array_keys($sessionCounts) as $alias) {
             $sessionIds[$alias] = $this->session($alias)->id;

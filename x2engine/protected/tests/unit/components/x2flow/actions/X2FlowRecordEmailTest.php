@@ -54,10 +54,11 @@ class X2FlowRecordEmailTest extends X2FlowTestBase {
      * Replace credId token with cred id from x2_credentials-local.
      */
     public static function setUpBeforeClass () {
-        $file = 'fixtures/x2_flows.X2FlowRecordEmailTestTemplate.php';
+        $fixtureDir = implode(DIRECTORY_SEPARATOR, array(__DIR__,'..','..','..','..','fixtures'));
+        $file = $fixtureDir.DIRECTORY_SEPARATOR.'x2_flows.X2FlowRecordEmailTestTemplate.php';
         $content = file_get_contents ($file);
         if (self::LIVE_DELIVERY) {
-            $localCredentialFixture = require ('fixtures/x2_credentials-local.php');
+            $localCredentialFixture = require ($fixtureDir.DIRECTORY_SEPARATOR.'x2_credentials-local.php');
             $credId = $localCredentialFixture['liveDeliveryTest']['id'];
         } else {
             $credId = -1;
@@ -65,7 +66,7 @@ class X2FlowRecordEmailTest extends X2FlowTestBase {
 
         $content = preg_replace (
             '/EMAIL_CREDENTIAL_ID/', $credId, $content);
-        file_put_contents ('fixtures/x2_flows.X2FlowRecordEmailTest.php', $content);
+        file_put_contents ($fixtureDir.DIRECTORY_SEPARATOR.'x2_flows.X2FlowRecordEmailTest.php', $content);
 
         if (!YII_UNIT_TESTING || !X2_DEBUG_EMAIL) {
             X2_TEST_DEBUG_LEVEL > 1 && println (
