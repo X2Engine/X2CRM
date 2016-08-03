@@ -1,10 +1,10 @@
 <?php return array (
   'Module Title' => 'Название модуля',
-  'The name for your new module' => 'Имя для нового модуля',
-  '(Optional) What to call individual records, e.g. "Create new X"' => '(Дополнительно), как назвать отдельные записи, например, "Создать новый X"',
+  'The name for your new module' => 'Имя для вашего нового модуля',
+  '(Optional) What to call individual records, e.g. "Create new X"' => '(Опционально) Как назвать отдельные записи, например, "Создать новый X"',
   'DB Table Name' => 'Имя таблицы БД',
-  'Optional (alphanumeric only, must start with a letter)' => 'Дополнительный (алфавитно-цифровые только, должно начинаться с буквы)',
-  '{X} List' => '{X} Список',
+  'Optional (alphanumeric only, must start with a letter)' => 'Опционально (только алфавитно-цифровые символы, должно начинаться с буквы)',
+  '{X} List' => 'Список {X}',
   'View {X}' => 'Посмотреть {X}',
   'Create {X}' => 'Создать {X}',
   'Update {X}' => 'Обновить {X}',
@@ -19,6 +19,6 @@
   'Unable to create table for custom module.' => 'Невозможно создать таблицу для пользовательского модуля.',
   'Import {X}' => 'Импорт {X}',
   'Export {X}' => 'Экспорт {X}',
-  '{modelName} Attributes' => '{modelName} Атрибуты',
+  '{modelName} Attributes' => ' Атрибуты {modelName}',
   'Edit {X}' => 'Редактировать {X}',
 );
