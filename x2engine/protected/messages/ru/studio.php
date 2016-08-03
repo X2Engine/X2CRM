@@ -39,6 +39,7 @@
   'Create Popup Notification' => 'Создайте всплывающее уведомление',
   'Create Record' => 'Создать запись',
   'Create Action for Record' => 'Создать действие для записи',
+  'Delete Record' => 'Удалить запись',
   'Email Contact' => 'Контактный адрес электронной почты',
   'Add to List' => 'Добавить к списку',
   'Remove from List' => 'Удалить из списка',
@@ -190,9 +191,4 @@
   'Triggers when a new contact fills out your web lead capture form.' => 'Триггеры, когда новый контакт заполняет ваш веб-свинцовую форму захвата.',
   'Process Status' => 'Процесс Статус',
   'The following condition did not pass: {name} {operator} {value}' => 'Следующее условие не пройти: {name} {operator} {value}',
-  'Link Field' => 'Ссылка поле',
-  'If you want to use this action inside a splitter, place one of these at the start of each splitter branch to ensure the branch acts on the correct record.' => 'Если вы хотите использовать это действие внутри сплиттер, поместите одну из них в начале каждого разветвителя филиала для обеспечения филиалов действует на правильной записи.',
-  'Changed to {recordLink}.' => 'Изменен {recordLink} .',
-  'Unable to change record.' => 'Невозможно изменить запись.',
-  'Invalid configuration.' => 'Недопустимая конфигурация.',
 );
