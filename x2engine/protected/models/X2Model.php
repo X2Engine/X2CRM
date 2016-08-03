@@ -2815,7 +2815,7 @@ abstract class X2Model extends X2ActiveRecord {
             }
         } else {
             if (!(empty($type) || empty($id)) &&
-                is_subclass_of($type, 'CActiveRecord')) { // both ID and type must be set
+                is_subclass_of(ucfirst($type), 'CActiveRecord')) { // both ID and type must be set
                 return X2Model::model($type)->findByPk($id);
             }
         }

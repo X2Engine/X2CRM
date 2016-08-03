@@ -1098,4 +1098,6 @@
   'Configure the timeout in between failed login attempts, and the number of failed login attempts before the IP address is banned. To view a record of failed and successful login attempts, please visit the {link} page.' => 'IP地址是被禁止之前配置失败的登录尝试之间的超时和失败的登录尝试的次数。要查看失败的和成功的登录尝试的记录，请访问{link}页。',
   'User History' => '用户历史记录',
   'To manage user login settings, including failed logins before CAPTCHA and failed logins before ban, please visit the {link} page.' => '要管理用户登录设置，包括CAPTCHA之前失败的登录和禁令之前登录失败，请访问{link}页。',
+  'Email Configuration & Connectors' => '电子邮件配置及连接器',
+  'X2Studio Customization Tools' => 'X2Studio定制工具',
 );

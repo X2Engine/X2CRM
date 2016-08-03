@@ -54,13 +54,22 @@ class WorkflowStartStageTriggerTest extends X2FlowTestBase {
             'roleToWorkflow' => array (':x2_role_to_workflow', '.WorkflowTests'),
         );
     }
+    
+    public function setUp(){
+        TestingAuxLib::loadControllerMock ();
+        return parent::setUp();
+    }
+    
+    public function tearDown(){
+        TestingAuxLib::restoreController();
+        parent::tearDown();
+    }
 
     /**
      * Trigger the flow by completing a workflow stage on the contact. Assert that the flow 
      * executes without errors.
      */
     public function testFlowExecution () {
-        TestingAuxLib::loadControllerMock ();
         $this->clearLogs ();
         $workflow = $this->workflows ('workflow2'); 
         $model = $this->contacts ('contact935');

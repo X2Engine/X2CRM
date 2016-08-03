@@ -85,7 +85,7 @@ class RolesTest extends X2DbTestCase {
      */
     public function testGetUserRoles() {
         $userId = $this->user['testUser']['id'];
-        $userRoles = Roles::getUserRoles($userId);
+        $userRoles = Roles::getUserRoles($userId, false);
 
         // Assert that user has roles
         $this->assertTrue(sizeof($userRoles) > 0);
@@ -96,7 +96,7 @@ class RolesTest extends X2DbTestCase {
 
         // Test group-inherited user roles; fixture entry "testUser5" is a
         // member of a group:
-        $userRoles = Roles::getUserRoles($this->user['testUser5']['id']);
+        $userRoles = Roles::getUserRoles($this->user['testUser5']['id'], false);
         $this->assertEquals(array(3), $userRoles);
 
         // Iterate over and remove records explicitly to raise the afterDelete event
@@ -106,7 +106,7 @@ class RolesTest extends X2DbTestCase {
         foreach ($records as $record) {
             $record->delete();
         }
-        $userRoles = Roles::getUserRoles($userId);
+        $userRoles = Roles::getUserRoles($userId, false);
 
         // assert that user has no roles
         $this->assertTrue(sizeof($userRoles) === 0);

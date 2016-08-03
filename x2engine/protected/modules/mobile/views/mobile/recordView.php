@@ -57,34 +57,9 @@ $this->onPageLoad ("
 ", CClientScript::POS_END);
 
 
-if ($model instanceof X2Model &&
-    $this->hasMobileAction ('mobileDelete') && $this->hasMobileAction ('mobileUpdate') &&
-    Yii::app()->user->checkAccess(ucfirst ($this->module->name).'Delete', $authParams)) {
+
 ?>
 
-<div data-role='popup' id='settings-menu'>
-    <ul data-role='listview' data-inset='true'>
-        <li>
-            <a class='delete-button requires-confirmation' 
-             href='<?php echo $this->createAbsoluteUrl ('mobileDelete', array (
-                'id' => $model->id,
-             )); ?>'><?php 
-                echo CHtml::encode (Yii::t('mobile', 'Delete')); ?></a>
-            <div class='confirmation-text' style='display: none;'>
-                <?php
-                echo CHtml::encode (
-                    Yii::t('app', 'Are you sure you want to delete this {type}?', array (
-                        '{type}' => lcfirst ($model->getDisplayName (false)),
-                    )));
-                ?>
-            </div>
-        </li>
-    </ul>
-</div>
-
-<?php
-}
-?>
 
 <div class='refresh-content' data-refresh-selector='.page-title'>
     <h1 class='page-title ui-title'>

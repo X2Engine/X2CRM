@@ -39,7 +39,6 @@
   'Create Popup Notification' => '팝업 알림을 만들',
   'Create Record' => '레코드 만들기',
   'Create Action for Record' => '기록에 대한 작업을 만듭니다',
-  'Delete Record' => '레코드를 삭제',
   'Email Contact' => '연락처를 이메일을',
   'Add to List' => '목록에 추가',
   'Remove from List' => '목록에서 제거',

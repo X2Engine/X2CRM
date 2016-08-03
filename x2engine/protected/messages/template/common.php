@@ -609,4 +609,5 @@
   'Details' => '',
   'Select All' => '',
   'User Login History' => '',
+  'Delete Record' => '',
 );

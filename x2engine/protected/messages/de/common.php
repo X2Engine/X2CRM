@@ -609,4 +609,5 @@
   'Details' => 'Details',
   'Select All' => 'Alles auswählen',
   'User Login History' => 'User Login Geschichte',
+  'Delete Record' => 'Datensatz löschen',
 );

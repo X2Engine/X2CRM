@@ -50,8 +50,17 @@ class X2FlowWaitActionTest extends X2FlowTestBase {
     );
 
     public function getCronBehavior () {
-        TestingAuxLib::loadControllerMock ();
         return new CronBehavior;
+    }
+    
+    public function setUp(){
+        TestingAuxLib::loadControllerMock();
+        return parent::setUp();
+    }
+    
+    public function tearDown(){
+        TestingAuxLib::restoreController();
+        parent::tearDown();
     }
 
     private function assertWaitActionPausesAndResumes ($flowName) {
@@ -115,7 +124,6 @@ class X2FlowWaitActionTest extends X2FlowTestBase {
      * action when cron action is triggered
      */
     public function testCronEventCreation () {
-        TestingAuxLib::loadControllerMock ();
         $this->assertWaitActionPausesAndResumes ('flow1');
         //$this->assertWaitActionPausesAndResumes ('flow2');
     }

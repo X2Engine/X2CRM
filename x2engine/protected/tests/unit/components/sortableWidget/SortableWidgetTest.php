@@ -170,6 +170,7 @@ class SortableWidgetTest extends X2DbTestCase {
 
         $this->assertEquals ($widgetProps, $instance->getWidgetProperties ());
         $this->assertEquals ($widgetProps['label'], $instance->getWidgetProperty ('label'));
+        TestingAuxLib::restoreController();
     }
 
     public function testPropertySetters () {
@@ -210,6 +211,7 @@ class SortableWidgetTest extends X2DbTestCase {
         $widgetLayout = $profile->profileWidgetLayout;
         $widgetProps = $widgetLayout[$widgetClass];
         $this->assertEquals ($newWidgetProps, $widgetProps);
+        TestingAuxLib::restoreController();
     }
 
     protected static function createWidget (

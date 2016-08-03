@@ -54,8 +54,17 @@ class X2FlowSplitterTest extends X2FlowTestBase {
     }
 
     private function getCronBehavior () {
-        TestingAuxLib::loadControllerMock ();
         return new CronBehavior;
+    }
+    
+    public function setUp(){
+        TestingAuxLib::loadControllerMock ();
+        return parent::setUp();
+    }
+    
+    public function tearDown(){
+        TestingAuxLib::restoreController();
+        parent::tearDown();
     }
 
     private function clearEphemeral () {

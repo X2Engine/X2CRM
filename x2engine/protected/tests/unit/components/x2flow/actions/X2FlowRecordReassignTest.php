@@ -88,6 +88,7 @@ class X2FlowRecordReassignTest extends X2FlowTestBase {
         $this->assertTrue ($success);
         $contact->refresh ();
         $this->assertEquals ('testuser', $contact->assignedTo);
+        TestingAuxLib::restoreController();
     }
 }
 

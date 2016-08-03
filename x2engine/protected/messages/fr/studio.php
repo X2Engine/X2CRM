@@ -39,7 +39,6 @@
   'Create Popup Notification' => 'Créer une fenêtre de notification',
   'Create Record' => 'Créer un enregistrement',
   'Create Action for Record' => 'Créer une action pour enregistrement',
-  'Delete Record' => 'Supprimer l&#39;enregistrement',
   'Email Contact' => 'Email Contacter',
   'Add to List' => 'Ajouter à la liste',
   'Remove from List' => 'Supprimer de la liste',

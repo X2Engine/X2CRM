@@ -1,5 +1,13 @@
-# 6.0.2 #
+# 6.0.3 #
 {releaseDate}
+* General Changelog / Developer Notes
+  * Admin control panel UI overhaul
+  * Ability to delete from mobile activity feed
+  * Mobile login tokens persist longer
+  * Miscellaneous bug fixes
+
+# 6.0.2 #
+7/14/2016
 * General Changelog / Developer Notes
   * Action history is now accessible from mobile
   * New "Change Record" flow action allows workflows to execute on related records

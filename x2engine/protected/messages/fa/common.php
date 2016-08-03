@@ -609,4 +609,5 @@
   'Details' => 'جزئیات',
   'Select All' => 'انتخاب همه',
   'User Login History' => 'ورود کاربر تاریخ',
+  'Delete Record' => 'حذف رکورد',
 );

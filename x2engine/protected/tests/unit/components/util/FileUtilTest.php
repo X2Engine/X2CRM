@@ -102,9 +102,10 @@ class FileUtilTest extends FileOperTestCase {
      */
     public function assertRecursiveCcopy($SR, $TR, $RT, $C, $tss, $tst){
         // A thing to note: the current working directory is protected/tests
-        $relSource = implode(DIRECTORY_SEPARATOR, array('data', 'output', 'test-'.$this->testTime));
+        $testDir = implode(DIRECTORY_SEPARATOR, array('x2engine','protected','tests'));
+        $relSource = implode(DIRECTORY_SEPARATOR, array($testDir, 'data', 'output', 'test-'.$this->testTime));
         $absSource = realpath('.').DIRECTORY_SEPARATOR.$relSource;
-        $relTarget = implode(DIRECTORY_SEPARATOR, array('..', 'test-FileUtil', 'test-FileUtil-subdir'));
+        $relTarget = implode(DIRECTORY_SEPARATOR, array($testDir, '..', 'test-FileUtil', 'test-FileUtil-subdir'));
         $absTarget = implode(DIRECTORY_SEPARATOR, array(Yii::app()->basePath, 'test-FileUtil', 'test-FileUtil-subdir'));
         $source = $SR ? $relSource : $absSource;
         $target = $TR ? $relTarget : $absTarget;
@@ -344,7 +345,7 @@ class FileUtilTest extends FileOperTestCase {
         // Specifying only one path. The return value should originate from
         // index.php's directory!
         $relpath = FileUtil::relpath($file);
-        $this->assertEquals('../../framework/YiiBase.php', $relpath);
+        $this->assertEquals('x2engine/framework/YiiBase.php', $relpath);
         // Test on Windows!
         $startPoint = 'C:\\Program Files (x86)\\Something\\SomethingElse\\..\\something.exe';
         $endPoint = 'C:\\Windows\\Something\\..\\Something\\SomethingMore/library.dll';

@@ -5,13 +5,13 @@ $expired = $now - 528400;
 $recent = $now - 100;
 
 return array(
-    'testUser_expired' => array(
+    /*'testUser_expired' => array(
         'id' => '827ccb0eea8a706c4c34a16891f84e7b', // md5('12345')
         'user' => 'testuser2',
         'lastUpdated' => $expired, // should be expired
         'IP' => '1.0.0.1',
         'status' => 0
-    ),
+    ),*/
     'testBruteforceUser' => array(
         'id' => 'fcc90fdbfb061b258cba50754cf71e92',
         'user' => 'testuser3',
