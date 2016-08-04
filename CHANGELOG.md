@@ -1,5 +1,5 @@
 # 6.0.3 #
-{releaseDate}
+8/3/2016
 * General Changelog / Developer Notes
   * Admin control panel UI overhaul
   * Ability to delete from mobile activity feed
