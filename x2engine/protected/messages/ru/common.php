@@ -348,7 +348,7 @@
   'Pause' => 'Пауза',
   'minute' => 'минут',
   'Failed to upload file.' => 'Не удалось загрузить файл.',
-  'Preferences' => 'Настройки пёрофиля',
+  'Preferences' => 'Настройки профиля',
   'Minimize' => 'Минимизировать',
   'Make Sticky' => 'Прилипить',
   'Undo Sticky' => 'Отлипить',
