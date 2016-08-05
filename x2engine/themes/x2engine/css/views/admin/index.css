@@ -38,54 +38,57 @@
 
 #content {
   border: none;
-  background: none; }
+  background: none;
+  max-width: 1920px; }
   #content .cell {
     margin-right: 15px;
     margin-bottom: 0px; }
 
-.admin-screen .license-info-section {
-  padding-top: 10px; }
-.admin-screen .page-title {
-  margin-bottom: 5px; }
-.admin-screen .ui-widget-content .row .cell a {
-  color: #004BAF; }
-.admin-screen .cell a {
-  text-decoration: none; }
-.admin-screen .ui-tabs-vertical .ui-tabs-nav {
-  padding: .2em .1em .2em .2em;
-  float: left;
-  width: 20em;
-  background: #FFFFFF; }
-  .admin-screen .ui-tabs-vertical .ui-tabs-nav li {
-    background: #FFF;
-    font-size: 14.6px;
-    margin: 0 2px 0 0;
-    font-family: Verdana,Arial,sans-serif;
-    border-color: #FFF !important;
-    height: 3.2em;
-    clear: left;
-    width: 100%;
-    border-bottom-width: 1px !important;
-    border-right-width: 0 !important;
-    margin: 0 -1px .2em 0; }
-    .admin-screen .ui-tabs-vertical .ui-tabs-nav li a {
-      display: block;
-      width: 80%;
-      height: 60%; }
-    .admin-screen .ui-tabs-vertical .ui-tabs-nav li a:focus, .admin-screen .ui-tabs-vertical .ui-tabs-nav li a:hover {
-      color: #006CFC; }
-    .admin-screen .ui-tabs-vertical .ui-tabs-nav li .ui-tabs-active {
-      padding-bottom: 0;
-      padding-right: .1em;
-      border-right-width: 1px; }
-.admin-screen .ui-tabs-vertical .ui-tabs-panel {
-  padding: 1em;
-  float: right;
-  width: 38em;
-  height: 35em; }
+.admin-screen {
+  max-width: 1920px; }
+  .admin-screen .license-info-section {
+    padding-top: 10px; }
+  .admin-screen .page-title {
+    margin-bottom: 5px; }
+  .admin-screen .ui-widget-content .row .cell a {
+    color: #004BAF; }
+  .admin-screen .cell a {
+    text-decoration: none; }
+  .admin-screen .ui-tabs-vertical .ui-tabs-nav {
+    padding: .2em .1em .2em .2em;
+    float: left;
+    width: 20em;
+    background: #FFFFFF; }
+    .admin-screen .ui-tabs-vertical .ui-tabs-nav li {
+      background: #FFF;
+      font-size: 14.6px;
+      margin: 0 2px 0 0;
+      font-family: Verdana,Arial,sans-serif;
+      border-color: #FFF !important;
+      height: 3.2em;
+      clear: left;
+      width: 100%;
+      border-bottom-width: 1px !important;
+      border-right-width: 0 !important;
+      margin: 0 -1px .2em 0; }
+      .admin-screen .ui-tabs-vertical .ui-tabs-nav li a {
+        display: block;
+        width: 80%;
+        height: 60%; }
+      .admin-screen .ui-tabs-vertical .ui-tabs-nav li a:focus, .admin-screen .ui-tabs-vertical .ui-tabs-nav li a:hover {
+        color: #006CFC; }
+      .admin-screen .ui-tabs-vertical .ui-tabs-nav li .ui-tabs-active {
+        padding-bottom: 0;
+        padding-right: .1em;
+        border-right-width: 1px; }
+  .admin-screen .ui-tabs-vertical .ui-tabs-panel {
+    padding: 1em;
+    margin-left: 1em;
+    float: left;
+    width: 38em;
+    height: 35em; }
 
 .spanMax {
-  width: 890px;
   height: 600px; }
 
 .ui-tabs-vertical {

@@ -41,6 +41,7 @@
 #content {
     border: none;
     background: none;
+    max-width: 1920px;
     .cell {
         margin-right: 15px;
         margin-bottom: 0px;
@@ -48,6 +49,7 @@
 }
 
 .admin-screen {
+    max-width: 1920px;
     .license-info-section {
         padding-top: 10px;
     }
@@ -94,7 +96,8 @@
         }
         .ui-tabs-panel { 
             padding: 1em; 
-            float: right; 
+            margin-left: 1em;
+            float: left; 
             width: 38em;
             height: 35em;
         }
@@ -102,7 +105,6 @@
 }
 
 .spanMax {
-    width: 890px;
     height: 600px
 }
 
