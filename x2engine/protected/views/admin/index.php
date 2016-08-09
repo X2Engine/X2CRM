@@ -162,21 +162,20 @@ $failedLoginsDataProvider = new CActiveDataProvider('FailedLogins',
                     ?>
                 </div>
                 <div class="cell span-6"><?php
-                    echo CHtml::encode(Yii::t('admin',
-                                    'X2CRM Commercial Software Support'));
-                    ?>
-                    <br><?php
-                    echo CHtml::link('www.x2crm.com/support',
+                    echo CHtml::link(Yii::t('admin',
+                                    'File a Support Case'),
                             'http://www.x2crm.com/support');
+                    ?><br><?php
+                        echo Yii::t('admin','For X2VPS customers')
                     ?>
                 </div>
                 <div class="cell span-6"><?php
-                    echo CHtml::encode(Yii::t('admin',
-                                    'X2CRM Open Source Support'));
+                    echo CHtml::link(Yii::t('admin',
+                                    'X2CRM Open Source Support'),
+                            'http://community.x2crm.com');
                     ?>
                     <br><?php
-                    echo CHtml::link('Community Support Forums ',
-                            'http://community.x2crm.com');
+                    echo Yii::t('admin','Community Support Forums')
                     ?>
                 </div>
 
@@ -187,22 +186,24 @@ $failedLoginsDataProvider = new CActiveDataProvider('FailedLogins',
                     echo Yii::t('admin', 'Documentation & Videos');
                     ?></h2>
                 <div class="cell span-6"><?php
-                    echo CHtml::encode(
-                            Yii::t('admin', 'X2CRM User Reference Guide'));
-                    ?><br><?php
                     echo CHtml::link(
-                            Yii::t('admin', 'X2CRM Reference'),
+                            Yii::t('admin', 'X2CRM User Reference Guide'),
                             'http://www.x2crm.com/reference_guide/');
-                    if (Yii::app()->contEd('pro')) {
+                    ?><br><?php
+                    echo Yii::t('admin','Information for end users on X2CRM');
                         ?>
-                        <br> 
-                        <?php
+                        </div>
+                <div class="cell span-6">
+                    <?php
                         echo CHtml::link(
                                 Yii::t('admin', 'X2Workflow Reference'),
                                 'http://www.x2crm.com/x2flow_user_manual/');
-                    }
-                    ?>
+                        ?><br>
+                        <?php 
+                        echo Yii::t('admin','Information for administrators on X2Workflow')
+                        ?>
                 </div>
+                        
                 <div class="cell span-6"><?php
                     echo CHtml::link(
                             Yii::t('admin', 'X2CRM Tutorial Videos'),
@@ -211,22 +212,26 @@ $failedLoginsDataProvider = new CActiveDataProvider('FailedLogins',
                     echo CHtml::encode(
                             Yii::t('admin', 'User and admin tutorial videos'));
                     ?>
-                </div><br>
+                </div>
                 <div class="cell span-6"><?php
-                    echo CHtml::encode(
-                            Yii::t('admin', 'X2CRM Technical Documentation'));
-                    ?><br><?php
                     echo CHtml::link(
                             Yii::t('admin', 'Developer Wiki'),
                             'http://wiki.x2crm.com');
+                    ?><br><?php
+                    echo Yii::t('admin', 'X2CRM Technical Documentation');
+                    
                     ?>
-                    <br> 
+                </div>
+                <div class="cell span-6">
                     <?php
                     echo CHtml::link(
                             Yii::t('admin', 'Class Reference'),
                             'http://doc.x2crm.com');
+                    ?><br>
+                    <?php 
+                    echo Yii::t('admin','Documentation generated via JavaDoc comments')
                     ?>
-                </div><br>
+                </div>
 
             </div>
             <div id="tabs-3">
@@ -389,12 +394,7 @@ $failedLoginsDataProvider = new CActiveDataProvider('FailedLogins',
                     echo CHtml::link(Yii::t('admin', 'Mobile App Form Editor'),
                             array('/admin/editMobileForms'));
                     ?><br><?php
-                    if (Yii::app()->contEd('pro')) {
                         echo Yii::t('admin', 'Edit form layouts for X2Touch.');
-                    } else {
-
-                        echo Yii::t('admin', 'Edit form layouts for X2Touch.');
-                    }
                     ?></div>
 
             </div>
@@ -704,14 +704,14 @@ $failedLoginsDataProvider = new CActiveDataProvider('FailedLogins',
                             array('/admin/updater'));
                     ?><br><?php
                     echo Yii::t('admin', 'The X2CRM remote update utility.');
-                    ?></div><br>
+                    ?></div>
                 <div class="cell span-6"><?php
                     echo CHtml::link(Yii::t('admin', 'General Settings'),
                             array('/admin/appSettings'));
                     ?><br><?php
                     echo Yii::t('admin',
                             'Configure session timeout and chat poll rate.');
-                    ?></div><br>
+                    ?></div>
                 <div class="cell span-6"><?php
                     echo CHtml::link(Yii::t('admin', 'Activity Feed Settings'),
                             array('/admin/activitySettings'));
@@ -727,7 +727,7 @@ $failedLoginsDataProvider = new CActiveDataProvider('FailedLogins',
                     echo Yii::t('admin',
                             'Miscellaneous settings that control publicly-visible data');
                     ?>
-                </div><br>
+                </div>
                 <div class="cell span-6">
                     <?php
                     echo CHtml::link(Yii::t('admin', 'Cron Table'),
