@@ -71,6 +71,10 @@
       border-bottom-width: 1px !important;
       border-right-width: 0 !important;
       margin: 0 -1px .2em 0; }
+      .admin-screen .ui-tabs-vertical .ui-tabs-nav li div {
+        position: relative;
+        top: 15%;
+        transform: translateY(-50%); }
       .admin-screen .ui-tabs-vertical .ui-tabs-nav li a {
         display: block;
         width: 80%;

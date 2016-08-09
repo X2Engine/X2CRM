@@ -79,6 +79,11 @@
                 border-bottom-width: 1px !important; 
                 border-right-width: 0 !important; 
                 margin: 0 -1px .2em 0;
+                div {
+                    position: relative;
+                    top: 15%;
+                    transform: translateY(-50%);
+                }
                 a { 
                     display:block;
                     width: 80%; 
