@@ -87,6 +87,9 @@
     float: left;
     height: 35em;
     width: 70%; }
+    .admin-screen .ui-tabs-vertical .ui-tabs-panel .cell {
+      padding: 10px;
+      height: 100px; }
 
 .spanMax {
   height: 600px; }
