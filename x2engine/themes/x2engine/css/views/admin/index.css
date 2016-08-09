@@ -57,7 +57,7 @@
   .admin-screen .ui-tabs-vertical .ui-tabs-nav {
     padding: .2em .1em .2em .2em;
     float: left;
-    width: 20em;
+    width: 25%;
     background: #FFFFFF; }
     .admin-screen .ui-tabs-vertical .ui-tabs-nav li {
       background: #FFF;
@@ -85,7 +85,6 @@
     padding: 1em;
     margin-left: 1em;
     float: left;
-    width: 38em;
     height: 35em; }
 
 .spanMax {
