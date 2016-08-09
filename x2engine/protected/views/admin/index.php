@@ -162,20 +162,18 @@ $failedLoginsDataProvider = new CActiveDataProvider('FailedLogins',
                     ?>
                 </div>
                 <div class="cell span-6"><?php
-                    echo CHtml::link(Yii::t('admin',
-                                    'File a Support Case'),
+                    echo CHtml::link(Yii::t('admin', 'File a Support Case'),
                             'http://www.x2crm.com/support');
                     ?><br><?php
-                        echo Yii::t('admin','For X2VPS customers')
+                    echo Yii::t('admin', 'For X2VPS customers')
                     ?>
                 </div>
                 <div class="cell span-6"><?php
-                    echo CHtml::link(Yii::t('admin',
-                                    'X2CRM Open Source Support'),
+                    echo CHtml::link(Yii::t('admin', 'X2CRM Open Source Support'),
                             'http://community.x2crm.com');
                     ?>
                     <br><?php
-                    echo Yii::t('admin','Community Support Forums')
+                    echo Yii::t('admin', 'Community Support Forums')
                     ?>
                 </div>
 
@@ -190,20 +188,21 @@ $failedLoginsDataProvider = new CActiveDataProvider('FailedLogins',
                             Yii::t('admin', 'X2CRM User Reference Guide'),
                             'http://www.x2crm.com/reference_guide/');
                     ?><br><?php
-                    echo Yii::t('admin','Information for end users on X2CRM');
-                        ?>
-                        </div>
+                    echo Yii::t('admin', 'Information for end users on X2CRM');
+                    ?>
+                </div>
                 <div class="cell span-6">
                     <?php
-                        echo CHtml::link(
-                                Yii::t('admin', 'X2Workflow Reference'),
-                                'http://www.x2crm.com/x2flow_user_manual/');
-                        ?><br>
-                        <?php 
-                        echo Yii::t('admin','Information for administrators on X2Workflow')
-                        ?>
+                    echo CHtml::link(
+                            Yii::t('admin', 'X2Workflow Reference'),
+                            'http://www.x2crm.com/x2flow_user_manual/');
+                    ?><br>
+                    <?php
+                    echo Yii::t('admin',
+                            'Information for administrators on X2Workflow')
+                    ?>
                 </div>
-                        
+
                 <div class="cell span-6"><?php
                     echo CHtml::link(
                             Yii::t('admin', 'X2CRM Tutorial Videos'),
@@ -219,7 +218,6 @@ $failedLoginsDataProvider = new CActiveDataProvider('FailedLogins',
                             'http://wiki.x2crm.com');
                     ?><br><?php
                     echo Yii::t('admin', 'X2CRM Technical Documentation');
-                    
                     ?>
                 </div>
                 <div class="cell span-6">
@@ -228,8 +226,9 @@ $failedLoginsDataProvider = new CActiveDataProvider('FailedLogins',
                             Yii::t('admin', 'Class Reference'),
                             'http://doc.x2crm.com');
                     ?><br>
-                    <?php 
-                    echo Yii::t('admin','Documentation generated via JavaDoc comments')
+                    <?php
+                    echo Yii::t('admin',
+                            'Documentation generated via JavaDoc comments')
                     ?>
                 </div>
 
@@ -394,7 +393,7 @@ $failedLoginsDataProvider = new CActiveDataProvider('FailedLogins',
                     echo CHtml::link(Yii::t('admin', 'Mobile App Form Editor'),
                             array('/admin/editMobileForms'));
                     ?><br><?php
-                        echo Yii::t('admin', 'Edit form layouts for X2Touch.');
+                    echo Yii::t('admin', 'Edit form layouts for X2Touch.');
                     ?></div>
 
             </div>
