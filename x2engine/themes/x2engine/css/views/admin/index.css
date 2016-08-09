@@ -85,7 +85,8 @@
     padding: 1em;
     margin-left: 1em;
     float: left;
-    height: 35em; }
+    height: 35em;
+    width: 70%; }
 
 .spanMax {
   height: 600px; }

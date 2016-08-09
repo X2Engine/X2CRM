@@ -153,36 +153,31 @@ $failedLoginsDataProvider = new CActiveDataProvider('FailedLogins',
                 <h2 id="admin-support"><?php
                     echo Yii::t('admin', 'Customer Support');
                     ?></h2>
-                <div class="row">
-                    <div class="cell span-6"><?php
-                        echo CHtml::link(Yii::t('admin', 'X2CRM | X2Engine Inc'),
-                                'http://www.x2crm.com');
-                        ?><br><?php
-                        echo Yii::t('admin',
-                                'Software, Customer Support, and Developer Services');
-                        ?>
-                    </div>
-                    <div class="cell span-6"><?php
-                        echo CHtml::encode(Yii::t('admin',
-                                        'X2CRM Commercial Software Support'));
-                        ?>
-                        <br><?php
-                        echo CHtml::link('www.x2crm.com/support',
-                                'http://www.x2crm.com/support');
-                        ?>
-                    </div>
-                </div><br>
-                <div class="row">
-                    <div class="cell span-6"><?php
-                        echo CHtml::encode(Yii::t('admin',
-                                        'X2CRM Open Source Support'));
-                        ?>
-                        <br><?php
-                        echo CHtml::link('Community Support Forums ',
-                                'http://community.x2crm.com');
-                        ?>
-                    </div>
-                    <?php ?>
+                <div class="cell span-6"><?php
+                    echo CHtml::link(Yii::t('admin', 'X2CRM | X2Engine Inc'),
+                            'http://www.x2crm.com');
+                    ?><br><?php
+                    echo Yii::t('admin',
+                            'Software, Customer Support, and Developer Services');
+                    ?>
+                </div>
+                <div class="cell span-6"><?php
+                    echo CHtml::encode(Yii::t('admin',
+                                    'X2CRM Commercial Software Support'));
+                    ?>
+                    <br><?php
+                    echo CHtml::link('www.x2crm.com/support',
+                            'http://www.x2crm.com/support');
+                    ?>
+                </div>
+                <div class="cell span-6"><?php
+                    echo CHtml::encode(Yii::t('admin',
+                                    'X2CRM Open Source Support'));
+                    ?>
+                    <br><?php
+                    echo CHtml::link('Community Support Forums ',
+                            'http://community.x2crm.com');
+                    ?>
                 </div>
 
             </div>
@@ -191,7 +186,6 @@ $failedLoginsDataProvider = new CActiveDataProvider('FailedLogins',
                 <h2 id="admin-doc-and-videos"><?php
                     echo Yii::t('admin', 'Documentation & Videos');
                     ?></h2>
-                <div class="row">
                     <div class="cell span-6"><?php
                         echo CHtml::encode(
                                 Yii::t('admin', 'X2CRM User Reference Guide'));
@@ -218,8 +212,6 @@ $failedLoginsDataProvider = new CActiveDataProvider('FailedLogins',
                                 Yii::t('admin', 'User and admin tutorial videos'));
                         ?>
                     </div><br>
-                </div><br>
-                <div class="row">
                     <div class="cell span-6"><?php
                         echo CHtml::encode(
                                 Yii::t('admin', 'X2CRM Technical Documentation'));
@@ -235,12 +227,10 @@ $failedLoginsDataProvider = new CActiveDataProvider('FailedLogins',
                                 'http://doc.x2crm.com');
                         ?>
                     </div><br>
-                </div>
 
             </div>
             <div id="tabs-3">
 
-                <div class="row">
                     <h2 id="admin-users"><?php
                         echo Yii::t('admin', 'User Management');
                         ?></h2>
@@ -271,8 +261,6 @@ $failedLoginsDataProvider = new CActiveDataProvider('FailedLogins',
                         echo Yii::t('admin',
                                 'Send invitation emails to create X2CRM user accounts');
                         ?></div>
-                </div><br>
-                <div class="row">
                     <div class="cell span-6"><?php
                         echo CHtml::link(Yii::t('admin',
                                         'Edit User Permissions & Access Rules'),
@@ -286,16 +274,12 @@ $failedLoginsDataProvider = new CActiveDataProvider('FailedLogins',
                         ?><br><?php
                         echo Yii::t('admin', 'Create and manage user roles');
                         ?></div>
-                </div>
-                <div class="row">
                     <div class="cell span-6"><?php
                         echo CHtml::link(Yii::t('app', 'Groups'),
                                 array('/groups/groups/index'));
                         ?><br><?php
                         echo Yii::t('admin', 'Create and manage user groups');
                         ?></div>
-                </div><br>
-                <div class="row">
                     <div class="cell span-6"><?php
                         echo CHtml::link(Yii::t('admin', 'View User Changelog'),
                                 array('/admin/viewChangelog'));
@@ -337,12 +321,10 @@ $failedLoginsDataProvider = new CActiveDataProvider('FailedLogins',
                                 'Manage X2CRM user account history, including failed and successful logins');
                         ?>
                     </div>
-                </div>
 
             </div>
             <div id="tabs-4">
 
-                <div class="row">
                     <h2 id="admin-ui-settings"><?php
                         echo Yii::t('admin', 'User Interface Settings');
                         ?></h2>
@@ -376,9 +358,7 @@ $failedLoginsDataProvider = new CActiveDataProvider('FailedLogins',
                         echo Yii::t('admin',
                                 'Enable or disable tabs in the action publisher');
                         ?>
-                    </div><!-- .cell.span-6 -->
-                </div><br>
-                <div class="row">
+                    </div>
                     <div class="cell span-6"><?php
                         echo CHtml::link(Yii::t('admin', 'Manage Menu Items'),
                                 array('/admin/manageModules'));
@@ -399,8 +379,6 @@ $failedLoginsDataProvider = new CActiveDataProvider('FailedLogins',
                         ?><br><?php
                         echo Yii::t('admin', 'Add a link to the top bar');
                         ?></div>
-                </div><br>
-                <div class="row">
                     <div class="cell span-6"><?php
                         echo CHtml::link(Yii::t('admin', 'Edit Global CSS'),
                                 array('/admin/editGlobalCss'));
@@ -421,12 +399,10 @@ $failedLoginsDataProvider = new CActiveDataProvider('FailedLogins',
                                     'Edit form layouts for X2Touch.');
                         }
                         ?></div>
-                </div>
 
             </div>
             <div id="tabs-5">
 
-                <div class="row">
                     <h2 id="admin-lead-capture"><?php
                         echo Yii::t('admin', 'Web Lead Capture and Routing');
                         ?></h2>
@@ -452,8 +428,6 @@ $failedLoginsDataProvider = new CActiveDataProvider('FailedLogins',
                         echo Yii::t('admin',
                                 'Manage rules for the "Custom Round Robin" lead distribution setting');
                         ?></div>
-                </div><br>
-                <div class="row">
                     <div class="cell span-6"><?php
                         echo CHtml::link(Yii::t('admin', 'Service Case Web Form'),
                                 array('/services/services/createWebForm'));
@@ -476,12 +450,10 @@ $failedLoginsDataProvider = new CActiveDataProvider('FailedLogins',
                         echo Yii::t('admin',
                                 'Configure and embed visitor tracking on your website');
                         ?></div>
-                </div><br>
 
             </div>
             <div id="tabs-6">
 
-                <div class="row">
                     <h2 id="admin-workflow"><?php
                         echo Yii::t('admin', 'Workflow & Process Tools');
                         ?></h2>
@@ -506,8 +478,6 @@ $failedLoginsDataProvider = new CActiveDataProvider('FailedLogins',
                         ?><br><?php
                         echo Yii::t('admin', 'Change advanced process settings');
                         ?></div>
-                </div><br>
-                <div class="row">
                     <div class="cell span-6"><?php
                         echo CHtml::link(Yii::t('admin', 'X2Workflow Settings'),
                                 array('/admin/flowSettings'));
@@ -529,12 +499,10 @@ $failedLoginsDataProvider = new CActiveDataProvider('FailedLogins',
                         echo Yii::t('admin',
                                 'Manage which events will trigger user notifications');
                         ?></div>
-                </div>
 
             </div>
             <div id="tabs-7">
 
-                <div class="row">
                     <h2 id="admin-email"><?php
                         echo Yii::t('admin',
                                 'Email Configuration & 3rd Party Connectors');
@@ -558,8 +526,6 @@ $failedLoginsDataProvider = new CActiveDataProvider('FailedLogins',
                         ?><br><?php
                         echo Yii::t('admin', 'Manage your marketing campaigns');
                         ?></div>
-                </div><br>
-                <div class="row">
                     <div class="cell span-6"><?php
                         echo CHtml::link(Yii::t('admin', 'Email Capture'),
                                 array('/admin/emailDropboxSettings'));
@@ -582,8 +548,6 @@ $failedLoginsDataProvider = new CActiveDataProvider('FailedLogins',
                         echo Yii::t('admin',
                                 'Configure and enable Google integration');
                         ?></div>
-                </div><br>
-                <div class="row">
                     <div class="cell span-6"><?php
                         echo CHtml::link(Yii::t('admin', 'Twitter Integration'),
                                 array('/admin/twitterIntegration'));
@@ -591,12 +555,10 @@ $failedLoginsDataProvider = new CActiveDataProvider('FailedLogins',
                         echo Yii::t('admin',
                                 'Enter your Twitter app settings for Twitter widget');
                         ?></div>
-                </div>
 
             </div>
             <div id="tabs-8">
 
-                <div class="row">
                     <h2 id="admin-import-export"><?php
                         echo Yii::t('admin', 'Data Import & Export Utilities');
                         ?></h2>
@@ -613,17 +575,13 @@ $failedLoginsDataProvider = new CActiveDataProvider('FailedLogins',
                         ?><br><?php
                         echo Yii::t('admin', 'Export records to a CSV file');
                         ?></div>
-                    <div class="cell span-6"><?php /* echo CHtml::link(Yii::t('admin','X2Translations'),array('/admin/translationManager')); ?><br><?php echo Yii::t('admin','Add, remove and update message translations in the X2CRM language packs'); */ ?></div>
-                </div>
-                <div class="row">
+                    
                     <div class="cell span-6"><?php
                         echo CHtml::link(Yii::t('admin', 'Import All Data'),
                                 array('/admin/import'));
                         ?><br><?php
                         echo Yii::t('admin', 'Import from a global export file');
                         ?></div>
-                </div><br>
-                <div class="row">
                     <div class="cell span-6"><?php
                         echo CHtml::link(Yii::t('admin', 'Export All Data'),
                                 array('/admin/export'));
@@ -645,8 +603,6 @@ $failedLoginsDataProvider = new CActiveDataProvider('FailedLogins',
                         echo Yii::t('admin',
                                 'Delete all records created by a previous import');
                         ?></div>
-                </div><br>
-                <div class="row">
                     <div class="cell span-6"><?php
                         echo CHtml::link(Yii::t('admin', 'Revert Merges'),
                                 array('/admin/undoMerge'));
@@ -662,12 +618,10 @@ $failedLoginsDataProvider = new CActiveDataProvider('FailedLogins',
                         echo Yii::t('admin',
                                 'View a list of all duplicates in the system and resolve them in bulk.');
                         ?></div>
-                </div>
 
             </div>
             <div id="tabs-9">
 
-                <div class="row">
                     <h2 id="admin-x2studio"><?php
                         echo Yii::t('admin',
                                 'X2Studio Module Customization Tools');
@@ -693,8 +647,6 @@ $failedLoginsDataProvider = new CActiveDataProvider('FailedLogins',
                         echo Yii::t('admin',
                                 'Import and Export packages to easily share and use system customizations');
                         ?></div>
-                </div><br>
-                <div class="row">
                     <div class="cell span-6"><?php
                         echo CHtml::link(Yii::t('admin', 'Form Editor'),
                                 array('/admin/editor'));
@@ -715,8 +667,6 @@ $failedLoginsDataProvider = new CActiveDataProvider('FailedLogins',
                         echo Yii::t('admin',
                                 'Convert your custom modules to be compatible with the latest version');
                         ?></div>
-                </div><br>
-                <div class="row">
                     <div class="cell span-6"><?php
                         echo CHtml::link(Yii::t('admin', 'Import a module'),
                                 array('/admin/importModule'));
@@ -745,12 +695,10 @@ $failedLoginsDataProvider = new CActiveDataProvider('FailedLogins',
                         echo Yii::t('admin',
                                 'Manage dropdowns for custom fields');
                         ?></div>
-                </div>
 
             </div>
             <div id="tabs-10">
 
-                <div class="row">
                     <h2 id="admin-settings"><?php
                         echo Yii::t('admin', 'System Settings');
                         ?></h2>
@@ -774,8 +722,6 @@ $failedLoginsDataProvider = new CActiveDataProvider('FailedLogins',
                         echo Yii::t('admin',
                                 'Configure session timeout and chat poll rate.');
                         ?></div><br>
-                </div><br>
-                <div class="row">
                     <div class="cell span-6"><?php
                         echo CHtml::link(Yii::t('admin',
                                         'Activity Feed Settings'),
@@ -802,12 +748,10 @@ $failedLoginsDataProvider = new CActiveDataProvider('FailedLogins',
                                 'Control the interval at which X2CRM will check for and run scheduled tasks');
                         ?>
                     </div>
-                </div>
 
             </div>
             <div id="tabs-11">
 
-                <div class="row">
                     <h2 id="admin-security"><?php
                         echo Yii::t('admin', 'Security Settings');
                         ?></h2>
@@ -829,8 +773,6 @@ $failedLoginsDataProvider = new CActiveDataProvider('FailedLogins',
                                 'Advanced API security and access control settings');
                         ?>
                     </div>
-                </div><br>
-                <div class="row">
                     <div class="cell span-6"><?php
                         echo CHtml::link(Yii::t('admin',
                                         'Advanced Security Settings'),
@@ -839,7 +781,6 @@ $failedLoginsDataProvider = new CActiveDataProvider('FailedLogins',
                         echo Yii::t('admin',
                                 'Configure IP access control, failed login penalties, and user password requirements to help prevent unauthorized access to the system');
                         ?></div>
-                </div>
 
             </div>
         </div>
