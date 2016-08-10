@@ -80,10 +80,9 @@ $themeUrl = Yii::app()->theme->getBaseUrl();
 	<?php //echo CHtml::link('['.Yii::t('contacts','Show All').']','javascript:void(0)',array('id'=>'showAll','class'=>'right hide','style'=>'text-decoration:none;')); ?>
 	<?php //echo CHtml::link('['.Yii::t('contacts','Hide All').']','javascript:void(0)',array('id'=>'hideAll','class'=>'right','style'=>'text-decoration:none;')); ?>
 	<h2><span class="no-bold"><?php echo Yii::t('opportunities','{opportunity}:', array('{opportunity}'=>Modules::displayName(false))); ?> </span><?php echo CHtml::encode($model->name); ?></h2>
-	<?php echo X2Html::editRecordButton($model); ?>
-    <?php if ((bool) $model->contactName) {
-        echo X2Html::emailFormButton();        
-    }
+    <?php
+    echo X2Html::editRecordButton($model);
+    echo X2Html::emailFormButton();
     echo X2Html::inlineEditButtons();
     ?>
 </div>
@@ -103,8 +102,14 @@ $this->widget('DetailView', array(
 // $this->renderPartial('application.components.views.@DETAILVIEW',array('model'=>$model,'modelName'=>'Opportunity'));
 $this->endWidget();
 
+$inlineEmailTo = '';
+if((bool) $model->contactName){
+    if ($contact = $model->getLinkedModel('contactName'))
+        $inlineEmailTo = '"'.$contact->name.'" <'.$contact->email.'>, ';
+}
 $this->widget('InlineEmailForm', array(
     'attributes' => array(
+        'to' => $inlineEmailTo,
         'modelName' => 'Opportunities',
         'modelId' => $model->id,
         'targetModel' => $model,
@@ -131,19 +136,6 @@ $this->widget('InlineEmailForm', array(
     </div>
 
 <?php 
-if((bool) $model->contactName){ // if associated contact exists, setup inline email form
-    $contact = $model->getLinkedModel('contactName');
-    if ($contact) {
-        $this->widget('InlineEmailForm', array(
-            'attributes' => array(
-                'to' => '"'.$contact->name.'" <'.$contact->email.'>, ',
-                'modelName' => 'Opportunity',
-                'modelId' => $model->id,
-            ),
-            'startHidden' => true,
-        ));
-    }
-}
 
 // $this->widget(
 //     'Attachments',
