@@ -109,7 +109,7 @@ $failedLoginsDataProvider = new CActiveDataProvider('FailedLogins',
                 array('class' => 'x2-button right'));
         ?>
     </div>
-    <div class=" x2-layout-island">
+    <div class=" x2-layout-island" id="main-admin-panel" style="display:none;">
         <div id="tabs" class="form">
             <ul>
                 <li data-attr="tabs-1"><div id="admin-support"><a href="#tabs-1"><?php
@@ -811,5 +811,6 @@ $failedLoginsDataProvider = new CActiveDataProvider('FailedLogins',
                 tabs.tabs("refresh");
             }
         });
+        $("#main-admin-panel").show();
     });
 </script>
