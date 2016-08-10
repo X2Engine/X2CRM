@@ -66,7 +66,7 @@
   'Turn it down all the way to receive notifications about every page hit.' => 'Поверните его на всем пути для получения уведомлений о каждой странице хит.',
   'Header Code' => 'Код заголовка',
   'Email List' => 'Список рассылки',
-  'A new web lead has been assigned to you: ' => 'Новый веб-лид был назначен на вас:',
+  'A new web lead has been assigned to you: ' => 'Новый веб свинца был назначен к вам:',
   'If you want to keep your current HTML forms but still get web leads into X2, please see the wiki article located here: {link}' => 'Если вы хотите сохранить ваши нынешние формы HTML, но все еще ​​получить веб ведет в X2, см. вики статья находится здесь: {link}',
   'Web Lead API' => 'Ведущий API веб-',
   'Custom HTML could not be removed.' => 'Особый HTML не может быть удален.',

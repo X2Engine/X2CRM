@@ -58,7 +58,6 @@ class GMailAccount extends EmailAccount {
     public $senderName = '';
     public $server = 'smtp.gmail.com';
     public $user = '';
-    public $disableInbox = false;
 
     public function attributeLabels(){
         return array(
@@ -69,7 +68,6 @@ class GMailAccount extends EmailAccount {
             'imapServer' => Yii::t('app','IMAP Server'),
             'imapSecurity' => Yii::t('app','IMAP Security'),
             'imapNoValidate' => Yii::t('app','Disable SSL Validation'),
-            'disableInbox' => Yii::t('app','Disable Email Inbox'),
         );
     }
 
@@ -112,8 +110,6 @@ class GMailAccount extends EmailAccount {
         $this->renderInput ('imapNoValidate');
         echo CHtml::activeLabel($this, 'imapServer');
         $this->renderInput ('imapServer');
-        echo CHtml::activeLabel($this, 'disableInbox');
-        $this->renderInput ('disableInbox');
         echo CHtml::errorSummary($this);
     }
 
@@ -121,7 +117,7 @@ class GMailAccount extends EmailAccount {
         return array(
             array('email','email'),
             array('senderName,email,password', 'required'),
-            array('senderName,email,password,imapPort,imapSecurity,imapNoValidate,imapServer,disableInbox', 'safe'),
+            array('senderName,email,password,imapPort,imapSecurity,imapNoValidate,imapServer', 'safe'),
         );
     }
 

@@ -162,7 +162,6 @@ CREATE TABLE x2_credentials(
 	userId		INT	NULL, -- Null userId indicates system-wide account, i.e. marketing email
 	private		TINYINT NOT NULL DEFAULT 1, -- If userId is null, anyone can use it
 	isEncrypted	TINYINT NOT NULL DEFAULT 0, -- Set to 1 when encryption was used on save.
-	disableInbox	TINYINT NOT NULL DEFAULT 0, -- Set to 1 to disable Email module usage.
 	modelClass	VARCHAR(50)	NOT NULL, -- The class of embedded model used for handling authentication data
 	createDate	BIGINT DEFAULT NULL,
 	lastUpdated	BIGINT DEFAULT NULL,

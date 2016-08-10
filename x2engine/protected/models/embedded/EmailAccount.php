@@ -59,7 +59,6 @@ class EmailAccount extends JSONEmbeddedModel {
     public $server = '';
     public $user = '';
     public $enableVerification = true;
-    public $disableInbox = false;
 
     public function attributeLabels(){
         return array(
@@ -74,7 +73,6 @@ class EmailAccount extends JSONEmbeddedModel {
             'imapServer' => Yii::t('app','IMAP Server'),
             'imapSecurity' => Yii::t('app','IMAP Security'),
             'imapNoValidate' => Yii::t('app','Disable SSL Validation'),
-            'disableInbox' => Yii::t('app','Disable Email Inbox'),
         );
     }
 
@@ -113,9 +111,6 @@ class EmailAccount extends JSONEmbeddedModel {
                 echo CHtml::activeDropDownList($this, $attr,array(''=>'None','tls'=>'TLS','ssl'=>'SSL'), $this->htmlOptions($attr));
                 break;
             case 'imapNoValidate':
-                echo CHtml::activeCheckBox($this, $attr, $this->htmlOptions($attr));
-                break;
-            case 'disableInbox':
                 echo CHtml::activeCheckBox($this, $attr, $this->htmlOptions($attr));
                 break;
             case 'user':
@@ -158,8 +153,6 @@ class EmailAccount extends JSONEmbeddedModel {
         $this->renderInput ('imapNoValidate');
         echo CHtml::activeLabel($this, 'imapServer');
         $this->renderInput ('imapServer');
-        echo CHtml::activeLabel($this, 'disableInbox');
-        $this->renderInput ('disableInbox');
         echo CHtml::errorSummary($this);
     }
 
@@ -180,7 +173,7 @@ class EmailAccount extends JSONEmbeddedModel {
             array('user','emailUser'),
             array('server,user,email','length','min'=>1,'max'=>500,'allowEmpty'=>0),
             array('password','required'),
-            array('senderName,server,port,security,user,email,password,imapPort,imapServer,imapSecurity,imapNoValidate,disableInbox','safe'),
+            array('senderName,server,port,security,user,email,password,imapPort,imapServer,imapSecurity,imapNoValidate','safe'),
         );
     }
 

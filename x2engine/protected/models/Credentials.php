@@ -532,7 +532,6 @@ class Credentials extends CActiveRecord {
 		}
 		// Compose options for the selector
 		foreach($credRecords as $cred) {
-			if ($imapOnly && $type == 'email' && $cred->auth->disableInbox) continue;
 			$credentials[$cred->id] = $cred->name;
 			if($type == 'email') {
 				$credentials[$cred->id] = Formatter::truncateText($credentials[$cred->id].
