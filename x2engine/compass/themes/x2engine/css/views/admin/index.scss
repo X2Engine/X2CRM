@@ -41,6 +41,7 @@
 #content {
     border: none;
     background: none;
+    max-width: 1920px;
     .cell {
         margin-right: 15px;
         margin-bottom: 0px;
@@ -48,13 +49,14 @@
 }
 
 .admin-screen {
+    max-width: 1920px;
     .license-info-section {
         padding-top: 10px;
     }
     .page-title {
         margin-bottom: 5px;
     }
-    .ui-widget-content .row .cell a {
+    .ui-widget-content .cell a {
         color: #004BAF;
     }
     .cell a{
@@ -63,7 +65,7 @@
 
     .ui-tabs-vertical {
         .ui-tabs-nav { 
-            padding: .2em .1em .2em .2em; float: left; width: 20em; 
+            padding: .2em .1em .2em .2em; float: left; width: 25%; 
             background: #FFFFFF;
             li {
                 background: #FFF;
@@ -77,6 +79,11 @@
                 border-bottom-width: 1px !important; 
                 border-right-width: 0 !important; 
                 margin: 0 -1px .2em 0;
+                div {
+                    position: relative;
+                    top: 15%;
+                    transform: translateY(-50%);
+                }
                 a { 
                     display:block;
                     width: 80%; 
@@ -94,15 +101,19 @@
         }
         .ui-tabs-panel { 
             padding: 1em; 
-            float: right; 
-            width: 38em;
+            margin-left: 1em;
+            float: left; 
             height: 35em;
+            width: 70%;
+            .cell {
+                padding: 10px;
+                height: 100px;
+            }
         }
     }
 }
 
 .spanMax {
-    width: 890px;
     height: 600px
 }
 
