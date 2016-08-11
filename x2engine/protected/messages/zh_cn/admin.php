@@ -1100,4 +1100,10 @@
   'To manage user login settings, including failed logins before CAPTCHA and failed logins before ban, please visit the {link} page.' => '要管理用户登录设置，包括CAPTCHA之前失败的登录和禁令之前登录失败，请访问{link}页。',
   'Email Configuration & Connectors' => '电子邮件配置及连接器',
   'X2Studio Customization Tools' => 'X2Studio定制工具',
+  'File a Support Case' => '文件支持案例',
+  'For X2VPS customers' => '对于X2VPS客户',
+  'Community Support Forums' => '社区支持论坛',
+  'Information for end users on X2CRM' => '对X2CRM最终用户信息',
+  'Information for administrators on X2Workflow' => '对X2Workflow管理员的信息',
+  'Documentation generated via JavaDoc comments' => '通过JavaDoc注释生成的文档',
 );

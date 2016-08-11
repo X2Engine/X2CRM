@@ -43,4 +43,5 @@
   'Delete {user}' => 'Удалить {user}',
   'Check your email at {email} for further instructions to finish resetting your password.' => 'Проверьте вашу электронную почту {email} для получения дальнейших инструкций, чтобы закончить сброс пароля.',
   'You should now have access as "{user}" with the new password specified.' => 'Теперь вы должны иметь доступ как "{user}" с новым указанным паролем.',
+  'User Login History' => 'Пользователь Войти История',
 );

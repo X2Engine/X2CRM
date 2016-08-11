@@ -1154,4 +1154,7 @@
   'Web: {website}' => 'Web: {website}',
   'Email: {email}' => 'E-mail: {email}',
   'Manage X2CRM user account history, including failed and successful logins' => 'Gestire X2CRM storia account utente, inclusi gli account di accesso falliti e di successo',
+  'Disable Email Inbox' => 'Disabilitare Email Posta in arrivo',
+  'Please enter a password to verify' => 'Si prega di inserire una password per verificare',
+  'Inbox usage is disabled for these credentials. Please update the settings on the "Manage Apps" page to enable inbox access.' => 'utilizzo posta in arrivo è disattivata per queste credenziali. Si prega di aggiornare le impostazioni nella pagina &quot;Gestisci applicazioni&quot; per consentire l&#39;accesso casella di posta.',
 );

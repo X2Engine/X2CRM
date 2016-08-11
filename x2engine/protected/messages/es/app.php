@@ -1154,4 +1154,7 @@
   'Web: {website}' => 'Web: {website}',
   'Email: {email}' => 'E-mail: {email}',
   'Manage X2CRM user account history, including failed and successful logins' => 'Administrar X2CRM historial de la cuenta de usuario, incluyendo los inicios de sesión fallidos y exitosos',
+  'Disable Email Inbox' => 'Bloquear correo electrónico bandeja de entrada',
+  'Please enter a password to verify' => 'Por favor, introduzca una contraseña para verificar',
+  'Inbox usage is disabled for these credentials. Please update the settings on the "Manage Apps" page to enable inbox access.' => 'el uso de la bandeja de entrada está desactivada para estas credenciales. Por favor, actualice la configuración en la página &quot;Administrar aplicaciones&quot; para permitir el acceso bandeja de entrada.',
 );

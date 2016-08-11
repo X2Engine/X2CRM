@@ -1154,4 +1154,7 @@
   'Web: {website}' => 'Web: {website}',
   'Email: {email}' => 'Email: {email}',
   'Manage X2CRM user account history, including failed and successful logins' => 'Διαχειριστείτε το ιστορικό του λογαριασμού χρήστη X2CRM, συμπεριλαμβανομένων απέτυχε και επιτυχημένες συνδέσεις',
+  'Disable Email Inbox' => 'Απενεργοποίηση Εισερχόμενα Email',
+  'Please enter a password to verify' => 'Παρακαλώ εισάγετε έναν κωδικό πρόσβασης για την επαλήθευση',
+  'Inbox usage is disabled for these credentials. Please update the settings on the "Manage Apps" page to enable inbox access.' => 'χρήση Εισερχόμενα είναι απενεργοποιημένη για αυτές τις πιστοποιήσεις. Παρακαλείστε να ενημερώσετε τις ρυθμίσεις στη σελίδα &quot;Διαχείριση εφαρμογών&quot; για να ενεργοποιήσετε την πρόσβαση inbox.',
 );

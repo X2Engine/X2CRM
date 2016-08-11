@@ -1154,4 +1154,7 @@
   'Web: {website}' => '웹 : {website}',
   'Email: {email}' => '이메일 : {email}',
   'Manage X2CRM user account history, including failed and successful logins' => '실패와 성공 로그인을 포함 X2CRM 사용자 계정 역사를 관리',
+  'Disable Email Inbox' => '안 이메일받은 편지함',
+  'Please enter a password to verify' => '확인하기 위해 비밀번호를 입력하세요',
+  'Inbox usage is disabled for these credentials. Please update the settings on the "Manage Apps" page to enable inbox access.' => '받은 편지함의 사용은 이러한 자격 증명을 사용할 수 없습니다. 받은 편지함에 액세스 할 수 있도록 &#39;애플리케이션 관리&#39;페이지에서 설정을 업데이트하시기 바랍니다.',
 );

@@ -1154,4 +1154,7 @@
   'Web: {website}' => '网址： {website}',
   'Email: {email}' => '电子邮件： {email}',
   'Manage X2CRM user account history, including failed and successful logins' => '管理X2CRM用户帐户历史记录，包括失败和成功的登录',
+  'Disable Email Inbox' => '禁用电子邮件收件箱',
+  'Please enter a password to verify' => '请输入密码来验证',
+  'Inbox usage is disabled for these credentials. Please update the settings on the "Manage Apps" page to enable inbox access.' => '收件箱的使用为这些凭据禁用。请“管理应用程序”页面上更新设置，以使收件箱访问。',
 );

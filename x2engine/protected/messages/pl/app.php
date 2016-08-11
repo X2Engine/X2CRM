@@ -1154,4 +1154,7 @@
   'Web: {website}' => 'Web: {website}',
   'Email: {email}' => 'E-mail: {email}',
   'Manage X2CRM user account history, including failed and successful logins' => 'Zarządzaj X2CRM historię konta użytkownika, łącznie z nieudanych i udanych logowań',
+  'Disable Email Inbox' => 'Wyłącz email Poczta',
+  'Please enter a password to verify' => 'Wpisz hasło w celu weryfikacji',
+  'Inbox usage is disabled for these credentials. Please update the settings on the "Manage Apps" page to enable inbox access.' => 'Wykorzystanie Skrzynka odbiorcza jest wyłączona dla tych mandatów. Proszę zaktualizować ustawienia na stronie &quot;Zarządzaj aplikacjami&quot;, aby umożliwić dostęp do skrzynki odbiorczej.',
 );
