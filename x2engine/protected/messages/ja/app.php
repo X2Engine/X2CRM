@@ -1154,4 +1154,7 @@
   'Web: {website}' => 'ウェブサイト： {website}',
   'Email: {email}' => 'メール： {email}',
   'Manage X2CRM user account history, including failed and successful logins' => 'X2CRMユーザーアカウント履歴は失敗し、成功したログインを含め、管理します',
+  'Disable Email Inbox' => '電子メールの受信トレイを無効にします',
+  'Please enter a password to verify' => '確認するためにパスワードを入力してください',
+  'Inbox usage is disabled for these credentials. Please update the settings on the "Manage Apps" page to enable inbox access.' => '受信トレイの使用は、これらの資格は無効になっています。受信トレイへのアクセスを有効にするには、「アプリ管理」ページの設定を更新してください。',
 );

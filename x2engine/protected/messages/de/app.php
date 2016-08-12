@@ -1153,4 +1153,7 @@
   'Web: {website}' => 'Web: {website}',
   'Email: {email}' => 'E - Mail: {email}',
   'Manage X2CRM user account history, including failed and successful logins' => 'Verwalten X2CRM Benutzerkonto Geschichte, einschließlich gescheiterte und erfolgreiche Anmeldungen',
+  'Disable Email Inbox' => 'E-Mail deaktivieren Posteingang',
+  'Please enter a password to verify' => 'Bitte geben Sie ein Passwort, um zu überprüfen',
+  'Inbox usage is disabled for these credentials. Please update the settings on the "Manage Apps" page to enable inbox access.' => 'Posteingang Nutzung ist für diesen Anmeldeinformationen deaktiviert. Bitte aktualisieren Sie die Einstellungen auf den &quot;Apps verwalten&quot; Seite Posteingang Zugriff zu ermöglichen.',
 );

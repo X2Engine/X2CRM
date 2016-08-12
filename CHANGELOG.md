@@ -1,5 +1,13 @@
-# 6.0.3 #
+# 6.0.4 #
 {releaseDate}
+* General Changelog / Developer Notes
+  * More improvements to Admin control panel
+  * Fix inline email issue on Opportunities
+  * Added ability to disable Email Inbox per credential
+  * Miscellaneous bug fixes
+
+# 6.0.3 #
+8/3/2016
 * General Changelog / Developer Notes
   * Admin control panel UI overhaul
   * Ability to delete from mobile activity feed

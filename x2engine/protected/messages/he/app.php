@@ -1154,4 +1154,7 @@
   'Web: {website}' => 'אינטרנט: {website}',
   'Email: {email}' => 'דוא&quot;ל: {email}',
   'Manage X2CRM user account history, including failed and successful logins' => 'ניהול היסטוריית חשבון משתמש X2CRM, כוללים שמות משתמש שנכשל ומוצלחים',
+  'Disable Email Inbox' => 'בתיבת דואר נכנס שבת',
+  'Please enter a password to verify' => 'הזן להלן את הסיסמה לאמת',
+  'Inbox usage is disabled for these credentials. Please update the settings on the "Manage Apps" page to enable inbox access.' => 'שימוש בתיבת דואר נכנס מושבת עבור אישורים אלה. עדכן את ההגדרות בעמוד &quot;ניהול יישומים &#39;כדי לאפשר גישה לתיבת הדואר הנכנס.',
 );

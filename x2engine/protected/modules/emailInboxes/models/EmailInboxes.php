@@ -985,6 +985,12 @@ class EmailInboxes extends X2Model {
         }
         $folders = array_diff ($folders, $skipFolders);
         foreach ($folders as $folder) {
+            // Skip folders if logging is not requested
+            if (in_array($folder, $sentFolders)) {
+                if (!$this->settings['logOutboundByDefault']) continue;
+            } else {
+                if (!$this->settings['logInboundByDefault']) continue;
+            }
             Yii::log("Beginning inbound logging for folder $folder in inbox {$this->id}", 'trace', 'application.automation.cron');
             $this->selectFolder ($folder);
             // Retrieve the UID of the most recently logged email for this folder and

@@ -39,6 +39,7 @@
   'Create Popup Notification' => 'Создайте всплывающее уведомление',
   'Create Record' => 'Создать запись',
   'Create Action for Record' => 'Создать действие для записи',
+  'Delete Record' => 'Удалить запись',
   'Email Contact' => 'Контактный адрес электронной почты',
   'Add to List' => 'Добавить к списку',
   'Remove from List' => 'Удалить из списка',

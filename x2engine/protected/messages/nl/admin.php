@@ -1100,4 +1100,10 @@
   'To manage user login settings, including failed logins before CAPTCHA and failed logins before ban, please visit the {link} page.' => 'Om de gebruiker login-instellingen, waaronder mislukte aanmeldingen voor CAPTCHA en mislukte aanmeldingen voor het verbod te beheren, kunt u terecht op de {link} pagina.',
   'Email Configuration & Connectors' => 'E-mail Configuratie en aansluitingen',
   'X2Studio Customization Tools' => 'X2Studio Customization Gereedschap',
+  'File a Support Case' => 'Dien een Ondersteuning Case',
+  'For X2VPS customers' => 'Voor X2VPS klanten',
+  'Community Support Forums' => 'Community Support Forum',
+  'Information for end users on X2CRM' => 'Informatie voor eindgebruikers op X2CRM',
+  'Information for administrators on X2Workflow' => 'Informatie voor beheerders over X2Workflow',
+  'Documentation generated via JavaDoc comments' => 'Documentatie gegenereerd via JavaDoc reacties',
 );
