@@ -59,8 +59,9 @@ class LogEmailCommand extends CConsoleCommand {
 	public function run($args) {
         $inboxes = EmailInboxes::model()->findAll();
         foreach ($inboxes as $inbox) {
-            if (!($inbox->settings['logInboundByDefault'] || $inbox->settings['logOutboundByDefault']))
-                continue;
+            if (!($inbox->settings['logInboundByDefault'] || $inbox->settings['logOutboundByDefault']) ||
+                $inbox->credentials->auth->disableInbox)
+                    continue;
             Yii::log("Logging recent emails for inbox ".$inbox->id, 'trace', 'application.automation.cron');
             $inbox->logRecentMessages ();
             sleep ($this->timeout);

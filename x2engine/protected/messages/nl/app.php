@@ -1154,4 +1154,7 @@
   'Web: {website}' => 'Web: {website}',
   'Email: {email}' => 'E-mail: {email}',
   'Manage X2CRM user account history, including failed and successful logins' => 'Beheer X2CRM user account geschiedenis, met inbegrip van mislukte en geslaagde logins',
+  'Disable Email Inbox' => 'Disable E-mail inbox',
+  'Please enter a password to verify' => 'Voer een wachtwoord in om te controleren',
+  'Inbox usage is disabled for these credentials. Please update the settings on the "Manage Apps" page to enable inbox access.' => 'gebruik Inbox is uitgeschakeld voor deze referenties. Gelieve de instellingen bij te werken op de pagina &quot;Manage Apps&quot; om toegang te krijgen inbox mogelijk te maken.',
 );

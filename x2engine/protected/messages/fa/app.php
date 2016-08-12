@@ -1154,4 +1154,7 @@
   'Web: {website}' => 'وب سایت: {website}',
   'Email: {email}' => 'ایمیل: {email}',
   'Manage X2CRM user account history, including failed and successful logins' => 'مدیریت X2CRM تاریخ حساب کاربر، از جمله باری شکست خورده و موفق',
+  'Disable Email Inbox' => 'صندوق ایمیل غیر فعال کردن',
+  'Please enter a password to verify' => 'لطفا یک رمزعبور برای تایید وارد کنید',
+  'Inbox usage is disabled for these credentials. Please update the settings on the "Manage Apps" page to enable inbox access.' => 'استفاده از صندوق برای این اعتبار غیر فعال است. لطفا تنظیمات در صفحه &quot;مدیریت نرم افزار&quot; به روز رسانی به فعال کردن دسترسی به صندوق پستی.',
 );

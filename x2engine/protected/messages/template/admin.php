@@ -1100,4 +1100,10 @@
   'To manage user login settings, including failed logins before CAPTCHA and failed logins before ban, please visit the {link} page.' => '',
   'Email Configuration & Connectors' => '',
   'X2Studio Customization Tools' => '',
+  'File a Support Case' => '',
+  'For X2VPS customers' => '',
+  'Community Support Forums' => '',
+  'Information for end users on X2CRM' => '',
+  'Information for administrators on X2Workflow' => '',
+  'Documentation generated via JavaDoc comments' => '',
 );

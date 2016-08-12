@@ -1154,4 +1154,7 @@
   'Web: {website}' => 'Web: {website}',
   'Email: {email}' => 'Email: {email}',
   'Manage X2CRM user account history, including failed and successful logins' => 'Gerenciar histórico da conta do usuário X2CRM, incluindo logins falhos e bem sucedidos',
+  'Disable Email Inbox' => 'Desactivar caixa de correio electrónico',
+  'Please enter a password to verify' => 'Por favor insira uma senha para verificar',
+  'Inbox usage is disabled for these credentials. Please update the settings on the "Manage Apps" page to enable inbox access.' => 'o uso de caixa de entrada está desativada para essas credenciais. Por favor, atualize as configurações na página &quot;Gerenciar Aplicativos&quot; para permitir o acesso caixa de entrada.',
 );

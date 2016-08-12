@@ -1215,4 +1215,7 @@
   'Web: {website}' => '',
   'Email: {email}' => '',
   'Manage X2CRM user account history, including failed and successful logins' => '',
+  'Disable Email Inbox' => '',
+  'Please enter a password to verify' => '',
+  'Inbox usage is disabled for these credentials. Please update the settings on the "Manage Apps" page to enable inbox access.' => '',
 );

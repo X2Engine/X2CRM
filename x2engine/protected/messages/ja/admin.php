@@ -1100,4 +1100,10 @@
   'To manage user login settings, including failed logins before CAPTCHA and failed logins before ban, please visit the {link} page.' => 'CAPTCHA前にログインを失敗し、禁止する前にログインを失敗したなど、ユーザーのログイン設定を、管理するには、次のURLをご覧ください{link}のページを。',
   'Email Configuration & Connectors' => 'メールの設定＆コネクタ',
   'X2Studio Customization Tools' => 'X2Studioカスタマイズ・ツール',
+  'File a Support Case' => 'サポートケースファイル',
+  'For X2VPS customers' => 'X2VPSのお客様のために',
+  'Community Support Forums' => 'コミュニティサポートフォーラム',
+  'Information for end users on X2CRM' => 'X2CRM上のエンドユーザー向けの情報',
+  'Information for administrators on X2Workflow' => 'X2Workflowに関する管理者向け情報',
+  'Documentation generated via JavaDoc comments' => 'Javadocコメントを経て生成されたドキュメント',
 );

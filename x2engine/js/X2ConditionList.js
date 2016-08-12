@@ -55,7 +55,7 @@ function ConditionList (argsDict) {
     this._sortList$ = this._container$.children ('.x2-cond-list');
     this._addCondButton$ = this._container$.find ('button');
     var fieldsOptions = {};
-    fieldsOptions[this.modelClass] = this.options;
+    fieldsOptions[this.modelClass+"_all"] = this.options;
     this._fields = new x2.FieldsGeneric ({
         templateSelector: this.containerSelector + ' .x2fields-template',
         options: fieldsOptions,

@@ -148,7 +148,6 @@ Yii::app()->clientScript->registerScript('loadJqueryVersion',
             'Steve Lance',
             'Derek Mueller',
             'Josef Bustamante',
-            'Wade Hastings',
             'Matthew Pearson',
             'Demitri Morgan',
             'Alex Rowe'
