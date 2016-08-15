@@ -2715,6 +2715,18 @@ class AdminController extends X2Controller {
         $this->redirect($url);
     }
 
+    public function actionJasperIntegration() {
+        $credId = Yii::app()->settings->jasperCredentialsId;
+
+        if ($credId && ($cred = Credentials::model()->findByPk($credId))) {
+            $params = array('id' => $credId);
+        } else {
+            $params = array('class' => 'JasperServer');
+        }
+        $url = Yii::app()->createUrl('/profile/createUpdateCredentials', $params);
+        $this->redirect($url);
+    }
+
     public function actionTwitterIntegration() {
         $credId = Yii::app()->settings->twitterCredentialsId;
 
