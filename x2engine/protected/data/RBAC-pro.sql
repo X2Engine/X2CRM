@@ -90,6 +90,7 @@ VALUES
 ('ReportsReadOnlyAccess','ReportsUpdate'),
 ('ReportsReadOnlyAccess','ReportsRowsAndColumnsReport'),
 ('ReportsReadOnlyAccess','ReportsSummationReport'),
+('ReportsReadOnlyAccess','ReportsExternalReport'),
 ('ReportsMinimumRequirements','ReportsSearch'),
 ('ReportsReadOnlyAccess','ReportsWorkflow'),
 ('ReportsMinimumRequirements','ReportsGetItems'),

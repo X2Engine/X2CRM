@@ -295,6 +295,9 @@ ReportForm.prototype._updateReportSettings = function () {
         dataType: 'JSON',
         success: function (data) {
             x2.flashes.displayFlashes (data['flashes']);
+
+            if (that.type === 'external')
+                window.location = yii.scriptUrl + '/reports/' + that._getReportId ();
         }
     });
 };

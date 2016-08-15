@@ -787,6 +787,7 @@ VALUES
 ('ReportsUpdate',0,'',NULL,'N;'),
 ('ReportsRowsAndColumnsReport',0,'',NULL,'N;'),
 ('ReportsSummationReport',0,'',NULL,'N;'),
+('ReportsExternalReport',0,'',NULL,'N;'),
 ('ReportsPrintChart',0,'',NULL,'N;'),
 ('ReportsCallChartFunction',0,'',NULL,'N;'),
 ('RoleAccessTask',1,'A set of operations for managing roles.',NULL,'N;'),

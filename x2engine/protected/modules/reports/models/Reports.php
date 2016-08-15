@@ -50,7 +50,7 @@ class Reports extends X2Model {
     public $settings; 
 
     /**
-     * @var string $type 'rowsAndColumns'|'grid'|'summation'
+     * @var string $type 'rowsAndColumns'|'grid'|'summation'|'external'
      */
     public $type; 
 
@@ -129,7 +129,7 @@ class Reports extends X2Model {
         $formModelName = array_pop ($keys);
         if (!in_array ($formModelName, 
             array ('SummationReportFormModel', 'RowsAndColumnsReportFormModel', 
-                'GridReportFormModel'))) {
+                'GridReportFormModel', 'ExternalReportFormModel'))) {
 
             return false;
         }
@@ -223,6 +223,21 @@ class Reports extends X2Model {
             return 'X2RowsAndColumnsReport';
         }
 
+    }
+
+    public static function getExternalReportUrl($path) {
+        $credsId = Yii::app()->settings->jasperCredentialsId;
+        $creds = Credentials::model()->findByPk($credsId);
+        if ($creds) {
+            $server = $creds->auth->server;
+            $user = $creds->auth->username;
+            $pass = $creds->auth->password;
+            $reportName = str_replace('/', '%2F', $path);
+            $uri = "{$server}/flow.html?_flowId=viewReportFlow&decorate=no&j_username={$user}&j_password={$pass}&reportUnit={$reportName}";
+            return $uri;
+        } else {
+            return null;
+        }
     }
 
     public function getInstance () {
