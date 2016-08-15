@@ -1,5 +1,5 @@
 # 6.0.4 #
-{releaseDate}
+8/12/2016
 * General Changelog / Developer Notes
   * More improvements to Admin control panel
   * Fix inline email issue on Opportunities
