@@ -458,8 +458,9 @@ class WebFormAction extends CAction {
             $model->validate (null, false);
 
             if(!$model->hasErrors()){
+                $success = $model->save();
 
-                if($model->save()){
+                if ($success){
                     $model->name = $model->id;
                     // reset scenario for webForms after saving
                     $model->scenario = $extractedParams['requireCaptcha'] ? 'webFormWithCaptcha' : 'webForm';
