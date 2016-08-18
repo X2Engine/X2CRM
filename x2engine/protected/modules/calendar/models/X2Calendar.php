@@ -60,6 +60,13 @@ class X2Calendar extends CActiveRecord
 	public function tableName() {
 		return 'x2_calendars';
 	}
+        
+        public function rules(){
+            return array(
+                array('name','required'),
+                array('name','length', 'max' => 100)
+            );
+        }
 	
 	public function attributeLabels() {
 		return array(
