@@ -314,26 +314,7 @@ class CalendarController extends x2base {
                         FILTER_DEFAULT, FILTER_REQUIRE_ARRAY);
                 $editPermissions = filter_input(INPUT_POST, 'edit-permission',
                         FILTER_DEFAULT, FILTER_REQUIRE_ARRAY);
-                $permissions = array();
-                if (is_array($viewPermissions)) {
-                    foreach ($viewPermissions as $userId) {
-                        $permissions[$userId] = array('view' => 1, 'edit' => 0);
-                    }
-                }
-                if (is_array($editPermissions)) {
-                    foreach ($editPermissions as $userId) {
-                        $permissions[$userId] = array('view' => 1, 'edit' => 1);
-                    }
-                }
-
-                foreach ($permissions as $userId => $perms) {
-                    $permissionRecord = new X2CalendarPermissions();
-                    $permissionRecord->calendarId = $model->id;
-                    $permissionRecord->userId = $userId;
-                    $permissionRecord->view = $perms['view'];
-                    $permissionRecord->edit = $perms['edit'];
-                    $permissionRecord->save();
-                }
+                $model->setCalendarPermissions($viewPermissions, $editPermissions);
                 $this->redirect(array('index'));
             }
         }

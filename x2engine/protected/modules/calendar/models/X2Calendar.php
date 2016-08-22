@@ -353,6 +353,29 @@ class X2Calendar extends CActiveRecord
 		
 		$googleCalendar->events->insert($this->googleCalendarId, $event);
 	}
+        
+        public function setCalendarPermissions($view, $edit){
+            $permissions = array();
+            if (is_array($view)) {
+                foreach ($view as $userId) {
+                    $permissions[$userId] = array('view' => 1, 'edit' => 0);
+                }
+            }
+            if (is_array($edit)) {
+                foreach ($edit as $userId) {
+                    $permissions[$userId] = array('view' => 1, 'edit' => 1);
+                }
+            }
+            X2CalendarPermissions::model()->deleteAllByAttributes(array('calendarId'=>$this->id));
+            foreach ($permissions as $userId => $perms) {
+                $permissionRecord = new X2CalendarPermissions();
+                $permissionRecord->calendarId = $this->id;
+                $permissionRecord->userId = $userId;
+                $permissionRecord->view = $perms['view'];
+                $permissionRecord->edit = $perms['edit'];
+                $permissionRecord->save();
+            }
+        }
 
 	public function search() {
 		$criteria=new CDbCriteria;
