@@ -295,21 +295,9 @@ class CalendarController extends x2base {
 
         $model = new X2Calendar;
 
-        if(isset($_POST['X2Calendar'])){
-            // copy $_POST data into Calendar model
-//            $this->render('test', array('model'=>$_POST));
-            foreach(array_keys($model->attributes) as $field){
-                if(isset($_POST['X2Calendar'][$field])){
-                    $model->$field = $_POST['X2Calendar'][$field];
-                    $fieldData = Fields::model()->findByAttributes(array('modelName' => 'Calendar', 'fieldName' => $field));
-                    if(isset($fieldData) && $fieldData->type == 'assignment' && $fieldData->linkType == 'multiple'){
-                        $model->$field = Fields::parseUsers($model->$field);
-                    }elseif(isset($fieldData) && $fieldData->type == 'date'){
-                        $model->$field = strtotime($model->$field);
-                    }
-                }
-            }
-
+        $calendar = filter_input(INPUT_POST, 'X2Calendar', FILTER_DEFAULT, FILTER_REQUIRE_ARRAY);
+        if(is_array($calendar)){
+            $model->attributes = $calendar;
             if($model->googleCalendar && isset($_SESSION['token'])){
                 $token = json_decode($_SESSION['token'], true);
                 $model->googleRefreshToken = $token['refresh_token']; // used for accessing this google calendar at a later time
@@ -321,8 +309,33 @@ class CalendarController extends x2base {
             $model->createDate = time();
             $model->lastUpdated = time();
 
-            $model->save();
-            $this->redirect(array('index'));
+            if ($model->save()) {
+                $viewPermissions = filter_input(INPUT_POST, 'view-permission',
+                        FILTER_DEFAULT, FILTER_REQUIRE_ARRAY);
+                $editPermissions = filter_input(INPUT_POST, 'edit-permission',
+                        FILTER_DEFAULT, FILTER_REQUIRE_ARRAY);
+                $permissions = array();
+                if (is_array($viewPermissions)) {
+                    foreach ($viewPermissions as $userId) {
+                        $permissions[$userId] = array('view' => 1, 'edit' => 0);
+                    }
+                }
+                if (is_array($editPermissions)) {
+                    foreach ($editPermissions as $userId) {
+                        $permissions[$userId] = array('view' => 1, 'edit' => 1);
+                    }
+                }
+
+                foreach ($permissions as $userId => $perms) {
+                    $permissionRecord = new X2CalendarPermissions();
+                    $permissionRecord->calendarId = $model->id;
+                    $permissionRecord->userId = $userId;
+                    $permissionRecord->view = $perms['view'];
+                    $permissionRecord->edit = $perms['edit'];
+                    $permissionRecord->save();
+                }
+                $this->redirect(array('index'));
+            }
         }
 
         $admin = Yii::app()->settings;

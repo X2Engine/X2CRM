@@ -36,6 +36,8 @@ CREATE TABLE x2_users (
     INDEX (username)
 ) COLLATE = utf8_general_ci;
 /*&*/
+ALTER TABLE `x2_calendar_permissions` ADD CONSTRAINT FOREIGN KEY (`userId`) REFERENCES x2_users(`id`) ON UPDATE CASCADE ON DELETE CASCADE;
+/*&*/
 DROP TABLE IF EXISTS x2_password_reset;
 /*&*/
 CREATE TABLE x2_password_reset (

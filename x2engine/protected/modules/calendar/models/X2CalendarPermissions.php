@@ -80,10 +80,10 @@ class X2CalendarPermissions extends CActiveRecord
             // permissions for user's that have set there permissions
             $permissions = X2CalendarPermissions::model()->findAll( 
                 array(
-                    'select'=>'user_id, other_user_id, view',
-                    'condition'=>'other_user_id=:user_id',
-                    'params'=>array(':user_id'=>Yii::app()->user->id),
-                    'index'=>'user_id',
+                    'select'=>'userId, calendarId, view',
+                    'condition'=>'userId=:userId',
+                    'params'=>array(':userId'=>Yii::app()->user->id),
+                    'index'=>'userId',
                 )
             );
             
@@ -94,15 +94,15 @@ class X2CalendarPermissions extends CActiveRecord
             foreach($permissions as $permission) { 
 
                 // user gives us permission to view there calendar?
-                if($permission->view && isset($users[$permission->user_id])) { 
-                    $user = $users[$permission->user_id];
+                if($permission->view && isset($users[$permission->userId])) { 
+                    $user = $users[$permission->userId];
                     $first = $user->firstName;
                     $last = $user->lastName;
                     $fullname = Formatter::fullName($first, $last);
                     $username = $user->username;
                     $names[$username] = $fullname;
                 }
-                $checked[] = $permission->user_id;
+                $checked[] = $permission->userId;
             }
             
             // user's who have not set permissions default to letting everyone see there calendar
@@ -161,10 +161,10 @@ class X2CalendarPermissions extends CActiveRecord
         
             $permissions = X2CalendarPermissions::model()->findAll( // permissions for user's that have set there permissions
                 array(
-                    'select'=>'user_id, other_user_id, edit',
-                    'condition'=>'other_user_id=:user_id',
-                    'params'=>array(':user_id'=>Yii::app()->user->id),
-                    'index'=>'user_id',
+                    'select'=>'userId, calendarId, edit',
+                    'condition'=>'userId=:userId',
+                    'params'=>array(':userId'=>Yii::app()->user->id),
+                    'index'=>'userId',
                 )
             );
 
@@ -172,21 +172,21 @@ class X2CalendarPermissions extends CActiveRecord
             // safeguard to prevent invalid permissions from being used
             // TODO: write migration script to delete old invalid permissions
             $permissions = array_filter ($permissions, function ($permission) use ($users) {
-                return in_array ($permission->user_id, array_keys ($users));
+                return in_array ($permission->userId, array_keys ($users));
             });
             /* x2tempend */ 
             
             $checked = array(); // user's who have there permission set up. Other user's will have default permissions
             foreach($permissions as $permission) { // loop through user's that have set there permissions
                 if($permission->edit) { // user gives us permission to view there calendar?
-                    $user = $users[$permission->user_id];
+                    $user = $users[$permission->userId];
                     $first = $user->firstName;
                     $last = $user->lastName;
                     $fullname = Formatter::fullName($first, $last);
                     $username = $user->username;
                     $names[$username] = $fullname;
                 }
-                $checked[] = $permission->user_id;
+                $checked[] = $permission->userId;
             }
             
             // user's who have not set permissions default to not letting everyone edit there calendar
@@ -215,10 +215,10 @@ class X2CalendarPermissions extends CActiveRecord
         );
         $permissions = X2CalendarPermissions::model()->findAll( // permissions for user's that have set there permissions
             array(
-                'select'=>'user_id, other_user_id, view',
-                'condition'=>'user_id=:user_id',
-                'params'=>array(':user_id'=>$id),
-                'index'=>'other_user_id',
+                'select'=>'userId, calendarId, view',
+                    'condition'=>'userId=:userId',
+                    'params'=>array(':userId'=>Yii::app()->user->id),
+                    'index'=>'userId',
             )
         );
         
@@ -248,10 +248,10 @@ class X2CalendarPermissions extends CActiveRecord
         );
         $permissions = X2CalendarPermissions::model()->findAll( // permissions for user's that have set there permissions
             array(
-                'select'=>'user_id, other_user_id, edit',
-                'condition'=>'user_id=:user_id',
-                'params'=>array(':user_id'=>$id),
-                'index'=>'other_user_id',
+                'select'=>'userId, calendarId, edit',
+                    'condition'=>'userId=:userId',
+                    'params'=>array(':userId'=>Yii::app()->user->id),
+                    'index'=>'userId',
             )
         );
         

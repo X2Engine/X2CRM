@@ -71,9 +71,9 @@ $this->actionMenu = $this->formatMenu($menuItems);
 <?php 
 
 
-$users = User::getNames();
-unset($users['Anyone']);
-unset($users['admin']);
+$users = User::getUserIds();
+unset($users['']);
+unset($users[Yii::app()->user->id]);
 	
 echo $this->renderPartial('_form', 
 	 array(

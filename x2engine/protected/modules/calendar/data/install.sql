@@ -14,15 +14,17 @@ CREATE TABLE x2_calendars (
     googleCalendarId   VARCHAR(255),
     googleAccessToken  VARCHAR(512),
     googleRefreshToken VARCHAR(255)
-) COLLATE utf8_general_ci;
+) ENGINE InnoDB, COLLATE utf8_general_ci;
 /*&*/
 CREATE TABLE x2_calendar_permissions (
     id            INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
-    user_id       INT,
-    other_user_id INT,
+    calendarId    INT UNSIGNED,
+    userId        INT UNSIGNED,
     view          TINYINT,
     edit          TINYINT
-) COLLATE utf8_general_ci;
+) ENGINE InnoDB, COLLATE utf8_general_ci;
+/*&*/
+ALTER TABLE `x2_calendar_permissions` ADD CONSTRAINT FOREIGN KEY (`calendarId`) REFERENCES x2_calendars(`id`) ON UPDATE CASCADE ON DELETE CASCADE;
 /*&*/
 INSERT INTO `x2_modules`
 (`name`, title, visible, menuPosition, searchable, editable, adminOnly, custom, toggleable)
