@@ -423,7 +423,7 @@ class CalendarController extends x2base {
     public function actionDelete($id){
         $model = $this->loadModel($id);
         $model->delete();
-        $this->redirect(array('list'));
+        $this->redirect(array('index'));
     }
 
     /*
