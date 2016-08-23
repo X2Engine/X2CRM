@@ -300,7 +300,9 @@ class CalendarController extends x2base {
             $model->attributes = $calendar;
             if($model->googleCalendar && isset($_SESSION['token'])){
                 $token = json_decode($_SESSION['token'], true);
-                $model->googleRefreshToken = $token['refresh_token']; // used for accessing this google calendar at a later time
+                if(isset($token['refresh_token'])){
+                    $model->googleRefreshToken = $token['refresh_token']; // used for accessing this google calendar at a later time
+                }
                 $model->googleAccessToken = $_SESSION['token'];
             }
 
@@ -379,33 +381,30 @@ class CalendarController extends x2base {
     public function actionUpdate($id){
         $model = $this->loadModel($id);
 
-        if(isset($_POST['X2Calendar'])){
-
-            // check for empty permissions
-            if(!isset($_POST['X2Calendar']['viewPermission']))
-                $model->viewPermission = '';
-            if(!isset($_POST['X2Calendar']['editPermission']))
-                $model->editPermission = '';
-
-            // copy $_POST data into Calendar model
-            foreach(array_keys($model->attributes) as $field){
-                if(isset($_POST['X2Calendar'][$field])){
-                    $model->$field = $_POST['X2Calendar'][$field];
-                    $fieldData = Fields::model()->findByAttributes(array('modelName' => 'Calendar', 'fieldName' => $field));
-                    if($fieldData->type == 'assignment' && $fieldData->linkType == 'multiple'){
-                        $model->$field = Fields::parseUsers($model->$field);
-                    }elseif($fieldData->type == 'date'){
-                        $model->$field = strtotime($model->$field);
-                    }
+        $calendar = filter_input(INPUT_POST, 'X2Calendar', FILTER_DEFAULT, FILTER_REQUIRE_ARRAY);
+        if(is_array($calendar)){
+            $model->attributes = $calendar;
+            if($model->googleCalendar && isset($_SESSION['token'])){
+                $token = json_decode($_SESSION['token'], true);
+                if(!isset($model->googleRefreshToken) && isset($token['refresh_token'])){
+                    $model->googleRefreshToken = $token['refresh_token']; // used for accessing this google calendar at a later time
                 }
+                $model->googleAccessToken = $_SESSION['token'];
             }
 
             $model->updatedBy = Yii::app()->user->name;
             $model->lastUpdated = time();
 
-            $model->save();
-            $this->redirect(array('view', 'id' => $model->id));
+            if ($model->save()) {
+                $viewPermissions = filter_input(INPUT_POST, 'view-permission',
+                        FILTER_DEFAULT, FILTER_REQUIRE_ARRAY);
+                $editPermissions = filter_input(INPUT_POST, 'edit-permission',
+                        FILTER_DEFAULT, FILTER_REQUIRE_ARRAY);
+                $model->setCalendarPermissions($viewPermissions, $editPermissions);
+                $this->redirect(array('index'));
+            }
         }
+        
 
         $admin = Yii::app()->settings;
         $googleIntegration = $admin->googleIntegration;

@@ -72,8 +72,8 @@ $(function() {
     </div>
     <br>
     <?php
-    $viewPermission = X2CalendarPermissions::getUserIdsWithViewPermission(Yii::app()->user->id);
-    $editPermission = X2CalendarPermissions::getUserIdsWithEditPermission(Yii::app()->user->id);
+    $viewPermission = $model->getUserIdsWithViewPermission();
+    $editPermission = $model->getUserIdsWithEditPermission();
     ?>
     <div class="row">
         <?php
@@ -155,7 +155,7 @@ if ($googleIntegration) {
 
 <?php
 echo '	<div class="row buttons">' . "\n";
-echo '		' . CHtml::submitButton(Yii::t('app', 'Create'),
+echo '		' . CHtml::submitButton($model->isNewRecord?Yii::t('app', 'Create'):Yii::t('app','Save'),
         array('class' => 'x2-button', 'id' => 'save-button', 'tabindex' => 24)) . "\n";
 echo "	</div>\n";
 $this->endWidget();

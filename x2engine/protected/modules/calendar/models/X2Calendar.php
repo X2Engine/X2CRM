@@ -376,6 +376,22 @@ class X2Calendar extends CActiveRecord
                 $permissionRecord->save();
             }
         }
+        
+        public function getUserIdsWithViewPermission(){
+            return Yii::app()->db->createCommand()
+                    ->select('userId')
+                    ->from('x2_calendar_permissions')
+                    ->where('view = 1 AND calendarId = :calendarId',array(':calendarId'=>$this->id))
+                    ->queryColumn();
+        }
+        
+        public function getUserIdsWithEditPermission(){
+            return Yii::app()->db->createCommand()
+                    ->select('userId')
+                    ->from('x2_calendar_permissions')
+                    ->where('edit = 1 AND calendarId = :calendarId',array(':calendarId'=>$this->id))
+                    ->queryColumn();
+        }
 
 	public function search() {
 		$criteria=new CDbCriteria;
