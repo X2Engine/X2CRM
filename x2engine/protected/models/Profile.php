@@ -1139,6 +1139,10 @@ class Profile extends X2ActiveRecord {
                     'title' => 'Activity Feed',
                     'minimize' => false,
                 ),
+                'GoogleMaps' => array(
+                    'title' => 'Google Map',
+                    'minimize' => false,
+                ),
                 'OnlineUsers' => array(
                     'title' => 'Active Users',
                     'minimize' => false,

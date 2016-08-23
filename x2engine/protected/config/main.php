@@ -346,6 +346,7 @@ $config = array(
              
             'OnlineUsers' => 'Active Users',
             'TimeZone' => 'Clock',
+            'GoogleMaps' => 'Google Map',
             'ChatBox' => 'Activity Feed',
             'TagCloud' => 'Tag Cloud',
             'ActionMenu' => 'My Actions',
