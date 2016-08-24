@@ -9,7 +9,7 @@
   'Bug Report Attributes' => 'Атрибуты отчета об ошибках',
   'Share {opportunity}' => 'Поделиться {opportunity}',
   '{account}' => '{account}',
-  '{module} Report' => '{module} Сообщить',
-  'This form will allow you to generate a campaign to mail related {contacts} of the {accounts} displayed in the report below. Select "Primary {contacts}" to only email {contacts} which are set as the Primary {contact} for an {account}. Select "All" to email all related {contacts} on each {account}.' => 'Эта форма позволит вам создать кампанию по почте для связанных {contacts} из {accounts} отображаемых в приведенном ниже отчете. Выберите &quot;Основной {contacts} только по электронной почте {contacts} которые устанавливаются в качестве первичного {contact} для {account} Выберите &quot;Все&quot;, для отправки на все связанные {contacts} на каждом {account}',
-  'Primary {module}' => 'Первичный {module}',
+  '{module} Report' => '{module} отчет',
+  'This form will allow you to generate a campaign to mail related {contacts} of the {accounts} displayed in the report below. Select "Primary {contacts}" to only email {contacts} which are set as the Primary {contact} for an {account}. Select "All" to email all related {contacts} on each {account}.' => 'Эта форма позволит вам создать кампанию по почте для связанных {contacts} из {accounts} отображаемых в приведенном ниже отчете. Выберите "Основной {contacts}" только по email {contacts} которые устанавливаются в качестве основного {contact} для {account} Выберите "Все", для отправки на все связанные {contacts} на каждом {account}',
+  'Primary {module}' => 'Основной {module}',
 );
