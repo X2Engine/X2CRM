@@ -1555,17 +1555,9 @@ class EmailInboxes extends X2Model {
      * @param int|array $uids The message UIDs to delete
      */
     public function deleteMessages ($uids) {
-        if ($this->isGmail()) {
-            imap_mail_move (
-                $this->stream, $this->sequence($uids), '[Gmail]/Trash', CP_UID);
-        } else {
-            // TODO check for other possible "Trash" folders
-            imap_delete($this->stream, $this->sequence($uids), FT_UID);
-        }
+        imap_delete($this->stream, $this->sequence($uids), FT_UID);
         imap_expunge($this->stream);
         $this->updateCachedMailbox($uids, true);
-        if ($this->isGmail())
-            $this->invalidateCachedMailbox("[Gmail]/Trash");
     }
 
     /**
