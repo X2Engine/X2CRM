@@ -64,5 +64,5 @@
   'Disabled' => 'Отключено',
   'Failed to associate message "{subject}" with {type} {model}' => 'Не удалось связать сообщение "{subject}" с {type} {model}',
   'Message "{subject}" already associated with {type} {model}' => 'Сообщение "{subject}" уже связано с {type} {model}',
-  'Disable Quota Operations' => 'Disable Quota Operations',
+  'Disable Quota Operations' => 'Отключить операции со счетами',
 );

@@ -112,7 +112,7 @@
   '{Action} Description' => 'Описание {Action}',
   'Subtype' => 'Класс',
   'Flow Triggered' => 'Flow Triggered',
-  'Quote ID' => 'ID цитаты',
+  'Quote ID' => 'ID комм. предложения',
   'Notification Users' => 'Уведомление пользователей',
   'Notification Time' => 'Время уведомления',
   'Calendar ID' => 'ID календаря',
