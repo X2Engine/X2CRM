@@ -128,7 +128,7 @@
   'HTML saved' => 'HTML сохраняется',
   'HTML removed' => 'HTML удалены',
   'Create a public form to receive new {module}.' => 'Создать общественное форму, чтобы получать новые {module}',
-  'If no lead routing has been configured, all new {module} will be assigned to "Anyone".' => 'Если нет свинца маршрутизации не был настроен, все новое {module} будет назначен &quot;Любой&quot;.',
+  'If no lead routing has been configured, all new {module} will be assigned to "Anyone".' => 'Если нет свинца маршрутизации не был настроен, все новое {module} будет назначен "Любой".',
   'The web form must be saved for custom fields to get included. Changes made to the custom fields will not be reflected in the preview until the web form is saved.' => 'Веб-форма должна быть сохранена для пользовательских полей, чтобы включены. Изменения, внесенные в пользовательские поля не будут отражены в окне предварительного просмотра, пока веб-форма не сохраняется.',
   'The web form must be saved for your custom fields or custom HTML to get included. Changes made to the custom fields or custom HTML will not be reflected in the preview until the web form is saved.' => 'Веб-форма должна быть сохранена для пользовательских полей или заказ HTML, чтобы включены. Изменения, внесенные в пользовательские поля или заказ HTML не будут отражены в окне предварительного просмотра, пока веб-форма не сохраняется.',
   '{Contact} has clicked a link' => '{Contact} нажал ссылку',
@@ -171,6 +171,6 @@
   'Enter a URL which the form will redirect to upon submission.' => 'Введите URL которых форма перенаправления по представлению.',
   '{recordType} has opened the email sent on ' => '{recordType} открыл электронной почты отправлено на',
   'When this is enabled, all links in the email template will be replaced with links that will track when they have been clicked.' => 'Когда эта опция включена, все ссылки в шаблоне электронной почты будет заменен ссылок, которые будут отслеживать, когда они были нажали.',
-  'The {contact} you enter here will be used for variable replacement, i.e. for "John Doe" the token {firstName} will get replaced with "John"' => '{contact} Вы здесь введете, будут использованы для замены переменной, то есть для &quot;John Doe&quot; маркер {firstName} будет заменяются с &quot;Иоанна&quot;',
+  'The {contact} you enter here will be used for variable replacement, i.e. for "John Doe" the token {firstName} will get replaced with "John"' => '{contact} Вы здесь введете, будут использованы для замены переменной, то есть для "John Doe" маркер {firstName} будет заменяются с "Иоанна"',
   'Generate and export the web tracker JavaScript. This can be uploaded to your site in place of the standard web tracker embed code, which is useful when using tracking under SSL. Please note: the code that is generated is specific to your X2CRM installation.' => 'Создание и экспортировать веб трекер JavaScript. Это может быть загружено на ваш сайт на место стандартного кода веб трекер встраивания, что бывает полезно при использовании отслеживания под SSL. Пожалуйста, обратите внимание: код, который генерируется зависит от конкретной установки X2CRM.',
 );
