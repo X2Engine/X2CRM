@@ -1,6 +1,6 @@
 <?php return array (
   'Inventory' => 'Учет',
-  'Product Information' => 'информация о продукте',
+  'Product Information' => 'информация о товаре',
   'Adjustments' => 'Корректировки',
   'Line Item' => 'Линия товара',
   'Unit Price' => 'Цена за еденицу',
