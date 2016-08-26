@@ -35,7 +35,7 @@
  **********************************************************************************/
 
 @import "standards";
-@import "colors";
+@import "colors"; 
 
 $eventTextColor: rgb(19, 19, 19);
 
@@ -175,3 +175,7 @@ table.page-title {
    -o-border-radius: 0px 0px 4px 4px;
 }
 
+.calendar-checkbox{
+    float:left;
+    margin-right: 5px;
+}

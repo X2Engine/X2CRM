@@ -73,7 +73,7 @@ if(isset($this->calendarUsers) && $this->calendarUsers !== null) {
         } else {
             $editable = 'false';
         }
-        echo "<li>\n";
+        echo "<li>\n<div class='calendar-checkbox'>";
         // checkbox for each user calendar the current user is alowed to view
         echo CHtml::checkBox($userName, in_array($userName, $showUserCalendars),
             array(
@@ -82,7 +82,7 @@ if(isset($this->calendarUsers) && $this->calendarUsers !== null) {
                     this.name, this.checked, $editable);", 
             )
         );
-        echo "<label for=\"$userName\">".CHtml::encode ($user)."</label>\n";
+        echo "</div><label for=\"$userName\">".CHtml::encode ($user)."</label>\n";
         echo "</li>";
     }
     echo "</ul>\n";
