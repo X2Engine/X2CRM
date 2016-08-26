@@ -13,7 +13,7 @@
   'Choose File' => 'Выберите файл',
   'Select File' => 'Выберите файл',
   'Attachments:' => 'Вложения:',
-  'Upload Media File' => 'Загружать мультимедийные файлы',
+  'Upload Media File' => 'Загрузить медиа файлы',
   'File Size' => 'Размер файла',
   'Dimensions' => 'Размеры',
   'View in Google Drive' => 'Посмотреть в Google Drive',

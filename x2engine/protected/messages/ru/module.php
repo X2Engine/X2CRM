@@ -1,6 +1,6 @@
 <?php return array (
   'Module Title' => 'Название модуля',
-  'The name for your new module' => 'Имя для вашего нового модуля',
+  'The name for your new module' => 'Имя вашего нового модуля',
   '(Optional) What to call individual records, e.g. "Create new X"' => '(Опционально) Как назвать отдельные записи, например, "Создать новый X"',
   'DB Table Name' => 'Имя таблицы БД',
   'Optional (alphanumeric only, must start with a letter)' => 'Опционально (только алфавитно-цифровые символы, должно начинаться с буквы)',
