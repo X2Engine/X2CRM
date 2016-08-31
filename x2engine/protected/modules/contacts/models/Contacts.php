@@ -410,6 +410,41 @@ class Contacts extends X2Model {
         $anonContact->delete();
     }
 
-    
+    /**
+     * Update contact location of specified type
+     * @param float $lat latitude
+     * @param float $lon longitude
+     * @param string $type null for address (authoritative) or 'geolocation'
+     */
+    public function updateLocation($lat, $lon, $type = null) {
+        $location = Locations::model()->findByAttributes(array(
+            'contactId' => $this->id,
+            'type' => $type,
+        ));
+        if(!isset($location)){
+            $location = new Locations;
+            $location->contactId = $this->id;
+            $location->lat = $lat;
+            $location->lon = $lon;
+            $location->type = $type;
+            $location->save();
+        }else{
+            if($location->lat != $lat || $location->lon != $lon){
+                $location->lat = $lat;
+                $location->lon = $lon;
+                $location->save();
+            }
+        }
+    }
 
+    /**
+     * Retrieve location of specified type
+     * @param string $type null for address (authoritative) or 'geolocation'
+     */
+    public function getLocation($type = null) {
+        return Locations::model()->findByAttributes(array(
+            'contactId' => $this->id,
+            'type' => $type,
+        ));
+    }
 }

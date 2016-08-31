@@ -1602,6 +1602,8 @@ class ProfileController extends x2base {
 
         if (!Yii::app()->user->isGuest) {
             $activityFeedParams = $this->getActivityFeedViewParams($id, $publicProfile);
+            $user = $activityFeedParams['model']->user;
+            $this->portlets['GoogleMaps']['params']['location'] = $user->address;
 
             $params = array(
                 'activityFeedParams' => $activityFeedParams,

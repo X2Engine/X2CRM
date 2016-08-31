@@ -237,8 +237,8 @@ x2WebTracker.setKeyCookieHiddenField = function (key) {
             x2WebTracker.setKeyCookie (x2KeyCookie);
             x2WebTracker.sendKey ({
                 url: url, 
-                x2KeyGetParam: x2KeyGetParam <?php  ?>, 
-                fingerprint: fingerprint<?php  ?>
+                x2KeyGetParam: x2KeyGetParam,
+                fingerprint: fingerprint
             });
             x2WebTracker.setKeyCookieHiddenField (x2KeyGetParam);
             return;
@@ -252,13 +252,11 @@ x2WebTracker.setKeyCookieHiddenField = function (key) {
         var x2KeyCookie = x2WebTracker.generateKey ();
         x2WebTracker.setKeyCookie (x2KeyCookie);
         x2WebTracker.setKeyCookieHiddenField (x2KeyCookie);
-        <?php  ?>
         x2WebTracker.sendKey ({
             url: url, 
             x2KeyGetParam: null,
             fingerprint: fingerprint
         });
-        <?php  ?>
         return; 
     }
 
@@ -269,8 +267,8 @@ x2WebTracker.setKeyCookieHiddenField = function (key) {
     if (x2KeyCookie.match (/[a-zA-Z0-9]/)) {
         x2WebTracker.sendKey ({
             url: url, 
-            x2KeyGetParam: null <?php  ?>, 
-            fingerprint: fingerprint<?php  ?>
+            x2KeyGetParam: null,
+            fingerprint: fingerprint
         });
         x2WebTracker.setKeyCookieHiddenField (x2KeyCookie);
     }

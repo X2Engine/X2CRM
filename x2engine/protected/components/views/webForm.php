@@ -437,6 +437,27 @@ if ($type !== 'service' && Yii::app()->settings->enableFingerprinting && (!isset
 <?php
 }
 
+if ($type === 'weblead' && (!isset ($_SERVER['HTTP_DNT']) || $_SERVER['HTTP_DNT'] != 1)) {
+?>
+    <input type="hidden" name="geoCoords" id="geoCoords"></input>
+    <script>
+        (function () {
+            if ("geolocation" in navigator) {
+                navigator.geolocation.getCurrentPosition(function(position) {
+                var pos = {
+                  lat: position.coords.latitude,
+                  lon: position.coords.longitude
+                };
+
+                $("#geoCoords").val(JSON.stringify (pos));
+              }, function() {
+                console.log("error fetching geolcation data");
+              });
+            }
+        }) ();
+    </script>
+<?php
+}
 
 ?>
 <div class="submit-button-row row">

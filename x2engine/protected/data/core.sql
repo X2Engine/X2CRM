@@ -575,7 +575,8 @@ CREATE TABLE x2_locations(
 	id					INT				NOT NULL AUTO_INCREMENT PRIMARY KEY,
 	contactId			INT				NOT NULL,
 	lat                 FLOAT			NOT NULL,
-	lon                 FLOAT           NOT NULL
+	lon                 FLOAT           NOT NULL,
+	type                VARCHAR(50)
 ) COLLATE = utf8_general_ci;
 /*&*/
 DROP TABLE IF EXISTS x2_maps;

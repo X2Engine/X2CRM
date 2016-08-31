@@ -86,6 +86,11 @@ class UsersController extends x2base {
      */
     public function actionView($id) {
         $user=User::model()->findByPk($id);
+
+        // Only load the Google Maps widget if we're on a User with an address
+        if(isset($this->portlets['GoogleMaps'])) {
+            $this->portlets['GoogleMaps']['params']['location'] = $user->address;
+        }
         $dataProvider=new CActiveDataProvider('Actions', array(
             'criteria'=>array(
                 'order'=>'complete DESC',

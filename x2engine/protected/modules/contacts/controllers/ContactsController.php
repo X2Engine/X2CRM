@@ -178,8 +178,14 @@ class ContactsController extends x2base {
                 $this->portlets['TimeZone']['params']['model'] = &$contact;
             }
             // Only load the Google Maps widget if we're on a Contact with an address
-            if(isset($this->portlets['GoogleMaps']))
+            if(isset($this->portlets['GoogleMaps'])) {
                 $this->portlets['GoogleMaps']['params']['location'] = $contact->cityAddress;
+                $geoloc = $contact->getLocation('geolocation');
+                if ($geoloc)  {
+                    $coords = array('lat' => (float)$geoloc->lat, 'lng' => (float)$geoloc->lon);
+                    $this->portlets['GoogleMaps']['params']['geolocation'] = $coords;
+                }
+            }
 
             // Update the VCR list information to preserve what list we came from
             if (isset($_COOKIE['vcr-list'])) {
@@ -475,7 +481,10 @@ class ContactsController extends x2base {
          * location. Otherwise center it on the first location in the set
          */
         if(isset($contactId)){
-            $location = X2Model::model('Locations')->findByAttributes(array('contactId' => $contactId));
+            $location = X2Model::model('Locations')->findByAttributes(array(
+                'contactId' => $contactId,
+                'type' => null,
+            ));
             if(isset($location)){
                 $loc = array("lat" => $location->lat, "lng" => $location->lon);
                 $markerLoc = array("lat" => $location->lat, "lng" => $location->lon);
@@ -601,7 +610,10 @@ class ContactsController extends x2base {
      * @param float $lon The longitude of the location
      */
     public function actionUpdateLocation($contactId, $lat, $lon){
-        $location = Locations::model()->findByAttributes(array('contactId' => $contactId));
+        $location = Locations::model()->findByAttributes(array(
+            'contactId' => $contactId,
+            'type' => null,
+        ));
         if(!isset($location)){
             $location = new Locations;
             $location->contactId = $contactId;
@@ -1566,13 +1578,13 @@ class ContactsController extends x2base {
                 'name'=>'map',
                 'label'=>Yii::t('contacts','Contact Map'),
                 'url'=>array('googleMaps'),
-                'visible' => Yii::app()->settings->googleIntegration,
+                'visible' => (bool) Yii::app()->settings->googleIntegration,
             ),
             array(
                 'name'=>'savedMaps',
                 'label'=>Yii::t('contacts','Saved Maps'),
                 'url'=>array('savedMaps'),
-                'visible' => Yii::app()->settings->googleIntegration,
+                'visible' => (bool) Yii::app()->settings->googleIntegration,
             ),
             array(
                 'name'=>'quick',

@@ -195,6 +195,11 @@ class WebFormAction extends CAction {
                 //TODO: upload profile picture url from webleadfb
                 
                 if($success){
+                    if (isset($_POST['geoCoords']) && $model instanceof Contacts) {
+                        $coords = json_decode($_POST['geoCoords'], true);
+                        if (array_key_exists('lat', $coords) && array_key_exists('lon', $coords))
+                            $model->updateLocation($coords['lat'], $coords['lon'], 'geolocation');
+                    }
                     if ($extractedParams['generateLead'])
                         call_user_func(array($this->controller, 'generateLead'),$model, $extractedParams['leadSource']);
                     if ($extractedParams['generateAccount'])
