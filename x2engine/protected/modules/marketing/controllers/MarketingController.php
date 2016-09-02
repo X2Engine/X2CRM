@@ -633,6 +633,11 @@ class MarketingController extends x2base {
 
         $contact = $item->contact;
         $list = $item->list;
+        if (!is_null($contact)) {
+            $pos = Locations::resolveIpLocation($this->getRealIp());
+            if ($pos && array_key_exists('lat', $pos) && array_key_exists('lat', $pos))
+                $contact->updateLocation($pos['lat'], $pos['lon'], $type);
+        }
 
         $event = new Events;
         $notif = new Notification;

@@ -258,10 +258,15 @@ $('#save-button').click(function(e){
     if(mapName){
         var center=map.getCenter();
         var tags=new Array();
+        var locationType = $('#params_locationType').val();
         $.each($('#mapControlForm').find ('.x2-tag-list a'),function(){
             tags.push($(this).text());
         })
-        var parameters={'assignedTo':'".(empty($assignment)?"":$assignment)."','tags':tags};
+        var parameters = {
+            'assignedTo':'".(empty($assignment)?"":$assignment)."',
+            'tags':tags,
+            'locationType':locationType,
+        };
         var contactIdPost=$('#contactId').val();
         centerLat=center.lat();
         centerLng=center.lng();
@@ -269,7 +274,7 @@ $('#save-button').click(function(e){
         $.ajax({
             url:'saveMap',
             type:'POST',
-            data:{'mapName':mapName,'contactId':contactIdPost,'parameters':parameters,'centerLat':centerLat,'centerLng':centerLng,'zoom':zoom},
+            data:{'mapName':mapName,'contactId':contactIdPost,'parameters':parameters,'centerLat':centerLat,'centerLng':centerLng,'zoom':zoom,'locationType':locationType},
             success:function(){
                 alert('Map parameters saved!');
             }
@@ -320,6 +325,14 @@ $('#save-button').click(function(e){
         <div class="cell" style="width:350px;">
             <?php $this->widget('ContactMapInlineTags', array('filter'=>true,'tags'=>$tags)); ?>
             <?php echo CHtml::hiddenField('params[tags]'); ?>
+        </div>
+
+        <div class="cell">
+            <label><?php echo Yii::t('contacts','Location Type'); ?></label>
+            <?php echo CHtml::dropDownList('params[locationType]',$locationType,array_merge(
+            array('all'=>Yii::t('app', 'All')),
+            Locations::getLocationTypes()
+        )); ?>
         </div>
 
         <div class="cell">

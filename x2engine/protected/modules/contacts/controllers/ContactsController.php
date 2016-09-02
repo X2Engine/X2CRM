@@ -180,11 +180,7 @@ class ContactsController extends x2base {
             // Only load the Google Maps widget if we're on a Contact with an address
             if(isset($this->portlets['GoogleMaps'])) {
                 $this->portlets['GoogleMaps']['params']['location'] = $contact->cityAddress;
-                $geoloc = $contact->getLocation('geolocation');
-                if ($geoloc)  {
-                    $coords = array('lat' => (float)$geoloc->lat, 'lng' => (float)$geoloc->lon);
-                    $this->portlets['GoogleMaps']['params']['geolocation'] = $coords;
-                }
+                $this->portlets['GoogleMaps']['params']['activityLocations'] = $contact->getMapLocations();
             }
 
             // Update the VCR list information to preserve what list we came from
@@ -442,6 +438,15 @@ class ContactsController extends x2base {
                 $conditions.=" AND x2_tags.type='Contacts' AND x2_tags.tag IN $tagStr";
             }
         }
+        if (isset($params['locationType']) && in_array($params['locationType'], array_keys(Locations::getLocationTypes()))) {
+            if ($params['locationType'] === 'address') {
+                $conditions .= ' AND x2_locations.type IS NULL';
+            } else {
+                $conditions .= ' AND x2_locations.type = :locType';
+                $parameters[':locType'] = $params['locationType'];
+            }
+        }
+
         /*
          * These two CDbCommands generate the query to grab all the location lat
          * and lon data to be used on the map. If tags are being filtered on,
@@ -533,6 +538,7 @@ class ContactsController extends x2base {
             'zoom' => isset($zoom) ? $zoom : null,
             'mapFlag' => isset($map) ? 'true' : 'false',
             'noHeatMap' => isset($_GET['noHeatMap']) && $_GET['noHeatMap'] ? true : false,
+            'locationType' => isset($params['locationType']) ? $params['locationType'] : 'all',
         ));
     }
 
@@ -550,11 +556,13 @@ class ContactsController extends x2base {
             $contactId = isset($_POST['contactId']) ? $_POST['contactId'] : '';
             $params = isset($_POST['parameters']) ? $_POST['parameters'] : array();
             $mapName = $_POST['mapName'];
+            $locationType = $_POST['locationType'];
 
             $map = new Maps;
             $map->name = $mapName;
             $map->owner = Yii::app()->user->getName();
             $map->contactId = $contactId;
+            $map->locationType = $locationType;
             $map->zoom = $zoom;
             $map->centerLat = $centerLat;
             $map->centerLng = $centerLng;

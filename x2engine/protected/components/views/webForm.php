@@ -451,7 +451,7 @@ if ($type === 'weblead' && (!isset ($_SERVER['HTTP_DNT']) || $_SERVER['HTTP_DNT'
 
                 $("#geoCoords").val(JSON.stringify (pos));
               }, function() {
-                console.log("error fetching geolcation data");
+                console.log("error fetching geolocation data");
               });
             }
         }) ();

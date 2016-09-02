@@ -164,8 +164,15 @@ class WebListenerAction extends CAction {
 
                 // Only set the cookie if the contact was identified with a cookie
                 if (!isset($retArr['probability']) || $retArr['probability'] >= 100)
-                
-                self::setKey($contact->trackingKey);
+                    self::setKey($contact->trackingKey);
+
+                $coords = false;
+                if (isset($_GET['geoCoords']))
+                    $coords = json_decode($_GET['geoCoords'], true);
+                if (!$coords)
+                    $coords = Locations::resolveIpLocation(Yii::app()->controller->getRealIP());
+                if ($coords && array_key_exists('lat', $coords) && array_key_exists('lon', $coords))
+                    $contact->updateLocation($coords['lat'], $coords['lon'], 'webactivity');
             }
         }
 

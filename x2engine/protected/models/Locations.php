@@ -41,6 +41,22 @@
  */
 class Locations extends CActiveRecord
 {
+    public static $geoIpProviders = array(
+        //'https://freegeoip.net/json',
+        'https://geoip.nekudo.com/api',
+    );
+
+    public static function getLocationTypes() {
+        return array(
+            'address' => Yii::t('app', 'Address'),
+            'weblead' => Yii::t('app', 'Weblead Form Submission'),
+            'webactivity' => Yii::t('app', 'Webactivity'),
+            'open' => Yii::t('app', 'Email Opened'),
+            'click' => Yii::t('app', 'Email Click'),
+            'unsub' => Yii::t('app', 'Email Unsubscribe'),
+        );
+    }
+
 	/**
 	 * Returns the static model of the specified AR class.
 	 * @return Imports the static model class
@@ -75,8 +91,42 @@ class Locations extends CActiveRecord
 			'contactId' => Yii::t('contacts','Contact ID'),
 			'lat' => Yii::t('contacts','Latitutde'),
 			'lon' => Yii::t('contacts','Longitude'),
-	
+			'type' => Yii::t('contacts','Type'),
 		);
 	}
 
+    public static function resolveIpLocation($ip) {
+        $location = null;
+        foreach (self::$geoIpProviders as $provider) {
+            $resp = RequestUtil::request(array(
+                'url' => $provider.'/'.$ip,
+                'header' => array(
+                    'Content-Type' => 'application/json',
+                ),
+            ));
+            AuxLib::debugLogR($resp);
+            $resp = CJSON::decode($resp);
+            if ($resp) {
+                if (array_key_exists('location', $resp) &&
+                    array_key_exists('latitude', $resp['location']) &&
+                    array_key_exists('longitude', $resp['location'])) {
+                        $location = array(
+                            'lat' => $resp['location']['latitude'],
+                            'lon' => $resp['location']['longitude'],
+                            'provider' => $provider,
+                        );
+                        break;
+                } else if (array_key_exists('latitude', $resp) &&
+                    array_key_exists('longitude', $resp)) {
+                        $location = array(
+                            'lat' => $resp['latitude'],
+                            'lon' => $resp['longitude'],
+                            'provider' => $provider,
+                        );
+                        break;
+                }
+            }
+        }
+        return $location;
+    }
 }

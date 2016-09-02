@@ -79,9 +79,14 @@ $this->widget('zii.widgets.grid.CGridView', array(
             'value'=>'"(".$data->centerLat.", ".$data->centerLng.")"'
         ),
         array(
+            'header'=>Yii::t('contacts','Location Type'),
+            'type'=>'raw',
+            'value'=>'!is_null($data->locationType) ? Locations::getLocationTypes()[$data->locationType] : Yii::t("contacts", "All")'
+        ),
+        array(
             'header'=>Yii::t('contacts','Delete Map'),
             'type'=>'raw',
-            'value'=>'CHtml::link("Delete","#",array("submit"=>"deleteMap?id=".$data->id,"confirm"=>"Are you sure you want to delete this map?"))',
+            'value'=>'CHtml::link("Delete","#",array("submit"=>"deleteMap?id=".$data->id,"confirm"=>"Are you sure you want to delete this map?","csrf"=>true))',
         ),
 
     ),

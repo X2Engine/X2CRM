@@ -49,11 +49,11 @@ class GoogleMaps extends X2Widget {
     }
     
     public $location;
-    public $geolocation;
+    public $activityLocations;
 
     public function run() {
     
-        if((!isset($this->location) || empty($this->location)) && (!isset($this->geolocation) || empty($this->geolocation)))
+        if((!isset($this->location) || empty($this->location)) && (!isset($this->activityLocations) || empty($this->activityLocations)))
             return;
 
         Yii::app()->clientScript->registerScript('setupGoogleMapsWidget','
@@ -74,7 +74,6 @@ class GoogleMaps extends X2Widget {
             }
 
             $("#locationType").change(function() {
-                console.log($(this).val());
                 var locationType = $(this).val();
                 $.each(x2.googleMapsWidget.markers, function(i, marker) {
                     if(marker.category !== locationType && locationType !== "all")
@@ -84,11 +83,26 @@ class GoogleMaps extends X2Widget {
                 });
             });
         });
-        
+
+        x2.googleMapsWidget.addMarker = function(location, type, infoContents) {
+            var marker = new google.maps.Marker({
+                map: window.map,
+                position: location,
+                category: type
+            });
+            var infowindow = new google.maps.InfoWindow({
+                content:infoContents
+            });
+            google.maps.event.addListener(marker,"click",function(){
+                infowindow.open(map,marker);
+            });
+            x2.googleMapsWidget.markers.push(marker);
+        };
+
         function runGoogleMapsWidget() {
             x2.googleMapsWidget.instantiated = true;
             geocoder = new google.maps.Geocoder();
-            var geolocationCoords = '.CJSON::encode($this->geolocation).';
+            var geolocationCoords = '.CJSON::encode($this->activityLocations).';
             geocoder.geocode( {"address": "'.CJavaScript::quote($this->location).'"}, function(results, status) {
                 if (status == google.maps.GeocoderStatus.OK) {
                     $.ajax({
@@ -103,12 +117,6 @@ class GoogleMaps extends X2Widget {
                         mapTypeControl: false
                     });
                         
-                    var marker = new google.maps.Marker({
-                        map: window.map,
-                        position: results[0].geometry.location,
-                        category: "address"
-                    });
-                    x2.googleMapsWidget.markers.push(marker);
                     var content =
                         \'<span>'.
                             '<a style="text-decoration:none;"'.
@@ -120,52 +128,31 @@ class GoogleMaps extends X2Widget {
                                 Yii::t('contacts','View on Heat Map').
                             '</a>'.
                           '</span>\';
-                    var infowindow = new google.maps.InfoWindow({
-                                content:content
-                            });
-                    google.maps.event.addListener(marker,"click",function(){
-                            infowindow.open(map,marker);
-                        });
+                    x2.googleMapsWidget.addMarker(results[0].geometry.location, "address", content);
 
-
-
-                    if (typeof geolocationCoords.lat != "undefined" && typeof geolocationCoords.lng != "undefined") {
-                        var geoMarker = new google.maps.Marker({
-                            map: window.map,
-                            position: geolocationCoords,
-                            category: "webleadForm"
-                        });
-                        x2.googleMapsWidget.markers.push(geoMarker);
-                        var content = 
-                            \'<span>'.
-                                '<a style="text-decoration:none;"'.
-                                ' href="'.CHtml::normalizeUrl(array('googleMaps','contactId'=>$_GET['id'],'noHeatMap'=>1)).'">'.
-                                    Yii::t('contacts','View on Large Map').
-                                '</a>'.
-                                '<br /><br />'.
-                                '<a style="text-decoration:none;" href="'.CHtml::normalizeUrl(array('googleMaps','contactId'=>$_GET['id'])).'">'.
-                                    Yii::t('contacts','View on Heat Map').
-                                '</a>'.
-                                '<br /><br /><small>'.Yii::t('contacts', 'via Geolocation').'</small>'.
-                              '</span>\';
-                        var geoInfowindow = new google.maps.InfoWindow({
-                                    content:content
-                                });
-                        google.maps.event.addListener(geoMarker,"click",function(){
-                                geoInfowindow.open(map,geoMarker);
-                            });
-                    }
+                    $.each(geolocationCoords, function(i, coords) {
+                        if (typeof coords.lat != "undefined" && typeof coords.lng != "undefined") {
+                            var content = 
+                                \'<span>'.
+                                    '<a style="text-decoration:none;"'.
+                                    ' href="'.CHtml::normalizeUrl(array('googleMaps','contactId'=>$_GET['id'],'noHeatMap'=>1)).'">'.
+                                        Yii::t('contacts','View on Large Map').
+                                    '</a>'.
+                                    '<br /><br />'.
+                                    '<a style="text-decoration:none;" href="'.CHtml::normalizeUrl(array('googleMaps','contactId'=>$_GET['id'])).'">'.
+                                        Yii::t('contacts','View on Heat Map').
+                                    '</a>'.
+                                    '<br /><br /><small>'.Yii::t('contacts', 'Submitted Weblead Form').'</small>'.
+                                  '</span>\';
+                            x2.googleMapsWidget.addMarker(coords, coords.type, content);
+                        }
+                    });
                 } else if (typeof geolocationCoords.lat != "undefined" && typeof geolocationCoords.lng != "undefined") {
                     window.map = new google.maps.Map(document.getElementById("googleMapsCanvas"),{
                         center: geolocationCoords,
                         zoom: 8,
                         mapTypeId: google.maps.MapTypeId.ROADMAP,
                         mapTypeControl: false
-                    });
-                    var marker = new google.maps.Marker({
-                        map: window.map,
-                        position: geolocationCoords,
-                        category: "webleadForm"
                     });
                     var content = 
                         \'<span>'.
@@ -177,14 +164,9 @@ class GoogleMaps extends X2Widget {
                             '<a style="text-decoration:none;" href="'.CHtml::normalizeUrl(array('googleMaps','contactId'=>$_GET['id'])).'">'.
                                 Yii::t('contacts','View on Heat Map').
                             '</a>'.
-                            '<br /><br /><small>'.Yii::t('contacts', 'via Geolocation').'</small>'.
+                            '<br /><br /><small>'.Yii::t('contacts', 'Submitted Weblead Form').'</small>'.
                           '</span>\';
-                    var infowindow = new google.maps.InfoWindow({
-                                content:content
-                            });
-                    google.maps.event.addListener(marker,"click",function(){
-                            infowindow.open(map,marker);
-                        });
+                    x2.googleMapsWidget.addMarker(coords, coords.type, content);
                 } else {
                     $("#widget_GoogleMaps").remove();
                 }
@@ -211,14 +193,9 @@ class GoogleMaps extends X2Widget {
         ');
         ?><div class="mapsHeader"><?php
         echo CHtml::label(Yii::t('app', 'Filter'), 'locationType');
-        echo X2Html::dropDownList('locationType', 'All', array(
-            'all' => Yii::t('app', 'All'),
-            'address' => Yii::t('app', 'Address'),
-            'webleadForm' => Yii::t('app', 'Weblead Form Submission'),
-            'webactivity' => Yii::t('app', 'Webactivity'),
-            'open' => Yii::t('app', 'Email Opened'),
-            'click' => Yii::t('app', 'Email Click'),
-            'unsub' => Yii::t('app', 'Email Unsubscribe'),
+        echo X2Html::dropDownList('locationType', 'All', array_merge(
+            array('all'=>Yii::t('app', 'All')),
+            Locations::getLocationTypes()
         ));
         ?></div><?php
         echo '<div id="googleMapsCanvas" style="width:100%;height:250px"></div>';

@@ -447,4 +447,23 @@ class Contacts extends X2Model {
             'type' => $type,
         ));
     }
+    /**
+     * Retrieve list of locations with types, formatted for Google Maps
+     */
+    public function getMapLocations($type = null) {
+        $params = array(
+            'contactId' => $this->id,
+        );
+        if ($type)
+            $params['type'] = $type;
+        $locations = array();
+        foreach (Locations::model()->findAllByAttributes($params) as $loc) {
+            $locations[] = array(
+                'lat' => (float) $loc['lat'],
+                'lng' => (float) $loc['lon'],
+                'type' => $loc['type'],
+            );
+        }
+        return $locations;
+    }
 }
