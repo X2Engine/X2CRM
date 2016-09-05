@@ -2,7 +2,7 @@
   'Edit Lead' => 'Редактировать лид',
   'View Lead' => 'Посмотреть лид',
   'Leads:' => 'Лиды:',
-  '{leads} List' => '{leads}',
+  '{leads} List' => 'Список {leads}',
   'Create {lead}' => 'Создать {lead}',
   'Edit {lead}' => 'Редактировать {lead}',
   'Delete {lead}' => 'Удалить {lead}',

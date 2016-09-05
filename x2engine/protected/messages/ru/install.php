@@ -1,5 +1,5 @@
 <?php return array (
-  'required but missing' => 'Требуется, но отсутствует',
+  'required but missing' => 'требуется, но отсутствует',
   'Your server\'s PHP version' => 'Версия PHP вашего сервера',
   'version 5.3 or later is required' => 'Требуется версии 5.3 или более поздняя',
   'Please enter a valid email address.' => 'Пожалуйста введите адрес email в правильном формате.',
