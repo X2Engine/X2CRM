@@ -171,8 +171,24 @@ class WebListenerAction extends CAction {
                     $coords = json_decode($_GET['geoCoords'], true);
                 if (!$coords)
                     $coords = Locations::resolveIpLocation(Yii::app()->controller->getRealIP());
-                if ($coords && array_key_exists('lat', $coords) && array_key_exists('lon', $coords))
-                    $contact->updateLocation($coords['lat'], $coords['lon'], 'webactivity');
+                if ($coords && array_key_exists('lat', $coords) && array_key_exists('lon', $coords)) {
+                    $location = $contact->updateLocation($coords['lat'], $coords['lon'], 'webactivity');
+                    $latest = Yii::app()->db->createCommand()
+                        ->select('id, MAX(completeDate) as completeDate')
+                        ->from('x2_actions')
+                        ->where('associationId=:id AND associationType="contacts" AND type="webactivity"', array(':id'=>$contact->id))
+                        ->queryRow();
+
+                    // Only mark webactivity location if this action was captured within the
+                    // cooldown period
+                    if ($latest['completeDate'] !== null && $latest['completeDate'] > time() - Yii::app()->settings->webTrackerCooldown) {
+                        Yii::app()->db->createCommand()
+                            ->update('x2_actions',
+                                array('locationId' => $location->id),
+                                'id = :id',
+                                array(':id' => $latest['id']));
+                    }
+                }
             }
         }
 

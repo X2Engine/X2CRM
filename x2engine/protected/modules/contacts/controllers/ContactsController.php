@@ -178,7 +178,7 @@ class ContactsController extends x2base {
                 $this->portlets['TimeZone']['params']['model'] = &$contact;
             }
             // Only load the Google Maps widget if we're on a Contact with an address
-            if(isset($this->portlets['GoogleMaps'])) {
+            if(isset($this->portlets['GoogleMaps']) && Yii::app()->settings->googleIntegration) {
                 $this->portlets['GoogleMaps']['params']['location'] = $contact->cityAddress;
                 $this->portlets['GoogleMaps']['params']['activityLocations'] = $contact->getMapLocations();
             }

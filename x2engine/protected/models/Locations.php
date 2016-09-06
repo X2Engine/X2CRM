@@ -82,20 +82,59 @@ class Locations extends CActiveRecord
 			array('contactId, lat, lon', 'required'),
         );
 	}
-	
+
+	/**
+	 * @return array behaviors
+	 */
+    public function behaviors(){
+        return array(
+            'TimestampBehavior' => array('class' => 'TimestampBehavior'),
+        );
+    }
+
 	/**
 	 * @return array customized attribute labels (name=>label)
 	 */
 	public function attributeLabels() {
 		return array(
 			'contactId' => Yii::t('contacts','Contact ID'),
+			'recordId' => Yii::t('contacts','Record ID'),
+			'recordType' => Yii::t('contacts','Record Type'),
 			'lat' => Yii::t('contacts','Latitutde'),
 			'lon' => Yii::t('contacts','Longitude'),
 			'type' => Yii::t('contacts','Type'),
+			'ipAddress' => Yii::t('contacts','IP Address'),
 		);
 	}
 
+    /**
+     * Retrieve the associated record, optionally as a link
+     * @param bool $link Whether to return a link to the record
+     * @return X2Model | string | null
+     */
+    public function getAssociation($link = false){
+        $model = X2Model::getAssociationModel($this->recordType, $this->recordId);
+        if($model && $link)
+            return $model->getLink();
+        return $model;
+    }
+
+    /**
+     * Retrieve the Action associated with this Location
+     */
+    public function getAction() {
+        return X2Model::model('Actions')->findByAttributes(array(
+            'locationId' => $this->id,
+        ));
+    }
+
+    /**
+     * Perform a GeoIP lookup of the specified IP
+     * @param string $ip IP Address
+     * @return array | null Array with 'lat' and 'lon', or null if unable to resolve
+     */
     public static function resolveIpLocation($ip) {
+        // TODO cache GeoIP lookups
         $location = null;
         foreach (self::$geoIpProviders as $provider) {
             $resp = RequestUtil::request(array(
@@ -104,7 +143,7 @@ class Locations extends CActiveRecord
                     'Content-Type' => 'application/json',
                 ),
             ));
-            AuxLib::debugLogR($resp);
+            //AuxLib::debugLogR($resp);
             $resp = CJSON::decode($resp);
             if ($resp) {
                 if (array_key_exists('location', $resp) &&

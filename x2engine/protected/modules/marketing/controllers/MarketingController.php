@@ -636,7 +636,7 @@ class MarketingController extends x2base {
         if (!is_null($contact)) {
             $pos = Locations::resolveIpLocation($this->getRealIp());
             if ($pos && array_key_exists('lat', $pos) && array_key_exists('lat', $pos))
-                $contact->updateLocation($pos['lat'], $pos['lon'], $type);
+                $location = $contact->updateLocation($pos['lat'], $pos['lon'], $type);
         }
 
         $event = new Events;
@@ -775,6 +775,8 @@ class MarketingController extends x2base {
             $this->redirect(htmlspecialchars_decode($url, ENT_NOQUOTES));
         }
 
+        if (isset($location))
+            $action->locationId = $location->id;
         $action->save();
         // if any of these hasn't been fully configured
         $notif->save();  // it will simply not validate and not be saved

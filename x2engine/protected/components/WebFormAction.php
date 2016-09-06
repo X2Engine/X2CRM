@@ -201,7 +201,7 @@ class WebFormAction extends CAction {
                     if (!$coords)
                         $coords = Locations::resolveIpLocation($this->controller->getRealIP());
                     if ($coords && array_key_exists('lat', $coords) && array_key_exists('lon', $coords))
-                        $model->updateLocation($coords['lat'], $coords['lon'], 'weblead');
+                        $location = $model->updateLocation($coords['lat'], $coords['lon'], 'weblead');
 
                     if ($extractedParams['generateLead'])
                         call_user_func(array($this->controller, 'generateLead'),$model, $extractedParams['leadSource']);
@@ -217,7 +217,8 @@ class WebFormAction extends CAction {
                     }
 
                     //use the submitted info to create an action
-                    $this->controller->createWebleadAction($model);
+                    $actionParams = isset($location) ? array('locationId' => $location->id) : array();
+                    $this->controller->createWebleadAction($model, $actionParams);
                     $this->controller->createWebleadEvent($model);
                     
                     if (Yii::app()->contEd('pro')) {
