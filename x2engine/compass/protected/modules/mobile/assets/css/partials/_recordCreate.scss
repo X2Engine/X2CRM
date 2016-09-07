@@ -87,9 +87,6 @@
         @include header-text-button;
     }
     
-    .import-button {
-        @include header-text-button;
-    }
     .ui-content.autocomplete-shown {
         overflow-y: hidden;
         .autocomplete-option {

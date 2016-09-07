@@ -56,6 +56,19 @@ echo CHtml::encode ($title);
 </div>
 
 <div class='refresh-content' data-refresh-selector='#header .header-content-center'>
+    <?php
+    if($model instanceof Contacts) { 
+    ?>
+        <div class='header-content-right' style="margin-right: 70px;">
+            <div class='import-button'>
+            <?php
+            echo CHtml::encode (Yii::t('mobile', 'Import'));
+            ?>
+            </div>
+        </div>
+    <?php
+    }
+    ?>
     <div class='search-box' style='display: none;'>
         <div class='search-cancel-button ui-btn'>
             <i class='fa fa-arrow-left'></i>

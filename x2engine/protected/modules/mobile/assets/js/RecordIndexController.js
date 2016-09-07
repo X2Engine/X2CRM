@@ -50,6 +50,18 @@ function RecordIndexController (argsDict) {
 
 RecordIndexController.prototype = auxlib.create (x2.RecordIndexControllerBase.prototype);
 
+RecordIndexController.prototype.importContact = function () {
+    var that = this;
+    this.importButton$ = $('#header .import-button');
+    this.importButton$.click (function () {
+        x2touch.API.getContact (function(contact){
+            alert('The following contact has been selected:' + JSON.stringify(contact));
+        },function(err){
+            alert('Error: ' + err);
+        });
+    });
+};
+
 RecordIndexController.prototype.setUpSearch = function () {
     var that = this;
     var searchButton$ = $('#header .search-button');
@@ -107,6 +119,7 @@ RecordIndexController.prototype.init = function () {
     x2.RecordIndexControllerBase.prototype.init.call (this);
     this.documentEvents.push (x2.main.onPageShow (function () {
         that.createButton$ = x2.main.activePage$.find ('.record-create-button');
+        that.importContact ();
         that.setUpSearch ();
         that.setUpClickBehavior ();
     }, 'RecordIndexController'));

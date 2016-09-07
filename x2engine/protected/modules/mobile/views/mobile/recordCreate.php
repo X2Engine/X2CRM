@@ -44,13 +44,6 @@ $this->onPageLoad ("
 
 ?>
 <div class='refresh-content' data-refresh-selector='.header-content-right'>
-    <div class='header-content-right' style="margin-right: 90px;">
-        <div class='import-button'>
-        <?php
-        echo CHtml::encode (Yii::t('mobile', 'Import'));
-        ?>
-        </div>
-    </div>
     <div class='header-content-right'>
         <div class='submit-button disabled'>
         <?php
