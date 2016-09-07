@@ -376,17 +376,17 @@ class EmailInboxesController extends x2base {
         if (!empty($contacts)) {
             list($mimeType, $filename, $size, $attachment, $encoding) = $this->fetchAttachment ($uid, $part, false, true);
             if ($this->associateAttachment($contacts, $filename, $attachment)) {
-                $rmessage = Yii::t('emailInboxes', 'Attachment successfully associated');
+                $result = Yii::t('emailInboxes', 'Attachment successfully associated');
                 $type = 'success';
             } else {
-                $message = Yii::t('emailInboxes', 'Association failed: the attachment could not be saved');
+                $result = Yii::t('emailInboxes', 'Association failed: the attachment could not be saved');
             }
         } else {
-            $message = Yii::t('emailInboxes', 'Association failed: there are no related records');
+            $result = Yii::t('emailInboxes', 'Association failed: there are no related records');
         }
 
         echo CJSON::encode(array(
-            'message' => $message,
+            'message' => $result,
             'type' => $type,
         ));
     }
@@ -655,35 +655,28 @@ class EmailInboxesController extends x2base {
                 throw new CHttpException(500, "Couldn't create user folder $userFolderPath");
             }
         }
-        $associatedMedia = Yii::app()->file->set($userFolderPath.DIRECTORY_SEPARATOR.$filename);
-        if ($associatedMedia->exists) {
-            AuxLib::debugLog('filename already exists');
-            return false;
-        } else {
-            $associatedMedia->create();
-            $associatedMedia->setContents($attachment);
-        }
+
+        $media = new Media;
+        $media->fileName = $filename;
+        $media->createDate = time();
+        $media->lastUpdated = time();
+        $media->uploadedBy = $username;
+        $media->associationType = 'Contacts';
+        $media->associationId = $contacts[0]->id;
+        $media->resolveNameConflicts();
+        $associatedMedia = Yii::app()->file->set($userFolderPath.DIRECTORY_SEPARATOR.$media->fileName);
+        $associatedMedia->create();
+        $associatedMedia->setContents($attachment);
 
         if ($associatedMedia->exists) {
-            $media = new Media;
-            $media->fileName = $associatedMedia->basename;
-            $media->createDate = time();
-            $media->lastUpdated = time();
-            $media->uploadedBy = $username;
-            $media->associationType = 'Contacts';
-            $media->associationId = $contacts[0]->id;
             if ($media->save()) {
                 $createdRelationships = true;
                 foreach ($contacts as $contact) {
                     $createdRelationships = $createdRelationships && $contact->createRelationship($media);
                 }
                 return $createdRelationships;
-            } else {
-                AuxLib::debugLog('failed to save media');
-                return false;
             }
-        } else {
-            return false;
         }
+        return false;
     }
 }

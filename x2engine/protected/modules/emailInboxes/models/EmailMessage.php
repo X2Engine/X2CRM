@@ -548,11 +548,13 @@ class EmailMessage extends CModel {
                 echo CHtml::ajaxLink('', $this->getAttachmentLink ($attachment, 'associate'), array(
                     'complete' => 'function(data) {
                         data = JSON.parse(data.responseText);
+                        if (typeof throbber !== "undefined") throbber.remove();
                         x2.topFlashes.displayFlash (data.message, data.type);
                     }',
                 ), array(
                     'class' => 'attachment-association-link fa fa-link x2-button',
-                    'title' => CHtml::encode (Yii::t('emailInboxes', 'Associate attachment with related record'))
+                    'title' => CHtml::encode (Yii::t('emailInboxes', 'Associate attachment with related record')),
+                    'onclick' => 'var throbber = auxlib.pageLoading();',
                 ));
             }
             echo "</div>";
