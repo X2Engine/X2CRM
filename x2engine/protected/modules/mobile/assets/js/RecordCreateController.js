@@ -49,6 +49,24 @@ function RecordCreateController (argsDict) {
 
 RecordCreateController.prototype = auxlib.create (x2.Controller.prototype);
 
+RecordCreateController.prototype.exportContact = function () {
+    var that = this;
+    this.importButton$ = $('#header .export-button');
+    //pass in contact info to be saved in device's contacts
+    this.importButton$.click (function () {
+        if (confirm('Would you like to export this contact?')) {
+            // Save it!
+            x2touch.API.setContact (function (contact) {
+                alert("Export Success");
+            }, function(contactError){
+                alert("Error = " + contactError.code);
+            },{});
+        } else {
+            // Do nothing!
+        }
+    });
+};
+
 RecordCreateController.prototype.setUpForm = function () {
     var that = this;
     this.submitButton$ = $('#header .submit-button');
@@ -62,6 +80,7 @@ RecordCreateController.prototype.init = function () {
     var that = this;
     this.documentEvents.push (x2.main.onPageShow (function () {
         that.form$ = $.mobile.activePage.find ('form');
+        that.exportContact ();
         that.setUpForm ();
     }, this.constructor.name));
 };
