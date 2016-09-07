@@ -58,6 +58,18 @@ RecordCreateController.prototype.setUpForm = function () {
 //    });
 };
 
+RecordCreateController.prototype.importContact = function () {
+    var that = this;
+    this.importButton$ = $('#header .import-button');
+    this.importButton$.click (function () {
+        x2touch.API.getContact (function(contact){
+            console.log('The following contact has been selected:' + JSON.stringify(contact));
+        },function(err){
+            console.log('Error: ' + err);
+        });
+    });
+};
+
 RecordCreateController.prototype.init = function () {
     var that = this;
     this.documentEvents.push (x2.main.onPageShow (function () {
