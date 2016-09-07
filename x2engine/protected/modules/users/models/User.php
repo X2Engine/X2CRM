@@ -118,7 +118,10 @@ class User extends CActiveRecord {
                 'class' => 'application.components.behaviors.ERememberFiltersBehavior',
                 'defaults' => array(),
                 'defaultStickOnClear' => false
-            )
+            ),
+            'MappableBehavior' => array(
+                'class' => 'application.components.behaviors.MappableBehavior',
+            ),
         ));
     }
 

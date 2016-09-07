@@ -102,6 +102,9 @@ class Contacts extends X2Model {
             'ContactsNameBehavior' => array(
                 'class' => 'application.components.behaviors.ContactsNameBehavior',
             ),
+            'MappableBehavior' => array(
+                'class' => 'application.components.behaviors.MappableBehavior',
+            ),
         ));
     }
 
@@ -408,99 +411,5 @@ class Contacts extends X2Model {
         // by afterDelete() when the AnonContact is deleted.
         $this->update(array('fingerprintId'));
         $anonContact->delete();
-    }
-
-    /**
-     * Update contact location of specified type. Only a single address Location
-     * will be stored, any other type may have multiple
-     * @param float $lat latitude
-     * @param float $lon longitude
-     * @param string $type null for address (authoritative)
-     */
-    public function updateLocation($lat, $lon, $type = null) {
-        if (is_null($type)) {
-            // Look for existing address Location
-            $location = Locations::model()->findByAttributes(array(
-                'recordType' => 'Contacts',
-                'recordId' => $this->id,
-                'type' => null,
-            ));
-        }
-        if(!isset($location)){
-            $location = new Locations;
-            $location->contactId = $this->id;
-            $location->recordId = $this->id;
-            $location->recordType = 'Contacts';
-            $location->lat = $lat;
-            $location->lon = $lon;
-            $location->type = $type;
-            $location->save();
-        }else{
-            if($location->lat != $lat || $location->lon != $lon){
-                $location->lat = $lat;
-                $location->lon = $lon;
-                $location->save();
-            }
-        }
-        return $location;
-    }
-
-    /**
-     * Retrieve location of specified type
-     * @param string $type null for address (authoritative) or 'geolocation'
-     */
-    public function getLocation($type = null) {
-        return Locations::model()->findByAttributes(array(
-            'contactId' => $this->id,
-            'type' => $type,
-        ));
-    }
-
-    /**
-     * Retrieve list of locations with types, formatted for Google Maps
-     */
-    public function getMapLocations($type = null) {
-        $params = array(
-            'recordId' => $this->id,
-            'recordType' => 'Contacts',
-        );
-        if ($type)
-            $params['type'] = $type;
-        $locations = array();
-        foreach (Locations::model()->findAllByAttributes($params) as $loc) {
-            // Provide an appropriate description and link for locations
-            switch($loc->type) {
-                case "weblead":
-                    $infoText = Yii::t('contacts', 'Submitted Weblead Form');
-                    break;
-                case "webactivity":
-                    $infoText = Yii::t('contacts', 'Web Activity');
-                    break;
-                case "open":
-                    $infoText = Yii::t('contacts', 'Email Opened');
-                    break;
-                case "unsub":
-                    $infoText = Yii::t('contacts', 'Email Unsubscribed');
-                    break;
-                case "click":
-                    $infoText = Yii::t('contacts', 'Email Clicked');
-                    break;
-                default:
-                    $infoText = Yii::t('contacts', 'Registered Address');
-            }
-            $action = $loc->action;
-            if ($action)
-                $infoText = CHtml::link($infoText, $action->getUrl(), array(
-                    'class' => 'action-frame-link',
-                    'data-action-id' => $action->id,
-                ));
-            $locations[] = array(
-                'lat' => (float) $loc['lat'],
-                'lng' => (float) $loc['lon'],
-                'type' => $loc['type'],
-                'infoText' => $infoText,
-            );
-        }
-        return $locations;
     }
 }

@@ -90,6 +90,7 @@ class UsersController extends x2base {
         // Only load the Google Maps widget if we're on a User with an address
         if(isset($this->portlets['GoogleMaps']) && Yii::app()->settings->googleIntegration) {
             $this->portlets['GoogleMaps']['params']['location'] = $user->address;
+            $this->portlets['GoogleMaps']['params']['activityLocations'] = $user->getMapLocations();
         }
         $dataProvider=new CActiveDataProvider('Actions', array(
             'criteria'=>array(

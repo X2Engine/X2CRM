@@ -54,6 +54,7 @@ class Locations extends CActiveRecord
             'open' => Yii::t('app', 'Email Opened'),
             'click' => Yii::t('app', 'Email Click'),
             'unsub' => Yii::t('app', 'Email Unsubscribe'),
+            'login' => Yii::t('app', 'User Login'),
         );
     }
 
