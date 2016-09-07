@@ -300,7 +300,11 @@ class Actions extends X2Model {
         $multiAssociationLinks = array();
         foreach ($this->getMultiassociations() as $type => $models) {
             foreach ($models as $model) {
-                $multiAssociationLinks[$type][] = X2Model::getModelLink($model->id, $type);
+                if ($model) {
+                    $link = X2Model::getModelLink($model->id, $type);
+                    if ($link)
+                        $multiAssociationLinks[$type][] = $link;
+                }
             }
         }
         return $multiAssociationLinks;
