@@ -2,7 +2,7 @@
   'Create {group}' => 'Создать {group}',
   '{group}:' => '{group}',
   '{users}:' => '{users}',
-  '{group} List' => '{group} Список',
+  '{group} List' => 'Список {group}',
   'Edit {group}' => 'Редактировать {group}',
   'Delete {group}' => 'Удалить {group}',
 );
