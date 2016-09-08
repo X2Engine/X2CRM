@@ -49,6 +49,29 @@ function EventPublisherController (argsDict) {
 
 EventPublisherController.prototype = auxlib.create (x2.Controller.prototype);
 
+EventPublisherController.prototype.getMobileLocation = function () {
+    //https://cordova.apache.org/docs/en/latest/reference/cordova-plugin-geolocation/index.html
+    // onSuccess Callback
+    // This method accepts a Position object, which contains the
+    // current GPS coordinates
+    // onError Callback receives a PositionError object
+    
+    x2touch.API.getCurrentPosition(function(position) {
+        alert('Latitude: '          + position.coords.latitude          + '\n' +
+              'Longitude: '         + position.coords.longitude         + '\n' +
+              'Altitude: '          + position.coords.altitude          + '\n' +
+              'Accuracy: '          + position.coords.accuracy          + '\n' +
+              'Altitude Accuracy: ' + position.coords.altitudeAccuracy  + '\n' +
+              'Heading: '           + position.coords.heading           + '\n' +
+              'Speed: '             + position.coords.speed             + '\n' +
+              'Timestamp: '         + position.timestamp                + '\n');
+    }, function (error) {
+        alert('code: '    + error.code    + '\n' +
+              'message: ' + error.message + '\n');
+    }, {});  
+
+};
+
 EventPublisherController.prototype.setUpForm = function () {
     var that = this;
     this.submitButton$ = $('#header .post-event-button');
@@ -68,9 +91,10 @@ EventPublisherController.prototype.setUpForm = function () {
 EventPublisherController.prototype.init = function () {
     x2.Controller.prototype.init.call (this);
     var that = this;
-    this.documentEvents.push (x2.main.onPageShow (function () {
+    that.documentEvents.push (x2.main.onPageShow (function () {
         that.setUpForm ();
     }, 'EventPublisherController'));
+    that.getMobileLocation ();
 };
 
 return EventPublisherController;

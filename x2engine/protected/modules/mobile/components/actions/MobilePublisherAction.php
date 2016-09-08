@@ -51,6 +51,7 @@ class MobilePublisherAction extends MobileAction {
             if ($model->validate ()) {
                 //AuxLib::debugLogR ('valid');
                 $event = new Events;
+                //Yii::app()->user->updateLocation($latitudeData, $longitudeData, 'webactivity');
                 $event->setAttributes (array (
                     'visibility' => X2PermissionsBehavior::VISIBILITY_PUBLIC,
                     'user' => $profile->username,
