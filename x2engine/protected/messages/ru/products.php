@@ -1,9 +1,9 @@
 <?php return array (
   'Inventory' => 'Учет',
-  'Product Information' => 'информация о продукте',
+  'Product Information' => 'Информация о товаре',
   'Adjustments' => 'Корректировки',
-  'Line Item' => 'Линия товара',
+  'Line Item' => 'Товарная позиция',
   'Unit Price' => 'Цена за еденицу',
   'Create New {module}' => 'Создать новый {module}',
-  'Update {module}' => 'Обновление {module}',
+  'Update {module}' => 'Обновить {module}',
 );
