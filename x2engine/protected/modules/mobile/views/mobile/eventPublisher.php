@@ -93,6 +93,7 @@ $form = $this->beginWidget ('MobileActiveForm', array (
         'placeholder' =>'Add a post...',
         'class' => 'event-text-box',
     ));
+    echo $form->mobileCoordinates ();
     ?>
     <div class='photo-attachments-container'>
     </div>

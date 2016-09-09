@@ -41,8 +41,11 @@ class MobilePublisherAction extends MobileAction {
     public function run () {
         $model = new EventPublisherFormModel;
         $profile = Yii::app()->params->profile;
-
+        $coords = null;
         if (isset ($_POST['EventPublisherFormModel'])) {
+            if (isset($_POST['geoCoords'])){
+                $coords = json_decode($_POST['geoCoords'], true);
+            }
             $model->setAttributes ($_POST['EventPublisherFormModel']);
             if (isset ($_FILES['EventPublisherFormModel'])) {
                 $model->photo = CUploadedFile::getInstance ($model, 'photo');
@@ -51,7 +54,6 @@ class MobilePublisherAction extends MobileAction {
             if ($model->validate ()) {
                 //AuxLib::debugLogR ('valid');
                 $event = new Events;
-                //Yii::app()->user->updateLocation($latitudeData, $longitudeData, 'webactivity');
                 $event->setAttributes (array (
                     'visibility' => X2PermissionsBehavior::VISIBILITY_PUBLIC,
                     'user' => $profile->username,
