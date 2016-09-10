@@ -53,6 +53,8 @@ class MobilePublisherAction extends MobileAction {
             //AuxLib::debugLogR ('validating');
             if ($model->validate ()) {
                 //AuxLib::debugLogR ('valid');
+                Yii::app()->params->profile->user->updateLocation($coords['lat'], 
+                        $coords['lon'], 'mobileActivityPost');
                 $event = new Events;
                 $event->setAttributes (array (
                     'visibility' => X2PermissionsBehavior::VISIBILITY_PUBLIC,
