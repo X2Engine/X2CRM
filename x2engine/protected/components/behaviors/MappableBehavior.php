@@ -43,14 +43,30 @@
 class MappableBehavior extends CActiveRecordBehavior {
     public $recordType;
 
+    public function logLocation($type, $method = 'GET', $param = 'geoCoords') {
+        $logIp = false;
+        $coords = false;
+        if ($method && isset($_{$method}[$param]))
+            $coords = json_decode($_{$method}[$param], true);
+        if (!$coords) {
+            $logIp = Yii::app()->controller->getRealIP();
+            $coords = Locations::resolveIpLocation($logIp);
+        }
+        if ($coords && array_key_exists('lat', $coords) && array_key_exists('lon', $coords)) {
+            $location = $this->updateLocation($coords['lat'], $coords['lon'], $type, $logIp);
+            return $location;
+        }
+    }
+
     /**
      * Update contact location of specified type. Only a single address Location
      * will be stored, any other type may have multiple
      * @param float $lat latitude
      * @param float $lon longitude
      * @param string $type null for address (authoritative)
+     * @param string|false $logIp IP Address to log, if requested
      */
-    public function updateLocation($lat, $lon, $type = null) {
+    public function updateLocation($lat, $lon, $type = null, $logIp = false) {
         if (is_null($type)) {
             // Look for existing address Location
             $location = Locations::model()->findByAttributes(array(
@@ -67,11 +83,13 @@ class MappableBehavior extends CActiveRecordBehavior {
             $location->lat = $lat;
             $location->lon = $lon;
             $location->type = $type;
+            if ($logIp) $location->ipAddress = $logIp;
             $location->save();
         }else{
             if($location->lat != $lat || $location->lon != $lon){
                 $location->lat = $lat;
                 $location->lon = $lon;
+                if ($logIp) $location->ipAddress = $logIp;
                 $location->save();
             }
         }

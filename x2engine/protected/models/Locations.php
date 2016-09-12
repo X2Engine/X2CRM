@@ -42,7 +42,7 @@
 class Locations extends CActiveRecord
 {
     public static $geoIpProviders = array(
-        //'https://freegeoip.net/json',
+        'https://freegeoip.net/json',
         'https://geoip.nekudo.com/api',
     );
 
@@ -130,21 +130,58 @@ class Locations extends CActiveRecord
     }
 
     /**
-     * Perform a GeoIP lookup of the specified IP
+     * Perform a GeoIP lookup of the specified IP. Dual layered caching is used here, first
+     * checking the cache, before consulting the db, resorting to a GeoIP lookup if missing
      * @param string $ip IP Address
      * @return array | null Array with 'lat' and 'lon', or null if unable to resolve
      */
     public static function resolveIpLocation($ip) {
-        // TODO cache GeoIP lookups
+        $cacheKey = 'X2-Locations-geoip-'.$ip;
+        $cachedLoc = Yii::app()->cache->get($cacheKey);
+        if ($cachedLoc) { // Check the cache first
+                $location = array(
+                    'lat' => $cachedLoc['lat'],
+                    'lon' => $cachedLoc['lon'],
+                    'provider' => 'cache',
+                );
+        } else { // Otherwise, see if the IP was cached in db within a week ago
+            $cachedLoc = Yii::app()->db->createCommand()
+                ->select('lat, lon')
+                ->from(self::tableName())
+                ->where('ipAddress = :ip AND createDate > :week', array(
+                    ':ip' => $ip,
+                    ':week' => time() - (3600 * 24 * 7),
+                ))->queryRow();
+            if ($cachedLoc) {
+                $location = array(
+                    'lat' => $cachedLoc['lat'],
+                    'lon' => $cachedLoc['lon'],
+                    'provider' => 'database',
+                );
+            } else { // Finally, perform the GeoIP lookup
+                $location = self::geoIPLookup($ip);
+            }
+            if ($location && array_key_exists('lat', $location) && array_key_exists('lat', $location)) {
+                Yii::app()->cache->set($cacheKey, array(
+                    'lat' => $location['lat'],
+                    'lon' => $location['lon'],
+                ), 3600);
+            }
+        }
+        return $location;
+    }
+
+    private static function geoIPLookup($ip) {
         $location = null;
         foreach (self::$geoIpProviders as $provider) {
+            if(extension_loaded('curl')) // note: freegeoip.net does not resolve without curl
+                AppFileUtil::$alwaysCurl = true;
             $resp = RequestUtil::request(array(
                 'url' => $provider.'/'.$ip,
                 'header' => array(
                     'Content-Type' => 'application/json',
                 ),
             ));
-            //AuxLib::debugLogR($resp);
             $resp = CJSON::decode($resp);
             if ($resp) {
                 if (array_key_exists('location', $resp) &&

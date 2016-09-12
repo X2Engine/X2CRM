@@ -166,13 +166,8 @@ class WebListenerAction extends CAction {
                 if (!isset($retArr['probability']) || $retArr['probability'] >= 100)
                     self::setKey($contact->trackingKey);
 
-                $coords = false;
-                if (isset($_GET['geoCoords']))
-                    $coords = json_decode($_GET['geoCoords'], true);
-                if (!$coords)
-                    $coords = Locations::resolveIpLocation(Yii::app()->controller->getRealIP());
-                if ($coords && array_key_exists('lat', $coords) && array_key_exists('lon', $coords)) {
-                    $location = $contact->updateLocation($coords['lat'], $coords['lon'], 'webactivity');
+                $location = $contact->logLocation('webactivity');
+                if ($location) {
                     $latest = Yii::app()->db->createCommand()
                         ->select('id, MAX(completeDate) as completeDate')
                         ->from('x2_actions')
