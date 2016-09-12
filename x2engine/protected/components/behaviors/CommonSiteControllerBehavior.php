@@ -199,13 +199,7 @@ class CommonSiteControllerBehavior extends CBehavior {
         if($model->validate() && $model->login() && $isActiveUser){  // user successfully logged in
                 
             $this->recordSuccessfulLogin ($activeUser, $ip);
-            $coords = false;
-            if (isset($_POST['geoCoords']))
-                $coords = json_decode($_POST['geoCoords'], true);
-            if (!$coords)
-                $coords = Locations::resolveIpLocation($ip);
-            if ($coords && array_key_exists('lat', $coords) && array_key_exists('lon', $coords))
-                $userModel->updateLocation($coords['lat'], $coords['lon'], 'login');
+            $userModel->logLocation('login', 'POST');
 
             if($isMobile){
                 $cookie = new CHttpCookie('sessionToken', $sessionIdToken);
