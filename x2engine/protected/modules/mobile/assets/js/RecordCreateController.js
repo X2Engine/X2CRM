@@ -49,8 +49,74 @@ function RecordCreateController (argsDict) {
 
 RecordCreateController.prototype = auxlib.create (x2.Controller.prototype);
 
+RecordCreateController.prototype.importContact = function () {
+    var that = this;
+    this.importButton$ = $('#header .import-button');
+    this.importButton$.click (function () {
+        x2touch.API.getContact (function(contact){
+            var contactInfo = JSON.parse(contact);
+            x2.main.activePage$.find ('#Contacts_firstName').val(contactInfo.givenName);
+            x2.main.activePage$.find ('#Contacts_lastName').val(contactInfo.familyName);
+            x2.main.activePage$.find ('#Contacts_company_id').val(contactInfo.id);
+            if (contactInfo.orgranizaions[0] != null){
+                x2.main.activePage$.find ('#Contacts_company').val(contactInfo.orgranizaions[0].name);
+                x2.main.activePage$.find ('#Contacts_title').val(contactInfo.organizations[0].title);
+            }
+            if (contactInfo.emails[0] != null)
+                x2.main.activePage$.find ('#Contacts_email').val(contactInfo.emails[0].value);
+            if (contactInfo.phoneNumbers[0] != null)
+                x2.main.activePage$.find ('#Contacts_phone').val(contactInfo.phoneNumbers[0].value);
+            x2.main.activePage$.find ('#Contacts_backgroundInfo').val(contactInfo.note);
+            if (contactInfo.addresses[0] != null){
+                x2.main.activePage$.find ('#Contacts_address').val(contactInfo.addresses[0].streetAddress);
+                x2.main.activePage$.find ('#Contacts_city').val(contactInfo.addresses[0].locality);
+                x2.main.activePage$.find ('#Contacts_state').val(contactInfo.addresses[0].region);
+                x2.main.activePage$.find ('#Contacts_zipcode').val(contactInfo.addresses[0].postalCode);
+                x2.main.activePage$.find ('#Contacts_country').val(contactInfo.addresses[0].country);
+            }
+            x2.main.activePage$.find ('#Contacts_assignedTo_assignedToDropdown').val("");
+            x2.main.activePage$.find ('#Contacts_visibility').val("");
+        },function(err){
+            alert('Error: ' + err);
+        });
+        form$.submit ();
+    });
+};
+
 RecordCreateController.prototype.exportContact = function () {
     var that = this;
+    var contactInfo = {};
+    var firstName = x2.main.activePage$.find ('#Contacts_firstName').val();
+    var lastName = x2.main.activePage$.find ('#Contacts_lastName').val();
+    var companyID = x2.main.activePage$.find ('#Contacts_company_id').val();
+    var companyName = x2.main.activePage$.find ('#Contacts_company').val();
+    var title = x2.main.activePage$.find ('#Contacts_title').val();
+    var email = x2.main.activePage$.find ('#Contacts_email').val();
+    var phoneNum = x2.main.activePage$.find ('#Contacts_phone').val();
+    var backgroundInfo = x2.main.activePage$.find ('#Contacts_backgroundInfo').val();
+    var address = x2.main.activePage$.find ('#Contacts_address').val();
+    var city = x2.main.activePage$.find ('#Contacts_city').val();
+    var state = x2.main.activePage$.find ('#Contacts_state').val();
+    var zipcode = x2.main.activePage$.find ('#Contacts_zipcode').val();
+    var country = x2.main.activePage$.find ('#Contacts_country').val();
+    var assignedTo = x2.main.activePage$.find ('#Contacts_assignedTo_assignedToDropdown').val();
+    var visibility = x2.main.activePage$.find ('#Contacts_visibility').val();
+    contactInfo.firstName = firstName;
+    contactInfo.lastName = lastName;
+    contactInfo.companyID = companyID;
+    contactInfo.companyName = companyName;
+    contactInfo.title = title;
+    contactInfo.email = email;
+    contactInfo.phoneNum = phoneNum;
+    contactInfo.backgroundInfo = backgroundInfo;
+    contactInfo.address = address;
+    contactInfo.city = city;
+    contactInfo.state = state;
+    contactInfo.zipcode = zipcode;
+    contactInfo.country = country;
+    contactInfo.assignedTo = assignedTo;
+    contactInfo.visibility = visibility;
+    
     this.importButton$ = $('#header .export-button');
     //pass in contact info to be saved in device's contacts
     this.importButton$.click (function () {
@@ -60,7 +126,7 @@ RecordCreateController.prototype.exportContact = function () {
                 alert("Export Success");
             }, function(contactError){
                 alert("Error = " + contactError.code);
-            },{});
+            },contactInfo);
         } else {
             // Do nothing!
         }
@@ -81,6 +147,7 @@ RecordCreateController.prototype.init = function () {
     this.documentEvents.push (x2.main.onPageShow (function () {
         that.form$ = $.mobile.activePage.find ('form');
         that.exportContact ();
+        that.importContact ();
         that.setUpForm ();
     }, this.constructor.name));
 };
