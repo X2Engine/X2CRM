@@ -94,6 +94,7 @@ $this->onPageLoad ("
             ?>
             </div>
             <?php
+            echo $form->mobileCoordinates ();
             echo $form->textField ($formModel, 'text', array (
                 'placeholder' => 'Add a reply...',
                 'class' => 'reply-box',
