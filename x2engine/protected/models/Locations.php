@@ -147,7 +147,7 @@ class Locations extends CActiveRecord
         } else { // Otherwise, see if the IP was cached in db within a week ago
             $cachedLoc = Yii::app()->db->createCommand()
                 ->select('lat, lon')
-                ->from(self::tableName())
+                ->from(self::model()->tableName())
                 ->where('ipAddress = :ip AND createDate > :week', array(
                     ':ip' => $ip,
                     ':week' => time() - (3600 * 24 * 7),
