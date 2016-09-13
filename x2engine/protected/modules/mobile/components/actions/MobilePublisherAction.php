@@ -44,7 +44,7 @@ class MobilePublisherAction extends MobileAction {
         $coords = null;
         if (isset ($_POST['EventPublisherFormModel'])) {
             if (isset($_POST['geoCoords'])){
-                $coords = json_decode($_POST['geoCoords'], true);
+                Yii::app()->params->profile->user->logLocation('mobileActivityPost', 'POST');
             }
             $model->setAttributes ($_POST['EventPublisherFormModel']);
             if (isset ($_FILES['EventPublisherFormModel'])) {
@@ -53,8 +53,6 @@ class MobilePublisherAction extends MobileAction {
             //AuxLib::debugLogR ('validating');
             if ($model->validate ()) {
                 //AuxLib::debugLogR ('valid');
-                Yii::app()->params->profile->user->updateLocation($coords['lat'], 
-                        $coords['lon'], 'mobileActivityPost');
                 $event = new Events;
                 $event->setAttributes (array (
                     'visibility' => X2PermissionsBehavior::VISIBILITY_PUBLIC,
