@@ -9,9 +9,12 @@ CREATE TABLE x2_calendars (
     createdBy          VARCHAR(40),
     lastUpdated        BIGINT,
     updatedBy          VARCHAR(40),
-    googleCalendarId   VARCHAR(255),
-    googleAccessToken  VARCHAR(512),
-    googleRefreshToken VARCHAR(255)
+    syncType           VARCHAR(255),
+    remoteCalendarId   VARCHAR(255),
+    remoteCalendarUrl  VARCHAR(512),
+    syncToken          VARCHAR(255),
+    ctag               VARCHAR(255),
+    credentials        TEXT
 ) ENGINE InnoDB, COLLATE utf8_general_ci;
 /*&*/
 CREATE TABLE x2_calendar_permissions (
@@ -23,6 +26,8 @@ CREATE TABLE x2_calendar_permissions (
 ) ENGINE InnoDB, COLLATE utf8_general_ci;
 /*&*/
 ALTER TABLE `x2_calendar_permissions` ADD CONSTRAINT FOREIGN KEY (`calendarId`) REFERENCES x2_calendars(`id`) ON UPDATE CASCADE ON DELETE CASCADE;
+/*&*/
+ALTER TABLE `x2_actions` ADD CONSTRAINT FOREIGN KEY (`calendarId`) REFERENCES x2_calendars(`id`) ON UPDATE CASCADE ON DELETE SET NULL;
 /*&*/
 INSERT INTO `x2_modules`
 (`name`, title, visible, menuPosition, searchable, editable, adminOnly, custom, toggleable)

@@ -67,6 +67,16 @@ class X2Calendar extends CActiveRecord
                 array('name','length', 'max' => 100)
             );
         }
+        
+        public function behaviors() {
+            $behaviors = array();
+            if (!empty($this->syncType)) {
+                if ($this->syncType == 'google') {
+                    $behaviors['syncBehavior'] = 'GoogleCalendarSync';
+                }
+            }
+            return array_merge($behaviors, parent::behaviors());
+        }
 	
 	public function attributeLabels() {
 		return array(
