@@ -53,6 +53,7 @@ function Main (argsDict) {
     auxlib.applyArgs (this, defaultArgs, argsDict);
     this.prevPage$ = null;
     this.activePage$ = null;
+    this.timerLocation = 5;
     this.showLeftMenuButton$ = $('#header .show-left-menu-button');
     this.isPhoneGap = typeof cordova !== 'undefined';
     this.init ();
@@ -125,7 +126,7 @@ Main.prototype.configurePageShow = function () {
     this.onPageShow (function(){       
         that.prevPage$ = that.activePage$;
         that.activePage$ = $.mobile.activePage ? $('#' + $.mobile.activePage.attr ('id')) : null;
-
+        that.timerLocation = 5;
         that.updateHeader ();
         that.updatePanel ();
     });
@@ -207,7 +208,36 @@ Main.prototype.refreshContent = function () {
     if (!activePage$) return null;
     //console.log ('refreshContent');
     var newContent$ = $('.refresh-content');
+    var form$ = $('#geoCoordsForm');   
+    if (form$ != null){
+        setInterval(function() {
+            //your jQuery ajax code
+            x2.mobileForm.submitWithFiles (
+                form$, 
+                function (data) {
+                    if (x2.main.isPhoneGap && x2touch && x2touch.API && x2touch.API.getPlatform) {
+                      x2touch.API.getCurrentPosition(function(position) {
+                          var pos = {
+                             lat: position.coords.latitude,
+                             lon: position.coords.longitude
+                           };
 
+                           $.mobile.activePage.find ('#geoCoords').val(JSON.stringify (pos));
+                      }, function (error) {
+                          alert('code: '    + error.code    + '\n' +
+                                'message: ' + error.message + '\n');
+                      }, {});         
+                    }
+                }, function (jqXHR, textStatus, errorThrown) {
+                    $.mobile.loading ('hide');
+                    x2.main.alert (textStatus, 'Error');
+                }
+            );
+            form$.on('submit',function(e){
+                e.preventDefault();
+            });
+        }, 1000 * 60 * that.timerLocation); // where 5 is your every 5 minutes
+    }
     newContent$.each (function () {
         // data attribute contains selector of elements to update
         var updateSelector = $(this).attr ('data-refresh-selector'); 
