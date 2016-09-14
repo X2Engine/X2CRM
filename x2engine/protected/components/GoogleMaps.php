@@ -50,6 +50,7 @@ class GoogleMaps extends X2Widget {
     
     public $location;
     public $activityLocations;
+    public $defaultFilter = 'address';
 
     public function run() {
     
@@ -75,20 +76,27 @@ class GoogleMaps extends X2Widget {
 
             $("#locationType").change(function() {
                 var locationType = $(this).val();
-                $.each(x2.googleMapsWidget.markers, function(i, marker) {
-                    if(marker.category !== locationType && locationType !== "all")
+                if (locationType) {
+                    $.each(x2.googleMapsWidget.markers, function(i, marker) {
+                        if(locationType.indexOf(marker.category) === -1)
+                            marker.setVisible(false);
+                        else
+                            marker.setVisible(true);
+                    });
+                } else {
+                    $.each(x2.googleMapsWidget.markers, function(i, marker) {
                         marker.setVisible(false);
-                    else
-                        marker.setVisible(true);
-                });
+                    });
+                }
             });
         });
 
-        x2.googleMapsWidget.addMarker = function(location, type, infoContents) {
+        x2.googleMapsWidget.addMarker = function(location, type, infoContents, visible = true) {
             var marker = new google.maps.Marker({
                 map: window.map,
                 position: location,
-                category: type
+                category: type,
+                visible: visible
             });
             var infowindow = new google.maps.InfoWindow({
                 content:infoContents
@@ -128,7 +136,7 @@ class GoogleMaps extends X2Widget {
                                 Yii::t('contacts','View on Heat Map').
                             '</a>'.
                           '</span>\';
-                    x2.googleMapsWidget.addMarker(results[0].geometry.location, "address", content);
+                    x2.googleMapsWidget.addMarker(results[0].geometry.location, "address", content, ("'.$this->defaultFilter.'" === "address"));
 
                     $.each(geolocationCoords, function(i, coords) {
                         if (typeof coords.lat != "undefined" && typeof coords.lng != "undefined") {
@@ -144,7 +152,7 @@ class GoogleMaps extends X2Widget {
                                     '</a>'.
                                     '<br /><br /><small>\' + coords.infoText + \'</small>'.
                                   '</span>\';
-                            x2.googleMapsWidget.addMarker(coords, coords.type, content);
+                            x2.googleMapsWidget.addMarker(coords, coords.type, content, ("'.$this->defaultFilter.'" === coords.type));
                         }
                     });
                 } else if (geolocationCoords.length > 0) {
@@ -168,7 +176,7 @@ class GoogleMaps extends X2Widget {
                                     '</a>'.
                                     '<br /><br /><small>\' + coords.infoText + \'</small>'.
                                   '</span>\';
-                            x2.googleMapsWidget.addMarker(coords, coords.type, content);
+                            x2.googleMapsWidget.addMarker(coords, coords.type, content, ("'.$this->defaultFilter.'" === coords.type));
                         }
                     });
                 } else {
@@ -196,11 +204,16 @@ class GoogleMaps extends X2Widget {
             }
         ');
         ?><div class="mapsHeader"><?php
-        echo CHtml::label(Yii::t('app', 'Filter'), 'locationType');
-        echo X2Html::dropDownList('locationType', 'All', array_merge(
-            array('all'=>Yii::t('app', 'All')),
-            Locations::getLocationTypes()
-        ));
+        echo CHtml::dropDownList (
+            'locationType',
+            $this->defaultFilter,
+            Locations::getLocationTypes(),
+            array (
+                'multiple' => 'multiple',
+                'data-selected-text' => Yii::t('app', 'filters(s)'),
+                'class' => 'x2-multiselect-dropdown'
+            )
+        );
         ?></div><?php
         echo '<div id="googleMapsCanvas" style="width:100%;height:250px"></div>';
     }

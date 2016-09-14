@@ -1606,6 +1606,8 @@ class ProfileController extends x2base {
             if(!$activityFeedParams['isMyProfile'] && isset($this->portlets['GoogleMaps']) && Yii::app()->settings->googleIntegration) {
                 $this->portlets['GoogleMaps']['params']['location'] = $user->address;
                 $this->portlets['GoogleMaps']['params']['activityLocations'] = $user->getMapLocations();
+                $defaultFilter = !empty($user->address) ? 'address' : 'login';
+                $this->portlets['GoogleMaps']['params']['defaultFilter'] = $defaultFilter;
             }
 
             $params = array(

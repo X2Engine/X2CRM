@@ -329,10 +329,16 @@ $('#save-button').click(function(e){
 
         <div class="cell">
             <label><?php echo Yii::t('contacts','Location Type'); ?></label>
-            <?php echo CHtml::dropDownList('params[locationType]',$locationType,array_merge(
-            array('all'=>Yii::t('app', 'All')),
-            Locations::getLocationTypes()
-        )); ?>
+            <?php echo CHtml::dropDownList (
+                'params[locationType]',
+                $locationType,
+                Locations::getLocationTypes(),
+                array (
+                    'multiple' => 'multiple',
+                    'data-selected-text' => Yii::t('app', 'filters(s)'),
+                    'class' => 'x2-multiselect-dropdown'
+                )
+            ); ?>
         </div>
 
         <div class="cell">

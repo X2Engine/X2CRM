@@ -44,13 +44,14 @@ class MappableBehavior extends CActiveRecordBehavior {
     public $recordType;
 
     public function logLocation($type, $method = 'GET', $param = 'geoCoords') {
+        $ip = Yii::app()->controller->getRealIP();
         $logIp = false;
         $coords = false;
         if ($method && isset($_{$method}[$param]))
             $coords = json_decode($_{$method}[$param], true);
-        if (!$coords) {
-            $logIp = Yii::app()->controller->getRealIP();
-            $coords = Locations::resolveIpLocation($logIp);
+        if (!$coords && !X2IPAddress::isPrivateAddress($ip)) {
+            $coords = Locations::resolveIpLocation($ip);
+            $logIp = $ip;
         }
         if ($coords && array_key_exists('lat', $coords) && array_key_exists('lon', $coords)) {
             $location = $this->updateLocation($coords['lat'], $coords['lon'], $type, $logIp);
