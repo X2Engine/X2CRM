@@ -77,6 +77,9 @@ $form = $this->beginWidget ('CalendarEventActiveForm', array (
 
     echo $form->label ($model, 'assignedTo'); 
     echo $form->renderInput ($model, 'assignedTo');
+    
+    echo $form->label ($model, 'calendarId'); 
+    echo $form->dropDownList ($model, 'calendarId',  X2CalendarPermissions::getEditableUserCalendarNames());
 ?>
             </div>
             <div class='cell'>

@@ -1304,9 +1304,7 @@ class CalendarController extends x2base {
         // View permissions for the viewing user
         $criteria = $staticAction->getAccessCriteria();
         // Assignment condition: all events for the user whose calendar is being viewed:
-        $criteria->addCondition('`assignedTo` REGEXP BINARY :unameRegex');
-        $permissionsBehavior = Yii::app()->params->modelPermissions;
-        $criteria->params[':unameRegex'] = $permissionsBehavior::getUserNameRegex($calendarUser);
+        $criteria->addCondition('`calendarId` = :calendarId');
         // Action type filters:
         $criteria->addCondition(self::constructFilterClause($filter));
         $criteria->addCondition("`type` IS NULL OR `type`='' OR `type`='event'");
@@ -1316,7 +1314,8 @@ class CalendarController extends x2base {
             ':start1' => $start,
             ':start2' => $start,
             ':end1' => $end,
-            ':end2' => $end
+            ':end2' => $end,
+            ':calendarId' => $calendarUser
         ));
         return Actions::model()->findAllWithoutActionText($criteria);
     }

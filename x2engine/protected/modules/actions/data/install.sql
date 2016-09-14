@@ -9,7 +9,7 @@ DROP TABLE IF EXISTS x2_actions;
 CREATE TABLE x2_actions (
     id                        INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
     assignedTo                VARCHAR(255),
-    calendarId                INT,
+    calendarId                INT UNSIGNED,
     subject                   VARCHAR(255),
     visibility                INT NOT NULL DEFAULT 1,
     associationId             INT NOT NULL,
@@ -48,6 +48,8 @@ CREATE TABLE x2_action_meta_data (
     actionId                  INT UNSIGNED NOT NULL,
     eventSubtype              VARCHAR(100),
     eventStatus               VARCHAR(100),
+    etag                      VARCHAR(255),
+    remoteCalendarUrl         VARCHAR(255),
     INDEX (actionId),
     FOREIGN KEY (actionId) REFERENCES x2_actions(id) ON UPDATE CASCADE ON DELETE CASCADE
 ) COLLATE = utf8_general_ci, ENGINE = INNODB;
@@ -107,4 +109,4 @@ VALUES
 ("Actions", "quoteId",           "Quote ID",         0, 0, "int",        0, 1, NULL, 0, 0, "",     0, 1, NULL),
 ("Actions", "notificationUsers", "Notification Users",0, 0, "varchar",   0, 0, NULL, 0, 0, "",     0, 1, NULL),
 ("Actions", "notificationTime",  "Notification Time", 0, 0, "int",   0, 0, NULL, 0, 0, "",     0, 1, NULL),
-("Actions", "calendarId",        "Calendar ID",      0, 0, "int",        0, 1, NULL, 0, 0, "",     0, 1, NULL);
+("Actions", "calendarId",        "Calendar ID",      0, 0, "int",        0, 0, NULL, 0, 0, "",     0, 1, NULL);

@@ -179,7 +179,7 @@ class Actions extends X2Model {
             array(
                 array('allDay', 'boolean'),
                 array('associationId,associationType','requiredAssoc'),
-                array('createDate, completeDate, lastUpdated', 'numerical', 'integerOnly' => true),
+                array('createDate, completeDate, lastUpdated, calendarId', 'numerical', 'integerOnly' => true),
                 array(
                     'id,assignedTo,actionDescription,visibility,associationId,associationType,'.
                     'associationName,dueDate,priority,type,createDate,complete,reminder,'.
