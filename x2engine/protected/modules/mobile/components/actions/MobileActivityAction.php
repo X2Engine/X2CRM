@@ -42,6 +42,9 @@ class MobileActivityAction extends MobileAction {
         $this->controller->headerTitle = Yii::t('mobile', 'Activities');
         $id = Yii::app()->params->profile->id;
         $params = $this->controller->getActivityFeedViewParams($id, false);
+        if (isset($_POST['geoCoords'])){
+            Yii::app()->params->profile->user->logLocation('mobileActivityPost', 'POST');
+        }
         $this->controller->render (
             $this->pathAliasBase.'views.mobile.activity',
             $params

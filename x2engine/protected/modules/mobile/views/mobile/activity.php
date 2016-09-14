@@ -63,6 +63,9 @@ $profile = Yii::app()->params->profile;
     ?>
     </div>
 </div>
+<form id="geoCoordsForm" action="" method="POST">
+    <input type="hidden" name="geoCoords" id="geoCoords">
+</form>
 <?php
 
 $this->widget (
