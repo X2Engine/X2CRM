@@ -79,6 +79,8 @@ echo $this->renderPartial('_form',
 	 array(
 		 'model'=>$model,
                  'googleIntegration'=>$googleIntegration,
+                 'client' => $client,
+                 'googleCalendarList' => $googleCalendarList,
 		 'users'=>$users,
 		 'modelName'=>'calendar',
 		 'isQuickCreate'=>true, // let us create the CActiveForm in this file

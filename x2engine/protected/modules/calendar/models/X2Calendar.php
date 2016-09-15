@@ -82,7 +82,6 @@ class X2Calendar extends CActiveRecord
 		return array(
 			'id' => Yii::t('admin','ID'),
 			'googleCalendar'=>Yii::t('calendar', 'Google Calendar'),
-			'googleFeed'=>Yii::t('calendar', 'Google Feed'),
 			'googleCalendarName' => Yii::t('calendar','Google Calendar Name'),
 		);
 	}

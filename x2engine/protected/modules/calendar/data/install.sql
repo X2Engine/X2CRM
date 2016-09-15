@@ -3,8 +3,7 @@ DROP TABLE IF EXISTS x2_calendars,x2_calendar_permissions;
 CREATE TABLE x2_calendars (
     id                 INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
     name               VARCHAR(100) NOT NULL, 
-    googleCalendar     TINYINT,
-    googleFeed         VARCHAR(255),
+    remoteSync         TINYINT,
     createDate         BIGINT,
     createdBy          VARCHAR(40),
     lastUpdated        BIGINT,

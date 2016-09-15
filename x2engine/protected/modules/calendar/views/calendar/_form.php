@@ -122,16 +122,14 @@ if ($googleIntegration) {
 
                 <?php if ($client->getAccessToken()) { ?>
                     <?php
-                    echo $form->labelEx($model, 'googleCalendar');
+                    $model->syncType = 'google';
+                    echo $form->hiddenField($model, 'syncType');
                     ?>
                     <?php
-                    echo $form->checkbox($model, 'googleCalendar');
+                    echo $form->labelEx($model, 'remoteCalendarId');
                     ?>
                     <?php
-                    echo $form->labelEx($model, 'googleCalendarName');
-                    ?>
-                    <?php
-                    echo $form->dropDownList($model, 'googleCalendarId',
+                    echo $form->dropDownList($model, 'remoteCalendarId',
                             $googleCalendarList);
                     ?>
                     <br />
