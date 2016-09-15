@@ -96,7 +96,7 @@ class X2Flow extends X2ActiveRecord {
             array('triggerType, modelClass', 'length', 'max' => 40),
             // The following rule is used by search().
             // Please remove those attributes that should not be searched.
-            array('id, active, name, createDate, lastUpdated', 'safe', 'on' => 'search'),
+            array('id, active, name, description, createDate, lastUpdated', 'safe', 'on' => 'search'),
         );
     }
 
@@ -149,6 +149,11 @@ class X2Flow extends X2ActiveRecord {
     public function behaviors(){
         return array(
             'TimestampBehavior' => array('class' => 'TimestampBehavior'),
+            'ERememberFiltersBehavior' => array(
+                'class' => 'application.components.behaviors.ERememberFiltersBehavior',
+                'defaults' => array(),
+                'defaultStickOnClear' => false
+            ),
         );
     }
 
@@ -180,6 +185,7 @@ class X2Flow extends X2ActiveRecord {
         $criteria->compare('id', $this->id);
         $criteria->compare('active', $this->active);
         $criteria->compare('name', $this->name, true);
+        $criteria->compare('description', $this->description, true);
         $criteria->compare('createDate', $this->createDate, true);
         $criteria->compare('lastUpdated', $this->lastUpdated, true);
 

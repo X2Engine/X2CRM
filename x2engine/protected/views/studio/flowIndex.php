@@ -75,7 +75,7 @@ $this->actionMenu = array(
 
 $this->widget('X2ActiveGridView', array(
 	'id'=>'flow-grid',
-	'buttons'=>array('columnSelector','autoResize'),
+	'buttons'=>array('clearFilters','columnSelector','autoResize'),
     'modelName' => 'X2Flow',
 	'baseScriptUrl'=>
         Yii::app()->request->baseUrl.'/themes/'.Yii::app()->theme->name.'/css/gridview',
@@ -83,7 +83,8 @@ $this->widget('X2ActiveGridView', array(
         '<div class="page-title icon x2flow">'.
         '<h2>'.Yii::t('studio','X2Workflow Automation Rules').'</h2>{buttons}'.
         '{summary}</div>{items}{pager}',
-    'dataProvider'=>CActiveRecord::model('X2Flow')->search(),
+	'dataProvider'=>$model->search(),
+	'filter'=>$model,
     'defaultGvSettings' => array (
         'name' => 200,
         'description' => 450,
@@ -148,13 +149,11 @@ $this->widget('X2ActiveGridView', array(
 </div>
 <br>
 <?php
-if(Yii::app()->contEd('pro')) {
-	echo CHtml::link(
-        Yii::t('studio','Create New Workflow'),
-        array('/studio/flowDesigner'),
-        array(
-            'class'=>'x2-button',
-            'id'=>'create-flow-button'
-        ));
-}
+echo CHtml::link(
+    Yii::t('studio','Create New Workflow'),
+    array('/studio/flowDesigner'),
+    array(
+        'class'=>'x2-button',
+        'id'=>'create-flow-button'
+    ));
 ?>
