@@ -20,6 +20,9 @@
  * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, TITLE, AND NON-INFRINGEMENT.
  ********************************************************************************/
 
+Yii::setPathOfAlias(
+        'Sabre', Yii::getPathOfAlias('application.integration.SabreDAV'));
+
 use Sabre\DAV\Client;
 use Sabre\DAV\XMLUtil;
 
@@ -98,7 +101,7 @@ class X2CalDavClient extends Client {
         if ($this->oAuthToken) {
             $headers['Authorization'] = 'Bearer ' . $this->oAuthToken;
         }
-
+        
         $response = $this->request('PROPFIND', $url, $body, $headers);
         $result = $this->parseMultiStatus($response['body']);
 

@@ -287,6 +287,13 @@ class CalendarController extends x2base {
     public function actionQuickView ($id) {
         echo Yii::t('app', 'Quick view not supported');
     }
+    
+    public function actionSync(){
+        $calendars = X2Calendar::model()->findAllByAttributes(array('remoteSync'=>1));
+        foreach($calendars as $calendar){
+            $calendar->sync();
+        }
+    }
 
     /**
      * Create shared calendar
@@ -298,10 +305,13 @@ class CalendarController extends x2base {
         $calendar = filter_input(INPUT_POST, 'X2Calendar', FILTER_DEFAULT, FILTER_REQUIRE_ARRAY);
         if(is_array($calendar)){
             $model->attributes = $calendar;
-            if($model->remoteSync && $model->asa('syncBehavior')){
-                $credentials = filter_input(INPUT_SESSION, 'token');
-                $model->credentials = $credentials;
-                $model->remoteCalendarUrl = str_replace('{calendarId}', $model->remoteCalendarId, $model->calendarUrl);
+            if($model->remoteSync){
+                $model->attachSyncBehavior();
+                if(isset($_SESSION['token'])){
+                    $credentials = $_SESSION['token'];
+                    $model->credentials = $credentials;
+                }
+                $model->remoteCalendarUrl = str_replace('{calendarId}', $model->remoteCalendarId, $model->syncBehavior->calendarUrl);
             }
 
             $model->createdBy = Yii::app()->user->name;

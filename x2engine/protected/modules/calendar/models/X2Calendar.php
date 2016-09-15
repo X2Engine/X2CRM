@@ -41,6 +41,8 @@
  * @todo Find out if this class is still actually used for anything. Delete it
  *  and anything else associated with it (i.e. the database table) if not.
  */
+Yii::import('application.components.calendarSync.*');
+
 class X2Calendar extends CActiveRecord
 {
 
@@ -64,7 +66,9 @@ class X2Calendar extends CActiveRecord
         public function rules(){
             return array(
                 array('name','required'),
-                array('name','length', 'max' => 100)
+                array('remoteSync','boolean'),
+                array('name','length', 'max' => 100),
+                array('syncType, remoteCalendarId, remoteCalendarUrl, ctag, credentials','safe')
             );
         }
         
@@ -76,6 +80,14 @@ class X2Calendar extends CActiveRecord
                 }
             }
             return array_merge($behaviors, parent::behaviors());
+        }
+        
+        public function attachSyncBehavior(){
+            if (!empty($this->syncType)) {
+                if ($this->syncType == 'google') {
+                    $this->attachBehavior('syncBehavior','GoogleCalendarSync');
+                }
+            }
         }
 	
 	public function attributeLabels() {

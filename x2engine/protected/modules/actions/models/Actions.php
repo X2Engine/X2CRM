@@ -82,6 +82,9 @@ class Actions extends X2Model {
         'emailFolderName' => null,
         'emailUidValidity' => null,
         
+        'etag'=> null,
+        'remoteCalendarUrl' => null,
+        
     );
 
     private static $_priorityLabels;
@@ -797,6 +800,14 @@ class Actions extends X2Model {
     public function setEmailUidValidity ($value) {
         $this->metaDataTemp['emailUidValidity'] = $value;
     }
+    
+    public function setEtag ($value) {
+        $this->metaDataTemp['etag'] = $value;
+    }
+    
+    public function setRemoteCalendarUrl ($value) {
+        $this->metaDataTemp['remoteCalendarUrl'] = $value;
+    }
      
 
     public function setActionDescription($value){
@@ -827,6 +838,13 @@ class Actions extends X2Model {
 
     public function getEmailUidValidity() {
         return $this->metaDataTemp['emailUidValidity'];
+    }
+    
+    public function getEtag () {
+        return $this->metaDataTemp['etag'];
+    }
+    public function getRemoteCalendarUrl () {
+        return $this->metaDataTemp['remoteCalendarUrl'];
     }
      
 

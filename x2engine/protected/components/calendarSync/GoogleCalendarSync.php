@@ -26,10 +26,18 @@ class GoogleCalendarSync extends CalDavSync {
 
     protected function authenticate() {
         $credentials = json_decode($this->owner->credentials, true);
-        if (!isset($credentials['refreshToken'])) {
-            throw new CException('Invalid Google Calendar sync configuration.', 400);
-        }
         $auth = new GoogleAuthenticator();
+        if (!isset($credentials['refreshToken'])) {
+            $user = User::model()->findByAttributes(array('username'=>$this->owner->createdBy));
+            if($user && !is_null($auth->getStoredCredentials($user->id))){
+                $credentials['refreshToken'] = $auth->getStoredCredentials($user->id);
+                $this->owner->credentials = json_encode($credentials);
+                $this->owner->update(array('credentials'));
+            }else{
+                $auth->flushCredentials();
+                throw new CException('Invalid Google Calendar sync configuration.', 400);
+            }
+        }
         $auth->flushCredentials(false);
         $token = $auth->exchangeRefreshToken($credentials['refreshToken']);
         $accessToken = json_decode($token, true);

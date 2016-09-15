@@ -123,6 +123,8 @@ if ($googleIntegration) {
                 <?php if ($client->getAccessToken()) { ?>
                     <?php
                     $model->syncType = 'google';
+                    $model->remoteSync = 1;
+                    echo $form->hiddenField($model, 'remoteSync');
                     echo $form->hiddenField($model, 'syncType');
                     ?>
                     <?php
