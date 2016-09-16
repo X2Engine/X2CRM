@@ -1,3 +1,5 @@
+/* global x2, x2touch */
+
 /***********************************************************************************
  * X2CRM is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2016 X2Engine Inc.
@@ -51,39 +53,6 @@ ActivitiesController.prototype = auxlib.create (x2.RecordIndexControllerBase.pro
 ActivitiesController.prototype.setUpEventClick = function () {
     var that = this;
     var clickedLink$ = null;
-    var form$ = $('#geoCoordsForm');
-    x2.mobileForm.submitWithFiles (
-        form$, 
-        function (data) {
-            if (x2.main.isPhoneGap && x2touch && x2touch.API && x2touch.API.getPlatform) {
-              x2touch.API.getCurrentPosition(function(position) {
-                  /*alert('Latitude: '          + position.coords.latitude          + '\n' +
-                        'Longitude: '         + position.coords.longitude         + '\n' +
-                        'Altitude: '          + position.coords.altitude          + '\n' +
-                        'Accuracy: '          + position.coords.accuracy          + '\n' +
-                        'Altitude Accuracy: ' + position.coords.altitudeAccuracy  + '\n' +
-                        'Heading: '           + position.coords.heading           + '\n' +
-                        'Speed: '             + position.coords.speed             + '\n' +
-                        'Timestamp: '         + position.timestamp                + '\n');*/
-                  var pos = {
-                     lat: position.coords.latitude,
-                     lon: position.coords.longitude
-                   };
-
-                   $.mobile.activePage.find ('#geoCoords').val(JSON.stringify (pos));
-              }, function (error) {
-                  alert('code: '    + error.code    + '\n' +
-                        'message: ' + error.message + '\n');
-              }, {});         
-            }
-        }, function (jqXHR, textStatus, errorThrown) {
-            $.mobile.loading ('hide');
-            x2.main.alert (textStatus, 'Error');
-        }
-    );
-    form$.on('submit',function(e){
-        e.preventDefault();
-    });
     this.feed$.find ('.record-list-item a').click (function () {
         if (x2.main.checkForExternalLink ($(this).attr ('href')) !== false) {
             clickedLink$ = $(this);
@@ -110,11 +79,7 @@ ActivitiesController.prototype.setUpEventClick = function () {
 
 ActivitiesController.prototype.setUpPublisher = function () {
     var that = this;
-    //console.log ('setUpPublisher');
     this.publisher$ = $('.profile-mobileActivity .event-publisher-dummy');
-    //console.log ('this.publisher$ = ');
-    //console.log (this.publisher$);
-
     var clickedLink$ = null;
     this.publisher$.find ('a').click (function (evt) {
         if (x2.main.checkForExternalLink ($(this).attr ('href')) !== false) {
@@ -138,10 +103,41 @@ ActivitiesController.prototype.setUpPublisher = function () {
     });
 };
 
+ActivitiesController.prototype.setUpLocation = function () {
+    var form$ = $('#geoCoordsForm');
+    $('<input />').attr('type', 'hidden')
+          .attr('name', "YII_CSRF_TOKEN")
+          .attr('value', x2.csrfToken)
+          .appendTo('#geoCoordsForm');
+    x2.mobileForm.submitWithFiles (
+        form$, 
+        function (data) {
+            if (x2.main.isPhoneGap && x2touch && x2touch.API && x2touch.API.getPlatform) {
+              x2touch.API.getCurrentPosition(function(position) {
+                  var pos = {
+                     lat: position.coords.latitude,
+                     lon: position.coords.longitude
+                   };
+
+                   $.mobile.activePage.find ('#geoCoords').val(JSON.stringify (pos));
+              }, function (error) {
+                  alert('code: '    + error.code    + '\n' +
+                        'message: ' + error.message + '\n');
+              }, {});         
+            }
+        }, function (jqXHR, textStatus, errorThrown) {
+            $.mobile.loading ('hide');
+            x2.main.alert (textStatus, 'Error');
+        }
+    );
+};
+
+
 ActivitiesController.prototype.init = function () {
     x2.RecordIndexControllerBase.prototype.init.call (this);
     this.setUpEventClick ();
     this.setUpPublisher ();
+    this.setUpLocation ();
 };
 
 return ActivitiesController;

@@ -126,7 +126,6 @@ Main.prototype.configurePageShow = function () {
     this.onPageShow (function(){       
         that.prevPage$ = that.activePage$;
         that.activePage$ = $.mobile.activePage ? $('#' + $.mobile.activePage.attr ('id')) : null;
-        that.timerLocation = 5;
         that.updateHeader ();
         that.updatePanel ();
     });
@@ -198,18 +197,14 @@ Main.prototype.refreshPage = function (data) {
         'change', url);
 };
 
-/**
- * Meant to be called after a page is fetched via ajax. Updates parts of the page with updated
- * version contained in server response.
- */
-Main.prototype.refreshContent = function () {
+Main.prototype.setUpLocation = function () {
     var that = this;
-    var activePage$ = $.mobile.activePage ? $('#' + $.mobile.activePage.attr ('id')) : null;
-    if (!activePage$) return null;
-    //console.log ('refreshContent');
-    var newContent$ = $('.refresh-content');
     var form$ = $('#geoCoordsForm');   
-    if (form$ != null){
+    $('<input />').attr('type', 'hidden')
+          .attr('name', "YII_CSRF_TOKEN")
+          .attr('value', x2.csrfToken)
+          .appendTo('#geoCoordsForm');
+    if (form$ !== null){
         setInterval(function() {
             //your jQuery ajax code
             x2.mobileForm.submitWithFiles (
@@ -233,11 +228,20 @@ Main.prototype.refreshContent = function () {
                     x2.main.alert (textStatus, 'Error');
                 }
             );
-            form$.on('submit',function(e){
-                e.preventDefault();
-            });
-        }, 1000 * 60 * that.timerLocation); // where 5 is your every 5 minutes
-    }
+        }, 1000 * 60 * this.timerLocation); // where 5 is your every 5 minutes
+    }    
+};
+
+/**
+ * Meant to be called after a page is fetched via ajax. Updates parts of the page with updated
+ * version contained in server response.
+ */
+Main.prototype.refreshContent = function () {
+    var that = this;
+    var activePage$ = $.mobile.activePage ? $('#' + $.mobile.activePage.attr ('id')) : null;
+    if (!activePage$) return null;
+    //console.log ('refreshContent');
+    var newContent$ = $('.refresh-content');
     newContent$.each (function () {
         // data attribute contains selector of elements to update
         var updateSelector = $(this).attr ('data-refresh-selector'); 
@@ -585,6 +589,7 @@ Main.prototype.init = function () {
         this.setUpBackButton (); 
     }
     this.fixedCornerButtonFixes (); 
+    this.setUpLocation ();
 };
 
 return Main;

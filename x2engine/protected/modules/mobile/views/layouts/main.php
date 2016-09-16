@@ -186,7 +186,7 @@ if (YII_UNIT_TESTING) {
 X2Html::getFlashes ();
 ?>
 </div>
-<form id="geoCoordsForm" action="MobileAction.php" method="POST">
+<form id="geoCoordsForm" action="" method="POST">
     <input type="hidden" name="geoCoords" id="geoCoords">
 </form>
     <div id='header' data-role='header'>

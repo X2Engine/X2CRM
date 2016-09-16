@@ -54,7 +54,7 @@ abstract class MobileAction extends CAction {
 
     protected function beforeRun () {
         if (isset($_POST['geoCoords'])){
-            Yii::app()->params->profile->user->logLocation('mobileActivityPost', 'POST');
+            Yii::app()->params->profile->user->logLocation('mobileIdle', 'POST');
         }
     }
 
