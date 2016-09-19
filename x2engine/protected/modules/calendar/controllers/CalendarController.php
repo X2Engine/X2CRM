@@ -333,44 +333,8 @@ class CalendarController extends x2base {
         $googleIntegration = $admin->googleIntegration;
 
         // if google integration is activated let user choose if they want to link this calendar to a google calendar
-
-        
         if ($googleIntegration) {
-            $client = new GoogleAuthenticator();
-            try {
-                if ($client->getAccessToken()) {
-                    $googleCalendar = $client->getCalendarService();
-                    try {
-                        $calList = $googleCalendar->calendarList->listCalendarList();
-                        $googleCalendarList = array();
-                        foreach ($calList['items'] as $cal) {
-                            $googleCalendarList[$cal['id']] = $cal['summary'];
-                        }
-                    } catch (Google_Service_Exception $e) {
-                        if ($e->getCode() == '403') {
-                            $errors[] = 'Google Calendar API access has not been configured.';
-                            Yii::app()->user->setFlash(
-                                    'error', 'Google Calendar API access has not been configured.');
-                            $googleCalendarList = null;
-                            //$auth->flushCredentials();
-                        } elseif ($e->getCode() == '401') {
-                            $errors[] = 'Invalid user credentials provided. Please try again.';
-                            Yii::app()->user->setFlash(
-                                    'error', 'Invalid user credentials. Please ensure your account is ' .
-                                    'able to use this service or delete the access permissions ' .
-                                    'and try again.');
-                            $googleCalendarList = null;
-                            $client->flushCredentials();
-                        }
-                    }
-                }
-            } catch(Google_Auth_Exception $e){
-                $client->flushCredentials();
-                $client->setErrors($e->getMessage());
-                $client = null;
-                $googleCalendarList = null;
-            }
-
+            list ($client, $googleCalendarList) = X2Calendar::getGoogleCalendarList();
         }else{
             $client = null;
             $googleCalendarList = null;
@@ -417,8 +381,20 @@ class CalendarController extends x2base {
 
         $admin = Yii::app()->settings;
         $googleIntegration = $admin->googleIntegration;
+        
+        if ($googleIntegration) {
+            list ($client, $googleCalendarList) = X2Calendar::getGoogleCalendarList($id);
+        }else{
+            $client = null;
+            $googleCalendarList = null;
+        }
 
-        $this->render('update', array('model' => $model, 'googleIntegration' => $googleIntegration));
+        $this->render('update', array(
+            'model' => $model,
+            'client' => $client,
+            'googleIntegration' => $googleIntegration,
+            'googleCalendarList' => $googleCalendarList,
+        ));
     }
 
     public function actionList(){

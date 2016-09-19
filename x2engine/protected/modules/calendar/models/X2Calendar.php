@@ -165,6 +165,58 @@ class X2Calendar extends CActiveRecord
 		
 		return $names;
 	}
+        
+        /**
+         * Returns a list of calendars that can be synced to
+         */
+        public static function getGoogleCalendarList($id = null){
+            $client = new GoogleAuthenticator();
+            try {
+                if ($client->getAccessToken()) {
+                    $googleCalendar = $client->getCalendarService();
+                    try {
+                        $calList = $googleCalendar->calendarList->listCalendarList();
+                        $syncedCalendarCmd = Yii::app()->db->createCommand()
+                                ->selectDistinct('remoteCalendarId')
+                                ->from('x2_calendars');
+                        if(!is_null($id)){
+                            $syncedCalendarCmd->where('id != :id AND remoteCalendarId IS NOT NULL',array(':id'=>$id));
+                        }else{
+                            $syncedCalendarCmd->where('remoteCalendarId IS NOT NULL');
+                        }
+                        $syncedCalendars = $syncedCalendarCmd->queryColumn();
+                        $googleCalendarList = array();
+                        foreach ($calList['items'] as $cal) {
+                            if(!in_array($cal['id'], $syncedCalendars)){
+                                $googleCalendarList[$cal['id']] = $cal['summary'];
+                            }
+                        }
+                    } catch (Google_Service_Exception $e) {
+                        if ($e->getCode() == '403') {
+                            $errors[] = 'Google Calendar API access has not been configured.';
+                            Yii::app()->user->setFlash(
+                                    'error', 'Google Calendar API access has not been configured.');
+                            $googleCalendarList = null;
+                            //$auth->flushCredentials();
+                        } elseif ($e->getCode() == '401') {
+                            $errors[] = 'Invalid user credentials provided. Please try again.';
+                            Yii::app()->user->setFlash(
+                                    'error', 'Invalid user credentials. Please ensure your account is ' .
+                                    'able to use this service or delete the access permissions ' .
+                                    'and try again.');
+                            $googleCalendarList = null;
+                            $client->flushCredentials();
+                        }
+                    }
+                }
+            } catch (Google_Auth_Exception $e) {
+                $client->flushCredentials();
+                $client->setErrors($e->getMessage());
+                $client = null;
+                $googleCalendarList = null;
+            }
+            return array($client, $googleCalendarList);
+        }
 	
 	public static function getCalendarFilters() {
 		$user = User::model()->findByPk(Yii::app()->user->id);
