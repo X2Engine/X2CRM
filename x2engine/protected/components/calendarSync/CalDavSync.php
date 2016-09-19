@@ -62,17 +62,17 @@ abstract class CalDavSync extends CalendarSync {
 
     public function sync() {
         $calData = $this->getSyncInfo();
-        //if ($calData['ctag'] != $this->owner->ctag) {
-        //if (isset($this->owner->syncToken)) {
-        //  $this->syncWithToken();
-        //} else {
-        $this->syncWithoutToken();
-        //}
-        $calData = $this->getSyncInfo();
-        $this->owner->syncToken = $calData['syncToken'];
-        $this->owner->ctag = $calData['ctag'];
-        $this->owner->save();
-        // }
+        if ($calData['ctag'] != $this->owner->ctag) {
+            if (isset($this->owner->syncToken)) {
+                $this->syncWithToken();
+            } else {
+                $this->syncWithoutToken();
+            }
+            $calData = $this->getSyncInfo();
+            $this->owner->syncToken = $calData['syncToken'];
+            $this->owner->ctag = $calData['ctag'];
+            $this->owner->save();
+        }
     }
 
     protected function syncWithToken() {
@@ -84,7 +84,8 @@ abstract class CalDavSync extends CalendarSync {
             if ($statusCode == '200') {
                 $paths[] = $syncPath;
             } elseif ($statusCode == '404') {
-                $actionUrl = $this->owner->remoteCalendarUrl . $syncPath;
+                $pieces = explode('/',$syncPath);
+                $actionUrl = str_replace('.ics', '', urldecode($pieces[count($pieces)-1]));
                 $actionMetaData = X2Model::model('ActionMetaData')->findByAttributes(array(
                     'remoteCalendarUrl' => $actionUrl,
                 ));
@@ -109,14 +110,19 @@ abstract class CalDavSync extends CalendarSync {
         
         $paths = $this->createUpdateActions($calendarEvents, true);
         $pathList = AuxLib::bindArray($paths);
-        $bindParams = array_merge(
-                array(':calId' => $this->owner->id,), $pathList);
-        $deletedActions = Yii::app()->db->createCommand()
+        $bindParams = array(':calId' => $this->owner->id);
+        $deletedActionCmd = Yii::app()->db->createCommand()
                 ->select('a.id')
                 ->from('x2_actions a')
-                ->join('x2_action_meta_data b', 'a.id = b.actionId')
-                ->where('a.calendarId = :calId AND b.remoteCalendarUrl NOT IN ' . AuxLib::arrToStrList(array_keys($pathList)), $bindParams)
-                ->queryAll();
+                ->join('x2_action_meta_data b', 'a.id = b.actionId');
+        if(!empty($pathList)){
+            $bindParams = array_merge(
+                $bindParams, $pathList);
+            $deletedActionCmd->where('a.calendarId = :calId AND b.remoteCalendarUrl NOT IN ' . AuxLib::arrToStrList(array_keys($pathList)), $bindParams);
+        }else{
+            $deletedActionCmd->where('a.calendarId = :calId', $bindParams);
+        }
+        $deletedActions = $deletedActionCmd->queryAll();
         foreach ($deletedActions as $actionId) {
             $action = X2Model::model('Actions')->findByPk($actionId);
             $action->delete();
@@ -198,7 +204,8 @@ abstract class CalDavSync extends CalendarSync {
         $action->type = 'event';
         if ($calObject->vevent->dtstart->getDateType() === 4) {
             $action->dueDate = strtotime($calObject->vevent->dtstart->value);
-            $action->completeDate = strtotime($calObject->vevent->dtend->value);
+            // Subtract 1s to fix all day display issue in Calendar
+            $action->completeDate = strtotime($calObject->vevent->dtend->value) - 1;
             $action->allDay = 1;
         } else {
             $timezone = new \DateTimeZone('UTC');
