@@ -494,6 +494,13 @@ class Actions extends X2Model {
 
     public function beforeDelete() {
         
+        if($this->type === 'event' && !empty($this->calendarId) && !empty($this->remoteCalendarUrl)){
+            $calendar = X2Calendar::model()->findByPk($this->calendarId);
+            if($calendar){
+                $calendar->deleteAction($this);
+            }
+        }
+        
         ActionTimer::model()->deleteAllByAttributes(array('actionId'=>$this->id));
         
         return parent::beforeDelete();
@@ -710,6 +717,12 @@ class Actions extends X2Model {
     public function afterCreate(){
         if($this->type === 'event') {
             $this->createCalendarFeedEvent ();
+            if(!empty($this->calendarId) && empty($this->remoteCalendarUrl)){
+                $calendar = X2Calendar::model()->findByPk($this->calendarId);
+                if($calendar && $calendar->asa('syncBehavior')){
+                    $calendar->syncActionToCalendar($this);
+                }
+            }
         }
         if(empty ($this->type) || in_array($this->type, array('call','time','note'))){
             $this->createEvents ('record_create', $this->createDate);
@@ -757,6 +770,16 @@ class Actions extends X2Model {
          
 
         parent::afterCreate();
+    }
+    
+    public function afterUpdate() {
+        if ($this->type === 'event' && !empty($this->calendarId) && !empty($this->remoteCalendarUrl)) {
+            $calendar = X2Calendar::model()->findByPk($this->calendarId);
+            if ($calendar && $calendar->asa('syncBehavior')) {
+                $calendar->syncActionToCalendar($this);
+            }
+        }
+        parent::afterUpdate();
     }
 
     /**
@@ -1351,28 +1374,6 @@ class Actions extends X2Model {
         foreach(self::$_fields[$this->tableName()] as &$field){
             if(isset ($dbAttributes[$field->fieldName])) {
                 $this->compareAttribute ($criteria, $field);
-            }
-        }
-    }
-
-    /**
-     * TODO: unit test 
-     */
-    public function syncGoogleCalendar($operation, $ajax=false){
-        $profiles = $this->getProfilesOfAssignees ();
-
-        foreach($profiles as &$profile){
-            if($profile !== null){
-                if($operation === 'create') {
-                    // create action to Google Calendar
-                    $profile->syncActionToGoogleCalendar($this, $ajax); 
-                } elseif($operation === 'update') {
-                    // update action to Google Calendar
-                    $profile->updateGoogleCalendarEvent($this, $ajax); 
-                } elseif($operation === 'delete') {
-                    // delete action in Google Calendar
-                    $profile->deleteGoogleCalendarEvent($this, $ajax); 
-                }
             }
         }
     }

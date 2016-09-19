@@ -109,6 +109,12 @@ class CalendarController extends x2base {
             ),
         );
     }
+    
+    public function actionSyncActionsToGoogleCalendar(){
+        $auth = new GoogleAuthenticator();
+        $token = $auth->getAccessToken();
+        $this->redirect('index');
+    }
 
     /**
      * Show Calendar

@@ -21,6 +21,9 @@
  * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, TITLE, AND NON-INFRINGEMENT.
  * ****************************************************************************** */
 
+Yii::setPathOfAlias(
+        'Sabre', Yii::getPathOfAlias('application.integration.SabreDAV'));
+
 abstract class CalDavSync extends CalendarSync {
 
     public static $xmlProperties = array(
@@ -250,17 +253,17 @@ abstract class CalDavSync extends CalendarSync {
                 $metaData->actionId = $action->id;
             }
             $metaData->etag = $newEventData['etag'];
-            $metaData->remoteCalendarUrl = $uniqueId . '.ics';
+            $metaData->remoteCalendarUrl = $uniqueId;
             $metaData->save();
         }
     }
 
     protected function updateCalObject($action) {
-        $eventData = $this->client->get($this->owner->remoteCalendarUrl, '/'.$action->remoteCalendarUrl);
+        $eventData = $this->client->get($this->owner->remoteCalendarUrl, '/' . $action->remoteCalendarUrl . '.ics');
         $calObj = Sabre\VObject\Reader::read($eventData['body']);
         $this->setEventAttributes($calObj->vevent, $action);
-        if ($this->client->put($this->owner->remoteCalendarUrl, $action->remoteCalendarUrl, $calObj->serialize(), $action->etag)) {
-            $newEventData = $this->client->get($this->owner->remoteCalendarUrl, '/'.$action->remoteCalendarUrl);
+        if ($this->client->put($this->owner->remoteCalendarUrl, '/' . $action->remoteCalendarUrl . '.ics', $calObj->serialize(), $action->etag)) {
+            $newEventData = $this->client->get($this->owner->remoteCalendarUrl, '/' . $action->remoteCalendarUrl . '.ics');
             $metaData = ActionMetaData::model()->findByAttributes(array('actionId' => $action->id));
             $metaData->etag = $newEventData['etag'];
             $metaData->save();

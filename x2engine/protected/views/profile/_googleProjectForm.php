@@ -96,7 +96,7 @@ echo X2Html::orderedList (array (
                     'textarea', array ('readonly' => 'readonly', 'class'=>'authorized-js-origins'),
                     (@$_SERVER['HTTPS'] == 'on' ? 'https://' : 'http://') . $_SERVER['HTTP_HOST'] . 
                         Yii::app()->controller->createUrl(
-                            '/calendar/calendar/index')."\n".
+                            '/calendar/calendar/syncActionsToGoogleCalendar')."\n".
                     (@$_SERVER['HTTPS'] == 'on' ? 'https://' : 'http://') . $_SERVER['HTTP_HOST'] . 
                         Yii::app()->controller->createUrl('/site/googleLogin')."\n".
                     (@$_SERVER['HTTPS'] == 'on' ? 'https://' : 'http://') . $_SERVER['HTTP_HOST'] . 
