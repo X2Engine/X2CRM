@@ -231,7 +231,7 @@ class GoogleAuthenticator {
                     $client->setRedirectUri(
                         (@$_SERVER['HTTPS'] == 'on' ? 'https://' : 'http://').$_SERVER['HTTP_HOST'].
                             Yii::app()->controller->createUrl(
-                                '/calendar/calendar/syncActionsToGoogleCalendar'));
+                                '/calendar/calendar/index'));
                     break;
                 default:
                     $client->setRedirectUri($this->redirectUri);

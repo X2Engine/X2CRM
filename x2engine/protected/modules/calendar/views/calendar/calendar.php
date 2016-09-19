@@ -100,8 +100,6 @@ $menuOptions = array(
 );
 if (Yii::app()->params->isAdmin)
     $menuOptions[] = 'userPermissions';
-if (Yii::app()->settings->googleIntegration)
-    $menuOptions[] = 'sync';
 $this->insertMenu($menuOptions);
 
 $this->calendarUsers = X2CalendarPermissions::getViewableUserCalendarNames();

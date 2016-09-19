@@ -26,6 +26,7 @@ abstract class CalDavSync extends CalendarSync {
     public static $xmlProperties = array(
         'ctag' => '{http://calendarserver.org/ns/}getctag',
         'etag' => '{DAV:}getetag',
+        'calendarColor' => '{http://apple.com/ns/ical/}calendar-color',
         'displayName' => '{DAV:}displayname',
         'calendarData' => '{urn:ietf:params:xml:ns:caldav}calendar-data',
         'syncToken' => '{DAV:}sync-token',

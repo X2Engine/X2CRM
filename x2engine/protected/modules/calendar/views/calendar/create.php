@@ -48,14 +48,6 @@ $menuItems = array(
     array('label'=>Yii::t('calendar','List'),'url'=>array('list')),
     array('label'=>Yii::t('calendar','Create')),
 );
-if (Yii::app()->settings->googleIntegration) {
-    $menuItems[] = array(
-        'label'=>Yii::t('calendar', 'Sync My {actions} To Google Calendar', array(
-            '{actions}' => Modules::displayName(true, "Actions"),
-        )),
-        'url'=>array('syncActionsToGoogleCalendar')
-    );
-}
 
 $this->actionMenu = $this->formatMenu($menuItems);
 ?>

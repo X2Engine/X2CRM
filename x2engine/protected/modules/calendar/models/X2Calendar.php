@@ -208,6 +208,8 @@ class X2Calendar extends CActiveRecord
                             $client->flushCredentials();
                         }
                     }
+                }else{
+                    $googleCalendarList = null;
                 }
             } catch (Google_Auth_Exception $e) {
                 $client->flushCredentials();

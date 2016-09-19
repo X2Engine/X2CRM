@@ -92,7 +92,6 @@ class CalendarController extends x2base {
                     'deleteAction',
                     'saveCheckedCalendar',
                     'saveCheckedCalendarFilter',
-                    'syncActionsToGoogleCalendar',
                     'toggleUserCalendarsVisible',
                     'togglePortletVisible',
                     //'uploadToGoogle'
@@ -1095,154 +1094,6 @@ class CalendarController extends x2base {
         }
     }
 
-    /*public function actionUploadToGoogle(){
-        Yii::app()->params->profile->syncAllEvents();
-    }*/
-
-    public function actionSyncActionsToGoogleCalendar(){
-        $errors = array();
-        $model = Yii::app()->params->profile;
-        $client = null;
-        if(isset($_POST['Profile'])){
-            foreach(array_keys($model->attributes) as $field){
-                if(isset($_POST['Profile'][$field])){
-                    $model->$field = $_POST['Profile'][$field];
-                }
-            }
-
-            if($model->syncGoogleCalendarId && isset($_SESSION['token'])){
-                $token = json_decode($_SESSION['token'], true);
-                // used for accessing this google calendar at a later time
-                //$model->syncGoogleCalendarRefreshToken = $token['refresh_token']; 
-                $model->syncGoogleCalendarAccessToken = $_SESSION['token'];
-            }
-
-            $model->update();
-
-        }
-
-        if(isset($_SESSION['calendarForceRefresh']) && $_SESSION['calendarForceRefresh']){
-            unset($_SESSION['calendarForceRefresh']);
-            Yii::app()->user->setFlash(
-                'error',
-                'Your Refresh Token was invalid and needed to be refreshed. The last action you ' .
-                'attempted to Sync with Google did not successfully synchronize.');
-        }
-        $admin = Yii::app()->settings;
-        $googleIntegration = $admin->googleIntegration;
-
-        /* if google integration is activated let user choose if they want to link this calendar 
-        to a google calendar */
-        if($googleIntegration){
-//            $timezone = date_default_timezone_get();
-//            require_once "protected/extensions/google-api-php-client/src/Google_Client.php";
-//            require_once "protected/extensions/google-api-php-client/src/contrib/Google_Service_Calendar.php"; // for google calendar sync
-//            require_once 'protected/extensions/google-api-php-client/src/contrib/Google_Service_Oauth2.php'; // for google oauth login
-//            date_default_timezone_set($timezone);
-
-            $auth = new GoogleAuthenticator();
-
-            /* name of the Google Calendar that current user's actions are being synced to if it 
-            has been set */
-            $syncGoogleCalendarName = null; 
-            try{
-                if(isset($_GET['unlinkGoogleCalendar'])){ 
-                    // user changed their mind about linking their google calendar
-
-                    unset($_SESSION['token']);
-                    $model->syncGoogleCalendarId = null;
-                    // used for accessing this google calendar at a later time
-                    //$model->syncGoogleCalendarRefreshToken = null; 
-                    $model->syncGoogleCalendarAccessToken = null;
-                    $model->update();
-                    $googleCalendarList = null;
-                    if($auth->getAccessToken()){
-                        $googleCalendar = $auth->getCalendarService();
-                        try{
-                            $calList = $googleCalendar->calendarList->listCalendarList();
-                            $googleCalendarList = array();
-                            foreach($calList['items'] as $cal){
-                                $googleCalendarList[$cal['id']] = $cal['summary'];
-                            }
-                        }catch(Google_Service_Exception $e){
-                            if($e->getCode() == '403'){
-                                $errors[] = $e->getMessage();
-                                Yii::app()->user->setFlash('error', $e->getMessage());
-                                $googleCalendarList = null;
-                                //$auth->flushCredentials();
-                            }elseif($e->getCode() == '401'){
-                                $errors[] = 'Invalid user credentials provided. Please try again.';
-                                Yii::app()->user->setFlash(
-                                    'error',
-                                    'Invalid user credentials. Please ensure your account is ' . 
-                                    'able to use this service or delete the access permissions ' .
-                                    'and try again.');
-                                $googleCalendarList = null;
-                                $auth->flushCredentials();
-                            }
-                        }
-                    }else{
-                        $googleCalendarList = null;
-                    }
-                }else{
-                    if($auth->getAccessToken()){
-                        $googleCalendar = $auth->getCalendarService();
-                        try{
-                            $calList = $googleCalendar->calendarList->listCalendarList();
-                            $googleCalendarList = array();
-                            foreach($calList['items'] as $cal){
-                                $googleCalendarList[$cal['id']] = $cal['summary'];
-                            }
-
-
-                        }catch(Google_Service_Exception $e){
-                            if($e->getCode() == '403'){
-                                $errors[] = 'Google Calendar API access has not been configured.';
-                                Yii::app()->user->setFlash(
-                                    'error',
-                                    'Google Calendar API access has not been configured.');
-                                $googleCalendarList = null;
-                                //$auth->flushCredentials();
-                            }elseif($e->getCode() == '401'){
-                                $errors[] = 'Invalid user credentials provided. Please try again.';
-                                Yii::app()->user->setFlash(
-                                    'error',
-                                    'Invalid user credentials. Please ensure your account is ' .
-                                    'able to use this service or delete the access permissions ' .
-                                    'and try again.');
-                                $googleCalendarList = null;
-                                $auth->flushCredentials();
-                            }
-                        }
-                    }else{
-                        $googleCalendarList = null;
-                    }
-                }
-            }catch(Google_Auth_Exception $e){
-                $auth->flushCredentials();
-                $auth->setErrors($e->getMessage());
-                $client = null;
-                $googleCalendarList = null;
-                $syncGoogleCalendarName = null;
-            }
-        }else{
-            $client = null;
-            $googleCalendarList = null;
-            $syncGoogleCalendarName = null;
-        }
-        $syncGoogleCalendarId = Yii::app()->params->profile->syncGoogleCalendarId;   
-
-        $this->render('syncActionsToGoogleCalendar', array(
-            'errors' => $errors,
-            'auth' => isset($auth) ? $auth : null,
-            'model' => $model,
-            'googleIntegration' => $googleIntegration,
-            'client' => $client,
-            'googleCalendarList' => $googleCalendarList,
-            'syncGoogleCalendarName' => $syncGoogleCalendarId,
-        ));
-    }
-
     public function actionToggleUserCalendarsVisible(){
         echo Yii::app()->params->profile->userCalendarsVisible;
     }
@@ -1354,13 +1205,6 @@ class CalendarController extends x2base {
                     '{user}'=>$User,
                 )),
                 'url'=>array('userCalendarPermissions'),
-            ),
-            array(
-                'name'=>'sync',
-                'label'=>Yii::t('calendar', 'Sync My {actions} To Google Calendar', array(
-                    '{actions}' => $Actions,
-                )),
-                'url'=>array('syncActionsToGoogleCalendar'),
             ),
         );
 

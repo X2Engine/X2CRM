@@ -134,17 +134,11 @@ if ($googleIntegration) {
                     echo $form->dropDownList($model, 'remoteCalendarId',
                             $googleCalendarList);
                     ?>
-                    <br />
-                    <?php
-                    echo CHtml::link(Yii::t('calendar',
-                                    "Don't link to Google Calendar"),
-                            $this->createUrl('') . '?unlinkGoogleCalendar');
-                    ?>
                 <?php } else { ?>
                     <?php
                     echo CHtml::link(Yii::t('calendar',
                                     "Link to Google Calendar"),
-                            $client->createAuthUrl());
+                            $client->getAuthorizationUrl('calendar'));
                     ?>
                 <?php } ?>
 
