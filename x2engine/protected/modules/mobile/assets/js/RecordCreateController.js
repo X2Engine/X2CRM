@@ -48,7 +48,7 @@ function RecordCreateController (argsDict) {
 }
 
 RecordCreateController.prototype = auxlib.create (x2.Controller.prototype);
-
+/*
 RecordCreateController.prototype.importContact = function () {
     var that = this;
     this.importButton$ = $('#header .import-button');
@@ -82,7 +82,7 @@ RecordCreateController.prototype.importContact = function () {
         form$.submit ();
     });
 };
-
+*/
 RecordCreateController.prototype.exportContact = function () {
     var that = this;
     var contactInfo = {};
@@ -147,7 +147,7 @@ RecordCreateController.prototype.init = function () {
     this.documentEvents.push (x2.main.onPageShow (function () {
         that.form$ = $.mobile.activePage.find ('form');
         that.exportContact ();
-        that.importContact ();
+        //that.importContact ();
         that.setUpForm ();
     }, this.constructor.name));
 };
