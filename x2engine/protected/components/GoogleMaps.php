@@ -201,6 +201,7 @@ class GoogleMaps extends X2Widget {
             .mapsHeader {
                 background-color: #F5F5F5;
                 width: 100%;
+                height: 32px;
             }
         ');
         ?><div class="mapsHeader"><?php
@@ -213,6 +214,11 @@ class GoogleMaps extends X2Widget {
                 'data-selected-text' => Yii::t('app', 'filters(s)'),
                 'class' => 'x2-multiselect-dropdown'
             )
+        );
+        echo CHtml::link (
+            Yii::t('contacts', 'View on Large Map'),
+            array('contacts/googleMaps','contactId'=>$_GET['id'],'noHeatMap'=>1),
+            array('class' => 'x2-button x2-small-button right')
         );
         ?></div><?php
         echo '<div id="googleMapsCanvas" style="width:100%;height:250px"></div>';
