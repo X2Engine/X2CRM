@@ -249,7 +249,6 @@ class X2Calendar extends CActiveRecord
             'jsonFeed' => Yii::app()->createUrl('/calendar/jsonFeed'), // feed to get actions from users
             'jsonFeedGroup' => Yii::app()->createUrl('/calendar/jsonFeedGroup'), // feed to get actions from group Calendar
             'jsonFeedShared' => Yii::app()->createUrl('/calendar/jsonFeedShared'), // feed to get actions from shared calendars
-            //'jsonFeedAll' => Yii::app()->createUrl('/calendar/jsonFeedAll'),
             'currentUserFeed' => Yii::app()->createUrl('/calendar/jsonFeed', array('user' => Yii::app()->user->name)), // add current user actions to calendar
             'anyoneUserFeed' => Yii::app()->createUrl('/calendar/jsonFeed', array('user' => 'Anyone')), // add Anyone actions to calendar
             'moveAction' => Yii::app()->createUrl('/calendar/moveAction'),

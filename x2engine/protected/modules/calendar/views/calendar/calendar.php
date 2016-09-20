@@ -103,11 +103,6 @@ if (Yii::app()->params->isAdmin)
 $this->insertMenu($menuOptions);
 
 $this->calendarUsers = X2CalendarPermissions::getViewableUserCalendarNames();
-$this->groupCalendars = X2Calendar::getViewableGroupCalendarNames();
-
-//$this->sharedCalendars = X2Calendar::getViewableCalendarNames();
-//$this->googleCalendars = X2Calendar::getViewableGoogleCalendarNames();
-$this->calendarFilter = X2Calendar::getCalendarFilters();
 
 // urls for ajax (and other javascript) calls
 $urls = X2Calendar::getCalendarUrls();
@@ -128,7 +123,7 @@ $sharedCalendars = $showCalendars['sharedCalendars'];
 $checkedUserCalendars = '';
 foreach($userCalendars as $user){
     if(isset($this->calendarUsers[$user])){
-        $userCalendarFeed = $this->createUrl('jsonFeed', array('user' => $user));
+        $userCalendarFeed = $this->createUrl('jsonFeed', array('calendarId' => $user));
         $checkedUserCalendars .= '
         $("#calendar").fullCalendar("addEventSource",{
             url: "'.$userCalendarFeed.'"
@@ -631,11 +626,11 @@ $(function() {
             user = 'Anyone';
         if(on) {
             $('#calendar').fullCalendar('addEventSource', {
-                url: '<?php echo $urls['jsonFeed']; ?>?user=' + user
+                url: '<?php echo $urls['jsonFeed']; ?>?calendarId=' + user
             });
         } else {
             $('#calendar').fullCalendar('removeEventSource', {
-                url: '<?php echo $urls['jsonFeed']; ?>?user=' + user
+                url: '<?php echo $urls['jsonFeed']; ?>?calendarId=' + user
             });
             //This is to remove the prepopulated events
             $('#calendar').fullCalendar('removeEvents', function(event){
@@ -650,40 +645,6 @@ $(function() {
         $.post('<?php echo $urls['saveCheckedCalendar']; ?>', {
             Calendar: user, Checked: on, Type: 'user'
         });
-    }
-
-    function toggleGroupCalendarSource(groupId, on) {
-        if (on) {
-            $('#calendar').fullCalendar('addEventSource', {
-                url: '<?php echo $urls['jsonFeedGroup']; ?>?groupId=' + groupId
-            });
-        } else {
-            $('#calendar').fullCalendar('removeEventSource', {
-                url: '<?php echo $urls['jsonFeedGroup']; ?>?groupId=' + groupId
-            });
-            // This is to remove the prepopulated events
-            $('#calendar').fullCalendar('removeEvents', function(event){
-                if( event.calendarAssignment == groupId ){
-                    return true;
-                }
-            });
-        }
-         x2CalendarExporter.toggleUser(groupId,on); 
-        $.post('<?php echo $urls['saveCheckedCalendar']; ?>', {
-            Calendar: groupId, 
-            Checked: on, 
-            Type: 'group'
-        });
-    }
-
-    // filter calendar actions
-    function toggleCalendarFilter(filterName, on) {
-        $.post('<?php echo $urls['saveCheckedCalendarFilter']; ?>', {
-                Filter: filterName, 
-                Checked: on
-            }).done(function() { 
-                $('#calendar').fullCalendar('refetchEvents'); 
-            });
     }
 
     // remove id's so we can create another dialog

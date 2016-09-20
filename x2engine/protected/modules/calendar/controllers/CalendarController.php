@@ -66,9 +66,6 @@ class CalendarController extends x2base {
                 'actions' => array(
                     'index',
                     'jsonFeed',
-                    'jsonFeedGroup',
-                    'jsonFeedShared',
-                    'jsonFeedGoogle',
                     'myCalendarPermissions',
                     'create',
                     'update',
@@ -85,7 +82,6 @@ class CalendarController extends x2base {
                     'uncompleteAction',
                     'deleteAction',
                     'saveCheckedCalendar',
-                    'saveCheckedCalendarFilter',
                     'toggleUserCalendarsVisible',
                     'togglePortletVisible',
                     //'uploadToGoogle'
@@ -410,57 +406,14 @@ class CalendarController extends x2base {
         $this->redirect(array('index'));
     }
 
-    /*
-      Helper function for actionJsonFeed () and actionJsonFeedGroup ().
-      Returns:
-      A string containing a SQL boolean expression
-     */
-    private function constructFilterClause(array $filter){
-        $clause = "";
-        $clause .= "((complete != \"Yes\") "; // add incomplete actions
-        if(in_array('contacts', $filter))
-            $clause .= "OR (associationType = \"contacts\") "; // add contact actions
-        if(in_array('accounts', $filter))
-            $clause .= "OR (associationType = \"accounts\") "; // add account actions
-        if(in_array('opportunities', $filter))
-            $clause .= "OR (associationType = \"opportunities\") "; // add opportunities actions
-        if(in_array('quotes', $filter))
-            $clause .= "OR (associationType = \"quotes\") "; // add quote actions
-        if(in_array('products', $filter))
-            $clause .= "OR (associationType = \"product\") "; // add product actions
-        if(in_array('media', $filter))
-            $clause .= "OR (associationType = \"media\") "; // add media actions
-        if(in_array('completed', $filter))
-            $clause .= "OR (complete = \"Yes\") "; // add completed actions
-        $clause .= ")";
-        return $clause;
-    }
-
-    /** 
-    * Retrieves a JSON of calendar events to send to the calendar view, which renders the events immediately
-    * @return - array of JSON strings
-    */
-
-    /*public function actionJsonFeedAll($start=null, $end=null){
-            echo CJSON::encode($this->feedAll($start, $end));
-    }*/
-
     /**
-     * @param string $user username to fetch events for
+     * @param string $calendarId username to fetch events for
      * @param int    $start unix time to for start of window
      * @param int    $end unix ending time
      */
-    public function actionJsonFeed($user, $start, $end){
-        echo CJSON::encode($this->feedUser($user, $start, $end));
+    public function actionJsonFeed($calendarId, $start, $end){
+        echo CJSON::encode($this->getFeed($calendarId, $start, $end));
 
-    }
-
-    public function actionJsonFeedGroup($groupId, $start, $end){
-        echo CJSON::encode($this->feedGroup($groupId, $start, $end));
-    }
-
-    public function actionJsonFeedGoogle($calendarId){
-        echo CJSON::encode($this->feedGoogle($calendarId));
     }
 
     public function formatActionToEvent($action, $id){
@@ -554,82 +507,29 @@ class CalendarController extends x2base {
 
     }
 
-    /** 
-     * Retrives all checked calendar events
-     * @param int $start starting unix time to fetch events between
-     * @param int $end ending unix time to fetch events between
-     */
-
-    public function feedAll($start=null, $end=null){
-
-        // default window is +/- one month
-        if(!isset($start))
-            $start = strtotime("-1 month");
-            $end = strtotime("+1 month");
-
-
-        $this->calendarUsers = X2CalendarPermissions::getViewableUserCalendarNames();
-        $this->groupCalendars = X2Calendar::getViewableGroupCalendarNames();
-        $this->calendarFilter = X2Calendar::getCalendarFilters();
-
-        $user = User::model()->findByPk(Yii::app()->user->getId());
-        $showCalendars = json_decode($user->showCalendars, true);
-
-        //fix showCalendars['groupCalendars']
-        if(!isset($showCalendars['groupCalendars'])){
-            $showCalendars['groupCalendars'] = array();
-            $user->showCalendars = json_encode($showCalendars);
-            $user->update();
-        }
-
-        // get a list of all calendars to show
-        $events = array();
-        foreach($showCalendars['userCalendars'] as $cal){
-            $events = array_merge($events, $this->feedUser( $cal, $start, $end)); 
-        }
-
-        foreach($showCalendars['groupCalendars'] as $cal){
-            $events = array_merge($events, $this->feedGroup( $cal, $start, $end)); 
-        }
-
-        return $events;
-    }
-
     /**
      * Fetches events assigned to a user between two timestamps
-     * @param string $user username to fetch events for 
+     * @param string $calendarId username to fetch events for 
      * @param int $start UNIX timestamp for the beginning time 
      * @param int $end UNIX timestamp for the end time
      * @return array an array of fetched events
      */
-    public function feedUser($user, $start, $end){
-        // These arent being used, but they look useful for something
-        // $loggedInUser = $this->currentUser; // User::model()->findByPk(Yii::app()->user->id); // get logged in user profile
-        // $filter = explode(',', $loggedInUser->calendarFilter); // action types user doesn't want filtered
-        // $possibleFilters = X2Calendar::getCalendarFilterNames(); // action types that can be filtered
-
-        $actions = $this->calendarActions($user,$start,$end);
+    public function getFeed($calendarId, $start, $end){
+        $calendar = X2Calendar::model()->findByPk($calendarId);
+        if($calendar->asa('syncBehavior')){
+            $calendar->sync();
+        }
+        $actions = $this->calendarActions($calendarId,$start,$end);
 
         $events = array();
         foreach($actions as $action){
-            $event = $this->formatActionToEvent($action, $user);
+            $event = $this->formatActionToEvent($action, $calendarId);
 
             if($event)
                 $events[] = $event;
         }
 
         return $events;
-    }
-
-    /**
-    * See {@link CalendarController::feedUser}
-    * @param int $groupId ID of the group assigned 
-    * @param int $start UNIX timestamp for the beginning time 
-    * @param int $end UNIX timestamp for the end time
-    * @return array An array of fetched events
-    */
-    public function feedGroup($groupId, $start, $end){
-        return $this->feedUser($groupId, $start, $end);
     }
 
     /**
@@ -787,26 +687,6 @@ class CalendarController extends x2base {
         }
     }
 
-    // when user checks/unchecks a filter, remember it in user profile
-    public function actionSaveCheckedCalendarFilter(){
-        if(isset($_POST['Filter'])){
-            $filterName = $_POST['Filter'];
-            $checked = $_POST['Checked'];
-            $user = User::model()->findByPk(Yii::app()->user->id);
-            $calendarFilter = explode(',', $user->calendarFilter);
-
-            if($checked)
-                if(!in_array($filterName, $calendarFilter))
-                    $calendarFilter[] = $filterName;
-                else
-                if(($key = array_search($filterName, $calendarFilter)) !== false)
-                    unset($calendarFilter[$key]);
-
-            $user->calendarFilter = implode(',', $calendarFilter);
-            $user->update();
-        }
-    }
-
     public function actionToggleUserCalendarsVisible(){
         echo Yii::app()->params->profile->userCalendarsVisible;
     }
@@ -848,14 +728,11 @@ class CalendarController extends x2base {
      * @return array An array of action records
      */
     public function calendarActions($calendarUser, $start, $end){
-        $filter = explode(',', $this->currentUser->calendarFilter); // action types user doesn't want filtered
         $staticAction = Actions::model();
         // View permissions for the viewing user
         $criteria = $staticAction->getAccessCriteria();
         // Assignment condition: all events for the user whose calendar is being viewed:
         $criteria->addCondition('`calendarId` = :calendarId');
-        // Action type filters:
-        $criteria->addCondition(self::constructFilterClause($filter));
         $criteria->addCondition("`type` IS NULL OR `type`='' OR `type`='event'");
         $criteria->addCondition('(`dueDate` >= :start1 AND `dueDate` <= :end1) '
                 .'OR (`completeDate` >= :start2 AND `completeDate` <= :end2)');
