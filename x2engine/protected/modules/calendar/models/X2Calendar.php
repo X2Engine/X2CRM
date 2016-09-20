@@ -108,43 +108,6 @@ class X2Calendar extends CActiveRecord
 		return $names;
 	}
 	
-	public static function getViewableUserCalendarNames() {
-		$order = 'desc';
-		$userArray = X2Model::model('User')->findAll();
-		$names = array('Anyone' => 'Anyone');
-		foreach ($userArray as $user) {
-			if(in_array(Yii::app()->user->name, explode(',', $user->calendarViewPermission)) || 
-				!$user->setCalendarPermissions || // user hasn't set up calendar permissions?
-				Yii::app()->params->isAdmin || 
-				Yii::app()->user->name == $user->username) {
-				$first = $user->firstName;
-				$last = $user->lastName;
-				$userName = $user->username;
-				$name = $first . ' ' . $last;
-				$names[$userName] = $name;
-			}
-		}
-		return $names;
-	}
-	
-	public static function getEditableUserCalendarNames() {
-		$order = 'desc';
-		$userArray = X2Model::model('User')->findAll();
-		$names = array('Anyone' => 'Anyone');
-		foreach ($userArray as $user) {
-			if(in_array(Yii::app()->user->name, explode(',', $user->calendarEditPermission)) || 
-				Yii::app()->params->isAdmin || 
-				Yii::app()->user->name == $user->username) {
-				$first = $user->firstName;
-				$last = $user->lastName;
-				$userName = $user->username;
-				$name = $first . ' ' . $last;
-				$names[$userName] = $name;
-			}
-		}
-		return $names;
-	}
-	
 	public static function getViewableGroupCalendarNames() {
 		
 		$names = array();

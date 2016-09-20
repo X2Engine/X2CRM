@@ -209,9 +209,8 @@ class SampleDataCommand extends CConsoleCommand {
             'x2_users' => array(
                 'pk' => 'id',
                 'fields' => array('id', 'firstName', 'lastName', 'officePhone',
-                    'cellPhone', 'showCalendars', 'calendarViewPermission',
-                    'calendarEditPermission', 'calendarFilter',
-                    'setCalendarPermissions', 'recentItems', 'topContacts'),
+                    'cellPhone', 'showCalendars',
+                    'recentItems', 'topContacts'),
                 'where' => '`id`=1'
             )
         );
