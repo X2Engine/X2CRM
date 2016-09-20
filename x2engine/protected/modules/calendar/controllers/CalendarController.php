@@ -293,10 +293,14 @@ class CalendarController extends x2base {
     /**
      * Delete shared Calendar
      */
-    public function actionDelete($id){
-        $model = $this->loadModel($id);
-        $model->delete();
-        $this->redirect(array('index'));
+    public function actionDelete($id) {
+        if (Yii::app()->request->isPostRequest) {
+            $model = $this->loadModel($id);
+            $model->delete();
+            $this->redirect(array('index'));
+        } else {
+            throw new CHttpException(400, 'Invalid request. Please do not repeat this request again.');
+        }
     }
 
     /**
@@ -660,6 +664,7 @@ class CalendarController extends x2base {
         $Calendar = Modules::displayName();
         $Actions = Modules::displayName(true, "Actions");
         $User = Modules::displayName(false, "Users");
+        $modelId = isset($model) ? $model->id : 0;
 
         /**
          * To show all options:
@@ -675,19 +680,29 @@ class CalendarController extends x2base {
                 'url'=>array('index')
             ),
             array(
-                'name'=>'myPermissions',
-                'label'=>Yii::t('calendar', 'My {calendar} Permissions', array(
+                'name'=>'create',
+                'label'=>Yii::t('calendar', 'Create {calendar}', array(
                     '{calendar}'=>$Calendar,
                 )),
-                'url'=>array('myCalendarPermissions')
+                'url'=>array('create')
             ),
             array(
-                'name'=>'userPermissions',
-                'label'=>Yii::t('calendar', '{user} {calendar} Permissions', array(
+                'name'=>'update',
+                'label'=>Yii::t('calendar', 'Update {calendar}', array(
                     '{calendar}'=>$Calendar,
-                    '{user}'=>$User,
                 )),
-                'url'=>array('userCalendarPermissions'),
+                'url'=>array('update', 'id'=>$modelId),
+            ),
+            array(
+                'name'=>'delete',
+                'label'=>Yii::t('calendar', 'Delete {calendar}', array(
+                    '{calendar}'=>$Calendar,
+                )),
+                'url'=>'#',
+                'linkOptions'=>array(
+                    'submit'=>array('delete','id'=>$modelId),
+                    'confirm'=>'Are you sure you want to delete this item?'
+                )
             ),
         );
 

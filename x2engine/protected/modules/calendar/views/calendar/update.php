@@ -39,29 +39,10 @@
 <?php
 
 $modTitle = Modules::displayName();
-$menuItems = array(
-    array('label'=>Yii::t('calendar','{module}', array('{module}'=>$modTitle)), 'url'=>array('index')),
-    array(
-        'label'=>Yii::t('calendar', 'My {module} Permissions', array(
-            '{module}' => $modTitle,
-        )),
-        'url'=>array('myCalendarPermissions')
-    ),
-    array('label'=>Yii::t('calendar', 'List'),'url'=>array('list')),
-    array('label'=>Yii::t('calendar','Create'), 'url'=>array('create')),
-    array('label'=>Yii::t('calendar','View'), 'url'=>array('view', 'id'=>$model->id)),
-    array('label'=>Yii::t('calendar','Update')),
-    array(
-        'label'=>Yii::t('calendar','Delete'),
-        'url'=>'#',
-        'linkOptions'=>array(
-            'submit'=>array('delete','id'=>$model->id),
-            'confirm'=>'Are you sure you want to delete this item?'
-        ),
-    ),
+$menuOptions = array(
+    'index', 'create', 'update', 'delete'
 );
-
-$this->actionMenu=$this->formatMenu($menuItems);
+$this->insertMenu($menuOptions);
 ?>
 <div class="calendar page-title">
 <h2>

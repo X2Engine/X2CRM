@@ -37,19 +37,10 @@
 
 $modTitle = Modules::displayName();
 
-$menuItems = array(
-    array('label'=>Yii::t('calendar','{module}', array('{module}'=>$modTitle)), 'url'=>array('index')),
-    array(
-        'label'=>Yii::t('calendar', 'My {module} Permissions',  array(
-            '{module}' => $modTitle,
-        )),
-        'url'=>array('myCalendarPermissions')
-    ),
-    array('label'=>Yii::t('calendar','List'),'url'=>array('list')),
-    array('label'=>Yii::t('calendar','Create')),
+$menuOptions = array(
+    'index', 'create'
 );
-
-$this->actionMenu = $this->formatMenu($menuItems);
+$this->insertMenu($menuOptions);
 ?>
 <div class="calendar page-title">
 <h2>

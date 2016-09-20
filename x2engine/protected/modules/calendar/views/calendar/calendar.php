@@ -96,10 +96,8 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->getBaseUrl ().'/js/X2Di
 //Yii::app()->clientScript->registerScriptFile(Yii::app()->getBaseUrl().'/protected/extensions/CJuiDateTimePicker/assets/jquery-ui-timepicker-addon.js');
 
 $menuOptions = array(
-    'index', 'myPermissions',
+    'index', 'create'
 );
-if (Yii::app()->params->isAdmin)
-    $menuOptions[] = 'userPermissions';
 $this->insertMenu($menuOptions);
 
 $this->calendarUsers = X2CalendarPermissions::getViewableUserCalendarNames();
