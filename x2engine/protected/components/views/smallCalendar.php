@@ -52,7 +52,6 @@ function giveSaveButtonFocus() {
 
 $(function(){
 
-    var justMe;
     var urls;
     var myurl; 
     var indicator;
@@ -62,7 +61,6 @@ $(function(){
     function initialize(){
         x2.calendarManager.calendar = '#small-calendar';
         x2.calendarManager.widgetSettingUrl = '$widgetSettingUrl';
-        justMe = $justMe;
 
 
         // Initialize the calendar, ensure that only one is present
@@ -210,7 +208,7 @@ $(function(){
                 center: '',
                 right: 'month agendaDay prev,next'
             },
-            eventSources: justMe ? [myurl] : urls,
+            eventSources: urls,
             eventRender: function(event, element, view) {
                 indicator.addEvent(event, view);
             },
@@ -375,29 +373,6 @@ $(function(){
     // Make header a link to the full calendar 
     // $('#small-calendar .fc-header-title h2').wrap('<a href=\"$urls[index]\"></a>').
     // attr('title', 'Go to full calendar');
-     
-
-    function justMeButton(){
-
-        var meButton = $('#small-calendar-container #me-button');
-        meButton.click(function(evt){
-            if( !meButton.hasClass('pressed') ){
-                $('#small-calendar').fullCalendar('removeEventSources');
-                $('#small-calendar').fullCalendar('addEventSource', myurl);
-                meButton.addClass('pressed');
-                x2.calendarManager.updateWidgetSetting('justMe', true);
-            } else {
-                $('#small-calendar').fullCalendar('removeEventSources');
-                for(var i in urls){
-                    $('#small-calendar').fullCalendar('addEventSource', urls[i]);
-                }
-                meButton.removeClass('pressed');            
-                x2.calendarManager.updateWidgetSetting('justMe', false);
-            }
-            
-        });
-        
-    }
 
     function applyHeader(){
         var headerRight = $('#small-calendar .fc-header-right').hide();
@@ -484,9 +459,6 @@ $(function(){
 //                    'type' =>'button',
 //                ))
             ?>                
-
-            <span title='<?php echo Yii::t('calendar','Show just my events') ?>'
-            style='display:none;' class="x2-button fc-button <?php if($justMe == 'true'){ echo 'pressed'; } ?>" id="me-button" type='button'><?php echo Yii::t('calendar','Just Me') ?></span>
     </div>
 
 </div>
