@@ -68,7 +68,7 @@ EventPublisherController.prototype.setUpForm = function () {
 EventPublisherController.prototype.init = function () {
     x2.Controller.prototype.init.call (this);
     var that = this;
-    this.documentEvents.push (x2.main.onPageShow (function () {
+    that.documentEvents.push (x2.main.onPageShow (function () {
         that.setUpForm ();
     }, 'EventPublisherController'));
 };

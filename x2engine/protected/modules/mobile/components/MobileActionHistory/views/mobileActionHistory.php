@@ -106,6 +106,7 @@ if (!$this->refresh && $hasCreateAccess) {
                 'type' => $type
             ))
         ));
+        echo $form->mobileCoordinates();
         if ($type === 'attachments') {
             echo $form->fileField($action, 'upload');
         } else {

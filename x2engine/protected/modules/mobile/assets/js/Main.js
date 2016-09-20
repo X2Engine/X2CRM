@@ -53,6 +53,7 @@ function Main (argsDict) {
     auxlib.applyArgs (this, defaultArgs, argsDict);
     this.prevPage$ = null;
     this.activePage$ = null;
+    this.timerLocation = 5;
     this.showLeftMenuButton$ = $('#header .show-left-menu-button');
     this.isPhoneGap = typeof cordova !== 'undefined';
     this.init ();
@@ -125,7 +126,6 @@ Main.prototype.configurePageShow = function () {
     this.onPageShow (function(){       
         that.prevPage$ = that.activePage$;
         that.activePage$ = $.mobile.activePage ? $('#' + $.mobile.activePage.attr ('id')) : null;
-
         that.updateHeader ();
         that.updatePanel ();
     });
@@ -197,6 +197,41 @@ Main.prototype.refreshPage = function (data) {
         'change', url);
 };
 
+Main.prototype.setUpLocation = function () {
+    var that = this;
+    var form$ = $('#geoCoordsForm');   
+    $('<input />').attr('type', 'hidden')
+          .attr('name', "YII_CSRF_TOKEN")
+          .attr('value', x2.csrfToken)
+          .appendTo('#geoCoordsForm');
+    if (form$ !== null){
+        setInterval(function() {
+            //your jQuery ajax code
+            x2.mobileForm.submitWithFiles (
+                form$, 
+                function (data) {
+                    if (x2.main.isPhoneGap && x2touch && x2touch.API && x2touch.API.getPlatform) {
+                      x2touch.API.getCurrentPosition(function(position) {
+                          var pos = {
+                             lat: position.coords.latitude,
+                             lon: position.coords.longitude
+                           };
+
+                           $.mobile.activePage.find ('#geoCoords').val(JSON.stringify (pos));
+                      }, function (error) {
+                          alert('code: '    + error.code    + '\n' +
+                                'message: ' + error.message + '\n');
+                      }, {});         
+                    }
+                }, function (jqXHR, textStatus, errorThrown) {
+                    $.mobile.loading ('hide');
+                    x2.main.alert (textStatus, 'Error');
+                }
+            );
+        }, 1000 * 60 * this.timerLocation); // where 5 is your every 5 minutes
+    }    
+};
+
 /**
  * Meant to be called after a page is fetched via ajax. Updates parts of the page with updated
  * version contained in server response.
@@ -207,7 +242,6 @@ Main.prototype.refreshContent = function () {
     if (!activePage$) return null;
     //console.log ('refreshContent');
     var newContent$ = $('.refresh-content');
-
     newContent$.each (function () {
         // data attribute contains selector of elements to update
         var updateSelector = $(this).attr ('data-refresh-selector'); 
@@ -555,6 +589,7 @@ Main.prototype.init = function () {
         this.setUpBackButton (); 
     }
     this.fixedCornerButtonFixes (); 
+    this.setUpLocation ();
 };
 
 return Main;
