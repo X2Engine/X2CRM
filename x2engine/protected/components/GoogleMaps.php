@@ -215,11 +215,13 @@ class GoogleMaps extends X2Widget {
                 'class' => 'x2-multiselect-dropdown'
             )
         );
-        echo CHtml::link (
-            Yii::t('contacts', 'View on Large Map'),
-            array('contacts/googleMaps','contactId'=>$_GET['id'],'noHeatMap'=>1),
-            array('class' => 'x2-button x2-small-button right')
-        );
+        if (Yii::app()->controller instanceof ContactsController) {
+            echo CHtml::link (
+                Yii::t('contacts', 'View on Large Map'),
+                array('contacts/googleMaps','contactId'=>$_GET['id'],'noHeatMap'=>1),
+                array('class' => 'x2-button x2-small-button right')
+            );
+        }
         ?></div><?php
         echo '<div id="googleMapsCanvas" style="width:100%;height:250px"></div>';
     }
