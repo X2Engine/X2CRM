@@ -586,36 +586,6 @@ class ActionsController extends x2base {
     }
 
     public function update($model, $oldAttributes, $api){
-
-        // now in Actions::beforeSave()
-        /* $model->dueDate = Formatter::parseDateTime($model->dueDate);
-
-          if($model->completeDate)
-          $model->completeDate = Formatter::parseDateTime($model->completeDate);
-
-          $association = $this->getAssociation($model->associationType,$model->associationId);
-
-          if($association != null) {
-          $model->associationName = $association->name;
-          } else {
-          $model->associationName = 'None';
-          $model->associationId = 0;
-          } */
-
-        // now in Actions::synchGoogleCalendar()
-        /* if( !is_numeric($model->assignedTo)) { // assigned to user
-          $profile = Profile::model()->findByAttributes(array('username'=>$model->assignedTo));
-          if(isset($profile)) // prevent error for actions assigned to 'Anyone'
-          $profile->updateGoogleCalendarEvent($model); // update action in Google Calendar if user has a Google Calendar
-          } else { // Assigned to group
-          $groups = Yii::app()->db->createCommand()->select('userId')->from('x2_group_to_user')->where("groupId={$model->assignedTo}")->queryAll();
-          foreach($groups as $group) {
-          $profile = Profile::model()->findByPk($group['userId']);
-          if(isset($profile)) // prevent error for actions assigned to 'Anyone'
-          $profile->updateGoogleCalendarEvent($model);
-          }
-          } */
-
         if($api == 0)
             parent::update($model, $oldAttributes, $api);
         else

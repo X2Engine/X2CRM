@@ -249,21 +249,14 @@ class X2Calendar extends CActiveRecord
             'jsonFeed' => Yii::app()->createUrl('/calendar/jsonFeed'), // feed to get actions from users
             'jsonFeedGroup' => Yii::app()->createUrl('/calendar/jsonFeedGroup'), // feed to get actions from group Calendar
             'jsonFeedShared' => Yii::app()->createUrl('/calendar/jsonFeedShared'), // feed to get actions from shared calendars
-            'jsonFeedGoogle' => Yii::app()->createUrl('/calendar/jsonFeedGoogle'), // feed to get events from a google calendar
             //'jsonFeedAll' => Yii::app()->createUrl('/calendar/jsonFeedAll'),
             'currentUserFeed' => Yii::app()->createUrl('/calendar/jsonFeed', array('user' => Yii::app()->user->name)), // add current user actions to calendar
             'anyoneUserFeed' => Yii::app()->createUrl('/calendar/jsonFeed', array('user' => 'Anyone')), // add Anyone actions to calendar
             'moveAction' => Yii::app()->createUrl('/calendar/moveAction'),
-            'moveGoogleEvent' => Yii::app()->createUrl('/calendar/moveGoogleEvent'),
             'resizeAction' => Yii::app()->createUrl('/calendar/resizeAction'),
-            'resizeGoogleEvent' => Yii::app()->createUrl('/calendar/resizeGoogleEvent'),
             'viewAction' => Yii::app()->createUrl('/calendar/viewAction'),
             'saveAction' => Yii::app()->createUrl('/actions/actions/quickUpdate'),
             'editAction' => Yii::app()->createUrl('/calendar/editAction'),
-            'viewGoogleEvent' => Yii::app()->createUrl('/calendar/viewGoogleEvent'),
-            'editGoogleEvent' => Yii::app()->createUrl('/calendar/editGoogleEvent'),
-            'saveGoogleEvent' => Yii::app()->createUrl('/calendar/saveGoogleEvent'),
-            'deleteGoogleEvent' => Yii::app()->createUrl('/calendar/deleteGoogleEvent'),
             'completeAction' => Yii::app()->createUrl('/calendar/completeAction'),
             'uncompleteAction' => Yii::app()->createUrl('/calendar/uncompleteAction'),
             'deleteAction' => Yii::app()->createUrl('/calendar/deleteAction'),
