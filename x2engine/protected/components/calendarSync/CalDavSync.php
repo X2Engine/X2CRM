@@ -126,10 +126,16 @@ abstract class CalDavSync extends CalendarSync {
         }else{
             $deletedActionCmd->where('a.calendarId = :calId', $bindParams);
         }
-        $deletedActions = $deletedActionCmd->queryAll();
-        foreach ($deletedActions as $actionId) {
-            $action = X2Model::model('Actions')->findByPk($actionId);
-            $action->delete();
+        $deletedActions = $deletedActionCmd->queryColumn();
+        if(!empty($deletedActions)){
+            $actionIdParams = AuxLib::bindArray($deletedActions);
+            $reminderIds = Yii::app()->db->createCommand()
+                    ->select('id')
+                    ->from('x2_events')
+                    ->where('associationType = "Actions" AND associationId IN '. AuxLib::arrToStrList($actionIdParams). ' AND type = "action_reminder"')
+                    ->queryColumn();
+            X2Model::model('Events')->deleteByPk($reminderIds);
+            X2Model::model('Actions')->deleteByPk($deletedActions);
         }
     }
 

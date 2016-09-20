@@ -788,7 +788,6 @@ class Actions extends X2Model {
      */
     public function afterDelete(){
         X2Model::model('Events')->deleteAllByAttributes(array('associationType' => 'Actions', 'associationId' => $this->id, 'type' => 'action_reminder'));
-        X2Model::model('ActionText')->deleteByPk($this->id);
          
         if ($this->quoteId && $this->type === 'products') 
             Quote::model()->deleteByPk ($this->quoteId);

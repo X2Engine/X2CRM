@@ -231,17 +231,27 @@ class CalendarController extends x2base {
      * update calendar with id $id
      */
     public function actionUpdate($id){
+        $syncFlag = false;
         $model = $this->loadModel($id);
 
         $calendar = filter_input(INPUT_POST, 'X2Calendar', FILTER_DEFAULT, FILTER_REQUIRE_ARRAY);
         if(is_array($calendar)){
+            $oldAttributes = $model->attributes;
             $model->attributes = $calendar;
-            if($model->googleCalendar && isset($_SESSION['token'])){
-                $token = json_decode($_SESSION['token'], true);
-                if(!isset($model->googleRefreshToken) && isset($token['refresh_token'])){
-                    $model->googleRefreshToken = $token['refresh_token']; // used for accessing this google calendar at a later time
+            if($model->remoteSync){
+                if(!$model->asa('syncBehavior')){
+                    $model->attachSyncBehavior();
                 }
-                $model->googleAccessToken = $_SESSION['token'];
+                if(isset($_SESSION['token'])){
+                    $credentials = $_SESSION['token'];
+                    $model->credentials = $credentials;
+                }
+                if($oldAttributes['remoteCalendarId'] !== $model->remoteCalendarId){
+                    $model->remoteCalendarUrl = str_replace('{calendarId}', $model->remoteCalendarId, $model->syncBehavior->calendarUrl);
+                    $model->ctag = null;
+                    $model->syncToken = null;
+                    $syncFlag = true;
+                }
             }
 
             $model->updatedBy = Yii::app()->user->name;
@@ -253,6 +263,9 @@ class CalendarController extends x2base {
                 $editPermissions = filter_input(INPUT_POST, 'edit-permission',
                         FILTER_DEFAULT, FILTER_REQUIRE_ARRAY);
                 $model->setCalendarPermissions($viewPermissions, $editPermissions);
+                if($syncFlag){
+                    $model->sync();
+                }
                 $this->redirect(array('index'));
             }
         }
