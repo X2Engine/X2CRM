@@ -41,8 +41,11 @@ class MobilePublisherAction extends MobileAction {
     public function run () {
         $model = new EventPublisherFormModel;
         $profile = Yii::app()->params->profile;
-
+        $coords = null;
         if (isset ($_POST['EventPublisherFormModel'])) {
+            if (isset($_POST['geoCoords'])){
+                Yii::app()->params->profile->user->logLocation('mobileActivityPost', 'POST');
+            }
             $model->setAttributes ($_POST['EventPublisherFormModel']);
             if (isset ($_FILES['EventPublisherFormModel'])) {
                 $model->photo = CUploadedFile::getInstance ($model, 'photo');

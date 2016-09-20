@@ -85,6 +85,7 @@ $this->onPageLoad ("
                 }',
             )
         ));
+        echo $form->mobileCoordinates ();
         ?>
             <div class='photo-attachments-container'>
             </div>
