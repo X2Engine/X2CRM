@@ -59,8 +59,9 @@ class SmallCalendar extends X2Widget {
 
         // Fetch the calendars to display
         $user = User::model()->findByPk(Yii::app()->user->getId());
-        if (is_null($user->showCalendars))
+        if (is_null($user->showCalendars)){
             $user->initCheckedCalendars();
+        }
         $showCalendars = $user->showCalendars;
 
         // Possible urls for the calendar to call

@@ -73,20 +73,15 @@ $(function(){
         // By fetching the checked user calendars
         var calendars = $showCalendars;
         urls = [];
-        myurl = '$urls[jsonFeed]?user=$user';
+        myurl = '$urls[jsonFeed]?calendarId=$user';
 
         for (var i in calendars.userCalendars){
-            urls.push('$urls[jsonFeed]?user='+calendars.userCalendars[i]);
-        }
-
-        for (var i in calendars.groupCalendars){
-            urls.push('$urls[jsonFeedGroup]?groupId='+calendars.groupCalendars[i]);
+            urls.push('$urls[jsonFeed]?calendarId='+calendars.userCalendars[i]);
         }
 
         indicatorClass();
         initCalendar();
         applyHeader();
-        justMeButton();
         miscModifications();
         $('#small-calendar .fc-button').click(responsiveBehavior);
         responsiveBehavior();

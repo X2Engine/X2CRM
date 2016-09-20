@@ -117,8 +117,6 @@ if(!isset($showCalendars['groupCalendars'])){
 }
 
 $userCalendars = $showCalendars['userCalendars'];
-$groupCalendars = $showCalendars['groupCalendars'];
-$sharedCalendars = $showCalendars['sharedCalendars'];
 
 $checkedUserCalendars = '';
 foreach($userCalendars as $user){
@@ -127,16 +125,6 @@ foreach($userCalendars as $user){
         $checkedUserCalendars .= '
         $("#calendar").fullCalendar("addEventSource",{
             url: "'.$userCalendarFeed.'"
-        });';
-    }
-}
-
-$checkedGroupCalendars = '';
-foreach($groupCalendars as $groupId){
-    if(isset($this->groupCalendars[$groupId])){
-        $checkedGroupCalendars .= '
-        $("#calendar").fullCalendar("addEventSource",{
-            url:"'.$urls['jsonFeedGroup'].'?groupId='.$groupId.'"
         });';
     }
 }
@@ -565,17 +553,15 @@ $(function() {
         $('#calendar').fullCalendar('removeEventSources');
 
         <?php echo $checkedUserCalendars; ?>
-        <?php echo $checkedGroupCalendars; ?>
 
     });*/
 
-<?php echo $checkedGroupCalendars; ?>
 <?php echo $checkedUserCalendars; ?>
 
     });
 
      /* Begin: calendar export code (generates URL for third-party ical format reader) */
-    x2CalendarExporter = {'users':<?php echo json_encode(array_merge($userCalendars,$groupCalendars)); ?>};
+    x2CalendarExporter = {'users':<?php echo json_encode($userCalendars); ?>};
     // Adds or removes a user from the calendar export URL
     x2CalendarExporter.toggleUser = function(user,add) {
         // New list of user/group calendars

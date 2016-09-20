@@ -722,10 +722,7 @@ class User extends CActiveRecord {
         // calendar list not initialized?
         if (is_null($this->showCalendars)) {
             $showCalendars = array(
-                'userCalendars' => array('Anyone', $this->username),
-                'groupCalendars' => array(),
-                'sharedCalendars' => array(),
-                'googleCalendars' => array()
+                'userCalendars' => array(),
             );
             $this->showCalendars = CJSON::encode($showCalendars);
 

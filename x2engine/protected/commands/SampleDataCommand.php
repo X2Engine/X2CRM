@@ -159,6 +159,7 @@ class SampleDataCommand extends CConsoleCommand {
             'x2_auth_item_child',
             'x2_doc_folders',
             'x2_modules',
+	    'x2_mobile_layouts',
             'x2_sessions',
             'x2_temp_files',
             'x2_timezone_points',
