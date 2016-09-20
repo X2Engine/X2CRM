@@ -830,7 +830,10 @@ class Actions extends X2Model {
     public function setRemoteCalendarUrl ($value) {
         $this->metaDataTemp['remoteCalendarUrl'] = $value;
     }
-     
+    
+    public function setRemoteSource ($value) {
+        $this->metaDataTemp['remoteSource'] = $value;
+    }
 
     public function setActionDescription($value){
         // Magic setter stores value in actionDescriptionTemp until saved
@@ -867,6 +870,9 @@ class Actions extends X2Model {
     }
     public function getRemoteCalendarUrl () {
         return $this->metaDataTemp['remoteCalendarUrl'];
+    }
+    public function getRemoteSource () {
+        return $this->metaDataTemp['remoteSource'];
     }
      
 

@@ -65,6 +65,9 @@ abstract class CalDavSync extends CalendarSync {
     }
 
     public function sync() {
+        if(is_null($this->owner->ctag)){
+            $this->outboundSync();
+        }
         $calData = $this->getSyncInfo();
         if ($calData['ctag'] != $this->owner->ctag) {
             if (isset($this->owner->syncToken)) {
@@ -76,6 +79,19 @@ abstract class CalDavSync extends CalendarSync {
             $this->owner->syncToken = $calData['syncToken'];
             $this->owner->ctag = $calData['ctag'];
             $this->owner->save();
+        }
+    }
+    
+    public function deleteRemoteActions(){
+        $actionIds = Yii::app()->db->createCommand()
+                ->select('a.id')
+                ->from('x2_actions a')
+                ->leftJoin('x2_action_meta_data b', 'a.id = b.actionId')
+                ->where('(b.remoteSource = 0 OR b.remoteSource IS NULL) AND a.calendarId = :calendarId', array(':calendarId'=>$this->owner->id))
+                ->queryColumn();
+        $actions = X2Model::model('Actions')->findAllByPk($actionIds);
+        foreach($actions as $action){
+            $this->deleteAction($action);
         }
     }
 
@@ -150,6 +166,22 @@ abstract class CalDavSync extends CalendarSync {
             'syncToken' => $calendarInfo[self::$xmlProperties['syncToken']]
         );
     }
+    
+    protected function outboundSync(){
+        $actionIds = Yii::app()->db->createCommand()
+                ->select('a.id')
+                ->from('x2_actions a')
+                ->leftJoin('x2_action_meta_data b', 'a.id = b.actionId')
+                ->where('(b.remoteSource = 0 OR b.remoteSource IS NULL) AND a.calendarId = :calendarId', array(':calendarId'=>$this->owner->id))
+                ->queryColumn();
+        $actions = X2Model::model('Actions')->findAllByPk($actionIds);
+        foreach($actions as $action){
+            if(!is_null($action->remoteCalendarUrl)){
+                $action->remoteCalendarUrl = null;
+            }
+            $this->syncActionToCalendar($action);
+        }
+    }
 
     protected function createUpdateActions($calendarData, $return = false) {
         if ($return) {
@@ -212,6 +244,7 @@ abstract class CalDavSync extends CalendarSync {
         $action->associationType = 'calendar';
         $action->associationName = 'Calendar';
         $action->type = 'event';
+        $action->remoteSource = 1;
         if ($calObject->vevent->dtstart->getDateType() === 4) {
             $action->dueDate = strtotime($calObject->vevent->dtstart->value);
             // Subtract 1s to fix all day display issue in Calendar
@@ -286,6 +319,9 @@ abstract class CalDavSync extends CalendarSync {
         $startDateTime = new \DateTime('@' . $action->dueDate);
         $startTime->setDateTime($startDateTime);
         $endTime = new Sabre\VObject\Property\DateTime('DTEND');
+        if(empty($action->completeDate)){
+            $action->completeDate = $action->dueDate;
+        }
         $endDateTime = new \DateTime('@' . $action->completeDate);
         $endTime->setDateTime($endDateTime);
         $vevent->dtstart = $startTime;

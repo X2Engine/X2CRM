@@ -27,7 +27,11 @@ abstract class CalendarSync extends CBehavior {
 
     public abstract function syncActionToCalendar($action);
     
+    public abstract function deleteRemoteActions();
+    
     public abstract function deleteAction($action);
+    
+    protected abstract function outboundSync();
 
     protected abstract function createAction($calObject, $params = array());
 

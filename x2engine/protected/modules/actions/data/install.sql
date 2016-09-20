@@ -50,6 +50,7 @@ CREATE TABLE x2_action_meta_data (
     eventStatus               VARCHAR(100),
     etag                      VARCHAR(255),
     remoteCalendarUrl         VARCHAR(255),
+    remoteSource              INT DEFAULT 0,
     INDEX (actionId),
     FOREIGN KEY (actionId) REFERENCES x2_actions(id) ON UPDATE CASCADE ON DELETE CASCADE
 ) COLLATE = utf8_general_ci, ENGINE = INNODB;

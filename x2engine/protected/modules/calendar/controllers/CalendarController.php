@@ -231,7 +231,6 @@ class CalendarController extends x2base {
      * update calendar with id $id
      */
     public function actionUpdate($id){
-        $syncFlag = false;
         $model = $this->loadModel($id);
 
         $calendar = filter_input(INPUT_POST, 'X2Calendar', FILTER_DEFAULT, FILTER_REQUIRE_ARRAY);
@@ -247,10 +246,10 @@ class CalendarController extends x2base {
                     $model->credentials = $credentials;
                 }
                 if($oldAttributes['remoteCalendarId'] !== $model->remoteCalendarId){
+                    $model->deleteRemoteActions();
                     $model->remoteCalendarUrl = str_replace('{calendarId}', $model->remoteCalendarId, $model->syncBehavior->calendarUrl);
                     $model->ctag = null;
                     $model->syncToken = null;
-                    $syncFlag = true;
                 }
             }
 
@@ -263,9 +262,6 @@ class CalendarController extends x2base {
                 $editPermissions = filter_input(INPUT_POST, 'edit-permission',
                         FILTER_DEFAULT, FILTER_REQUIRE_ARRAY);
                 $model->setCalendarPermissions($viewPermissions, $editPermissions);
-                if($syncFlag){
-                    $model->sync();
-                }
                 $this->redirect(array('index'));
             }
         }

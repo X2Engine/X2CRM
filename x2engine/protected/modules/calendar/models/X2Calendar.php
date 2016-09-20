@@ -301,6 +301,13 @@ class X2Calendar extends CActiveRecord
 	    	return $array;
 
     }
+    
+    protected function beforeDelete() {
+        if($this->asa('syncBehavior')){
+            $this->deleteRemoteActions();
+        }
+        return parent::beforeDelete();
+    }
 	
         public function setCalendarPermissions($view, $edit){
             $permissions = array();
