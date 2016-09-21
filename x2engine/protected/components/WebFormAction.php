@@ -195,13 +195,7 @@ class WebFormAction extends CAction {
                 //TODO: upload profile picture url from webleadfb
                 
                 if($success){
-                    $coords = false;
-                    if (isset($_POST['geoCoords']) && $model instanceof Contacts)
-                        $coords = json_decode($_POST['geoCoords'], true);
-                    if (!$coords)
-                        $coords = Locations::resolveIpLocation($this->controller->getRealIP());
-                    if ($coords && array_key_exists('lat', $coords) && array_key_exists('lon', $coords))
-                        $location = $model->updateLocation($coords['lat'], $coords['lon'], 'weblead');
+                    $location = $model->logLocation('weblead', 'POST');
 
                     if ($extractedParams['generateLead'])
                         call_user_func(array($this->controller, 'generateLead'),$model, $extractedParams['leadSource']);

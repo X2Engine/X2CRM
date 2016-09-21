@@ -217,9 +217,12 @@ class GoogleMaps extends X2Widget {
         );
         if (Yii::app()->controller instanceof ContactsController) {
             echo CHtml::link (
-                Yii::t('contacts', 'View on Large Map'),
+                Yii::t('contacts', 'Large Map'),
                 array('contacts/googleMaps','contactId'=>$_GET['id'],'noHeatMap'=>1),
-                array('class' => 'x2-button x2-small-button right')
+                array(
+                    'class' => 'x2-button right',
+                    'onclick' => '$(this).attr("href", $(this).attr("href")+"&"+jQuery.param({"locationType": $("#locationType").val()}))',
+                )
             );
         }
         ?></div><?php

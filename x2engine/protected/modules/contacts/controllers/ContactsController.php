@@ -399,6 +399,10 @@ class ContactsController extends x2base {
         if(isset($_POST['params'])){
             $params = $_POST['params'];
         }
+        $noHeatMap = isset($_GET['noHeatMap']) && $_GET['noHeatMap'] ? true : false;
+        // Check for a location type from a link
+        if (!isset($params['locationType']) && isset($_GET['locationType']))
+            $params['locationType'] = $_GET['locationType'];
         if(!empty($loadMap)){ // If we have a map ID, duplicate whatever information was saved there
             $map = Maps::model()->findByPk($loadMap);
             if(isset($map)){
@@ -462,6 +466,11 @@ class ContactsController extends x2base {
             $conditions .= ')';
         }
 
+        if ($noHeatMap && isset($contactId)) {
+            $conditions .= ' AND x2_locations.recordId = :recordId';
+            $parameters[':recordId'] = $contactId;
+        }
+
         /*
          * These two CDbCommands generate the query to grab all the location lat
          * and lon data to be used on the map. If tags are being filtered on,
@@ -472,8 +481,8 @@ class ContactsController extends x2base {
             $locations = Yii::app()->db->createCommand()
                     ->select('x2_locations.*')
                     ->from('x2_locations')
-                    ->join('x2_contacts', 'x2_contacts.id=x2_locations.contactId')
-                    ->join('x2_tags', 'x2_tags.itemId=x2_locations.contactId')
+                    ->join('x2_contacts', 'x2_contacts.id=x2_locations.recordId')
+                    ->join('x2_tags', 'x2_tags.itemId=x2_locations.recordId')
                     ->where($conditions, $parameters)
                     ->group('x2_tags.itemId')
                     ->having('COUNT(x2_tags.itemId)>='.$tagCount)
@@ -482,7 +491,7 @@ class ContactsController extends x2base {
             $locations = Yii::app()->db->createCommand()
                     ->select('x2_locations.*')
                     ->from('x2_locations')
-                    ->join('x2_contacts', 'x2_contacts.id=x2_locations.contactId')
+                    ->join('x2_contacts', 'x2_contacts.id=x2_locations.recordId')
                     ->where($conditions, $parameters)
                     ->queryAll();
         }
@@ -502,8 +511,8 @@ class ContactsController extends x2base {
          */
         if(isset($contactId)){
             $location = X2Model::model('Locations')->findByAttributes(array(
-                'contactId' => $contactId,
-                'type' => null,
+                'recordId' => $contactId,
+                'type' => (isset($params['locationType']) ? $params['locationType'] : null),
             ));
             if(isset($location)){
                 $loc = array("lat" => $location->lat, "lng" => $location->lon);
@@ -530,6 +539,13 @@ class ContactsController extends x2base {
             $loc['lng'] = $map->centerLng;
             $zoom = $map->zoom;
         }
+        if (isset($contactId)) {
+            $contactName = Yii::app()->db->createCommand()
+                ->select('name')
+                ->from('x2_contacts')
+                ->where('id = :id', array(':id' => $contactId))
+                ->queryScalar();
+        }
         /*
          * This view file is actually really complicated as it uses a lot of
          * Google's JS files to render the map.
@@ -540,6 +556,7 @@ class ContactsController extends x2base {
             'markerLoc' => isset($markerLoc) ? json_encode($markerLoc) : json_encode($loc),
             'markerFlag' => $markerFlag,
             'contactId' => isset($contactId) ? $contactId : 0,
+            'contactName' => isset($contactName) ? $contactName : '',
             'assignment' => 
                 isset($_POST['params']['assignedTo']) || isset($params['assignedTo']) ?
                     (isset($_POST['params']['assignedTo']) ? 
@@ -552,7 +569,7 @@ class ContactsController extends x2base {
                 Tags::parseTags($_POST['params']['tags']) : array()),
             'zoom' => isset($zoom) ? $zoom : null,
             'mapFlag' => isset($map) ? 'true' : 'false',
-            'noHeatMap' => isset($_GET['noHeatMap']) && $_GET['noHeatMap'] ? true : false,
+            'noHeatMap' => $noHeatMap,
             'locationType' => isset($params['locationType']) ? $params['locationType'] : array('address'),
         ));
     }

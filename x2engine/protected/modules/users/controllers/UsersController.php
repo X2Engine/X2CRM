@@ -96,8 +96,8 @@ class UsersController extends x2base {
         }
         $dataProvider=new CActiveDataProvider('Actions', array(
             'criteria'=>array(
-                'order'=>'complete DESC',
-                'condition'=>'assignedTo=\''.$user->username.'\'',
+                'order'=>'createDate DESC',
+                'condition'=>'assignedTo=\''.$user->username.'\' OR completedBy = \''.$user->username.'\'',
         )));
         $actionHistory=$dataProvider->getData();
         $this->render('view',array(

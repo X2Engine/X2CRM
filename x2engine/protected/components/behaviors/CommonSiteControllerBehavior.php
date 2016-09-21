@@ -264,6 +264,7 @@ class CommonSiteControllerBehavior extends CBehavior {
             //refresh the number of tokens a user owns
             SessionToken::cleanUpUserTokens (Yii::app()->user->name);
             $this->recordSuccessfulLogin ($activeUser, $ip);
+            $userModel->logLocation('login', 'POST');
 
             // We're not using the isAdmin parameter of the application
             // here because isAdmin in this context hasn't been set yet.

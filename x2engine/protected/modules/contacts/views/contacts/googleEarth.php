@@ -159,12 +159,14 @@ function refreshQtip() {
                                 map: map
                             });
                         }
+                        if (!markerFlag)
+                            marker.setVisible(false);
                         if(typeof infowindow==='undefined'){
                             var infowindow = new google.maps.InfoWindow({
                                 content: data
                             });
-                            infowindow.open(map, marker);
-
+                            if (markerFlag)
+                                infowindow.open(map, marker);
                         }
                         google.maps.event.addListener(infowindow,'domready',function(){
                             $('#corporate-directions').click(function(e){
@@ -311,11 +313,17 @@ $('#save-button').click(function(e){
     ?>
     <div class="row">
         <h2 style='margin-top: 5px'><?php echo Yii::t('contacts','Filters');?></h2>
-        <div class="cell">
-            <?php if(!empty($contactId)) { ?>
-                <a href="#" id="hide-marker-link" style="text-decoration:none;"><?php echo Yii::t('contacts','Clear Marker');?></a>
+        <?php if(!empty($contactId)) { ?>
+            <?php if(!empty($contactName)) { ?>
+                <div class="row">
+                    <?php echo CHtml::link(Yii::t('contacts', 'View ').$contactName,
+                    array('contacts/view', 'id' => $contactId), array('style' => 'text-decoration:none;')); ?>
+                </div>
             <?php } ?>
-        </div>
+            <div class="row">
+                <a href="#" id="hide-marker-link" style="text-decoration:none;"><?php echo Yii::t('contacts','Clear Marker');?></a>
+            </div>
+        <?php } ?>
 
         <div class="cell">
             <label><?php echo Yii::t('contacts','Assigned To'); ?></label>
