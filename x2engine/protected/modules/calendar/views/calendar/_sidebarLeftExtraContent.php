@@ -64,9 +64,6 @@ if(isset($this->calendarUsers) && $this->calendarUsers !== null) {
     $showUserCalendars = $showCalendars['userCalendars'];
     echo '<ul style="font-size: 0.8em; font-weight: bold; color: black;">';
     foreach($this->calendarUsers as $userName=>$user) {
-        if($user=='Anyone'){
-            $user=Yii::t('app',$user);
-        }
         // check if current user has permission to edit calendar
         if(isset($editableUserCalendars[$userName])) {
             $editable = 'true';
@@ -82,7 +79,19 @@ if(isset($this->calendarUsers) && $this->calendarUsers !== null) {
                     this.name, this.checked, $editable);", 
             )
         );
-        echo "</div><label for=\"$userName\">".CHtml::encode ($user)."</label>\n";
+        echo "</div>";
+        if($editable==='true'){
+            echo "<div class='calendar-edit-button'>";
+            echo CHtml::link(
+                '', $this->createUrl('update', array('id' => $userName)),
+                array(
+                    'class' => 'x2-button icon edit minimal',
+                )
+            );
+            echo "</div>";
+        }
+        echo "<div class='calendar-name'><label for=\"$userName\">".CHtml::encode ($user)."</label></div>\n";
+        
         echo "</li>";
     }
     echo "</ul>\n";

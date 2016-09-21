@@ -179,3 +179,17 @@ table.page-title {
     float:left;
     margin-right: 5px;
 }
+
+.calendar-edit-button{
+    float: right;
+}
+
+.calendar-name{
+    display: flex;
+}
+
+.x2-button.icon.edit.minimal {
+    border: none;
+    background: none;
+    padding: 0px;    
+}

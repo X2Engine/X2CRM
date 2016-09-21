@@ -380,3 +380,20 @@ table.page-title .fc-header-left {
   float: left;
   margin-right: 5px;
 }
+
+/* line 183, ../../../../../compass/protected/modules/calendar/assets/css/calendarLayout.scss */
+.calendar-edit-button {
+  float: right;
+}
+
+/* line 187, ../../../../../compass/protected/modules/calendar/assets/css/calendarLayout.scss */
+.calendar-name {
+  display: flex;
+}
+
+/* line 191, ../../../../../compass/protected/modules/calendar/assets/css/calendarLayout.scss */
+.x2-button.icon.edit.minimal {
+  border: none;
+  background: none;
+  padding: 0px;
+}

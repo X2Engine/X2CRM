@@ -232,57 +232,60 @@ class CalendarController extends x2base {
      */
     public function actionUpdate($id){
         $model = $this->loadModel($id);
+        if(Yii::app()->params->isAdmin || in_array(Yii::app()->user->id, $model->getUserIdsWithEditPermission())){
+            $calendar = filter_input(INPUT_POST, 'X2Calendar', FILTER_DEFAULT, FILTER_REQUIRE_ARRAY);
+            if(is_array($calendar)){
+                $oldAttributes = $model->attributes;
+                $model->attributes = $calendar;
+                if($model->remoteSync){
+                    if(!$model->asa('syncBehavior')){
+                        $model->attachSyncBehavior();
+                    }
+                    if(isset($_SESSION['token'])){
+                        $credentials = $_SESSION['token'];
+                        $model->credentials = $credentials;
+                    }
+                    if($oldAttributes['remoteCalendarId'] !== $model->remoteCalendarId){
+                        $model->deleteRemoteActions();
+                        $model->remoteCalendarUrl = str_replace('{calendarId}', $model->remoteCalendarId, $model->syncBehavior->calendarUrl);
+                        $model->ctag = null;
+                        $model->syncToken = null;
+                    }
+                }
 
-        $calendar = filter_input(INPUT_POST, 'X2Calendar', FILTER_DEFAULT, FILTER_REQUIRE_ARRAY);
-        if(is_array($calendar)){
-            $oldAttributes = $model->attributes;
-            $model->attributes = $calendar;
-            if($model->remoteSync){
-                if(!$model->asa('syncBehavior')){
-                    $model->attachSyncBehavior();
-                }
-                if(isset($_SESSION['token'])){
-                    $credentials = $_SESSION['token'];
-                    $model->credentials = $credentials;
-                }
-                if($oldAttributes['remoteCalendarId'] !== $model->remoteCalendarId){
-                    $model->deleteRemoteActions();
-                    $model->remoteCalendarUrl = str_replace('{calendarId}', $model->remoteCalendarId, $model->syncBehavior->calendarUrl);
-                    $model->ctag = null;
-                    $model->syncToken = null;
+                $model->updatedBy = Yii::app()->user->name;
+                $model->lastUpdated = time();
+
+                if ($model->save()) {
+                    $viewPermissions = filter_input(INPUT_POST, 'view-permission',
+                            FILTER_DEFAULT, FILTER_REQUIRE_ARRAY);
+                    $editPermissions = filter_input(INPUT_POST, 'edit-permission',
+                            FILTER_DEFAULT, FILTER_REQUIRE_ARRAY);
+                    $model->setCalendarPermissions($viewPermissions, $editPermissions);
+                    $this->redirect(array('index'));
                 }
             }
-            
-            $model->updatedBy = Yii::app()->user->name;
-            $model->lastUpdated = time();
 
-            if ($model->save()) {
-                $viewPermissions = filter_input(INPUT_POST, 'view-permission',
-                        FILTER_DEFAULT, FILTER_REQUIRE_ARRAY);
-                $editPermissions = filter_input(INPUT_POST, 'edit-permission',
-                        FILTER_DEFAULT, FILTER_REQUIRE_ARRAY);
-                $model->setCalendarPermissions($viewPermissions, $editPermissions);
-                $this->redirect(array('index'));
+
+            $admin = Yii::app()->settings;
+            $googleIntegration = $admin->googleIntegration;
+
+            if ($googleIntegration) {
+                list ($client, $googleCalendarList) = X2Calendar::getGoogleCalendarList($id);
+            }else{
+                $client = null;
+                $googleCalendarList = null;
             }
-        }
-        
 
-        $admin = Yii::app()->settings;
-        $googleIntegration = $admin->googleIntegration;
-        
-        if ($googleIntegration) {
-            list ($client, $googleCalendarList) = X2Calendar::getGoogleCalendarList($id);
+            $this->render('update', array(
+                'model' => $model,
+                'client' => $client,
+                'googleIntegration' => $googleIntegration,
+                'googleCalendarList' => $googleCalendarList,
+            ));
         }else{
-            $client = null;
-            $googleCalendarList = null;
+            $this->denied();
         }
-
-        $this->render('update', array(
-            'model' => $model,
-            'client' => $client,
-            'googleIntegration' => $googleIntegration,
-            'googleCalendarList' => $googleCalendarList,
-        ));
     }
 
     public function actionList(){
