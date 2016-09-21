@@ -264,9 +264,11 @@ abstract class CalDavSync extends CalendarSync {
 
     public function deleteAction($action) {
         try{
-            $this->client->delete(
-                    $this->owner->remoteCalendarUrl, '/' . $action->remoteCalendarUrl . '.ics', $action->etag
-            );
+            if(isset($action->remoteCalendarUrl, $action->etag)){
+                $this->client->delete(
+                        $this->owner->remoteCalendarUrl, '/' . $action->remoteCalendarUrl . '.ics', $action->etag
+                );
+            }
         } catch (Exception $e){
             
         }
