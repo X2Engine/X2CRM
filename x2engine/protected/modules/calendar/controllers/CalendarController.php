@@ -232,7 +232,9 @@ class CalendarController extends x2base {
      */
     public function actionUpdate($id){
         $model = $this->loadModel($id);
-        if(Yii::app()->params->isAdmin || in_array(Yii::app()->user->id, $model->getUserIdsWithEditPermission())){
+        if(Yii::app()->user->name === $model->createdBy 
+                || Yii::app()->params->isAdmin 
+                || in_array(Yii::app()->user->id, $model->getUserIdsWithEditPermission())){
             $calendar = filter_input(INPUT_POST, 'X2Calendar', FILTER_DEFAULT, FILTER_REQUIRE_ARRAY);
             if(is_array($calendar)){
                 $oldAttributes = $model->attributes;
