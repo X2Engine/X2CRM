@@ -58,17 +58,18 @@ class X2CalendarPermissions extends CActiveRecord
     public static function getViewableUserCalendarNames() {
         
         $calendarQuery = Yii::app()->db->createCommand()
-                ->selectDistinct('a.id, a.name')
-                ->from('x2_calendars a');
+                ->selectDistinct('a.id, a.name, (a.createdBy = :user) as mine')
+                ->from('x2_calendars a')
+                ->order('mine DESC');
+        $params = array(
+            ':user' => Yii::app()->user->name
+        );
         if (!Yii::app()->params->isAdmin) {
-            $calendarQuery->where('a.createdBy = :user OR (a.createdBy != :user AND b.userId = :userId AND b.view = 1)',
-                            array(
-                        ':user' => Yii::app()->user->name,
-                        ':userId' => Yii::app()->user->id
-                    ))
+            $calendarQuery->where('a.createdBy = :user OR (a.createdBy != :user AND b.userId = :userId AND b.view = 1)')
                     ->leftJoin('x2_calendar_permissions b', 'a.id = b.calendarId');
+            $params[':userId'] = Yii::app()->user->id;
         }
-        $calendars = $calendarQuery->queryAll();
+        $calendars = $calendarQuery->queryAll(true, $params);
         $ret = array();
         foreach($calendars as $arr){
             $ret[$arr['id']] = $arr['name'];
