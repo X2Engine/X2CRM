@@ -47,6 +47,7 @@ class X2Calendar extends CActiveRecord
 {
 
 	public $googleCalendarName;
+        public $defaultCalendar;
 	
 	/**
 	 * Returns the static model of the specified AR class.
@@ -97,7 +98,7 @@ class X2Calendar extends CActiveRecord
 			'googleCalendarName' => Yii::t('calendar','Google Calendar Name'),
 		);
 	}
-	
+        
 	public static function getNames() {
 		$calendars = X2Calendar::model()->findAllByAttributes(array('googleCalendar'=>false));
 		
@@ -108,26 +109,6 @@ class X2Calendar extends CActiveRecord
 		return $names;
 	}
 	
-	public static function getViewableGroupCalendarNames() {
-		
-		$names = array();
-
-		if(Yii::app()->params->isAdmin) { // admin sees all
-			$groups = Yii::app()->db->createCommand()->select()->from('x2_groups')->queryAll();			
-		} else {
-			$groups = Yii::app()->db->createCommand()
-                ->select('x2_groups.id, x2_groups.name')
-                ->from('x2_group_to_user')
-                ->join('x2_groups', 'groupId = x2_groups.id')
-                ->where('userId='.Yii::app()->user->id)->queryAll();
-		}
-		
-		foreach($groups as $group) {
-			$names[$group['id']] = $group['name'];
-		}
-		
-		return $names;
-	}
         
         /**
          * Returns a list of calendars that can be synced to

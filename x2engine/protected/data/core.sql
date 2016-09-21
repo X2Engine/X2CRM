@@ -408,6 +408,7 @@ CREATE TABLE x2_profile(
     googleRefreshToken      VARCHAR(255),
 	leadRoutingAvailability	TINYINT			DEFAULT 1,
 	showTours 				TINYINT			DEFAULT 1,
+        defaultCalendar     INT,
 	UNIQUE(username, emailAddress),
 	INDEX (username)
 ) COLLATE = utf8_general_ci;

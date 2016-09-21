@@ -328,7 +328,7 @@ class Profile extends X2ActiveRecord {
         // will receive user inputs.
         return array(
             array('fullName, username, status', 'required'),
-            array('status, lastUpdated, disableNotifPopup, allowPost', 'numerical', 'integerOnly' => true),
+            array('status, lastUpdated, disableNotifPopup, allowPost, defaultCalendar', 'numerical', 'integerOnly' => true),
             array('enableFullWidth,showSocialMedia,showDetailView,disablePhoneLinks,disableTimeInTitle,showTours', 'boolean'), //,showWorkflow
             array('emailUseSignature', 'length', 'max' => 10),
             array('startPage', 'length', 'max' => 30),

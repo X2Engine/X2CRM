@@ -252,7 +252,7 @@ class CalendarController extends x2base {
                     $model->syncToken = null;
                 }
             }
-
+            
             $model->updatedBy = Yii::app()->user->name;
             $model->lastUpdated = time();
 

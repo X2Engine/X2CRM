@@ -64,12 +64,12 @@ $(function() {
     ));
     ?>
     <div class="row">
-        <?php
-        echo $form->labelEx($model, 'name');
-        echo $form->textField($model, 'name');
-        echo $form->error($model, 'name');
-        ?>
-    </div>
+            <?php
+            echo $form->labelEx($model, 'name');
+            echo $form->textField($model, 'name');
+            echo $form->error($model, 'name');
+            ?>
+        </div>
     <br>
     <?php
     $viewPermission = $model->getUserIdsWithViewPermission();

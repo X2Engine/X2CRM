@@ -78,6 +78,9 @@ $form = $this->beginWidget ('CalendarEventActiveForm', array (
     echo $form->label ($model, 'assignedTo'); 
     echo $form->renderInput ($model, 'assignedTo');
     
+    if(empty($model->calendarId)){
+        $model->calendarId = Yii::app()->params->profile->defaultCalendar;
+    }
     echo $form->label ($model, 'calendarId'); 
     echo $form->dropDownList ($model, 'calendarId',  X2CalendarPermissions::getEditableUserCalendarNames());
 ?>
