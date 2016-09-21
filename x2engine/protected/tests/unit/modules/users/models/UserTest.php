@@ -62,7 +62,7 @@ class UserTest extends X2DbTestCase {
         'events' => array ('Events', '.UserTest'),
         'social' => array ('Social', '.UserTest'),
         'profile' => array ('Profile', '.UserTest'),
-        'calendar' => 'X2Calendars',
+        'calendar' => 'X2Calendar',
         'calendarPermissions' => 'X2CalendarPermissions',
     );
 

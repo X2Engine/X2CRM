@@ -40,7 +40,7 @@ Yii::import ('application.modules.users.models.*');
 class X2CalendarPermissionsTest extends X2DbTestCase {
 
     public $fixtures = array (
-        'calendar' => 'X2Calendars',
+        'calendar' => 'X2Calendar',
         'calendarPermissions' => 'X2CalendarPermissions',
         'users' => 'User',
     );
