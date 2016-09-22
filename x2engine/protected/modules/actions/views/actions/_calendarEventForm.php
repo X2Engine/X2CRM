@@ -1,5 +1,5 @@
 <?php
-/***********************************************************************************
+/* * *********************************************************************************
  * X2CRM is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2016 X2Engine Inc.
  * 
@@ -33,85 +33,91 @@
  * X2Engine" logo. If the display of the logo is not reasonably feasible for
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2Engine".
- **********************************************************************************/
+ * ******************************************************************************** */
 
-$submitButton = isset ($submitButton) ? $submitButton : true;
-$htmlOptions = !isset ($htmlOptions) ? array () : $htmlOptions;
-$namespace = !isset ($namespace) ? null : $namespace;
+$submitButton = isset($submitButton) ? $submitButton : true;
+$htmlOptions = !isset($htmlOptions) ? array() : $htmlOptions;
+$namespace = !isset($namespace) ? null : $namespace;
 
-$form = $this->beginWidget ('CalendarEventActiveForm', array (
+$form = $this->beginWidget('CalendarEventActiveForm', array(
     'formModel' => $model,
     'htmlOptions' => $htmlOptions,
     'namespace' => $namespace,
-));
-    echo $form->textArea ($model, 'actionDescription');
-
-
+        ));
+echo $form->textArea($model, 'actionDescription');
 ?>
-    <div class='row'>
+<div class="row">
+    <div class="cell">
+        <?php
+        if (empty($model->calendarId)) {
+            $model->calendarId = Yii::app()->params->profile->defaultCalendar;
+        }
+        echo $form->label($model, 'calendarId');
+        echo $form->dropDownList($model, 'calendarId', X2CalendarPermissions::getEditableUserCalendarNames());
+        ?>
+    </div>
+</div>
+<div class='row'>
+    <div class='cell'>
         <div class='cell'>
-            <div class='cell'>
-<?php
-    echo $form->dateRangeInput ($model, 'dueDate', 'completeDate');
-?>
-            </div>
-            <div class='cell'>
-<?php
-
-    echo '<div class="clearfix"></div>';
-
-    echo $form->label ($model, 'allDay'); 
-    echo $form->renderInput ($model, 'allDay');
-
-    echo $form->label ($model, 'priority'); 
-    echo $form->renderInput ($model, 'priority');
-
-    echo $form->label ($model, 'color'); 
-    echo $form->renderInput ($model, 'color');
-?>
-            </div>
+            <?php
+            echo $form->dateRangeInput($model, 'dueDate', 'completeDate', array('timeTracker' => false));
+            ?>
         </div>
         <div class='cell'>
-            <div class='cell'>
-<?php
+            <?php
+            echo '<div class="clearfix"></div>';
+            echo $form->label($model, 'assignedTo');
+            echo $form->renderInput($model, 'assignedTo');
+            ?>
 
-    echo $form->label ($model, 'assignedTo'); 
-    echo $form->renderInput ($model, 'assignedTo');
-    
-    if(empty($model->calendarId)){
-        $model->calendarId = Yii::app()->params->profile->defaultCalendar;
-    }
-    echo $form->label ($model, 'calendarId'); 
-    echo $form->dropDownList ($model, 'calendarId',  X2CalendarPermissions::getEditableUserCalendarNames());
-?>
-            </div>
-            <div class='cell'>
-<?php
-
-    echo $form->label ($model, 'eventSubtype'); 
-    echo $form->renderInput ($model, 'eventSubtype');
-
-    echo $form->label ($model, 'eventStatus'); 
-    echo $form->renderInput ($model, 'eventStatus');
-?>
-            </div>
-            <div class='cell'>
-<?php
-
-    echo $form->label ($model, 'visibility'); 
-    echo $form->renderInput ($model, 'visibility');
-
-    echo $form->label ($model, 'associationType'); 
-    echo $form->renderInput ($model, 'associationType');
-    echo CHtml::hiddenField ('modelName', 'calendar'); 
-?>
-            </div>
         </div>
     </div>
+    <div class='cell'>
+        <div class='cell'>
+            <?php
+            echo $form->label($model, 'allDay');
+            echo $form->renderInput($model, 'allDay');
+
+            echo $form->label($model, 'priority');
+            echo $form->renderInput($model, 'priority');
+
+            echo $form->label($model, 'color');
+            echo $form->renderInput($model, 'color');
+            ?>
+        </div>
+        <div class='cell'>
+            <?php
+            echo $form->label($model, 'eventSubtype');
+            echo $form->renderInput($model, 'eventSubtype');
+
+            echo $form->label($model, 'eventStatus');
+            echo $form->renderInput($model, 'eventStatus');
+            
+            echo $form->label($model, 'visibility');
+            echo $form->renderInput($model, 'visibility');
+
+            ?>
+        </div>
+        <div class='cell'>
+            <?php
+            
+            if (!isset($model->associationId)) {
+                echo $form->label($model, 'associationType');
+                echo $form->renderInput($model, 'associationType');
+            } else {
+                echo $form->hiddenField($model, 'associationType');
+                echo $form->hiddenField($model, 'associationId');
+                echo $form->hiddenField($model, 'associationName');
+            }
+            echo CHtml::hiddenField('modelName', 'calendar');
+            ?>
+        </div>
+    </div>
+</div>
 <?php
+if ($submitButton)
+    echo $form->submitButton();
 
-    if ($submitButton) echo $form->submitButton ();
-
-$this->endWidget ();
-
+$this->endWidget();
 ?>

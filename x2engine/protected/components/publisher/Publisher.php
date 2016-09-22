@@ -49,7 +49,7 @@ class Publisher extends X2Widget {
         'action' => 'PublisherActionTab',
         'call' => 'PublisherCallTab',
         'time' => 'PublisherTimeTab',
-        'event' => 'PublisherEventTab',
+        'event' => 'PublisherCalendarEventTab',
         'products' => 'PublisherProductsTab',
     );
 
@@ -79,6 +79,9 @@ class Publisher extends X2Widget {
                 });
             $this->_tabs = array ();
             foreach ($visibleTabs as $tabName => $shown) {
+                if($tabName === 'PublisherEventTab'){
+                    $tabName = 'PublisherCalendarEventTab';
+                }
                 $tab = new $tabName ();
                 $tab->publisher = $this;
                 $tab->namespace = $this->namespace;
