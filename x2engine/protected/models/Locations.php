@@ -122,13 +122,11 @@ class Locations extends CActiveRecord
         return $model;
     }
 
-    /**
-     * Retrieve the Action associated with this Location
-     */
-    public function getAction() {
-        return X2Model::model('Actions')->findByAttributes(array(
-            'locationId' => $this->id,
-        ));
+    public function relations() {
+        return array(
+            'action' => array(self::HAS_ONE, 'Actions', 'locationId'),
+            'event' => array(self::HAS_ONE, 'Events', 'locationId'),
+        );
     }
 
     /**

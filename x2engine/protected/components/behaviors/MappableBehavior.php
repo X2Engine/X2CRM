@@ -47,8 +47,12 @@ class MappableBehavior extends CActiveRecordBehavior {
         $ip = Yii::app()->controller->getRealIP();
         $logIp = false;
         $coords = false;
-        if ($method && isset($_{$method}[$param]))
-            $coords = json_decode($_{$method}[$param], true);
+        if ($method === 'GET' && isset($_GET[$param]))
+            $geoCoords = $_GET[$param];
+        else if ($method === 'POST' && isset($_POST[$param]))
+            $geoCoords = $_POST[$param];
+        if ($method && isset($geoCoords))
+            $coords = json_decode($geoCoords, true);
         if (!$coords && !X2IPAddress::isPrivateAddress($ip)) {
             $coords = Locations::resolveIpLocation($ip);
             $logIp = $ip;
@@ -129,15 +133,24 @@ class MappableBehavior extends CActiveRecordBehavior {
                 case "login":
                     $infoText = Yii::t('app', 'User Login');
                     break;
+                case 'mobileIdle':
+                    $infoText = Yii::t('app', 'Mobile Location');
+                    break;
+                case 'mobileActivityPost':
+                    $infoText = Yii::t('app', 'Mobile Activity Post');
+                    break;
                 default:
                     $infoText = Yii::t('app', 'Registered Address');
             }
             $action = $loc->action;
+            $event = $loc->event;
             if ($action)
                 $infoText = CHtml::link($infoText, $action->getUrl(), array(
                     'class' => 'action-frame-link',
                     'data-action-id' => $action->id,
                 ));
+            else if ($event)
+                $infoText = $infoText.': '. $event->getText();
             $locations[] = array(
                 'lat' => (float) $loc['lat'],
                 'lng' => (float) $loc['lon'],
