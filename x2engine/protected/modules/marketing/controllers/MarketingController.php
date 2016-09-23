@@ -601,6 +601,16 @@ class MarketingController extends x2base {
      *  of the person unsubscribing
      */
     public function actionClick($uid, $type, $url = null, $email = null){
+        // If the request is coming from within the web application, ignore it.
+        $referrer = isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : '';
+        $baseUrl = Yii::app()->request->getBaseUrl(true);
+        $fromApp = strpos($referrer, $baseUrl) === 0;
+        if ($fromApp && $type === 'open') {
+            header('Content-Type: image/gif');
+            echo base64_decode('R0lGODlhAQABAIABAP///wAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==');
+            return;
+        }
+
         $now = time();
         $item = CActiveRecord::model('X2ListItem')
             ->with('contact', 'list')->findByAttributes(array('uniqueId' => $uid));

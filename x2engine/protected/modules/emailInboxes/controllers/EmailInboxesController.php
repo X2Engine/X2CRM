@@ -436,8 +436,11 @@ class EmailInboxesController extends x2base {
                 $this->_selectedMailbox = null;
             }
 
-            if ($this->_selectedMailbox !== null && $this->_selectedMailbox->credentials->auth->disableInbox) {
-                throw new CHttpException(403, Yii::t('app', 'Inbox usage is disabled for these credentials. Please update the settings on the "Manage Apps" page to enable inbox access.'));
+            if ($this->_selectedMailbox !== null && $this->_selectedMailbox->credentials && $this->_selectedMailbox->credentials->auth->disableInbox) {
+                $this->render ('badCredentials', array(
+                    'error' => Yii::t('app', 'Inbox usage is disabled for these credentials. Please update the settings on the "Manage Apps" page to enable inbox access.'),
+                ));
+                Yii::app ()->end ();
             }
         }
         return $this->_selectedMailbox;

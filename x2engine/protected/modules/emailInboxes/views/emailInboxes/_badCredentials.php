@@ -56,7 +56,7 @@ Yii::app()->clientScript->registerCss('_badCredentialsCss',"
                      <?php echo $error; ?>
                 </div>
             </h2>
-            <a href='<?php echo $this->createUrl ('configureMyInbox'); ?>'><?php 
+            <a href='<?php echo $this->createUrl ('/emailInboxes/configureMyInbox'); ?>'><?php
                 echo Yii::t('emailInboxes', '-Configure your personal email inbox-'); 
             ?></a>
         </div>
