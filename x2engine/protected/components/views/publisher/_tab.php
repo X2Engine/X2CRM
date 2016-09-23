@@ -44,6 +44,7 @@
     $this->render ($this->getInnerViewFile (), array (
         'htmlOptions' => $htmlOptions,
         'model' => $model,
+        'email' => $email,
     ));
 ?>
 </div>

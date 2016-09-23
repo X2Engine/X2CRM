@@ -56,6 +56,18 @@ echo $form->textArea($model, 'actionDescription');
         echo $form->dropDownList($model, 'calendarId', X2CalendarPermissions::getEditableUserCalendarNames());
         ?>
     </div>
+    <div class="cell">
+        <?php
+            echo $form->label($model, 'allDay');
+            echo $form->renderInput($model, 'allDay');
+        ?>
+    </div>
+    <div class="cell">
+        <?php 
+            echo CHtml::label(Yii::t('calendar','Send Invites'), 'invite');
+            echo CHtml::checkBox('invite');
+        ?>
+    </div>
 </div>
 <div class='row'>
     <div class='cell'>
@@ -76,8 +88,6 @@ echo $form->textArea($model, 'actionDescription');
     <div class='cell'>
         <div class='cell'>
             <?php
-            echo $form->label($model, 'allDay');
-            echo $form->renderInput($model, 'allDay');
 
             echo $form->label($model, 'priority');
             echo $form->renderInput($model, 'priority');
@@ -115,9 +125,28 @@ echo $form->textArea($model, 'actionDescription');
         </div>
     </div>
 </div>
+<div id="email-invites" class="row" style="display:none;">
+    <br>
+    <div class="cell">
+        <?php 
+        echo X2Html::label(Yii::t('calendar','Enter a list of email addresses, one per line'),'emailAddresses');
+        echo X2Html::textArea('emailAddresses', $email);
+        ?>
+    </div>
+</div>
 <?php
 if ($submitButton)
     echo $form->submitButton();
 
 $this->endWidget();
+
+Yii::app()->clientScript->registerScript('email-invites',"
+    $('#invite').on('click',function(){
+        if($(this).is(':checked') && $('#email-invites').is(':hidden')){
+            $('#email-invites').slideDown();
+        } else if (!$(this).is(':checked') && $('#email-invites').is(':visible')){
+            $('#email-invites').slideUp();
+        }
+    });
+");
 ?>
