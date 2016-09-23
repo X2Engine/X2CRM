@@ -143,7 +143,15 @@ class UsersController extends x2base {
              
 
             if($model->save()){
+                $calendar = new X2Calendar();
+                $calendar->createdBy = $model->username;
+                $calendar->updatedBy = $model->username;
+                $calendar->createDate = time();
+                $calendar->lastUpdated = time();
+                $calendar->name = $profile->fullName."'s Calendar";
+                $calendar->save();
                 $profile->id=$model->id;
+                $profile->defaultCalendar = $calendar->id;
                 $profile->save();
                 if(isset($_POST['roles'])){
                     $roles=$_POST['roles'];
