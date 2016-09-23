@@ -173,34 +173,46 @@ class Locations extends CActiveRecord
 
     private static function geoIPLookup($ip) {
         $location = null;
-        foreach (self::$geoIpProviders as $provider) {
-            if(extension_loaded('curl')) // note: freegeoip.net does not resolve without curl
-                AppFileUtil::$alwaysCurl = true;
-            $resp = RequestUtil::request(array(
-                'url' => $provider.'/'.$ip,
-                'header' => array(
-                    'Content-Type' => 'application/json',
-                ),
-            ));
-            $resp = CJSON::decode($resp);
-            if ($resp) {
-                if (array_key_exists('location', $resp) &&
-                    array_key_exists('latitude', $resp['location']) &&
-                    array_key_exists('longitude', $resp['location'])) {
-                        $location = array(
-                            'lat' => $resp['location']['latitude'],
-                            'lon' => $resp['location']['longitude'],
-                            'provider' => $provider,
-                        );
-                        break;
-                } else if (array_key_exists('latitude', $resp) &&
-                    array_key_exists('longitude', $resp)) {
-                        $location = array(
-                            'lat' => $resp['latitude'],
-                            'lon' => $resp['longitude'],
-                            'provider' => $provider,
-                        );
-                        break;
+        if (isset($_SERVER['GEOIP_LATITUDE']) && isset($_SERVER['GEOIP_LONGITUDE']) &&
+                $_SERVER['GEOIP_ADDR'] === $ip) {
+            // Retrieve coords from mod_geoip, verifying that $ip is the request address, which
+            // may not be the case when executed independantly, or when the client is behind a
+            // proxy but mod_geoip is not configured to scan proxy headers
+            $location = array(
+                'lat' => $_SERVER['GEOIP_LATITUDE'],
+                'lon' => $_SERVER['GEOIP_LONGITUDE'],
+                'provider' => 'mod-geoip',
+            );
+        } else {
+            foreach (self::$geoIpProviders as $provider) {
+                if(extension_loaded('curl')) // note: freegeoip.net does not resolve without curl
+                    AppFileUtil::$alwaysCurl = true;
+                $resp = RequestUtil::request(array(
+                    'url' => $provider.'/'.$ip,
+                    'header' => array(
+                        'Content-Type' => 'application/json',
+                    ),
+                ));
+                $resp = CJSON::decode($resp);
+                if ($resp) {
+                    if (array_key_exists('location', $resp) &&
+                        array_key_exists('latitude', $resp['location']) &&
+                        array_key_exists('longitude', $resp['location'])) {
+                            $location = array(
+                                'lat' => $resp['location']['latitude'],
+                                'lon' => $resp['location']['longitude'],
+                                'provider' => $provider,
+                            );
+                            break;
+                    } else if (array_key_exists('latitude', $resp) &&
+                        array_key_exists('longitude', $resp)) {
+                            $location = array(
+                                'lat' => $resp['latitude'],
+                                'lon' => $resp['longitude'],
+                                'provider' => $provider,
+                            );
+                            break;
+                    }
                 }
             }
         }
