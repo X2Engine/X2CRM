@@ -64,8 +64,8 @@ echo $form->textArea($model, 'actionDescription');
     </div>
     <div class="cell">
         <?php 
-            echo CHtml::label(Yii::t('calendar','Send Invites'), 'invite');
-            echo CHtml::checkBox('invite');
+            echo $form->label($model, 'invite');
+            echo $form->checkBox($model, 'invite');
         ?>
     </div>
 </div>
@@ -129,8 +129,9 @@ echo $form->textArea($model, 'actionDescription');
     <br>
     <div class="cell">
         <?php 
-        echo X2Html::label(Yii::t('calendar','Enter a list of email addresses, one per line'),'emailAddresses');
-        echo X2Html::textArea('emailAddresses', $email);
+        $model->emailAddresses = $email;
+        echo $form->label($model,'emailAddresses');
+        echo $form->textArea($model, 'emailAddresses');
         ?>
     </div>
 </div>
@@ -141,7 +142,7 @@ if ($submitButton)
 $this->endWidget();
 
 Yii::app()->clientScript->registerScript('email-invites',"
-    $('#invite').on('click',function(){
+    $('#CalendarEventFormModel_invite').on('click',function(){
         if($(this).is(':checked') && $('#email-invites').is(':hidden')){
             $('#email-invites').slideDown();
         } else if (!$(this).is(':checked') && $('#email-invites').is(':visible')){

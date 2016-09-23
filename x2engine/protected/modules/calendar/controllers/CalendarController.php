@@ -605,6 +605,16 @@ class CalendarController extends x2base {
             echo 1; // if portlet not found, just make it visible
         }
     }
+    
+    public function actionEventRsvp($email, $inviteKey, $status = null){
+        $invite = X2Model::model('CalendarInvites')->findByAttributes(array(
+            'email' => $email,
+            'inviteKey' => $inviteKey,
+        ));
+        if(!$invite){
+            $this->denied();
+        }
+    }
 
     /**
      * Returns the data model based on the primary key given in the GET variable.

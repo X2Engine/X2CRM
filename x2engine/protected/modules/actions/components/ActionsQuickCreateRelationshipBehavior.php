@@ -51,6 +51,18 @@ class ActionsQuickCreateRelationshipBehavior extends QuickCreateRelationshipBeha
         if (isset ($_POST['modelName']) && !isset ($model->associationType)) {
             $model->associationType = $_POST['modelName'];
         }
+        $email = null;
+        $associatedModel = X2Model::getModelOfTypeWithId($model->associationType, $model->associationId);
+        if($associatedModel){
+            $fields = $associatedModel->getFields();
+            // Try to grab the model's email from the first email field
+            foreach($fields as $field){
+                if($field->type === 'email'){
+                    $email = $associatedModel->{$field->fieldName};
+                    break;
+                }
+            }
+        }
         if ($model instanceof ActionFormModelBase) {
             echo CJSON::encode (array (
                 'status' => $model->hasErrors () ? 'userError' : 'success',
@@ -59,6 +71,7 @@ class ActionsQuickCreateRelationshipBehavior extends QuickCreateRelationshipBeha
                         lcfirst (preg_replace ('/^(.*)FormModel/', '$1', get_class ($model))) .
                         'Form', array (
                     'model' => $model,
+                    'email' => $email,
                 ), true, true)
             ));
         } else {
