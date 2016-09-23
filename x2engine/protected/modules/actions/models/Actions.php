@@ -151,8 +151,7 @@ class Actions extends X2Model {
     }
 
     public function behaviors(){
-        $that = $this;
-        return array(
+        $behaviors =  array(
             'LinkableBehavior' => array(
                 'class' => 'LinkableBehavior',
                 'module' => 'actions'
@@ -171,6 +170,18 @@ class Actions extends X2Model {
                 'fileAttribute' => 'upload'
             ),
         );
+        if(!$this->isNewRecord && $this->type==='event'){
+            $emailAddresses = Yii::app()->db->createCommand()
+                ->select('email')
+                ->from('x2_calendar_invites')
+                ->where('actionId = :id',array(':id' => $this->id))
+                ->queryColumn();
+            $behaviors['CalendarInviteBehavior'] = array(
+                'class' => 'CalendarInviteBehavior',
+                'emailAddresses' => $emailAddresses,
+            );
+        }
+        return $behaviors;
     }
 
     /**

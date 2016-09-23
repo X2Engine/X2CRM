@@ -44,7 +44,9 @@ class CalendarInviteBehavior extends ActiveRecordBehavior {
         if ($this->owner->isNewRecord) {
             $this->createCalendarInvites();
         } else {
-            $this->updateCalendarInvites();
+            if($this->owner->oldAttributes['dueDate'] != $this->owner->dueDate){
+                $this->updateCalendarInvites();
+            }
         }
     }
 
