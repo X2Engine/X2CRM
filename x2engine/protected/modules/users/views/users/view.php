@@ -140,8 +140,8 @@ foreach($actionHistory as $action) {
                     CHtml::link(Yii::t('contacts', 'View on Large Map'),
                     array(
                         'contacts/googleMaps',
-                        //'contactId' => $association->id, // TODO uncomment when large map view supports Users
-                        //'noHeatMap' => 1,
+                        'userId' => $model->id,
+                        'noHeatMap' => 1,
                         'locationType' => array($action->location->type),
                     ))
                     : ''),

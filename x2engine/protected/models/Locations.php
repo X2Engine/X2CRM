@@ -110,6 +110,26 @@ class Locations extends CActiveRecord
 		);
 	}
 
+    public static function getDefaultContactTypes() {
+        return array(
+            'address',
+            'weblead',
+            'webactivity',
+            'open',
+            'click',
+            'unsub',
+        );
+    }
+
+    public static function getDefaultUserTypes() {
+        return array(
+            'address',
+            'login',
+            'mobileIdle',
+            'mobileActivityPost',
+        );
+    }
+
     /**
      * Retrieve the associated record, optionally as a link
      * @param bool $link Whether to return a link to the record

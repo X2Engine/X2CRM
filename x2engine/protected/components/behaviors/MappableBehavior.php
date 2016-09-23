@@ -140,7 +140,7 @@ class MappableBehavior extends CActiveRecordBehavior {
                     $infoText = Yii::t('app', 'Mobile Activity Post');
                     break;
                 default:
-                    $infoText = Yii::t('app', 'Registered Address');
+                    $infoText = Yii::t('app', 'Stated Address');
             }
             $action = $loc->action;
             $event = $loc->event;
