@@ -606,14 +606,23 @@ class CalendarController extends x2base {
         }
     }
     
-    public function actionEventRsvp($email, $inviteKey, $status = null){
+    public function actionEventRsvp($email, $inviteKey) {
+        $this->layout = '//layouts/column1';
         $invite = X2Model::model('CalendarInvites')->findByAttributes(array(
             'email' => $email,
             'inviteKey' => $inviteKey,
         ));
-        if(!$invite){
+        if (!$invite) {
             $this->denied();
         }
+        $action = X2Model::model('Actions')->findByPk($invite->actionId);
+        $status = filter_input(INPUT_POST,'status');
+        if (!is_null($status)) {
+            $invite->status = $status;
+            $invite->save();
+            Yii::app()->end();
+        }
+        $this->render('eventRsvp', array('invite' => $invite, 'action'=>$action));
     }
 
     /**
