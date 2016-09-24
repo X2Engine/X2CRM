@@ -223,6 +223,7 @@ class Actions extends X2Model {
             'timers' => array(self::HAS_MANY,'ActionTimer','actionId'),
             'media' => array (
                 self::MANY_MANY, 'Media', 'x2_actions_to_media(actionsId, mediaId)'),
+            'invites' => array(self::HAS_MANY,'CalendarInvites','actionId'),
             //'assignee' => array(self::BELONGS_TO,'User',array('assignedTo'=>'username')),
         ));
     }

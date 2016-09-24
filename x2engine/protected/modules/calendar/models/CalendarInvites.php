@@ -57,5 +57,11 @@ class CalendarInvites extends X2ActiveRecord {
         return X2Html::link('here',Yii::app()->createExternalUrl('/calendar/calendar/eventRsvp', 
                 array('email' => $this->email, 'inviteKey' => $this->inviteKey)));
     }
+    
+    public function relations(){
+        return array(
+            'action' => array(self::BELONGS_TO,'Actions','actionId'),
+        );
+    }
 
 }

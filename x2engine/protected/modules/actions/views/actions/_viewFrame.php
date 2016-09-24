@@ -191,6 +191,31 @@ $language = (Yii::app()->language == 'en') ? '' : Yii::app()->getLanguage();
                     height: 21px;
                 }
             }
+            .dialog-label {
+                font-weight: bold;
+                display: block;
+            }
+
+            .cell {
+                float: left;
+            }
+
+            .dialog-cell {
+                padding: 5px;
+            }
+
+            #calendar-invites tr,th{
+                font-weight: bold;
+                padding: 5px;
+            }
+
+            #calendar-invites tr,td{
+                padding: 5px;
+
+            }
+            #calendar-invite-box{
+                border-top: 1px solid #ccc;
+            }
         </style>
         <title><?php Yii::t('actions', 'Action View Frame'); ?></title>
     </head>
@@ -413,9 +438,31 @@ $language = (Yii::app()->language == 'en') ? '' : Yii::app()->getLanguage();
 
                 ?>
             </div>
+            <?php if($model->type === 'event' && !empty($model->invites)){ ?>
+                <div style="clear:both"></div>
+                <div id="calendar-invite-box" class="row">
+                    <div class="cell dialog-cell">
+                        <table id="calendar-invites">
+                            <tr>
+                                <th><?php echo Yii::t('calendar', 'Guest'); ?></th>
+                                <th><?php echo Yii::t('calendar', 'Status'); ?></th>
+                            </tr>
+                            <?php
+                            foreach ($model->invites as $invite) {
+                                echo "<tr>";
+                                echo "<td>" . $invite->email . "</td><td>" . 
+                                        (is_null($invite->status) ? Yii::t('calendar', 'Awaiting response') 
+                                        : Yii::t('calendar', $invite->status)) . "</td>";
+                                echo "</tr>";
+                            }
+                            ?>
+                        </table>
+                    </div>
+                </div>
+            <?php } ?>
             </div>
                 <?php $this->endWidget(); ?>
-                <?php if(!empty($model->associationType) && is_numeric($model->associationId) && !is_null(X2Model::getAssociationModel($model->associationType, $model->associationId)) && ($publisher == 'false' || !$publisher)){ ?>
+                <?php if(($publisher == 'false' || !$publisher) && !empty($model->associationType) && is_numeric($model->associationId) && !is_null(X2Model::getAssociationModel($model->associationType, $model->associationId))){ ?>
                 <div id="recordBody" class="form">
                     <?php echo '<div class="page-title"><h3>'.Yii::t('actions', 'Associated Record').'</h3></div>'; ?>
                     <?php
