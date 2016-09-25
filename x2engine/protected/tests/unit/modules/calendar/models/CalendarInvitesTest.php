@@ -41,6 +41,14 @@ class CalendarInvitesTest extends X2DbTestCase {
     public static function referenceFixtures() {
         return array(
             'calendar' => 'X2Calendar',
+            'credentials' => 'Credentials',
+        );
+    }
+    
+    public function fixtures(){
+        return array(
+            'actions' => array('Actions','.CalendarInvites'),
+            'invites' => 'CalendarInvites'
         );
     }
 
@@ -66,6 +74,23 @@ class CalendarInvitesTest extends X2DbTestCase {
         $action->refresh();
         
         $this->assertEquals(1, count($action->invites));
+        
+        $invite = $action->invites[0];
+        $this->assertNull($invite->status);
+        $this->assertEquals('test@example.com',$invite->email);
+        $this->assertNotNull($invite->inviteKey);
+        
+        TestingAuxLib::restoreX2WebUser();
+    }
+    
+    public function testUpdateInvites(){
+        TestingAuxLib::loadX2NonWebUser ();
+        TestingAuxLib::suLogin ('admin');  
+        
+        $action = $this->actions('action1');
+        $invite = $action->invites[0];
+        
+        $this->assertEquals('Yes',$invite->status);
         
         TestingAuxLib::restoreX2WebUser();
     }

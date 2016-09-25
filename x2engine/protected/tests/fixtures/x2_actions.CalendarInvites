@@ -23,7 +23,7 @@ return array(
         'workflowId' => NULL,
         'quoteId' => NULL,
         'stageNumber' => NULL,
-        'allDay' => NULL,
+        'allDay' => 1,
         'color' => NULL,
         'syncGoogleCalendarEventId' => NULL,
         'sticky' => '0',
