@@ -38,6 +38,8 @@
 
 class MigrateMediaFiles extends X2TestCase {
 
+    protected static $skipAllTests = true;
+    
     public $mediaSrc;
     public $mediaDest;
     public $migrationDest;
