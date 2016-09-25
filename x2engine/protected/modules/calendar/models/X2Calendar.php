@@ -93,9 +93,8 @@ class X2Calendar extends CActiveRecord
 	
 	public function attributeLabels() {
 		return array(
-			'id' => Yii::t('admin','ID'),
-			'googleCalendar'=>Yii::t('calendar', 'Google Calendar'),
-			'googleCalendarName' => Yii::t('calendar','Google Calendar Name'),
+                    'id' => Yii::t('admin','ID'),
+                    'remoteCalendarId' => Yii::t('calendar','Remote Calendar Name'),
 		);
 	}
         
