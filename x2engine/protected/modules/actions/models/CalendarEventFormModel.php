@@ -47,6 +47,7 @@ class CalendarEventFormModel extends EventFormModel {
             'eventStatus' => Yii::t('actions', 'Event Status'),
             'associationType' => Yii::t('actions', 'Association Type'),
             'color' => Yii::t('actions', 'Color'),
+            'emailAddresses' => Yii::t('actions','Enter email addresses, one per line'),
         ));
     }
     

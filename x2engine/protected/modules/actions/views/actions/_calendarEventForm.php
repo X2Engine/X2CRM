@@ -127,7 +127,7 @@ echo $form->textArea($model, 'actionDescription');
 </div>
 <div id="email-invites" class="row" style="display:none;">
     <br>
-    <div class="cell">
+    <div class="cell" style="width:100%; max-width:640px;">
         <?php 
         $model->emailAddresses = $email;
         echo $form->label($model,'emailAddresses');

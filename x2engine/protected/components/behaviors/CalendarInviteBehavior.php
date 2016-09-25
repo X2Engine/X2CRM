@@ -81,8 +81,12 @@ class CalendarInviteBehavior extends ActiveRecordBehavior {
     }
 
     private function sendCalendarInvite($invite, $subject, $message) {
-
-        $formattedDate = Formatter::formatDueDate($this->owner->dueDate, 'long', 'long');
+        
+        if ($this->owner->allDay) {
+            $formattedDate = Formatter::formatDueDate($this->owner->dueDate, 'long', null) . Yii::t('calendar', 'All Day');
+        } else {
+            $formattedDate = Formatter::formatDueDate($this->owner->dueDate, 'long', 'long');
+        }
         $rsvpLink = $invite->getRsvpLink();
 
         $eml = new InlineEmail();

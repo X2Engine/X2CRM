@@ -215,6 +215,7 @@ $language = (Yii::app()->language == 'en') ? '' : Yii::app()->getLanguage();
             }
             #calendar-invite-box{
                 border-top: 1px solid #ccc;
+                margin-top: 10px;
             }
         </style>
         <title><?php Yii::t('actions', 'Action View Frame'); ?></title>
