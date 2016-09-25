@@ -45,12 +45,10 @@ class CalendarInvitesTest extends X2DbTestCase {
         );
     }
     
-    public function fixtures(){
-        return array(
-            'actions' => array('Actions','.CalendarInvites'),
-            'invites' => 'CalendarInvites'
-        );
-    }
+    public $fixtures = array(
+        'actions' => array('Actions', '.CalendarInvites'),
+        'invites' => 'CalendarInvites'
+    );
 
     public function testCreateInvites() {
         TestingAuxLib::loadX2NonWebUser ();
