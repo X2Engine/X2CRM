@@ -62,6 +62,11 @@ class CalendarInvitesTest extends X2DbTestCase {
         
         $this->assertEquals(0, count($action->invites));
         
+        $action->save();
+        $action->refresh();
+        
+        $this->assertEquals(1, count($action->invites));
+        
         TestingAuxLib::restoreX2WebUser();
     }
 
