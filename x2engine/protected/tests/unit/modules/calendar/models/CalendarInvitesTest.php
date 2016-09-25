@@ -84,7 +84,7 @@ class CalendarInvitesTest extends X2DbTestCase {
     
     public function testUpdateInvites(){
         TestingAuxLib::loadX2NonWebUser ();
-        TestingAuxLib::suLogin ('testUser');  
+        TestingAuxLib::suLogin ('testuser');  
         
         $action = $this->actions('action1');
         $invite = $action->invites[0];
