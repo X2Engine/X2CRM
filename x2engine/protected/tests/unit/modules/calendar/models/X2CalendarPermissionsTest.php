@@ -111,7 +111,7 @@ class X2CalendarPermissionsTest extends X2DbTestCase {
         $user = $this->users ('testUser2');
         TestingAuxLib::suLogin ('testuser2'); 
         //testUser2 can edit only their own
-        $editable = array_keys (X2CalendarPermissions::getEditableCalendarNames ());
+        $editable = array_keys (X2CalendarPermissions::getEditableUserCalendarNames ());
         $grantedUsers = ArrayUtil::sort(array_merge(array(Yii::app()->user->id), Yii::app()->db->createCommand ("
                 SELECT calendarId
                 FROM x2_calendar_permissions
