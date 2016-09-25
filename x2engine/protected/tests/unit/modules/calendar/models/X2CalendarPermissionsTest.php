@@ -78,7 +78,7 @@ class X2CalendarPermissionsTest extends X2DbTestCase {
         $grantedUsers = ArrayUtil::sort(Yii::app()->db->createCommand ("
                 SELECT calendarId
                 FROM x2_calendar_permissions
-                WHERE createdBy=:userId AND view = 1
+                WHERE userId=:userId AND view = 1
             ")->queryColumn (array (':userId' => $user->username)));
         $this->assertEquals (ArrayUtil::sort ($grantedUsers), 
             ArrayUtil::sort ($viewable));
@@ -98,25 +98,25 @@ class X2CalendarPermissionsTest extends X2DbTestCase {
 
         $user = $this->users ('testUser');
         TestingAuxLib::suLogin ('testuser');      
-        //testUser can edit 1 calendar
+        //testUser can edit their own + 1 calendar
         $editable = array_keys (X2CalendarPermissions::getEditableUserCalendarNames ());
-        $grantedUsers = ArrayUtil::sort(Yii::app()->db->createCommand ("
+        $grantedUsers = ArrayUtil::sort(array_merge(array(Yii::app()->user->id),Yii::app()->db->createCommand ("
                 SELECT calendarId
                 FROM x2_calendar_permissions
                 WHERE userId=:userId AND edit = 1
-            ")->queryColumn (array (':userId' => $user->id)));
+            ")->queryColumn (array (':userId' => $user->id))));
         $this->assertEquals (ArrayUtil::sort ($grantedUsers), 
             ArrayUtil::sort ($editable));
         
         $user = $this->users ('testUser2');
         TestingAuxLib::suLogin ('testuser2'); 
-        //testUser2 can edit no calendars
+        //testUser2 can edit only their own
         $editable = array_keys (X2CalendarPermissions::getEditableCalendarNames ());
-        $grantedUsers = ArrayUtil::sort(Yii::app()->db->createCommand ("
+        $grantedUsers = ArrayUtil::sort(array_merge(array(Yii::app()->user->id), Yii::app()->db->createCommand ("
                 SELECT calendarId
                 FROM x2_calendar_permissions
-                WHERE createdBy=:userId AND edit = 1
-            ")->queryColumn (array (':userId' => $user->username)));
+                WHERE userId=:userId AND edit = 1
+            ")->queryColumn (array (':userId' => $user->username))));
         $this->assertEquals (ArrayUtil::sort ($grantedUsers), 
             ArrayUtil::sort ($editable));
         TestingAuxLib::restoreX2WebUser ();

@@ -45,12 +45,14 @@ class CalendarInvitesTest extends X2DbTestCase {
     }
 
     public function testCreateInvites() {
+        TestingAuxLib::loadX2NonWebUser ();
+        TestingAuxLib::suLogin ('admin');    
         $action = new Actions();
         $time = time();
         $action->dueDate = $time;
         $action->createDate = $time;
         $action->lastUpdated = $time;
-        $action->assignedTo = Yii::app()->user->name;
+        $action->assignedTo = Yii::app()->user->name;        
         $action->calendarId = $this->calendar(Yii::app()->user->name)->id;
         $action->type = 'event';
         $action->attachBehavior('CalendarInviteBehavior', array(
@@ -59,6 +61,8 @@ class CalendarInvitesTest extends X2DbTestCase {
         ));
         
         $this->assertEquals(0, count($action->invites));
+        
+        TestingAuxLib::restoreX2WebUser();
     }
 
 }
