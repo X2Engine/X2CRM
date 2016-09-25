@@ -43,6 +43,7 @@ class CalendarInvitesTest extends X2DbTestCase {
             'calendar' => 'X2Calendar',
             'credentials' => 'Credentials',
             'credentialsDefault' => ':x2_credentials_default',
+            'users' => 'User',
         );
     }
     
