@@ -42,6 +42,7 @@ class CalendarInvitesTest extends X2DbTestCase {
         return array(
             'calendar' => 'X2Calendar',
             'credentials' => 'Credentials',
+            'credentialsDefault' => ':x2_credentials_default',
         );
     }
     
@@ -82,7 +83,7 @@ class CalendarInvitesTest extends X2DbTestCase {
     
     public function testUpdateInvites(){
         TestingAuxLib::loadX2NonWebUser ();
-        TestingAuxLib::suLogin ('admin');  
+        TestingAuxLib::suLogin ('testUser');  
         
         $action = $this->actions('action1');
         $invite = $action->invites[0];
