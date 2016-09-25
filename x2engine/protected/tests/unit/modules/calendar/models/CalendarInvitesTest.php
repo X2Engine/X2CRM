@@ -89,6 +89,12 @@ class CalendarInvitesTest extends X2DbTestCase {
         
         $this->assertEquals('Yes',$invite->status);
         
+        $action->dueDate = $action->dueDate + (60 * 60);
+        $action->save();
+        
+        $invite->refresh();
+        $this->assertNull($invite->status);
+        
         TestingAuxLib::restoreX2WebUser();
     }
 
