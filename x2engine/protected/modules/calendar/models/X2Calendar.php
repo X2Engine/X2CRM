@@ -162,27 +162,7 @@ class X2Calendar extends CActiveRecord
             }
             return array($client, $googleCalendarList);
         }
-	
-	public static function getCalendarFilters() {
-		$user = User::model()->findByPk(Yii::app()->user->id);
-		$calendarFilters = explode(',', $user->calendarFilter);
-		$filters = X2Calendar::getCalendarFilterNames();
-		
-		$filterList = array();
-		foreach($filters as $filter)
-			if(in_array($filter, $calendarFilters))
-				$filterList[$filter] = true;
-			else
-				$filterList[$filter] = false;
-		
-		return $filterList;
-	}
-	
-	// get a list of the names of all filters
-	public static function getCalendarFilterNames() {
-		return array('contacts', 'accounts', 'opportunities', 'quotes', 'products', 'media', 'completed');
-	}
-
+        
 	/**
      * Getter for the possible actions used by the calendar
      * @return array Array of constructed URLS
