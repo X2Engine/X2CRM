@@ -63,11 +63,11 @@ class X2CalendarPermissionsTest extends X2DbTestCase {
         TestingAuxLib::suLogin ('testuser');      
         //testUser can see all but one calendar
         $viewable = array_keys (X2CalendarPermissions::getViewableUserCalendarNames ());
-        $grantedUsers = ArrayUtil::sort(Yii::app()->db->createCommand ("
+        $grantedUsers = ArrayUtil::sort(array_merge(array(Yii::app()->user->id), Yii::app()->db->createCommand ("
                 SELECT calendarId
                 FROM x2_calendar_permissions
                 WHERE userId=:userId AND view = 1
-            ")->queryColumn (array (':userId' => $user->id)));
+            ")->queryColumn (array (':userId' => $user->id))));
         $this->assertEquals (ArrayUtil::sort ($grantedUsers), 
             ArrayUtil::sort ($viewable));
         
@@ -75,11 +75,11 @@ class X2CalendarPermissionsTest extends X2DbTestCase {
         TestingAuxLib::suLogin ('testuser2'); 
         //testUser2 can see no calendars
         $viewable = array_keys (X2CalendarPermissions::getViewableUserCalendarNames ());
-        $grantedUsers = ArrayUtil::sort(Yii::app()->db->createCommand ("
+        $grantedUsers = ArrayUtil::sort(array_merge(array(Yii::app()->user->id), Yii::app()->db->createCommand ("
                 SELECT calendarId
                 FROM x2_calendar_permissions
                 WHERE userId=:userId AND view = 1
-            ")->queryColumn (array (':userId' => $user->username)));
+            ")->queryColumn (array (':userId' => $user->username))));
         $this->assertEquals (ArrayUtil::sort ($grantedUsers), 
             ArrayUtil::sort ($viewable));
         TestingAuxLib::restoreX2WebUser ();
