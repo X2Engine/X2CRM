@@ -200,7 +200,7 @@ X2Html::getFlashes ();
         if (strpos($currentUrl, '/mobile/login') == false){
         ?>
             <a href='<?php echo Yii::app()->createAbsoluteUrl ('profile/mobileActivity'); ?>' 
-              style='margin-left: 50px;' 
+              style='margin-left: 70px;' 
               class='ui-btn-left ui-btn show-left-menu-button-right'>
                 <i class='fa fa-home'></i>
             </a>

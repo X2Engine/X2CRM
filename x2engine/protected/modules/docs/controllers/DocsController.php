@@ -172,6 +172,8 @@ class DocsController extends x2base {
 
         if (isset($_POST['Docs'])) {
             $model->setX2Fields($_POST['Docs']);
+            $model->subject = Formatter::restoreInsertableAttributes($model->subject);
+            $model->text = Formatter::restoreInsertableAttributes($model->text);
             if ($model->save()) {
                 if (isset($_GET['ajax']) && $_GET['ajax']) {
                     echo CJSON::encode($model->attributes);

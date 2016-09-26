@@ -1,8 +1,8 @@
 <?php return array (
   '{poster} posted a new reply to {topic}.' => '{poster} разместил новый ответ в {topic}',
-  '{poster} posted a new reply to a topic, but that reply has been deleted.' => '{poster} разместил новый ответ к теме, но ответ был удален.',
+  '{poster} posted a new reply to a topic, but that reply has been deleted.' => '{poster} разместил новый ответ к теме, но этот ответ был удален.',
   'Topic Title' => 'Название темы',
-  'Replies' => 'Ответов',
+  'Replies' => 'Ответы',
   'Latest Post' => 'Последнее сообщение',
   'Create {topic}' => 'Создать {topic}',
   'Are you sure you want to delete this post?' => 'Вы уверены, что хотите удалить это сообщение?',
@@ -17,8 +17,8 @@
   'Edit {topic}' => 'Редактировать {topic}',
   'Sorting' => 'Сортировка',
   'Most Recent' => 'Самое новое',
-  'Alphabetical' => 'Алфавитный',
-  'Most Popular' => 'Самый популярный',
-  '{poster}posted a new reply to {topic}.' => '{poster} разместил новый ответ в {topic} .',
-  '{poster}posted a new reply to a topic, but that reply has been deleted.' => '{poster} разместил новый ответ в, но этот ответ был удален.',
+  'Alphabetical' => 'По алфавиту',
+  'Most Popular' => 'По популярности',
+  '{poster}posted a new reply to {topic}.' => '{poster} разместил новый ответ в {topic}.',
+  '{poster}posted a new reply to a topic, but that reply has been deleted.' => '{poster} разместил новый ответ к теме, но этот ответ был удален.',
 );

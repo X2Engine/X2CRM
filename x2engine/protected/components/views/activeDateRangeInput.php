@@ -59,6 +59,7 @@ Yii::app()->clientScript->registerCss('activeDateRangeInput',"
 
 <div class='active-date-range-input' 
  id='<?php echo $this->resolveId ($this->id); ?>'>
+    <?php if(!isset($this->options['timeTracker']) || $this->options['timeTracker'] === true){ ?>
     <div class="cell action-duration">
         <div class="action-duration-input">
             <label for="timetrack-hours"><?php echo Yii::t('actions','Hours'); ?></label>
@@ -72,6 +73,7 @@ Yii::app()->clientScript->registerCss('activeDateRangeInput',"
              name="timetrack-minutes" />
         </div>
     </div>
+    <?php } ?>
 
     <div class="cell">
         <?php 

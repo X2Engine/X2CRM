@@ -75,6 +75,7 @@ $echoTabRow = function ($tabs, $rowNum=1) use ($that) {
         $tab->renderTab (array (
             'model' => $model,
             'associationType' => $associationType,
+            'email' => $email,
         ));
     }
     ?><button id="toggle-location-button" class="x2-button" style="margin-top:-40px;"><?php

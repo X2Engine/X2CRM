@@ -41,10 +41,13 @@
  * @todo Find out if this class is still actually used for anything. Delete it
  *  and anything else associated with it (i.e. the database table) if not.
  */
+Yii::import('application.components.calendarSync.*');
+
 class X2Calendar extends CActiveRecord
 {
 
 	public $googleCalendarName;
+        public $defaultCalendar;
 	
 	/**
 	 * Returns the static model of the specified AR class.
@@ -60,16 +63,41 @@ class X2Calendar extends CActiveRecord
 	public function tableName() {
 		return 'x2_calendars';
 	}
+        
+        public function rules(){
+            return array(
+                array('name','required'),
+                array('remoteSync','boolean'),
+                array('name','length', 'max' => 100),
+                array('syncType, remoteCalendarId, remoteCalendarUrl, ctag, credentials','safe')
+            );
+        }
+        
+        public function behaviors() {
+            $behaviors = array();
+            if (!empty($this->syncType)) {
+                if ($this->syncType == 'google') {
+                    $behaviors['syncBehavior'] = 'GoogleCalendarSync';
+                }
+            }
+            return array_merge($behaviors, parent::behaviors());
+        }
+        
+        public function attachSyncBehavior(){
+            if (!empty($this->syncType)) {
+                if ($this->syncType == 'google') {
+                    $this->attachBehavior('syncBehavior','GoogleCalendarSync');
+                }
+            }
+        }
 	
 	public function attributeLabels() {
 		return array(
-			'id' => Yii::t('admin','ID'),
-			'googleCalendar'=>Yii::t('calendar', 'Google Calendar'),
-			'googleFeed'=>Yii::t('calendar', 'Google Feed'),
-			'googleCalendarName' => Yii::t('calendar','Google Calendar Name'),
+                    'id' => Yii::t('admin','ID'),
+                    'remoteCalendarId' => Yii::t('calendar','Remote Calendar Name'),
 		);
 	}
-	
+        
 	public static function getNames() {
 		$calendars = X2Calendar::model()->findAllByAttributes(array('googleCalendar'=>false));
 		
@@ -80,84 +108,61 @@ class X2Calendar extends CActiveRecord
 		return $names;
 	}
 	
-	public static function getViewableUserCalendarNames() {
-		$order = 'desc';
-		$userArray = X2Model::model('User')->findAll();
-		$names = array('Anyone' => 'Anyone');
-		foreach ($userArray as $user) {
-			if(in_array(Yii::app()->user->name, explode(',', $user->calendarViewPermission)) || 
-				!$user->setCalendarPermissions || // user hasn't set up calendar permissions?
-				Yii::app()->params->isAdmin || 
-				Yii::app()->user->name == $user->username) {
-				$first = $user->firstName;
-				$last = $user->lastName;
-				$userName = $user->username;
-				$name = $first . ' ' . $last;
-				$names[$userName] = $name;
-			}
-		}
-		return $names;
-	}
-	
-	public static function getEditableUserCalendarNames() {
-		$order = 'desc';
-		$userArray = X2Model::model('User')->findAll();
-		$names = array('Anyone' => 'Anyone');
-		foreach ($userArray as $user) {
-			if(in_array(Yii::app()->user->name, explode(',', $user->calendarEditPermission)) || 
-				Yii::app()->params->isAdmin || 
-				Yii::app()->user->name == $user->username) {
-				$first = $user->firstName;
-				$last = $user->lastName;
-				$userName = $user->username;
-				$name = $first . ' ' . $last;
-				$names[$userName] = $name;
-			}
-		}
-		return $names;
-	}
-	
-	public static function getViewableGroupCalendarNames() {
-		
-		$names = array();
-
-		if(Yii::app()->params->isAdmin) { // admin sees all
-			$groups = Yii::app()->db->createCommand()->select()->from('x2_groups')->queryAll();			
-		} else {
-			$groups = Yii::app()->db->createCommand()
-                ->select('x2_groups.id, x2_groups.name')
-                ->from('x2_group_to_user')
-                ->join('x2_groups', 'groupId = x2_groups.id')
-                ->where('userId='.Yii::app()->user->id)->queryAll();
-		}
-		
-		foreach($groups as $group) {
-			$names[$group['id']] = $group['name'];
-		}
-		
-		return $names;
-	}
-	
-	public static function getCalendarFilters() {
-		$user = User::model()->findByPk(Yii::app()->user->id);
-		$calendarFilters = explode(',', $user->calendarFilter);
-		$filters = X2Calendar::getCalendarFilterNames();
-		
-		$filterList = array();
-		foreach($filters as $filter)
-			if(in_array($filter, $calendarFilters))
-				$filterList[$filter] = true;
-			else
-				$filterList[$filter] = false;
-		
-		return $filterList;
-	}
-	
-	// get a list of the names of all filters
-	public static function getCalendarFilterNames() {
-		return array('contacts', 'accounts', 'opportunities', 'quotes', 'products', 'media', 'completed');
-	}
-
+        
+        /**
+         * Returns a list of calendars that can be synced to
+         */
+        public static function getGoogleCalendarList($id = null){
+            $client = new GoogleAuthenticator();
+            try {
+                if ($client->getAccessToken()) {
+                    $googleCalendar = $client->getCalendarService();
+                    try {
+                        $calList = $googleCalendar->calendarList->listCalendarList();
+                        $syncedCalendarCmd = Yii::app()->db->createCommand()
+                                ->selectDistinct('remoteCalendarId')
+                                ->from('x2_calendars');
+                        if(!is_null($id)){
+                            $syncedCalendarCmd->where('id != :id AND remoteCalendarId IS NOT NULL',array(':id'=>$id));
+                        }else{
+                            $syncedCalendarCmd->where('remoteCalendarId IS NOT NULL');
+                        }
+                        $syncedCalendars = $syncedCalendarCmd->queryColumn();
+                        $googleCalendarList = array();
+                        foreach ($calList['items'] as $cal) {
+                            if(!in_array($cal['id'], $syncedCalendars)){
+                                $googleCalendarList[$cal['id']] = $cal['summary'];
+                            }
+                        }
+                    } catch (Google_Service_Exception $e) {
+                        if ($e->getCode() == '403') {
+                            $errors[] = 'Google Calendar API access has not been configured.';
+                            Yii::app()->user->setFlash(
+                                    'error', 'Google Calendar API access has not been configured.');
+                            $googleCalendarList = null;
+                            //$auth->flushCredentials();
+                        } elseif ($e->getCode() == '401') {
+                            $errors[] = 'Invalid user credentials provided. Please try again.';
+                            Yii::app()->user->setFlash(
+                                    'error', 'Invalid user credentials. Please ensure your account is ' .
+                                    'able to use this service or delete the access permissions ' .
+                                    'and try again.');
+                            $googleCalendarList = null;
+                            $client->flushCredentials();
+                        }
+                    }
+                }else{
+                    $googleCalendarList = null;
+                }
+            } catch (Google_Auth_Exception $e) {
+                $client->flushCredentials();
+                $client->setErrors($e->getMessage());
+                $client = null;
+                $googleCalendarList = null;
+            }
+            return array($client, $googleCalendarList);
+        }
+        
 	/**
      * Getter for the possible actions used by the calendar
      * @return array Array of constructed URLS
@@ -167,21 +172,13 @@ class X2Calendar extends CActiveRecord
             'jsonFeed' => Yii::app()->createUrl('/calendar/jsonFeed'), // feed to get actions from users
             'jsonFeedGroup' => Yii::app()->createUrl('/calendar/jsonFeedGroup'), // feed to get actions from group Calendar
             'jsonFeedShared' => Yii::app()->createUrl('/calendar/jsonFeedShared'), // feed to get actions from shared calendars
-            'jsonFeedGoogle' => Yii::app()->createUrl('/calendar/jsonFeedGoogle'), // feed to get events from a google calendar
-            //'jsonFeedAll' => Yii::app()->createUrl('/calendar/jsonFeedAll'),
             'currentUserFeed' => Yii::app()->createUrl('/calendar/jsonFeed', array('user' => Yii::app()->user->name)), // add current user actions to calendar
             'anyoneUserFeed' => Yii::app()->createUrl('/calendar/jsonFeed', array('user' => 'Anyone')), // add Anyone actions to calendar
             'moveAction' => Yii::app()->createUrl('/calendar/moveAction'),
-            'moveGoogleEvent' => Yii::app()->createUrl('/calendar/moveGoogleEvent'),
             'resizeAction' => Yii::app()->createUrl('/calendar/resizeAction'),
-            'resizeGoogleEvent' => Yii::app()->createUrl('/calendar/resizeGoogleEvent'),
             'viewAction' => Yii::app()->createUrl('/calendar/viewAction'),
             'saveAction' => Yii::app()->createUrl('/actions/actions/quickUpdate'),
             'editAction' => Yii::app()->createUrl('/calendar/editAction'),
-            'viewGoogleEvent' => Yii::app()->createUrl('/calendar/viewGoogleEvent'),
-            'editGoogleEvent' => Yii::app()->createUrl('/calendar/editGoogleEvent'),
-            'saveGoogleEvent' => Yii::app()->createUrl('/calendar/saveGoogleEvent'),
-            'deleteGoogleEvent' => Yii::app()->createUrl('/calendar/deleteGoogleEvent'),
             'completeAction' => Yii::app()->createUrl('/calendar/completeAction'),
             'uncompleteAction' => Yii::app()->createUrl('/calendar/uncompleteAction'),
             'deleteAction' => Yii::app()->createUrl('/calendar/deleteAction'),
@@ -264,88 +261,52 @@ class X2Calendar extends CActiveRecord
 	    	return $array;
 
     }
+    
+    protected function beforeDelete() {
+        if($this->asa('syncBehavior')){
+            $this->deleteRemoteActions();
+        }
+        return parent::beforeDelete();
+    }
 	
-	// get a google calendar service instance using an access token and,
-	// if necesary, refresh the access token
-	public function getGoogleCalendar() {
-		// Google Calendar Libraries
-		$timezone = date_default_timezone_get();
-        require_once 'protected/integration/Google/google-api-php-client/src/Google/autoload.php';
-		date_default_timezone_set($timezone);
-
-		$admin = Yii::app()->settings;
-        $credentials = Yii::app()->settings->getGoogleIntegrationCredentials ();
-		if($admin->googleIntegration && $credentials) {
-			$client = new Google_Client();
-			$client->setClientId($credentials['clientId']);
-			$client->setClientSecret($credentials['clientSecret']);
-			//$client->setDeveloperKey($admin->googleAPIKey);
-			$client->setAccessToken($this->googleAccessToken);
-			$service = new Google_Service_Calendar ($client);
-
-			// check if the access token needs to be refreshed
-			// note that the google library automatically refreshes the access token if we need a new one, 
-			// we just need to check if this happend by calling a google api function that requires authorization, 
-			// and, if the access token has changed, save this new access token
-			$googleCalendar = $service->calendars->get($this->googleCalendarId);			
-			if($this->googleAccessToken != $client->getAccessToken()) {
-				$this->googleAccessToken = $client->getAccessToken();
-				$this->update();
-			}
-
-			return $service;
-		}
-		
-		return null;
-	}
-	
-	public function createGoogleEvent($action) {
-	
-		// Google Calendar Libraries
-		$timezone = date_default_timezone_get();
-        require_once 'protected/integration/Google/google-api-php-client/src/Google/autoload.php';
-		date_default_timezone_set($timezone);
-		
-		$googleCalendar = $this->getGoogleCalendar();
-	
-		$event = new Event();
-		$event->setSummary($action->actionDescription);
-		
-		if($action->allDay) {
-			$start = new EventDateTime();
-			$start->setDate(date('Y-m-d', $action->dueDate));
-			$event->setStart($start);
-			
-			if(!$action->completeDate)
-				$action->completeDate = $action->dueDate + 86400;
-			$end = new EventDateTime();
-			$end->setDate(date('Y-m-d', $action->completeDate));
-			$event->setEnd($end);
-		} else {
-			$start = new EventDateTime();
-			$start->setDateTime(date('c', $action->dueDate));
-			$event->setStart($start);
-			
-			if(!$action->completeDate)
-				$action->completeDate = $action->dueDate + 3600; // if no end time specified, make event 1 hour long
-			$end = new EventDateTime();
-			$end->setDateTime(date('c', $action->completeDate));
-			$event->setEnd($end);
-		}
-		
-		if($action->color && $action->color != '#3366CC') {
-		    $colorTable = array(
-		    	10=>'Green',
-		    	11=>'Red',
-		    	6=>'Orange',
-		    	8=>'Black',
-		    );
-		    if(($key = array_search($action->color, $colorTable)) != false)
-		    	$event->setColorId($key);
-		}
-		
-		$googleCalendar->events->insert($this->googleCalendarId, $event);
-	}
+        public function setCalendarPermissions($view, $edit){
+            $permissions = array();
+            if (is_array($view)) {
+                foreach ($view as $userId) {
+                    $permissions[$userId] = array('view' => 1, 'edit' => 0);
+                }
+            }
+            if (is_array($edit)) {
+                foreach ($edit as $userId) {
+                    $permissions[$userId] = array('view' => 1, 'edit' => 1);
+                }
+            }
+            X2CalendarPermissions::model()->deleteAllByAttributes(array('calendarId'=>$this->id));
+            foreach ($permissions as $userId => $perms) {
+                $permissionRecord = new X2CalendarPermissions();
+                $permissionRecord->calendarId = $this->id;
+                $permissionRecord->userId = $userId;
+                $permissionRecord->view = $perms['view'];
+                $permissionRecord->edit = $perms['edit'];
+                $permissionRecord->save();
+            }
+        }
+        
+        public function getUserIdsWithViewPermission(){
+            return Yii::app()->db->createCommand()
+                    ->select('userId')
+                    ->from('x2_calendar_permissions')
+                    ->where('view = 1 AND calendarId = :calendarId',array(':calendarId'=>$this->id))
+                    ->queryColumn();
+        }
+        
+        public function getUserIdsWithEditPermission(){
+            return Yii::app()->db->createCommand()
+                    ->select('userId')
+                    ->from('x2_calendar_permissions')
+                    ->where('edit = 1 AND calendarId = :calendarId',array(':calendarId'=>$this->id))
+                    ->queryColumn();
+        }
 
 	public function search() {
 		$criteria=new CDbCriteria;

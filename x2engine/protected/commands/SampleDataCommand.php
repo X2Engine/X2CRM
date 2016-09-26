@@ -159,6 +159,7 @@ class SampleDataCommand extends CConsoleCommand {
             'x2_auth_item_child',
             'x2_doc_folders',
             'x2_modules',
+	    'x2_mobile_layouts',
             'x2_sessions',
             'x2_temp_files',
             'x2_timezone_points',
@@ -209,9 +210,8 @@ class SampleDataCommand extends CConsoleCommand {
             'x2_users' => array(
                 'pk' => 'id',
                 'fields' => array('id', 'firstName', 'lastName', 'officePhone',
-                    'cellPhone', 'showCalendars', 'calendarViewPermission',
-                    'calendarEditPermission', 'calendarFilter',
-                    'setCalendarPermissions', 'recentItems', 'topContacts'),
+                    'cellPhone', 'showCalendars',
+                    'recentItems', 'topContacts'),
                 'where' => '`id`=1'
             )
         );

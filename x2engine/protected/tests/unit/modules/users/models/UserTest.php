@@ -62,6 +62,7 @@ class UserTest extends X2DbTestCase {
         'events' => array ('Events', '.UserTest'),
         'social' => array ('Social', '.UserTest'),
         'profile' => array ('Profile', '.UserTest'),
+        'calendar' => 'X2Calendar',
         'calendarPermissions' => 'X2CalendarPermissions',
     );
 
@@ -75,12 +76,7 @@ class UserTest extends X2DbTestCase {
         // test calendar permissions deletion
         $this->assertNotEquals (0,
             sizeof (X2CalendarPermissions::model()->findAllByAttributes (
-                array ('user_id' => $user->id))));
-        $this->assertNotEquals (0,
-            sizeof (
-                X2CalendarPermissions::model()->findAllByAttributes (
-                    array ('other_user_id' => $user->id))));
-        
+                array ('userId' => $user->id))));
         // assert that group to user records exist for this user
         $this->assertTrue (
             sizeof (
@@ -118,11 +114,7 @@ class UserTest extends X2DbTestCase {
         // test calendar permissions deletion
         $this->assertEquals (0,
             sizeof (X2CalendarPermissions::model()->findAllByAttributes (
-                array ('user_id' => $user->id))));
-        $this->assertEquals (0,
-            sizeof (
-                X2CalendarPermissions::model()->findAllByAttributes (
-                    array ('other_user_id' => $user->id))));
+                array ('userId' => $user->id))));
     }
 
     public function testBeforeDelete () {

@@ -83,9 +83,19 @@
             top: 10px;
         }
     }
+
+    .export-button {
+        @include header-text-button;
+    }
+    
     .submit-button {
         @include header-text-button;
     }
+    /*
+    .import-button {
+        @include header-text-button;
+    }
+    */
     .ui-content.autocomplete-shown {
         overflow-y: hidden;
         .autocomplete-option {

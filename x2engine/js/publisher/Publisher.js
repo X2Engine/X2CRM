@@ -87,7 +87,7 @@ Publisher.loadFrame = function (id,type){
         var frame=
             '<iframe style=\"width:99%;height:99%\" ' +
               'src=\"' + yii.scriptUrl + '/actions/actions/viewAction' +
-                '?id='+id+'&publisher=true\"></iframe>';
+                '?id='+id+'&publisher=true&loadAssociated=false\"></iframe>';
     } else if(type=='QuotePrint'){
         var frame=
             '<iframe style=\"width:99%;height:99%\" ' +

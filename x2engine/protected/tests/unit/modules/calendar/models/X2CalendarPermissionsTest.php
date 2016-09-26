@@ -40,6 +40,7 @@ Yii::import ('application.modules.users.models.*');
 class X2CalendarPermissionsTest extends X2DbTestCase {
 
     public $fixtures = array (
+        'calendar' => 'X2Calendar',
         'calendarPermissions' => 'X2CalendarPermissions',
         'users' => 'User',
     );
@@ -51,32 +52,73 @@ class X2CalendarPermissionsTest extends X2DbTestCase {
         TestingAuxLib::loadX2NonWebUser ();
         TestingAuxLib::suLogin ('admin');        
         $viewable = array_keys (X2CalendarPermissions::getViewableUserCalendarNames ());
-        $this->assertEquals (array_merge (
-            array ('Anyone'), Yii::app()->db->createCommand ("
-                SELECT username
-                FROM x2_users
-                WHERE status = 1
+        //Admin can see all calendars
+        $this->assertEquals (ArrayUtil::sort(Yii::app()->db->createCommand ("
+                SELECT id
+                FROM x2_calendars
             ")->queryColumn ()), 
             ArrayUtil::sort ($viewable));
 
         $user = $this->users ('testUser');
-        TestingAuxLib::suLogin ('testuser');        
+        TestingAuxLib::suLogin ('testuser');      
+        //testUser can see all but one calendar
         $viewable = array_keys (X2CalendarPermissions::getViewableUserCalendarNames ());
-        $grantedUsers = array_unique (array_merge (
-            array ('Anyone', 'testuser'), Yii::app()->db->createCommand ("
-                /**
-                 * get names of users who have granted view permission to testuser and names of
-                 * users who have not set up calendar permissions
-                 */
-                SELECT distinct(username)
-                FROM x2_users as t, x2_calendar_permissions
-                WHERE t.status = 1 AND (other_user_id=:userId OR t.id NOT in (
-                    SELECT distinct(user_id)
-                    FROM x2_calendar_permissions
-                ))
-            ")->queryColumn (array (':userId' => $user->id))));
+        $grantedUsers = ArrayUtil::sort(array_unique(array_merge(array(Yii::app()->user->id), Yii::app()->db->createCommand ("
+                SELECT calendarId
+                FROM x2_calendar_permissions
+                WHERE userId=:userId AND view = 1
+            ")->queryColumn (array (':userId' => $user->id)))));
         $this->assertEquals (ArrayUtil::sort ($grantedUsers), 
             ArrayUtil::sort ($viewable));
+        
+        $user = $this->users ('testUser2');
+        TestingAuxLib::suLogin ('testuser2'); 
+        //testUser2 can see no calendars
+        $viewable = array_keys (X2CalendarPermissions::getViewableUserCalendarNames ());
+        $grantedUsers = ArrayUtil::sort(array_unique(array_merge(array(Yii::app()->user->id), Yii::app()->db->createCommand ("
+                SELECT calendarId
+                FROM x2_calendar_permissions
+                WHERE userId=:userId AND view = 1
+            ")->queryColumn (array (':userId' => $user->username)))));
+        $this->assertEquals (ArrayUtil::sort ($grantedUsers), 
+            ArrayUtil::sort ($viewable));
+        TestingAuxLib::restoreX2WebUser ();
+    }
+    
+    public function testGetEditableUserCalendarNames () {
+        TestingAuxLib::loadX2NonWebUser ();
+        TestingAuxLib::suLogin ('admin');        
+        $editable = array_keys (X2CalendarPermissions::getEditableUserCalendarNames ());
+        //Admin can edit all calendars
+        $this->assertEquals (ArrayUtil::sort(Yii::app()->db->createCommand ("
+                SELECT id
+                FROM x2_calendars
+            ")->queryColumn ()), 
+            ArrayUtil::sort ($editable));
+
+        $user = $this->users ('testUser');
+        TestingAuxLib::suLogin ('testuser');      
+        //testUser can edit their own + 1 calendar
+        $editable = array_keys (X2CalendarPermissions::getEditableUserCalendarNames ());
+        $grantedUsers = ArrayUtil::sort(array_unique(array_merge(array(Yii::app()->user->id),Yii::app()->db->createCommand ("
+                SELECT calendarId
+                FROM x2_calendar_permissions
+                WHERE userId=:userId AND edit = 1
+            ")->queryColumn (array (':userId' => $user->id)))));
+        $this->assertEquals (ArrayUtil::sort ($grantedUsers), 
+            ArrayUtil::sort ($editable));
+        
+        $user = $this->users ('testUser2');
+        TestingAuxLib::suLogin ('testuser2'); 
+        //testUser2 can edit only their own
+        $editable = array_keys (X2CalendarPermissions::getEditableUserCalendarNames ());
+        $grantedUsers = ArrayUtil::sort(array_unique(array_merge(array(Yii::app()->user->id), Yii::app()->db->createCommand ("
+                SELECT calendarId
+                FROM x2_calendar_permissions
+                WHERE userId=:userId AND edit = 1
+            ")->queryColumn (array (':userId' => $user->username)))));
+        $this->assertEquals (ArrayUtil::sort ($grantedUsers), 
+            ArrayUtil::sort ($editable));
         TestingAuxLib::restoreX2WebUser ();
     }
 

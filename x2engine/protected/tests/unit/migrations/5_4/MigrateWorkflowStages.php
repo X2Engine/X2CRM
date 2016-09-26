@@ -38,6 +38,8 @@
 
 class MigrateWorkflowStages extends X2DbTestCase {
     
+    protected static $skipAllTests = true;
+    
     public $fixtures = array (
         'contacts' => array ('Contacts', '.WorkflowTests'),
         'actions' => array ('Actions', '.WorkflowMigrationTests'),
