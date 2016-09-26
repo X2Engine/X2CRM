@@ -90,10 +90,12 @@ PublisherTab.prototype.getFormObj = function () {
  */
 PublisherTab.prototype.reset = function () {
     var that = this;
+    var coords = $("input[name=geoCoords]").val();
     var formObj = this.getFormObj ();
     formObj.findElemByAttr ('associationType').val (this._formDefaults.associationType);
     formObj.findElemByAttr ('associationId').val (this._formDefaults.associationId);
     formObj.findElemByAttr ('assignedTo').val (this._formDefaults.assignedTo);
+    $("input[name=geoCoords]").val(coords);
 };
 
 PublisherTab.prototype._saveDefaults = function () {

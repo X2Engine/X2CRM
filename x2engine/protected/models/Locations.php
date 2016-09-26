@@ -55,6 +55,7 @@ class Locations extends CActiveRecord
             'click' => Yii::t('app', 'Email Click'),
             'unsub' => Yii::t('app', 'Email Unsubscribe'),
             'login' => Yii::t('app', 'User Login'),
+            'activityPost' => Yii::t('app', 'Activity Post'),
             'mobileIdle' => Yii::t('app', 'Mobile Location'),
             'mobileActivityPost' => Yii::t('app', 'Mobile Activity Post'),
         );
@@ -125,6 +126,7 @@ class Locations extends CActiveRecord
         return array(
             'address',
             'login',
+            'activityPost',
             'mobileIdle',
             'mobileActivityPost',
         );

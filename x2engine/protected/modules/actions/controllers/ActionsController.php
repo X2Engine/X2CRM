@@ -283,6 +283,9 @@ class ActionsController extends x2base {
             }
 
             if (!$model->hasErrors () && isset($_POST['x2ajax'])) {
+                $location = Yii::app()->params->profile->user->logLocation('activityPost', 'POST');
+                if ($location)
+                    $model->locationId = $location->id;
                 $this->quickCreate($model);
                 $model->syncGoogleCalendar('create');
             } elseif(!$model->hasErrors () && $model->save()){

@@ -153,6 +153,9 @@ function addLargeMapMarker(contents) {
             map: map
         });
     }
+    if (contactId === 0 && markerFlag) {
+        marker.setIcon('https://maps.google.com/mapfiles/ms/icons/green-dot.png');
+    }
     if (!markerFlag)
         marker.setVisible(false);
     if(typeof infowindow==='undefined'){

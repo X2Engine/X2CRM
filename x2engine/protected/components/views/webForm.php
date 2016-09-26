@@ -437,7 +437,7 @@ if ($type !== 'service' && Yii::app()->settings->enableFingerprinting && (!isset
 <?php
 }
 
-if ($type === 'weblead' && (!isset ($_SERVER['HTTP_DNT']) || $_SERVER['HTTP_DNT'] != 1)) {
+if ($type === 'weblead' && !empty ($_SERVER['HTTPS']) && (!isset ($_SERVER['HTTP_DNT']) || $_SERVER['HTTP_DNT'] != 1)) {
 ?>
     <input type="hidden" name="geoCoords" id="geoCoords"></input>
     <script>

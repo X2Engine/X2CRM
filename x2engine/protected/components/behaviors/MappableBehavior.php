@@ -133,6 +133,9 @@ class MappableBehavior extends CActiveRecordBehavior {
                 case "login":
                     $infoText = Yii::t('app', 'User Login');
                     break;
+                case 'activityPost':
+                    $infoText = Yii::t('app', 'Activity Post');
+                    break;
                 case 'mobileIdle':
                     $infoText = Yii::t('app', 'Mobile Location');
                     break;

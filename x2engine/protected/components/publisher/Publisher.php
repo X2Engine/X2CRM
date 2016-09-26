@@ -178,6 +178,38 @@ class Publisher extends X2Widget {
         });
         ", CClientScript::POS_HEAD);
 
+        if (!empty($_SERVER['HTTPS'])) {
+            Yii::app()->clientScript->registerScript('geolocationJs', '
+                $("#toggle-location-button").click(function (evt) {
+                    evt.preventDefault();
+                    if ($("#toggle-location-button").data("location-enabled") === true) {
+                        // Clear geoCoords field and reset style
+                        $("input[name=geoCoords]").val("");
+                        $("#toggle-location-button")
+                            .data("location-enabled", false)
+                            .css("color", "");
+                    } else {
+                        // Populate geoCoords field and highlight blue
+                        if ("geolocation" in navigator) {
+                            navigator.geolocation.getCurrentPosition(function(position) {
+                            var pos = {
+                              lat: position.coords.latitude,
+                              lon: position.coords.longitude
+                            };
+
+                            $("input[name=geoCoords]").val(JSON.stringify (pos));
+                            $("#toggle-location-button")
+                                .data("location-enabled", true)
+                                .css("color", "blue");
+                          }, function() {
+                            console.log("error fetching geolocation data");
+                          });
+                        }
+                    }
+                });
+            ', CClientScript::POS_READY);
+        }
+
         Yii::app()->clientScript->registerCss('recordViewPublisherCss', '
             .action-event-panel {
                 margin-top: 5px;

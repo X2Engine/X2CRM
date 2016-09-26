@@ -580,7 +580,7 @@ class ContactsController extends x2base {
             'zoom' => isset($zoom) ? $zoom : null,
             'mapFlag' => isset($map) ? 'true' : 'false',
             'noHeatMap' => $noHeatMap,
-            'locationType' => isset($params['locationType']) ? $params['locationType'] : array('address'),
+            'locationType' => isset($params['locationType']) ? $params['locationType'] : Locations::getDefaultContactTypes(),
         ));
     }
 

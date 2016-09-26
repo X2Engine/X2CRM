@@ -168,8 +168,12 @@ $this->renderPartial ('_feedFilters');
         ?>
         <div id='second-row-buttons-container'>
             <?php
+            echo CHtml::hiddenField('geoCoords', '');
             echo CHtml::submitButton(
                 Yii::t('app','Post'),array('class'=>'x2-button','id'=>'save-button'));
+            ?><button id="toggle-location-button" class="x2-button"><?php
+                echo X2Html::fa('crosshairs');
+            ?></button><?php
             if ($isMyProfile) {
                 echo CHtml::button(
                     Yii::t('app','Attach A File/Photo'),
@@ -182,6 +186,37 @@ $this->renderPartial ('_feedFilters');
         </div>
         </div>
         <?php
+            if (!empty($_SERVER['HTTPS'])) {
+                Yii::app()->clientScript->registerScript('geolocationJs', '
+                    $("#toggle-location-button").click(function (evt) {
+                        evt.preventDefault();
+                        if ($("#toggle-location-button").data("location-enabled") === true) {
+                            // Clear geoCoords field and reset style
+                            $("#geoCoords").val("");
+                            $("#toggle-location-button")
+                                .data("location-enabled", false)
+                                .attr("style", "");
+                        } else {
+                            // Populate geoCoords field and highlight blue
+                            if ("geolocation" in navigator) {
+                                navigator.geolocation.getCurrentPosition(function(position) {
+                                var pos = {
+                                  lat: position.coords.latitude,
+                                  lon: position.coords.longitude
+                                };
+
+                                $("#geoCoords").val(JSON.stringify (pos));
+                                $("#toggle-location-button")
+                                    .data("location-enabled", true)
+                                    .attr("style", "color: blue;");
+                              }, function() {
+                                console.log("error fetching geolocation data");
+                              });
+                            }
+                        }
+                    });
+                ', CClientScript::POS_READY);
+            }
         ?>
     </div>
     <?php $this->endWidget(); ?>
