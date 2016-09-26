@@ -177,6 +177,12 @@ class ContactsController extends x2base {
                 $this->portlets['TimeZone']['params']['localTime'] = true;
                 $this->portlets['TimeZone']['params']['model'] = &$contact;
             }
+            // Only load the Google Maps widget if we're on a Contact with an address
+            if(isset($this->portlets['GoogleMaps']) && Yii::app()->settings->googleIntegration) {
+                $this->portlets['GoogleMaps']['params']['location'] = $contact->cityAddress;
+                $this->portlets['GoogleMaps']['params']['activityLocations'] = $contact->getMapLocations();
+                $this->portlets['GoogleMaps']['params']['defaultFilter'] = Locations::getDefaultContactTypes();
+            }
 
             // Update the VCR list information to preserve what list we came from
             if (isset($_COOKIE['vcr-list'])) {
@@ -226,6 +232,8 @@ class ContactsController extends x2base {
         // Set our widget info
         if (isset($this->portlets['TimeZone']))
             $this->portlets['TimeZone']['params']['model'] = &$contact;
+        if(isset($this->portlets['GoogleMaps']))
+            $this->portlets['GoogleMaps']['params']['location'] = $contact->cityAddress;
 
         if ($this->checkPermissions($contact, 'view')) {
 
@@ -370,6 +378,305 @@ class ContactsController extends x2base {
         }
         $contact->save();
         $this->redirect(array('view', 'id' => $id));
+    }
+
+     /**
+     * Loads a Google Maps interface with Contact location data plotted on it
+     * This will generate a Google Map frame on a page with several possible
+     * additional features. By default it provides a heat map of contact location
+     * data. However, if a Contact ID is also provided, it will center the map
+     * on that Contact's location and place a marker there. Filtering based on
+     * tags or assignment is also possible with the $params array
+     * @param int $contactId The ID of a Contact to center the map on
+     * @param array $params Additional filter parameters to limit the visible dataset
+     * @param int $loadMap The ID of a saved map to re-load previously saved settings
+     */
+    public function actionGoogleMaps($contactId = null, $params = array(), $loadMap = null){
+        if (!Yii::app()->settings->googleIntegration) {
+            throw new CHttpException(403, 'Please enable Google Integration to use this page.');
+        }
+        if(isset($_POST['contactId']))
+            $contactId = $_POST['contactId'];
+        if(isset($_POST['params'])){
+            $params = $_POST['params'];
+        }
+        if(isset($_GET['userId']))
+            $userId = $_GET['userId'];
+        $noHeatMap = isset($_GET['noHeatMap']) && $_GET['noHeatMap'] ? true : false;
+        // Check for a location type from a link
+        if (!isset($params['locationType']) && isset($_GET['locationType']))
+            $params['locationType'] = $_GET['locationType'];
+        if(!empty($loadMap)){ // If we have a map ID, duplicate whatever information was saved there
+            $map = Maps::model()->findByPk($loadMap);
+            if(isset($map)){
+                $contactId = $map->contactId;
+                $params = json_decode($map->params, true);
+            }
+        }
+        $conditions = "TRUE";
+        $parameters = array();
+        $tagCount = 0;
+        $tagFlag = false;
+        $contactFields = array_flip (Contacts::model()->attributeNames());
+
+        // Loop through params and add conditions to limit the contact data set
+        foreach($params as $field => $value){
+            // prevents SQL injection by verifying field name
+            if ($field != 'tags' && !isset ($contactFields[$field])) continue; 
+            if($field != 'tags' && $value != ''){
+                if ($field === 'assignedTo' && $value === 'Anyone') {
+                    $conditions.=" AND (x2_contacts.$field='Anyone' OR x2_contacts.$field='')";
+                } else {
+                    $conditions.=" AND x2_contacts.$field=:$field";
+                    $parameters[":$field"] = $value;
+                }
+            }elseif($value != ''){
+                $tagFlag = true;
+                if(!is_array($value)){
+                    $value = explode(",", $value);
+                }
+                $tagCount = count($value);
+                $tagStr = "(";
+                for($i = 0; $i < count($value); $i++){
+                    $tagStr.=':tag'.$i.', ';
+                    $parameters[":tag$i"] = $value[$i];
+                }
+                $tagStr = substr($tagStr, 0, strlen($tagStr) - 2).")";
+                $conditions.=" AND x2_tags.type='Contacts' AND x2_tags.tag IN $tagStr";
+            }
+        }
+        if (isset($params['locationType'])) {
+            // Add locationType conditions and parameters
+            $locationType = array_intersect($params['locationType'], array_keys(Locations::getLocationTypes()));
+            $conditions .= ' AND (';
+            if (isset($locationType[0]) && $locationType[0] === 'address') {
+                $conditions .= ' x2_locations.type IS NULL';
+                if (count($locationType) > 1)
+                    $conditions .= ' OR ';
+                unset($locationType[0]);
+            }
+            if (!empty($locationType)) {
+                $conditions .= ' x2_locations.type IN (';
+                $renderComma = false;
+                foreach ($locationType as $i => $locType) {
+                    if ($renderComma) $conditions .= ', ';
+                    $conditions .= ':locType'.$i;
+                    $parameters[':locType'.$i] = $locType;
+                    $renderComma = true;
+                }
+                $conditions .= ')';
+            }
+            $conditions .= ')';
+        }
+
+        if ($noHeatMap) {
+            if (isset($contactId)) {
+                $conditions .= ' AND x2_locations.recordType = "Contacts" AND x2_locations.recordId = :recordId';
+                $parameters[':recordId'] = $contactId;
+            } else if (isset($userId)) {
+                $conditions .= ' AND x2_locations.recordType = "User" AND x2_locations.recordId = :recordId';
+                $parameters[':recordId'] = $userId;
+            }
+        }
+
+        /*
+         * These two CDbCommands generate the query to grab all the location lat
+         * and lon data to be used on the map. If tags are being filtered on,
+         * we need a double join to grab all the requisite data, otherwise we
+         * only need to join x2_contacts to x2_locations
+         */
+        if($tagFlag){
+            $locations = Yii::app()->db->createCommand()
+                    ->select('x2_locations.*')
+                    ->from('x2_locations')
+                    ->join('x2_contacts', 'x2_contacts.id=x2_locations.recordId')
+                    ->join('x2_tags', 'x2_tags.itemId=x2_locations.recordId')
+                    ->where($conditions, $parameters)
+                    ->group('x2_tags.itemId')
+                    ->having('COUNT(x2_tags.itemId)>='.$tagCount)
+                    ->queryAll();
+        }else{
+            $locations = Yii::app()->db->createCommand()
+                    ->select('x2_locations.*')
+                    ->from('x2_locations')
+                    ->join('x2_contacts', 'x2_contacts.id=x2_locations.recordId')
+                    ->where($conditions, $parameters)
+                    ->queryAll();
+        }
+        $locationCodes = array();
+        // Loop through the SQL result and convert the data to an array that Google can read
+        foreach($locations as $location){
+            if(isset($location['lat']) && isset($location['lon'])){
+                $tempArr['lat'] = $location['lat'];
+                $tempArr['lng'] = $location['lon'];
+                $locationCodes[] = $tempArr;
+            }
+        }
+        /*
+         * $locationCodes[0] is the first location on the map and where the map
+         * will be centered. If we have a Contact ID, center it on that contact's
+         * location. Otherwise center it on the first location in the set
+         */
+        if(isset($contactId) || isset($userId)){
+            $location = X2Model::model('Locations')->findByAttributes(array(
+                'recordId' => (isset($userId) ? $userId : $contactId),
+                'recordType' => (isset($userId) ? 'User' : 'Contacts'),
+                'type' => (isset($params['locationType']) ? $params['locationType'] : null),
+            ));
+            if(isset($location)){
+                $loc = array("lat" => $location->lat, "lng" => $location->lon);
+                $markerLoc = array("lat" => $location->lat, "lng" => $location->lon);
+                $markerFlag = true;
+            }elseif(count($locationCodes) > 0){
+                $loc = $locationCodes[0];
+                $markerFlag = "false";
+            }else{
+                $loc = array('lat' => 0, 'lng' => 0);
+                $markerFlag = "false";
+            }
+        }else{
+            if(isset($locationCodes[0])){
+                $loc = $locationCodes[0];
+            }else{
+                $loc = array('lat' => 0, 'lng' => 0);
+            }
+            $markerFlag = "false";
+        }
+        // If we already have a map, use the previous center & zoom settings
+        if(isset($map)){
+            $loc['lat'] = $map->centerLat;
+            $loc['lng'] = $map->centerLng;
+            $zoom = $map->zoom;
+        }
+        if (isset($contactId)) {
+            $contactName = Yii::app()->db->createCommand()
+                ->select('name')
+                ->from('x2_contacts')
+                ->where('id = :id', array(':id' => $contactId))
+                ->queryScalar();
+        }
+        /*
+         * This view file is actually really complicated as it uses a lot of
+         * Google's JS files to render the map.
+         */
+        $this->render('googleEarth', array(
+            'locations' => json_encode($locationCodes),
+            'center' => json_encode($loc),
+            'markerLoc' => isset($markerLoc) ? json_encode($markerLoc) : json_encode($loc),
+            'markerFlag' => $markerFlag,
+            'userId' => isset($userId) ? $userId : 0,
+            'contactId' => isset($contactId) ? $contactId : 0,
+            'contactName' => isset($contactName) ? $contactName : '',
+            'assignment' => 
+                isset($_POST['params']['assignedTo']) || isset($params['assignedTo']) ?
+                    (isset($_POST['params']['assignedTo']) ? 
+                        $_POST['params']['assignedTo'] : $params['assignedTo']) 
+                    : '',
+            'leadSource' => 
+                isset($_POST['params']['leadSource']) ? 
+                    $_POST['params']['leadSource'] : '',
+            'tags' => ((isset($_POST['params']['tags']) && !empty($_POST['params']['tags'])) ? 
+                Tags::parseTags($_POST['params']['tags']) : array()),
+            'zoom' => isset($zoom) ? $zoom : null,
+            'mapFlag' => isset($map) ? 'true' : 'false',
+            'noHeatMap' => $noHeatMap,
+            'locationType' => isset($params['locationType']) ? $params['locationType'] : Locations::getDefaultContactTypes(),
+        ));
+    }
+
+    /**
+     * An AJAX called function to save map settings.
+     */
+    public function actionSaveMap(){
+        if (!Yii::app()->settings->googleIntegration) {
+            throw new CHttpException(403, 'Please enable Google Integration to use this page.');
+        }
+        if(isset($_POST['centerLat']) && isset($_POST['centerLng']) && isset($_POST['mapName'])){
+            $zoom = $_POST['zoom'];
+            $centerLat = $_POST['centerLat'];
+            $centerLng = $_POST['centerLng'];
+            $contactId = isset($_POST['contactId']) ? $_POST['contactId'] : '';
+            $params = isset($_POST['parameters']) ? $_POST['parameters'] : array();
+            $mapName = $_POST['mapName'];
+            $locationType = $_POST['locationType'];
+
+            $map = new Maps;
+            $map->name = $mapName;
+            $map->owner = Yii::app()->user->getName();
+            $map->contactId = $contactId;
+            $map->locationType = $locationType;
+            $map->zoom = $zoom;
+            $map->centerLat = $centerLat;
+            $map->centerLng = $centerLng;
+            $map->params = json_encode($params);
+            if($map->save()){
+
+            }else{
+
+            }
+        }
+    }
+
+    /**
+     * Display an index of saved maps.
+     */
+    public function actionSavedMaps(){
+        if (!Yii::app()->settings->googleIntegration) {
+            throw new CHttpException(403, 'Please enable Google Integration to use this page.');
+        }
+        if(Yii::app()->user->checkAccess('ContactsAdmin')){
+            $dataProvider = new CActiveDataProvider('Maps');
+        }else{
+            $dataProvider = new CActiveDataProvider('Maps', array(
+                        'criteria' => array(
+                            'condition' => 'owner="'.Yii::app()->user->getName().'"',
+                        )
+                    ));
+        }
+        $this->render('savedMaps', array(
+            'dataProvider' => $dataProvider,
+        ));
+    }
+
+    /**
+     * Delete a saved map
+     * @param int $id ID of the map to delete
+     */
+    public function actionDeleteMap($id){
+        if (!Yii::app()->settings->googleIntegration) {
+            throw new CHttpException(403, 'Please enable Google Integration to use this page.');
+        }
+        $map = Maps::model()->findByPk($id);
+        if(isset($map) && ($map->owner == Yii::app()->user->getName() || Yii::app()->user->checkAccess('ContactsAdmin')) && Yii::app()->request->isPostRequest){
+            $map->delete();
+        }
+        $this->redirect('savedMaps');
+    }
+
+    /**
+     * An AJAX called function to update the location of a Contact record
+     * @param int $contactId The ID of the contact
+     * @param float $lat The lattitutde of the location
+     * @param float $lon The longitude of the location
+     */
+    public function actionUpdateLocation($contactId, $lat, $lon){
+        $location = Locations::model()->findByAttributes(array(
+            'contactId' => $contactId,
+            'type' => null,
+        ));
+        if(!isset($location)){
+            $location = new Locations;
+            $location->contactId = $contactId;
+            $location->lat = $lat;
+            $location->lon = $lon;
+            $location->save();
+        }else{
+            if($location->lat != $lat || $location->lon != $lon){
+                $location->lat = $lat;
+                $location->lon = $lon;
+                $location->save();
+            }
+        }
     }
 
     /**
@@ -1316,6 +1623,18 @@ class ContactsController extends x2base {
                 'name'=>'export',
                 'label'=>Yii::t('contacts', 'Export {module}', array('{module}'=>$Contacts)),
                 'url'=>array('admin/exportModels', 'model'=>'Contacts')
+            ),
+            array(
+                'name'=>'map',
+                'label'=>Yii::t('contacts','Contact Map'),
+                'url'=>array('googleMaps'),
+                'visible' => (bool) Yii::app()->settings->googleIntegration,
+            ),
+            array(
+                'name'=>'savedMaps',
+                'label'=>Yii::t('contacts','Saved Maps'),
+                'url'=>array('savedMaps'),
+                'visible' => (bool) Yii::app()->settings->googleIntegration,
             ),
             array(
                 'name'=>'quick',

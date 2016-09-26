@@ -320,7 +320,8 @@ CREATE TABLE x2_events(
     sticky                  TINYINT             DEFAULT 0,
     color                   VARCHAR(10),
     fontColor               VARCHAR(10),
-    linkColor               VARCHAR(10)
+    linkColor               VARCHAR(10),
+    locationId              INT UNSIGNED
 ) COLLATE = utf8_general_ci, ENGINE = InnoDB;
 /*&*/
 DROP TABLE IF EXISTS x2_events_data;
@@ -570,9 +571,14 @@ DROP TABLE IF EXISTS x2_locations;
 /*&*/
 CREATE TABLE x2_locations(
 	id					INT				NOT NULL AUTO_INCREMENT PRIMARY KEY,
-	contactId			INT				NOT NULL,
+	contactId			INT				NOT NULL, -- TODO remove after writing migration
+	recordId			INT				NOT NULL,
+	recordType			VARCHAR(250)	NOT NULL,
 	lat                 FLOAT			NOT NULL,
-	lon                 FLOAT           NOT NULL
+	lon                 FLOAT           NOT NULL,
+	type                VARCHAR(50),
+	ipAddress           VARCHAR(250),
+	createDate			BIGINT          NOT NULL
 ) COLLATE = utf8_general_ci;
 /*&*/
 DROP TABLE IF EXISTS x2_maps;
@@ -585,7 +591,8 @@ CREATE TABLE x2_maps(
     params              TEXT,
     centerLat           FLOAT,
     centerLng           FLOAT,
-    zoom                INT
+    zoom                INT,
+	locationType        VARCHAR(50)
 ) COLLATE = utf8_general_ci;
 /*&*/
 DROP TABLE IF EXISTS x2_tips;

@@ -35,6 +35,7 @@ CREATE TABLE x2_actions (
     sticky                    TINYINT DEFAULT 0,
     flowTriggered             TINYINT DEFAULT 0,
     timeSpent                 INT DEFAULT 0,
+    locationId                INT UNSIGNED,
     INDEX (assignedTo),
     INDEX (type),
     INDEX (associationType,associationId),

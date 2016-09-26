@@ -171,7 +171,8 @@ ActivityFeed.prototype.publishPost = function  () {
             "text":editorText,
             "associationId":$("#Events_associationId").val(),
             "visibility":$("#Events_visibility").val(),
-            "subtype":$("#Events_subtype").val()
+            "subtype":$("#Events_subtype").val(),
+            "geoCoords":$("#geoCoords").val()
         },
         success:function(){
             that.finishMinimizeEditor ();

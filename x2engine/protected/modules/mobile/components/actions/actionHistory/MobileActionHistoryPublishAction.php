@@ -74,6 +74,9 @@ class MobileActionHistoryPublishAction extends MobileAction {
             $action->actionDescription = $_POST['Actions']['actionDescription'];
             $action->type = 'note';
         }
+        if (isset($_POST['geoCoords'])){
+            Yii::app()->params->profile->user->logLocation('mobileActivityPost', 'POST');
+        }
         
         if ($valid && $action->save ()) {
                 $this->controller->renderPartial (

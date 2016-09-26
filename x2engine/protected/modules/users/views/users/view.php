@@ -84,10 +84,22 @@ $this->insertMenu($menuOptions, $model);
 
 <?php
 foreach($actionHistory as $action) {
+    $association = $action->getAssociation();
+    $associatedDescription = '';
+    if ($association)
+        $associatedDescription = (isset($association->backgroundInfo) ?
+                        $association->backgroundInfo : $association->description);
+
 	$this->widget('zii.widgets.CDetailView', array(
 		'data'=>$action,
 		'baseScriptUrl'=>Yii::app()->request->baseUrl.'/themes/'.Yii::app()->theme->name.'/css/detailview',
 		'attributes'=>array(
+			array(
+				'label'=>'Associated Record',
+				'type'=>'raw',
+                'value'=> ($action->getAssociationLink().(!empty($associatedDescription) ?
+                    ': '.$associatedDescription : ''))
+			),
 			array(
 				'label'=>'Action Description',
 				'type'=>'raw',
@@ -120,7 +132,22 @@ foreach($actionHistory as $action) {
 				'type'=>'raw',
 				'value'=>date("F j, Y",$action->createDate),
 			),
+            array(
+                'name'=>'location',
+				'label'=>'Location',
+				'type'=>'raw',
+                'value'=>((isset($action->location) && $association instanceof Contacts) ?
+                    CHtml::link(Yii::t('contacts', 'View on Large Map'),
+                    array(
+                        'contacts/googleMaps',
+                        'userId' => $model->id,
+                        'noHeatMap' => 1,
+                        'locationType' => array($action->location->type),
+                    ))
+                    : ''),
+			),
 		),
 	));
+    echo '<br />';
 }
 ?><br /><br />

@@ -53,9 +53,8 @@ echo X2Html::unorderedList (array (
     CHtml::encode (Yii::t('app', 'Google sign in')),
     CHtml::encode (Yii::t('app', 'Google Calendar sync')),
     CHtml::encode (Yii::t('app', 'Google Drive access')),
-     
+    CHtml::encode (Yii::t('app', 'Google Maps widget and Contact Heatmap')),
     CHtml::encode (Yii::t('app', 'Google+ Profile widget and profile search')),
-     
 ));
 
 ?>
@@ -115,13 +114,13 @@ echo X2Html::orderedList (array (
             )),
         ), array ('style' => 'list-style-type: lower-latin;')),
      
-    Yii::t('app', 'To configure Google integration for the Google+ widget:').
+    Yii::t('app', 'To configure Google integration for the Google+ and Google Maps widgets:').
         X2Html::orderedList (array (
             CHtml::encode (
                 Yii::t('app', 'From the "APIs & auth" section in the left sidebar, select "APIs."')
             ),
             CHtml::encode (
-                Yii::t('app', 'Search for and enable the Google+ API.')
+                Yii::t('app', 'Search for and enable the Google+, Google Maps, and Google Maps Geocoding APIs.')
             ),
             CHtml::encode (
                 Yii::t('app', 'From the "APIs & auth" section in the left sidebar, select '.
@@ -133,7 +132,7 @@ echo X2Html::orderedList (array (
             CHtml::encode (
                 Yii::t('app', 'When asked for key type, select "Server key."')
             ),
-            Yii::t('app', 'Copy the API key into the Google+ Integration section {below}.', array (
+            Yii::t('app', 'Copy the API key into the Google+ and Google Maps Integration section {below}.', array (
                 '{below}' => CHtml::link (Yii::t('app', 'below'), '#api-key')
             )),
         ), array ('style' => 'list-style-type: lower-latin;')),
@@ -155,7 +154,7 @@ $model->renderProtectedInput ('clientSecret');
 
  
 echo X2Html::fragmentTarget ('api-key');
-echo CHtml::tag ('h3', array (), Yii::t('app', 'Google+ Integration'));
+echo CHtml::tag ('h3', array (), Yii::t('app', 'Google+ and Google Maps Integration'));
 echo '<hr />';
 echo CHtml::activeLabel($model, 'apiKey');
 $model->renderProtectedInput ('apiKey');

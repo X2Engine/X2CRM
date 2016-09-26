@@ -53,7 +53,7 @@ class GoogleProject extends JSONEmbeddedModel implements AdminOwnedCredentials {
 
      
     /**
-     *  @var string Used for Google+ integration
+     *  @var string Used for Google+ and Google Maps integration
      */
     public $apiKey = '';
      

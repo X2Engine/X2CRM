@@ -195,6 +195,8 @@ class WebFormAction extends CAction {
                 //TODO: upload profile picture url from webleadfb
                 
                 if($success){
+                    $location = $model->logLocation('weblead', 'POST');
+
                     if ($extractedParams['generateLead'])
                         call_user_func(array($this->controller, 'generateLead'),$model, $extractedParams['leadSource']);
                     if ($extractedParams['generateAccount'])
@@ -209,7 +211,8 @@ class WebFormAction extends CAction {
                     }
 
                     //use the submitted info to create an action
-                    $this->controller->createWebleadAction($model);
+                    $actionParams = isset($location) ? array('locationId' => $location->id) : array();
+                    $this->controller->createWebleadAction($model, $actionParams);
                     $this->controller->createWebleadEvent($model);
                     
                     if (Yii::app()->contEd('pro')) {

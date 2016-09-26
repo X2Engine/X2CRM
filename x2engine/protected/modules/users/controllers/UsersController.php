@@ -86,10 +86,18 @@ class UsersController extends x2base {
      */
     public function actionView($id) {
         $user=User::model()->findByPk($id);
+
+        // Only load the Google Maps widget if we're on a User with an address
+        if(isset($this->portlets['GoogleMaps']) && Yii::app()->settings->googleIntegration) {
+            $this->portlets['GoogleMaps']['params']['location'] = $user->address;
+            $this->portlets['GoogleMaps']['params']['activityLocations'] = $user->getMapLocations();
+            $this->portlets['GoogleMaps']['params']['defaultFilter'] = Locations::getDefaultUserTypes();
+            $this->portlets['GoogleMaps']['params']['modelParam'] = 'userId';
+        }
         $dataProvider=new CActiveDataProvider('Actions', array(
             'criteria'=>array(
-                'order'=>'complete DESC',
-                'condition'=>'assignedTo=\''.$user->username.'\'',
+                'order'=>'createDate DESC',
+                'condition'=>'assignedTo=\''.$user->username.'\' OR completedBy = \''.$user->username.'\'',
         )));
         $actionHistory=$dataProvider->getData();
         $this->render('view',array(

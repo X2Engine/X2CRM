@@ -78,7 +78,9 @@ $echoTabRow = function ($tabs, $rowNum=1) use ($that) {
             'email' => $email,
         ));
     }
-    ?>
+    ?><button id="toggle-location-button" class="x2-button" style="margin-top:-40px;"><?php
+        echo X2Html::fa('crosshairs');
+    ?></button>
     </div>
 </div>
 

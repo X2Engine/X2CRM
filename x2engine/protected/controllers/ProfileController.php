@@ -1602,6 +1602,14 @@ class ProfileController extends x2base {
 
         if (!Yii::app()->user->isGuest) {
             $activityFeedParams = $this->getActivityFeedViewParams($id, $publicProfile);
+            $user = $activityFeedParams['model']->user;
+            if(!$activityFeedParams['isMyProfile'] && Yii::app()->params->isAdmin &&
+                    isset($this->portlets['GoogleMaps']) && Yii::app()->settings->googleIntegration) {
+                $this->portlets['GoogleMaps']['params']['location'] = $user->address;
+                $this->portlets['GoogleMaps']['params']['activityLocations'] = $user->getMapLocations();
+                $this->portlets['GoogleMaps']['params']['defaultFilter'] = Locations::getDefaultUserTypes();
+                $this->portlets['GoogleMaps']['params']['modelParam'] = 'userId';
+            }
 
             $params = array(
                 'activityFeedParams' => $activityFeedParams,
@@ -1921,6 +1929,9 @@ class ProfileController extends x2base {
             }
             //$soc->attributes = $_POST['Social'];
             //die(var_dump($_POST['Social']));
+            $location = Yii::app()->params->profile->user->logLocation('activityPost', 'POST');
+            if ($location)
+                $post->locationId = $location->id;
             $post->user = Yii::app()->user->getName();
             $post->type = 'feed';
             $post->subtype = $_POST['subtype'];

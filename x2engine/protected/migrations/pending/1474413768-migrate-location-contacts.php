@@ -1,4 +1,5 @@
 <?php
+
 /***********************************************************************************
  * X2CRM is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2016 X2Engine Inc.
@@ -35,29 +36,9 @@
  * "Powered by X2Engine".
  **********************************************************************************/
 
-Yii::import ('application.modules.mobile.MobileModule');
-//Yii::import ('application.modules.mobile.components.*');
-Yii::import ('application.modules.mobile.models.*');
+$migrateLocationContacts = function() {
+    $sql = 'UPDATE x2_locations SET recordType = "Contacts", recordId = contactId';
+    Yii::app()->db->createCommand($sql)->execute();
+};
 
-abstract class MobileAction extends CAction {
-
-    public $pathAliasBase = 'application.modules.mobile.';
-    public $pageDepth = 0;
-
-    private $_model;
-    public function getModel ($id) {
-        if (!isset ($this->_model)) {
-            $this->_model = $this->controller->loadModel ($id);
-        }
-        return $this->_model;
-    }
-
-    protected function beforeRun () {
-        if (isset($_POST['geoCoords'])){
-            Yii::app()->params->profile->user->logLocation('mobileIdle', 'POST');
-        }
-    }
-
-}
-
-?>
+$migrateLocationContacts();
