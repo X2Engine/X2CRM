@@ -83,7 +83,7 @@ INSERT INTO x2_profile (id, fullName, username, emailAddress, status)
 /*&*/
 INSERT INTO x2_social (`type`, `data`) VALUES ('motd', 'Please enter a message of the day!');
 /*&*/
-INSERT INTO x2_admin (timeout,webLeadEmail,emailFromAddr,currency,installDate,updateDate,quoteStrictLock,unique_id,edition,serviceCaseFromEmailAddress,serviceCaseFromEmailName,serviceCaseEmailSubject,serviceCaseEmailMessage,eventDeletionTime,eventDeletionTypes,appName,appDescription,externalBaseUrl,externalBaseUri) VALUES (
+INSERT INTO x2_admin (timeout,webLeadEmail,emailFromAddr,currency,installDate,updateDate,quoteStrictLock,locationTrackingSwitch,unique_id,edition,serviceCaseFromEmailAddress,serviceCaseFromEmailName,serviceCaseEmailSubject,serviceCaseEmailMessage,eventDeletionTime,eventDeletionTypes,appName,appDescription,externalBaseUrl,externalBaseUri) VALUES (
 	'3600',
 	'{adminEmail}',
 	'{bulkEmail}',
@@ -91,6 +91,7 @@ INSERT INTO x2_admin (timeout,webLeadEmail,emailFromAddr,currency,installDate,up
 	'{time}',
 	0,
 	0,
+        1,
 	'{unique_id}',
 	'{edition}',
 	'{adminEmail}',

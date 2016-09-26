@@ -74,8 +74,9 @@ class MobileActionHistoryPublishAction extends MobileAction {
             $action->actionDescription = $_POST['Actions']['actionDescription'];
             $action->type = 'note';
         }
-        if (isset($_POST['geoCoords'])){
-            Yii::app()->params->profile->user->logLocation('mobileActivityPost', 'POST');
+        if (isset($_POST['geoCoords']) && Yii::app()->settings->locationTrackingSwitch){
+            $location = Yii::app()->params->profile->user->logLocation('mobileActivityPost', 'POST');
+            $action->location = $location;
         }
         
         if ($valid && $action->save ()) {
@@ -88,9 +89,9 @@ class MobileActionHistoryPublishAction extends MobileAction {
                 ), false, true);
 
                 Yii::app()->end ();
-            } else {
-                throw new CHttpException (500, Yii::t('app', 'Publish failed'));
-            }
+        } else {
+            throw new CHttpException (500, Yii::t('app', 'Publish failed'));
+        }
     }
 
 }

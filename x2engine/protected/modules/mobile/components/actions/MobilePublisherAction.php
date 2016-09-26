@@ -41,10 +41,28 @@ class MobilePublisherAction extends MobileAction {
     public function run () {
         $model = new EventPublisherFormModel;
         $profile = Yii::app()->params->profile;
-        $coords = null;
+        /*
+        if (isset ($_POST['geoCoords']) && isset ($_POST['location'])) {
+            $creds = Credentials::model()->findByPk($settings->googleCredentialsId);
+            if ($creds && $creds->auth && $creds->auth->apiKey){
+                $key = $creds->auth->apiKey; 
+                $ch = curl_init();
+                curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+                curl_setopt($ch, CURLOPT_URL, 
+                    'https://maps.googleapis.com/maps/api/geocode/json?latlng='+
+                    $_POST['geoCoords']['lat']+','+$_POST['geoCoords']['lon']+
+                    '&key='+$key
+                );
+                $content = curl_exec($ch);
+                echo $content;
+            }
+                   
+        }
+         * 
+         */
         if (isset ($_POST['EventPublisherFormModel'])) {
-            if (isset($_POST['geoCoords'])){
-                Yii::app()->params->profile->user->logLocation('mobileActivityPost', 'POST');
+            if (isset($_POST['geoCoords']) && Yii::app()->settings->locationTrackingSwitch){
+                $location = Yii::app()->params->profile->user->logLocation('mobileActivityPost', 'POST');
             }
             $model->setAttributes ($_POST['EventPublisherFormModel']);
             if (isset ($_FILES['EventPublisherFormModel'])) {

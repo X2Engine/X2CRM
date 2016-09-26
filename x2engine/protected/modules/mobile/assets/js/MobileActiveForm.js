@@ -51,29 +51,16 @@ function MobileActiveForm (argsDict) {
 
 MobileActiveForm.prototype = auxlib.create (x2.X2Form.prototype);
 
-MobileActiveForm.prototype.setUpPhotoSubmission = function () {
+MobileActiveForm.prototype.setUpLocationSubmission = function () {
     var that = this;
     this.form$ = $(this.formSelector);
-    this.submitButton$ = this.submitButtonSelector ? 
-        $(this.submitButtonSelector) :
-        this.form$.find ('.submit-button');
+    //this.form$ = $.mobile.activePage.find ('form.publisher-form');
+    this.submitButton$ = this.form$.find ('.submit-button');
 
     this.submitButton$.click (function () {
-       //https://cordova.apache.org/docs/en/latest/reference/cordova-plugin-geolocation/index.html
-        // onSuccess Callback
-        // This method accepts a Position object, which contains the
-        // current GPS coordinates
-        // onError Callback receives a PositionError object
         if (x2.main.isPhoneGap && x2touch && x2touch.API && x2touch.API.getPlatform) {
             x2touch.API.getCurrentPosition(function(position) {
-                /*alert('Latitude: '          + position.coords.latitude          + '\n' +
-                      'Longitude: '         + position.coords.longitude         + '\n' +
-                      'Altitude: '          + position.coords.altitude          + '\n' +
-                      'Accuracy: '          + position.coords.accuracy          + '\n' +
-                      'Altitude Accuracy: ' + position.coords.altitudeAccuracy  + '\n' +
-                      'Heading: '           + position.coords.heading           + '\n' +
-                      'Speed: '             + position.coords.speed             + '\n' +
-                      'Timestamp: '         + position.timestamp                + '\n');*/
+
                 var pos = {
                    lat: position.coords.latitude,
                    lon: position.coords.longitude
@@ -84,7 +71,58 @@ MobileActiveForm.prototype.setUpPhotoSubmission = function () {
                 alert('code: '    + error.code    + '\n' +
                       'message: ' + error.message + '\n');
             }, {});         
+        }   
+    });
+    /*
+    this.locationButton$ = $.mobile.activePage.find ('.location-attach-button');
+    this.locationButton$.click (function () {
+        if (x2.main.isPhoneGap && x2touch && x2touch.API && x2touch.API.getPlatform) {
+            x2touch.API.getCurrentPosition(function(position) {
+                var pos = {
+                   lat: position.coords.latitude,
+                   lon: position.coords.longitude
+                 };
+
+                $.mobile.activePage.find ('#geoCoords').val(JSON.stringify (pos));
+            }, function (error) {
+                alert('code: '    + error.code    + '\n' +
+                      'message: ' + error.message + '\n');
+            }, {});         
+        
         }
+         $.mobile.activePage.find ('#geoCoords').val("test");
+         $.mobile.activePage.find ('#geoLocationCoords').val("test");
+        x2.mobileForm.submitWithFiles (
+            this.form$, 
+            function (response) {
+                try {
+                    var data = JSON.parse (response.response);
+                    var theAddress = data['results']['formatted_address'];
+                    //$.mobile.activePage.find ('#geoCoordsLocation').val(theAddress);
+                    that.form$.find ('.reply-box').val(that.form$.find ('.reply-box').val()+"-"+theAddress);
+                } catch (e) {
+                }
+                
+                x2.main.refreshContent ();
+                $.mobile.loading ('hide');
+            }, function (jqXHR, textStatus, errorThrown) {
+                $.mobile.loading ('hide');
+                x2.main.alert (textStatus, 'Error');
+            }
+        );  
+        
+    });
+    */
+};
+
+MobileActiveForm.prototype.setUpPhotoSubmission = function () {
+    var that = this;
+    this.form$ = $(this.formSelector);
+    this.submitButton$ = this.submitButtonSelector ? 
+        $(this.submitButtonSelector) :
+        this.form$.find ('.submit-button');
+    
+    this.submitButton$.click (function () {
         if (!that.validate ()) {
             return;
         } else {
@@ -161,6 +199,7 @@ MobileActiveForm.prototype._init = function () {
     x2.main.getController ().documentEvents.push (x2.main.onPageShow (function () {
         that.setUpInteractions ();
         that.setUpPhotoSubmission ();
+        that.setUpLocationSubmission ();
     }, x2.main.getController ().constructor.name));
 };
 

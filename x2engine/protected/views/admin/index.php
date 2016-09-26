@@ -299,6 +299,13 @@ $failedLoginsDataProvider = new CActiveDataProvider('FailedLogins',
                             'See a history of which records users have viewed');
                     ?></div>
                 <div class="cell span-6"><?php
+                    echo CHtml::link(Yii::t('admin', 'User Location History'),
+                            array('/admin/userLocationHistory'));
+                    ?><br><?php
+                    echo Yii::t('admin',
+                            'See a history of where users have been');
+                    ?></div>
+                <div class="cell span-6"><?php
                     echo CHtml::link(Yii::t('admin', 'Manage Sessions'),
                             array('/admin/manageSessions'));
                     ?><br><?php echo Yii::t('admin', 'Manage user sessions');
@@ -736,6 +743,13 @@ $failedLoginsDataProvider = new CActiveDataProvider('FailedLogins',
                             'Control the interval at which X2CRM will check for and run scheduled tasks');
                     ?>
                 </div>
+                <div class="cell span-6"><?php
+                    echo CHtml::link(Yii::t('admin', 'Location Settings'),
+                            array('/admin/locationSettings'));
+                    ?><br><?php
+                    echo Yii::t('admin',
+                            'Configure location tracking and tracking rate.');
+                    ?></div>
 
             </div>
             <div id="tabs-11">

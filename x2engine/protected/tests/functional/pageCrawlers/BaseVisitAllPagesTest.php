@@ -257,7 +257,7 @@ abstract class BaseVisitAllPagesTest extends X2WebTestCase {
 
         'admin/activitySettings',
         'admin/addCriteria',
-        'admin/appSettings',
+        'admin/appSettings',       
         'admin/changeApplicationName',
         'admin/convertCustomModules',
         'admin/createModule',
@@ -307,7 +307,8 @@ abstract class BaseVisitAllPagesTest extends X2WebTestCase {
         'admin/roundRobinRules',
         
         'admin/setDefaultTheme',
-        
+        'admin/userLocationHistory',
+        'admin/locationSettings',
         'admin/setLeadRouting',
         'admin/setServiceRouting',
         'admin/translationManager',

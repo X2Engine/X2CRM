@@ -51,8 +51,8 @@ class MobileViewEventAction extends MobileAction {
                 if (isset ($_FILES['EventCommentPublisherFormModel'])) {
                     $model->photo = CUploadedFile::getInstance ($model, 'photo');
                 }
-                if (isset($_POST['geoCoords'])){
-                    Yii::app()->params->profile->user->logLocation('mobileActivityPost', 'POST');
+                if (isset($_POST['geoCoords']) && Yii::app()->settings->locationTrackingSwitch){
+                    $location = Yii::app()->params->profile->user->logLocation('mobileActivityPost', 'POST');
                 }
                 if ($formModel->validate ()) {
                     $event = new Events;

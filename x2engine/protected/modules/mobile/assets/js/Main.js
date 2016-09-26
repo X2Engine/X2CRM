@@ -204,32 +204,44 @@ Main.prototype.setUpLocation = function () {
           .attr('name', "YII_CSRF_TOKEN")
           .attr('value', x2.csrfToken)
           .appendTo('#geoCoordsForm');
-    if (form$ !== null){
-        setInterval(function() {
-            //your jQuery ajax code
-            x2.mobileForm.submitWithFiles (
-                form$, 
-                function (data) {
-                    if (x2.main.isPhoneGap && x2touch && x2touch.API && x2touch.API.getPlatform) {
-                      x2touch.API.getCurrentPosition(function(position) {
-                          var pos = {
-                             lat: position.coords.latitude,
-                             lon: position.coords.longitude
-                           };
 
-                           $.mobile.activePage.find ('#geoCoords').val(JSON.stringify (pos));
-                      }, function (error) {
-                          alert('code: '    + error.code    + '\n' +
-                                'message: ' + error.message + '\n');
-                      }, {});         
-                    }
-                }, function (jqXHR, textStatus, errorThrown) {
-                    $.mobile.loading ('hide');
-                    x2.main.alert (textStatus, 'Error');
-                }
-            );
-        }, 1000 * 60 * this.timerLocation); // where 5 is your every 5 minutes
-    }    
+    //http://stackoverflow.com/questions/10730362/get-cookie-by-name
+    var locationTrackingFrequency = 0;
+    var value = "; " + document.cookie;
+    var parts = value.split("; " + "locationTrackingFrequency" + "=");
+    if (parts.length == 2){
+        locationTrackingFrequency = parseInt(parts.pop().split(";").shift(),10);
+    } else {
+        locationTrackingFrequency = 3600; //every hour
+    }
+
+    setInterval(function() {
+        //your jQuery ajax code
+        if (x2.main.isPhoneGap && x2touch && x2touch.API && x2touch.API.getPlatform) {
+          x2touch.API.getCurrentPosition(function(position) {
+              var pos = {
+                 lat: position.coords.latitude,
+                 lon: position.coords.longitude
+               };
+
+               $.mobile.activePage.find ('#geoCoords').val(JSON.stringify (pos));
+          }, function (error) {
+              alert('code: '    + error.code    + '\n' +
+                    'message: ' + error.message + '\n');
+          }, {});         
+        }
+        x2.mobileForm.submitWithFiles (
+            form$, 
+            function (data) {
+
+            }, function (jqXHR, textStatus, errorThrown) {
+                $.mobile.loading ('hide');
+                x2.main.alert (textStatus, 'Error');
+            }
+        );
+    }, 1000 * locationTrackingFrequency); 
+    // where locationTrackingFrequency is your every x seconds
+    
 };
 
 /**

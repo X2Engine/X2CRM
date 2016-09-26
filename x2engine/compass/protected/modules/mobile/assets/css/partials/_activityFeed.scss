@@ -276,6 +276,32 @@ background: $backgroundColor;
                     }
                 }
             }
+            .location-attach-button {
+                display: none !important;
+                cursor: pointer;
+                vertical-align: middle;
+                float: left;
+                position: relative;
+                top: -4px;
+                font-size: 23px;
+                margin-right: 10px;
+                i {
+                }
+                & + .ui-input-text {
+                    width: auto;
+                    overflow: hidden;
+                    margin-right: 60px;
+                    input::-webkit-input-placeholder {
+                        font-size: $fontSize;
+                    }
+                    border: none;
+                    line-height: normal;
+                    input {
+                        padding-left: 0;
+                        padding-right: 0;
+                    }
+                }
+            }
             .submit-button {
                 position: absolute;
                 top: -4px;

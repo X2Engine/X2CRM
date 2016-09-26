@@ -46,14 +46,14 @@ $('#settings-form input, #settings-form select, #settings-form textarea').change
 	$('#save-button').addClass('highlight'); 
 });
 
-$('#chatPollTime').change(function() {
+$('#locationTrackingFrequency').change(function() {
 	$('#chatPollSlider').slider('value',$(this).val());
 });
 $('#timeout').change(function() {
 	$('#timeoutSlider').slider('value',$(this).val());
 });
-$('#batchTimeout').change(function(){
-    $('#batchTimeoutSlider').slider('value',$(this).val());
+$('#locationTrackingDistance').change(function(){
+    $('#locationTrackingDistanceSlider').slider('value',$(this).val());
 });
 $('#massActionsBatchSize').change(function(){
     $('#massActionsBatchSizeSlider').slider('value',$(this).val());
@@ -67,7 +67,7 @@ $('#currency').change(function() {
 });
 ", CClientScript::POS_READY);
 ?>
-<div class="page-title"><h2><?php echo Yii::t('admin', 'General Settings'); ?></h2></div>
+<div class="page-title"><h2><?php echo Yii::t('admin', 'Location Settings'); ?></h2></div>
 <div class="admin-form-container">
     <?php
     $form = $this->beginWidget('CActiveForm', array(
@@ -78,38 +78,46 @@ $('#currency').change(function() {
 
     <div class="form">
         <?php
-        echo $form->labelEx($model, 'chatPollTime');
+        echo $form->labelEx($model, 'locationTrackingFrequency');
         $this->widget('zii.widgets.jui.CJuiSlider', array(
-            'value' => $model->chatPollTime,
+            'value' => $model->locationTrackingFrequency,
             // additional javascript options for the slider plugin
             'options' => array(
-                'min' => 1000,
-                'max' => 100000,
-                'step' => 100,
+                'min' => 1,
+                'max' => 86400,
+                'step' => 1,
                 'change' => "js:function(event,ui) {
-					$('#chatPollTime').val(ui.value);
+					$('#locationTrackingFrequency').val(ui.value);
 					$('#save-button').addClass('highlight');
 				}",
                 'slide' => "js:function(event,ui) {
-					$('#chatPollTime').val(ui.value);
+					$('#locationTrackingFrequency').val(ui.value);
 				}",
             ),
             'htmlOptions' => array(
-                'id' => 'chatPollSlider',
+                'id' => 'locationTrackingFrequencySlider',
                 'style' => 'margin:10px 0;',
                 'class'=>'x2-wide-slider'
             ),
         ));
 
-        echo $form->textField($model, 'chatPollTime', array('id' => 'chatPollTime'));
+        echo $form->textField($model, 'locationTrackingFrequency', array('id' => 'locationTrackingFrequency'));
         ?><br>
-        <?php echo Yii::t('admin', 'Set the duration between notification requests in milliseconds.'); ?>
+        <?php echo Yii::t('admin', 'Set the time between location requests in seconds.'); ?>
         <br><br>
-        <?php echo Yii::t('admin', 'Decreasing this number allows for more instantaneous notifications, but generates more server requests, so adjust it to taste. The default value is 3000 (3 seconds).'); ?>
+        <?php echo Yii::t('admin', 'Decreasing this number allows for more instantaneous location fetching, but generates more server requests, so adjust it to taste. The default value is 3600 (1 hour).'); ?>
     </div>
-    <div class="form">
+    <!-- <div class="form">
         <?php
-        echo $form->labelEx($model, 'timeout');
+        echo $form->timeField ($model, 'locationTrackingFrequency', array('id' => 'locationTrackingFrequency'));
+        /*echo $this->widget ('ActiveDateRangeInput', array (
+            'model' => $model,
+            'startDateAttribute' => $attributeA,
+            'endDateAttribute' => $attributeB,
+            'namespace' => get_class ($this->formModel).$this->namespace,
+            'options' => $options,
+        ), true);*/
+        /*echo $form->labelEx($model, 'timeout');
         $this->widget('zii.widgets.jui.CJuiSlider', array(
             'value' => $model->timeout,
             // additional javascript options for the slider plugin
@@ -132,46 +140,48 @@ $('#currency').change(function() {
             ),
         ));
 
-        echo $form->textField($model, 'timeout', array('id' => 'timeout'));
+        echo $form->textField($model, 'timeout', array('id' => 'timeout'));*/
         ?>
         <br>
-        <?php echo Yii::t('admin', 'Set user session expiration time (in minutes). Default is 60.'); ?><br>
+        <?php //echo Yii::t('admin', 'Set user session expiration time (in minutes). Default is 60.'); ?><br>
         <br>
-        <label for="Admin_sessionLog"><?php echo Yii::t('admin', 'Log user sessions?'); ?></label>
-        <?php echo $form->checkBox($model, 'sessionLog'); ?>
-    </div>
+        <label for="Admin_sessionLog"><?php //echo Yii::t('admin', 'Log user sessions?'); ?></label>
+        <?php //echo $form->checkBox($model, 'sessionLog'); ?>
+    </div>-->
     <div class="form">
         <?php
-        echo $form->labelEx($model,'batchTimeout');
+        echo $form->labelEx($model,'locationTrackingDistance');
         $this->widget('zii.widgets.jui.CJuiSlider', array(
-            'value' => $model->batchTimeout,
+            'value' => $model->locationTrackingDistance,
             // additional javascript options for the slider plugin
             'options' => array(
-                'min' => 5,
-                'max' => 600,
-                'step' => 5,
+                'min' => 1,
+                'max' => 100000,
+                'step' => 1,
                 'change' => "js:function(event,ui) {
-					$('#batchTimeout').val(ui.value);
+					$('#locationTrackingDistance').val(ui.value);
 					$('#save-button').addClass('highlight');
 				}",
                 'slide' => "js:function(event,ui) {
-					$('#batchTimeout').val(ui.value);
+					$('#locationTrackingDistance').val(ui.value);
 				}",
             ),
             'htmlOptions' => array(
                 'style' => 'margin:10px 0;',
-                'id' => 'batchTimeoutSlider',
+                'id' => 'locationTrackingDistanceSlider',
                 'style' => 'margin:10px 0;',
                 'class'=>'x2-wide-slider',
             ),
         ));
-        echo $form->textField($model,'batchTimeout',array('style'=>'width:50px;','id'=>'batchTimeout'));
-        echo '<p>'.Yii::t('admin','When running actions in batches, this (number of seconds) constrains the amount of time that can be spent doing so. It is recommended to set this lower than the maximum PHP execution time on your web server.').'</p>';
-        ?>
+        echo $form->textField($model,'locationTrackingDistance',array('style'=>'width:50px;','id'=>'locationTrackingDistance'));
+        echo '<p>'.Yii::t('admin','The number in meters they have to move in order to track their location.').'</p>';
+        
+         ?>
+         
     </div>
-    <div class="form">
+    <!--<div class="form">
         <?php
-        echo $form->labelEx($model,'massActionsBatchSize');
+        /*echo $form->labelEx($model,'massActionsBatchSize');
         $this->widget('zii.widgets.jui.CJuiSlider', array(
             'value' => $model->massActionsBatchSize,
             // additional javascript options for the slider plugin
@@ -195,67 +205,70 @@ $('#currency').change(function() {
             ),
         ));
         echo $form->textField($model,'massActionsBatchSize',array('style'=>'width:50px;','id'=>'massActionsBatchSize'));
-        ?>
-    </div>
+        */?>
+    </div>-->
     <div class="form">
-        <label class='left-label' for="Admin_quoteStrictLock"><?php echo Yii::t('admin', 'Enable Strict Lock on Quotes'); ?></label><?php echo X2Html::hint2 (Yii::t('admin', 'Enabling strict lock completely disables locked quotes from being edited. While this setting is off, there will be a confirm dialog before editing a locked quote.'));
+        <label class='left-label' for="Admin_locationTrackingSwitch"><?php echo Yii::t('admin', 'Turn on Location Tracking'); ?></label>
+            <?php //echo X2Html::hint2 (Yii::t('admin','Enabling strict lock completely disables locked quotes from being edited. While this setting is off, there will be a confirm dialog before editing a locked quote.'));
         echo X2Html::clearfix (); 
-        echo $form->checkBox($model, 'quoteStrictLock'); ?>
+        echo $form->checkBox($model, 'locationTrackingSwitch'); ?>
         <br><br>
-        <label class='left-label' for="Admin_userActionBackdating"><?php echo Yii::t('admin', 'Allow Users to Backdate Actions'); ?></label><?php echo X2Html::hint2 (Yii::t('admin', 'Enabling action backdating will allow any user to change the automatically set date fields (i.e. create date). While this setting is off, only those with Admin access to the Actions module will be allowed to backdate actions.'));
-        echo X2Html::clearfix ();
-        echo $form->checkBox($model, 'userActionBackdating'); ?>
-        <br><br>
+        <!--<label class='left-label' for="Admin_userActionBackdating"><?php //echo Yii::t('admin', 'Allow Users to Backdate Actions'); ?></label><?php //echo X2Html::hint2 (Yii::t('admin', 'Enabling action backdating will allow any user to change the automatically set date fields (i.e. create date). While this setting is off, only those with Admin access to the Actions module will be allowed to backdate actions.'));
+        //echo X2Html::clearfix ();
+        //echo $form->checkBox($model, 'userActionBackdating'); ?>
+        <br><br>-->
         <?php
-        echo $form->label ($model, 'disableAutomaticRecordTagging', array (
+        /*echo $form->label ($model, 'disableAutomaticRecordTagging', array (
             'class' => 'left-label',
         ));
         echo X2Html::hint2 (Yii::t('admin', 'Enabling action backdating will allow any user to change the automatically set date fields (i.e. create date). While this setting is off, only those with Admin access to the Actions module will be allowed to backdate actions.'));
         echo X2Html::clearfix ();
-        echo $form->checkBox($model, 'disableAutomaticRecordTagging'); ?>
+        echo $form->checkBox($model, 'disableAutomaticRecordTagging'); */?>
     </div>
-    <div class="form">
-        <label class='left-label' for="Admin_historyPrivacy"><?php echo Yii::t('admin', 'Event/Action History Privacy'); ?></label><?php echo X2Html::hint2 (Yii::t('admin', 'Default will allow users to see actions/events which are public or assigned to them. User Only will allow users to only see actions/events assigned to them. Group Only will allow users to see actions/events assigned to members of their groups.'));
-        echo X2Html::clearfix ();
+    <!-- <div class="form">
+        <label class='left-label' for="Admin_historyPrivacy">
+            <?php //echo Yii::t('admin', 'Event/Action History Privacy'); ?></label>
+            <?php //echo X2Html::hint2 (Yii::t('admin', 'Default will allow users to see actions/events which are public or assigned to them. User Only will allow users to only see actions/events assigned to them. Group Only will allow users to see actions/events assigned to members of their groups.'));
+        /*echo X2Html::clearfix ();
         echo $form->dropDownList($model, 'historyPrivacy', array(
             'default' => Yii::t('admin', 'Default'),
             'user' => Yii::t('admin', 'User Only'),
             'group' => Yii::t('admin', 'Group Only'),
-        ));
+        ));*/
         ?>
         <br><br>
-        <?php echo Yii::t('admin', 'Choose a privacy setting for the Action History widget and Activity Feed. Please note that any user with Admin level access to the module that the History is on will ignore this setting. Only users with full Admin access will ignore this setting on the Activity Feed.') ?>
-    </div>
-    <div class="form">
-        <?php echo $form->labelEx($model, 'properCaseNames'); ?>
-        <?php echo Yii::t('admin', 'Attempt to format Contact names to have proper case?') ?><br>
-        <?php echo $form->dropDownList($model, 'properCaseNames', array(1 => Yii::t('app', 'Yes'), 0 => Yii::t('app', 'No'))); ?>
+        <?php //echo Yii::t('admin', 'Choose a privacy setting for the Action History widget and Activity Feed. Please note that any user with Admin level access to the module that the History is on will ignore this setting. Only users with full Admin access will ignore this setting on the Activity Feed.') ?>
+    </div> -->
+    <!-- <div class="form">
+        <?php //echo $form->labelEx($model, 'properCaseNames'); ?>
+        <?php //echo Yii::t('admin', 'Attempt to format Contact names to have proper case?') ?><br>
+        <?php //echo $form->dropDownList($model, 'properCaseNames', array(1 => Yii::t('app', 'Yes'), 0 => Yii::t('app', 'No'))); ?>
         <br><br>
-        <?php echo $form->labelEx($model, 'contactNameFormat'); ?>
-        <?php echo Yii::t('admin', 'Select a name format to use for Contact names throughout the app.') ?><br>
-<?php echo $form->dropDownList($model, 'contactNameFormat', array('firstName lastName' => '{'.Yii::t('contacts', 'First Name').'} {'.Yii::t('contacts', 'Last Name').'}', 'lastName, firstName' => '{'.Yii::t('contacts', 'Last Name').'}, {'.Yii::t('contacts', 'First Name').'}')); ?>
-    </div>
+        <?php //echo $form->labelEx($model, 'contactNameFormat'); ?>
+        <?php //echo Yii::t('admin', 'Select a name format to use for Contact names throughout the app.') ?><br>
+<?php //echo $form->dropDownList($model, 'contactNameFormat', array('firstName lastName' => '{'.Yii::t('contacts', 'First Name').'} {'.Yii::t('contacts', 'Last Name').'}', 'lastName, firstName' => '{'.Yii::t('contacts', 'Last Name').'}, {'.Yii::t('contacts', 'First Name').'}')); ?>
+    </div> -->
 
-    <div class="form">
-        <?php echo $form->labelEx($model, 'currency'); ?>
-            <?php echo Yii::t('admin', 'Select a default currency for quotes and invoices.') ?><br>
+    <!--<div class="form">
+        <?php //echo $form->labelEx($model, 'currency'); ?>
+            <?php //echo Yii::t('admin', 'Select a default currency for quotes and invoices.') ?><br>
         <select name="currency" id="currency">
             <?php
-            $curFound = false;
-            foreach(Yii::app()->params->supportedCurrencies as $currency):
+            //$curFound = false;
+            //foreach(Yii::app()->params->supportedCurrencies as $currency):
                 ?>
-                <option value="<?php echo $currency ?>"<?php if($model->currency == $currency){
-                    $curFound = true;
-                    echo ' selected="true"';
-                } ?>><?php echo $currency; ?></option>
-        <?php endforeach; ?>
-            <option value="other"<?php if(!$curFound){
-            echo ' selected="true"';
-        } ?>><?php echo Yii::t('admin', 'Other'); ?></option>
+                <option value="<?php //echo $currency ?>"<?php// if($model->currency == $currency){
+                    //$curFound = true;
+                    //echo ' selected="true"';
+                } ?>><?php //echo $currency; ?></option>
+        <?php //endforeach; ?>
+            <option value="other"<?php //if(!$curFound){
+            //echo ' selected="true"';
+        //} ?>><?php //echo Yii::t('admin', 'Other'); ?></option>
         </select>
-        <input type="text" name="currency2" id="currency2" style="width:120px;<?php if($curFound) echo 'display:none;'; ?>" value="<?php echo $curFound ? '' : $model->currency; ?>" />
-    </div>
-
+        <input type="text" name="currency2" id="currency2" style="width:120px;<?php //if($curFound) echo 'display:none;'; ?>" value="<?php //echo $curFound ? '' : $model->currency; ?>" />
+    </div>-->
+    
     <div class="error">
 <?php echo $form->errorSummary($model); ?>
     </div>

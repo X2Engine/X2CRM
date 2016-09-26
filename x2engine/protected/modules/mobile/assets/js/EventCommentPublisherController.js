@@ -59,38 +59,34 @@ EventCommentPublisherController.prototype.setUpForm = function () {
 
     var cameraButton$ = $('#footer .photo-attach-button');
     var attachmentsContainer$ = this.form$.find ('.photo-attachments-container');
+    if (x2.main.isPhoneGap && x2touch && x2touch.API && x2touch.API.getPlatform) {
+        x2touch.API.getCurrentPosition(function(position) {
+            var pos = {
+               lat: position.coords.latitude,
+               lon: position.coords.longitude
+             };
+
+             $.mobile.activePage.find ('#geoCoords').val(JSON.stringify (pos));
+        }, function (error) {
+            alert('code: '    + error.code    + '\n' +
+                  'message: ' + error.message + '\n');
+        }, {});         
+    }
     new x2.CameraButton ({
         element$: cameraButton$,
         validate: function () {
             return !that.form$.find ('.' + x2.mobileForm.photoAttachmentClass).length;
         },
         success: function (data) {
-             //https://cordova.apache.org/docs/en/latest/reference/cordova-plugin-geolocation/index.html
-             // onSuccess Callback
-             // This method accepts a Position object, which contains the
-             // current GPS coordinates
-             // onError Callback receives a PositionError object
-             if (x2.main.isPhoneGap && x2touch && x2touch.API && x2touch.API.getPlatform) {
-                 x2touch.API.getCurrentPosition(function(position) {
-                     /*alert('Latitude: '          + position.coords.latitude          + '\n' +
-                           'Longitude: '         + position.coords.longitude         + '\n' +
-                           'Altitude: '          + position.coords.altitude          + '\n' +
-                           'Accuracy: '          + position.coords.accuracy          + '\n' +
-                           'Altitude Accuracy: ' + position.coords.altitudeAccuracy  + '\n' +
-                           'Heading: '           + position.coords.heading           + '\n' +
-                           'Speed: '             + position.coords.speed             + '\n' +
-                           'Timestamp: '         + position.timestamp                + '\n');*/
-                     var pos = {
-                        lat: position.coords.latitude,
-                        lon: position.coords.longitude
-                      };
-
-                      $.mobile.activePage.find ('#geoCoords').val(JSON.stringify (pos));
-                 }, function (error) {
-                     alert('code: '    + error.code    + '\n' +
-                           'message: ' + error.message + '\n');
-                 }, {});         
-             }
+            /*
+            try {
+                var data = JSON.parse (response.response);
+                var theAddress = data['results']['formatted_address'];
+                //$.mobile.activePage.find ('#geoCoordsLocation').val(theAddress);
+                that.form$.find ('.event-text-box').val(that.form$.find ('.event-text-box').val()+"-"+theAddress);
+            } catch (e) {
+            }
+            */
             var attachment$ = x2.mobileForm.makePhotoAttachment (data);
             attachmentsContainer$.append (attachment$);
         },

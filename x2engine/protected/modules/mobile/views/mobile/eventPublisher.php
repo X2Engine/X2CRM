@@ -94,6 +94,7 @@ $form = $this->beginWidget ('MobileActiveForm', array (
         'class' => 'event-text-box',
     ));
     echo $form->mobileCoordinates ();
+    //echo $form->mobileLocationCoordinates ();
     ?>
     <div class='photo-attachments-container'>
     </div>
@@ -104,16 +105,21 @@ $this->endWidget ();
 
 <?php
  
-if (Yii::app()->params->isPhoneGap) {
+//if (Yii::app()->params->isPhoneGap) {
 ?>
 <div id='footer' data-role="footer" class='event-publisher-controls fixed-footer control-panel'>
     <div class='photo-attach-button icon-button'>
-    <?php
-    echo X2Html::fa ('camera');
-    ?>
+        <?php
+            echo X2Html::fa ('camera');
+        ?>
     </div>
+    <!--<div class='location-attach-button icon-button'>
+        <?php
+            //echo X2Html::fa ('fa-location-arrow');
+        ?>
+    </div>-->
 </div>
 <?php
-}
+//}
  
 ?>

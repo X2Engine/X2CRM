@@ -1,4 +1,3 @@
-<?php
 /***********************************************************************************
  * X2CRM is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2016 X2Engine Inc.
@@ -35,45 +34,73 @@
  * "Powered by X2Engine".
  **********************************************************************************/
 
-Yii::import ('application.modules.mobile.MobileModule');
-//Yii::import ('application.modules.mobile.components.*');
-Yii::import ('application.modules.mobile.models.*');
+x2.LocationButton = (function () {
 
-abstract class MobileAction extends CAction {
-
-    public $pathAliasBase = 'application.modules.mobile.';
-    public $pageDepth = 0;
-
-    private $_model;
-    public function getModel ($id) {
-        if (!isset ($this->_model)) {
-            $this->_model = $this->controller->loadModel ($id);
-        }
-        return $this->_model;
-    }
-
-    protected function beforeRun () {
-        $settings = Yii::app()->settings;
-        if (isset($_POST['geoCoords']) && 
-                $_POST['geoCoords']['lat'] != null && 
-                $_POST['geoCoords']['lon'] != null && 
-                $settings->locationTrackingSwitch){
-            
-            /*
-             * Get the last record of the user's location and compare 
-             *  the distance between that and of the new distance
-             */
-            $locationRecord = Locations::model()->find($condition='WHERE contactId='.Yii::app()->user->id, $params=array ());
-            $latitudeFrom = $locationRecord->lat;
-            $longitudeFrom = $locationRecord->lon;
-            $distance = vincentyGreatCircleDistance(
-                $latitudeFrom, $longitudeFrom, $_POST['geoCoords']['lat'], $_POST['geoCoords']['lon'], $earthRadius = 6371000);
-            if($distance >= Yii::app()->settings->locationTrackingDistance){
-                Yii::app()->params->profile->user->logLocation('mobileIdle', 'POST'); 
-            }
-        }
-    }
-
+function LocationButton (argsDict) {
+    var argsDict = typeof argsDict === 'undefined' ? {} : argsDict;
+    var defaultArgs = {
+        DEBUG: x2.DEBUG && false,
+        element$: null,
+        enableCrop: false,
+        //direction: 0, // back-facing
+        validate: function (callback) { callback (); },
+        success: function (data) {},
+        failure: function (message) {}
+    };
+    auxlib.applyArgs (this, defaultArgs, argsDict);
+    this.init ();
 }
 
-?>
+
+LocationButton.prototype.setUpButtonPhoneGap = function () {
+    var that = this;
+    this.element$.off ('click.setUpButtonPhoneGap').on ('click.setUpButtonPhoneGap', function () {
+        that.validate (function () {
+            x2touch.API.getPicture (function (data) {
+                if (that.enableCrop) {
+                    x2touch.API.cropPicture (data)
+                        .then (function (newPath) { 
+                            that.success (newPath);
+                        })
+                        .catch (function () {
+                            that.failure ('Failed to crop image.');
+                        });
+                } else {
+                    that.success (data);
+                }
+            }, function (message) {
+                that.failure (message);
+            }, {
+                //cameraDirection: that.direction,
+                //allowEdit: true
+            });
+        });
+    })
+};
+
+
+LocationButton.prototype.setUpButtonBrowser = function () {
+    var that = this;
+    this.element$.off ('click.setUpButtonBrowser').on ('click.setUpButtonBrowser', function () {
+        that.validate (function () {
+             that.success (
+             );
+        });
+    })
+};
+
+LocationButton.prototype.init = function () {
+      
+    if (x2.main.isPhoneGap) { 
+        this.setUpButtonPhoneGap ();
+    } else {
+     
+        this.setUpButtonBrowser ();
+      
+    }
+     
+};
+
+return LocationButton;
+
+}) ();

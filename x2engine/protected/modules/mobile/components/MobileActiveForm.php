@@ -125,6 +125,10 @@ class MobileActiveForm extends X2ActiveForm {
     public function mobileCoordinates() {
         return '<input type="hidden" name="geoCoords" id="geoCoords">';
     }
+    
+    public function mobileLocationCoordinates() {
+        return '<input type="hidden" name="geoLocationCoords" id="geoLocationCoords">';
+    }
 
 }
 

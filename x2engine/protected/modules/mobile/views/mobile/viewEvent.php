@@ -90,15 +90,20 @@ $this->onPageLoad ("
             <div class='photo-attachments-container'>
             </div>
             <div class='photo-attach-button icon-button'>
-            <?php
-            echo X2Html::fa ('camera');
-            ?>
+                <?php
+                    echo X2Html::fa ('camera');
+                ?>
             </div>
+            <!--<div class='location-attach-button icon-button'>
+                <?php
+                    //echo X2Html::fa ('fa-location-arrow');
+                ?>
+            </div>-->
             <?php
-            echo $form->textField ($formModel, 'text', array (
-                'placeholder' => 'Add a reply...',
-                'class' => 'reply-box',
-            ));
+                echo $form->textField ($formModel, 'text', array (
+                    'placeholder' => 'Add a reply...',
+                    'class' => 'reply-box',
+                ));
             ?>
              <div class='submit-button disabled'><?php  
                 echo CHtml::encode (Yii::t('mobile', 'Post'));
