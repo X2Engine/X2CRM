@@ -323,7 +323,8 @@ CREATE TABLE x2_events(
     sticky                  TINYINT             DEFAULT 0,
     color                   VARCHAR(10),
     fontColor               VARCHAR(10),
-    linkColor               VARCHAR(10)
+    linkColor               VARCHAR(10),
+    locationId              INT UNSIGNED
 ) COLLATE = utf8_general_ci, ENGINE = InnoDB;
 /*&*/
 DROP TABLE IF EXISTS x2_events_data;
