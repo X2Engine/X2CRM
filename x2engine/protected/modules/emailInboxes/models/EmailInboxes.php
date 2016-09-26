@@ -1768,6 +1768,16 @@ class EmailInboxes extends X2Model {
      */
     public function getTabOptions () {
         $visibleInboxes = $this->getVisibleInboxes ();
+        if (!Yii::app()->params->isAdmin) {
+            $visibleInboxes = array_filter($visibleInboxes, function($x) {
+                // Filter out inboxes that are shared, but not owned by System.
+                // These credentials will NOT be present in the hidden credentials dropdown,
+                // causing mail to be sent from an incorrect address
+                if ($x->shared)
+                    return $x->credentials->userId == Credentials::SYS_ID;
+                return true;
+            });
+        }
         if (!empty($visibleInboxes)) {
             return array_combine (array_map (function ($inbox) {
                 return $inbox->id;

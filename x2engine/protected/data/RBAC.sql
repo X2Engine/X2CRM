@@ -544,6 +544,7 @@ VALUES
 ('EmailInboxesSearch',0,'',NULL,'N;'),
 ('EmailInboxesAjaxGetModelAutocomplete',0,'',NULL,'N;'),
 ('EmailInboxesGetX2ModelInput',0,'',NULL,'N;'),
+('EmailInboxesAssociateAttachment',0,'',NULL,'N;'),
 ('FieldsTask',1,'Field editor control.',NULL,'N;'),
 ('GeneralAdminSettingsTask',1,'A suite of application wide settings configurable by the administrator.',NULL,'N;'),
 ('GroupsAdmin',0,'',NULL,'N;'),

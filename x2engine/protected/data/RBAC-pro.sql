@@ -148,6 +148,7 @@ VALUES
 ('EmailInboxesMinimumRequirements', 'EmailInboxesViewMessage'),
 ('EmailInboxesMinimumRequirements', 'EmailInboxesViewAttachment'),
 ('EmailInboxesMinimumRequirements', 'EmailInboxesDownloadAttachment'),
+('EmailInboxesMinimumRequirements', 'EmailInboxesAssociateAttachment'),
 ('EmailInboxesMinimumRequirements', 'EmailInboxesMarkMessages'),
 ('EmailInboxesMinimumRequirements', 'EmailInboxesConfigureMyInbox'),
 ('EmailInboxesAdminAccess', 'EmailInboxesAjaxGetModelAutocomplete'),
