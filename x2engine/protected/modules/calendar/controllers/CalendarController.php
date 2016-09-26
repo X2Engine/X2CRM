@@ -441,7 +441,7 @@ class CalendarController extends x2base {
     public function actionEditAction(){
         if(isset($_POST['ActionId'])){ // ensure we are getting sane post data
             $id = $_POST['ActionId'];
-            $model = Actions::model()->findByPk($id);
+            $model = Actions::model()->with('invites')->findByPk($id);
             $isEvent = json_decode($_POST['IsEvent']);
 
             Yii::app()->clientScript->scriptMap['*.js'] = false;
@@ -457,7 +457,7 @@ class CalendarController extends x2base {
     public function actionViewAction(){
         if(isset($_POST['ActionId'])){ // ensure we are getting sane post data
             $id = $_POST['ActionId'];
-            $model = Actions::model()->findByPk($id);
+            $model = Actions::model()->with('invites')->findByPk($id);
             $isEvent = json_decode($_POST['IsEvent']);
 
             Yii::app()->clientScript->scriptMap['*.js'] = false;
@@ -604,6 +604,25 @@ class CalendarController extends x2base {
         }else{
             echo 1; // if portlet not found, just make it visible
         }
+    }
+    
+    public function actionEventRsvp($email, $inviteKey) {
+        $this->layout = '//layouts/column1';
+        $invite = X2Model::model('CalendarInvites')->findByAttributes(array(
+            'email' => $email,
+            'inviteKey' => $inviteKey,
+        ));
+        if (!$invite) {
+            $this->denied();
+        }
+        $action = X2Model::model('Actions')->findByPk($invite->actionId);
+        $status = filter_input(INPUT_POST,'status');
+        if (!is_null($status)) {
+            $invite->status = $status;
+            $invite->save();
+            Yii::app()->end();
+        }
+        $this->render('eventRsvp', array('invite' => $invite, 'action'=>$action));
     }
 
     /**

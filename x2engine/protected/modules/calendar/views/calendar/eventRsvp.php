@@ -1,5 +1,5 @@
 <?php
-/***********************************************************************************
+/* * *********************************************************************************
  * X2CRM is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2016 X2Engine Inc.
  * 
@@ -33,52 +33,40 @@
  * X2Engine" logo. If the display of the logo is not reasonably feasible for
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2Engine".
- **********************************************************************************/
+ * ******************************************************************************** */
 
-$that = $this; 
-$echoTabRow = function ($tabs, $rowNum=1) use ($that) {
-    ?><ul id='<?php echo 'publisher-tabs-row-'.$rowNum; ?>' 
-       style='display: none;'>
-            <?php 
-            // Publisher tabs
-            foreach ($tabs as $tab) {
-                ?> <li> <?php
-                $tab->renderTitle ();
-                ?> </li> <?php
-            }
-            ?>
-        </ul><?php    
-};
-
+Yii::app()->clientScript->registerCssFile($this->module->assetsUrl . '/css/rsvp.css');
 ?>
-
-<div id="<?php echo 'publisher'; ?>" 
- <?php echo (sizeof ($tabs) > 4 ? 'class="multi-row-tabs-publisher"' : ''); ?>>
-    <?php
-    $tabsTmp = $tabs;
-    if (sizeof ($tabs) > 4) {
-        $rowNum = 0;
-        while (sizeof ($tabsTmp)) {
-            $tabRow = array_slice ($tabsTmp, 0, 3);
-            $echoTabRow ($tabRow, ++$rowNum);
-            $tabsTmp = array_slice ($tabsTmp, 3);
-        }
-    } else {
-        $echoTabRow ($tabsTmp);
-    }
-    ?>
-    <div class='clearfix sortable-widget-handle'></div>
-    <div class="form2 x2-layout-island">
-    <?php
-    // Publisher tab content 
-    foreach ($tabs as $tab) {
-        $tab->renderTab (array (
-            'model' => $model,
-            'associationType' => $associationType,
-            'email' => $email,
-        ));
-    }
-    ?>
+<div class="page-title">
+    <h2><?php echo Yii::t('calendar', 'Event RSVP'); ?></h2>
+</div>
+<div class="form">
+    <div>
+        <?php echo Yii::t('calendar', 'You are RSVPing for the following event:'); ?><br><br>
+        <b><?php echo Yii::t('calendar', 'What:'); ?> </b><?php echo $action->actionDescription; ?><br>
+        <b><?php echo Yii::t('calendar', 'When:'); ?> </b><?php echo Formatter::formatDueDate($action->dueDate, 'long', 'long') ?><br><br>
+        <?php echo Yii::t('calendar', 'Please select one of the options below to confirm your status.'); ?>
+    </div>
+    <div>
+        <?php echo X2Html::button(Yii::t('calendar', 'Yes'), array('data-value' => 'Yes', 'class' => 'x2-button left rsvp-button' . ($invite->status === 'Yes' ? ' disabled' : ''))); ?>
+        <?php echo X2Html::button(Yii::t('calendar', 'Maybe'), array('data-value' => 'Maybe', 'class' => 'x2-button left rsvp-button' . ($invite->status === 'Maybe' ? ' disabled' : ''))); ?>
+        <?php echo X2Html::button(Yii::t('calendar', 'No'), array('data-value' => 'No', 'class' => 'x2-button left rsvp-button' . ($invite->status === 'No' ? ' disabled' : ''))); ?>
     </div>
 </div>
 
+<?php
+Yii::app()->clientScript->registerScript('rsvp-buttons', "
+    $('.rsvp-button').on('click',function(){
+        var that = this;
+        $.ajax({
+            url: window.location,
+            type: 'POST',
+            data: {status: $(this).attr('data-value')},
+            success: function(){
+                $('.rsvp-button').removeClass('disabled');
+                $(that).addClass('disabled');
+            }
+        });
+    });
+");
+?>

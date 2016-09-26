@@ -38,7 +38,7 @@ return array(
     array(
         'calendarId'=>1,
         'userId'=>2,
-        'view'=>1,
+        'view'=>0,
         'edit'=>0,
     ),
     array(
@@ -51,7 +51,7 @@ return array(
         'calendarId'=>3,
         'userId'=>2,
         'view'=>1,
-        'edit'=>0,
+        'edit'=>1,
     ),
     array(
         'calendarId'=>4,

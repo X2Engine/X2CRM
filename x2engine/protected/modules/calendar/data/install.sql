@@ -1,4 +1,4 @@
-DROP TABLE IF EXISTS x2_calendars,x2_calendar_permissions;
+DROP TABLE IF EXISTS x2_calendars,x2_calendar_permissions,x2_calendar_invites;
 /*&*/
 CREATE TABLE x2_calendars (
     id                 INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
@@ -21,10 +21,18 @@ CREATE TABLE x2_calendar_permissions (
     calendarId    INT UNSIGNED,
     userId        INT UNSIGNED,
     view          TINYINT,
-    edit          TINYINT
+    edit          TINYINT,
+    FOREIGN KEY (`calendarId`) REFERENCES x2_calendars(`id`) ON UPDATE CASCADE ON DELETE CASCADE
 ) ENGINE InnoDB, COLLATE utf8_general_ci;
 /*&*/
-ALTER TABLE `x2_calendar_permissions` ADD CONSTRAINT FOREIGN KEY (`calendarId`) REFERENCES x2_calendars(`id`) ON UPDATE CASCADE ON DELETE CASCADE;
+CREATE TABLE x2_calendar_invites (
+    id              INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    actionId        INT UNSIGNED NOT NULL,
+    email           VARCHAR(255),
+    status          ENUM ('Yes', 'No', 'Maybe'),
+    inviteKey       VARCHAR(255),
+    FOREIGN KEY (`actionId`) REFERENCES x2_actions(`id`) ON UPDATE CASCADE ON DELETE CASCADE
+) ENGINE InnoDB, COLLATE utf8_general_ci;
 /*&*/
 ALTER TABLE `x2_actions` ADD CONSTRAINT FOREIGN KEY (`calendarId`) REFERENCES x2_calendars(`id`) ON UPDATE CASCADE ON DELETE SET NULL;
 /*&*/

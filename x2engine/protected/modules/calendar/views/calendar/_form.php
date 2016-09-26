@@ -36,10 +36,8 @@
  * ******************************************************************************** */
 
 Yii::app()->clientScript->registerScriptFile(Yii::app()->getBaseUrl() . '/js/multiselect/js/ui.multiselect.js');
-Yii::app()->clientScript->registerCssFile(Yii::app()->getBaseUrl() . '/js/multiselect/css/ui.multiselect.css',
-        'screen, projection');
-Yii::app()->clientScript->registerCss('userPermissionCss',
-        "
+Yii::app()->clientScript->registerCssFile(Yii::app()->getBaseUrl() . '/js/multiselect/css/ui.multiselect.css', 'screen, projection');
+Yii::app()->clientScript->registerCss('userPermissionCss', "
 .user-permission {
     width: 460px;
     height: 200px;
@@ -48,8 +46,7 @@ Yii::app()->clientScript->registerCss('userPermissionCss',
     margin-top: 20px;
 }
 ", 'screen, projection');
-Yii::app()->clientScript->registerScript('userCalendarPermission',
-        "
+Yii::app()->clientScript->registerScript('userCalendarPermission', "
 $(function() {
     $('.user-permission').multiselect();
 });
@@ -57,19 +54,18 @@ $(function() {
 ?>
 <div class="form">
     <?php
-    $form = $this->beginWidget('CActiveForm',
-            array(
+    $form = $this->beginWidget('CActiveForm', array(
         'id' => 'calendar-form',
         'enableAjaxValidation' => false,
     ));
     ?>
     <div class="row">
-            <?php
-            echo $form->labelEx($model, 'name');
-            echo $form->textField($model, 'name');
-            echo $form->error($model, 'name');
-            ?>
-        </div>
+        <?php
+        echo $form->labelEx($model, 'name');
+        echo $form->textField($model, 'name');
+        echo $form->error($model, 'name');
+        ?>
+    </div>
     <br>
     <?php
     $viewPermission = $model->getUserIdsWithViewPermission();
@@ -80,8 +76,7 @@ $(function() {
         echo $form->labelEx($model, 'viewPermission')
         ?>
         <?php
-        echo CHtml::listBox('view-permission', $viewPermission, $users,
-                array(
+        echo CHtml::listBox('view-permission', $viewPermission, $users, array(
             'class' => 'user-permission',
             'multiple' => 'multiple',
             'onChange' => 'giveSaveButtonFocus();',
@@ -94,64 +89,54 @@ $(function() {
         echo $form->labelEx($model, 'editPermission');
         ?>
         <?php
-        echo CHtml::listBox('edit-permission', $editPermission, $users,
-                array(
+        echo CHtml::listBox('edit-permission', $editPermission, $users, array(
             'class' => 'user-permission',
             'multiple' => 'multiple',
             'onChange' => 'giveSaveButtonFocus();',
         ));
         ?>
     </div>
-</div>
-<?php
-if ($googleIntegration) {
-    ?>
-    <div class="x2-layout form-view" style="margin-bottom: 0;">
-        <div class="formSection">
-            <div class="formSectionHeader">
-                <span class="sectionTitle"><?php
-                    echo Yii::t('calendar', 'Google');
-                    ?></span>
-            </div>
+    <?php
+    if ($googleIntegration) {
+        ?>
+        <div class="form">
+            <br>
+            <h3><?php echo Yii::t('calendar', 'Google Calendar Sync');?></h3>
         </div>
-    </div>
 
-    <div class="form" style="border:1px solid #ccc; border-top: 0; padding: 0; margin-top:-1px; border-radius:0;-webkit-border-radius:0; background:#eee;">
-        <table frame="border">
-            <td>
+        <div class="form">
+            <table>
+                <td>
 
-                <?php if ($client->getAccessToken()) { ?>
-                    <?php
-                    $model->syncType = 'google';
-                    $model->remoteSync = 1;
-                    echo $form->hiddenField($model, 'remoteSync');
-                    echo $form->hiddenField($model, 'syncType');
-                    ?>
-                    <?php
-                    echo $form->labelEx($model, 'remoteCalendarId');
-                    ?>
-                    <?php
-                    echo $form->dropDownList($model, 'remoteCalendarId',
-                            $googleCalendarList);
-                    ?>
-                <?php } else { ?>
-                    <?php
-                    echo CHtml::link(Yii::t('calendar',
-                                    "Link to Google Calendar"),
-                            $client->getAuthorizationUrl('calendar'));
-                    ?>
-                <?php } ?>
+                    <?php if ($client->getAccessToken()) { ?>
+                        <?php
+                        $model->syncType = 'google';
+                        $model->remoteSync = 1;
+                        echo $form->hiddenField($model, 'remoteSync');
+                        echo $form->hiddenField($model, 'syncType');
+                        ?>
+                        <?php
+                        echo $form->labelEx($model, 'remoteCalendarId');
+                        ?>
+                        <?php
+                        echo $form->dropDownList($model, 'remoteCalendarId', $googleCalendarList);
+                        ?>
+                    <?php } else { ?>
+                        <?php
+                        echo CHtml::link(Yii::t('calendar', "Link to Google Calendar"), $client->getAuthorizationUrl('calendar'),array('class'=>'x2-button'));
+                        ?>
+                    <?php } ?>
 
-            </td>
-        </table>
-    </div>
-<?php } ?>
+                </td>
+            </table>
+            <br>
+        </div>
+    <?php } ?>
 
-<?php
-echo '	<div class="row buttons">' . "\n";
-echo '		' . CHtml::submitButton($model->isNewRecord?Yii::t('app', 'Create'):Yii::t('app','Save'),
-        array('class' => 'x2-button', 'id' => 'save-button', 'tabindex' => 24)) . "\n";
-echo "	</div>\n";
-$this->endWidget();
-?>
+    <?php
+    echo '	<div class="row buttons">' . "\n";
+    echo '		' . CHtml::submitButton($model->isNewRecord ? Yii::t('app', 'Create') : Yii::t('app', 'Save'), array('class' => 'x2-button', 'id' => 'save-button', 'tabindex' => 24)) . "\n";
+    echo "	</div>\n";
+    $this->endWidget();
+    ?>
 </div>

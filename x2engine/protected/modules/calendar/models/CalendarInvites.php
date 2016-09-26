@@ -1,5 +1,6 @@
 <?php
-/***********************************************************************************
+
+/* * *********************************************************************************
  * X2CRM is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2016 X2Engine Inc.
  * 
@@ -33,52 +34,34 @@
  * X2Engine" logo. If the display of the logo is not reasonably feasible for
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2Engine".
- **********************************************************************************/
+ * ******************************************************************************** */
 
-class CalendarEventFormModel extends EventFormModel {
-    
-    public $invite;
-    public $emailAddresses;
-    
-    public function attributeLabels(){
-        return array_merge(parent::attributeLabels(), array(
-            'allDay' => Yii::t('actions', 'All Day'),
-            'eventSubtype' => Yii::t('actions', 'Event Subtype'),
-            'eventStatus' => Yii::t('actions', 'Event Status'),
-            'associationType' => Yii::t('actions', 'Association Type'),
-            'color' => Yii::t('actions', 'Color'),
-            'emailAddresses' => Yii::t('actions','Enter email addresses, one per line'),
-        ));
+class CalendarInvites extends X2ActiveRecord {
+
+    /**
+     * Returns the static model of the specified AR class.
+     * @return Contacts the static model class
+     */
+    public static function model($className = __CLASS__) {
+        return parent::model($className);
+    }
+
+    /**
+     * @return string the associated database table name
+     */
+    public function tableName() {
+        return 'x2_calendar_invites';
+    }
+
+    public function getRsvpLink() {
+        return X2Html::link('here',Yii::app()->createExternalUrl('/calendar/calendar/eventRsvp', 
+                array('email' => $this->email, 'inviteKey' => $this->inviteKey)));
     }
     
-    public function rules(){
-        return array_merge(parent::rules(),array(
-            array(
-                'invite', 'numerical', 'integerOnly'=>true,
-            ),
-            array (
-                'emailAddresses', 'safe',
-            ),
-        ));
+    public function relations(){
+        return array(
+            'action' => array(self::BELONGS_TO,'Actions','actionId'),
+        );
     }
-    
-     public function validate ($attributes=null, $clearErrors=true) {
-        $valid = parent::validate ();
-        $attributes = $this->getAttributes ();
-        $this->action->setX2Fields ($attributes);
-        $this->action->type = $this->type;
-        if($this->invite){
-            $this->action->attachBehavior('CalendarInviteBehavior', array(
-                'class' => 'CalendarInviteBehavior',
-                'emailAddresses' => explode("\n", $this->emailAddresses),
-            ));
-        }
-        $valid &= $this->action->validate ();
-        // synchronize errors
-        $this->addErrors ($this->action->getErrors ());
-        $this->action->addErrors ($this->getErrors ());
-        return $valid;
-    }
+
 }
-
-?>

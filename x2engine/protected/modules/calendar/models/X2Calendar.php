@@ -93,9 +93,8 @@ class X2Calendar extends CActiveRecord
 	
 	public function attributeLabels() {
 		return array(
-			'id' => Yii::t('admin','ID'),
-			'googleCalendar'=>Yii::t('calendar', 'Google Calendar'),
-			'googleCalendarName' => Yii::t('calendar','Google Calendar Name'),
+                    'id' => Yii::t('admin','ID'),
+                    'remoteCalendarId' => Yii::t('calendar','Remote Calendar Name'),
 		);
 	}
         
@@ -163,27 +162,7 @@ class X2Calendar extends CActiveRecord
             }
             return array($client, $googleCalendarList);
         }
-	
-	public static function getCalendarFilters() {
-		$user = User::model()->findByPk(Yii::app()->user->id);
-		$calendarFilters = explode(',', $user->calendarFilter);
-		$filters = X2Calendar::getCalendarFilterNames();
-		
-		$filterList = array();
-		foreach($filters as $filter)
-			if(in_array($filter, $calendarFilters))
-				$filterList[$filter] = true;
-			else
-				$filterList[$filter] = false;
-		
-		return $filterList;
-	}
-	
-	// get a list of the names of all filters
-	public static function getCalendarFilterNames() {
-		return array('contacts', 'accounts', 'opportunities', 'quotes', 'products', 'media', 'completed');
-	}
-
+        
 	/**
      * Getter for the possible actions used by the calendar
      * @return array Array of constructed URLS
