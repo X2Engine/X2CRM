@@ -256,7 +256,11 @@ abstract class CalDavSync extends CalendarSync {
                 $timezone = new \DateTimeZone($calObject->vtimezone->tzid->value);
             }
             $startTime = new \DateTime($calObject->vevent->dtstart->value, $timezone);
-            $endTime = new \DateTime($calObject->vevent->dtend->value, $timezone);
+            if(is_null($calObject->vevent->dtend)){
+                $endTime = $startTime;
+            } else {
+                $endTime = new \DateTime($calObject->vevent->dtend->value, $timezone);
+            }
             $action->dueDate = $startTime->getTimestamp();
             $action->completeDate = $endTime->getTimestamp();
         }
