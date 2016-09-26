@@ -149,6 +149,7 @@ class Credentials extends CActiveRecord {
         'YahooEmailAccount',
         'TwitterApp',
         'GoogleProject',
+        'JasperServer',
     );
 
 	/**
@@ -204,7 +205,7 @@ class Credentials extends CActiveRecord {
 
     public function afterSave () {
         if ($this->modelClass && 
-            in_array ($this->modelClass, array ('TwitterApp', 'GoogleProject'))) {
+            in_array ($this->modelClass, array ('TwitterApp', 'GoogleProject', 'JasperServer'))) {
 
             $modelClass = $this->modelClass;
             $prop = $modelClass::getAdminProperty ();
@@ -331,6 +332,7 @@ class Credentials extends CActiveRecord {
             ),
             'twitter' => array ('TwitterApp'),
             'googleProject' => array ('GoogleProject'),
+            'jasperServer' => array ('JasperServer'),
 //			'google' => array('GMailAccount'),
 		);
 	}
@@ -352,6 +354,7 @@ class Credentials extends CActiveRecord {
 			'YahooEmailAccount' => array('email'),
             'TwitterApp' => array ('twitter'),
             'GoogleProject' => array ('googleProject'),
+            'JasperServer' => array ('jasperServer'),
 		);
 	}
 
@@ -430,6 +433,7 @@ class Credentials extends CActiveRecord {
 			'email' => Yii::t('app', 'Email Account'),
 			'twitter' => Yii::t('app', 'Twitter App'),
 			'googleProject' => Yii::t('app', 'Google Project'),
+			'jasperServer' => Yii::t('app', 'Jasper Server'),
 			// 'google' => Yii::t('app','Google Account')
 		);
 	}

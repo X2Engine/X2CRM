@@ -549,6 +549,14 @@ $failedLoginsDataProvider = new CActiveDataProvider('FailedLogins',
                             'Enter your Twitter app settings for Twitter widget');
                     ?></div>
 
+                <div class="cell span-6"><?php
+                    echo CHtml::link(Yii::t('admin', 'Jasper Server Integration'),
+                            array('/admin/jasperIntegration'));
+                    ?><br><?php
+                    echo Yii::t('admin',
+                            'Enter your Jasper Server settings for external reporting');
+                    ?></div>
+
             </div>
             <div id="tabs-8">
 
