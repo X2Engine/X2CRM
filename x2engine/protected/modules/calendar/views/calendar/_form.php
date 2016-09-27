@@ -119,7 +119,7 @@ $(function() {
                         echo $form->labelEx($model, 'remoteCalendarId');
                         ?>
                         <?php
-                        echo $form->dropDownList($model, 'remoteCalendarId', $googleCalendarList);
+                        echo $form->dropDownList($model, 'remoteCalendarId', $googleCalendarList, array('empty'=>Yii::t('calendar','Select a calendar')));
                         ?>
                     <?php } else { ?>
                         <?php
