@@ -55,7 +55,7 @@ if(isset($noHeatMap) && $noHeatMap){
         var center=$center;
         var markerFlag=$markerFlag;
         var mapFlag=$mapFlag;
-        var zoom=0;
+        var zoom=".(isset($zoom)?$zoom:"0").";
         var noHeatMap=true;
         var bounds=new google.maps.LatLngBounds();
         var directionsService=new google.maps.DirectionsService();
@@ -68,6 +68,9 @@ if(isset($noHeatMap) && $noHeatMap){
                 mapTypeId: google.maps.MapTypeId.SATELLITE,
                 center: latLng
             };
+            if (zoom != 0) {
+                mapOptions.zoom = zoom;
+            }
             map = new google.maps.Map(document.getElementById('map_canvas'),
                 mapOptions);
             directionsDisplay.setMap(map);

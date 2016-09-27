@@ -276,14 +276,14 @@
   content: "\f016";
 }
 
-/* line 394, ../../../compass/css/lib/_font-awesome.scss */
-.x2-button.icon.map:before {
-  content: "\f041";
-}
-
 /* line 403, ../../../compass/css/lib/_font-awesome.scss */
 .x2-button.icon.edit:before {
   content: "\f044";
+}
+
+/* line 470, ../../../compass/css/lib/_font-awesome.scss */
+.x2-button.icon.map:before {
+  content: "\f05b";
 }
 
 /* line 562, ../../../compass/css/lib/_font-awesome.scss */
@@ -714,14 +714,14 @@ div.page-title.icon.activity-feed h2:before,
   content: "\f016";
 }
 
-/* line 394, ../../../compass/css/lib/_font-awesome.scss */
-.x2-button.icon.map:before {
-  content: "\f041";
-}
-
 /* line 403, ../../../compass/css/lib/_font-awesome.scss */
 .x2-button.icon.edit:before {
   content: "\f044";
+}
+
+/* line 470, ../../../compass/css/lib/_font-awesome.scss */
+.x2-button.icon.map:before {
+  content: "\f05b";
 }
 
 /* line 562, ../../../compass/css/lib/_font-awesome.scss */

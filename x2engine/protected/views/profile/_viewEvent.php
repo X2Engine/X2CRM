@@ -321,6 +321,11 @@ $important = $data->important ? 'important-action' : '';
                         )
                 );
                 ?>
+                <?php if ($data->location) { ?>
+                <span>
+                    <?php echo $data->location->getLocationLink(X2Html::fa('crosshairs')); ?>
+                </span>
+                <?php } ?>
             </span>
         </div>
                 <?php ?>

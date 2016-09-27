@@ -211,7 +211,7 @@ class GoogleMaps extends X2Widget {
         );
         echo CHtml::link (
             Yii::t('contacts', 'Large Map'),
-            array('contacts/googleMaps',$this->modelParam=>$_GET['id'],'noHeatMap'=>1,'locationType' => $this->defaultFilter),
+            array('/contacts/contacts/googleMaps',$this->modelParam=>$_GET['id'],'noHeatMap'=>1,'locationType' => $this->defaultFilter),
             array(
                 'class' => 'x2-button right',
                 'onclick' => '$(this).attr("href", $(this).attr("href")+"&"+jQuery.param({"locationType": $("#locationType").val()}))',

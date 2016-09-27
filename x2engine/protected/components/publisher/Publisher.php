@@ -178,12 +178,13 @@ class Publisher extends X2Widget {
         });
         ", CClientScript::POS_HEAD);
 
-        if (!empty($_SERVER['HTTPS'])) {
+        if (isset($_SERVER['HTTPS'])) {
             Yii::app()->clientScript->registerScript('geolocationJs', '
                 $("#toggle-location-button").click(function (evt) {
                     evt.preventDefault();
                     if ($("#toggle-location-button").data("location-enabled") === true) {
                         // Clear geoCoords field and reset style
+                        $("#checkInComment").slideUp();
                         $("input[name=geoCoords]").val("");
                         $("#toggle-location-button")
                             .data("location-enabled", false)
@@ -197,6 +198,7 @@ class Publisher extends X2Widget {
                               lon: position.coords.longitude
                             };
 
+                            $("#checkInComment").slideDown();
                             $("input[name=geoCoords]").val(JSON.stringify (pos));
                             $("#toggle-location-button")
                                 .data("location-enabled", true)
@@ -206,6 +208,14 @@ class Publisher extends X2Widget {
                           });
                         }
                     }
+                });
+                $("#checkInComment").on("blur", function() {
+                    var comment = $(this).val();
+                    var coords = JSON.parse($("#geoCoords").val());
+                    if (coords) {
+                        coords.comment = comment;
+                    }
+                    $("#geoCoords").val(JSON.stringify(coords));
                 });
             ', CClientScript::POS_READY);
         }

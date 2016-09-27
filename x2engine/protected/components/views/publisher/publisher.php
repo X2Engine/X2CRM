@@ -77,9 +77,18 @@ $echoTabRow = function ($tabs, $rowNum=1) use ($that) {
             'associationType' => $associationType,
         ));
     }
-    ?><button id="toggle-location-button" class="x2-button" style="margin-top:-40px;"><?php
-        echo X2Html::fa('crosshairs');
-    ?></button>
+    ?><div style="margin-top:-40px;">
+        <?php if (isset($_SERVER['HTTPS'])) { ?>
+            <button id="toggle-location-button" class="x2-button" title="<?php echo Yii::t('app', 'Location Check-In'); ?>" style="display:inline-block;"><?php
+                echo X2Html::fa('crosshairs fa-lg');
+            ?></button>
+            <textarea id="checkInComment" rows=2 style="display: none" placeholder="<?php echo Yii::t('app', 'Check-in comment'); ?>"></textarea>
+        <?php } else { ?>
+            <button class="x2-button disabled" title="<?php echo Yii::t('app', 'SSL is required to check in'); ?>" style="display:inline-block;" disabled=""><?php
+                echo X2Html::fa('crosshairs fa-lg');
+            ?></button>
+        <?php } ?>
+    </div>
     </div>
 </div>
 
