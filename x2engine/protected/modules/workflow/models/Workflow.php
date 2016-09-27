@@ -178,8 +178,9 @@ class Workflow extends X2ActiveRecord {
         return $this->_isDefaultFor;
     }
 
-    public function renderAttribute ($attr) {
-        switch ($attr) {
+    public function renderAttribute (
+            $fieldName, $makeLinks = true, $textOnly = true, $encode = true) {
+        switch ($fieldName) {
             case 'isDefaultFor':
                 $isDefaultFor = $this->getIsDefaultFor ();
                 if (in_array (self::DEFAULT_ALL_MODULES, $isDefaultFor)) {
@@ -197,7 +198,7 @@ class Workflow extends X2ActiveRecord {
                 }
                 break;
             default:
-                return $this->$attr;
+                return $this->$fieldName;
         }
     }
 
