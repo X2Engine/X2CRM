@@ -474,6 +474,17 @@ Please click on the link below to create an account at X2Engine!
         if (TopContacts::removeBookmark ($model))
             $this->renderTopContacts();
     }
+    
+    public function actionUserMap(){
+        $locations = Yii::app()->db->createCommand(
+                "SELECT lat, lon AS lng FROM ("
+                ."SELECT * FROM x2_locations"
+                ." WHERE recordType = 'User'"
+                ." ORDER BY createDate DESC"
+                .") AS tmp GROUP BY recordId"
+        )->queryAll();
+        printR($locations,true);
+    }
 
     private function renderTopContacts() {
         $this->renderPartial('application.components.leftWidget.views.topContacts',array(

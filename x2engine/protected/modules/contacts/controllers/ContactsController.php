@@ -512,6 +512,7 @@ class ContactsController extends x2base {
                 $locationCodes[] = $tempArr;
             }
         }
+        printR($locationCodes,true);
         /*
          * $locationCodes[0] is the first location on the map and where the map
          * will be centered. If we have a Contact ID, center it on that contact's
