@@ -145,7 +145,7 @@ class Locations extends CActiveRecord
             '/contacts/contacts/googleMaps',
             $modelParam => $this->recordId,
             'noHeatMap' => 1,
-            'type' => $this->type,
+            'locationType' => array($this->type),
         ));
     }
 

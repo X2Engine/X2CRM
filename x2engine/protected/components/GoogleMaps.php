@@ -124,7 +124,8 @@ class GoogleMaps extends X2Widget {
                             '<a style="text-decoration:none;" href="'.CHtml::normalizeUrl(array('/contacts/contacts/googleMaps',$this->modelParam=>$_GET['id'])).'&locationType[]=\'+coords.type+\'">'.
                                 Yii::t('contacts','View on Heat Map').
                             '</a>'.
-                            '<br /><br /><small>\' + coords.infoText + \'</small>'.
+                            '<br /><br /><small>\' + coords.infoText + \''.
+                            '<br />\' + coords.time + \'</small>'.
                           '</span>\';
                     x2.googleMapsWidget.addMarker(coords, coords.type, content);
                 }
