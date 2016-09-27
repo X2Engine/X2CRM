@@ -509,6 +509,15 @@ class ContactsController extends x2base {
             if(isset($location['lat']) && isset($location['lon'])){
                 $tempArr['lat'] = $location['lat'];
                 $tempArr['lng'] = $location['lon'];
+                if (!empty($location['type'])) {
+                    $tempArr['info'] = Locations::getLocationTypes()[$location['type']] .' '.
+                        Yii::t('contacts', 'by').' '.
+                        X2Model::getModelLink($location['recordId'], $location['recordType']);
+                } else {
+                    $tempArr['info'] = Yii::t('contacts', 'Stated address of ').' '.
+                        X2Model::getModelLink($location['recordId'], $location['recordType']);
+                }
+                $tempArr['time'] = Formatter::formatDateTime($location['createDate']);
                 $locationCodes[] = $tempArr;
             }
         }

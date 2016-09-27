@@ -163,6 +163,7 @@ class MappableBehavior extends CActiveRecordBehavior {
                 'lng' => (float) $loc['lon'],
                 'type' => $loc['type'],
                 'infoText' => $infoText,
+                'time' => Formatter::formatDateTime($loc['createDate']),
             );
         }
         return $locations;
