@@ -66,53 +66,13 @@ MobileActiveForm.prototype.setUpLocationSubmission = function () {
                    lon: position.coords.longitude
                  };
  
-                 $.mobile.activePage.find ('#geoCoords').val(JSON.stringify (pos));
+                 that.form$.find ('#geoCoords').val(JSON.stringify (pos));
             }, function (error) {
                 alert('code: '    + error.code    + '\n' +
                       'message: ' + error.message + '\n');
             }, {});         
         }   
     });
-    /*
-    this.locationButton$ = $.mobile.activePage.find ('.location-attach-button');
-    this.locationButton$.click (function () {
-        if (x2.main.isPhoneGap && x2touch && x2touch.API && x2touch.API.getPlatform) {
-            x2touch.API.getCurrentPosition(function(position) {
-                var pos = {
-                   lat: position.coords.latitude,
-                   lon: position.coords.longitude
-                 };
-
-                $.mobile.activePage.find ('#geoCoords').val(JSON.stringify (pos));
-            }, function (error) {
-                alert('code: '    + error.code    + '\n' +
-                      'message: ' + error.message + '\n');
-            }, {});         
-        
-        }
-         $.mobile.activePage.find ('#geoCoords').val("test");
-         $.mobile.activePage.find ('#geoLocationCoords').val("test");
-        x2.mobileForm.submitWithFiles (
-            this.form$, 
-            function (response) {
-                try {
-                    var data = JSON.parse (response.response);
-                    var theAddress = data['results']['formatted_address'];
-                    //$.mobile.activePage.find ('#geoCoordsLocation').val(theAddress);
-                    that.form$.find ('.reply-box').val(that.form$.find ('.reply-box').val()+"-"+theAddress);
-                } catch (e) {
-                }
-                
-                x2.main.refreshContent ();
-                $.mobile.loading ('hide');
-            }, function (jqXHR, textStatus, errorThrown) {
-                $.mobile.loading ('hide');
-                x2.main.alert (textStatus, 'Error');
-            }
-        );  
-        
-    });
-    */
 };
 
 MobileActiveForm.prototype.setUpPhotoSubmission = function () {

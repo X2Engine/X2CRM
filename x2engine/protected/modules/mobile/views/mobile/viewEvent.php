@@ -86,6 +86,7 @@ $this->onPageLoad ("
             )
         ));
         echo $form->mobileCoordinates ();
+        echo $form->mobileLocationCoordinates ();
         ?>
             <div class='photo-attachments-container'>
             </div>
@@ -94,11 +95,11 @@ $this->onPageLoad ("
                     echo X2Html::fa ('camera');
                 ?>
             </div>
-            <!--<div class='location-attach-button icon-button'>
+            <div class='location-attach-button icon-button'>
                 <?php
-                    //echo X2Html::fa ('fa-location-arrow');
+                    echo X2Html::fa ('fa-location-arrow');
                 ?>
-            </div>-->
+            </div>
             <?php
                 echo $form->textField ($formModel, 'text', array (
                     'placeholder' => 'Add a reply...',

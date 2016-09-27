@@ -40,60 +40,74 @@
 
 
 ?>
-<!--<div class="page-title"><h2><?php echo Yii::t('admin', 'User Location'); ?></h2></div>-->
+<!--<div class="page-title"><h2><?php //echo Yii::t('admin', 'User Location'); ?></h2></div>-->
 <div >
     <?php
-    // Display a grid of user login history
-    $this->widget('X2GridViewGeneric', array(
-        'id' => 'location-history-grid',
-	    'title'=>Yii::t('admin', 'User Location History'),
-        'dataProvider' => $locationHistoryDataProvider,
-	    'baseScriptUrl'=>  
-            Yii::app()->request->baseUrl.'/themes/'.Yii::app()->theme->name.'/css/gridview',
-	    'template'=> '<div class="page-title">{title}'
-		    .'{buttons}{summary}</div>{items}{pager}',
-        'buttons' => array ('autoResize', 'exportLogins'),
-        'defaultGvSettings' => array (
-            'username' => 100,
-            'lat' => 100,
-            'lon' => 100,
-            'IP' => 100,
-            'createDate' => 180,
-        ),
-        'gvSettingsName' => 'login-history-grid',
-    	'columns'=>array(
-    		array (
-                'name' => 'username',
-                'header' => Yii::t('admin','User'),
-                'type' => 'raw',
-                'value' => 'User::model()->findByPk($data->recordId)->username',
+        // Display a grid of user login history
+        $this->widget('X2GridViewGeneric', array(
+            'id' => 'location-history-grid',
+            'title'=>Yii::t('admin', 'User Location History'),
+            'dataProvider' => $locationHistoryDataProvider,
+                'baseScriptUrl'=>  
+                Yii::app()->request->baseUrl.'/themes/'.Yii::app()->theme->name.'/css/gridview',
+                'template'=> '<div class="page-title">{title}'
+                        .'{buttons}{summary}</div>{items}{pager}',
+            'buttons' => array ('autoResize', 'exportLogins', 'map'),
+            'defaultGvSettings' => array (
+                'username' => 100,
+                'firstName' => 100,
+                'lastName' => 100,
+                'lat' => 100,
+                'lon' => 100,
+                'IP' => 100,
+                'createDate' => 180,
             ),
-    		array (
-                'name' => 'latitude',
-                'header' => Yii::t('admin','Latitude'),
-                'type' => 'raw',
-                'value' => '$data->lat',
+            'gvSettingsName' => 'login-history-grid',
+            'columns'=>array(
+                    array (
+                    'name' => 'username',
+                    'header' => Yii::t('admin','User'),
+                    'type' => 'raw',
+                    'value' => 'User::model()->findByPk($data->recordId)->username',
+                ),
+                    array (
+                    'name' => 'firstName',
+                    'header' => Yii::t('admin','First Name'),
+                    'type' => 'raw',
+                    'value' => 'User::model()->findByPk($data->recordId)->firstName',
+                ),
+                    array (
+                    'name' => 'lastName',
+                    'header' => Yii::t('admin','Last Name'),
+                    'type' => 'raw',
+                    'value' => 'User::model()->findByPk($data->recordId)->lastName',
+                ),
+                    array (
+                    'name' => 'latitude',
+                    'header' => Yii::t('admin','Latitude'),
+                    'type' => 'raw',
+                    'value' => '$data->lat',
+                ),
+                    array (
+                    'name' => 'longitude',
+                    'header' => Yii::t('admin','Longitude'),
+                    'type' => 'raw',
+                    'value' => '$data->lon',
+                ),
+                    array (
+                    'name' => 'IP',
+                    'header' => Yii::t('admin','IP Address'),
+                    'type' => 'raw',
+                    'value' => '$data->ipAddress',
+                ),
+                    array (
+                    'name' => 'createDate',
+                    'header' => Yii::t('admin','Create Date'),
+                    'type' => 'raw',
+                    'value' => 'Formatter::formatCompleteDate($data->createDate)',
+                ),
             ),
-    		array (
-                'name' => 'longitude',
-                'header' => Yii::t('admin','Longitude'),
-                'type' => 'raw',
-                'value' => '$data->lon',
-            ),
-    		array (
-                'name' => 'IP',
-                'header' => Yii::t('admin','IP Address'),
-                'type' => 'raw',
-                'value' => '$data->ipAddress',
-            ),
-    		array (
-                'name' => 'createDate',
-                'header' => Yii::t('admin','Create Date'),
-                'type' => 'raw',
-                'value' => 'Formatter::formatCompleteDate($data->createDate)',
-            ),
-	),
-    ));
+        ));
     ?>
 
 
@@ -102,5 +116,4 @@
     </div>
 
     <?php //echo CHtml::resetButton(Yii::t('app','Cancel'),array('class'=>'x2-button'))."\n";  ?>
-<?php //$this->endWidget(); ?>
 </div>

@@ -141,14 +141,6 @@ MobileActionHistory.prototype.setUpCommentPublish = function () {
             function (data) {
                 if (x2.main.isPhoneGap && x2touch && x2touch.API && x2touch.API.getPlatform) {
                   x2touch.API.getCurrentPosition(function(position) {
-                      /*alert('Latitude: '          + position.coords.latitude          + '\n' +
-                            'Longitude: '         + position.coords.longitude         + '\n' +
-                            'Altitude: '          + position.coords.altitude          + '\n' +
-                            'Accuracy: '          + position.coords.accuracy          + '\n' +
-                            'Altitude Accuracy: ' + position.coords.altitudeAccuracy  + '\n' +
-                            'Heading: '           + position.coords.heading           + '\n' +
-                            'Speed: '             + position.coords.speed             + '\n' +
-                            'Timestamp: '         + position.timestamp                + '\n');*/
                       var pos = {
                          lat: position.coords.latitude,
                          lon: position.coords.longitude
@@ -172,6 +164,45 @@ MobileActionHistory.prototype.setUpCommentPublish = function () {
         });
     form$.on('submit',function(e){
         e.preventDefault();
+    });
+    this.locationButton$ = $.mobile.activePage.find ('.location-attach-button');
+    this.locationButton$.click (function () {
+        if (x2.main.isPhoneGap && x2touch && x2touch.API && x2touch.API.getPlatform) {
+            x2touch.API.getCurrentPosition(function(position) {
+                var pos = {
+                   lat: position.coords.latitude,
+                   lon: position.coords.longitude
+                 };
+
+                this.form$.find ('#geoCoords').val(JSON.stringify (pos));
+            }, function (error) {
+                alert('code: '    + error.code    + '\n' +
+                      'message: ' + error.message + '\n');
+            }, {});         
+        
+        }
+         this.form$.find ('#geoLocationCoords').val("set");
+         x2.mobileForm.submitWithFiles (
+            that.form$, 
+            function (response) {
+                try {
+                    var data = JSON.parse (response);
+                    var theAddress = data['results'][0]['formatted_address'];
+                    that.form$.find ('.location-tag').val(
+                        that.form$.find ('.location-tag').val()+" - "+theAddress
+                    );
+                } catch (e) {
+                    alert("failed to parse response from server");
+                }
+                
+                x2.main.refreshContent ();
+                $.mobile.loading ('hide');
+            }, function (jqXHR, textStatus, errorThrown) {
+                $.mobile.loading ('hide');
+                x2.main.alert (textStatus, 'Error');
+            }
+        ); 
+        
     });
 };
 

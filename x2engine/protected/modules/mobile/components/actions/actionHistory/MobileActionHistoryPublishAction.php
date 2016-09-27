@@ -50,7 +50,36 @@ class MobileActionHistoryPublishAction extends MobileAction {
         if (!$this->controller->checkPermissions ($model, 'view')) {
             $this->controller->denied ();
         }
+        
+        $settings = Yii::app()->settings;
+        if (isset ($_POST['geoCoords']) && isset ($_POST['geoLocationCoords'])) {
+            $creds = Credentials::model()->findByPk($settings->googleCredentialsId);
+            if ($creds && $creds->auth && $creds->auth->apiKey){
+                $key = $creds->auth->apiKey; 
+                $result = "";
+                $decodedResponse = json_decode($_POST['geoCoords'],true);
+                //https://davidwalsh.name/curl-post
+                //extract data from the post
+                //set POST variables
+                $url = 'https://maps.googleapis.com/maps/api/geocode/json?latlng=' .
+                    $decodedResponse['lat'] . ',' .$decodedResponse['lon'] . 
+                    '&key=' . $key;
+                //open connection
+                $ch = curl_init();
 
+                //set the url, number of POST vars, POST data
+                curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+                curl_setopt($ch,CURLOPT_URL, $url);
+
+                //execute post
+                $result = curl_exec($ch);
+                //close connection
+                echo $result;
+                curl_close($ch);
+                Yii::app()->end ();
+            }        
+        }
+        
         $action = new Actions;
         $action->setAttributes (array (
             'associationType' => X2Model::getAssociationType (get_class ($model)), 

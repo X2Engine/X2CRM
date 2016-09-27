@@ -89,13 +89,13 @@ if (!$this->refresh && $hasCreateAccess) {
                     echo CHtml::encode(Yii::t('mobile', 'Add file attachment'));
                     ?>
                 </div>
-            <!--<li class='location-attachment-button'>
+            <li class='location-attachment-button'>
                 <span><?php X2Html::fa ('fa-location-arrow'); ?></span>
                 <div class='location-attach-button icon-button'>
                     <?php
-                    //echo CHtml::encode(Yii::t('mobile', 'Add location'));
+                    echo CHtml::encode(Yii::t('mobile', 'Add location'));
                     ?>
-                </div>-->
+                </div>
                 <?php
         }
         $action = new Actions;
@@ -113,12 +113,14 @@ if (!$this->refresh && $hasCreateAccess) {
             ))
         ));
         echo $form->mobileCoordinates ();
+        echo $form->mobileLocationCoordinates ();
         if ($type === 'attachments') {
             echo $form->fileField($action, 'upload');
         } else {
             echo $form->textField($action, 'actionDescription',
                     array(
                 'placeholder' => 'Add a comment...',
+                'class' => 'location-tag',
             ));
         }
         $this->endWidget();
