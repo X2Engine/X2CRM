@@ -181,6 +181,7 @@ class ContactsController extends x2base {
             if(isset($this->portlets['GoogleMaps']) && Yii::app()->settings->googleIntegration) {
                 $this->portlets['GoogleMaps']['params']['location'] = $contact->cityAddress;
                 $this->portlets['GoogleMaps']['params']['activityLocations'] = $contact->getMapLocations();
+                $this->portlets['GoogleMaps']['params']['defaultFilter'] = Locations::getDefaultContactTypes();
             }
 
             // Update the VCR list information to preserve what list we came from
@@ -399,6 +400,8 @@ class ContactsController extends x2base {
         if(isset($_POST['params'])){
             $params = $_POST['params'];
         }
+        if(isset($_GET['userId']))
+            $userId = $_GET['userId'];
         $noHeatMap = isset($_GET['noHeatMap']) && $_GET['noHeatMap'] ? true : false;
         // Check for a location type from a link
         if (!isset($params['locationType']) && isset($_GET['locationType']))
@@ -466,9 +469,14 @@ class ContactsController extends x2base {
             $conditions .= ')';
         }
 
-        if ($noHeatMap && isset($contactId)) {
-            $conditions .= ' AND x2_locations.recordId = :recordId';
-            $parameters[':recordId'] = $contactId;
+        if ($noHeatMap) {
+            if (isset($contactId)) {
+                $conditions .= ' AND x2_locations.recordType = "Contacts" AND x2_locations.recordId = :recordId';
+                $parameters[':recordId'] = $contactId;
+            } else if (isset($userId)) {
+                $conditions .= ' AND x2_locations.recordType = "User" AND x2_locations.recordId = :recordId';
+                $parameters[':recordId'] = $userId;
+            }
         }
 
         /*
@@ -509,9 +517,10 @@ class ContactsController extends x2base {
          * will be centered. If we have a Contact ID, center it on that contact's
          * location. Otherwise center it on the first location in the set
          */
-        if(isset($contactId)){
+        if(isset($contactId) || isset($userId)){
             $location = X2Model::model('Locations')->findByAttributes(array(
-                'recordId' => $contactId,
+                'recordId' => (isset($userId) ? $userId : $contactId),
+                'recordType' => (isset($userId) ? 'User' : 'Contacts'),
                 'type' => (isset($params['locationType']) ? $params['locationType'] : null),
             ));
             if(isset($location)){
@@ -555,6 +564,7 @@ class ContactsController extends x2base {
             'center' => json_encode($loc),
             'markerLoc' => isset($markerLoc) ? json_encode($markerLoc) : json_encode($loc),
             'markerFlag' => $markerFlag,
+            'userId' => isset($userId) ? $userId : 0,
             'contactId' => isset($contactId) ? $contactId : 0,
             'contactName' => isset($contactName) ? $contactName : '',
             'assignment' => 

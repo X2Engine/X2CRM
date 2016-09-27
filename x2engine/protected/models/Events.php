@@ -83,6 +83,7 @@ class Events extends X2ActiveRecord {
             // only use this if $this->type === 'media'
             'legacyMedia' => array (
                 self::HAS_ONE, 'Media', array ('id' => 'associationId')),
+            'location' => array(self::BELONGS_TO, 'Locations', 'locationId'),
         ));
         return $relationships;
     }
