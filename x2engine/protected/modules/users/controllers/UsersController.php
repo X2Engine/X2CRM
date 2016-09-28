@@ -483,7 +483,15 @@ Please click on the link below to create an account at X2Engine!
                 ." ORDER BY createDate DESC"
                 .") AS tmp GROUP BY recordId"
         )->queryAll();
-        printR($locations,true);
+        if(!empty($locations)){
+            $center = $locations[0];
+        } else {
+            $center = array('lat' => 0, 'lng' => 0);;
+        }
+        $this->render('userMap',array(
+            'center'=>json_encode($center),
+            'locations'=>json_encode($locations),
+        ));
     }
 
     private function renderTopContacts() {
