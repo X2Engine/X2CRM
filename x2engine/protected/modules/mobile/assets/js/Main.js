@@ -212,7 +212,7 @@ Main.prototype.setUpLocation = function () {
     if (parts.length == 2){
         locationTrackingFrequency = parseInt(parts.pop().split(";").shift(),10);
     } else {
-        locationTrackingFrequency = 3600; //every hour
+        locationTrackingFrequency = 60; //every hour
     }
 
     setInterval(function() {

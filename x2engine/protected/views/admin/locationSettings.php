@@ -84,7 +84,7 @@ $('#currency').change(function() {
             // additional javascript options for the slider plugin
             'options' => array(
                 'min' => 1,
-                'max' => 86400,
+                'max' => 60,
                 'step' => 1,
                 'change' => "js:function(event,ui) {
 					$('#locationTrackingFrequency').val(ui.value);
@@ -156,7 +156,7 @@ $('#currency').change(function() {
             // additional javascript options for the slider plugin
             'options' => array(
                 'min' => 1,
-                'max' => 100000,
+                'max' => 10,
                 'step' => 1,
                 'change' => "js:function(event,ui) {
 					$('#locationTrackingDistance').val(ui.value);

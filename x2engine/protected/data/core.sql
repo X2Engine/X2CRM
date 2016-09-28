@@ -44,7 +44,7 @@ CREATE TABLE x2_admin(
 	enableWebTracker		TINYINT			DEFAULT 1,
 	currency				VARCHAR(3)		NULL,
 	chatPollTime			INT				DEFAULT 3000,
-        locationTrackingFrequency			INT				DEFAULT 3600,
+        locationTrackingFrequency			INT				DEFAULT 60,
         defaultTheme            INT             NULL,
 	ignoreUpdates			TINYINT			DEFAULT 0,
 	rrId					INT				DEFAULT 0,

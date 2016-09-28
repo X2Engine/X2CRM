@@ -12,7 +12,7 @@ return array(
         'enableWebTracker' => '1',
         'currency' => 'USD',
         'chatPollTime' => '2000',
-        'locationTrackingFrequency' => '3600',
+        'locationTrackingFrequency' => '60',
         'defaultTheme' => NULL,
         'ignoreUpdates' => '0',
         'rrId' => '0',

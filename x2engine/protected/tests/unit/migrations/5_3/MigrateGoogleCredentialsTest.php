@@ -56,7 +56,7 @@ CREATE TABLE `x2_admin` (
   `enableWebTracker` tinyint(4) DEFAULT '1',
   `currency` varchar(3) DEFAULT NULL,
   `chatPollTime` int(11) DEFAULT '2000',
-  `locationTrackingFrequency` int(11) DEFAULT '3600',
+  `locationTrackingFrequency` int(11) DEFAULT '60',
   `defaultTheme` int(11) DEFAULT NULL,
   `ignoreUpdates` tinyint(4) DEFAULT '0',
   `rrId` int(11) DEFAULT '0',
