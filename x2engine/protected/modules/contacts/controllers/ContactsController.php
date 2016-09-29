@@ -509,6 +509,15 @@ class ContactsController extends x2base {
             if(isset($location['lat']) && isset($location['lon'])){
                 $tempArr['lat'] = $location['lat'];
                 $tempArr['lng'] = $location['lon'];
+                $recordLink = X2Model::getModelLink($location['recordId'], $location['recordType']);
+                if (!empty($location['type'])) {
+                    $locTypes = Locations::getLocationTypes();
+                    $tempArr['info'] = $locTypes[$location['type']] .' '.
+                        Yii::t('contacts', 'by').' '.$recordLink;
+                } else {
+                    $tempArr['info'] = Yii::t('contacts', 'Stated address of ').' '.$recordLink;
+                }
+                $tempArr['time'] = Formatter::formatDateTime($location['createDate']);
                 $locationCodes[] = $tempArr;
             }
         }
@@ -527,6 +536,7 @@ class ContactsController extends x2base {
                 $loc = array("lat" => $location->lat, "lng" => $location->lon);
                 $markerLoc = array("lat" => $location->lat, "lng" => $location->lon);
                 $markerFlag = true;
+                $zoom = 12;
             }elseif(count($locationCodes) > 0){
                 $loc = $locationCodes[0];
                 $markerFlag = "false";
@@ -661,12 +671,15 @@ class ContactsController extends x2base {
      */
     public function actionUpdateLocation($contactId, $lat, $lon){
         $location = Locations::model()->findByAttributes(array(
-            'contactId' => $contactId,
+            'recordId' => $contactId,
+            'recordType' => 'Contacts',
             'type' => null,
         ));
         if(!isset($location)){
             $location = new Locations;
             $location->contactId = $contactId;
+            $location->recordId = $contactId;
+            $location->recordType = 'Contacts';
             $location->lat = $lat;
             $location->lon = $lon;
             $location->save();

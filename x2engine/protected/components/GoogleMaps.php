@@ -124,7 +124,8 @@ class GoogleMaps extends X2Widget {
                             '<a style="text-decoration:none;" href="'.CHtml::normalizeUrl(array('/contacts/contacts/googleMaps',$this->modelParam=>$_GET['id'])).'&locationType[]=\'+coords.type+\'">'.
                                 Yii::t('contacts','View on Heat Map').
                             '</a>'.
-                            '<br /><br /><small>\' + coords.infoText + \'</small>'.
+                            '<br /><br /><small>\' + coords.infoText + \''.
+                            '<br />\' + coords.time + \'</small>'.
                           '</span>\';
                     x2.googleMapsWidget.addMarker(coords, coords.type, content);
                 }
@@ -211,7 +212,7 @@ class GoogleMaps extends X2Widget {
         );
         echo CHtml::link (
             Yii::t('contacts', 'Large Map'),
-            array('contacts/googleMaps',$this->modelParam=>$_GET['id'],'noHeatMap'=>1,'locationType' => $this->defaultFilter),
+            array('/contacts/contacts/googleMaps',$this->modelParam=>$_GET['id'],'noHeatMap'=>1,'locationType' => $this->defaultFilter),
             array(
                 'class' => 'x2-button right',
                 'onclick' => '$(this).attr("href", $(this).attr("href")+"&"+jQuery.param({"locationType": $("#locationType").val()}))',

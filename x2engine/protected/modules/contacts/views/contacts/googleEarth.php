@@ -55,7 +55,7 @@ if(isset($noHeatMap) && $noHeatMap){
         var center=$center;
         var markerFlag=$markerFlag;
         var mapFlag=$mapFlag;
-        var zoom=0;
+        var zoom=".(isset($zoom)?$zoom:"0").";
         var noHeatMap=true;
         var bounds=new google.maps.LatLngBounds();
         var directionsService=new google.maps.DirectionsService();
@@ -68,6 +68,9 @@ if(isset($noHeatMap) && $noHeatMap){
                 mapTypeId: google.maps.MapTypeId.SATELLITE,
                 center: latLng
             };
+            if (zoom != 0) {
+                mapOptions.zoom = zoom;
+            }
             map = new google.maps.Map(document.getElementById('map_canvas'),
                 mapOptions);
             directionsDisplay.setMap(map);
@@ -145,24 +148,20 @@ Yii::app()->clientScript->registerScript('maps-qtip', "
 var contactId=".(empty($contactId)?"0":$contactId).";
 var center=$markerLoc;
 
-function addLargeMapMarker(contents) {
-    if(typeof marker==='undefined'){
-        var latLng = new google.maps.LatLng(center['lat'],center['lng']);
+function addLargeMapMarker(pos, contents, open = false) {
+        var latLng = new google.maps.LatLng(pos['lat'],pos['lng']);
         var marker = new google.maps.Marker({
             position: latLng,
             map: map
         });
-    }
     if (contactId === 0 && markerFlag) {
         marker.setIcon('https://maps.google.com/mapfiles/ms/icons/green-dot.png');
     }
-    if (!markerFlag)
-        marker.setVisible(false);
     if(typeof infowindow==='undefined'){
         var infowindow = new google.maps.InfoWindow({
             content: contents
         });
-        if (markerFlag)
+        if (open)
             infowindow.open(map, marker);
     }
     google.maps.event.addListener(infowindow,'domready',function(){
@@ -179,6 +178,8 @@ function addLargeMapMarker(contents) {
     google.maps.event.addListener(marker,'click',function(){
         infowindow.open(map,marker);
     });
+
+    return marker;
 }
 
 function refreshQtip() {
@@ -189,7 +190,7 @@ function refreshQtip() {
                     data: { id: contactId,fields:fields },
                     method: 'get',
                     success: function(data){
-                        addLargeMapMarker(data);
+                        var marker = addLargeMapMarker(center, data, true);
                         $('#hide-marker-link').click(function(){
                             $(this).remove();
                             $('#contactId').val(null);
@@ -213,9 +214,17 @@ function refreshQtip() {
                     }
                 });
         } else if (center && markerFlag) {
-            addLargeMapMarker('".CHtml::link(Yii::t('contacts', 'Link to {User} Record', array(
-                    '{User}' => Modules::displayName(false, 'Users'),
+            addLargeMapMarker(center, '".CHtml::link(Yii::t('contacts', 'Link to {User} Record', array(
+                    '{User}' => (Modules::displayName(false, 'Users')),
                 )), array('users/view', 'id' => $userId))."');
+        }
+
+        if (noHeatMap) {
+            var locations = ".$locations.";
+            $.each(locations, function(i, loc) {
+                var details = loc.info + '<br />' + loc.time;
+                addLargeMapMarker(loc, details);
+            });
         }
 }
 function getDirections(type){
