@@ -320,12 +320,14 @@ $important = $data->important ? 'important-action' : '';
                     'class' => 'broadcast-button',
                         )
                 );
+
+                if ($data->location || (isset($associatedModel) && $associatedModel instanceof Actions && $associatedModel->location)) {
+                    $location = $data->location ? $data->location : $associatedModel->location;
+                    echo '<span style="margin: 10px;">';
+                    echo $location->getLocationLink(X2Html::fa('crosshairs'));
+                    echo '</span>';
+                }
                 ?>
-                <?php if ($data->location) { ?>
-                <span>
-                    <?php echo $data->location->getLocationLink(X2Html::fa('crosshairs')); ?>
-                </span>
-                <?php } ?>
             </span>
         </div>
                 <?php ?>
