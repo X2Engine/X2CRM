@@ -217,6 +217,11 @@ class Publisher extends X2Widget {
                     }
                     $("#geoCoords").val(JSON.stringify(coords));
                 });
+                $("#publisher input[type=\'submit\']").click(function () {
+                    $("#checkInComment")
+                        .blur();
+                        .val("");
+                });
             ', CClientScript::POS_READY);
         }
 
