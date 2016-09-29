@@ -62,6 +62,7 @@ Yii::app()->clientScript->registerScript('maps-initialize', "
     var zoom=" . (isset($zoom) ? $zoom : "0") . ";
     var bounds=new google.maps.LatLngBounds();
     var directionsService=new google.maps.DirectionsService();
+    var latlngbounds = new google.maps.LatLngBounds();
     function initialize() {
         directionsDisplay = new google.maps.DirectionsRenderer();
         var latLng = new google.maps.LatLng(center['lat'],center['lng']);
@@ -86,8 +87,9 @@ initialize();
 Yii::app()->clientScript->registerScript('maps-qtip', "
 var center=$center;
 
-function addLargeMapMarker(pos, contents, open = false) {
+function addLargeMapMarker(pos, contents, open = true) {
         var latLng = new google.maps.LatLng(pos['lat'],pos['lng']);
+        latlngbounds.extend(latLng);
         var marker = new google.maps.Marker({
             position: latLng,
             map: map
@@ -133,6 +135,10 @@ function refreshQtip() {
         }
         addLargeMapMarker(loc, details);
     });
+    google.maps.event.addListenerOnce(map, 'bounds_changed', function(event) {
+        this.setZoom(map.getZoom()-1);
+      });
+    map.fitBounds(latlngbounds);
 }
 refreshQtip();
 ");
