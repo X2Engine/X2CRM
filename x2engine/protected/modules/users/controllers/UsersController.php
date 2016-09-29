@@ -557,6 +557,13 @@ Please click on the link below to create an account at X2Engine!
                 'url'=>array('admin')
             ),
             array(
+                'name'=>'map',
+                'label' => Yii::t('users', 'View {users} Map', array(
+                    '{users}' => $Users,
+                )),
+                'url'=>array('userMap')
+            ),
+            array(
                 'name'=>'create',
                 'label' => Yii::t('users', 'Create {user}', array(
                     '{user}' => $User,
