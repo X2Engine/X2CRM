@@ -237,7 +237,7 @@ class Publisher extends X2Widget {
                 });
                 $("#publisher input[type=\'submit\']").click(function () {
                     $("#checkInComment")
-                        .blur();
+                        .blur()
                         .val("");
                 });
             ', CClientScript::POS_READY);
