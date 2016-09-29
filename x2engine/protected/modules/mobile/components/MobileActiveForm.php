@@ -121,7 +121,7 @@ class MobileActiveForm extends X2ActiveForm {
         '</div>';
         return $html;
     }
-    
+ 
     public function mobileCoordinates() {
         return '<input type="hidden" name="geoCoords" id="geoCoords">';
     }

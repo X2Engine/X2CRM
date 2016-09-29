@@ -41,8 +41,6 @@ function LocationButton (argsDict) {
     var defaultArgs = {
         DEBUG: x2.DEBUG && false,
         element$: null,
-        enableCrop: false,
-        //direction: 0, // back-facing
         validate: function (callback) { callback (); },
         success: function (data) {},
         failure: function (message) {}
@@ -75,7 +73,7 @@ LocationButton.prototype.setUpButtonPhoneGap = function () {
                 //allowEdit: true
             });
         });
-    })
+    });
 };
 
 

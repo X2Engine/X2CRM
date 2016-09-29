@@ -41,6 +41,7 @@ function MobileActiveForm (argsDict) {
     var defaultArgs = {
         DEBUG: x2.DEBUG && false,
         photoAttrName: null,
+        locationAttrName: null,
         redirectUrl: null,
         submitButtonSelector: null,
         validate: function () { return true; }
@@ -54,8 +55,55 @@ MobileActiveForm.prototype = auxlib.create (x2.X2Form.prototype);
 MobileActiveForm.prototype.setUpLocationSubmission = function () {
     var that = this;
     this.form$ = $(this.formSelector);
+    this.locationButton$ = this.submitButtonSelector ? 
+        $(this.submitButtonSelector) :
+        this.form$.find ('.location-attach-button');
+    
+    this.locationButton$.click (function () {
+        if (!that.validate ()) {
+            return;
+        } else {
+            if (that.form$.find ('.photo-attachment').not ('.dummy-attachment').length) {
+                $.mobile.loading ('show');
+                /*x2.mobileForm.submitWithLocation (
+                    that.form$.attr ('action'), 
+                    that.form$, 
+                    that.photoAttrName,
+                    function (response) {
+                        $.mobile.loading ('hide'); 
+                        if (response.responseCode == 200)  {
+                            try {
+                                data = JSON.parse (response.response);
+                                if (data.redirectUrl) {
+                                    $(':mobile-pagecontainer').pagecontainer (
+                                        'change', 
+                                        data.redirectUrl, { transition: 'none' }); 
+                                    return;
+                                }
+                            } catch (e) {
+                            }
+                            $(':mobile-pagecontainer').pagecontainer (
+                                'change', 
+                                that.redirectUrl, { transition: 'none' }); 
+                        }
+                    },
+                    function (error) {
+                        x2.main.alert ('Upload failed');
+                        $.mobile.loading ('hide');
+                    }
+                );*/
+            } else {
+                that.form$.submit ();
+            }
+        }
+    });
+    
+    /*
+     * @func for more general location fetching
+     * 
+     */
     //this.form$ = $.mobile.activePage.find ('form.publisher-form');
-    this.submitButton$ = this.form$.find ('.submit-button');
+    /*this.submitButton$ = this.form$.find ('.submit-button');
 
     this.submitButton$.click (function () {
         if (x2.main.isPhoneGap && x2touch && x2touch.API && x2touch.API.getPlatform) {
@@ -72,7 +120,7 @@ MobileActiveForm.prototype.setUpLocationSubmission = function () {
                       'message: ' + error.message + '\n');
             }, {});         
         }   
-    });
+    });*/
 };
 
 MobileActiveForm.prototype.setUpPhotoSubmission = function () {
@@ -81,8 +129,9 @@ MobileActiveForm.prototype.setUpPhotoSubmission = function () {
     this.submitButton$ = this.submitButtonSelector ? 
         $(this.submitButtonSelector) :
         this.form$.find ('.submit-button');
-    
-    this.submitButton$.click (function () {
+
+    var checkinInput$ = $.mobile.activePage.find ('#checkin');
+    /*if(checkinInput$ !== null) {
         if (!that.validate ()) {
             return;
         } else {
@@ -118,26 +167,64 @@ MobileActiveForm.prototype.setUpPhotoSubmission = function () {
             } else {
                 that.form$.submit ();
             }
-        }
-    });
-
-    var cameraButton$ = $.mobile.activePage.find ('.photo-attach-button');
-    var attachmentsContainer$ = this.form$.find ('.photo-attachments-container');
-
-    new x2.CameraButton ({
-        element$: cameraButton$,
-        validate: function (callback) {
-            if (!that.form$.find ('.' + x2.mobileForm.photoAttachmentClass).length) {
-                callback ();
+        }        
+    } else {*/
+        this.submitButton$.click (function () {
+            if (!that.validate ()) {
+                return;
+            } else {
+                if (that.form$.find ('.photo-attachment').not ('.dummy-attachment').length) {
+                    $.mobile.loading ('show');
+                    x2.mobileForm.submitWithPhotos (
+                        that.form$.attr ('action'), 
+                        that.form$, 
+                        that.photoAttrName,
+                        function (response) {
+                            $.mobile.loading ('hide'); 
+                            if (response.responseCode == 200)  {
+                                try {
+                                    data = JSON.parse (response.response);
+                                    if (data.redirectUrl) {
+                                        $(':mobile-pagecontainer').pagecontainer (
+                                            'change', 
+                                            data.redirectUrl, { transition: 'none' }); 
+                                        return;
+                                    }
+                                } catch (e) {
+                                }
+                                $(':mobile-pagecontainer').pagecontainer (
+                                    'change', 
+                                    that.redirectUrl, { transition: 'none' }); 
+                            }
+                        },
+                        function (error) {
+                            x2.main.alert ('Upload failed');
+                            $.mobile.loading ('hide');
+                        }
+                    );
+                } else {
+                    that.form$.submit ();
+                }
             }
-        },
-        success: function (data) {
-            var attachment$ = x2.mobileForm.makePhotoAttachment (data);
-            attachmentsContainer$.append (attachment$);
-        },
-        failure: function (message) {
-        }
-    });
+        });   
+        var cameraButton$ = $.mobile.activePage.find ('.photo-attach-button');
+        var attachmentsContainer$ = this.form$.find ('.photo-attachments-container');
+
+        new x2.CameraButton ({
+            element$: cameraButton$,
+            validate: function (callback) {
+                if (!that.form$.find ('.' + x2.mobileForm.photoAttachmentClass).length) {
+                    callback ();
+                }
+            },
+            success: function (data) {
+                var attachment$ = x2.mobileForm.makePhotoAttachment (data);
+                attachmentsContainer$.append (attachment$);
+            },
+            failure: function (message) {
+            }
+        });
+    //}
 
 };
 

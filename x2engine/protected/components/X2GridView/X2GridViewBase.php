@@ -1089,7 +1089,7 @@ Yii::app()->clientScript->registerScript(sprintf('%x', crc32(Yii::app()->name)),
                 case 'map':
                     echo CHtml::link(
                         X2Html::fa('fa-map-marker').Yii::t('app', 'Map'),
-                        array('/admin/index'),
+                        array('/users/userMap'),
                         array('class'=>'x2-button', 'id'=>'map-link')
                     );
                     break;

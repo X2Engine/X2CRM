@@ -59,40 +59,19 @@ EventCommentPublisherController.prototype.setUpForm = function () {
 
     var cameraButton$ = $('#footer .photo-attach-button');
     var attachmentsContainer$ = this.form$.find ('.photo-attachments-container');
-    if (x2.main.isPhoneGap && x2touch && x2touch.API && x2touch.API.getPlatform) {
-        x2touch.API.getCurrentPosition(function(position) {
-            var pos = {
-               lat: position.coords.latitude,
-               lon: position.coords.longitude
-             };
-
-             $.mobile.activePage.find ('#geoCoords').val(JSON.stringify (pos));
-        }, function (error) {
-            alert('code: '    + error.code    + '\n' +
-                  'message: ' + error.message + '\n');
-        }, {});         
-    }
-    /*new x2.CameraButton ({
+    new x2.CameraButton ({
         element$: cameraButton$,
         validate: function () {
             return !that.form$.find ('.' + x2.mobileForm.photoAttachmentClass).length;
         },
         success: function (data) {
-            
-            try {
-                var data = JSON.parse (response.response);
-                var theAddress = data['results']['formatted_address'];
-                //$.mobile.activePage.find ('#geoCoordsLocation').val(theAddress);
-                that.form$.find ('.event-text-box').val(that.form$.find ('.event-text-box').val()+"-"+theAddress);
-            } catch (e) {
-            }
-            
             var attachment$ = x2.mobileForm.makePhotoAttachment (data);
             attachmentsContainer$.append (attachment$);
         },
         failure: function (message) {
         }
-    });*/
+    });
+
     this.locationButton$ = $.mobile.activePage.find ('.location-attach-button');
     this.locationButton$.click (function () {
         if (x2.main.isPhoneGap && x2touch && x2touch.API && x2touch.API.getPlatform) {

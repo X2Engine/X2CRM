@@ -103,7 +103,7 @@ $('#currency').change(function() {
 
         echo $form->textField($model, 'locationTrackingFrequency', array('id' => 'locationTrackingFrequency'));
         ?><br>
-        <?php echo Yii::t('admin', 'Set the time between location requests in seconds.'); ?>
+        <?php echo Yii::t('admin', 'Set the time between location requests in minutes.'); ?>
         <br><br>
         <?php echo Yii::t('admin', 'Decreasing this number allows for more instantaneous location fetching, but generates more server requests, so adjust it to taste. The default value is 3600 (1 hour).'); ?>
     </div>
@@ -174,7 +174,7 @@ $('#currency').change(function() {
             ),
         ));
         echo $form->textField($model,'locationTrackingDistance',array('style'=>'width:50px;','id'=>'locationTrackingDistance'));
-        echo '<p>'.Yii::t('admin','The number in meters they have to move in order to track their location.').'</p>';
+        echo '<p>'.Yii::t('admin','The number in kilometers they have to move in order to track their location.').'</p>';
         
          ?>
          

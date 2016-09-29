@@ -204,6 +204,11 @@ X2Html::getFlashes ();
               class='ui-btn-left ui-btn show-left-menu-button-right'>
                 <i class='fa fa-home'></i>
             </a>
+            <a href='<?php echo Yii::app()->createAbsoluteUrl ('profile/mobileCheckInPublisher'); ?>' 
+              style='margin-left: 100px;' 
+              class='ui-btn-left ui-btn show-left-menu-button-right'>
+                <i class='fa fa-location-arrow'></i>
+            </a>
         <?php
         }
         ?>

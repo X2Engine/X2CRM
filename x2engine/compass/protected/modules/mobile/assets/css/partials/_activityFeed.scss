@@ -49,7 +49,7 @@ $verticalSpacing: 8px;
     color: darken($lightGray, 17%);
 }
 
-.profile-mobilePublisher {
+.profile-mobilePublisher, .profile-mobileCheckInPublisher {
     background: white;
     .photo-attachments-container {
         display: inline-block;
@@ -80,7 +80,7 @@ $verticalSpacing: 8px;
 }
 
 
-.profile-mobileActivity, .profile-mobileViewEvent, .profile-mobilePublisher {
+.profile-mobileActivity, .profile-mobileViewEvent, .profile-mobilePublisher, .profile-mobileCheckInPublisher {
 
 #header {
     .post-event-button {

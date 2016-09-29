@@ -58,6 +58,9 @@ class MobileProfileControllerBehavior extends MobileControllerBehavior {
             ),
             'mobileIndex' => array (
                 'class' => 'MobileIndexAction'
+            ),
+            'mobileCheckInPublisher' => array (
+                'class' => 'MobilePublisherAction'
             )
         );
     }

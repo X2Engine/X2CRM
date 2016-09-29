@@ -34,9 +34,9 @@
  * "Powered by X2Engine".
  **********************************************************************************/
 
-x2.EventPublisherController = (function () {
+x2.CheckInPublisherController = (function () {
 
-function EventPublisherController (argsDict) {
+function CheckInPublisherController (argsDict) {
     var argsDict = typeof argsDict === 'undefined' ? {} : argsDict;
     var defaultArgs = {
         DEBUG: x2.DEBUG && false,
@@ -47,9 +47,9 @@ function EventPublisherController (argsDict) {
     x2.Controller.call (this, argsDict);
 }
 
-EventPublisherController.prototype = auxlib.create (x2.Controller.prototype);
+CheckInPublisherController.prototype = auxlib.create (x2.Controller.prototype);
 
-EventPublisherController.prototype.setUpForm = function () {
+CheckInPublisherController.prototype.setUpForm = function () {
     var that = this;
     this.submitButton$ = $('#header .post-event-button');
     this.form$ = $.mobile.activePage.find ('form.publisher-form');
@@ -62,61 +62,61 @@ EventPublisherController.prototype.setUpForm = function () {
     eventBox$.keyup (function () {
         that.submitButton$.toggleClass ('disabled', !$.trim (eventBox$.val ()));
     });
-    
-    this.locationButton$ = $.mobile.activePage.find ('.location-attach-button');
-   
-    this.locationButton$.click (function () {
-        this.form$ = $.mobile.activePage.find ('form.publisher-form');
-        if (x2.main.isPhoneGap && x2touch && x2touch.API && x2touch.API.getPlatform) {
-            x2touch.API.getCurrentPosition(function(position) {
-                var pos = {
-                   lat: position.coords.latitude,
-                   lon: position.coords.longitude
-                 };
 
-                this.form$.find ('#geoCoords').val(JSON.stringify (pos));
-            }, function (error) {
-                alert('code: '    + error.code    + '\n' +
-                      'message: ' + error.message + '\n');
-            }, {});         
-        
-        }
-         that.form$.find ('#geoLocationCoords').val("set");
-         x2.mobileForm.submitWithFiles (
-            that.form$, 
-            function (response) {
-                try {
-                    var data = JSON.parse (response);
-                    var theAddress = data['results'][0]['formatted_address'];
-                    that.form$.find ('.event-text-box').val(
-                        that.form$.find ('.event-text-box').val()+" - "+theAddress
-                    );
-                    //2nd results echoed out
-                    var photo = data['results'];
-                } catch (e) {
-                    alert("failed to parse response from server");
-                }
-                
-                x2.main.refreshContent ();
-                $.mobile.loading ('hide');
-            }, function (jqXHR, textStatus, errorThrown) {
-                $.mobile.loading ('hide');
-                x2.main.alert (textStatus, 'Error');
+    this.form$ = $.mobile.activePage.find ('form.publisher-form');
+    if (x2.main.isPhoneGap && x2touch && x2touch.API && x2touch.API.getPlatform) {
+        x2touch.API.getCurrentPosition(function(position) {
+            var pos = {
+               lat: position.coords.latitude,
+               lon: position.coords.longitude
+             };
+
+            this.form$.find ('#geoCoords').val(JSON.stringify (pos));
+        }, function (error) {
+            alert('code: '    + error.code    + '\n' +
+                  'message: ' + error.message + '\n');
+        }, {});         
+
+    }
+            var pos = {
+               lat: 40.702147,
+               lon: -74.015794
+             };
+
+     this.form$.find ('#geoCoords').val(JSON.stringify (pos));
+     that.form$.find ('#geoLocationCoords').val("set");
+     x2.mobileForm.submitWithFiles (
+        that.form$, 
+        function (response) {
+            try {
+                var data = JSON.parse (response);
+                var theAddress = data['results'][0]['formatted_address'];
+                that.form$.find ('.event-text-box').val(theAddress);
+                //2nd results echoed out
+                var photo = data['results'];
+            } catch (e) {
+                alert("failed to parse response from server");
             }
-        );  
-        
-    });
 
+            x2.main.refreshContent ();
+            $.mobile.loading ('hide');
+        }, function (jqXHR, textStatus, errorThrown) {
+            $.mobile.loading ('hide');
+            x2.main.alert (textStatus, 'Error');
+        }
+    ); 
+    alert("Thanks for checking in!"); 
+        
 };
 
-EventPublisherController.prototype.init = function () {
+CheckInPublisherController.prototype.init = function () {
     x2.Controller.prototype.init.call (this);
     var that = this;
     that.documentEvents.push (x2.main.onPageShow (function () {
         that.setUpForm ();
-    }, 'EventPublisherController'));
+    }, 'CheckInPublisherController'));
 };
 
-return EventPublisherController;
+return CheckInPublisherController;
 
 }) ();
