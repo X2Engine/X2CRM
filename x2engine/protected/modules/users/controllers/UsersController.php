@@ -476,21 +476,45 @@ Please click on the link below to create an account at X2Engine!
     }
     
     public function actionUserMap(){
+        $users = User::getUserIds();
+        unset($users['']);
+        $selectedUsers = array_keys($users);
+        $filterParams = filter_input(INPUT_POST,'params',FILTER_DEFAULT,FILTER_REQUIRE_ARRAY);
+        $params = array();
+        if(isset($filterParams['users'])){
+            $selectedUsers = $filterParams['users'];
+            $userParams = AuxLib::bindArray($selectedUsers);
+            $userList = AuxLib::arrToStrList($userParams);
+        }
+        $time = isset($filterParams['timestamp'])?$filterParams['timestamp']:Formatter::formatDateTime(time());
         $locations = Yii::app()->db->createCommand(
-                "SELECT lat, lon AS lng FROM ("
+                "SELECT lat, lon AS lng, recordId, type, comment AS info, createDate AS time"
+                . " FROM ("
                 ."SELECT * FROM x2_locations"
                 ." WHERE recordType = 'User'"
+                .(isset($filterParams['users'])?" AND recordId IN ".$userList:'')
+                ." AND createDate < :time"
                 ." ORDER BY createDate DESC"
                 .") AS tmp GROUP BY recordId"
-        )->queryAll();
+        )->queryAll(true, array(':time'=>strtotime($time)));
         if(!empty($locations)){
             $center = $locations[0];
         } else {
             $center = array('lat' => 0, 'lng' => 0);;
         }
+        $types = Locations::getLocationTypes();
+        foreach($locations as &$location){
+            $location['time'] = Formatter::formatLongDateTime($location['time']);
+            if(array_key_exists($location['type'],$types)){
+                $location['type'] = $types[$location['type']];
+            }
+        }
         $this->render('userMap',array(
+            'users' => $users,
+            'selectedUsers'=>$selectedUsers,
+            'timestamp'=>$time,
             'center'=>json_encode($center),
-            'locations'=>json_encode($locations),
+            'locations'=>$locations,
         ));
     }
 

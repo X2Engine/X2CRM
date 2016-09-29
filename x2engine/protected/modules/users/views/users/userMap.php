@@ -1,5 +1,5 @@
 <?php
-/***********************************************************************************
+/* * *********************************************************************************
  * X2CRM is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2016 X2Engine Inc.
  * 
@@ -33,10 +33,10 @@
  * X2Engine" logo. If the display of the logo is not reasonably feasible for
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2Engine".
- **********************************************************************************/
+ * ******************************************************************************** */
 
 $this->insertMenu(array(
-    'feed', 'admin', 'create', 'map','invite',
+    'feed', 'admin', 'create', 'map', 'invite',
 ));
 
 $key = '';
@@ -46,15 +46,20 @@ if ($creds && $creds->auth)
     $key = $creds->auth->apiKey;
 $assetUrl = 'https://maps.googleapis.com/maps/api/js?libraries=visualization';
 if (!empty($key))
-    $assetUrl .= '&key='.$key;
+    $assetUrl .= '&key=' . $key;
 Yii::app()->clientScript->registerScriptFile($assetUrl);
 
-Yii::app()->clientScript->registerScript('maps-initialize',"
+$userLinks = array();
+foreach ($locations as $location) {
+    $user = User::model()->findByPk($location['recordId']);
+    if ($user) {
+        $userLinks[$location['recordId']] = $user->getLink(array('style' => 'text-decoration:none;'));
+    }
+}
+Yii::app()->clientScript->registerScript('maps-initialize', "
     var map, pointarray, ge, directionsDisplay;
     var center=$center;
-    var markerFlag=true;
-    var zoom=".(isset($zoom)?$zoom:"0").";
-    var noHeatMap=true;
+    var zoom=" . (isset($zoom) ? $zoom : "0") . ";
     var bounds=new google.maps.LatLngBounds();
     var directionsService=new google.maps.DirectionsService();
     function initialize() {
@@ -113,25 +118,26 @@ function addLargeMapMarker(pos, contents, open = false) {
 }
 
 function refreshQtip() {
-        var fields=new Array('link','directions');
-        if (center) {
-            addLargeMapMarker(center, '".CHtml::link(Yii::t('contacts', 'Link to {User} Record', array(
-                    '{User}' => (Modules::displayName(false, 'Users')),
-                )), array('users/view', 'id' => 1))."');
+    var locations = " . json_encode($locations) . ";
+    var userLinks = " . json_encode($userLinks) . ";
+    $.each(locations, function(i, loc) {
+        var details = userLinks[loc['recordId']];
+        if(loc.type){
+            details += '<br>'+loc.type;
         }
-
-        if (noHeatMap) {
-            var locations = ".$locations.";
-            $.each(locations, function(i, loc) {
-                var details = loc.info + '<br />' + loc.time;
-                addLargeMapMarker(loc, details);
-            });
+        if(loc.info){
+            details += '<br>'+loc.info;
         }
+        if(loc.time){
+            details += '<br>'+loc.time;
+        }
+        addLargeMapMarker(loc, details);
+    });
 }
 refreshQtip();
 ");
 
-Yii::app()->clientScript->registerScript('map-controls',"
+Yii::app()->clientScript->registerScript('map-controls', "
 $('#mapControlForm').submit(function(){
     var tags=new Array();
     $.each($(this).find ('.x2-tag-list a'),function(){
@@ -146,35 +152,55 @@ $(window).resize(function(){
 ?>
 
 <div class='page-title icon contacts'>
-    <h2><?php echo Yii::t('users','User Map');?></h2>
+    <h2><?php echo Yii::t('users', 'User Location Map'); ?></h2>
 </div>
 <div id="controls" class="form">
 
-<?php
-   $form = $this->beginWidget('CActiveForm', array(
-        'action' => 'googleMaps',
+    <?php
+    $form = $this->beginWidget('CActiveForm', array(
+        'action' => 'userMap',
         'id' => 'mapControlForm',
         'enableAjaxValidation' => false,
         'method' => 'POST',
     ));
     // $range = 30; //$model->dateRange;
     // echo $startDate .' '.$endDate;
-
     ?>
     <div class="row">
-        <h2 style='margin-top: 5px'><?php echo Yii::t('contacts','Filters');?></h2>
+        <h2 style='margin-top: 5px'><?php echo Yii::t('contacts', 'Filters'); ?></h2>
         <div class="cell">
-            <label><?php echo Yii::t('contacts','Location Type'); ?></label>
-            <?php echo CHtml::dropDownList (
-                'params[locationType]',
-                null,
-                Locations::getLocationTypes(),
-                array (
-                    'multiple' => 'multiple',
-                    'data-selected-text' => Yii::t('app', 'filters(s)'),
-                    'class' => 'x2-multiselect-dropdown'
-                )
-            ); ?>
+            <label><?php echo Yii::t('users', 'User'); ?></label>
+            <?php
+            echo CHtml::dropDownList(
+                    'params[users]', $selectedUsers, $users, array(
+                'multiple' => 'multiple',
+                'data-selected-text' => Yii::t('app', 'filters(s)'),
+                'class' => 'x2-multiselect-dropdown'
+                    )
+            );
+            ?>
+        </div>
+        <div class="cell">
+            <label><?php echo Yii::t('users', 'Date/Time'); ?></label>
+            <?php
+            Yii::import('application.extensions.CJuiDateTimePicker.CJuiDateTimePicker');
+            echo Yii::app()->controller->widget('CJuiDateTimePicker', array(
+                'name' => 'params[timestamp]',
+                'value' => Formatter::formatDateTime($timestamp),
+                'mode' => 'datetime', //use "time","date" or "datetime" (default)
+                'options' => array(// jquery options
+                    'dateFormat' => Formatter::formatDatePicker('medium'),
+                    'timeFormat' => Formatter::formatTimePicker(),
+                    'ampm' => Formatter::formatAMPM(),
+                    'changeMonth' => true,
+                    'changeYear' => true,
+                ),
+                'htmlOptions' => array(
+                    'title' => Yii::t('users', 'Date/Time'),
+                ),
+                'language' => (Yii::app()->language == 'en') ? '' : Yii::app()->getLanguage(),
+                    ), true);
+            ?>
         </div>
 
         <div class="cell">
@@ -186,7 +212,7 @@ $(window).resize(function(){
 
 
     </div>
-    <?php $this->endWidget();?>
+    <?php $this->endWidget(); ?>
 </div>
 <div style="width:30%;float:left;display:none;" id="directions-box">
     <div style="width:auto;height:788px;margin-bottom:0px;overflow-y:scroll;" class="form" id="directions-panel"></div>
