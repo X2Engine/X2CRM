@@ -885,8 +885,9 @@ class InlineEmail extends CFormModel {
                     'credentialId' => $this->credentials->id,
                     'shared' => true,
                 ));
-                if (!$inbox->isAssignedTo($username))
+                if (!$inbox || !$inbox->isAssignedTo($username)) {
                     $inbox = null;
+                }
             }
             if ($inbox && !empty ($inbox->settings['copyToSent']))
                 return $inbox->copyToSent ($this->asa('emailDelivery')->getSentMIMEMessage ());
