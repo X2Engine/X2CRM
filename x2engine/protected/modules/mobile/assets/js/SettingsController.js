@@ -75,6 +75,23 @@ SettingsController.prototype.setUpForm = function () {
                 }
             );
         });
+        
+        if (x2touch && x2touch.API && x2touch.API.getPlatform) {
+            x2touch.API.getCurrentPosition(function(position) {
+                var pos = {
+                   lat: position.coords.latitude,
+                   lon: position.coords.longitude
+                 };
+
+                $.mobile.activePage.find ('#geoCoords').val(
+                    "latitiude: " + pos['lat'] + ", " + "longitude: " + pos['lon']
+                );
+            }, function (error) {
+                alert('code: '    + error.code    + '\n' +
+                      'message: ' + error.message + '\n');
+            }, {});         
+        
+        }           
     }
          
 };
