@@ -64,9 +64,15 @@ class MobilePublisherAction extends MobileAction {
                 //execute post
                 $result = curl_exec($ch);
                 //close connection
-                echo $result;
+                $decodedResult = json_decode($result);
+                $decodedResult['key'] = $key;
+                $jsonFormattedResponse = json_encode($decodedResult);
+                echo $result. json_encode($jsonFormattedResponse);
                 curl_close($ch);
 
+                /* 
+                 * TODO: Get static map here instead of in the front end?
+                 * 
                 $url = 'https://maps.googleapis.com/maps/api/staticmap?center=' . 
                         $decodedResponse['lat'] . ',' . $decodedResponse['lon'] .
                         '&zoom=13&size=600x300&maptype=roadmap&markers=color:blue%7Clabel:%7C' .
@@ -84,7 +90,7 @@ class MobilePublisherAction extends MobileAction {
                 //close connection
                 echo $result;
                 curl_close($ch);
-                
+                */
                 Yii::app()->end ();
             }        
         }

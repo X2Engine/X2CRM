@@ -65,33 +65,6 @@ MobileActiveForm.prototype.setUpLocationSubmission = function () {
         } else {
             if (that.form$.find ('.photo-attachment').not ('.dummy-attachment').length) {
                 $.mobile.loading ('show');
-                /*x2.mobileForm.submitWithLocation (
-                    that.form$.attr ('action'), 
-                    that.form$, 
-                    that.photoAttrName,
-                    function (response) {
-                        $.mobile.loading ('hide'); 
-                        if (response.responseCode == 200)  {
-                            try {
-                                data = JSON.parse (response.response);
-                                if (data.redirectUrl) {
-                                    $(':mobile-pagecontainer').pagecontainer (
-                                        'change', 
-                                        data.redirectUrl, { transition: 'none' }); 
-                                    return;
-                                }
-                            } catch (e) {
-                            }
-                            $(':mobile-pagecontainer').pagecontainer (
-                                'change', 
-                                that.redirectUrl, { transition: 'none' }); 
-                        }
-                    },
-                    function (error) {
-                        x2.main.alert ('Upload failed');
-                        $.mobile.loading ('hide');
-                    }
-                );*/
             } else {
                 that.form$.submit ();
             }
@@ -131,7 +104,7 @@ MobileActiveForm.prototype.setUpPhotoSubmission = function () {
         this.form$.find ('.submit-button');
 
     var checkinInput$ = $.mobile.activePage.find ('#checkin');
-    /*if(checkinInput$ !== null) {
+    if(checkinInput$ !== null) {
         if (!that.validate ()) {
             return;
         } else {
@@ -168,7 +141,7 @@ MobileActiveForm.prototype.setUpPhotoSubmission = function () {
                 that.form$.submit ();
             }
         }        
-    } else {*/
+    } else {
         this.submitButton$.click (function () {
             if (!that.validate ()) {
                 return;
@@ -224,7 +197,7 @@ MobileActiveForm.prototype.setUpPhotoSubmission = function () {
             failure: function (message) {
             }
         });
-    //}
+    }
 
 };
 

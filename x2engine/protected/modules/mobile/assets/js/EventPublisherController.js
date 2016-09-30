@@ -91,8 +91,13 @@ EventPublisherController.prototype.setUpForm = function () {
                     that.form$.find ('.event-text-box').val(
                         that.form$.find ('.event-text-box').val()+" - "+theAddress
                     );
-                    //2nd results echoed out
-                    var photo = data['results'];
+                    var key = data['key'];
+                    var url = 'https://maps.googleapis.com/maps/api/staticmap?center=' + 
+                            pos['lat'] + ',' + pos['lon'] +
+                            '&zoom=13&size=600x300&maptype=roadmap&markers=color:blue%7Clabel:%7C' +
+                            pos['lat'] + ',' + pos['lon'] +
+                            '&key=' + key;
+                    that.form$.find ('.photo-attachment').src = url;
                 } catch (e) {
                     alert("failed to parse response from server");
                 }

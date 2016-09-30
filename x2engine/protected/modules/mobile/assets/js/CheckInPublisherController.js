@@ -64,9 +64,10 @@ CheckInPublisherController.prototype.setUpForm = function () {
     });
 
     this.form$ = $.mobile.activePage.find ('form.publisher-form');
+    var pos = '';
     if (x2.main.isPhoneGap && x2touch && x2touch.API && x2touch.API.getPlatform) {
         x2touch.API.getCurrentPosition(function(position) {
-            var pos = {
+            pos = {
                lat: position.coords.latitude,
                lon: position.coords.longitude
              };
@@ -78,12 +79,6 @@ CheckInPublisherController.prototype.setUpForm = function () {
         }, {});         
 
     }
-            var pos = {
-               lat: 40.702147,
-               lon: -74.015794
-             };
-
-     this.form$.find ('#geoCoords').val(JSON.stringify (pos));
      that.form$.find ('#geoLocationCoords').val("set");
      x2.mobileForm.submitWithFiles (
         that.form$, 
@@ -92,8 +87,13 @@ CheckInPublisherController.prototype.setUpForm = function () {
                 var data = JSON.parse (response);
                 var theAddress = data['results'][0]['formatted_address'];
                 that.form$.find ('.event-text-box').val(theAddress);
-                //2nd results echoed out
-                var photo = data['results'];
+                var key = data['key'];
+                var url = 'https://maps.googleapis.com/maps/api/staticmap?center=' + 
+                        pos['lat'] + ',' + pos['lon'] +
+                        '&zoom=13&size=600x300&maptype=roadmap&markers=color:blue%7Clabel:%7C' +
+                        pos['lat'] + ',' + pos['lon'] +
+                        '&key=' + key;
+                that.form$.find ('.photo-attachment').src = url;
             } catch (e) {
                 alert("failed to parse response from server");
             }
