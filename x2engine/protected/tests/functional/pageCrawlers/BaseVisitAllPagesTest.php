@@ -150,7 +150,7 @@ abstract class BaseVisitAllPagesTest extends X2WebTestCase {
         'actions/viewAll',
 
         'calendar/index',
-        'calendar/myCalendarPermissions',
+        'calendar/create',
 
         'docs/index',
         'docs/create',
@@ -222,8 +222,7 @@ abstract class BaseVisitAllPagesTest extends X2WebTestCase {
     public $adminPages = array(
         'services/createWebForm',
 
-        'calendar/userCalendarPermissions',
-        'calendar/userCalendarPermissions/id/1',
+        'calendar/update?id=1',
         
          
         'weblist/update?id=18',
