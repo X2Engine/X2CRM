@@ -92,7 +92,7 @@ echo X2Html::orderedList (array (
                 Yii::t('app', 'When asked for "Authorized Redirect URIs," input the following '.
                     'urls:')).
                 CHtml::tag (
-                    'textarea', array ('readonly' => 'readonly', 'class'=>'authorized-js-origins'),
+                    'textarea', array ('readonly' => 'readonly', 'style' => 'display: block', 'class'=>'authorized-js-origins'),
                     (@$_SERVER['HTTPS'] == 'on' ? 'https://' : 'http://') . $_SERVER['HTTP_HOST'] . 
                         Yii::app()->controller->createUrl(
                             '/calendar/calendar/syncActionsToGoogleCalendar')."\n".
@@ -105,7 +105,7 @@ echo X2Html::orderedList (array (
                 Yii::t('app', 'When asked for "Authorized JavaScript Origins," input the '.
                     'following urls:')).
                 CHtml::tag (
-                    'textarea', array ('readonly' => 'readonly'),
+                    'textarea', array ('readonly' => 'readonly', 'style' => 'display: block'),
                     (@$_SERVER['HTTPS'] == 'on' ? 'https://' : 'http://') . $_SERVER['HTTP_HOST']
                 ),
             Yii::t('app', 'Copy the Client ID and Client Secret into OAuth 2.0 Credentials '.

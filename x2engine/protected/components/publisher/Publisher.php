@@ -229,11 +229,11 @@ class Publisher extends X2Widget {
                 });
                 $("#checkInComment").on("blur", function() {
                     var comment = $(this).val();
-                    var coords = JSON.parse($("#geoCoords").val());
+                    var coords = JSON.parse($("input[name=geoCoords]").val());
                     if (coords) {
                         coords.comment = comment;
+                        $("input[name=geoCoords]").val(JSON.stringify(coords));
                     }
-                    $("#geoCoords").val(JSON.stringify(coords));
                 });
                 $("#publisher input[type=\'submit\']").click(function () {
                     $("#checkInComment")
