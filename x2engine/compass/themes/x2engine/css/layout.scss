@@ -990,6 +990,14 @@ div {
         };
         // background: url(../images/icons/Edit.png) center center no-repeat;
     }
+    &.map {
+        height: 24px;
+        @include fa-icon("crosshairs") {
+            font-size: 150%;
+            padding: 5px;
+            position: relative;
+        };
+    }
 }
 
 .x2-edit-icon {

@@ -1929,6 +1929,9 @@ class ProfileController extends x2base {
             }
             //$soc->attributes = $_POST['Social'];
             //die(var_dump($_POST['Social']));
+            $location = Yii::app()->params->profile->user->logLocation('activityPost', 'POST');
+            if ($location)
+                $post->locationId = $location->id;
             $post->user = Yii::app()->user->getName();
             $post->type = 'feed';
             $post->subtype = $_POST['subtype'];

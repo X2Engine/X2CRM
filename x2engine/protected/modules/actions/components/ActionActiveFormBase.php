@@ -79,6 +79,7 @@ abstract class ActionActiveFormBase extends X2ActiveForm {
         $htmlOptions = X2Html::mergeHtmlOptions ($htmlOptions, array (
             'class' => 'x2-button',
         ));
+        $html .=  CHtml::hiddenField('geoCoords', '');
         $html .=  X2Html::submitButton (Yii::t('actions', 'Save'), $htmlOptions);
         $html .= '</div>';
         return $html;

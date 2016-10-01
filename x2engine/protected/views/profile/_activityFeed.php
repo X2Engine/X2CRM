@@ -168,8 +168,10 @@ $this->renderPartial ('_feedFilters');
         ?>
         <div id='second-row-buttons-container'>
             <?php
+            echo CHtml::hiddenField('geoCoords', '');
             echo CHtml::submitButton(
                 Yii::t('app','Post'),array('class'=>'x2-button','id'=>'save-button'));
+
             if ($isMyProfile) {
                 echo CHtml::button(
                     Yii::t('app','Attach A File/Photo'),
@@ -178,10 +180,61 @@ $this->renderPartial ('_feedFilters');
                         'onclick'=>"x2.FileUploader.toggle('activity')",
                         'id'=>"toggle-attachment-menu-button"));
             }
-            ?>
+
+            if (isset($_SERVER['HTTPS'])) { ?>
+                <button id="toggle-location-button" class="x2-button" title="<?php echo Yii::t('app', 'Location Check-In'); ?>" style="display:inline-block; margin-left:10px"><?php
+                    echo X2Html::fa('crosshairs fa-lg');
+                ?></button>
+                <textarea id="checkInComment" rows=2 style="display: none" placeholder="<?php echo Yii::t('app', 'Check-in comment'); ?>"></textarea>
+            <?php } else { ?>
+                <button class="x2-button disabled" title="<?php echo Yii::t('app', 'SSL is required to check in'); ?>" style="display:inline-block;" disabled=""><?php
+                    echo X2Html::fa('crosshairs fa-lg');
+                ?></button>
+            <?php } ?>
         </div>
         </div>
         <?php
+            if (isset($_SERVER['HTTPS'])) {
+                Yii::app()->clientScript->registerScript('geolocationJs', '
+                    $("#toggle-location-button").click(function (evt) {
+                        evt.preventDefault();
+                        if ($("#toggle-location-button").data("location-enabled") === true) {
+                            // Clear geoCoords field and reset style
+                            $("#checkInComment").slideUp();
+                            $("#geoCoords").val("");
+                            $("#toggle-location-button")
+                                .data("location-enabled", false)
+                                .css("color", "");
+                        } else {
+                            // Populate geoCoords field and highlight blue
+                            if ("geolocation" in navigator) {
+                                navigator.geolocation.getCurrentPosition(function(position) {
+                                var pos = {
+                                  lat: position.coords.latitude,
+                                  lon: position.coords.longitude
+                                };
+
+                                $("#checkInComment").slideDown();
+                                $("#geoCoords").val(JSON.stringify (pos));
+                                $("#toggle-location-button")
+                                    .data("location-enabled", true)
+                                    .css("color", "blue");
+                              }, function() {
+                                console.log("error fetching geolocation data");
+                              });
+                            }
+                        }
+                    });
+                    $("#checkInComment").on("blur", function() {
+                        var comment = $(this).val();
+                        var coords = JSON.parse($("#geoCoords").val());
+                        if (coords) {
+                            coords.comment = comment;
+                        }
+                        $("#geoCoords").val(JSON.stringify(coords));
+                    });
+                ', CClientScript::POS_READY);
+            }
         ?>
     </div>
     <?php $this->endWidget(); ?>

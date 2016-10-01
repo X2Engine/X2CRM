@@ -55,6 +55,7 @@ class Locations extends CActiveRecord
             'click' => Yii::t('app', 'Email Click'),
             'unsub' => Yii::t('app', 'Email Unsubscribe'),
             'login' => Yii::t('app', 'User Login'),
+            'activityPost' => Yii::t('app', 'Activity Post'),
             'mobileIdle' => Yii::t('app', 'Mobile Location'),
             'mobileActivityPost' => Yii::t('app', 'Mobile Activity Post'),
         );
@@ -107,6 +108,7 @@ class Locations extends CActiveRecord
 			'lon' => Yii::t('contacts','Longitude'),
 			'type' => Yii::t('contacts','Type'),
 			'ipAddress' => Yii::t('contacts','IP Address'),
+			'comment' => Yii::t('contacts','Check-in comment'),
 		);
 	}
 
@@ -125,9 +127,26 @@ class Locations extends CActiveRecord
         return array(
             'address',
             'login',
+            'activityPost',
             'mobileIdle',
             'mobileActivityPost',
         );
+    }
+
+    public function getLocationLink($text = null) {
+        if (is_null($text)) {
+            if (!empty($this->comment))
+                $text = $this->comment;
+            else
+                $text = '('.$this->lat.', '.$this->lon.')';
+        }
+        $modelParam = ($this->recordType === 'Contacts') ? 'contactId' : 'userId';
+        return CHtml::link($text, array(
+            '/contacts/contacts/googleMaps',
+            $modelParam => $this->recordId,
+            'noHeatMap' => 1,
+            'locationType' => array($this->type),
+        ));
     }
 
     /**

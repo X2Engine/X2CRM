@@ -58,7 +58,8 @@ class MappableBehavior extends CActiveRecordBehavior {
             $logIp = $ip;
         }
         if ($coords && array_key_exists('lat', $coords) && array_key_exists('lon', $coords)) {
-            $location = $this->updateLocation($coords['lat'], $coords['lon'], $type, $logIp);
+            $comment = isset($coords['comment']) ? $coords['comment'] : null;
+            $location = $this->updateLocation($coords['lat'], $coords['lon'], $type, $logIp, $comment);
             return $location;
         }
     }
@@ -70,8 +71,9 @@ class MappableBehavior extends CActiveRecordBehavior {
      * @param float $lon longitude
      * @param string $type null for address (authoritative)
      * @param string|false $logIp IP Address to log, if requested
+     * @param string $comment Comment to log if requested
      */
-    public function updateLocation($lat, $lon, $type = null, $logIp = false) {
+    public function updateLocation($lat, $lon, $type = null, $logIp = false, $comment = null) {
         if (is_null($type)) {
             // Look for existing address Location
             $location = Locations::model()->findByAttributes(array(
@@ -89,12 +91,14 @@ class MappableBehavior extends CActiveRecordBehavior {
             $location->lon = $lon;
             $location->type = $type;
             if ($logIp) $location->ipAddress = $logIp;
+            if ($comment) $location->comment = $comment;
             $location->save();
         }else{
             if($location->lat != $lat || $location->lon != $lon){
                 $location->lat = $lat;
                 $location->lon = $lon;
                 if ($logIp) $location->ipAddress = $logIp;
+                if ($comment) $location->comment = $comment;
                 $location->save();
             }
         }
@@ -133,6 +137,9 @@ class MappableBehavior extends CActiveRecordBehavior {
                 case "login":
                     $infoText = Yii::t('app', 'User Login');
                     break;
+                case 'activityPost':
+                    $infoText = Yii::t('app', 'Activity Post');
+                    break;
                 case 'mobileIdle':
                     $infoText = Yii::t('app', 'Mobile Location');
                     break;
@@ -156,6 +163,7 @@ class MappableBehavior extends CActiveRecordBehavior {
                 'lng' => (float) $loc['lon'],
                 'type' => $loc['type'],
                 'infoText' => $infoText,
+                'time' => Formatter::formatDateTime($loc['createDate']),
             );
         }
         return $locations;
