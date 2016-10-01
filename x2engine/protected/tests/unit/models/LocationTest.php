@@ -41,7 +41,7 @@ Yii::import('application.modules.users.models.*');
 class LocationTest extends X2DbTestCase {
 
     public $fixtures = array(
-        'location' => 'Location',
+        'location' => 'Locations',
     );
 
     public static function referenceFixtures() {
