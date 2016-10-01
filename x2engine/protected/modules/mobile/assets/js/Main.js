@@ -239,8 +239,8 @@ Main.prototype.setUpLocation = function () {
                 x2.main.alert (textStatus, 'Error');
             }
         );
-    }, 1000 * locationTrackingFrequency); 
-    // where locationTrackingFrequency is your every x seconds
+    }, 1000 * 60 * locationTrackingFrequency); 
+    // where locationTrackingFrequency is your every x minutes
     
 };
 

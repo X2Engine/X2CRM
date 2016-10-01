@@ -52,50 +52,6 @@ function MobileActiveForm (argsDict) {
 
 MobileActiveForm.prototype = auxlib.create (x2.X2Form.prototype);
 
-MobileActiveForm.prototype.setUpLocationSubmission = function () {
-    var that = this;
-    this.form$ = $(this.formSelector);
-    this.locationButton$ = this.submitButtonSelector ? 
-        $(this.submitButtonSelector) :
-        this.form$.find ('.location-attach-button');
-    
-    this.locationButton$.click (function () {
-        if (!that.validate ()) {
-            return;
-        } else {
-            if (that.form$.find ('.photo-attachment').not ('.dummy-attachment').length) {
-                $.mobile.loading ('show');
-            } else {
-                that.form$.submit ();
-            }
-        }
-    });
-    
-    /*
-     * @func for more general location fetching
-     * 
-     */
-    //this.form$ = $.mobile.activePage.find ('form.publisher-form');
-    /*this.submitButton$ = this.form$.find ('.submit-button');
-
-    this.submitButton$.click (function () {
-        if (x2.main.isPhoneGap && x2touch && x2touch.API && x2touch.API.getPlatform) {
-            x2touch.API.getCurrentPosition(function(position) {
-
-                var pos = {
-                   lat: position.coords.latitude,
-                   lon: position.coords.longitude
-                 };
- 
-                 that.form$.find ('#geoCoords').val(JSON.stringify (pos));
-            }, function (error) {
-                alert('code: '    + error.code    + '\n' +
-                      'message: ' + error.message + '\n');
-            }, {});         
-        }   
-    });*/
-};
-
 MobileActiveForm.prototype.setUpPhotoSubmission = function () {
     var that = this;
     this.form$ = $(this.formSelector);
@@ -219,7 +175,6 @@ MobileActiveForm.prototype._init = function () {
     x2.main.getController ().documentEvents.push (x2.main.onPageShow (function () {
         that.setUpInteractions ();
         that.setUpPhotoSubmission ();
-        that.setUpLocationSubmission ();
     }, x2.main.getController ().constructor.name));
 };
 

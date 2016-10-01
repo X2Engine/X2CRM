@@ -69,6 +69,42 @@ class AdminTest extends X2DbTestCase {
         Yii::app()->settings->save ();
         return parent::tearDownAfterClass ();
     }
+    
+    public function testLocationSettings() {
+        $admin = Yii::app()->settings;
+        $admin->locationTrackingSwitch = 1;
+        $this->assertEquals(1,$admin->locationTrackingSwitch);
+        
+        //Test vincentyGreatCircleDistance formula
+        $admin->locationTrackingDistance = 5;
+        //$earthRadius Mean earth radius in [km]
+        $distanceFromTwoPoints = vincentyGreatCircleDistance(36.9914, -122.0609, 37.3875, 122.0575, $earthRadius = 6371000000);
+        $this->assertGreaterThan($admin->locationTrackingDistance,$distanceFromTwoPoints);
+        $distanceFromTwoPointsEq = vincentyGreatCircleDistance(37.3875, 123.0575, 37.3875, 123.114, $earthRadius = 6371000000);
+        $this->assertEquals($admin->locationTrackingDistance,$distanceFromTwoPointsEq);
+        
+        $admin->locationTrackingFrequency = 5;
+        $minutes = 1000 * 60 * $admin->locationTrackingFrequency; // in miliseconds
+        $this->assertEquals(300000,$minutes);
+        
+        $admin->emailCount = 0;
+        $admin->emailInterval = 2;
+        $admin->update(array('emailCount','emailInterval'));
+        $now = time();
+        // This should register five emails as having been sent:
+        $admin->countEmail(5);
+        $this->assertEquals($now,$admin->emailStartTime);
+        $this->assertEquals(5,$admin->emailCount);
+        // One more:
+        $admin->countEmail();
+        $this->assertEquals(6,$admin->emailCount);
+        sleep(3);
+        // After the interval ends, the count should be reset
+        $now = time();
+        $admin->countEmail(3);
+        $this->assertEquals($now,$admin->emailStartTime);
+        $this->assertEquals(3,$admin->emailCount);
+    }
 
     public function testCountEmail() {
         $admin = Yii::app()->settings;
