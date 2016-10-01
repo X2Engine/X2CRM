@@ -78,9 +78,9 @@ class AdminTest extends X2DbTestCase {
         //Test vincentyGreatCircleDistance formula
         $admin->locationTrackingDistance = 5;
         //$earthRadius Mean earth radius in [km]
-        $distanceFromTwoPoints = vincentyGreatCircleDistance(36.9914, -122.0609, 37.3875, 122.0575, $earthRadius = 6371000000);
+        $distanceFromTwoPoints = LocationUtil::vincentyGreatCircleDistance(36.9914, -122.0609, 37.3875, 122.0575, $earthRadius = 6371000000);
         $this->assertGreaterThan($admin->locationTrackingDistance,$distanceFromTwoPoints);
-        $distanceFromTwoPointsEq = vincentyGreatCircleDistance(37.3875, 123.0575, 37.3875, 123.114, $earthRadius = 6371000000);
+        $distanceFromTwoPointsEq = LocationUtil::vincentyGreatCircleDistance(37.3875, 123.0575, 37.3875, 123.114, $earthRadius = 6371000000);
         $this->assertEquals($admin->locationTrackingDistance,$distanceFromTwoPointsEq);
         
         $admin->locationTrackingFrequency = 5;
