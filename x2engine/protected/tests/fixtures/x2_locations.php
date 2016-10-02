@@ -6,37 +6,37 @@ return array(
     'locationMobileIdle' => array(
         'id' => 1,
         'contactId' => 1,
-        'recordId' => 0,
+        'recordId' => 1,
         'recordType' => 'mobileIdle',
         'lat' => 36.9914,
         'lon' => 122.0609,
-        'type' => NULL,
-        'ipAddress' => NULL,
-        'createDate' => 0,
+        'type' =>  'mobileIdle',
+        'ipAddress' => '10.3.3.1',
+        'createDate' => 1234,
     ),
     'locationMobileActivityPost' => array(
         'id' => 2,
         'contactId' => 2,
-        'recordId' => 0,
+        'recordId' => 2,
         'recordType' => 'mobileActivityPost',
         'lat' => 36.9914,
         'lon' => 122.0609,
-        'type' => NULL,
+        'type' =>  'mobileActivityPost',
         'ipAddress' => '10.0.0.10',
-        'createDate' => 0,
+        'createDate' => 124,
     ),
     'locationMobileLogin' => array(
         'id' => 3,
         'contactId' => 3,
-        'recordId' => 0,
+        'recordId' => 3,
         'recordType' => 'login',
         'lat' => 36.9914,
         'lon' => 122.0609,
-        'type' => NULL,
+        'type' =>  'login',
         'ipAddress' => '10.0.0.1',
-        'createDate' => 0,
+        'createDate' => 1,
     ),
-    'locationNullType' => array(
+    /*'locationNullType' => array(
         'id' => 4,
         'contactId' => 4,
         'recordId' => 0,
@@ -47,7 +47,7 @@ return array(
         'ipAddress' => '10.0.0.2',
         'createDate' => 0,
     ),
-    /*'locationNullIpAddress' => array(
+    'locationNullIpAddress' => array(
         'id' => 5,
         'contactId' => 5,
         'recordId' => 0,
@@ -57,7 +57,7 @@ return array(
         'type' => '',
         'ipAddress' => NULL,
         'createDate' => 0,
-    ),*/
+    ),
     'locationNullTypeAndIpAddress' => array(
         'id' => 6,
         'contactId' => 6,
@@ -90,6 +90,6 @@ return array(
         'type' => NULL,
         'ipAddress' => '10.0.0.7',
         'createDate' => 0,
-    ),
+    ),*/
 );
 ?>

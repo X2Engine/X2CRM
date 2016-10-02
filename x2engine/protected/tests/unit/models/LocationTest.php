@@ -50,7 +50,7 @@ class LocationTest extends X2DbTestCase {
         );
     }
 
-    public function testCleanUpSessions() {
+    public function testLocationRowValues() {
         Yii::app()->cache->flush();
         // Prepare expected data:
         $locationCount = array(
@@ -71,14 +71,50 @@ class LocationTest extends X2DbTestCase {
         foreach($locationCount as $alias => $count){
             $column = Locations::model()->findByPk(array('id'=>$locationIds[$alias]));
             $this->assertNotNull($column);
+            
+            /*
+             * test for an id, there should be an id > 0 (starting at 1)
+             */
             $this->assertNotNull($column->id);
             $this->assertGreaterThan(0,$column->id);
+            
+            /*
+             * test for a contactId, there should be a contact ID > 0 (starting at 1)
+             */
             $this->assertNotNull($column->contactId);
-            $this->assertGreaterThan(0,$column->contactId);
+            $this->assertGreaterThan(-1,$column->contactId);
+            
+            /*
+             * test for a recordId, there should be a recordId > 0 (starting at 1)
+             */
             $this->assertNotNull($column->recordId);
-            $this->assertGreaterThan(0,$column->recordId);
+            $this->assertGreaterThan(-1,$column->recordId);
+            
+            /*
+             *  test for a recordType:
+             * 
+             *  'address' => Yii::t('app', 'Address'),
+             *  'weblead' => Yii::t('app', 'Weblead Form Submission'),
+             *  'webactivity' => Yii::t('app', 'Webactivity'),
+             *  'open' => Yii::t('app', 'Email Opened'),
+             *  'click' => Yii::t('app', 'Email Click'),
+             *  'unsub' => Yii::t('app', 'Email Unsubscribe'),
+             *  'login' => Yii::t('app', 'User Login'),
+             *  'activityPost' => Yii::t('app', 'Activity Post'),
+             *  'mobileIdle' => Yii::t('app', 'Mobile Location'),
+             *  'mobileActivityPost' => Yii::t('app', 'Mobile Activity Post'),
+             * 
+             */
+            $typeArray = array(
+                'address', 'weblead' , 'webactivity', 'open', 'click', 'unsub'
+            );
             $this->assertNotNull($column->recordType);
             $this->assertNotEquals('',$column->recordType);
+            $this->assertContains($column->recordType,$typeArray);
+            
+            /*
+             * test if lat and lon is valid
+             */
             $this->assertNotNull($column->lat);
             $this->assertGreaterThan(-90,$column->lat);
             $this->assertLessThan(90,$column->lat);
@@ -86,6 +122,45 @@ class LocationTest extends X2DbTestCase {
             $this->assertGreaterThan(-180,$column->lon);
             $this->assertLessThan(180,$column->lon);
             $this->assertNotNull($column->createDate);
+            $this->assertGreaterThan(0,$column->createDate);
+            
+            /*
+             *  test for a type:
+             * 
+             *  'address' => Yii::t('app', 'Address'),
+             *  'weblead' => Yii::t('app', 'Weblead Form Submission'),
+             *  'webactivity' => Yii::t('app', 'Webactivity'),
+             *  'open' => Yii::t('app', 'Email Opened'),
+             *  'click' => Yii::t('app', 'Email Click'),
+             *  'unsub' => Yii::t('app', 'Email Unsubscribe'),
+             *  'login' => Yii::t('app', 'User Login'),
+             *  'activityPost' => Yii::t('app', 'Activity Post'),
+             *  'mobileIdle' => Yii::t('app', 'Mobile Location'),
+             *  'mobileActivityPost' => Yii::t('app', 'Mobile Activity Post'),
+             * 
+             */
+            if($column->type != NULL) {
+                $typeArray = array(
+                    'address', 'weblead' , 'webactivity', 'open', 'click', 'unsub'
+                );
+                $this->assertNotNull($column->type);
+                $this->assertNotEquals('',$column->type);
+                $this->assertContains($column->type,$typeArray);
+            }
+                    
+            /*
+             * test for valid ip address
+             */
+            if($column->ipAddress != NULL) {
+                $this->assertNotEquals('',$column->ipAddress);
+                $valid = ip2long($column->ipAddress) !== false;
+                $this->assertTrue($valid);          
+            }
+            
+            /*
+             * test for create date
+             * (test for date being a bigint and later than 2015)
+             */
             $this->assertGreaterThan(0,$column->createDate);
         }
     }
