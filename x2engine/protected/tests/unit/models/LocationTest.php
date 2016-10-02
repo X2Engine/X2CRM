@@ -39,11 +39,11 @@
 Yii::import('application.modules.users.models.*');
 
 class LocationTest extends X2DbTestCase {
-    /*
+    
     public $fixtures = array(
         'location' => 'Locations',
     );
-    */
+    
     public static function referenceFixtures() {
         return array(
             'user' => 'User',
