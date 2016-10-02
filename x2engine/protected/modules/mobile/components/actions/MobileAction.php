@@ -67,7 +67,7 @@ abstract class MobileAction extends CAction {
             $latitudeFrom = $locationRecord->lat;
             $longitudeFrom = $locationRecord->lon;
             $distance = LocationUtil::vincentyGreatCircleDistance(
-                $latitudeFrom, $longitudeFrom, $_POST['geoCoords']['lat'], $_POST['geoCoords']['lon'], $earthRadius = 6371000000);
+                $latitudeFrom, $longitudeFrom, $_POST['geoCoords']['lat'], $_POST['geoCoords']['lon'], $earthRadius = 6371);
             if($distance >= Yii::app()->settings->locationTrackingDistance){
                 Yii::app()->params->profile->user->logLocation('mobileIdle', 'POST'); 
             }
