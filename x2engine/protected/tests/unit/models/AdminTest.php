@@ -81,7 +81,9 @@ class AdminTest extends X2DbTestCase {
         $distanceFromTwoPoints = LocationUtil::vincentyGreatCircleDistance(36.9914, 122.0609, 37.3875, 122.0575, $earthRadius = 6371);
         $this->assertGreaterThan($admin->locationTrackingDistance,$distanceFromTwoPoints);
         $distanceFromTwoPointsEq = LocationUtil::vincentyGreatCircleDistance(37.3875, 123.0575, 37.3875, 123.114, $earthRadius = 6371);
-        $this->assertEquals($admin->locationTrackingDistance,$distanceFromTwoPointsEq);
+        // testing if it's within .01 km of 5 km; the standard of error is about 10.006900992 m 
+        $this->assertGreaterThan(4.99,$distanceFromTwoPointsEq);
+        $this->assertLessThan(5.01,$distanceFromTwoPointsEq);
         
         $admin->locationTrackingFrequency = 5;
         $minutes = 1000 * 60 * $admin->locationTrackingFrequency; // in miliseconds

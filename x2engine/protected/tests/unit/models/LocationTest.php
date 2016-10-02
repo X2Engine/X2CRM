@@ -69,7 +69,7 @@ class LocationTest extends X2DbTestCase {
         
         
         foreach($locationCount as $alias => $count){
-            $column = Location::model()->findByPk(array('id'=>$locationIds[$alias]));
+            $column = Locations::model()->findByPk(array('id'=>$locationIds[$alias]));
             $this->assertNotNull($column);
             $this->assertNotNull($column->id);
             $this->assertGreaterThan(0,$column->id);
