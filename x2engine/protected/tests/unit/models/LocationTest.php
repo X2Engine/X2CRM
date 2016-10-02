@@ -101,7 +101,8 @@ class LocationTest extends X2DbTestCase {
              * 
              */
             $typeArray = array(
-                'address', 'weblead' , 'webactivity', 'open', 'click', 'unsub'
+                'address', 'weblead' , 'webactivity', 'open', 'click', 'unsub', 
+                'login', 'activityPost', 'mobileIdle', 'mobileActivityPost'
             );
             $this->assertNotNull($column->recordType);
             $this->assertNotEquals('',$column->recordType);
@@ -136,7 +137,8 @@ class LocationTest extends X2DbTestCase {
              */
             if($column->type != NULL) {
                 $typeArray = array(
-                    'address', 'weblead' , 'webactivity', 'open', 'click', 'unsub'
+                    'address', 'weblead' , 'webactivity', 'open', 'click', 'unsub',
+                     'login', 'activityPost', 'mobileIdle', 'mobileActivityPost'
                 );
                 $this->assertNotNull($column->type);
                 $this->assertNotEquals('',$column->type);
