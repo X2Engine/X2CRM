@@ -25,7 +25,7 @@ return array(
         'ipAddress' => '10.0.0.10',
         'createDate' => 124,
     ),
-    'locationMobileLogin' => array(
+    'locationLogin' => array(
         'id' => 3,
         'contactId' => 3,
         'recordId' => 3,

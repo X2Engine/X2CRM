@@ -54,22 +54,17 @@ class LocationTest extends X2DbTestCase {
         Yii::app()->cache->flush();
         // Prepare expected data:
         $locationCount = array(
-            'locationZeroCreateDate' => 1,
+            /*'locationZeroCreateDate' => 1,
             'locationZeroRecordId' => 1,
             'locationNullTypeAndIpAddress' => 1,
-            'locationNullType' => 1,
-            'locationMobileLogin' => 1,
-            'locationMobileActivityPost' => 1,
+            'locationNullType' => 1,*/
             'locationMobileIdle' => 1,
+            'locationMobileActivityPost' => 2,
+            'locationLogin' => 3,
         );
         
-        foreach(array_keys($locationCount) as $alias) {
-            $locationIds[$alias] = $this->location($alias)->id;
-        }
-        
-        
         foreach($locationCount as $alias => $count){
-            $column = Locations::model()->findByPk(array('id'=>$locationIds[$alias]));
+            $column = Locations::model()->findByPk(array('id'=>$count));
             $this->assertNotNull($column);
             
             /*
