@@ -45,7 +45,8 @@ class MobileCheckInAction extends MobileAction {
         $creds = Credentials::model()->findByPk($settings->googleCredentialsId);
         $decodedResponse = '';
         if (isset ($_POST['geoCoords']) && isset ($_POST['geoLocationCoords'])) {
-            if ($creds && $creds->auth && $creds->auth->apiKey){
+            $decodedResponse = json_decode($_POST['geoLocationCoords'],true);
+            if ($creds && $creds->auth && $creds->auth->apiKey && $decodedResponse == 'set'){
                 $key = $creds->auth->apiKey; 
                 $decodedResponse = json_decode($_POST['geoCoords'],true);
                 //https://davidwalsh.name/curl-post
