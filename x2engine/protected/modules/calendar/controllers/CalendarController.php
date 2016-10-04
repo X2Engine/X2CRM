@@ -615,6 +615,14 @@ class CalendarController extends x2base {
         if (!$invite) {
             $this->denied();
         }
+        $contact = X2Model::model('Contacts')->findByEmail($email);
+        if($contact && $contact->asa('MappableBehavior')){
+            $contact->logLocation();
+        } 
+        $user = X2Model::model('User')->findByEmail($email);
+        if($user && $user->asa('MappableBehavior')){
+            $user->logLocation();
+        }
         $action = X2Model::model('Actions')->findByPk($invite->actionId);
         $status = filter_input(INPUT_POST,'status');
         if (!is_null($status)) {
