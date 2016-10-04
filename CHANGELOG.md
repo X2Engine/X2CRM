@@ -9,6 +9,7 @@
   * Google Maps API Re-enabled
   * Jasper Reporting Integration
   * Two-way Google Calendar sync
+  * Support for multiple user calendars
   * Miscellaneous bug fixes and improvements
 
 # 6.0.4 #

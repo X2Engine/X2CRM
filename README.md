@@ -7,6 +7,7 @@
     * Log periodic location updates from X2Touch mobile
     * Settings page to configure and enable user location logging
   * Google Maps API Re-enabled
+  * Support for multiple user calendars
   * Jasper Reporting Integration
   * Two-way Google Calendar sync
   * Miscellaneous bug fixes and improvements		
