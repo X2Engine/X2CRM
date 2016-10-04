@@ -64,10 +64,9 @@ class MobilePublisherAction extends MobileAction {
                 //execute post
                 $result = curl_exec($ch);
                 //close connection
-                $decodedResult = json_decode($result);
+                $decodedResult = json_decode($result, true);
                 $decodedResult['key'] = $key;
-                $jsonFormattedResponse = json_encode($decodedResult);
-                echo $result. json_encode($jsonFormattedResponse);
+                echo $result . $decodedResult;
                 curl_close($ch);
 
                 /* 

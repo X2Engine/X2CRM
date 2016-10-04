@@ -75,40 +75,42 @@ EventPublisherController.prototype.setUpForm = function () {
                  };
 
                 this.form$.find ('#geoCoords').val(JSON.stringify (pos));
+                that.form$.find ('#geoLocationCoords').val("set");
+                x2.mobileForm.submitWithFiles (
+                   that.form$, 
+                   function (response) {
+                       try {
+                           var data = JSON.parse (response);
+                           var theAddress = data['results'][0]['formatted_address'];
+                           that.form$.find ('.event-text-box').val(
+                               that.form$.find ('.event-text-box').val()+" - "+theAddress
+                           );
+                           var key = data['key'];
+                           var url = 'https://maps.googleapis.com/maps/api/staticmap?center=' + 
+                                   pos['lat'] + ',' + pos['lon'] +
+                                   '&zoom=13&size=600x300&maptype=roadmap&markers=color:blue%7Clabel:%7C' +
+                                   pos['lat'] + ',' + pos['lon'] +
+                                   '&key=' + key;
+                           that.form$.find ('.photo-attachment').src = url;
+                       } catch (e) {
+                           alert("failed to parse response from server");
+                       }
+
+                       x2.main.refreshContent ();
+                       $.mobile.loading ('hide');
+                   }, function (jqXHR, textStatus, errorThrown) {
+                       $.mobile.loading ('hide');
+                       x2.main.alert (textStatus, 'Error');
+                   }
+               );  
             }, function (error) {
                 alert('code: '    + error.code    + '\n' +
                       'message: ' + error.message + '\n');
             }, {});         
         
-        }
-         that.form$.find ('#geoLocationCoords').val("set");
-         x2.mobileForm.submitWithFiles (
-            that.form$, 
-            function (response) {
-                try {
-                    var data = JSON.parse (response);
-                    var theAddress = data['results'][0]['formatted_address'];
-                    that.form$.find ('.event-text-box').val(
-                        that.form$.find ('.event-text-box').val()+" - "+theAddress
-                    );
-                    var key = data['key'];
-                    var url = 'https://maps.googleapis.com/maps/api/staticmap?center=' + 
-                            pos['lat'] + ',' + pos['lon'] +
-                            '&zoom=13&size=600x300&maptype=roadmap&markers=color:blue%7Clabel:%7C' +
-                            pos['lat'] + ',' + pos['lon'] +
-                            '&key=' + key;
-                    that.form$.find ('.photo-attachment').src = url;
-                } catch (e) {
-                    alert("failed to parse response from server");
-                }
-                
-                x2.main.refreshContent ();
-                $.mobile.loading ('hide');
-            }, function (jqXHR, textStatus, errorThrown) {
-                $.mobile.loading ('hide');
-                x2.main.alert (textStatus, 'Error');
-            }
-        );  
+        } else {
+            alert("Available on the mobile app!");
+        } 
         
     });
 
