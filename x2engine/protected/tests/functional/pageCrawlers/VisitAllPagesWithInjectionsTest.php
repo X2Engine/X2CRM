@@ -93,7 +93,7 @@ class VisitAllPagesWithInjectionsTest extends BaseVisitAllPagesTest {
             'x2_password_reset', 'x2_timezones', 'x2_workflow_stages', 'x2_sessions',// 'x2_profile',
             'x2_action_to_record', 'x2_role_to_workflow', 'x2_failed_logins', 'x2_credentials',
             'x2_events_to_media', 'x2_topic_replies', 'x2_role_to_permission', 'x2_actions_to_media',
-            'x2_calendar_invites',
+            'x2_calendar_invites', 'x2_calendar_permissions',
         );
         $ignoreFields = array(
             'nameId', 'actionDescription', 'actionId', 'existingProducts', 'products',
