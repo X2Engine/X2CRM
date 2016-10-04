@@ -1,3 +1,16 @@
+# 6.5 #
+{releaseDate}
+* General Changelog / Developer Notes
+  * New Location tracking features
+    * Log locations when Contacts open emails, visit your webpage, etc.
+    * Log locations of users when they log in to the system
+    * Log periodic location updates from X2Touch mobile
+    * Settings page to configure and enable user location logging
+  * Google Maps API Re-enabled
+  * Jasper Reporting Integration
+  * Two-way Google Calendar sync
+  * Miscellaneous bug fixes and improvements
+
 # 6.0.4 #
 8/12/2016
 * General Changelog / Developer Notes
