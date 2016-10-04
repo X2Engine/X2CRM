@@ -615,22 +615,22 @@ class CalendarController extends x2base {
         if (!$invite) {
             $this->denied();
         }
-        $contact = X2Model::model('Contacts')->findByEmail($email);
-        if($contact && $contact->asa('MappableBehavior')){
-            $contact->logLocation();
-        } 
-        $user = X2Model::model('User')->findByEmail($email);
-        if($user && $user->asa('MappableBehavior')){
-            $user->logLocation();
-        }
         $action = X2Model::model('Actions')->findByPk($invite->actionId);
-        $status = filter_input(INPUT_POST,'status');
+        $status = filter_input(INPUT_POST, 'status');
         if (!is_null($status)) {
+            $contact = X2Model::model('Contacts')->findByEmail($email);
+            if ($contact && $contact->asa('MappableBehavior')) {
+                $contact->logLocation('eventRSVP');
+            }
+            $user = X2Model::model('User')->findByAttributes(array('emailAddress' => $email));
+            if ($user && $user->asa('MappableBehavior')) {
+                $user->logLocation('eventRSVP');
+            }
             $invite->status = $status;
             $invite->save();
             Yii::app()->end();
         }
-        $this->render('eventRsvp', array('invite' => $invite, 'action'=>$action));
+        $this->render('eventRsvp', array('invite' => $invite, 'action' => $action));
     }
 
     /**
