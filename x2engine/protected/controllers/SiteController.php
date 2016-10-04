@@ -594,7 +594,11 @@ class SiteController extends x2base {
             $visStr = "";
             foreach ($newOrder as $item) {
                 $pos = array_search($item, $order);
-                $vis = $visibility[$pos];
+                if (array_key_exists($pos, $visibility)) {
+                    $vis = $visibility[$pos];
+                } else {
+                    $vis = 1;
+                }
                 $str.=$item . ":";
                 $visStr.=$vis . ":";
             }

@@ -51,6 +51,7 @@ $(function() {
     $('.user-permission').multiselect();
 });
 ", CClientScript::POS_HEAD);
+$users = array_map (array('CHtml', 'encode'), $users);
 ?>
 <div class="form">
     <?php

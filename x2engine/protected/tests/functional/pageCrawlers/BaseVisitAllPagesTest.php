@@ -253,6 +253,7 @@ abstract class BaseVisitAllPagesTest extends X2WebTestCase {
         'users/update/id/1',
         'users/inviteUsers',
         'users/create',
+        'users/userMap',
 
         'admin/activitySettings',
         'admin/addCriteria',
