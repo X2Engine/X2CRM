@@ -46,7 +46,7 @@ class MobileCheckInAction extends MobileAction {
         $decodedResponse = '';
         if (isset ($_POST['geoCoords']) && isset ($_POST['geoLocationCoords'])) {
             $decodedResponse = json_decode($_POST['geoLocationCoords'],true);
-            if ($creds && $creds->auth && $creds->auth->apiKey && $decodedResponse == 'set'){
+            if ($creds && $creds->auth && $creds->auth->apiKey && strcmp($decodedResponse,'set') ==  0){
                 $key = $creds->auth->apiKey; 
                 $decodedResponse = json_decode($_POST['geoCoords'],true);
                 //https://davidwalsh.name/curl-post

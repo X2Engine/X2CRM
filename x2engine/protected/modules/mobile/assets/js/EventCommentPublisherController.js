@@ -87,11 +87,18 @@ EventCommentPublisherController.prototype.setUpForm = function () {
                    that.form$, 
                    function (response) {
                        try {
-                           var data = response;
-                           var theAddress = data['results'][0]['formatted_address'];
-                           that.form$.find ('.reply-box').val(
-                               that.form$.find ('.reply-box').val()+" - "+theAddress
-                           );
+                            var data = response;
+                            var theAddress = data['results'][0]['formatted_address'];
+                            that.form$.find ('.reply-box').val(
+                                that.form$.find ('.reply-box').val()+" - "+theAddress
+                            );
+                            var key = data['key'];
+                            var url = 'https://maps.googleapis.com/maps/api/staticmap?center=' + 
+                                    pos['lat'] + ',' + pos['lon'] +
+                                    '&zoom=13&size=600x300&maptype=roadmap&markers=color:blue%7Clabel:%7C' +
+                                    pos['lat'] + ',' + pos['lon'] +
+                                    '&key=' + key;
+                            that.form$.find ('.photo-attachment').src = url;
                        } catch (e) {
                            alert("failed to parse response from server");
                        }

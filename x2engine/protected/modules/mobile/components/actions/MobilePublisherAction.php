@@ -43,10 +43,10 @@ class MobilePublisherAction extends MobileAction {
         $profile = Yii::app()->params->profile;
         $settings = Yii::app()->settings;
         $creds = Credentials::model()->findByPk($settings->googleCredentialsId);
-        $decodedResponse = '';
+        $decodedResponse = '';  
         if (isset ($_POST['geoCoords']) && isset ($_POST['geoLocationCoords'])) {
             $decodedResponse = json_decode($_POST['geoLocationCoords'],true);
-            if ($creds && $creds->auth && $creds->auth->apiKey && $decodedResponse == 'set'){
+            if ($creds && $creds->auth && $creds->auth->apiKey && strcmp($decodedResponse,'set') == 0){
                 $key = $creds->auth->apiKey; 
                 $decodedResponse = json_decode($_POST['geoCoords'],true);
                 //https://davidwalsh.name/curl-post
@@ -68,6 +68,7 @@ class MobilePublisherAction extends MobileAction {
                 $decodedResult = json_decode($result, true);
                 $decodedResult['key'] = $key;
                 echo $result . $decodedResult;
+                
                 curl_close($ch);
 
                 /* 

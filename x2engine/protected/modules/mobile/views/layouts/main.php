@@ -200,12 +200,12 @@ X2Html::getFlashes ();
         if (strpos($currentUrl, '/mobile/login') == false){
         ?>
             <a href='<?php echo Yii::app()->createAbsoluteUrl ('profile/mobileActivity'); ?>' 
-              style='margin-left: 70px;' 
+              style='margin-left: 40px;' 
               class='ui-btn-left ui-btn show-left-menu-button-right'>
                 <i class='fa fa-home'></i>
             </a>
             <a href='<?php echo Yii::app()->createAbsoluteUrl ('profile/mobileCheckInPublisher'); ?>' 
-              style='margin-left: 140px;' 
+              style='margin-left: 80px;' 
               class='ui-btn-left ui-btn show-left-menu-button-right'>
                 <i class='fa fa-location-arrow'></i>
             </a>
