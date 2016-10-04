@@ -1,5 +1,5 @@
 <?php
-/***********************************************************************************
+/* * *********************************************************************************
  * X2CRM is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2016 X2Engine Inc.
  * 
@@ -33,7 +33,7 @@
  * X2Engine" logo. If the display of the logo is not reasonably feasible for
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2Engine".
- **********************************************************************************/
+ * ******************************************************************************** */
 ?>
 
 <?php
@@ -55,6 +55,15 @@ $form = $this->beginWidget('CActiveForm', array(
     }
 
     .dialog-cell {
+        padding: 5px;
+    }
+    
+    #calendar-invites tr,th{
+        font-weight: bold;
+        padding: 5px;
+    }
+    
+    #calendar-invites tr,td{
         padding: 5px;
     }
 
@@ -93,7 +102,7 @@ $form = $this->beginWidget('CActiveForm', array(
             ),
         ));
 
-        if($isEvent){
+        if ($isEvent) {
             echo $form->label($model, 'endDate', array('class' => 'dialog-label'));
             $defaultDate = Formatter::formatDate($model->completeDate, 'medium');
             $model->completeDate = Formatter::formatDateTime($model->completeDate); //format date from DATETIME
@@ -129,51 +138,72 @@ $form = $this->beginWidget('CActiveForm', array(
         echo $form->dropDownList($model, 'priority', Actions::getPriorityLabels(), array('onChange' => 'giveSaveButtonFocus();'));
         ?>
         <?php echo $form->label($model, 'color', array('class' => 'dialog-label')); ?>
-        <?php 
-        echo $model->renderInput('color', array('onChange' => 'giveSaveButtonFocus();')); 
+        <?php
+        echo $model->renderInput('color', array('onChange' => 'giveSaveButtonFocus();'));
         ?>
 
     </div>
 
     <div class="cell dialog-cell">
         <?php
-        if($model->assignedTo == null && is_numeric($model->calendarId)){ // assigned to calendar instead of user?
+        if ($model->assignedTo == null && is_numeric($model->calendarId)) { // assigned to calendar instead of user?
             $model->assignedTo = $model->calendarId;
         }
-        echo $form->label($model, 'assignedTo', array('class' => 'dialog-label')); 
-        echo $model->renderInput (
-            'assignedTo', 
-            array(
-                'class' => 'action-assignment-dropdown',
-                'onChange' => 'giveSaveButtonFocus();',
-            )); 
+        echo $form->label($model, 'assignedTo', array('class' => 'dialog-label'));
+        echo $model->renderInput(
+                'assignedTo', array(
+            'class' => 'action-assignment-dropdown',
+            'onChange' => 'giveSaveButtonFocus();',
+        ));
         ?>
     </div>
 
     <div class="cell dialog-cell">
-        <?php 
+        <?php
         if ($model->type === 'event') {
-            echo $form->label ($model, 'eventSubtype', array ('class' => 'dialog-label'));
-            echo $model->renderInput ('eventSubtype');
-            echo $form->label ($model, 'eventStatus', array ('class' => 'dialog-label'));
-            echo $model->renderInput ('eventStatus');
+            echo $form->label($model, 'eventSubtype', array('class' => 'dialog-label'));
+            echo $model->renderInput('eventSubtype');
+            echo $form->label($model, 'eventStatus', array('class' => 'dialog-label'));
+            echo $model->renderInput('eventStatus');
         }
 
-        echo $form->label($model, 'visibility', array('class' => 'dialog-label')); 
+        echo $form->label($model, 'visibility', array('class' => 'dialog-label'));
         $visibility = array(1 => Yii::t('actions', 'Public'), 0 => Yii::t('actions', 'Private'));
         echo $form->dropDownList(
-            $model, 'visibility', $visibility, 
-            array(
-                'id' => 'dialog_Actions_visibility',
-                'onChange' => 'giveSaveButtonFocus();'
-            )); ?>
+                $model, 'visibility', $visibility, array(
+            'id' => 'dialog_Actions_visibility',
+            'onChange' => 'giveSaveButtonFocus();'
+        ));
+        ?>
     </div>
 
     <div class="cell dialog-cell">
         <?php echo $form->label($model, 'reminder', array('class' => 'dialog-label')); ?>
         <?php echo $form->dropDownList($model, 'reminder', array('No' => Yii::t('actions', 'No'), 'Yes' => Yii::t('actions', 'Yes')), array('onChange' => 'giveSaveButtonFocus();')); ?>
     </div>
-<input type="hidden" name="isEvent" value="<?php echo $isEvent ?>">
+    <input type="hidden" name="isEvent" value="<?php echo $isEvent ?>">
 </div>
+<?php if (!empty($model->invites)) { ?>
+    <div style="clear:both"></div>
+    <div class="row">
+        <div class="cell dialog-cell">
+            <table id="calendar-invites">
+                <tr>
+                    <th><?php echo Yii::t('calendar', 'Guest'); ?></th>
+                    <th><?php echo Yii::t('calendar', 'Status'); ?></th>
+                </tr>
+                <?php
+                foreach ($model->invites as $invite) {
+                    echo "<tr>";
+                    echo "<td>" . $invite->email . "</td><td>" . 
+                            (is_null($invite->status) ? Yii::t('calendar', 'Awaiting response') 
+                            : Yii::t('calendar', $invite->status)) . "</td>";
+                    echo "</tr>";
+                }
+                ?>
+            </table>
+        </div>
+    </div>
+<?php } ?>
 
 <?php $this->endWidget(); ?>

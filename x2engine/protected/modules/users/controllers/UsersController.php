@@ -151,7 +151,15 @@ class UsersController extends x2base {
              
 
             if($model->save()){
+                $calendar = new X2Calendar();
+                $calendar->createdBy = $model->username;
+                $calendar->updatedBy = $model->username;
+                $calendar->createDate = time();
+                $calendar->lastUpdated = time();
+                $calendar->name = $profile->fullName."'s Calendar";
+                $calendar->save();
                 $profile->id=$model->id;
+                $profile->defaultCalendar = $calendar->id;
                 $profile->save();
                 if(isset($_POST['roles'])){
                     $roles=$_POST['roles'];
@@ -474,6 +482,49 @@ Please click on the link below to create an account at X2Engine!
         if (TopContacts::removeBookmark ($model))
             $this->renderTopContacts();
     }
+    
+    public function actionUserMap(){
+        $users = User::getUserIds();
+        unset($users['']);
+        $selectedUsers = array_keys($users);
+        $filterParams = filter_input(INPUT_POST,'params',FILTER_DEFAULT,FILTER_REQUIRE_ARRAY);
+        $params = array();
+        if(isset($filterParams['users'])){
+            $selectedUsers = $filterParams['users'];
+            $userParams = AuxLib::bindArray($selectedUsers);
+            $userList = AuxLib::arrToStrList($userParams);
+        }
+        $time = isset($filterParams['timestamp'])?$filterParams['timestamp']:Formatter::formatDateTime(time());
+        $locations = Yii::app()->db->createCommand(
+                "SELECT lat, lon AS lng, recordId, type, comment AS info, createDate AS time"
+                . " FROM ("
+                ."SELECT * FROM x2_locations"
+                ." WHERE recordType = 'User'"
+                .(isset($filterParams['users'])?" AND recordId IN ".$userList:'')
+                ." AND createDate < :time"
+                ." ORDER BY createDate DESC"
+                .") AS tmp GROUP BY recordId"
+        )->queryAll(true, array(':time'=>strtotime($time)));
+        if(!empty($locations)){
+            $center = $locations[0];
+        } else {
+            $center = array('lat' => 0, 'lng' => 0);;
+        }
+        $types = Locations::getLocationTypes();
+        foreach($locations as &$location){
+            $location['time'] = Formatter::formatLongDateTime($location['time']);
+            if(array_key_exists($location['type'],$types)){
+                $location['type'] = $types[$location['type']];
+            }
+        }
+        $this->render('userMap',array(
+            'users' => $users,
+            'selectedUsers'=>$selectedUsers,
+            'timestamp'=>$time,
+            'center'=>json_encode($center),
+            'locations'=>$locations,
+        ));
+    }
 
     private function renderTopContacts() {
         $this->renderPartial('application.components.leftWidget.views.topContacts',array(
@@ -512,6 +563,13 @@ Please click on the link below to create an account at X2Engine!
                     '{users}' => $Users,
                 )),
                 'url'=>array('admin')
+            ),
+            array(
+                'name'=>'map',
+                'label' => Yii::t('users', 'View {users} Map', array(
+                    '{users}' => $Users,
+                )),
+                'url'=>array('userMap')
             ),
             array(
                 'name'=>'create',

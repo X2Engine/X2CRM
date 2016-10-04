@@ -57,6 +57,19 @@ if ($model instanceof X2Model &&
 ?>
 
 <div class='refresh-content' data-refresh-selector='.header-content-right'>
+    <?php
+    if($model instanceof Contacts) { 
+    ?>
+        <div class='header-content-right' style="margin-right: 80px;">
+            <div class='export-button'>
+            <?php
+            echo CHtml::encode (Yii::t('mobile', 'Export'));
+            ?>
+            </div>
+        </div>
+    <?php
+    }
+    ?>
     <div class='header-content-right'>
         <div class='submit-button disabled'>
         <?php

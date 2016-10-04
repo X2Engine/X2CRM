@@ -130,6 +130,6 @@ INSERT INTO `x2_tips` (`tip`, `edition`, `admin`, `module`) VALUES
 ("You can see the history of related records by clicking \"Relationships\" on the History widget. Accounts do this by default.",'opensource',0,'Relationships');
 /*&*/
 INSERT INTO `x2_mobile_layouts`
-(`modelName`, `layout`, `defaultForm`, `defaultView`, `version`)
+(`id`,`modelName`, `layout`, `defaultForm`, `defaultView`, `version`)
 VALUES
-('Profile', '["tagLine","username","officePhone","cellPhone","emailAddress","googleId"]',0,1,'5.4');
+(-1, 'Profile', '["tagLine","username","officePhone","cellPhone","emailAddress","googleId"]',0,1,'5.4');

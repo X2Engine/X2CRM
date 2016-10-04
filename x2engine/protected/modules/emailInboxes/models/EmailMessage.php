@@ -468,6 +468,8 @@ class EmailMessage extends CModel {
     public function getAttachmentLink (array $attachment, $type='view') {
         if ($type === 'view') {
             $action = 'viewAttachment';
+        } else if ($type === 'associate') {
+            $action = 'associateAttachment';
         } else {
             $action = 'downloadAttachment';
         }
@@ -540,8 +542,22 @@ class EmailMessage extends CModel {
                      href='#'
                      data-href='".$this->getAttachmentLink ($attachment, 'download')."'>
                     </a>
-                </div>
             ";
+            $contacts = $this->getAssociatedContacts(true);
+            if (!empty($contacts)) {
+                echo CHtml::ajaxLink('', $this->getAttachmentLink ($attachment, 'associate'), array(
+                    'complete' => 'function(data) {
+                        data = JSON.parse(data.responseText);
+                        if (typeof throbber !== "undefined") throbber.remove();
+                        x2.topFlashes.displayFlash (data.message, data.type);
+                    }',
+                ), array(
+                    'class' => 'attachment-association-link fa fa-link x2-button',
+                    'title' => CHtml::encode (Yii::t('emailInboxes', 'Associate attachment with related record')),
+                    'onclick' => 'var throbber = auxlib.pageLoading();',
+                ));
+            }
+            echo "</div>";
         }
     }
 

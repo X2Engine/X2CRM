@@ -82,14 +82,6 @@ $menuItems = array(
             'confirm'=>'Are you sure you want to delete this item?'
     )),
 );
-if (Yii::app()->settings->googleIntegration) {
-    $menuItems[] = array(
-        'label'=>Yii::t('calendar', 'Sync My Actions To Google Calendar', array(
-            '{actions}' => Modules::displayName(true, "Actions"),
-        )),
-        'url'=>array('syncActionsToGoogleCalendar')
-    );
-}
 
 $this->actionMenu = $this->formatMenu($menuItems);
 ?>

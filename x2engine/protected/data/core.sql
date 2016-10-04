@@ -121,7 +121,8 @@ CREATE TABLE x2_admin(
     twitterCredentialsId        INT UNSIGNED,
     twitterRateLimits           TEXT DEFAULT NULL,
     triggerLogMax               INT UNSIGNED DEFAULT 1000000,
-    googleCredentialsId         INT UNSIGNED
+    googleCredentialsId         INT UNSIGNED,
+    jasperCredentialsId         INT UNSIGNED
 ) ENGINE=InnoDB, COLLATE = utf8_general_ci;
 /*&*/
 DROP TABLE IF EXISTS x2_api_hooks;
@@ -391,12 +392,8 @@ CREATE TABLE x2_profile(
 	emailUseSignature		VARCHAR(5)		DEFAULT "user",
 	emailSignature			LONGTEXT,
 	enableFullWidth			TINYINT			DEFAULT 1,
-	syncGoogleCalendarId	TEXT,
-	syncGoogleCalendarAccessToken TEXT,
-	syncGoogleCalendarRefreshToken TEXT,
 	googleId				VARCHAR(250),
 	userCalendarsVisible	TINYINT			DEFAULT 1,
-	groupCalendarsVisible	TINYINT			DEFAULT 1,
 	tagsShowAllUsers		TINYINT,
 	hideCasesWithStatus		TEXT,
     hiddenTags              TEXT,
@@ -416,6 +413,7 @@ CREATE TABLE x2_profile(
     googleRefreshToken      VARCHAR(255),
 	leadRoutingAvailability	TINYINT			DEFAULT 1,
 	showTours 				TINYINT			DEFAULT 1,
+        defaultCalendar     INT,
 	UNIQUE(username, emailAddress),
 	INDEX (username)
 ) COLLATE = utf8_general_ci;

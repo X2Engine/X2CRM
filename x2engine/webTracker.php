@@ -220,11 +220,12 @@ x2WebTracker.setKeyCookieHiddenField = function (key) {
     var url = window.location.href;
 
     var fingerprint;
-    <?php if (!empty ($_SERVER['HTTPS']) && (!isset ($_SERVER['HTTP_DNT']) || $_SERVER['HTTP_DNT'] != 1)) {
+    <?php if (!isset ($_SERVER['HTTP_DNT']) || $_SERVER['HTTP_DNT'] != 1) {
         require(__DIR__.'/js/fontdetect.js');
         require(__DIR__.'/js/X2Identity.js'); ?>
         fingerprint = x2Identity.fingerprint();
 
+        <?php if (!empty ($_SERVER['HTTPS'])) { ?>
         if ("geolocation" in navigator) {
             navigator.geolocation.getCurrentPosition(function(position) {
             var pos = {
@@ -242,6 +243,7 @@ x2WebTracker.setKeyCookieHiddenField = function (key) {
             console.log("error fetching geolocation data");
           });
         }
+        <?php } ?>
     <?php } ?>
 
     <?php 

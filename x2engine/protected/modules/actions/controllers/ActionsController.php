@@ -287,9 +287,7 @@ class ActionsController extends x2base {
                 if ($location)
                     $model->locationId = $location->id;
                 $this->quickCreate($model);
-                $model->syncGoogleCalendar('create');
             } elseif(!$model->hasErrors () && $model->save()){
-                $model->syncGoogleCalendar('create');
                 $this->redirect(array('index'));
             }
         }
@@ -473,7 +471,6 @@ class ActionsController extends x2base {
                     $event->associationId = $model->id;
                     $event->save();
                 }
-                //$model->syncGoogleCalendar('create', true);
             }else{
                 if($model->hasErrors('verifyCode')){
                     echo CJSON::encode (array ('error' => $model->getError('verifyCode')));
@@ -592,36 +589,6 @@ class ActionsController extends x2base {
     }
 
     public function update($model, $oldAttributes, $api){
-
-        // now in Actions::beforeSave()
-        /* $model->dueDate = Formatter::parseDateTime($model->dueDate);
-
-          if($model->completeDate)
-          $model->completeDate = Formatter::parseDateTime($model->completeDate);
-
-          $association = $this->getAssociation($model->associationType,$model->associationId);
-
-          if($association != null) {
-          $model->associationName = $association->name;
-          } else {
-          $model->associationName = 'None';
-          $model->associationId = 0;
-          } */
-
-        // now in Actions::synchGoogleCalendar()
-        /* if( !is_numeric($model->assignedTo)) { // assigned to user
-          $profile = Profile::model()->findByAttributes(array('username'=>$model->assignedTo));
-          if(isset($profile)) // prevent error for actions assigned to 'Anyone'
-          $profile->updateGoogleCalendarEvent($model); // update action in Google Calendar if user has a Google Calendar
-          } else { // Assigned to group
-          $groups = Yii::app()->db->createCommand()->select('userId')->from('x2_group_to_user')->where("groupId={$model->assignedTo}")->queryAll();
-          foreach($groups as $group) {
-          $profile = Profile::model()->findByPk($group['userId']);
-          if(isset($profile)) // prevent error for actions assigned to 'Anyone'
-          $profile->updateGoogleCalendarEvent($model);
-          }
-          } */
-
         if($api == 0)
             parent::update($model, $oldAttributes, $api);
         else
@@ -714,7 +681,6 @@ class ActionsController extends x2base {
                         $event->update(array('timestamp'));
                     }
                 }
-                $model->syncGoogleCalendar('update');
                 // if the action has an association
                 if(isset($_GET['redirect']) && $model->associationType != 'none'){ 
                     if($model->associationType == 'product' || 
@@ -761,7 +727,6 @@ class ActionsController extends x2base {
         $copy = new $modelClass;
         $copy->setAttributes ($model->getAttributes (), false);
         if ($copy->save ()) {
-            $copy->syncGoogleCalendar('create');
             echo $this->ajaxResponse ('success');
         } else {
             echo $this->ajaxResponse ('failure');
@@ -780,7 +745,7 @@ class ActionsController extends x2base {
                 $model->completeDate = $model->dueDate;
             }
             if($model->save()){
-                $model->syncGoogleCalendar('update');
+                
             }
             if (isset($_POST['isEvent']) && $_POST['isEvent']) {
                 // Update calendar event
@@ -846,8 +811,6 @@ class ActionsController extends x2base {
             $event->user = Yii::app()->user->getName();
             $event->save();
             Events::model()->deleteAllByAttributes(array('associationType' => 'Actions', 'associationId' => $id, 'type' => 'action_reminder'));
-
-            $model->syncGoogleCalendar('delete');
 
             /* if(!is_numeric($model->assignedTo)) { // assigned to user
               $profile = Profile::model()->findByAttributes(array('username'=>$model->assignedTo));

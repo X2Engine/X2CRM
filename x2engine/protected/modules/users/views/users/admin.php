@@ -36,7 +36,7 @@
  **********************************************************************************/
 
 $menuOptions = array(
-    'feed', 'admin', 'create', 'invite',
+    'feed', 'admin', 'create', 'map', 'invite',
 );
 $this->insertMenu($menuOptions);
 

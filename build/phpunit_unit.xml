@@ -14,6 +14,7 @@
       <file>../x2engine/protected/components/x2flow/shortcodes.php</file>
       <file>../x2engine/protected/components/TranslationManager.php</file>
       <file>../x2engine/protected/models/formModels/MobileFormEditor.php</file>
+	  <directory suffix=".php">../x2engine/protected/components/calendarSync</directory>
       <directory suffix=".php">../x2engine/protected/components/ThemeGenerator/templates</directory>
       <directory suffix=".php">../x2engine/protected/components/phpMailer</directory>
       <directory suffix=".php">../x2engine/protected/components/sortableWidget/views</directory>

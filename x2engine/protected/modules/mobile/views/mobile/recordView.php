@@ -45,6 +45,7 @@ $authParams['X2Model'] = $model;
 $this->onPageLoad ("
     x2.main.controllers['$this->pageId'] = new x2.RecordViewController (".CJSON::encode (array (
         'modelName' => get_class ($model),
+        'modelEmail' => $model->email,
         'modelId' => $model->id,
         'myProfileId' => Yii::app()->params->profile->id,
         'translations' => array (
@@ -81,6 +82,12 @@ if ($model instanceof X2Model) {
 
     <div class='refresh-content' data-refresh-selector='.header-content-right'>
         <div class='header-content-right'>
+            <div class='mail-button ui-btn icon-btn' style='margin-right: 50px;'>
+            
+            <?php
+            echo X2Html::fa ('envelope');
+            ?>
+            </div>
             <div class='edit-button ui-btn icon-btn' 
              data-x2-url='<?php echo $this->createAbsoluteUrl ('mobileUpdate', array (
                 'id' => $model->id

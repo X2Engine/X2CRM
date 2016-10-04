@@ -63,7 +63,7 @@ class GoogleMaps extends X2Widget {
         x2.googleMapsWidget.instantiated = false;
         x2.googleMapsWidget.markers = [];
 
-        $(document).ready (function () {
+        function initializeGoogleMapsWidget() {
             if($("#widget_GoogleMaps .portlet-content").is(":visible")) {
                 runGoogleMapsWidget();
             } else {
@@ -74,7 +74,9 @@ class GoogleMaps extends X2Widget {
                     } 
                 });
             }
+        }
 
+        $(document).ready (function () {
             $("#locationType").change(function() {
                 var locationType = $(this).val();
                 if (locationType) {
@@ -187,10 +189,10 @@ class GoogleMaps extends X2Widget {
         $creds = Credentials::model()->findByPk($settings->googleCredentialsId);
         if ($creds && $creds->auth)
             $key = $creds->auth->apiKey;
-        $assetUrl = 'https://maps.googleapis.com/maps/api/js';
+        $assetUrl = 'https://maps.googleapis.com/maps/api/js?callback=initializeGoogleMapsWidget';
         if (!empty($key))
-            $assetUrl .= '?key='.$key;
-        Yii::app()->clientScript->registerScriptFile($assetUrl);
+            $assetUrl .= '&key='.$key;
+        Yii::app()->clientScript->registerScriptFile($assetUrl, CClientScript::POS_END);
 
         Yii::app()->clientScript->registerCss('GoogleMapsWidgetStyle','
             .mapsHeader {

@@ -114,7 +114,7 @@ class Admin extends X2ActiveRecord {
                         'PublisherActionTab' => true,
                         'PublisherCallTab' => true,
                         'PublisherTimeTab' => true,
-                        'PublisherEventTab' => false,
+                        'PublisherEventTab' => true,
                         'PublisherProductsTab' => false,
                     ),
                     

@@ -873,10 +873,22 @@ class InlineEmail extends CFormModel {
      */
     public function copyToSent() {
         if ($this->credentials) {
+            $username = Yii::app()->user->getName();
             $inbox = EmailInboxes::model()->findByAttributes (array(
                 'credentialId' => $this->credentials->id,
-                'assignedTo' => Yii::app()->user->getName(),
+                'assignedTo' => $username,
+                'shared' => false,
             ));
+            if (!$inbox) {
+                // Check for a shared inbox if this isn't the user's inbox
+                $inbox = EmailInboxes::model()->findByAttributes (array(
+                    'credentialId' => $this->credentials->id,
+                    'shared' => true,
+                ));
+                if (!$inbox || !$inbox->isAssignedTo($username)) {
+                    $inbox = null;
+                }
+            }
             if ($inbox && !empty ($inbox->settings['copyToSent']))
                 return $inbox->copyToSent ($this->asa('emailDelivery')->getSentMIMEMessage ());
         } else {

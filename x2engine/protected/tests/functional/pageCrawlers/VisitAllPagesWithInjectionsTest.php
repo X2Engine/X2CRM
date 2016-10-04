@@ -99,7 +99,7 @@ class VisitAllPagesWithInjectionsTest extends BaseVisitAllPagesTest {
             'masterId', 'username', 'parameters', 'twitterCredentialsId', 'modelClass',
             'workflowId', 'stageNumber', 'googleCredentialsId', 'parentFolder', 'folderId',
             'defaultWorkflow', 'roleId', 'stageId', 'replacementId', 'fieldId', 'topicId',
-            'backgroundInfo', 'description', 'nextAction',
+            'backgroundInfo', 'description', 'nextAction', 'calendarId',
         );
 
         // Prepare a mapping of table names to an array of string-type attributes

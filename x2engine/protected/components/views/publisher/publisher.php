@@ -75,6 +75,7 @@ $echoTabRow = function ($tabs, $rowNum=1) use ($that) {
         $tab->renderTab (array (
             'model' => $model,
             'associationType' => $associationType,
+            'email' => $email,
         ));
     }
     ?><div style="margin-top:-40px;">
