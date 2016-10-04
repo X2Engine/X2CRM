@@ -56,11 +56,9 @@ MobileActiveForm.prototype.setUpPhotoSubmission = function () {
     var that = this;
     this.form$ = $(this.formSelector);
     this.submitButton$ = this.submitButtonSelector ? 
-        $(this.submitButtonSelector) :
-        this.form$.find ('.submit-button');
-
-    var checkinInput$ = $.mobile.activePage.find ('#checkin');
-    if(checkinInput$ !== null) {
+    $(this.submitButtonSelector) : this.form$.find ('.submit-button');
+    var checkinInput$ = $.mobile.activePage.find ('#checkin').length;
+    if(checkinInput$) {
         if (!that.validate ()) {
             return;
         } else {

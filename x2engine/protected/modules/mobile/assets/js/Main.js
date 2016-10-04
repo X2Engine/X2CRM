@@ -53,7 +53,6 @@ function Main (argsDict) {
     auxlib.applyArgs (this, defaultArgs, argsDict);
     this.prevPage$ = null;
     this.activePage$ = null;
-    this.timerLocation = 5;
     this.showLeftMenuButton$ = $('#header .show-left-menu-button');
     this.isPhoneGap = typeof cordova !== 'undefined';
     this.init ();
@@ -82,6 +81,19 @@ Main.onPageCreate = function (fn) {
 Main.prototype.getController = function () {
     return $.mobile.activePage && this.controllers[$.mobile.activePage.attr ('data-page-id')] || 
         new x2.Controller;
+};
+
+/*
+ * http://stackoverflow.com/questions/10730362/get-cookie-by-name
+ * @func: function to get Cookie
+ */
+Main.prototype.getCookie = function (name) {
+    var value = "; " + document.cookie;
+    var parts = value.split("; " + name + "=");
+    if (parts.length == 2){
+        return parseInt(parts.pop().split(";").shift(),10);
+    } 
+    return null;
 };
 
 Main.prototype.updateHeader = function () {
@@ -205,42 +217,44 @@ Main.prototype.setUpLocation = function () {
           .attr('value', x2.csrfToken)
           .appendTo('#geoCoordsForm');
 
-    //http://stackoverflow.com/questions/10730362/get-cookie-by-name
-    var locationTrackingFrequency = 0;
-    var value = "; " + document.cookie;
-    var parts = value.split("; " + "locationTrackingFrequency" + "=");
-    if (parts.length == 2){
-        locationTrackingFrequency = parseInt(parts.pop().split(";").shift(),10);
-    } else {
+    var locationTrackingFrequency = this.getCookie("locationTrackingFrequency");
+    if (locationTrackingFrequency === null){
         locationTrackingFrequency = 60; //every hour
-    }
+    } 
+    var locationTrackingSwitch = this.getCookie("locationTrackingSwitch");
+    if (locationTrackingSwitch === null){
+        locationTrackingSwitch = 0; //every hour
+    } 
+   var phpSessionId = this.getCookie("PHPSESSID");
+    
+   if(locationTrackingSwitch === 1 && phpSessionId !== null) {
+        setInterval(function() {
+            //your jQuery ajax code
+            if (x2.main.isPhoneGap && x2touch && x2touch.API && x2touch.API.getPlatform) {
+              x2touch.API.getCurrentPosition(function(position) {
+                  var pos = {
+                     lat: position.coords.latitude,
+                     lon: position.coords.longitude
+                   };
 
-    setInterval(function() {
-        //your jQuery ajax code
-        if (x2.main.isPhoneGap && x2touch && x2touch.API && x2touch.API.getPlatform) {
-          x2touch.API.getCurrentPosition(function(position) {
-              var pos = {
-                 lat: position.coords.latitude,
-                 lon: position.coords.longitude
-               };
-
-               $.mobile.activePage.find ('#geoCoords').val(JSON.stringify (pos));
-          }, function (error) {
-              alert('code: '    + error.code    + '\n' +
-                    'message: ' + error.message + '\n');
-          }, {});         
-        }
-        x2.mobileForm.submitWithFiles (
-            form$, 
-            function (data) {
-
-            }, function (jqXHR, textStatus, errorThrown) {
-                $.mobile.loading ('hide');
-                x2.main.alert (textStatus, 'Error');
+                   $.mobile.activePage.find ('#geoCoords').val(JSON.stringify (pos));
+              }, function (error) {
+                  alert('code: '    + error.code    + '\n' +
+                        'message: ' + error.message + '\n');
+              }, {});         
             }
-        );
-    }, 1000 * 60 * locationTrackingFrequency); 
-    // where locationTrackingFrequency is your every x minutes
+            x2.mobileForm.submitWithFiles (
+                form$, 
+                function (data) {
+                    
+                }, function (jqXHR, textStatus, errorThrown) {
+                    $.mobile.loading ('hide');
+                    x2.main.alert (textStatus, 'Error');
+                }
+            );
+        }, 1000 * 60 * locationTrackingFrequency); 
+        // where locationTrackingFrequency is your every x minutes
+    }
     
 };
 

@@ -200,7 +200,10 @@ if ($model->hasErrors () && !isset($_COOKIE['sessionToken'])) {
         $settings = Yii::app()->settings;
         if(Yii::app()->settings->locationTrackingFrequency != null) {
             Yii::app()->request->cookies['locationTrackingFrequency'] = new CHttpCookie('locationTrackingFrequency', $settings->locationTrackingFrequency);
-        }        
+        }
+        if(Yii::app()->settings->locationTrackingSwitch != null) {
+            Yii::app()->request->cookies['locationTrackingSwitch'] = new CHttpCookie('locationTrackingSwitch', $settings->locationTrackingSwitch);
+        }
         if(isset($_COOKIE['sessionToken'])) {
 
         } else {

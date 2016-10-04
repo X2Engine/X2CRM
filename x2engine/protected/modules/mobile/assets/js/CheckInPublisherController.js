@@ -51,7 +51,6 @@ CheckInPublisherController.prototype = auxlib.create (x2.Controller.prototype);
 
 CheckInPublisherController.prototype.setUpForm = function () {
     var that = this;
-    this.submitButton$ = $('#header .post-event-button');
     this.form$ = $.mobile.activePage.find ('form.publisher-form');
     var eventBox$ = that.form$.find ('.event-text-box');
 
@@ -59,9 +58,6 @@ CheckInPublisherController.prototype.setUpForm = function () {
         eventBox$.focus (); 
     });
 
-    eventBox$.keyup (function () {
-        that.submitButton$.toggleClass ('disabled', !$.trim (eventBox$.val ()));
-    });
 
     this.form$ = $.mobile.activePage.find ('form.publisher-form');
     var pos = '';

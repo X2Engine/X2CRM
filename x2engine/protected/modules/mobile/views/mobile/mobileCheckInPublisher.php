@@ -53,16 +53,6 @@ $this->onPageLoad ("
 
 ?>
 
-<div class='refresh-content' data-refresh-selector='.header-content-right'>
-    <div class='header-content-right'>
-        <div class='post-event-button disabled'>
-        <?php
-        echo CHtml::encode (Yii::t('mobile', 'Post'));
-        ?>
-        </div>
-    </div>
-</div>
-
 
 <div class='event-publisher'>
 <?php
@@ -88,7 +78,7 @@ $form = $this->beginWidget ('MobileActiveForm', array (
         );
     ?>
     </div>
-    <input type="hidden" name="checkin" value="yes">
+    <input id="checkin" type="hidden" name="checkin" value="yes">
     <?php
     echo $form->textArea ($model, 'text', array (
         'placeholder' =>'Add a post...',
@@ -103,24 +93,3 @@ $form = $this->beginWidget ('MobileActiveForm', array (
 $this->endWidget ();
 ?>
 </div>
-
-<?php
- 
-if (Yii::app()->params->isPhoneGap) {
-?>
-<div id='footer' data-role="footer" class='event-publisher-controls fixed-footer control-panel'>
-    <div class='photo-attach-button icon-button'>
-        <?php
-            echo X2Html::fa ('camera');
-        ?>
-    </div>
-    <div class='location-attach-button icon-button'>
-        <?php
-            echo X2Html::fa ('fa-location-arrow');
-        ?>
-    </div>
-</div>
-<?php
-}
- 
-?>
