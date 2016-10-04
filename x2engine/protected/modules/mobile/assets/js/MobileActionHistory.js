@@ -92,31 +92,11 @@ MobileActionHistory.prototype.setUpFileUpload = function () {
     var that = this;
     var form$ = $.mobile.activePage.find ('.publisher-file-upload-form');
     var togglePublisher$ = $.mobile.activePage.find ('#file-upload-menu-button');
-    if (x2.main.isPhoneGap && x2touch && x2touch.API && x2touch.API.getPlatform) {
-        x2touch.API.getCurrentPosition(function(position) {
-            var pos = {
-               lat: position.coords.latitude,
-               lon: position.coords.longitude
-             };
-
-             $.mobile.activePage.find ('#geoCoords').val(JSON.stringify (pos));
-        }, function (error) {
-            alert('code: '    + error.code    + '\n' +
-                  'message: ' + error.message + '\n');
-        }, {});         
-    }
     form$.off ('change.setUpFileUpload').on ('change.setUpFileUpload', function () {
         $.mobile.loading ('show');
         x2.mobileForm.submitWithFiles (
             form$, 
-            function (response) {
-                /*try {
-                    var data = JSON.parse (response.response);
-                    var theAddress = data['results']['formatted_address'];
-                    //$.mobile.activePage.find ('#geoCoordsLocation').val(theAddress);
-                    that.form$.find ('#Actions_actionDescription').val(that.form$.find ('#Actions_actionDescription').val()+"-"+theAddress);
-                } catch (e) {
-                }*/
+            function (data) {
                 if (that.publisherIsActive) togglePublisher$.click ();
                 $.mobile.activePage.append ($(data).find ('.refresh-content'));
                 x2.main.refreshContent ();
@@ -139,19 +119,6 @@ MobileActionHistory.prototype.setUpCommentPublish = function () {
         x2.mobileForm.submitWithFiles (
             form$, 
             function (data) {
-                if (x2.main.isPhoneGap && x2touch && x2touch.API && x2touch.API.getPlatform) {
-                  x2touch.API.getCurrentPosition(function(position) {
-                      var pos = {
-                         lat: position.coords.latitude,
-                         lon: position.coords.longitude
-                       };
-
-                       $.mobile.activePage.find ('#geoCoords').val(JSON.stringify (pos));
-                  }, function (error) {
-                      alert('code: '    + error.code    + '\n' +
-                            'message: ' + error.message + '\n');
-                  }, {});         
-                }
                 if (that.publisherIsActive) togglePublisher$.click ();
                 $.mobile.activePage.append ($(data).find ('.refresh-content'));
                 x2.main.refreshContent ();
@@ -165,6 +132,7 @@ MobileActionHistory.prototype.setUpCommentPublish = function () {
     form$.on('submit',function(e){
         e.preventDefault();
     });
+
     this.locationButton$ = $.mobile.activePage.find ('.location-attach-button');
     this.locationButton$.click (function () {
         if (x2.main.isPhoneGap && x2touch && x2touch.API && x2touch.API.getPlatform) {
