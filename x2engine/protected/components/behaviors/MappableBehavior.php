@@ -47,18 +47,21 @@ class MappableBehavior extends CActiveRecordBehavior {
         $ip = Yii::app()->controller->getRealIP();
         $logIp = false;
         $coords = false;
+        $comment = null;
         if ($method === 'GET' && isset($_GET[$param]))
             $geoCoords = $_GET[$param];
         else if ($method === 'POST' && isset($_POST[$param]))
             $geoCoords = $_POST[$param];
-        if ($method && isset($geoCoords))
+        if ($method && isset($geoCoords)) {
             $coords = json_decode($geoCoords, true);
-        if (!$coords && !X2IPAddress::isPrivateAddress($ip)) {
+            $comment = isset($coords['comment']) ? $coords['comment'] : null;
+        }
+        if ((!$coords || !array_key_exists('lat', $coords) || !array_key_exists('lon', $coords)) &&
+                !X2IPAddress::isPrivateAddress($ip)) {
             $coords = Locations::resolveIpLocation($ip);
             $logIp = $ip;
         }
         if ($coords && array_key_exists('lat', $coords) && array_key_exists('lon', $coords)) {
-            $comment = isset($coords['comment']) ? $coords['comment'] : null;
             $location = $this->updateLocation($coords['lat'], $coords['lon'], $type, $logIp, $comment);
             return $location;
         }
