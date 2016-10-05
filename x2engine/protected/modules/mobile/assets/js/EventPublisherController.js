@@ -67,7 +67,7 @@ EventPublisherController.prototype.setUpForm = function () {
    
     this.locationButton$.click (function () {
         this.form$ = $.mobile.activePage.find ('form.publisher-form');
-        if (x2.main.isPhoneGap && x2touch && x2touch.API && x2touch.API.getPlatform) {
+        if (x2.main.isPhoneGap && x2touch && x2touch.API) {
             x2touch.API.getCurrentPosition(function(position) {
                 var pos = {
                    lat: position.coords.latitude,
