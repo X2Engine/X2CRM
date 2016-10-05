@@ -89,6 +89,9 @@ if (!$this->refresh && $hasCreateAccess) {
                     echo CHtml::encode(Yii::t('mobile', 'Add file attachment'));
                     ?>
                 </div>
+            <?php
+            if (Yii::app()->params->isPhoneGap) {
+            ?>
             <li class='location-attachment-button'>
                 <span><?php X2Html::fa ('fa-location-arrow'); ?></span>
                 <div class='location-attach-button icon-button'>
@@ -97,6 +100,7 @@ if (!$this->refresh && $hasCreateAccess) {
                     ?>
                 </div>
                 <?php
+            }
         }
         $action = new Actions;
         $form = $this->beginWidget('MobileActiveForm',

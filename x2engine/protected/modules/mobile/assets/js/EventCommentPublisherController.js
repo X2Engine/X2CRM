@@ -88,7 +88,7 @@ EventCommentPublisherController.prototype.setUpForm = function () {
                    function (response) {
                        try {
                             var data = response;
-                            var theAddress = data['results'][0]['formatted_address'];
+                            var theAddress = data[0]['results'][0]['formatted_address'];
                             that.form$.find ('.reply-box').val(
                                 that.form$.find ('.reply-box').val()+" - "+theAddress
                             );
@@ -98,7 +98,7 @@ EventCommentPublisherController.prototype.setUpForm = function () {
                                     '&zoom=13&size=600x300&maptype=roadmap&markers=color:blue%7Clabel:%7C' +
                                     pos['lat'] + ',' + pos['lon'] +
                                     '&key=' + key;
-                            that.form$.find ('.photo-attachment').src = url;
+                            that.form$.find ('.photo-attachment-container').src = url;
                        } catch (e) {
                            alert("failed to parse response from server");
                        }
@@ -115,9 +115,7 @@ EventCommentPublisherController.prototype.setUpForm = function () {
                       'message: ' + error.message + '\n');
             }, {});         
         
-        } else {
-            alert("Available on the mobile app!");
-        }
+        } 
         
     });
 };

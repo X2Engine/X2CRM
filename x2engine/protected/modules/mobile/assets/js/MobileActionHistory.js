@@ -113,7 +113,7 @@ MobileActionHistory.prototype.setUpCommentPublish = function () {
     var that = this;
     var form$ = $.mobile.activePage.find ('.publisher-comment-form');
     var togglePublisher$ = $.mobile.activePage.find ('#comment-menu-button');
-    
+    this.form$ = form$;
     form$.off ('change.setUpCommentPublish').on ('change.setUpCommentPublish', function () {
         $.mobile.loading ('show');
         x2.mobileForm.submitWithFiles (
@@ -142,16 +142,16 @@ MobileActionHistory.prototype.setUpCommentPublish = function () {
                    lon: position.coords.longitude
                  };
 
-                this.form$.find ('#geoCoords').val(JSON.stringify (pos));
-                this.form$.find ('#geoLocationCoords').val("set");
+                form$.find ('#geoCoords').val(JSON.stringify (pos));
+                form$.find ('#geoLocationCoords').val("set");
                 x2.mobileForm.submitWithFiles (
-                   that.form$, 
+                   form$, 
                    function (response) {
                        try {
                            var data = response;
-                           var theAddress = data['results'][0]['formatted_address'];
-                           that.form$.find ('.location-tag').val(
-                               that.form$.find ('.location-tag').val()+" - "+theAddress
+                           var theAddress = data[0]['results'][0]['formatted_address'];
+                           form$.find ('.location-tag').val(
+                               form$.find ('.location-tag').val()+" - "+theAddress
                            );
                        } catch (e) {
                            alert("failed to parse response from server");
@@ -169,9 +169,7 @@ MobileActionHistory.prototype.setUpCommentPublish = function () {
                       'message: ' + error.message + '\n');
             }, {});         
         
-        } else {
-            alert("Available on the mobile app!");
-        }   
+        } 
         
     });
 };

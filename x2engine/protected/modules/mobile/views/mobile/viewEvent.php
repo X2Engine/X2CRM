@@ -95,11 +95,17 @@ $this->onPageLoad ("
                     echo X2Html::fa ('camera');
                 ?>
             </div>
+            <?php
+            if (Yii::app()->params->isPhoneGap) {
+            ?>
             <div class='location-attach-button icon-button'>
                 <?php
                     echo X2Html::fa ('fa-location-arrow');
                 ?>
             </div>
+            <?php 
+            }
+            ?>
             <?php
                 echo $form->textField ($formModel, 'text', array (
                     'placeholder' => 'Add a reply...',

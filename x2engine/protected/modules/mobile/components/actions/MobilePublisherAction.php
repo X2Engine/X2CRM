@@ -45,7 +45,7 @@ class MobilePublisherAction extends MobileAction {
         $creds = Credentials::model()->findByPk($settings->googleCredentialsId);
         $decodedResponse = '';  
         if (isset ($_POST['geoCoords']) && isset ($_POST['geoLocationCoords'])) {
-            $decodedResponse = json_decode($_POST['geoLocationCoords'],true);
+            $decodedResponse = $_POST['geoLocationCoords'];
             if ($creds && $creds->auth && $creds->auth->apiKey && strcmp($decodedResponse,'set') == 0){
                 $key = $creds->auth->apiKey; 
                 $decodedResponse = json_decode($_POST['geoCoords'],true);
@@ -66,8 +66,8 @@ class MobilePublisherAction extends MobileAction {
                 $result = curl_exec($ch);
                 //close connection
                 $decodedResult = json_decode($result, true);
-                $decodedResult['key'] = $key;
-                echo $result . $decodedResult;
+                $newResult = json_encode(array($decodedResult, $key));
+                echo $newResult;
                 
                 curl_close($ch);
 

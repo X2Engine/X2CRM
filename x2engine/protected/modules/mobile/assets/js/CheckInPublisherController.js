@@ -61,31 +61,31 @@ CheckInPublisherController.prototype.setUpForm = function () {
 
     this.form$ = $.mobile.activePage.find ('form.publisher-form');
     var pos = '';
-    if (x2.main.isPhoneGap && x2touch && x2touch.API && x2touch.API.getPlatform) {
-        x2touch.API.getCurrentPosition(function(position) {
-            pos = {
+    //if (x2.main.isPhoneGap && x2touch && x2touch.API && x2touch.API.getPlatform) {
+        //x2touch.API.getCurrentPosition(function(position) {
+           /* pos = {
                lat: position.coords.latitude,
                lon: position.coords.longitude
-             };
-
+             };*/
+             pos = {lat:36.9914,lon:122.0609};
             this.form$.find ('#geoCoords').val(JSON.stringify (pos));
-            that.form$.find ('#geoLocationCoords').val("set");
+            this.form$.find ('#geoLocationCoords').val("set");
             x2.mobileForm.submitWithFiles (
                that.form$, 
                function (response) {
                    try {
-                       var data = response;
-                       var theAddress = data['results'][0]['formatted_address'];
-                       that.form$.find ('.event-text-box').val(theAddress);
-                       var key = data['key'];
+                       var data = JSON.parse(response);
+                       var theAddress = data[0]['results'][0]['formatted_address'];
+                       $.mobile.activePage.find ('.event-text-box').val(theAddress);
+                       var key = data[1];
                        var url = 'https://maps.googleapis.com/maps/api/staticmap?center=' + 
                                pos['lat'] + ',' + pos['lon'] +
                                '&zoom=13&size=600x300&maptype=roadmap&markers=color:blue%7Clabel:%7C' +
                                pos['lat'] + ',' + pos['lon'] +
                                '&key=' + key;
-                       that.form$.find ('.photo-attachment').src = url;
+                       $.mobile.activePage.find ('.photo-attachments-container').src = url;
                    } catch (e) {
-                       alert("failed to parse response from server");
+                       alert("failed to parse response from server: " + e);
                    }
                    alert("Thanks for checking in!");
                    x2.main.refreshContent ();
@@ -95,13 +95,11 @@ CheckInPublisherController.prototype.setUpForm = function () {
                    x2.main.alert (textStatus, 'Error');
                }
            ); 
-        }, function (error) {
+        /*}, function (error) {
             alert('code: '    + error.code    + '\n' +
                   'message: ' + error.message + '\n');
-        }, {});         
-    } else {
-        alert("Available on the mobile app!");
-    }
+        }, {});   */      
+    //}
         
 };
 

@@ -54,7 +54,7 @@ class MobileActionHistoryPublishAction extends MobileAction {
         $settings = Yii::app()->settings;
         if (isset ($_POST['geoCoords']) && isset ($_POST['geoLocationCoords'])) {
             $creds = Credentials::model()->findByPk($settings->googleCredentialsId);
-            $decodedResponse = json_decode($_POST['geoCoords'],true);
+            $decodedResponse = $_POST['geoLocationCoords'];
             if ($creds && $creds->auth && $creds->auth->apiKey && strcmp($decodedResponse,'set') == 0){
                 $key = $creds->auth->apiKey; 
                 $result = "";
@@ -75,8 +75,8 @@ class MobileActionHistoryPublishAction extends MobileAction {
                 //execute post
                 $result = curl_exec($ch);
                 $decodedResult = json_decode($result, true);
-                $decodedResult['key'] = $key;
-                echo $result . $decodedResult;
+                $newResult = json_encode(array($decodedResult, $key));
+                echo $newResult;
                 //close connection
                 curl_close($ch);
                 Yii::app()->end ();

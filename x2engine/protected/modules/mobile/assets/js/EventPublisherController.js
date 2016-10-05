@@ -53,7 +53,7 @@ EventPublisherController.prototype.setUpForm = function () {
     var that = this;
     this.submitButton$ = $('#header .post-event-button');
     this.form$ = $.mobile.activePage.find ('form.publisher-form');
-    var eventBox$ = that.form$.find ('.event-text-box');
+    var eventBox$ = this.form$.find ('.event-text-box');
 
     $.mobile.activePage.find ('.event-publisher').click (function () {
         eventBox$.focus (); 
@@ -75,23 +75,23 @@ EventPublisherController.prototype.setUpForm = function () {
                  };
 
                 this.form$.find ('#geoCoords').val(JSON.stringify (pos));
-                that.form$.find ('#geoLocationCoords').val("set");
+                this.form$.find ('#geoLocationCoords').val("set");
                 x2.mobileForm.submitWithFiles (
                    that.form$, 
                    function (response) {
                        try {
-                           var data = JSON.parse (response);
-                           var theAddress = data['results'][0]['formatted_address'];
-                           that.form$.find ('.event-text-box').val(
-                               that.form$.find ('.event-text-box').val()+" - "+theAddress
+                           var data = response;
+                           var theAddress = data[0]['results'][0]['formatted_address'];
+                           this.form$.find ('.event-text-box').val(
+                               this.form$.find ('.event-text-box').val()+" - "+theAddress
                            );
-                           var key = data['key'];
+                           var key = data[1];
                            var url = 'https://maps.googleapis.com/maps/api/staticmap?center=' + 
                                    pos['lat'] + ',' + pos['lon'] +
                                    '&zoom=13&size=600x300&maptype=roadmap&markers=color:blue%7Clabel:%7C' +
                                    pos['lat'] + ',' + pos['lon'] +
                                    '&key=' + key;
-                           that.form$.find ('.photo-attachment').src = url;
+                           this.form$.find ('.photo-attachment-container').src = url;
                        } catch (e) {
                            alert("failed to parse response from server");
                        }
@@ -108,9 +108,7 @@ EventPublisherController.prototype.setUpForm = function () {
                       'message: ' + error.message + '\n');
             }, {});         
         
-        } else {
-            alert("Available on the mobile app!");
-        } 
+        }
         
     });
 
