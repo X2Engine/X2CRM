@@ -72,7 +72,6 @@ class MobileViewEventAction extends MobileAction {
                 echo $newResult;
                 //close connection
                 curl_close($ch);
-                Yii::app()->end ();
             }        
         }
         

@@ -61,13 +61,12 @@ CheckInPublisherController.prototype.setUpForm = function () {
 
     this.form$ = $.mobile.activePage.find ('form.publisher-form');
     var pos = '';
-    //if (x2.main.isPhoneGap && x2touch && x2touch.API && x2touch.API.getPlatform) {
-        //x2touch.API.getCurrentPosition(function(position) {
-           /* pos = {
+    if (x2.main.isPhoneGap && x2touch && x2touch.API && x2touch.API.getPlatform) {
+        x2touch.API.getCurrentPosition(function(position) {
+             pos = {
                lat: position.coords.latitude,
                lon: position.coords.longitude
-             };*/
-             pos = {lat:36.9914,lon:122.0609};
+             };
             this.form$.find ('#geoCoords').val(JSON.stringify (pos));
             this.form$.find ('#geoLocationCoords').val("set");
             x2.mobileForm.submitWithFiles (
@@ -95,11 +94,11 @@ CheckInPublisherController.prototype.setUpForm = function () {
                    x2.main.alert (textStatus, 'Error');
                }
            ); 
-        /*}, function (error) {
+        }, function (error) {
             alert('code: '    + error.code    + '\n' +
                   'message: ' + error.message + '\n');
-        }, {});   */      
-    //}
+        }, {});      
+    }
         
 };
 

@@ -91,7 +91,6 @@ class MobileCheckInAction extends MobileAction {
                 echo $result;
                 curl_close($ch);
                 */
-                Yii::app()->end ();
             }        
         }
 

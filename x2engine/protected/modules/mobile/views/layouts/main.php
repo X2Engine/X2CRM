@@ -205,7 +205,7 @@ X2Html::getFlashes ();
                 <i class='fa fa-home'></i>
             </a>
             <?php
-            //if (Yii::app()->params->isPhoneGap) {
+            if (Yii::app()->params->isPhoneGap) {
             ?>
             <a href='<?php echo Yii::app()->createAbsoluteUrl ('profile/mobileCheckInPublisher'); ?>' 
               style='margin-left: 80px;' 
@@ -213,7 +213,7 @@ X2Html::getFlashes ();
                 <i class='fa fa-location-arrow'></i>
             </a>
             <?php
-            //}
+            }
             ?>
         <?php
         }
