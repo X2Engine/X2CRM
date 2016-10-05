@@ -54,6 +54,8 @@ foreach ($locations as $location) {
         $userLinks[$location['recordId']] = $user->getLink(array('style' => 'text-decoration:none;'));
     }
 }
+
+Yii::app()->clientScript->registerScriptFile($assetUrl, CClientScript::POS_END);
 Yii::app()->clientScript->registerScript('maps-initialize', "
     var map, pointarray, ge, directionsDisplay, latlngbounds;
     var center=$center;
@@ -132,7 +134,7 @@ Yii::app()->clientScript->registerScript('maps-initialize', "
         
         refreshQtip();
     }
-", CClientScript::POS_HEAD);
+", CClientScript::POS_END);
 
 Yii::app()->clientScript->registerScript('map-controls', "
 $('#mapControlForm').submit(function(){
@@ -146,7 +148,6 @@ $(window).resize(function(){
    google.maps.event.trigger(map,'resize');
 });
 ",  CClientScript::POS_END);
-Yii::app()->clientScript->registerScriptFile($assetUrl, CClientScript::POS_END);
 ?>
 
 <div class='page-title icon contacts'>
