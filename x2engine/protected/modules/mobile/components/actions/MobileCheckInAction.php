@@ -43,6 +43,8 @@ class MobileCheckInAction extends MobileAction {
         $profile = Yii::app()->params->profile;
         $settings = Yii::app()->settings;
         $creds = Credentials::model()->findByPk($settings->googleCredentialsId);
+        $decodedResponse = '';
+        $key = '';
         if (isset ($_POST['geoCoords']) && isset ($_POST['geoLocationCoords'])) {
             $decodedResponse = $_POST['geoLocationCoords'];
             if ($creds && $creds->auth && $creds->auth->apiKey && strcmp($decodedResponse,'set') == 0){
@@ -69,35 +71,34 @@ class MobileCheckInAction extends MobileAction {
                 echo $result;
                 curl_close($ch);
 
-                /* 
-                 * TODO: Get static map here
-                 * 
-                $url = 'https://maps.googleapis.com/maps/api/staticmap?center=' . 
-                        $decodedResponse['lat'] . ',' . $decodedResponse['lon'] .
-                        '&zoom=13&size=600x300&maptype=roadmap&markers=color:blue%7Clabel:%7C' .
-                        $decodedResponse['lat'] . ',' . $decodedResponse['lon'] .
-                        '&key=' . $key;
-                //open connection
-                $ch = curl_init();
-
-                //set the url, number of POST vars, POST data
-                curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-                curl_setopt($ch,CURLOPT_URL, $url);
-
-                //execute post
-                $result = curl_exec($ch);
-                //close connection
-                echo $result;
-                curl_close($ch);
-                */
                 Yii::app()->end ();
             }        
         }
 
         if (isset ($_POST['EventPublisherFormModel'])) {
-            if (isset($_POST['geoCoords']) && Yii::app()->settings->locationTrackingSwitch){
-                $location = Yii::app()->params->profile->user->logLocation('mobileActivityPost', 'POST');
-            }
+            $decodedResult = '';
+            $location = Yii::app()->params->profile->user->logLocation('mobileActivityPost', 'POST');
+            
+            /* 
+             * get static map here
+             */
+            $url = 'https://maps.googleapis.com/maps/api/staticmap?center=' . 
+                    $decodedResponse['lat'] . ',' . $decodedResponse['lon'] .
+                    '&zoom=13&size=600x300&maptype=roadmap&markers=color:blue%7Clabel:%7C' .
+                    $decodedResponse['lat'] . ',' . $decodedResponse['lon'] .
+                    '&key=' . $key;
+            //open connection
+            $ch = curl_init();
+
+            //set the url, number of POST vars, POST data
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+            curl_setopt($ch,CURLOPT_URL, $url);
+
+            //execute post
+            $result = curl_exec($ch);
+            //close connection
+            $decodedResult = $result;
+            curl_close($ch);
             $model->setAttributes ($_POST['EventPublisherFormModel']);
             if (isset ($_FILES['EventPublisherFormModel'])) {
                 $model->photo = CUploadedFile::getInstance ($model, 'photo');
@@ -114,7 +115,7 @@ class MobileCheckInAction extends MobileAction {
                     'text' => $model->text,
                     'photo' => $model->photo
                 ), false);
-                if ($event->save ()) {
+                if ($event->saveRaw ($profile,$decodedResult)) {
                     if (!isset ($_FILES['EventPublisherFormModel'])) {
                         //AuxLib::debugLogR ('saved');
                         $this->controller->redirect (

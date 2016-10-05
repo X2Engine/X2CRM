@@ -87,7 +87,7 @@ $this->onPageLoad ("
 ?>
     <input type="text" name="geoCoords" id="geoCoords">
 <?php
-    echo CHtml::button('Map', array('submit' =>Yii::app()->createAbsoluteUrl('users/userMap')));
+    //echo CHtml::button('Map', array('submit' =>Yii::app()->createAbsoluteUrl('users/userMap')));
     $this->endWidget ();
 ?>
 </div>
