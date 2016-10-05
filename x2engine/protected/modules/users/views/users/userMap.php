@@ -44,11 +44,9 @@ $settings = Yii::app()->settings;
 $creds = Credentials::model()->findByPk($settings->googleCredentialsId);
 if ($creds && $creds->auth)
     $key = $creds->auth->apiKey;
-$assetUrl = 'https://maps.googleapis.com/maps/api/js?libraries=visualization';
+$assetUrl = 'https://maps.googleapis.com/maps/api/js?libraries=visualization&callback=initializeMap';
 if (!empty($key))
     $assetUrl .= '&key=' . $key;
-Yii::app()->clientScript->registerScriptFile($assetUrl);
-
 $userLinks = array();
 foreach ($locations as $location) {
     $user = User::model()->findByPk($location['recordId']);
@@ -57,69 +55,26 @@ foreach ($locations as $location) {
     }
 }
 Yii::app()->clientScript->registerScript('maps-initialize', "
-    var map, pointarray, ge, directionsDisplay;
+function initializeMap() {
+    var map, pointarray, ge, directionsDisplay, latlngbounds;
     var center=$center;
     var zoom=" . (isset($zoom) ? $zoom : "0") . ";
-    var bounds=new google.maps.LatLngBounds();
-    var directionsService=new google.maps.DirectionsService();
-    var latlngbounds = new google.maps.LatLngBounds();
-    function initialize() {
-        directionsDisplay = new google.maps.DirectionsRenderer();
-        var latLng = new google.maps.LatLng(center['lat'],center['lng']);
-        bounds.extend(latLng);
-        var mapOptions = {
-            zoom: 3,
-            mapTypeId: google.maps.MapTypeId.SATELLITE,
-            center: latLng
-        };
-        if (zoom != 0) {
-            mapOptions.zoom = zoom;
-        }
-        map = new google.maps.Map(document.getElementById('map_canvas'),
-            mapOptions);
-        directionsDisplay.setMap(map);
-        directionsDisplay.setPanel(document.getElementById('directions-panel'));
+        
+    directionsDisplay = new google.maps.DirectionsRenderer();
+    var latLng = new google.maps.LatLng(center['lat'],center['lng']);
+    var mapOptions = {
+        zoom: 3,
+        mapTypeId: google.maps.MapTypeId.SATELLITE,
+        center: latLng
+    };
+    if (zoom != 0) {
+        mapOptions.zoom = zoom;
     }
+    map = new google.maps.Map(document.getElementById('map_canvas'),
+        mapOptions);
+    directionsDisplay.setMap(map);
+    directionsDisplay.setPanel(document.getElementById('directions-panel'));
 
-initialize();
-");
-
-Yii::app()->clientScript->registerScript('maps-qtip', "
-var center=$center;
-
-function addLargeMapMarker(pos, contents, open = true) {
-        var latLng = new google.maps.LatLng(pos['lat'],pos['lng']);
-        latlngbounds.extend(latLng);
-        var marker = new google.maps.Marker({
-            position: latLng,
-            map: map
-        });
-    if(typeof infowindow==='undefined'){
-        var infowindow = new google.maps.InfoWindow({
-            content: contents
-        });
-        if (open)
-            infowindow.open(map, marker);
-    }
-    google.maps.event.addListener(infowindow,'domready',function(){
-        $('#corporate-directions').click(function(e){
-            e.preventDefault();
-            getDirections('corporate');
-        });
-        $('#personal-directions').click(function(e){
-            e.preventDefault();
-            getDirections('personal');
-        });
-    });
-
-    google.maps.event.addListener(marker,'click',function(){
-        infowindow.open(map,marker);
-    });
-
-    return marker;
-}
-
-function refreshQtip() {
     var locations = " . json_encode($locations) . ";
     var userLinks = " . json_encode($userLinks) . ";
     $.each(locations, function(i, loc) {
@@ -139,22 +94,41 @@ function refreshQtip() {
         this.setZoom(map.getZoom()-1);
       });
     map.fitBounds(latlngbounds);
-}
-refreshQtip();
-");
+    
+    function addLargeMapMarker(pos, contents, open = true) {
+        latlngbounds = new google.maps.LatLngBounds();
+        var latLng = new google.maps.LatLng(pos['lat'],pos['lng']);
+        latlngbounds.extend(latLng);
+        var marker = new google.maps.Marker({
+            position: latLng,
+            map: map
+        });
+        if(typeof infowindow==='undefined'){
+            var infowindow = new google.maps.InfoWindow({
+                content: contents
+            });
+            if (open)
+                infowindow.open(map, marker);
+        }
+        google.maps.event.addListener(infowindow,'domready',function(){
+            $('#corporate-directions').click(function(e){
+                e.preventDefault();
+                getDirections('corporate');
+            });
+            $('#personal-directions').click(function(e){
+                e.preventDefault();
+                getDirections('personal');
+            });
+        });
 
-Yii::app()->clientScript->registerScript('map-controls', "
-$('#mapControlForm').submit(function(){
-    var tags=new Array();
-    $.each($(this).find ('.x2-tag-list a'),function(){
-        tags.push($(this).text());
-    });
-    $('#params_tags').val(tags);
-});
-$(window).resize(function(){
-   google.maps.event.trigger(map,'resize');
-});
-");
+        google.maps.event.addListener(marker,'click',function(){
+            infowindow.open(map,marker);
+        });
+
+        return marker;
+    }
+}", CClientScript::POS_HEAD);
+Yii::app()->clientScript->registerScriptFile($assetUrl, CClientScript::POS_END);
 ?>
 
 <div class='page-title icon contacts'>
