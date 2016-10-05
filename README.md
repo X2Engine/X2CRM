@@ -1,11 +1,16 @@
-# 6.0.4 #
-8/12/2016
+# 6.5 #
+{releaseDate}
 * General Changelog / Developer Notes
-  * More improvements to Admin control panel
-  * Fix inline email issue on Opportunities
-  * Added ability to disable Email Inbox per credential
-  * Miscellaneous bug fixes
-		
+  * New Location tracking features
+    * Log locations when Contacts open emails, visit your webpage, etc.
+    * Log locations of users when they log in to the system
+    * Log periodic location updates from X2Touch mobile
+    * Settings page to configure and enable user location logging
+  * Google Maps API Re-enabled
+  * Support for multiple user calendars
+  * Jasper Reporting Integration
+  * Two-way Google Calendar sync
+  * Miscellaneous bug fixes and improvements		
 
 # Introduction #
 Welcome to X2CRM!
