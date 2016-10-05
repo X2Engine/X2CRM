@@ -1023,7 +1023,7 @@ class ImportExportBehavior extends CBehavior {
 
         for ($i = 0; $i < count($models); $i++) {
             $record = $models[$i];
-            if ($mappedId) {
+            if ($mappedId || ($_SESSION['updateRecords'] && !empty($record['id']))) {
                 $modelId = $models[$i]['id'];
             } else {
                 $modelId = $i + $firstNewId;
@@ -1056,14 +1056,22 @@ class ImportExportBehavior extends CBehavior {
 
             // Add all listed tags
             foreach ($_SESSION['tags'] as $tag) {
-                $tagModel = new Tags;
-                $tagModel->taggedBy = 'Import';
-                $tagModel->timestamp = $now;
-                $tagModel->type = $modelName;
-                $tagModel->itemId = $modelId;
-                $tagModel->tag = $tag;
-                $tagModel->itemName = $modelName;
-                $auxModelContainer['Tags'][] = $tagModel->attributes;
+                // Retrieve existing records to avoid duplicate tags, as we don't have the
+                // convenience of ActiveRecord while adding tags
+                if (!empty($record['id']) && $_SESSION['updateRecords'])
+                    $model = X2Model::model($modelName)->findByPk($record['id']);
+                else
+                    unset($model);
+                if (!isset($model) || $model->isNewRecord || !$model->hasTag($tag)) {
+                    $tagModel = new Tags;
+                    $tagModel->taggedBy = 'Import';
+                    $tagModel->timestamp = $now;
+                    $tagModel->type = $modelName;
+                    $tagModel->itemId = $modelId;
+                    $tagModel->tag = $tag;
+                    $tagModel->itemName = $modelName;
+                    $auxModelContainer['Tags'][] = $tagModel->attributes;
+                }
             }
             // Log a comment if one was requested
             if (!empty($_SESSION['comment'])) {

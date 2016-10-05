@@ -4643,10 +4643,9 @@ class AdminController extends X2Controller {
                     else
                         continue;
 
-                    
                     // Locate an existing model to update, if requested, otherwise create
                     // a new model to populate
-                    if (isset($matchAttribute) && $_SESSION['updateRecords']) {
+                    if (isset($matchAttribute) && $_SESSION['updateRecords'] && !empty($importAttributes[$matchAttribute])) {
                         $model = X2Model::model($modelName)->findByAttributes (array(
                             $_SESSION['matchAttribute'] => $importAttributes[$matchAttribute]
                         ));
@@ -4654,11 +4653,8 @@ class AdminController extends X2Controller {
                         if (is_null($model))
                             $model = new $modelName;
                     } else {
-                    
                         $model = new $modelName;
-                    
                     }
-                    
 
                     foreach ($metaData as $attribute) {
                         if ($importMap[$attribute] === 'id')
@@ -5304,6 +5300,11 @@ class AdminController extends X2Controller {
                     $tempAttributes['theme'] = json_encode($record->theme);
                 }
                 $tempAttributes[] = $model;
+                if ($model === 'Admin') {
+                    $tempAttributes['googleCredentialsId'] = null;
+                    $tempAttributes['twitterCredentialsId'] = null;
+                    $tempAttributes['jasperCredentialsId'] = null;
+                }
                 // Export the data to CSV
                 fputcsv($fp, $tempAttributes, $this->importDelimeter, $this->importEnclosure);
             }
