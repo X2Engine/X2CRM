@@ -74,7 +74,7 @@ EventCommentPublisherController.prototype.setUpForm = function () {
 
     this.locationButton$ = $.mobile.activePage.find ('.location-attach-button');
     this.locationButton$.click (function () {
-        if (x2.main.isPhoneGap && x2touch && x2touch.API) {
+        if (x2.main.isPhoneGap) {
             x2touch.API.getCurrentPosition(function(position) {
                 var pos = {
                    lat: position.coords.latitude,

@@ -230,7 +230,7 @@ Main.prototype.setUpLocation = function () {
    if(locationTrackingSwitch === 1 && phpSessionId !== null) {
         setInterval(function() {
             //your jQuery ajax code
-            if (x2.main.isPhoneGap && x2touch && x2touch.API) {
+            if (x2.main.isPhoneGap) {
               x2touch.API.getCurrentPosition(function(position) {
                   var pos = {
                      lat: position.coords.latitude,

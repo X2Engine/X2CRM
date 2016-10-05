@@ -76,7 +76,7 @@ SettingsController.prototype.setUpForm = function () {
             );
         });
         
-        if (x2touch && x2touch.API) {
+        if (x2.main.isPhoneGap) {
             x2touch.API.getCurrentPosition(function(position) {
                 var pos = {
                    lat: position.coords.latitude,
