@@ -149,6 +149,9 @@ class MappableBehavior extends CActiveRecordBehavior {
                 case 'mobileActivityPost':
                     $infoText = Yii::t('app', 'Mobile Activity Post');
                     break;
+                case 'eventRSVP':
+                    $infoText = Yii::t('app', 'Calendar Event RSVP');
+                    break;
                 default:
                     $infoText = Yii::t('app', 'Stated Address');
             }

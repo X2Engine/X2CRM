@@ -61,7 +61,10 @@ Yii::app()->clientScript->registerScript('rsvp-buttons', "
         $.ajax({
             url: window.location,
             type: 'POST',
-            data: {status: $(this).attr('data-value')},
+            data: {
+                status: $(this).attr('data-value'),
+                geoCoords: $('#geoCoords').val()
+            },
             success: function(){
                 $('.rsvp-button').removeClass('disabled');
                 $(that).addClass('disabled');

@@ -121,6 +121,7 @@ class Locations extends CActiveRecord
             'open',
             'click',
             'unsub',
+            'eventRSVP',
         );
     }
 
@@ -131,6 +132,7 @@ class Locations extends CActiveRecord
             'activityPost',
             'mobileIdle',
             'mobileActivityPost',
+            'eventRSVP',
         );
     }
 

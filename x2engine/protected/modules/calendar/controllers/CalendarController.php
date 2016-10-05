@@ -620,11 +620,11 @@ class CalendarController extends x2base {
         if (!is_null($status)) {
             $contact = X2Model::model('Contacts')->findByEmail($email);
             if ($contact && $contact->asa('MappableBehavior')) {
-                $contact->logLocation('eventRSVP');
+                $contact->logLocation('eventRSVP', 'POST');
             }
             $user = X2Model::model('User')->findByAttributes(array('emailAddress' => $email));
             if ($user && $user->asa('MappableBehavior')) {
-                $user->logLocation('eventRSVP');
+                $user->logLocation('eventRSVP', 'POST');
             }
             $invite->status = $status;
             $invite->save();

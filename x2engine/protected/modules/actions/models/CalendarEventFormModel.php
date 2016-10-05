@@ -70,7 +70,7 @@ class CalendarEventFormModel extends EventFormModel {
         if($this->invite){
             $this->action->attachBehavior('CalendarInviteBehavior', array(
                 'class' => 'CalendarInviteBehavior',
-                'emailAddresses' => explode("\n", $this->emailAddresses),
+                'emailAddresses' => array_map('chop', explode("\n", $this->emailAddresses)),
             ));
         }
         $valid &= $this->action->validate ();
