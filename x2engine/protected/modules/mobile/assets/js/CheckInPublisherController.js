@@ -35,7 +35,7 @@
  **********************************************************************************/
 
 x2.CheckInPublisherController = (function () {
-
+    
 function CheckInPublisherController (argsDict) {
     var argsDict = typeof argsDict === 'undefined' ? {} : argsDict;
     var defaultArgs = {
@@ -50,6 +50,7 @@ function CheckInPublisherController (argsDict) {
 CheckInPublisherController.prototype = auxlib.create (x2.Controller.prototype);
 
 CheckInPublisherController.prototype.setUpForm = function () {
+    if (!x2.main.isPhoneGap) return;
     var that = this;
     this.form$ = $.mobile.activePage.find ('form.publisher-form');
     var eventBox$ = this.form$.find ('.event-text-box');
@@ -58,51 +59,48 @@ CheckInPublisherController.prototype.setUpForm = function () {
         eventBox$.focus (); 
     });
     
-
-    if (x2.main.isPhoneGap) {
-        x2touch.API.getCurrentPosition(function(position) {
-             var pos = {
-               lat: position.coords.latitude,
-               lon: position.coords.longitude
-             };
-            this.form$.find ('#geoCoords').val(JSON.stringify (pos));
-            this.form$.find ('#geoLocationCoords').val("set");
-            x2.mobileForm.submitWithFiles (
-               that.form$, 
-               function (response) {
-                   try {
-                       var data = JSON.parse(response);
-                       var theAddress = data['results'][0]['formatted_address'];
-                       //http://stackoverflow.com/questions/10211145/getting-current-date-and-time-in-javascript
-                       var currentdate = new Date(); 
-                        var datetime = " | " + (currentdate.getMonth()+1) + "/"
-                                        + currentdate.getDate()  + "/" 
-                                        + currentdate.getFullYear() + " @ "  
-                                        + currentdate.getHours() + ":"  
-                                        + currentdate.getMinutes()
-                       $.mobile.activePage.find ('.event-text-box').val("Checking in at "+theAddress+ " "+datetime);
-                        alert("Thanks for checking in!");
-                        $.mobile.activePage.find('.post-event-button').trigger( "click" );
-                   } catch (e) {
-                       alert("failed to parse response from server: " + e);
-                   }
-                   x2.main.refreshContent ();
-                   $.mobile.loading ('hide');
-               }, function (jqXHR, textStatus, errorThrown) {
-                   $.mobile.loading ('hide');
-                   x2.main.alert (textStatus, 'Error');
+    x2touch.API.getCurrentPosition(function(position) {
+         var pos = {
+           lat: position.coords.latitude,
+           lon: position.coords.longitude
+         };
+        that.form$.find ('#geoCoords').val(JSON.stringify (pos));
+        that.form$.find ('#geoLocationCoords').val("set");
+        x2.mobileForm.submitWithFiles (
+           that.form$, 
+           function (response) {
+               try {
+                   var data = JSON.parse(response);
+                   var theAddress = data['results'][0]['formatted_address'];
+                   //http://stackoverflow.com/questions/10211145/getting-current-date-and-time-in-javascript
+                   var currentdate = new Date(); 
+                    var datetime = " | " + (currentdate.getMonth()+1) + "/"
+                                    + currentdate.getDate()  + "/" 
+                                    + currentdate.getFullYear() + " @ "  
+                                    + currentdate.getHours() + ":"  
+                                    + currentdate.getMinutes()
+                   $.mobile.activePage.find ('.event-text-box').val("Checking in at "+theAddress+ " "+datetime);
+                    alert("Thanks for checking in!");
+                    $.mobile.activePage.find('.post-event-button').trigger( "click" );
+               } catch (e) {
+                   alert("failed to parse response from server: " + e);
                }
-           ); 
-            this.form$.find ('#geoLocationCoords').val("unset");
-        }, function (error) {
-            alert('code: '    + error.code    + '\n' +
-                  'message: ' + error.message + '\n');
-        }, {});      
-    }
+               x2.main.refreshContent ();
+               $.mobile.loading ('hide');
+           }, function (jqXHR, textStatus, errorThrown) {
+               $.mobile.loading ('hide');
+               x2.main.alert (textStatus, 'Error');
+           }
+       ); 
+        that.form$.find ('#geoLocationCoords').val("unset");
+    }, function (error) {
+        alert('code: '    + error.code    + '\n' +
+              'message: ' + error.message + '\n');
+    }, {});
         
 };
 
-CheckInPublisherController.prototype.init = function () {
+CheckInPublisherController.prototype.init = function () { 
     x2.Controller.prototype.init.call (this);
     var that = this;
     that.documentEvents.push (x2.main.onPageShow (function () {
