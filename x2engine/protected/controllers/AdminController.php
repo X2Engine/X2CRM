@@ -5300,6 +5300,11 @@ class AdminController extends X2Controller {
                     $tempAttributes['theme'] = json_encode($record->theme);
                 }
                 $tempAttributes[] = $model;
+                if ($model === 'Admin') {
+                    $tempAttributes['googleCredentialsId'] = null;
+                    $tempAttributes['twitterCredentialsId'] = null;
+                    $tempAttributes['jasperCredentialsId'] = null;
+                }
                 // Export the data to CSV
                 fputcsv($fp, $tempAttributes, $this->importDelimeter, $this->importEnclosure);
             }
