@@ -90,17 +90,6 @@ if (!$this->refresh && $hasCreateAccess) {
                     ?>
                 </div>
             <?php
-            if (Yii::app()->params->isPhoneGap) {
-            ?>
-            <li class='location-attachment-button'>
-                <span><?php X2Html::fa ('fa-location-arrow'); ?></span>
-                <div class='location-attach-button icon-button'>
-                    <?php
-                    echo CHtml::encode(Yii::t('mobile', 'Add location'));
-                    ?>
-                </div>
-                <?php
-            }
         }
         $action = new Actions;
         $form = $this->beginWidget('MobileActiveForm',
