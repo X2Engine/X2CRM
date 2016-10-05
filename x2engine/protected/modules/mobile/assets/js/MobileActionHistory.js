@@ -148,10 +148,10 @@ MobileActionHistory.prototype.setUpCommentPublish = function () {
                    form$, 
                    function (response) {
                        try {
-                           var data = response;
-                           var theAddress = data[0]['results'][0]['formatted_address'];
-                           form$.find ('.location-tag').val(
-                               form$.find ('.location-tag').val()+" - "+theAddress
+                           var data = JSON.parse(response);
+                           var theAddress = data['results'][0]['formatted_address'];
+                           $.mobile.activePage.find ('.location-tag').val(
+                               $.mobile.activePage.find ('.location-tag').val()+" - "+theAddress
                            );
                        } catch (e) {
                            alert("failed to parse response from server");
@@ -164,6 +164,7 @@ MobileActionHistory.prototype.setUpCommentPublish = function () {
                        x2.main.alert (textStatus, 'Error');
                    }
                ); 
+               this.form$.find ('#geoLocationCoords').val("unset");
             }, function (error) {
                 alert('code: '    + error.code    + '\n' +
                       'message: ' + error.message + '\n');

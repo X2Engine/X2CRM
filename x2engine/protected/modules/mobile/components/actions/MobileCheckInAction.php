@@ -43,10 +43,9 @@ class MobileCheckInAction extends MobileAction {
         $profile = Yii::app()->params->profile;
         $settings = Yii::app()->settings;
         $creds = Credentials::model()->findByPk($settings->googleCredentialsId);
-        $decodedResponse = '';
         if (isset ($_POST['geoCoords']) && isset ($_POST['geoLocationCoords'])) {
             $decodedResponse = $_POST['geoLocationCoords'];
-            if ($creds && $creds->auth && $creds->auth->apiKey && strcmp($decodedResponse,'set') ==  0){
+            if ($creds && $creds->auth && $creds->auth->apiKey && strcmp($decodedResponse,'set') == 0){
                 $key = $creds->auth->apiKey; 
                 $decodedResponse = json_decode($_POST['geoCoords'],true);
                 //https://davidwalsh.name/curl-post
@@ -65,13 +64,13 @@ class MobileCheckInAction extends MobileAction {
                 //execute post
                 $result = curl_exec($ch);
                 //close connection
-                $decodedResult = json_decode($result, true);
-                $newResult = json_encode(array($decodedResult, $key));
-                echo $newResult;
+                //$decodedResult = json_decode($result, true);
+                //$newResult = json_encode(array($decodedResult, $key));
+                echo $result;
                 curl_close($ch);
 
                 /* 
-                 * TODO: Get static map here instead of in the front end?
+                 * TODO: Get static map here
                  * 
                 $url = 'https://maps.googleapis.com/maps/api/staticmap?center=' . 
                         $decodedResponse['lat'] . ',' . $decodedResponse['lon'] .
@@ -91,6 +90,7 @@ class MobileCheckInAction extends MobileAction {
                 echo $result;
                 curl_close($ch);
                 */
+                Yii::app()->end ();
             }        
         }
 

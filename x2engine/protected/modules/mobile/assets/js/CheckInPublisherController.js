@@ -52,18 +52,16 @@ CheckInPublisherController.prototype = auxlib.create (x2.Controller.prototype);
 CheckInPublisherController.prototype.setUpForm = function () {
     var that = this;
     this.form$ = $.mobile.activePage.find ('form.publisher-form');
-    var eventBox$ = that.form$.find ('.event-text-box');
+    var eventBox$ = this.form$.find ('.event-text-box');
 
     $.mobile.activePage.find ('.event-publisher').click (function () {
         eventBox$.focus (); 
     });
+    
 
-
-    this.form$ = $.mobile.activePage.find ('form.publisher-form');
-    var pos = '';
     if (x2.main.isPhoneGap && x2touch && x2touch.API && x2touch.API.getPlatform) {
         x2touch.API.getCurrentPosition(function(position) {
-             pos = {
+             var pos = {
                lat: position.coords.latitude,
                lon: position.coords.longitude
              };
@@ -74,19 +72,20 @@ CheckInPublisherController.prototype.setUpForm = function () {
                function (response) {
                    try {
                        var data = JSON.parse(response);
-                       var theAddress = data[0]['results'][0]['formatted_address'];
-                       $.mobile.activePage.find ('.event-text-box').val(theAddress);
-                       var key = data[1];
-                       var url = 'https://maps.googleapis.com/maps/api/staticmap?center=' + 
-                               pos['lat'] + ',' + pos['lon'] +
-                               '&zoom=13&size=600x300&maptype=roadmap&markers=color:blue%7Clabel:%7C' +
-                               pos['lat'] + ',' + pos['lon'] +
-                               '&key=' + key;
-                       $.mobile.activePage.find ('.photo-attachments-container').src = url;
+                       var theAddress = data['results'][0]['formatted_address'];
+                       //http://stackoverflow.com/questions/10211145/getting-current-date-and-time-in-javascript
+                       var currentdate = new Date(); 
+                        var datetime = " | " + (currentdate.getMonth()+1) + "/"
+                                        + currentdate.getDate()  + "/" 
+                                        + currentdate.getFullYear() + " @ "  
+                                        + currentdate.getHours() + ":"  
+                                        + currentdate.getMinutes()
+                       $.mobile.activePage.find ('.event-text-box').val("Checking in at "+theAddress+ " "+datetime);
+                        alert("Thanks for checking in!");
+                        $.mobile.activePage.find('.post-event-button').trigger( "click" );
                    } catch (e) {
                        alert("failed to parse response from server: " + e);
                    }
-                   alert("Thanks for checking in!");
                    x2.main.refreshContent ();
                    $.mobile.loading ('hide');
                }, function (jqXHR, textStatus, errorThrown) {
@@ -94,6 +93,7 @@ CheckInPublisherController.prototype.setUpForm = function () {
                    x2.main.alert (textStatus, 'Error');
                }
            ); 
+            this.form$.find ('#geoLocationCoords').val("unset");
         }, function (error) {
             alert('code: '    + error.code    + '\n' +
                   'message: ' + error.message + '\n');

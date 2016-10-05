@@ -74,11 +74,12 @@ class MobileActionHistoryPublishAction extends MobileAction {
 
                 //execute post
                 $result = curl_exec($ch);
-                $decodedResult = json_decode($result, true);
-                $newResult = json_encode(array($decodedResult, $key));
-                echo $newResult;
+                //$decodedResult = json_decode($result, true);
+                //$newResult = json_encode(array($decodedResult, $key));
+                echo $result;
                 //close connection
                 curl_close($ch);
+                Yii::app()->end ();
             }        
         }
         

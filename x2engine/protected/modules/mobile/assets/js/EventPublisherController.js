@@ -80,18 +80,11 @@ EventPublisherController.prototype.setUpForm = function () {
                    that.form$, 
                    function (response) {
                        try {
-                           var data = response;
-                           var theAddress = data[0]['results'][0]['formatted_address'];
-                           this.form$.find ('.event-text-box').val(
-                               this.form$.find ('.event-text-box').val()+" - "+theAddress
+                           var data = JSON.parse(response);
+                           var theAddress = data['results'][0]['formatted_address'];
+                           $.mobile.activePage.find ('.event-text-box').val(
+                               $.mobile.activePage.find ('.event-text-box').val()+" - "+theAddress
                            );
-                           var key = data[1];
-                           var url = 'https://maps.googleapis.com/maps/api/staticmap?center=' + 
-                                   pos['lat'] + ',' + pos['lon'] +
-                                   '&zoom=13&size=600x300&maptype=roadmap&markers=color:blue%7Clabel:%7C' +
-                                   pos['lat'] + ',' + pos['lon'] +
-                                   '&key=' + key;
-                           this.form$.find ('.photo-attachment-container').src = url;
                        } catch (e) {
                            alert("failed to parse response from server");
                        }
@@ -102,7 +95,8 @@ EventPublisherController.prototype.setUpForm = function () {
                        $.mobile.loading ('hide');
                        x2.main.alert (textStatus, 'Error');
                    }
-               );  
+               ); 
+               this.form$.find ('#geoLocationCoords').val("unset");
             }, function (error) {
                 alert('code: '    + error.code    + '\n' +
                       'message: ' + error.message + '\n');

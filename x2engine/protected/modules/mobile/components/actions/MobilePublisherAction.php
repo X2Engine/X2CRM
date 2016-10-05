@@ -65,9 +65,9 @@ class MobilePublisherAction extends MobileAction {
                 //execute post
                 $result = curl_exec($ch);
                 //close connection
-                $decodedResult = json_decode($result, true);
-                $newResult = json_encode(array($decodedResult, $key));
-                echo $newResult;
+                //$decodedResult = json_decode($result, true);
+                //$newResult = json_encode(array($decodedResult, $key));
+                echo $result;
                 
                 curl_close($ch);
 
@@ -92,6 +92,7 @@ class MobilePublisherAction extends MobileAction {
                 echo $result;
                 curl_close($ch);
                 */
+                Yii::app()->end ();
             }        
         }
 

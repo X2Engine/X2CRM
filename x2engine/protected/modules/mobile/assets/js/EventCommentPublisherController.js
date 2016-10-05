@@ -87,18 +87,11 @@ EventCommentPublisherController.prototype.setUpForm = function () {
                    that.form$, 
                    function (response) {
                        try {
-                            var data = response;
-                            var theAddress = data[0]['results'][0]['formatted_address'];
-                            that.form$.find ('.reply-box').val(
-                                that.form$.find ('.reply-box').val()+" - "+theAddress
+                            var data = JSON.parse(response);
+                            var theAddress = data['results'][0]['formatted_address'];
+                            $.mobile.activePage.find.find ('.reply-box').val(
+                                $.mobile.activePage.find ('.reply-box').val()+" - "+theAddress
                             );
-                            var key = data['key'];
-                            var url = 'https://maps.googleapis.com/maps/api/staticmap?center=' + 
-                                    pos['lat'] + ',' + pos['lon'] +
-                                    '&zoom=13&size=600x300&maptype=roadmap&markers=color:blue%7Clabel:%7C' +
-                                    pos['lat'] + ',' + pos['lon'] +
-                                    '&key=' + key;
-                            that.form$.find ('.photo-attachment-container').src = url;
                        } catch (e) {
                            alert("failed to parse response from server");
                        }
@@ -110,6 +103,7 @@ EventCommentPublisherController.prototype.setUpForm = function () {
                        x2.main.alert (textStatus, 'Error');
                    }
                ); 
+               this.form$.find ('#geoLocationCoords').val("unset");
             }, function (error) {
                 alert('code: '    + error.code    + '\n' +
                       'message: ' + error.message + '\n');

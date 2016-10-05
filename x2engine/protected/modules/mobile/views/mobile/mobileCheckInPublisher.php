@@ -53,6 +53,15 @@ $this->onPageLoad ("
 
 ?>
 
+<div class='refresh-content' data-refresh-selector='.header-content-right'>
+    <div class='header-content-right'>
+        <div class='post-event-button disabled'>
+        <?php
+        echo CHtml::encode (Yii::t('mobile', 'Post'));
+        ?>
+        </div>
+    </div>
+</div>
 
 <div class='event-publisher'>
 <?php
@@ -70,16 +79,8 @@ $form = $this->beginWidget ('MobileActiveForm', array (
     ),
 ));
 ?>
-    <div class='avatar'>
     <?php
-        echo CHtml::link (
-            Profile::renderFullSizeAvatar ($profile->id, 45),
-            $profile->url
-        );
-    ?>
-    </div>
-    <input id="checkin" type="hidden" name="checkin" value="yes">
-    <?php
+    
     echo $form->textArea ($model, 'text', array (
         'placeholder' =>'Add a post...',
         'class' => 'event-text-box',
