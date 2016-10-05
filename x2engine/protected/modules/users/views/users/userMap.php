@@ -54,12 +54,46 @@ foreach ($locations as $location) {
         $userLinks[$location['recordId']] = $user->getLink(array('style' => 'text-decoration:none;'));
     }
 }
-
-Yii::app()->clientScript->registerScriptFile($assetUrl, CClientScript::POS_END);
 Yii::app()->clientScript->registerScript('maps-initialize', "
+function initializeMap() {
     var map, pointarray, ge, directionsDisplay, latlngbounds;
     var center=$center;
     var zoom=" . (isset($zoom) ? $zoom : "0") . ";
+        
+    directionsDisplay = new google.maps.DirectionsRenderer();
+    var latLng = new google.maps.LatLng(center['lat'],center['lng']);
+    var mapOptions = {
+        zoom: 3,
+        mapTypeId: google.maps.MapTypeId.SATELLITE,
+        center: latLng
+    };
+    if (zoom != 0) {
+        mapOptions.zoom = zoom;
+    }
+    map = new google.maps.Map(document.getElementById('map_canvas'),
+        mapOptions);
+    directionsDisplay.setMap(map);
+    directionsDisplay.setPanel(document.getElementById('directions-panel'));
+
+    var locations = " . json_encode($locations) . ";
+    var userLinks = " . json_encode($userLinks) . ";
+    $.each(locations, function(i, loc) {
+        var details = userLinks[loc['recordId']];
+        if(loc.type){
+            details += '<br>'+loc.type;
+        }
+        if(loc.info){
+            details += '<br>'+loc.info;
+        }
+        if(loc.time){
+            details += '<br>'+loc.time;
+        }
+        addLargeMapMarker(loc, details);
+    });
+    google.maps.event.addListenerOnce(map, 'bounds_changed', function(event) {
+        this.setZoom(map.getZoom()-1);
+      });
+    map.fitBounds(latlngbounds);
     
     function addLargeMapMarker(pos, contents, open = true) {
         latlngbounds = new google.maps.LatLngBounds();
@@ -93,61 +127,8 @@ Yii::app()->clientScript->registerScript('maps-initialize', "
 
         return marker;
     }
-
-    function refreshQtip() {
-        var locations = " . json_encode($locations) . ";
-        var userLinks = " . json_encode($userLinks) . ";
-        $.each(locations, function(i, loc) {
-            var details = userLinks[loc['recordId']];
-            if(loc.type){
-                details += '<br>'+loc.type;
-            }
-            if(loc.info){
-                details += '<br>'+loc.info;
-            }
-            if(loc.time){
-                details += '<br>'+loc.time;
-            }
-            addLargeMapMarker(loc, details);
-        });
-        google.maps.event.addListenerOnce(map, 'bounds_changed', function(event) {
-            this.setZoom(map.getZoom()-1);
-          });
-        map.fitBounds(latlngbounds);
-    }
-
-    function initializeMap() {
-        directionsDisplay = new google.maps.DirectionsRenderer();
-        var latLng = new google.maps.LatLng(center['lat'],center['lng']);
-        var mapOptions = {
-            zoom: 3,
-            mapTypeId: google.maps.MapTypeId.SATELLITE,
-            center: latLng
-        };
-        if (zoom != 0) {
-            mapOptions.zoom = zoom;
-        }
-        map = new google.maps.Map(document.getElementById('map_canvas'),
-            mapOptions);
-        directionsDisplay.setMap(map);
-        directionsDisplay.setPanel(document.getElementById('directions-panel'));
-        
-        refreshQtip();
-    }
-", CClientScript::POS_END);
-
-Yii::app()->clientScript->registerScript('map-controls', "
-$('#mapControlForm').submit(function(){
-    var tags=new Array();
-    $.each($(this).find ('.x2-tag-list a'),function(){
-        tags.push($(this).text());
-    });
-    $('#params_tags').val(tags);
-});
-$(window).resize(function(){
-   google.maps.event.trigger(map,'resize');
-});
-",  CClientScript::POS_END);
+}", CClientScript::POS_HEAD);
+Yii::app()->clientScript->registerScriptFile($assetUrl, CClientScript::POS_END);
 ?>
 
 <div class='page-title icon contacts'>
