@@ -44,11 +44,9 @@ $settings = Yii::app()->settings;
 $creds = Credentials::model()->findByPk($settings->googleCredentialsId);
 if ($creds && $creds->auth)
     $key = $creds->auth->apiKey;
-$assetUrl = 'https://maps.googleapis.com/maps/api/js?libraries=visualization';
+$assetUrl = 'https://maps.googleapis.com/maps/api/js?libraries=visualization&callback=initializeMap';
 if (!empty($key))
     $assetUrl .= '&key=' . $key;
-Yii::app()->clientScript->registerScriptFile($assetUrl);
-
 $userLinks = array();
 foreach ($locations as $location) {
     $user = User::model()->findByPk($location['recordId']);
@@ -57,16 +55,68 @@ foreach ($locations as $location) {
     }
 }
 Yii::app()->clientScript->registerScript('maps-initialize', "
-    var map, pointarray, ge, directionsDisplay;
+    var map, pointarray, ge, directionsDisplay, latlngbounds;
     var center=$center;
     var zoom=" . (isset($zoom) ? $zoom : "0") . ";
-    var bounds=new google.maps.LatLngBounds();
-    var directionsService=new google.maps.DirectionsService();
-    var latlngbounds = new google.maps.LatLngBounds();
-    function initialize() {
+    
+    function addLargeMapMarker(pos, contents, open = true) {
+        latlngbounds = new google.maps.LatLngBounds();
+        var latLng = new google.maps.LatLng(pos['lat'],pos['lng']);
+        latlngbounds.extend(latLng);
+        var marker = new google.maps.Marker({
+            position: latLng,
+            map: map
+        });
+        if(typeof infowindow==='undefined'){
+            var infowindow = new google.maps.InfoWindow({
+                content: contents
+            });
+            if (open)
+                infowindow.open(map, marker);
+        }
+        google.maps.event.addListener(infowindow,'domready',function(){
+            $('#corporate-directions').click(function(e){
+                e.preventDefault();
+                getDirections('corporate');
+            });
+            $('#personal-directions').click(function(e){
+                e.preventDefault();
+                getDirections('personal');
+            });
+        });
+
+        google.maps.event.addListener(marker,'click',function(){
+            infowindow.open(map,marker);
+        });
+
+        return marker;
+    }
+
+    function refreshQtip() {
+        var locations = " . json_encode($locations) . ";
+        var userLinks = " . json_encode($userLinks) . ";
+        $.each(locations, function(i, loc) {
+            var details = userLinks[loc['recordId']];
+            if(loc.type){
+                details += '<br>'+loc.type;
+            }
+            if(loc.info){
+                details += '<br>'+loc.info;
+            }
+            if(loc.time){
+                details += '<br>'+loc.time;
+            }
+            addLargeMapMarker(loc, details);
+        });
+        google.maps.event.addListenerOnce(map, 'bounds_changed', function(event) {
+            this.setZoom(map.getZoom()-1);
+          });
+        map.fitBounds(latlngbounds);
+    }
+
+    function initializeMap() {
         directionsDisplay = new google.maps.DirectionsRenderer();
         var latLng = new google.maps.LatLng(center['lat'],center['lng']);
-        bounds.extend(latLng);
         var mapOptions = {
             zoom: 3,
             mapTypeId: google.maps.MapTypeId.SATELLITE,
@@ -79,69 +129,10 @@ Yii::app()->clientScript->registerScript('maps-initialize', "
             mapOptions);
         directionsDisplay.setMap(map);
         directionsDisplay.setPanel(document.getElementById('directions-panel'));
+        
+        refreshQtip();
     }
-
-initialize();
-");
-
-Yii::app()->clientScript->registerScript('maps-qtip', "
-var center=$center;
-
-function addLargeMapMarker(pos, contents, open = true) {
-        var latLng = new google.maps.LatLng(pos['lat'],pos['lng']);
-        latlngbounds.extend(latLng);
-        var marker = new google.maps.Marker({
-            position: latLng,
-            map: map
-        });
-    if(typeof infowindow==='undefined'){
-        var infowindow = new google.maps.InfoWindow({
-            content: contents
-        });
-        if (open)
-            infowindow.open(map, marker);
-    }
-    google.maps.event.addListener(infowindow,'domready',function(){
-        $('#corporate-directions').click(function(e){
-            e.preventDefault();
-            getDirections('corporate');
-        });
-        $('#personal-directions').click(function(e){
-            e.preventDefault();
-            getDirections('personal');
-        });
-    });
-
-    google.maps.event.addListener(marker,'click',function(){
-        infowindow.open(map,marker);
-    });
-
-    return marker;
-}
-
-function refreshQtip() {
-    var locations = " . json_encode($locations) . ";
-    var userLinks = " . json_encode($userLinks) . ";
-    $.each(locations, function(i, loc) {
-        var details = userLinks[loc['recordId']];
-        if(loc.type){
-            details += '<br>'+loc.type;
-        }
-        if(loc.info){
-            details += '<br>'+loc.info;
-        }
-        if(loc.time){
-            details += '<br>'+loc.time;
-        }
-        addLargeMapMarker(loc, details);
-    });
-    google.maps.event.addListenerOnce(map, 'bounds_changed', function(event) {
-        this.setZoom(map.getZoom()-1);
-      });
-    map.fitBounds(latlngbounds);
-}
-refreshQtip();
-");
+", CClientScript::POS_HEAD);
 
 Yii::app()->clientScript->registerScript('map-controls', "
 $('#mapControlForm').submit(function(){
@@ -154,7 +145,8 @@ $('#mapControlForm').submit(function(){
 $(window).resize(function(){
    google.maps.event.trigger(map,'resize');
 });
-");
+",  CClientScript::POS_END);
+Yii::app()->clientScript->registerScriptFile($assetUrl, CClientScript::POS_END);
 ?>
 
 <div class='page-title icon contacts'>
