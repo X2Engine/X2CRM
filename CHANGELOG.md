@@ -11,6 +11,10 @@
   * Two-way Google Calendar sync
   * Support for multiple user calendars
   * Miscellaneous bug fixes and improvements
+* Tracked Bug Fixes:  
+  * [4858](http://x2software.com/index.php/bugReports/4858): The system is unable to find the requested action "configureMyInbox".  
+  * [4923](http://x2software.com/index.php/bugReports/4923): Trying to get property of non-object  
+  * [5288](http://x2software.com/index.php/bugReports/5288): Undefined variable: success  
 
 # 6.0.4 #
 8/12/2016
