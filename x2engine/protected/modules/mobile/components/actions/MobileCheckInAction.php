@@ -122,22 +122,28 @@ class MobileCheckInAction extends MobileAction {
                     'text' => $model->text,
                     'photo' => $model->photo
                 ), false);
-                if ($event->saveRaw ($profile,$decodedResult)) {
-                    if (!isset ($_FILES['EventPublisherFormModel'])) {
-                        //AuxLib::debugLogR ('saved');
-                        $this->controller->redirect (
-                            $this->controller->createAbsoluteUrl (
-                                '/profile/mobileActivity'));
+                if ($key && !empty($decodedResponse) && !empty($decodedResult)) {
+                    if ($event->saveRaw ($profile,$decodedResult)) {
+                        if (!isset ($_FILES['EventPublisherFormModel'])) {
+                            //AuxLib::debugLogR ('saved');
+                            $this->controller->redirect (
+                                $this->controller->createAbsoluteUrl (
+                                    '/profile/mobileActivity'));
+                        } else {
+                            echo CJSON::encode (array ( 
+                                'redirectUrl' => $this->controller->createAbsoluteUrl (
+                                    '/profile/mobileActivity'),
+                            ));
+                            Yii::app()->end ();
+                        }
                     } else {
-                        echo CJSON::encode (array ( 
-                            'redirectUrl' => $this->controller->createAbsoluteUrl (
-                                '/profile/mobileActivity'),
-                        ));
-                        Yii::app()->end ();
+                        //AuxLib::debugLogR ('invalid');
+                        throw new CHttpException (500, implode (';', $event->getAllErrorMessages ()));
                     }
                 } else {
-                    //AuxLib::debugLogR ('invalid');
-                    throw new CHttpException (500, implode (';', $event->getAllErrorMessages ()));
+                    $this->controller->redirect (
+                        $this->controller->createAbsoluteUrl (
+                        '/profile/mobileActivity'));                    
                 }
             } else {
                 if (isset ($_FILES['EventPublisherFormModel'])) {

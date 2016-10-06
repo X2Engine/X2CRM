@@ -85,7 +85,11 @@ CheckInPublisherController.prototype.setUpForm = function () {
                     alert("Thanks for checking in!");
                     $.mobile.activePage.find('.post-event-button').trigger( "click" );
                } catch (e) {
+                   /*
+                    * Possibilities: API token not set or API not turned on
+                    */
                    alert("failed to parse response from server: " + e);
+                   window.history.back();
                }
                x2.main.refreshContent ();
                $.mobile.loading ('hide');
