@@ -43,4 +43,6 @@
   'Delete {user}' => 'حذف {user}',
   'Check your email at {email} for further instructions to finish resetting your password.' => 'ایمیل خود را در {email} برای دستورالعمل های بیشتر به پایان برساند رمز عبور خود را بازنشانی.',
   'You should now have access as "{user}" with the new password specified.' => 'شما هم اکنون می باید دسترسی به عنوان &quot;دارند {user} با رمز عبور جدید مشخص شده است.',
+  'View {users} Map' => 'نمایش {users} نقشه',
+  'User Location Map' => 'کاربر نقشه محل سکونت',
 );

@@ -4,7 +4,6 @@
   'Reminder' => 'Напоминание',
   'Complete Date' => 'Срок завершения',
   'Date Completed' => 'Дата завершения',
-  'All Day' => 'Весь день',
   'Complete + New Action' => 'Завершить + Новое задача',
   'Uncomplete' => 'Незавершено',
   'Overdue' => 'Просроченно',
@@ -120,4 +119,5 @@
   'Event Subtype' => 'Подтип события',
   'Event Status' => 'Статус события',
   'Calendar Color' => 'Цвет метки календаря',
+  'Enter email addresses, one per line' => 'Введите адреса электронной почты, по одному в строке',
 );

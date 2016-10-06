@@ -606,4 +606,12 @@
   'Mailing Address' => 'Почтовый адрес',
   'Details' => 'Подробности',
   'Do Not Email Page' => 'Страница "Не присылать письма"',
+  'All Day' => 'Весь день',
+  'Jasper Server Integration' => 'Интеграция Jasper сервера',
+  'Longitude' => 'долгота',
+  'Date/Time' => 'Дата / время',
+  'Stated Address' => 'Заявлено Адрес',
+  'Check-in comment' => 'Прибытие в комментарии',
+  'Email Opened' => 'Email Открыта',
+  'Email Clicked' => 'Email Кликов',
 );

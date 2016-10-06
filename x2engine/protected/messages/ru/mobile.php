@@ -26,4 +26,5 @@
   'Web Address' => 'Веб-адрес',
   'Add photo attachment' => 'Прикрепить фотографию',
   'Add file attachment' => 'Прикрепить файл',
+  'Delete Record' => 'Удалить запись',
 );

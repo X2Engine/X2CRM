@@ -65,4 +65,9 @@
   'Failed to associate message "{subject}" with {type} {model}' => 'Nachricht konnte nicht zugeordnet werden &quot; {subject} &quot; mit {type} {model}',
   'Message "{subject}" already associated with {type} {model}' => 'Message &quot; {subject} &quot; bereits im Zusammenhang mit {type} {model}',
   'Disable Quota Operations' => 'Deaktivieren Quote Operationen',
+  'Manage your application credentials' => 'Verwalten Sie Ihre Bewerbungsunterlagen',
+  'Associate attachment with related record' => 'Mitarbeiter Befestigung mit ähnlichen Rekord',
+  'Attachment successfully associated' => 'Anlage erfolgreich verbunden sind',
+  'Association failed: the attachment could not be saved' => 'Verband fehlgeschlagen: die Anlage konnte nicht gespeichert werden',
+  'Association failed: there are no related records' => 'Verband gescheitert: Es gibt keine verknüpften Datensätze sind',
 );

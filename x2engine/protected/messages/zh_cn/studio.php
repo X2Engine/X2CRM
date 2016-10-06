@@ -170,7 +170,6 @@
   'JSON' => 'JSON',
   'This ID is unique to this email. Conditions checking for email opens can refer to this ID' => '此ID是唯一的这封电子邮件。条件检查电子邮件，打开可以参考这个ID',
   'Checking this box will cause the email to be attached to the record associated with this flow, if it exists.' => '选中此框将导致邮件被附加到与此流相关的记录，如果它存在。',
-  'Email Opened' => '电子邮件开业',
   'Inbound Email' => '入站电子邮件',
   'Outbound Email' => '出站电子邮件',
   'Triggers when an inbound email is received.' => '收到入站电子邮件时触发。',

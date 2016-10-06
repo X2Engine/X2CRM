@@ -610,4 +610,12 @@
   'Select All' => 'Alles auswählen',
   'User Login History' => 'User Login Geschichte',
   'Delete Record' => 'Datensatz löschen',
+  'All Day' => 'Den ganzen Tag',
+  'Jasper Server Integration' => 'Jasper Server Integration',
+  'Longitude' => 'Länge',
+  'Date/Time' => 'Terminzeit',
+  'Stated Address' => 'Die angegebenen Adresse',
+  'Check-in comment' => 'Der Check-in Kommentar',
+  'Email Opened' => 'E-Mail geöffnet',
+  'Email Clicked' => 'E-Mail-Clicked',
 );

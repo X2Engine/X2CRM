@@ -170,7 +170,6 @@
   'JSON' => 'JSON',
   'This ID is unique to this email. Conditions checking for email opens can refer to this ID' => 'Deze ID is uniek voor deze e-mail. Voorwaarden voor het controleren van e-mail opent kunnen verwijzen naar deze ID',
   'Checking this box will cause the email to be attached to the record associated with this flow, if it exists.' => 'Controle dit vak zal de e-mail moet worden gehecht aan de plaat waaraan deze stroom, als het bestaat.',
-  'Email Opened' => 'E-mail Geopend',
   'Inbound Email' => 'Inkomende e-mail',
   'Outbound Email' => 'Uitgaande e-mail',
   'Triggers when an inbound email is received.' => 'Activeert wanneer een inkomende e-mail is ontvangen.',

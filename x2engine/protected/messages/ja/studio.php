@@ -170,7 +170,6 @@
   'JSON' => 'JSON',
   'This ID is unique to this email. Conditions checking for email opens can refer to this ID' => 'このIDは、このメールに特有のものです。電子メールをチェックする条件は、このIDを参照することができます開きます',
   'Checking this box will cause the email to be attached to the record associated with this flow, if it exists.' => 'それが存在する場合、このチェックボックスをオンにすると、電子メールは、この流れに対応するレコードに添付されます。',
-  'Email Opened' => 'メールオープン',
   'Inbound Email' => 'インバウンドメール',
   'Outbound Email' => 'アウトバウンドメール',
   'Triggers when an inbound email is received.' => 'インバウンド電子メールを受信したときにトリガします。',

@@ -610,4 +610,12 @@
   'Select All' => 'انتخاب همه',
   'User Login History' => 'ورود کاربر تاریخ',
   'Delete Record' => 'حذف رکورد',
+  'All Day' => 'تمام روز',
+  'Jasper Server Integration' => 'ادغام سرور جاسپر',
+  'Longitude' => 'عرض جغرافیایی',
+  'Date/Time' => 'زمان قرار',
+  'Stated Address' => 'نشانی اعلام',
+  'Check-in comment' => 'چک در نظر',
+  'Email Opened' => 'ایمیل باز',
+  'Email Clicked' => 'ایمیل کلیک',
 );

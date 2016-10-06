@@ -32,8 +32,8 @@
   'Require Comment?' => 'Требовать комментарий?',
   'Stage {stage} does not exist' => 'Этап {stage} не существует',
   'Stage could not be reverted because its backdate window has expired.' => 'Этап не может быть возвращен, потому, что дата истекла.',
-  'Stage change failed. This could be because your interface is displaying out-of-date information. Please try refreshing the page.' =>  'Изменение этапа не удалось. Возможно на вашей странице отображается не актуальная информация. Пожалуйста, попробуйте обновить страницу.',
-  'At least one stage could not be reverted because its backdate window has expired.' =>  'По крайней мере один из этапов не может быть возвращен, потому что окно для заднего числа просрочено.',
+  'Stage change failed. This could be because your interface is displaying out-of-date information. Please try refreshing the page.' => 'Изменение этапа не удалось. Возможно на вашей странице отображается не актуальная информация. Пожалуйста, попробуйте обновить страницу.',
+  'At least one stage could not be reverted because its backdate window has expired.' => 'По крайней мере один из этапов не может быть возвращен, потому что окно для заднего числа просрочено.',
   'Create {process}' => 'Создать {process}',
   'Update {process}' => 'Обновить {process}',
   '{process} Status' => 'Статус {process} ',
@@ -53,4 +53,5 @@
   'Financial Data Field' => 'Поле финансовых данных',
   'Select a model type' => 'Выберите тип модели',
   'Select a field' => 'Выберите поле',
+  'Default For' => 'По умолчанию для',
 );

@@ -43,4 +43,6 @@
   'Delete {user}' => 'מחק {user}',
   'Check your email at {email} for further instructions to finish resetting your password.' => 'בדוק את תיבת הדוא&quot;ל שלך {email} לקבלת הוראות נוספות כדי לסיים איפוס הסיסמה שלך.',
   'You should now have access as "{user}" with the new password specified.' => 'עכשיו צריכה להיות לך גישה כ&quot; {user} &quot;עם הסיסמה החדשה שצוינה.',
+  'View {users} Map' => 'צפה {users} מפה',
+  'User Location Map' => 'מפת מיקום המשתמש',
 );

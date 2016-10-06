@@ -53,4 +53,5 @@
   'Financial Data Field' => 'Financiële Dataveld',
   'Select a model type' => 'Selecteer een modeltype',
   'Select a field' => 'Selecteer een veld',
+  'Default For' => 'standaard Voor',
 );

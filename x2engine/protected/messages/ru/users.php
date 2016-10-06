@@ -43,4 +43,7 @@
   'Delete {user}' => 'Удалить {user}',
   'Check your email at {email} for further instructions to finish resetting your password.' => 'Проверьте свою почту {email} для получения дальнейших инструкций по завершения смены пароля.',
   'You should now have access as "{user}" with the new password specified.' => 'Теперь вы можете входить как "{user}" с указанным новым паролем.',
+  'View {users} Map' => 'Просмотр {users} Карта',
+  'User Location Map' => 'Пользователь Location Map',
+  'User Login History' => 'Пользователь Войти История',
 );

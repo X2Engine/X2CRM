@@ -610,4 +610,12 @@
   'Select All' => 'Selecteer alles',
   'User Login History' => 'User Login Geschiedenis',
   'Delete Record' => 'Record verwijderen',
+  'All Day' => 'De hele dag',
+  'Jasper Server Integration' => 'Jasper Server Integration',
+  'Longitude' => 'Lengtegraad',
+  'Date/Time' => 'Datum Tijd',
+  'Stated Address' => 'verklaarde Adres',
+  'Check-in comment' => 'Check-in commentaar',
+  'Email Opened' => 'E-mail Geopend',
+  'Email Clicked' => 'E-mail Clicked',
 );

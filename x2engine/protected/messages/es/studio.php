@@ -170,7 +170,6 @@
   'JSON' => 'JSON',
   'This ID is unique to this email. Conditions checking for email opens can refer to this ID' => 'Este ID es único a este correo electrónico. Condiciones de cheques para el correo electrónico se abre puede hacer referencia a este ID',
   'Checking this box will cause the email to be attached to the record associated with this flow, if it exists.' => 'Al marcar esta casilla hará que el correo electrónico que se adjuntará al expediente asociado a este flujo, si es que existe.',
-  'Email Opened' => 'Correo Abierto',
   'Inbound Email' => 'Inbound Email',
   'Outbound Email' => 'Correo electrónico saliente',
   'Triggers when an inbound email is received.' => 'Dispara cuando se recibe un correo electrónico entrante.',

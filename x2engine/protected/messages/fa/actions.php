@@ -4,7 +4,6 @@
   'Reminder' => 'یادآور',
   'Complete Date' => 'تاریخ تکمیل',
   'Date Completed' => 'تاریخ تکمیل',
-  'All Day' => 'همه روزها',
   'Complete + New Action' => 'تکمیل + اقدام جدید',
   'Uncomplete' => 'نا تمام',
   'Overdue' => 'سر رسیده',
@@ -120,4 +119,5 @@
   'Event Subtype' => 'رویداد زیر گروه',
   'Event Status' => 'رویداد وضعیت',
   'Calendar Color' => 'تقویم رنگ',
+  'Enter email addresses, one per line' => 'آدرس ایمیل را وارد کنید، خط یکی در هر',
 );

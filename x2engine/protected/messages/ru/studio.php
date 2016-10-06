@@ -171,7 +171,6 @@
   'JSON' => 'JSON',
   'This ID is unique to this email. Conditions checking for email opens can refer to this ID' => 'Этот ID уникален для данного письма. Проверка условия прочтения письма можете обратиться к этому ID',
   'Checking this box will cause the email to be attached to the record associated with this flow, if it exists.' => 'Если установлен этот флажок, письмо будет привязано к записи, связанной с этим потоком, если она существует.',
-  'Email Opened' => 'Сообщение прочитано',
   'Inbound Email' => 'Входящая почта',
   'Outbound Email' => 'Исходящая почта',
   'Triggers when an inbound email is received.' => 'События при получении входящего письма.',
@@ -191,4 +190,9 @@
   'Triggers when a new contact fills out your web lead capture form.' => 'Срабатывает, когда новый контакт заполняет вашу форму захвата веб-лида.',
   'Process Status' => 'Статус процесса',
   'The following condition did not pass: {name} {operator} {value}' => 'Следующее условие не выполнено: {name} {operator} {value}',
+  'Link Field' => 'Ссылка поле',
+  'If you want to use this action inside a splitter, place one of these at the start of each splitter branch to ensure the branch acts on the correct record.' => 'Если вы хотите использовать это действие внутри сплиттер, поместите одну из них в начале каждого разветвителя филиала для обеспечения филиалов действует на правильной записи.',
+  'Changed to {recordLink}.' => 'Изменен {recordLink} .',
+  'Unable to change record.' => 'Невозможно изменить запись.',
+  'Invalid configuration.' => 'Недопустимая конфигурация.',
 );

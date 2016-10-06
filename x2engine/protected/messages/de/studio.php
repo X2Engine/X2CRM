@@ -170,7 +170,6 @@
   'JSON' => 'JSON',
   'This ID is unique to this email. Conditions checking for email opens can refer to this ID' => 'Diese ID ist einzigartig für diese E-Mail. AGB Prüfung für E-Mail öffnet, kann auf diese ID beziehen',
   'Checking this box will cause the email to be attached to the record associated with this flow, if it exists.' => 'Wenn dieses Kontrollkästchen bewirkt, dass der E-Mail an, um den Datensatz mit dieser Strömung zugeordnet angebracht werden kann, wenn es vorhanden ist.',
-  'Email Opened' => 'Email Eröffnet',
   'Inbound Email' => 'Eingehende E-Mail',
   'Outbound Email' => 'Ausgehende E-Mail',
   'Triggers when an inbound email is received.' => 'Wird ausgelöst, wenn eine eingehende E-Mail empfangen wird.',

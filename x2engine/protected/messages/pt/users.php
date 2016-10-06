@@ -43,4 +43,6 @@
   'Delete {user}' => 'Excluir {user}',
   'Check your email at {email} for further instructions to finish resetting your password.' => 'Verifique se o seu e-mail para {email} para obter mais instruções para terminar redefinir sua senha.',
   'You should now have access as "{user}" with the new password specified.' => 'Agora você deve ter acesso como {user} com a nova senha especificada.',
+  'View {users} Map' => 'Ver {users} Mapa',
+  'User Location Map' => 'Mapa de localização do usuário',
 );

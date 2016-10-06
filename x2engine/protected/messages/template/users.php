@@ -43,4 +43,6 @@
   'Invalid reset key.' => '',
   'The password reset link has expired.' => '',
   'Invalid reset link.' => '',
+  'View {users} Map' => '',
+  'User Location Map' => '',
 );

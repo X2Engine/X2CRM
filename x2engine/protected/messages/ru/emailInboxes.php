@@ -65,4 +65,9 @@
   'Failed to associate message "{subject}" with {type} {model}' => 'Не удалось связать сообщение "{subject}" с {type} {model}',
   'Message "{subject}" already associated with {type} {model}' => 'Сообщение "{subject}" уже связано с {type} {model}',
   'Disable Quota Operations' => 'Отключить операции с коммерческими предложениями',
+  'Manage your application credentials' => 'Управление учетных данных приложений',
+  'Associate attachment with related record' => 'Ассоциированный вложения с соответствующей записью',
+  'Attachment successfully associated' => 'Приложение успешно связано',
+  'Association failed: the attachment could not be saved' => 'Ассоциация не удалось: вложение не может быть сохранен',
+  'Association failed: there are no related records' => 'Ассоциация не удалось: нет связанных записей',
 );
