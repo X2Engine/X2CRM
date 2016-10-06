@@ -35,36 +35,62 @@
  * "Powered by X2Engine".
  **********************************************************************************/
 
-Yii::import ('application.modules.mobile.components.behaviors.*');
+//Yii::app()->clientScript->registerCssFile(
+//    Yii::app()->controller->assetsUrl.'/css/recordIndex.css');
+//Yii::app()->clientScript->registerCssFile(
+//    Yii::app()->controller->assetsUrl.'/css/activityFeed.css');
+Yii::app()->clientScript->registerScriptFile(
+    Yii::app()->controller->assetsUrl.'/js/CheckInPublisherController.js');
 
-class MobileProfileControllerBehavior extends MobileControllerBehavior {
-
-    public function actions () {
-        return array (
-            'mobilePublisher' => array (
-                'class' => 'MobilePublisherAction'
-            ),
-            'mobileActivity' => array (
-                'class' => 'MobileActivityAction'
-            ),
-            'mobileViewEvent' => array (
-                'class' => 'MobileViewEventAction'
-            ),
-            'mobileDeleteEvent' => array (
-                'class' => 'MobileDeleteEventAction'
-            ),
-            'mobileView' => array (
-                'class' => 'MobileProfileViewAction'
-            ),
-            'mobileIndex' => array (
-                'class' => 'MobileIndexAction'
-            ),
-            'mobileCheckInPublisher' => array (
-                'class' => 'MobileCheckInAction'
-            )
-        );
-    }
-
-}
+$attr = 'photo';
+$htmlOptions = array ();
+CHtml::resolveNameID ($model, $attr, $htmlOptions);
+$this->onPageLoad ("
+    x2.main.controllers['$this->pageId'] = new x2.CheckInPublisherController ({
+        photoAttrName: ".CJSON::encode ($htmlOptions['name'])."
+    });
+", CClientScript::POS_END);
 
 ?>
+
+<div class='refresh-content' data-refresh-selector='.header-content-right'>
+    <div class='header-content-right'>
+        <div class='post-event-button disabled'>
+        <?php
+        echo CHtml::encode (Yii::t('mobile', 'Post'));
+        ?>
+        </div>
+    </div>
+</div>
+
+<div class='event-publisher'>
+<?php
+$form = $this->beginWidget ('MobileActiveForm', array (
+    'htmlOptions' => array (
+        'class' => 'publisher-form',
+    ),
+    'photoAttrName' => 'EventPublisherFormModel[photo]',
+    'JSClassParams' => array (
+        'submitButtonSelector' => '#header .post-event-button',
+        'validate' => 'js:function () {
+            return $.trim (this.form$.find (".event-text-box").val ()) ||
+                this.form$.find (".photo-attachment");
+        }',
+    ),
+));
+?>
+    <?php
+    
+    echo $form->textArea ($model, 'text', array (
+        'placeholder' =>'Add a post...',
+        'class' => 'event-text-box',
+    ));
+    echo $form->mobileCoordinates ();
+    echo $form->mobileLocationCoordinates ();
+    ?>
+    <div class='photo-attachments-container'>
+    </div>
+<?php
+$this->endWidget ();
+?>
+</div>

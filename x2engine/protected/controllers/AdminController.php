@@ -2540,6 +2540,48 @@ class AdminController extends X2Controller {
       } */
 
     /**
+     * Page for User History
+     */
+    public function actionUserLocationHistory() {
+        $locationHistoryDataProvider  = new CActiveDataProvider ('Locations', array(
+            'sort' => array('defaultOrder' => 'createDate DESC'),
+        ));
+        $users = new CActiveDataProvider ('User', array(
+            'sort' => array('defaultOrder' => 'id ASC'),
+        ));
+        
+        $this->render ('userLocationHistory', array(
+            'locationHistoryDataProvider' => $locationHistoryDataProvider,
+            'users' => $users,
+        ));
+    }
+    
+    public function actionLocationSettings() {
+
+        $admin = &Yii::app()->settings;
+        if (isset($_POST['Admin'])) {
+
+            $oldFormat = $admin->contactNameFormat;
+            $admin->attributes = $_POST['Admin'];
+            foreach ($_POST['Admin'] as $attribute => $value) {
+                if ($admin->hasAttribute($attribute)) {
+                    $admin->$attribute = $value;
+                }
+            }
+            $admin->timeout *= 60; //convert from minutes to seconds
+
+
+            if ($admin->save()) {
+                $this->redirect('locationSettings');
+            }
+        }
+        $admin->timeout = ceil($admin->timeout / 60);
+        $this->render('locationSettings', array(
+            'model' => $admin,
+        ));
+    }
+
+    /**
      * Control general settings for the software.
      *
      * This method renders a page with settings for a variety of admin options.

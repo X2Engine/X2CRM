@@ -189,26 +189,23 @@ class Admin extends X2ActiveRecord {
             array('emailType,emailFromName, emailFromAddr', 'requiredIfSysDefault', 'field' => 'emailBulkAccount'),
             array('serviceCaseFromEmailName, serviceCaseFromEmailAddress', 'requiredIfSysDefault', 'field' => 'serviceCaseEmailAccount'),
             array('serviceCaseEmailSubject, serviceCaseEmailMessage', 'required'),
-            array('timeout, webTrackerCooldown, chatPollTime, ignoreUpdates, rrId, onlineOnly, emailBatchSize, emailInterval, emailPort, installDate, updateDate, updateInterval, workflowBackdateWindow, workflowBackdateRange', 'numerical', 'integerOnly' => true),
+            array('batchTimeout, timeout, webTrackerCooldown, chatPollTime, locationTrackingFrequency, '
+                . 'ignoreUpdates, rrId, onlineOnly, emailBatchSize, emailInterval, emailPort, '
+                . 'installDate, updateDate, updateInterval, workflowBackdateWindow, '
+                . 'workflowBackdateRange, locationTrackingDistance', 
+                'numerical', 'integerOnly' => true),
             // accounts, sales,
             array('chatPollTime', 'numerical', 'max' => 100000, 'min' => 100),
+            array('locationTrackingFrequency', 'numerical', 'max' => 60, 'min' => 1),
+            array('locationTrackingDistance', 'numerical', 'max' => 10, 'min' => 1),
             array('currency', 'length', 'max' => 3),
             array('emailUseAuth, emailUseSignature', 'length', 'max' => 10),
             array('emailType, emailSecurity,gaTracking_internal,gaTracking_public', 'length', 'max' => 20),
             array('webLeadEmail, leadDistribution, emailFromName, emailFromAddr, emailHost, emailUser, emailPass,externalBaseUrl,externalBaseUri', 'length', 'max' => 255),
             // array('emailSignature', 'length', 'max'=>512),
-            array('batchTimeout', 'numerical', 'integerOnly' => true),
-            array(
-                'massActionsBatchSize',
-                'numerical',
-                'integerOnly' => true,
-                'min' => 5,
-                'max' => 100,
-            ),
+            array('massActionsBatchSize','numerical','integerOnly' => true,'min' => 5,'max' => 100,),
             array('emailBulkAccount,serviceCaseEmailAccount', 'safe'),
-            
-            array('emailDropbox'  .',api2' ,'safe'),
-            
+            array('emailDropbox'  .',api2' ,'safe'),          
             array('emailBulkAccount', 'setDefaultEmailAccount', 'alias' => 'bulkEmail'),
             array('serviceCaseEmailAccount', 'setDefaultEmailAccount', 'alias' => 'serviceCaseEmail'),
             array('webLeadEmailAccount','setDefaultEmailAccount','alias' => 'systemResponseEmail'),
@@ -217,7 +214,7 @@ class Admin extends X2ActiveRecord {
             array('externalBaseUrl','url','allowEmpty'=>true),
             array('assetBaseUrls','validateUrlArray','allowEmpty'=>false),
             array('externalBaseUrl','match','pattern'=>':/$:','not'=>true,'allowEmpty'=>true,'message'=>Yii::t('admin','Value must not include a trailing slash.')),
-            array('enableWebTracker, quoteStrictLock, workflowBackdateReassignment,disableAutomaticRecordTagging,enableAssetDomains, enableUnsubscribeHeader', 'boolean'),
+            array('enableWebTracker, locationTrackingSwitch, quoteStrictLock, workflowBackdateReassignment,disableAutomaticRecordTagging,enableAssetDomains, enableUnsubscribeHeader', 'boolean'),
             array('gaTracking_internal,gaTracking_public', 'match', 'pattern' => "/'/", 'not' => true, 'message' => Yii::t('admin', 'Invalid property ID')),
             array ('appDescription', 'length', 'max' => 255),
             array (
@@ -317,8 +314,11 @@ class Admin extends X2ActiveRecord {
             'ipBlacklist' => Yii::t('admin','IP Blacklist'),
             'ipWhitelist' => Yii::t('admin','IP Whitelist'),
             'triggerLogMax' => Yii::t('admin','Maximum number of X2Workflow trigger logs'),
-             
             
+            'locationTrackingFrequency' => Yii::t('admin', 'Location Tracking Frequency'), 
+            'locationTrackingDistance' => Yii::t('admin', 'Location Tracking Distance'),  
+            'locationTracking' => Yii::t('admin', 'Location Tracking'), 
+             
             'enableFingerprinting' => Yii::t('marketing', 'Enable Fingerprinting'),
             'performHostnameLookups' => Yii::t('marketing', 'Perform Hostname Lookups'),
             'identityThreshold' => Yii::t('marketing','Identity Threshold'),

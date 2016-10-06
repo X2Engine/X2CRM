@@ -103,41 +103,10 @@ ActivitiesController.prototype.setUpPublisher = function () {
     });
 };
 
-ActivitiesController.prototype.setUpLocation = function () {
-    var form$ = $('#geoCoordsForm');
-    $('<input />').attr('type', 'hidden')
-          .attr('name', "YII_CSRF_TOKEN")
-          .attr('value', x2.csrfToken)
-          .appendTo('#geoCoordsForm');
-    x2.mobileForm.submitWithFiles (
-        form$, 
-        function (data) {
-            if (x2.main.isPhoneGap && x2touch && x2touch.API && x2touch.API.getPlatform) {
-              x2touch.API.getCurrentPosition(function(position) {
-                  var pos = {
-                     lat: position.coords.latitude,
-                     lon: position.coords.longitude
-                   };
-
-                   $.mobile.activePage.find ('#geoCoords').val(JSON.stringify (pos));
-              }, function (error) {
-                  alert('code: '    + error.code    + '\n' +
-                        'message: ' + error.message + '\n');
-              }, {});         
-            }
-        }, function (jqXHR, textStatus, errorThrown) {
-            $.mobile.loading ('hide');
-            x2.main.alert (textStatus, 'Error');
-        }
-    );
-};
-
-
 ActivitiesController.prototype.init = function () {
     x2.RecordIndexControllerBase.prototype.init.call (this);
     this.setUpEventClick ();
     this.setUpPublisher ();
-    this.setUpLocation ();
 };
 
 return ActivitiesController;

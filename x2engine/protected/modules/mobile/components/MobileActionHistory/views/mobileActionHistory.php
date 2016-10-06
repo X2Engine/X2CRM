@@ -86,11 +86,10 @@ if (!$this->refresh && $hasCreateAccess) {
                 <span><?php echo X2Html::fa('file'); ?></span>
                 <div>
                     <?php
-                    echo CHtml::encode(Yii::t('mobile',
-                                    'Add file attachment'));
+                    echo CHtml::encode(Yii::t('mobile', 'Add file attachment'));
                     ?>
                 </div>
-                <?php
+            <?php
         }
         $action = new Actions;
         $form = $this->beginWidget('MobileActiveForm',
@@ -106,13 +105,15 @@ if (!$this->refresh && $hasCreateAccess) {
                 'type' => $type
             ))
         ));
-        echo $form->mobileCoordinates();
+        echo $form->mobileCoordinates ();
+        echo $form->mobileLocationCoordinates ();
         if ($type === 'attachments') {
             echo $form->fileField($action, 'upload');
         } else {
             echo $form->textField($action, 'actionDescription',
                     array(
                 'placeholder' => 'Add a comment...',
+                'class' => 'location-tag',
             ));
         }
         $this->endWidget();

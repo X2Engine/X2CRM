@@ -86,19 +86,20 @@ $this->onPageLoad ("
             )
         ));
         echo $form->mobileCoordinates ();
+        echo $form->mobileLocationCoordinates ();
         ?>
             <div class='photo-attachments-container'>
             </div>
             <div class='photo-attach-button icon-button'>
-            <?php
-            echo X2Html::fa ('camera');
-            ?>
+                <?php
+                    echo X2Html::fa ('camera');
+                ?>
             </div>
             <?php
-            echo $form->textField ($formModel, 'text', array (
-                'placeholder' => 'Add a reply...',
-                'class' => 'reply-box',
-            ));
+                echo $form->textField ($formModel, 'text', array (
+                    'placeholder' => 'Add a reply...',
+                    'class' => 'reply-box',
+                ));
             ?>
              <div class='submit-button disabled'><?php  
                 echo CHtml::encode (Yii::t('mobile', 'Post'));

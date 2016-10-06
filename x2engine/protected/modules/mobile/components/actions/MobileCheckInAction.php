@@ -35,7 +35,7 @@
  * "Powered by X2Engine".
  **********************************************************************************/
 
-class MobilePublisherAction extends MobileAction {
+class MobileCheckInAction extends MobileAction {
     public $pageDepth = 1;
 
     public function run () {
@@ -43,11 +43,13 @@ class MobilePublisherAction extends MobileAction {
         $profile = Yii::app()->params->profile;
         $settings = Yii::app()->settings;
         $creds = Credentials::model()->findByPk($settings->googleCredentialsId);
-        $decodedResponse = '';  
+        $key = null;
+        if($creds && $creds->auth && $creds->auth->apiKey){
+            $key = $creds->auth->apiKey;
+        }
         if (isset ($_POST['geoCoords']) && isset ($_POST['geoLocationCoords'])) {
             $decodedResponse = $_POST['geoLocationCoords'];
-            if ($creds && $creds->auth && $creds->auth->apiKey && strcmp($decodedResponse,'set') == 0){
-                $key = $creds->auth->apiKey; 
+            if ($key && $decodedResponse === 'set'){
                 $decodedResponse = json_decode($_POST['geoCoords'],true);
                 //https://davidwalsh.name/curl-post
                 //extract data from the post
@@ -68,12 +70,20 @@ class MobilePublisherAction extends MobileAction {
                 //$decodedResult = json_decode($result, true);
                 //$newResult = json_encode(array($decodedResult, $key));
                 echo $result;
-                
                 curl_close($ch);
 
+                Yii::app()->end ();
+            }        
+        }
+
+        if (isset ($_POST['EventPublisherFormModel'])) {
+            $decodedResponse = json_decode(filter_input(INPUT_POST, 'geoCoords', FILTER_DEFAULT),true);
+            $location = Yii::app()->params->profile->user->logLocation('mobileActivityPost', 'POST');
+            $decodedResult = null;
+            if($key && !empty($decodedResponse)){
                 /* 
-                 * TODO: Get static map here instead of in the front end?
-                 * 
+                 * get static map here
+                 */
                 $url = 'https://maps.googleapis.com/maps/api/staticmap?center=' . 
                         $decodedResponse['lat'] . ',' . $decodedResponse['lon'] .
                         '&zoom=13&size=600x300&maptype=roadmap&markers=color:blue%7Clabel:%7C' .
@@ -88,49 +98,19 @@ class MobilePublisherAction extends MobileAction {
 
                 //execute post
                 $result = curl_exec($ch);
-                //close connection
-                echo $result;
-                curl_close($ch);
-                */
-                Yii::app()->end ();
-            }        
-        }
-
-        if (isset ($_POST['EventPublisherFormModel'])) {
-            if (isset($_POST['geoCoords'])){
-                $location = Yii::app()->params->profile->user->logLocation('mobileActivityPost', 'POST');
-                /* 
-                 * get static map here
-                 * TODO: check for bad response
-                 */
-                if (strcmp("",$decodedResponse) != 0) {
-                    $url = 'https://maps.googleapis.com/maps/api/staticmap?center=' . 
-                            $decodedResponse['lat'] . ',' . $decodedResponse['lon'] .
-                            '&zoom=13&size=600x300&maptype=roadmap&markers=color:blue%7Clabel:%7C' .
-                            $decodedResponse['lat'] . ',' . $decodedResponse['lon'] .
-                            '&key=' . $key;
-                    //open connection
-                    $ch = curl_init();
-
-                    //set the url, number of POST vars, POST data
-                    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-                    curl_setopt($ch,CURLOPT_URL, $url);
-
-                    //execute post
-                    $result = curl_exec($ch);
+                $http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+                if($http_code === 200){
                     //close connection
                     $decodedResult = $result;
-                    curl_close($ch);
-                    $model->setAttributes ($_POST['EventPublisherFormModel']);
-                    if (isset ($_FILES['EventPublisherFormModel'])) {
-                        $model->photo = CUploadedFile::getInstance ($model, 'photo');
-                    }   
                 }
+                curl_close($ch);
             }
+            
             $model->setAttributes ($_POST['EventPublisherFormModel']);
-            if (isset ($_FILES['EventPublisherFormModel'])) {
+            if ($decodedResult && isset ($_FILES['EventPublisherFormModel'])) {
                 $model->photo = CUploadedFile::getInstance ($model, 'photo');
             }
+            
             //AuxLib::debugLogR ('validating');
             if ($model->validate ()) {
                 //AuxLib::debugLogR ('valid');
@@ -142,44 +122,23 @@ class MobilePublisherAction extends MobileAction {
                     'text' => $model->text,
                     'photo' => $model->photo
                 ), false);
-                if(isset ($_FILES['EventPublisherFormModel']) || strcmp("",$decodedResponse) == 0) {
-                    if ($event->save ()) {
-                       if (!isset ($_FILES['EventPublisherFormModel'])) {
-                           //AuxLib::debugLogR ('saved');
-                           $this->controller->redirect (
-                               $this->controller->createAbsoluteUrl (
-                                   '/profile/mobileActivity'));
-                       } else {
-                           echo CJSON::encode (array ( 
-                               'redirectUrl' => $this->controller->createAbsoluteUrl (
-                                   '/profile/mobileActivity'),
-                           ));
-                           Yii::app()->end ();
-                       }
-                   } else {
-                       //AuxLib::debugLogR ('invalid');
-                       throw new CHttpException (500, implode (';', $event->getAllErrorMessages ()));
-                   }                   
-                } else {
-                    if ($event->saveRaw ($profile,$decodedResponse)) {
-                        if (!isset ($_FILES['EventPublisherFormModel'])) {
-                            //AuxLib::debugLogR ('saved');
-                            $this->controller->redirect (
-                                $this->controller->createAbsoluteUrl (
-                                    '/profile/mobileActivity'));
-                        } else {
-                            echo CJSON::encode (array ( 
-                                'redirectUrl' => $this->controller->createAbsoluteUrl (
-                                    '/profile/mobileActivity'),
-                            ));
-                            Yii::app()->end ();
-                        }
+                if ($event->saveRaw ($profile,$decodedResult)) {
+                    if (!isset ($_FILES['EventPublisherFormModel'])) {
+                        //AuxLib::debugLogR ('saved');
+                        $this->controller->redirect (
+                            $this->controller->createAbsoluteUrl (
+                                '/profile/mobileActivity'));
                     } else {
-                        //AuxLib::debugLogR ('invalid');
-                        throw new CHttpException (500, implode (';', $event->getAllErrorMessages ()));
+                        echo CJSON::encode (array ( 
+                            'redirectUrl' => $this->controller->createAbsoluteUrl (
+                                '/profile/mobileActivity'),
+                        ));
+                        Yii::app()->end ();
                     }
+                } else {
+                    //AuxLib::debugLogR ('invalid');
+                    throw new CHttpException (500, implode (';', $event->getAllErrorMessages ()));
                 }
-
             } else {
                 if (isset ($_FILES['EventPublisherFormModel'])) {
                     throw new CHttpException (500, implode (';', $event->getAllErrorMessages ()));
@@ -189,7 +148,7 @@ class MobilePublisherAction extends MobileAction {
             }
         }
         $this->controller->render (
-            $this->pathAliasBase.'views.mobile.eventPublisher', array (
+            $this->pathAliasBase.'views.mobile.mobileCheckInPublisher', array (
                 'profile' => $profile,
                 'model' => $model,
             )

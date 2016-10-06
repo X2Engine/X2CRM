@@ -69,6 +69,27 @@ class AdminTest extends X2DbTestCase {
         Yii::app()->settings->save ();
         return parent::tearDownAfterClass ();
     }
+    
+    public function testLocationSettings() {
+        $admin = Yii::app()->settings;
+        $admin->locationTrackingSwitch = 1;
+        $this->assertEquals(1,$admin->locationTrackingSwitch);
+        
+        //Test vincentyGreatCircleDistance formula
+        $admin->locationTrackingDistance = 5;
+        //$earthRadius Mean earth radius in [km]
+        $distanceFromTwoPoints = LocationUtil::vincentyGreatCircleDistance(36.9914, 122.0609, 37.3875, 122.0575, $earthRadius = 6371);
+        $this->assertGreaterThan($admin->locationTrackingDistance,$distanceFromTwoPoints);
+        $distanceFromTwoPointsEq = LocationUtil::vincentyGreatCircleDistance(37.3875, 123.0575, 37.3875, 123.114, $earthRadius = 6371);
+        // testing if it's within .01 km of 5 km; the standard of error is about 10.006900992 m 
+        $this->assertGreaterThan(4.99,$distanceFromTwoPointsEq);
+        $this->assertLessThan(5.01,$distanceFromTwoPointsEq);
+        
+        $admin->locationTrackingFrequency = 5;
+        $minutes = 1000 * 60 * $admin->locationTrackingFrequency; // in miliseconds
+        $this->assertEquals(300000,$minutes);
+        
+    }
 
     public function testCountEmail() {
         $admin = Yii::app()->settings;

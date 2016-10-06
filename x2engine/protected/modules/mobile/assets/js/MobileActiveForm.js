@@ -41,6 +41,7 @@ function MobileActiveForm (argsDict) {
     var defaultArgs = {
         DEBUG: x2.DEBUG && false,
         photoAttrName: null,
+        locationAttrName: null,
         redirectUrl: null,
         submitButtonSelector: null,
         validate: function () { return true; }
@@ -55,36 +56,10 @@ MobileActiveForm.prototype.setUpPhotoSubmission = function () {
     var that = this;
     this.form$ = $(this.formSelector);
     this.submitButton$ = this.submitButtonSelector ? 
-        $(this.submitButtonSelector) :
-        this.form$.find ('.submit-button');
+    $(this.submitButtonSelector) : this.form$.find ('.submit-button');
+    var checkinInput$ = $.mobile.activePage.find ('#geoLocationCoords').length;
 
     this.submitButton$.click (function () {
-       //https://cordova.apache.org/docs/en/latest/reference/cordova-plugin-geolocation/index.html
-        // onSuccess Callback
-        // This method accepts a Position object, which contains the
-        // current GPS coordinates
-        // onError Callback receives a PositionError object
-        if (x2.main.isPhoneGap && x2touch && x2touch.API && x2touch.API.getPlatform) {
-            x2touch.API.getCurrentPosition(function(position) {
-                /*alert('Latitude: '          + position.coords.latitude          + '\n' +
-                      'Longitude: '         + position.coords.longitude         + '\n' +
-                      'Altitude: '          + position.coords.altitude          + '\n' +
-                      'Accuracy: '          + position.coords.accuracy          + '\n' +
-                      'Altitude Accuracy: ' + position.coords.altitudeAccuracy  + '\n' +
-                      'Heading: '           + position.coords.heading           + '\n' +
-                      'Speed: '             + position.coords.speed             + '\n' +
-                      'Timestamp: '         + position.timestamp                + '\n');*/
-                var pos = {
-                   lat: position.coords.latitude,
-                   lon: position.coords.longitude
-                 };
- 
-                 $.mobile.activePage.find ('#geoCoords').val(JSON.stringify (pos));
-            }, function (error) {
-                alert('code: '    + error.code    + '\n' +
-                      'message: ' + error.message + '\n');
-            }, {});         
-        }
         if (!that.validate ()) {
             return;
         } else {
@@ -121,8 +96,7 @@ MobileActiveForm.prototype.setUpPhotoSubmission = function () {
                 that.form$.submit ();
             }
         }
-    });
-
+    });   
     var cameraButton$ = $.mobile.activePage.find ('.photo-attach-button');
     var attachmentsContainer$ = this.form$.find ('.photo-attachments-container');
 
@@ -140,6 +114,7 @@ MobileActiveForm.prototype.setUpPhotoSubmission = function () {
         failure: function (message) {
         }
     });
+    
 
 };
 
