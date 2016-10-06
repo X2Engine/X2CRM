@@ -84,7 +84,7 @@ SettingsController.prototype.setUpForm = function () {
                  };
 
                 $.mobile.activePage.find ('#geoCoords').val(
-                    "latitiude: " + pos['lat'] + ", " + "longitude: " + pos['lon']
+                    "latitude: " + pos['lat'] + ", " + "longitude: " + pos['lon']
                 );
             }, function (error) {
                 alert('code: '    + error.code    + '\n' +
