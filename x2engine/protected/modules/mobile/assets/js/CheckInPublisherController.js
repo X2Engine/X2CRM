@@ -78,7 +78,7 @@ CheckInPublisherController.prototype.setUpForm = function () {
                                     + currentdate.getDate()  + "/" 
                                     + currentdate.getFullYear() + " @ "  
                                     + currentdate.getHours() + ":"  
-                                    + currentdate.getMinutes()
+                                    + currentdate.getMinutes();
                    $.mobile.activePage.find ('.event-text-box').val("Checking in at "+theAddress+ " "+datetime);
                     alert("Thanks for checking in!");
                     $.mobile.activePage.find('.post-event-button').trigger( "click" );
