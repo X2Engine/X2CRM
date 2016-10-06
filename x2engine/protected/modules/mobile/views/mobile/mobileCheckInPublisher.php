@@ -55,7 +55,7 @@ $this->onPageLoad ("
 
 <div class='refresh-content' data-refresh-selector='.header-content-right'>
     <div class='header-content-right'>
-        <div class='post-event-button disabled'>
+        <div class='post-event-button disabled' style='visibility: hidden;'>
         <?php
         echo CHtml::encode (Yii::t('mobile', 'Post'));
         ?>
@@ -82,8 +82,8 @@ $form = $this->beginWidget ('MobileActiveForm', array (
     <?php
     
     echo $form->textArea ($model, 'text', array (
-        'placeholder' =>'Add a post...',
-        'class' => 'event-text-box',
+        'placeholder' =>'Getting Location...',
+        'class' => 'event-text-box'
     ));
     echo $form->mobileCoordinates ();
     echo $form->mobileLocationCoordinates ();
