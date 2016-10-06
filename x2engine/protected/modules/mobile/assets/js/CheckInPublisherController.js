@@ -73,12 +73,14 @@ CheckInPublisherController.prototype.setUpForm = function () {
                    var data = JSON.parse(response);
                    var theAddress = data['results'][0]['formatted_address'];
                    //http://stackoverflow.com/questions/10211145/getting-current-date-and-time-in-javascript
-                   var currentdate = new Date(); 
+                   var currentdate = new Date();
+                   var minutes = currentdate.getMinutes();
+                   if (minutes < 10) minutes = "0" + minutes;
                     var datetime = " | " + (currentdate.getMonth()+1) + "/"
                                     + currentdate.getDate()  + "/" 
                                     + currentdate.getFullYear() + " @ "  
                                     + currentdate.getHours() + ":"  
-                                    + currentdate.getMinutes();
+                                    + minutes;
                    $.mobile.activePage.find ('.event-text-box').val("Checking in at "+theAddress+ " "+datetime);
                     alert("Thanks for checking in!");
                     $.mobile.activePage.find('.post-event-button').trigger( "click" );
