@@ -79,7 +79,13 @@ echo X2Html::orderedList (array (
                 Yii::t('app', 'From the "APIs & auth" section in the left sidebar, select "APIs."')
             ),
             CHtml::encode (
-                Yii::t('app', 'Search for and enable the Calendar and Drive APIs.')
+                Yii::t('app', 'Search for and enable the following APIs:')
+            ).
+            X2Html::orderedList(array(
+                'CalDav API',
+                'Google Calendar API',
+                'Google Drive API',
+                )
             ),
             CHtml::encode (
                 Yii::t('app', 'From the "APIs & auth" section in the left sidebar, select '.
@@ -120,8 +126,13 @@ echo X2Html::orderedList (array (
                 Yii::t('app', 'From the "APIs & auth" section in the left sidebar, select "APIs."')
             ),
             CHtml::encode (
-                Yii::t('app', 'Search for and enable the Google+, Google Maps, and Google Maps Geocoding APIs.')
-            ),
+                Yii::t('app', 'Search for and enable following APIs.')
+            ).X2Html::orderedList(array(
+                'Google Maps Geocoding API', 
+                'Google Static Maps API',
+                'Google Maps JavaScript API',
+                'Google+ API',
+            )),
             CHtml::encode (
                 Yii::t('app', 'From the "APIs & auth" section in the left sidebar, select '.
                     '"Credentials."')
