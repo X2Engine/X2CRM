@@ -113,6 +113,11 @@ if (Yii::app()->params->isPhoneGap) {
             echo X2Html::fa ('camera');
         ?>
     </div>
+    <div class='location-attach-button icon-button'>
+        <?php
+            echo X2Html::fa ('fa-location-arrow');
+        ?>
+    </div>
 </div>
 <?php
 }
