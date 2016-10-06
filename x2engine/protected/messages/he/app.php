@@ -1186,4 +1186,5 @@
   'Search for and enable following APIs.' => 'חפש ולאפשר API הבאים.',
   'Copy the API key into the Google+ and Google Maps Integration section {below}.' => 'העתק את מפתח API לתוך הקטע Google+ ו- Google Maps אינטגרציה {below} .',
   'Google+ and Google Maps Integration' => 'שילוב של Google+ ו- Google Maps',
+  'Release Contributors' => 'תורם שחרור',
 );

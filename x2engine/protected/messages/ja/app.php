@@ -1186,4 +1186,5 @@
   'Search for and enable following APIs.' => '検索し、次のAPIを有効にします。',
   'Copy the API key into the Google+ and Google Maps Integration section {below}.' => 'Google+とGoogleマップの統合セクションにAPIキーをコピー{below} 。',
   'Google+ and Google Maps Integration' => 'Google+とGoogleマップの統合',
+  'Release Contributors' => 'リリースの貢献者',
 );

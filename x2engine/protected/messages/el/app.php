@@ -1186,4 +1186,5 @@
   'Search for and enable following APIs.' => 'Αναζήτηση και να ενεργοποιήσετε ακόλουθα APIs.',
   'Copy the API key into the Google+ and Google Maps Integration section {below}.' => 'Αντιγράψτε το κλειδί API στο τμήμα Google+ και το Google Maps Ενσωμάτωση {below} .',
   'Google+ and Google Maps Integration' => 'Ενσωμάτωση Google+ και το Google Maps',
+  'Release Contributors' => 'απελευθέρωση Συντελεστές',
 );

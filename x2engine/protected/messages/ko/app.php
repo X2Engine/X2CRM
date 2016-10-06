@@ -1186,4 +1186,5 @@
   'Search for and enable following APIs.' => '검색 및 다음 API를 할 수 있습니다.',
   'Copy the API key into the Google+ and Google Maps Integration section {below}.' => 'Google+와 Google지도 통합 섹션에 API 키를 복사 {below} .',
   'Google+ and Google Maps Integration' => 'Google+와 Google지도 통합',
+  'Release Contributors' => '릴리스 참여자',
 );

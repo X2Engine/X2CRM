@@ -1186,4 +1186,5 @@
   'Search for and enable following APIs.' => '搜索并启用以下API。',
   'Copy the API key into the Google+ and Google Maps Integration section {below}.' => 'API密钥复制到Google+和谷歌地图整合部分{below} 。',
   'Google+ and Google Maps Integration' => 'Google+和谷歌地图整合',
+  'Release Contributors' => '发布者',
 );

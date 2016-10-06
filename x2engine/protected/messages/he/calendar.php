@@ -81,6 +81,6 @@
   'You are RSVPing for the following event:' => 'אתה RSVPing עבור האירוע הבא:',
   'What:' => 'מה:',
   'When:' => 'מתי:',
-  'Please select one of the options below to confirm your status.' => '',
+  'Please select one of the options below to confirm your status.' => 'אנא בחר אחת מהאפשרויות להלן כדי לאשר את מצבך.',
   'Maybe' => 'אולי',
 );

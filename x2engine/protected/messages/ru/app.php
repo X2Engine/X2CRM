@@ -1186,4 +1186,5 @@
   'Web: {website}' => 'Веб: {website} - {website}',
   'Email: {email}' => 'Электронная почта: {email}',
   'Manage X2CRM user account history, including failed and successful logins' => 'Управление X2CRM историю учетных записей пользователей, в том числе потерпел неудачу и успешных входов в систему',
+  'Release Contributors' => 'Выпуск Авторы',
 );

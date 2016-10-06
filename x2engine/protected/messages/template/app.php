@@ -1247,4 +1247,5 @@
   'Search for and enable following APIs.' => '',
   'Copy the API key into the Google+ and Google Maps Integration section {below}.' => '',
   'Google+ and Google Maps Integration' => '',
+  'Release Contributors' => '',
 );

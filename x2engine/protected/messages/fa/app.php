@@ -1186,4 +1186,5 @@
   'Search for and enable following APIs.' => 'جستجو و فعال API های زیر است.',
   'Copy the API key into the Google+ and Google Maps Integration section {below}.' => 'کلید API را کپی کنید به بخش گوگل پلاس و ادغام نقشه های گوگل {below} .',
   'Google+ and Google Maps Integration' => 'ادغام Google+ و Google Maps',
+  'Release Contributors' => 'انتشار همکاران',
 );
