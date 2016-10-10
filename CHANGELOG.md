@@ -1,5 +1,23 @@
-# 6.0.4 #
+# 6.5 #
 {releaseDate}
+* General Changelog / Developer Notes
+  * New Location tracking features
+    * Log locations when Contacts open emails, visit your webpage, etc.
+    * Log locations of users when they log in to the system
+    * Log periodic location updates from X2Touch mobile
+    * Settings page to configure and enable user location logging
+  * Google Maps API Re-enabled
+  * Jasper Reporting Integration
+  * Two-way Google Calendar sync
+  * Support for multiple user calendars
+  * Miscellaneous bug fixes and improvements
+* Tracked Bug Fixes:  
+  * [4858](http://x2software.com/index.php/bugReports/4858): The system is unable to find the requested action "configureMyInbox".  
+  * [4923](http://x2software.com/index.php/bugReports/4923): Trying to get property of non-object  
+  * [5288](http://x2software.com/index.php/bugReports/5288): Undefined variable: success  
+
+# 6.0.4 #
+8/12/2016
 * General Changelog / Developer Notes
   * More improvements to Admin control panel
   * Fix inline email issue on Opportunities

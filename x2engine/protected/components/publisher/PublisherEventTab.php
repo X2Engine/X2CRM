@@ -40,7 +40,7 @@
  */
 class PublisherEventTab extends PublisherTimeTab {
     
-    public $title = 'New Event';
+    public $title = 'Calendar Event';
 
     public $tabId = 'new-event'; 
 

@@ -610,4 +610,12 @@
   'Select All' => 'すべて選択',
   'User Login History' => 'ユーザーログイン履歴',
   'Delete Record' => 'レコードを削除します',
+  'All Day' => '一日中',
+  'Jasper Server Integration' => 'ジャスパーサーバ統合',
+  'Longitude' => '経度',
+  'Date/Time' => '日付時刻',
+  'Stated Address' => '記載された住所',
+  'Check-in comment' => 'チェックインのコメント',
+  'Email Opened' => 'メール開設',
+  'Email Clicked' => 'メールのClicked',
 );

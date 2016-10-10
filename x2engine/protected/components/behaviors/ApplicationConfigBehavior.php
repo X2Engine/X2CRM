@@ -259,6 +259,7 @@ class ApplicationConfigBehavior extends CBehavior {
                 Yii::import('application.components.X2Settings.*');
                 Yii::import('application.components.X2MessageSource');
                 Yii::import('application.components.X2Html');
+                Yii::import('application.components.behaviors.CalendarInviteBehavior');
                 Yii::import('application.components.behaviors.JSONEmbeddedModelFieldsBehavior');
                 Yii::import('application.components.behaviors.MergeableBehavior');
                 Yii::import('application.components.behaviors.TransformedFieldStorageBehavior');

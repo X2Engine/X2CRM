@@ -170,7 +170,6 @@
   'JSON' => 'JSON',
   'This ID is unique to this email. Conditions checking for email opens can refer to this ID' => 'این ID منحصر به فرد به این ایمیل است. شرایط برای چک کردن ایمیل باز می شود می توانید به این ID مراجعه',
   'Checking this box will cause the email to be attached to the record associated with this flow, if it exists.' => 'چک کردن این کادر باعث خواهد شد به ایمیل به رکورد مرتبط با این جریان متصل، در صورت وجود.',
-  'Email Opened' => 'ایمیل باز',
   'Inbound Email' => 'ایمیل های ورودی',
   'Outbound Email' => 'عازم ناحیه دور دست ایمیل',
   'Triggers when an inbound email is received.' => 'باعث هنگامی که یک ایمیل های ورودی دریافت کرده است.',

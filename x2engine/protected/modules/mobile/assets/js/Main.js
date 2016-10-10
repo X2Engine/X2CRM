@@ -83,6 +83,19 @@ Main.prototype.getController = function () {
         new x2.Controller;
 };
 
+/*
+ * http://stackoverflow.com/questions/10730362/get-cookie-by-name
+ * @func: function to get Cookie
+ */
+Main.prototype.getCookie = function (name) {
+    var value = "; " + document.cookie;
+    var parts = value.split("; " + name + "=");
+    if (parts.length == 2){
+        return parseInt(parts.pop().split(";").shift(),10);
+    } 
+    return null;
+};
+
 Main.prototype.updateHeader = function () {
     var that = this;
 
@@ -125,7 +138,6 @@ Main.prototype.configurePageShow = function () {
     this.onPageShow (function(){       
         that.prevPage$ = that.activePage$;
         that.activePage$ = $.mobile.activePage ? $('#' + $.mobile.activePage.attr ('id')) : null;
-
         that.updateHeader ();
         that.updatePanel ();
     });
@@ -197,6 +209,55 @@ Main.prototype.refreshPage = function (data) {
         'change', url);
 };
 
+Main.prototype.setUpLocation = function () {
+    var that = this;
+    var form$ = $('#geoCoordsForm');   
+    $('<input />').attr('type', 'hidden')
+          .attr('name', "YII_CSRF_TOKEN")
+          .attr('value', x2.csrfToken)
+          .appendTo('#geoCoordsForm');
+
+    var locationTrackingFrequency = this.getCookie("locationTrackingFrequency");
+    if (locationTrackingFrequency === null){
+        locationTrackingFrequency = 60; //every hour
+    } 
+    var locationTrackingSwitch = this.getCookie("locationTrackingSwitch");
+    if (locationTrackingSwitch === null){
+        locationTrackingSwitch = 0; //every hour
+    } 
+   var phpSessionId = this.getCookie("PHPSESSID");
+    
+   if(locationTrackingSwitch === 1 && phpSessionId !== null) {
+        setInterval(function() {
+            //your jQuery ajax code
+            if (x2.main.isPhoneGap) {
+              x2touch.API.getCurrentPosition(function(position) {
+                  var pos = {
+                     lat: position.coords.latitude,
+                     lon: position.coords.longitude
+                   };
+
+                   $.mobile.activePage.find ('#geoCoords').val(JSON.stringify (pos));
+              }, function (error) {
+                  alert('code: '    + error.code    + '\n' +
+                        'message: ' + error.message + '\n');
+              }, {});         
+            }
+            x2.mobileForm.submitWithFiles (
+                form$, 
+                function (data) {
+                    
+                }, function (jqXHR, textStatus, errorThrown) {
+                    $.mobile.loading ('hide');
+                    x2.main.alert (textStatus, 'Error');
+                }
+            );
+        }, 1000 * 60 * locationTrackingFrequency); 
+        // where locationTrackingFrequency is your every x minutes
+    }
+    
+};
+
 /**
  * Meant to be called after a page is fetched via ajax. Updates parts of the page with updated
  * version contained in server response.
@@ -207,7 +268,6 @@ Main.prototype.refreshContent = function () {
     if (!activePage$) return null;
     //console.log ('refreshContent');
     var newContent$ = $('.refresh-content');
-
     newContent$.each (function () {
         // data attribute contains selector of elements to update
         var updateSelector = $(this).attr ('data-refresh-selector'); 
@@ -555,6 +615,7 @@ Main.prototype.init = function () {
         this.setUpBackButton (); 
     }
     this.fixedCornerButtonFixes (); 
+    this.setUpLocation ();
 };
 
 return Main;

@@ -2540,6 +2540,48 @@ class AdminController extends X2Controller {
       } */
 
     /**
+     * Page for User History
+     */
+    public function actionUserLocationHistory() {
+        $locationHistoryDataProvider  = new CActiveDataProvider ('Locations', array(
+            'sort' => array('defaultOrder' => 'createDate DESC'),
+        ));
+        $users = new CActiveDataProvider ('User', array(
+            'sort' => array('defaultOrder' => 'id ASC'),
+        ));
+        
+        $this->render ('userLocationHistory', array(
+            'locationHistoryDataProvider' => $locationHistoryDataProvider,
+            'users' => $users,
+        ));
+    }
+    
+    public function actionLocationSettings() {
+
+        $admin = &Yii::app()->settings;
+        if (isset($_POST['Admin'])) {
+
+            $oldFormat = $admin->contactNameFormat;
+            $admin->attributes = $_POST['Admin'];
+            foreach ($_POST['Admin'] as $attribute => $value) {
+                if ($admin->hasAttribute($attribute)) {
+                    $admin->$attribute = $value;
+                }
+            }
+            $admin->timeout *= 60; //convert from minutes to seconds
+
+
+            if ($admin->save()) {
+                $this->redirect('locationSettings');
+            }
+        }
+        $admin->timeout = ceil($admin->timeout / 60);
+        $this->render('locationSettings', array(
+            'model' => $admin,
+        ));
+    }
+
+    /**
      * Control general settings for the software.
      *
      * This method renders a page with settings for a variety of admin options.
@@ -2710,6 +2752,18 @@ class AdminController extends X2Controller {
             $params = array('id' => $credId);
         } else {
             $params = array('class' => 'GoogleProject');
+        }
+        $url = Yii::app()->createUrl('/profile/createUpdateCredentials', $params);
+        $this->redirect($url);
+    }
+
+    public function actionJasperIntegration() {
+        $credId = Yii::app()->settings->jasperCredentialsId;
+
+        if ($credId && ($cred = Credentials::model()->findByPk($credId))) {
+            $params = array('id' => $credId);
+        } else {
+            $params = array('class' => 'JasperServer');
         }
         $url = Yii::app()->createUrl('/profile/createUpdateCredentials', $params);
         $this->redirect($url);
@@ -4631,10 +4685,9 @@ class AdminController extends X2Controller {
                     else
                         continue;
 
-                    
                     // Locate an existing model to update, if requested, otherwise create
                     // a new model to populate
-                    if (isset($matchAttribute) && $_SESSION['updateRecords']) {
+                    if (isset($matchAttribute) && $_SESSION['updateRecords'] && !empty($importAttributes[$matchAttribute])) {
                         $model = X2Model::model($modelName)->findByAttributes (array(
                             $_SESSION['matchAttribute'] => $importAttributes[$matchAttribute]
                         ));
@@ -4642,11 +4695,8 @@ class AdminController extends X2Controller {
                         if (is_null($model))
                             $model = new $modelName;
                     } else {
-                    
                         $model = new $modelName;
-                    
                     }
-                    
 
                     foreach ($metaData as $attribute) {
                         if ($importMap[$attribute] === 'id')
@@ -5292,6 +5342,11 @@ class AdminController extends X2Controller {
                     $tempAttributes['theme'] = json_encode($record->theme);
                 }
                 $tempAttributes[] = $model;
+                if ($model === 'Admin') {
+                    $tempAttributes['googleCredentialsId'] = null;
+                    $tempAttributes['twitterCredentialsId'] = null;
+                    $tempAttributes['jasperCredentialsId'] = null;
+                }
                 // Export the data to CSV
                 fputcsv($fp, $tempAttributes, $this->importDelimeter, $this->importEnclosure);
             }
@@ -6647,7 +6702,7 @@ class AdminController extends X2Controller {
         //No valid duplicate clusters found
         echo 1;
     }
-    
 
+    
     
 }

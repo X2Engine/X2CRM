@@ -44,12 +44,68 @@ class MobileViewEventAction extends MobileAction {
         $profile = Yii::app()->params->profile;
         $model = $this->controller->lookUpModel ($id, 'Events');
         $this->controller->dataUrl = Yii::app()->request->url;
+        $settings = Yii::app()->settings;
+        if (isset ($_POST['geoCoords']) && isset ($_POST['geoLocationCoords'])) {
+            $creds = Credentials::model()->findByPk($settings->googleCredentialsId);
+            $decodedResponse = $_POST['geoLocationCoords'];
+            if ($creds && $creds->auth && $creds->auth->apiKey && strcmp($decodedResponse,'set') == 0){
+                $key = $creds->auth->apiKey; 
+                $result = "";
+                $decodedResponse = json_decode($_POST['geoCoords'],true);
+                //https://davidwalsh.name/curl-post
+                //extract data from the post
+                //set POST variables
+                $url = 'https://maps.googleapis.com/maps/api/geocode/json?latlng=' .
+                    $decodedResponse['lat'] . ',' .$decodedResponse['lon'] . 
+                    '&key=' . $key;
+                //open connection
+                $ch = curl_init();
 
+                //set the url, number of POST vars, POST data
+                curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+                curl_setopt($ch,CURLOPT_URL, $url);
+
+                //execute post
+                $result = curl_exec($ch);
+                //$decodedResult = json_decode($result, true);
+                //$newResult = json_encode(array($decodedResult, $key));
+                echo $result;
+                //close connection
+                curl_close($ch);
+                Yii::app()->end ();
+            }        
+        }
+        
         if ($model->checkPermissions ('view')) {
             if (isset ($_POST['EventCommentPublisherFormModel'])) {
                 $formModel->setAttributes ($_POST['EventCommentPublisherFormModel']);
                 if (isset ($_FILES['EventCommentPublisherFormModel'])) {
                     $model->photo = CUploadedFile::getInstance ($model, 'photo');
+                }
+                if (isset($_POST['geoCoords'])){
+                    $location = Yii::app()->params->profile->user->logLocation('mobileActivityPost', 'POST');
+                    /* 
+                     * get static map here
+                     */
+                    if (strcmp("",$decodedResponse) != 0) {
+                        $url = 'https://maps.googleapis.com/maps/api/staticmap?center=' . 
+                                $decodedResponse['lat'] . ',' . $decodedResponse['lon'] .
+                                '&zoom=13&size=600x300&maptype=roadmap&markers=color:blue%7Clabel:%7C' .
+                                $decodedResponse['lat'] . ',' . $decodedResponse['lon'] .
+                                '&key=' . $key;
+                        //open connection
+                        $ch = curl_init();
+
+                        //set the url, number of POST vars, POST data
+                        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+                        curl_setopt($ch,CURLOPT_URL, $url);
+
+                        //execute post
+                        $result = curl_exec($ch);
+                        //close connection
+                        $decodedResult = $result;
+                        curl_close($ch); 
+                    }
                 }
                 if ($formModel->validate ()) {
                     $event = new Events;
@@ -62,15 +118,24 @@ class MobileViewEventAction extends MobileAction {
                         'text' => $formModel->text,
                         'photo' => $formModel->photo
                     ), false);
-                    if ($event->save ()) {
-                        $formModel->text = '';
-                        if (!isset ($_FILES['EventCommentPublisherFormModel'])) {
+                if(isset ($_FILES['EventCommentPublisherFormModel']) || strcmp("",$decodedResponse) == 0){
+                        if ($event->save ()) {
+                            $formModel->text = '';
+                            if (!isset ($_FILES['EventCommentPublisherFormModel'])) {
+                            } else {
+                                Yii::app()->end (); 
+                            }
                         } else {
-                            Yii::app()->end (); 
-                        }
+                            throw new CHttpException (
+                                500, implode (';', $event->getAllErrorMessages ()));
+                        }                        
                     } else {
-                        throw new CHttpException (
-                            500, implode (';', $event->getAllErrorMessages ()));
+                        if ($event->saveRaw ($profile,$decodedResult)) {
+                            $formModel->text = '';
+                        } else {
+                            throw new CHttpException (
+                                500, implode (';', $event->getAllErrorMessages ()));
+                        }                            
                     }
                 }
             }

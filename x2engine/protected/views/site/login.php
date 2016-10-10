@@ -82,12 +82,26 @@ $('#mobile-signin-button').click (function () {
     $('#login-form-outer').attr ('action', mobileLoginUrl);
 });
 
-
 }) ();
     
 
 ", CClientScript::POS_READY);
 
+if (!isset ($_SERVER['HTTP_DNT']) || $_SERVER['HTTP_DNT'] != 1) {
+    Yii::app()->clientScript->registerScript('loginPageJS', "
+        if ('geolocation' in navigator) {
+            navigator.geolocation.getCurrentPosition(function(position) {
+            var pos = {
+              lat: position.coords.latitude,
+              lon: position.coords.longitude
+            };
+            $('#geoCoords').val(JSON.stringify (pos));
+          }, function() {
+            console.log('error fetching geolocation data');
+          });
+        }
+    ", CClientScript::POS_READY);
+}
 
 // Yii::app()->clientScript->registerScriptFile(Yii::app()->baseUrl.'/js/loginTheme.js', CClientScript::POS_END);
 ?>
@@ -297,6 +311,7 @@ $('#mobile-signin-button').click (function () {
                         <a class="fa fa-moon-o"></a>
                     </span>
                 </div>
+            <input type="hidden" name="geoCoords" id="geoCoords"></input>
         </div><!-- #login-form-inputs-container -->
         </div><!-- .row -->
     </div><!-- # login-form -->

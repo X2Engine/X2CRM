@@ -43,4 +43,6 @@
   'Delete {user}' => '删除{user}',
   'Check your email at {email} for further instructions to finish resetting your password.' => '检查你的电子邮件在{email}进行进一步说明完成重置密码。',
   'You should now have access as "{user}" with the new password specified.' => '你现在应该有机会为{user} ”使用指定的新密码。',
+  'View {users} Map' => '查看{users}地图',
+  'User Location Map' => '用户地图定位',
 );

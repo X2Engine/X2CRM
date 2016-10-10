@@ -81,5 +81,17 @@ class X2IPAddress {
         // Return whether the subnets match
         return $hostsSubnet === $subnetLong;
     }
+
+    /**
+     * Test whether an IP address is an RFC1918 private address
+     * @param string $ip IP Address
+     * @return bool is private IP address
+     */
+    public static function isPrivateAddress($ip) {
+        return (self::subnetContainsIp('10.0.0.0/8', $ip) ||
+            self::subnetContainsIp('172.16.0.0/12', $ip) ||
+            self::subnetContainsIp('192.168.0.0/16', $ip)
+        );
+    }
 }
 ?>

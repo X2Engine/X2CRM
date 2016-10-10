@@ -42,6 +42,7 @@ class X2IPAddressTest extends X2TestCase {
             '192.168.1.*' => '192.168.1.0/24',
             '172.16.2.*' => '172.16.2.0/24',
             '10.10.*.*' => '10.10.0.0/16',
+            '10.*.*.*' => '10.0.0.0/8',
             '*.*.*.*' => '0.0.0.0/0',
         );
         foreach ($testNetworks as $wildcard => $cidr) {
@@ -67,5 +68,28 @@ class X2IPAddressTest extends X2TestCase {
         }
     }
 
+    public function testIsPrivateAddress() {
+        $validPrivateAddresses = array(
+            '192.168.1.21',
+            '192.168.99.1',
+            '172.16.1.23',
+            '10.128.0.10',
+            '10.0.0.100',
+        );
+        $invalidPrivateAddresses = array(
+            '193.168.1.21',
+            '192.12.0.1',
+            '172.15.1.23',
+            '11.128.0.10',
+            '9.0.0.100',
+            '8.8.4.4',
+        );
+        foreach ($validPrivateAddresses as $ip) {
+            $this->assertTrue (X2IPAddress::isPrivateAddress($ip));
+        }
+        foreach ($invalidPrivateAddresses as $ip) {
+            $this->assertFalse (X2IPAddress::isPrivateAddress($ip));
+        }
+    }
 }
 ?>

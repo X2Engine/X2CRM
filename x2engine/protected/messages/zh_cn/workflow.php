@@ -53,4 +53,5 @@
   'Financial Data Field' => '财务数据字段',
   'Select a model type' => '选择模型类型',
   'Select a field' => '选择字段',
+  'Default For' => '默认',
 );

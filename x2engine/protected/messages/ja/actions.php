@@ -4,7 +4,6 @@
   'Reminder' => 'リマインダー',
   'Complete Date' => '終了日',
   'Date Completed' => '日付が完了しました',
-  'All Day' => '終日',
   'Complete + New Action' => '完了する+新規アクション',
   'Uncomplete' => '不完全にする',
   'Overdue' => '期限を過ぎた',
@@ -120,4 +119,5 @@
   'Event Subtype' => 'イベントサブタイプ',
   'Event Status' => 'イベントステータス',
   'Calendar Color' => 'カレンダーの色',
+  'Enter email addresses, one per line' => 'メールアドレスを入力し、1あたりのライン',
 );

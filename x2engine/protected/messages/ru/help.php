@@ -1,4 +1,4 @@
 <?php return array (
-  'Icon Reference' => 'Список модулей',
+  'Icon Reference' => 'Справка по иконкам',
   'X2Engine Modules' => 'Модули X2Engine',
 );

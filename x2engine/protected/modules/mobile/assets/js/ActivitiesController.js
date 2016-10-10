@@ -1,3 +1,5 @@
+/* global x2, x2touch */
+
 /***********************************************************************************
  * X2CRM is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2016 X2Engine Inc.
@@ -77,11 +79,7 @@ ActivitiesController.prototype.setUpEventClick = function () {
 
 ActivitiesController.prototype.setUpPublisher = function () {
     var that = this;
-    //console.log ('setUpPublisher');
     this.publisher$ = $('.profile-mobileActivity .event-publisher-dummy');
-    //console.log ('this.publisher$ = ');
-    //console.log (this.publisher$);
-
     var clickedLink$ = null;
     this.publisher$.find ('a').click (function (evt) {
         if (x2.main.checkForExternalLink ($(this).attr ('href')) !== false) {

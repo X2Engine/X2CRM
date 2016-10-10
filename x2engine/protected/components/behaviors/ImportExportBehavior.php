@@ -773,20 +773,13 @@ class ImportExportBehavior extends CBehavior {
      * @param array $importedIds Array of ids from imported models
      */
     protected function saveImportedModel(X2Model $model, $modelName, $importedIds) {
-        if (!empty($model->id)) {
-            $lookup = X2Model::model(str_replace(' ', '', $modelName))->findByPk($model->id);
-            if (isset($lookup)) {
-                Relationships::model()->deleteAllByAttributes(array(
-                    'firstType' => $modelName,
-                    'firstId' => $lookup->id)
-                );
-                Relationships::model()->deleteAllByAttributes(array(
-                    'secondType' => $modelName,
-                    'secondId' => $lookup->id)
-                );
-                $lookup->delete();
-                unset($lookup);
-            }
+        if (!empty($model->id) && $_SESSION['updateRecords']) {
+            $tableName = X2Model::model($modelName)->tableName();
+            $criteria = new CDbCriteria;
+            $criteria->compare('id', $model->id);
+            Yii::app()->db->schema->commandBuilder
+                    ->createDeleteCommand($tableName, $criteria)
+                    ->execute();
         }
         // Save our model & create the import records and 
         // relationships. Passing $validate=false to CActiveRecord.save
@@ -1030,7 +1023,7 @@ class ImportExportBehavior extends CBehavior {
 
         for ($i = 0; $i < count($models); $i++) {
             $record = $models[$i];
-            if ($mappedId) {
+            if ($mappedId || ($_SESSION['updateRecords'] && !empty($record['id']))) {
                 $modelId = $models[$i]['id'];
             } else {
                 $modelId = $i + $firstNewId;
@@ -1063,14 +1056,22 @@ class ImportExportBehavior extends CBehavior {
 
             // Add all listed tags
             foreach ($_SESSION['tags'] as $tag) {
-                $tagModel = new Tags;
-                $tagModel->taggedBy = 'Import';
-                $tagModel->timestamp = $now;
-                $tagModel->type = $modelName;
-                $tagModel->itemId = $modelId;
-                $tagModel->tag = $tag;
-                $tagModel->itemName = $modelName;
-                $auxModelContainer['Tags'][] = $tagModel->attributes;
+                // Retrieve existing records to avoid duplicate tags, as we don't have the
+                // convenience of ActiveRecord while adding tags
+                if (!empty($record['id']) && $_SESSION['updateRecords'])
+                    $model = X2Model::model($modelName)->findByPk($record['id']);
+                else
+                    unset($model);
+                if (!isset($model) || $model->isNewRecord || !$model->hasTag($tag)) {
+                    $tagModel = new Tags;
+                    $tagModel->taggedBy = 'Import';
+                    $tagModel->timestamp = $now;
+                    $tagModel->type = $modelName;
+                    $tagModel->itemId = $modelId;
+                    $tagModel->tag = $tag;
+                    $tagModel->itemName = $modelName;
+                    $auxModelContainer['Tags'][] = $tagModel->attributes;
+                }
             }
             // Log a comment if one was requested
             if (!empty($_SESSION['comment'])) {

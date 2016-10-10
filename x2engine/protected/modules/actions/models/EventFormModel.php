@@ -43,11 +43,12 @@ class EventFormModel extends ActionFormModelBase {
     public $color;
     public $eventSubtype;
     public $eventStatus;
+    public $calendarId;
 
     public function rules () {
         return array_merge (parent::rules (), array (
             array (
-                'actionDescription, allDay, priority, color', 'required',
+                'actionDescription, calendarId, allDay, priority, color', 'required',
             ),
             array (
                 'completeDate,dueDate', 'validateDate',
@@ -66,6 +67,7 @@ class EventFormModel extends ActionFormModelBase {
             'actionDescription' => Yii::t('actions', 'Notes'),
             'dueDate' => Yii::t('actions', 'Start Date'),
             'completeDate' => Yii::t('actions', 'End Date'),
+            'calendarId' => Yii::t('actions','Calendar'),
         ));
     }
 }

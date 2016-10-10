@@ -37,8 +37,8 @@
 
 class WebFormBehavior extends CBehavior {
 
-    protected function createWebleadAction($model) {
-        Actions::associateAction ($model, array (
+    protected function createWebleadAction($model, $params = array()) {
+        Actions::associateAction ($model, array_merge(array (
             'actionDescription' => 
             Yii::t('contacts', 'Web Lead')
             ."\n\n".Yii::t('contacts', 'Name').': '.
@@ -49,7 +49,7 @@ class WebFormBehavior extends CBehavior {
             Yii::t('contacts', 'Background Info').": ".
             CHtml::decode($model->backgroundInfo),
                 'type' => 'note',
-            ));
+            ), $params));
     }
 
     /**

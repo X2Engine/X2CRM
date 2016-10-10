@@ -53,4 +53,5 @@
   'Financial Data Field' => 'Campo dati finanziari',
   'Select a model type' => 'Selezionare un tipo di modello',
   'Select a field' => 'Selezionare un campo',
+  'Default For' => 'Per default',
 );

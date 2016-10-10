@@ -57,9 +57,11 @@ $this->insertMenu($menuOptions);
 <div class='flush-grid-view'>
 <?php
 
-$this->widget('X2GridViewGeneric', array(
+$this->widget('X2ActiveGridView', array(
     'id' => 'workflow-grid',
-	'dataProvider'=>$dataProvider,
+    'modelName' => 'Workflow',
+	'dataProvider'=>$model->search(),
+	'filter'=>$model,
     'baseScriptUrl'=>  
         Yii::app()->request->baseUrl.'/themes/'.Yii::app()->theme->name.'/css/gridview',
     'title'=>Yii::t('workflow','{processes}', array(
@@ -67,30 +69,34 @@ $this->widget('X2GridViewGeneric', array(
     'template'=> '<div class="page-title icon workflow">{title}'.
         '{buttons}{summary}</div>{items}{pager}',
 	'summaryText' => Yii::t('app','<b>{start}&ndash;{end}</b> of <b>{count}</b>'),
-    'buttons' => array ('autoResize'),
-	'enableSorting'=>false,
+    'buttons' => array ('clearFilters','autoResize'),
 	'gvSettingsName'=>'workflowIndex',
     'defaultGvSettings' => array (
         'name' => 240,
         'isDefaultFor' => 100,
         'stages' => 100,
     ),
-	'columns'=>array(
-		array(
+	'pager'=>array('class'=>'CLinkPager','maxButtonCount'=>10),
+	'specialColumns'=>array(
+		'name' => array(
+			'header'=>Yii::t('workflow','Name'),
 			'name'=>'name',
 			'value'=>'CHtml::link(CHtml::encode($data->name),array("view","id"=>$data->id))',
 			'type'=>'raw',
 		),
-		array(
+		'isDefaultFor' => array(
 			'name'=>'isDefaultFor',
+			'header'=>Yii::t('workflow', 'Default For'),
 			'value'=>'$data->renderAttribute ("isDefaultFor")',
 			'type'=>'raw',
+			'filter'=>false,
 		),
-		array(
+		'stages' => array(
 			'header'=>Yii::t('workflow','Stages'),
 			'name'=>'stages',
 			'value'=>'X2Model::model("WorkflowStage")->countByAttributes(array("workflowId"=>$data->id))',
 			'type'=>'raw',
+			'filter'=>false,
 		),
 	),
 )); ?>

@@ -43,4 +43,6 @@
   'Delete {user}' => 'Διαγραφή {user}',
   'Check your email at {email} for further instructions to finish resetting your password.' => 'Ελέγξτε το email σας στο {email} για περαιτέρω οδηγίες για να ολοκληρώσετε την επαναφορά του κωδικού πρόσβασής σας.',
   'You should now have access as "{user}" with the new password specified.' => 'Πρέπει τώρα να έχετε πρόσβαση ως {user} με το νέο κωδικό πρόσβασης που ορίζεται.',
+  'View {users} Map' => 'Δείτε {users} Χάρτης',
+  'User Location Map' => 'Χρήστη Τοποθεσία Χάρτης',
 );

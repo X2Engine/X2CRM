@@ -57,4 +57,9 @@
   'Rows & Columns' => 'Wiersze i Kolumny',
   '{type} Report' => '{type} Zgłoś',
   'Rows and Columns' => 'Wiersze i Kolumny',
+  'Report Path:' => 'Zgłoś Ścieżka:',
+  'External Reports' => 'Raporty zewnętrzne',
+  'Save Changes' => 'Zapisz zmiany',
+  'Please supply the full path to the report on the Jasper Server, e.g., /Reports/MyReport. This can be found by right clicking on your report in the Jasper Server and selecting "Properties."' => 'Proszę podać pełną ścieżkę do raportu o Jasper Server, na przykład / Raporty / MYREPORT. Można go znaleźć klikając prawym przyciskiem myszy na raporcie w Jasper serwera i wybierając opcję &quot;Właściwości&quot;.',
+  'Failed to load external report. Please check your Jasper Server credential details.' => 'Nie udało się załadować raport zewnętrznego. Proszę sprawdzić Jasper Server poświadczeń szczegóły.',
 );

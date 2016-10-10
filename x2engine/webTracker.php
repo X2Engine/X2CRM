@@ -94,7 +94,7 @@ x2WebTracker.getSendKeyParams = function (args, method) {
     var url = args['url'];
      
     var attributes;
-    var fingerprint = args['fingerprint']
+    var fingerprint = args['fingerprint'];
     if (typeof fingerprint !== 'undefined') {
         // Ensure fingerprint data has valid keys: these will not be set
         // at this point if the client has DNT set
@@ -103,11 +103,16 @@ x2WebTracker.getSendKeyParams = function (args, method) {
         if (typeof fingerprint['fingerprint'] !== 'undefined')
             fingerprint = fingerprint['fingerprint'];
     }
+    var geoCoords;
+    if (typeof args['geoCoords'] !== 'undefined') {
+        geoCoords = args['geoCoords'];
+    }
           
 
     var params = {
         url: (method === 'GET') ? encodeURIComponent (url) : url,
         fingerprint: fingerprint,
+        geoCoords: geoCoords,
         /*attributes: (method === 'GET') ? encodeURIComponent (fingerprint['attributes']) :
             fingerprint['attributes'],*/
          
@@ -214,14 +219,32 @@ x2WebTracker.setKeyCookieHiddenField = function (key) {
 (x2WebTracker.main = function () {
     var url = window.location.href;
 
-    <?php  ?>
     var fingerprint;
     <?php if (!isset ($_SERVER['HTTP_DNT']) || $_SERVER['HTTP_DNT'] != 1) {
         require(__DIR__.'/js/fontdetect.js');
         require(__DIR__.'/js/X2Identity.js'); ?>
         fingerprint = x2Identity.fingerprint();
+
+        <?php if (!empty ($_SERVER['HTTPS'])) { ?>
+        if ("geolocation" in navigator) {
+            navigator.geolocation.getCurrentPosition(function(position) {
+            var pos = {
+              lat: position.coords.latitude,
+              lon: position.coords.longitude
+            };
+
+            // Forward coords afterwards asynchronously
+            x2WebTracker.sendKey ({
+                url: url,
+                fingerprint: fingerprint,
+                geoCoords: JSON.stringify (pos)
+            });
+          }, function() {
+            console.log("error fetching geolocation data");
+          });
+        }
+        <?php } ?>
     <?php } ?>
-    <?php  ?>
 
     <?php 
     /*
@@ -237,8 +260,8 @@ x2WebTracker.setKeyCookieHiddenField = function (key) {
             x2WebTracker.setKeyCookie (x2KeyCookie);
             x2WebTracker.sendKey ({
                 url: url, 
-                x2KeyGetParam: x2KeyGetParam <?php  ?>, 
-                fingerprint: fingerprint<?php  ?>
+                x2KeyGetParam: x2KeyGetParam,
+                fingerprint: fingerprint
             });
             x2WebTracker.setKeyCookieHiddenField (x2KeyGetParam);
             return;
@@ -252,13 +275,11 @@ x2WebTracker.setKeyCookieHiddenField = function (key) {
         var x2KeyCookie = x2WebTracker.generateKey ();
         x2WebTracker.setKeyCookie (x2KeyCookie);
         x2WebTracker.setKeyCookieHiddenField (x2KeyCookie);
-        <?php  ?>
         x2WebTracker.sendKey ({
             url: url, 
             x2KeyGetParam: null,
             fingerprint: fingerprint
         });
-        <?php  ?>
         return; 
     }
 
@@ -269,8 +290,8 @@ x2WebTracker.setKeyCookieHiddenField = function (key) {
     if (x2KeyCookie.match (/[a-zA-Z0-9]/)) {
         x2WebTracker.sendKey ({
             url: url, 
-            x2KeyGetParam: null <?php  ?>, 
-            fingerprint: fingerprint<?php  ?>
+            x2KeyGetParam: null,
+            fingerprint: fingerprint
         });
         x2WebTracker.setKeyCookieHiddenField (x2KeyCookie);
     }

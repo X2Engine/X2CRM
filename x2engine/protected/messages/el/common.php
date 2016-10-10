@@ -610,4 +610,12 @@
   'Select All' => 'Επιλογή όλων',
   'User Login History' => 'Ιστορία Είσοδος χρήστη',
   'Delete Record' => 'Διαγραφή Εγγραφή',
+  'All Day' => 'Όλη μέρα',
+  'Jasper Server Integration' => 'Jasper Integration Server',
+  'Longitude' => 'Γεωγραφικό μήκος',
+  'Date/Time' => 'Ημερομηνία ώρα',
+  'Stated Address' => 'δήλωσε Διεύθυνση',
+  'Check-in comment' => 'Το check-in σχόλιο',
+  'Email Opened' => 'email Άνοιξε',
+  'Email Clicked' => 'email έγινε κλικ',
 );

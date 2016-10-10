@@ -49,7 +49,7 @@ class Publisher extends X2Widget {
         'action' => 'PublisherActionTab',
         'call' => 'PublisherCallTab',
         'time' => 'PublisherTimeTab',
-        'event' => 'PublisherEventTab',
+        'event' => 'PublisherCalendarEventTab',
         'products' => 'PublisherProductsTab',
     );
 
@@ -58,6 +58,7 @@ class Publisher extends X2Widget {
     public $model;
     public $associationType; // type of record to associate actions with
     public $associationId = ''; // record to associate actions with
+    public $email = null; // for calendar invitations
     public $assignedTo = null; // user actions will be assigned to by default
     public $renderTabs = true;
 
@@ -65,6 +66,7 @@ class Publisher extends X2Widget {
         'model',
         'associationId',
         'associationType',
+        'email',
     );
 
     protected $_packages;
@@ -79,6 +81,9 @@ class Publisher extends X2Widget {
                 });
             $this->_tabs = array ();
             foreach ($visibleTabs as $tabName => $shown) {
+                if($tabName === 'PublisherEventTab'){
+                    $tabName = 'PublisherCalendarEventTab';
+                }
                 $tab = new $tabName ();
                 $tab->publisher = $this;
                 $tab->namespace = $this->namespace;
@@ -154,6 +159,19 @@ class Publisher extends X2Widget {
             $model->assignedTo = Yii::app()->user->getName();
         }
         $this->model = $model;
+        
+        $associatedModel = X2Model::getModelOfTypeWithId($this->associationType, $this->associationId);
+        if($associatedModel){
+            $fields = $associatedModel->getFields();
+            // Try to grab the model's email from the first email field
+            foreach($fields as $field){
+                if($field->type === 'email'){
+                    $this->email = $associatedModel->{$field->fieldName};
+                    break;
+                }
+            }
+        }
+        
         $selectedTabObj = $this->tabs[0];
         $selectedTabObj->startVisible = true;
 
@@ -177,6 +195,79 @@ class Publisher extends X2Widget {
             });
         });
         ", CClientScript::POS_HEAD);
+
+        if (isset($_SERVER['HTTPS'])) {
+            Yii::app()->clientScript->registerScript('geolocationJs', '
+                $("#toggle-location-button").click(function (evt) {
+                    evt.preventDefault();
+                    if ($("#toggle-location-button").data("location-enabled") === true) {
+                        // Clear geoCoords field and reset style
+                        $("#checkInComment").slideUp();
+                        $("input[name=geoCoords]").val("");
+                        $("#toggle-location-button")
+                            .data("location-enabled", false)
+                            .css("color", "");
+                    } else {
+                        // Populate geoCoords field and highlight blue
+                        $("#checkInComment").slideDown();
+                        $("#toggle-location-button")
+                            .data("location-enabled", true)
+                            .css("color", "blue");
+                        if ("geolocation" in navigator) {
+                            navigator.geolocation.getCurrentPosition(function(position) {
+                            var pos = {
+                              lat: position.coords.latitude,
+                              lon: position.coords.longitude
+                            };
+
+                            $("input[name=geoCoords]").val(JSON.stringify (pos));
+                          }, function() {
+                            console.log("error fetching geolocation data");
+                          });
+                        }
+                    }
+                });
+            ', CClientScript::POS_READY);
+        } else {
+            Yii::app()->clientScript->registerScript('geolocationJs', '
+                $("#toggle-location-button").click(function (evt) {
+                    evt.preventDefault();
+                    if ($("#toggle-location-button").data("location-enabled") === true) {
+                        $("#checkInComment").slideUp();
+                        $("#toggle-location-button")
+                            .data("location-enabled", false)
+                            .css("color", "");
+                    } else {
+                        $("#checkInComment").slideDown();
+                        $("#toggle-location-button")
+                            .data("location-enabled", true)
+                            .css("color", "blue");
+                    }
+                });
+            ', CClientScript::POS_READY);
+        }
+        Yii::app()->clientScript->registerScript('checkInJs', '
+            $("#checkInComment").on("blur", function() {
+                var comment = $(this).val();
+                var coordsVal = $("input[name=geoCoords]").val();
+                var coords;
+                if (coordsVal) {
+                    coords = JSON.parse(coordsVal);
+                    if (!coords) {
+                        coords = {};
+                    }
+                } else {
+                    coords = {};
+                }
+                coords.comment = comment;
+                $("input[name=geoCoords]").val(JSON.stringify(coords));
+            });
+            $("#publisher input[type=\'submit\']").click(function () {
+                $("#checkInComment")
+                    .blur()
+                    .val("");
+            });
+        ', CClientScript::POS_READY);
 
         Yii::app()->clientScript->registerCss('recordViewPublisherCss', '
             .action-event-panel {

@@ -43,7 +43,7 @@ Yii::app()->clientScript->registerCssFile(
     Yii::app()->theme->baseUrl.'/css/components/sortableWidget/views/emailInboxWidget.css');
 
 
-if ($mailbox) {
+if ($mailbox && $mailbox->credentials && !$mailbox->credentials->auth->disableInbox) {
 
     $this->widget('EmailInboxesGridView', array(
         'id' => $this->getWidgetKey (),
@@ -135,6 +135,15 @@ if ($mailbox) {
         ");
     }
 
+} else if ($mailbox) {
+        ?><div>
+            <div class='flash-error'>
+                 <?php echo Yii::t('app', 'Inbox usage is disabled for these credentials. Please update the settings on the "Manage Apps" page to enable inbox access.'); ?>
+            </div>
+            <a class="centered" href='<?php echo $this->controller->createUrl ('manageCredentials'); ?>'><?php
+                echo Yii::t('emailInboxes', 'Manage your application credentials');
+            ?></a>
+                </div><?php
 }
 
 ?>

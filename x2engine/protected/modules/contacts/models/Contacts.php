@@ -102,6 +102,9 @@ class Contacts extends X2Model {
             'ContactsNameBehavior' => array(
                 'class' => 'application.components.behaviors.ContactsNameBehavior',
             ),
+            'MappableBehavior' => array(
+                'class' => 'application.components.behaviors.MappableBehavior',
+            ),
         ));
     }
 
@@ -409,7 +412,4 @@ class Contacts extends X2Model {
         $this->update(array('fingerprintId'));
         $anonContact->delete();
     }
-
-    
-
 }

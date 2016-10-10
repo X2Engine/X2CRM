@@ -67,6 +67,7 @@ class ModulePanelItem extends PanelItem {
                     'mobilePublisher', 
                     'mobileViewEvent', 
                     'mobileDeleteEvent',
+                    'mobileCheckInPublisher',
                   )) ||
                 isset (Yii::app()->controller->module) &&
                 isset (Yii::app()->controller->moduleObj) &&

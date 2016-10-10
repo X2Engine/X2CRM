@@ -67,9 +67,9 @@ class WorkflowController extends x2base {
     
     // Lists all workflows
     public function actionIndex() {
-        $dataProvider = new CActiveDataProvider('Workflow');
+        $model = new Workflow('search');
         $this->render('index',array(
-            'dataProvider'=>$dataProvider,
+            'model'=>$model,
         ));
     }
     

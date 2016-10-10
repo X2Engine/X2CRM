@@ -23,7 +23,6 @@
   'Completed:' => '',
   '{action} Description' => '',
   'Action Description' => '',
-  'All Day' => '',
   'Calendar ID' => '',
   'Date Completed' => '',
   'Subtype' => '',
@@ -120,4 +119,5 @@
   '{Action} Description' => '',
   'color' => '',
   'Calendar Color' => '',
+  'Enter email addresses, one per line' => '',
 );

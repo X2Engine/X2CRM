@@ -58,6 +58,15 @@ $form=$this->beginWidget('CActiveForm', array(
 	padding: 5px;
 }
 
+#calendar-invites tr,th{
+        font-weight: bold;
+        padding: 5px;
+    }
+    
+    #calendar-invites tr,td{
+        padding: 5px;
+    }
+
 </style>
 
 <div class="row">
@@ -115,5 +124,27 @@ $form=$this->beginWidget('CActiveForm', array(
         }
 		?>
 </div>
+    <?php if (!empty($model->invites)) { ?>
+    <div style="clear:both"></div>
+    <div class="row">
+        <div class="cell dialog-cell">
+            <table id="calendar-invites">
+                <tr>
+                    <th><?php echo Yii::t('calendar', 'Guest'); ?></th>
+                    <th><?php echo Yii::t('calendar', 'Status'); ?></th>
+                </tr>
+                <?php
+                foreach ($model->invites as $invite) {
+                    echo "<tr>";
+                    echo "<td>" . $invite->email . "</td><td>" . 
+                            (is_null($invite->status) ? Yii::t('calendar', 'Awaiting response') 
+                            : Yii::t('calendar', $invite->status)) . "</td>";
+                    echo "</tr>";
+                }
+                ?>
+            </table>
+        </div>
+    </div>
+<?php } ?>
 
 <?php $this->endWidget(); ?>

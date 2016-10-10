@@ -209,7 +209,6 @@ class ApiController extends x2base {
                         $model->actionDescription = $_POST['actionDescription'];
                     }
                     $message .= " with description {$model->actionDescription}";
-                    $model->syncGoogleCalendar('create');
                     break;
                 case 'Contacts':
                     $message .= " with name {$model->name}";
@@ -288,8 +287,6 @@ class ApiController extends x2base {
 	 */
 	public function actionDelete() {
 		$model = $this->model;
-		if ($this->modelClass === 'Actions')
-				$model->syncGoogleCalendar('delete');
 		// Delete the model
 		$num = $model->delete();
 		if ($num > 0) {
@@ -490,9 +487,6 @@ class ApiController extends x2base {
 		// each class:
 		if ($model->save()) {
 			switch ($this->modelClass) {
-				case 'Actions':
-					$model->syncGoogleCalendar('update');
-					break;
 				default:
 					$this->_sendResponse(200, $model->attributes,true);
 			}

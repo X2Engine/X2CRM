@@ -44,12 +44,13 @@ CREATE TABLE x2_admin(
 	enableWebTracker		TINYINT			DEFAULT 1,
 	currency				VARCHAR(3)		NULL,
 	chatPollTime			INT				DEFAULT 3000,
-    defaultTheme            INT             NULL,
+        locationTrackingFrequency			INT				DEFAULT 60,
+        defaultTheme            INT             NULL,
 	ignoreUpdates			TINYINT			DEFAULT 0,
 	rrId					INT				DEFAULT 0,
 	leadDistribution		VARCHAR(255),
 	onlineOnly				TINYINT,
-    actionPublisherTabs     TEXT,
+        actionPublisherTabs     TEXT,
 	disableAutomaticRecordTagging		TINYINT			DEFAULT 0,
 	emailBulkAccount		INT	NOT NULL DEFAULT -1,
 	emailNotificationAccount	INT NOT NULL DEFAULT -1,
@@ -57,8 +58,8 @@ CREATE TABLE x2_admin(
 	emailFromAddr			VARCHAR(255)	NOT NULL DEFAULT '',
 	emailBatchSize			INT				NOT NULL DEFAULT 200,
 	emailInterval			INT				NOT NULL DEFAULT 60,
-    emailCount              INT             NOT NULL DEFAULT 0,
-    emailStartTime          BIGINT          DEFAULT NULL,
+        emailCount              INT             NOT NULL DEFAULT 0,
+        emailStartTime          BIGINT          DEFAULT NULL,
 	emailUseSignature		VARCHAR(5)		DEFAULT "user",
 	emailSignature			TEXT,
 	emailType				VARCHAR(20)		DEFAULT "mail",
@@ -69,11 +70,12 @@ CREATE TABLE x2_admin(
 	emailPass				VARCHAR(255),
 	emailSecurity			VARCHAR(10),
 	enableColorDropdownLegend   TINYINT         DEFAULT 0,
-    enforceDefaultTheme     TINYINT         DEFAULT 0,
+        enforceDefaultTheme     TINYINT         DEFAULT 0,
 	installDate				BIGINT			NOT NULL,
 	updateDate				BIGINT			NOT NULL,
 	updateInterval			INT				NOT NULL DEFAULT 0,
 	quoteStrictLock			TINYINT,
+        locationTrackingSwitch          TINYINT,
 	googleIntegration		TINYINT,
 	inviteKey				VARCHAR(255),
 	workflowBackdateWindow			INT			NOT NULL DEFAULT -1,
@@ -101,6 +103,7 @@ CREATE TABLE x2_admin(
     userActionBackdating        TINYINT         DEFAULT 0,
     historyPrivacy              VARCHAR(20) DEFAULT "default",
     batchTimeout                INT DEFAULT 300,
+    locationTrackingDistance    INT DEFAULT 1,
     massActionsBatchSize        INT DEFAULT 10,
     externalBaseUrl             VARCHAR(255) DEFAULT NULL,
     externalBaseUri             VARCHAR(255) DEFAULT NULL,
@@ -118,7 +121,8 @@ CREATE TABLE x2_admin(
     twitterCredentialsId        INT UNSIGNED,
     twitterRateLimits           TEXT DEFAULT NULL,
     triggerLogMax               INT UNSIGNED DEFAULT 1000000,
-    googleCredentialsId         INT UNSIGNED
+    googleCredentialsId         INT UNSIGNED,
+    jasperCredentialsId         INT UNSIGNED
 ) ENGINE=InnoDB, COLLATE = utf8_general_ci;
 /*&*/
 DROP TABLE IF EXISTS x2_api_hooks;
@@ -320,7 +324,8 @@ CREATE TABLE x2_events(
     sticky                  TINYINT             DEFAULT 0,
     color                   VARCHAR(10),
     fontColor               VARCHAR(10),
-    linkColor               VARCHAR(10)
+    linkColor               VARCHAR(10),
+    locationId              INT UNSIGNED
 ) COLLATE = utf8_general_ci, ENGINE = InnoDB;
 /*&*/
 DROP TABLE IF EXISTS x2_events_data;
@@ -387,12 +392,8 @@ CREATE TABLE x2_profile(
 	emailUseSignature		VARCHAR(5)		DEFAULT "user",
 	emailSignature			LONGTEXT,
 	enableFullWidth			TINYINT			DEFAULT 1,
-	syncGoogleCalendarId	TEXT,
-	syncGoogleCalendarAccessToken TEXT,
-	syncGoogleCalendarRefreshToken TEXT,
 	googleId				VARCHAR(250),
 	userCalendarsVisible	TINYINT			DEFAULT 1,
-	groupCalendarsVisible	TINYINT			DEFAULT 1,
 	tagsShowAllUsers		TINYINT,
 	hideCasesWithStatus		TEXT,
     hiddenTags              TEXT,
@@ -412,6 +413,7 @@ CREATE TABLE x2_profile(
     googleRefreshToken      VARCHAR(255),
 	leadRoutingAvailability	TINYINT			DEFAULT 1,
 	showTours 				TINYINT			DEFAULT 1,
+        defaultCalendar     INT,
 	UNIQUE(username, emailAddress),
 	INDEX (username)
 ) COLLATE = utf8_general_ci;
@@ -573,9 +575,15 @@ DROP TABLE IF EXISTS x2_locations;
 /*&*/
 CREATE TABLE x2_locations(
 	id					INT				NOT NULL AUTO_INCREMENT PRIMARY KEY,
-	contactId			INT				NOT NULL,
+	contactId			INT				NOT NULL, -- TODO remove after writing migration
+	recordId			INT				NOT NULL,
+	recordType			VARCHAR(250)	NOT NULL,
 	lat                 FLOAT			NOT NULL,
-	lon                 FLOAT           NOT NULL
+	lon                 FLOAT           NOT NULL,
+	type                VARCHAR(50),
+	ipAddress           VARCHAR(250),
+	comment             VARCHAR(250),
+	createDate			BIGINT          NOT NULL
 ) COLLATE = utf8_general_ci;
 /*&*/
 DROP TABLE IF EXISTS x2_maps;
@@ -588,7 +596,8 @@ CREATE TABLE x2_maps(
     params              TEXT,
     centerLat           FLOAT,
     centerLng           FLOAT,
-    zoom                INT
+    zoom                INT,
+	locationType        VARCHAR(50)
 ) COLLATE = utf8_general_ci;
 /*&*/
 DROP TABLE IF EXISTS x2_tips;

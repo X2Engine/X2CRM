@@ -186,7 +186,9 @@ if (YII_UNIT_TESTING) {
 X2Html::getFlashes ();
 ?>
 </div>
-
+<form id="geoCoordsForm" action="" method="POST">
+    <input type="hidden" name="geoCoords" id="geoCoords">
+</form>
     <div id='header' data-role='header'>
         <a href='#<?php echo $this->pageId; ?>-panel' 
           style='display: none;' 
@@ -198,10 +200,21 @@ X2Html::getFlashes ();
         if (strpos($currentUrl, '/mobile/login') == false){
         ?>
             <a href='<?php echo Yii::app()->createAbsoluteUrl ('profile/mobileActivity'); ?>' 
-              style='margin-left: 50px;' 
+              style='margin-left: 40px;' 
               class='ui-btn-left ui-btn show-left-menu-button-right'>
                 <i class='fa fa-home'></i>
             </a>
+            <?php
+            if (Yii::app()->params->isPhoneGap) {
+            ?>
+            <a href='<?php echo Yii::app()->createAbsoluteUrl ('profile/mobileCheckInPublisher'); ?>' 
+              style='margin-left: 80px;' 
+              class='ui-btn-left ui-btn show-left-menu-button-right'>
+                <i class='fa fa-location-arrow'></i>
+            </a>
+            <?php
+            }
+            ?>
         <?php
         }
         ?>

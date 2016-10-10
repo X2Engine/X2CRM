@@ -396,7 +396,8 @@ $userMenu = array(
     array(
         'label' => Yii::t('app', 'Profile'), 
         'url' => array('/profile/view',
-            'id' => Yii::app()->user->getId()),
+            'id' => Yii::app()->user->getId(),
+            'publicProfile'=>1),
         'itemOptions' => array (
             'id' => 'profile-user-menu-link',
             'class' => 'user-menu-link ' . ($isAdmin ? '' : 'x2-first'),
@@ -427,7 +428,7 @@ $userMenu = array(
 $userMenuItems = array(
     array(
         'label' => Yii::t('app', 'Profile'), 'url' => array('/profile/view',
-            'id' => Yii::app()->user->getId())),
+            'id' => Yii::app()->user->getId(), 'publicProfile'=>1)),
     array(
         'label' => Yii::t('app', 'Notifications'),
         'url' => array('/site/viewNotifications')),

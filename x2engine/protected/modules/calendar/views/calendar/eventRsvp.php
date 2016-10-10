@@ -1,0 +1,95 @@
+<?php
+/* * *********************************************************************************
+ * X2CRM is a customer relationship management program developed by
+ * X2Engine, Inc. Copyright (C) 2011-2016 X2Engine Inc.
+ * 
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU Affero General Public License version 3 as published by the
+ * Free Software Foundation with the addition of the following permission added
+ * to Section 15 as permitted in Section 7(a): FOR ANY PART OF THE COVERED WORK
+ * IN WHICH THE COPYRIGHT IS OWNED BY X2ENGINE, X2ENGINE DISCLAIMS THE WARRANTY
+ * OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
+ * 
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.  See the GNU Affero General Public License for more
+ * details.
+ * 
+ * You should have received a copy of the GNU Affero General Public License along with
+ * this program; if not, see http://www.gnu.org/licenses or write to the Free
+ * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301 USA.
+ * 
+ * You can contact X2Engine, Inc. P.O. Box 66752, Scotts Valley,
+ * California 95067, USA. on our website at www.x2crm.com, or at our
+ * email address: contact@x2engine.com.
+ * 
+ * The interactive user interfaces in modified source and object code versions
+ * of this program must display Appropriate Legal Notices, as required under
+ * Section 5 of the GNU Affero General Public License version 3.
+ * 
+ * In accordance with Section 7(b) of the GNU Affero General Public License version 3,
+ * these Appropriate Legal Notices must retain the display of the "Powered by
+ * X2Engine" logo. If the display of the logo is not reasonably feasible for
+ * technical reasons, the Appropriate Legal Notices must display the words
+ * "Powered by X2Engine".
+ * ******************************************************************************** */
+
+Yii::app()->clientScript->registerCssFile($this->module->assetsUrl . '/css/rsvp.css');
+?>
+<div class="page-title">
+    <h2><?php echo Yii::t('calendar', 'Event RSVP'); ?></h2>
+</div>
+<div class="form">
+    <div>
+        <?php echo Yii::t('calendar', 'You are RSVPing for the following event:'); ?><br><br>
+        <b><?php echo Yii::t('calendar', 'What:'); ?> </b><?php echo $action->actionDescription; ?><br>
+        <b><?php echo Yii::t('calendar', 'When:'); ?> </b><?php echo Formatter::formatDueDate($action->dueDate, 'long', 'long') ?><br><br>
+        <?php echo Yii::t('calendar', 'Please select one of the options below to confirm your status.'); ?>
+    </div>
+    <div>
+        <?php echo X2Html::button(Yii::t('calendar', 'Yes'), array('data-value' => 'Yes', 'class' => 'x2-button left rsvp-button' . ($invite->status === 'Yes' ? ' disabled' : ''))); ?>
+        <?php echo X2Html::button(Yii::t('calendar', 'Maybe'), array('data-value' => 'Maybe', 'class' => 'x2-button left rsvp-button' . ($invite->status === 'Maybe' ? ' disabled' : ''))); ?>
+        <?php echo X2Html::button(Yii::t('calendar', 'No'), array('data-value' => 'No', 'class' => 'x2-button left rsvp-button' . ($invite->status === 'No' ? ' disabled' : ''))); ?>
+    </div>
+</div>
+
+<?php
+Yii::app()->clientScript->registerScript('rsvp-buttons', "
+    $('.rsvp-button').on('click',function(){
+        var that = this;
+        $.ajax({
+            url: window.location,
+            type: 'POST',
+            data: {
+                status: $(this).attr('data-value'),
+                geoCoords: $('#geoCoords').val()
+            },
+            success: function(){
+                $('.rsvp-button').removeClass('disabled');
+                $(that).addClass('disabled');
+            }
+        });
+    });
+");
+
+if (!empty ($_SERVER['HTTPS']) && (!isset ($_SERVER['HTTP_DNT']) || $_SERVER['HTTP_DNT'] != 1)) {
+    ?>
+        <input type="hidden" name="geoCoords" id="geoCoords"></input>
+        <script>
+            (function () {
+                if ("geolocation" in navigator) {
+                    navigator.geolocation.getCurrentPosition(function(position) {
+                    var pos = {
+                      lat: position.coords.latitude,
+                      lon: position.coords.longitude
+                    };
+
+                    $("#geoCoords").val(JSON.stringify (pos));
+                  }, function() {
+                    console.log("error fetching geolocation data");
+                  });
+                }
+            }) ();
+        </script>
+<?php } ?>

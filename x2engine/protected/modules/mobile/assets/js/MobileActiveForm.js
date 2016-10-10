@@ -41,6 +41,7 @@ function MobileActiveForm (argsDict) {
     var defaultArgs = {
         DEBUG: x2.DEBUG && false,
         photoAttrName: null,
+        locationAttrName: null,
         redirectUrl: null,
         submitButtonSelector: null,
         validate: function () { return true; }
@@ -55,8 +56,8 @@ MobileActiveForm.prototype.setUpPhotoSubmission = function () {
     var that = this;
     this.form$ = $(this.formSelector);
     this.submitButton$ = this.submitButtonSelector ? 
-        $(this.submitButtonSelector) :
-        this.form$.find ('.submit-button');
+    $(this.submitButtonSelector) : this.form$.find ('.submit-button');
+    var checkinInput$ = $.mobile.activePage.find ('#geoLocationCoords').length;
 
     this.submitButton$.click (function () {
         if (!that.validate ()) {
@@ -95,8 +96,7 @@ MobileActiveForm.prototype.setUpPhotoSubmission = function () {
                 that.form$.submit ();
             }
         }
-    });
-
+    });   
     var cameraButton$ = $.mobile.activePage.find ('.photo-attach-button');
     var attachmentsContainer$ = this.form$.find ('.photo-attachments-container');
 
@@ -114,6 +114,7 @@ MobileActiveForm.prototype.setUpPhotoSubmission = function () {
         failure: function (message) {
         }
     });
+    
 
 };
 

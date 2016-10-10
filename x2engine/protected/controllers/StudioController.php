@@ -77,7 +77,10 @@ class StudioController extends x2base {
 
 
     public function actionFlowIndex() {
-        $this->render('flowIndex');
+        $model = new X2Flow('search');
+        $this->render('flowIndex',array(
+            'model'=>$model,
+        ));
     }
 
     public function actionTriggerLogs($pageSize=null) {

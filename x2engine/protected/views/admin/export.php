@@ -161,6 +161,8 @@ Yii::app()->clientScript->registerCssFile(Yii::app()->theme->baseUrl.'/css/impor
                     // satisfy constraints when the data is imported
                     models.unshift('WorkflowStage');
                     models.unshift('Workflow');
+                } else if ($(this).attr('name')=='X2Calendar'){
+                    models.unshift('X2Calendar');
                 } else {
                     models.push($(this).attr('name'));
                     if($(this).attr('name')=='User'){

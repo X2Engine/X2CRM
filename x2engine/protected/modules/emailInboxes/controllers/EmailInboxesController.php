@@ -362,6 +362,36 @@ class EmailInboxesController extends x2base {
     }
 
     /**
+     * Saves a specific attachment as a Media object, creating relationships
+     * to the associated records
+     * @param int $uid Unique ID of the message
+     * @param float $part Multipart part number
+     */
+    public function actionAssociateAttachment($uid, $part) {
+        $mailbox = $this->getSelectedMailbox ();
+        if (!$this->checkPermissions ($mailbox, 'view')) $this->denied ();
+        $message = $mailbox->fetchMessage ($uid);
+        $contacts = $message->getAssociatedContacts (true);
+        $type = 'error';
+        if (!empty($contacts)) {
+            list($mimeType, $filename, $size, $attachment, $encoding) = $this->fetchAttachment ($uid, $part, false, true);
+            if ($this->associateAttachment($contacts, $filename, $attachment)) {
+                $result = Yii::t('emailInboxes', 'Attachment successfully associated');
+                $type = 'success';
+            } else {
+                $result = Yii::t('emailInboxes', 'Association failed: the attachment could not be saved');
+            }
+        } else {
+            $result = Yii::t('emailInboxes', 'Association failed: there are no related records');
+        }
+
+        echo CJSON::encode(array(
+            'message' => $result,
+            'type' => $type,
+        ));
+    }
+
+    /**
      * View an inline attachment
      * @param int $id Unique ID of the message
      * @param float $part Multipart part number
@@ -436,8 +466,11 @@ class EmailInboxesController extends x2base {
                 $this->_selectedMailbox = null;
             }
 
-            if ($this->_selectedMailbox !== null && $this->_selectedMailbox->credentials->auth->disableInbox) {
-                throw new CHttpException(403, Yii::t('app', 'Inbox usage is disabled for these credentials. Please update the settings on the "Manage Apps" page to enable inbox access.'));
+            if ($this->_selectedMailbox !== null && $this->_selectedMailbox->credentials && $this->_selectedMailbox->credentials->auth->disableInbox) {
+                $this->render ('badCredentials', array(
+                    'error' => Yii::t('app', 'Inbox usage is disabled for these credentials. Please update the settings on the "Manage Apps" page to enable inbox access.'),
+                ));
+                Yii::app ()->end ();
             }
         }
         return $this->_selectedMailbox;
@@ -586,15 +619,64 @@ class EmailInboxesController extends x2base {
      * @param int $uid IMAP Message UID
      * @param float $part IMAP multipart message part number
      * @param boolean $inline Whether it is an inline attachment
+     * @param boolean $return
      */
-    private function fetchAttachment($uid, $part, $inline = false) {
+    private function fetchAttachment($uid, $part, $inline = false, $return = false) {
         $mailbox = $this->getSelectedMailbox ();
         if (!isset($mailbox))
             $this->redirect('index');
 
         $this->getCurrentFolder(true);
         $message = $mailbox->fetchMessage ($uid);
-        $message->downloadAttachment ($part, $inline);
+        return $message->downloadAttachment ($part, $inline, $return);
     }
 
+    /**
+     * Helper function to handle associating attachments to the related record
+     * @param array $contacts Array of related records to be associated with
+     * @param string $filename Attachment file name
+     * @param string $attachment Attachment data
+     * @return boolean success
+     */
+    private function associateAttachment(array $contacts, $filename, $attachment) {
+        if (empty($contacts)) return;
+        $username = Yii::app()->user->name;
+        $userFolderPath = implode(DIRECTORY_SEPARATOR, array(
+            Yii::app()->basePath,
+            '..',
+            'uploads',
+            'protected',
+            'media',
+            $username
+        ));
+        // if user folder doesn't exit, try to create it
+        if (!(file_exists($userFolderPath) && is_dir($userFolderPath))) {
+            if (!@mkdir($userFolderPath, 0777, true)) { // make dir with edit permission
+                throw new CHttpException(500, "Couldn't create user folder $userFolderPath");
+            }
+        }
+
+        $media = new Media;
+        $media->fileName = $filename;
+        $media->createDate = time();
+        $media->lastUpdated = time();
+        $media->uploadedBy = $username;
+        $media->associationType = 'Contacts';
+        $media->associationId = $contacts[0]->id;
+        $media->resolveNameConflicts();
+        $associatedMedia = Yii::app()->file->set($userFolderPath.DIRECTORY_SEPARATOR.$media->fileName);
+        $associatedMedia->create();
+        $associatedMedia->setContents($attachment);
+
+        if ($associatedMedia->exists) {
+            if ($media->save()) {
+                $createdRelationships = true;
+                foreach ($contacts as $contact) {
+                    $createdRelationships = $createdRelationships && $contact->createRelationship($media);
+                }
+                return $createdRelationships;
+            }
+        }
+        return false;
+    }
 }

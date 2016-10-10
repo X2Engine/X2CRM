@@ -65,4 +65,9 @@
   'Failed to associate message "{subject}" with {type} {model}' => 'Impossible d&#39;associer un message &quot; {subject} &quot; avec {type} {model}',
   'Message "{subject}" already associated with {type} {model}' => 'Message &quot; {subject} &quot; déjà associé à {type} {model}',
   'Disable Quota Operations' => 'Désactiver les opérations de quotas',
+  'Manage your application credentials' => 'Gérez vos références d&#39;application',
+  'Associate attachment with related record' => 'attachement associé avec enregistrement lié',
+  'Attachment successfully associated' => 'Pièce jointe associée avec succès',
+  'Association failed: the attachment could not be saved' => 'Association a échoué: la pièce jointe n&#39;a pas pu être sauvé',
+  'Association failed: there are no related records' => 'Association a échoué: il n&#39;y a pas des documents connexes',
 );

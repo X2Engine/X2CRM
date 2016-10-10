@@ -53,4 +53,5 @@
   'Financial Data Field' => '금융 데이터 필드',
   'Select a model type' => '모델 유형을 선택',
   'Select a field' => '필드를 선택',
+  'Default For' => '에 대한 기본',
 );

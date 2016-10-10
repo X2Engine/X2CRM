@@ -71,6 +71,47 @@ EventCommentPublisherController.prototype.setUpForm = function () {
         failure: function (message) {
         }
     });
+
+    this.locationButton$ = $.mobile.activePage.find ('.location-attach-button');
+    this.locationButton$.click (function () {
+        if (x2.main.isPhoneGap) {
+            x2touch.API.getCurrentPosition(function(position) {
+                var pos = {
+                   lat: position.coords.latitude,
+                   lon: position.coords.longitude
+                 };
+
+                that.form$.find ('#geoCoords').val(JSON.stringify (pos));
+                that.form$.find ('#geoLocationCoords').val("set");
+                x2.mobileForm.submitWithFiles (
+                   that.form$, 
+                   function (response) {
+                       try {
+                            var data = JSON.parse(response);
+                            var theAddress = data['results'][0]['formatted_address'];
+                            $.mobile.activePage.find.find ('.reply-box').val(
+                                $.mobile.activePage.find ('.reply-box').val()+" - "+theAddress
+                            );
+                       } catch (e) {
+                           alert("failed to parse response from server");
+                       }
+
+                       x2.main.refreshContent ();
+                       $.mobile.loading ('hide');
+                   }, function (jqXHR, textStatus, errorThrown) {
+                       $.mobile.loading ('hide');
+                       x2.main.alert (textStatus, 'Error');
+                   }
+               ); 
+               this.form$.find ('#geoLocationCoords').val("unset");
+            }, function (error) {
+                alert('code: '    + error.code    + '\n' +
+                      'message: ' + error.message + '\n');
+            }, {});         
+        
+        } 
+        
+    });
 };
 
 EventCommentPublisherController.prototype.init = function () {

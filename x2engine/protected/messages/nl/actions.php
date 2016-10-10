@@ -4,7 +4,6 @@
   'Reminder' => 'Herrinering',
   'Complete Date' => 'Datum Afronding',
   'Date Completed' => 'Datum Afgerond',
-  'All Day' => 'Hele Dag',
   'Complete + New Action' => 'Afgerond + Nieuwe Actie',
   'Uncomplete' => 'Niet afgerond',
   'Overdue' => 'Achterstallig',
@@ -120,4 +119,5 @@
   'Event Subtype' => 'Event Subtype',
   'Event Status' => 'Event Status',
   'Calendar Color' => 'Kalender Color',
+  'Enter email addresses, one per line' => 'Geef e-mailadressen, één per regel',
 );

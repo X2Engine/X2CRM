@@ -112,6 +112,11 @@ class ReportsController extends x2base {
                 'label' => Yii::t('reports', 'User Activity'),
                 'url' => array ('activityReport')
             ),
+            array(
+                'name' => 'externalReports',
+                'label' => Yii::t('reports', 'External Reports'),
+                'url' => array ('externalReport')
+            ),
         );
 
 // highlights menu item corresponding to report type. Commented out since it prevents you from
@@ -282,6 +287,24 @@ class ReportsController extends x2base {
         $this->render ('savedReports',array(
             'dataProvider'=>$dataProvider,
             'model' => $model,
+        ));
+    }
+
+    public function actionExternalReport ($report=null) {
+        $formModel = new ExternalReportFormModel;
+        $reportPath = null;
+        if (isset ($_GET['ExternalReportFormModel'])) {
+            $formModel->setAttributes ($_GET['ExternalReportFormModel']);
+            if ($formModel->validate ())
+                $reportPath = $formModel->reportPath;
+        }
+
+        $type = $formModel->getReportType ();
+        $this->render ('externalReport',array(
+            'report' => $report,
+            'reportPath' => $reportPath,
+            'type' => $type,
+            'formModel' => $formModel,
         ));
     }
 
