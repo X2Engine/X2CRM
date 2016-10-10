@@ -83,7 +83,7 @@ INSERT INTO x2_profile (id, fullName, username, emailAddress, status)
 /*&*/
 INSERT INTO x2_social (`type`, `data`) VALUES ('motd', 'Please enter a message of the day!');
 /*&*/
-INSERT INTO x2_admin (timeout,webLeadEmail,emailFromAddr,currency,installDate,updateDate,quoteStrictLock,unique_id,edition,serviceCaseFromEmailAddress,serviceCaseFromEmailName,serviceCaseEmailSubject,serviceCaseEmailMessage,eventDeletionTime,eventDeletionTypes,appName,appDescription,externalBaseUrl,externalBaseUri) VALUES (
+INSERT INTO x2_admin (timeout,webLeadEmail,emailFromAddr,currency,installDate,updateDate,quoteStrictLock,locationTrackingSwitch,unique_id,edition,serviceCaseFromEmailAddress,serviceCaseFromEmailName,serviceCaseEmailSubject,serviceCaseEmailMessage,eventDeletionTime,eventDeletionTypes,appName,appDescription,externalBaseUrl,externalBaseUri) VALUES (
 	'3600',
 	'{adminEmail}',
 	'{bulkEmail}',
@@ -91,6 +91,7 @@ INSERT INTO x2_admin (timeout,webLeadEmail,emailFromAddr,currency,installDate,up
 	'{time}',
 	0,
 	0,
+        1,
 	'{unique_id}',
 	'{edition}',
 	'{adminEmail}',
@@ -106,7 +107,7 @@ INSERT INTO x2_admin (timeout,webLeadEmail,emailFromAddr,currency,installDate,up
 );
 /*&*/
 UPDATE x2_profile SET `widgets`='0:1:1:1:1:1:0:0:0:0:0:0:0:0',
-	`widgetOrder`='OnlineUsers:TimeZone:SmallCalendar:GoogleMaps:ChatBox:TagCloud:TwitterFeed:MessageBox:QuickContact:NoteBox:ActionMenu:MediaBox:DocViewer:TopSites';
+	`widgetOrder`='OnlineUsers:TimeZone:GoogleMaps:SmallCalendar:ChatBox:TagCloud:TwitterFeed:MessageBox:QuickContact:NoteBox:ActionMenu:MediaBox:DocViewer:TopSites';
 /*&*/
 INSERT INTO `x2_modules`
 (`name`, title, visible, menuPosition, searchable, editable, adminOnly, custom, toggleable, moduleType)
@@ -129,6 +130,6 @@ INSERT INTO `x2_tips` (`tip`, `edition`, `admin`, `module`) VALUES
 ("You can see the history of related records by clicking \"Relationships\" on the History widget. Accounts do this by default.",'opensource',0,'Relationships');
 /*&*/
 INSERT INTO `x2_mobile_layouts`
-(`modelName`, `layout`, `defaultForm`, `defaultView`, `version`)
+(`id`,`modelName`, `layout`, `defaultForm`, `defaultView`, `version`)
 VALUES
-('Profile', '["tagLine","username","officePhone","cellPhone","emailAddress","googleId"]',0,1,'5.4');
+(-1, 'Profile', '["tagLine","username","officePhone","cellPhone","emailAddress","googleId"]',0,1,'5.4');

@@ -53,4 +53,5 @@
   'Financial Data Field' => '財務データフィールド',
   'Select a model type' => 'モデルタイプを選択',
   'Select a field' => 'フィールドを選択します',
+  'Default For' => 'デフォルト',
 );

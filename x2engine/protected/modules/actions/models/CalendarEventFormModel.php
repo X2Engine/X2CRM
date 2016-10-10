@@ -36,6 +36,10 @@
  **********************************************************************************/
 
 class CalendarEventFormModel extends EventFormModel {
+    
+    public $invite;
+    public $emailAddresses;
+    
     public function attributeLabels(){
         return array_merge(parent::attributeLabels(), array(
             'allDay' => Yii::t('actions', 'All Day'),
@@ -43,7 +47,37 @@ class CalendarEventFormModel extends EventFormModel {
             'eventStatus' => Yii::t('actions', 'Event Status'),
             'associationType' => Yii::t('actions', 'Association Type'),
             'color' => Yii::t('actions', 'Color'),
+            'emailAddresses' => Yii::t('actions','Enter email addresses, one per line'),
         ));
+    }
+    
+    public function rules(){
+        return array_merge(parent::rules(),array(
+            array(
+                'invite', 'numerical', 'integerOnly'=>true,
+            ),
+            array (
+                'emailAddresses', 'safe',
+            ),
+        ));
+    }
+    
+     public function validate ($attributes=null, $clearErrors=true) {
+        $valid = parent::validate ();
+        $attributes = $this->getAttributes ();
+        $this->action->setX2Fields ($attributes);
+        $this->action->type = $this->type;
+        if($this->invite){
+            $this->action->attachBehavior('CalendarInviteBehavior', array(
+                'class' => 'CalendarInviteBehavior',
+                'emailAddresses' => array_map('chop', explode("\n", $this->emailAddresses)),
+            ));
+        }
+        $valid &= $this->action->validate ();
+        // synchronize errors
+        $this->addErrors ($this->action->getErrors ());
+        $this->action->addErrors ($this->getErrors ());
+        return $valid;
     }
 }
 

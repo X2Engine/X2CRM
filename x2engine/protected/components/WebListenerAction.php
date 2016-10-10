@@ -164,8 +164,26 @@ class WebListenerAction extends CAction {
 
                 // Only set the cookie if the contact was identified with a cookie
                 if (!isset($retArr['probability']) || $retArr['probability'] >= 100)
-                
-                self::setKey($contact->trackingKey);
+                    self::setKey($contact->trackingKey);
+
+                $location = $contact->logLocation('webactivity');
+                if ($location) {
+                    $latest = Yii::app()->db->createCommand()
+                        ->select('id, MAX(completeDate) as completeDate')
+                        ->from('x2_actions')
+                        ->where('associationId=:id AND associationType="contacts" AND type="webactivity"', array(':id'=>$contact->id))
+                        ->queryRow();
+
+                    // Only mark webactivity location if this action was captured within the
+                    // cooldown period
+                    if ($latest['completeDate'] !== null && $latest['completeDate'] > time() - Yii::app()->settings->webTrackerCooldown) {
+                        Yii::app()->db->createCommand()
+                            ->update('x2_actions',
+                                array('locationId' => $location->id),
+                                'id = :id',
+                                array(':id' => $latest['id']));
+                    }
+                }
             }
         }
 

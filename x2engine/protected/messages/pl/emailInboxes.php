@@ -65,4 +65,9 @@
   'Failed to associate message "{subject}" with {type} {model}' => 'Nie udało się powiązać komunikat &quot; {subject} &quot; z {type} {model}',
   'Message "{subject}" already associated with {type} {model}' => 'Wiadomość &quot; {subject} &quot; już związane z {type} {model}',
   'Disable Quota Operations' => 'Wyłącz operacje przydziałów',
+  'Manage your application credentials' => 'Zarządzanie poświadczeniami aplikacji',
+  'Associate attachment with related record' => 'Associate załącznik z powiązanym rekordzie',
+  'Attachment successfully associated' => 'Załącznik powodzeniem związany',
+  'Association failed: the attachment could not be saved' => 'Stowarzyszenie nie powiodło się: załącznik nie może zostać zapisany',
+  'Association failed: there are no related records' => 'Stowarzyszenie nie powiodło się: nie ma related records',
 );

@@ -75,9 +75,15 @@ $echoTabRow = function ($tabs, $rowNum=1) use ($that) {
         $tab->renderTab (array (
             'model' => $model,
             'associationType' => $associationType,
+            'email' => $email,
         ));
     }
-    ?>
+    ?><div style="margin-top:-40px;">
+        <button id="toggle-location-button" class="x2-button" title="<?php echo Yii::t('app', 'Location Check-In'); ?>" style="display:inline-block;"><?php
+            echo X2Html::fa('crosshairs fa-lg');
+        ?></button>
+        <textarea id="checkInComment" rows=2 style="display: none" placeholder="<?php echo Yii::t('app', 'Check-in comment'); ?>"></textarea>
+    </div>
     </div>
 </div>
 

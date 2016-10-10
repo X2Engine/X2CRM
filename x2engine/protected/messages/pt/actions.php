@@ -4,7 +4,6 @@
   'Reminder' => 'Lembrete',
   'Complete Date' => 'Data Completa',
   'Date Completed' => 'Cata de Conclusão',
-  'All Day' => 'Todo Dia',
   'Complete + New Action' => 'Completo + Ação Novo',
   'Uncomplete' => 'Faça Incompleta',
   'Overdue' => 'Atrasado',
@@ -120,4 +119,5 @@
   'Event Subtype' => 'O subtipo do evento',
   'Event Status' => 'Status de Evento',
   'Calendar Color' => 'calendário Cor',
+  'Enter email addresses, one per line' => 'Digite os endereços de e-mail, linha um por',
 );

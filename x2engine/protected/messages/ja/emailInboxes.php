@@ -65,4 +65,9 @@
   'Failed to associate message "{subject}" with {type} {model}' => '「メッセージを関連付けることができませんでした{subject}と「 {type} {model}',
   'Message "{subject}" already associated with {type} {model}' => 'メッセージ「 {subject}すでに関連付けられている&quot; {type} {model}',
   'Disable Quota Operations' => 'クォータの操作を無効にします',
+  'Manage your application credentials' => 'アプリケーションの資格情報を管理します',
+  'Associate attachment with related record' => '関連レコードに関連付けアタッチメント',
+  'Attachment successfully associated' => '添付ファイルが正常に関連します',
+  'Association failed: the attachment could not be saved' => '協会は失敗しました：添付ファイルが保存できませんでした',
+  'Association failed: there are no related records' => '協会は失敗しました：何の関連レコードはありません',
 );

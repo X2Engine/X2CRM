@@ -170,7 +170,6 @@
   'JSON' => 'JSON',
   'This ID is unique to this email. Conditions checking for email opens can refer to this ID' => 'זיהוי זה הוא ייחודי להודעה זו. תנאי בדיקת הדואר אלקטרוני פותחים יכולים להתייחס לזיהוי זה',
   'Checking this box will cause the email to be attached to the record associated with this flow, if it exists.' => 'סימון תיבה זו יגרום לדואר האלקטרוני שיצורף לשיא קשור לזרימה זו, אם היא קיימת.',
-  'Email Opened' => 'דוא&quot;ל נפתח',
   'Inbound Email' => 'דוא&quot;ל הנכנס',
   'Outbound Email' => 'דוא&quot;ל יוצא',
   'Triggers when an inbound email is received.' => 'מפעיל כאשר הדוא&quot;ל הנכנס הוא קיבל.',

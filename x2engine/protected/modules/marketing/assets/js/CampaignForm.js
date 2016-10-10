@@ -285,7 +285,7 @@ x2.CampaignForm = (function() {
                 Docs: {
                     visibility: key('visibility'),
                     name: key('name'),
-                    subject: key('visibility'),
+                    subject: key('subject'),
                     text: key('content'),
                     assignedTo: key('assignedTo'),
                 },

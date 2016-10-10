@@ -53,9 +53,8 @@ echo X2Html::unorderedList (array (
     CHtml::encode (Yii::t('app', 'Google sign in')),
     CHtml::encode (Yii::t('app', 'Google Calendar sync')),
     CHtml::encode (Yii::t('app', 'Google Drive access')),
-     
+    CHtml::encode (Yii::t('app', 'Google Maps widget and Contact Heatmap')),
     CHtml::encode (Yii::t('app', 'Google+ Profile widget and profile search')),
-     
 ));
 
 ?>
@@ -80,7 +79,13 @@ echo X2Html::orderedList (array (
                 Yii::t('app', 'From the "APIs & auth" section in the left sidebar, select "APIs."')
             ),
             CHtml::encode (
-                Yii::t('app', 'Search for and enable the Calendar and Drive APIs.')
+                Yii::t('app', 'Search for and enable the following APIs:')
+            ).
+            X2Html::orderedList(array(
+                'CalDav API',
+                'Google Calendar API',
+                'Google Drive API',
+                )
             ),
             CHtml::encode (
                 Yii::t('app', 'From the "APIs & auth" section in the left sidebar, select '.
@@ -93,7 +98,7 @@ echo X2Html::orderedList (array (
                 Yii::t('app', 'When asked for "Authorized Redirect URIs," input the following '.
                     'urls:')).
                 CHtml::tag (
-                    'textarea', array ('readonly' => 'readonly', 'class'=>'authorized-js-origins'),
+                    'textarea', array ('readonly' => 'readonly', 'style' => 'display: block', 'class'=>'authorized-js-origins'),
                     (@$_SERVER['HTTPS'] == 'on' ? 'https://' : 'http://') . $_SERVER['HTTP_HOST'] . 
                         Yii::app()->controller->createUrl(
                             '/calendar/calendar/syncActionsToGoogleCalendar')."\n".
@@ -106,7 +111,7 @@ echo X2Html::orderedList (array (
                 Yii::t('app', 'When asked for "Authorized JavaScript Origins," input the '.
                     'following urls:')).
                 CHtml::tag (
-                    'textarea', array ('readonly' => 'readonly'),
+                    'textarea', array ('readonly' => 'readonly', 'style' => 'display: block'),
                     (@$_SERVER['HTTPS'] == 'on' ? 'https://' : 'http://') . $_SERVER['HTTP_HOST']
                 ),
             Yii::t('app', 'Copy the Client ID and Client Secret into OAuth 2.0 Credentials '.
@@ -115,14 +120,19 @@ echo X2Html::orderedList (array (
             )),
         ), array ('style' => 'list-style-type: lower-latin;')),
      
-    Yii::t('app', 'To configure Google integration for the Google+ widget:').
+    Yii::t('app', 'To configure Google integration for the Google+ and Google Maps widgets:').
         X2Html::orderedList (array (
             CHtml::encode (
                 Yii::t('app', 'From the "APIs & auth" section in the left sidebar, select "APIs."')
             ),
             CHtml::encode (
-                Yii::t('app', 'Search for and enable the Google+ API.')
-            ),
+                Yii::t('app', 'Search for and enable following APIs.')
+            ).X2Html::orderedList(array(
+                'Google Maps Geocoding API', 
+                'Google Static Maps API',
+                'Google Maps JavaScript API',
+                'Google+ API',
+            )),
             CHtml::encode (
                 Yii::t('app', 'From the "APIs & auth" section in the left sidebar, select '.
                     '"Credentials."')
@@ -133,7 +143,7 @@ echo X2Html::orderedList (array (
             CHtml::encode (
                 Yii::t('app', 'When asked for key type, select "Server key."')
             ),
-            Yii::t('app', 'Copy the API key into the Google+ Integration section {below}.', array (
+            Yii::t('app', 'Copy the API key into the Google+ and Google Maps Integration section {below}.', array (
                 '{below}' => CHtml::link (Yii::t('app', 'below'), '#api-key')
             )),
         ), array ('style' => 'list-style-type: lower-latin;')),
@@ -155,7 +165,7 @@ $model->renderProtectedInput ('clientSecret');
 
  
 echo X2Html::fragmentTarget ('api-key');
-echo CHtml::tag ('h3', array (), Yii::t('app', 'Google+ Integration'));
+echo CHtml::tag ('h3', array (), Yii::t('app', 'Google+ and Google Maps Integration'));
 echo '<hr />';
 echo CHtml::activeLabel($model, 'apiKey');
 $model->renderProtectedInput ('apiKey');

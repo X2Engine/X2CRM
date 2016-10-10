@@ -105,7 +105,7 @@ $('#currency').change(function() {
         ?><br>
         <?php echo Yii::t('admin', 'Set the duration between notification requests in milliseconds.'); ?>
         <br><br>
-        <?php echo Yii::t('admin', 'Decreasing this number allows for more instantaneous notifications, but generates more server requests, so adjust it to taste. The default value is 2000 (2 seconds).'); ?>
+        <?php echo Yii::t('admin', 'Decreasing this number allows for more instantaneous notifications, but generates more server requests, so adjust it to taste. The default value is 3000 (3 seconds).'); ?>
     </div>
     <div class="form">
         <?php

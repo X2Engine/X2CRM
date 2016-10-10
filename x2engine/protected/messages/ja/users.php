@@ -43,4 +43,6 @@
   'Delete {user}' => '削除{user}',
   'Check your email at {email} for further instructions to finish resetting your password.' => 'でメールをチェックしてください{email}パスワードの再設定が終了する詳細な手順について。',
   'You should now have access as "{user}" with the new password specified.' => 'これで、 &quot;としてのアクセスが必要です{user}指定した新しいパスワードを使用して&quot;。',
+  'View {users} Map' => 'ビュー{users}の地図',
+  'User Location Map' => 'ユーザーのロケーションマップ',
 );

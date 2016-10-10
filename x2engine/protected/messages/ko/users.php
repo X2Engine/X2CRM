@@ -43,4 +43,6 @@
   'Delete {user}' => '삭제 {user}',
   'Check your email at {email} for further instructions to finish resetting your password.' => '에 이메일 확인 {email} 비밀번호를 재설정 완료 자세한 지침.',
   'You should now have access as "{user}" with the new password specified.' => '이제 &quot;로 접근해야한다 {user} 지정한 새 암호를 &quot;.',
+  'View {users} Map' => '보기 {users} 지도',
+  'User Location Map' => '사용자 위치지도',
 );

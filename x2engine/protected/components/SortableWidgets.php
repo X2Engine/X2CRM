@@ -93,6 +93,14 @@ class SortableWidgets extends CJuiWidget {
                                     duration: 200,
                                     complete: function() {
                                         blindComplete = true;
+                                        // for google maps, trigger a resize event
+                                        if(widget === 'GoogleMaps' && $(this).is(':visible')) {
+                                            if (!x2.googleMapsWidget.instantiated) {
+                                                runGoogleMapsWidget ();
+                                            } else {
+                                                google.maps.event.trigger(window.map,'resize');
+                                            }
+                                        }
                                     }
                                 });
                             }

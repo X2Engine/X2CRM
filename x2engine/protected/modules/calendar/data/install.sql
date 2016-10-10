@@ -1,28 +1,40 @@
-DROP TABLE IF EXISTS x2_calendars,x2_calendar_permissions;
+DROP TABLE IF EXISTS x2_calendars,x2_calendar_permissions,x2_calendar_invites;
 /*&*/
 CREATE TABLE x2_calendars (
     id                 INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
-    name               VARCHAR(100) NOT NULL,
-    viewPermission     TEXT,
-    editPermission     TEXT,
-    googleCalendar     TINYINT,
-    googleFeed         VARCHAR(255),
+    name               VARCHAR(100) NOT NULL, 
+    remoteSync         TINYINT,
     createDate         BIGINT,
     createdBy          VARCHAR(40),
     lastUpdated        BIGINT,
     updatedBy          VARCHAR(40),
-    googleCalendarId   VARCHAR(255),
-    googleAccessToken  VARCHAR(512),
-    googleRefreshToken VARCHAR(255)
-) COLLATE utf8_general_ci;
+    syncType           VARCHAR(255),
+    remoteCalendarId   VARCHAR(255),
+    remoteCalendarUrl  VARCHAR(512),
+    syncToken          VARCHAR(255),
+    ctag               VARCHAR(255),
+    credentials        TEXT
+) ENGINE InnoDB, COLLATE utf8_general_ci;
 /*&*/
 CREATE TABLE x2_calendar_permissions (
     id            INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
-    user_id       INT,
-    other_user_id INT,
+    calendarId    INT UNSIGNED,
+    userId        INT UNSIGNED,
     view          TINYINT,
-    edit          TINYINT
-) COLLATE utf8_general_ci;
+    edit          TINYINT,
+    FOREIGN KEY (`calendarId`) REFERENCES x2_calendars(`id`) ON UPDATE CASCADE ON DELETE CASCADE
+) ENGINE InnoDB, COLLATE utf8_general_ci;
+/*&*/
+CREATE TABLE x2_calendar_invites (
+    id              INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    actionId        INT UNSIGNED NOT NULL,
+    email           VARCHAR(255),
+    status          ENUM ('Yes', 'No', 'Maybe'),
+    inviteKey       VARCHAR(255),
+    FOREIGN KEY (`actionId`) REFERENCES x2_actions(`id`) ON UPDATE CASCADE ON DELETE CASCADE
+) ENGINE InnoDB, COLLATE utf8_general_ci;
+/*&*/
+ALTER TABLE `x2_actions` ADD CONSTRAINT calendarId FOREIGN KEY (`calendarId`) REFERENCES x2_calendars(`id`) ON UPDATE CASCADE ON DELETE SET NULL;
 /*&*/
 INSERT INTO `x2_modules`
 (`name`, title, visible, menuPosition, searchable, editable, adminOnly, custom, toggleable)

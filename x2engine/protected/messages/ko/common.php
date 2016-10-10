@@ -610,4 +610,12 @@
   'Select All' => '모두 선택',
   'User Login History' => '사용자 로그인 기록',
   'Delete Record' => '기록 삭제',
+  'All Day' => '하루 종일',
+  'Jasper Server Integration' => '재스퍼 서버 통합',
+  'Longitude' => '경도',
+  'Date/Time' => '날짜 시간',
+  'Stated Address' => '명시된 주소',
+  'Check-in comment' => '체크인 코멘트',
+  'Email Opened' => '이메일 개설',
+  'Email Clicked' => '이메일 클릭 수',
 );

@@ -57,4 +57,9 @@
   'Rows & Columns' => '行和列',
   '{type} Report' => '{type}报告',
   'Rows and Columns' => '行和列',
+  'Report Path:' => '报告路径：',
+  'External Reports' => '外部报告',
+  'Save Changes' => '保存更改',
+  'Please supply the full path to the report on the Jasper Server, e.g., /Reports/MyReport. This can be found by right clicking on your report in the Jasper Server and selecting "Properties."' => '请提供给碧玉服务器，例如，/报告/ MyReport报表上的完整路径。这可以通过右键点击你的碧玉服务器，然后选择报告中找到“属性”。',
+  'Failed to load external report. Please check your Jasper Server credential details.' => '无法加载外部报告。请检查您的碧玉服务器证书的详细信息。',
 );

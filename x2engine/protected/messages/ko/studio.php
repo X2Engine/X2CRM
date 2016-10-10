@@ -170,7 +170,6 @@
   'JSON' => 'JSON',
   'This ID is unique to this email. Conditions checking for email opens can refer to this ID' => '이 ID는이 이메일에 고유합니다. 이메일을 확인하는 조건이 ID를 참조 할 수 있습니다 열립니다',
   'Checking this box will cause the email to be attached to the record associated with this flow, if it exists.' => '이 상자를 선택하면 존재하는 경우 이메일,이 흐름과 관련된 기록에 첨부하게됩니다.',
-  'Email Opened' => '이메일 개설',
   'Inbound Email' => '인바운드 이메일',
   'Outbound Email' => '아웃 바운드 이메일',
   'Triggers when an inbound email is received.' => '인바운드 이메일이 수신 될 때 트리거한다.',

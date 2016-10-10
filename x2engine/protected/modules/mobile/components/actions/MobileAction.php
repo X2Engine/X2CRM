@@ -53,6 +53,25 @@ abstract class MobileAction extends CAction {
     }
 
     protected function beforeRun () {
+        $settings = Yii::app()->settings;
+        if (isset($_POST['geoCoords']) && 
+                $_POST['geoCoords']['lat'] != null && 
+                $_POST['geoCoords']['lon'] != null && 
+                $settings->locationTrackingSwitch){
+            
+            /*
+             * Get the last record of the user's location and compare 
+             *  the distance between that and of the new distance
+             */
+            $locationRecord = Locations::model()->find($condition='WHERE contactId='.Yii::app()->user->id, $params=array ());
+            $latitudeFrom = $locationRecord->lat;
+            $longitudeFrom = $locationRecord->lon;
+            $distance = LocationUtil::vincentyGreatCircleDistance(
+                $latitudeFrom, $longitudeFrom, $_POST['geoCoords']['lat'], $_POST['geoCoords']['lon'], $earthRadius = 6371);
+            if($distance >= Yii::app()->settings->locationTrackingDistance){
+                Yii::app()->params->profile->user->logLocation('mobileIdle', 'POST'); 
+            }
+        }
     }
 
 }

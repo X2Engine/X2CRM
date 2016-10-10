@@ -53,4 +53,5 @@
   'Financial Data Field' => 'Οικονομικά Στοιχεία πεδίο',
   'Select a model type' => 'Επιλέξτε έναν τύπο μοντέλο',
   'Select a field' => 'Επιλέξτε ένα πεδίο',
+  'Default For' => 'προεπιλογή για',
 );

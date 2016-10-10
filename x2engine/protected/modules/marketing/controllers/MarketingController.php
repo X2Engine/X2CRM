@@ -601,6 +601,16 @@ class MarketingController extends x2base {
      *  of the person unsubscribing
      */
     public function actionClick($uid, $type, $url = null, $email = null){
+        // If the request is coming from within the web application, ignore it.
+        $referrer = isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : '';
+        $baseUrl = Yii::app()->request->getBaseUrl(true);
+        $fromApp = strpos($referrer, $baseUrl) === 0;
+        if ($fromApp && $type === 'open') {
+            header('Content-Type: image/gif');
+            echo base64_decode('R0lGODlhAQABAIABAP///wAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==');
+            return;
+        }
+
         $now = time();
         $item = CActiveRecord::model('X2ListItem')
             ->with('contact', 'list')->findByAttributes(array('uniqueId' => $uid));
@@ -633,6 +643,9 @@ class MarketingController extends x2base {
 
         $contact = $item->contact;
         $list = $item->list;
+        if (!is_null($contact)) {
+            $location = $contact->logLocation($type, false);
+        }
 
         $event = new Events;
         $notif = new Notification;
@@ -770,6 +783,8 @@ class MarketingController extends x2base {
             $this->redirect(htmlspecialchars_decode($url, ENT_NOQUOTES));
         }
 
+        if (isset($location))
+            $action->locationId = $location->id;
         $action->save();
         // if any of these hasn't been fully configured
         $notif->save();  // it will simply not validate and not be saved

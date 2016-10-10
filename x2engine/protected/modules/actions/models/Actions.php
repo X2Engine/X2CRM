@@ -82,6 +82,9 @@ class Actions extends X2Model {
         'emailFolderName' => null,
         'emailUidValidity' => null,
         
+        'etag'=> null,
+        'remoteCalendarUrl' => null,
+        
     );
 
     private static $_priorityLabels;
@@ -148,8 +151,7 @@ class Actions extends X2Model {
     }
 
     public function behaviors(){
-        $that = $this;
-        return array(
+        $behaviors =  array(
             'LinkableBehavior' => array(
                 'class' => 'LinkableBehavior',
                 'module' => 'actions'
@@ -168,6 +170,18 @@ class Actions extends X2Model {
                 'fileAttribute' => 'upload'
             ),
         );
+        if(!$this->isNewRecord && $this->type==='event'){
+            $emailAddresses = Yii::app()->db->createCommand()
+                ->select('email')
+                ->from('x2_calendar_invites')
+                ->where('actionId = :id',array(':id' => $this->id))
+                ->queryColumn();
+            $behaviors['CalendarInviteBehavior'] = array(
+                'class' => 'CalendarInviteBehavior',
+                'emailAddresses' => $emailAddresses,
+            );
+        }
+        return $behaviors;
     }
 
     /**
@@ -179,7 +193,7 @@ class Actions extends X2Model {
             array(
                 array('allDay', 'boolean'),
                 array('associationId,associationType','requiredAssoc'),
-                array('createDate, completeDate, lastUpdated', 'numerical', 'integerOnly' => true),
+                array('createDate, completeDate, lastUpdated, calendarId', 'numerical', 'integerOnly' => true),
                 array(
                     'id,assignedTo,actionDescription,visibility,associationId,associationType,'.
                     'associationName,dueDate,priority,type,createDate,complete,reminder,'.
@@ -209,6 +223,8 @@ class Actions extends X2Model {
             'timers' => array(self::HAS_MANY,'ActionTimer','actionId'),
             'media' => array (
                 self::MANY_MANY, 'Media', 'x2_actions_to_media(actionsId, mediaId)'),
+            'location' => array(self::BELONGS_TO, 'Locations', 'locationId'),
+            'invites' => array(self::HAS_MANY,'CalendarInvites','actionId'),
             //'assignee' => array(self::BELONGS_TO,'User',array('assignedTo'=>'username')),
         ));
     }
@@ -300,7 +316,11 @@ class Actions extends X2Model {
         $multiAssociationLinks = array();
         foreach ($this->getMultiassociations() as $type => $models) {
             foreach ($models as $model) {
-                $multiAssociationLinks[$type][] = X2Model::getModelLink($model->id, $type);
+                if ($model) {
+                    $link = X2Model::getModelLink($model->id, $type);
+                    if ($link)
+                        $multiAssociationLinks[$type][] = $link;
+                }
             }
         }
         return $multiAssociationLinks;
@@ -490,6 +510,13 @@ class Actions extends X2Model {
     }
 
     public function beforeDelete() {
+        
+        if($this->type === 'event' && !empty($this->calendarId) && !empty($this->remoteCalendarUrl)){
+            $calendar = X2Calendar::model()->findByPk($this->calendarId);
+            if($calendar){
+                $calendar->deleteAction($this);
+            }
+        }
         
         ActionTimer::model()->deleteAllByAttributes(array('actionId'=>$this->id));
         
@@ -707,6 +734,12 @@ class Actions extends X2Model {
     public function afterCreate(){
         if($this->type === 'event') {
             $this->createCalendarFeedEvent ();
+            if(!empty($this->calendarId) && empty($this->remoteCalendarUrl)){
+                $calendar = X2Calendar::model()->findByPk($this->calendarId);
+                if($calendar && $calendar->asa('syncBehavior')){
+                    $calendar->syncActionToCalendar($this);
+                }
+            }
         }
         if(empty ($this->type) || in_array($this->type, array('call','time','note'))){
             $this->createEvents ('record_create', $this->createDate);
@@ -755,6 +788,16 @@ class Actions extends X2Model {
 
         parent::afterCreate();
     }
+    
+    public function afterUpdate() {
+        if ($this->type === 'event' && !empty($this->calendarId) && !empty($this->remoteCalendarUrl)) {
+            $calendar = X2Calendar::model()->findByPk($this->calendarId);
+            if ($calendar && $calendar->asa('syncBehavior')) {
+                $calendar->syncActionToCalendar($this);
+            }
+        }
+        parent::afterUpdate();
+    }
 
     /**
      * Deletes the action reminder event, if any
@@ -762,7 +805,6 @@ class Actions extends X2Model {
      */
     public function afterDelete(){
         X2Model::model('Events')->deleteAllByAttributes(array('associationType' => 'Actions', 'associationId' => $this->id, 'type' => 'action_reminder'));
-        X2Model::model('ActionText')->deleteByPk($this->id);
          
         if ($this->quoteId && $this->type === 'products') 
             Quote::model()->deleteByPk ($this->quoteId);
@@ -797,7 +839,18 @@ class Actions extends X2Model {
     public function setEmailUidValidity ($value) {
         $this->metaDataTemp['emailUidValidity'] = $value;
     }
-     
+    
+    public function setEtag ($value) {
+        $this->metaDataTemp['etag'] = $value;
+    }
+    
+    public function setRemoteCalendarUrl ($value) {
+        $this->metaDataTemp['remoteCalendarUrl'] = $value;
+    }
+    
+    public function setRemoteSource ($value) {
+        $this->metaDataTemp['remoteSource'] = $value;
+    }
 
     public function setActionDescription($value){
         // Magic setter stores value in actionDescriptionTemp until saved
@@ -827,6 +880,16 @@ class Actions extends X2Model {
 
     public function getEmailUidValidity() {
         return $this->metaDataTemp['emailUidValidity'];
+    }
+    
+    public function getEtag () {
+        return $this->metaDataTemp['etag'];
+    }
+    public function getRemoteCalendarUrl () {
+        return $this->metaDataTemp['remoteCalendarUrl'];
+    }
+    public function getRemoteSource () {
+        return $this->metaDataTemp['remoteSource'];
     }
      
 
@@ -1333,28 +1396,6 @@ class Actions extends X2Model {
         foreach(self::$_fields[$this->tableName()] as &$field){
             if(isset ($dbAttributes[$field->fieldName])) {
                 $this->compareAttribute ($criteria, $field);
-            }
-        }
-    }
-
-    /**
-     * TODO: unit test 
-     */
-    public function syncGoogleCalendar($operation, $ajax=false){
-        $profiles = $this->getProfilesOfAssignees ();
-
-        foreach($profiles as &$profile){
-            if($profile !== null){
-                if($operation === 'create') {
-                    // create action to Google Calendar
-                    $profile->syncActionToGoogleCalendar($this, $ajax); 
-                } elseif($operation === 'update') {
-                    // update action to Google Calendar
-                    $profile->updateGoogleCalendarEvent($this, $ajax); 
-                } elseif($operation === 'delete') {
-                    // delete action in Google Calendar
-                    $profile->deleteGoogleCalendarEvent($this, $ajax); 
-                }
             }
         }
     }

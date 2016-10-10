@@ -180,7 +180,7 @@ ActionFrames.prototype.loadActionFrame = function (id, type, textOnly){
     type = typeof type === 'undefined' ? null : type; 
     var that = this;
 
-    var publisher=($('#publisher-form').html()!=null);
+    var publisher=($('#publisher').html()!=null);
     var frame='<iframe id="action-frame" style="width:99%;height:99%"' +
         'src="'+yii.baseUrl+'/index.php/actions/viewAction?id='+id+'&publisher='+publisher+''+
         (textOnly ? '&textOnly=1' : '') + '" ' +

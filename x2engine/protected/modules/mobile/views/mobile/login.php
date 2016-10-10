@@ -197,7 +197,13 @@ if ($model->hasErrors () && !isset($_COOKIE['sessionToken'])) {
     <div data-role="fieldcontain">
         <!--?php echo $form->label($model, 'password', array()); ?-->
         <?php 
-        
+        $settings = Yii::app()->settings;
+        if(Yii::app()->settings->locationTrackingFrequency != null) {
+            Yii::app()->request->cookies['locationTrackingFrequency'] = new CHttpCookie('locationTrackingFrequency', $settings->locationTrackingFrequency);
+        }
+        if(Yii::app()->settings->locationTrackingSwitch != null) {
+            Yii::app()->request->cookies['locationTrackingSwitch'] = new CHttpCookie('locationTrackingSwitch', $settings->locationTrackingSwitch);
+        }
         if(isset($_COOKIE['sessionToken'])) {
 
         } else {

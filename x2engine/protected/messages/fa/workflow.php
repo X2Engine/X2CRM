@@ -53,4 +53,5 @@
   'Financial Data Field' => 'درست اطلاعات مالی',
   'Select a model type' => 'انتخاب نوع مدل',
   'Select a field' => 'انتخاب رشته',
+  'Default For' => 'به طور پیش فرض برای',
 );

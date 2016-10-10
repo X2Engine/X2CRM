@@ -118,7 +118,10 @@ class User extends CActiveRecord {
                 'class' => 'application.components.behaviors.ERememberFiltersBehavior',
                 'defaults' => array(),
                 'defaultStickOnClear' => false
-            )
+            ),
+            'MappableBehavior' => array(
+                'class' => 'application.components.behaviors.MappableBehavior',
+            ),
         ));
     }
 
@@ -265,9 +268,11 @@ class User extends CActiveRecord {
         foreach($social as $socialItem){
             $socialItem->delete();
         }
+        
+        X2Calendar::model()->deleteAllByAttributes(array('createdBy'=>$this->username));
 
         X2CalendarPermissions::model()->deleteAllByAttributes (
-            array(), 'user_id=:userId OR other_user_id=:userId', array (':userId' => $this->id)
+            array(), 'userId=:userId', array (':userId' => $this->id)
         );
 
         // delete profile
@@ -722,10 +727,7 @@ class User extends CActiveRecord {
         // calendar list not initialized?
         if (is_null($this->showCalendars)) {
             $showCalendars = array(
-                'userCalendars' => array('Anyone', $this->username),
-                'groupCalendars' => array(),
-                'sharedCalendars' => array(),
-                'googleCalendars' => array()
+                'userCalendars' => array(),
             );
             $this->showCalendars = CJSON::encode($showCalendars);
 

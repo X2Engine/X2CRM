@@ -41,7 +41,7 @@
  * This is the model class for table "x2_workflows".
  * @package application.modules.workflow.models
  */
-class Workflow extends CActiveRecord {
+class Workflow extends X2ActiveRecord {
 
     const DEFAULT_ALL_MODULES = '-1';
 
@@ -74,6 +74,11 @@ class Workflow extends CActiveRecord {
                     ),
                 ),
                 'maintainCurrentFieldsOrder' => true
+            ),
+            'ERememberFiltersBehavior' => array(
+                'class' => 'application.components.behaviors.ERememberFiltersBehavior',
+                'defaults' => array(),
+                'defaultStickOnClear' => false
             ),
         ));
     }
@@ -173,8 +178,9 @@ class Workflow extends CActiveRecord {
         return $this->_isDefaultFor;
     }
 
-    public function renderAttribute ($attr) {
-        switch ($attr) {
+    public function renderAttribute (
+            $fieldName, $makeLinks = true, $textOnly = true, $encode = true) {
+        switch ($fieldName) {
             case 'isDefaultFor':
                 $isDefaultFor = $this->getIsDefaultFor ();
                 if (in_array (self::DEFAULT_ALL_MODULES, $isDefaultFor)) {
@@ -192,7 +198,7 @@ class Workflow extends CActiveRecord {
                 }
                 break;
             default:
-                return $this->$attr;
+                return $this->$fieldName;
         }
     }
 

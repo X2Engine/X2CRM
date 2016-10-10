@@ -170,7 +170,6 @@
   'JSON' => 'JSON',
   'This ID is unique to this email. Conditions checking for email opens can refer to this ID' => 'Αυτό το αναγνωριστικό είναι μοναδικό σε αυτό το email. Προϋποθέσεις για τον έλεγχο e-mail ανοίγει μπορεί να αναφέρεται σε αυτό το αναγνωριστικό',
   'Checking this box will cause the email to be attached to the record associated with this flow, if it exists.' => 'Επιλέγοντας αυτό το πλαίσιο θα προκαλέσει το e-mail πρέπει να επισυνάπτεται στο αρχείο που σχετίζεται με αυτή τη ροή, εάν υπάρχει.',
-  'Email Opened' => 'Άνοιξε Email',
   'Inbound Email' => 'Εισερχόμενος Email',
   'Outbound Email' => 'Εξερχόμενος Email',
   'Triggers when an inbound email is received.' => 'Πυροδοτεί όταν μια εισερχόμενη παραλαβή του email.',

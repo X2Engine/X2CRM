@@ -152,7 +152,13 @@ Yii::app()->clientScript->registerScript('loadJqueryVersion',
             'Demitri Morgan',
             'Alex Rowe'
         ));
-        ?><br>
+        ?><br><br>
+        <b><?php echo Yii::t('app','Release Contributors');?></b><br>
+        <?php 
+        echo implode('<br>',array(
+            'Pomazan Bogdan -- Russian Language Translations'
+        ));
+        ?>
     </div>
     <hr>
     <div id="about-credits">

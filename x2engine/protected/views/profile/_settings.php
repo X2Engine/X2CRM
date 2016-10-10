@@ -244,6 +244,15 @@ $form = $this->beginWidget('X2ActiveForm', array(
         </div>
     </div>
     <div class="row">
+        <div class="cell">
+            <?php echo $form->labelEx($model, 'defaultCalendar'); ?>
+            <?php
+            echo $form->dropDownList(
+                $model, 'defaultCalendar', X2CalendarPermissions::getEditableUserCalendarNames());
+            ?>
+        </div>
+    </div>
+    <div class="row">
         <div class="cell" style="margin: 8px 0px">
             <label style='display:inline-block'><?php echo Yii::t('app','Show Tips');?></label>
             <?php echo X2Html::activeCheckBox ($model, 'showTours', array(

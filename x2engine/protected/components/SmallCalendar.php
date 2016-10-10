@@ -59,16 +59,15 @@ class SmallCalendar extends X2Widget {
 
         // Fetch the calendars to display
         $user = User::model()->findByPk(Yii::app()->user->getId());
-        if (is_null($user->showCalendars))
+        if (is_null($user->showCalendars)){
             $user->initCheckedCalendars();
+        }
         $showCalendars = $user->showCalendars;
 
         // Possible urls for the calendar to call
         $urls = X2Calendar::getCalendarUrls();
 
-        $widgetSettingUrl = $this->controller->createUrl('/site/widgetSetting');;
-
-        $justMe = Profile::getWidgetSetting('SmallCalendar','justMe');
+        $widgetSettingUrl = $this->controller->createUrl('/site/widgetSetting');
 
         Yii::app()->clientScript->registerCssFile(
             Yii::app()->baseUrl .'/js/fullcalendar-1.6.1/fullcalendar/fullcalendar.css');
@@ -88,8 +87,7 @@ class SmallCalendar extends X2Widget {
                 'showCalendars' => $showCalendars,
                 'urls' => $urls,
                 'user' => $user->username,
-                'widgetSettingUrl' => $widgetSettingUrl,
-                'justMe' => $justMe
+                'widgetSettingUrl' => $widgetSettingUrl
             ));
     }
 }

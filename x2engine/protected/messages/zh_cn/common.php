@@ -610,4 +610,12 @@
   'Select All' => '全选',
   'User Login History' => '用户登录历史',
   'Delete Record' => '删除记录',
+  'All Day' => '整天',
+  'Jasper Server Integration' => '碧玉服务器集成',
+  'Longitude' => '经度',
+  'Date/Time' => '约会时间',
+  'Stated Address' => '声明地址',
+  'Check-in comment' => '入住评论',
+  'Email Opened' => '电子邮件开业',
+  'Email Clicked' => '电子邮件已点击',
 );

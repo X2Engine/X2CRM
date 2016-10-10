@@ -1086,6 +1086,13 @@ Yii::app()->clientScript->registerScript(sprintf('%x', crc32(Yii::app()->name)),
                             'class'=>'x2-button search-button'.$lastChildClass)
                         );
                     break;
+                case 'map':
+                    echo CHtml::link(
+                        X2Html::fa('fa-map-marker').Yii::t('app', 'Map'),
+                        array('/users/userMap'),
+                        array('class'=>'x2-button', 'id'=>'map-link')
+                    );
+                    break;
                 case 'clearFilters':
                     $url = array_merge(
                         array(Yii::app()->controller->action->id),

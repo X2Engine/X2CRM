@@ -610,4 +610,12 @@
   'Select All' => 'בחר הכל',
   'User Login History' => 'היסטוריה משתמש כניסה',
   'Delete Record' => 'מחק רשום',
+  'All Day' => 'כל היום',
+  'Jasper Server Integration' => 'Integration Server ג&#39;ספר',
+  'Longitude' => 'קו אורך',
+  'Date/Time' => 'תאריך שעה',
+  'Stated Address' => 'כתובת מצוינת',
+  'Check-in comment' => 'צ&#39;ק-אין תגובה',
+  'Email Opened' => 'דוא&quot;ל נפתח',
+  'Email Clicked' => 'דוא&quot;ל שנלחץ',
 );

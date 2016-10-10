@@ -42,7 +42,11 @@
         @include list-item;
         @include btn-states(0.05);
     }
-
+    
+    .import-button {
+        @include header-text-button;
+    }
+    
     .record-index-list-view {
         .empty {
             @include no-data-message;

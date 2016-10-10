@@ -44,6 +44,7 @@ function RecordViewController (argsDict) {
         DEBUG: x2.DEBUG && false,
         hasSettingsMenu: true,
         modelName: null,
+        modelEmail: null,
         modelId: null,
         myProfileId: null,
         supportsActionHistory: false
@@ -54,6 +55,13 @@ function RecordViewController (argsDict) {
 
 RecordViewController.prototype = auxlib.create (x2.Controller.prototype);
 
+RecordViewController.prototype.setUpMail = function () {
+    var that = this;
+    var mailButton$ = $('#header .mail-button');
+    mailButton$.click (function () {
+        x2touch.API.setEmail (that.modelEmail);
+    });
+};
 
 RecordViewController.prototype.setUpEdit = function () {
     var editButton$ = $('#header .edit-button');
@@ -230,6 +238,7 @@ RecordViewController.prototype.init = function () {
     var that = this;
     this.documentEvents.push (x2.main.onPageShow (function () {
         that.setUpEdit ();
+        that.setUpMail ();
         that.setUpDelete ();
         if (that.modelName === 'Profile') {
             that.setUpProfile ();

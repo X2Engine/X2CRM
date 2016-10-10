@@ -53,7 +53,7 @@ EventPublisherController.prototype.setUpForm = function () {
     var that = this;
     this.submitButton$ = $('#header .post-event-button');
     this.form$ = $.mobile.activePage.find ('form.publisher-form');
-    var eventBox$ = that.form$.find ('.event-text-box');
+    var eventBox$ = this.form$.find ('.event-text-box');
 
     $.mobile.activePage.find ('.event-publisher').click (function () {
         eventBox$.focus (); 
@@ -62,13 +62,56 @@ EventPublisherController.prototype.setUpForm = function () {
     eventBox$.keyup (function () {
         that.submitButton$.toggleClass ('disabled', !$.trim (eventBox$.val ()));
     });
+    
+    this.locationButton$ = $.mobile.activePage.find ('.location-attach-button');
+   
+    this.locationButton$.click (function () {
+        this.form$ = $.mobile.activePage.find ('form.publisher-form');
+        if (x2.main.isPhoneGap) {
+            x2touch.API.getCurrentPosition(function(position) {
+                var pos = {
+                   lat: position.coords.latitude,
+                   lon: position.coords.longitude
+                 };
+
+                this.form$.find ('#geoCoords').val(JSON.stringify (pos));
+                this.form$.find ('#geoLocationCoords').val("set");
+                x2.mobileForm.submitWithFiles (
+                   that.form$, 
+                   function (response) {
+                       try {
+                           var data = JSON.parse(response);
+                           var theAddress = data['results'][0]['formatted_address'];
+                           $.mobile.activePage.find ('.event-text-box').val(
+                               $.mobile.activePage.find ('.event-text-box').val()+" - "+theAddress
+                           );
+                       } catch (e) {
+                           alert("failed to parse response from server");
+                       }
+
+                       x2.main.refreshContent ();
+                       $.mobile.loading ('hide');
+                   }, function (jqXHR, textStatus, errorThrown) {
+                       $.mobile.loading ('hide');
+                       x2.main.alert (textStatus, 'Error');
+                   }
+               ); 
+               this.form$.find ('#geoLocationCoords').val("unset");
+            }, function (error) {
+                alert('code: '    + error.code    + '\n' +
+                      'message: ' + error.message + '\n');
+            }, {});         
+        
+        }
+        
+    });
 
 };
 
 EventPublisherController.prototype.init = function () {
     x2.Controller.prototype.init.call (this);
     var that = this;
-    this.documentEvents.push (x2.main.onPageShow (function () {
+    that.documentEvents.push (x2.main.onPageShow (function () {
         that.setUpForm ();
     }, 'EventPublisherController'));
 };

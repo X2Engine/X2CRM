@@ -164,6 +164,26 @@ class GoogleAuthenticator {
             return false;
         }
     }
+    
+    public function exchangeRefreshToken($refreshToken) {
+        if ($this->_enabled) {
+            $client = new Google_Client();
+            $client->setClientId($this->clientId);
+            $client->setClientSecret($this->clientSecret);
+            try {
+                $client->refreshToken($refreshToken); // Try to get an access token based on the stored refresh token
+                $credentials = $client->getAccessToken();
+                return $credentials;
+            } catch (Google_AuthException $e) {
+                $profile = Yii::app()->params->profile;
+                if (isset($profile)) { // If there was an error using the refresh token, remove it from the database so it can't cause issues.
+                    $profile->googleRefreshToken = null;
+                    $profile->update(array('googleRefreshToken'));
+                }
+                return false;
+            }
+        }
+    }
 
     /**
      * Send a request to the UserInfo API to retrieve the user's information.

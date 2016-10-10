@@ -65,4 +65,9 @@
   'Failed to associate message "{subject}" with {type} {model}' => 'נכשל נסיון לשייך הודעה &quot; {subject} &quot; עם {type} {model}',
   'Message "{subject}" already associated with {type} {model}' => 'הודעה &quot; {subject} &quot; כבר הקשורים {type} {model}',
   'Disable Quota Operations' => 'ביטול פעולות מכסות',
+  'Manage your application credentials' => 'נהל אישורי בקשתך',
+  'Associate attachment with related record' => 'מצורף עמית עם רשומה קשורה',
+  'Attachment successfully associated' => 'Attachment בהצלחה הקשורים',
+  'Association failed: the attachment could not be saved' => 'האגודה נכשלה: הקובץ המצורף לא יישמר',
+  'Association failed: there are no related records' => 'האגודה נכשלה: אין רשום קשור',
 );

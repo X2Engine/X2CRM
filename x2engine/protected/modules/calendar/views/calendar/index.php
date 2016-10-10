@@ -41,7 +41,6 @@ if(Yii::app()->settings->googleIntegration) { // menu if google integration is e
 		array('label'=>Yii::t('calendar', 'My Calendar Permissions'), 'url'=>array('myCalendarPermissions')),
 		array('label'=>Yii::t('calendar', 'List')),
 		array('label'=>Yii::t('calendar','Create'), 'url'=>array('create')),
-		array('label'=>Yii::t('calendar', 'Sync My Actions To Google Calendar'), 'url'=>array('syncActionsToGoogleCalendar')),
 	);
 } else {
 	$menuItems = array(
