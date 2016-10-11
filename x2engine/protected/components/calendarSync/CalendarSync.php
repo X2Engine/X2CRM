@@ -35,22 +35,48 @@
  * "Powered by X2Engine".
  **********************************************************************************/
 
-
+/**
+ * Abstract base class defining nexessary features for syncronizing calendars
+ * between X2 and other protocols. See CalDavSync for an example implementation
+ */
 abstract class CalendarSync extends CBehavior {
 
+    /**
+     * Master sync function to handle both inbound and outbound sync in one place.
+     * How this is implemented is left to the developer.
+     */
     public abstract function sync();
 
+    /**
+     * Master function to handle creating a remote calendar object from an X2
+     * Action record.
+     */
     public abstract function syncActionToCalendar($action);
     
+    /**
+     * Must delete all remote calendar events which were created from a sync from X2
+     */
     public abstract function deleteRemoteActions();
     
+    /**
+     * Must delete a remote calendar event associated with a provided Action model
+     */
     public abstract function deleteAction($action);
-    
-    protected abstract function outboundSync();
 
+    /**
+     * Must create an Action model from a calendar event object from the subclass's
+     * protocol
+     */
     protected abstract function createAction($calObject, $params = array());
-
+    
+    /**
+     * Must update an Action model from a calendar event object from the subclass's
+     * protocol
+     */
     protected abstract function updateAction($action, $calObject, $params = array());
-
+    
+    /**
+     * Must create a remote calendar event object from a provided Action model
+     */
     protected abstract function createCalObject($action);
 }
