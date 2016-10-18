@@ -127,6 +127,12 @@ class Events extends X2ActiveRecord {
                     'media',
                     $profile->username
                 ));
+                // if user folder doesn't exit, try to create it
+                if (!(file_exists($userFolderPath) && is_dir($userFolderPath))) {
+                    if (!@mkdir($userFolderPath, 0777, true)) { // make dir with edit permission
+                        throw new CHttpException(500, "Couldn't create user folder $userFolderPath");
+                    }
+                }
 
                 // add media record for file                
                 $media = new Media;

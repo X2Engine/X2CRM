@@ -1930,14 +1930,27 @@ class ProfileController extends x2base {
             //$soc->attributes = $_POST['Social'];
             //die(var_dump($_POST['Social']));
             $location = Yii::app()->params->profile->user->logLocation('activityPost', 'POST');
-            if ($location)
+            $geoCoords = isset($_POST['geoCoords']) ? CJSON::decode($_POST['geoCoords'], true) : null;
+            $isCheckIn = ($geoCoords && (isset($geoCoords['lat']) || !empty($geoCoords['comment'])));
+            if ($location && $isCheckIn) {
+                // Only associate location when a checkin is requested
                 $post->locationId = $location->id;
+                $staticMap = $location->generateStaticMap();
+                $geocodedAddress = $location->geocode();
+            }
             $post->user = Yii::app()->user->getName();
             $post->type = 'feed';
             $post->subtype = $_POST['subtype'];
             $post->lastUpdated = time();
             $post->timestamp = time();
             if ($post->save()) {
+                if (!empty($staticMap)) {
+                    if (!empty($geocodedAddress)) {
+                        $post->text .= Yii::t('app', 'Checking in at ').$geocodedAddress.' | '.
+                            Formatter::formatDateTime(time());
+                    }
+                    $post->saveRaw(Yii::app()->params->profile, $staticMap);
+                }
                 if (!empty($post->associationId) && 
                     $post->associationId != Yii::app()->user->getId() &&
                     $post->isVisibleTo (User::model ()->findByPk ($post->associationId))) {

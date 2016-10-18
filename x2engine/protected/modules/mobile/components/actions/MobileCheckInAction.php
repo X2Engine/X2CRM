@@ -79,32 +79,7 @@ class MobileCheckInAction extends MobileAction {
         if (isset ($_POST['EventPublisherFormModel'])) {
             $decodedResponse = json_decode(filter_input(INPUT_POST, 'geoCoords', FILTER_DEFAULT),true);
             $location = Yii::app()->params->profile->user->logLocation('mobileActivityPost', 'POST');
-            $decodedResult = null;
-            if($key && !empty($decodedResponse)){
-                /* 
-                 * get static map here
-                 */
-                $url = 'https://maps.googleapis.com/maps/api/staticmap?center=' . 
-                        $decodedResponse['lat'] . ',' . $decodedResponse['lon'] .
-                        '&zoom=13&size=600x300&maptype=roadmap&markers=color:blue%7Clabel:%7C' .
-                        $decodedResponse['lat'] . ',' . $decodedResponse['lon'] .
-                        '&key=' . $key;
-                //open connection
-                $ch = curl_init();
-
-                //set the url, number of POST vars, POST data
-                curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-                curl_setopt($ch,CURLOPT_URL, $url);
-
-                //execute post
-                $result = curl_exec($ch);
-                $http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-                if($http_code === 200){
-                    //close connection
-                    $decodedResult = $result;
-                }
-                curl_close($ch);
-            }
+            $decodedResult = $location ? $location->generateStaticMap() : null;
             
             $model->setAttributes ($_POST['EventPublisherFormModel']);
             if ($decodedResult && isset ($_FILES['EventPublisherFormModel'])) {

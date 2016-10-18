@@ -260,4 +260,68 @@ class Locations extends CActiveRecord
         }
         return $location;
     }
+
+    protected function getGoogleApiKey() {
+        $key = null;
+        $settings = Yii::app()->settings;
+        $creds = Credentials::model()->findByPk($settings->googleCredentialsId);
+        if($creds && $creds->auth && $creds->auth->apiKey){
+            $key = $creds->auth->apiKey;
+        }
+        return $key;
+    }
+
+    public function generateStaticMap() {
+        $decodedResult = null;
+        $key = $this->googleApiKey;
+        if($key && !empty($this->lat) && !empty($this->lon)){
+            /**
+             * get static map here
+             */
+            $url = 'https://maps.googleapis.com/maps/api/staticmap?center=' .
+                    $this->lat . ',' . $this->lon .
+                    '&zoom=13&size=600x300&maptype=roadmap&markers=color:blue%7Clabel:%7C' .
+                    $this->lat . ',' . $this->lon .
+                    '&key=' . $key;
+            //open connection
+            $ch = curl_init();
+
+            //set the url, number of POST vars, POST data
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+            curl_setopt($ch,CURLOPT_URL, $url);
+
+            //execute post
+            $result = curl_exec($ch);
+            $http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+            if($http_code === 200){
+                //close connection
+                $decodedResult = $result;
+            }
+            curl_close($ch);
+        }
+        return $decodedResult;
+    }
+
+    public function geocode() {
+        $key = $this->googleApiKey;
+        if ($key && !empty($this->lat) && !empty($this->lon)) {
+            $url = 'https://maps.googleapis.com/maps/api/geocode/json?latlng=' .
+                $this->lat . ',' . $this->lon .
+                '&key=' . $key;
+            //open connection
+            $ch = curl_init();
+
+            //set the url, number of POST vars, POST data
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+            curl_setopt($ch,CURLOPT_URL, $url);
+
+            //execute post
+            $result = curl_exec($ch);
+            curl_close($ch);
+            $data = CJSON::decode($result, true);
+            if ($data)
+                return $data['results'][0]['formatted_address'];
+            return $result;
+        }
+    }
 }
