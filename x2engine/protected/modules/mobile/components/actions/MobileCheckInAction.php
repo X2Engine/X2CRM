@@ -78,7 +78,7 @@ class MobileCheckInAction extends MobileAction {
 
         if (isset ($_POST['EventPublisherFormModel'])) {
             $decodedResponse = json_decode(filter_input(INPUT_POST, 'geoCoords', FILTER_DEFAULT),true);
-            $location = Yii::app()->params->profile->user->logLocation('mobileActivityPost', 'POST');
+            $location = Yii::app()->params->profile->user->logLocation('mobileCheckIn', 'POST');
             $decodedResult = null;
             if($key && !empty($decodedResponse)){
                 /* 

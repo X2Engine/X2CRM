@@ -428,6 +428,61 @@ class Actions extends X2Model {
     public function getAssociation () {
         return self::getAssociationModel($this->associationType, $this->associationId);
     }
+    
+    public function saveRaw ($profile, $attachmentData, $runValidation=true, $attributes=null) {
+
+            // save related photo record
+            $transaction = Yii::app()->db->beginTransaction ();
+            try {
+                // save the event
+                $ret = parent::save ($runValidation, $attributes);
+                if (!$ret) {
+                    throw new CException (implode (';', $this->getAllErrorMessages ()));
+                }
+                //save the raw data to a file
+                $filename = md5(uniqid(rand(), true)) . '.png';
+                $userFolderPath = implode(DIRECTORY_SEPARATOR, array(
+                    Yii::app()->basePath,
+                    '..',
+                    'uploads',
+                    'protected',
+                    'media',
+                    $profile->username
+                ));
+                // add media record for file                
+                $media = new Media;
+                $media->setAttributes (array (
+                    'fileName' => $filename,
+                    'mimetype' => 'image/png',
+                ), false);
+                $media->createDate = time();
+                $media->lastUpdated = time();
+                $media->uploadedBy = $profile->username;
+                $media->associationType = 'User';
+                $media->associationId = $profile->id;
+                $media->resolveNameConflicts();
+                $associatedMedia = Yii::app()->file->set($userFolderPath.DIRECTORY_SEPARATOR.$media->fileName);
+                $associatedMedia->create();
+                $associatedMedia->setContents($attachmentData);                
+                if (!$media->save () && !$associatedMedia->exists) {
+                    throw new CException (implode (';', $media->getAllErrorMessages ()));
+                }
+                
+                // relate file to action
+                $join = new RelationshipsJoin ('insert', 'x2_actions_to_media');
+                $join->actionsId = $this->id;
+                $join->mediaId = $media->id;
+                if (!$join->save ()) {
+                    throw new CException (implode (';', $join->getAllErrorMessages ()));
+                }
+                $transaction->commit ();
+                return $ret;
+            } catch (CException $e) {
+                $transaction->rollback ();
+                return false;
+            }
+
+    }
 
     /**
      * Fixes up record association, parses dates (since this doesn't use 

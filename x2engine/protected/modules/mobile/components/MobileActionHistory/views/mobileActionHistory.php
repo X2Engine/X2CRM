@@ -72,6 +72,7 @@ if (!$this->refresh && $hasCreateAccess) {
     <ul>
         
         <?php
+        $action = new Actions;
         if ($type === 'attachments') {
             ?>
             <li class='photo-attachment-button'>
@@ -80,6 +81,41 @@ if (!$this->refresh && $hasCreateAccess) {
                     <?php
                     echo CHtml::encode(Yii::t('mobile', 'Add photo attachment'));
                     ?>
+                </div>
+            </li>
+            <li class='location-attach-button'>
+                <span><?php echo X2Html::fa('fa-location-arrow'); ?></span>
+                <div>
+                    <?php 
+                    echo CHtml::encode(Yii::t('mobile', 'Add location attachment'));
+                    ?>
+                    
+                    <?php
+                    
+                    if ($type === 'attachments') {
+                        $form = $this->beginWidget('MobileActiveForm',
+                                array(
+                            'htmlOptions' => array(
+                                'class' => 'publisher-file-upload-form'
+                            ),
+                            'action' => Yii::app()->controller->createAbsoluteUrl(
+                                    'mobileActionHistoryAttachmentsPublish',
+                                    array(
+                                'id' => $this->model->id,
+                                'type' => $type
+                            ))
+                        ));
+                        echo $form->mobileCoordinates ();
+                        echo $form->mobileLocationCoordinates ();
+                        echo $form->radioButton($action,'upload',
+                            $htmlOptions=array ('class'=>'location-action-attachment-button')
+                        );
+                        ?> 
+                            <?php
+                        $this->endWidget();
+                    }
+                    ?>
+                            
                 </div>
             </li>
             <li class='file-attachment-button'>
@@ -91,25 +127,33 @@ if (!$this->refresh && $hasCreateAccess) {
                 </div>
             <?php
         }
-        $action = new Actions;
-        $form = $this->beginWidget('MobileActiveForm',
-                array(
-            'htmlOptions' => array(
-                'class' => $type === 'attachments' ? 'publisher-file-upload-form'
-                            : 'publisher-comment-form'
-            ),
-            'action' => Yii::app()->controller->createAbsoluteUrl(
-                    'mobileActionHistoryPublish',
-                    array(
-                'id' => $this->model->id,
-                'type' => $type
-            ))
-        ));
-        echo $form->mobileCoordinates ();
-        echo $form->mobileLocationCoordinates ();
         if ($type === 'attachments') {
+            $form = $this->beginWidget('MobileActiveForm',
+                    array(
+                'htmlOptions' => array(
+                    'class' => 'publisher-file-upload-form'
+                ),
+                'action' => Yii::app()->controller->createAbsoluteUrl(
+                        'mobileActionHistoryAttachmentsPublish',
+                        array(
+                    'id' => $this->model->id,
+                    'type' => $type
+                ))
+            ));
             echo $form->fileField($action, 'upload');
         } else {
+            $form = $this->beginWidget('MobileActiveForm',
+                    array(
+                'htmlOptions' => array(
+                    'class' => 'publisher-comment-form'
+                ),
+                'action' => Yii::app()->controller->createAbsoluteUrl(
+                        'mobileActionHistoryPublish',
+                        array(
+                    'id' => $this->model->id,
+                    'type' => $type
+                ))
+            ));
             echo $form->textField($action, 'actionDescription',
                     array(
                 'placeholder' => 'Add a comment...',
@@ -132,18 +176,6 @@ if (!$this->refresh && $hasCreateAccess) {
 
 
 <?php
- /*
-$this->beginWidget ('MobileActiveForm', array (
-    'htmlOptions' => array (
-        'class' => 'publisher-photo-upload-form'
-    ),
-    'action' => Yii::app()->controller->createAbsoluteUrl (
-        'mobileActionHistoryPublish', array (
-            'id' => $this->model->id
-        ))
-));
-$this->endWidget ();
- */
 
 }
 ?>

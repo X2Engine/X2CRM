@@ -34,9 +34,9 @@
  * "Powered by X2Engine".
  **********************************************************************************/
 
-x2.MobileActionHistory = (function () {
+x2.MobileActionHistoryAttachments = (function () {
 
-function MobileActionHistory (argsDict) {
+function MobileActionHistoryAttachments (argsDict) {
     var argsDict = typeof argsDict === 'undefined' ? {} : argsDict;
     var defaultArgs = {
         DEBUG: x2.DEBUG && false
@@ -46,9 +46,67 @@ function MobileActionHistory (argsDict) {
     this.init ();
 }
 
-MobileActionHistory.prototype = auxlib.create (x2.Widget.prototype);
+MobileActionHistoryAttachments.prototype = auxlib.create (x2.Widget.prototype);
+
+MobileActionHistoryAttachments.prototype.setUpLocationPhotoUpload = function () {
+    var that = this;
+    var form$ = $.mobile.activePage.find ('.publisher-file-upload-form');
+    this.form$ = form$;
+    var togglePublisher$ = $.mobile.activePage.find ('#file-upload-menu-button');
  
-MobileActionHistory.prototype.setUpPhotoUpload = function () {
+    
+    
+    //locationButton$.click (function () {
+        that.form$.off ('change.setUpLocationPhotoUpload').on ('change.setUpLocationPhotoUpload', function () {
+
+        $.mobile.loading ('show');
+    
+            /*if (!x2.main.isPhoneGap) return;
+            if (x2.main.isPhoneGap) {
+                x2touch.API.getCurrentPosition(function(position) {
+                    var pos = {
+                       lat: position.coords.latitude,
+                       lon: position.coords.longitude
+                     };*/
+                    var pos = {
+                       lon: -122.0609,
+                       lat: 36.9914
+                     };
+                    that.form$.find ('#geoCoords').val(JSON.stringify (pos));
+                    that.form$.find ('#geoLocationCoords').val("set");
+                    x2.mobileForm.submitWithFiles (
+                       that.form$, 
+                       function (response) {
+                            try {
+                                if (that.publisherIsActive) togglePublisher$.click ();
+                                $.mobile.activePage.append ($(response).find ('.refresh-content'));
+                                x2.main.refreshContent ();
+                                that.form$.find ('input[type="radio"]').attr('checked',false);
+                                $.mobile.loading ('hide');
+                            } catch (e) {
+                                alert(e);
+                            }
+                       }, function (jqXHR, textStatus, errorThrown) {
+                           $.mobile.loading ('hide');
+                           x2.main.alert (textStatus, 'Error');
+                       }
+                   ); 
+                   that.form$.find ('#geoLocationCoords').val("unset");
+                /*}, function (error) {
+                    alert('code: '    + error.code    + '\n' +
+                          'message: ' + error.message + '\n');
+                }, {});         
+
+            }*/
+        });
+    //});
+    /*that.form$.on('submit',function(e){
+        e.preventDefault();
+    });*/
+ 
+};
+ 
+MobileActionHistoryAttachments.prototype.setUpPhotoUpload = function () {
     var that = this;
     var form$ = $.mobile.activePage.find ('.publisher-photo-upload-form');
     this.form$ = form$;
@@ -87,12 +145,13 @@ MobileActionHistory.prototype.setUpPhotoUpload = function () {
     });
 };
  
-MobileActionHistory.prototype.setUpCommentPublish = function () {
+
+MobileActionHistoryAttachments.prototype.setUpFileUpload = function () {
     var that = this;
-    var form$ = $.mobile.activePage.find ('.publisher-comment-form');
-    var togglePublisher$ = $.mobile.activePage.find ('#comment-menu-button');
+    var form$ = $.mobile.activePage.find ('.publisher-file-upload-form');
+    var togglePublisher$ = $.mobile.activePage.find ('#file-upload-menu-button');
     this.form$ = form$;
-    that.form$.off ('change.setUpCommentPublish').on ('change.setUpCommentPublish', function () {
+    that.form$.off ('change.setUpFileUpload').on ('change.setUpFileUpload', function () {
         $.mobile.loading ('show');
         x2.mobileForm.submitWithFiles (
             that.form$, 
@@ -100,22 +159,17 @@ MobileActionHistory.prototype.setUpCommentPublish = function () {
                 if (that.publisherIsActive) togglePublisher$.click ();
                 $.mobile.activePage.append ($(data).find ('.refresh-content'));
                 x2.main.refreshContent ();
-                that.form$.find ('input[type="text"]').val ('');
+                that.form$.find ('input[type="file"]').val ('');
                 $.mobile.loading ('hide');
             }, function (jqXHR, textStatus, errorThrown) {
                 $.mobile.loading ('hide');
                 x2.main.alert (textStatus, 'Error');
-            });
+        });
         
     });
-        
-    that.form$.on('submit',function(e){
-        e.preventDefault();
-    });
-    
 };
 
-MobileActionHistory.prototype.setUpPublisher = function () {
+MobileActionHistoryAttachments.prototype.setUpPublisher = function () {
     var that = this;
     var publisher$ = $.mobile.activePage.find ('.publisher-menu');
     var buttons$ = publisher$.find ('ul li');
@@ -141,19 +195,23 @@ MobileActionHistory.prototype.setUpPublisher = function () {
         }, true);
         return false;
     });
+    
+    that.setUpLocationPhotoUpload (); 
      
     that.setUpPhotoUpload (); 
     
-    that.setUpCommentPublish ();
+    that.setUpFileUpload (); 
+    
 };
 
-MobileActionHistory.prototype.init = function () {
+MobileActionHistoryAttachments.prototype.init = function () {
     var that = this;
-    x2.main.onPageShow (function(){       
+
+    x2.main.onPageShow (function(){ 
         that.setUpPublisher ();
     });
 };
 
-return MobileActionHistory;
+return MobileActionHistoryAttachments;
 
 }) ();

@@ -50,6 +50,7 @@ function EventPublisherController (argsDict) {
 EventPublisherController.prototype = auxlib.create (x2.Controller.prototype);
 
 EventPublisherController.prototype.setUpForm = function () {
+    if (!x2.main.isPhoneGap) return;
     var that = this;
     this.submitButton$ = $('#header .post-event-button');
     this.form$ = $.mobile.activePage.find ('form.publisher-form');
