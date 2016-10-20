@@ -34,7 +34,7 @@ CREATE TABLE x2_calendar_invites (
     FOREIGN KEY (`actionId`) REFERENCES x2_actions(`id`) ON UPDATE CASCADE ON DELETE CASCADE
 ) ENGINE InnoDB, COLLATE utf8_general_ci;
 /*&*/
-ALTER TABLE `x2_actions` ADD CONSTRAINT FOREIGN KEY (`calendarId`) REFERENCES x2_calendars(`id`) ON UPDATE CASCADE ON DELETE SET NULL;
+ALTER TABLE `x2_actions` ADD CONSTRAINT calendarId FOREIGN KEY (`calendarId`) REFERENCES x2_calendars(`id`) ON UPDATE CASCADE ON DELETE SET NULL;
 /*&*/
 INSERT INTO `x2_modules`
 (`name`, title, visible, menuPosition, searchable, editable, adminOnly, custom, toggleable)

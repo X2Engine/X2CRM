@@ -1428,6 +1428,24 @@ class HTMLPurifier_CSSDefinition extends HTMLPurifier_Definition
                     // For everyone else:
                     $trusted_wh
                 );
+        
+        $this->info['max-width'] =
+        $this->info['max-height'] =
+            $max === null ?
+                $trusted_wh :
+                new HTMLPurifier_AttrDef_Switch(
+                    'img',
+                    // For img tags:
+                    new HTMLPurifier_AttrDef_CSS_Composite(
+                        array(
+                            new HTMLPurifier_AttrDef_CSS_Length('0', $max),
+                            new HTMLPurifier_AttrDef_Enum(array('auto'))
+                        )
+                    ),
+                    // For everyone else:
+                    $trusted_wh
+                );
+
 
         $this->info['text-decoration'] = new HTMLPurifier_AttrDef_CSS_TextDecoration();
 

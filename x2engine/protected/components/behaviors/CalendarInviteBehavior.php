@@ -67,7 +67,7 @@ class CalendarInviteBehavior extends ActiveRecordBehavior {
     }
 
     private function updateCalendarInvites() {
-        $subject = "Event Time Chage";
+        $subject = "Event Time Change";
         $message = "An event you were previously invited to has changed.<br><br>";
         $message .= "<b>What: </b>".$this->owner->actionDescription."<br>";
         $message .= "<b>When: </b>{date}<br>";

@@ -2545,6 +2545,9 @@ class AdminController extends X2Controller {
     public function actionUserLocationHistory() {
         $locationHistoryDataProvider  = new CActiveDataProvider ('Locations', array(
             'sort' => array('defaultOrder' => 'createDate DESC'),
+            'criteria' => array(
+                'condition' => 'recordType = "User"'
+            ),
         ));
         $users = new CActiveDataProvider ('User', array(
             'sort' => array('defaultOrder' => 'id ASC'),

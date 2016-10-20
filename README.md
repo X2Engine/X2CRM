@@ -1,5 +1,5 @@
 # 6.5 #
-{releaseDate}
+10/7/2016
 * General Changelog / Developer Notes
   * New Location tracking features
     * Log locations when Contacts open emails, visit your webpage, etc.

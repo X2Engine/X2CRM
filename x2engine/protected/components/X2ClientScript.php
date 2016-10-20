@@ -888,7 +888,7 @@ class X2ClientScript extends NLSClientScript {
     }
 
     private function registerAuxLibTranslationsScript () {
-        $this->registerScript('registerDateFormats',"
+        $this->registerScript('registerAuxLibTranslations',"
             auxlib.translations = ".CJSON::encode (array (
                 'Are you sure you want to delete this item?' => 
                     Yii::t('app', 'Are you sure you want to delete this item?'), 
