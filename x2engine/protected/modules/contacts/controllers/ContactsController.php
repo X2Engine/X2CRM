@@ -445,28 +445,30 @@ class ContactsController extends x2base {
                 $conditions.=" AND x2_tags.type='Contacts' AND x2_tags.tag IN $tagStr";
             }
         }
-        if (isset($params['locationType'])) {
+        if (isset($params['locationType']) && is_array($params['locationType'])) {
             // Add locationType conditions and parameters
             $locationType = array_intersect($params['locationType'], array_keys(Locations::getLocationTypes()));
-            $conditions .= ' AND (';
-            if (isset($locationType[0]) && $locationType[0] === 'address') {
-                $conditions .= ' x2_locations.type IS NULL';
-                if (count($locationType) > 1)
-                    $conditions .= ' OR ';
-                unset($locationType[0]);
-            }
             if (!empty($locationType)) {
-                $conditions .= ' x2_locations.type IN (';
-                $renderComma = false;
-                foreach ($locationType as $i => $locType) {
-                    if ($renderComma) $conditions .= ', ';
-                    $conditions .= ':locType'.$i;
-                    $parameters[':locType'.$i] = $locType;
-                    $renderComma = true;
+                $conditions .= ' AND (';
+                if (isset($locationType[0]) && ($locationType[0] === 'address' || $locationType[0] === 'null' || is_null($locationType[0]))) {
+                    $conditions .= ' x2_locations.type IS NULL';
+                    if (count($locationType) > 1)
+                        $conditions .= ' OR ';
+                    unset($locationType[0]);
+                }
+                if (!empty($locationType)) {
+                    $conditions .= ' x2_locations.type IN (';
+                    $renderComma = false;
+                    foreach ($locationType as $i => $locType) {
+                        if ($renderComma) $conditions .= ', ';
+                        $conditions .= ':locType'.$i;
+                        $parameters[':locType'.$i] = $locType;
+                        $renderComma = true;
+                    }
+                    $conditions .= ')';
                 }
                 $conditions .= ')';
             }
-            $conditions .= ')';
         }
 
         if ($noHeatMap) {
