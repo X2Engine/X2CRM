@@ -141,6 +141,18 @@
 
 @import url(http://fonts.googleapis.com/css?family=Lato:900);
 
+.fixed-corner-button {
+    color: #255296 !Important;
+} 
+
+#header .ui-btn {
+    color: #255296 !Important;
+}
+
+#header h1.page-title {
+    color: #255296 !Important;
+}
+
 .background-stripe {
     $color: rgba(white, 0.1);
     $smallWidth: 6px;
