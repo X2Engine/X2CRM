@@ -161,9 +161,8 @@ if (!$this->refresh && $hasCreateAccess) {
             ));
         }
         $this->endWidget();
-        if ($type === 'attachments') {?>
+        ?>
             </li>
-        <?php } ?>
 
         </ul>
     </div>

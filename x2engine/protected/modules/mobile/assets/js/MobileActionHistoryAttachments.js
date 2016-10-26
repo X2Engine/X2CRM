@@ -53,56 +53,46 @@ MobileActionHistoryAttachments.prototype.setUpLocationPhotoUpload = function () 
     var form$ = $.mobile.activePage.find ('.publisher-file-upload-form');
     this.form$ = form$;
     var togglePublisher$ = $.mobile.activePage.find ('#file-upload-menu-button');
- 
-    
-    
-    //locationButton$.click (function () {
-        that.form$.off ('change.setUpLocationPhotoUpload').on ('change.setUpLocationPhotoUpload', function () {
 
-        $.mobile.loading ('show');
-    
-            /*if (!x2.main.isPhoneGap) return;
-            if (x2.main.isPhoneGap) {
-                x2touch.API.getCurrentPosition(function(position) {
-                    var pos = {
-                       lat: position.coords.latitude,
-                       lon: position.coords.longitude
-                     };*/
-                    var pos = {
-                       lon: -122.0609,
-                       lat: 36.9914
-                     };
-                    that.form$.find ('#geoCoords').val(JSON.stringify (pos));
-                    that.form$.find ('#geoLocationCoords').val("set");
-                    x2.mobileForm.submitWithFiles (
-                       that.form$, 
-                       function (response) {
-                            try {
-                                if (that.publisherIsActive) togglePublisher$.click ();
-                                $.mobile.activePage.append ($(response).find ('.refresh-content'));
-                                x2.main.refreshContent ();
-                                that.form$.find ('input[type="radio"]').attr('checked',false);
-                                $.mobile.loading ('hide');
-                            } catch (e) {
-                                alert(e);
-                            }
-                       }, function (jqXHR, textStatus, errorThrown) {
-                           $.mobile.loading ('hide');
-                           x2.main.alert (textStatus, 'Error');
-                       }
-                   ); 
-                   that.form$.find ('#geoLocationCoords').val("unset");
-                /*}, function (error) {
-                    alert('code: '    + error.code    + '\n' +
-                          'message: ' + error.message + '\n');
-                }, {});         
+    that.form$.off ('change.setUpLocationPhotoUpload').on ('change.setUpLocationPhotoUpload', function () {
 
-            }*/
-        });
-    //});
-    /*that.form$.on('submit',function(e){
-        e.preventDefault();
-    });*/
+    $.mobile.loading ('show');
+
+        if (!x2.main.isPhoneGap) return;
+        if (x2.main.isPhoneGap) {
+            x2touch.API.getCurrentPosition(function(position) {
+                var pos = {
+                   lat: position.coords.latitude,
+                   lon: position.coords.longitude
+                 };
+                that.form$.find ('#geoCoords').val(JSON.stringify (pos));
+                that.form$.find ('#geoLocationCoords').val("set");
+                x2.mobileForm.submitWithFiles (
+                   that.form$, 
+                   function (response) {
+                        try {
+                            if (that.publisherIsActive) togglePublisher$.click ();
+                            $.mobile.activePage.append ($(response).find ('.refresh-content'));
+                            x2.main.refreshContent ();
+                            that.form$.find ('input[type="radio"]').attr('checked',false);
+                            $.mobile.loading ('hide');
+                        } catch (e) {
+                            alert(e);
+                        }
+                   }, function (jqXHR, textStatus, errorThrown) {
+                       $.mobile.loading ('hide');
+                       x2.main.alert (textStatus, 'Error');
+                   }
+               ); 
+               that.form$.find ('#geoLocationCoords').val("unset");
+            }, function (error) {
+                alert('code: '    + error.code    + '\n' +
+                      'message: ' + error.message + '\n');
+            }, {});         
+
+        }
+    });
+
  
 };
  
