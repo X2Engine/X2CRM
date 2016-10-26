@@ -33,7 +33,7 @@
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2Engine".
  **********************************************************************************/
-
+$grayText: darken(#c5c5c5,27%);
 .x2-remote-page {
 
 /* narrow header */
@@ -142,15 +142,15 @@
 @import url(http://fonts.googleapis.com/css?family=Lato:900);
 
 .fixed-corner-button {
-    color: #255296 !Important;
+    color: $grayText !important;
 } 
 
 #header .ui-btn {
-    color: #255296 !Important;
+    color: $grayText !important;
 }
 
 #header h1.page-title {
-    color: #255296 !Important;
+    color: $grayText !important;
 }
 
 .background-stripe {
