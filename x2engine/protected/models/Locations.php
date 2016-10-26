@@ -84,7 +84,7 @@ class Locations extends CActiveRecord
 		// NOTE: you should only define rules for those attributes that
 		// will receive user inputs.
 		return array(
-			array('contactId, lat, lon', 'required'),
+			array('recordId, recordType, lat, lon', 'required'),
         );
 	}
 
@@ -322,6 +322,26 @@ class Locations extends CActiveRecord
             if ($data)
                 return $data['results'][0]['formatted_address'];
             return $result;
+        }
+    }
+
+    private static $editableFields = array(
+        'recordType',
+        'recordId',
+        'lat',
+        'lon',
+        'type',
+        'comment',
+    );
+    /**
+     * Hack to support Locations in API2 without refactoring to inherit X2Model. This can be
+     * removed when location functionality is extracted to a module
+     */
+    public function setX2Fields(&$data, $filter = false, $bypassPermissions=false) {
+        foreach ($data as $field => $value) {
+            if (in_array($field, self::$editableFields)) {
+                $this->$field = $value;
+            }
         }
     }
 }
