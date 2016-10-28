@@ -790,8 +790,31 @@ class EventTextFormatter {
         $authorText = static::getAuthorText($event, $htmlOptions);
         $truncated = (array_key_exists('truncated', $params)) ? $params['truncated']
                     : false;
-        $media = $event->legacyMedia;
-        $text = substr($authorText, 0, -1) . ": " . $event->text;
+        //get table x2_events_to_media and by using $event->id get mediaId
+        // in this case 2003
+        $mediaId = Yii::app()->db->createCommand()
+                ->select('mediaId')
+                ->from('x2_events_to_media')
+                ->where('eventsId=:eventsId', array(':eventsId' => $event->id))
+                ->queryScalar();
+        $media = Media::model()->findByAttributes(
+                array('id' => $mediaId));
+        $recipient = User::model()->findByAttributes(array('id' => $event->associationId));
+        $profileRecipient = Profile::model()->findByPk($event->associationId);
+        if ($recipient) {
+            $recipientLink = 
+                CHtml::link(
+                    Yii::t('app', $recipient->firstName . ' ' . $recipient->lastName), 
+                    $profileRecipient->getUrl ());
+            $modifier = ' &raquo; ';
+            if (Yii::app()->user->getName() == $recipient->username) {
+                $recipientLink = CHtml::link(
+                    Yii::t('app', 'You'), 
+                    $profileRecipient->getUrl ());
+            } 
+            $authorText .= $modifier . $recipientLink;
+        }
+        $text = $authorText . ": " . $event->text;
         if ($media) {
             if (!$truncated) {
                 $text.="<br>" . Media::attachmentSocialText($media->getMediaLink(),
