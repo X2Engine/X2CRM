@@ -39,6 +39,9 @@ class CalendarEventFormModel extends EventFormModel {
     
     public $invite;
     public $emailAddresses;
+    public $reminder;
+    public $notificationUsers = 'assigned';
+    public $notificationTime = 15;
     
     public function attributeLabels(){
         return array_merge(parent::attributeLabels(), array(
@@ -57,7 +60,7 @@ class CalendarEventFormModel extends EventFormModel {
                 'invite', 'numerical', 'integerOnly'=>true,
             ),
             array (
-                'emailAddresses', 'safe',
+                'emailAddresses, reminder, notificationUsers, notificationTime', 'safe',
             ),
         ));
     }
@@ -78,6 +81,11 @@ class CalendarEventFormModel extends EventFormModel {
         $this->addErrors ($this->action->getErrors ());
         $this->action->addErrors ($this->getErrors ());
         return $valid;
+    }
+
+    public function renderReminderConfig() {
+        if ($this->action)
+            return $this->action->renderReminderConfig(array('style' => 'display: none'), $this);
     }
 }
 
