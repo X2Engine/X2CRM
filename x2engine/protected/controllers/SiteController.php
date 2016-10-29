@@ -751,9 +751,9 @@ class SiteController extends x2base {
         $event->user = Yii::app()->user->getName();
         if (isset($_POST['attachmentText']) && !empty($_POST['attachmentText'])) {
             $event->text = $_POST['attachmentText'];
-        } else {
+        } /*else {
             $event->text = Yii::t('app', 'Attached file: ');
-        }
+        }*/
         $event->type = 'media';
         $event->subtype = 'Social Post';
         $event->timestamp = time();
@@ -901,9 +901,9 @@ class SiteController extends x2base {
                             $event->user = Yii::app()->user->getName();
                             if (isset($_POST['attachmentText']) && !empty($_POST['attachmentText'])) {
                                 $event->text = $_POST['attachmentText'];
-                            } else {
+                            } /*else {
                                 $event->text = Yii::t('app', 'Attached file: ');
-                            }
+                            }*/
                             $event->type = 'media';
                             $event->timestamp = time();
                             $event->lastUpdated = time();

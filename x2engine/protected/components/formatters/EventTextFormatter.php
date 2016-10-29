@@ -811,8 +811,12 @@ class EventTextFormatter {
                 $recipientLink = CHtml::link(
                     Yii::t('app', 'You'), 
                     $profileRecipient->getUrl ());
-            } 
-            $authorText .= $modifier . $recipientLink;
+            }      
+            if ($event->user == Yii::app()->user->getName() && $recipient->username == Yii::app()->user->getName()) {
+                //$authorText .= ;
+            } else {
+                $authorText .= $modifier . $recipientLink;
+            }
         }
         $text = $authorText . ": " . $event->text;
         if ($media) {
