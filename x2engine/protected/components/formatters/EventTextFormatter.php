@@ -788,6 +788,7 @@ class EventTextFormatter {
 
     private static function formatMedia($event, $params, $htmlOptions) {
         $authorText = static::getAuthorText($event, $htmlOptions);
+        $authorText = rtrim($authorText, " ");
         $truncated = (array_key_exists('truncated', $params)) ? $params['truncated']
                     : false;
         //get table x2_events_to_media and by using $event->id get mediaId

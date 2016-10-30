@@ -825,7 +825,7 @@ Etiam eget iaculis nisl. Duis id malesuada orci. Mauris imperdiet ut elit rhoncu
 
         TestingAuxLib::loadX2NonWebUser();
         TestingAuxLib::suLogin('admin');
-
+        /* requires x2_events_to_media to be loaded
         $event = $this->events('media');
         $text = $event->getText();
         $this->assertNotEmpty($text);
@@ -836,7 +836,7 @@ Etiam eget iaculis nisl. Duis id malesuada orci. Mauris imperdiet ut elit rhoncu
         $this->assertNotEmpty($truncatedText);
         $this->assertEquals('<a href="http://localhost/index-test.php/profile/1">You</a>: <br>File: <a href="http://localhost/index-test.php/media/media/view/1">Divers.jpg</a>',
                 $truncatedText);
-
+        */
         $event2 = $this->events('mediaNoRecord');
         $noRecordText = $event2->getText();
         $this->assertNotEmpty($noRecordText);
