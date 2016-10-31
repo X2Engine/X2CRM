@@ -50,13 +50,10 @@ Yii::import('application.modules.workflow.models.*');
 
 class EventTextFormatterTest extends X2DbTestCase {
 
-    public $fixtures=array(
-        'eventsToMedia' => array(':x2_events_to_media'),
-    );
-        
     public static function referenceFixtures() {
         return array(
             'events' => array('Events', '.GetText'),
+            'eventsToMedia' => ':x2_events_to_media',
             'users' => 'User',
             'contacts' => 'Contacts',
             'notifications' => 'Notification',
@@ -829,7 +826,7 @@ Etiam eget iaculis nisl. Duis id malesuada orci. Mauris imperdiet ut elit rhoncu
 
         TestingAuxLib::loadX2NonWebUser();
         TestingAuxLib::suLogin('admin');
-        
+
         $event = $this->events('media');
         $text = $event->getText();
         $this->assertNotEmpty($text);
