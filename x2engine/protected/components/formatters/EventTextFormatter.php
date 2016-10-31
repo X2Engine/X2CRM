@@ -793,15 +793,9 @@ class EventTextFormatter {
                     : false;
         //get table x2_events_to_media and by using $event->id get mediaId
         // in this case 2003
-        $mediaId = Yii::app()->db->createCommand()
-                ->select('mediaId')
-                ->from('x2_events_to_media')
-                ->where('eventsId=:eventsId', array(':eventsId' => $event->id))
-                ->queryScalar();
-        $media = Media::model()->findByAttributes(
-                array('id' => $mediaId));
-        $recipient = User::model()->findByAttributes(array('id' => $event->associationId));
-        $profileRecipient = Profile::model()->findByPk($event->associationId);
+        $media = $params['media'];
+        $recipient = $params['recipient'];
+        $profileRecipient = $params['profileRecipient'];
         if ($recipient) {
             $recipientLink = 
                 CHtml::link(
