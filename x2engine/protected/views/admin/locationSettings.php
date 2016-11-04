@@ -260,7 +260,7 @@ $('#currency').change(function() {
                 <option value="<?php //echo $currency ?>"<?php// if($model->currency == $currency){
                     //$curFound = true;
                     //echo ' selected="true"';
-                } ?>><?php //echo $currency; ?></option>
+                //} ?>><?php //echo $currency; ?></option>
         <?php //endforeach; ?>
             <option value="other"<?php //if(!$curFound){
             //echo ' selected="true"';
