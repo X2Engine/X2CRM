@@ -122,6 +122,8 @@ class MobileCheckInAction extends MobileAction {
                     'text' => $model->text,
                     'photo' => $model->photo
                 ), false);
+                if ($location)
+                    $event->locationId = $location->id;
                 if ($key && !empty($decodedResponse) && !empty($decodedResult)) {
                     if ($event->saveRaw ($profile,$decodedResult)) {
                         if (!isset ($_FILES['EventPublisherFormModel'])) {
