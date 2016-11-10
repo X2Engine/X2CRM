@@ -806,7 +806,7 @@ div.half-width > div.form {
     background: #fff;
 }
 
-#main-column.half-width > {
+#main-column.half-width {
     div, form {
         margin: 0 5px 5px 0px;
     }
@@ -829,7 +829,7 @@ div.half-width > div.form {
             }
         }
     }
-    #main-column > {
+    #main-column {
         div {
             &.page-title-fixed-outer {
                 padding-right: 10px;
@@ -866,7 +866,7 @@ div.half-width > div.form {
                 }
             }
         }
-        #main-column > {
+        #main-column {
             div {
                 &.page-title-fixed-outer {
                     padding-right: 10px;
