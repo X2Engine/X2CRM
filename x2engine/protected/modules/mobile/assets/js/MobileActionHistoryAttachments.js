@@ -52,46 +52,115 @@ MobileActionHistoryAttachments.prototype.setUpLocationPhotoUpload = function () 
     var that = this;
     var form$ = $.mobile.activePage.find ('.publisher-file-upload-form');
     this.form$ = form$;
+    var publisher$ = $.mobile.activePage.find ('.publisher-menu');
+    var buttons$ = publisher$.find ('ul li');
     var togglePublisher$ = $.mobile.activePage.find ('#file-upload-menu-button');
 
-    that.form$.off ('change.setUpLocationPhotoUpload').on ('change.setUpLocationPhotoUpload', function () {
-
-    $.mobile.loading ('show');
-
-        if (!x2.main.isPhoneGap) return;
-        if (x2.main.isPhoneGap) {
-            x2touch.API.getCurrentPosition(function(position) {
-                var pos = {
-                   lat: position.coords.latitude,
-                   lon: position.coords.longitude
-                 };
-                that.form$.find ('#geoCoords').val(JSON.stringify (pos));
-                that.form$.find ('#geoLocationCoords').val("set");
-                x2.mobileForm.submitWithFiles (
-                   that.form$, 
-                   function (response) {
-                        try {
-                            if (that.publisherIsActive) togglePublisher$.click ();
-                            $.mobile.activePage.append ($(response).find ('.refresh-content'));
-                            x2.main.refreshContent ();
-                            that.form$.find ('input[type="radio"]').attr('checked',false);
-                            $.mobile.loading ('hide');
-                        } catch (e) {
-                            alert(e);
-                        }
-                   }, function (jqXHR, textStatus, errorThrown) {
-                       $.mobile.loading ('hide');
-                       x2.main.alert (textStatus, 'Error');
-                   }
-               ); 
-               that.form$.find ('#geoLocationCoords').val("unset");
-            }, function (error) {
-                alert('code: '    + error.code    + '\n' +
-                      'message: ' + error.message + '\n');
-            }, {});         
-
+    new x2.LocationButton ({
+        element$: buttons$.filter ('.location-attachment-button'),
+        success: function (position) {
+            var pos = {
+               lat: position.coords.latitude,
+               lon: position.coords.longitude
+             };
+            that.form$.find ('#geoCoords').val(JSON.stringify (pos));
+            that.form$.find ('#geoLocationCoords').val("set");
+            $.mobile.loading ('show');
+            x2.mobileForm.submitWithFiles (
+               that.form$, 
+               function (response) {
+                    try {
+                        if (that.publisherIsActive) togglePublisher$.click ();
+                        $.mobile.activePage.append ($(response).find ('.refresh-content'));
+                        x2.main.refreshContent ();
+                        $.mobile.loading ('hide');
+                    } catch (e) {
+                        alert(e);
+                    }
+               }, function (jqXHR, textStatus, errorThrown) {
+                   $.mobile.loading ('hide');
+                   x2.main.alert (textStatus, 'Error');
+               }
+           ); 
+           that.form$.find ('#geoLocationCoords').val("unset");
         }
     });
+
+
+
+ 
+};
+
+MobileActionHistoryAttachments.prototype.setUpVideoUpload = function () {
+    var that = this;
+    var form$ = $.mobile.activePage.find ('.publisher-file-upload-form');
+    this.form$ = form$;
+    var publisher$ = $.mobile.activePage.find ('.publisher-menu');
+    var buttons$ = publisher$.find ('ul li');
+    var togglePublisher$ = $.mobile.activePage.find ('#file-upload-menu-button');
+
+
+    new x2.VideoButton ({
+        element$: buttons$.filter ('.video-attachment-button'),
+        success: function (data) {
+            that.form$.find ('#videoFile').val(JSON.stringify (data));
+            $.mobile.loading ('show');
+            x2.mobileForm.submitWithFiles (
+               that.form$, 
+               function (response) {
+                    try {
+                        if (that.publisherIsActive) togglePublisher$.click ();
+                        $.mobile.activePage.append ($(response).find ('.refresh-content'));
+                        x2.main.refreshContent ();
+                        $.mobile.loading ('hide');
+                    } catch (e) {
+                        alert(e);
+                    }
+               }, function (jqXHR, textStatus, errorThrown) {
+                   $.mobile.loading ('hide');
+                   x2.main.alert (textStatus, 'Error');
+               }
+           ); 
+        }
+    });
+
+
+ 
+};
+
+MobileActionHistoryAttachments.prototype.setUpAudioUpload = function () {
+    var that = this;
+    var form$ = $.mobile.activePage.find ('.publisher-file-upload-form');
+    this.form$ = form$;
+    var publisher$ = $.mobile.activePage.find ('.publisher-menu');
+    var buttons$ = publisher$.find ('ul li');
+    var togglePublisher$ = $.mobile.activePage.find ('#file-upload-menu-button');
+
+    new x2.AudioButton ({
+        element$: buttons$.filter ('.audio-attachment-button'),
+        success: function (data) {
+            that.form$.find ('#audioFile').val(JSON.stringify (data));
+            $.mobile.loading ('show');
+            x2.mobileForm.submitWithFiles (
+               that.form$, 
+               function (response) {
+                   alert(response);
+                    try {
+                        if (that.publisherIsActive) togglePublisher$.click ();
+                        $.mobile.activePage.append ($(response).find ('.refresh-content'));
+                        x2.main.refreshContent ();
+                        $.mobile.loading ('hide');
+                    } catch (e) {
+                        alert(e);
+                    }
+               }, function (jqXHR, textStatus, errorThrown) {
+                   $.mobile.loading ('hide');
+                   x2.main.alert (textStatus, 'Error');
+               }
+           ); 
+        }
+    });
+
 
  
 };
@@ -191,6 +260,10 @@ MobileActionHistoryAttachments.prototype.setUpPublisher = function () {
     that.setUpPhotoUpload (); 
     
     that.setUpFileUpload (); 
+    
+    that.setUpVideoUpload ();
+    
+    that.setUpAudioUpload ();
     
 };
 

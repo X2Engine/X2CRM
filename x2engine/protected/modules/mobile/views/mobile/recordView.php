@@ -45,7 +45,7 @@ $authParams['X2Model'] = $model;
 $this->onPageLoad ("
     x2.main.controllers['$this->pageId'] = new x2.RecordViewController (".CJSON::encode (array (
         'modelName' => get_class ($model),
-        'modelEmail' => $model->email,
+        //'modelEmail' => $model->email,
         'modelId' => $model->id,
         'myProfileId' => Yii::app()->params->profile->id,
         'translations' => array (

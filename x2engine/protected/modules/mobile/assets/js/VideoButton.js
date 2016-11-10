@@ -34,60 +34,61 @@
  * "Powered by X2Engine".
  **********************************************************************************/
 
-x2.SettingsController = (function () {
+x2.VideoButton = (function () {
 
-function SettingsController (argsDict) {
+function VideoButton (argsDict) {
     var argsDict = typeof argsDict === 'undefined' ? {} : argsDict;
     var defaultArgs = {
-        DEBUG: x2.DEBUG && false
+        DEBUG: x2.DEBUG && false,
+        element$: null,
+        validate: function (callback) { callback (); },
+        success: function (data) {},
+        failure: function (message) {}
     };
     auxlib.applyArgs (this, defaultArgs, argsDict);
-    x2.Controller.call (this, argsDict);
+    this.init ();
 }
 
-SettingsController.prototype = auxlib.create (x2.Controller.prototype);
 
-SettingsController.prototype.setUpForm = function () {
+VideoButton.prototype.setUpButtonPhoneGap = function () {
     var that = this;
-    var settingsView$ = $.mobile.activePage.find ('.detail-view');
-    var languageInput$ = settingsView$.find ('.profile-language');
-    var form$ = settingsView$.find ('form');
-    languageInput$.change (function () {
-        form$.submit (); 
-    });
-
-     
-    if (x2.main.isPhoneGap) {
-        var changeUrlButton$ = form$.find ('.change-url-button');
-        changeUrlButton$.click (function () {
-            x2touch.API.confirm (
-                that.translations.changeUrlMessage,
-                that.translations.changeUrlTitle,
-                [
-                    that.translations.changeUrlButtonConfirm,
-                    that.translations.changeUrlButtonCancel
-                ], 
-                function (index) {
-                    if (index === 1) {
-                        x2touch.API.forgetWebAddress ();
-                        x2.panel.getElement ().find ('.logout-button').click ();
-                    }
-                }
-            );
+    this.element$.off ('click.setUpButtonPhoneGap').on ('click.setUpButtonPhoneGap', function () {
+        that.validate (function () {
+            x2touch.API.getVideo(function(mediaFiles) {
+                that.success (mediaFiles);
+            }, function (error) {
+                that.failure (error);
+                /*alert('code: '    + error.code    + '\n' +
+                      'message: ' + error.message + '\n');*/
+            }, {});         
+            
         });
-           
-    }
-         
+    });
 };
 
-SettingsController.prototype.init = function () {
-    x2.Controller.prototype.init.call (this);
+
+VideoButton.prototype.setUpButtonBrowser = function () {
     var that = this;
-    this.documentEvents.push (x2.main.onPageShow (function () {
-        that.setUpForm ();
-    }, 'SettingsController'));
+    this.element$.off ('click.setUpButtonBrowser').on ('click.setUpButtonBrowser', function () {
+        that.validate (function () {
+             that.success (
+             );
+        });
+    })
 };
 
-return SettingsController;
+VideoButton.prototype.init = function () {
+      
+    if (x2.main.isPhoneGap) { 
+        this.setUpButtonPhoneGap ();
+    } else {
+     
+        this.setUpButtonBrowser ();
+      
+    }
+     
+};
+
+return VideoButton;
 
 }) ();
