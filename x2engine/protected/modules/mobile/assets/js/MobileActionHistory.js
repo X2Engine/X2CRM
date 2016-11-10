@@ -48,45 +48,6 @@ function MobileActionHistory (argsDict) {
 
 MobileActionHistory.prototype = auxlib.create (x2.Widget.prototype);
  
-MobileActionHistory.prototype.setUpPhotoUpload = function () {
-    var that = this;
-    var form$ = $.mobile.activePage.find ('.publisher-photo-upload-form');
-    this.form$ = form$;
-    var publisher$ = $.mobile.activePage.find ('.publisher-menu');
-    var buttons$ = publisher$.find ('ul li');
-    var togglePublisher$ = $.mobile.activePage.find ('#file-upload-menu-button');
-    new x2.CameraButton ({
-        element$: buttons$.filter ('.photo-attachment-button'),
-        success: function (data) {
-            var attachment$ = x2.mobileForm.makePhotoAttachment (data);
-            attachment$.hide ();
-            that.form$.find ('.' + x2.mobileForm.photoAttachmentClass).remove ();
-            that.form$.append (attachment$);
-            $.mobile.loading ('show');
-            x2.mobileForm.submitWithPhotos (
-                that.form$.attr ('action'), 
-                that.form$, 
-                'Actions[upload]',
-                function (response) {
-                    if (response.responseCode == 200)  {
-                        if (that.publisherIsActive) togglePublisher$.click ();
-                        $.mobile.activePage.append ($(response.response).find ('.refresh-content'));
-                        x2.main.refreshContent ();
-                        $.mobile.loading ('hide');
-                    } else {
-                        $.mobile.loading ('hide');
-                        x2.main.alert ('Upload failed', 'Error');
-                    }
-                },
-                function (error) {
-                    $.mobile.loading ('hide');
-                    x2.main.alert (error.body, 'Error');
-                }
-            );
-        }
-    });
-};
- 
 MobileActionHistory.prototype.setUpCommentPublish = function () {
     var that = this;
     var form$ = $.mobile.activePage.find ('.publisher-comment-form');
@@ -141,9 +102,7 @@ MobileActionHistory.prototype.setUpPublisher = function () {
         }, true);
         return false;
     });
-     
-    that.setUpPhotoUpload (); 
-    
+         
     that.setUpCommentPublish ();
 };
 

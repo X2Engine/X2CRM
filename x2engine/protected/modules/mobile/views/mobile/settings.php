@@ -84,9 +84,6 @@ $this->onPageLoad ("
 <?php
     }
 
-?>
-    <input type="text" name="geoCoords" id="geoCoords">
-<?php
     $this->endWidget ();
 ?>
 </div>

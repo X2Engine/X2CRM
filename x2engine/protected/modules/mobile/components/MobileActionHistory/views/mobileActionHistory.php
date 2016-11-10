@@ -74,60 +74,6 @@ if (!$this->refresh && $hasCreateAccess) {
         <?php
         $action = new Actions;
         if ($type === 'attachments') {
-            ?>
-            <li class='photo-attachment-button'>
-                <span><?php echo X2Html::fa('camera'); ?></span>
-                <div>
-                    <?php
-                    echo CHtml::encode(Yii::t('mobile', 'Add photo attachment'));
-                    ?>
-                </div>
-            </li>
-            <li class='location-attach-button'>
-                <span><?php echo X2Html::fa('fa-location-arrow'); ?></span>
-                <div>
-                    <?php 
-                    echo CHtml::encode(Yii::t('mobile', 'Add location attachment'));
-                    ?>
-                    
-                    <?php
-                    
-                    if ($type === 'attachments') {
-                        $form = $this->beginWidget('MobileActiveForm',
-                                array(
-                            'htmlOptions' => array(
-                                'class' => 'publisher-file-upload-form'
-                            ),
-                            'action' => Yii::app()->controller->createAbsoluteUrl(
-                                    'mobileActionHistoryAttachmentsPublish',
-                                    array(
-                                'id' => $this->model->id,
-                                'type' => $type
-                            ))
-                        ));
-                        echo $form->mobileCoordinates ();
-                        echo $form->mobileLocationCoordinates ();
-                        echo $form->radioButton($action,'upload',
-                            $htmlOptions=array ('class'=>'location-action-attachment-button')
-                        );
-                        ?> 
-                            <?php
-                        $this->endWidget();
-                    }
-                    ?>
-                            
-                </div>
-            </li>
-            <li class='file-attachment-button'>
-                <span><?php echo X2Html::fa('file'); ?></span>
-                <div>
-                    <?php
-                    echo CHtml::encode(Yii::t('mobile', 'Add file attachment'));
-                    ?>
-                </div>
-            <?php
-        }
-        if ($type === 'attachments') {
             $form = $this->beginWidget('MobileActiveForm',
                     array(
                 'htmlOptions' => array(
@@ -140,6 +86,74 @@ if (!$this->refresh && $hasCreateAccess) {
                     'type' => $type
                 ))
             ));
+            ?>
+            <li class='photo-attachment-button'>
+                <span><?php echo X2Html::fa('camera'); ?></span>
+                <div>
+                    <?php
+                    echo CHtml::encode(Yii::t('mobile', 'Add photo attachment'));
+                    ?>
+                </div>
+            </li>
+            <li class='location-attachment-button'>
+                <span><?php echo X2Html::fa('fa-location-arrow'); ?></span>
+                <div>
+                    <?php 
+                    echo CHtml::encode(Yii::t('mobile', 'Add location attachment'));
+                    ?>
+                    
+                    <?php
+                    
+                        echo $form->mobileCoordinates ();
+                        echo $form->mobileLocationCoordinates ();
+                        ?> 
+
+                            
+                </div>
+            </li>
+            <li class='audio-attachment-button'>
+                <span><?php echo X2Html::fa('fa-file-audio-o'); ?></span>
+                <div>
+                    <?php 
+                    echo CHtml::encode(Yii::t('mobile', 'Add audio attachment'));
+                    ?>
+                    
+                    <?php
+                    
+
+                        echo $form->audioFile ();
+
+                        ?> 
+
+                            
+                </div>
+            </li>
+            <li class='video-attachment-button'>
+                <span><?php echo X2Html::fa('fa-file-video-o '); ?></span>
+                <div>
+                    <?php 
+                    echo CHtml::encode(Yii::t('mobile', 'Add video attachment'));
+                    ?>
+                    
+                    <?php
+                    
+
+                        echo $form->videoFile ();
+
+                        ?> 
+                            
+                </div>
+            </li>
+            <li class='file-attachment-button'>
+                <span><?php echo X2Html::fa('file'); ?></span>
+                <div>
+                    <?php
+                    echo CHtml::encode(Yii::t('mobile', 'Add file attachment'));
+                    ?>
+                </div>
+            <?php
+
+
             echo $form->fileField($action, 'upload');
         } else {
             $form = $this->beginWidget('MobileActiveForm',
@@ -162,7 +176,7 @@ if (!$this->refresh && $hasCreateAccess) {
         }
         $this->endWidget();
         ?>
-            </li>
+            
 
         </ul>
     </div>

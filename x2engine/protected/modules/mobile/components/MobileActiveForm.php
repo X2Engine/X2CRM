@@ -121,15 +121,22 @@ class MobileActiveForm extends X2ActiveForm {
         '</div>';
         return $html;
     }
+    
+    public function audioFile() {
+        return '<input type="hidden" name="audioFile" id="audioFile">';
+    }
+     
+    public function videoFile() {
+        return '<input type="hidden" name="videoFile" id="videoFile">';
+    }
  
     public function mobileCoordinates() {
         return '<input type="hidden" name="geoCoords" id="geoCoords">';
     }
-    
+   
     public function mobileLocationCoordinates() {
         return '<input type="hidden" name="geoLocationCoords" id="geoLocationCoords">';
     }
-
 }
 
 ?>

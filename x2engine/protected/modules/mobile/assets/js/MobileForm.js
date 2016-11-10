@@ -65,23 +65,6 @@ MobileForm.prototype.submitWithFiles = function (form$, success, failure) {
     });
 };
 
-MobileForm.prototype.submitWithLocation = function (
-    locationUploadUrl, form$, fileKey, success, failure) {
-
-    if (!x2.main.isPhoneGap) 
-        throw new Error ('MobileForm::submitWithLocation is not browser compatible');
-
-    var params = {};
-    form$.find (':input').not (':disabled').each (function () {
-        params[$(this).attr ('name')] = $(this).val ();
-    });
-    
-    var photo$ = form$.find ('.' + this.photoAttachmentClass);
-    var fileUrl = photo$.attr ('src');
-    //console.log ([fileUrl, locationUploadUrl, fileKey, params, success, failure]);
-    //x2touch.API.uploadFile (fileUrl, locationUploadUrl, fileKey, params, success, failure);
-};
-
 MobileForm.prototype.submitWithPhotos = function (
     photoUploadUrl, form$, fileKey, success, failure) {
 
@@ -121,9 +104,9 @@ MobileForm.prototype.makePhotoAttachment = function (data) {
         'class': x2.mobileForm.photoAttachmentClass + '-container',
     });
     var img$ = $('<img>', {
-        'class': x2.mobileForm.photoAttachmentClass,
-        src: data
-    });
+            'class': x2.mobileForm.photoAttachmentClass,
+            src: data
+        });         
     var remove$ = $('<div>', {
         'class': 'remove-attachment-button'
     });

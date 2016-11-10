@@ -119,10 +119,20 @@ class MobileActionHistoryAttachmentsPublishAction extends MobileAction {
             $valid = true;
             $action->upload = CUploadedFile::getInstance ($action, 'upload'); 
             
+        } else if ($type ==='attachments' && isset ($_POST['audioFile'])) {
+            $attachmentType = 'audio';
+            $valid = true;
+            $decodedResult = json_decode(filter_input(INPUT_POST, 'audioFile', FILTER_DEFAULT),true);
+            
+        } else if ($type ==='attachments' && isset ($_POST['videoFile'])) {
+            $attachmentType = 'video';
+            $valid = true;
+            $decodedResult = json_decode(filter_input(INPUT_POST, 'videoFile', FILTER_DEFAULT),true);
+            
         } 
         $action->type = 'attachment';
         if(!strcmp($attachmentType,'location')) {
-            if ($valid && $action->saveRaw ($profile,$decodedResult)) {
+            if ($valid && $action->saveRaw ($profile,false,$decodedResult)) {
                 $this->controller->renderPartial (
                     'application.modules.mobile.views.mobile._actionHistoryAttachments', array (
                     'model' => $model,
@@ -134,6 +144,19 @@ class MobileActionHistoryAttachmentsPublishAction extends MobileAction {
             } else {
                 throw new CHttpException (500, Yii::t('app', 'Publish failed'));
             }
+        } else if (!strcmp($attachmentType,'audio') || !strcmp($attachmentType,'video')) {
+            if ($valid && $action->saveRaw ($profile,true,$decodedResult)) {
+                $this->controller->renderPartial (
+                    'application.modules.mobile.views.mobile._actionHistoryAttachments', array (
+                    'model' => $model,
+                    'refresh' => true,
+                    'type'=>$type,
+                ), false, true);
+
+                Yii::app()->end ();
+            } else {
+                throw new CHttpException (500, Yii::t('app', 'Publish failed'));
+            }            
         } else if (!strcmp($attachmentType,'file')){
             if ($valid && $action->save ()) {
                 $this->controller->renderPartial (

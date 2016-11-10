@@ -84,9 +84,6 @@ $this->onPageLoad ("
 <?php
     }
 
-?>
-    <input type="text" name="geoCoords" id="geoCoords">
-<?php
     $this->endWidget ();
 
 $key = '';
@@ -196,10 +193,10 @@ Yii::app()->clientScript->registerScriptFile($assetUrl, CClientScript::POS_END);
     // echo $startDate .' '.$endDate;
     ?>
     
-    <!--<div class="row">
-        <h2 style='margin-top: 5px'><?php /*echo Yii::t('contacts', 'Filters'); ?></h2>
-        <div class="cell">
-            <label><?php echo Yii::t('users', 'User'); ?></label>
+    <div class="row">
+        <h2 style='margin-top: 5px'><?php echo Yii::t('contacts', 'Filters'); ?></h2>
+        <!--<div class="cell">
+            <label><?php /*echo Yii::t('users', 'User'); ?></label>
             <?php
             echo CHtml::dropDownList(
                     'params[users]', $selectedUsers, $users, array(
@@ -207,9 +204,9 @@ Yii::app()->clientScript->registerScriptFile($assetUrl, CClientScript::POS_END);
                 'data-selected-text' => Yii::t('app', 'filters(s)'),
                 'class' => 'x2-multiselect-dropdown'
                     )
-            );
+            );*/
             ?>
-        </div>
+        </div>-->
         <div class="cell">
             <label><?php echo Yii::t('users', 'Date/Time'); ?></label>
             <?php
@@ -234,9 +231,9 @@ Yii::app()->clientScript->registerScriptFile($assetUrl, CClientScript::POS_END);
         </div>
 
         <div class="cell">
-            <?php echo CHtml::submitButton(Yii::t('charts', 'Go'), array('class' => 'x2-button', 'style' => 'margin-top:13px;'));*/ ?>
+            <?php echo CHtml::submitButton(Yii::t('charts', 'Go'), array('class' => 'x2-button', 'style' => 'margin-top:13px;')); ?>
         </div>
-    </div>-->
+    </div>
     <div class="row">
 
 
