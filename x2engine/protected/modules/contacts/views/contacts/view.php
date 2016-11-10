@@ -132,15 +132,17 @@ $themeUrl = Yii::app()->theme->getBaseUrl();
     $this->widget('RecordAliasesWidget', array(
         'model' => $model
     ));
-    echo CHtml::link(
-        '', $this->createUrl('googleMaps', array('contactId' => $model->id)),
-        array(
-            'class' => 'x2-button icon map right',
-            'title' => Yii::t('app', 'View {module} on Map', array(
-                '{module}' => $modTitles['contact'],
-            )),
-        )
-    );
+    if (Yii::app()->settings->googleIntegration) {
+        echo CHtml::link(
+            '', $this->createUrl('googleMaps', array('contactId' => $model->id, 'noHeatMap' => 1)),
+            array(
+                'class' => 'x2-button icon map right',
+                'title' => Yii::t('app', 'View {module} on Map', array(
+                    '{module}' => $modTitles['contact'],
+                )),
+            )
+        );
+    }
     if(Yii::app()->user->checkAccess('ContactsUpdate', $authParams)){
         if(!empty($model->company) && is_numeric($model->company)) {
             echo CHtml::link(

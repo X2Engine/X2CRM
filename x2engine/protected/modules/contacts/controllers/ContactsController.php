@@ -1641,7 +1641,7 @@ class ContactsController extends x2base {
             ),
             array(
                 'name'=>'map',
-                'label'=>Yii::t('contacts','Contact Map'),
+                'label'=>Yii::t('contacts','View Contact Map'),
                 'url'=>array('googleMaps'),
                 'visible' => (bool) Yii::app()->settings->googleIntegration,
             ),
