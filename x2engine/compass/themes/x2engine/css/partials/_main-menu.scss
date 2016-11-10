@@ -74,7 +74,7 @@
     width: 30px;
     margin: 0;
 
-    color: white;
+    color: $appBlue;
     text-decoration: none;
 }
 
@@ -120,6 +120,11 @@ li.special.leadrouting-indicator {
     padding-left: 10px;
 }
 
+#main-menu > li.active a {
+    padding-left: 10px;
+    color: white;
+}
+
 #user-menu {
     float: right;
 }
@@ -143,7 +148,7 @@ li.special.leadrouting-indicator {
     }
      li  {
         a, span {
-            color: white;
+            color: $appBlue;
             line-height: 32px;
             height: 32px;
             text-shadow: rgba(0, 0, 0, 0.25) 0 1px 4px;
@@ -178,11 +183,29 @@ li.special.leadrouting-indicator {
     &:hover, &.active {
         background: lighten($appBlue, 7.5%);
         /* background:rgba(255,255,255,0.15); */
+        span{
+            color: white;
+        }
+    }
+}
+
+#header.defaultBg #user-menu > li {
+    &:hover, &.active {
+        background: lighten($appBlue, 7.5%);
+        /* background:rgba(255,255,255,0.15); */
+        a{
+            color: white;
+        }
     }
 }
 
 .main-menu > li.special:hover, #header.defaultBg .main-menu > li.special:hover {
     background: none;
+}
+
+
+a:hover {
+    color: white !important; 
 }
 
 #main-menu-bar {
