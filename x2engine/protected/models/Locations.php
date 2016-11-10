@@ -265,7 +265,7 @@ class Locations extends CActiveRecord
         $key = null;
         $settings = Yii::app()->settings;
         $creds = Credentials::model()->findByPk($settings->googleCredentialsId);
-        if($creds && $creds->auth && $creds->auth->apiKey){
+        if($creds && $settings->googleIntegration && $creds->auth && $creds->auth->apiKey){
             $key = $creds->auth->apiKey;
         }
         return $key;

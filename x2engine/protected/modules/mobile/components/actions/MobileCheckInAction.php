@@ -116,9 +116,12 @@ class MobileCheckInAction extends MobileAction {
                         throw new CHttpException (500, implode (';', $event->getAllErrorMessages ()));
                     }
                 } else {
-                    $this->controller->redirect (
-                        $this->controller->createAbsoluteUrl (
-                        '/profile/mobileActivity'));                    
+                    echo CJSON::encode (array (
+                        'error' => Yii::t('mobile', 'Failed to retrieve static map. Please ensure that Google Integration is enabled.'),
+                        'redirectUrl' => $this->controller->createAbsoluteUrl (
+                            '/profile/mobileActivity'),
+                    ));
+                    Yii::app()->end ();
                 }
             } else {
                 if (isset ($_FILES['EventPublisherFormModel'])) {
