@@ -173,10 +173,18 @@ li.special.leadrouting-indicator {
     box-shadow: none;
 }
 
-.main-menu > li {
+.main-menu > li.dropdown {
     &:hover, &.active {
         /* background:url(../images/black_15.png); */
-        background: rgba(0, 0, 0, 0.2);
+        background: lighten($appBlue, 7.5%);
+        span, a {
+            color: white;
+        }
+        .open {
+            a {
+                color: black;
+            }
+        }
     }
 }
 
@@ -204,6 +212,11 @@ li.special.leadrouting-indicator {
         }
     }
 }
+
+#header.defaultBg #user-menu > li#search-bar.special:hover {
+    background: white;
+}
+
 
 .main-menu > li.special:hover, #header.defaultBg .main-menu > li.special:hover {
     background: none;
