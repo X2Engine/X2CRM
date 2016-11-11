@@ -450,8 +450,14 @@ class Actions extends X2Model {
                 if ($isMedia) {
                     if (!strcmp($attachmentData['type'],'audio/wav')) {
                         $filename = md5(uniqid(rand(), true)) . '.wav';
-                        $fileType = 'audio/wav';
-                    }    
+                    } else if (!strcmp($attachmentData['type'],'audio/amr')) {
+                        $filename = md5(uniqid(rand(), true)) . '.amr';
+                    } else if (!strcmp($attachmentData['type'],'video/quicktime')) {
+                        $filename = md5(uniqid(rand(), true)) . '.quicktime';                   
+                    } else if (!strcmp($attachmentData['type'],'video/3gpp')) {
+                        $filename = md5(uniqid(rand(), true)) . '.3gpp';  
+                    }
+                    $fileType = $attachmentData['type'];
                 } else {
                     $filename = md5(uniqid(rand(), true)) . '.png';
                     $fileType = 'image/png';

@@ -132,7 +132,7 @@ class MobileActionHistoryAttachmentsPublishAction extends MobileAction {
         } 
         $action->type = 'attachment';
         if(!strcmp($attachmentType,'location')) {
-            if ($valid && $action->saveRaw ($profile,false,$decodedResult)) {
+            if ($valid && $action->saveRaw ($profile,$decodedResult,false)) {
                 $this->controller->renderPartial (
                     'application.modules.mobile.views.mobile._actionHistoryAttachments', array (
                     'model' => $model,
@@ -145,7 +145,7 @@ class MobileActionHistoryAttachmentsPublishAction extends MobileAction {
                 throw new CHttpException (500, Yii::t('app', 'Publish failed'));
             }
         } else if (!strcmp($attachmentType,'audio') || !strcmp($attachmentType,'video')) {
-            if ($valid && $action->saveRaw ($profile,true,$decodedResult)) {
+            if ($valid && $action->saveRaw ($profile,$decodedResult,true)) {
                 $this->controller->renderPartial (
                     'application.modules.mobile.views.mobile._actionHistoryAttachments', array (
                     'model' => $model,
