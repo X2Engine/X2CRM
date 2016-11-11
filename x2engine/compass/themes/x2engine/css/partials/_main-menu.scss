@@ -184,7 +184,7 @@ li.special.leadrouting-indicator {
     &:hover, &.active {
         background: lighten($appBlue, 7.5%);
         /* background:rgba(255,255,255,0.15); */
-        span{
+        span, a{
             color: white;
         }
     }
@@ -205,9 +205,6 @@ li.special.leadrouting-indicator {
 }
 
 
-a:hover {
-    color: white !important; 
-}
 
 #main-menu-bar {
     #x2-logo {
