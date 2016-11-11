@@ -270,7 +270,7 @@ li.special.leadrouting-indicator {
              height: 25px;
              width: 30px;
              color: $appBlue;
-             @include fa-icon('search');
+             //@include fa-icon('search'); 
              /* @theme color smart_text */
              
              // background: url(../images/search-icon.png) 8px 5px no-repeat;

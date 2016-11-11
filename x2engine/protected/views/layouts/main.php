@@ -361,7 +361,7 @@ $menuItems[] = array(
 $notifCount = X2Model::model('Notification')->countByAttributes(array('user' => Yii::app()->user->getName()), 'createDate < '.time());
 
 $searchbarHtml = CHtml::beginForm(array('/search/search'), 'get')
-        .'<button class="x2-button" type="submit"><span></span></button>'
+        .'<button class="x2-button" type="submit"><span><i class="fa fa-search"></i></span></button>'
         .CHtml::textField('term', Yii::t('app', 'Search for contact, action, deal...'), array(
             'id' => 'search-bar-box',
             'onfocus' => 'x2.forms.toggleTextResponsive(this);',
