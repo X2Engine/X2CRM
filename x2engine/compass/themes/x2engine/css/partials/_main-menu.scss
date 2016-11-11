@@ -180,21 +180,26 @@ li.special.leadrouting-indicator {
     }
 }
 
-#header.defaultBg .main-menu > li {
+#header.defaultBg #main-menu > li {
     &:hover, &.active {
         background: lighten($appBlue, 7.5%);
         /* background:rgba(255,255,255,0.15); */
-        span, a{
+        span, a {
             color: white;
         }
+        .open {
+            a {
+                color: black;
+            }
+        }
     }
-}
+}   
 
 #header.defaultBg #user-menu > li {
     &:hover, &.active {
         background: lighten($appBlue, 7.5%);
         /* background:rgba(255,255,255,0.15); */
-        a{
+        a {
             color: white;
         }
     }

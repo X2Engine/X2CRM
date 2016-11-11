@@ -114,7 +114,7 @@ MobileActionHistoryAttachments.prototype.setUpVideoUpload = function () {
                         x2.main.refreshContent ();
                         $.mobile.loading ('hide');
                     } catch (e) {
-                        alert(e);
+                        alert('Error' + e);
                     }
                }, function (jqXHR, textStatus, errorThrown) {
                    $.mobile.loading ('hide');
@@ -144,7 +144,6 @@ MobileActionHistoryAttachments.prototype.setUpAudioUpload = function () {
             x2.mobileForm.submitWithFiles (
                that.form$, 
                function (response) {
-                   alert(response);
                     try {
                         if (that.publisherIsActive) togglePublisher$.click ();
                         $.mobile.activePage.append ($(response).find ('.refresh-content'));
