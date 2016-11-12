@@ -109,6 +109,7 @@ MobileActionHistoryAttachments.prototype.setUpVideoUpload = function () {
             that.form$.append (attachment$);
             $.mobile.loading ('show');
             x2.mobileForm.submitWithVideo (
+                data.type,
                 that.form$.attr ('action'), 
                 that.form$, 
                 'Actions[upload]',
@@ -152,6 +153,7 @@ MobileActionHistoryAttachments.prototype.setUpAudioUpload = function () {
             that.form$.append (attachment$);
             $.mobile.loading ('show');
             x2.mobileForm.submitWithAudio (
+                data.type,
                 that.form$.attr ('action'), 
                 that.form$, 
                 'Actions[upload]',

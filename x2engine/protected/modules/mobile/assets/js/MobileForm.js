@@ -103,7 +103,7 @@ MobileForm.prototype.submitWithPhotos = function (
 };
 
 MobileForm.prototype.submitWithAudio = function (
-    audioUploadUrl, form$, fileKey, success, failure) {
+    type, audioUploadUrl, form$, fileKey, success, failure) {
 
     if (!x2.main.isPhoneGap) 
         throw new Error ('MobileForm::submitWithAudio is not browser compatible');
@@ -119,44 +119,24 @@ MobileForm.prototype.submitWithAudio = function (
     //fileKey EventsPublisherFormModel[audio]
     var audio$ = form$.find ('.' + this.audioAttachmentClass);
     var fileUrl = audio$.attr ('src');
-    var mimeType = '';
-    if (strpos(fileUrl, 'wav') !== false) {
-        mimeType = 'audio/wav';
-    } else if (strpos(fileUrl, 'amr') !== false) {
-        mimeType = 'audio/amr';
-    } else {
-        mimeType = 'audio/mp3';
-    }
-    x2touch.API.uploadFile (mimeType, fileUrl, audioUploadUrl, fileKey, params, success, failure);
+    x2touch.API.uploadFile (type, fileUrl, audioUploadUrl, fileKey, params, success, failure);
 };
 
 MobileForm.prototype.submitWithVideo = function (
-    videoUploadUrl, form$, fileKey, success, failure) {
+    type, videoUploadUrl, form$, fileKey, success, failure) {
 
     if (!x2.main.isPhoneGap) 
         throw new Error ('MobileForm::submitWithVideo is not browser compatible');
-
     var params = {};
     form$.find (':input').not (':disabled').each (function () {
         params[$(this).attr ('name')] = $(this).val ();
     });
-
     //fileUrl is fullPath in device FS
     //videoUploadUrl: http://x2developer.com/~josef/x2engine/index.php/profile/mobilePublisher/x2ajax=1&isMobileApp=1
     //fileKey EventsPublisherFormModel[video]
     var video$ = form$.find ('.' + this.videoAttachmentClass);
     var fileUrl = video$.attr ('src');
-    var mimeType = '';
-    if (strpos(fileUrl, '3gpp') !== false) {
-        mimeType = 'video/3gpp';
-    } else if (strpos(fileUrl, 'quicktime') !== false) {
-        mimeType = 'video/quicktime';
-    } else if (strpos(fileUrl, 'mp4') !== false) {
-        mimeType = 'video/mp4';
-    } else {
-        mimeType = 'video/mp4';
-    }
-    x2touch.API.uploadFile (mimeType, fileUrl, videoUploadUrl, fileKey, params, success, failure);
+    x2touch.API.uploadFile (type, fileUrl, videoUploadUrl, fileKey, params, success, failure);
 };
 
 
@@ -184,8 +164,8 @@ MobileForm.prototype.makeAudioAttachment = function (type, data) {
         'class': x2.mobileForm.audioAttachmentClass + '-container',
     });
     var audio$ = $([
-        "<audio controls class='" + x2.mobileForm.audioAttachmentClass + "'>",
-        "  <source src='" + data + "' type='"+type+"' >",
+        "<audio controls >",
+        "  <source src='" + data + "' type='"+type+"' class='" + x2.mobileForm.audioAttachmentClass + "'>",
         "</audio>"
       ].join("\n"));       
     var remove$ = $('<div>', {
@@ -204,8 +184,8 @@ MobileForm.prototype.makeVideoAttachment = function (type, data) {
         'class': x2.mobileForm.videoAttachmentClass + '-container',
     });
     var video$ = $([
-        "<video controls class='" + x2.mobileForm.videoAttachmentClass + "'>",
-        "  <source src='" + data + "' type='"+type+"' >",
+        "<video controls >",
+        "  <source src='" + data + "' type='"+type+"' class='" + x2.mobileForm.videoAttachmentClass + "'>",
         "</video>"
       ].join("\n"));         
     var remove$ = $('<div>', {
