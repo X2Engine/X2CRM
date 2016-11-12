@@ -71,6 +71,17 @@ CheckInPublisherController.prototype.setUpForm = function () {
            function (response) {
                try {
                    var data = JSON.parse(response);
+                   if (!data['results']) {
+                       if (data['error']) {
+                           alert(data['error']);
+                       }
+                       if (data['redirectUrl']) {
+                           var url = data['redirectUrl'];
+                           $(':mobile-pagecontainer').pagecontainer (
+                              'change', url, { transition: 'none' });
+                       }
+                       return;
+                   }
                    var theAddress = data['results'][0]['formatted_address'];
                    //http://stackoverflow.com/questions/10211145/getting-current-date-and-time-in-javascript
                    var currentdate = new Date();
