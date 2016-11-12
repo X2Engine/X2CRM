@@ -13,7 +13,7 @@
  * This program is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE.  See the GNU Affero General Public License for more
- * details.
+ * details. 
  * 
  * You should have received a copy of the GNU Affero General Public License along with
  * this program; if not, see http://www.gnu.org/licenses or write to the Free
@@ -119,20 +119,10 @@ class MobileActionHistoryAttachmentsPublishAction extends MobileAction {
             $valid = true;
             $action->upload = CUploadedFile::getInstance ($action, 'upload'); 
             
-        } else if ($type ==='attachments' && isset ($_POST['audioFile'])) {
-            $attachmentType = 'audio';
-            $valid = true;
-            $decodedResult = json_decode(filter_input(INPUT_POST, 'audioFile', FILTER_DEFAULT),true);
-            
-        } else if ($type ==='attachments' && isset ($_POST['videoFile'])) {
-            $attachmentType = 'video';
-            $valid = true;
-            $decodedResult = json_decode(filter_input(INPUT_POST, 'videoFile', FILTER_DEFAULT),true);
-            
         } 
         $action->type = 'attachment';
         if(!strcmp($attachmentType,'location')) {
-            if ($valid && $action->saveRaw ($profile,$decodedResult,false)) {
+            if ($valid && $action->saveRaw ($profile,$decodedResult)) {
                 $this->controller->renderPartial (
                     'application.modules.mobile.views.mobile._actionHistoryAttachments', array (
                     'model' => $model,
@@ -144,19 +134,6 @@ class MobileActionHistoryAttachmentsPublishAction extends MobileAction {
             } else {
                 throw new CHttpException (500, Yii::t('app', 'Publish failed'));
             }
-        } else if (!strcmp($attachmentType,'audio') || !strcmp($attachmentType,'video')) {
-            if ($valid && $action->saveRaw ($profile,$decodedResult,true)) {
-                $this->controller->renderPartial (
-                    'application.modules.mobile.views.mobile._actionHistoryAttachments', array (
-                    'model' => $model,
-                    'refresh' => true,
-                    'type'=>$type,
-                ), false, true);
-
-                Yii::app()->end ();
-            } else {
-                throw new CHttpException (500, Yii::t('app', 'Publish failed'));
-            }            
         } else if (!strcmp($attachmentType,'file')){
             if ($valid && $action->save ()) {
                 $this->controller->renderPartial (

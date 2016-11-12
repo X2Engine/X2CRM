@@ -103,24 +103,41 @@ MobileActionHistoryAttachments.prototype.setUpVideoUpload = function () {
     new x2.VideoButton ({
         element$: buttons$.filter ('.video-attachment-button'),
         success: function (data) {
-            that.form$.find ('#videoFile').val(JSON.stringify (data));
+            alert("test1");
+            var attachment$ = x2.mobileForm.makeVideoAttachment (data.fullPath);
+            alert(data.fullPath);
+            attachment$.hide ();
+            alert("test3");
+            that.form$.find ('.' + x2.mobileForm.videoAttachmentClass).remove ();
+            alert("test4");
+            that.form$.append (attachment$);
+            alert("test5");
             $.mobile.loading ('show');
-            x2.mobileForm.submitWithFiles (
-               that.form$, 
-               function (response) {
-                    try {
+            alert("test6");
+            x2.mobileForm.submitWithVideo (
+                that.form$.attr ('action'), 
+                that.form$, 
+                'Actions[upload]',
+                function (response) {
+                    alert("response");
+                    alert(response);
+                    if (response.responseCode == 200)  {
+                        alert(response.fullPath);
                         if (that.publisherIsActive) togglePublisher$.click ();
-                        $.mobile.activePage.append ($(response).find ('.refresh-content'));
+                        $.mobile.activePage.append ($(response.response).find ('.refresh-content'));
                         x2.main.refreshContent ();
                         $.mobile.loading ('hide');
-                    } catch (e) {
-                        alert(e);
+                    } else {
+                        $.mobile.loading ('hide');
+                        x2.main.alert ('Upload failed', 'Error');
                     }
-               }, function (jqXHR, textStatus, errorThrown) {
-                   $.mobile.loading ('hide');
-                   x2.main.alert (textStatus, 'Error');
-               }
-           ); 
+                },
+                function (error) {
+                    alert("error");
+                    $.mobile.loading ('hide');
+                    x2.main.alert (error.body, 'Error');
+                }
+            );
         }
     });
 
@@ -139,25 +156,32 @@ MobileActionHistoryAttachments.prototype.setUpAudioUpload = function () {
     new x2.AudioButton ({
         element$: buttons$.filter ('.audio-attachment-button'),
         success: function (data) {
-            that.form$.find ('#audioFile').val(JSON.stringify (data));
+            var attachment$ = x2.mobileForm.makeAudioAttachment (data.fullPath);
+            attachment$.hide ();
+            that.form$.find ('.' + x2.mobileForm.audioAttachmentClass).remove ();
+            that.form$.append (attachment$);
             $.mobile.loading ('show');
-            x2.mobileForm.submitWithFiles (
-               that.form$, 
-               function (response) {
-                   alert(response);
-                    try {
+            x2.mobileForm.submitWithAudio (
+                that.form$.attr ('action'), 
+                that.form$, 
+                'Actions[upload]',
+                function (response) {
+                    if (response.responseCode == 200)  {
+                        alert(response.fullPath);
                         if (that.publisherIsActive) togglePublisher$.click ();
-                        $.mobile.activePage.append ($(response).find ('.refresh-content'));
+                        $.mobile.activePage.append ($(response.response).find ('.refresh-content'));
                         x2.main.refreshContent ();
                         $.mobile.loading ('hide');
-                    } catch (e) {
-                        alert(e);
+                    } else {
+                        $.mobile.loading ('hide');
+                        x2.main.alert ('Upload failed', 'Error');
                     }
-               }, function (jqXHR, textStatus, errorThrown) {
-                   $.mobile.loading ('hide');
-                   x2.main.alert (textStatus, 'Error');
-               }
-           ); 
+                },
+                function (error) {
+                    $.mobile.loading ('hide');
+                    x2.main.alert (error.body, 'Error');
+                }
+            );
         }
     });
 

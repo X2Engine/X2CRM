@@ -117,13 +117,6 @@ if (!$this->refresh && $hasCreateAccess) {
                     <?php 
                     echo CHtml::encode(Yii::t('mobile', 'Add audio attachment'));
                     ?>
-                    
-                    <?php
-                    
-
-                        echo $form->audioFile ();
-
-                        ?> 
 
                             
                 </div>
@@ -135,12 +128,6 @@ if (!$this->refresh && $hasCreateAccess) {
                     echo CHtml::encode(Yii::t('mobile', 'Add video attachment'));
                     ?>
                     
-                    <?php
-                    
-
-                        echo $form->videoFile ();
-
-                        ?> 
                             
                 </div>
             </li>

@@ -42,6 +42,8 @@ function MobileForm (argsDict) {
         DEBUG: x2.DEBUG && false
     };
     this.photoAttachmentClass = 'photo-attachment';
+    this.videoAttachmentClass = 'video-attachment';
+    this.audioAttachmentClass = 'audio-attachment';
     auxlib.applyArgs (this, defaultArgs, argsDict);
 }
 
@@ -91,11 +93,63 @@ MobileForm.prototype.submitWithPhotos = function (
 //            function () {},
 //            options);
 //    });
-    
+    //fileUrl is fullPath in device FS
+    //photoUploadUrl: http://x2developer.com/~josef/x2engine/index.php/profile/mobilePublisher/x2ajax=1&isMobileApp=1
+    //fileKey EventsPublisherFormModel[photo]
     var photo$ = form$.find ('.' + this.photoAttachmentClass);
     var fileUrl = photo$.attr ('src');
-    //console.log ([fileUrl, photoUploadUrl, fileKey, params, success, failure]);
-    x2touch.API.uploadFile (fileUrl, photoUploadUrl, fileKey, params, success, failure);
+    var mimeType = 'image/jpeg';
+    x2touch.API.uploadFile (mimeType, fileUrl, photoUploadUrl, fileKey, params, success, failure);
+};
+
+MobileForm.prototype.submitWithAudio = function (
+    audioUploadUrl, form$, fileKey, success, failure) {
+
+    if (!x2.main.isPhoneGap) 
+        throw new Error ('MobileForm::submitWithAudio is not browser compatible');
+
+    var params = {};
+    form$.find (':input').not (':disabled').each (function () {
+        params[$(this).attr ('name')] = $(this).val ();
+    });
+
+
+    //fileUrl is fullPath in device FS
+    //audioUploadUrl: http://x2developer.com/~josef/x2engine/index.php/profile/mobilePublisher/x2ajax=1&isMobileApp=1
+    //fileKey EventsPublisherFormModel[audio]
+    var audio$ = form$.find ('.' + this.audioAttachmentClass);
+    var fileUrl = audio$.attr ('src');
+    var mimeType = '';
+    if (strpos(fileUrl, 'wav') !== false) {
+        mimeType = 'audio/wav';
+    } else if (strpos(fileUrl, 'amr') !== false) {
+        mimeType = 'audio/amr';
+    }
+    x2touch.API.uploadFile (mimeType, fileUrl, audioUploadUrl, fileKey, params, success, failure);
+};
+
+MobileForm.prototype.submitWithVideo = function (
+    videoUploadUrl, form$, fileKey, success, failure) {
+
+    if (!x2.main.isPhoneGap) 
+        throw new Error ('MobileForm::submitWithVideo is not browser compatible');
+
+    var params = {};
+    form$.find (':input').not (':disabled').each (function () {
+        params[$(this).attr ('name')] = $(this).val ();
+    });
+
+    //fileUrl is fullPath in device FS
+    //videoUploadUrl: http://x2developer.com/~josef/x2engine/index.php/profile/mobilePublisher/x2ajax=1&isMobileApp=1
+    //fileKey EventsPublisherFormModel[video]
+    var video$ = form$.find ('.' + this.videoAttachmentClass);
+    var fileUrl = video$.attr ('src');
+    if (strpos(fileUrl, '3gpp') !== false) {
+        mimeType = 'video/3gpp';
+    } else if (strpos(fileUrl, 'quicktime') !== false) {
+        mimeType = 'video/quicktime';
+    }
+    x2touch.API.uploadFile (mimeType, fileUrl, videoUploadUrl, fileKey, params, success, failure);
 };
 
 
@@ -113,6 +167,46 @@ MobileForm.prototype.makePhotoAttachment = function (data) {
     remove$.append ($('<i>', { 'class': 'fa fa-circle' }));
     remove$.append ($('<i>', { 'class': 'fa fa-times-circle' }));
     attachment$.append (img$);
+    attachment$.append (remove$);
+    remove$.click (function () { $(this).parent ().remove (); });
+    return attachment$;
+};
+
+MobileForm.prototype.makeAudioAttachment = function (data) {
+    var attachment$ = $('<div>', {
+        'class': x2.mobileForm.audioAttachmentClass + '-container',
+    });
+    var audio$ = $([
+        "<audio controls class='" + x2.mobileForm.audioAttachmentClass + "'>",
+        "  <source src='" + data + "' >",
+        "</audio>"
+      ].join("\n"));       
+    var remove$ = $('<div>', {
+        'class': 'remove-attachment-button'
+    });
+    remove$.append ($('<i>', { 'class': 'fa fa-circle' }));
+    remove$.append ($('<i>', { 'class': 'fa fa-times-circle' }));
+    attachment$.append (audio$);
+    attachment$.append (remove$);
+    remove$.click (function () { $(this).parent ().remove (); });
+    return attachment$;
+};
+
+MobileForm.prototype.makeVideoAttachment = function (data) {
+    var attachment$ = $('<div>', {
+        'class': x2.mobileForm.videoAttachmentClass + '-container',
+    });
+    var video$ = $([
+        "<video controls class='" + x2.mobileForm.videoAttachmentClass + "'>",
+        "  <source src='" + data + "' >",
+        "</video>"
+      ].join("\n"));         
+    var remove$ = $('<div>', {
+        'class': 'remove-attachment-button'
+    });
+    remove$.append ($('<i>', { 'class': 'fa fa-circle' }));
+    remove$.append ($('<i>', { 'class': 'fa fa-times-circle' }));
+    attachment$.append (video$);
     attachment$.append (remove$);
     remove$.click (function () { $(this).parent ().remove (); });
     return attachment$;
