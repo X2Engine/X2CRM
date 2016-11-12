@@ -160,7 +160,7 @@ class Publisher extends X2Widget {
         }
         $this->model = $model;
         
-        $associatedModel = X2Model::getModelOfTypeWithId($this->associationType, $this->associationId);
+        $associatedModel = X2Model::getModelOfTypeWithId($this->associationType, $this->associationId, true);
         if($associatedModel){
             $fields = $associatedModel->getFields();
             // Try to grab the model's email from the first email field
