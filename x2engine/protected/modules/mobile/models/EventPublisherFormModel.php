@@ -58,14 +58,14 @@ class EventPublisherFormModel extends CFormModel {
                 'audio', 'file', 
                 'allowEmpty' => true,
                 'types' => array (
-                    'wav', 'amr'
+                    'wav', 'amr', 'mp3', 'ogg'
                 ),
             ),
             array (
                 'video', 'file', 
                 'allowEmpty' => true,
                 'types' => array (
-                    'quicktime', '3gpp'
+                    'quicktime', '3gpp', 'mp4'
                 ),
             ),
         );

@@ -56,11 +56,6 @@ class MobileActionHistoryAttachmentsPublishAction extends MobileAction {
         $creds = Credentials::model()->findByPk($settings->googleCredentialsId);
         $key = null;
         $decodedResult = null;
-        if($creds && $creds->auth && $creds->auth->apiKey){
-            $key = $creds->auth->apiKey;
-        } else {
-           throw new CHttpException (403, Yii::t('app', 'Google API key missing'));
-        }
         
         $action = new Actions;
         $action->setAttributes (array (
@@ -75,8 +70,13 @@ class MobileActionHistoryAttachmentsPublishAction extends MobileAction {
         ), false);
         $valid = false;
         $geoLocationCoords = isset ($_POST['geoLocationCoords']) ? $_POST['geoLocationCoords'] : "";
-        $attachmentType = null;
+        $attachmentType = '';
         if ($geoLocationCoords == 'set' && isset ($_POST['geoCoords'])) {
+            if($creds && $creds->auth && $creds->auth->apiKey){
+                $key = $creds->auth->apiKey;
+            } else {
+               throw new CHttpException (403, Yii::t('app', 'Google API key missing'));
+            }
             $decodedResponse = json_decode(filter_input(INPUT_POST, 'geoCoords', FILTER_DEFAULT),true);
             $location = Yii::app()->params->profile->user->logLocation('mobileActionPost', 'POST');
             $action->location = $location;
