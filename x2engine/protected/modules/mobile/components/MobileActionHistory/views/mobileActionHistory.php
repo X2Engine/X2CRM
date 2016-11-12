@@ -82,6 +82,45 @@ if (!$this->refresh && $hasCreateAccess) {
                     ?>
                 </div>
             </li>
+<<<<<<< HEAD
+=======
+            <li class='location-attachment-button'>
+                <span><?php echo X2Html::fa('fa-location-arrow'); ?></span>
+                <div>
+                    <?php 
+                    echo CHtml::encode(Yii::t('mobile', 'Add location attachment'));
+                    ?>
+                    
+                    <?php
+                    
+                        echo $form->mobileCoordinates ();
+                        echo $form->mobileLocationCoordinates ();
+                        ?> 
+
+                            
+                </div>
+            </li>
+            <li class='audio-attachment-button'>
+                <span><?php echo X2Html::fa('fa-file-audio-o'); ?></span>
+                <div>
+                    <?php 
+                    echo CHtml::encode(Yii::t('mobile', 'Add audio attachment'));
+                    ?>
+
+                            
+                </div>
+            </li>
+            <!--<li class='video-attachment-button'>
+                <span><?php //echo X2Html::fa('fa-file-video-o '); ?></span>
+                <div>
+                    <?php 
+                    //echo CHtml::encode(Yii::t('mobile', 'Add video attachment'));
+                    ?>
+                    
+                            
+                </div>
+            </li>-->
+>>>>>>> 85781f8... temporarily removed video attachment
             <li class='file-attachment-button'>
                 <span><?php echo X2Html::fa('file'); ?></span>
                 <div>
