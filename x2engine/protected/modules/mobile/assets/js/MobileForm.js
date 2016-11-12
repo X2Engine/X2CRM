@@ -124,6 +124,8 @@ MobileForm.prototype.submitWithAudio = function (
         mimeType = 'audio/wav';
     } else if (strpos(fileUrl, 'amr') !== false) {
         mimeType = 'audio/amr';
+    } else {
+        mimeType = 'audio/mp3';
     }
     x2touch.API.uploadFile (mimeType, fileUrl, audioUploadUrl, fileKey, params, success, failure);
 };
@@ -144,10 +146,15 @@ MobileForm.prototype.submitWithVideo = function (
     //fileKey EventsPublisherFormModel[video]
     var video$ = form$.find ('.' + this.videoAttachmentClass);
     var fileUrl = video$.attr ('src');
+    var mimeType = '';
     if (strpos(fileUrl, '3gpp') !== false) {
         mimeType = 'video/3gpp';
     } else if (strpos(fileUrl, 'quicktime') !== false) {
         mimeType = 'video/quicktime';
+    } else if (strpos(fileUrl, 'mp4') !== false) {
+        mimeType = 'video/mp4';
+    } else {
+        mimeType = 'video/mp4';
     }
     x2touch.API.uploadFile (mimeType, fileUrl, videoUploadUrl, fileKey, params, success, failure);
 };
@@ -172,13 +179,13 @@ MobileForm.prototype.makePhotoAttachment = function (data) {
     return attachment$;
 };
 
-MobileForm.prototype.makeAudioAttachment = function (data) {
+MobileForm.prototype.makeAudioAttachment = function (type, data) {
     var attachment$ = $('<div>', {
         'class': x2.mobileForm.audioAttachmentClass + '-container',
     });
     var audio$ = $([
         "<audio controls class='" + x2.mobileForm.audioAttachmentClass + "'>",
-        "  <source src='" + data + "' >",
+        "  <source src='" + data + "' type='"+type+"' >",
         "</audio>"
       ].join("\n"));       
     var remove$ = $('<div>', {
@@ -192,13 +199,13 @@ MobileForm.prototype.makeAudioAttachment = function (data) {
     return attachment$;
 };
 
-MobileForm.prototype.makeVideoAttachment = function (data) {
+MobileForm.prototype.makeVideoAttachment = function (type, data) {
     var attachment$ = $('<div>', {
         'class': x2.mobileForm.videoAttachmentClass + '-container',
     });
     var video$ = $([
         "<video controls class='" + x2.mobileForm.videoAttachmentClass + "'>",
-        "  <source src='" + data + "' >",
+        "  <source src='" + data + "' type='"+type+"' >",
         "</video>"
       ].join("\n"));         
     var remove$ = $('<div>', {

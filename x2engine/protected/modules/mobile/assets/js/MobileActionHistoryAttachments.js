@@ -103,26 +103,17 @@ MobileActionHistoryAttachments.prototype.setUpVideoUpload = function () {
     new x2.VideoButton ({
         element$: buttons$.filter ('.video-attachment-button'),
         success: function (data) {
-            alert("test1");
-            var attachment$ = x2.mobileForm.makeVideoAttachment (data.fullPath);
-            alert(data.fullPath);
+            var attachment$ = x2.mobileForm.makeVideoAttachment (data.type, data.fullPath);
             attachment$.hide ();
-            alert("test3");
             that.form$.find ('.' + x2.mobileForm.videoAttachmentClass).remove ();
-            alert("test4");
             that.form$.append (attachment$);
-            alert("test5");
             $.mobile.loading ('show');
-            alert("test6");
             x2.mobileForm.submitWithVideo (
                 that.form$.attr ('action'), 
                 that.form$, 
                 'Actions[upload]',
                 function (response) {
-                    alert("response");
-                    alert(response);
                     if (response.responseCode == 200)  {
-                        alert(response.fullPath);
                         if (that.publisherIsActive) togglePublisher$.click ();
                         $.mobile.activePage.append ($(response.response).find ('.refresh-content'));
                         x2.main.refreshContent ();
@@ -133,7 +124,6 @@ MobileActionHistoryAttachments.prototype.setUpVideoUpload = function () {
                     }
                 },
                 function (error) {
-                    alert("error");
                     $.mobile.loading ('hide');
                     x2.main.alert (error.body, 'Error');
                 }
@@ -156,7 +146,7 @@ MobileActionHistoryAttachments.prototype.setUpAudioUpload = function () {
     new x2.AudioButton ({
         element$: buttons$.filter ('.audio-attachment-button'),
         success: function (data) {
-            var attachment$ = x2.mobileForm.makeAudioAttachment (data.fullPath);
+            var attachment$ = x2.mobileForm.makeAudioAttachment (data.type,data.fullPath);
             attachment$.hide ();
             that.form$.find ('.' + x2.mobileForm.audioAttachmentClass).remove ();
             that.form$.append (attachment$);
@@ -167,7 +157,6 @@ MobileActionHistoryAttachments.prototype.setUpAudioUpload = function () {
                 'Actions[upload]',
                 function (response) {
                     if (response.responseCode == 200)  {
-                        alert(response.fullPath);
                         if (that.publisherIsActive) togglePublisher$.click ();
                         $.mobile.activePage.append ($(response.response).find ('.refresh-content'));
                         x2.main.refreshContent ();
