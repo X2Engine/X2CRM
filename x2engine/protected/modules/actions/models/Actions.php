@@ -429,7 +429,7 @@ class Actions extends X2Model {
         return self::getAssociationModel($this->associationType, $this->associationId);
     }
     
-    public function saveRaw ($profile, $attachmentData, $isMedia,$runValidation=true, $attributes=null) {
+    public function saveRaw ($profile, $attachmentData, $runValidation=true, $attributes=null) {
 
             // save related photo record
             $transaction = Yii::app()->db->beginTransaction ();
@@ -439,29 +439,9 @@ class Actions extends X2Model {
                 if (!$ret) {
                     throw new CException (implode (';', $this->getAllErrorMessages ()));
                 }
-                if ($isMedia) {
-                    if ((int)$attachmentData['size'] > 10000000) {
-                        throw new CException ('Audio note too big');
-                    }
-                }
                 //save the raw data to a file
-                $filename = '';
-                $fileType = '';
-                if ($isMedia) {
-                    if (!strcmp($attachmentData['type'],'audio/wav')) {
-                        $filename = md5(uniqid(rand(), true)) . '.wav';
-                    } else if (!strcmp($attachmentData['type'],'audio/amr')) {
-                        $filename = md5(uniqid(rand(), true)) . '.amr';
-                    } else if (!strcmp($attachmentData['type'],'video/quicktime')) {
-                        $filename = md5(uniqid(rand(), true)) . '.quicktime';                   
-                    } else if (!strcmp($attachmentData['type'],'video/3gpp')) {
-                        $filename = md5(uniqid(rand(), true)) . '.3gpp';  
-                    }
-                    $fileType = $attachmentData['type'];
-                } else {
-                    $filename = md5(uniqid(rand(), true)) . '.png';
-                    $fileType = 'image/png';
-                }
+                $filename = md5(uniqid(rand(), true)) . '.png';
+                $fileType = 'image/png';
                 $userFolderPath = implode(DIRECTORY_SEPARATOR, array(
                     Yii::app()->basePath,
                     '..',
@@ -484,11 +464,8 @@ class Actions extends X2Model {
                 $media->resolveNameConflicts();
                 $associatedMedia = Yii::app()->file->set($userFolderPath.DIRECTORY_SEPARATOR.$media->fileName);
                 $associatedMedia->create();
-                if ($isMedia){
-                    $associatedMedia->setContents($attachmentData['data']);   
-                } else {
-                    $associatedMedia->setContents($attachmentData);  
-                }
+                $associatedMedia->setContents($attachmentData);  
+                
                 if (!$media->save () && !$associatedMedia->exists) {
                     throw new CException (implode (';', $media->getAllErrorMessages ()));
                 }
