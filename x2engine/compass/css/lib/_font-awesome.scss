@@ -51,7 +51,7 @@
         &:before {
             text-decoration: none;
             @extend %fa;
-            @extend %fa- #{$name} !optional;
+            @extend %fa-#{$name} !optional;
             @content;
         }
     }
@@ -60,7 +60,7 @@
         &:after {
             text-decoration: none;
             @extend %fa;
-            @extend %fa- #{$name} !optional;
+            @extend %fa-#{$name} !optional;
             @content;
         }
     }
