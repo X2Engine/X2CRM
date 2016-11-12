@@ -788,10 +788,32 @@ class EventTextFormatter {
 
     private static function formatMedia($event, $params, $htmlOptions) {
         $authorText = static::getAuthorText($event, $htmlOptions);
+        $authorText = rtrim($authorText, " ");
         $truncated = (array_key_exists('truncated', $params)) ? $params['truncated']
                     : false;
-        $media = $event->legacyMedia;
-        $text = substr($authorText, 0, -1) . ": " . $event->text;
+        //get table x2_events_to_media and by using $event->id get mediaId
+        // in this case 2003
+        $media = $params['media'];
+        $recipient = $params['recipient'];
+        $profileRecipient = $params['profileRecipient'];
+        if ($recipient) {
+            $recipientLink = 
+                CHtml::link(
+                    Yii::t('app', $recipient->firstName . ' ' . $recipient->lastName), 
+                    $profileRecipient->getUrl ());
+            $modifier = ' &raquo; ';
+            if (Yii::app()->user->getName() == $recipient->username) {
+                $recipientLink = CHtml::link(
+                    Yii::t('app', 'You'), 
+                    $profileRecipient->getUrl ());
+            }      
+            if ($event->user == Yii::app()->user->getName() && $recipient->username == Yii::app()->user->getName()) {
+                //$authorText .= ;
+            } else {
+                $authorText .= $modifier . $recipientLink;
+            }
+        }
+        $text = $authorText . ": " . $event->text;
         if ($media) {
             if (!$truncated) {
                 $text.="<br>" . Media::attachmentSocialText($media->getMediaLink(),

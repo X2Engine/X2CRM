@@ -34,47 +34,61 @@
  * "Powered by X2Engine".
  **********************************************************************************/
 
-@import "login-shared";
-@import "colors";
+x2.AudioButton = (function () {
 
-// general
-$borderColor: darken($lightGray, 2%);
-$greenHighlight: #13A513;
-$backgroundColor: white;
-$text: lighten(black, 5%);
-//$subduedTextColor: lighten($text, 50%);
-$subduedTextColor: gray;
-$linkColor: blue;
-$border: gray;
-$fontSize: 16px;
-$errorRed: lighten(red, 10%);
-$iconButtonColor: lighten(black,20%);
+function AudioButton (argsDict) {
+    var argsDict = typeof argsDict === 'undefined' ? {} : argsDict;
+    var defaultArgs = {
+        DEBUG: x2.DEBUG && false,
+        element$: null,
+        validate: function (callback) { callback (); },
+        success: function (data) {},
+        failure: function (message) {}
+    };
+    auxlib.applyArgs (this, defaultArgs, argsDict);
+    this.init ();
+}
 
-// login
-$loginLinkColor: #255296;
-$loginInputBorder: #255296;
-$loginInputBoxShadow: inset 0px 2px 2px rgba(128, 128, 128, 0.83);
-$loginPlaceholderText: gray;
 
-// menus
-$menuBackgroundColor: #EFEFEF;
-$menuText: black;
+AudioButton.prototype.setUpButtonPhoneGap = function () {
+    var that = this;
+    this.element$.off ('click.setUpButtonPhoneGap').on ('click.setUpButtonPhoneGap', function () {
+        that.validate (function () {
+            x2touch.API.getAudio(function(mediaFiles) {
+                that.success (mediaFiles);
+            }, function (error) {
+                that.failure (error);
+                /*alert('code: '    + error.code    + '\n' +
+                      'message: ' + error.message + '\n');*/
+            }, {});         
+            
+        });
+    });
+};
 
-// header
-$headerBackground: darken($defaultBgColor, 3%);
-$headerText: lighten($headerBackground, 63%);
-$headerTextSize: 19px;
-$headerTextSecondary: lighten($headerBackground, 28%);
 
-// panel
-$panelBackgroundColor: #4E4E4E;
-$panelText: white;
-$panelBorder: lighten($panelBackgroundColor,5%);
+AudioButton.prototype.setUpButtonBrowser = function () {
+    var that = this;
+    this.element$.off ('click.setUpButtonBrowser').on ('click.setUpButtonBrowser', function () {
+        that.validate (function () {
+             that.success (
+             );
+        });
+    })
+};
 
-// forms
-$inputErrorBorder: lighten(red,15%);
+AudioButton.prototype.init = function () {
+      
+    if (x2.main.isPhoneGap) { 
+        this.setUpButtonPhoneGap ();
+    } else {
+     
+        this.setUpButtonBrowser ();
+      
+    }
+     
+};
 
-// lists
-$itemBorderColor: $lightGray;
-$labelFontSize: 13px;
+return AudioButton;
 
+}) ();

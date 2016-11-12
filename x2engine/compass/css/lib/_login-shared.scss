@@ -39,7 +39,7 @@
 $loginText: #444343;
 $loginTextFaded: #666;
 $loginBoldText: rgb(104, 104, 104);
-$defaultBgColor: $appBlue;
+$defaultBgColor: $lightestGray;
 
 @mixin loginButtons {
     -moz-box-shadow: none;

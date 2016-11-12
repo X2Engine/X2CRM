@@ -58,6 +58,8 @@ class Locations extends CActiveRecord
             'activityPost' => Yii::t('app', 'Activity Post'),
             'mobileIdle' => Yii::t('app', 'Mobile Location'),
             'mobileActivityPost' => Yii::t('app', 'Mobile Activity Post'),
+            'mobileActionPost' => Yii::t('app', 'Mobile Action History Post'),
+            'mobileCheckIn' => Yii::t('app', 'Mobile Check-In Post'),
             'eventRSVP' => Yii::t('app','Calendar Event RSVP'),
         );
     }
@@ -132,6 +134,8 @@ class Locations extends CActiveRecord
             'activityPost',
             'mobileIdle',
             'mobileActivityPost',
+            'mobileActionPost',
+            'mobileCheckIn',
             'eventRSVP',
         );
     }

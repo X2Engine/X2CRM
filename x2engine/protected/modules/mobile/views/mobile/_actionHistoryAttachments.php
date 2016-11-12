@@ -1,3 +1,4 @@
+<?php
 /***********************************************************************************
  * X2CRM is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2016 X2Engine Inc.
@@ -34,47 +35,20 @@
  * "Powered by X2Engine".
  **********************************************************************************/
 
-@import "login-shared";
-@import "colors";
+$refresh = !isset ($refresh) ? false : $refresh;
+$type = !isset($type) ? 'attachments' : $type;
 
-// general
-$borderColor: darken($lightGray, 2%);
-$greenHighlight: #13A513;
-$backgroundColor: white;
-$text: lighten(black, 5%);
-//$subduedTextColor: lighten($text, 50%);
-$subduedTextColor: gray;
-$linkColor: blue;
-$border: gray;
-$fontSize: 16px;
-$errorRed: lighten(red, 10%);
-$iconButtonColor: lighten(black,20%);
+$htmlOptions = array (
+    'class' => 'action-history',
+);
 
-// login
-$loginLinkColor: #255296;
-$loginInputBorder: #255296;
-$loginInputBoxShadow: inset 0px 2px 2px rgba(128, 128, 128, 0.83);
-$loginPlaceholderText: gray;
+echo X2Html::openTag ('div', $htmlOptions);
 
-// menus
-$menuBackgroundColor: #EFEFEF;
-$menuText: black;
+$this->widget ('application.modules.mobile.components.MobileActionHistory.MobileActionHistoryAttachments', array (
+    'model' => $model,
+    'refresh' => $refresh,
+    'type' => $type,
+));
 
-// header
-$headerBackground: darken($defaultBgColor, 3%);
-$headerText: lighten($headerBackground, 63%);
-$headerTextSize: 19px;
-$headerTextSecondary: lighten($headerBackground, 28%);
-
-// panel
-$panelBackgroundColor: #4E4E4E;
-$panelText: white;
-$panelBorder: lighten($panelBackgroundColor,5%);
-
-// forms
-$inputErrorBorder: lighten(red,15%);
-
-// lists
-$itemBorderColor: $lightGray;
-$labelFontSize: 13px;
-
+?>
+</div>

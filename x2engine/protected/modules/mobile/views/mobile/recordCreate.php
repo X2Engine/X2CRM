@@ -45,17 +45,17 @@ $this->onPageLoad ("
 ?>
 <div class='refresh-content' data-refresh-selector='.header-content-right'>
     <?php
-    //if($model instanceof Contacts) { 
+    if($model instanceof Contacts) { 
     ?>
-        <!--<div class='header-content-right' style="margin-right: 80px;">
+        <div class='header-content-right' style="margin-right: 80px;">
             <div class='import-button'>
             <?php
-            //echo CHtml::encode (Yii::t('mobile', 'Import'));
+                echo CHtml::encode (Yii::t('mobile', 'Import'));
             ?>
             </div>
-        </div>-->
+        </div>
     <?php
-    //}
+    }
     ?>
     <div class='header-content-right'>
         <div class='submit-button disabled'>

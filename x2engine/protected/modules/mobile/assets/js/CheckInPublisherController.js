@@ -99,7 +99,7 @@ CheckInPublisherController.prototype.setUpForm = function () {
                    /*
                     * Possibilities: API token not set or API not turned on
                     */
-                   alert("failed to parse response from server: " + e);
+                   alert(e);
                    window.history.back();
                }
                x2.main.refreshContent ();

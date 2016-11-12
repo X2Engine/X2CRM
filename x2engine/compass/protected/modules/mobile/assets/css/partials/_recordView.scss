@@ -197,6 +197,17 @@ $publisherMenuHeightBrowser: 64px;
     display: none;
 }
 
+
+.location-action-attachment-button {
+   height:$publisherMenuHeight/2;
+   width: 100%;
+   background: transparent;
+   border: none !important;
+   outline:none;
+   left: 235px;
+   top: 4px;
+}
+
 &[data-x2-tab-name='action-history'] {
     .publisher-menu-button {
         display: block !important;

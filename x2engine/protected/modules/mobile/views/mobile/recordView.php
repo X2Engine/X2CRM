@@ -45,7 +45,7 @@ $authParams['X2Model'] = $model;
 $this->onPageLoad ("
     x2.main.controllers['$this->pageId'] = new x2.RecordViewController (".CJSON::encode (array (
         'modelName' => get_class ($model),
-        'modelEmail' => $model->email,
+        //'modelEmail' => $model->email,
         'modelId' => $model->id,
         'myProfileId' => Yii::app()->params->profile->id,
         'translations' => array (
@@ -121,7 +121,7 @@ if ($supportsActionHistory) {
                 ?>
                 </a>
             </li>
-            <li class='record-view-tab' data-x2-tab-name='action-history'>
+            <li class='record-view-tab' data-x2-tab-name='action-history-attachments'>
                 <a id='attachment-tab-link' href='<?php echo '#'.MobileHtml::namespaceId ('action-history-attachments'); ?>'><?php 
                 //echo CHtml::encode (Yii::t('mobile', 'History'));
                 echo CHtml::encode (Yii::t('mobile', 'Attachments'));
@@ -168,7 +168,7 @@ if ($supportsActionHistory) {
     <div id='<?php echo MobileHtml::namespaceId ('action-history');?>' class='action-history-outer'>
 
     <?php
-        $this->renderPartial ('application.modules.mobile.views.mobile._actionHistory', array (
+        $this->renderPartial ('application.modules.mobile.views.mobile._actionHistoryAttachments', array (
             'model' => $model,
             'type' => 'all',
         ));
