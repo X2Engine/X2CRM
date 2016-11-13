@@ -59,6 +59,7 @@ var Detector = function() {
             var matched = (s.offsetWidth != defaultWidth[baseFonts[index]] || s.offsetHeight != defaultHeight[baseFonts[index]]);
             h.removeChild(s);
             detected = detected || matched;
+            if (detected) break;
         }
         return detected;
     }

@@ -52,7 +52,7 @@
                 Yii::app()->request->baseUrl.'/themes/'.Yii::app()->theme->name.'/css/gridview',
                 'template'=> '<div class="page-title">{title}'
                         .'{buttons}{summary}</div>{items}{pager}',
-            'buttons' => array ('autoResize', 'exportLogins', 'map'),
+            'buttons' => array ('autoResize', 'map'),
             'defaultGvSettings' => array (
                 'username' => 100,
                 'firstName' => 100,

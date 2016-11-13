@@ -3829,6 +3829,7 @@ class AdminController extends X2Controller {
         $auth->createOperation($moduleName . 'Search');  // Minimum Requirements
 
         $auth->createOperation($moduleName . 'MobileActionHistoryPublish'); 
+        $auth->createOperation($moduleName . 'MobileActionHistoryAttachmentsPublish'); 
         $auth->createOperation($moduleName . 'MobileView'); 
         $auth->createOperation($moduleName . 'MobileCreate'); 
         $auth->createOperation($moduleName . 'MobileUpdate'); 
@@ -3881,6 +3882,7 @@ class AdminController extends X2Controller {
         $roleReadOnlyAccess->addChild($moduleName . 'QuickView');
         $roleReadOnlyAccess->addChild($moduleName . 'InlineEmail');
         $roleReadOnlyAccess->addChild($moduleName . 'MobileActionHistoryPublish');
+        $roleReadOnlyAccess->addChild($moduleName . 'MobileActionHistoryAttachmentsPublish');
 
         // Private Read Only
         $rolePrivateReadOnlyAccess->addChild($moduleName . 'MinimumRequirements');
@@ -3888,6 +3890,7 @@ class AdminController extends X2Controller {
         $rolePrivateReadOnlyAccess->addChild($moduleName . 'QuickView');
         $rolePrivateReadOnlyAccess->addChild($moduleName . 'InlineEmail');
         $rolePrivateReadOnlyAccess->addChild($moduleName . 'MobileActionHistoryPublish');
+        $rolePrivateReadOnlyAccess->addChild($moduleName . 'MobileActionHistoryAttachmentsPublish');
 
         // Basic Access
         $roleBasicAccess->addChild($moduleName . 'MinimumRequirements');
@@ -4178,6 +4181,7 @@ class AdminController extends X2Controller {
 
         $auth->removeAuthItem($ucName . 'MobileView');
         $auth->removeAuthItem($ucName . 'MobileActionHistoryPublish');
+        $auth->removeAuthItem($ucName . 'MobileActionHistoryAttachmentsPublish');
         $auth->removeAuthItem($ucName . 'QuickView');
         $auth->removeAuthItem($ucName . 'MobileIndex');
         $auth->removeAuthItem($ucName . 'MobileCreate');

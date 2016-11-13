@@ -424,6 +424,8 @@ ActivityFeed.prototype.setupEditorBehavior = function  () {
         // Only submits if there are files queued
         if (typeof that.fileUploader !== 'undefined' && that.fileUploader.filesQueued()) {
             that.fileUploader.mediaParams.attachmentText = window.newPostEditor.getData ();
+            that.fileUploader.mediaParams.private = $("#file-uploader-private:checked").length > 0;
+            that.fileUploader.mediaParams.associationId = $("#Events_associationId").val();
             that.fileUploader.upload();
             return;
         }

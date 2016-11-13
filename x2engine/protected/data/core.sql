@@ -580,7 +580,12 @@ CREATE TABLE x2_locations(
 	recordType			VARCHAR(250)	NOT NULL,
 	lat                 FLOAT			NOT NULL,
 	lon                 FLOAT           NOT NULL,
-	type                VARCHAR(50),
+        altitude            FLOAT           NOT NULL,
+        accuracy            FLOAT           NOT NULL,
+        altitudeAccuracy    FLOAT           NOT NULL,
+        heading             FLOAT           NOT NULL,
+        speed               FLOAT           NOT NULL,
+	type                VARCHAR(50)     NOT NULL,
 	ipAddress           VARCHAR(250),
 	comment             VARCHAR(250),
 	createDate			BIGINT          NOT NULL

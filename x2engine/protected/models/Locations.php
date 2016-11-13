@@ -58,6 +58,8 @@ class Locations extends CActiveRecord
             'activityPost' => Yii::t('app', 'Activity Post'),
             'mobileIdle' => Yii::t('app', 'Mobile Location'),
             'mobileActivityPost' => Yii::t('app', 'Mobile Activity Post'),
+            'mobileActionPost' => Yii::t('app', 'Mobile Action History Post'),
+            'mobileCheckIn' => Yii::t('app', 'Mobile Check-In Post'),
             'eventRSVP' => Yii::t('app','Calendar Event RSVP'),
         );
     }
@@ -84,7 +86,7 @@ class Locations extends CActiveRecord
 		// NOTE: you should only define rules for those attributes that
 		// will receive user inputs.
 		return array(
-			array('contactId, lat, lon', 'required'),
+			array('recordId, recordType, lat, lon', 'required'),
         );
 	}
 
@@ -132,6 +134,8 @@ class Locations extends CActiveRecord
             'activityPost',
             'mobileIdle',
             'mobileActivityPost',
+            'mobileActionPost',
+            'mobileCheckIn',
             'eventRSVP',
         );
     }
@@ -259,5 +263,89 @@ class Locations extends CActiveRecord
             }
         }
         return $location;
+    }
+
+    protected function getGoogleApiKey() {
+        $key = null;
+        $settings = Yii::app()->settings;
+        $creds = Credentials::model()->findByPk($settings->googleCredentialsId);
+        if($creds && $settings->googleIntegration && $creds->auth && $creds->auth->apiKey){
+            $key = $creds->auth->apiKey;
+        }
+        return $key;
+    }
+
+    public function generateStaticMap() {
+        $decodedResult = null;
+        $key = $this->googleApiKey;
+        if($key && !empty($this->lat) && !empty($this->lon)){
+            /**
+             * get static map here
+             */
+            $url = 'https://maps.googleapis.com/maps/api/staticmap?center=' .
+                    $this->lat . ',' . $this->lon .
+                    '&zoom=13&size=600x300&maptype=roadmap&markers=color:blue%7Clabel:%7C' .
+                    $this->lat . ',' . $this->lon .
+                    '&key=' . $key;
+            //open connection
+            $ch = curl_init();
+
+            //set the url, number of POST vars, POST data
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+            curl_setopt($ch,CURLOPT_URL, $url);
+
+            //execute post
+            $result = curl_exec($ch);
+            $http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+            if($http_code === 200){
+                //close connection
+                $decodedResult = $result;
+            }
+            curl_close($ch);
+        }
+        return $decodedResult;
+    }
+
+    public function geocode() {
+        $key = $this->googleApiKey;
+        if ($key && !empty($this->lat) && !empty($this->lon)) {
+            $url = 'https://maps.googleapis.com/maps/api/geocode/json?latlng=' .
+                $this->lat . ',' . $this->lon .
+                '&key=' . $key;
+            //open connection
+            $ch = curl_init();
+
+            //set the url, number of POST vars, POST data
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+            curl_setopt($ch,CURLOPT_URL, $url);
+
+            //execute post
+            $result = curl_exec($ch);
+            curl_close($ch);
+            $data = CJSON::decode($result, true);
+            if ($data)
+                return $data['results'][0]['formatted_address'];
+            return $result;
+        }
+    }
+
+    private static $editableFields = array(
+        'recordType',
+        'recordId',
+        'lat',
+        'lon',
+        'type',
+        'comment',
+    );
+    /**
+     * Hack to support Locations in API2 without refactoring to inherit X2Model. This can be
+     * removed when location functionality is extracted to a module
+     */
+    public function setX2Fields(&$data, $filter = false, $bypassPermissions=false) {
+        foreach ($data as $field => $value) {
+            if (in_array($field, self::$editableFields)) {
+                $this->$field = $value;
+            }
+        }
     }
 }

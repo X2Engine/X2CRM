@@ -418,6 +418,12 @@ class ContactsController extends x2base {
         $tagCount = 0;
         $tagFlag = false;
         $contactFields = array_flip (Contacts::model()->attributeNames());
+        $time = Formatter::formatDateTime(time());
+        if (isset($params['timestamp'])) {
+            $time = $params['timestamp'];
+            $conditions .= ' AND x2_locations.createDate < :time';
+            $parameters[':time'] = strtotime($time);
+        }
 
         // Loop through params and add conditions to limit the contact data set
         foreach($params as $field => $value){
@@ -579,6 +585,7 @@ class ContactsController extends x2base {
             'userId' => isset($userId) ? $userId : 0,
             'contactId' => isset($contactId) ? $contactId : 0,
             'contactName' => isset($contactName) ? $contactName : '',
+            'timestamp' => $time,
             'assignment' => 
                 isset($_POST['params']['assignedTo']) || isset($params['assignedTo']) ?
                     (isset($_POST['params']['assignedTo']) ? 

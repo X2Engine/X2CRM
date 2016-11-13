@@ -299,7 +299,7 @@ if($type == 'attachment' && $data->completedBy != 'Email') {
         }else if(in_array($data->type, array('email', 'emailFrom')) && $data->completedBy != 'Email'){
             echo Yii::t('media', ($data->type == 'email' ? 'Sent by {name}' : 'Sent to {name}'), array('{name}' => User::getUserLinks($data->completedBy))).$relString;
         }
-        if (isset($data->location)) {
+        if (Yii::app()->settings->googleIntegration && isset($data->location)) {
             echo '<div class="right">';
             echo X2Html::fa('crosshairs').' '.$data->location->getLocationLink();
             echo '</div>';
