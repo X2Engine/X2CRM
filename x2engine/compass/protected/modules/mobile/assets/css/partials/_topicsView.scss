@@ -86,6 +86,8 @@
         }
         .reply-attachments {
             @include photo-attachment;
+            @include audio-attachment;
+            @include video-attachment;
 
             .file-attachments-container {
                 padding: 5px;

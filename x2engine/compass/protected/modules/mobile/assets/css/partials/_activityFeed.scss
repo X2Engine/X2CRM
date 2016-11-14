@@ -77,6 +77,58 @@ $verticalSpacing: 8px;
             line-height: 20px;
         }
     }
+    .audio-attachments-container {
+        display: inline-block;
+        position: relative;
+        .audio-attachment {
+            max-width: 100%;
+            @media (min-width: 500px) {
+                max-width: 500px;
+            }
+            //max-height: 400px;
+            img {
+            }
+        }
+        .remove-attachment-button {
+            cursor: pointer;
+            position: absolute;
+            right: 10px;
+            top: 10px;
+            color: lighten(black,20%);
+            //border: 2px solid black;
+            text-align: center;
+            //border-radius: 50%;
+            //width: 20px;
+            //height: 20px;
+            line-height: 20px;
+        }
+    }
+    .video-attachments-container {
+        display: inline-block;
+        position: relative;
+        .video-attachment {
+            max-width: 100%;
+            @media (min-width: 500px) {
+                max-width: 500px;
+            }
+            //max-height: 400px;
+            img {
+            }
+        }
+        .remove-attachment-button {
+            cursor: pointer;
+            position: absolute;
+            right: 10px;
+            top: 10px;
+            color: lighten(black,20%);
+            //border: 2px solid black;
+            text-align: center;
+            //border-radius: 50%;
+            //width: 20px;
+            //height: 20px;
+            line-height: 20px;
+        }
+    }
 }
 
 
@@ -189,6 +241,8 @@ background: $backgroundColor;
         }
         .event-attachments {
             @include photo-attachment;
+            @include audio-attachment;
+            @include video-attachment;
         }
         .bottom-bar {
             & > * {
@@ -248,6 +302,14 @@ background: $backgroundColor;
             position: relative;
             .photo-attachments-container {
                 .photo-attachment {
+                }
+            }
+            .audio-attachments-container {
+                .audio-attachment {
+                }
+            }
+            .video-attachments-container {
+                .video-attachment {
                 }
             }
             .photo-attach-button {

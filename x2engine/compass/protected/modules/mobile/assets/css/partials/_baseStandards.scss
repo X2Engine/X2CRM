@@ -139,6 +139,28 @@ list view
     }
 }
 
+@mixin audio-attachment {
+    .audio-attachment-container {
+        img {
+            max-width: 100%;
+            @media (min-width: 500px) {
+                max-width: 500px;
+            }
+        }
+    }
+}
+
+@mixin video-attachment {
+    .video-attachment-container {
+        img {
+            max-width: 100%;
+            @media (min-width: 500px) {
+                max-width: 500px;
+            }
+        }
+    }
+}
+
 /*
 panel
 */
