@@ -183,17 +183,17 @@ $important = $data->important ? 'important-action' : '';
             echo Formatter::convertLineBreaks(x2base::convertUrls($data->getText()));
             ?>
         </span>
-        <!--<div class='event-attachments'>
+        <div class='event-attachments'>
         <?php
-            //foreach ($data->media as $media) {
+            foreach ($data->media as $media) {
             ?>
             <div class='photo-attachment-container'>
-                <?php //echo $media->getImage (false, array ('photo-attachment')); ?>
+                <?php echo $media->getImage (false, array ('photo-attachment')); ?>
             </div>
             <?php
-            //}
+            }
         ?>
-        </div>-->
+        </div>
         <div class='event-bottom-row'>
             <span class="comment-age x2-hint" id="<?php echo $data->id . "-" . $data->timestamp; ?>" 
                   style="<?php echo $style; ?>"
