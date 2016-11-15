@@ -1647,6 +1647,12 @@ class ContactsController extends x2base {
                 'url'=>array('admin/exportModels', 'model'=>'Contacts')
             ),
             array(
+                'name'=>'viewOnMap',
+                'label' => Yii::t('contacts', 'View {module} on Map', array('{module}' => $Contact)),
+                'url' => array('googleMaps', 'contactId' => $modelId, 'noHeatMap' => 1),
+                'visible' => (bool) Yii::app()->settings->googleIntegration,
+            ),
+            array(
                 'name'=>'map',
                 'label'=>Yii::t('contacts','View Contact Map'),
                 'url'=>array('googleMaps'),
