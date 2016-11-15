@@ -175,6 +175,18 @@ class Locations extends CActiveRecord
         );
     }
 
+    public static function renderLocationTypes($types) {
+        if (!is_array($types)) $types = array($types);
+        $availableTypes = self::getLocationTypes();
+        foreach ($types as $i => $type) {
+            if ($type)
+                $types[$i] = $availableTypes[$type];
+            else
+                $types[$i] = $availableTypes['address'];
+        }
+        return implode(', ', $types);
+    }
+
     /**
      * Perform a GeoIP lookup of the specified IP. Dual layered caching is used here, first
      * checking the cache, before consulting the db, resorting to a GeoIP lookup if missing
