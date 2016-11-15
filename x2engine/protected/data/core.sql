@@ -602,7 +602,7 @@ CREATE TABLE x2_maps(
     centerLat           FLOAT,
     centerLng           FLOAT,
     zoom                INT,
-	locationType        VARCHAR(50)
+	locationType        VARCHAR(250)
 ) COLLATE = utf8_general_ci;
 /*&*/
 DROP TABLE IF EXISTS x2_tips;

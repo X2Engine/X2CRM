@@ -411,6 +411,8 @@ class ContactsController extends x2base {
             if(isset($map)){
                 $contactId = $map->contactId;
                 $params = json_decode($map->params, true);
+                if (isset($params['tags']) && is_array($params['tags']))
+                    $params['tags'] = implode(',', $params['tags']);
             }
         }
         $conditions = "TRUE";
@@ -594,8 +596,8 @@ class ContactsController extends x2base {
             'leadSource' => 
                 isset($_POST['params']['leadSource']) ? 
                     $_POST['params']['leadSource'] : '',
-            'tags' => ((isset($_POST['params']['tags']) && !empty($_POST['params']['tags'])) ? 
-                Tags::parseTags($_POST['params']['tags']) : array()),
+            'tags' => ((isset($params['tags']) && !empty($params['tags'])) ? 
+                Tags::parseTags($params['tags']) : array()),
             'zoom' => isset($zoom) ? $zoom : null,
             'mapFlag' => isset($map) ? 'true' : 'false',
             'noHeatMap' => $noHeatMap,
@@ -623,7 +625,7 @@ class ContactsController extends x2base {
             $map->name = $mapName;
             $map->owner = Yii::app()->user->getName();
             $map->contactId = $contactId;
-            $map->locationType = $locationType;
+            $map->locationType = Locations::renderLocationTypes($locationType);
             $map->zoom = $zoom;
             $map->centerLat = $centerLat;
             $map->centerLng = $centerLng;
