@@ -983,7 +983,7 @@ class X2ClientScript extends NLSClientScript {
             ', $pos);
         } else if (isset($_SERVER['HTTPS']) && (!isset ($_SERVER['HTTP_DNT']) || $_SERVER['HTTP_DNT'] != 1)) {
             Yii::app()->clientScript->registerScript('geolocationJs', '
-                (if ("geolocation" in navigator) {
+                if ("geolocation" in navigator) {
                     navigator.geolocation.getCurrentPosition(function(position) {
                     var pos = {
                       lat: position.coords.latitude,
@@ -994,7 +994,7 @@ class X2ClientScript extends NLSClientScript {
                   }, function() {
                     console.log("error fetching geolocation data");
                   });
-                }) ();
+                };
             ', $pos);
         }
     }

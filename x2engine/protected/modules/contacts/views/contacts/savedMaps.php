@@ -81,7 +81,7 @@ $this->widget('zii.widgets.grid.CGridView', array(
         array(
             'header'=>Yii::t('contacts','Location Type'),
             'type'=>'raw',
-            'value'=>'!is_null($data->locationType) ? Locations::getLocationTypes()[$data->locationType] : Yii::t("contacts", "All")'
+            'value'=>'!is_null($data->locationType) ? $data->locationType : Yii::t("contacts", "All")'
         ),
         array(
             'header'=>Yii::t('contacts','Delete Map'),

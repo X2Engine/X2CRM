@@ -83,7 +83,7 @@ $serviceModule = Modules::model()->findByAttributes(array('name' => 'services'))
 
 $menuOptions = array(
     'all', 'lists', 'create', 'view', 'edit', 'share', 'delete',
-    'email', 'attach', 'quotes', 'print', 'editLayout', 'addRecordAlias',
+    'email', 'attach', 'quotes', 'print', 'viewOnMap', 'editLayout', 'addRecordAlias',
 );
 $menuOptions[] = ($subscribed ? 'unsubscribe' : 'subscribe');
 if ($opportunityModule->visible && $accountModule->visible)
