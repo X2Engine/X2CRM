@@ -798,7 +798,8 @@ class EventTextFormatter {
          */
         if ($params['media'] == null) {
             $media = $event->legacyMedia;
-            $text = substr($authorText, 0, -1) . ": " . $event->text;            
+            //$text = substr($authorText, 0, -1) . ": " . $event->text;
+            $text = $authorText . ": " . $event->text;            
         } else {
             $media = $params['media'];
             $recipient = $params['recipient'];
