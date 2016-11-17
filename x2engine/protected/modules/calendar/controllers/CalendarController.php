@@ -544,12 +544,8 @@ class CalendarController extends x2base {
     public function actionDeleteAction(){
         if(isset($_POST['id'])){
             $id = $_POST['id'];
-
             $action = Actions::model()->findByPk($id);
 
-            $profile = Profile::model()->findByAttributes(array('username' => $action->assignedTo));
-            if(isset($profile))
-                $profile->deleteGoogleCalendarEvent($action); // update action in Google Calendar if user has a Google Calendar
             X2Model::model('Events')->deleteAllByAttributes(array('associationType' => 'Actions', 'type' => 'calendar_event', 'associationId' => $action->id));
             $action->delete();
         }

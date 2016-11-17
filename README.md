@@ -1,5 +1,5 @@
 # 6.5.1 #
-{releaseDate}
+11/17/2016
 * General Changelog / Developer Notes
   * Added open rate, click rate, and unsubscribe rate attributes to Campaigns
   * Added ability to import Contacts from mobile devices
