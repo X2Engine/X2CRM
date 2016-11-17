@@ -188,7 +188,7 @@ $important = $data->important ? 'important-action' : '';
             foreach ($data->media as $media) {
             ?>
             <div class='photo-attachment-container'>
-                <?php echo $media->getImage (false, array ('photo-attachment')); ?>
+                <?php //echo $media->getImage (false, array ('photo-attachment')); ?>
             </div>
             <?php
             }
