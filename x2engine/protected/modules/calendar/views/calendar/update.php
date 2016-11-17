@@ -42,7 +42,7 @@ $modTitle = Modules::displayName();
 $menuOptions = array(
     'index', 'create', 'update', 'delete'
 );
-$this->insertMenu($menuOptions);
+$this->insertMenu($menuOptions, $model);
 ?>
 <div class="calendar page-title">
 <h2>
