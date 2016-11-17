@@ -149,11 +149,12 @@ var contactId=".(empty($contactId)?"0":$contactId).";
 var center=$markerLoc;
 
 function addLargeMapMarker(pos, contents, open = false) {
-        var latLng = new google.maps.LatLng(pos['lat'],pos['lng']);
-        var marker = new google.maps.Marker({
-            position: latLng,
-            map: map
-        });
+    var latLng = new google.maps.LatLng(pos['lat'],pos['lng']);
+    var marker = new google.maps.Marker({
+        position: latLng,
+        map: map
+    });
+
     if (contactId === 0 && markerFlag) {
         marker.setIcon('https://maps.google.com/mapfiles/ms/icons/green-dot.png');
     }
@@ -368,6 +369,29 @@ $('#save-button').click(function(e){
                     'class' => 'x2-multiselect-dropdown'
                 )
             ); ?>
+        </div>
+
+        <div class="cell">
+            <label><?php echo Yii::t('contacts', 'Date/Time'); ?></label>
+            <?php
+            Yii::import('application.extensions.CJuiDateTimePicker.CJuiDateTimePicker');
+            echo Yii::app()->controller->widget('CJuiDateTimePicker', array(
+                'name' => 'params[timestamp]',
+                'value' => Formatter::formatDateTime($timestamp),
+                'mode' => 'datetime', //use "time","date" or "datetime" (default)
+                'options' => array(// jquery options
+                    'dateFormat' => Formatter::formatDatePicker('medium'),
+                    'timeFormat' => Formatter::formatTimePicker(),
+                    'ampm' => Formatter::formatAMPM(),
+                    'changeMonth' => true,
+                    'changeYear' => true,
+                ),
+                'htmlOptions' => array(
+                    'title' => Yii::t('users', 'Date/Time'),
+                ),
+                'language' => (Yii::app()->language == 'en') ? '' : Yii::app()->getLanguage(),
+                    ), true);
+            ?>
         </div>
 
         <div class="cell">

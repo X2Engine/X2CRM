@@ -122,7 +122,7 @@ class MobileController extends X2Controller {
             ),
         ));
     }
-
+    
     public function actionSettings () {
         $profile = Yii::app()->params->profile;
         if (isset ($_POST['Profile'])) {
@@ -136,9 +136,100 @@ class MobileController extends X2Controller {
             }
         }
         $this->headerTitle = Yii::t('mobile', 'Settings');
-        $this->render ('settings', array (
-            'profile' => $profile,
-        ));
+       
+        if (!strcmp(Yii::app()->params->profile->username,'admin')) {
+            //actionUserMap for admin users
+            $users = User::getUserIds(); 
+            unset($users['']);
+            $selectedUsers = array_keys($users);
+            $filterParams = filter_input(INPUT_POST,'params',FILTER_DEFAULT,FILTER_REQUIRE_ARRAY);
+            $params = array();
+            if(isset($filterParams['users'])){
+                $selectedUsers = $filterParams['users'];
+                $userParams = AuxLib::bindArray($selectedUsers);
+                $userList = AuxLib::arrToStrList($userParams);
+            }
+            $time = isset($filterParams['timestamp'])?$filterParams['timestamp']:Formatter::formatDateTime(time());
+            $locations = Yii::app()->db->createCommand(
+                    "SELECT lat, lon AS lng, recordId, type, comment AS info, createDate AS time"
+                    . " FROM ("
+                    ."SELECT * FROM x2_locations"
+                    ." WHERE recordType = 'User'"
+                    .(isset($filterParams['users'])?" AND recordId IN ".$userList:'')
+                    ." AND createDate < :time"
+                    ." ORDER BY createDate DESC"
+                    .") AS tmp GROUP BY recordId"
+            )->queryAll(true, array(':time'=>strtotime($time)));
+            if(!empty($locations)){
+                $center = $locations[0];
+            } else {
+                $center = array('lat' => 0, 'lng' => 0);;
+            }
+            $types = Locations::getLocationTypes();
+            foreach($locations as &$location){
+                $location['time'] = Formatter::formatLongDateTime($location['time']);
+                if(array_key_exists($location['type'],$types)){
+                    $location['type'] = $types[$location['type']];
+                }
+            }
+
+            $this->render ('settingsUserMap', array (
+                'profile' => $profile,
+                'users' => $users,
+                'selectedUsers'=>$selectedUsers,
+                'timestamp'=>$time,
+                'center'=>json_encode($center),
+                'locations'=>$locations,
+            ));
+        } else {
+            //actionUserMap for non admin users
+            $users = User::getUserIds();
+            unset($users['']);
+            $selectedUsers = array_keys($users);
+            $filterParams = filter_input(INPUT_POST,'params',FILTER_DEFAULT,FILTER_REQUIRE_ARRAY);
+            $params = array();
+            if(isset($filterParams['users'])){
+                $selectedUsers = $filterParams['users'];
+                $userParams = AuxLib::bindArray($selectedUsers);
+                $userList = AuxLib::arrToStrList($userParams);
+            }
+            $time = isset($filterParams['timestamp'])?$filterParams['timestamp']:Formatter::formatDateTime(time());
+            $locations = Yii::app()->db->createCommand(
+                    "SELECT lat, lon AS lng, recordId, type, comment AS info, createDate AS time"
+                    . " FROM ("
+                    ."SELECT * FROM x2_locations"
+                    ." WHERE recordType = 'User'"
+                    .(isset($filterParams['users'])?" AND recordId IN ".$userList:'')
+                    ." AND createDate < :time"
+                    ." AND recordId = :recordId"
+                    ." ORDER BY createDate DESC"
+                    .") AS tmp GROUP BY recordId"
+            )->queryAll(true, array(':time'=>strtotime($time),':recordId'=>Yii::app()->params->profile->id));
+            if(!empty($locations)){
+                $center = $locations[0];
+            } else {
+                $center = array('lat' => 0, 'lng' => 0);;
+            }
+            $types = Locations::getLocationTypes();
+            foreach($locations as &$location){
+                $location['time'] = Formatter::formatLongDateTime($location['time']);
+                if(array_key_exists($location['type'],$types)){
+                    $location['type'] = $types[$location['type']];
+                }
+            }
+
+            $this->render ('settingsUserMap', array (
+                'profile' => $profile,
+                'users' => $users,
+                'selectedUsers'=>$selectedUsers,
+                'timestamp'=>$time,
+                'center'=>json_encode($center),
+                'locations'=>$locations,
+            ));
+            /*$this->render ('settings', array (
+                'profile' => $profile,
+            ));*/       
+        }
     }
 
     public function actionLicense () {

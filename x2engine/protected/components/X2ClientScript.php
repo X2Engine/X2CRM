@@ -888,7 +888,7 @@ class X2ClientScript extends NLSClientScript {
     }
 
     private function registerAuxLibTranslationsScript () {
-        $this->registerScript('registerDateFormats',"
+        $this->registerScript('registerAuxLibTranslations',"
             auxlib.translations = ".CJSON::encode (array (
                 'Are you sure you want to delete this item?' => 
                     Yii::t('app', 'Are you sure you want to delete this item?'), 
@@ -939,6 +939,94 @@ class X2ClientScript extends NLSClientScript {
             }) ();
             ", self::POS_HEAD);
         }
+    }
+
+    /**
+     * Register the geolocation JavaScript
+     * @param bool $multiple whether to operate on multiple geoCoords inputs
+     * @param const $pos CClientScript position
+     */
+    public function registerGeolocationScript($onLocationButton = false, $multiple = false, $pos = CClientScript::POS_READY) {
+        $selector = $multiple ? "input[name=geoCoords]" : "#geoCoords";
+        if ($onLocationButton) {
+            Yii::app()->clientScript->registerScript('geolocationJs', '
+                $("#toggle-location-button").click(function (evt) {
+                    evt.preventDefault();
+                    if ($("#toggle-location-button").data("location-enabled") === true) {
+                        // Clear geoCoords field and reset style
+                        $("#checkInComment").slideUp();'.
+                        (isset($_SERVER['HTTPS']) ? '$("'.$selector.'").val("");' : '').
+                        '$("#toggle-location-button")
+                            .data("location-enabled", false)
+                            .css("color", "");
+                    } else {
+                        // Populate geoCoords field and highlight blue
+                        $("#checkInComment").slideDown();
+                        $("#toggle-location-button")
+                            .data("location-enabled", true)
+                            .css("color", "blue");'.
+                        ((isset($_SERVER['HTTPS']) && (!isset ($_SERVER['HTTP_DNT']) || $_SERVER['HTTP_DNT'] != 1)) ?
+                        'if ("geolocation" in navigator) {
+                            navigator.geolocation.getCurrentPosition(function(position) {
+                            var pos = {
+                              lat: position.coords.latitude,
+                              lon: position.coords.longitude
+                            };
+
+                            $("'.$selector.'").val(JSON.stringify (pos));
+                          }, function() {
+                            console.log("error fetching geolocation data");
+                          });
+                        }' : '').
+                    '}
+                });
+            ', $pos);
+        } else if (isset($_SERVER['HTTPS']) && (!isset ($_SERVER['HTTP_DNT']) || $_SERVER['HTTP_DNT'] != 1)) {
+            Yii::app()->clientScript->registerScript('geolocationJs', '
+                if ("geolocation" in navigator) {
+                    navigator.geolocation.getCurrentPosition(function(position) {
+                    var pos = {
+                      lat: position.coords.latitude,
+                      lon: position.coords.longitude
+                    };
+
+                    $("'.$selector.'").val(JSON.stringify (pos));
+                  }, function() {
+                    console.log("error fetching geolocation data");
+                  });
+                };
+            ', $pos);
+        }
+    }
+
+    /**
+     * Register the check-in JavaScript
+     * @param string $submitSelector CSS selector of the associated submit button
+     * @param bool $multiple whether to operate on multiple geoCoords inputs
+     * @param const $pos CClientScript position
+     */
+    public function registerCheckinScript($submitSelector, $multiple = false, $pos = CClientScript::POS_READY) {
+        $selector = $multiple ? "input[name=geoCoords]" : "#geoCoords";
+        Yii::app()->clientScript->registerScript('checkInJs', '
+            $("#checkInComment").on("blur", function() {
+                var comment = $(this).val();
+                var coordsVal = $("'.$selector.'").val();
+                var coords = {};
+                if (coordsVal) {
+                    coords = JSON.parse(coordsVal);
+                    if (!coords) {
+                        coords = {};
+                    }
+                }
+                coords.comment = comment;
+                $("'.$selector.'").val(JSON.stringify(coords));
+            });
+            $("'.$submitSelector.'").click(function () {
+                $("#checkInComment")
+                    .blur()
+                    .val("");
+            });
+        ', $pos);
     }
 
     /**

@@ -217,7 +217,8 @@ class GoogleMaps extends X2Widget {
             array('/contacts/contacts/googleMaps',$this->modelParam=>$_GET['id'],'noHeatMap'=>1,'locationType' => $this->defaultFilter),
             array(
                 'class' => 'x2-button right',
-                'onclick' => '$(this).attr("href", $(this).attr("href")+"&"+jQuery.param({"locationType": $("#locationType").val()}))',
+                'onclick' => '$(this).attr("href", $(this).attr("data-map-url") + "&"+jQuery.param({"locationType": $("#locationType").val()}))',
+                'data-map-url' => $this->controller->createAbsoluteUrl('/contacts/contacts/googleMaps',array($this->modelParam=>$_GET['id'],'noHeatMap'=>1))
             )
         );
         ?></div><?php

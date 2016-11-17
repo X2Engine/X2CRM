@@ -57,7 +57,6 @@ MobileActiveForm.prototype.setUpPhotoSubmission = function () {
     this.form$ = $(this.formSelector);
     this.submitButton$ = this.submitButtonSelector ? 
     $(this.submitButtonSelector) : this.form$.find ('.submit-button');
-    var checkinInput$ = $.mobile.activePage.find ('#geoLocationCoords').length;
 
     this.submitButton$.click (function () {
         if (!that.validate ()) {

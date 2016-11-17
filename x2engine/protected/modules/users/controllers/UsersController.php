@@ -484,6 +484,9 @@ Please click on the link below to create an account at X2Engine!
     }
     
     public function actionUserMap(){
+        if (!Yii::app()->settings->googleIntegration) {
+            throw new CHttpException(403, 'Please enable Google Integration to use this page.');
+        }
         $users = User::getUserIds();
         unset($users['']);
         $selectedUsers = array_keys($users);
@@ -569,7 +572,8 @@ Please click on the link below to create an account at X2Engine!
                 'label' => Yii::t('users', 'View {users} Map', array(
                     '{users}' => $Users,
                 )),
-                'url'=>array('userMap')
+                'url'=>array('userMap'),
+                'visible' => (bool) Yii::app()->settings->googleIntegration,
             ),
             array(
                 'name'=>'create',

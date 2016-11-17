@@ -580,7 +580,12 @@ CREATE TABLE x2_locations(
 	recordType			VARCHAR(250)	NOT NULL,
 	lat                 FLOAT			NOT NULL,
 	lon                 FLOAT           NOT NULL,
-	type                VARCHAR(50),
+        altitude            FLOAT           DEFAULT NULL,
+        accuracy            FLOAT           DEFAULT NULL,
+        altitudeAccuracy    FLOAT           DEFAULT NULL,
+        heading             FLOAT           DEFAULT NULL,
+        speed               FLOAT           DEFAULT NULL,
+	type                VARCHAR(50)     DEFAULT NULL,
 	ipAddress           VARCHAR(250),
 	comment             VARCHAR(250),
 	createDate			BIGINT          NOT NULL
@@ -597,7 +602,7 @@ CREATE TABLE x2_maps(
     centerLat           FLOAT,
     centerLng           FLOAT,
     zoom                INT,
-	locationType        VARCHAR(50)
+	locationType        VARCHAR(250)
 ) COLLATE = utf8_general_ci;
 /*&*/
 DROP TABLE IF EXISTS x2_tips;

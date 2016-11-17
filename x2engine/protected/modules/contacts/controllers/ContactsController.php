@@ -411,6 +411,8 @@ class ContactsController extends x2base {
             if(isset($map)){
                 $contactId = $map->contactId;
                 $params = json_decode($map->params, true);
+                if (isset($params['tags']) && is_array($params['tags']))
+                    $params['tags'] = implode(',', $params['tags']);
             }
         }
         $conditions = "TRUE";
@@ -418,6 +420,12 @@ class ContactsController extends x2base {
         $tagCount = 0;
         $tagFlag = false;
         $contactFields = array_flip (Contacts::model()->attributeNames());
+        $time = Formatter::formatDateTime(time());
+        if (isset($params['timestamp'])) {
+            $time = $params['timestamp'];
+            $conditions .= ' AND x2_locations.createDate < :time';
+            $parameters[':time'] = strtotime($time);
+        }
 
         // Loop through params and add conditions to limit the contact data set
         foreach($params as $field => $value){
@@ -445,28 +453,30 @@ class ContactsController extends x2base {
                 $conditions.=" AND x2_tags.type='Contacts' AND x2_tags.tag IN $tagStr";
             }
         }
-        if (isset($params['locationType'])) {
+        if (isset($params['locationType']) && is_array($params['locationType'])) {
             // Add locationType conditions and parameters
             $locationType = array_intersect($params['locationType'], array_keys(Locations::getLocationTypes()));
-            $conditions .= ' AND (';
-            if (isset($locationType[0]) && $locationType[0] === 'address') {
-                $conditions .= ' x2_locations.type IS NULL';
-                if (count($locationType) > 1)
-                    $conditions .= ' OR ';
-                unset($locationType[0]);
-            }
             if (!empty($locationType)) {
-                $conditions .= ' x2_locations.type IN (';
-                $renderComma = false;
-                foreach ($locationType as $i => $locType) {
-                    if ($renderComma) $conditions .= ', ';
-                    $conditions .= ':locType'.$i;
-                    $parameters[':locType'.$i] = $locType;
-                    $renderComma = true;
+                $conditions .= ' AND (';
+                if (isset($locationType[0]) && ($locationType[0] === 'address' || $locationType[0] === 'null' || is_null($locationType[0]))) {
+                    $conditions .= ' x2_locations.type IS NULL';
+                    if (count($locationType) > 1)
+                        $conditions .= ' OR ';
+                    unset($locationType[0]);
+                }
+                if (!empty($locationType)) {
+                    $conditions .= ' x2_locations.type IN (';
+                    $renderComma = false;
+                    foreach ($locationType as $i => $locType) {
+                        if ($renderComma) $conditions .= ', ';
+                        $conditions .= ':locType'.$i;
+                        $parameters[':locType'.$i] = $locType;
+                        $renderComma = true;
+                    }
+                    $conditions .= ')';
                 }
                 $conditions .= ')';
             }
-            $conditions .= ')';
         }
 
         if ($noHeatMap) {
@@ -577,6 +587,7 @@ class ContactsController extends x2base {
             'userId' => isset($userId) ? $userId : 0,
             'contactId' => isset($contactId) ? $contactId : 0,
             'contactName' => isset($contactName) ? $contactName : '',
+            'timestamp' => $time,
             'assignment' => 
                 isset($_POST['params']['assignedTo']) || isset($params['assignedTo']) ?
                     (isset($_POST['params']['assignedTo']) ? 
@@ -585,8 +596,8 @@ class ContactsController extends x2base {
             'leadSource' => 
                 isset($_POST['params']['leadSource']) ? 
                     $_POST['params']['leadSource'] : '',
-            'tags' => ((isset($_POST['params']['tags']) && !empty($_POST['params']['tags'])) ? 
-                Tags::parseTags($_POST['params']['tags']) : array()),
+            'tags' => ((isset($params['tags']) && !empty($params['tags'])) ? 
+                Tags::parseTags($params['tags']) : array()),
             'zoom' => isset($zoom) ? $zoom : null,
             'mapFlag' => isset($map) ? 'true' : 'false',
             'noHeatMap' => $noHeatMap,
@@ -614,7 +625,7 @@ class ContactsController extends x2base {
             $map->name = $mapName;
             $map->owner = Yii::app()->user->getName();
             $map->contactId = $contactId;
-            $map->locationType = $locationType;
+            $map->locationType = Locations::renderLocationTypes($locationType);
             $map->zoom = $zoom;
             $map->centerLat = $centerLat;
             $map->centerLng = $centerLng;
@@ -1638,8 +1649,14 @@ class ContactsController extends x2base {
                 'url'=>array('admin/exportModels', 'model'=>'Contacts')
             ),
             array(
+                'name'=>'viewOnMap',
+                'label' => Yii::t('contacts', 'View {module} on Map', array('{module}' => $Contact)),
+                'url' => array('googleMaps', 'contactId' => $modelId, 'noHeatMap' => 1),
+                'visible' => (bool) Yii::app()->settings->googleIntegration,
+            ),
+            array(
                 'name'=>'map',
-                'label'=>Yii::t('contacts','Contact Map'),
+                'label'=>Yii::t('contacts','View Contact Map'),
                 'url'=>array('googleMaps'),
                 'visible' => (bool) Yii::app()->settings->googleIntegration,
             ),

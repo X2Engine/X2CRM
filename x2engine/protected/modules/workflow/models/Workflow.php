@@ -260,6 +260,16 @@ class Workflow extends X2ActiveRecord {
         parent::afterSave();
     }
 
+    public function beforeDelete() {
+        // Explicitly delete associated actions for installations who have updated and failed
+        // to receive the CASCADE on the constraint
+        Actions::model()->deleteAllByAttributes(array(
+            'workflowId' => $this->id,
+        ));
+
+        return parent::beforeDelete ();
+    }
+
     /**
      * @return array workflow names indexed by id 
      */

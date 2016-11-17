@@ -50,6 +50,7 @@ function EventPublisherController (argsDict) {
 EventPublisherController.prototype = auxlib.create (x2.Controller.prototype);
 
 EventPublisherController.prototype.setUpForm = function () {
+    if (!x2.main.isPhoneGap) return;
     var that = this;
     this.submitButton$ = $('#header .post-event-button');
     this.form$ = $.mobile.activePage.find ('form.publisher-form');
@@ -63,10 +64,10 @@ EventPublisherController.prototype.setUpForm = function () {
         that.submitButton$.toggleClass ('disabled', !$.trim (eventBox$.val ()));
     });
     
-    this.locationButton$ = $.mobile.activePage.find ('.location-attach-button');
+    var locationButton$ = $.mobile.activePage.find ('.location-attach-button');
    
-    this.locationButton$.click (function () {
-        this.form$ = $.mobile.activePage.find ('form.publisher-form');
+    locationButton$.click (function () {
+        if (!x2.main.isPhoneGap) return;
         if (x2.main.isPhoneGap) {
             x2touch.API.getCurrentPosition(function(position) {
                 var pos = {
@@ -74,8 +75,8 @@ EventPublisherController.prototype.setUpForm = function () {
                    lon: position.coords.longitude
                  };
 
-                this.form$.find ('#geoCoords').val(JSON.stringify (pos));
-                this.form$.find ('#geoLocationCoords').val("set");
+                that.form$.find ('#geoCoords').val(JSON.stringify (pos));
+                that.form$.find ('#geoLocationCoords').val("set");
                 x2.mobileForm.submitWithFiles (
                    that.form$, 
                    function (response) {
@@ -86,7 +87,7 @@ EventPublisherController.prototype.setUpForm = function () {
                                $.mobile.activePage.find ('.event-text-box').val()+" - "+theAddress
                            );
                        } catch (e) {
-                           alert("failed to parse response from server");
+                           alert(e);
                        }
 
                        x2.main.refreshContent ();
@@ -96,7 +97,7 @@ EventPublisherController.prototype.setUpForm = function () {
                        x2.main.alert (textStatus, 'Error');
                    }
                ); 
-               this.form$.find ('#geoLocationCoords').val("unset");
+               that.form$.find ('#geoLocationCoords').val("unset");
             }, function (error) {
                 alert('code: '    + error.code    + '\n' +
                       'message: ' + error.message + '\n');

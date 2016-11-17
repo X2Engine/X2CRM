@@ -746,24 +746,40 @@ class SiteController extends x2base {
      * @param string $name
      */
     private function handleFeedTypeUpload($model, $name) {
+        $newEventIdTimestamp = 0;
         $event = new Events;
         $event->user = Yii::app()->user->getName();
         if (isset($_POST['attachmentText']) && !empty($_POST['attachmentText'])) {
             $event->text = $_POST['attachmentText'];
-        } else {
+        } /*else {
             $event->text = Yii::t('app', 'Attached file: ');
-        }
+        }*/
         $event->type = 'media';
+        $event->subtype = 'Social Post';
         $event->timestamp = time();
         $event->lastUpdated = time();
-        $event->associationId = $model->id;
-        $event->associationType = 'Media';
+        $event->associationId = $model->associationId;
+        $event->associationType = 'User';
+        $newEventIdTimestamp = $event->timestamp;
+        if ($model->private) 
+            $event->visibility = 0;
+        $location = Yii::app()->params->profile->user->logLocation('activityPost', 'POST');
+        if ($location)
+            $event->locationId = $location->id;
         if ($event->save()) {
             //$this->redirect('profile');
         } else {
             unlink('uploads/protected/' . $name);
         }
-
+        
+        $event = X2Model::model('Events')->findByAttributes(array('timestamp' => $newEventIdTimestamp));
+        // relate file to event
+        $join = new RelationshipsJoin ('insert', 'x2_events_to_media');
+        $join->eventsId = $event->id;
+        $join->mediaId = $model->id;
+        if (!$join->save ()) {
+            throw new CException (implode (';', $join->getAllErrorMessages ()));
+        }
 
         if (isset($_POST['profileId'])) {
             $this->redirect(array('/profile/view', 'id' => $_POST['profileId']));
@@ -885,9 +901,9 @@ class SiteController extends x2base {
                             $event->user = Yii::app()->user->getName();
                             if (isset($_POST['attachmentText']) && !empty($_POST['attachmentText'])) {
                                 $event->text = $_POST['attachmentText'];
-                            } else {
+                            } /*else {
                                 $event->text = Yii::t('app', 'Attached file: ');
-                            }
+                            }*/
                             $event->type = 'media';
                             $event->timestamp = time();
                             $event->lastUpdated = time();
@@ -965,8 +981,11 @@ class SiteController extends x2base {
                         $model->associationId = $_POST['associationId'];
                     if (isset($_POST['associationType']))
                         $model->associationType = $_POST['associationType'];
-                    if (isset($_POST['private']))
-                        $model->private = true;
+                    if (isset($_POST['private']) && !strcmp($_POST['private'],'true')) {
+                        $model->private = 1;
+                    } else {
+                        $model->private = 0;
+                    }
                     $model->uploadedBy = Yii::app()->user->getName();
                     $model->createDate = time();
                     $model->lastUpdated = time();

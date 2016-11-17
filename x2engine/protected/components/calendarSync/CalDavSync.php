@@ -1,31 +1,55 @@
 <?php
-
-/* * *******************************************************************************
- * Copyright (C) 2011-2014 X2Engine Inc. All Rights Reserved.
- *
- * X2Engine Inc.
- * P.O. Box 66752
- * Scotts Valley, California 95067 USA
- *
- * Company website: http://www.x2engine.com
- * Community and support website: http://www.x2community.com
- *
- * X2Engine Inc. grants you a perpetual, non-exclusive, non-transferable license
- * to install and use this Software for your internal business purposes.
- * You shall not modify, distribute, license or sublicense the Software.
- * Title, ownership, and all intellectual property rights in the Software belong
- * exclusively to X2Engine.
- *
- * THIS SOFTWARE IS PROVIDED "AS IS" AND WITHOUT WARRANTIES OF ANY KIND, EITHER
- * EXPRESS OR IMPLIED, INCLUDING WITHOUT LIMITATION THE IMPLIED WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, TITLE, AND NON-INFRINGEMENT.
- * ****************************************************************************** */
+/***********************************************************************************
+ * X2CRM is a customer relationship management program developed by
+ * X2Engine, Inc. Copyright (C) 2011-2016 X2Engine Inc.
+ * 
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU Affero General Public License version 3 as published by the
+ * Free Software Foundation with the addition of the following permission added
+ * to Section 15 as permitted in Section 7(a): FOR ANY PART OF THE COVERED WORK
+ * IN WHICH THE COPYRIGHT IS OWNED BY X2ENGINE, X2ENGINE DISCLAIMS THE WARRANTY
+ * OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
+ * 
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.  See the GNU Affero General Public License for more
+ * details.
+ * 
+ * You should have received a copy of the GNU Affero General Public License along with
+ * this program; if not, see http://www.gnu.org/licenses or write to the Free
+ * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301 USA.
+ * 
+ * You can contact X2Engine, Inc. P.O. Box 66752, Scotts Valley,
+ * California 95067, USA. on our website at www.x2crm.com, or at our
+ * email address: contact@x2engine.com.
+ * 
+ * The interactive user interfaces in modified source and object code versions
+ * of this program must display Appropriate Legal Notices, as required under
+ * Section 5 of the GNU Affero General Public License version 3.
+ * 
+ * In accordance with Section 7(b) of the GNU Affero General Public License version 3,
+ * these Appropriate Legal Notices must retain the display of the "Powered by
+ * X2Engine" logo. If the display of the logo is not reasonably feasible for
+ * technical reasons, the Appropriate Legal Notices must display the words
+ * "Powered by X2Engine".
+ **********************************************************************************/
 
 Yii::setPathOfAlias(
         'Sabre', Yii::getPathOfAlias('application.integration.SabreDAV'));
 
+/**
+ * Abstract class for all CalDav based sync protocols. Authenticate must be
+ * implemented in sublcasses to properly synchronize. Supported methods are
+ * oAuthToken and username/password. See GoogleCalendarSync for an implementation.
+ */
 abstract class CalDavSync extends CalendarSync {
 
+    /**
+     * A list of properties which can be retrieved from a CalDav object and their
+     * corresponding XML identifiers in the response objects.
+     * @var array
+     */
     public static $xmlProperties = array(
         'ctag' => '{http://calendarserver.org/ns/}getctag',
         'etag' => '{DAV:}getetag',
@@ -34,6 +58,11 @@ abstract class CalDavSync extends CalendarSync {
         'calendarData' => '{urn:ietf:params:xml:ns:caldav}calendar-data',
         'syncToken' => '{DAV:}sync-token',
     );
+    
+    /**
+     * An instance of X2CalDavClient to handle CalDav protocol requests
+     * @var X2CalDavClient 
+     */
     protected $_client;
 
     /**
@@ -43,6 +72,12 @@ abstract class CalDavSync extends CalendarSync {
      */
     protected abstract function authenticate();
 
+    /**
+     * Initializes and returns a CalDav client configured with the correct authentication
+     * parameters.
+     * @return X2CalDavClient
+     * @throws CException
+     */
     protected function initializeClient() {
         $credentials = $this->authenticate();
         if (empty($credentials['oAuthToken']) && (empty($credentials['username']) || empty($credentials['password']))) {
@@ -57,6 +92,10 @@ abstract class CalDavSync extends CalendarSync {
         return $this->_client;
     }
 
+    /**
+     * Returns or initializes and returns a new client
+     * @return X2CalDavClient
+     */
     public function getClient() {
         if (isset($this->_client)) {
             return $this->_client;
@@ -64,6 +103,13 @@ abstract class CalDavSync extends CalendarSync {
         return $this->initializeClient();
     }
 
+    /**
+     * Handles synchronization of X2 and CalDav calendars. If an X2Calendar does
+     * not yet have a ctag (it has never before been synced) an outbount sync is
+     * performed to transfer X2 calendar events into the CalDav server. If a
+     * sync token has been provided, it will use that instead of attempting a
+     * full sync.
+     */
     public function sync() {
         if(is_null($this->owner->ctag)){
             $this->outboundSync();
@@ -82,7 +128,12 @@ abstract class CalDavSync extends CalendarSync {
         }
     }
     
+    /**
+     * Deletes all remote calendar events which were created from a sync from X2
+     */
     public function deleteRemoteActions(){
+        // Returns a list of IDs of Actions which were not created from an inbound
+        // sync but are associated with this calendar
         $actionIds = Yii::app()->db->createCommand()
                 ->select('a.id')
                 ->from('x2_actions a')
@@ -95,6 +146,10 @@ abstract class CalDavSync extends CalendarSync {
         }
     }
 
+    /**
+     * Retrieves a set of calendar event paths from a given sync token and synchronizes
+     * them with an X2 Calendar
+     */
     protected function syncWithToken() {
         $syncResult = $this->client->sync($this->owner->remoteCalendarUrl, $this->owner->syncToken);
         $paths = array();
@@ -115,6 +170,7 @@ abstract class CalDavSync extends CalendarSync {
                 }
             }
         }
+        // Gets all calendar events which were created / updated since the last sync
         $multigetResult = $this->client->multiget($this->owner->remoteCalendarUrl, $paths, array(
             self::$xmlProperties['etag'],
             self::$xmlProperties['calendarData'],
@@ -122,6 +178,11 @@ abstract class CalDavSync extends CalendarSync {
         $this->createUpdateActions($multigetResult);
     }
 
+    /**
+     * Performs a full synchronization in the event that there is no token to
+     * calculate a diff from. This function is called after outboundSync to ensure
+     * no Actions which were already in X2 are deleted
+     */
     protected function syncWithoutToken() {
         $calendarEvents = $this->client->report($this->owner->remoteCalendarUrl, array(
             self::$xmlProperties['etag'],
@@ -155,6 +216,12 @@ abstract class CalDavSync extends CalendarSync {
         }
     }
 
+    /**
+     * Retrieves up to date information about the status of a remote calendar,
+     * including the ctag and syncToken which can be used to determine if any
+     * changes have been made and generate a diff of those changes
+     * @return array
+     */
     protected function getSyncInfo() {
         $calendarInfo = $this->client->propFind($this->owner->remoteCalendarUrl, array(
             self::$xmlProperties['displayName'],
@@ -167,6 +234,10 @@ abstract class CalDavSync extends CalendarSync {
         );
     }
     
+    /**
+     * Get a list of Actions associated with this calendar but with no remote
+     * source and create them in the remote calendar
+     */
     protected function outboundSync(){
         $actionIds = Yii::app()->db->createCommand()
                 ->select('a.id')
@@ -183,6 +254,12 @@ abstract class CalDavSync extends CalendarSync {
         }
     }
 
+    /**
+     * Creates or updates Actions in X2 from remote calendar event data
+     * @param array $calendarData XML data of remote calendar events
+     * @param boolean $return Whether or not to return the paths
+     * @return array A list of paths of created/updated events
+     */
     protected function createUpdateActions($calendarData, $return = false) {
         if ($return) {
             $paths = array();
@@ -214,6 +291,9 @@ abstract class CalDavSync extends CalendarSync {
         }
     }
 
+    /**
+     * Creates an Action from a SabreDav VEvent
+     */
     protected function createAction($calObject, $params = array()) {
         $action = new Actions();
         $action->etag = $params['etag'];
@@ -222,12 +302,21 @@ abstract class CalDavSync extends CalendarSync {
         $action->save();
     }
 
+    /**
+     * Updates an Action from a SabreDav VEvent
+     */
     protected function updateAction($action, $calObject, $params = array()) {
         $action->etag = $params['etag'];
         $this->setActionAttributes($action, $calObject);
         $action->save();
     }
 
+    /**
+     * Converts a SabreDav VEvent object's attributes into X2 friendly attributes
+     * and sets the provided Action's attributes to the processed data.
+     * 
+     * TODO: Handle recurring events
+     */
     protected function setActionAttributes(&$action, $calObject) {
         $action->actionDescription = $calObject->vevent->summary->value;
         if (!empty($calObject->vevent->description->value)) {
@@ -237,7 +326,6 @@ abstract class CalDavSync extends CalendarSync {
                 $action->actionDescription = $calObject->vevent->description->value;
             }
         }
-        // NEED TO HANDLE RECURRING ACTIONS STILL
         $action->visibility = 1;
         $action->assignedTo = 'Anyone';
         $action->calendarId = $this->owner->id;
@@ -245,9 +333,9 @@ abstract class CalDavSync extends CalendarSync {
         $action->associationName = 'Calendar';
         $action->type = 'event';
         $action->remoteSource = 1;
-        if ($calObject->vevent->dtstart->getDateType() === 4) {
+        if ($calObject->vevent->dtstart->getDateType() === 4) { // All day event
             $action->dueDate = strtotime($calObject->vevent->dtstart->value);
-            // Subtract 1s to fix all day display issue in Calendar
+            // Subtract 1 second to fix all day display issue in Calendar
             $action->completeDate = strtotime($calObject->vevent->dtend->value) - 1;
             $action->allDay = 1;
         } else {
@@ -266,6 +354,9 @@ abstract class CalDavSync extends CalendarSync {
         }
     }
 
+    /**
+     * Attempt to delete a remote calendar event associated with a given Action
+     */
     public function deleteAction($action) {
         try{
             if(isset($action->remoteCalendarUrl, $action->etag)){
@@ -278,6 +369,9 @@ abstract class CalDavSync extends CalendarSync {
         }
     }
 
+    /**
+     * Either create or update a remote calendar event associated with an Action
+     */
     public function syncActionToCalendar($action) {
         if (empty($action->remoteCalendarUrl)) {
             $calObject = $this->createCalObject($action);
@@ -286,6 +380,9 @@ abstract class CalDavSync extends CalendarSync {
         }
     }
 
+    /**
+     * Creates a VEvent object from an Action and sends it to a remote CalDav server
+     */
     protected function createCalObject($action) {
         $calObj = new Sabre\VObject\Component\VCalendar();
         $vevent = new Sabre\VObject\Component\VEvent('VEVENT');
@@ -307,6 +404,9 @@ abstract class CalDavSync extends CalendarSync {
         }
     }
 
+    /**
+     * Updates a VEvent object associated with an Action and sends it to a remote CalDav server
+     */
     protected function updateCalObject($action) {
         $eventData = $this->client->get($this->owner->remoteCalendarUrl, '/' . $action->remoteCalendarUrl . '.ics');
         $calObj = Sabre\VObject\Reader::read($eventData['body']);
@@ -319,6 +419,10 @@ abstract class CalDavSync extends CalendarSync {
         }
     }
 
+    /**
+     * Converts an Action's attributes to CalDav friendly attributes and modifies
+     * the provided VEvent with them
+     */
     protected function setEventAttributes(&$vevent, $action) {
 
         $startTime = new Sabre\VObject\Property\DateTime('DTSTART');

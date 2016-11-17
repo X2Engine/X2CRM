@@ -73,23 +73,5 @@ Yii::app()->clientScript->registerScript('rsvp-buttons', "
     });
 ");
 
-if (!empty ($_SERVER['HTTPS']) && (!isset ($_SERVER['HTTP_DNT']) || $_SERVER['HTTP_DNT'] != 1)) {
-    ?>
-        <input type="hidden" name="geoCoords" id="geoCoords"></input>
-        <script>
-            (function () {
-                if ("geolocation" in navigator) {
-                    navigator.geolocation.getCurrentPosition(function(position) {
-                    var pos = {
-                      lat: position.coords.latitude,
-                      lon: position.coords.longitude
-                    };
-
-                    $("#geoCoords").val(JSON.stringify (pos));
-                  }, function() {
-                    console.log("error fetching geolocation data");
-                  });
-                }
-            }) ();
-        </script>
-<?php } ?>
+Yii::app()->clientScript->registerGeolocationScript(); ?>
+<input type="hidden" name="geoCoords" id="geoCoords"></input>

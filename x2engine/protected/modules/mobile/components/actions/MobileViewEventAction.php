@@ -67,11 +67,12 @@ class MobileViewEventAction extends MobileAction {
 
                 //execute post
                 $result = curl_exec($ch);
+                //close connection
                 //$decodedResult = json_decode($result, true);
                 //$newResult = json_encode(array($decodedResult, $key));
                 echo $result;
-                //close connection
                 curl_close($ch);
+
                 Yii::app()->end ();
             }        
         }
@@ -118,24 +119,28 @@ class MobileViewEventAction extends MobileAction {
                         'text' => $formModel->text,
                         'photo' => $formModel->photo
                     ), false);
-                if(isset ($_FILES['EventCommentPublisherFormModel']) || strcmp("",$decodedResponse) == 0){
-                        if ($event->save ()) {
-                            $formModel->text = '';
-                            if (!isset ($_FILES['EventCommentPublisherFormModel'])) {
+                    if ($key && !empty($decodedResponse) && !empty($decodedResult)) {
+                        if ($event->saveRaw ($profile,$decodedResult)) {
+                            if (!isset ($_FILES['EventPublisherFormModel'])) {
+                                //AuxLib::debugLogR ('saved');
+                                $this->controller->redirect (
+                                    $this->controller->createAbsoluteUrl (
+                                        '/profile/mobileActivity'));
                             } else {
-                                Yii::app()->end (); 
+                                echo CJSON::encode (array ( 
+                                    'redirectUrl' => $this->controller->createAbsoluteUrl (
+                                        '/profile/mobileActivity'),
+                                ));
+                                Yii::app()->end ();
                             }
                         } else {
-                            throw new CHttpException (
-                                500, implode (';', $event->getAllErrorMessages ()));
-                        }                        
+                            //AuxLib::debugLogR ('invalid');
+                            throw new CHttpException (500, implode (';', $event->getAllErrorMessages ()));
+                        }
                     } else {
-                        if ($event->saveRaw ($profile,$decodedResult)) {
-                            $formModel->text = '';
-                        } else {
-                            throw new CHttpException (
-                                500, implode (';', $event->getAllErrorMessages ()));
-                        }                            
+                        $this->controller->redirect (
+                            $this->controller->createAbsoluteUrl (
+                            '/profile/mobileActivity'));                    
                     }
                 }
             }

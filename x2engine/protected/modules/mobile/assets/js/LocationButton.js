@@ -54,24 +54,14 @@ LocationButton.prototype.setUpButtonPhoneGap = function () {
     var that = this;
     this.element$.off ('click.setUpButtonPhoneGap').on ('click.setUpButtonPhoneGap', function () {
         that.validate (function () {
-            x2touch.API.getPicture (function (data) {
-                if (that.enableCrop) {
-                    x2touch.API.cropPicture (data)
-                        .then (function (newPath) { 
-                            that.success (newPath);
-                        })
-                        .catch (function () {
-                            that.failure ('Failed to crop image.');
-                        });
-                } else {
-                    that.success (data);
-                }
-            }, function (message) {
-                that.failure (message);
-            }, {
-                //cameraDirection: that.direction,
-                //allowEdit: true
-            });
+            x2touch.API.getCurrentPosition(function(position) {
+                that.success (position);
+            }, function (error) {
+                that.failure (error);
+                /*alert('code: '    + error.code    + '\n' +
+                      'message: ' + error.message + '\n');*/
+            }, {});         
+            
         });
     });
 };
