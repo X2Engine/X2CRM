@@ -585,7 +585,7 @@ CREATE TABLE x2_locations(
         altitudeAccuracy    FLOAT           DEFAULT NULL,
         heading             FLOAT           DEFAULT NULL,
         speed               FLOAT           DEFAULT NULL,
-	type                VARCHAR(50)     NOT NULL,
+	type                VARCHAR(50)     DEFAULT NULL,
 	ipAddress           VARCHAR(250),
 	comment             VARCHAR(250),
 	createDate			BIGINT          NOT NULL
