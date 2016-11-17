@@ -184,7 +184,7 @@ MobileForm.prototype.makeVideoAttachment = function (type, data) {
         'class': x2.mobileForm.videoAttachmentClass + '-container'
     });
     var video$ = $([
-        "<video preload='auto' controls >",
+        "<video controls >",
         "  <source src='" + data + "' class='" + x2.mobileForm.videoAttachmentClass + "' type='"+type+"' >",
         "</video>"
       ].join("\n"));         
