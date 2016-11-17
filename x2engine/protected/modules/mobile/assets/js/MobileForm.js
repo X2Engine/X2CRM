@@ -164,8 +164,8 @@ MobileForm.prototype.makeAudioAttachment = function (type, data) {
         'class': x2.mobileForm.audioAttachmentClass + '-container'
     });
     var audio$ = $([
-        "<audio class='" + x2.mobileForm.audioAttachmentClass + "' controls >",
-        "  <source src='" + data + "' type='"+type+"' >",
+        "<audio controls >",
+        "  <source src='" + data + "' class='" + x2.mobileForm.audioAttachmentClass + "' type='"+type+"' >",
         "</audio>"
       ].join("\n"));       
     var remove$ = $('<div>', {
@@ -184,8 +184,8 @@ MobileForm.prototype.makeVideoAttachment = function (type, data) {
         'class': x2.mobileForm.videoAttachmentClass + '-container'
     });
     var video$ = $([
-        "<video class='" + x2.mobileForm.videoAttachmentClass + "' controls >",
-        "  <source src='" + data + "' type='"+type+"' >",
+        "<video preload='auto' controls >",
+        "  <source src='" + data + "' class='" + x2.mobileForm.videoAttachmentClass + "' type='"+type+"' >",
         "</video>"
       ].join("\n"));         
     var remove$ = $('<div>', {
