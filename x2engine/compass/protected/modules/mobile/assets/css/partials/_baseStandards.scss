@@ -141,7 +141,7 @@ list view
 
 @mixin audio-attachment {
     .audio-attachment-container {
-        img {
+        audio {
             max-width: 100%;
             @media (min-width: 500px) {
                 max-width: 500px;
@@ -152,7 +152,7 @@ list view
 
 @mixin video-attachment {
     .video-attachment-container {
-        img {
+        video {
             max-width: 100%;
             @media (min-width: 500px) {
                 max-width: 500px;

@@ -180,11 +180,12 @@ MobileForm.prototype.makeAudioAttachment = function (type, data) {
 };
 
 MobileForm.prototype.makeVideoAttachment = function (type, data) {
+    var classOfDiv = x2.mobileForm.videoAttachmentClass + '-container';
     var attachment$ = $('<div>', {
-        'class': x2.mobileForm.videoAttachmentClass + '-container',
+        'class': classOfDiv
     });
     var video$ = $([
-        "<video width='150' height='150' controls >",
+        "<video controls>",
         "  <source src='" + data + "' type='"+type+"' class='" + x2.mobileForm.videoAttachmentClass + "'>",
         "</video>"
       ].join("\n"));         
