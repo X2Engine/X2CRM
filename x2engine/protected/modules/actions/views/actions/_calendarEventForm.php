@@ -68,6 +68,12 @@ echo $form->textArea($model, 'actionDescription');
             echo $form->checkBox($model, 'invite');
         ?>
     </div>
+    <div class="cell">
+        <?php
+            echo $form->label ($model, 'reminder');
+            echo $form->checkBox($model, 'reminder');
+        ?>
+    </div>
 </div>
 <div class='row'>
     <div class='cell'>
@@ -135,6 +141,7 @@ echo $form->textArea($model, 'actionDescription');
         ?>
     </div>
 </div>
+<?php echo $model->renderReminderConfig(); ?>
 <?php
 if ($submitButton)
     echo $form->submitButton();
@@ -147,6 +154,13 @@ Yii::app()->clientScript->registerScript('email-invites',"
             $('#email-invites').slideDown();
         } else if (!$(this).is(':checked') && $('#email-invites').is(':visible')){
             $('#email-invites').slideUp();
+        }
+    });
+    $('#CalendarEventFormModel_reminder').on('click',function(){
+        if($(this).is(':checked') && $('.reminder-config').is(':hidden')){
+            $('.reminder-config').slideDown();
+        } else if (!$(this).is(':checked') && $('.reminder-config').is(':visible')){
+            $('.reminder-config').slideUp();
         }
     });
 ");

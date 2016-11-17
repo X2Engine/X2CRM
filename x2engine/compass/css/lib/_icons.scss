@@ -108,7 +108,7 @@
         @extend %default;
 
         // optional settings for individual icons
-        @extend %#{$icon} !optional;
+        @extend #{$icon} !optional;
     }
 }
 

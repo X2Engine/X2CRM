@@ -428,6 +428,63 @@ class Actions extends X2Model {
     public function getAssociation () {
         return self::getAssociationModel($this->associationType, $this->associationId);
     }
+    
+    public function saveRaw ($profile, $attachmentData, $runValidation=true, $attributes=null) {
+
+            // save related photo record
+            $transaction = Yii::app()->db->beginTransaction ();
+            try {
+                // save the event
+                $ret = parent::save ($runValidation, $attributes);
+                if (!$ret) {
+                    throw new CException (implode (';', $this->getAllErrorMessages ()));
+                }
+                //save the raw data to a file
+                $filename = md5(uniqid(rand(), true)) . '.png';
+                $fileType = 'image/png';
+                $userFolderPath = implode(DIRECTORY_SEPARATOR, array(
+                    Yii::app()->basePath,
+                    '..',
+                    'uploads',
+                    'protected',
+                    'media',
+                    $profile->username
+                ));
+                // add media record for file                
+                $media = new Media;
+                $media->setAttributes (array (
+                    'fileName' => $filename,
+                    'mimetype' => $fileType,
+                ), false);
+                $media->createDate = time();
+                $media->lastUpdated = time();
+                $media->uploadedBy = $profile->username;
+                $media->associationType = 'User';
+                $media->associationId = $profile->id;
+                $media->resolveNameConflicts();
+                $associatedMedia = Yii::app()->file->set($userFolderPath.DIRECTORY_SEPARATOR.$media->fileName);
+                $associatedMedia->create();
+                $associatedMedia->setContents($attachmentData);  
+                
+                if (!$media->save () && !$associatedMedia->exists) {
+                    throw new CException (implode (';', $media->getAllErrorMessages ()));
+                }
+                
+                // relate file to action
+                $join = new RelationshipsJoin ('insert', 'x2_actions_to_media');
+                $join->actionsId = $this->id;
+                $join->mediaId = $media->id;
+                if (!$join->save ()) {
+                    throw new CException (implode (';', $join->getAllErrorMessages ()));
+                }
+                $transaction->commit ();
+                return $ret;
+            } catch (CException $e) {
+                $transaction->rollback ();
+                return false;
+            }
+
+    }
 
     /**
      * Fixes up record association, parses dates (since this doesn't use 
@@ -656,7 +713,7 @@ class Actions extends X2Model {
         $assignees = $this->getAssignees ();
         foreach ($assignees as $assignee) {
             $event = new Events;
-            $event->timestamp = $this->createDate;
+            $event->timestamp = $timestamp;
             $event->visibility = $this->visibility;
             $event->type = $eventType;
             $event->associationType = 'Actions';
@@ -1662,42 +1719,48 @@ class Actions extends X2Model {
                     $fieldName, array (
                         'class' => 'reminder-checkbox',
                     ));
-                $reminderInput .= 
-                    X2Html::openTag ('div', X2Html::mergeHtmlOptions ($htmlOptions, array (
-                        'class' => 'reminder-config',
-                    ))).
-                    Yii::t(
-                        'actions',
-                        'Create a notification reminder for {user} {time} before this {action} '.
-                            'is due',
-                        array(
-                            '{user}' => CHtml::activeDropDownList(
-                                $this,
-                                'notificationUsers', 
-                                array(
-                                    'me' => Yii::t('actions', 'me'),
-                                    'assigned' => Yii::t('actions', 'the assigned user'),
-                                    'both' => Yii::t('actions', 'me and the assigned user'),
-                                )
-                            ),
-                            '{time}' => CHtml::activeDropDownList(
-                                $this, 'notificationTime', 
-                                array(
-                                    1 => Yii::t('actions','1 minute'),
-                                    5 => Yii::t('actions','5 minutes'),
-                                    10 => Yii::t('actions','10 minutes'),
-                                    15 => Yii::t('actions','15 minutes'),
-                                    30 => Yii::t('actions','30 minutes'),
-                                    60 => Yii::t('actions','1 hour'),
-                                    1440 => Yii::t('actions','1 day'),
-                                    10080 => Yii::t('actions','1 week')
-                                )),
-                            '{action}' => lcfirst(Modules::displayName(false, 'Actions')),
-                        )).'</div>';
+                $reminderInput .= $this->renderReminderConfig($htmlOptions);
                 return $reminderInput;
             default:
                 return parent::renderInput($fieldName, $htmlOptions);
         }
+    }
+
+    public function renderReminderConfig($htmlOptions = array(), $model = null) {
+        if (is_null($model)) $model = $this;
+        $reminderConfig =
+            X2Html::openTag ('div', X2Html::mergeHtmlOptions ($htmlOptions, array (
+                'class' => 'reminder-config',
+            ))).
+            Yii::t(
+                'actions',
+                'Create a notification reminder for {user} {time} before this {action} '.
+                    'is due',
+                array(
+                    '{user}' => CHtml::activeDropDownList(
+                        $model,
+                        'notificationUsers',
+                        array(
+                            'me' => Yii::t('actions', 'me'),
+                            'assigned' => Yii::t('actions', 'the assigned user'),
+                            'both' => Yii::t('actions', 'me and the assigned user'),
+                        )
+                    ),
+                    '{time}' => CHtml::activeDropDownList(
+                        $model, 'notificationTime',
+                        array(
+                            1 => Yii::t('actions','1 minute'),
+                            5 => Yii::t('actions','5 minutes'),
+                            10 => Yii::t('actions','10 minutes'),
+                            15 => Yii::t('actions','15 minutes'),
+                            30 => Yii::t('actions','30 minutes'),
+                            60 => Yii::t('actions','1 hour'),
+                            1440 => Yii::t('actions','1 day'),
+                            10080 => Yii::t('actions','1 week')
+                        )),
+                    '{action}' => lcfirst(Modules::displayName(false, 'Actions')),
+                )).'</div>';
+        return $reminderConfig;
     }
 
     public function isMultiassociated() {

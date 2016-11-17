@@ -277,7 +277,9 @@ class CommonSiteControllerBehavior extends CBehavior {
 
             $session->status = 1;
             $session->save();
-            SessionLog::logSession(Yii::app()->user->name, $sessionTokenCookie, 'login');
+            if($isMobile && Yii::app()->request->cookies['sessionToken']->value != null){
+                SessionLog::logSession(Yii::app()->user->name, Yii::app()->request->cookies['sessionToken']->value, 'login');
+            }
             $_SESSION['playLoginSound'] = true;
 
             if(YII_UNIT_TESTING && defined ('X2_DEBUG_EMAIL') && X2_DEBUG_EMAIL)

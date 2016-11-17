@@ -396,7 +396,7 @@ class EventTextFormatter {
     private static function formatWorkflow_revert($event, $params, $htmlOptions) {
         $authorText = static::getAuthorText($event, $htmlOptions);
         $action = X2Model::model('Actions')->findByPk($event->associationId);
-        if (isset($action)) {
+        if (isset($action) && isset($action->workflowStage)) {
             $record = X2Model::model(ucfirst($action->associationType))->findByPk($action->associationId);
             if (isset($record)) {
                 return $authorText . Yii::t('app',
@@ -788,10 +788,39 @@ class EventTextFormatter {
 
     private static function formatMedia($event, $params, $htmlOptions) {
         $authorText = static::getAuthorText($event, $htmlOptions);
+        $authorText = rtrim($authorText, " ");
         $truncated = (array_key_exists('truncated', $params)) ? $params['truncated']
                     : false;
-        $media = $event->legacyMedia;
-        $text = substr($authorText, 0, -1) . ": " . $event->text;
+        /*
+         *  get table x2_events_to_media and by using $event->id get mediaId
+         *  but for legacy media that weren't loaded in x2_events_to_media get them via legacyMedia
+         * 
+         */
+        if ($params['media'] == null) {
+            $media = $event->legacyMedia;
+            $text = substr($authorText, 0, -1) . ": " . $event->text;            
+        } else {
+            $media = $params['media'];
+            $recipient = $params['recipient'];
+            $profileRecipient = $params['profileRecipient'];
+            if ($recipient) {
+                $recipientLink = 
+                    CHtml::link(
+                        Yii::t('app', $recipient->firstName . ' ' . $recipient->lastName), 
+                        $profileRecipient->getUrl ());
+                $modifier = ' &raquo; ';
+                if (Yii::app()->user->getName() == $recipient->username) {
+                    $recipientLink = CHtml::link(
+                        Yii::t('app', 'You'), 
+                        $profileRecipient->getUrl ());
+                }      
+                if (!($event->user == Yii::app()->user->getName() && $recipient->username == Yii::app()->user->getName())){
+                    $authorText .= $modifier . $recipientLink;
+                }
+                
+            }
+            $text = $authorText . ": " . $event->text;
+        }
         if ($media) {
             if (!$truncated) {
                 $text.="<br>" . Media::attachmentSocialText($media->getMediaLink(),

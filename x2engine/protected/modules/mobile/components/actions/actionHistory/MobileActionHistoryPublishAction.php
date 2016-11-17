@@ -51,38 +51,7 @@ class MobileActionHistoryPublishAction extends MobileAction {
             $this->controller->denied ();
         }
         
-        $settings = Yii::app()->settings;
-        if (isset ($_POST['geoCoords']) && isset ($_POST['geoLocationCoords'])) {
-            $creds = Credentials::model()->findByPk($settings->googleCredentialsId);
-            $decodedResponse = $_POST['geoLocationCoords'];
-            if ($creds && $creds->auth && $creds->auth->apiKey && strcmp($decodedResponse,'set') == 0){
-                $key = $creds->auth->apiKey; 
-                $result = "";
-                $decodedResponse = json_decode($_POST['geoCoords'],true);
-                //https://davidwalsh.name/curl-post
-                //extract data from the post
-                //set POST variables
-                $url = 'https://maps.googleapis.com/maps/api/geocode/json?latlng=' .
-                    $decodedResponse['lat'] . ',' .$decodedResponse['lon'] . 
-                    '&key=' . $key;
-                //open connection
-                $ch = curl_init();
-
-                //set the url, number of POST vars, POST data
-                curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-                curl_setopt($ch,CURLOPT_URL, $url);
-
-                //execute post
-                $result = curl_exec($ch);
-                //$decodedResult = json_decode($result, true);
-                //$newResult = json_encode(array($decodedResult, $key));
-                echo $result;
-                //close connection
-                curl_close($ch);
-                Yii::app()->end ();
-            }        
-        }
-        
+        $profile = Yii::app()->params->profile;
         $action = new Actions;
         $action->setAttributes (array (
             'associationType' => X2Model::getAssociationType (get_class ($model)), 
@@ -95,32 +64,30 @@ class MobileActionHistoryPublishAction extends MobileAction {
             'private' => 0,
         ), false);
         $valid = false;
-        if ($type ==='attachments' && isset ($_FILES['Actions'])) {
-            $valid = true;
-            $action->upload = CUploadedFile::getInstance ($action, 'upload'); 
-            $action->type = 'attachment';
-
-            
-        } elseif ($type === 'all' && isset($_POST['Actions'])){
+        if ($type === 'all' && isset($_POST['Actions'])){
             $valid = true;
             $action->actionDescription = $_POST['Actions']['actionDescription'];
             $action->type = 'note';
         }
-        if (isset($_POST['geoCoords']) && Yii::app()->settings->locationTrackingSwitch){
-            $location = Yii::app()->params->profile->user->logLocation('mobileActivityPost', 'POST');
-            $action->location = $location;
-        }
-        
+
         if ($valid && $action->save ()) {
-                $this->controller->renderPartial (
-                    'application.modules.mobile.views.mobile._actionHistory', array (
+            $userFolderPath = implode(DIRECTORY_SEPARATOR, array(
+                Yii::app()->basePath,
+                '..',
+                'uploads',
+                'protected',
+                'media',
+                $profile->username
+            ));
+            $this->controller->renderPartial (
+                'application.modules.mobile.views.mobile._actionHistory', array (
 
-                    'model' => $model,
-                    'refresh' => true,
-                    'type'=>$type,
-                ), false, true);
+                'model' => $model,
+                'refresh' => true,
+                'type'=>$type,
+            ), false, true);
 
-                Yii::app()->end ();
+            Yii::app()->end ();
         } else {
             throw new CHttpException (500, Yii::t('app', 'Publish failed'));
         }

@@ -51,6 +51,9 @@ class MobileActionHistoryBehavior extends MobileExtraActionsBehavior {
             'mobileActionHistoryPublish' => array (
                 'class' => 'MobileActionHistoryPublishAction'
             ),
+            'mobileActionHistoryAttachmentsPublish' => array (
+                'class' => 'MobileActionHistoryAttachmentsPublishAction'
+            ),
         );
     }
 

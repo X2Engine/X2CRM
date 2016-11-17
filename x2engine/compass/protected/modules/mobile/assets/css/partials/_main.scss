@@ -296,11 +296,11 @@ div.x2touch-panel {
     input {
         height: $headerHeight;
         padding: 0;
-        color: $headerText;
+        color: gray;
         font-size: $headerTextSize;
     } 
     input::-webkit-input-placeholder {
-        color: $headerTextSecondary;
+        color: gray;
         font-size: $headerTextSize;
     }
 }

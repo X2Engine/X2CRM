@@ -130,7 +130,9 @@ class Campaign extends X2Model {
 	 */
 	public static function load($id) {
 		$model = X2Model::model('Campaign');
-		return $model->with('list')->findByPk((int)$id,$model->getAccessCriteria());
+		$campaign = $model->with('list')->findByPk((int)$id,$model->getAccessCriteria());
+		$campaign->recalculateRates();
+		return $campaign;
 	}
 
 	/**
@@ -170,5 +172,30 @@ class Campaign extends X2Model {
         } else {
             return parent::getDisplayName ($plural, $ofModule);
         }
+    }
+
+    protected function recalculateRates() {
+        $list = $this->list;
+        if (!$list) return;
+
+        $total = $list->statusCount('sent');
+        if ($total == 0) return;
+
+        $opened = $list->statusCount('opened');
+        $clicked = $list->statusCount('clicked');
+        $unsubscribed = $list->statusCount('unsubscribed');
+        $updateAttrs = array();
+        $this->openRate = sprintf('%.2f', $opened / $total * 100);
+        if (!isset($this->_oldAttributes['openRate']) || $this->openRate != $this->_oldAttributes['openRate'])
+            $updateAttrs[] = 'openRate';
+        $this->clickRate = sprintf('%.2f', $clicked / $total * 100);
+        if (!isset($this->_oldAttributes['clickRate']) || $this->clickRate != $this->_oldAttributes['clickRate'])
+            $updateAttrs[] = 'clickRate';
+        $this->unsubscribeRate = sprintf('%.2f', $unsubscribed / $total * 100);
+        if (!isset($this->_oldAttributes['unsubscribeRate']) || $this->unsubscribeRate != $this->_oldAttributes['unsubscribeRate'])
+            $updateAttrs[] = 'unsubscribeRate';
+
+        if (!empty($updateAttrs))
+            $this->update($updateAttrs);
     }
 }

@@ -66,7 +66,7 @@ menu with JS
 
 #search-bar-title {
     font-size: 31px;
-    color: white;
+    color: $appBlue;
     float: left;
     margin-left: 18px;
     margin-right: 6px;
@@ -144,7 +144,7 @@ body {
     width: 100%;
     z-index: 1000;
     &.defaultBg {
-        background: $appBlue;
+        background: $lightestGray;
         /* #417dcd to #3d70b4 */
     }
 }

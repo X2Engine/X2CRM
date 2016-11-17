@@ -1177,6 +1177,10 @@ class Api2Controller extends CController {
                     case 'PUT':
                         $action = "{$module}Update";
                 }
+                if ($_GET['_class'] === 'Locations') {
+                    // Restrict Location operations to admin access
+                    $action = 'GeneralAdminSettingsTask';
+                }
                 break;
             case 'relationships':
             case 'tags':
@@ -1658,7 +1662,7 @@ class Api2Controller extends CController {
             if(!isset($_GET['_class']))
                 $this->send(400,'Required parameter "class" missing.');
             $this->_staticModel = X2Model::model($_GET['_class']);
-            if(!($this->_staticModel instanceof X2Model))
+            if(!($this->_staticModel instanceof X2Model) && !($this->_staticModel instanceof Locations))
                 $this->send(400,"Invalid model class \"{$_GET['_class']}\".");
         }
         return $this->_staticModel;

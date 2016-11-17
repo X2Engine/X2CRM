@@ -2545,6 +2545,9 @@ class AdminController extends X2Controller {
     public function actionUserLocationHistory() {
         $locationHistoryDataProvider  = new CActiveDataProvider ('Locations', array(
             'sort' => array('defaultOrder' => 'createDate DESC'),
+            'criteria' => array(
+                'condition' => 'recordType = "User"'
+            ),
         ));
         $users = new CActiveDataProvider ('User', array(
             'sort' => array('defaultOrder' => 'id ASC'),
@@ -3826,6 +3829,7 @@ class AdminController extends X2Controller {
         $auth->createOperation($moduleName . 'Search');  // Minimum Requirements
 
         $auth->createOperation($moduleName . 'MobileActionHistoryPublish'); 
+        $auth->createOperation($moduleName . 'MobileActionHistoryAttachmentsPublish'); 
         $auth->createOperation($moduleName . 'MobileView'); 
         $auth->createOperation($moduleName . 'MobileCreate'); 
         $auth->createOperation($moduleName . 'MobileUpdate'); 
@@ -3878,6 +3882,7 @@ class AdminController extends X2Controller {
         $roleReadOnlyAccess->addChild($moduleName . 'QuickView');
         $roleReadOnlyAccess->addChild($moduleName . 'InlineEmail');
         $roleReadOnlyAccess->addChild($moduleName . 'MobileActionHistoryPublish');
+        $roleReadOnlyAccess->addChild($moduleName . 'MobileActionHistoryAttachmentsPublish');
 
         // Private Read Only
         $rolePrivateReadOnlyAccess->addChild($moduleName . 'MinimumRequirements');
@@ -3885,6 +3890,7 @@ class AdminController extends X2Controller {
         $rolePrivateReadOnlyAccess->addChild($moduleName . 'QuickView');
         $rolePrivateReadOnlyAccess->addChild($moduleName . 'InlineEmail');
         $rolePrivateReadOnlyAccess->addChild($moduleName . 'MobileActionHistoryPublish');
+        $rolePrivateReadOnlyAccess->addChild($moduleName . 'MobileActionHistoryAttachmentsPublish');
 
         // Basic Access
         $roleBasicAccess->addChild($moduleName . 'MinimumRequirements');
@@ -4175,6 +4181,7 @@ class AdminController extends X2Controller {
 
         $auth->removeAuthItem($ucName . 'MobileView');
         $auth->removeAuthItem($ucName . 'MobileActionHistoryPublish');
+        $auth->removeAuthItem($ucName . 'MobileActionHistoryAttachmentsPublish');
         $auth->removeAuthItem($ucName . 'QuickView');
         $auth->removeAuthItem($ucName . 'MobileIndex');
         $auth->removeAuthItem($ucName . 'MobileCreate');

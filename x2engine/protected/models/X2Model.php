@@ -943,36 +943,32 @@ abstract class X2Model extends X2ActiveRecord {
             $this->afterUpdate();
 
         $phoneFields = array();
-        $linkFields = array();
 
         // look through fields for phone numbers and relationships
         foreach (self::$_fields[$this->tableName()] as &$_field) {
             if ($_field->type === 'phone') {
-                $phoneFields[$_field->fieldName] = $this->getAttribute($_field->fieldName);
-            } elseif ($_field->type === 'link') {
-                $nameAndId = Fields::nameAndId($this->getAttribute($_field->fieldName));
-                $linkFields[$_field->fieldName] = array(
-                    'id' => $nameAndId[1],
-                    'type' => $_field->linkType
-                );
+                $fieldValue = $this->getAttribute($_field->fieldName);
+                // Only update Phone records that have changed
+                if (!isset($this->_oldAttributes[$_field->fieldName]) || $fieldValue != $this->_oldAttributes[$_field->fieldName])
+                    $phoneFields[$_field->fieldName] = $fieldValue;
             }
         }
 
-        // deal with phone numbers
-        if (count($phoneFields)) {
-            // clear out old phone numbers
-            X2Model::model('PhoneNumber')->deleteAllByAttributes(
-                array('modelId' => $this->id, 'modelType' => get_class($this))); 
-        }
-
         // create new entries in x2_phone_numbers
+        $className = get_class($this);
         foreach ($phoneFields as $field => &$number) {  
             if (!empty($number)) {
-                $num = new PhoneNumber;
                 // eliminate everything other than digits
-                $num->number = preg_replace('/\D/', '', $number); 
+                $number = preg_replace('/\D/', '', $number);
+                $num = PhoneNumber::model()->findByAttributes(array(
+                    'modelId' => $this->id,
+                    'modelType' => $className,
+                    'fieldName' => $field,
+                ));
+                if (!$num) $num = new PhoneNumber;
+                $num->number = $number;
                 $num->modelId = $this->id;
-                $num->modelType = get_class($this);
+                $num->modelType = $className;
                 $num->fieldName = $field;
                 $num->save();
             }

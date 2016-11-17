@@ -222,7 +222,7 @@
  *  License - http://fontawesome.io/license (Font: SIL OFL 1.1, CSS: MIT License)
  */
 /* line 76, ../../../compass/css/lib/_font-awesome.scss */
-#search-bar button.x2-button span:before, .sidebar-left .filter-control-button:hover:before, .page-title.icon.emailInboxes h2:before, .page-title.icon.profile h2:before, .page-title.icon.actions h2:before, .page-title.icon.accounts h2:before, .page-title.icon.opportunities h2:before, .page-title.icon.marketing h2:before, .page-title.icon.x2flow h2:before, .page-title.icon.x2Leads h2:before, .page-title.icon.docs h2:before, .page-title.icon.groups h2:before, .page-title.icon.media h2:before, .page-title.icon.users h2:before, .page-title.icon.charts h2:before, .page-title.icon.topics h2:before, .page-title.icon.bugReports h2:before, .page-title.icon.reports h2:before, .page-title.icon.reports h2 .stacked-icon:before, .page-title.icon.custom-module h2:before, .reports h2:before, .reports h2:after, table.fc-header .fc-header-title h2:before, .x2-button.icon.edit:before, .x2-button.icon.map:before, div.page-title .x2-button.icon.copy span:before, div.page-title .x2-button.icon.email:before, div.page-title .filter-button span:before {
+.sidebar-left .filter-control-button:hover:before, .page-title.icon.emailInboxes h2:before, .page-title.icon.profile h2:before, .page-title.icon.actions h2:before, .page-title.icon.accounts h2:before, .page-title.icon.opportunities h2:before, .page-title.icon.marketing h2:before, .page-title.icon.x2flow h2:before, .page-title.icon.x2Leads h2:before, .page-title.icon.docs h2:before, .page-title.icon.groups h2:before, .page-title.icon.media h2:before, .page-title.icon.users h2:before, .page-title.icon.charts h2:before, .page-title.icon.topics h2:before, .page-title.icon.bugReports h2:before, .page-title.icon.reports h2:before, .page-title.icon.reports h2 .stacked-icon:before, .page-title.icon.custom-module h2:before, .reports h2:before, .reports h2:after, table.fc-header .fc-header-title h2:before, .x2-button.icon.edit:before, .x2-button.icon.map:before, div.page-title .x2-button.icon.copy span:before, div.page-title .x2-button.icon.email:before, div.page-title .filter-button span:before {
   display: inline-block;
   font: normal normal normal 14px/1 FontAwesome;
   text-rendering: auto;
@@ -232,12 +232,12 @@
 
 /* makes the font 33% larger relative to the icon container */
 /* line 135, ../../../compass/css/lib/_font-awesome.scss */
-#search-bar button.x2-button span.pull-left:before, .sidebar-left .pull-left.filter-control-button:hover:before, .page-title.icon.emailInboxes h2.pull-left:before, .page-title.icon.profile h2.pull-left:before, .page-title.icon.actions h2.pull-left:before, .page-title.icon.accounts h2.pull-left:before, .page-title.icon.opportunities h2.pull-left:before, .page-title.icon.marketing h2.pull-left:before, .page-title.icon.x2flow h2.pull-left:before, .page-title.icon.x2Leads h2.pull-left:before, .page-title.icon.docs h2.pull-left:before, .page-title.icon.groups h2.pull-left:before, .page-title.icon.media h2.pull-left:before, .page-title.icon.users h2.pull-left:before, .page-title.icon.charts h2.pull-left:before, .page-title.icon.topics h2.pull-left:before, .page-title.icon.bugReports h2.pull-left:before, .page-title.icon.reports h2.pull-left:before, .page-title.icon.reports h2 .pull-left.stacked-icon:before, .page-title.icon.custom-module h2.pull-left:before, .reports h2.pull-left:before, .reports h2.pull-left:after, table.fc-header .fc-header-title h2.pull-left:before, .pull-left.x2-button.icon.edit:before, .pull-left.x2-button.icon.map:before, div.page-title .x2-button.icon.copy span.pull-left:before, div.page-title .pull-left.x2-button.icon.email:before, div.page-title .filter-button span.pull-left:before {
+.sidebar-left .pull-left.filter-control-button:hover:before, .page-title.icon.emailInboxes h2.pull-left:before, .page-title.icon.profile h2.pull-left:before, .page-title.icon.actions h2.pull-left:before, .page-title.icon.accounts h2.pull-left:before, .page-title.icon.opportunities h2.pull-left:before, .page-title.icon.marketing h2.pull-left:before, .page-title.icon.x2flow h2.pull-left:before, .page-title.icon.x2Leads h2.pull-left:before, .page-title.icon.docs h2.pull-left:before, .page-title.icon.groups h2.pull-left:before, .page-title.icon.media h2.pull-left:before, .page-title.icon.users h2.pull-left:before, .page-title.icon.charts h2.pull-left:before, .page-title.icon.topics h2.pull-left:before, .page-title.icon.bugReports h2.pull-left:before, .page-title.icon.reports h2.pull-left:before, .page-title.icon.reports h2 .pull-left.stacked-icon:before, .page-title.icon.custom-module h2.pull-left:before, .reports h2.pull-left:before, .reports h2.pull-left:after, table.fc-header .fc-header-title h2.pull-left:before, .pull-left.x2-button.icon.edit:before, .pull-left.x2-button.icon.map:before, div.page-title .x2-button.icon.copy span.pull-left:before, div.page-title .pull-left.x2-button.icon.email:before, div.page-title .filter-button span.pull-left:before {
   margin-right: .3em;
 }
 
 /* line 138, ../../../compass/css/lib/_font-awesome.scss */
-#search-bar button.x2-button span.pull-right:before, .sidebar-left .pull-right.filter-control-button:hover:before, .page-title.icon.emailInboxes h2.pull-right:before, .page-title.icon.profile h2.pull-right:before, .page-title.icon.actions h2.pull-right:before, .page-title.icon.accounts h2.pull-right:before, .page-title.icon.opportunities h2.pull-right:before, .page-title.icon.marketing h2.pull-right:before, .page-title.icon.x2flow h2.pull-right:before, .page-title.icon.x2Leads h2.pull-right:before, .page-title.icon.docs h2.pull-right:before, .page-title.icon.groups h2.pull-right:before, .page-title.icon.media h2.pull-right:before, .page-title.icon.users h2.pull-right:before, .page-title.icon.charts h2.pull-right:before, .page-title.icon.topics h2.pull-right:before, .page-title.icon.bugReports h2.pull-right:before, .page-title.icon.reports h2.pull-right:before, .page-title.icon.reports h2 .pull-right.stacked-icon:before, .page-title.icon.custom-module h2.pull-right:before, .reports h2.pull-right:before, .reports h2.pull-right:after, table.fc-header .fc-header-title h2.pull-right:before, .pull-right.x2-button.icon.edit:before, .pull-right.x2-button.icon.map:before, div.page-title .x2-button.icon.copy span.pull-right:before, div.page-title .pull-right.x2-button.icon.email:before, div.page-title .filter-button span.pull-right:before {
+.sidebar-left .pull-right.filter-control-button:hover:before, .page-title.icon.emailInboxes h2.pull-right:before, .page-title.icon.profile h2.pull-right:before, .page-title.icon.actions h2.pull-right:before, .page-title.icon.accounts h2.pull-right:before, .page-title.icon.opportunities h2.pull-right:before, .page-title.icon.marketing h2.pull-right:before, .page-title.icon.x2flow h2.pull-right:before, .page-title.icon.x2Leads h2.pull-right:before, .page-title.icon.docs h2.pull-right:before, .page-title.icon.groups h2.pull-right:before, .page-title.icon.media h2.pull-right:before, .page-title.icon.users h2.pull-right:before, .page-title.icon.charts h2.pull-right:before, .page-title.icon.topics h2.pull-right:before, .page-title.icon.bugReports h2.pull-right:before, .page-title.icon.reports h2.pull-right:before, .page-title.icon.reports h2 .pull-right.stacked-icon:before, .page-title.icon.custom-module h2.pull-right:before, .reports h2.pull-right:before, .reports h2.pull-right:after, table.fc-header .fc-header-title h2.pull-right:before, .pull-right.x2-button.icon.edit:before, .pull-right.x2-button.icon.map:before, div.page-title .x2-button.icon.copy span.pull-right:before, div.page-title .pull-right.x2-button.icon.email:before, div.page-title .filter-button span.pull-right:before {
   margin-left: .3em;
 }
 
@@ -254,11 +254,6 @@
 /* line 207, ../../../compass/css/lib/_font-awesome.scss */
 .page-title.icon.media h2:before {
   content: "\f001";
-}
-
-/* line 210, ../../../compass/css/lib/_font-awesome.scss */
-#search-bar button.x2-button span:before {
-  content: "\f002";
 }
 
 /* line 219, ../../../compass/css/lib/_font-awesome.scss */
@@ -660,7 +655,7 @@ div.page-title.icon.activity-feed h2:before,
  *  License - http://fontawesome.io/license (Font: SIL OFL 1.1, CSS: MIT License)
  */
 /* line 76, ../../../compass/css/lib/_font-awesome.scss */
-#search-bar button.x2-button span:before, .sidebar-left .filter-control-button:hover:before, .page-title.icon.emailInboxes h2:before, .page-title.icon.profile h2:before, .page-title.icon.actions h2:before, .page-title.icon.accounts h2:before, .page-title.icon.opportunities h2:before, .page-title.icon.marketing h2:before, .page-title.icon.x2flow h2:before, .page-title.icon.x2Leads h2:before, .page-title.icon.docs h2:before, .page-title.icon.groups h2:before, .page-title.icon.media h2:before, .page-title.icon.users h2:before, .page-title.icon.charts h2:before, .page-title.icon.topics h2:before, .page-title.icon.bugReports h2:before, .page-title.icon.reports h2:before, .page-title.icon.reports h2 .stacked-icon:before, .page-title.icon.custom-module h2:before, .reports h2:before, .reports h2:after, table.fc-header .fc-header-title h2:before, .x2-button.icon.edit:before, .x2-button.icon.map:before, div.page-title .x2-button.icon.copy span:before, div.page-title .x2-button.icon.email:before, div.page-title .filter-button span:before {
+.sidebar-left .filter-control-button:hover:before, .page-title.icon.emailInboxes h2:before, .page-title.icon.profile h2:before, .page-title.icon.actions h2:before, .page-title.icon.accounts h2:before, .page-title.icon.opportunities h2:before, .page-title.icon.marketing h2:before, .page-title.icon.x2flow h2:before, .page-title.icon.x2Leads h2:before, .page-title.icon.docs h2:before, .page-title.icon.groups h2:before, .page-title.icon.media h2:before, .page-title.icon.users h2:before, .page-title.icon.charts h2:before, .page-title.icon.topics h2:before, .page-title.icon.bugReports h2:before, .page-title.icon.reports h2:before, .page-title.icon.reports h2 .stacked-icon:before, .page-title.icon.custom-module h2:before, .reports h2:before, .reports h2:after, table.fc-header .fc-header-title h2:before, .x2-button.icon.edit:before, .x2-button.icon.map:before, div.page-title .x2-button.icon.copy span:before, div.page-title .x2-button.icon.email:before, div.page-title .filter-button span:before {
   display: inline-block;
   font: normal normal normal 14px/1 FontAwesome;
   text-rendering: auto;
@@ -670,12 +665,12 @@ div.page-title.icon.activity-feed h2:before,
 
 /* makes the font 33% larger relative to the icon container */
 /* line 135, ../../../compass/css/lib/_font-awesome.scss */
-#search-bar button.x2-button span.pull-left:before, .sidebar-left .pull-left.filter-control-button:hover:before, .page-title.icon.emailInboxes h2.pull-left:before, .page-title.icon.profile h2.pull-left:before, .page-title.icon.actions h2.pull-left:before, .page-title.icon.accounts h2.pull-left:before, .page-title.icon.opportunities h2.pull-left:before, .page-title.icon.marketing h2.pull-left:before, .page-title.icon.x2flow h2.pull-left:before, .page-title.icon.x2Leads h2.pull-left:before, .page-title.icon.docs h2.pull-left:before, .page-title.icon.groups h2.pull-left:before, .page-title.icon.media h2.pull-left:before, .page-title.icon.users h2.pull-left:before, .page-title.icon.charts h2.pull-left:before, .page-title.icon.topics h2.pull-left:before, .page-title.icon.bugReports h2.pull-left:before, .page-title.icon.reports h2.pull-left:before, .page-title.icon.reports h2 .pull-left.stacked-icon:before, .page-title.icon.custom-module h2.pull-left:before, .reports h2.pull-left:before, .reports h2.pull-left:after, table.fc-header .fc-header-title h2.pull-left:before, .pull-left.x2-button.icon.edit:before, .pull-left.x2-button.icon.map:before, div.page-title .x2-button.icon.copy span.pull-left:before, div.page-title .pull-left.x2-button.icon.email:before, div.page-title .filter-button span.pull-left:before {
+.sidebar-left .pull-left.filter-control-button:hover:before, .page-title.icon.emailInboxes h2.pull-left:before, .page-title.icon.profile h2.pull-left:before, .page-title.icon.actions h2.pull-left:before, .page-title.icon.accounts h2.pull-left:before, .page-title.icon.opportunities h2.pull-left:before, .page-title.icon.marketing h2.pull-left:before, .page-title.icon.x2flow h2.pull-left:before, .page-title.icon.x2Leads h2.pull-left:before, .page-title.icon.docs h2.pull-left:before, .page-title.icon.groups h2.pull-left:before, .page-title.icon.media h2.pull-left:before, .page-title.icon.users h2.pull-left:before, .page-title.icon.charts h2.pull-left:before, .page-title.icon.topics h2.pull-left:before, .page-title.icon.bugReports h2.pull-left:before, .page-title.icon.reports h2.pull-left:before, .page-title.icon.reports h2 .pull-left.stacked-icon:before, .page-title.icon.custom-module h2.pull-left:before, .reports h2.pull-left:before, .reports h2.pull-left:after, table.fc-header .fc-header-title h2.pull-left:before, .pull-left.x2-button.icon.edit:before, .pull-left.x2-button.icon.map:before, div.page-title .x2-button.icon.copy span.pull-left:before, div.page-title .pull-left.x2-button.icon.email:before, div.page-title .filter-button span.pull-left:before {
   margin-right: .3em;
 }
 
 /* line 138, ../../../compass/css/lib/_font-awesome.scss */
-#search-bar button.x2-button span.pull-right:before, .sidebar-left .pull-right.filter-control-button:hover:before, .page-title.icon.emailInboxes h2.pull-right:before, .page-title.icon.profile h2.pull-right:before, .page-title.icon.actions h2.pull-right:before, .page-title.icon.accounts h2.pull-right:before, .page-title.icon.opportunities h2.pull-right:before, .page-title.icon.marketing h2.pull-right:before, .page-title.icon.x2flow h2.pull-right:before, .page-title.icon.x2Leads h2.pull-right:before, .page-title.icon.docs h2.pull-right:before, .page-title.icon.groups h2.pull-right:before, .page-title.icon.media h2.pull-right:before, .page-title.icon.users h2.pull-right:before, .page-title.icon.charts h2.pull-right:before, .page-title.icon.topics h2.pull-right:before, .page-title.icon.bugReports h2.pull-right:before, .page-title.icon.reports h2.pull-right:before, .page-title.icon.reports h2 .pull-right.stacked-icon:before, .page-title.icon.custom-module h2.pull-right:before, .reports h2.pull-right:before, .reports h2.pull-right:after, table.fc-header .fc-header-title h2.pull-right:before, .pull-right.x2-button.icon.edit:before, .pull-right.x2-button.icon.map:before, div.page-title .x2-button.icon.copy span.pull-right:before, div.page-title .pull-right.x2-button.icon.email:before, div.page-title .filter-button span.pull-right:before {
+.sidebar-left .pull-right.filter-control-button:hover:before, .page-title.icon.emailInboxes h2.pull-right:before, .page-title.icon.profile h2.pull-right:before, .page-title.icon.actions h2.pull-right:before, .page-title.icon.accounts h2.pull-right:before, .page-title.icon.opportunities h2.pull-right:before, .page-title.icon.marketing h2.pull-right:before, .page-title.icon.x2flow h2.pull-right:before, .page-title.icon.x2Leads h2.pull-right:before, .page-title.icon.docs h2.pull-right:before, .page-title.icon.groups h2.pull-right:before, .page-title.icon.media h2.pull-right:before, .page-title.icon.users h2.pull-right:before, .page-title.icon.charts h2.pull-right:before, .page-title.icon.topics h2.pull-right:before, .page-title.icon.bugReports h2.pull-right:before, .page-title.icon.reports h2.pull-right:before, .page-title.icon.reports h2 .pull-right.stacked-icon:before, .page-title.icon.custom-module h2.pull-right:before, .reports h2.pull-right:before, .reports h2.pull-right:after, table.fc-header .fc-header-title h2.pull-right:before, .pull-right.x2-button.icon.edit:before, .pull-right.x2-button.icon.map:before, div.page-title .x2-button.icon.copy span.pull-right:before, div.page-title .pull-right.x2-button.icon.email:before, div.page-title .filter-button span.pull-right:before {
   margin-left: .3em;
 }
 
@@ -692,11 +687,6 @@ div.page-title.icon.activity-feed h2:before,
 /* line 207, ../../../compass/css/lib/_font-awesome.scss */
 .page-title.icon.media h2:before {
   content: "\f001";
-}
-
-/* line 210, ../../../compass/css/lib/_font-awesome.scss */
-#search-bar button.x2-button span:before {
-  content: "\f002";
 }
 
 /* line 219, ../../../compass/css/lib/_font-awesome.scss */
@@ -884,7 +874,7 @@ menu with JS
 /* line 67, ../../../compass/themes/x2engine/css/layout.scss */
 #search-bar-title {
   font-size: 31px;
-  color: white;
+  color: #255296;
   float: left;
   margin-left: 18px;
   margin-right: 6px;
@@ -938,7 +928,7 @@ html {
 /* line 112, ../../../compass/themes/x2engine/css/layout.scss */
 body {
   height: 100%;
-  background: #F4F4F4;
+  background: #F9F9F9;
   /*min-width:880px;*/
 }
 /* line 117, ../../../compass/themes/x2engine/css/layout.scss */
@@ -975,7 +965,7 @@ body:before {
 }
 /* line 146, ../../../compass/themes/x2engine/css/layout.scss */
 #header.defaultBg {
-  background: #255296;
+  background: #F9F9F9;
   /* #417dcd to #3d70b4 */
 }
 
@@ -1099,7 +1089,7 @@ div.admin-flash-error {
   height: 30px;
   width: 30px;
   margin: 0;
-  color: white;
+  color: #255296;
   text-decoration: none;
 }
 
@@ -1159,22 +1149,28 @@ li.special.leadrouting-indicator.visible span {
 }
 
 /* line 123, ../../../compass/themes/x2engine/css/partials/_main-menu.scss */
+#main-menu > li.active a {
+  padding-left: 10px;
+  color: white;
+}
+
+/* line 128, ../../../compass/themes/x2engine/css/partials/_main-menu.scss */
 #user-menu {
   float: right;
 }
 
-/* line 127, ../../../compass/themes/x2engine/css/partials/_main-menu.scss */
+/* line 132, ../../../compass/themes/x2engine/css/partials/_main-menu.scss */
 #user-menu-2 {
   float: right;
   padding-left: 4px;
 }
 
-/* line 132, ../../../compass/themes/x2engine/css/partials/_main-menu.scss */
+/* line 137, ../../../compass/themes/x2engine/css/partials/_main-menu.scss */
 #user-menu > li:last-child a {
   padding-right: 0;
 }
 
-/* line 137, ../../../compass/themes/x2engine/css/partials/_main-menu.scss */
+/* line 142, ../../../compass/themes/x2engine/css/partials/_main-menu.scss */
 .main-menu a, .main-menu span {
   display: block;
   font-size: 13px;
@@ -1182,9 +1178,9 @@ li.special.leadrouting-indicator.visible span {
   font-weight: bold;
   text-decoration: none;
 }
-/* line 145, ../../../compass/themes/x2engine/css/partials/_main-menu.scss */
-.main-menu > li > a, .main-menu > li > span {
-  color: white;
+/* line 151, ../../../compass/themes/x2engine/css/partials/_main-menu.scss */
+.main-menu li a, .main-menu li span {
+  color: #255296;
   line-height: 32px;
   height: 32px;
   text-shadow: rgba(0, 0, 0, 0.25) 0 1px 4px;
@@ -1193,7 +1189,7 @@ li.special.leadrouting-indicator.visible span {
   height: 25px;
 }
 
-/* line 157, ../../../compass/themes/x2engine/css/partials/_main-menu.scss */
+/* line 163, ../../../compass/themes/x2engine/css/partials/_main-menu.scss */
 .dropdown > span {
   cursor: pointer;
   padding-right: 15px;
@@ -1201,31 +1197,62 @@ li.special.leadrouting-indicator.visible span {
   background: url(../images/dropdown-arrow.png) transparent no-repeat center right;
 }
 
-/* line 164, ../../../compass/themes/x2engine/css/partials/_main-menu.scss */
+/* line 170, ../../../compass/themes/x2engine/css/partials/_main-menu.scss */
 .main-menu > li.special:hover, #header.defaultBg .main-menu > li.special:hover {
   -moz-box-shadow: none;
   -webkit-box-shadow: none;
   box-shadow: none;
 }
 
-/* line 171, ../../../compass/themes/x2engine/css/partials/_main-menu.scss */
-.main-menu > li:hover, .main-menu > li.active {
+/* line 177, ../../../compass/themes/x2engine/css/partials/_main-menu.scss */
+.main-menu > li.dropdown:hover, .main-menu > li.dropdown.active {
   /* background:url(../images/black_15.png); */
-  background: rgba(0, 0, 0, 0.2);
+  background: #2d63b5;
+}
+/* line 180, ../../../compass/themes/x2engine/css/partials/_main-menu.scss */
+.main-menu > li.dropdown:hover span, .main-menu > li.dropdown:hover a, .main-menu > li.dropdown.active span, .main-menu > li.dropdown.active a {
+  color: white;
+}
+/* line 184, ../../../compass/themes/x2engine/css/partials/_main-menu.scss */
+.main-menu > li.dropdown:hover .open a, .main-menu > li.dropdown.active .open a {
+  color: black;
 }
 
-/* line 178, ../../../compass/themes/x2engine/css/partials/_main-menu.scss */
-#header.defaultBg .main-menu > li:hover, #header.defaultBg .main-menu > li.active {
+/* line 192, ../../../compass/themes/x2engine/css/partials/_main-menu.scss */
+#header.defaultBg #main-menu > li:hover, #header.defaultBg #main-menu > li.active {
   background: #2d63b5;
   /* background:rgba(255,255,255,0.15); */
 }
+/* line 195, ../../../compass/themes/x2engine/css/partials/_main-menu.scss */
+#header.defaultBg #main-menu > li:hover span, #header.defaultBg #main-menu > li:hover a, #header.defaultBg #main-menu > li.active span, #header.defaultBg #main-menu > li.active a {
+  color: white;
+}
+/* line 199, ../../../compass/themes/x2engine/css/partials/_main-menu.scss */
+#header.defaultBg #main-menu > li:hover .open a, #header.defaultBg #main-menu > li.active .open a {
+  color: black;
+}
 
-/* line 184, ../../../compass/themes/x2engine/css/partials/_main-menu.scss */
+/* line 207, ../../../compass/themes/x2engine/css/partials/_main-menu.scss */
+#header.defaultBg #user-menu > li:hover, #header.defaultBg #user-menu > li.active {
+  background: #2d63b5;
+  /* background:rgba(255,255,255,0.15); */
+}
+/* line 210, ../../../compass/themes/x2engine/css/partials/_main-menu.scss */
+#header.defaultBg #user-menu > li:hover a, #header.defaultBg #user-menu > li.active a {
+  color: white;
+}
+
+/* line 216, ../../../compass/themes/x2engine/css/partials/_main-menu.scss */
+#header.defaultBg #user-menu > li#search-bar.special:hover {
+  background: white;
+}
+
+/* line 221, ../../../compass/themes/x2engine/css/partials/_main-menu.scss */
 .main-menu > li.special:hover, #header.defaultBg .main-menu > li.special:hover {
   background: none;
 }
 
-/* line 189, ../../../compass/themes/x2engine/css/partials/_main-menu.scss */
+/* line 228, ../../../compass/themes/x2engine/css/partials/_main-menu.scss */
 #main-menu-bar #x2-logo {
   font-size: 32px;
   top: -3px;
@@ -1237,30 +1264,30 @@ li.special.leadrouting-indicator.visible span {
 /*********************************
 * Search bar
 ********************************/
-/* line 202, ../../../compass/themes/x2engine/css/partials/_main-menu.scss */
+/* line 241, ../../../compass/themes/x2engine/css/partials/_main-menu.scss */
 .main-menu li.search-bar {
   padding-left: 0;
   /* position:relative; */
   /* padding:3px 0 0 10px; */
 }
 
-/* line 208, ../../../compass/themes/x2engine/css/partials/_main-menu.scss */
+/* line 247, ../../../compass/themes/x2engine/css/partials/_main-menu.scss */
 #search-bar-title a {
   line-height: 16px;
   /* padding-top:5px; */
   /* display:block; */
 }
 
-/* line 215, ../../../compass/themes/x2engine/css/partials/_main-menu.scss */
+/* line 254, ../../../compass/themes/x2engine/css/partials/_main-menu.scss */
 #search-bar form {
   padding: 0;
 }
-/* line 218, ../../../compass/themes/x2engine/css/partials/_main-menu.scss */
+/* line 257, ../../../compass/themes/x2engine/css/partials/_main-menu.scss */
 #search-bar a.x2-button {
   float: right;
   margin: 6px 0 0 5px;
 }
-/* line 222, ../../../compass/themes/x2engine/css/partials/_main-menu.scss */
+/* line 261, ../../../compass/themes/x2engine/css/partials/_main-menu.scss */
 #search-bar button.x2-button {
   float: right;
   margin: 2px 0 0 0;
@@ -1271,19 +1298,15 @@ li.special.leadrouting-indicator.visible span {
   -o-border-radius: 0 3px 3px 0;
   border-radius: 0 3px 3px 0;
 }
-/* line 227, ../../../compass/themes/x2engine/css/partials/_main-menu.scss */
+/* line 266, ../../../compass/themes/x2engine/css/partials/_main-menu.scss */
 #search-bar button.x2-button span {
   display: block;
   margin: 0;
   padding: 0;
   height: 25px;
   width: 30px;
-  color: white;
+  color: #255296;
   /* @theme color smart_text */
-}
-/* line 51, ../../../compass/css/lib/_font-awesome.scss */
-#search-bar button.x2-button span:before {
-  text-decoration: none;
 }
 
 /*********************************

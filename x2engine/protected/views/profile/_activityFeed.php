@@ -188,78 +188,8 @@ $this->renderPartial ('_feedFilters');
         </div>
         </div>
         <?php
-            if (isset($_SERVER['HTTPS'])) {
-                Yii::app()->clientScript->registerScript('geolocationJs', '
-                    $("#toggle-location-button").click(function (evt) {
-                        evt.preventDefault();
-                        if ($("#toggle-location-button").data("location-enabled") === true) {
-                            // Clear geoCoords field and reset style
-                            $("#checkInComment").slideUp();
-                            $("#geoCoords").val("");
-                            $("#toggle-location-button")
-                                .data("location-enabled", false)
-                                .css("color", "");
-                        } else {
-                            // Populate geoCoords field and highlight blue
-                            $("#checkInComment").slideDown();
-                            $("#toggle-location-button")
-                                .data("location-enabled", true)
-                                .css("color", "blue");
-                            if ("geolocation" in navigator) {
-                                navigator.geolocation.getCurrentPosition(function(position) {
-                                var pos = {
-                                  lat: position.coords.latitude,
-                                  lon: position.coords.longitude
-                                };
-
-                                $("#geoCoords").val(JSON.stringify (pos));
-                              }, function() {
-                                console.log("error fetching geolocation data");
-                              });
-                            }
-                        }
-                    });
-                ', CClientScript::POS_READY);
-            } else {
-                Yii::app()->clientScript->registerScript('geolocationJs', '
-                    $("#toggle-location-button").click(function (evt) {
-                        evt.preventDefault();
-                        if ($("#toggle-location-button").data("location-enabled") === true) {
-                            $("#checkInComment").slideUp();
-                            $("#toggle-location-button")
-                                .data("location-enabled", false)
-                                .css("color", "");
-                        } else {
-                            $("#checkInComment").slideDown();
-                            $("#toggle-location-button")
-                                .data("location-enabled", true)
-                                .css("color", "blue");
-                        }
-                    });
-                ', CClientScript::POS_READY);
-            }
-            Yii::app()->clientScript->registerScript('checkInJs', '
-                $("#checkInComment").on("blur", function() {
-                    var comment = $(this).val();
-                    var coordsVal = $("#geoCoords").val();
-                    var coords;
-                    if (coordsVal) {
-                        coords = JSON.parse(coordsVal);
-                        if (!coords) {
-                            coords = {};
-                        }
-                    } else {
-                        coords = {};
-                    }
-                    coords.comment = comment;
-                    $("#geoCoords").val(JSON.stringify(coords));
-                });
-                $("#feed-form input[type=\'submit\'").click(function () {
-                    $("#checkInComment")
-                        .blur()
-                        .val("");
-                });
-            ', CClientScript::POS_READY);
+            Yii::app()->clientScript->registerGeolocationScript(true);
+            Yii::app()->clientScript->registerCheckinScript("#feed-form input[type=\'submit\'");
         ?>
     </div>
     <?php $this->endWidget(); ?>

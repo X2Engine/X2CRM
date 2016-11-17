@@ -963,7 +963,10 @@ class InlineEmail extends CFormModel {
                 $inbox = EmailInboxes::model()->findAllByAttributes (array(
                     'credentialId' => $this->credentials->id,
                 ));
-                $inbox = array_filter ($inbox, function($i) use($user) {return $i->isVisibleTo ($user);});
+                if ($user)
+                    $inbox = array_filter ($inbox, function($i) use($user) {return $i->isVisibleTo ($user);});
+                else // No user, look for system-owned credentials
+                    $inbox = array_filter ($inbox, function($i) {return isset($i->credentials) && $i->credentials->userId == Credentials::SYS_ID;});
 
                 if (count($inbox) > 0) {
                     // Select the first inbox: if multiple inboxes were found, they are associated with

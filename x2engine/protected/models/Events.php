@@ -118,7 +118,7 @@ class Events extends X2ActiveRecord {
                     throw new CException (implode (';', $this->getAllErrorMessages ()));
                 }
                 //save the raw data to a file
-                $filename = md5(uniqid(rand(), true));
+                $filename = md5(uniqid(rand(), true)) + '.png';
                 $userFolderPath = implode(DIRECTORY_SEPARATOR, array(
                     Yii::app()->basePath,
                     '..',
@@ -127,6 +127,12 @@ class Events extends X2ActiveRecord {
                     'media',
                     $profile->username
                 ));
+                // if user folder doesn't exit, try to create it
+                if (!(file_exists($userFolderPath) && is_dir($userFolderPath))) {
+                    if (!@mkdir($userFolderPath, 0777, true)) { // make dir with edit permission
+                        throw new CHttpException(500, "Couldn't create user folder $userFolderPath");
+                    }
+                }
 
                 // add media record for file                
                 $media = new Media;
@@ -321,6 +327,14 @@ class Events extends X2ActiveRecord {
     }
 
     public function getText(array $params = array(), array $htmlOptions = array()) {
+        $mediaId = Yii::app()->db->createCommand()
+                ->select('mediaId')
+                ->from('x2_events_to_media')
+                ->where('eventsId=:eventsId', array(':eventsId' => $this->id))
+                ->queryScalar();
+        $params['media'] = Media::model()->findByAttributes(array('id' => $mediaId));
+        $params['recipient'] = User::model()->findByAttributes(array('id' => $this->associationId));
+        $params['profileRecipient'] = Profile::model()->findByPk($this->associationId);
         return EventTextFormatter::getText($this, $params, $htmlOptions);
     }
 

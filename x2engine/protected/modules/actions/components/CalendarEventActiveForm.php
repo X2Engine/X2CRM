@@ -41,6 +41,23 @@ class CalendarEventActiveForm extends ActionActiveFormBase {
      * @var string $id
      */
     public $id = 'inline-calendar-event-form'; 
+
+    public $JSClass = 'ActionActiveForm';
+
+    public function getPackages () {
+        if (!isset ($this->_packages)) {
+            $this->_packages = array_merge (parent::getPackages (), array(
+                'ActionActiveFormJS' => array(
+                    'baseUrl' => Yii::app ()->getModule ('actions')->assetsUrl,
+                    'js' => array(
+                        'js/ActionActiveForm.js',
+                    ),
+                    'depends' => array ('ActionActiveFormBaseJS'),
+                ),
+            ));
+        }
+        return $this->_packages;
+    }
 }
 
 ?>
