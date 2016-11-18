@@ -214,6 +214,12 @@ $publisherMenuHeightBrowser: 64px;
     }
 }
 
+&[data-x2-tab-name='action-history-attachments'] {
+    .publisher-menu-button {
+        display: block !important;
+    }
+}
+
 &.x2touch-android {
     @include publisher-button-animation ($publisherMenuHeight,'makeActivePhoneGap');
     #footer.publisher-menu {
