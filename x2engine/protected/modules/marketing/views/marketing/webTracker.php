@@ -205,6 +205,14 @@ if ($absBaseUrl[strlen($absBaseUrl)-1] !== '/')
         ?>
     </div>
 </div><br>
+<div class="row">
+    <div class="cell" style="width:120px;">
+        <?php echo CHtml::activeLabel($admin,'enableGeolocation'); ?>
+        <?php echo CHtml::activeDropDownList(
+            $admin,'enableGeolocation',array(1=>Yii::t('app','Enable'),0=>Yii::t('app','Disable')),
+            array('id'=>'enableGeolocation','style'=>'')); ?>
+    </div>
+</div><br>
 <?php 
 if (Yii::app()->contEd('pla')) { ?>
 <h4><b><?php echo Yii::t('marketing','X2Identity Settings'); ?></b></h4>
