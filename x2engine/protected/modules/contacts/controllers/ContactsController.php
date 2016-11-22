@@ -688,7 +688,6 @@ class ContactsController extends x2base {
         ));
         if(!isset($location)){
             $location = new Locations;
-            $location->contactId = $contactId;
             $location->recordId = $contactId;
             $location->recordType = 'Contacts';
             $location->lat = $lat;
