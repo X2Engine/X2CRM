@@ -563,6 +563,13 @@ $failedLoginsDataProvider = new CActiveDataProvider('FailedLogins',
                     echo Yii::t('admin',
                             'Enter your Jasper Server settings for external reporting');
                     ?></div>
+                <div class="cell span-6"><?php
+                    echo CHtml::link(Yii::t('admin', 'X2Hub Integration'),
+                            array('/admin/x2HubIntegration'));
+                    ?><br><?php
+                    echo Yii::t('admin',
+                            'Configure your X2Hub settings to enable external connectors');
+                    ?></div>
 
             </div>
             <div id="tabs-8">

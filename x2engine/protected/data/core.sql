@@ -123,7 +123,8 @@ CREATE TABLE x2_admin(
     twitterRateLimits           TEXT DEFAULT NULL,
     triggerLogMax               INT UNSIGNED DEFAULT 1000000,
     googleCredentialsId         INT UNSIGNED,
-    jasperCredentialsId         INT UNSIGNED
+    jasperCredentialsId         INT UNSIGNED,
+    hubCredentialsId            INT UNSIGNED
 ) ENGINE=InnoDB, COLLATE = utf8_general_ci;
 /*&*/
 DROP TABLE IF EXISTS x2_api_hooks;
