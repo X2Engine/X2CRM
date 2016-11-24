@@ -87,7 +87,6 @@ class MappableBehavior extends CActiveRecordBehavior {
         }
         if(!isset($location)){
             $location = new Locations;
-            $location->contactId = $this->owner->id;
             $location->recordId = $this->owner->id;
             $location->recordType = get_class($this->owner);
             $location->lat = $lat;

@@ -104,7 +104,6 @@ class Locations extends CActiveRecord
 	 */
 	public function attributeLabels() {
 		return array(
-			'contactId' => Yii::t('contacts','Contact ID'),
 			'recordId' => Yii::t('contacts','Record ID'),
 			'recordType' => Yii::t('contacts','Record Type'),
 			'lat' => Yii::t('contacts','Latitutde'),
