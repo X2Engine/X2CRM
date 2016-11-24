@@ -60,7 +60,7 @@ VideoButton.prototype.setUpButtonPhoneGap = function () {
                 that.failure (error);
                 /*alert('code: '    + error.code    + '\n' +
                       'message: ' + error.message + '\n');*/
-            }, {});         
+            }, {limit: 1, duration: 20});         
             
         });
     });

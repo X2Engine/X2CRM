@@ -1946,6 +1946,7 @@ class ProfileController extends x2base {
             if ($post->save()) {
                 if (!empty($staticMap)) {
                     if (!empty($geocodedAddress)) {
+                        $post->type = 'media';
                         $post->text .= Yii::t('app', 'Checking in at ').$geocodedAddress.' | '.
                             Formatter::formatDateTime(time());
                     }

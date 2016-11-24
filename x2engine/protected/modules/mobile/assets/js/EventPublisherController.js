@@ -65,6 +65,7 @@ EventPublisherController.prototype.setUpForm = function () {
     });
     
     var locationButton$ = $.mobile.activePage.find ('.location-attach-button');
+    var audioButton$ = $('#footer .audio-attach-button');
    
     locationButton$.click (function () {
         if (!x2.main.isPhoneGap) return;
@@ -105,6 +106,38 @@ EventPublisherController.prototype.setUpForm = function () {
         
         }
         
+    });
+    
+    new x2.AudioButton ({
+        element$: audioButton$,
+        success: function (data) {
+            var attachment$ = x2.mobileForm.makeAudioAttachment (data.type,data.fullPath);
+            attachment$.hide ();
+            that.form$.find ('.' + x2.mobileForm.audioAttachmentClass).remove ();
+            that.form$.append (attachment$);
+            $.mobile.loading ('show');
+            x2.mobileForm.submitWithAudio (
+                data.type,
+                that.form$.attr ('action'), 
+                that.form$, 
+                'EventPublisherFormModel[audio]',
+                function (response) {
+                    if (response.responseCode == 200)  {
+                        if (that.publisherIsActive) togglePublisher$.click ();
+                        $.mobile.activePage.append ($(response.response).find ('.refresh-content'));
+                        x2.main.refreshContent ();
+                        $.mobile.loading ('hide');
+                    } else {
+                        $.mobile.loading ('hide');
+                        x2.main.alert ('Upload failed', 'Error');
+                    }
+                },
+                function (error) {
+                    $.mobile.loading ('hide');
+                    x2.main.alert (error.body, 'Error');
+                }
+            );
+        }
     });
 
 };
