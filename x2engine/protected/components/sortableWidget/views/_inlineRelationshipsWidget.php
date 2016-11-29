@@ -136,10 +136,10 @@ $(".editLabelLink").click(function() {
                 firstType: model,
                 label: newLabel
             },
-            success: function () { // success
+            success: function () {
                 $.fn.yiiGridView.update("relationships-grid");
             },
-            error: function () { // success
+            error: function () {
                 alert(errorMsg);
             }
         });
