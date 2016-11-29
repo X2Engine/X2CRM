@@ -78,6 +78,13 @@ $form = $this->beginWidget ('ActionActiveForm', array (
         'style' => 'display: none;'
     ));
 
+    echo CHtml::label (Yii::t('actions', 'Add to Calendar'), 'calendarId');
+    $editableCalendars = array_merge(
+        array('' => Yii::t('actions', 'None')),
+        X2CalendarPermissions::getEditableUserCalendarNames()
+    );
+    echo CHtml::activeDropDownList($model, 'calendarId', $editableCalendars);
+
     echo $form->hiddenField($model, 'associationType'); 
     echo $form->hiddenField($model, 'associationId'); 
 
