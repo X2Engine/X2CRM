@@ -123,6 +123,16 @@ class RelationshipsGridModel extends CModel {
         }
     }
 
+    public function renderInlineRelabelControls() {
+        return CHtml::ajaxLink(X2Html::fa("edit"), "#", array(), array(
+            "class" => "editLabelLink",
+            "style" => "display: none",
+            "data-id" => $this->relatedModel->id,
+            "data-label" => $this->label,
+            "data-model" => get_class($this->relatedModel)
+        ));
+    }
+
     public function filterModels (array $gridModels) {
         $filteredModels = array ();
         $that = $this;
