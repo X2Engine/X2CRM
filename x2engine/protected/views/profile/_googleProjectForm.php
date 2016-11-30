@@ -129,6 +129,7 @@ echo X2Html::orderedList (array (
                 Yii::t('app', 'Search for and enable following APIs.')
             ).X2Html::orderedList(array(
                 'Google Maps Geocoding API', 
+                'Google Maps Directions API',
                 'Google Static Maps API',
                 'Google Maps JavaScript API',
                 'Google+ API',

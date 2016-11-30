@@ -340,6 +340,50 @@ class Locations extends CActiveRecord
         }
     }
 
+    /**
+     * Retrieves the estimated travel time from $this to $destination
+     * param Location $destination
+     * return string
+     */
+    public function getTravelTime(Locations $destination) {
+        $key = $this->googleApiKey;
+        if ($key && !empty($this->lat) && !empty($this->lon) && !empty($destination->lat) && !empty($destination->lon)) {
+            // Check cache first
+            $cacheKey = 'd'.$this->lat.','.$this->lon.','.$destination->lat.','.$destination->lon;
+            $duration = Yii::app()->cache->get($cacheKey);
+            if ($duration) {
+                return $duration;
+            }
+
+            $url = 'https://maps.googleapis.com/maps/api/directions/json' .
+                '?origin=' . $this->lat .','. $this->lon .
+                '&destination=' . $destination->lat .','. $destination->lon .
+                '&key=' . $key;
+            //open connection
+            $ch = curl_init();
+
+            //set the url, number of POST vars, POST data
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+            curl_setopt($ch,CURLOPT_URL, $url);
+
+            //execute post
+            $result = curl_exec($ch);
+            curl_close($ch);
+            $data = CJSON::decode($result, true);
+            if ($data && isset($data['status']) && $data['status'] === 'OK' &&
+                array_key_exists('routes', $data) &&
+                array_key_exists(0, $data['routes']) &&
+                array_key_exists('legs', $data['routes'][0]) &&
+                array_key_exists(0, $data['routes'][0]['legs'])
+            ) {
+                    $leg = $data['routes'][0]['legs'][0];
+                    $duration = $leg['duration']['text'];
+                    Yii::app()->cache->set($cacheKey, $duration, 60 * 60);
+                    return $duration;
+            }
+        }
+    }
+
     private static $editableFields = array(
         'recordType',
         'recordId',
