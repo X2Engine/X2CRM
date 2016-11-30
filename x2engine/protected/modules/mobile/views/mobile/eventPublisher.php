@@ -118,11 +118,11 @@ if (Yii::app()->params->isPhoneGap) {
             echo X2Html::fa ('fa-location-arrow');
         ?>
     </div>
-    <div class='audio-attach-button icon-button'>
+    <!--<div class='audio-attach-button icon-button'>
         <?php
-            echo X2Html::fa ('fa-file-audio-o');
+            //echo X2Html::fa ('fa-file-audio-o');
         ?>
-    </div>
+    </div>-->
 </div>
 <?php
 }

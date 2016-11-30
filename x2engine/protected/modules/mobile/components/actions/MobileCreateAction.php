@@ -72,7 +72,7 @@ class MobileCreateAction extends MobileAction {
             }
         }
 
-        $this->controller->pageClass = $this->pageClass;;
+        $this->controller->pageClass = $this->pageClass;
         $model->setInputRenderer (
             'application.modules.mobile.components.formatters.MobileFieldInputRenderer');
         $this->controller->render (

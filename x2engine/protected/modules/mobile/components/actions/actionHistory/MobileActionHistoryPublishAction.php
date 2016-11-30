@@ -71,14 +71,6 @@ class MobileActionHistoryPublishAction extends MobileAction {
         }
 
         if ($valid && $action->save ()) {
-            $userFolderPath = implode(DIRECTORY_SEPARATOR, array(
-                Yii::app()->basePath,
-                '..',
-                'uploads',
-                'protected',
-                'media',
-                $profile->username
-            ));
             $this->controller->renderPartial (
                 'application.modules.mobile.views.mobile._actionHistory', array (
 

@@ -230,6 +230,7 @@ $publisherMenuHeightBrowser: 64px;
 &.x2touch-browser, &.x2touch-ios {
     @include publisher-button-animation ($publisherMenuHeightBrowser,'makeActiveBrowser');
     #footer.publisher-menu {
+        /*
         .photo-attachment-button {
             display: none;
         }
@@ -238,7 +239,7 @@ $publisherMenuHeightBrowser: 64px;
         }
         .video-attachment-button {
             display: none;
-        }
+        }*/
         * {
             border: none;
         }
