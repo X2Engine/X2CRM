@@ -1931,7 +1931,7 @@ class ProfileController extends x2base {
             //die(var_dump($_POST['Social']));
             $location = Yii::app()->params->profile->user->logLocation('activityPost', 'POST');
             $geoCoords = isset($_POST['geoCoords']) ? CJSON::decode($_POST['geoCoords'], true) : null;
-            $isCheckIn = ($geoCoords && (isset($geoCoords['lat']) || !empty($geoCoords['comment'])));
+            $isCheckIn = ($geoCoords && (isset($geoCoords['lat']) || isset($geoCoords['locationEnabled'])));
             if ($location && $isCheckIn) {
                 // Only associate location when a checkin is requested
                 $post->locationId = $location->id;
