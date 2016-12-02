@@ -834,6 +834,7 @@ class MarketingController extends x2base {
                 $settings = array(
                     'enableFingerprinting',
                     'enableGeolocation',
+                    'disableAnonContactNotifs',
                     'identityThreshold',
                     'maxAnonContacts',
                     'maxAnonActions',

@@ -214,7 +214,7 @@ class Admin extends X2ActiveRecord {
             array('externalBaseUrl','url','allowEmpty'=>true),
             array('assetBaseUrls','validateUrlArray','allowEmpty'=>false),
             array('externalBaseUrl','match','pattern'=>':/$:','not'=>true,'allowEmpty'=>true,'message'=>Yii::t('admin','Value must not include a trailing slash.')),
-            array('enableWebTracker, locationTrackingSwitch, quoteStrictLock, workflowBackdateReassignment,disableAutomaticRecordTagging,enableAssetDomains, enableUnsubscribeHeader', 'boolean'),
+            array('enableWebTracker, disableAnonContactNotifs, locationTrackingSwitch, quoteStrictLock, workflowBackdateReassignment,disableAutomaticRecordTagging,enableAssetDomains, enableUnsubscribeHeader', 'boolean'),
             array('gaTracking_internal,gaTracking_public', 'match', 'pattern' => "/'/", 'not' => true, 'message' => Yii::t('admin', 'Invalid property ID')),
             array ('appDescription', 'length', 'max' => 255),
             array (
@@ -251,6 +251,7 @@ class Admin extends X2ActiveRecord {
             'timeout' => Yii::t('admin', 'Session Timeout'),
             'webLeadEmail' => Yii::t('admin', 'Web Lead Email'),
             'enableWebTracker' => Yii::t('admin', 'Enable Web Tracker'),
+            'disableAnonContactNotifs' => Yii::t('admin', 'Disable AnonContact Notifications'),
             'webTrackerCooldown' => Yii::t('admin', 'Web Tracker Cooldown'),
             'currency' => Yii::t('admin', 'Currency'),
             'chatPollTime' => Yii::t('admin', 'Notification Poll Time'),
