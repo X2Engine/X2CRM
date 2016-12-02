@@ -184,7 +184,12 @@ $this->renderPartial ('_feedFilters');
             <button id="toggle-location-button" class="x2-button" title="<?php echo Yii::t('app', 'Location Check-In'); ?>" style="display:inline-block; margin-left:10px"><?php
                 echo X2Html::fa('crosshairs fa-lg');
             ?></button>
-            <textarea id="checkInComment" rows=2 style="display: none" placeholder="<?php echo Yii::t('app', 'Check-in comment'); ?>"></textarea>
+            <?php
+            $checkInPlaceholder = Yii::t('app', 'Check-in comment.');
+            if (!isset($_SERVER['HTTPS']) ?  : '')
+                $checkInPlaceholder .= Yii::t('app', ' Note: for higher accuracy and an embedded static map, visit the site under HTTPS.');
+            ?>
+            <textarea id="checkInComment" rows=2 style="display: none" placeholder="<?php echo $checkInPlaceholder; ?>"></textarea>
         </div>
         </div>
         <?php

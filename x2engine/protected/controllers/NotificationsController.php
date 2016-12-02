@@ -154,11 +154,20 @@ class NotificationsController extends CController {
 
 
         $notifModels = X2Model::model('Notification')->findAll($criteria);
+        $skipAnonContactNotifs = Yii::app()->settings->disableAnonContactNotifs;
 
         foreach($notifModels as &$model) {
             $msg = $model->getMessage();
+            $isAnonContactNotif = false;
+            if ($skipAnonContactNotifs && $model->modelType === 'Actions') {
+                $associatedAction = Actions::model()->findByPk($model->modelId);
+                if ($associatedAction && $associatedAction->associationType === 'anoncontact' &&
+                    $associatedAction->type === 'webactivity') {
+                        $isAnonContactNotif = true;
+                }
+            }
 
-            if($msg !== null) {
+            if($msg !== null && !$isAnonContactNotif) {
                 $notifications[] = array(
                     'id'=>$model->id,
                     'viewed'=>$model->viewed,

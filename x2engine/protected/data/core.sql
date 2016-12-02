@@ -124,7 +124,8 @@ CREATE TABLE x2_admin(
     triggerLogMax               INT UNSIGNED DEFAULT 1000000,
     googleCredentialsId         INT UNSIGNED,
     jasperCredentialsId         INT UNSIGNED,
-    hubCredentialsId            INT UNSIGNED
+    hubCredentialsId            INT UNSIGNED,
+    disableAnonContactNotifs    TINYINT DEFAULT 0
 ) ENGINE=InnoDB, COLLATE = utf8_general_ci;
 /*&*/
 DROP TABLE IF EXISTS x2_api_hooks;

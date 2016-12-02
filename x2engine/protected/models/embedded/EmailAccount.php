@@ -48,6 +48,7 @@ Yii::import('application.models.embedded.JSONEmbeddedModel');
 class EmailAccount extends JSONEmbeddedModel {
 
     public $email = '';
+    public $smtpNoValidate = false;
     public $imapNoValidate = false;
     public $imapPort = 143;
     public $imapSecurity = '';
@@ -70,6 +71,7 @@ class EmailAccount extends JSONEmbeddedModel {
             'security' => Yii::t('app', 'Security type'),
             'user' => Yii::t('app', 'User name (if different from email address)'),
             'password' => Yii::t('app', 'Password'),
+            'smtpNoValidate' => Yii::t('app','Disable SSL Validation'),
             'imapPort' => Yii::t('app','IMAP Port'),
             'imapServer' => Yii::t('app','IMAP Server'),
             'imapSecurity' => Yii::t('app','IMAP Security'),
@@ -115,6 +117,9 @@ class EmailAccount extends JSONEmbeddedModel {
             case 'imapNoValidate':
                 echo CHtml::activeCheckBox($this, $attr, $this->htmlOptions($attr));
                 break;
+            case 'smtpNoValidate':
+                echo CHtml::activeCheckBox($this, $attr, $this->htmlOptions($attr));
+                break;
             case 'disableInbox':
                 echo CHtml::activeCheckBox($this, $attr, $this->htmlOptions($attr));
                 break;
@@ -125,6 +130,16 @@ class EmailAccount extends JSONEmbeddedModel {
                 echo X2Html::x2ActivePasswordField ($this, $attr, $this->htmlOptions ($attr), true);
                 break;
         }
+    }
+
+    /**
+     * Renders a label and input for disabling SMTP SSL Validation
+     * This can be overridden in child classes to hide the controls
+     * and require SSL validation, e.g., for provider-specific accounts
+     */
+    public function renderSmtpSslValidation() {
+        echo CHtml::activeLabel($this, 'smtpNoValidate');
+        $this->renderInput ('smtpNoValidate');
     }
 
     /**
@@ -146,6 +161,7 @@ class EmailAccount extends JSONEmbeddedModel {
         $this->renderInput ('user');
         echo CHtml::activeLabel ($this, 'password');
         $this->renderInput ('password');
+        $this->renderSmtpSslValidation();
         echo '<br/>';
         echo '<br/>';
 		echo CHtml::tag ('h3', array (), Yii::t('app', 'IMAP Configuration'));
@@ -180,7 +196,7 @@ class EmailAccount extends JSONEmbeddedModel {
             array('user','emailUser'),
             array('server,user,email','length','min'=>1,'max'=>500,'allowEmpty'=>0),
             array('password','required'),
-            array('senderName,server,port,security,user,email,password,imapPort,imapServer,imapSecurity,imapNoValidate,disableInbox','safe'),
+            array('senderName,server,port,security,user,email,password,imapPort,imapServer,imapSecurity,smtpNoValidate,imapNoValidate,disableInbox','safe'),
         );
     }
 
