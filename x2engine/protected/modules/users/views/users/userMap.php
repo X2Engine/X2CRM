@@ -55,12 +55,16 @@ foreach ($locations as $location) {
     }
 }
 Yii::app()->clientScript->registerScript('maps-initialize', "
+var corporateAddress=".CJSON::encode(Yii::app()->settings->corporateAddress).";
+var personalAddress=".CJSON::encode(Yii::app()->params->profile->address).";
+var map, directionsService, directionsDisplay;
 function initializeMap() {
-    var map, pointarray, ge, directionsDisplay, latlngbounds;
+    var pointarray, ge, latlngbounds;
     var center=$center;
     var zoom=" . (isset($zoom) ? $zoom : "0") . ";
         
     directionsDisplay = new google.maps.DirectionsRenderer();
+    directionsService=new google.maps.DirectionsService();
     var latLng = new google.maps.LatLng(center['lat'],center['lng']);
     var mapOptions = {
         zoom: 3,
@@ -88,14 +92,14 @@ function initializeMap() {
         if(loc.time){
             details += '<br>'+loc.time;
         }
-        addLargeMapMarker(loc, details);
+        addLargeMapMarker(loc, details, true);
     });
     google.maps.event.addListenerOnce(map, 'bounds_changed', function(event) {
         this.setZoom(map.getZoom()-1);
       });
     map.fitBounds(latlngbounds);
-    
-    function addLargeMapMarker(pos, contents, open = true) {
+
+    function addLargeMapMarker(pos, contents, directionsLink = false, open = true) {
         latlngbounds = new google.maps.LatLngBounds();
         var latLng = new google.maps.LatLng(pos['lat'],pos['lng']);
         latlngbounds.extend(latLng);
@@ -103,23 +107,41 @@ function initializeMap() {
             position: latLng,
             map: map
         });
+
+        if (directionsLink) {
+            if (corporateAddress)
+                contents += '<br /><a class=\"directions-link\" data-type=corporate data-lat=' + pos['lat'] + ' data-lng=' + pos['lng'] + ' href=\"#\">".Yii::t('contacts', 'Directions from Corporate')."</a>';
+            if (personalAddress) {
+                contents += '<br /><a class=\"directions-link\" data-type=personal data-lat=' + pos['lat'] + ' data-lng=' + pos['lng'] + ' href=\"#\">".Yii::t('contacts', 'Directions from Personal Address')."</a>';
+            }
+        }
         if(typeof infowindow==='undefined'){
             var infowindow = new google.maps.InfoWindow({
                 content: contents
             });
             if (open)
                 infowindow.open(map, marker);
+            google.maps.event.addListener(infowindow,'domready',function(){ // Set up directions handlers
+                $('#corporate-directions').click(function(e){
+                    e.preventDefault();
+                    getDirections('corporate');
+                    $('#clear-route').show();
+                });
+                $('#personal-directions').click(function(e){
+                    e.preventDefault();
+                    getDirections('personal');
+                    $('#clear-route').show();
+                });
+                $('.directions-link').click(function(evt) {
+                    evt.preventDefault();
+                    var type = $(this).data('type'),
+                        lat = $(this).data('lat'),
+                        lng = $(this).data('lng');
+                    getDirections(type, lat, lng);
+                    $('#clear-route').show();
+                });
+            });
         }
-        google.maps.event.addListener(infowindow,'domready',function(){
-            $('#corporate-directions').click(function(e){
-                e.preventDefault();
-                getDirections('corporate');
-            });
-            $('#personal-directions').click(function(e){
-                e.preventDefault();
-                getDirections('personal');
-            });
-        });
 
         google.maps.event.addListener(marker,'click',function(){
             infowindow.open(map,marker);
@@ -127,7 +149,64 @@ function initializeMap() {
 
         return marker;
     }
-}", CClientScript::POS_HEAD);
+}
+
+function getDirections(type, lat = null, lng = null){
+    var center=map.getCenter();
+    if (!lat || !lng)
+        var latLng = new google.maps.LatLng(center['lat'],center['lng']);
+    else
+        var latLng = new google.maps.LatLng(lat,lng);
+    if(type=='corporate') {
+        if (corporateAddress){
+            var request = {
+                origin:corporateAddress,
+                destination:latLng,
+                travelMode: google.maps.TravelMode.DRIVING
+            };
+        }else{
+            alert('Invalid corporate address.');
+        }
+    }
+    if(type=='personal') {
+        if (personalAddress){
+            var request = {
+                origin:personalAddress,
+                destination:latLng,
+                travelMode: google.maps.TravelMode.DRIVING
+            };
+        }else{
+            alert('Invalid personal address.');
+        }
+    }
+    if(typeof request!=='undefined'){
+        directionsService.route(request, function(result, status) {
+            if (status == google.maps.DirectionsStatus.OK) {
+                directionsDisplay.setDirections(result);
+                $('#map_canvas').width('70%');
+                $('#directions-box').show();
+            }else if(status=='ZERO_RESULTS'){
+                alert('No valid route found.');
+            }
+        });
+    }
+}
+", CClientScript::POS_HEAD);
+Yii::app()->clientScript->registerScript('user-map-controls', "
+$('#clear-route').click(function() {
+    directionsDisplay.setMap(null); // Reset DirectionsRenderer
+    directionsDisplay = new google.maps.DirectionsRenderer();
+    directionsDisplay.setMap(map);
+    $('#directions-panel').text('');
+    directionsDisplay.setPanel(document.getElementById('directions-panel'));
+    $('#clear-route').hide();
+    $('#hide-directions').click();
+});
+$('#hide-directions').click(function() {
+    $('#directions-box').hide();
+    $('#map_canvas').width('100%');
+});
+");
 Yii::app()->clientScript->registerScriptFile($assetUrl, CClientScript::POS_END);
 ?>
 
@@ -196,7 +275,8 @@ Yii::app()->clientScript->registerScriptFile($assetUrl, CClientScript::POS_END);
 </div>
 <div style="width:30%;float:left;display:none;" id="directions-box">
     <div style="width:auto;height:788px;margin-bottom:0px;overflow-y:scroll;" class="form" id="directions-panel"></div>
+    <button id="hide-directions" class="x2-button"><?php echo Yii::t('contacts', 'Hide Directions'); ?></button>
 </div>
 <div id="map_canvas" style="height: 800px; width:100%;float:right;"></div>
 
-
+<button id="clear-route" class="x2-button" style="display:none"><?php echo Yii::t('contacts', 'Clear Route'); ?></button>
