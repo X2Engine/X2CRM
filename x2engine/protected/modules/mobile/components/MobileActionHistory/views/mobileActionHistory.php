@@ -122,14 +122,14 @@ if (!$this->refresh && $hasCreateAccess) {
                 </div>
             </li>
             <li class='video-attachment-button'>
-                <span><?php echo X2Html::fa('fa-file-video-o '); ?></span>
+                <!--<span><?php echo X2Html::fa('fa-file-video-o '); ?></span>
                 <div>
                     <?php 
-                    echo CHtml::encode(Yii::t('mobile', 'Add video attachment'));
+                    //echo CHtml::encode(Yii::t('mobile', 'Add video attachment'));
                     ?>
                     
                             
-                </div>
+                </div>-->
             </li>
             <li class='file-attachment-button'>
                 <span><?php echo X2Html::fa('file'); ?></span>
