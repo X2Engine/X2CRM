@@ -649,9 +649,11 @@ class Actions extends X2Model {
         if ($this->reminder) {
             if (!$this->isNewRecord)
                 $this->deleteOldNotifications ($this->notificationUsers);
-            $this->createNotifications (
-                $this->notificationUsers,
-                $this->dueDate - ($this->notificationTime * 60), 'action_reminder');
+            $notifTime = $this->dueDate - ($this->notificationTime * 60);
+            if ($this->complete !== 'Yes' && $notifTime >= time()) {
+                // Only recreate the reminder if it hasn't happened yet or the Action is incomplete
+                $this->createNotifications($this->notificationUsers, $notifTime, 'action_reminder');
+            }
         }
 
         

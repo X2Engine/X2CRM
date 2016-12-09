@@ -943,6 +943,7 @@ class X2ClientScript extends NLSClientScript {
 
     /**
      * Register the geolocation JavaScript
+     * @param bool $onLocationButton Whether to register the geolocation on the location button
      * @param bool $multiple whether to operate on multiple geoCoords inputs
      * @param const $pos CClientScript position
      */
@@ -956,9 +957,9 @@ class X2ClientScript extends NLSClientScript {
                     evt.preventDefault();
                     if ($("#toggle-location-button").data("location-enabled") === true) {
                         // Clear geoCoords field and reset style
-                        $("#checkInComment").slideUp();'.
-                        (isset($_SERVER['HTTPS']) ? '$("'.$selector.'").val("");' : '').
-                        '$("#toggle-location-button")
+                        $("#checkInComment").slideUp();
+                        $("'.$selector.'").val("");
+                        $("#toggle-location-button")
                             .data("location-enabled", false)
                             .css("color", "");
                     } else {
@@ -972,14 +973,15 @@ class X2ClientScript extends NLSClientScript {
                             navigator.geolocation.getCurrentPosition(function(position) {
                             var pos = {
                               lat: position.coords.latitude,
-                              lon: position.coords.longitude
+                              lon: position.coords.longitude,
+                              locationEnabled: true
                             };
 
                             $("'.$selector.'").val(JSON.stringify (pos));
                           }, function() {
                             console.log("error fetching geolocation data");
                           });
-                        }' : '').
+                        }' : '$("'.$selector.'").val(JSON.stringify ({locationEnabled: true}));').
                     '}
                 });
             ', $pos);

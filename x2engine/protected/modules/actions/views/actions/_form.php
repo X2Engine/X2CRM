@@ -287,7 +287,31 @@ $backdating = !(Yii::app()->user->checkAccess('ActionsAdmin') ||
             } 
             ?>
         </div><!-- #action-backdating -->
-</div><!-- .form -->
+    </div><!-- .form -->
+    <div class="form">
+        <span><?php
+        echo CHtml::link(
+            CHtml::image(
+                $themeUrl.'/images/icons/Expand_Inverted.png', '', array('style' => 'float:left;')).
+                "<label style='cursor:pointer'>&nbsp;".
+                    Yii::t('actions', 'Add to Calendar').
+                "</label>", '#',
+                array(
+                    'id' => $form->resolveId ('calendarId'),
+                    'style' => 'color:black;text-decoration:none;'
+                ));
+        ?></span>
+        <div id="action-calendarId" style="display:none;" class="row">
+            <br>
+            <?php
+            $editableCalendars = array_merge(
+                array('' => Yii::t('actions', 'None')),
+                X2CalendarPermissions::getEditableUserCalendarNames()
+            );
+            echo CHtml::activeDropDownList($actionModel, 'calendarId', $editableCalendars);
+            ?>
+        </div>
+    </div><!-- .form -->
 <?php 
 if(!$backdating && 
     file_exists(__DIR__.DIRECTORY_SEPARATOR.'_actionTimersForm.php') && 
@@ -361,6 +385,16 @@ $(function () {
             $(this).find("img").attr("src",yii.themeBaseUrl+"/images/icons/Collapse_Widget.png");
         }else{
             $("#action-backdating").slideUp();
+            $(this).find("img").attr("src",yii.themeBaseUrl+"/images/icons/Expand_Inverted.png");
+        }
+    });
+    $("'.$form->resolveIds ("#calendarId").'").click (function(e){
+        e.preventDefault();
+        if($("#action-calendarId").is(":hidden")){
+            $("#action-calendarId").slideDown();
+            $(this).find("img").attr("src",yii.themeBaseUrl+"/images/icons/Collapse_Widget.png");
+        }else{
+            $("#action-calendarId").slideUp();
             $(this).find("img").attr("src",yii.themeBaseUrl+"/images/icons/Expand_Inverted.png");
         }
     });

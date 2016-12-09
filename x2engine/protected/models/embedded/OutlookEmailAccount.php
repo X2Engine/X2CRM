@@ -62,6 +62,8 @@ class OutlookEmailAccount extends EmailAccount {
         return Yii::t('app','Outlook Email Account');
     }
 
+    // Hide SMTP SSL validation setting
+    public function renderSmtpSslValidation() { }
 }
 
 ?>

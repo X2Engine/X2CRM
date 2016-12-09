@@ -278,6 +278,22 @@ if (Yii::app()->contEd('pla')) { ?>
 </div>
 <div class="row">
     <div class="cell">
+        <?php
+            $disableAnonNotifsHint = Yii::t('marketing',
+                "This will filter notifications for AnonContact web activity without affecting "
+                ."the total number of notifications. These can be reenabled at any time to reveal "
+                ."past web activity visits in your notifications.");
+            echo CHtml::activeLabel($admin, 'disableAnonContactNotifs');
+            echo CHtml::activeCheckBox(
+                $admin,'disableAnonContactNotifs',array(
+                    'id'=>'disableAnonContactNotifs',
+            ));
+            echo X2Html::hint($disableAnonNotifsHint, false, null, true);
+        ?>
+    </div>
+</div>
+<div class="row">
+    <div class="cell">
         <?php 
             echo CHtml::activeLabel($admin, 'identityThreshold');
             $validThresholds = array();

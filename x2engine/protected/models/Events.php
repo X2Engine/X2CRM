@@ -122,7 +122,7 @@ class Events extends X2ActiveRecord {
                     throw new CException (implode (';', $this->getAllErrorMessages ()));
                 }
                 //save the raw data to a file
-                $filename = md5(uniqid(rand(), true)) + '.png';
+                $filename = md5(uniqid(rand(), true)) . '.png';
                 $userFolderPath = implode(DIRECTORY_SEPARATOR, array(
                     Yii::app()->basePath,
                     '..',

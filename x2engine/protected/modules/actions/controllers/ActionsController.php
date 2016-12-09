@@ -284,7 +284,9 @@ class ActionsController extends x2base {
 
             if (!$model->hasErrors () && isset($_POST['x2ajax'])) {
                 $location = Yii::app()->params->profile->user->logLocation('activityPost', 'POST');
-                if ($location)
+                $geoCoords = isset($_POST['geoCoords']) ? CJSON::decode($_POST['geoCoords']) : null;
+                $isCheckIn = ($geoCoords && (isset($geoCoords['lat']) || isset($geoCoords['locationEnabled'])));
+                if ($location && $isCheckIn)
                     $model->locationId = $location->id;
                 $this->quickCreate($model);
             } elseif(!$model->hasErrors () && $model->save()){
