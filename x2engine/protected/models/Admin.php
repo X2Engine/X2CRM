@@ -542,7 +542,8 @@ class Admin extends X2ActiveRecord {
                     } elseif (isset ($tryJson['dateExpires']) && isset ($tryJson['maxUsers'])) {
                         $this->_licenseKeyInfo = array (
                             'dateExpires' => $tryJson['dateExpires'],
-                            'maxUsers' => $tryJson['maxUsers']
+                            'maxUsers' => $tryJson['maxUsers'],
+                            'hubEnabled' => (isset($tryJson['hubEnabled']) ? $tryJson['hubEnabled'] : false),
                         );
                     }
                 }

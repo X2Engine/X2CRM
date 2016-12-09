@@ -535,7 +535,7 @@ class Credentials extends CActiveRecord {
 		if($model === null || $model->$name == null){
 			// Figure out which one is default since it hasn't been set yet
 			$defaultCreds = $staticModel->getDefaultCredentials();
-			if($type == 'email' || $type == 'sms')
+			if($type == 'email' || $type == 'sms' || $type == 'x2HubConnector')
 				$selectedCredentials = self::LEGACY_ID;
 			if(array_key_exists($defaultUserId, $defaultCreds))
 				if(array_key_exists($type, $defaultCreds[$defaultUserId]))

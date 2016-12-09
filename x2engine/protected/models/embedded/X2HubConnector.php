@@ -44,7 +44,7 @@ Yii::import('application.models.embedded.*');
  * @package application.models.embedded
  */
 class X2HubConnector extends JSONEmbeddedModel implements AdminOwnedCredentials {
-    
+
     public static function getAdminProperty () {
         return 'hubCredentialsId'; 
     }
@@ -57,11 +57,14 @@ class X2HubConnector extends JSONEmbeddedModel implements AdminOwnedCredentials 
         );
     }
 
-    public $unique_id = '';
+    public $hubEnabled = false;
+    public $enableGoogleCalendar = true;
+    public $enableGoogleMaps = true;
+    public $enableTwoFactor = true;
 
     public function rules(){
         return array(
-            array('unique_id', 'safe'),
+            array('hubEnabled,enableGoogleCalendar,enableGoogleMaps,enableTwoFactor', 'safe'),
         );
     }
 
@@ -77,7 +80,10 @@ class X2HubConnector extends JSONEmbeddedModel implements AdminOwnedCredentials 
 
     public function attributeLabels(){
         return array(
-            'unique_id' => Yii::t('app','Product Key'),
+            'hubEnabled' => Yii::t('app','Hub Enabled'),
+            'enableGoogleCalendar' => Yii::t('app','Enable Google Calendar Sync'),
+            'enableGoogleMaps' => Yii::t('app','Enable Google Maps'),
+            'enableTwoFactor' => Yii::t('app','Enable 2 Factor Authentication'),
         );
     }
 
@@ -93,22 +99,54 @@ class X2HubConnector extends JSONEmbeddedModel implements AdminOwnedCredentials 
         return parent::htmlOptions ($name, $options);
     }
 
+    public function renderInput($field) {
+        switch ($field) {
+            case 'hubEnabled':
+            case 'enableGoogleCalendar':
+            case 'enableGoogleMaps':
+            case 'enableTwoFactor':
+                echo CHtml::hiddenField('Credentials[auth]['.$field.']', 0);
+                echo CHtml::checkBox('Credentials[auth]['.$field.']', $this->$field);
+                break;
+            default:
+                parent::renderInput($field);
+                break;
+        }
+    }
+
     public function renderInputs(){
         echo $this->getInstructions ();
 		echo CHtml::tag ('h3', array (), $this->exoModel->getAttributeLabel ($this->exoAttr));
 		echo '<hr />';
-        echo CHtml::activeLabel($this, 'unique_id');
-        $this->renderInput ('unique_id');
+        echo CHtml::activeLabel($this, 'hubEnabled');
+        $this->renderInput ('hubEnabled');
+		echo CHtml::tag ('h4', array (), Yii::t('', 'Services'));
+        echo CHtml::activeLabel($this, 'enableGoogleCalendar');
+        $this->renderInput ('enableGoogleCalendar');
+        echo CHtml::activeLabel($this, 'enableGoogleMaps');
+        $this->renderInput ('enableGoogleMaps');
+        echo CHtml::activeLabel($this, 'enableTwoFactor');
+        $this->renderInput ('enableTwoFactor');
         echo CHtml::errorSummary($this);
         echo '<br>';
         echo '<br>';
     }
 
     private function getInstructions () {
+        $enabled = false;
+        if (Yii::app()->settings->hubCredentialsId && $this->hubEnabled) {
+            $enabled = Yii::app()->controller
+                ->attachBehavior('HubConnectionBehavior', new HubConnectionBehavior)
+                ->pingHub();
+        }
         return 
-            '
-            <h3>'.Yii::t('app', 'Configuring X2Hub Integration').'</h3>
+            '<h3>'.Yii::t('app', 'Configuring X2Hub Integration').'</h3>
             <hr>
+            <div>'.Yii::t('app', 'Status').': '.
+                ($enabled ?
+                '<span style="color:green">'.X2Html::fa('check').Yii::t('app', 'Enabled').'</span>' :
+                '<span style="color:red">'.X2Html::fa('times').Yii::t('app', 'Disabled')).'</span>' .
+            '</div><br />
             <p>'.
                 Yii::t('app',
                     'Enter your X2Hub product key below to enable external connectivity '.
@@ -116,8 +154,7 @@ class X2HubConnector extends JSONEmbeddedModel implements AdminOwnedCredentials 
                     'other connectors will be automatically configured and utilized through '.
                     'X2Hub, including Google Integration, Twitter Integration, etc.'
                 ).
-            '</p>
-            ';
+            '</p>';
     }
 
 }
