@@ -310,6 +310,7 @@ class Admin extends X2ActiveRecord {
             'doNotEmailLinkPage' => Yii::t('admin','"Do not email" Page'),
             'doNotEmailPage' => Yii::t('admin','Do Not Email Page'),
             'enableAssetDomains' => Yii::t('admin','Enable Asset Domains'),
+            'twoFactorCredentialsId' => Yii::t('admin','Two Factor Auth Credentials'),
              
             'imapPollTimeout' => Yii::t('admin','Email Polling Timeout'),
             'ipBlacklist' => Yii::t('admin','IP Blacklist'),

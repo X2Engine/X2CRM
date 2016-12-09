@@ -60,6 +60,11 @@ Yii::app()->clientScript->registerCss('loginExtraCss', "
 #login-box-outer {
     top: ".$loginBoxHeight."px;
 }
+#LoginForm_twoFactorCode {
+    font-size: larger;
+    text-align: center;
+    width: 40%;
+}
 
 ");
 
@@ -82,6 +87,35 @@ $('#mobile-signin-button').click (function () {
     $('#login-form-outer').attr ('action', mobileLoginUrl);
 });
 
+$('#login-form-outer').submit(function(evt) {
+    evt.preventDefault();
+    var that = this,
+        username = $('#LoginForm_username').val(),
+        csrfTokenRegex = /(?:^|.*;)\s*YII_CSRF_TOKEN\s*=\s*([^;]*)(?:.*$|$)/;
+    var csrfToken = document.cookie.replace (csrfTokenRegex, '$1');
+
+    $.ajax({
+        url: '".Yii::app()->createUrl ('/site/site/needsTwoFactor')."',
+        type: 'POST',
+        data: {
+            username: username,
+            YII_CSRF_TOKEN: csrfToken
+        },
+        success: function(data) {
+            $(that).unbind('submit');
+            if (data != 'yes')
+                $(that).submit();
+            else {
+                $('.twoFactorCodeControls').slideDown();
+                $('#LoginForm_twoFactorCode').focus();
+            }
+        },
+        error: function(data) {
+            console.log('error checking 2FA requirement');
+            $(that).unbind('submit');
+        }
+    });
+});
 }) ();
     
 
@@ -208,6 +242,12 @@ Yii::app()->clientScript->registerGeolocationScript();
                     echo $form->textField($model, 'verifyCode');
                     ?>
                 </div><?php } ?>
+                <div class="row twoFactorCodeControls" style="display:none;">
+                    <?php
+                    echo '<p class="hint">'.Yii::t('app', 'Please enter your two factor authentication verification code.').'</p>';
+                    echo $form->textField($model, 'twoFactorCode');
+                    ?>
+                </div>
                 <div class="row" id='signin-button-container'>
                     <button class='x2-button x2-blue' id='signin-button'>
                         <?php

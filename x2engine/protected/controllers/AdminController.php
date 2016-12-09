@@ -429,6 +429,7 @@ class AdminController extends X2Controller {
             'maxFailedLogins',
             'maxLoginHistory',
             'scanUploads',
+            'twoFactorCredentialsId',
         );
         $jsonFields = array(
             'ipWhitelist',
@@ -471,8 +472,13 @@ class AdminController extends X2Controller {
             if (is_array ($admin->$field))
                 $admin->$field = implode("\r\n", $admin->$field);
 
+        $twilioCreds = Credentials::getCredentialOptions($admin, 'twoFactorCredentialsId', 'sms');
+        $hubCreds = Credentials::getCredentialOptions($admin, 'twoFactorCredentialsId', 'x2HubConnector');
+        $twoFAOptions = array('' => 'Disabled') + $twilioCreds['credentials'] + $hubCreds['credentials'];
+
         $this->render ('securitySettings', array(
             'model' => $admin,
+            'twoFAOptions' => $twoFAOptions,
         ));
     }
 

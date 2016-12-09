@@ -73,6 +73,7 @@ class ProfileController extends x2base {
                     'toggleEmailReport', 'deleteEmailReport', 'sendTestActivityReport',
                     'createProfileWidget','deleteSortableWidget','deleteTheme','previewTheme', 
                     'resetTours', 'disableTours', 'mobileIndex', 'mobileView', 'mobileActivity', 
+                    'beginTwoFactorActivation', 'completeTwoFactorActivation', 'disableTwoFactor',
                     'mobileViewEvent', 'mobileDeleteEvent','mobilePublisher', 'mobileCheckInPublisher'),
                 'users' => array('@'),
             ),
@@ -543,6 +544,31 @@ class ProfileController extends x2base {
             'displayThemeEditor' => $admin->enforceDefaultTheme,
                 
         ));
+    }
+
+    public function actionBeginTwoFactorActivation() {
+        if (!Yii::app()->request->isPostRequest) $this->denied();
+        $model = $this->loadModel(Yii::app()->user->getId());
+        if (!$model->requestTwoFA(true))
+            throw new CHttpException(500, Yii::t('profile', 'Failed to request two factor authentication code!'));
+    }
+
+    public function actionCompleteTwoFactorActivation($code) {
+        if (!Yii::app()->request->isPostRequest) $this->denied();
+        $model = $this->loadModel(Yii::app()->user->getId());
+        if ($model->verifyTwoFACode($code)) {
+            $model->enableTwoFactor = 1;
+            $model->update(array('enableTwoFactor'));
+        } else {
+            throw new CHttpException(500, Yii::t('profile', 'Verification Failed!'));
+        }
+    }
+
+    public function actionDisableTwoFactor() {
+        if (!Yii::app()->request->isPostRequest) $this->denied();
+        $model = $this->loadModel(Yii::app()->user->getId());
+        $model->enableTwoFactor = 0;
+        $model->update(array('enableTwoFactor'));
     }
 
     public function actionManageCredentials() {
