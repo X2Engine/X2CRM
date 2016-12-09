@@ -95,6 +95,11 @@ $this->onPageLoad ("
                     echo X2Html::fa ('camera');
                 ?>
             </div>
+            <div class='audio-attach-button icon-button'>
+                <?php
+                    echo X2Html::fa ('camera');
+                ?>
+            </div>
             <?php
                 echo $form->textField ($formModel, 'text', array (
                     'placeholder' => 'Add a reply...',
