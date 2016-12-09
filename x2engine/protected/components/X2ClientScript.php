@@ -880,9 +880,9 @@ class X2ClientScript extends NLSClientScript {
     private function registerDateFormats () {
         $this->registerScript('registerDateFormats',"
             x2.dateFormats = {
-                dateFormat: '".Formatter::formatDatePicker()."',
-                timeFormat: '".Formatter::formatTimePicker()."',
-                ampm: '".Formatter::formatAMPM()."'
+                dateFormat: ".CJSON::encode(Formatter::formatDatePicker()).",
+                timeFormat: ".CJSON::encode(Formatter::formatTimePicker()).",
+                ampm: ".CJSON::encode(Formatter::formatAMPM())."
             };
         ", CClientScript::POS_END);
     }
