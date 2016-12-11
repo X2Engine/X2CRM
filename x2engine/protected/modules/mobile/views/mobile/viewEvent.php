@@ -97,7 +97,7 @@ $this->onPageLoad ("
             </div>
             <div class='audio-attach-button icon-button'>
                 <?php
-                    echo X2Html::fa ('camera');
+                    echo X2Html::fa ('fa-file-audio-o');
                 ?>
             </div>
             <?php

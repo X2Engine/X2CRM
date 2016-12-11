@@ -119,6 +119,9 @@ MobileForm.prototype.submitWithAudio = function (
     //fileKey EventsPublisherFormModel[audio]
     var audio$ = form$.find ('.' + this.audioAttachmentClass);
     var fileUrl = audio$.attr ('src');
+    if (fileUrl.includes("wav")) {
+        type='audio/wav';
+    } 
     x2touch.API.uploadFile (type, fileUrl, audioUploadUrl, fileKey, params, success, failure);
 };
 

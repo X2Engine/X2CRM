@@ -73,7 +73,7 @@ class EventCommentPublisherFormModel extends CFormModel {
                 'video', 'file', 
                 'allowEmpty' => true,
                 'types' => array (
-                    'quicktime', '3gpp', 'mp4'
+                    'quicktime', '3gpp', 'mp4', 'MOV'
                 ),
             ),
         );

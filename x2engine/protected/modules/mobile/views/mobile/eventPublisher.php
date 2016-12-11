@@ -135,11 +135,11 @@ if (Yii::app()->params->isPhoneGap) {
             echo X2Html::fa ('fa-file-audio-o');
         ?>
     </div>
-    <!--<div class='video-attach-button icon-button'>
+    <div class='video-attach-button icon-button'>
         <?php
-            //echo X2Html::fa ('fa-file-video-o');
+            echo X2Html::fa ('fa-file-video-o');
         ?>
-    </div>-->
+    </div>
 </div>
 <?php
 }
