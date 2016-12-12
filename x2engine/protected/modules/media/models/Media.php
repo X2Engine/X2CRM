@@ -307,17 +307,21 @@ class Media extends X2Model {
         if ($this->drive) {
             return $this->googlePreview;
         }
-        
-        $audio = Yii::app()->controller->widget ( 'application.extensions.mediaElement.MediaElementPortlet',
-                    array ( 
-                    'url' => $this->getPublicUrl(),
-                    // or you can set the model and attributes
-                    //'model' => $model,
-                    //'attribute' => 'url'
-                    // its required and so you have to set correctly
-                    'mimeType' => $this->resolveType(),    
+        $audio = '';
+        if (!Yii::app()->params->isPhoneGap) {     
+            $audio = Yii::app()->controller->widget ( 'application.extensions.mediaElement.MediaElementPortlet',
+                        array ( 
+                        'url' => $this->getPublicUrl(),
+                        // or you can set the model and attributes
+                        //'model' => $model,
+                        //'attribute' => 'url'
+                        // its required and so you have to set correctly
+                        'mimeType' => $this->resolveType(),    
 
-                ),True);          
+                    ),True);   
+        } else {
+            $audio = '';
+        }
 
         if (!$link) {
             return $audio;
@@ -336,17 +340,21 @@ class Media extends X2Model {
         if ($this->drive) {
             return $this->googlePreview;
         }
+        $video = '';
+        if (!Yii::app()->params->isPhoneGap) {
+            $video = Yii::app()->controller->widget ( 'application.extensions.mediaElement.MediaElementPortlet',
+                        array ( 
+                        'url' => $this->getPublicUrl(),
+                        // or you can set the model and attributes
+                        //'model' => $model,
+                        //'attribute' => 'url'
+                        // its required and so you have to set correctly
+                        'mimeType' => $this->resolveType(),    
 
-        $video = Yii::app()->controller->widget ( 'application.extensions.mediaElement.MediaElementPortlet',
-                    array ( 
-                    'url' => $this->getPublicUrl(),
-                    // or you can set the model and attributes
-                    //'model' => $model,
-                    //'attribute' => 'url'
-                    // its required and so you have to set correctly
-                    'mimeType' => $this->resolveType(),    
-
-                ),True);  
+                    ),True);  
+        } else {
+            $video = '';
+        }
         
         if (!$link) {
             return $video;

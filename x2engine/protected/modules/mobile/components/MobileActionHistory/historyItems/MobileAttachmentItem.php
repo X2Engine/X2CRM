@@ -68,9 +68,7 @@ class MobileAttachmentItem extends MobileHistoryItem {
             $html .= CHtml::closeTag ('div');
 
             
-            if (!$media->drive && 
-                // attachment download not fully functional in iOS client
-                MobileModule::getPlatform () !== 'iOS') {
+            if (!$media->drive) {
 
                 $html .= CHtml::link(
                     $media->name,

@@ -65,7 +65,7 @@ class MediaElementPortlet extends CPortlet
 	public $url = null;
 	public $mimeType = null;
 	public $mediaType = 'audio';
-	public $autoplay = true;
+	public $autoplay = false;
 	public $htmlOptions = array();
 	public $scriptUrl = null;
 	public $scriptFile = array('mediaelement-and-player.js');
