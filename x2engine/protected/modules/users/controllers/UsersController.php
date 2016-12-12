@@ -67,7 +67,7 @@ class UsersController extends x2base {
                 'users'=>array('@'),
             ),
             array('allow', // allow admin user to perform 'admin' and 'delete' actions
-                'actions'=>array('view','index','create','update','admin','delete','search','inviteUsers'),
+                'actions'=>array('view','index','create','update','admin','delete','search','inviteUsers', 'deactivateTwoFactor'),
                 'users'=>array('admin'),
             ),
             array('deny',  // deny all users
@@ -527,6 +527,15 @@ Please click on the link below to create an account at X2Engine!
             'center'=>json_encode($center),
             'locations'=>$locations,
         ));
+    }
+
+    public function actionDeactivateTwoFactor($id){
+        if (!Yii::app()->request->isPostRequest) $this->denied();
+        $model = Profile::model()->findByPk($id);
+        if ($model) {
+            $model->enableTwoFactor = 0;
+            $model->update(array('enableTwoFactor'));
+        }
     }
 
     private function renderTopContacts() {
