@@ -313,7 +313,8 @@ class WebFormAction extends CAction {
                     $this->controller->renderPartial('application.components.views.webFormSubmit',
                         array (
                             'type' => 'weblead',
-                            'redirectUrl' => $extractedParams['redirectUrl']
+                            'redirectUrl' => $extractedParams['redirectUrl'],
+                            'thankYouText' => $extractedParams['thankYouText'],
                         )
                     );
 
@@ -604,7 +605,11 @@ class WebFormAction extends CAction {
                     }
                     if ($success) {
                         $this->controller->renderPartial('application.components.views.webFormSubmit',
-                            array('type' => 'service', 'caseNumber' => $model->id));
+                            array(
+                                'type' => 'service',
+                                'caseNumber' => $model->id,
+                                'thankYouText' => $extractedParams['thankYouText'],
+                            ));
 
                         return; // to commit transaction
                     }
@@ -666,6 +671,7 @@ class WebFormAction extends CAction {
         $extractedParams['generateAccount'] = false;
         $extractedParams['redirectUrl'] = null;
         $extractedParams['requireCaptcha'] = false;
+        $extractedParams['thankYouText'] = false;
         if (isset ($webForm)) { // new method
             if (!empty ($webForm->leadSource)) 
                 $extractedParams['leadSource'] = $webForm->leadSource;
@@ -681,6 +687,8 @@ class WebFormAction extends CAction {
             }
             if (!empty ($webForm->redirectUrl)) 
                 $extractedParams['redirectUrl'] = $webForm->redirectUrl;
+            if (!empty ($webForm->thankYouText))
+                $extractedParams['thankYouText'] = $webForm->thankYouText;
         }
 
         

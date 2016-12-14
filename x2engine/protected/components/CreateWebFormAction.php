@@ -117,6 +117,9 @@ class CreateWebFormAction extends CAction {
             if(isset($_POST['redirectUrl'])) {
                 $model->redirectUrl = $_POST['redirectUrl'];
             }
+            if(isset($_POST['thankYouText'])) {
+                $model->thankYouText = Fields::getPurifier()->purify($_POST['thankYouText']);
+            }
 
             
             if (Yii::app()->contEd('pro')) {
