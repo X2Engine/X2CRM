@@ -227,6 +227,12 @@ $('#currency').change(function() {
         <?php echo Yii::t('admin', 'Choose a privacy setting for the Action History widget and Activity Feed. Please note that any user with Admin level access to the module that the History is on will ignore this setting. Only users with full Admin access will ignore this setting on the Activity Feed.') ?>
     </div>
     <div class="form">
+        <?php echo $form->labelEx($model, 'corporateAddress'); ?>
+        <div>
+        <?php echo Yii::t('admin', 'Enter your corporate address to enable directions on the Google Maps widget.') ?>
+        </div>
+        <?php echo $form->textArea($model, 'corporateAddress', array('id' => 'corporateAddress', 'style' => 'height:100px;', 'class'=>'x2-extra-wide-input')); ?>
+        <br><br>
         <?php echo $form->labelEx($model, 'properCaseNames'); ?>
         <?php echo Yii::t('admin', 'Attempt to format Contact names to have proper case?') ?><br>
         <?php echo $form->dropDownList($model, 'properCaseNames', array(1 => Yii::t('app', 'Yes'), 0 => Yii::t('app', 'No'))); ?>

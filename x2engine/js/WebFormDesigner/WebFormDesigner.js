@@ -579,6 +579,11 @@ x2.WebFormDesigner = (function() {
             }
             $('#generate-lead-checkbox').change ();
         }
+        if (typeof form.thankYouText !== 'undefined' && form.thankYouText != '') {
+            $('#thankYouText').val (form.thankYouText);
+        } else {
+            $('#thankYouText').val ('');
+        }
 
         this._updateExtraFields (form);
         this._updateCustomFields (form);

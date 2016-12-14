@@ -50,6 +50,8 @@ Yii::app()->clientScript->registerScriptFile($assetUrl);
 if(isset($noHeatMap) && $noHeatMap){
     Yii::app()->clientScript->registerScript('maps-initialize',"
         var map, pointarray, ge, directionsDisplay;
+        var corporateAddress=".CJSON::encode(Yii::app()->settings->corporateAddress).";
+        var personalAddress=".CJSON::encode(Yii::app()->params->profile->address).";
         var center=$center;
         var markerFlag=$markerFlag;
         var mapFlag=$mapFlag;
@@ -146,7 +148,7 @@ Yii::app()->clientScript->registerScript('maps-qtip', "
 var contactId=".(empty($contactId)?"0":$contactId).";
 var center=$markerLoc;
 
-function addLargeMapMarker(pos, contents, open = false) {
+function addLargeMapMarker(pos, contents, directionsLink = false, open = false) {
     var latLng = new google.maps.LatLng(pos['lat'],pos['lng']);
     var marker = new google.maps.Marker({
         position: latLng,
@@ -156,23 +158,40 @@ function addLargeMapMarker(pos, contents, open = false) {
     if (contactId === 0 && markerFlag) {
         marker.setIcon('https://maps.google.com/mapfiles/ms/icons/green-dot.png');
     }
+    if (directionsLink) {
+        if (corporateAddress)
+            contents += '<a class=\"directions-link\" data-type=corporate data-lat=' + pos['lat'] + ' data-lng=' + pos['lng'] + ' href=\"#\">".Yii::t('contacts', 'Directions from Corporate')."</a><br />';
+        if (personalAddress) {
+            contents += '<a class=\"directions-link\" data-type=personal data-lat=' + pos['lat'] + ' data-lng=' + pos['lng'] + ' href=\"#\">".Yii::t('contacts', 'Directions from Personal Address')."</a>';
+        }
+    }
     if(typeof infowindow==='undefined'){
         var infowindow = new google.maps.InfoWindow({
             content: contents
         });
         if (open)
             infowindow.open(map, marker);
+        google.maps.event.addListener(infowindow,'domready',function(){ // Set up directions handlers
+            $('#corporate-directions').click(function(e){
+                e.preventDefault();
+                getDirections('corporate');
+                $('#clear-route').show();
+            });
+            $('#personal-directions').click(function(e){
+                e.preventDefault();
+                getDirections('personal');
+                $('#clear-route').show();
+            });
+            $('.directions-link').click(function(evt) {
+                evt.preventDefault();
+                var type = $(this).data('type'),
+                    lat = $(this).data('lat'),
+                    lng = $(this).data('lng');
+                getDirections(type, lat, lng);
+                $('#clear-route').show();
+            });
+        });
     }
-    google.maps.event.addListener(infowindow,'domready',function(){
-        $('#corporate-directions').click(function(e){
-            e.preventDefault();
-            getDirections('corporate');
-        });
-        $('#personal-directions').click(function(e){
-            e.preventDefault();
-            getDirections('personal');
-        });
-    });
 
     google.maps.event.addListener(marker,'click',function(){
         infowindow.open(map,marker);
@@ -189,7 +208,7 @@ function refreshQtip() {
                     data: { id: contactId,fields:fields },
                     method: 'get',
                     success: function(data){
-                        var marker = addLargeMapMarker(center, data, true);
+                        var marker = addLargeMapMarker(center, data, false, true);
                         $('#hide-marker-link').click(function(){
                             $(this).remove();
                             $('#contactId').val(null);
@@ -222,31 +241,37 @@ function refreshQtip() {
             var locations = ".$locations.";
             $.each(locations, function(i, loc) {
                 var details = loc.info + '<br />' + loc.time;
-                addLargeMapMarker(loc, details);
+                addLargeMapMarker(loc, details, true);
             });
         }
 }
-function getDirections(type){
-    var latLng = new google.maps.LatLng(center['lat'],center['lng']);
-    var corporateAddress=\"".CJavaScript::encode(Yii::app()->settings->corporateAddress)."\";
-    var personalAddress=\"".CJavaScript::encode(Yii::app()->params->profile->address)."\";
-    if(type=='corporate' && corporateAddress!=''){
-        var request = {
-            origin:corporateAddress,
-            destination:latLng,
-            travelMode: google.maps.TravelMode.DRIVING
-        };
-    }else if(type=='corporate' && corporateAddress==''){
-        alert('Invalid corporate address.');
+
+function getDirections(type, lat = null, lng = null){
+    if (!lat || !lng)
+        var latLng = new google.maps.LatLng(center['lat'],center['lng']);
+    else
+        var latLng = new google.maps.LatLng(lat,lng);
+    if(type=='corporate') {
+        if (corporateAddress){
+            var request = {
+                origin:corporateAddress,
+                destination:latLng,
+                travelMode: google.maps.TravelMode.DRIVING
+            };
+        }else{
+            alert('Invalid corporate address.');
+        }
     }
-    if(type=='personal' && personalAddress!=''){
-        var request = {
-            origin:personalAddress,
-            destination:latLng,
-            travelMode: google.maps.TravelMode.DRIVING
-        };
-    }else if(type=='personal' && personalAddress==''){
-        alert('Invalid personal address.');
+    if(type=='personal') {
+        if (personalAddress){
+            var request = {
+                origin:personalAddress,
+                destination:latLng,
+                travelMode: google.maps.TravelMode.DRIVING
+            };
+        }else{
+            alert('Invalid personal address.');
+        }
     }
     if(typeof request!=='undefined'){
         directionsService.route(request, function(result, status) {
@@ -270,6 +295,19 @@ $('#mapControlForm').submit(function(){
         tags.push($(this).text());
     });
     $('#params_tags').val(tags);
+});
+$('#clear-route').click(function() {
+    directionsDisplay.setMap(null); // Reset DirectionsRenderer
+    directionsDisplay = new google.maps.DirectionsRenderer();
+    directionsDisplay.setMap(map);
+    $('#directions-panel').text('');
+    directionsDisplay.setPanel(document.getElementById('directions-panel'));
+    $('#clear-route').hide();
+    $('#hide-directions').click();
+});
+$('#hide-directions').click(function() {
+    $('#directions-box').hide();
+    $('#map_canvas').width('100%');
 });
 $(window).resize(function(){
    google.maps.event.trigger(map,'resize');
@@ -405,7 +443,8 @@ $('#save-button').click(function(e){
 </div>
 <div style="width:30%;float:left;display:none;" id="directions-box">
     <div style="width:auto;height:788px;margin-bottom:0px;overflow-y:scroll;" class="form" id="directions-panel"></div>
+    <button id="hide-directions" class="x2-button"><?php echo Yii::t('contacts', 'Hide Directions'); ?></button>
 </div>
 <div id="map_canvas" style="height: 800px; width:100%;float:right;"></div>
 
-
+<button id="clear-route" class="x2-button" style="display:none"><?php echo Yii::t('contacts', 'Clear Route'); ?></button>

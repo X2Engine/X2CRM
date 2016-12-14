@@ -165,7 +165,71 @@ $this->renderPartial ('_feedFilters');
                 'translateOptions',
                 Dropdowns::getSocialSubtypes ()),
             array ('class' => 'x2-select'));
-        ?>
+?>
+        <div class="x2-button" title="<?php echo Yii::t('profile', 'Insert Link to Record'); ?>" onclick='$("#feed_link_record").slideToggle()'><?php echo X2Html::fa('chain'); ?></div>
+        <div class="row" id="feed_link_record" style="display:none">
+            <div class="cell"><?php
+                // Model association autocomplete
+                $modelList = Fields::getDisplayedModelNamesList();
+                echo $form->label($feed, 'associationType'); 
+                echo $form->dropDownList(
+                    $feed, 'associationType', 
+                    array_merge(array('none' => Yii::t('app','None')), $modelList), 
+                    array(
+                        'ajax' => array(
+                            'type' => 'POST',
+                            'url' => CController::createUrl('/actions/actions/parseType'), 
+                            'update' => '#', //selector to update
+                            'success' => 'function(data){
+                                if(data){
+                                    $("#feed_auto_select").autocomplete("option","source",data);
+                                    $("#feed_auto_select").val("");
+                                    $("#feed_auto_complete").show();
+                                }else{
+                                    $("#feed_auto_complete").hide();
+                                }
+                            }'
+                        )
+                    )
+                );
+                echo $form->error($feed, 'associationType');
+                ?>
+            </div>
+            <div class="cell" id="feed_auto_complete" 
+             style="display:none;">
+                <?php
+                echo $form->label($feed, 'associationName');
+                $this->widget('zii.widgets.jui.CJuiAutoComplete', array(
+                    'name' => 'feed_auto_select',
+                    'value' => '',
+                    'source' => '',
+                    'options' => array(
+                        'minLength' => '2',
+                        'select' => 'js:function( event, ui ) {
+                            $.ajax({
+                                url: "'.$this->createUrl('/actions/actions/getAutocompleteAssocLink').'",
+                                method: "POST",
+                                data: {
+                                    type: $("#Events_associationType").val(),
+                                    id: ui.item.id,
+                                    YII_CSRF_TOKEN: x2.csrfToken
+                                },
+                                complete: function(data) {
+                                    window.newPostEditor.insertHtml(data.responseText);
+                                    $("#Events_associationType").val("none");
+                                    $("#feed_link_record").slideUp();
+                                    $("#feed_auto_complete").hide();
+                                    $("#feed_auto_select").val("");
+                                }
+                            });
+                            return false;
+                        }',
+                    ),
+                ));
+                ?>
+            </div>
+        </div>
+
         <div id='second-row-buttons-container'>
             <?php
             echo CHtml::hiddenField('geoCoords', '');
