@@ -276,19 +276,9 @@ class Locations extends CActiveRecord
         return $location;
     }
 
-    protected function getGoogleApiKey() {
-        $key = null;
-        $settings = Yii::app()->settings;
-        $creds = Credentials::model()->findByPk($settings->googleCredentialsId);
-        if($creds && $settings->googleIntegration && $creds->auth && $creds->auth->apiKey){
-            $key = $creds->auth->apiKey;
-        }
-        return $key;
-    }
-
     public function generateStaticMap() {
         $decodedResult = null;
-        $key = $this->googleApiKey;
+        $key = Yii::app()->settings->getGoogleApiKey('staticmap');
         if($key && !empty($this->lat) && !empty($this->lon)){
             $url = 'https://maps.googleapis.com/maps/api/staticmap?center=' .
                     $this->lat . ',' . $this->lon .
@@ -301,7 +291,7 @@ class Locations extends CActiveRecord
     }
 
     public function geocode() {
-        $key = $this->googleApiKey;
+        $key = Yii::app()->settings->getGoogleApiKey('geocoding');
         if ($key && !empty($this->lat) && !empty($this->lon)) {
             $url = 'https://maps.googleapis.com/maps/api/geocode/json?latlng=' .
                 $this->lat . ',' . $this->lon .
@@ -320,7 +310,7 @@ class Locations extends CActiveRecord
      * return string
      */
     public function getTravelTime(Locations $destination) {
-        $key = $this->googleApiKey;
+        $key = Yii::app()->settings->getGoogleApiKey('directions');
         if ($key && !empty($this->lat) && !empty($this->lon) && !empty($destination->lat) && !empty($destination->lon)) {
             $cacheKey = 'd'.$this->lat.','.$this->lon.','.$destination->lat.','.$destination->lon;
             $duration = Yii::app()->cache->get($cacheKey);

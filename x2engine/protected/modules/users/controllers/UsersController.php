@@ -88,7 +88,7 @@ class UsersController extends x2base {
         $user=User::model()->findByPk($id);
 
         // Only load the Google Maps widget if we're on a User with an address
-        if(isset($this->portlets['GoogleMaps']) && Yii::app()->settings->googleIntegration) {
+        if(isset($this->portlets['GoogleMaps']) && Yii::app()->settings->enableMaps) {
             $this->portlets['GoogleMaps']['params']['location'] = $user->address;
             $this->portlets['GoogleMaps']['params']['activityLocations'] = $user->getMapLocations();
             $this->portlets['GoogleMaps']['params']['defaultFilter'] = Locations::getDefaultUserTypes();
@@ -582,7 +582,7 @@ Please click on the link below to create an account at X2Engine!
                     '{users}' => $Users,
                 )),
                 'url'=>array('userMap'),
-                'visible' => (bool) Yii::app()->settings->googleIntegration,
+                'visible' => (bool) Yii::app()->settings->enableMaps,
             ),
             array(
                 'name'=>'create',

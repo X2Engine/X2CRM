@@ -41,9 +41,7 @@ $this->insertMenu(array(
 
 $key = '';
 $settings = Yii::app()->settings;
-$creds = Credentials::model()->findByPk($settings->googleCredentialsId);
-if ($creds && $creds->auth)
-    $key = $creds->auth->apiKey;
+$key = $settings->getGoogleApiKey('maps');
 $assetUrl = 'https://maps.googleapis.com/maps/api/js?libraries=visualization';
 if (!empty($key))
     $assetUrl .= '&key='.$key;

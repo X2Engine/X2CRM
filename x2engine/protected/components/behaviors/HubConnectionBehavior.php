@@ -53,10 +53,9 @@ class HubConnectionBehavior extends CModelBehavior {
     }
 
     public function pingHub() {
-        $settings = Yii::app()->settings;
-        $info = $settings->getLicenseKeyInfo();
-        if (isset($info['hubEnabled']))
-            return $info['hubEnabled'] === $settings->unique_id;
+        $response = $this->hubRequest('site/ping');
+        if (isset($response['error']) && $response['error'] === false)
+            return $response['message'] === 'enabled';
     }
 
     /**
@@ -65,9 +64,24 @@ class HubConnectionBehavior extends CModelBehavior {
      * @return string Verification code
      */
     public function requestTwoFA(Profile $user) {
-        $response = $this->hubRequest('TwoFA/request', array(
+        $response = $this->hubRequest('twoFA/request', array(
             'userId' => $user->id,
             'phone' => $user->cellPhone,
+        ));
+        if (isset($response['error']) && $response['error'] === false)
+            return $response['message'];
+    }
+
+    /**
+     * Request a Google API key from X2Hub for a user
+     * @param int $userId User id requesting service
+     * @param string $type X2Hub Activity type
+     * @return string API Key
+     */
+    public function getGoogleApiKey($userId, $type) {
+        $response = $this->hubRequest('google/getApiKey', array(
+            'userId' => $userId,
+            'type' => $type,
         ));
         if (isset($response['error']) && $response['error'] === false)
             return $response['message'];
@@ -79,19 +93,22 @@ class HubConnectionBehavior extends CModelBehavior {
      * @param array $params Request parameters
      * @return array Response details
      */
-    protected function hubRequest($action, array $params) {
-        $params = array_merge($params, array(
-            'unique_id' => Yii::app()->settings->unique_id,
-        ));
-        $query = http_build_query($params);
-        $url = $this->hubServerUrl.'/'.$action.'?'.$query;
-        $response = RequestUtil::request(array(
-            'url' => $url,
-            'header' => array(
-                'Content-Type' => 'application/json',
-            ),
-        ));
-        return CJSON::decode($response, true);
+    protected function hubRequest($action, array $params = array()) {
+        $creds = Credentials::model()->findByPk(Yii::app()->settings->hubCredentialsId);
+        if ($creds && $creds->auth) {
+            $params = array_merge($params, array(
+                'unique_id' => $creds->auth->unique_id,
+            ));
+            $query = http_build_query($params);
+            $url = $this->hubServerUrl.'/'.$action.'?'.$query;
+            $response = RequestUtil::request(array(
+                'url' => $url,
+                'header' => array(
+                    'Content-Type' => 'application/json',
+                ),
+            ));
+            return CJSON::decode($response, true);
+        }
     }
 
 }

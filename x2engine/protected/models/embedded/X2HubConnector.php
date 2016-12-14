@@ -57,6 +57,7 @@ class X2HubConnector extends JSONEmbeddedModel implements AdminOwnedCredentials 
         );
     }
 
+    public $unique_id = false;
     public $hubEnabled = false;
     public $enableGoogleCalendar = true;
     public $enableGoogleMaps = true;
@@ -64,7 +65,7 @@ class X2HubConnector extends JSONEmbeddedModel implements AdminOwnedCredentials 
 
     public function rules(){
         return array(
-            array('hubEnabled,enableGoogleCalendar,enableGoogleMaps,enableTwoFactor', 'safe'),
+            array('unique_id,hubEnabled,enableGoogleCalendar,enableGoogleMaps,enableTwoFactor', 'safe'),
         );
     }
 
@@ -80,6 +81,7 @@ class X2HubConnector extends JSONEmbeddedModel implements AdminOwnedCredentials 
 
     public function attributeLabels(){
         return array(
+            'unique_id' => Yii::t('app','X2Hub Product Key'),
             'hubEnabled' => Yii::t('app','Hub Enabled'),
             'enableGoogleCalendar' => Yii::t('app','Enable Google Calendar Sync'),
             'enableGoogleMaps' => Yii::t('app','Enable Google Maps'),
@@ -108,6 +110,9 @@ class X2HubConnector extends JSONEmbeddedModel implements AdminOwnedCredentials 
                 echo CHtml::hiddenField('Credentials[auth]['.$field.']', 0);
                 echo CHtml::checkBox('Credentials[auth]['.$field.']', $this->$field);
                 break;
+            case 'unique_id':
+                echo CHtml::textField('Credentials[auth]['.$field.']', $this->$field);
+                break;
             default:
                 parent::renderInput($field);
                 break;
@@ -118,6 +123,8 @@ class X2HubConnector extends JSONEmbeddedModel implements AdminOwnedCredentials 
         echo $this->getInstructions ();
 		echo CHtml::tag ('h3', array (), $this->exoModel->getAttributeLabel ($this->exoAttr));
 		echo '<hr />';
+        echo CHtml::activeLabel($this, 'unique_id');
+        $this->renderInput ('unique_id');
         echo CHtml::activeLabel($this, 'hubEnabled');
         $this->renderInput ('hubEnabled');
 		echo CHtml::tag ('h4', array (), Yii::t('', 'Services'));
