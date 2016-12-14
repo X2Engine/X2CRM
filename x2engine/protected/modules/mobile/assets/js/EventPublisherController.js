@@ -52,6 +52,44 @@ function EventPublisherController (argsDict) {
 
 EventPublisherController.prototype = auxlib.create (x2.Controller.prototype);
 
+EventPublisherController.prototype.locationFetch = function () {
+    x2touch.API.getCurrentPosition(function(position) {
+        var pos = {
+           lat: position.coords.latitude,
+           lon: position.coords.longitude
+         };
+
+        that.form$.find ('#geoCoords').val(JSON.stringify (pos));
+        that.form$.find ('#geoLocationCoords').val("set");
+        x2.mobileForm.submitWithFiles (
+           that.form$, 
+           function (response) {
+               try {
+                   var data = JSON.parse(response);
+                   var theAddress = data['results'][0]['formatted_address'];
+                   $.mobile.activePage.find ('.event-text-box').val(
+                       $.mobile.activePage.find ('.event-text-box').val()+" - "+theAddress
+                   );
+               } catch (e) {
+                   alert(e);
+                   alert("Failed to fetch location.");
+               }
+
+               x2.main.refreshContent ();
+               $.mobile.loading ('hide');
+           }, function (jqXHR, textStatus, errorThrown) {
+               $.mobile.loading ('hide');
+               x2.main.alert (textStatus, 'Error');
+           }
+       ); 
+       that.form$.find ('#geoLocationCoords').val("unset");
+    }, function (error) {
+        alert('code: '    + error.code    + '\n' +
+              'message: ' + error.message + '\n');
+    }, {});         
+        
+};
+
 EventPublisherController.prototype.setUpForm = function () {
     if (!x2.main.isPhoneGap) return;
     var that = this;
@@ -71,46 +109,10 @@ EventPublisherController.prototype.setUpForm = function () {
     var audioButton$ = $('#footer .audio-attach-button');
     var videoButton$ = $('#footer .video-attach-button');
    
-    locationButton$.click (function () {
-        if (!x2.main.isPhoneGap) return;
-        if (x2.main.isPhoneGap) {
-            x2touch.API.getCurrentPosition(function(position) {
-                var pos = {
-                   lat: position.coords.latitude,
-                   lon: position.coords.longitude
-                 };
-
-                that.form$.find ('#geoCoords').val(JSON.stringify (pos));
-                that.form$.find ('#geoLocationCoords').val("set");
-                x2.mobileForm.submitWithFiles (
-                   that.form$, 
-                   function (response) {
-                       try {
-                           var data = JSON.parse(response);
-                           var theAddress = data['results'][0]['formatted_address'];
-                           $.mobile.activePage.find ('.event-text-box').val(
-                               $.mobile.activePage.find ('.event-text-box').val()+" - "+theAddress
-                           );
-                       } catch (e) {
-                           alert(e);
-                       }
-
-                       x2.main.refreshContent ();
-                       $.mobile.loading ('hide');
-                   }, function (jqXHR, textStatus, errorThrown) {
-                       $.mobile.loading ('hide');
-                       x2.main.alert (textStatus, 'Error');
-                   }
-               ); 
-               that.form$.find ('#geoLocationCoords').val("unset");
-            }, function (error) {
-                alert('code: '    + error.code    + '\n' +
-                      'message: ' + error.message + '\n');
-            }, {});         
-        
-        }
-        
-    });
+    //locationButton$.click (function () {
+        if (x2.main.isPhoneGap) 
+            that.locationFetch ();
+    //});
     
     new x2.AudioButton ({
         element$: audioButton$,
