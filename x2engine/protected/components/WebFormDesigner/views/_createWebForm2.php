@@ -233,6 +233,10 @@ endif;
                         <?php echo Yii::t('marketing','Default') .': '. Yii::t('marketing','none'); ?>
                     </p>
                 </div>
+                <div class="cell">
+                    <?php echo CHtml::label(Yii::t('marketing','Customize Thank You Text'), 'thankYouText'); ?>
+                    <?php echo CHtml::textArea('thankYouText', '', array('class'=>'half')); ?>
+                </div>
                 <div style="display: none;">
                     <?php echo CHtml::hiddenField('type', $this->type); ?>
                 </div>

@@ -1011,8 +1011,13 @@ class ActionsController extends x2base {
     }
 
     public function actionParseType(){
-        if(isset($_POST['Actions']['associationType'])){
-            $type = $_POST['Actions']['associationType'];
+        $associationType = null;
+        if (isset($_POST['Actions']['associationType']))
+            $associationType = $_POST['Actions']['associationType'];
+        else if (isset($_POST['Events']['associationType']))
+            $associationType = $_POST['Events']['associationType'];
+        if($associationType){
+            $type = $associationType;
             if($modelName = X2Model::getModelName($type)){
                 $linkModel = $modelName;
                 if(class_exists($linkModel)){
@@ -1024,6 +1029,24 @@ class ActionsController extends x2base {
                     $linkSource = "";
                 }
                 echo $linkSource;
+            }else{
+                echo '';
+            }
+        }else{
+            echo '';
+        }
+    }
+
+    public function actionGetAutocompleteAssocLink(){
+        $associationType = null;
+        if (isset($_POST['type']))
+            $associationType = $_POST['type'];
+        if (isset($_POST['id']))
+            $associationId = $_POST['id'];
+        if($associationType && $associationId){
+            $modelName = X2Model::getModelName($associationType);
+            if($model = X2Model::model($modelName)->findByPk($associationId)){
+                echo $model->getLink();
             }else{
                 echo '';
             }
