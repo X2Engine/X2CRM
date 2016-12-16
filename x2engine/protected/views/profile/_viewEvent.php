@@ -187,7 +187,7 @@ $important = $data->important ? 'important-action' : '';
                     $location = $data->location;
                     if ($location) {          
                 ?>
-                    <a href='<?php echo $location->getLocationLink(X2Html::fa('crosshairs'),true); ?>'><?php echo X2Html::fa('fa-location-arrow'); ?></a>  
+                    <a target="_blank" href='<?php echo $location->getLocationLink(X2Html::fa('crosshairs'),true); ?>'><?php echo X2Html::fa('fa-location-arrow'); ?></a>  
                 <?php
                     }
                 ?>
