@@ -139,7 +139,11 @@ class Locations extends CActiveRecord
         );
     }
 
-    public function getLocationLink($text = null) {
+    public function getLocationLink($text = null, $nonX2googleMaps=false) {
+        if ($nonX2googleMaps) {
+            $provider = 'https://google.com/maps/?q='.$this->lat.','.$this->lon;
+            return $provider;   
+        }
         if (is_null($text)) {
             if (!empty($this->comment))
                 $text = $this->comment;
@@ -154,7 +158,7 @@ class Locations extends CActiveRecord
             'locationType' => array($this->type),
         ));
     }
-
+    
     /**
      * Retrieve the associated record, optionally as a link
      * @param bool $link Whether to return a link to the record

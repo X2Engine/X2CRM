@@ -182,6 +182,16 @@ $important = $data->important ? 'important-action' : '';
             <?php
             echo Formatter::convertLineBreaks(x2base::convertUrls($data->getText()));
             ?>
+
+                <?php
+                    $location = $data->location;
+                    if ($location) {          
+                ?>
+                    <a href='<?php echo $location->getLocationLink(X2Html::fa('crosshairs'),true); ?>'><?php echo X2Html::fa('fa-location-arrow'); ?></a>  
+                <?php
+                    }
+                ?>
+            
         </span>
         <div class='event-attachments'>
         <?php
