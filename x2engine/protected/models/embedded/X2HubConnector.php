@@ -53,7 +53,7 @@ class X2HubConnector extends JSONEmbeddedModel implements AdminOwnedCredentials 
         return array (
             'private' => 1,
             'userId' => Credentials::SYS_ID,
-            'name' => 'X2Hub Integration',
+            'name' => 'X2 Hub Services',
         );
     }
 
@@ -62,6 +62,7 @@ class X2HubConnector extends JSONEmbeddedModel implements AdminOwnedCredentials 
     public $enableGoogleCalendar = true;
     public $enableGoogleMaps = true;
     public $enableTwoFactor = true;
+    public $enableGoogleSpeech = false;
 
     public function rules(){
         return array(
@@ -81,10 +82,11 @@ class X2HubConnector extends JSONEmbeddedModel implements AdminOwnedCredentials 
 
     public function attributeLabels(){
         return array(
-            'unique_id' => Yii::t('app','X2Hub Product Key'),
+            'unique_id' => Yii::t('app','X2 Hub Product Key'),
             'hubEnabled' => Yii::t('app','Hub Enabled'),
             'enableGoogleCalendar' => Yii::t('app','Enable Google Calendar Sync'),
             'enableGoogleMaps' => Yii::t('app','Enable Google Maps'),
+            'enableGoogleSpeech' => Yii::t('app','Enable Google Speech'),
             'enableTwoFactor' => Yii::t('app','Enable 2 Factor Authentication'),
         );
     }
@@ -94,7 +96,7 @@ class X2HubConnector extends JSONEmbeddedModel implements AdminOwnedCredentials 
     }
 
     public function modelLabel() {
-        return Yii::t('app','X2Hub Integration');
+        return Yii::t('app','X2 Hub Services');
     }
 
     public function htmlOptions ($name, $options=array ()) {
@@ -113,6 +115,10 @@ class X2HubConnector extends JSONEmbeddedModel implements AdminOwnedCredentials 
             case 'unique_id':
                 echo CHtml::textField('Credentials[auth]['.$field.']', $this->$field);
                 break;
+            case 'enableGoogleSpeech': // unreleased
+                //echo CHtml::hiddenField('Credentials[auth]['.$field.']', 0);
+                echo CHtml::checkBox('Credentials[auth]['.$field.']', $this->$field, array('disabled' => 'disabled', 'style' => 'opacity:0.5', 'title' => Yii::t('app', 'Coming Soon!')));
+                break;
             default:
                 parent::renderInput($field);
                 break;
@@ -128,12 +134,14 @@ class X2HubConnector extends JSONEmbeddedModel implements AdminOwnedCredentials 
         echo CHtml::activeLabel($this, 'hubEnabled');
         $this->renderInput ('hubEnabled');
 		echo CHtml::tag ('h4', array (), Yii::t('', 'Services'));
+        echo CHtml::activeLabel($this, 'enableTwoFactor');
+        $this->renderInput ('enableTwoFactor');
         echo CHtml::activeLabel($this, 'enableGoogleCalendar');
         $this->renderInput ('enableGoogleCalendar');
         echo CHtml::activeLabel($this, 'enableGoogleMaps');
         $this->renderInput ('enableGoogleMaps');
-        echo CHtml::activeLabel($this, 'enableTwoFactor');
-        $this->renderInput ('enableTwoFactor');
+        echo CHtml::activeLabel($this, 'enableGoogleSpeech');
+        $this->renderInput ('enableGoogleSpeech');
         echo CHtml::errorSummary($this);
         echo '<br>';
         echo '<br>';
@@ -147,7 +155,7 @@ class X2HubConnector extends JSONEmbeddedModel implements AdminOwnedCredentials 
                 ->pingHub();
         }
         return 
-            '<h3>'.Yii::t('app', 'Configuring X2Hub Integration').'</h3>
+            '<h3>'.Yii::t('app', 'Configuring X2 Hub Services').'</h3>
             <hr>
             <div>'.Yii::t('app', 'Status').': '.
                 ($enabled ?
@@ -156,10 +164,10 @@ class X2HubConnector extends JSONEmbeddedModel implements AdminOwnedCredentials 
             '</div><br />
             <p>'.
                 Yii::t('app',
-                    'Enter your X2Hub product key below to enable external connectivity '.
-                    'through the X2Hub Services. Once you have configured your settings, '.
+                    'Enter your X2 Hub product key below to enable external connectivity '.
+                    'through the X2 Hub Services. Once you have configured your settings, '.
                     'other connectors will be automatically configured and utilized through '.
-                    'X2Hub, including Google Integration, Twitter Integration, etc.'
+                    'X2 Hub, including Google Maps integration and two factor auth support.'
                 ).
             '</p>';
     }

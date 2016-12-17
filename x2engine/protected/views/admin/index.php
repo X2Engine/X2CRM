@@ -116,7 +116,7 @@ $failedLoginsDataProvider = new CActiveDataProvider('FailedLogins',
                             echo Yii::t('admin', 'Customer Support');
                             ?></a></div></li>
                 <li data-attr="tabs-12"><div id="admin-hub"><a href="#tabs-12"><?php
-                            echo Yii::t('admin', 'X2Hub Services');
+                            echo Yii::t('admin', 'X2 Hub Services');
                             ?></a></div></li>
                 <li data-attr="tabs-2"><div id="admin-doc-and-videos"> <a href="#tabs-2"><?php
                             echo Yii::t('admin', 'Documentation & Videos');
@@ -799,21 +799,21 @@ $failedLoginsDataProvider = new CActiveDataProvider('FailedLogins',
             <div id="tabs-12">
 
                 <h2 id="admin-hub"><?php
-                    echo Yii::t('admin', 'X2Hub Services');
+                    echo Yii::t('admin', 'X2 Hub Services');
                     ?></h2>
                 <div class="cell span-6"><?php
                     echo CHtml::link(Yii::t('admin',
-                                    'Obtain X2Hub License Key'),'https://x2crm.com/products/');
+                                    'Obtain X2 Hub License Key'),'https://x2crm.com/products/');
                     ?><br><?php
                     echo Yii::t('admin',
-                            'Obtain a license key to use with X2Hub Services.');
+                            'Obtain a license key to use with X2 Hub Services.');
                     ?></div>
                 <div class="cell span-6"><?php
-                    echo CHtml::link(Yii::t('admin', 'Configure X2Hub Integration'),
+                    echo CHtml::link(Yii::t('admin', 'Configure X2 Hub Integration'),
                             array('/admin/x2HubIntegration'));
                     ?><br><?php
                     echo Yii::t('admin',
-                            'Configure your X2Hub settings to enable external connectors');
+                            'Configure your X2 Hub settings to enable external connectors');
                     ?></div>
 
             </div>
