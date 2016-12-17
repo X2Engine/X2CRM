@@ -39,6 +39,7 @@ CREATE TABLE x2_actions (
     INDEX (assignedTo),
     INDEX (type),
     INDEX (associationType,associationId),
+    INDEX (locationId),
     UNIQUE (associationType, associationId, workflowId, stageNumber)
 ) COLLATE = utf8_general_ci, ENGINE = INNODB;
 /*&*/
