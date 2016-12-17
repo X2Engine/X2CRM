@@ -329,7 +329,8 @@ CREATE TABLE x2_events(
     color                   VARCHAR(10),
     fontColor               VARCHAR(10),
     linkColor               VARCHAR(10),
-    locationId              INT UNSIGNED
+    locationId              INT UNSIGNED,
+    INDEX (locationId)
 ) COLLATE = utf8_general_ci, ENGINE = InnoDB;
 /*&*/
 DROP TABLE IF EXISTS x2_events_data;
@@ -535,7 +536,8 @@ CREATE TABLE x2_tags(
 	tag						VARCHAR(250)	NOT NULL,
 	itemName				VARCHAR(250),
 	timestamp				INT				NOT NULL DEFAULT 0,
-	INDEX (tag)
+	INDEX (tag),
+	INDEX (itemId)
 ) COLLATE = utf8_general_ci;
 /*&*/
 DROP TABLE IF EXISTS x2_temp_files;

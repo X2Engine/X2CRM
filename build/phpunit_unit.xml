@@ -11,6 +11,7 @@
     <directory suffix=".php">../x2engine/protected/modules</directory>
     <exclude>
       <file>../x2engine/protected/components/GoogleAuthenticator.php</file>
+      <file>../x2engine/protected/components/behaviors/TwilioBehavior.php</file>
       <file>../x2engine/protected/components/x2flow/shortcodes.php</file>
       <file>../x2engine/protected/components/TranslationManager.php</file>
       <file>../x2engine/protected/models/formModels/MobileFormEditor.php</file>
