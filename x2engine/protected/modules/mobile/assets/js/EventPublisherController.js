@@ -67,9 +67,9 @@ EventPublisherController.prototype.setUpForm = function () {
         that.submitButton$.toggleClass ('disabled', !$.trim (eventBox$.val ()));
     });
     
-    var locationButton$ = $.mobile.activePage.find ('.location-attach-button');
-    var audioButton$ = $('#footer .audio-attach-button');
-    var videoButton$ = $('#footer .video-attach-button');
+    //var locationButton$ = $.mobile.activePage.find ('.location-attach-button');
+    //var audioButton$ = $('#footer .audio-attach-button');
+    //var videoButton$ = $('#footer .video-attach-button');
    
     //locationButton$.click (function () {
         if (!x2.main.isPhoneGap) return;
@@ -109,7 +109,7 @@ EventPublisherController.prototype.setUpForm = function () {
         }, {}); 
    // });
     
-    new x2.AudioButton ({
+    /*new x2.AudioButton ({
         element$: audioButton$,
         success: function (data) {
             var attachment$ = x2.mobileForm.makeAudioAttachment (data.type,data.fullPath);
@@ -171,7 +171,7 @@ EventPublisherController.prototype.setUpForm = function () {
                 }
             );
         }
-    });
+    });*/
 
 };
 

@@ -95,7 +95,7 @@ class MobilePublisherAction extends MobileAction {
                 $event->setAttributes (array (
                     'visibility' => X2PermissionsBehavior::VISIBILITY_PUBLIC,
                     'user' => $profile->username,
-                    'type' => 'structured-feed',
+                    'type' => 'media',
                     'text' => $model->text,
                     'photo' => $model->photo,
                     'audio' => $model->audio
