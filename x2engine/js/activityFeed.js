@@ -64,6 +64,8 @@ function ActivityFeed (argsDict) {
 
     // used to prevent text field expansion if already expanded
     that.editorIsExpanded = false; 
+    
+    that.postType = "";
 
     this._init ();
 
@@ -311,23 +313,29 @@ ActivityFeed.prototype.setupAndroidPublisher = function  () {
 
 ActivityFeed.prototype.minimizePosts = function (){
     var that = this;
-    $('.items').find ('.event-text').each (function (index, element) {
-        if($(element).html().length>200){
-            var text=element;
-            var oldText=$(element).html();
-            $.ajax({
-                url:"minimizePosts",
-                type:"GET",
-                data:{"minimize":"minimize"},
-                success:function(){
-                    if ($(text).find ('.expandable-details').is (':visible')) {
-                        $(text).find ('.read-less').find ('a').click ();
+    $('.items').find ('.view,.top-level,.activity-feed').each (function (index, element) {
+        var thisItem = element;
+        $(thisItem).find ('.img-box,.test,.feed').each (function (index, element) {
+            that.postType = $(element).attr("title");
+        });
+        $(thisItem).find ('.event-text').each (function (index, element) {
+            if($(element).html().length>200 && that.postType !== "Social Posts"){
+                var text=this.element;
+                var oldText=$(this.element).html();
+                $.ajax({
+                    url:"minimizePosts",
+                    type:"GET",
+                    data:{"minimize":"minimize"},
+                    success:function(){
+                        if ($(text).find ('.expandable-details').is (':visible')) {
+                            $(text).find ('.read-less').find ('a').click ();
+                        }
                     }
-                }
-            });
-        }else{
+                });
+            }else{
 
-        }
+            }
+        });
     });
 }
 
@@ -1324,6 +1332,9 @@ ActivityFeed.prototype._setUpFilters = function () {
         var eventTypes=auxlib.filter (function (a) {
             return a !== '';
         }, auxlib.getUnselected ($('#simpleEventTypes')));
+        var eventTypesExpansion=auxlib.filter (function (a) {
+            return a !== '';
+        }, auxlib.getUnselected ($('#simpleEventTypesExpansion')));
         var subtypes=[];
         var defaultFilters=[];
         var linkId=$(link).attr("id");
@@ -1332,7 +1343,7 @@ ActivityFeed.prototype._setUpFilters = function () {
         var str2=pieces[0];
         pieces2=str2.split("#");
         window.location = pieces2[0] + "?filters=true&visibility=" + visibility + 
-            "&users=" + users + "&types=" + eventTypes + "&subtypes=" + subtypes + 
+            "&users=" + users + "&typesExpansion="+ eventTypesExpansion + "&types=" + eventTypes +"&subtypes=" + subtypes + 
             "&default=" + defaultFilters;
         return false;
     });

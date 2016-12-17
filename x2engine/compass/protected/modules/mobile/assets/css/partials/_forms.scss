@@ -35,7 +35,7 @@
  **********************************************************************************/
 
 .x2-remote-page {
-
+/*
 .photo-attachments-container {
     &.thumbnails {
         .photo-attachment-container {
@@ -73,6 +73,80 @@
     }
 }
 
+.audio-attachments-container {
+    &.thumbnails {
+        .audio-attachment-container {
+            margin-top: 9px;
+            position: relative;
+            display: inline-block;
+            audio {
+                max-width: 120px;
+                max-height: 120px;
+            }
+        }
+    }
+    .remove-attachment-button {
+        position: absolute;
+        right: 0;
+        top: 0;
+        height: 15px;
+        width: 15px;
+        line-height: 15px; 
+        i {
+            cursor: pointer;
+            font-size: 20px;
+            position: absolute;
+            top: -10px;
+            left: 6px;
+            color: white;
+        }
+        i:last-child {
+            color: black;
+        }
+    }
+    & > .audio-attachment-container > .remove-attachment-button {
+        right: 0;
+        top: 1px;
+    }
+}
+
+.video-attachments-container {
+    &.thumbnails {
+        .video-attachment-container {
+            margin-top: 9px;
+            position: relative;
+            display: inline-block;
+            video {
+                max-width: 120px;
+                max-height: 120px;
+            }
+        }
+    }
+    .remove-attachment-button {
+        position: absolute;
+        right: 0;
+        top: 0;
+        height: 15px;
+        width: 15px;
+        line-height: 15px; 
+        i {
+            cursor: pointer;
+            font-size: 20px;
+            position: absolute;
+            top: -10px;
+            left: 6px;
+            color: white;
+        }
+        i:last-child {
+            color: black;
+        }
+    }
+    & > .video-attachment-container > .remove-attachment-button {
+        right: 0;
+        top: 1px;
+    }
+}
+*/
 .errorSummary { display: none; } // this is parsed by JS and displayed in an alert/dialog 
 
 input[type='text'] {

@@ -79,8 +79,13 @@ class MobilePublisherAction extends MobileAction {
             $decodedResult = $location ? $location->generateStaticMap() : null;
             
             $model->setAttributes ($_POST['EventPublisherFormModel']);
-            if ($decodedResult && isset ($_FILES['EventPublisherFormModel'])) {
-                $model->photo = CUploadedFile::getInstance ($model, 'photo');
+            if (isset ($_FILES['EventPublisherFormModel'])) {
+                if ($decodedResult) {
+                    $model->photo = CUploadedFile::getInstance ($model, 'photo');
+                }
+                $model->audio = CUploadedFile::getInstance ($model, 'audio');
+                //$model->video = CUploadedFile::getInstance ($model, 'video');
+                
             }
             
             //AuxLib::debugLogR ('validating');
@@ -90,9 +95,11 @@ class MobilePublisherAction extends MobileAction {
                 $event->setAttributes (array (
                     'visibility' => X2PermissionsBehavior::VISIBILITY_PUBLIC,
                     'user' => $profile->username,
-                    'type' => 'structured-feed',
+                    'type' => 'media',
                     'text' => $model->text,
-                    'photo' => $model->photo
+                    'photo' => $model->photo,
+                    'audio' => $model->audio
+                    //'video' => $model->video
                 ), false);
                 if ($location)
                     $event->locationId = $location->id;

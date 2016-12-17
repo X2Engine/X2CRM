@@ -41,6 +41,9 @@ function EventPublisherController (argsDict) {
     var defaultArgs = {
         DEBUG: x2.DEBUG && false,
         photoAttrName: '',
+        locationAttrName: '',
+        audioAttrName: '',
+        videoAttrName: '',
 
     };
     auxlib.applyArgs (this, defaultArgs, argsDict);
@@ -64,48 +67,111 @@ EventPublisherController.prototype.setUpForm = function () {
         that.submitButton$.toggleClass ('disabled', !$.trim (eventBox$.val ()));
     });
     
-    var locationButton$ = $.mobile.activePage.find ('.location-attach-button');
+    //var locationButton$ = $.mobile.activePage.find ('.location-attach-button');
+    //var audioButton$ = $('#footer .audio-attach-button');
+    //var videoButton$ = $('#footer .video-attach-button');
    
-    locationButton$.click (function () {
+    //locationButton$.click (function () {
         if (!x2.main.isPhoneGap) return;
-        if (x2.main.isPhoneGap) {
-            x2touch.API.getCurrentPosition(function(position) {
-                var pos = {
-                   lat: position.coords.latitude,
-                   lon: position.coords.longitude
-                 };
+        x2touch.API.getCurrentPosition(function(position) {
+            var pos = {
+               lat: position.coords.latitude,
+               lon: position.coords.longitude
+             };
 
-                that.form$.find ('#geoCoords').val(JSON.stringify (pos));
-                that.form$.find ('#geoLocationCoords').val("set");
-                x2.mobileForm.submitWithFiles (
-                   that.form$, 
-                   function (response) {
-                       try {
-                           var data = JSON.parse(response);
-                           var theAddress = data['results'][0]['formatted_address'];
-                           $.mobile.activePage.find ('.event-text-box').val(
-                               $.mobile.activePage.find ('.event-text-box').val()+" - "+theAddress
-                           );
-                       } catch (e) {
-                           alert(e);
-                       }
-
-                       x2.main.refreshContent ();
-                       $.mobile.loading ('hide');
-                   }, function (jqXHR, textStatus, errorThrown) {
-                       $.mobile.loading ('hide');
-                       x2.main.alert (textStatus, 'Error');
+            that.form$.find ('#geoCoords').val(JSON.stringify (pos));
+            that.form$.find ('#geoLocationCoords').val("set");
+            x2.mobileForm.submitWithFiles (
+               that.form$, 
+               function (response) {
+                   try {
+                       var data = JSON.parse(response);
+                       var theAddress = data['results'][0]['formatted_address'];
+                       $.mobile.activePage.find ('.event-text-box').val(
+                           $.mobile.activePage.find ('.event-text-box').val()+" - "+theAddress
+                       );	
+                   } catch (e) {
+                       alert(e);
+                       alert("Failed to fetch location.");
                    }
-               ); 
-               that.form$.find ('#geoLocationCoords').val("unset");
-            }, function (error) {
-                alert('code: '    + error.code    + '\n' +
-                      'message: ' + error.message + '\n');
-            }, {});         
-        
+
+                   x2.main.refreshContent ();
+                   $.mobile.loading ('hide');
+               }, function (jqXHR, textStatus, errorThrown) {
+                   $.mobile.loading ('hide');
+                   x2.main.alert (textStatus, 'Error');
+               }
+           ); 
+           that.form$.find ('#geoLocationCoords').val("unset");
+        }, function (error) {
+            alert('code: '    + error.code    + '\n' +
+                  'message: ' + error.message + '\n');
+        }, {}); 
+   // });
+    
+    /*new x2.AudioButton ({
+        element$: audioButton$,
+        success: function (data) {
+            var attachment$ = x2.mobileForm.makeAudioAttachment (data.type,data.fullPath);
+            attachment$.hide ();
+            that.form$.find ('.' + x2.mobileForm.audioAttachmentClass).remove ();
+            that.form$.append (attachment$);
+            $.mobile.loading ('show');
+            x2.mobileForm.submitWithAudio (
+                data.type,
+                that.form$.attr ('action'), 
+                that.form$, 
+                'EventPublisherFormModel[audio]',
+                function (response) {
+                    if (response.responseCode == 200)  {
+                        if (that.publisherIsActive) togglePublisher$.click ();
+                        $.mobile.activePage.append ($(response.response).find ('.refresh-content'));
+                        x2.main.refreshContent ();
+                        $.mobile.loading ('hide');
+                    } else {
+                        $.mobile.loading ('hide');
+                        x2.main.alert ('Upload failed', 'Error');
+                    }
+                },
+                function (error) {
+                    $.mobile.loading ('hide');
+                    x2.main.alert (error.body, 'Error');
+                }
+            );
         }
-        
     });
+    
+    new x2.VideoButton ({
+        element$: videoButton$,
+        success: function (data) {
+            var attachment$ = x2.mobileForm.makeVideoAttachment (data.type,data.fullPath);
+            attachment$.hide ();
+            that.form$.find ('.' + x2.mobileForm.videoAttachmentClass).remove ();
+            that.form$.append (attachment$);
+            $.mobile.loading ('show');
+            x2.mobileForm.submitWithVideo (
+                data.type,
+                that.form$.attr ('action'), 
+                that.form$, 
+                'EventPublisherFormModel[video]',
+                function (response) {
+                    if (response.responseCode == 200)  {
+                        if (that.publisherIsActive) togglePublisher$.click ();
+                        $.mobile.activePage.append ($(response.response).find ('.refresh-content'));
+                        x2.main.refreshContent ();
+                        $.mobile.loading ('hide');
+                    } else {
+                        $.mobile.loading ('hide');
+                        x2.main.alert ('Upload failed', 'Error');
+                    }
+                },
+                function (error) {
+                    $.mobile.loading ('hide');
+                    x2.main.alert (error.body, 'Error');
+                }
+            );
+        }
+    });*/
 
 };
 

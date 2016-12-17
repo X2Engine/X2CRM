@@ -182,18 +182,17 @@ $important = $data->important ? 'important-action' : '';
             <?php
             echo Formatter::convertLineBreaks(x2base::convertUrls($data->getText()));
             ?>
+
+                <?php
+                    $location = $data->location;
+                    if ($location) {          
+                ?>
+                    <a target="_blank" href='<?php echo $location->getLocationLink(X2Html::fa('crosshairs'),true); ?>'><?php echo X2Html::fa('fa-location-arrow'); ?></a>  
+                <?php
+                    }
+                ?>
+            
         </span>
-        <div class='event-attachments'>
-        <?php
-            foreach ($data->media as $media) {
-            ?>
-            <div class='photo-attachment-container'>
-                <?php //echo $media->getImage (false, array ('photo-attachment')); ?>
-            </div>
-            <?php
-            }
-        ?>
-        </div>
         <div class='event-bottom-row'>
             <span class="comment-age x2-hint" id="<?php echo $data->id . "-" . $data->timestamp; ?>" 
                   style="<?php echo $style; ?>"

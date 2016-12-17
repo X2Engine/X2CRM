@@ -39,6 +39,7 @@ class EventPublisherFormModel extends CFormModel {
 
     public $text;
     public $photo;
+    public $locationPhoto;
     public $audio;
     public $video;
 
@@ -55,6 +56,13 @@ class EventPublisherFormModel extends CFormModel {
                 ),
             ),
             array (
+                'locationPhoto', 'file', 
+                'allowEmpty' => true,
+                'types' => array (
+                    'gif', 'jpg', 'jpeg', 'tif', 'tiff', 'bmp', 'png'
+                ),
+            ),
+            array (
                 'audio', 'file', 
                 'allowEmpty' => true,
                 'types' => array (
@@ -65,7 +73,7 @@ class EventPublisherFormModel extends CFormModel {
                 'video', 'file', 
                 'allowEmpty' => true,
                 'types' => array (
-                    'quicktime', '3gpp', 'mp4'
+                    'quicktime', '3gpp', 'mp4', 'MOV'
                 ),
             ),
         );

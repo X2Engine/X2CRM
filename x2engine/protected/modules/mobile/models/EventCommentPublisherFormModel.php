@@ -39,6 +39,9 @@ class EventCommentPublisherFormModel extends CFormModel {
 
     public $text;
     public $photo;
+    public $locationPhoto;
+    public $audio;
+    public $video;
 
     public function rules () {
         return array (
@@ -50,6 +53,27 @@ class EventCommentPublisherFormModel extends CFormModel {
                 'allowEmpty' => true,
                 'types' => array (
                     'gif', 'jpg', 'jpeg', 'tif', 'tiff', 'bmp', 'png'
+                ),
+            ),
+            array (
+                'locationPhoto', 'file', 
+                'allowEmpty' => true,
+                'types' => array (
+                    'gif', 'jpg', 'jpeg', 'tif', 'tiff', 'bmp', 'png'
+                ),
+            ),
+            array (
+                'audio', 'file', 
+                'allowEmpty' => true,
+                'types' => array (
+                    'wav', 'amr', 'mp3', 'ogg'
+                ),
+            ),
+            array (
+                'video', 'file', 
+                'allowEmpty' => true,
+                'types' => array (
+                    'quicktime', '3gpp', 'mp4', 'MOV'
                 ),
             ),
         );

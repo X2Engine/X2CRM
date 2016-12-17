@@ -255,6 +255,13 @@ class Media extends X2Model {
         return strpos($this->resolveType(), 'image/') === 0;
     }
 
+    public function isAudio() {
+        return strpos($this->resolveType(), 'audio/') === 0;
+    }
+    
+    public function isVideo() {
+        return strpos($this->resolveType(), 'video/') === 0;
+    }
     /**
      * Return true if $filename has an image extension. Image extensions include:
      * jpg, gif, png, bmp, jpeg, jpe
@@ -288,6 +295,72 @@ class Media extends X2Model {
         }
 
         return X2Html::link($img, $this->getPublicUrl());
+    }
+    
+    // return an audio tag of this file
+    // return '' if file is not an image
+    public function getAudio($link = false, array $htmlOptions=array ('encode'=>false)) {
+        if (!$this->fileExists() || !$this->isAudio()) {
+            return '';
+        }
+
+        if ($this->drive) {
+            return $this->googlePreview;
+        }
+        $audio = '';
+        if (!Yii::app()->params->isPhoneGap) {     
+            $audio = Yii::app()->controller->widget ( 'application.extensions.mediaElement.MediaElementPortlet',
+                        array ( 
+                        'url' => $this->getPublicUrl(),
+                        // or you can set the model and attributes
+                        //'model' => $model,
+                        //'attribute' => 'url'
+                        // its required and so you have to set correctly
+                        'mimeType' => $this->resolveType(),    
+
+                    ),True);   
+        } else {
+            $audio = '';
+        }
+
+        if (!$link) {
+            return $audio;
+        } 
+
+        return X2Html::link($audio, $this->getPublicUrl());
+    }
+    
+    // return an video tag of this file
+    // return '' if file is not an image
+    public function getVideo($link = false, array $htmlOptions=array ('encode'=>false)) {
+        if (!$this->fileExists() || !$this->isVideo()) {
+            return '';
+        }
+
+        if ($this->drive) {
+            return $this->googlePreview;
+        }
+        $video = '';
+        if (!Yii::app()->params->isPhoneGap) {
+            $video = Yii::app()->controller->widget ( 'application.extensions.mediaElement.MediaElementPortlet',
+                        array ( 
+                        'url' => $this->getPublicUrl(),
+                        // or you can set the model and attributes
+                        //'model' => $model,
+                        //'attribute' => 'url'
+                        // its required and so you have to set correctly
+                        'mimeType' => $this->resolveType(),    
+
+                    ),True);  
+        } else {
+            $video = '';
+        }
+        
+        if (!$link) {
+            return $video;
+        }
+
+        return X2Html::link($video, $this->getPublicUrl());
     }
 
     public function getGooglePreview() {

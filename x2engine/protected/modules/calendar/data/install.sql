@@ -1,4 +1,8 @@
-DROP TABLE IF EXISTS x2_calendars,x2_calendar_permissions,x2_calendar_invites;
+DROP TABLE IF EXISTS x2_calendar_invites;
+/*&*/
+DROP TABLE IF EXISTS x2_calendar_permissions;
+/*&*/
+DROP TABLE IF EXISTS x2_calendars;
 /*&*/
 CREATE TABLE x2_calendars (
     id                 INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,

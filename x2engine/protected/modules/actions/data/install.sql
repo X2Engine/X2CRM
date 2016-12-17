@@ -4,6 +4,8 @@ DROP TABLE IF EXISTS x2_action_to_record;
 /*&*/
 DROP TABLE IF EXISTS x2_action_meta_data;
 /*&*/
+DROP TABLE IF EXISTS x2_calendar_invites;
+/*&*/
 DROP TABLE IF EXISTS x2_actions;
 /*&*/
 CREATE TABLE x2_actions (

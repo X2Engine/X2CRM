@@ -34,7 +34,7 @@
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2Engine".
  **********************************************************************************/
-
+Yii::import('application.extensions.mediaElement.*');
 $item = $actionHistory->getHistoryItem ($data);
 if ($item) {
     echo $item->render ();

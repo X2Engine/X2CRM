@@ -119,6 +119,9 @@ MobileForm.prototype.submitWithAudio = function (
     //fileKey EventsPublisherFormModel[audio]
     var audio$ = form$.find ('.' + this.audioAttachmentClass);
     var fileUrl = audio$.attr ('src');
+    if (fileUrl.includes("wav")) {
+        type='audio/wav';
+    } 
     x2touch.API.uploadFile (type, fileUrl, audioUploadUrl, fileKey, params, success, failure);
 };
 
@@ -142,7 +145,7 @@ MobileForm.prototype.submitWithVideo = function (
 
 MobileForm.prototype.makePhotoAttachment = function (data) {
     var attachment$ = $('<div>', {
-        'class': x2.mobileForm.photoAttachmentClass + '-container',
+        'class': x2.mobileForm.photoAttachmentClass + '-container'
     });
     var img$ = $('<img>', {
             'class': x2.mobileForm.photoAttachmentClass,
@@ -161,11 +164,11 @@ MobileForm.prototype.makePhotoAttachment = function (data) {
 
 MobileForm.prototype.makeAudioAttachment = function (type, data) {
     var attachment$ = $('<div>', {
-        'class': x2.mobileForm.audioAttachmentClass + '-container',
+        'class': x2.mobileForm.audioAttachmentClass + '-container'
     });
     var audio$ = $([
         "<audio controls >",
-        "  <source src='" + data + "' type='"+type+"' class='" + x2.mobileForm.audioAttachmentClass + "'>",
+        "  <source src='" + data + "' class='" + x2.mobileForm.audioAttachmentClass + "' type='"+type+"' >",
         "</audio>"
       ].join("\n"));       
     var remove$ = $('<div>', {
@@ -181,11 +184,11 @@ MobileForm.prototype.makeAudioAttachment = function (type, data) {
 
 MobileForm.prototype.makeVideoAttachment = function (type, data) {
     var attachment$ = $('<div>', {
-        'class': x2.mobileForm.videoAttachmentClass + '-container',
+        'class': x2.mobileForm.videoAttachmentClass + '-container'
     });
     var video$ = $([
         "<video controls >",
-        "  <source src='" + data + "' type='"+type+"' class='" + x2.mobileForm.videoAttachmentClass + "'>",
+        "  <source src='" + data + "' class='" + x2.mobileForm.videoAttachmentClass + "' type='"+type+"' >",
         "</video>"
       ].join("\n"));         
     var remove$ = $('<div>', {
