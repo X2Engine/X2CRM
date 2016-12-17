@@ -406,6 +406,7 @@ class Profile extends X2ActiveRecord {
             'enableFullWidth' => Yii::t('profile', 'Enable Full Width Layout'),
             'googleId' => Yii::t('profile', 'Google ID'),
             'address' => Yii::t('profile', 'Address'),
+            'enableTwoFactor' => Yii::t('profile', 'Enable Two Factor Authentication'),
         );
     }
 
@@ -1279,6 +1280,67 @@ class Profile extends X2ActiveRecord {
         return $this->user['lastLogin'];
     }
 
+    /**
+     * Request a two factor authentication code to be sent to the user's cell phone
+     * @param bool $init Initialize two factor auth, Profile is not required to have two factor enabled
+     * @return bool Whether the code was successfully sent
+     */
+    public function requestTwoFA($init = false) {
+        $settings = Yii::app()->settings;
+        if ($settings->twoFactorCredentialsId && ($this->enableTwoFactor || $init)) {
+            $creds = Credentials::model()->findByPk($settings->twoFactorCredentialsId);
+            if ($creds && $creds->auth) {
+                if (get_class($creds->auth) === 'X2HubConnector' && $creds->auth->hubEnabled && $creds->auth->enableTwoFactor) {
+                    $sent = false;
+                    $hub = Yii::app()->controller->attachBehavior('HubConnectionBehavior', new HubConnectionBehavior);
+                    $code = $hub->requestTwoFA($this);
+                    if ($code) $sent = true;
+                } else if (get_class($creds->auth) === 'TwilioAccount') {
+                    // Trim hex to at most 12 digits to account for conversion to dec without exponents
+                    $rand = hexdec(substr(bin2hex(openssl_random_pseudo_bytes(12)), 0, 12));
+                    $code = sprintf('%06d', substr($rand, 0, 6)); // trim or pad to 6 digits
+                    $message = Yii::t('profile', 'Your X2CRM verification code is ').$code;
+                    $twilio = Yii::app()->controller->attachBehavior('TwilioBehavior', new TwilioBehavior);
+                    $twilio->initialize(array(
+                        'sid' => $creds->auth->sid,
+                        'token' => $creds->auth->token,
+                        'from' => $creds->auth->from,
+                    ));
+                    $sent = $twilio->sendSMSMessage($this->cellPhone, $message);
+                }
+                if (isset($code)) {
+                    Yii::app()->db->createCommand()
+                        ->delete('x2_twofactor_auth', 'userId = :id', array(
+                            ':id' => $this->id,
+                        ));
+                    $inserted = Yii::app()->db->createCommand()
+                        ->insert('x2_twofactor_auth', array(
+                            'userId' => $this->id,
+                            'requested' => time(),
+                            'code' => $code,
+                        ));
+                    return $sent && $inserted;
+                }
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Verify a two factor authentication code
+     * @param string $code User submitted verification code
+     * @return bool Whether verification code is valid
+     */
+    public function verifyTwoFACode($code) {
+        $verification = Yii::app()->db->createCommand()
+            ->select('code')
+            ->from('x2_twofactor_auth')
+            ->where('userId = :id AND requested >= :requested', array(
+                ':id' => $this->id,
+                ':requested' => time() - (60 * 5), // within the past 5 minutes
+            ))->queryScalar();
+        return $code === $verification;
+    }
      
     /**
      * Checks for a valid enforced default theme and returns it if it exists. 

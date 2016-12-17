@@ -124,6 +124,8 @@ CREATE TABLE x2_admin(
     triggerLogMax               INT UNSIGNED DEFAULT 1000000,
     googleCredentialsId         INT UNSIGNED,
     jasperCredentialsId         INT UNSIGNED,
+    hubCredentialsId            INT UNSIGNED,
+    twoFactorCredentialsId      INT UNSIGNED,
     disableAnonContactNotifs    TINYINT DEFAULT 0
 ) ENGINE=InnoDB, COLLATE = utf8_general_ci;
 /*&*/
@@ -417,6 +419,7 @@ CREATE TABLE x2_profile(
 	leadRoutingAvailability	TINYINT			DEFAULT 1,
 	showTours 				TINYINT			DEFAULT 1,
         defaultCalendar     INT,
+    enableTwoFactor         TINYINT DEFAULT 0,
 	UNIQUE(username, emailAddress),
 	INDEX (username)
 ) COLLATE = utf8_general_ci;
@@ -545,6 +548,14 @@ CREATE TABLE x2_temp_files (
 	name					TEXT,
 	createDate				INT
 ) COLLATE = utf8_general_ci;
+/*&*/
+DROP TABLE IF EXISTS x2_twofactor_auth;
+/*&*/
+CREATE TABLE x2_twofactor_auth (
+    userId      INT NOT NULL PRIMARY KEY,
+    code        VARCHAR(6) NOT NULL,
+    requested   BIGINT NOT NULL
+) COLLATE = utf8_general_ci, ENGINE = InnoDB;
 /*&*/
 DROP TABLE IF EXISTS x2_urls;
 /*&*/

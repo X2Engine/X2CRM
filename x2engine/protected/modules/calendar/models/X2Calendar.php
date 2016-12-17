@@ -75,7 +75,7 @@ class X2Calendar extends CActiveRecord
         
         public function behaviors() {
             $behaviors = array();
-            if (!empty($this->syncType)) {
+            if (!empty($this->syncType) && !empty($this->remoteCalendarId)) {
                 if ($this->syncType == 'google') {
                     $behaviors['syncBehavior'] = 'GoogleCalendarSync';
                 }
@@ -84,7 +84,7 @@ class X2Calendar extends CActiveRecord
         }
         
         public function attachSyncBehavior(){
-            if (!empty($this->syncType)) {
+            if (!empty($this->syncType) && !empty($this->remoteCalendarId)) {
                 if ($this->syncType == 'google') {
                     $this->attachBehavior('syncBehavior','GoogleCalendarSync');
                 }
@@ -113,7 +113,7 @@ class X2Calendar extends CActiveRecord
          * Returns a list of calendars that can be synced to
          */
         public static function getGoogleCalendarList($id = null){
-            $client = new GoogleAuthenticator();
+            $client = new GoogleAuthenticator('calendar');
             try {
                 if ($client->getAccessToken()) {
                     $googleCalendar = $client->getCalendarService();

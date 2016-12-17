@@ -86,7 +86,7 @@ class SiteController extends x2base {
                 'actions' => array(
                     'login', 'forgetMe', 'index', 'logout', 'warning', 'captcha', 'googleLogin',
                     'error', 'storeToken', 'sendErrorReport', 'resetPassword', 'anonHelp',
-                    'mobileResetPassword', 'webleadCaptcha'),
+                    'mobileResetPassword', 'webleadCaptcha', 'needsTwoFactor'),
                 'users' => array('*'),
             ),
             array('allow', // allow authenticated user to perform 'create' and 'update' actions
@@ -1493,6 +1493,22 @@ class SiteController extends x2base {
                 'profile' => $profile,
             )
         ); // display the login form
+    }
+
+    /**
+     * Test is a user needs two factor auth, and send a verification code if so
+     */
+    public function actionNeedsTwoFactor() {
+        if (!Yii::app()->request->isPostRequest) $this->denied();
+        $username = filter_input(INPUT_POST, 'username', FILTER_SANITIZE_STRING);
+        $model = Profile::model()->findByAttributes(array(
+            'username' => $username,
+        ));
+        if ($model->enableTwoFactor) {
+            if (!$model->requestTwoFA(true))
+                throw new CHttpException(500, Yii::t('profile', 'Failed to request two factor authentication code!'));
+            else echo 'yes';
+        }
     }
 
     /**

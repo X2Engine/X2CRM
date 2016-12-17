@@ -51,6 +51,7 @@ class LoginForm extends X2FormModel {
     public $password;
     public $rememberMe;
     public $verifyCode;
+    public $twoFactorCode;
     public $useCaptcha;
     public $sessionToken;
     private $_identity;
@@ -67,6 +68,8 @@ class LoginForm extends X2FormModel {
             array('rememberMe', 'boolean'),
             // password needs to be authenticated
             array('password', 'authenticate'),
+            // 2FA code needs to be verified if required
+            array('twoFactorCode', 'verifySecondFactor'),
             // captcha needs to be filled out
             array(
                 'verifyCode', 
@@ -110,6 +113,25 @@ class LoginForm extends X2FormModel {
             }
 		}
 	}
+
+    /**
+     * Verifies the 2FA code
+     * 
+     * This is the 'verifySecondFactor' validator as declared in rules().
+     * @param string $attribute Attribute name
+     * @param array $params validation parameters
+     */
+	public function verifySecondFactor($attribute, $params) {
+        $profile = Profile::model()->findByAttributes(array(
+            'username' => $this->username,
+        ));
+        if ($profile->enableTwoFactor) {
+            if (!$profile->verifyTwoFACode($this->twoFactorCode)) {
+                $this->addError('username', Yii::t('app', 'Incorrect username or password. Note, usernames are case sensitive.'));
+                $this->addError('password', Yii::t('app', 'Incorrect username or password. Note, usernames are case sensitive.'));
+            }
+        }
+    }
 
 	/**
 	 * Logs in the user using the given username and password in the model.

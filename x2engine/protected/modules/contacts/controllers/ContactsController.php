@@ -178,7 +178,7 @@ class ContactsController extends x2base {
                 $this->portlets['TimeZone']['params']['model'] = &$contact;
             }
             // Only load the Google Maps widget if we're on a Contact with an address
-            if(isset($this->portlets['GoogleMaps']) && Yii::app()->settings->googleIntegration) {
+            if(isset($this->portlets['GoogleMaps']) && Yii::app()->settings->enableMaps) {
                 $this->portlets['GoogleMaps']['params']['location'] = $contact->cityAddress;
                 $this->portlets['GoogleMaps']['params']['activityLocations'] = $contact->getMapLocations();
                 $this->portlets['GoogleMaps']['params']['defaultFilter'] = Locations::getDefaultContactTypes();
@@ -392,7 +392,7 @@ class ContactsController extends x2base {
      * @param int $loadMap The ID of a saved map to re-load previously saved settings
      */
     public function actionGoogleMaps($contactId = null, $params = array(), $loadMap = null){
-        if (!Yii::app()->settings->googleIntegration) {
+        if (!Yii::app()->settings->enableMaps) {
             throw new CHttpException(403, 'Please enable Google Integration to use this page.');
         }
         if(isset($_POST['contactId']))
@@ -609,7 +609,7 @@ class ContactsController extends x2base {
      * An AJAX called function to save map settings.
      */
     public function actionSaveMap(){
-        if (!Yii::app()->settings->googleIntegration) {
+        if (!Yii::app()->settings->enableMaps) {
             throw new CHttpException(403, 'Please enable Google Integration to use this page.');
         }
         if(isset($_POST['centerLat']) && isset($_POST['centerLng']) && isset($_POST['mapName'])){
@@ -642,7 +642,7 @@ class ContactsController extends x2base {
      * Display an index of saved maps.
      */
     public function actionSavedMaps(){
-        if (!Yii::app()->settings->googleIntegration) {
+        if (!Yii::app()->settings->enableMaps) {
             throw new CHttpException(403, 'Please enable Google Integration to use this page.');
         }
         if(Yii::app()->user->checkAccess('ContactsAdmin')){
@@ -664,7 +664,7 @@ class ContactsController extends x2base {
      * @param int $id ID of the map to delete
      */
     public function actionDeleteMap($id){
-        if (!Yii::app()->settings->googleIntegration) {
+        if (!Yii::app()->settings->enableMaps) {
             throw new CHttpException(403, 'Please enable Google Integration to use this page.');
         }
         $map = Maps::model()->findByPk($id);
@@ -1651,19 +1651,19 @@ class ContactsController extends x2base {
                 'name'=>'viewOnMap',
                 'label' => Yii::t('contacts', 'View {module} on Map', array('{module}' => $Contact)),
                 'url' => array('googleMaps', 'contactId' => $modelId, 'noHeatMap' => 1),
-                'visible' => (bool) Yii::app()->settings->googleIntegration,
+                'visible' => (bool) Yii::app()->settings->enableMaps,
             ),
             array(
                 'name'=>'map',
                 'label'=>Yii::t('contacts','View Contact Map'),
                 'url'=>array('googleMaps'),
-                'visible' => (bool) Yii::app()->settings->googleIntegration,
+                'visible' => (bool) Yii::app()->settings->enableMaps,
             ),
             array(
                 'name'=>'savedMaps',
                 'label'=>Yii::t('contacts','Saved Maps'),
                 'url'=>array('savedMaps'),
-                'visible' => (bool) Yii::app()->settings->googleIntegration,
+                'visible' => (bool) Yii::app()->settings->enableMaps,
             ),
             array(
                 'name'=>'quick',

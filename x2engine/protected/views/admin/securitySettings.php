@@ -58,6 +58,13 @@ Yii::app()->clientScript->registerCssFile(Yii::app()->theme->baseUrl.'/css/admin
     echo $form->labelEx ($model, 'scanUploads', array('style'=>'display:inline-block;margin-right:5px;'));
     echo $form->checkbox ($model, 'scanUploads').'<br />';
 
+    // Two factor auth settings
+    echo '<h3>'.Yii::t('admin', 'Two Factor Authentication').'</h3>';
+    echo Yii::t ('admin', 'Configure whether to enable two factor authentication for user logins. '.
+                          'Please select a credential to use for sending.<br /><br />');
+    echo $form->labelEx ($model, 'twoFactorCredentialsId', array('style'=>'display:inline-block;margin-right:5px;'));
+    echo $form->dropDownList ($model, 'twoFactorCredentialsId', $twoFAOptions).'<br />';
+
     // IP Whitelist/Blacklist settings
     $hint = Yii::t('admin', 'You may enter entire address blocks here, either using '.
         'a * to signify the entire subnet, such as "192.168.1.*", or using CIDR notation '.

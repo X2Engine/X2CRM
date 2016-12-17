@@ -101,7 +101,7 @@ class CalendarController extends x2base {
     }
     
     public function actionSyncActionsToGoogleCalendar(){
-        $auth = new GoogleAuthenticator();
+        $auth = new GoogleAuthenticator('calendar');
         $token = $auth->getAccessToken();
         $this->redirect('index');
     }
@@ -210,9 +210,13 @@ class CalendarController extends x2base {
 
         $admin = Yii::app()->settings;
         $googleIntegration = $admin->googleIntegration;
+        $hubCreds = Credentials::model()->findByPk($admin->hubCredentialsId);
+        $hubCalendaring = false;
+        if ($hubCreds && $hubCreds->auth)
+            $hubCalendaring = $hubCreds->auth->enableGoogleCalendar;
 
         // if google integration is activated let user choose if they want to link this calendar to a google calendar
-        if ($googleIntegration) {
+        if ($googleIntegration || $hubCalendaring) {
             list ($client, $googleCalendarList) = X2Calendar::getGoogleCalendarList();
         }else{
             $client = null;
@@ -224,6 +228,7 @@ class CalendarController extends x2base {
             'client' => $client,
             'googleIntegration' => $googleIntegration,
             'googleCalendarList' => $googleCalendarList,
+            'hubCalendaring' => $hubCalendaring,
         ));
     }
 
@@ -271,8 +276,12 @@ class CalendarController extends x2base {
 
             $admin = Yii::app()->settings;
             $googleIntegration = $admin->googleIntegration;
+            $hubCreds = Credentials::model()->findByPk($admin->hubCredentialsId);
+            $hubCalendaring = false;
+            if ($hubCreds && $hubCreds->auth)
+                $hubCalendaring = $hubCreds->auth->enableGoogleCalendar;
 
-            if ($googleIntegration) {
+            if ($googleIntegration || $hubCalendaring) {
                 list ($client, $googleCalendarList) = X2Calendar::getGoogleCalendarList($id);
             }else{
                 $client = null;
@@ -284,6 +293,7 @@ class CalendarController extends x2base {
                 'client' => $client,
                 'googleIntegration' => $googleIntegration,
                 'googleCalendarList' => $googleCalendarList,
+                'hubCalendaring' => $hubCalendaring,
             ));
         }else{
             $this->denied();

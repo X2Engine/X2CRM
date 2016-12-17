@@ -83,6 +83,42 @@ class Admin extends X2ActiveRecord {
     }
 
     /**
+     * @param string $type X2Hub Activity type (optional)
+     */
+    public function getGoogleApiKey($type = null) {
+        $apiKey = null;
+        if ($this->hubCredentialsId) {
+            $creds = Credentials::model()->findByPk($this->hubCredentialsId);
+            if ($creds && $creds->auth && $creds->auth->hubEnabled) {
+                $disabled = false;
+                if (in_array($type, array('maps', 'staticmap', 'directions', 'geocoding')) && !$creds->auth->enableGoogleMaps)
+                    $disabled = true;
+                if (!$disabled) {
+                    $hub = Yii::app()->controller->attachBehavior('HubConnectionBehavior', new HubConnectionBehavior);
+                    $apiKey = $hub->getGoogleApiKey(Yii::app()->user->id, $type);
+                }
+            }
+        }
+        if (empty($apiKey)) {
+            $creds = $this->getGoogleIntegrationCredentials();
+            if ($creds && isset($creds['apiKey']))
+                $apiKey = $creds['apiKey'];
+        }
+        return $apiKey;
+    }
+
+    public function getEnableMaps() {
+        $settings = Yii::app()->settings;
+        if ($settings->hubCredentialsId) {
+            $hubCreds = Credentials::model()->findByPk($settings->hubCredentialsId);
+            if ($hubCreds && $hubCreds->auth && $hubCreds->auth->enableGoogleMaps)
+                return true;
+        }
+        if ($settings->googleIntegration)
+            return true;
+    }
+
+    /**
      * @return string the associated database table name
      */
     public function tableName(){
@@ -310,6 +346,7 @@ class Admin extends X2ActiveRecord {
             'doNotEmailLinkPage' => Yii::t('admin','"Do not email" Page'),
             'doNotEmailPage' => Yii::t('admin','Do Not Email Page'),
             'enableAssetDomains' => Yii::t('admin','Enable Asset Domains'),
+            'twoFactorCredentialsId' => Yii::t('admin','Two Factor Auth Credentials'),
              
             'imapPollTimeout' => Yii::t('admin','Email Polling Timeout'),
             'ipBlacklist' => Yii::t('admin','IP Blacklist'),
@@ -542,7 +579,8 @@ class Admin extends X2ActiveRecord {
                     } elseif (isset ($tryJson['dateExpires']) && isset ($tryJson['maxUsers'])) {
                         $this->_licenseKeyInfo = array (
                             'dateExpires' => $tryJson['dateExpires'],
-                            'maxUsers' => $tryJson['maxUsers']
+                            'maxUsers' => $tryJson['maxUsers'],
+                            'hubEnabled' => (isset($tryJson['hubEnabled']) ? $tryJson['hubEnabled'] : false),
                         );
                     }
                 }

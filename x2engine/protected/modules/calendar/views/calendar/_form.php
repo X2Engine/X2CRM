@@ -98,7 +98,7 @@ $users = array_map (array('CHtml', 'encode'), $users);
         ?>
     </div>
     <?php
-    if ($googleIntegration) {
+    if ($googleIntegration || $hubCalendaring) {
         ?>
         <div class="form">
             <br>

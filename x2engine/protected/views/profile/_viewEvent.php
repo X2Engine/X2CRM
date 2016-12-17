@@ -321,7 +321,7 @@ $important = $data->important ? 'important-action' : '';
                         )
                 );
 
-                if (Yii::app()->settings->googleIntegration && ($data->location || (isset($associatedModel) && $associatedModel instanceof Actions && $associatedModel->location))) {
+                if (Yii::app()->settings->enableMaps && ($data->location || (isset($associatedModel) && $associatedModel instanceof Actions && $associatedModel->location))) {
                     $location = $data->location ? $data->location : $associatedModel->location;
                     echo '<span style="margin: 10px;">';
                     echo $location->getLocationLink(X2Html::fa('crosshairs'));
