@@ -88,6 +88,35 @@ class HubConnectionBehavior extends CModelBehavior {
     }
 
     /**
+     * Request a Google OAuth access token from X2Hub for a user
+     * @param int $userId User id requesting service
+     * @param string $type X2Hub Activity type
+     * @return string Access token
+     */
+    public function getGoogleAccessToken($userId, $type, $redirectUri, $code = null, $refreshToken = null) {
+        $response = $this->hubRequest('google/getAccessToken', array(
+            'userId' => $userId,
+            'type' => $type,
+            'code' => $code,
+            'refreshToken' => $refreshToken,
+            'redirectUri' => $redirectUri,
+        ));
+        if (isset($response['error']) && $response['error'] === false)
+            return $response['message'];
+    }
+
+    public function getGoogleAuthorizationUrl($userId, $type, $redirectUri, $state) {
+        $response = $this->hubRequest('google/getAuthorizationUrl', array(
+            'userId' => $userId,
+            'type' => $type,
+            'state' => $state,
+            'redirectUri' => $redirectUri,
+        ));
+        if (isset($response['error']) && $response['error'] === false)
+            return $response['message'];
+    }
+
+    /**
      * Issue a request to X2Hub
      * @param string $action X2Hub Action to perform
      * @param array $params Request parameters
@@ -102,6 +131,7 @@ class HubConnectionBehavior extends CModelBehavior {
             $query = http_build_query($params);
             $url = $this->hubServerUrl.'/'.$action.'?'.$query;
             $response = RequestUtil::request(array(
+                'timeout' => 15,
                 'url' => $url,
                 'header' => array(
                     'Content-Type' => 'application/json',
