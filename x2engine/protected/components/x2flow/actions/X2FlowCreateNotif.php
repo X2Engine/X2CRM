@@ -79,17 +79,8 @@ class X2FlowCreateNotif extends X2FlowAction {
         $notif->user = $this->parseOption('user', $params);
         $notif->createdBy = 'API';
         $notif->createDate = time();
-        // file_put_contents('triggerLog.txt',"\n".$notif->user,FILE_APPEND);
-        // if($this->parseOption('type',$params) == 'auto') {
-        // if(!isset($params['model']))
-        // return false;
-        // $notif->modelType = get_class($params['model']);
-        // $notif->modelId = $params['model']->id;
-        // $notif->type = $this->getNotifType();
-        // } else {
         $notif->type = 'custom';
         $notif->text = $this->parseOption('text', $params);
-        // }
 
         if ($notif->save()) {
             return array (true, "");

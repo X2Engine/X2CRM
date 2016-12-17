@@ -32,3 +32,5 @@ x2engine/nbproject/
 /logs
 /.tags
 /x2engine/nbproject/private/
+/nbproject/
+.DS_Store

@@ -1,5 +1,6 @@
 <?php
-/***********************************************************************************
+
+/* * *********************************************************************************
  * X2CRM is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2016 X2Engine Inc.
  * 
@@ -33,7 +34,7 @@
  * X2Engine" logo. If the display of the logo is not reasonably feasible for
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2Engine".
- **********************************************************************************/
+ * ******************************************************************************** */
 
 /**
  * X2FlowTrigger 
@@ -41,21 +42,23 @@
  * @package application.components.x2flow.actions
  */
 class RecordUpdateTrigger extends X2FlowTrigger {
-	public $title = 'Record Updated';
-	public $info = 'Triggered when some updates a record of the the specified type.';
-	
-	public function paramRules() {
-		return array(
-			'title' => Yii::t('studio',$this->title),
-			'info' => Yii::t('studio',$this->info),
-			'modelClass' => 'modelClass',
-			'options' => array(
-				array(
-                    'name'=>'modelClass',
-                    'label'=>Yii::t('studio', 'Record Type'),
-                    'type'=>'dropdown',
-                    'options'=>X2Flow::getModelTypes(true)
+
+    public $title = 'Record Updated';
+    public $info = 'Triggered when some updates a record of the the specified type.';
+
+    public function paramRules() {
+        return array(
+            'title' => Yii::t('studio', $this->title),
+            'info' => Yii::t('studio', $this->info),
+            'modelClass' => 'modelClass',
+            'options' => array(
+                array(
+                    'name' => 'modelClass',
+                    'label' => Yii::t('studio', 'Record Type'),
+                    'type' => 'dropdown',
+                    'options' => X2Flow::getModelTypes(true)
                 ),
-			));
-	}
+        ));
+    }
+
 }

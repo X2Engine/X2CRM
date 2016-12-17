@@ -1,4 +1,5 @@
 <?php
+
 /***********************************************************************************
  * X2CRM is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2016 X2Engine Inc.
@@ -35,56 +36,24 @@
  * "Powered by X2Engine".
  **********************************************************************************/
 
-require_once 'protected/integration/Twilio/twilio-php/Twilio/autoload.php';
-
-use Twilio\Rest\Client;
-
 /**
- * A behavior for interacting with the Twilio API
- * @package application.components.behaviors
- * @author "Raymond Colebaugh" <raymond@x2engine.com>
+ * X2FlowTrigger 
+ * 
+ * @package application.components.x2flow.actions
  */
-class TwilioBehavior extends CBehavior {
+class LocationTrigger extends X2FlowTrigger {
 
-    private $_client;
-    private $sid;
-    private $token;
-    private $from;
+    public $title = 'Location';
+    public $info = 'Triggers when a record opens an email sent to them through the system.';
 
-    public function initialize(array $params = array()) {
-        foreach ($params as $key => $value) {
-            if (in_array($key, array('token', 'sid', 'from'))) {
-                $this->$key = $value;
-            }
-        }
-    }
-
-    /**
-     * Instantiate Twilio API client
-     */
-    protected function getTwilioClient() {
-        if (!isset($this->_client)) {
-            if (!empty($this->sid) && !empty($this->token)) {
-                $this->_client = new Client(
-                    $this->sid,
-                    $this->token
-                );
-            }
-        }
-        return $this->_client;
-    }
-
-    /**
-     * Send an SMS message using the Twilio API
-     * @param string $number The target phone number
-     * @param string $message Message to send via SMS
-     * @return bool Success
-     */
-    public function sendSMSMessage($number, $message) {
-        $client = $this->twilioClient;
-        return $client->messages->create($number, array(
-            'from' => $this->from,
-            'body' => $message,
+    public function paramRules() {
+        return array(
+            'title' => Yii::t('studio', $this->title),
+            'info' => Yii::t('studio', $this->info),
+            'modelClass' => 'modelClass',
+            'options' => array(
+                array('name' => 'modelClass', 'label' => Yii::t('studio',
+                            'Record Type'), 'type' => 'dropdown', 'options' => X2Flow::getModelTypes(true)),
         ));
     }
 

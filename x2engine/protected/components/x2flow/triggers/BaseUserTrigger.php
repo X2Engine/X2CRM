@@ -1,5 +1,6 @@
 <?php
-/***********************************************************************************
+
+/* * *********************************************************************************
  * X2CRM is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2016 X2Engine Inc.
  * 
@@ -33,7 +34,7 @@
  * X2Engine" logo. If the display of the logo is not reasonably feasible for
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2Engine".
- **********************************************************************************/
+ * ******************************************************************************** */
 
 /**
  * X2FlowTrigger
@@ -42,18 +43,18 @@
  */
 abstract class BaseUserTrigger extends X2FlowTrigger {
 
-	public function paramRules() {
-		return array(
-			'title' => Yii::t('studio',$this->title),
-			'info' => Yii::t('studio',$this->info),
-			'options' => array(
-				array(
-                    'name'=>'user',
-                    'label'=>Yii::t('studio','User'),
-                    'type'=>'dropdown',
-                    'options'=>array ('Anyone' => Yii::t('admin', 'Anyone')) + 
-                        X2Model::getAssignmentOptions(false,false),
-                    'operators'=>array(
+    public function paramRules() {
+        return array(
+            'title' => Yii::t('studio', $this->title),
+            'info' => Yii::t('studio', $this->info),
+            'options' => array(
+                array(
+                    'name' => 'user',
+                    'label' => Yii::t('studio', 'User'),
+                    'type' => 'dropdown',
+                    'options' => array('Anyone' => Yii::t('admin', 'Anyone')) +
+                    X2Model::getAssignmentOptions(false, false),
+                    'operators' => array(
                         '=',
                         '<>',
                         'list',
@@ -65,9 +66,9 @@ abstract class BaseUserTrigger extends X2FlowTrigger {
         );
     }
 
-    public static function evalComparison($subject,$operator,$value=null, Fields $field = null) {
-        $value = self::parseArray ($operator, $value);
-        if (is_array ($value) && in_array ('Anyone', $value)) { 
+    public static function evalComparison($subject, $operator, $value = null, Fields $field = null) {
+        $value = self::parseArray($operator, $value);
+        if (is_array($value) && in_array('Anyone', $value)) {
             if ($operator === 'list') {
                 return true;
             } elseif ($operator === 'notList') {
@@ -78,9 +79,10 @@ abstract class BaseUserTrigger extends X2FlowTrigger {
         } elseif ($value === 'Anyone' && $operator === '<>') {
             return false;
         }
-        
-        return parent::evalComparison ($subject, $operator, $value);
+
+        return parent::evalComparison($subject, $operator, $value);
     }
+
 }
 
 ?>

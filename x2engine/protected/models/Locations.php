@@ -111,6 +111,7 @@ class Locations extends CActiveRecord
 			'type' => Yii::t('contacts','Type'),
 			'ipAddress' => Yii::t('contacts','IP Address'),
 			'comment' => Yii::t('contacts','Check-in comment'),
+			'seen' => Yii::t('contacts','Seen by'),
 		);
 	}
 
