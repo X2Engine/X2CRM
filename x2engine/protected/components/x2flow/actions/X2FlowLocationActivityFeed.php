@@ -37,65 +37,52 @@
  * ******************************************************************************** */
 
 /**
- * X2FlowAction that adds a comment to a record
+ * X2FlowAction that creates a notification
  *
  * @package application.components.x2flow.actions
  */
-class X2FlowRecordComment extends X2FlowAction {
+class X2FlowLocationActivityFeed extends BaseX2FlowLocation {
 
-    public $title = 'Add Comment';
-    public $info = '';
+    public $title = 'Create Location-Based Activity Feed Post';
+    public $info = 'Create an Activity Feed post based on specific location criteria.';
+    public $flag = 'a';
 
     public function paramRules() {
-        $assignmentOptions = array('{assignedTo}' => '{' . Yii::t('studio', 'Owner of Record') . '}') +
-                X2Model::getAssignmentOptions(false, true);
-        return array_merge(parent::paramRules(), array(
-            'title' => Yii::t('studio', $this->title),
-            'modelRequired' => 1,
-            'options' => array(
-                array(
-                    'name' => 'assignedTo',
-                    'label' => Yii::t('actions', 'Assigned To'),
-                    'type' => 'dropdown', 'options' => $assignmentOptions,
-                ),
-                array(
-                    'name' => 'comment',
-                    'label' => Yii::t('studio', 'Comment'),
-                    'type' => 'text'
-                ),
-            )
-        ));
+        return parent::paramRules();
     }
 
     public function execute(&$params) {
-        $model = new Actions;
-        $model->type = 'note';
-        $model->complete = 'Yes';
-        $model->associationId = $params['model']->id;
-        $model->associationType = $params['model']->module;
-        $model->actionDescription = $this->parseOption('comment', $params);
-        $model->assignedTo = $this->parseOption('assignedTo', $params);
-        $model->completedBy = $this->parseOption('assignedTo', $params);
+        $locations = $this->getNearbyUserRecords($params, $this->flag);
 
-        if (empty($model->assignedTo) && $params['model']->hasAttribute('assignedTo')) {
-            $model->assignedTo = $params['model']->assignedTo;
-            $model->completedBy = $params['model']->assignedTo;
+        if (count($locations) > 0) {
+            $user = $this->parseOption('to', $params);
+            $message = $this->createLongMessage(
+                    $params, $locations, '<br/>', true
+            );
+            foreach ($locations as $location) {
+                $this->updateSeen($location, $this->flag);
+            }
+            return $this->createActivityFeedEvent($params, $user, $message);
         }
 
-        if ($params['model']->hasAttribute('visibility')) {
-            $model->visibility = $params['model']->visibility;
-        }
-        $model->createDate = time();
-        $model->completeDate = time();
+        return array(true, "No post to be sent");
+    }
 
-        if ($model->save()) {
-            return array(
-                true,
-                Yii::t('studio', 'View created action: ') . $model->getLink());
-        } else {
-            $errors = $model->getErrors();
-            return array(false, array_shift($errors));
+    private function createActivityFeedEvent(&$params, $user, $text) {
+        $event = new Events;
+
+        $event->user = $user;
+        $event->type = 'feed';
+        $event->subtype = $this->parseOption('type', $params);
+        $event->text = $text;
+        $event->visibility = 0;
+
+        if ($event->save()) {
+            return array(true, "");
         }
+        
+        $errors = $event->getErrors();
+        return array(false, array_shift($errors));
     }
 
 }

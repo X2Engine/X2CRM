@@ -589,6 +589,7 @@ CREATE TABLE x2_locations(
 	type                VARCHAR(50)     DEFAULT NULL,
 	ipAddress           VARCHAR(250),
 	comment             VARCHAR(250),
+	seen                TEXT,
 	createDate			BIGINT          NOT NULL
 ) COLLATE = utf8_general_ci;
 /*&*/

@@ -74,21 +74,6 @@ abstract class X2FlowTrigger extends X2FlowItem {
         );
     }
 
-/*     public static function getGenericConditions() {
-        return array(
-            'attribute'            => Yii::t('studio','Compare Attribute'),
-            'current_user'        => Yii::t('studio','Current User'),
-            'month'                => Yii::t('studio','Current Month'),
-            'day_of_week'        => Yii::t('studio','Day of Week'),
-            'time_of_day'        => Yii::t('studio','Time of Day'),
-            'current_time'        => Yii::t('studio','Current Timestamp'),
-            'user_active'        => Yii::t('studio','User Active?'),
-            'on_list'            => Yii::t('studio','On List'),
-            'workflow_status'    => Yii::t('studio','Workflow Status'),
-            // 'current_local_time' => Yii::t('studio',''),
-        );
-    } */
-
     public static $genericConditions = array(
         'attribute' => 'Compare Attribute',
         'workflow_status' => 'Process Status',
@@ -102,8 +87,6 @@ abstract class X2FlowTrigger extends X2FlowItem {
         'on_list' => 'On List',
         'has_tags' => 'Has Tags',
         'email_open' => 'Email Opened',
-        // 'workflow_status'    => 'Workflow Status',
-        // 'current_local_time' => ''),
     );
 
     public static function getGenericConditions() {
@@ -159,8 +142,6 @@ abstract class X2FlowTrigger extends X2FlowItem {
                     'operators'=>array('before','after')
                 );
 
-            // case 'current_local_time':
-
             case 'current_time':
                 return array(
                     'label' => Yii::t('studio','Current Time'),
@@ -196,28 +177,16 @@ abstract class X2FlowTrigger extends X2FlowItem {
                 );
             default:
                 return false;
-            // case 'workflow_status':
-                // return array(
-                    // 'label'=>Yii::t('studio','Workflow Status'),
-
-
-                // 'workflowId',
-                // 'stageNumber',
-
-                    // 'started_workflow',
-                    // 'started_stage',
-                    // 'completed_stage',
-                    // 'completed_workflow', */
         }
     }
 
     /**
-     * Can be overriden in child class to give flow a default return value
+     * Can be overridden in child class to give flow a default return value
      */
     public function getDefaultReturnVal ($flowId) { return null; }
 
     /**
-     * Can be overriden in child class to extend behavior of validate method
+     * Can be overridden in child class to extend behavior of validate method
      */
     public function afterValidate (&$params, $defaultErrMsg='', $flowId) { 
         return array (false, Yii::t('studio', $defaultErrMsg)); 

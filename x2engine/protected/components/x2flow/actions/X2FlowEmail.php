@@ -44,7 +44,6 @@ class X2FlowEmail extends BaseX2FlowEmail {
 	public $title = 'Email';
 	public $info = 'Send a template or custom email to the specified address.';
 
-
 	public function paramRules() {
         $parentRules = parent::paramRules ();
         $parentRules['options'] = array_merge (
@@ -123,12 +122,10 @@ class X2FlowEmail extends BaseX2FlowEmail {
             $eml->bcc = $this->parseOption('bcc', $params);
         }
 
-        //$eml->from = array('address'=>$this->parseOption('from',$params),'name'=>'');
         $eml->credId = $this->parseOption('from', $params);
         if ($eml->credentials && $eml->credentials->user)
                 $eml->setUserProfile($eml->credentials->user->profile);
 
-        //printR ($eml->from, true);
         $eml->subject = $this->parseOption('subject', $params);
 
         // "body" option (deliberately-entered content) takes precedence over template

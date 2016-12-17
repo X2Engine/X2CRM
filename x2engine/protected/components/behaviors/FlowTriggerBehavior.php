@@ -1,5 +1,6 @@
 <?php
-/***********************************************************************************
+
+/* * *********************************************************************************
  * X2CRM is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2016 X2Engine Inc.
  * 
@@ -33,47 +34,46 @@
  * X2Engine" logo. If the display of the logo is not reasonably feasible for
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2Engine".
- **********************************************************************************/
+ * ******************************************************************************** */
 
 /**
  * Causes flow triggers to be run as the result of events raised by the owner model
  *
  * @package application.components.x2flow
  */
-class FlowTriggerBehavior extends CActiveRecordBehavior  {
+class FlowTriggerBehavior extends CActiveRecordBehavior {
 
     /**
      * @var bool Used to prevent update flows from being triggered when update () is called.
      */
     private $updateTriggerEnabled = false;
 
-	public function events() {
-		return array_merge(parent::events(),array(
-			'onAfterInsert'=>'afterInsert',
-			'onAfterUpdate'=>'afterUpdate',
-		));
-	}
+    public function events() {
+        return array_merge(parent::events(), array(
+            'onAfterInsert' => 'afterInsert',
+            'onAfterUpdate' => 'afterUpdate',
+        ));
+    }
 
-	public function afterInsert($event) {
-        X2Flow::trigger('RecordCreateTrigger',array('model'=>$this->getOwner ()));
-	}
+    public function afterInsert($event) {
+        X2Flow::trigger('RecordCreateTrigger', array('model' => $this->getOwner()));
+    }
 
-    public function enableUpdateTrigger () {
+    public function enableUpdateTrigger() {
         $this->updateTriggerEnabled = true;
     }
 
-    public function disableUpdateTrigger () {
+    public function disableUpdateTrigger() {
         $this->updateTriggerEnabled = false;
     }
 
-	public function afterUpdate($event) {
+    public function afterUpdate($event) {
         if ($this->updateTriggerEnabled) {
-            X2Flow::trigger('RecordUpdateTrigger',array(
-                'model'=>$this->getOwner()
+            X2Flow::trigger('RecordUpdateTrigger', array(
+                'model' => $this->getOwner()
             ));
             $this->updateTriggerEnabled = false;
         }
-	}
-
+    }
 
 }

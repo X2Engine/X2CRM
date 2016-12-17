@@ -37,65 +37,67 @@
  * ******************************************************************************** */
 
 /**
- * X2FlowAction that adds a comment to a record
+ * X2FlowAction that creates a notification
  *
  * @package application.components.x2flow.actions
  */
-class X2FlowRecordComment extends X2FlowAction {
+class X2FlowLocationText extends BaseX2FlowLocation {
 
-    public $title = 'Add Comment';
-    public $info = '';
+    public $title = 'Create Location-Based SMS';
+    public $info = 'Create a text message based on specific location criteria. (Twilio Account Required)';
+    public $flag = 't';
 
     public function paramRules() {
-        $assignmentOptions = array('{assignedTo}' => '{' . Yii::t('studio', 'Owner of Record') . '}') +
-                X2Model::getAssignmentOptions(false, true);
-        return array_merge(parent::paramRules(), array(
-            'title' => Yii::t('studio', $this->title),
-            'modelRequired' => 1,
-            'options' => array(
-                array(
-                    'name' => 'assignedTo',
-                    'label' => Yii::t('actions', 'Assigned To'),
-                    'type' => 'dropdown', 'options' => $assignmentOptions,
-                ),
-                array(
-                    'name' => 'comment',
-                    'label' => Yii::t('studio', 'Comment'),
-                    'type' => 'text'
-                ),
-            )
-        ));
+        $credentials = Credentials::getCredentialOptions(null, 'twoFactorCredentialsId', 'sms');
+        
+        $parentRules = parent::paramRules();
+        $parentRules['options'] = array_merge(array(
+            array(
+                'name' => 'from',
+                'label' => Yii::t('studio', 'Send As'),
+                'type' => 'dropdown',
+                'options' => $credentials['credentials']
+            ),
+                ), $parentRules['options']
+        );
+        return $parentRules;
     }
 
     public function execute(&$params) {
-        $model = new Actions;
-        $model->type = 'note';
-        $model->complete = 'Yes';
-        $model->associationId = $params['model']->id;
-        $model->associationType = $params['model']->module;
-        $model->actionDescription = $this->parseOption('comment', $params);
-        $model->assignedTo = $this->parseOption('assignedTo', $params);
-        $model->completedBy = $this->parseOption('assignedTo', $params);
-
-        if (empty($model->assignedTo) && $params['model']->hasAttribute('assignedTo')) {
-            $model->assignedTo = $params['model']->assignedTo;
-            $model->completedBy = $params['model']->assignedTo;
+        $locations = $this->getNearbyUserRecords($params, $flag);
+        
+        if (count($locations) > 0) {
+            $number = $this->formatPhoneNumber(
+                    User::model()->findByAttributes(array(
+                        'username' => $this->parseOption('to', $params)
+                    ))->cellPhone
+            );
+            $message = $this->createLongMessage(
+                    $params, $locations, PHP_EOL, false
+            );
+            foreach ($locations as $location) {
+                $this->updateSeen($location, $this->flag);
+            }
+            return $this->sendSms($params, $number, $message);
         }
+        
+        return array(true, Yii::t('app', "No SMS to be sent"));
+    }
 
-        if ($params['model']->hasAttribute('visibility')) {
-            $model->visibility = $params['model']->visibility;
-        }
-        $model->createDate = time();
-        $model->completeDate = time();
+    private function sendSms($params, $number, $text) {
+        $from = Credentials::model()->findByPk($this->parseOption('from', $params));
+        $twilio = Yii::app()->controller->attachBehavior('TwilioBehavior', new TwilioBehavior);
+        $twilio->initialize(array(
+            'sid' => $from->auth->sid,
+            'token' => $from->auth->token,
+            'from' => $from->auth->from,
+        ));
+        $twilio->sendSMSMessage($number, $text);
+        return array(true, YII_UNIT_TESTING ? $text : "");
+    }
 
-        if ($model->save()) {
-            return array(
-                true,
-                Yii::t('studio', 'View created action: ') . $model->getLink());
-        } else {
-            $errors = $model->getErrors();
-            return array(false, array_shift($errors));
-        }
+    private function formatPhoneNumber($number) {
+        return str_replace(' ', '', str_replace(')', '', str_replace('(', '', str_replace('-', '', $number))));
     }
 
 }

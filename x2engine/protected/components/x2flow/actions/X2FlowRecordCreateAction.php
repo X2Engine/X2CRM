@@ -64,12 +64,15 @@ class X2FlowRecordCreateAction extends X2FlowAction {
         $action->associationId = $params['model']->id;
         $action->subject = $this->parseOption('subject', $params);
         $action->actionDescription = $this->parseOption('description', $params);
-        if($params['model']->hasAttribute('assignedTo'))
+        if($params['model']->hasAttribute('assignedTo')) {
             $action->assignedTo = $params['model']->assignedTo;
-        if($params['model']->hasAttribute('priority'))
+        }
+        if($params['model']->hasAttribute('priority')) {
             $action->priority = $params['model']->priority;
-        if($params['model']->hasAttribute('visibility'))
+        }
+        if($params['model']->hasAttribute('visibility')) {
             $action->visibility = $params['model']->visibility;
+        }
 
         if ($action->save()) {
             return array (
