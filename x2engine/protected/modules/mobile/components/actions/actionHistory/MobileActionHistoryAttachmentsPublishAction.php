@@ -136,6 +136,45 @@ class MobileActionHistoryAttachmentsPublishAction extends MobileAction {
             }
         } else if (!strcmp($attachmentType,'file')){
             if ($valid && $action->save ()) {
+                //https://mikepultz.com/2013/07/google-speech-api-full-duplex-php-version/
+                $media = $action->media;
+                $key = '';
+                // make google speech api in php
+                /*if (strpos($media->resolveType(), 'audio') !== false){
+                    $media = $action->media;
+                    $rawAudioWavData = file_get_contents($media->getPath());
+                    $rawBase64data = base64_encode($rawAudioWavData);   
+
+                    if($creds->auth->apiKey){
+                        $key = $creds->auth->apiKey;
+                    } else {
+                       throw new CHttpException (403, Yii::t('app', 'Google API key missing'));
+                    }
+                    // pass $rawBase64data to  google speech api and return to $text
+                    $text = '';
+                    
+                    $action = new Actions;
+                    $action->setAttributes (array (
+                        'associationType' => X2Model::getAssociationType (get_class ($model)), 
+                        'associationId' => $model->id,
+                        'associationName' => $model->name,
+                        'dueDate' => time (),
+                        'completeDate' => time (),
+                        'complete' => 'Yes',
+                        'completedBy' => Yii::app()->user->getName (),
+                        'private' => 0,
+                    ), false);
+                    $action->actionDescription = $text;
+                    $action->type = 'note';
+
+                    if(!$action->save ()) {
+                        throw new CHttpException (500, Yii::t('app', 'Publish failed'));
+                    }
+                    $action->setActionDescription($text);
+                    //$action->includeTextToAction($text);
+                        
+                }*/
+                
                 $this->controller->renderPartial (
                     'application.modules.mobile.views.mobile._actionHistoryAttachments', array (
                     'model' => $model,

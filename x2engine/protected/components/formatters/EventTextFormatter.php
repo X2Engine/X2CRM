@@ -822,7 +822,7 @@ class EventTextFormatter {
             }
             $text = $authorText . ": " . $event->text;
         }
-        /*if ($media) {
+        if ($media) {
             if (!$truncated) {
                 $text.="<br>" . Media::attachmentSocialText($media->getMediaLink(),
                                 true, true);
@@ -832,7 +832,7 @@ class EventTextFormatter {
             }
         } else {
             $text.="<br>Media file not found.";
-        }*/
+        }
         return $text;
     }
 
