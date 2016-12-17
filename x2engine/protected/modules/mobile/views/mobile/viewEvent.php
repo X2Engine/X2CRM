@@ -90,16 +90,16 @@ $this->onPageLoad ("
         ?>
             <div class='photo-attachments-container'>
             </div>
-            <div class='photo-attach-button icon-button'>
+             <!--<div class='photo-attach-button icon-button'>
                 <?php
-                    echo X2Html::fa ('camera');
+                    //echo X2Html::fa ('camera');
                 ?>
             </div>
             <div class='audio-attach-button icon-button'>
                 <?php
-                    echo X2Html::fa ('fa-file-audio-o');
+                    //echo X2Html::fa ('fa-file-audio-o');
                 ?>
-            </div>
+            </div>-->
             <?php
                 echo $form->textField ($formModel, 'text', array (
                     'placeholder' => 'Add a reply...',

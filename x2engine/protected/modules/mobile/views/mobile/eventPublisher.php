@@ -120,26 +120,26 @@ $this->endWidget ();
 if (Yii::app()->params->isPhoneGap) {
 ?>
 <div id='footer' data-role="footer" class='event-publisher-controls fixed-footer control-panel'>
-    <div class='photo-attach-button icon-button'>
+    <!--<div class='photo-attach-button icon-button'>
         <?php
-            echo X2Html::fa ('camera');
+            //echo X2Html::fa ('camera');
         ?>
-    </div>
-    <div class='location-attach-button icon-button'>
+    </div>-->
+    <!--<div class='location-attach-button icon-button'>
         <?php
-            echo X2Html::fa ('fa-location-arrow');
+           // echo X2Html::fa ('fa-location-arrow');
         ?>
     </div>
     <div class='audio-attach-button icon-button'>
         <?php
-            echo X2Html::fa ('fa-file-audio-o');
+            //echo X2Html::fa ('fa-file-audio-o');
         ?>
     </div>
     <div class='video-attach-button icon-button'>
         <?php
-            echo X2Html::fa ('fa-file-video-o');
+            //echo X2Html::fa ('fa-file-video-o');
         ?>
-    </div>
+    </div>-->
 </div>
 <?php
 }
