@@ -67,47 +67,57 @@ EventPublisherController.prototype.setUpForm = function () {
         that.submitButton$.toggleClass ('disabled', !$.trim (eventBox$.val ()));
     });
     
-    //var locationButton$ = $.mobile.activePage.find ('.location-attach-button');
+    var locationButton$ = $.mobile.activePage.find ('.location-attach-button');
+    var locationButtonOn = false;
     //var audioButton$ = $('#footer .audio-attach-button');
     //var videoButton$ = $('#footer .video-attach-button');
-   
-    //locationButton$.click (function () {
+    
+    locationButton$.click (function () {
         if (!x2.main.isPhoneGap) return;
-        x2touch.API.getCurrentPosition(function(position) {
-            var pos = {
-               lat: position.coords.latitude,
-               lon: position.coords.longitude
-             };
+        if (!locationButtonOn) {
+            x2touch.API.getCurrentPosition(function(position) {
+                var pos = {
+                   lat: position.coords.latitude,
+                   lon: position.coords.longitude
+                 };
 
-            that.form$.find ('#geoCoords').val(JSON.stringify (pos));
-            that.form$.find ('#geoLocationCoords').val("set");
-            x2.mobileForm.submitWithFiles (
-               that.form$, 
-               function (response) {
-                   try {
-                       var data = JSON.parse(response);
-                       var theAddress = data['results'][0]['formatted_address'];
-                       $.mobile.activePage.find ('.event-text-box').val(
-                           $.mobile.activePage.find ('.event-text-box').val()+" - "+theAddress
-                       );	
-                   } catch (e) {
-                       alert(e);
-                       alert("Failed to fetch location.");
+                that.form$.find ('#geoCoords').val(JSON.stringify (pos));
+                that.form$.find ('#geoLocationCoords').val("set");
+                x2.mobileForm.submitWithFiles (
+                   that.form$, 
+                   function (response) {
+                       try {
+                           var data = JSON.parse(response);
+                           var theAddress = data['results'][0]['formatted_address'];
+                           $.mobile.activePage.find ('.event-text-box-location').val(" - "+theAddress);	
+                           $('.location-attach-button > .fa-location-arrow').css('color', '#0084ff');
+                           locationButtonOn = true;
+                       } catch (e) {
+                           alert(e);
+                           alert("Failed to fetch location.");
+                       }
+
+                       x2.main.refreshContent ();
+                       $.mobile.loading ('hide');
+                   }, function (jqXHR, textStatus, errorThrown) {
+                       $.mobile.loading ('hide');
+                       x2.main.alert (textStatus, 'Error');
                    }
-
-                   x2.main.refreshContent ();
-                   $.mobile.loading ('hide');
-               }, function (jqXHR, textStatus, errorThrown) {
-                   $.mobile.loading ('hide');
-                   x2.main.alert (textStatus, 'Error');
-               }
-           ); 
-           that.form$.find ('#geoLocationCoords').val("unset");
-        }, function (error) {
-            alert('code: '    + error.code    + '\n' +
-                  'message: ' + error.message + '\n');
-        }, {}); 
-   // });
+               ); 
+               that.form$.find ('#geoLocationCoords').val("unset");
+            }, function (error) {
+                alert('code: '    + error.code    + '\n' +
+                      'message: ' + error.message + '\n');
+            }, {});             
+        } else {
+            that.form$.find ('#geoCoords').val("");
+            that.form$.find ('#geoLocationCoords').val("");
+            $.mobile.activePage.find ('.event-text-box-location').val("");
+            $('.location-attach-button > .fa-location-arrow').css('color', 'grey');
+            locationButtonOn = false;
+        }
+    });
+    locationButton$.click ();
     
     /*new x2.AudioButton ({
         element$: audioButton$,

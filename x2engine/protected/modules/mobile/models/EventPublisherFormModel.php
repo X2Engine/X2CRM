@@ -38,6 +38,7 @@
 class EventPublisherFormModel extends CFormModel {
 
     public $text;
+    public $textLocation;
     public $photo;
     public $locationPhoto;
     public $audio;
@@ -47,6 +48,9 @@ class EventPublisherFormModel extends CFormModel {
         return array (
             array (
                 'text', 'safe',
+            ),
+            array (
+                'textLocation', 'safe',
             ),
             array (
                 'photo', 'file', 

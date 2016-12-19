@@ -83,7 +83,7 @@ class MobilePublisherAction extends MobileAction {
                 if ($decodedResult) {
                     $model->photo = CUploadedFile::getInstance ($model, 'photo');
                 }
-                $model->audio = CUploadedFile::getInstance ($model, 'audio');
+                //$model->audio = CUploadedFile::getInstance ($model, 'audio');
                 //$model->video = CUploadedFile::getInstance ($model, 'video');
                 
             }
@@ -96,14 +96,14 @@ class MobilePublisherAction extends MobileAction {
                     'visibility' => X2PermissionsBehavior::VISIBILITY_PUBLIC,
                     'user' => $profile->username,
                     'type' => 'media',
-                    'text' => $model->text,
+                    'text' => $model->text . $model->textLocation,
                     'photo' => $model->photo,
                     'audio' => $model->audio
                     //'video' => $model->video
                 ), false);
                 if ($location)
                     $event->locationId = $location->id;
-                if ($key && !empty($decodedResult)) {
+                if ($key && !empty($decodedResult) && !empty($model->textLocation)) {
                     if ($event->saveRaw ($profile,$decodedResult)) {
                         if (!isset ($_FILES['EventPublisherFormModel'])) {
                             //AuxLib::debugLogR ('saved');
