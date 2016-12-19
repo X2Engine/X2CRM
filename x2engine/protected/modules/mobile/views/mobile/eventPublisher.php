@@ -99,6 +99,9 @@ $form = $this->beginWidget ('MobileActiveForm', array (
         'placeholder' =>'Add a post...',
         'class' => 'event-text-box',
     ));
+    echo $form->textArea ($model, 'textLocation', array (
+        'class' => 'event-text-box-location',
+    ));
     echo $form->mobileCoordinates ();
     echo $form->mobileLocationCoordinates ();
     ?>
@@ -125,12 +128,12 @@ if (Yii::app()->params->isPhoneGap) {
             //echo X2Html::fa ('camera');
         ?>
     </div>-->
-    <!--<div class='location-attach-button icon-button'>
+    <div class='location-attach-button icon-button'>
         <?php
-           // echo X2Html::fa ('fa-location-arrow');
+            echo X2Html::fa ('fa-location-arrow');
         ?>
     </div>
-    <div class='audio-attach-button icon-button'>
+    <!--<div class='audio-attach-button icon-button'>
         <?php
             //echo X2Html::fa ('fa-file-audio-o');
         ?>
