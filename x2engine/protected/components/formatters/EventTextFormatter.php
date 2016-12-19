@@ -822,16 +822,18 @@ class EventTextFormatter {
             }
             $text = $authorText . ": " . $event->text;
         }
-        if ($media) {
-            if (!$truncated) {
-                $text.="<br>" . Media::attachmentSocialText($media->getMediaLink(),
-                                true, true);
+        foreach ($event->media as $media) {
+            if ($media) {
+                if (!$truncated) {
+                    $text.="<br>" . Media::attachmentSocialText($media->getMediaLink(),
+                                    true, true);
+                } else {
+                    $text.="<br>" . Media::attachmentSocialText($media->getMediaLink(),
+                                    true, false);
+                }
             } else {
-                $text.="<br>" . Media::attachmentSocialText($media->getMediaLink(),
-                                true, false);
+                $text.="<br>Media file not found.";
             }
-        } else {
-            $text.="<br>Media file not found.";
         }
         return $text;
     }
