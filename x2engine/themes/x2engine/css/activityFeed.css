@@ -977,41 +977,50 @@
 #activity-feed-container .deleteButton:hover {
   opacity: 1;
 }
-/* line 298, ../../../compass/themes/x2engine/css/activityFeed.scss */
+/* line 294, ../../../compass/themes/x2engine/css/activityFeed.scss */
+#activity-feed-container #checkInComment {
+  display: none;
+  width: 100%;
+}
+/* line 299, ../../../compass/themes/x2engine/css/activityFeed.scss */
+#activity-feed-container #toggle-attachment-menu-button {
+  margin-top: 0px;
+}
+/* line 307, ../../../compass/themes/x2engine/css/activityFeed.scss */
 #activity-feed-container .feed-comment-icon, #activity-feed-container .broadcast-icon, #activity-feed-container .like-icon, #activity-feed-container .sticky-icon, #activity-feed-container .feed-make-important-icon, #activity-feed-container .like-count, #activity-feed-container .unsticky-icon, #activity-feed-container .unlike-icon, #activity-feed-container .feed-make-unimportant-icon {
   margin-left: 10px;
 }
-/* line 302, ../../../compass/themes/x2engine/css/activityFeed.scss */
+/* line 311, ../../../compass/themes/x2engine/css/activityFeed.scss */
 #activity-feed-container .feed-comment-icon, #activity-feed-container .broadcast-icon, #activity-feed-container .like-icon, #activity-feed-container .sticky-icon, #activity-feed-container .feed-make-important-icon, #activity-feed-container .like-count {
   opacity: 0.6;
   cursor: pointer;
   color: #454545;
 }
-/* line 308, ../../../compass/themes/x2engine/css/activityFeed.scss */
+/* line 317, ../../../compass/themes/x2engine/css/activityFeed.scss */
 #activity-feed-container .feed-comment-icon:hover, #activity-feed-container .broadcast-icon:hover, #activity-feed-container .like-icon:hover, #activity-feed-container .sticky-icon:hover, #activity-feed-container .feed-make-important-icon:hover, #activity-feed-container .like-count:hover {
   opacity: 0.8;
 }
-/* line 313, ../../../compass/themes/x2engine/css/activityFeed.scss */
+/* line 322, ../../../compass/themes/x2engine/css/activityFeed.scss */
 #activity-feed-container .unsticky-icon, #activity-feed-container .unlike-icon, #activity-feed-container .feed-make-unimportant-icon {
   opacity: 1.0;
   cursor: pointer;
 }
-/* line 318, ../../../compass/themes/x2engine/css/activityFeed.scss */
+/* line 327, ../../../compass/themes/x2engine/css/activityFeed.scss */
 #activity-feed-container .unsticky-icon:hover, #activity-feed-container .unlike-icon:hover, #activity-feed-container .feed-make-unimportant-icon:hover {
   opacity: 0.9;
 }
-/* line 331, ../../../compass/themes/x2engine/css/activityFeed.scss */
+/* line 340, ../../../compass/themes/x2engine/css/activityFeed.scss */
 #activity-feed-container .like-count {
   opacity: 0.6;
   padding-left: 3px;
   color: #004baf;
   margin-left: 0px;
 }
-/* line 339, ../../../compass/themes/x2engine/css/activityFeed.scss */
+/* line 348, ../../../compass/themes/x2engine/css/activityFeed.scss */
 #activity-feed-container .unlike-button[style*="none"] + .like-count {
   color: #454545;
 }
-/* line 343, ../../../compass/themes/x2engine/css/activityFeed.scss */
+/* line 352, ../../../compass/themes/x2engine/css/activityFeed.scss */
 #activity-feed-container #activity-feed-settings-button {
   cursor: pointer;
   float: right;
@@ -1025,12 +1034,12 @@
 #activity-feed-container #activity-feed-settings-button:hover {
   opacity: 1;
 }
-/* line 351, ../../../compass/themes/x2engine/css/activityFeed.scss */
+/* line 360, ../../../compass/themes/x2engine/css/activityFeed.scss */
 #activity-feed-container #second-row-buttons-container {
   display: block;
   margin-top: 7px;
 }
-/* line 359, ../../../compass/themes/x2engine/css/activityFeed.scss */
+/* line 368, ../../../compass/themes/x2engine/css/activityFeed.scss */
 #activity-feed-container .img-box {
   display: block;
   float: left;
@@ -1044,7 +1053,7 @@
   height: 45px;
   padding-bottom: 5px;
 }
-/* line 375, ../../../compass/themes/x2engine/css/activityFeed.scss */
+/* line 384, ../../../compass/themes/x2engine/css/activityFeed.scss */
 #activity-feed-container .img-box:before {
   font-size: 30px !important;
 }

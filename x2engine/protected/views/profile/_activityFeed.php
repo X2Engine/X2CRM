@@ -253,7 +253,7 @@ $this->renderPartial ('_feedFilters');
             if (!isset($_SERVER['HTTPS']) ?  : '')
                 $checkInPlaceholder .= Yii::t('app', ' Note: for higher accuracy and an embedded static map, visit the site under HTTPS.');
             ?>
-            <textarea id="checkInComment" rows=2 style="display: none" placeholder="<?php echo $checkInPlaceholder; ?>"></textarea>
+            <textarea id="checkInComment" rows=2 placeholder="<?php echo $checkInPlaceholder; ?>"></textarea>
         </div>
         </div>
         <?php
