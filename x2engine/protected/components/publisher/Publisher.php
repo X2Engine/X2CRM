@@ -197,7 +197,7 @@ class Publisher extends X2Widget {
         ", CClientScript::POS_HEAD);
 
         Yii::app()->clientScript->registerGeolocationScript(true, true);
-        Yii::app()->clientScript->registerCheckinScript("#publisher input[type=\'submit\']", true);
+        Yii::app()->clientScript->registerCheckinScript("#publisher input[type=\'submit\']", true, true);
 
         Yii::app()->clientScript->registerCss('recordViewPublisherCss', '
             .action-event-panel {

@@ -248,6 +248,12 @@ $this->renderPartial ('_feedFilters');
             <button id="toggle-location-button" class="x2-button" title="<?php echo Yii::t('app', 'Location Check-In'); ?>" style="display:inline-block; margin-left:10px"><?php
                 echo X2Html::fa('crosshairs fa-lg');
             ?></button>
+            <button id="toggle-location-comment-button" class="x2-button" title="<?php echo Yii::t('app', 'Add a comment on your location '); ?>" style="display:inline-block"><?php
+                echo X2Html::fa('stack', array(),
+                    X2Html::fa('comment-o fa-stack-2x').
+                    X2Html::fa('crosshairs fa-stack-1x')
+                );
+            ?></button>
             <?php
             $checkInPlaceholder = Yii::t('app', 'Check-in comment.');
             if (!isset($_SERVER['HTTPS']) ?  : '')
@@ -258,7 +264,7 @@ $this->renderPartial ('_feedFilters');
         </div>
         <?php
             Yii::app()->clientScript->registerGeolocationScript(true);
-            Yii::app()->clientScript->registerCheckinScript("#feed-form input[type=\'submit\'");
+            Yii::app()->clientScript->registerCheckinScript("#feed-form input[type=\'submit\'", true);
         ?>
     </div>
     <?php $this->endWidget(); ?>
