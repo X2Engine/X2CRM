@@ -170,6 +170,7 @@ $this->renderPartial ('_feedFilters');
         <div class="row" id="feed_link_record" style="display:none">
             <div class="cell"><?php
                 // Model association autocomplete
+                echo $form->hiddenField($feed, 'recordLinks');
                 $modelList = Fields::getDisplayedModelNamesList();
                 echo $form->label($feed, 'associationType'); 
                 echo $form->dropDownList(
@@ -206,16 +207,25 @@ $this->renderPartial ('_feedFilters');
                     'options' => array(
                         'minLength' => '2',
                         'select' => 'js:function( event, ui ) {
+                            var recordType = $("#Events_associationType").val();
                             $.ajax({
                                 url: "'.$this->createUrl('/actions/actions/getAutocompleteAssocLink').'",
                                 method: "POST",
                                 data: {
-                                    type: $("#Events_associationType").val(),
+                                    type: recordType,
                                     id: ui.item.id,
                                     YII_CSRF_TOKEN: x2.csrfToken
                                 },
                                 complete: function(data) {
-                                    window.newPostEditor.insertHtml(data.responseText);
+                                    data = JSON.parse(data.responseText);
+                                    $("#feed_record_links").show().append("<br />" + data[2]);
+                                    var recordLinksVal = $("#Events_recordLinks").val();
+                                    var currentLinks = false;
+                                    if (recordLinksVal)
+                                        currentLinks = JSON.parse(recordLinksVal);
+                                    if (!currentLinks) currentLinks = [];
+                                    currentLinks.push([data[0], data[1]]);
+                                    $("#Events_recordLinks").val(JSON.stringify(currentLinks));
                                     $("#Events_associationType").val("none");
                                     $("#feed_link_record").slideUp();
                                     $("#feed_auto_complete").hide();
@@ -228,6 +238,7 @@ $this->renderPartial ('_feedFilters');
                 ));
                 ?>
             </div>
+            <div class="cell" id="feed_record_links" style="display:none;"></div>
         </div>
 
         <div id='second-row-buttons-container'>

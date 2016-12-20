@@ -111,6 +111,18 @@ class Events extends X2ActiveRecord {
         );
     }
 
+    public function behaviors(){
+        $behaviors = array(
+            'JSONFieldsBehavior' => array (
+                'class' => 'application.components.behaviors.JSONFieldsBehavior',
+                'transformAttributes' => array (
+                    'recordLinks',
+                ),
+            ),
+        );
+        return $behaviors;
+    }
+
     public function saveRaw ($profile, $attachmentData, $runValidation=true, $attributes=null) {
 
             // save related photo record
@@ -1060,4 +1072,23 @@ class Events extends X2ActiveRecord {
         );
     }
 
+    /**
+     * Render a list of links to associated records
+     */
+    public function renderRecordLinks() {
+        if (!empty($this->recordLinks) && is_array($this->recordLinks)) {
+            echo '<ul>';
+            foreach ($this->recordLinks as $link) {
+                if (isset($link[0]) && isset($link[1])) {
+                    $model = X2Model::model($link[0])->findByPk($link[1]);
+                    if ($model) {
+                        echo '<li>';
+                        echo $model->getLink();
+                        echo '</li>';
+                    }
+                }
+            }
+            echo '</ul>';
+        }
+    }
 }

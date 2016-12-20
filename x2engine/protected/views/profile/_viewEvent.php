@@ -192,6 +192,12 @@ $important = $data->important ? 'important-action' : '';
                     }
                 ?>
             
+                <?php
+                    if (!empty($data->recordLinks)) {
+                        echo '<div>'.Yii::t('profile', 'Associated Records').'</div>';
+                        $data->renderRecordLinks();
+                    }
+                ?>
         </span>
         <div class='event-bottom-row'>
             <span class="comment-age x2-hint" id="<?php echo $data->id . "-" . $data->timestamp; ?>" 

@@ -174,10 +174,13 @@ ActivityFeed.prototype.publishPost = function  () {
             "associationId":$("#Events_associationId").val(),
             "visibility":$("#Events_visibility").val(),
             "subtype":$("#Events_subtype").val(),
+            "recordLinks":$("#Events_recordLinks").val(),
             "geoCoords":$("#geoCoords").val()
         },
         success:function(){
             that.finishMinimizeEditor ();
+            $("#Events_recordLinks").val(''); // clear out associated record links
+            $("#feed_record_links").html('');
         },
         failure:function(){
             window.newPostEditor.focusManager.unlock ();

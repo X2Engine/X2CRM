@@ -330,6 +330,7 @@ CREATE TABLE x2_events(
     fontColor               VARCHAR(10),
     linkColor               VARCHAR(10),
     locationId              INT UNSIGNED,
+    recordLinks             TEXT,
     INDEX (locationId)
 ) COLLATE = utf8_general_ci, ENGINE = InnoDB;
 /*&*/

@@ -1046,7 +1046,11 @@ class ActionsController extends x2base {
         if($associationType && $associationId){
             $modelName = X2Model::getModelName($associationType);
             if($model = X2Model::model($modelName)->findByPk($associationId)){
-                echo $model->getLink();
+                echo CJSON::encode(array(
+                    $modelName,
+                    $associationId,
+                    $model->getLink(),
+                ));
             }else{
                 echo '';
             }
