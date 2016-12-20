@@ -761,7 +761,7 @@ class SiteController extends x2base {
             // Only associate location when a checkin is requested
             $event->locationId = $location->id;
             $staticMap = $location->generateStaticMap();
-            $event->text .= ' | ' . $geoCoords['comment'] . ' | ';
+            $event->text .= '$|&|$' . $geoCoords['comment'] . '$|&|$'; //temporary dividers to be parsed later
             $geocodedAddress = $location->geocode();
         }
         $event->type = 'media';
