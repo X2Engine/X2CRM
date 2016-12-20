@@ -291,6 +291,15 @@
         @include opacity-hover(0.5);
     }
 
+    #checkInComment {
+        display: none;
+        width: 100%;
+    }
+
+    #toggle-attachment-menu-button {
+        margin-top: 0px;
+    }
+
 
     /*******************************************
     * pseudo elements to base the icons on

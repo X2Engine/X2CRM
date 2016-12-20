@@ -170,6 +170,7 @@ $this->renderPartial ('_feedFilters');
         <div class="row" id="feed_link_record" style="display:none">
             <div class="cell"><?php
                 // Model association autocomplete
+                echo $form->hiddenField($feed, 'recordLinks');
                 $modelList = Fields::getDisplayedModelNamesList();
                 echo $form->label($feed, 'associationType'); 
                 echo $form->dropDownList(
@@ -206,16 +207,25 @@ $this->renderPartial ('_feedFilters');
                     'options' => array(
                         'minLength' => '2',
                         'select' => 'js:function( event, ui ) {
+                            var recordType = $("#Events_associationType").val();
                             $.ajax({
                                 url: "'.$this->createUrl('/actions/actions/getAutocompleteAssocLink').'",
                                 method: "POST",
                                 data: {
-                                    type: $("#Events_associationType").val(),
+                                    type: recordType,
                                     id: ui.item.id,
                                     YII_CSRF_TOKEN: x2.csrfToken
                                 },
                                 complete: function(data) {
-                                    window.newPostEditor.insertHtml(data.responseText);
+                                    data = JSON.parse(data.responseText);
+                                    $("#feed_record_links").show().append("<br />" + data[2]);
+                                    var recordLinksVal = $("#Events_recordLinks").val();
+                                    var currentLinks = false;
+                                    if (recordLinksVal)
+                                        currentLinks = JSON.parse(recordLinksVal);
+                                    if (!currentLinks) currentLinks = [];
+                                    currentLinks.push([data[0], data[1]]);
+                                    $("#Events_recordLinks").val(JSON.stringify(currentLinks));
                                     $("#Events_associationType").val("none");
                                     $("#feed_link_record").slideUp();
                                     $("#feed_auto_complete").hide();
@@ -228,6 +238,7 @@ $this->renderPartial ('_feedFilters');
                 ));
                 ?>
             </div>
+            <div class="cell" id="feed_record_links" style="display:none;"></div>
         </div>
 
         <div id='second-row-buttons-container'>
@@ -248,17 +259,23 @@ $this->renderPartial ('_feedFilters');
             <button id="toggle-location-button" class="x2-button" title="<?php echo Yii::t('app', 'Location Check-In'); ?>" style="display:inline-block; margin-left:10px"><?php
                 echo X2Html::fa('crosshairs fa-lg');
             ?></button>
+            <button id="toggle-location-comment-button" class="x2-button" title="<?php echo Yii::t('app', 'Add a comment on your location '); ?>" style="display:inline-block"><?php
+                echo X2Html::fa('stack', array(),
+                    X2Html::fa('comment-o fa-stack-2x').
+                    X2Html::fa('crosshairs fa-stack-1x')
+                );
+            ?></button>
             <?php
             $checkInPlaceholder = Yii::t('app', 'Check-in comment.');
             if (!isset($_SERVER['HTTPS']) ?  : '')
                 $checkInPlaceholder .= Yii::t('app', ' Note: for higher accuracy and an embedded static map, visit the site under HTTPS.');
             ?>
-            <textarea id="checkInComment" rows=2 style="display: none" placeholder="<?php echo $checkInPlaceholder; ?>"></textarea>
+            <textarea id="checkInComment" rows=2 placeholder="<?php echo $checkInPlaceholder; ?>"></textarea>
         </div>
         </div>
         <?php
             Yii::app()->clientScript->registerGeolocationScript(true);
-            Yii::app()->clientScript->registerCheckinScript("#feed-form input[type=\'submit\'");
+            Yii::app()->clientScript->registerCheckinScript("#feed-form input[type=\'submit\'", true);
         ?>
     </div>
     <?php $this->endWidget(); ?>

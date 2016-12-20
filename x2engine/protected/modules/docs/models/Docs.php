@@ -256,7 +256,7 @@ class Docs extends X2Model {
     public static function modelsWhichSupportEmailTemplates () {
         // get all x2model types not in blacklist
         return array_diff_key (X2Model::getModelNames (), array_flip (array (
-            'Actions', 'Quote', 'Product', 'Opportunity','Campaign', 
+            'Actions', 'Quote', 'Product', 'Opportunities','Campaign',
         )));
     }
 

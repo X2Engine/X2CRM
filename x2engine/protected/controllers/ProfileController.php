@@ -1965,6 +1965,8 @@ class ProfileController extends x2base {
                 $post->text .= '$|&|$' . $geoCoords['comment'] . '$|&|$'; //temporary dividers to be parsed later
                 $geocodedAddress = $location->geocode();
             }
+            if (isset($_POST['recordLinks']) && ($decodedLinks = CJSON::decode($_POST['recordLinks'], true)))
+                $post->recordLinks = $decodedLinks;
             $post->user = Yii::app()->user->getName();
             $post->type = 'feed';
             $post->subtype = $_POST['subtype'];
