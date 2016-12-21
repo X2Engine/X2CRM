@@ -93,7 +93,7 @@ class MobileCheckInAction extends MobileAction {
                     'visibility' => X2PermissionsBehavior::VISIBILITY_PUBLIC,
                     'user' => $profile->username,
                     'type' => 'media',
-                    'text' => $model->text,
+                    'text' => $model->text .' | '. Formatter::formatDateTime(time()),
                     'photo' => $model->photo
                 ), false);
                 if ($location)

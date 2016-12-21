@@ -89,7 +89,7 @@ EventPublisherController.prototype.setUpForm = function () {
                        try {
                            var data = JSON.parse(response);
                            var theAddress = data['results'][0]['formatted_address'];
-                           $.mobile.activePage.find ('.event-text-box-location').val(" - "+theAddress);	
+                           $.mobile.activePage.find ('.event-text-box-location').val("Checking in at "+theAddress);	
                            $('.location-attach-button > .fa-location-arrow').css('color', '#0084ff');
                            locationButtonOn = true;
                        } catch (e) {

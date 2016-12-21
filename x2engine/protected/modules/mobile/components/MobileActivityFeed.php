@@ -41,7 +41,11 @@ class MobileActivityFeed {
         $text = '';
         switch ($model->type) {
             case 'feed':
+                $text = $model->text;
+                break;
             case 'structured-feed':
+                $text = $model->text;
+                break;
             case 'comment':
                 $text = $model->text;
                 break;
@@ -52,6 +56,16 @@ class MobileActivityFeed {
                 $text = $model->getText (array ('requireAbsoluteUrl' => true));
                 break;
         }
+        $eventTexts = explode('$|&|$', $text);
+        if(count($eventTexts) == 3) { 
+            $text = "Checkin Post: ". "<br><br>" .$eventTexts[2] . "<br><br>" .$eventTexts[0];
+            if (strcmp($eventTexts[1],' '))
+                $text.="<br><br>" ."Location Comment:<br>".$eventTexts[1];
+        } else {
+            $text = "Checkin Post: "."<br><br>" .$eventTexts[0];
+        }
+        //takeout trailing $|&|$ that's used to format activity feed posts
+        $text = str_replace("$|&|$", "", $text);
         return $text;
     }
 }

@@ -96,7 +96,9 @@ class MobilePublisherAction extends MobileAction {
                     'visibility' => X2PermissionsBehavior::VISIBILITY_PUBLIC,
                     'user' => $profile->username,
                     'type' => 'media',
-                    'text' => $model->text . $model->textLocation,
+                    'text' => $model->text . '$|&|$' . ' ' . '$|&|$' . 
+                              $model->textLocation . ' | '. 
+                              Formatter::formatDateTime(time()),
                     'photo' => $model->photo,
                     'audio' => $model->audio
                     //'video' => $model->video
