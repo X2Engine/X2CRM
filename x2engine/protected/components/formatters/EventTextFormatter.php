@@ -55,6 +55,8 @@ class EventTextFormatter {
         if ($truncated && mb_strlen($text, 'UTF-8') > 250) {
             $text = mb_substr($text, 0, 250, 'UTF-8') . "...";
         }
+        //takeout trailing $|&|$ that's used to format activity feed posts
+        $text = str_replace("$|&|$", "", $text);
         return $text;
     }
 
