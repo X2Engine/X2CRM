@@ -452,6 +452,13 @@ if(!($requirements['extensions']['hash']=extension_loaded('hash'))){
 
 // Check the session save path:
 $ssp = ini_get('session.save_path');
+
+// session.save_path has an optional parameter to set the nest level. obviously we need to remove this and get the actual path
+if (strstr($ssp,';')) {
+	$tmp=explode(';',$ssp);
+	if (count($tmp)>1) $ssp = $tmp[1];
+}
+
 if(!is_writable($ssp)){
 	$reqMessages[3][] = strtr(installer_t('The path defined in session.save_path ({ssp}) is not writable.'), array('{ssp}' => $ssp));
 }
