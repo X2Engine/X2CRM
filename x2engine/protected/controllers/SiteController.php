@@ -754,6 +754,16 @@ class SiteController extends x2base {
         } /*else {
             $event->text = Yii::t('app', 'Attached file: ');
         }*/
+        $location = Yii::app()->params->profile->user->logLocation('activityPost', 'POST');
+        $geoCoords = isset($_POST['geoCoords']) ? CJSON::decode($_POST['geoCoords'], true) : null;
+        $isCheckIn = ($geoCoords && (isset($geoCoords['lat']) || isset($geoCoords['locationEnabled'])));
+        if ($location && $isCheckIn) {
+            // Only associate location when a checkin is requested
+            $event->locationId = $location->id;
+            $staticMap = $location->generateStaticMap();
+            $event->text .= '$|&|$' . $geoCoords['comment'] . '$|&|$'; //temporary dividers to be parsed later
+            $geocodedAddress = $location->geocode();
+        }
         $event->type = 'media';
         $event->subtype = 'Social Post';
         $event->timestamp = time();
@@ -770,6 +780,13 @@ class SiteController extends x2base {
             $event->locationId = $location->id;
         if ($event->save()) {
             //$this->redirect('profile');
+            if (!empty($staticMap)) {
+                if (!empty($geocodedAddress)) { 
+                    $event->text .= Yii::t('app', 'Checking in at ').$geocodedAddress.' | '.
+                        Formatter::formatDateTime(time());
+                }
+                $event->saveRaw(Yii::app()->params->profile, $staticMap);
+            }
         } else {
             unlink('uploads/protected/' . $name);
         }

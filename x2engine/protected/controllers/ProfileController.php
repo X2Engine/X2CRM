@@ -1962,6 +1962,7 @@ class ProfileController extends x2base {
                 // Only associate location when a checkin is requested
                 $post->locationId = $location->id;
                 $staticMap = $location->generateStaticMap();
+                $post->text .= '$|&|$' . $geoCoords['comment'] . '$|&|$'; //temporary dividers to be parsed later
                 $geocodedAddress = $location->geocode();
             }
             if (isset($_POST['recordLinks']) && ($decodedLinks = CJSON::decode($_POST['recordLinks'], true)))

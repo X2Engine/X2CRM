@@ -830,12 +830,12 @@ Etiam eget iaculis nisl. Duis id malesuada orci. Mauris imperdiet ut elit rhoncu
         $event = $this->events('media');
         $text = $event->getText();
         $this->assertNotEmpty($text);
-        $this->assertEquals('<a href="http://localhost/index-test.php/profile/1">You</a>: <br>File: <a href="http://localhost/index-test.php/media/media/view/1">Divers.jpg</a><br><img class="attachment-img" src="http://localhost/index-test.php/media/media/getFile?id=1&key=d84e7834f79223ad17981fe3f9e61b12ae5c012345cbc29bcfe1d7b982edc9b9" alt="" />',
+        $this->assertEquals('<a href="http://localhost/index-test.php/profile/1">You</a>: <br><br>File: <a href="http://localhost/index-test.php/media/media/view/1">Divers.jpg</a><br><img class="attachment-img" src="http://localhost/index-test.php/media/media/getFile?id=1&key=d84e7834f79223ad17981fe3f9e61b12ae5c012345cbc29bcfe1d7b982edc9b9" alt="" />',
                 $text);
 
         $truncatedText = $event->getText(array('truncated' => true));
         $this->assertNotEmpty($truncatedText);
-        $this->assertEquals('<a href="http://localhost/index-test.php/profile/1">You</a>: <br>File: <a href="http://localhost/index-test.php/media/media/view/1">Divers.jpg</a>',
+        $this->assertEquals('<a href="http://localhost/index-test.php/profile/1">You</a>: <br><br>File: <a href="http://localhost/index-test.php/media/media/view/1">Divers.jpg</a>',
                 $truncatedText);
         
         $event2 = $this->events('mediaNoRecord');
