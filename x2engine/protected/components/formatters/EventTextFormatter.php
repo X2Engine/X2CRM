@@ -41,6 +41,10 @@
  *
  */
 class EventTextFormatter {
+    /**
+     * Whether associated record links were already rendered in a formatter function
+     */
+    public static $renderedRecordLinks = false;
 
     public static function getText(Events $event, array $params = array(), array $htmlOptions
     = array()) {
@@ -51,6 +55,11 @@ class EventTextFormatter {
             $text = static::$eventTextFn($event, $params, $htmlOptions);
         } else {
             $text = static::formatDefault($event, $params, $htmlOptions);
+        }
+        if (!static::$renderedRecordLinks && !empty($event->recordLinks)) {
+            $text .= '<br /><br /><div>'.Yii::t('app', 'Associated Records').'</div>';
+            $text .= $event->renderRecordLinks(array('style' => 'margin-bottom: 0px'));
+            static::$renderedRecordLinks = false;
         }
         if ($truncated && mb_strlen($text, 'UTF-8') > 250) {
             $text = mb_substr($text, 0, 250, 'UTF-8') . "...";
@@ -834,6 +843,11 @@ class EventTextFormatter {
             } else {
                 $text = $authorText . ": " . $event->text;          
             }
+        }
+        if (!empty($event->recordLinks)) {
+            $text .= '<br /><br /><div>'.Yii::t('app', 'Associated Records').'</div>';
+            $text .= $event->renderRecordLinks(array('style' => 'margin-bottom: 0px'));
+            static::$renderedRecordLinks = true;
         }
         if (count($event->media) > 1) {
             $index = 0;

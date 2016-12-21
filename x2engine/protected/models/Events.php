@@ -1075,20 +1075,18 @@ class Events extends X2ActiveRecord {
     /**
      * Render a list of links to associated records
      */
-    public function renderRecordLinks() {
+    public function renderRecordLinks($htmlOptions = array()) {
+        $modelLinks = array();
         if (!empty($this->recordLinks) && is_array($this->recordLinks)) {
-            echo '<ul>';
             foreach ($this->recordLinks as $link) {
                 if (isset($link[0]) && isset($link[1])) {
                     $model = X2Model::model($link[0])->findByPk($link[1]);
                     if ($model) {
-                        echo '<li>';
-                        echo $model->getLink();
-                        echo '</li>';
+                        $modelLinks[] = array('content' => $model->getLink());
                     }
                 }
             }
-            echo '</ul>';
+            return X2Html::ul($modelLinks, $htmlOptions);
         }
     }
 }
