@@ -162,18 +162,18 @@ Yii::app()->clientScript->registerGeolocationScript();
                  
                 $loginLogo = Media::getLoginLogo ();
                 if ($loginLogo) {
-                    echo CHtml::image(
+                    echo CHtml::link(CHtml::image(
                         $loginLogo->getPublicUrl (),
                         Yii::app()->settings->appName,
                         array (
                             'id' => 'custom-login-form-logo',
-                        ));
+                        )), 'https://www.x2crm.com/', array('class' => 'login-logo-link'));
                 } else {
                  
-                    echo X2Html::logo ('login_'.(LoginThemeHelper::singleton ()->usingDarkTheme ?
+                    echo CHtml::link(X2Html::logo ('login_'.(LoginThemeHelper::singleton ()->usingDarkTheme ?
                         'white' : 'black'), array (
                         'id' => 'login-form-logo',
-                    ));
+                    )), 'https://www.x2crm.com/', array('class' => 'login-logo-link'));
                   
                 }
                  
@@ -321,7 +321,7 @@ Yii::app()->clientScript->registerGeolocationScript();
                 </div>
                 <div id="login-version">
                     <a href='#' id='dark-theme-button' class='fa fa-adjust text-link'></a>
-                    <span>X2CRM Version <?php echo Yii::app()->params->version; ?>, <a href="http://www.x2crm.com">X2Engine, Inc.</a></span>
+                    <span>X2CRM Version <?php echo Yii::app()->params->version; ?>, <a href="https://www.x2crm.com">X2Engine, Inc.</a></span>
                 </div>
                 <div style='display:none' class="row theme-selection">
                     <span class="switch" >
