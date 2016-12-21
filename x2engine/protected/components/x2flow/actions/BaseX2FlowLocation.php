@@ -42,7 +42,6 @@
  * @package application.components.x2flow.actions
  */
 abstract class BaseX2FlowLocation extends X2FlowAction {
-
     protected $typeDropdown = array(
         'login' => 'User Login',
         'webactivity' => 'Website Activity',
@@ -165,6 +164,7 @@ abstract class BaseX2FlowLocation extends X2FlowAction {
         }
 
         $distance = intval($this->parseOption('distance', $params));
+        //printR(gettype($distance), true);
         $time = intval($this->parseOption('time', $params));
 
         $locations = Locations::model()->findAll('type="' . $this->getKey($this->parseOption('type', $params), $this->typeDropdown) . '"');
@@ -192,9 +192,9 @@ abstract class BaseX2FlowLocation extends X2FlowAction {
                     break;
                 }
             }
-            if ($location->recordId == Yii::app()->params->profile->id) {
-                continue;
-            } else if (!$found && $miles <= $distance && $days <= $time) {
+            //if ($location->recordId == Yii::app()->params->profile->id) {
+            //    continue;
+            /*} else*/ if (!$found && $miles <= $distance && $days <= $time) {
                 $result[$location->recordId] = $location;
             }
         }
