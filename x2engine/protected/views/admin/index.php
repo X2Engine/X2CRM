@@ -801,7 +801,7 @@ $failedLoginsDataProvider = new CActiveDataProvider('FailedLogins',
                 <h2 id="admin-hub"><?php
                     echo Yii::t('admin', 'X2 Hub Services');
                     ?></h2>
-                <p>
+                <p class="cell">
                     <?php echo Yii::t('admin', 'X2 Hub Services is a cloud information service provided by X2Engine Inc. It includes connectors for security, calendaring, mapping, speech, email, text, and other network services. For more information and to purchase a subscription, please visit {url}.', array('{url}' => CHtml::link('https://www.x2crm.com/', 'https://www.x2crm.com/', array('target' => '_blank')))); ?>
                 </p>
                 <div class="cell span-6"><?php
