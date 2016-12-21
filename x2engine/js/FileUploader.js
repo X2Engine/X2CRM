@@ -145,6 +145,13 @@ x2.FileUploader = (function() {
                 formData.append (key, that.mediaParams[key]);
             }
 
+            var recordLinks = $("#Events_recordLinks").val();
+            if (recordLinks) {
+                formData.append ('recordLinks', recordLinks);
+                $("#Events_recordLinks").val('');
+                $("#feed_record_links").html('');
+            }
+
         });
 
     };

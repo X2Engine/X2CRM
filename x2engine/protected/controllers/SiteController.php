@@ -760,6 +760,8 @@ class SiteController extends x2base {
         $event->lastUpdated = time();
         $event->associationId = $model->associationId;
         $event->associationType = 'User';
+        if (isset($_POST['recordLinks']) && ($decodedLinks = CJSON::decode($_POST['recordLinks'], true)))
+            $event->recordLinks = $decodedLinks;
         $newEventIdTimestamp = $event->timestamp;
         if ($model->private) 
             $event->visibility = 0;
@@ -909,6 +911,8 @@ class SiteController extends x2base {
                             $event->lastUpdated = time();
                             $event->associationId = $model->id;
                             $event->associationType = 'Media';
+                            if (isset($_POST['recordLinks']) && ($decodedLinks = CJSON::decode($_POST['recordLinks'], true)))
+                                $event->recordLinks = $decodedLinks;
                             $event->save();
                             if (Auxlib::isAjax()) return print("success");
                             $this->redirect(array('/profile/view', 'id' => Yii::app()->user->getId()));
