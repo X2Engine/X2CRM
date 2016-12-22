@@ -1175,6 +1175,11 @@ ActivityFeed.prototype.updateEventList = function  () {
                     $newElem = $(text).hide().prependTo("#new-events");
                     that.makePostExpandable ($newElem.find ('.event-text-box').children ('.event-text'));
                     $newElem.fadeIn(1000);
+                    $('.attachment-img').each (function () {
+                        new x2.EnlargeableImage ({
+                            elem: $(this)
+                        });                                       
+                    });
                 }
                 if(data[2]){
                     var comments=data[2];
