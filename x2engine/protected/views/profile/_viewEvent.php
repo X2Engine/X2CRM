@@ -191,7 +191,6 @@ $important = $data->important ? 'important-action' : '';
                 <?php
                     }
                 ?>
-            
         </span>
         <div class='event-bottom-row'>
             <span class="comment-age x2-hint" id="<?php echo $data->id . "-" . $data->timestamp; ?>" 

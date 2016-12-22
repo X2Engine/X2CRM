@@ -754,12 +754,24 @@ class SiteController extends x2base {
         } /*else {
             $event->text = Yii::t('app', 'Attached file: ');
         }*/
+        $location = Yii::app()->params->profile->user->logLocation('activityPost', 'POST');
+        $geoCoords = isset($_POST['geoCoords']) ? CJSON::decode($_POST['geoCoords'], true) : null;
+        $isCheckIn = ($geoCoords && (isset($geoCoords['lat']) || isset($geoCoords['locationEnabled'])));
+        if ($location && $isCheckIn) {
+            // Only associate location when a checkin is requested
+            $event->locationId = $location->id;
+            $staticMap = $location->generateStaticMap();
+            $event->text .= '$|&|$' . $geoCoords['comment'] . '$|&|$'; //temporary dividers to be parsed later
+            $geocodedAddress = $location->geocode();
+        }
         $event->type = 'media';
         $event->subtype = 'Social Post';
         $event->timestamp = time();
         $event->lastUpdated = time();
         $event->associationId = $model->associationId;
         $event->associationType = 'User';
+        if (isset($_POST['recordLinks']) && ($decodedLinks = CJSON::decode($_POST['recordLinks'], true)))
+            $event->recordLinks = $decodedLinks;
         $newEventIdTimestamp = $event->timestamp;
         if ($model->private) 
             $event->visibility = 0;
@@ -768,6 +780,13 @@ class SiteController extends x2base {
             $event->locationId = $location->id;
         if ($event->save()) {
             //$this->redirect('profile');
+            if (!empty($staticMap)) {
+                if (!empty($geocodedAddress)) { 
+                    $event->text .= Yii::t('app', 'Checking in at ').$geocodedAddress.' | '.
+                        Formatter::formatDateTime(time());
+                }
+                $event->saveRaw(Yii::app()->params->profile, $staticMap);
+            }
         } else {
             unlink('uploads/protected/' . $name);
         }
@@ -909,6 +928,8 @@ class SiteController extends x2base {
                             $event->lastUpdated = time();
                             $event->associationId = $model->id;
                             $event->associationType = 'Media';
+                            if (isset($_POST['recordLinks']) && ($decodedLinks = CJSON::decode($_POST['recordLinks'], true)))
+                                $event->recordLinks = $decodedLinks;
                             $event->save();
                             if (Auxlib::isAjax()) return print("success");
                             $this->redirect(array('/profile/view', 'id' => Yii::app()->user->getId()));

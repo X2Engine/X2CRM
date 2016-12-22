@@ -958,13 +958,14 @@ class X2ClientScript extends NLSClientScript {
                     if ($("#toggle-location-button").data("location-enabled") === true) {
                         // Clear geoCoords field and reset style
                         $("#checkInComment").slideUp();
+                        $("#toggle-location-comment-button").slideUp().css("color", "");
                         $("'.$selector.'").val("");
                         $("#toggle-location-button")
                             .data("location-enabled", false)
                             .css("color", "");
                     } else {
                         // Populate geoCoords field and highlight blue
-                        $("#checkInComment").slideDown();
+                        $("#toggle-location-comment-button").slideDown();
                         $("#toggle-location-button")
                             .data("location-enabled", true)
                             .css("color", "blue");'.
@@ -983,6 +984,16 @@ class X2ClientScript extends NLSClientScript {
                           });
                         }' : '$("'.$selector.'").val(JSON.stringify ({locationEnabled: true}));').
                     '}
+                });
+                $("#toggle-location-comment-button").click(function(evt) {
+                    evt.preventDefault();
+                    if ($("#checkInComment").is(":visible")) {
+                        $("#checkInComment").slideUp();
+                        $("#toggle-location-comment-button").css("color", "");
+                    } else {
+                        $("#toggle-location-comment-button").css("color", "blue");
+                        $("#checkInComment").slideDown();
+                    }
                 });
             ', $pos);
         } else if ($enableGeolocation && isset($_SERVER['HTTPS']) && $noDNT) {
@@ -1009,7 +1020,7 @@ class X2ClientScript extends NLSClientScript {
      * @param bool $multiple whether to operate on multiple geoCoords inputs
      * @param const $pos CClientScript position
      */
-    public function registerCheckinScript($submitSelector, $multiple = false, $pos = CClientScript::POS_READY) {
+    public function registerCheckinScript($submitSelector, $onByDefault = false, $multiple = false, $pos = CClientScript::POS_READY) {
         $selector = $multiple ? "input[name=geoCoords]" : "#geoCoords";
         Yii::app()->clientScript->registerScript('checkInJs', '
             $("#checkInComment").on("blur", function() {
@@ -1031,6 +1042,11 @@ class X2ClientScript extends NLSClientScript {
                     .val("");
             });
         ', $pos);
+        if ($onByDefault) {
+            Yii::app()->clientScript->registerScript('startCheckInJs', '
+                $("#toggle-location-button").click();
+            ', CClientScript::POS_READY);
+        }
     }
 
     /**

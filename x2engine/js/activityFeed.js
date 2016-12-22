@@ -174,10 +174,13 @@ ActivityFeed.prototype.publishPost = function  () {
             "associationId":$("#Events_associationId").val(),
             "visibility":$("#Events_visibility").val(),
             "subtype":$("#Events_subtype").val(),
+            "recordLinks":$("#Events_recordLinks").val(),
             "geoCoords":$("#geoCoords").val()
         },
         success:function(){
             that.finishMinimizeEditor ();
+            $("#Events_recordLinks").val(''); // clear out associated record links
+            $("#feed_record_links").html('');
         },
         failure:function(){
             window.newPostEditor.focusManager.unlock ();
@@ -434,6 +437,7 @@ ActivityFeed.prototype.setupEditorBehavior = function  () {
             that.fileUploader.mediaParams.attachmentText = window.newPostEditor.getData ();
             that.fileUploader.mediaParams.private = $("#file-uploader-private:checked").length > 0;
             that.fileUploader.mediaParams.associationId = $("#Events_associationId").val();
+            that.fileUploader.mediaParams.geoCoords = $("#geoCoords").val();
             that.fileUploader.upload();
             return;
         }
@@ -1171,6 +1175,11 @@ ActivityFeed.prototype.updateEventList = function  () {
                     $newElem = $(text).hide().prependTo("#new-events");
                     that.makePostExpandable ($newElem.find ('.event-text-box').children ('.event-text'));
                     $newElem.fadeIn(1000);
+                    $('.attachment-img').each (function () {
+                        new x2.EnlargeableImage ({
+                            elem: $(this)
+                        });                                       
+                    });
                 }
                 if(data[2]){
                     var comments=data[2];
