@@ -168,7 +168,7 @@ if ($supportsActionHistory) {
     <div id='<?php echo MobileHtml::namespaceId ('action-history');?>' class='action-history-outer'>
 
     <?php
-        $this->renderPartial ('application.modules.mobile.views.mobile._actionHistory', array (
+        $this->renderPartial ('application.modules.mobile.views.mobile._actionHistoryAttachments', array (
             'model' => $model,
             'type' => 'all',
         ));
