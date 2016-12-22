@@ -92,11 +92,19 @@ class MobilePublisherAction extends MobileAction {
             if ($model->validate ()) {
                 //AuxLib::debugLogR ('valid');
                 $event = new Events;
+                $eventTextLocation = '';
+                if (!empty($model->textLocation))
+                    $eventTextLocation = $model->text . '$|&|$' . ' ' . '$|&|$' . 
+                              $model->textLocation . ' | '. 
+                              Formatter::formatDateTime(time());
+                else 
+                    $eventTextLocation = $model->text . '$|&|$' . ' ' . '$|&|$';
+                    
                 $event->setAttributes (array (
                     'visibility' => X2PermissionsBehavior::VISIBILITY_PUBLIC,
                     'user' => $profile->username,
                     'type' => 'media',
-                    'text' => $model->text . $model->textLocation,
+                    'text' => $eventTextLocation,
                     'photo' => $model->photo,
                     'audio' => $model->audio
                     //'video' => $model->video
