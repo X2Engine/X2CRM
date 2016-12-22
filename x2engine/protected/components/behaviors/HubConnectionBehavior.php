@@ -49,7 +49,7 @@
 class HubConnectionBehavior extends CModelBehavior {
 
     public function getHubServerUrl() {
-        return 'http://localhost/Hub/index.php';
+        return 'https://hub.x2crm.com/index.php';
     }
 
     public function pingHub() {
