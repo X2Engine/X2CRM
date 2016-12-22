@@ -42,6 +42,7 @@
  * @package application.components.x2flow.actions
  */
 abstract class BaseX2FlowLocation extends X2FlowAction {
+
     protected $typeDropdown = array(
         'login' => 'User Login',
         'webactivity' => 'Website Activity',
@@ -134,6 +135,9 @@ abstract class BaseX2FlowLocation extends X2FlowAction {
     }
 
     protected function createMessage(&$params, $record, $isLink) {
+        $url = 'http://x2developer.com/~isaiah/x2engine/index.php/profile/';
+        $recordUser = $this->getUserFromRecord($record);
+        $recordId = $recordUser->id;
         $recent = $this->getRecentLoginRecord();
         $distance = $this->getRecordDistance($record, $params);
         $distanceUnits = $this->parseOption('distance_units', $params);
@@ -148,12 +152,12 @@ abstract class BaseX2FlowLocation extends X2FlowAction {
             }
         }
 
-        $message = sprintf('%s has %s %d %s away on %s at %s. ', $this->getUserFullName($record), $typeText, $distance, $distanceUnits, $date, $time);
         if ($isLink) {
+            $message = sprintf('<a href="%s">%s</a> has %s %d %s away on %s at %s. ', $url . $recordId, $this->getUserFullName($record), $typeText, $distance, $distanceUnits, $date, $time);
             $message .= sprintf('<a href="https://google.com/maps/dir/%f,%f/%f,%f/">Get directions</a>', $recent->lat, $recent->lon, $record->lat, $record->lon);
-        } /* else {
-          $message = sprintf('%s has %s %d %s away on %s at %s. ', $this->getUserFullName($record), $typeText, $distance, $distanceUnits, $date, $time);
-          } */
+        } else {
+            $message = sprintf('%s has %s %d %s away on %s at %s. ', $this->getUserFullName($record), $typeText, $distance, $distanceUnits, $date, $time);
+        }
 
         return $message;
     }
@@ -164,7 +168,6 @@ abstract class BaseX2FlowLocation extends X2FlowAction {
         }
 
         $distance = intval($this->parseOption('distance', $params));
-        //printR(gettype($distance), true);
         $time = intval($this->parseOption('time', $params));
 
         $locations = Locations::model()->findAll('type="' . $this->getKey($this->parseOption('type', $params), $this->typeDropdown) . '"');
@@ -194,7 +197,7 @@ abstract class BaseX2FlowLocation extends X2FlowAction {
             }
             //if ($location->recordId == Yii::app()->params->profile->id) {
             //    continue;
-            /*} else*/ if (!$found && $miles <= $distance && $days <= $time) {
+            /* } else */ if (!$found && $miles <= $distance && $days <= $time) {
                 $result[$location->recordId] = $location;
             }
         }
@@ -217,7 +220,6 @@ abstract class BaseX2FlowLocation extends X2FlowAction {
 
     protected function getUserFromRecord($record) {
         $users = User::model()->findAll();
-
         foreach ($users as $current) {
             if ($record->recordId === $current->id) {
                 return $current;
