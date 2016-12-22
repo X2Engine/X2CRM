@@ -50,6 +50,7 @@ $this->onPageLoad ("
         photoAttrName: ".CJSON::encode ($htmlOptions['name']).",
         translations: ".CJSON::encode (array (
             'Checking in at' => Yii::t('app','Checking in at'),
+            'Thanks for checking in!' => Yii::t('app','Thanks for checking in!'),
         )).",
     });
 ", CClientScript::POS_END);
