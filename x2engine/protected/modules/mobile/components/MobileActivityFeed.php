@@ -56,13 +56,19 @@ class MobileActivityFeed {
                 $text = $model->getText (array ('requireAbsoluteUrl' => true));
                 break;
         }
+        // This is needed to parse the activity text, location comment, and 
+        // location info from one string and format the text on the post accordingly
         $eventTexts = explode('$|&|$', $text);
         if(count($eventTexts) == 3) { 
-            $text = "Checkin Post: ". "<br><br>" .$eventTexts[2] . "<br><br>" .$eventTexts[0];
-            if (strcmp($eventTexts[1],' '))
-                $text.="<br><br>" ."Location Comment:<br>".$eventTexts[1];
+            $text = Yii::t('app', 'Checkin Post').": ". "<br><br>" .$eventTexts[2] . "<br><br>" .$eventTexts[0];
+            // take out all white space, if the location comment part of the text
+            // is completely empty, don't even include 'Location Comment:'
+            $string = preg_replace('~\x{00a0}~','',$eventTexts[1]);
+            $stringNoWhiteSpace = preg_replace('/\s/', '', $string);
+            if (strcmp($stringNoWhiteSpace,''))
+                $text.="<br><br>" .Yii::t('app', 'Location Comment').":<br>".$eventTexts[1];
         } else {
-            $text = "Checkin Post: "."<br><br>" .$eventTexts[0];
+            $text = Yii::t('app', 'Checkin Post').": "."<br><br>" .$eventTexts[0];
         }
         //takeout trailing $|&|$ that's used to format activity feed posts
         $text = str_replace("$|&|$", "", $text);

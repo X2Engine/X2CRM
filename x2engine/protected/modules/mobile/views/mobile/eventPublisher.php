@@ -51,6 +51,9 @@ $this->onPageLoad ("
         locationAttrName: ".CJSON::encode ($htmlOptions['name']).",
         audioAttrName: ".CJSON::encode ($htmlOptions['name']).",
         videoAttrName: ".CJSON::encode ($htmlOptions['name']).",
+        translations: ".CJSON::encode (array (
+            'Checking in at' => Yii::t('app','Checking in at'),
+        )).",
     });
 ", CClientScript::POS_END);
 

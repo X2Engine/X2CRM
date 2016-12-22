@@ -41,6 +41,7 @@ function CheckInPublisherController (argsDict) {
     var defaultArgs = {
         DEBUG: x2.DEBUG && false,
         photoAttrName: '',
+        translations: {}
 
     };
     auxlib.applyArgs (this, defaultArgs, argsDict);
@@ -83,8 +84,8 @@ CheckInPublisherController.prototype.setUpForm = function () {
                        return;
                    }
                    var theAddress = data['results'][0]['formatted_address'];
-                   $.mobile.activePage.find ('.event-text-box').val("Checking in at "+theAddress);
-                    alert("Thanks for checking in!");
+                   $.mobile.activePage.find ('.event-text-box').val(that.translations['Checking in at']+' '+theAddress);
+                    alert(that.translations['Thanks for checking in!']);
                     $.mobile.activePage.find('.post-event-button').trigger( "click" );
                } catch (e) {
                    /*
