@@ -1,18 +1,20 @@
-# 6.5.1 #
-11/17/2016
+# 6.5.2 #
+{releaseDate}
 * General Changelog / Developer Notes
-  * Added open rate, click rate, and unsubscribe rate attributes to Campaigns
-  * Added ability to import Contacts from mobile devices
-  * Added static maps to webapp check ins
-  * Added mobile audio attachments
-  * Resurfaced calendar event reminders
-  * Fixed broken images in Image Gallery widget
-* Tracked Bug Fixes:
-  * [3396](http://x2software.com/index.php/bugReports/3396): CDbCommand failed to execute the SQL statement: SQLSTATE[23000]: Integrity constraint violation: 1451 Cannot delete or update a parent row: a foreign key constraint fails (`nevulosa_x2153`.`x2_actions`, CONSTRAINT `fk_actions_workflow_id` FOREIGN KEY
-  * [5375](http://x2software.com/index.php/bugReports/5375): syntax error, unexpected '}'
-  * [5391](http://x2software.com/index.php/bugReports/5391): CDbCommand failed to execute the SQL statement: SQLSTATE[42000]: Syntax error or access violation: 1064 You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near ') AND x2_lo
-  * [5416](http://x2software.com/index.php/bugReports/5416): Undefined variable: sessionTokenCookie
-  * [5420](http://x2software.com/index.php/bugReports/5420): Argument 1 passed to RelationshipsBehavior::deleteRelationship() must be an instance of CActiveRecord, null given
+  * X2Touch Improvements
+    * Added video attachments on iOS
+    * Added audio attachments on iOS and Android
+  * New X2Workflow actions for creating notifications, emails, text messages, and activity feed posts with records in a specified proximity
+  * Activity feed posts can now be associated with arbitrary records
+  * Added Twilio account type and SMS-based two factor authentication
+  * Checkin post formatting improvements
+  * Added weblead form thank you text customization
+  * Fixed Doc template usage with Opportunities
+  * Added option to toggle geolocation functionality
+  * Standard Actions can now be posted to a user's calendar
+  * Added ability to relabel existing relationships
+  * AnonContact webactivity visits can now be filtered from your notifications
+  * Miscellaneous bug fixes
 
 # Introduction #
 Welcome to X2CRM!
