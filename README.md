@@ -1,5 +1,5 @@
 # 6.5.2 #
-{releaseDate}
+12/23/2016
 * General Changelog / Developer Notes
   * X2Touch Improvements
     * Added video attachments on iOS
