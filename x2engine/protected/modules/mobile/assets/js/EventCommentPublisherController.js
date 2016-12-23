@@ -59,6 +59,9 @@ EventCommentPublisherController.prototype.setUpForm = function () {
 
     var cameraButton$ = $('#footer .photo-attach-button');
     var attachmentsContainer$ = this.form$.find ('.photo-attachments-container');
+    var audioButton$ = $('#footer .audio-attach-button');
+    var videoButton$ = $('#footer .video-attach-button');
+    
     new x2.CameraButton ({
         element$: cameraButton$,
         validate: function () {
@@ -69,6 +72,70 @@ EventCommentPublisherController.prototype.setUpForm = function () {
             attachmentsContainer$.append (attachment$);
         },
         failure: function (message) {
+        }
+    });
+    
+    new x2.AudioButton ({
+        element$: audioButton$,
+        success: function (data) {
+            var attachment$ = x2.mobileForm.makeAudioAttachment (data.type,data.fullPath);
+            attachment$.hide ();
+            that.form$.find ('.' + x2.mobileForm.audioAttachmentClass).remove ();
+            that.form$.append (attachment$);
+            $.mobile.loading ('show');
+            x2.mobileForm.submitWithAudio (
+                data.type,
+                that.form$.attr ('action'), 
+                that.form$, 
+                'EventCommentPublisherFormModel[audio]',
+                function (response) {
+                    if (response.responseCode == 200)  {
+                        if (that.publisherIsActive) togglePublisher$.click ();
+                        $.mobile.activePage.append ($(response.response).find ('.refresh-content'));
+                        x2.main.refreshContent ();
+                        $.mobile.loading ('hide');
+                    } else {
+                        $.mobile.loading ('hide');
+                        x2.main.alert ('Upload failed', 'Error');
+                    }
+                },
+                function (error) {
+                    $.mobile.loading ('hide');
+                    x2.main.alert (error.body, 'Error');
+                }
+            );
+        }
+    });
+    
+    new x2.VideoButton ({
+        element$: videoButton$,
+        success: function (data) {
+            var attachment$ = x2.mobileForm.makeVideoAttachment (data.type,data.fullPath);
+            attachment$.hide ();
+            that.form$.find ('.' + x2.mobileForm.videoAttachmentClass).remove ();
+            that.form$.append (attachment$);
+            $.mobile.loading ('show');
+            x2.mobileForm.submitWithVideo (
+                data.type,
+                that.form$.attr ('action'), 
+                that.form$, 
+                'EventCommentPublisherFormModel[video]',
+                function (response) {
+                    if (response.responseCode == 200)  {
+                        if (that.publisherIsActive) togglePublisher$.click ();
+                        $.mobile.activePage.append ($(response.response).find ('.refresh-content'));
+                        x2.main.refreshContent ();
+                        $.mobile.loading ('hide');
+                    } else {
+                        $.mobile.loading ('hide');
+                        x2.main.alert ('Upload failed', 'Error');
+                    }
+                },
+                function (error) {
+                    $.mobile.loading ('hide');
+                    x2.main.alert (error.body, 'Error');
+                }
+            );
         }
     });
 

@@ -429,6 +429,37 @@ class Actions extends X2Model {
         return self::getAssociationModel($this->associationType, $this->associationId);
     }
     
+    /**
+     * Includes text to an action or creates one if it doesn't already exist
+     * @param string $textToBeIncluded the text to be included in the action description
+     * @return 
+     */
+    public function includeTextToAction($textToBeIncluded){
+        // No action text exists for this yet
+        if(!($this->actionText instanceof ActionText)){
+            $actionText = new ActionText; // Create new one
+            $actionText->actionId = $this->id;
+            $actionText->text = $textToBeIncluded; // A magic setter sets actionDescriptionTemp value
+            $actionText->save();
+        }else{ // We have an action text
+            if($this->actionText->text != $textToBeIncluded){ // Only update if different
+                $this->actionText->text = $textToBeIncluded;
+                $this->actionText->save();
+            }
+        }
+        return;
+
+    }
+
+    /**
+     * Creates a photo (.png) under uploads/protected/media/[USER] given the raw data 
+     * and relates it to an action. The relationship is stored in 'x2_actions_to_media'
+     * @param User $profile the profile of the user that did the action
+     * @param string $attachmentData raw image data (format png)
+     * @param Bool $runValidation used to enable/disable X2Flow record update trigger
+     * @param Array $attributes attributes for enabling/disabling X2Flow record update trigger
+     * @return Bool
+     */
     public function saveRaw ($profile, $attachmentData, $runValidation=true, $attributes=null) {
 
             // save related photo record
@@ -581,19 +612,7 @@ class Actions extends X2Model {
     }
 
     private function saveMetaData () {
-        // No action text exists for this yet
-        if(!($this->actionText instanceof ActionText)){
-            $actionText = new ActionText; // Create new oen
-            $actionText->actionId = $this->id;
-            $actionText->text = $this->actionDescriptionTemp; // A magic setter sets actionDescriptionTemp value
-            $actionText->save();
-        }else{ // We have an action text
-            if($this->actionText->text != $this->actionDescriptionTemp){ // Only update if different
-                $this->actionText->text = $this->actionDescriptionTemp;
-                $this->actionText->save();
-            }
-        }
-
+        $this->includeTextToAction ($this->actionDescriptionTemp);
 
         if (!$this->actionMetaData instanceof ActionMetaData) {
             $metaData = new ActionMetaData;
@@ -649,9 +668,11 @@ class Actions extends X2Model {
         if ($this->reminder) {
             if (!$this->isNewRecord)
                 $this->deleteOldNotifications ($this->notificationUsers);
-            $this->createNotifications (
-                $this->notificationUsers,
-                $this->dueDate - ($this->notificationTime * 60), 'action_reminder');
+            $notifTime = $this->dueDate - ($this->notificationTime * 60);
+            if ($this->complete !== 'Yes' && $notifTime >= time()) {
+                // Only recreate the reminder if it hasn't happened yet or the Action is incomplete
+                $this->createNotifications($this->notificationUsers, $notifTime, 'action_reminder');
+            }
         }
 
         

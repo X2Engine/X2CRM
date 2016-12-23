@@ -1,5 +1,6 @@
 <?php
-/***********************************************************************************
+
+/* * *********************************************************************************
  * X2CRM is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2016 X2Engine Inc.
  * 
@@ -33,7 +34,7 @@
  * X2Engine" logo. If the display of the logo is not reasonably feasible for
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2Engine".
- **********************************************************************************/
+ * ******************************************************************************** */
 
 /**
  * X2FlowAction that adds a comment to a record
@@ -45,20 +46,20 @@ class X2FlowRecordComment extends X2FlowAction {
     public $title = 'Add Comment';
     public $info = '';
 
-    public function paramRules(){
-        $assignmentOptions = array('{assignedTo}' => '{'.Yii::t('studio', 'Owner of Record').'}') + 
-            X2Model::getAssignmentOptions(false, true);
-        return array_merge (parent::paramRules (), array (
+    public function paramRules() {
+        $assignmentOptions = array('{assignedTo}' => '{' . Yii::t('studio', 'Owner of Record') . '}') +
+                X2Model::getAssignmentOptions(false, true);
+        return array_merge(parent::paramRules(), array(
             'title' => Yii::t('studio', $this->title),
             'modelRequired' => 1,
             'options' => array(
                 array(
-                    'name' => 'assignedTo', 
-                    'label' => Yii::t('actions', 'Assigned To'), 
+                    'name' => 'assignedTo',
+                    'label' => Yii::t('actions', 'Assigned To'),
                     'type' => 'dropdown', 'options' => $assignmentOptions,
                 ),
                 array(
-                    'name' => 'comment', 
+                    'name' => 'comment',
                     'label' => Yii::t('studio', 'Comment'),
                     'type' => 'text'
                 ),
@@ -66,7 +67,7 @@ class X2FlowRecordComment extends X2FlowAction {
         ));
     }
 
-    public function execute(&$params){
+    public function execute(&$params) {
         $model = new Actions;
         $model->type = 'note';
         $model->complete = 'Yes';
@@ -76,22 +77,23 @@ class X2FlowRecordComment extends X2FlowAction {
         $model->assignedTo = $this->parseOption('assignedTo', $params);
         $model->completedBy = $this->parseOption('assignedTo', $params);
 
-        if(empty($model->assignedTo) && $params['model']->hasAttribute('assignedTo')){
+        if (empty($model->assignedTo) && $params['model']->hasAttribute('assignedTo')) {
             $model->assignedTo = $params['model']->assignedTo;
             $model->completedBy = $params['model']->assignedTo;
         }
 
-        if($params['model']->hasAttribute('visibility'))
+        if ($params['model']->hasAttribute('visibility')) {
             $model->visibility = $params['model']->visibility;
+        }
         $model->createDate = time();
         $model->completeDate = time();
 
-        if($model->save()){
+        if ($model->save()) {
             return array(
                 true,
-                Yii::t('studio', 'View created action: ').$model->getLink());
-        }else{
-            $errors = $model->getErrors ();
+                Yii::t('studio', 'View created action: ') . $model->getLink());
+        } else {
+            $errors = $model->getErrors();
             return array(false, array_shift($errors));
         }
     }

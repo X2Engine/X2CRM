@@ -39,6 +39,9 @@ class MobileActiveForm extends X2ActiveForm {
 
     public $JSClass = 'MobileActiveForm'; 
     public $photoAttrName = null; 
+    public $audioAttrName = null; 
+    public $videoAttrName = null; 
+    public $locationPhotoAttrName = null;
     public $redirectUrl = null; 
 
     public function getPackages () {
@@ -56,6 +59,9 @@ class MobileActiveForm extends X2ActiveForm {
     public function getJSClassParams () {
         return array_merge (parent::getJSClassParams (), array (
             'photoAttrName' => $this->photoAttrName,
+            'locationPhotoAttrName' => $this->locationPhotoAttrName,
+            'audioAttrName' => $this->audioAttrName,
+            'videoAttrName' => $this->videoAttrName,
             'redirectUrl' => $this->redirectUrl ? $this->redirectUrl : AuxLib::getRequestUrl (),
         ));
     }

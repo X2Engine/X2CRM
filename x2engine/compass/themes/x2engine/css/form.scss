@@ -494,6 +494,9 @@ div.form .background-row {
         &#admin-security {
             @include fa-icon('shield');
         }
+        &#admin-hub {
+            @include fa-icon('cloud');
+        }
     }
     
     div {
@@ -552,6 +555,9 @@ div.form .background-row {
         }
         &#admin-security {
             @include fa-icon('shield');
+        }
+        &#admin-hub {
+            @include fa-icon('cloud');
         }
     }
 }

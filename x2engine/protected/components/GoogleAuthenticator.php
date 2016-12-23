@@ -93,12 +93,45 @@ class GoogleAuthenticator {
     private $_enabled;
 
     /**
+     * X2 Hub Credentials, if available
+     * @var Credentials
+     */
+    private $_hubCredentials;
+
+    /**
+     * Current GoogleAuthenticator scenario for Hub interactions
+     */
+    private $_hubScenario = null;
+
+    /**
+     * Valid GoogleAuthenticator scenarios for Hub interactions
+     */
+    private $_hubScenarios = array(
+        'calendar',
+    );
+
+    /**
      * Constructor that sets up the Authenticator with all the required data to
      * connect to Google properly.
      */
-    public function __construct() {
+    public function __construct($scenario = null) {
         $this->_enabled = Yii::app()->settings->googleIntegration; // Check if integration is enabled in the first place
         $credentials = Yii::app()->settings->getGoogleIntegrationCredentials ();
+        if (Yii::app()->settings->hubCredentialsId && in_array($scenario, $this->_hubScenarios)) {
+            // Check if Hub integration is configured
+            $hubCreds = Credentials::model()->findByPk(Yii::app()->settings->hubCredentialsId);
+            if ($hubCreds && $hubCreds->auth && $hubCreds->auth->hubEnabled) {
+                if ($scenario === 'calendar' && $hubCreds->auth->enableGoogleCalendar) {
+                    $this->_hubScenario = $scenario;
+                    if(empty($this->redirectUri)){
+                        $this->redirectUri = (@$_SERVER['HTTPS'] == 'on' ? 'https://' : 'http://').
+                            $_SERVER['HTTP_HOST'].Yii::app()->controller->createUrl('');
+                    }
+                    $this->_hubCredentials = $hubCreds;
+                    return;
+                }
+            }
+        }
         if($this->_enabled){
             $this->clientId = $credentials['clientId'];
             $this->clientSecret = $credentials['clientSecret'];
@@ -166,6 +199,12 @@ class GoogleAuthenticator {
     }
     
     public function exchangeRefreshToken($refreshToken) {
+        if ($this->_hubCredentials) {
+            $hub = Yii::app()->controller->attachBehavior('HubConnectionBehavior', new HubConnectionBehavior);
+            $credentials = $hub->getGoogleAccessToken(Yii::app()->user->id, $this->_hubScenario, $this->redirectUri, null, $refreshToken);
+            if ($credentials)
+                return $credentials;
+        }
         if ($this->_enabled) {
             $client = new Google_Client();
             $client->setClientId($this->clientId);
@@ -221,6 +260,11 @@ class GoogleAuthenticator {
      * @return String Authorization URL to redirect the user to.
      */
     public function getAuthorizationUrl($state){
+        if ($this->_hubCredentials) {
+            $url = $this->getAuthorizationUrlFromHub($state);
+            if ($url)
+                return $url;
+        }
         if($this->_enabled){
             $client = new Google_Client();
 
@@ -251,6 +295,25 @@ class GoogleAuthenticator {
 //        return
 //                $tmpUrl['scheme'].'://'.$tmpUrl['host'].$tmpUrl['port'].
 //                $tmpUrl['path'].'?'.implode('&', $query);
+    }
+
+    protected function getAuthorizationUrlFromHub($state) {
+        if ($this->_hubCredentials) {
+            $type = $this->_hubScenario;
+            $hub = Yii::app()->controller->attachBehavior('HubConnectionBehavior', new HubConnectionBehavior);
+            switch($state){
+                case 'calendar':
+                    $_SESSION['calendarForceRefresh']=1;
+                    $redirectUri =
+                        (@$_SERVER['HTTPS'] == 'on' ? 'https://' : 'http://').$_SERVER['HTTP_HOST'].
+                            Yii::app()->controller->createUrl(
+                                '/calendar/calendar/syncActionsToGoogleCalendar');
+                    break;
+                default:
+                    $redirectUri = $this->redirectUri;
+            }
+            return $hub->getGoogleAuthorizationUrl(Yii::app()->user->id, $type, $redirectUri, $state);
+        }
     }
 
     /**
@@ -320,7 +383,7 @@ class GoogleAuthenticator {
      * refresh token.
      */
     public function flushCredentials($full = true){
-        if($this->_enabled){
+        if($this->_enabled || $this->_hubCredentials){
             unset($_SESSION['access_token']);
             unset($_SESSION['token']);
             unset($_GET['code']);
@@ -342,6 +405,11 @@ class GoogleAuthenticator {
      * @return String|boolean Returns either the JSON encoded access token, or false on failure
      */
     public function getAccessToken($userId = null){
+        if ($this->_hubCredentials) {
+            $token = $this->getAccessTokenFromHub($userId);
+            if ($token)
+                return $token;
+        }
         if($this->_enabled){
             $client = new Google_Client();
             $client->setClientId($this->clientId);
@@ -384,6 +452,55 @@ class GoogleAuthenticator {
                     $_SESSION['token'] = $credentials;
                     $_SESSION['access_token'] = $credentials;
                     return $credentials;
+                }catch(CodeExchangeException $e){
+                    return false;
+                }
+            }
+        }
+        return false; // No token was ever returned due to data not being set or exceptions. Return false to indicate a failure.
+    }
+
+    protected function getAccessTokenFromHub($userId) {
+        if(isset($_SESSION['access_token'])){ // The access token is already stored in the session, return it.
+            return $_SESSION['access_token'];
+        }
+        if ($this->_hubCredentials) {
+            $type = $this->_hubScenario;
+            $hub = Yii::app()->controller->attachBehavior('HubConnectionBehavior', new HubConnectionBehavior);
+
+            if(empty($userId)){
+                $userId = Yii::app()->user->getId();
+            }
+            if(!empty($userId) && !is_null($this->getStoredCredentials($userId))){ // We found a stored refresh token
+                $refreshToken = $this->getStoredCredentials($userId);
+                try{
+                    $credentials = $hub->getGoogleAccessToken($userId, $type, $this->redirectUri, null, $refreshToken);
+                    if ($credentials) {
+                        $_SESSION['token'] = $credentials; // Set credentials as a session variable for quicker lookup.
+                        $_SESSION['access_token'] = $credentials;
+                        return $credentials;
+                    }
+                }catch(Google_Auth_Exception $e){
+                    $profile = Yii::app()->params->profile;
+                    if(isset($profile)){ // If there was an error using the refresh token, remove it from the database so it can't cause issues.
+                        $profile->googleRefreshToken = null;
+                        $profile->update(array('googleRefreshToken'));
+                    }
+                    return false;
+                }
+            }
+            if(isset($_GET['code'])){ // There is a Google auth code in the GET request header.
+                try{
+                    $credentials = $hub->getGoogleAccessToken($userId, $type, $this->redirectUri, $_GET['code']); // Attempt to exchange the auth code for an access token.
+                    if ($credentials) {
+                        $_SESSION['token'] = $credentials;
+                        $_SESSION['access_token'] = $credentials;
+                        $credentialsArray = CJSON::decode($credentials, true);
+                        if (!empty($userId) && $credentialsArray && isset($credentialsArray['refresh_token'])){
+                            $this->storeCredentials($userId, $credentials);
+                        }
+                        return $credentials;
+                    }
                 }catch(CodeExchangeException $e){
                     return false;
                 }

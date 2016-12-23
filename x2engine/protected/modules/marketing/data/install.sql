@@ -64,6 +64,7 @@ CREATE TABLE x2_web_forms(
     generateLead         TINYINT DEFAULT 0,
     generateAccount      TINYINT DEFAULT 0,
     requireCaptcha       TINYINT DEFAULT 0,
+    thankYouText         TEXT DEFAULT NULL,
     PRIMARY KEY (id)
 ) COLLATE = utf8_general_ci;
 /*&*/

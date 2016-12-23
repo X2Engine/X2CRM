@@ -65,6 +65,7 @@ if (!empty($error)) { ?>
 } else { ?>
 	<h1 id='web-form-submit-message'><?php echo Yii::t('contacts','Thank You!'); ?></h1>
     <?php
+    if (empty($thankYouText)) {
     if ($type === 'weblead' || $type === 'weblist') { ?>
         <p><?php echo Yii::t('contacts','Thank you for your interest!'); ?></p>
     <?php
@@ -74,6 +75,13 @@ if (!empty($error)) { ?>
     } ?>
         <p><?php echo Yii::t('contacts','Someone will be in touch shortly.'); ?></p>
     <?php 
+    } else { ?>
+        <p><?php echo $thankYouText; ?></p>
+        <?php if ($type === 'service') { ?>
+            <p><?php echo Yii::t('contacts','Your case number is: ') . $caseNumber; ?></p>
+        <?php
+        }
+    }
 } 
 if (isset ($redirectUrl) && $redirectUrl) {
 ?>

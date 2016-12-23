@@ -79,24 +79,39 @@ class MobilePublisherAction extends MobileAction {
             $decodedResult = $location ? $location->generateStaticMap() : null;
             
             $model->setAttributes ($_POST['EventPublisherFormModel']);
-            if ($decodedResult && isset ($_FILES['EventPublisherFormModel'])) {
-                $model->photo = CUploadedFile::getInstance ($model, 'photo');
+            if (isset ($_FILES['EventPublisherFormModel'])) {
+                if ($decodedResult) {
+                    $model->photo = CUploadedFile::getInstance ($model, 'photo');
+                }
+                //$model->audio = CUploadedFile::getInstance ($model, 'audio');
+                //$model->video = CUploadedFile::getInstance ($model, 'video');
+                
             }
             
             //AuxLib::debugLogR ('validating');
             if ($model->validate ()) {
                 //AuxLib::debugLogR ('valid');
                 $event = new Events;
+                $eventTextLocation = '';
+                if (!empty($model->textLocation))
+                    $eventTextLocation = $model->text . '$|&|$' . ' ' . '$|&|$' . 
+                              $model->textLocation . ' | '. 
+                              Formatter::formatDateTime(time());
+                else 
+                    $eventTextLocation = $model->text . '$|&|$' . ' ' . '$|&|$';
+                    
                 $event->setAttributes (array (
                     'visibility' => X2PermissionsBehavior::VISIBILITY_PUBLIC,
                     'user' => $profile->username,
-                    'type' => 'structured-feed',
-                    'text' => $model->text,
-                    'photo' => $model->photo
+                    'type' => 'media',
+                    'text' => $eventTextLocation,
+                    'photo' => $model->photo,
+                    'audio' => $model->audio
+                    //'video' => $model->video
                 ), false);
                 if ($location)
                     $event->locationId = $location->id;
-                if ($key && !empty($decodedResult)) {
+                if ($key && !empty($decodedResult) && !empty($model->textLocation)) {
                     if ($event->saveRaw ($profile,$decodedResult)) {
                         if (!isset ($_FILES['EventPublisherFormModel'])) {
                             //AuxLib::debugLogR ('saved');

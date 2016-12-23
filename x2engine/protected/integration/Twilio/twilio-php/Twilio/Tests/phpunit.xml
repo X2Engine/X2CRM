@@ -1,0 +1,8 @@
+<!--suppress XmlUnboundNsPrefix -->
+<phpunit bootstrap="./Bootstrap.php">
+  <testsuites>
+    <testsuite name="Twilio Test Suite">
+      <directory>./</directory>
+    </testsuite>
+  </testsuites>
+</phpunit>

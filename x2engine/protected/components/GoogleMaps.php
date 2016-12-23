@@ -194,9 +194,11 @@ class GoogleMaps extends X2Widget {
             $assetUrl .= '&key='.$key;
         Yii::app()->clientScript->registerScriptFile($assetUrl, CClientScript::POS_END);
 
+        $colors = ThemeGenerator::generatePalette(Yii::app()->params->profile->getTheme());
+        $bgcolor = $colors['themeName'] === 'Default' ? '#F5F5F5' : $colors['highlight1'];
         Yii::app()->clientScript->registerCss('GoogleMapsWidgetStyle','
             .mapsHeader {
-                background-color: #F5F5F5;
+                background-color: '.$bgcolor.';
                 width: 100%;
                 height: 32px;
             }

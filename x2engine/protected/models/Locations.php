@@ -104,7 +104,6 @@ class Locations extends CActiveRecord
 	 */
 	public function attributeLabels() {
 		return array(
-			'contactId' => Yii::t('contacts','Contact ID'),
 			'recordId' => Yii::t('contacts','Record ID'),
 			'recordType' => Yii::t('contacts','Record Type'),
 			'lat' => Yii::t('contacts','Latitutde'),
@@ -112,6 +111,7 @@ class Locations extends CActiveRecord
 			'type' => Yii::t('contacts','Type'),
 			'ipAddress' => Yii::t('contacts','IP Address'),
 			'comment' => Yii::t('contacts','Check-in comment'),
+			'seen' => Yii::t('contacts','Seen by'),
 		);
 	}
 
@@ -140,7 +140,11 @@ class Locations extends CActiveRecord
         );
     }
 
-    public function getLocationLink($text = null) {
+    public function getLocationLink($text = null, $nonX2googleMaps=false) {
+        if ($nonX2googleMaps) {
+            $provider = 'https://google.com/maps/?q='.$this->lat.','.$this->lon;
+            return $provider;   
+        }
         if (is_null($text)) {
             if (!empty($this->comment))
                 $text = $this->comment;
@@ -155,7 +159,7 @@ class Locations extends CActiveRecord
             'locationType' => array($this->type),
         ));
     }
-
+    
     /**
      * Retrieve the associated record, optionally as a link
      * @param bool $link Whether to return a link to the record
@@ -277,67 +281,65 @@ class Locations extends CActiveRecord
         return $location;
     }
 
-    protected function getGoogleApiKey() {
-        $key = null;
-        $settings = Yii::app()->settings;
-        $creds = Credentials::model()->findByPk($settings->googleCredentialsId);
-        if($creds && $settings->googleIntegration && $creds->auth && $creds->auth->apiKey){
-            $key = $creds->auth->apiKey;
-        }
-        return $key;
-    }
-
     public function generateStaticMap() {
         $decodedResult = null;
-        $key = $this->googleApiKey;
+        $key = Yii::app()->settings->getGoogleApiKey('staticmap');
         if($key && !empty($this->lat) && !empty($this->lon)){
-            /**
-             * get static map here
-             */
             $url = 'https://maps.googleapis.com/maps/api/staticmap?center=' .
                     $this->lat . ',' . $this->lon .
                     '&zoom=13&size=600x300&maptype=roadmap&markers=color:blue%7Clabel:%7C' .
                     $this->lat . ',' . $this->lon .
                     '&key=' . $key;
-            //open connection
-            $ch = curl_init();
-
-            //set the url, number of POST vars, POST data
-            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-            curl_setopt($ch,CURLOPT_URL, $url);
-
-            //execute post
-            $result = curl_exec($ch);
-            $http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-            if($http_code === 200){
-                //close connection
-                $decodedResult = $result;
-            }
-            curl_close($ch);
+            $decodedResult = RequestUtil::request(array('url' => $url));
         }
         return $decodedResult;
     }
 
     public function geocode() {
-        $key = $this->googleApiKey;
+        $key = Yii::app()->settings->getGoogleApiKey('geocoding');
         if ($key && !empty($this->lat) && !empty($this->lon)) {
             $url = 'https://maps.googleapis.com/maps/api/geocode/json?latlng=' .
                 $this->lat . ',' . $this->lon .
                 '&key=' . $key;
-            //open connection
-            $ch = curl_init();
-
-            //set the url, number of POST vars, POST data
-            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-            curl_setopt($ch,CURLOPT_URL, $url);
-
-            //execute post
-            $result = curl_exec($ch);
-            curl_close($ch);
+            $result = RequestUtil::request(array('url' => $url));
             $data = CJSON::decode($result, true);
             if ($data)
                 return $data['results'][0]['formatted_address'];
             return $result;
+        }
+    }
+
+    /**
+     * Retrieves the estimated travel time from $this to $destination
+     * param Location $destination
+     * return string
+     */
+    public function getTravelTime(Locations $destination) {
+        $key = Yii::app()->settings->getGoogleApiKey('directions');
+        if ($key && !empty($this->lat) && !empty($this->lon) && !empty($destination->lat) && !empty($destination->lon)) {
+            $cacheKey = 'd'.$this->lat.','.$this->lon.','.$destination->lat.','.$destination->lon;
+            $duration = Yii::app()->cache->get($cacheKey);
+            if ($duration) {
+                return $duration;
+            }
+
+            $url = 'https://maps.googleapis.com/maps/api/directions/json' .
+                '?origin=' . $this->lat .','. $this->lon .
+                '&destination=' . $destination->lat .','. $destination->lon .
+                '&key=' . $key;
+            $result = RequestUtil::request(array('url' => $url));
+            $data = CJSON::decode($result, true);
+            if ($data && isset($data['status']) && $data['status'] === 'OK' &&
+                array_key_exists('routes', $data) &&
+                array_key_exists(0, $data['routes']) &&
+                array_key_exists('legs', $data['routes'][0]) &&
+                array_key_exists(0, $data['routes'][0]['legs'])
+            ) {
+                    $leg = $data['routes'][0]['legs'][0];
+                    $duration = $leg['duration']['text'];
+                    Yii::app()->cache->set($cacheKey, $duration, 60 * 60);
+                    return $duration;
+            }
         }
     }
 

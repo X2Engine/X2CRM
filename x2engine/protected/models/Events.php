@@ -43,6 +43,8 @@
 class Events extends X2ActiveRecord {
 
     public $photo;
+    public $audio;
+    public $video;
 
     /**
      * Returns the static model of the specified AR class.
@@ -64,6 +66,8 @@ class Events extends X2ActiveRecord {
             parent::attributeNames (), 
             array (
                 'photo',
+                'audio',
+                'video'
             )
         );
     }
@@ -107,6 +111,18 @@ class Events extends X2ActiveRecord {
         );
     }
 
+    public function behaviors(){
+        $behaviors = array(
+            'JSONFieldsBehavior' => array (
+                'class' => 'application.components.behaviors.JSONFieldsBehavior',
+                'transformAttributes' => array (
+                    'recordLinks',
+                ),
+            ),
+        );
+        return $behaviors;
+    }
+
     public function saveRaw ($profile, $attachmentData, $runValidation=true, $attributes=null) {
 
             // save related photo record
@@ -118,7 +134,7 @@ class Events extends X2ActiveRecord {
                     throw new CException (implode (';', $this->getAllErrorMessages ()));
                 }
                 //save the raw data to a file
-                $filename = md5(uniqid(rand(), true)) + '.png';
+                $filename = md5(uniqid(rand(), true)) . '.png';
                 $userFolderPath = implode(DIRECTORY_SEPARATOR, array(
                     Yii::app()->basePath,
                     '..',
@@ -171,7 +187,7 @@ class Events extends X2ActiveRecord {
     }
     
     public function save ($runValidation=true, $attributes=null) {
-        if ($this->photo) {
+        if ($this->photo || $this->audio || $this->video) {
 
             // save related photo record
             $transaction = Yii::app()->db->beginTransaction ();
@@ -184,17 +200,35 @@ class Events extends X2ActiveRecord {
 
                 // add media record for file
                 $media = new Media; 
-                $media->setAttributes (array (
-                    'fileName' => $this->photo->getName (),
-                    'mimetype' => $this->photo->type,
-                ), false);
+                if ($this->photo) {
+                    $media->setAttributes (array (
+                        'fileName' => $this->photo->getName (),
+                        'mimetype' => $this->photo->type,
+                    ), false);
+                } else if ($this->audio) {
+                    $media->setAttributes (array (
+                        'fileName' => $this->audio->getName (),
+                        'mimetype' => $this->audio->type,
+                    ), false);                    
+                } else if ($this->video) {
+                    $media->setAttributes (array (
+                        'fileName' => $this->video->getName (),
+                        'mimetype' => $this->video->type,
+                    ), false);                     
+                }
                 $media->resolveNameConflicts ();
                 if (!$media->save ()) {
                     throw new CException (implode (';', $media->getAllErrorMessages ()));
                 }
 
                 // save the file
-                $tempName = $this->photo->getTempName ();
+                if ($this->photo) {
+                    $tempName = $this->photo->getTempName ();
+                } else if ($this->audio) {
+                    $tempName = $this->audio->getTempName ();
+                } else if ($this->video) {
+                    $tempName = $this->video->getTempName ();
+                }
                 $username = Yii::app()->user->getName ();
                 if (!FileUtil::ccopy(
                     $tempName, 
@@ -1038,4 +1072,21 @@ class Events extends X2ActiveRecord {
         );
     }
 
+    /**
+     * Render a list of links to associated records
+     */
+    public function renderRecordLinks($htmlOptions = array()) {
+        $modelLinks = array();
+        if (!empty($this->recordLinks) && is_array($this->recordLinks)) {
+            foreach ($this->recordLinks as $link) {
+                if (isset($link[0]) && isset($link[1])) {
+                    $model = X2Model::model($link[0])->findByPk($link[1]);
+                    if ($model) {
+                        $modelLinks[] = array('content' => $model->getLink());
+                    }
+                }
+            }
+            return X2Html::ul($modelLinks, $htmlOptions);
+        }
+    }
 }

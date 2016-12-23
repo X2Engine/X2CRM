@@ -49,16 +49,26 @@ class MobileAttachmentItem extends MobileHistoryItem {
                 $media = X2Model::model('Media')->findByPK($data[1]); 
         }
         if ($media) {
-            $html .= CHtml::openTag ('div', array (
-                'class' => 'history-attachment-image',
-            ));
-            $html .= $media->getImage ();
+            if ($media->isAudio()) {
+                $html .= CHtml::openTag ('div', array (
+                    'class' => 'history-attachment-audio',
+                ));
+                $html .= $media->getAudio();
+            } else if ($media->isVideo()) {
+                $html .= CHtml::openTag ('div', array (
+                    'class' => 'history-attachment-video',
+                ));
+                $html .= $media->getVideo();
+            } else {
+                $html .= CHtml::openTag ('div', array (
+                    'class' => 'history-attachment-image',
+                ));
+                $html .= $media->getImage();
+            }
             $html .= CHtml::closeTag ('div');
 
             
-            if (!$media->drive && 
-                // attachment download not fully functional in iOS client
-                MobileModule::getPlatform () !== 'iOS') {
+            if (!$media->drive) {
 
                 $html .= CHtml::link(
                     $media->name,

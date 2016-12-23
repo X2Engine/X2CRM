@@ -74,16 +74,10 @@ class LocationTest extends X2DbTestCase {
             $this->assertGreaterThan(0,$column->id);
             
             /*
-             * test for a contactId, there should be a contact ID > 0 (starting at 1)
-             */
-            $this->assertNotNull($column->contactId);
-            $this->assertGreaterThan(-1,$column->contactId);
-            
-            /*
              * test for a recordId, there should be a recordId > 0 (starting at 1)
              */
             $this->assertNotNull($column->recordId);
-            $this->assertGreaterThan(-1,$column->recordId);
+            $this->assertGreaterThan(0,$column->recordId);
             
             /*
              *  test for a recordType:

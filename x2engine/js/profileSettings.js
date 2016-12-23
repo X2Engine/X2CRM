@@ -96,6 +96,69 @@ ProfileSettings.prototype.getCurrentTheme = function () {
     return $('[name="preferences[themeName]"]').val ();
 };
 
+ProfileSettings.prototype.initiateTwoFAActivation = function (elem) {
+    var that = this;
+    if ($(elem).is(':checked')) {
+        if (confirm(this.translations.enableTwoFAMessage)) {
+            $.ajax({
+                url: this.beginTwoFAUrl,
+                type: 'POST',
+                success: function() {
+                    alert(that.translations.twoFACodeSentMessage);
+                    $(".twofa-activation").show();
+                    $("input.twofa-activation[type='text']").focus();
+                    $("#code.twofa-activation").val('');
+                },
+                error: function(data) {
+                    alert(data.responseText);
+                    $(elem).attr('checked', false);
+                    $(".twofa-activation").hide();
+                    $("#code.twofa-activation").val('');
+                }
+            });
+        } else {
+            $(elem).attr('checked', false);
+            $(".twofa-activation").hide();
+        }
+    } else {
+        if (confirm(this.translations.disableTwoFAMessage)) {
+            $(".twofa-activation").hide();
+            $.ajax({
+                url: this.disableTwoFAUrl,
+                type: 'POST',
+                success: function() {
+                    alert(that.translations.disableTwoFASuccessMessage);
+                },
+                error: function() {
+                    console.log('Failed to disable two factor auth');
+                }
+            });
+        } else {
+            $(elem).attr('checked', true);
+        }
+    }
+};
+
+ProfileSettings.prototype.activateTwoFA = function (code) {
+    var that = this;
+    if (code) {
+        $.ajax({
+            url: this.completeTwoFAUrl + '?code=' + code,
+            type: 'POST',
+            success: function() {
+                alert(that.translations.enableTwoFASuccessMessage);
+                $(".twofa-activation").hide();
+            },
+            error: function(data) {
+                alert(data.responseText);
+                $(".twofa-activation").hide();
+                $("#code.twofa-activation").val('');
+                $("#Profile_enableTwoFactor").removeAttr('checked');
+            }
+        });
+    }
+};
+
 ProfileSettings.prototype._setUpModuleOverrides = function () {
     var that = this;
     var addModuleOverrideButton$ = $('#add-module-override-button');
@@ -363,6 +426,16 @@ function setupPrefsEventListeners () {
         selectPreferredColor (
             'background', '#F5F4DE', $(this), $('div.grid-view table.items tr.even'));
 	});
+
+    $('input.twofa-activation[type="button"]').click(function() {
+        var code = $('input.twofa-activation[type="text"]').val();
+        x2.profileSettings.activateTwoFA(code);
+    });
+    $('input.twofa-activation[type="text"]').keypress(function(e) {
+        if (e.which != 13)  return; // 13 is the Enter Key
+        var code = $(this).val();
+        x2.profileSettings.activateTwoFA(code);
+    });
 
     $(document).on ('blur', '.color-picker-input', function () {
         var text = $(this).val ();

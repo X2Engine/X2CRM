@@ -258,6 +258,8 @@ class ActionsTest extends X2DbTestCase {
         $action->reminder = true;
         $action->notificationUsers = 'assigned';
         $action->notificationTime = 1234;
+        // adjust dueDate so the reminder time is in the future (dueDate - 60 * notificationTime)
+        $action->dueDate = time() + 60 * 60 * 24;
         $this->assertSaves ($action);
         $this->assertEquals (1, count ($action->getReminders (true)));
         $reminders = $action->getReminders (true);
@@ -271,6 +273,8 @@ class ActionsTest extends X2DbTestCase {
         $action->reminder = true;
         $action->notificationUsers = 'assigned';
         $action->notificationTime = 1234;
+        // adjust dueDate so the reminder time is in the future (dueDate - 60 * notificationTime)
+        $action->dueDate = time() + 60 * 60 * 24;
         $this->assertSaves ($action);
         $this->assertEquals (1, count ($action->getReminders (true)));
         $reminders = $action->getReminders (true);

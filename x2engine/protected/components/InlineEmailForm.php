@@ -142,10 +142,6 @@ class InlineEmailForm extends X2Widget {
     }
 
     public function init(){
-        $this->disableTemplates = $this->disableTemplates ||
-            in_array ($this->associationType, 
-                array_keys (Docs::modelsWhichSupportEmailTemplates ()));
-
         // Prepare the model for initially displayed input:
         $this->model = new InlineEmail();
         if(isset($this->targetModel)) {
@@ -155,6 +151,9 @@ class InlineEmailForm extends X2Widget {
         if (!$this->associationType) {
             $this->associationType = X2Model::getModelName ($this->getModuleName ());
         }
+        $this->disableTemplates = $this->disableTemplates ||
+            !in_array ($this->associationType,
+                array_keys (Docs::modelsWhichSupportEmailTemplates ()));
 
         // Bring in attributes set in the configuration:
         $this->model->attributes = $this->attributes;

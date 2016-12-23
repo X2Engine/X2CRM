@@ -241,7 +241,17 @@ class EmailDeliveryBehavior extends CBehavior {
         // writing would be to use its translated exception messages (brittle).
         if ($this->credentials) {
             try {
-                $phpMail->smtpConnect ();
+                $smtpOptions = array();
+                if(isset($this->credentials->auth->smtpNoValidate) && $this->credentials->auth->smtpNoValidate) {
+                    $smtpOptions = array(
+                        'ssl' => array(
+                            'verify_peer' => false,
+                            'verify_peer_name' => false,
+                            'allow_self_signed' => true,
+                        ),
+                    );
+                }
+                $phpMail->smtpConnect ($smtpOptions);
             } catch (phpmailerException $e) {
                 $escalated = new phpmailerException (
                     $e->getMessage (), PHPMailer::STOP_CRITICAL);

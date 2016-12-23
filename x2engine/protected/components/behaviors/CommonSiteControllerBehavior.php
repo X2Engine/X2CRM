@@ -48,6 +48,7 @@ class CommonSiteControllerBehavior extends CBehavior {
      * @param bool $isMobile Whether this was called from mobile site controller
      */
     public function login (LoginForm $model, $isMobile=false){
+        ob_start();
         if($isMobile && SessionToken::cleanSessionTokenCookie()) {
             unset(Yii::app()->request->cookies['sessionToken']);
             setcookie("sessionToken", "", time() - 3600);

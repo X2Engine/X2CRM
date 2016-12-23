@@ -140,7 +140,7 @@ if ($supportsActionHistory) {
     ));
     
 
-    if ($supportsActionHistory) {
+if ($supportsActionHistory) {
         Yii::app()->clientScript->registerScript('hideBothPublisherButtons','
             $("#detail-tab-link").on("click",function(){
                 $("#file-upload-menu-button").attr("style", "display: none !important");

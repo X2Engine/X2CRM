@@ -50,7 +50,7 @@ class GoogleCalendarSync extends CalDavSync {
      */
     protected function authenticate() {
         $credentials = json_decode($this->owner->credentials, true);
-        $auth = new GoogleAuthenticator();
+        $auth = new GoogleAuthenticator('calendar');
         if (!isset($credentials['refreshToken'])) {
             $user = User::model()->findByAttributes(array('username'=>$this->owner->createdBy));
             if($user && !is_null($auth->getStoredCredentials($user->id))){

@@ -42,6 +42,7 @@ CREATE TABLE x2_admin(
 	webLeadEmailAccount		INT NOT NULL DEFAULT -1,
 	webTrackerCooldown		INT				DEFAULT 60,
 	enableWebTracker		TINYINT			DEFAULT 1,
+	enableGeolocation		TINYINT			DEFAULT 1,
 	currency				VARCHAR(3)		NULL,
 	chatPollTime			INT				DEFAULT 3000,
         locationTrackingFrequency			INT				DEFAULT 60,
@@ -122,7 +123,10 @@ CREATE TABLE x2_admin(
     twitterRateLimits           TEXT DEFAULT NULL,
     triggerLogMax               INT UNSIGNED DEFAULT 1000000,
     googleCredentialsId         INT UNSIGNED,
-    jasperCredentialsId         INT UNSIGNED
+    jasperCredentialsId         INT UNSIGNED,
+    hubCredentialsId            INT UNSIGNED,
+    twoFactorCredentialsId      INT UNSIGNED,
+    disableAnonContactNotifs    TINYINT DEFAULT 0
 ) ENGINE=InnoDB, COLLATE = utf8_general_ci;
 /*&*/
 DROP TABLE IF EXISTS x2_api_hooks;
@@ -325,7 +329,9 @@ CREATE TABLE x2_events(
     color                   VARCHAR(10),
     fontColor               VARCHAR(10),
     linkColor               VARCHAR(10),
-    locationId              INT UNSIGNED
+    locationId              INT UNSIGNED,
+    recordLinks             TEXT,
+    INDEX (locationId)
 ) COLLATE = utf8_general_ci, ENGINE = InnoDB;
 /*&*/
 DROP TABLE IF EXISTS x2_events_data;
@@ -414,6 +420,7 @@ CREATE TABLE x2_profile(
 	leadRoutingAvailability	TINYINT			DEFAULT 1,
 	showTours 				TINYINT			DEFAULT 1,
         defaultCalendar     INT,
+    enableTwoFactor         TINYINT DEFAULT 0,
 	UNIQUE(username, emailAddress),
 	INDEX (username)
 ) COLLATE = utf8_general_ci;
@@ -530,7 +537,8 @@ CREATE TABLE x2_tags(
 	tag						VARCHAR(250)	NOT NULL,
 	itemName				VARCHAR(250),
 	timestamp				INT				NOT NULL DEFAULT 0,
-	INDEX (tag)
+	INDEX (tag),
+	INDEX (itemId)
 ) COLLATE = utf8_general_ci;
 /*&*/
 DROP TABLE IF EXISTS x2_temp_files;
@@ -541,6 +549,14 @@ CREATE TABLE x2_temp_files (
 	name					TEXT,
 	createDate				INT
 ) COLLATE = utf8_general_ci;
+/*&*/
+DROP TABLE IF EXISTS x2_twofactor_auth;
+/*&*/
+CREATE TABLE x2_twofactor_auth (
+    userId      INT NOT NULL PRIMARY KEY,
+    code        VARCHAR(6) NOT NULL,
+    requested   BIGINT NOT NULL
+) COLLATE = utf8_general_ci, ENGINE = InnoDB;
 /*&*/
 DROP TABLE IF EXISTS x2_urls;
 /*&*/
@@ -575,7 +591,6 @@ DROP TABLE IF EXISTS x2_locations;
 /*&*/
 CREATE TABLE x2_locations(
 	id					INT				NOT NULL AUTO_INCREMENT PRIMARY KEY,
-	contactId			INT				NOT NULL, -- TODO remove after writing migration
 	recordId			INT				NOT NULL,
 	recordType			VARCHAR(250)	NOT NULL,
 	lat                 FLOAT			NOT NULL,
@@ -588,6 +603,7 @@ CREATE TABLE x2_locations(
 	type                VARCHAR(50)     DEFAULT NULL,
 	ipAddress           VARCHAR(250),
 	comment             VARCHAR(250),
+	seen                TEXT,
 	createDate			BIGINT          NOT NULL
 ) COLLATE = utf8_general_ci;
 /*&*/

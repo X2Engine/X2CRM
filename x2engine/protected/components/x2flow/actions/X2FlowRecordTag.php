@@ -1,5 +1,6 @@
 <?php
-/***********************************************************************************
+
+/* * *********************************************************************************
  * X2CRM is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2016 X2Engine Inc.
  * 
@@ -33,7 +34,7 @@
  * X2Engine" logo. If the display of the logo is not reasonably feasible for
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2Engine".
- **********************************************************************************/
+ * ******************************************************************************** */
 
 /**
  * X2FlowAction that adds, removes or clears all tags on a record
@@ -41,57 +42,59 @@
  * @package application.components.x2flow.actions
  */
 class X2FlowRecordTag extends X2FlowAction {
-	public $title = 'Add or Remove Tags';
-	public $info = 'Enter a comma-separated list of tags to add to the record';
 
-	public function paramRules() {
-		$tagActions = array(
-			'add' => Yii::t('studio','Add'),
-			'remove' => Yii::t('studio','Remove'),
-			'clear' => Yii::t('studio','Clear All'),
-		);
-		return array_merge (parent::paramRules (), array (
-			'title' => Yii::t('studio',$this->title),
-			'info' => Yii::t('studio',$this->info),
-			'modelRequired' => 1,
-			'options' => array(
-				array(
-                    'name'=>'tags',
-                    'label'=>Yii::t('studio','Tags'),
-                    'type'=>'tags',
-                    'optional'=>true
+    public $title = 'Add or Remove Tags';
+    public $info = 'Enter a comma-separated list of tags to add to the record';
+
+    public function paramRules() {
+        $tagActions = array(
+            'add' => Yii::t('studio', 'Add'),
+            'remove' => Yii::t('studio', 'Remove'),
+            'clear' => Yii::t('studio', 'Clear All'),
+        );
+        return array_merge(parent::paramRules(), array(
+            'title' => Yii::t('studio', $this->title),
+            'info' => Yii::t('studio', $this->info),
+            'modelRequired' => 1,
+            'options' => array(
+                array(
+                    'name' => 'tags',
+                    'label' => Yii::t('studio', 'Tags'),
+                    'type' => 'tags',
+                    'optional' => true
                 ),
-				array('name'=>'action','label'=>Yii::t('studio','Action'),'type'=>'dropdown','options'=>$tagActions),
-			)));
-	}
+                array('name' => 'action', 'label' => Yii::t('studio', 'Action'), 'type' => 'dropdown', 'options' => $tagActions),
+        )));
+    }
 
-	public function execute(&$params) {
-		$tags = $this->parseOption('tags',$params);
+    public function execute(&$params) {
+        $tags = $this->parseOption('tags', $params);
 
         $retVal = null;
         $model = $params['model'];
-		switch($this->parseOption('action',$params)) {
-			case 'add':
-				$retVal = $model->addTags($tags);
+        switch ($this->parseOption('action', $params)) {
+            case 'add':
+                $retVal = $model->addTags($tags);
                 break;
-			case 'remove':
-				$retVal = $model->removeTags($tags);
+            case 'remove':
+                $retVal = $model->removeTags($tags);
                 break;
-			case 'clear':
-				$retVal = $model->clearTags();
+            case 'clear':
+                $retVal = $model->clearTags();
                 break;
-		}
+        }
         if ($retVal) {
-		    if(is_subclass_of ($model,'X2Model')) {
-                return array (
+            if (is_subclass_of($model, 'X2Model')) {
+                return array(
                     true,
-                    Yii::t('studio', 'View updated record: ').$model->getLink ()
+                    Yii::t('studio', 'View updated record: ') . $model->getLink()
                 );
             } else {
-                return array (true, "");
+                return array(true, "");
             }
         } else {
-            return array (false, "");
+            return array(false, "");
         }
-	}
+    }
+
 }

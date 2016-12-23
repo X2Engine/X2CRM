@@ -63,10 +63,13 @@ $eventTypeList=Yii::app()->db->createCommand()
         ->group('type')
         ->queryAll();
 $eventTypes=array();
+/*$eventTypesExpansion=array();
 foreach($eventTypeList as $key=>$value){
-    if($value['type']!='comment')
+    if($value['type']!='comment') {
         $eventTypes[$value['type']]=Events::parseType($value['type']);
-}
+        $eventTypesExpansion[$value['type']]=Events::parseType($value['type']);
+    }
+}*/
 $profile=Yii::app()->params->profile;
 
 
@@ -173,9 +176,22 @@ echo CHtml::dropDownList (
         'class' => 'x2-select'
     )
 );
-
+/*
 ?>
-<span><?php echo addslashes (Yii::t('app', ' events associated with ')); ?></span>
+<span><?php echo addslashes (Yii::t('app', 'Expand ')); ?></span>
+<?php
+
+echo CHtml::dropDownList (
+    'simpleEventTypesExpansion', 
+    '',
+    array ('' => Yii::t('app', 'All')) + $eventTypesExpansion,
+    array (
+        'class' => 'x2-select'
+    )
+);
+*/
+?>
+<span><?php echo addslashes (Yii::t('app', ' Events associated with ')); ?></span>
 <?php
 
 echo CHtml::dropDownList (

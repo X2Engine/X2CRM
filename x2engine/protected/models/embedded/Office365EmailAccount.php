@@ -62,6 +62,8 @@ class Office365EmailAccount extends EmailAccount {
         return Yii::t('app','Office 365 Email Account');
     }
 
+    // Hide SMTP SSL validation setting
+    public function renderSmtpSslValidation() { }
 }
 
 ?>
