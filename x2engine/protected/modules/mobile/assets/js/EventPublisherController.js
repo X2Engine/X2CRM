@@ -41,6 +41,10 @@ function EventPublisherController (argsDict) {
     var defaultArgs = {
         DEBUG: x2.DEBUG && false,
         photoAttrName: '',
+        locationAttrName: '',
+        audioAttrName: '',
+        videoAttrName: '',
+        translations: {},
 
     };
     auxlib.applyArgs (this, defaultArgs, argsDict);
@@ -65,10 +69,13 @@ EventPublisherController.prototype.setUpForm = function () {
     });
     
     var locationButton$ = $.mobile.activePage.find ('.location-attach-button');
-   
+    var locationButtonOn = false;
+    //var audioButton$ = $('#footer .audio-attach-button');
+    //var videoButton$ = $('#footer .video-attach-button');
+    
     locationButton$.click (function () {
         if (!x2.main.isPhoneGap) return;
-        if (x2.main.isPhoneGap) {
+        if (!locationButtonOn) {
             x2touch.API.getCurrentPosition(function(position) {
                 var pos = {
                    lat: position.coords.latitude,
@@ -83,11 +90,12 @@ EventPublisherController.prototype.setUpForm = function () {
                        try {
                            var data = JSON.parse(response);
                            var theAddress = data['results'][0]['formatted_address'];
-                           $.mobile.activePage.find ('.event-text-box').val(
-                               $.mobile.activePage.find ('.event-text-box').val()+" - "+theAddress
-                           );
+                           $.mobile.activePage.find ('.event-text-box-location').val(that.translations['Checking in at']+' '+theAddress);	
+                           $('.location-attach-button > .fa-location-arrow').css('color', '#0084ff');
+                           locationButtonOn = true;
                        } catch (e) {
                            alert(e);
+                           alert("Failed to fetch location.");
                        }
 
                        x2.main.refreshContent ();
@@ -101,11 +109,80 @@ EventPublisherController.prototype.setUpForm = function () {
             }, function (error) {
                 alert('code: '    + error.code    + '\n' +
                       'message: ' + error.message + '\n');
-            }, {});         
-        
+            }, {});             
+        } else {
+            that.form$.find ('#geoCoords').val("");
+            that.form$.find ('#geoLocationCoords').val("");
+            $.mobile.activePage.find ('.event-text-box-location').val("");
+            $('.location-attach-button > .fa-location-arrow').css('color', 'grey');
+            locationButtonOn = false;
         }
-        
     });
+    locationButton$.click ();
+    
+    /*new x2.AudioButton ({
+        element$: audioButton$,
+        success: function (data) {
+            var attachment$ = x2.mobileForm.makeAudioAttachment (data.type,data.fullPath);
+            attachment$.hide ();
+            that.form$.find ('.' + x2.mobileForm.audioAttachmentClass).remove ();
+            that.form$.append (attachment$);
+            $.mobile.loading ('show');
+            x2.mobileForm.submitWithAudio (
+                data.type,
+                that.form$.attr ('action'), 
+                that.form$, 
+                'EventPublisherFormModel[audio]',
+                function (response) {
+                    if (response.responseCode == 200)  {
+                        if (that.publisherIsActive) togglePublisher$.click ();
+                        $.mobile.activePage.append ($(response.response).find ('.refresh-content'));
+                        x2.main.refreshContent ();
+                        $.mobile.loading ('hide');
+                    } else {
+                        $.mobile.loading ('hide');
+                        x2.main.alert ('Upload failed', 'Error');
+                    }
+                },
+                function (error) {
+                    $.mobile.loading ('hide');
+                    x2.main.alert (error.body, 'Error');
+                }
+            );
+        }
+    });
+    
+    new x2.VideoButton ({
+        element$: videoButton$,
+        success: function (data) {
+            var attachment$ = x2.mobileForm.makeVideoAttachment (data.type,data.fullPath);
+            attachment$.hide ();
+            that.form$.find ('.' + x2.mobileForm.videoAttachmentClass).remove ();
+            that.form$.append (attachment$);
+            $.mobile.loading ('show');
+            x2.mobileForm.submitWithVideo (
+                data.type,
+                that.form$.attr ('action'), 
+                that.form$, 
+                'EventPublisherFormModel[video]',
+                function (response) {
+                    if (response.responseCode == 200)  {
+                        if (that.publisherIsActive) togglePublisher$.click ();
+                        $.mobile.activePage.append ($(response.response).find ('.refresh-content'));
+                        x2.main.refreshContent ();
+                        $.mobile.loading ('hide');
+                    } else {
+                        $.mobile.loading ('hide');
+                        x2.main.alert ('Upload failed', 'Error');
+                    }
+                },
+                function (error) {
+                    $.mobile.loading ('hide');
+                    x2.main.alert (error.body, 'Error');
+                }
+            );
+        }
+    });*/
 
 };
 

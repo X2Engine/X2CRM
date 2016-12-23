@@ -70,7 +70,15 @@ $this->insertMenu($menuOptions, $model);
 		array(
 			'name'=>'status',
 			'type'=>'raw',
-			'value'=>$model->status==1?"Active":"Inactive",
+			'value'=>$model->status==1?Yii::t('users', "Active"):Yii::t('users', "Inactive"),
+		),
+		array(
+			'name'=>'enableTwoFactor',
+            'label' => 'Two Factor Auth',
+			'type'=>'raw',
+            'value'=>($model->profile && $model->profile->enableTwoFactor)?
+                Yii::t('users', 'Enabled').CHtml::button('Deactivate', array('id' => 'deactivate-twofactor', 'class' => 'x2-button x2-small-button', 'style' => 'display:inline;', 'confirm' => Yii::t('users', 'Are you sure you want to deactivate this users two factor auth requirement?'))) :
+                Yii::t('users', 'Disabled'),
 		),
 	),
 )); ?>
@@ -151,3 +159,21 @@ foreach($actionHistory as $action) {
     echo '<br />';
 }
 ?><br /><br />
+<?php
+Yii::app()->clientScript->registerScript('deactivate-twofactor', '
+    $("#deactivate-twofactor").click(function() {
+        var that = this;
+        $.ajax({
+            url: "'.Yii::app()->createUrl('users/deactivateTwoFactor', array('id' => $model->id)).'",
+            method: "POST",
+            data: {
+                YII_CSRF_TOKEN: "'.Yii::app()->request->csrfToken.'",
+            },
+            success: function() {
+                alert("'.Yii::t('users', 'Successfully deactivated two factor auth').'");
+                $(that).parent().html("'.Yii::t('users', 'Disabled').'");
+            }
+        });
+    });
+');
+?>

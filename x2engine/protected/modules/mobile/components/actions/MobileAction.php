@@ -63,7 +63,13 @@ abstract class MobileAction extends CAction {
              * Get the last record of the user's location and compare 
              *  the distance between that and of the new distance
              */
-            $locationRecord = Locations::model()->find($condition='WHERE contactId='.Yii::app()->user->id, $params=array ());
+            $locationRecord = Locations::model()->findByAttributes(array(
+                'recordId' => Yii::app()->user->id,
+                'recordType' => 'User',
+                'type' => 'mobileIdle',
+            ), array(
+                'order' => 'createDate DESC',
+            ));
             $latitudeFrom = $locationRecord->lat;
             $longitudeFrom = $locationRecord->lon;
             $distance = LocationUtil::vincentyGreatCircleDistance(

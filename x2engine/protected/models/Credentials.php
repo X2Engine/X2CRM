@@ -147,9 +147,11 @@ class Credentials extends CActiveRecord {
         'SendgridAccount',
         'SESAccount',
         'YahooEmailAccount',
+        'TwilioAccount',
         'TwitterApp',
         'GoogleProject',
         'JasperServer',
+        'X2HubConnector',
     );
 
 	/**
@@ -205,7 +207,7 @@ class Credentials extends CActiveRecord {
 
     public function afterSave () {
         if ($this->modelClass && 
-            in_array ($this->modelClass, array ('TwitterApp', 'GoogleProject', 'JasperServer'))) {
+            in_array ($this->modelClass, array ('TwitterApp', 'GoogleProject', 'JasperServer', 'X2HubConnector'))) {
 
             $modelClass = $this->modelClass;
             $prop = $modelClass::getAdminProperty ();
@@ -330,9 +332,13 @@ class Credentials extends CActiveRecord {
                 'SESAccount',
                 'YahooEmailAccount',
             ),
+			'sms' => array(
+                'TwilioAccount',
+            ),
             'twitter' => array ('TwitterApp'),
             'googleProject' => array ('GoogleProject'),
             'jasperServer' => array ('JasperServer'),
+            'x2HubConnector' => array ('X2HubConnector'),
 //			'google' => array('GMailAccount'),
 		);
 	}
@@ -352,9 +358,11 @@ class Credentials extends CActiveRecord {
 			'SendgridAccount' => array('email'),
 			'SESAccount' => array('email'),
 			'YahooEmailAccount' => array('email'),
+			'TwilioAccount' => array('sms'),
             'TwitterApp' => array ('twitter'),
             'GoogleProject' => array ('googleProject'),
             'JasperServer' => array ('jasperServer'),
+            'X2HubConnector' => array ('x2HubConnector'),
 		);
 	}
 
@@ -431,9 +439,11 @@ class Credentials extends CActiveRecord {
 	public function getServiceLabels(){
 		return array(
 			'email' => Yii::t('app', 'Email Account'),
+			'sms' => Yii::t('app', 'SMS Account'),
 			'twitter' => Yii::t('app', 'Twitter App'),
 			'googleProject' => Yii::t('app', 'Google Project'),
 			'jasperServer' => Yii::t('app', 'Jasper Server'),
+			'x2HubConnector' => Yii::t('app', 'X2Hub Connector'),
 			// 'google' => Yii::t('app','Google Account')
 		);
 	}
@@ -525,7 +535,7 @@ class Credentials extends CActiveRecord {
 		if($model === null || $model->$name == null){
 			// Figure out which one is default since it hasn't been set yet
 			$defaultCreds = $staticModel->getDefaultCredentials();
-			if($type == 'email')
+			if($type == 'email' || $type == 'sms' || $type == 'x2HubConnector')
 				$selectedCredentials = self::LEGACY_ID;
 			if(array_key_exists($defaultUserId, $defaultCreds))
 				if(array_key_exists($type, $defaultCreds[$defaultUserId]))
@@ -541,6 +551,9 @@ class Credentials extends CActiveRecord {
 			if($type == 'email') {
 				$credentials[$cred->id] = Formatter::truncateText($credentials[$cred->id].
                     ' : "'.$cred->auth->senderName.'" <'.$cred->auth->email.'>',50);
+            } else if ($type == 'sms') {
+				$credentials[$cred->id] = Formatter::truncateText($credentials[$cred->id].
+                    ' : "'.$cred->auth->from.'"',50);
             }
 		}
 		if($type == 'email' && !$excludeLegacy) {// Legacy email delivery method(s)

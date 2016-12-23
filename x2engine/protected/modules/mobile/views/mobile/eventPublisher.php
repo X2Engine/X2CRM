@@ -47,7 +47,13 @@ $htmlOptions = array ();
 CHtml::resolveNameID ($model, $attr, $htmlOptions);
 $this->onPageLoad ("
     x2.main.controllers['$this->pageId'] = new x2.EventPublisherController ({
-        photoAttrName: ".CJSON::encode ($htmlOptions['name'])."
+        photoAttrName: ".CJSON::encode ($htmlOptions['name']).",
+        locationAttrName: ".CJSON::encode ($htmlOptions['name']).",
+        audioAttrName: ".CJSON::encode ($htmlOptions['name']).",
+        videoAttrName: ".CJSON::encode ($htmlOptions['name']).",
+        translations: ".CJSON::encode (array (
+            'Checking in at' => Yii::t('app','Checking in at'),
+        )).",
     });
 ", CClientScript::POS_END);
 
@@ -71,6 +77,9 @@ $form = $this->beginWidget ('MobileActiveForm', array (
         'class' => 'publisher-form',
     ),
     'photoAttrName' => 'EventPublisherFormModel[photo]',
+    'locationPhotoAttrName' => 'EventPublisherFormModel[locationPhoto]',
+    'audioAttrName' => 'EventPublisherFormModel[audio]',
+    'videoAttrName' => 'EventPublisherFormModel[video]',
     'JSClassParams' => array (
         'submitButtonSelector' => '#header .post-event-button',
         'validate' => 'js:function () {
@@ -93,10 +102,19 @@ $form = $this->beginWidget ('MobileActiveForm', array (
         'placeholder' =>'Add a post...',
         'class' => 'event-text-box',
     ));
+    echo $form->textArea ($model, 'textLocation', array (
+        'class' => 'event-text-box-location',
+    ));
     echo $form->mobileCoordinates ();
     echo $form->mobileLocationCoordinates ();
     ?>
     <div class='photo-attachments-container'>
+    </div>
+    <div class='location-attachments-container'>
+    </div>
+    <div class='audio-attachments-container'>
+    </div>
+    <div class='video-attachments-container'>
     </div>
 <?php
 $this->endWidget ();
@@ -108,16 +126,26 @@ $this->endWidget ();
 if (Yii::app()->params->isPhoneGap) {
 ?>
 <div id='footer' data-role="footer" class='event-publisher-controls fixed-footer control-panel'>
-    <div class='photo-attach-button icon-button'>
+    <!--<div class='photo-attach-button icon-button'>
         <?php
-            echo X2Html::fa ('camera');
+            //echo X2Html::fa ('camera');
         ?>
-    </div>
+    </div>-->
     <div class='location-attach-button icon-button'>
         <?php
             echo X2Html::fa ('fa-location-arrow');
         ?>
     </div>
+    <!--<div class='audio-attach-button icon-button'>
+        <?php
+            //echo X2Html::fa ('fa-file-audio-o');
+        ?>
+    </div>
+    <div class='video-attach-button icon-button'>
+        <?php
+            //echo X2Html::fa ('fa-file-video-o');
+        ?>
+    </div>-->
 </div>
 <?php
 }

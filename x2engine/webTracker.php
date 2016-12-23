@@ -225,7 +225,7 @@ x2WebTracker.setKeyCookieHiddenField = function (key) {
         require(__DIR__.'/js/X2Identity.js'); ?>
         fingerprint = x2Identity.fingerprint();
 
-        <?php if (!empty ($_SERVER['HTTPS'])) { ?>
+        <?php if (!empty ($_SERVER['HTTPS']) && !file_exists(__DIR__.DIRECTORY_SEPARATOR.'.nogeoloc')) { ?>
         if ("geolocation" in navigator) {
             navigator.geolocation.getCurrentPosition(function(position) {
             var pos = {

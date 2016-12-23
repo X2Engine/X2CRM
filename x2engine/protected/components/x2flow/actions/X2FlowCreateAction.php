@@ -1,5 +1,6 @@
 <?php
-/***********************************************************************************
+
+/* * *********************************************************************************
  * X2CRM is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2016 X2Engine Inc.
  * 
@@ -33,7 +34,7 @@
  * X2Engine" logo. If the display of the logo is not reasonably feasible for
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2Engine".
- **********************************************************************************/
+ * ******************************************************************************** */
 
 /**
  * X2FlowAction that creates a new action
@@ -41,89 +42,57 @@
  * @package application.components.x2flow.actions
  */
 class X2FlowCreateAction extends X2FlowAction {
-	public $title = 'Create Action';
-	public $info = 'Creates a new action for the specified user.';
 
-	public function paramRules() {
-		$visOptions = array(
-			1 => Yii::t('actions','Public'),
-			0 => Yii::t('actions','Private'),
-		);
-		$priorityOptions = array(
-			'1' => Yii::t('actions','Low'),
-			'2' => Yii::t('actions','Medium'),
-			'3' => Yii::t('actions','High')
-		);
-		// $assignmentOptions = array('{assignedTo}'=>'{'.Yii::t('studio','Owner of Record').'}') + X2Model::getAssignmentOptions(false,true);	// '{assignedTo}', groups, no 'anyone'
-		$assignmentOptions = array('{assignedTo}' => '{'.Yii::t('studio', 'Owner of Record').'}') + X2Model::getAssignmentOptions(false, true);	// '{assignedTo}', groups, no 'anyone'
-                $colorOptions = Dropdowns::getItems(Actions::COLORS_DROPDOWN_ID);
-		return array_merge (parent::paramRules (), array (
-			'title' => Yii::t('studio',$this->title),
-			'options' => array(
-				// array('name'=>'attributes'),
-                array('name'=>'dueDate','label'=>Yii::t('actions','Due Date'),'type'=>'dateTime', 'optional'=>1),
-				array('name'=>'subject','label'=>Yii::t('actions','Subject'),'optional'=>1),
-				array('name'=>'description','label'=>Yii::t('actions','Description'),'type'=>'text'),
-				array('name'=>'assignedTo','label'=>Yii::t('actions','Assigned To'),'type'=>'dropdown','options'=>$assignmentOptions),
-				array('name'=>'priority','label'=>Yii::t('actions','Priority'),'type'=>'dropdown','options'=>$priorityOptions),
-				array('name'=>'visibility','label'=>Yii::t('actions','Visibility'),'type'=>'dropdown','options'=>$visOptions),
-                                array('name'=>'color','label'=>Yii::t('actions','Calendar Color'),'type'=>'dropdown','options'=>$colorOptions),
-				// array('name'=>'reminder','label'=>Yii::t('actions','Remind Me'),'type'=>'checkbox','default'=>false),
-			)));
-	}
+    public $title = 'Create Action';
+    public $info = 'Creates a new action for the specified user.';
 
-	public function execute(&$params) {
-		$options = $this->config['options'];
+    public function paramRules() {
+        $visOptions = array(
+            1 => Yii::t('actions', 'Public'),
+            0 => Yii::t('actions', 'Private'),
+        );
+        $priorityOptions = array(
+            '1' => Yii::t('actions', 'Low'),
+            '2' => Yii::t('actions', 'Medium'),
+            '3' => Yii::t('actions', 'High')
+        );
+        $assignmentOptions = array('{assignedTo}' => '{' . Yii::t('studio', 'Owner of Record') . '}') + X2Model::getAssignmentOptions(false, true); // '{assignedTo}', groups, no 'anyone'
+        $colorOptions = Dropdowns::getItems(Actions::COLORS_DROPDOWN_ID);
+        return array_merge(parent::paramRules(), array(
+            'title' => Yii::t('studio', $this->title),
+            'options' => array(
+                array('name' => 'dueDate', 'label' => Yii::t('actions', 'Due Date'), 'type' => 'dateTime', 'optional' => 1),
+                array('name' => 'subject', 'label' => Yii::t('actions', 'Subject'), 'optional' => 1),
+                array('name' => 'description', 'label' => Yii::t('actions', 'Description'), 'type' => 'text'),
+                array('name' => 'assignedTo', 'label' => Yii::t('actions', 'Assigned To'), 'type' => 'dropdown', 'options' => $assignmentOptions),
+                array('name' => 'priority', 'label' => Yii::t('actions', 'Priority'), 'type' => 'dropdown', 'options' => $priorityOptions),
+                array('name' => 'visibility', 'label' => Yii::t('actions', 'Visibility'), 'type' => 'dropdown', 'options' => $visOptions),
+                array('name' => 'color', 'label' => Yii::t('actions', 'Calendar Color'), 'type' => 'dropdown', 'options' => $colorOptions),
+        )));
+    }
 
-		$action = new Actions;
+    public function execute(&$params) {
+        $action = new Actions;
 
-		$action->subject = $this->parseOption('subject',$params);
-                $action->dueDate = $this->parseOption('dueDate',$params);
-		$action->actionDescription = $this->parseOption('description',$params);
-		$action->priority = $this->parseOption('priority',$params);
-		$action->visibility = $this->parseOption('visibility',$params);
-                $action->color = $this->parseOption('color', $params);
-                
-		if(isset($params['model']))
-			$action->assignedTo = $this->parseOption('assignedTo',$params);
+        $action->subject = $this->parseOption('subject', $params);
+        $action->dueDate = $this->parseOption('dueDate', $params);
+        $action->actionDescription = $this->parseOption('description', $params);
+        $action->priority = $this->parseOption('priority', $params);
+        $action->visibility = $this->parseOption('visibility', $params);
+        $action->color = $this->parseOption('color', $params);
 
-		// if(isset($this->config['attributes']))
-			// $this->setModelAttributes($action,$this->config['attributes'],$params);
-
-        if ($action->save()) {
-            return array (
-                true,
-                Yii::t('studio', "View created action: ").$action->getLink ());
-        } else {
-            $errors = $action->getErrors ();
-            return array(false, array_shift($errors));
+        if (isset($params['model'])) {
+            $action->assignedTo = $this->parseOption('assignedTo', $params);
         }
 
+        if ($action->save()) {
+            return array(
+                true,
+                Yii::t('studio', "View created action: ") . $action->getLink());
+        } else {
+            $errors = $action->getErrors();
+            return array(false, array_shift($errors));
+        }
+    }
 
-
-		// if($this->parseOption('reminder',$params)) {
-			// $notif=new Notification;
-			// $notif->modelType='Actions';
-			// $notif->createdBy=Yii::app()->user->getName();
-			// $notif->modelId=$model->id;
-			// if($_POST['notificationUsers']=='me'){
-				// $notif->user=Yii::app()->user->getName();
-			// }else{
-				// $notif->user=$model->assignedTo;
-			// }
-			// $notif->createDate=$model->dueDate-($_POST['notificationTime']*60);
-			// $notif->type='action_reminder';
-			// $notif->save();
-			// if($_POST['notificationUsers']=='both' && Yii::app()->user->getName()!=$model->assignedTo){
-				// $notif2=new Notification;
-				// $notif2->modelType='Actions';
-				// $notif2->createdBy=Yii::app()->user->getName();
-				// $notif2->modelId=$model->id;
-				// $notif2->user=Yii::app()->user->getName();
-				// $notif2->createDate=$model->dueDate-($_POST['notificationTime']*60);
-				// $notif2->type='action_reminder';
-				// $notif2->save();
-			// }
-		// }
-	}
 }

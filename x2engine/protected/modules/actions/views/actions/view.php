@@ -77,6 +77,7 @@ if(isset($associationModel) && $model->associationType=='contacts') {
 			'modelName'=>'Contacts',
 			'modelId'=>$associationModel->id,
 		),
+		'associationType'=>'Contacts',
 		'startHidden'=>true,
 	)
 );

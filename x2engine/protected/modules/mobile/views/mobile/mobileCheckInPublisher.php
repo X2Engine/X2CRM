@@ -47,7 +47,11 @@ $htmlOptions = array ();
 CHtml::resolveNameID ($model, $attr, $htmlOptions);
 $this->onPageLoad ("
     x2.main.controllers['$this->pageId'] = new x2.CheckInPublisherController ({
-        photoAttrName: ".CJSON::encode ($htmlOptions['name'])."
+        photoAttrName: ".CJSON::encode ($htmlOptions['name']).",
+        translations: ".CJSON::encode (array (
+            'Checking in at' => Yii::t('app','Checking in at'),
+            'Thanks for checking in!' => Yii::t('app','Thanks for checking in!'),
+        )).",
     });
 ", CClientScript::POS_END);
 

@@ -284,7 +284,9 @@ class ActionsController extends x2base {
 
             if (!$model->hasErrors () && isset($_POST['x2ajax'])) {
                 $location = Yii::app()->params->profile->user->logLocation('activityPost', 'POST');
-                if ($location)
+                $geoCoords = isset($_POST['geoCoords']) ? CJSON::decode($_POST['geoCoords']) : null;
+                $isCheckIn = ($geoCoords && (isset($geoCoords['lat']) || isset($geoCoords['locationEnabled'])));
+                if ($location && $isCheckIn)
                     $model->locationId = $location->id;
                 $this->quickCreate($model);
             } elseif(!$model->hasErrors () && $model->save()){
@@ -1009,8 +1011,13 @@ class ActionsController extends x2base {
     }
 
     public function actionParseType(){
-        if(isset($_POST['Actions']['associationType'])){
-            $type = $_POST['Actions']['associationType'];
+        $associationType = null;
+        if (isset($_POST['Actions']['associationType']))
+            $associationType = $_POST['Actions']['associationType'];
+        else if (isset($_POST['Events']['associationType']))
+            $associationType = $_POST['Events']['associationType'];
+        if($associationType){
+            $type = $associationType;
             if($modelName = X2Model::getModelName($type)){
                 $linkModel = $modelName;
                 if(class_exists($linkModel)){
@@ -1022,6 +1029,28 @@ class ActionsController extends x2base {
                     $linkSource = "";
                 }
                 echo $linkSource;
+            }else{
+                echo '';
+            }
+        }else{
+            echo '';
+        }
+    }
+
+    public function actionGetAutocompleteAssocLink(){
+        $associationType = null;
+        if (isset($_POST['type']))
+            $associationType = $_POST['type'];
+        if (isset($_POST['id']))
+            $associationId = $_POST['id'];
+        if($associationType && $associationId){
+            $modelName = X2Model::getModelName($associationType);
+            if($model = X2Model::model($modelName)->findByPk($associationId)){
+                echo CJSON::encode(array(
+                    $modelName,
+                    $associationId,
+                    $model->getLink(),
+                ));
             }else{
                 echo '';
             }

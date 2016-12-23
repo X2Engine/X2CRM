@@ -89,11 +89,14 @@ class MobileCheckInAction extends MobileAction {
             if ($model->validate ()) {
                 //AuxLib::debugLogR ('valid');
                 $event = new Events;
+                $eventTextLocation = ' ' . '$|&|$' . ' ' . '$|&|$' .$model->text. ' | '. 
+                              Formatter::formatDateTime(time());
+
                 $event->setAttributes (array (
                     'visibility' => X2PermissionsBehavior::VISIBILITY_PUBLIC,
                     'user' => $profile->username,
-                    'type' => 'structured-feed',
-                    'text' => $model->text,
+                    'type' => 'media',
+                    'text' => $eventTextLocation,
                     'photo' => $model->photo
                 ), false);
                 if ($location)

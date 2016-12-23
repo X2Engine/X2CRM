@@ -880,9 +880,9 @@ class X2ClientScript extends NLSClientScript {
     private function registerDateFormats () {
         $this->registerScript('registerDateFormats',"
             x2.dateFormats = {
-                dateFormat: '".Formatter::formatDatePicker()."',
-                timeFormat: '".Formatter::formatTimePicker()."',
-                ampm: '".Formatter::formatAMPM()."'
+                dateFormat: ".CJSON::encode(Formatter::formatDatePicker()).",
+                timeFormat: ".CJSON::encode(Formatter::formatTimePicker()).",
+                ampm: ".CJSON::encode(Formatter::formatAMPM())."
             };
         ", CClientScript::POS_END);
     }
@@ -943,45 +943,60 @@ class X2ClientScript extends NLSClientScript {
 
     /**
      * Register the geolocation JavaScript
+     * @param bool $onLocationButton Whether to register the geolocation on the location button
      * @param bool $multiple whether to operate on multiple geoCoords inputs
      * @param const $pos CClientScript position
      */
     public function registerGeolocationScript($onLocationButton = false, $multiple = false, $pos = CClientScript::POS_READY) {
         $selector = $multiple ? "input[name=geoCoords]" : "#geoCoords";
+        $enableGeolocation = Yii::app()->settings->enableGeolocation;
+        $noDNT = (!isset ($_SERVER['HTTP_DNT']) || $_SERVER['HTTP_DNT'] != 1);
         if ($onLocationButton) {
             Yii::app()->clientScript->registerScript('geolocationJs', '
                 $("#toggle-location-button").click(function (evt) {
                     evt.preventDefault();
                     if ($("#toggle-location-button").data("location-enabled") === true) {
                         // Clear geoCoords field and reset style
-                        $("#checkInComment").slideUp();'.
-                        (isset($_SERVER['HTTPS']) ? '$("'.$selector.'").val("");' : '').
-                        '$("#toggle-location-button")
+                        $("#checkInComment").slideUp();
+                        $("#toggle-location-comment-button").slideUp().css("color", "");
+                        $("'.$selector.'").val("");
+                        $("#toggle-location-button")
                             .data("location-enabled", false)
                             .css("color", "");
                     } else {
                         // Populate geoCoords field and highlight blue
-                        $("#checkInComment").slideDown();
+                        $("#toggle-location-comment-button").slideDown();
                         $("#toggle-location-button")
                             .data("location-enabled", true)
                             .css("color", "blue");'.
-                        ((isset($_SERVER['HTTPS']) && (!isset ($_SERVER['HTTP_DNT']) || $_SERVER['HTTP_DNT'] != 1)) ?
+                        (($enableGeolocation && isset($_SERVER['HTTPS']) && $noDNT) ?
                         'if ("geolocation" in navigator) {
                             navigator.geolocation.getCurrentPosition(function(position) {
                             var pos = {
                               lat: position.coords.latitude,
-                              lon: position.coords.longitude
+                              lon: position.coords.longitude,
+                              locationEnabled: true
                             };
 
                             $("'.$selector.'").val(JSON.stringify (pos));
                           }, function() {
                             console.log("error fetching geolocation data");
                           });
-                        }' : '').
+                        }' : '$("'.$selector.'").val(JSON.stringify ({locationEnabled: true}));').
                     '}
                 });
+                $("#toggle-location-comment-button").click(function(evt) {
+                    evt.preventDefault();
+                    if ($("#checkInComment").is(":visible")) {
+                        $("#checkInComment").slideUp();
+                        $("#toggle-location-comment-button").css("color", "");
+                    } else {
+                        $("#toggle-location-comment-button").css("color", "blue");
+                        $("#checkInComment").slideDown();
+                    }
+                });
             ', $pos);
-        } else if (isset($_SERVER['HTTPS']) && (!isset ($_SERVER['HTTP_DNT']) || $_SERVER['HTTP_DNT'] != 1)) {
+        } else if ($enableGeolocation && isset($_SERVER['HTTPS']) && $noDNT) {
             Yii::app()->clientScript->registerScript('geolocationJs', '
                 if ("geolocation" in navigator) {
                     navigator.geolocation.getCurrentPosition(function(position) {
@@ -1005,7 +1020,7 @@ class X2ClientScript extends NLSClientScript {
      * @param bool $multiple whether to operate on multiple geoCoords inputs
      * @param const $pos CClientScript position
      */
-    public function registerCheckinScript($submitSelector, $multiple = false, $pos = CClientScript::POS_READY) {
+    public function registerCheckinScript($submitSelector, $onByDefault = false, $multiple = false, $pos = CClientScript::POS_READY) {
         $selector = $multiple ? "input[name=geoCoords]" : "#geoCoords";
         Yii::app()->clientScript->registerScript('checkInJs', '
             $("#checkInComment").on("blur", function() {
@@ -1027,6 +1042,11 @@ class X2ClientScript extends NLSClientScript {
                     .val("");
             });
         ', $pos);
+        if ($onByDefault) {
+            Yii::app()->clientScript->registerScript('startCheckInJs', '
+                $("#toggle-location-button").click();
+            ', CClientScript::POS_READY);
+        }
     }
 
     /**

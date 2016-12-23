@@ -38,7 +38,9 @@
 class EventPublisherFormModel extends CFormModel {
 
     public $text;
+    public $textLocation;
     public $photo;
+    public $locationPhoto;
     public $audio;
     public $video;
 
@@ -48,7 +50,17 @@ class EventPublisherFormModel extends CFormModel {
                 'text', 'safe',
             ),
             array (
+                'textLocation', 'safe',
+            ),
+            array (
                 'photo', 'file', 
+                'allowEmpty' => true,
+                'types' => array (
+                    'gif', 'jpg', 'jpeg', 'tif', 'tiff', 'bmp', 'png'
+                ),
+            ),
+            array (
+                'locationPhoto', 'file', 
                 'allowEmpty' => true,
                 'types' => array (
                     'gif', 'jpg', 'jpeg', 'tif', 'tiff', 'bmp', 'png'
@@ -65,7 +77,7 @@ class EventPublisherFormModel extends CFormModel {
                 'video', 'file', 
                 'allowEmpty' => true,
                 'types' => array (
-                    'quicktime', '3gpp', 'mp4'
+                    'quicktime', '3gpp', 'mp4', 'MOV'
                 ),
             ),
         );

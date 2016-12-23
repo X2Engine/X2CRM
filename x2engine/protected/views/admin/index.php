@@ -115,6 +115,9 @@ $failedLoginsDataProvider = new CActiveDataProvider('FailedLogins',
                 <li data-attr="tabs-1"><div id="admin-support"><a href="#tabs-1"><?php
                             echo Yii::t('admin', 'Customer Support');
                             ?></a></div></li>
+                <li data-attr="tabs-12"><div id="admin-hub"><a href="#tabs-12"><?php
+                            echo Yii::t('admin', 'X2 Hub Services');
+                            ?></a></div></li>
                 <li data-attr="tabs-2"><div id="admin-doc-and-videos"> <a href="#tabs-2"><?php
                             echo Yii::t('admin', 'Documentation & Videos');
                             ?></a></div></li>
@@ -790,6 +793,30 @@ $failedLoginsDataProvider = new CActiveDataProvider('FailedLogins',
                     ?><br><?php
                     echo Yii::t('admin',
                             'Configure IP access control, failed login penalties, and user password requirements to help prevent unauthorized access to the system');
+                    ?></div>
+
+            </div>
+            <div id="tabs-12">
+
+                <h2 id="admin-hub"><?php
+                    echo Yii::t('admin', 'X2 Hub Services');
+                    ?></h2>
+                <p class="cell">
+                    <?php echo Yii::t('admin', 'X2 Hub Services is a cloud information service provided by X2Engine Inc. It includes connectors for security, calendaring, mapping, speech, email, text, and other network services. For more information and to purchase a subscription, please visit {url}.', array('{url}' => CHtml::link('https://www.x2crm.com/', 'https://www.x2crm.com/', array('target' => '_blank')))); ?>
+                </p>
+                <div class="cell span-6"><?php
+                    echo CHtml::link(Yii::t('admin',
+                                    'Obtain X2 Hub License Key'),'https://x2crm.com/products/');
+                    ?><br><?php
+                    echo Yii::t('admin',
+                            'Obtain a license key to use with X2 Hub Services.');
+                    ?></div>
+                <div class="cell span-6"><?php
+                    echo CHtml::link(Yii::t('admin', 'Configure X2 Hub Integration'),
+                            array('/admin/x2HubIntegration'));
+                    ?><br><?php
+                    echo Yii::t('admin',
+                            'Configure your X2 Hub settings to enable external connectors');
                     ?></div>
 
             </div>

@@ -67,7 +67,7 @@ class UsersController extends x2base {
                 'users'=>array('@'),
             ),
             array('allow', // allow admin user to perform 'admin' and 'delete' actions
-                'actions'=>array('view','index','create','update','admin','delete','search','inviteUsers'),
+                'actions'=>array('view','index','create','update','admin','delete','search','inviteUsers', 'deactivateTwoFactor'),
                 'users'=>array('admin'),
             ),
             array('deny',  // deny all users
@@ -88,7 +88,7 @@ class UsersController extends x2base {
         $user=User::model()->findByPk($id);
 
         // Only load the Google Maps widget if we're on a User with an address
-        if(isset($this->portlets['GoogleMaps']) && Yii::app()->settings->googleIntegration) {
+        if(isset($this->portlets['GoogleMaps']) && Yii::app()->settings->enableMaps) {
             $this->portlets['GoogleMaps']['params']['location'] = $user->address;
             $this->portlets['GoogleMaps']['params']['activityLocations'] = $user->getMapLocations();
             $this->portlets['GoogleMaps']['params']['defaultFilter'] = Locations::getDefaultUserTypes();
@@ -529,6 +529,15 @@ Please click on the link below to create an account at X2Engine!
         ));
     }
 
+    public function actionDeactivateTwoFactor($id){
+        if (!Yii::app()->request->isPostRequest) $this->denied();
+        $model = Profile::model()->findByPk($id);
+        if ($model) {
+            $model->enableTwoFactor = 0;
+            $model->update(array('enableTwoFactor'));
+        }
+    }
+
     private function renderTopContacts() {
         $this->renderPartial('application.components.leftWidget.views.topContacts',array(
             'bookmarkRecords'=>User::getTopContacts(),
@@ -573,7 +582,7 @@ Please click on the link below to create an account at X2Engine!
                     '{users}' => $Users,
                 )),
                 'url'=>array('userMap'),
-                'visible' => (bool) Yii::app()->settings->googleIntegration,
+                'visible' => (bool) Yii::app()->settings->enableMaps,
             ),
             array(
                 'name'=>'create',

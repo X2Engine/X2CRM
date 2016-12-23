@@ -110,7 +110,7 @@ echo CHtml::openTag ('div', array_merge (array (
         </div>
         <?php
         }
-        if ($data->type === 'media' && $data->legacyMedia) {
+        if ($data->type === 'media' && $data->legacyMedia) {          
         ?>
         <div class='photo-attachment-container'>
             <?php echo Media::attachmentSocialText(

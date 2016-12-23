@@ -42,7 +42,7 @@ $modTitle = Modules::displayName();
 $menuOptions = array(
     'index', 'create', 'update', 'delete'
 );
-$this->insertMenu($menuOptions);
+$this->insertMenu($menuOptions, $model);
 ?>
 <div class="calendar page-title">
 <h2>
@@ -63,6 +63,7 @@ echo $this->renderPartial('_form',
                  'googleIntegration'=>$googleIntegration,
                  'client' => $client,
                  'googleCalendarList' => $googleCalendarList,
+                 'hubCalendaring' => $hubCalendaring,
 		 'users'=>$users,
 		 'modelName'=>'calendar',
 		 'isQuickCreate'=>true, // let us create the CActiveForm in this file

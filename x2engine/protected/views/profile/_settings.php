@@ -63,8 +63,19 @@ $passVariablesToClientScript = "
     x2.profileSettings.translations = {
         themeImportDialogTitle: '".Yii::t('profile', 'Import a Theme')."',
         close: '".Yii::t('app', 'close')."',
+        enableTwoFAMessage: '".Yii::t('profile', 'Are you sure you want to enable two factor authentication?')."',
+        disableTwoFAMessage: '".Yii::t('profile', 'Are you sure you want to disable two factor authentication?')."',
+        twoFACodeSentMessage: '".Yii::t('profile', 'A verification code has been sent to your phone number ').$model->cellPhone."',
+        enableTwoFASuccessMessage: '".Yii::t('profile', 'Two factor authentication had been enabled')."',
+        disableTwoFASuccessMessage: '".Yii::t('profile', 'Two factor authentication had been disabled')."',
     };
     x2.profileSettings.uploadedByAttrs = {};
+    x2.profileSettings.beginTwoFAUrl = '".
+        CHtml::normalizeUrl(array("/profile/beginTwoFactorActivation"))."';
+    x2.profileSettings.completeTwoFAUrl = '".
+        CHtml::normalizeUrl(array("/profile/completeTwoFactorActivation"))."';
+    x2.profileSettings.disableTwoFAUrl = '".
+        CHtml::normalizeUrl(array("/profile/disableTwoFactor"))."';
 ";
 
 // pass array of predefined theme uploadedBy attributes to client
@@ -131,7 +142,7 @@ $form = $this->beginWidget('X2ActiveForm', array(
         </div>
     </div>
     <?php } ?>
-     <div class="row" style="margin-bottom:10px;">
+     <div class="row">
         <div class="cell">
             <?php
             echo $form->checkBox(
@@ -140,6 +151,32 @@ $form = $this->beginWidget('X2ActiveForm', array(
             <?php
             echo $form->labelEx(
                     $model, 'disableNotifPopup', array('style' => 'display:inline;'));
+            ?>
+        </div>
+    </div>
+    <div class="row" style="margin-bottom:10px;">
+        <div class="cell">
+            <?php
+            if (Yii::app()->settings->twoFactorCredentialsId && !empty($model->cellPhone)) {
+                echo $form->checkBox(
+                        $model, 'enableTwoFactor', array('onchange' => 'js:x2.profileSettings.initiateTwoFAActivation(this);'));
+                echo $form->labelEx(
+                        $model, 'enableTwoFactor', array('style' => 'display:inline;'));
+                echo X2Html::hint2 (
+                    Yii::t('app', 'Enable two factor authentication to require a verification code on login'));
+                echo CHtml::textField('code', '', array('class' => 'twofa-activation', 'style' => 'display: none', 'placeholder' => Yii::t('profile', 'Verification Code')));
+                echo CHtml::button(Yii::t('profile', 'Activate'), array('class' => 'twofa-activation', 'style' => 'display: none'));
+            } else {
+                // Two factor auth is not yet configured
+                if (empty($model->cellPhone))
+                    $twoFactorTip = Yii::t('profile', 'Please add your cell phone number to enable two factor authentication');
+                else
+                    $twoFactorTip = Yii::t('profile', 'Please configure credentials in the security settings page to enable two factor authentication');
+                echo $form->checkBox(
+                        $model, 'enableTwoFactor', array('disabled' => 'disabled','style' => 'display:inline;opacity:0.5;'));
+                echo $form->labelEx(
+                        $model, 'enableTwoFactor', array('title' => $twoFactorTip, 'style' => 'display:inline;opacity:0.5;'));
+            }
             ?>
         </div>
     </div>

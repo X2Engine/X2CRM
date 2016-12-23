@@ -41,6 +41,10 @@
  *
  */
 class EventTextFormatter {
+    /**
+     * Whether associated record links were already rendered in a formatter function
+     */
+    public static $renderedRecordLinks = false;
 
     public static function getText(Events $event, array $params = array(), array $htmlOptions
     = array()) {
@@ -52,9 +56,16 @@ class EventTextFormatter {
         } else {
             $text = static::formatDefault($event, $params, $htmlOptions);
         }
+        if (!static::$renderedRecordLinks && !empty($event->recordLinks)) {
+            $text .= '<br /><br /><div>'.Yii::t('app', 'Associated Records').'</div>';
+            $text .= $event->renderRecordLinks(array('style' => 'margin-bottom: 0px'));
+            static::$renderedRecordLinks = false;
+        }
         if ($truncated && mb_strlen($text, 'UTF-8') > 250) {
             $text = mb_substr($text, 0, 250, 'UTF-8') . "...";
         }
+        //takeout trailing $|&|$ that's used to format activity feed posts
+        $text = str_replace("$|&|$", "", $text);
         return $text;
     }
 
@@ -796,9 +807,17 @@ class EventTextFormatter {
          *  but for legacy media that weren't loaded in x2_events_to_media get them via legacyMedia
          * 
          */
+        
+        // var array $eventTexts to parse $event->text for further formatting
+        $eventTexts = explode('$|&|$', $event->text);
         if ($params['media'] == null) {
             $media = $event->legacyMedia;
-            $text = substr($authorText, 0, -1) . ": " . $event->text;            
+            //$text = substr($authorText, 0, -1) . ": " . $event->text;
+            if(count($eventTexts) == 3) {
+                $text = $authorText . ": " . $eventTexts[2]."<br><br>".$eventTexts[0];    
+            } else {
+                $text = $authorText . ": " . $event->text;          
+            }
         } else {
             $media = $params['media'];
             $recipient = $params['recipient'];
@@ -819,19 +838,49 @@ class EventTextFormatter {
                 }
                 
             }
-            $text = $authorText . ": " . $event->text;
+            if(count($eventTexts) == 3) {
+                $text = $authorText . ": " . $eventTexts[2]."<br><br><br>".$eventTexts[0];    
+            } else {
+                $text = $authorText . ": " . $event->text;          
+            }
         }
-        if ($media) {
+        if (!empty($event->recordLinks)) {
+            $text .= '<br /><br /><div>'.Yii::t('app', 'Associated Records').'</div>';
+            $text .= $event->renderRecordLinks(array('style' => 'margin-bottom: 0px'));
+            static::$renderedRecordLinks = true;
+        }
+        if (count($event->media) > 1) {
+            $index = 0;
+            foreach($event->media as $key=>$media) {
+                if ($index == (count($event->media)-1) && count($eventTexts) == 3) {
+                    $text .= "<br>";
+                    $text .= $eventTexts[1];   
+                }
+                if (!$truncated) {
+                    $text.="<br><br>" . Media::attachmentSocialText($media->getMediaLink(),
+                                    true, true) . "<br>";
+                } else {
+                    $text.="<br><br>" . Media::attachmentSocialText($media->getMediaLink(),
+                                    true, false) . "<br>";
+                }
+                $index++;
+            }
+        } else if (count($event->media) == 1) {
+            if (count($eventTexts) == 3) {
+                $text.="<br><br>";
+                $text .= $eventTexts[1];   
+            }
             if (!$truncated) {
-                $text.="<br>" . Media::attachmentSocialText($media->getMediaLink(),
+                $text.="<br><br>" . Media::attachmentSocialText($media->getMediaLink(),
                                 true, true);
             } else {
-                $text.="<br>" . Media::attachmentSocialText($media->getMediaLink(),
+                $text.="<br><br>" . Media::attachmentSocialText($media->getMediaLink(),
                                 true, false);
             }
         } else {
             $text.="<br>Media file not found.";
         }
+        
         return $text;
     }
 

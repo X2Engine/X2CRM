@@ -316,7 +316,8 @@ class WeblistController extends x2base {
 				$this->renderPartial(
                     'application.components.views.webFormSubmit',
                     array_merge (array (
-                        'type'=>'weblist'
+                        'type'=>'weblist',
+                        'thankYouText' => $webForm->thankYouText,
                     ), $sanitizedGetParams));
 			} catch (Exception $e) {
 				$transaction->rollBack();

@@ -51,7 +51,7 @@ $verticalSpacing: 8px;
 
 .profile-mobilePublisher, .profile-mobileCheckInPublisher {
     background: white;
-    .photo-attachments-container {
+    /*.photo-attachments-container {
         display: inline-block;
         position: relative;
         .photo-attachment {
@@ -77,6 +77,58 @@ $verticalSpacing: 8px;
             line-height: 20px;
         }
     }
+    .audio-attachments-container {
+        display: inline-block;
+        position: relative;
+        .audio-attachment {
+            max-width: 100%;
+            @media (min-width: 500px) {
+                max-width: 500px;
+            }
+            //max-height: 400px;
+            img {
+            }
+        }
+        .remove-attachment-button {
+            cursor: pointer;
+            position: absolute;
+            right: 10px;
+            top: 10px;
+            color: lighten(black,20%);
+            //border: 2px solid black;
+            text-align: center;
+            //border-radius: 50%;
+            //width: 20px;
+            //height: 20px;
+            line-height: 20px;
+        }
+    }
+    .video-attachments-container {
+        display: inline-block;
+        position: relative;
+        .video-attachment {
+            max-width: 100%;
+            @media (min-width: 500px) {
+                max-width: 500px;
+            }
+            //max-height: 400px;
+            img {
+            }
+        }
+        .remove-attachment-button {
+            cursor: pointer;
+            position: absolute;
+            right: 10px;
+            top: 10px;
+            color: lighten(black,20%);
+            //border: 2px solid black;
+            text-align: center;
+            //border-radius: 50%;
+            //width: 20px;
+            //height: 20px;
+            line-height: 20px;
+        }
+    }*/
 }
 
 
@@ -121,6 +173,14 @@ background: $backgroundColor;
         position: absolute;
     }
     textarea.event-text-box {
+        width: 100%;
+        margin-left: 55px;
+        margin-top: 12px;
+        padding: 0;
+        padding-right: 65px;
+        border: none;
+    }
+    textarea.event-text-box-location {
         width: 100%;
         margin-left: 55px;
         margin-top: 12px;
@@ -188,7 +248,9 @@ background: $backgroundColor;
             color: $subduedTextColor;
         }
         .event-attachments {
-            @include photo-attachment;
+            /*@include photo-attachment;
+            @include audio-attachment;
+            @include video-attachment;*/
         }
         .bottom-bar {
             & > * {
@@ -246,10 +308,18 @@ background: $backgroundColor;
     .comment-publisher {
         form {
             position: relative;
-            .photo-attachments-container {
+            /*.photo-attachments-container {
                 .photo-attachment {
                 }
             }
+            .audio-attachments-container {
+                .audio-attachment {
+                }
+            }
+            .video-attachments-container {
+                .video-attachment {
+                }
+            }*/
             .photo-attach-button {
                 display: none !important;
                 cursor: pointer;

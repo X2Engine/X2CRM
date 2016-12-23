@@ -86,6 +86,7 @@ if (!$this->refresh && $hasCreateAccess) {
                     'type' => $type
                 ))
             ));
+            if (MobileModule::getPlatform () === 'iOS') {
             ?>
             <li class='photo-attachment-button'>
                 <span><?php echo X2Html::fa('camera'); ?></span>
@@ -95,6 +96,17 @@ if (!$this->refresh && $hasCreateAccess) {
                     ?>
                 </div>
             </li>
+            <li class='video-attachment-button'>
+                <span><?php echo X2Html::fa('fa-file-video-o '); ?></span>
+                <div>
+                    <?php 
+                    echo CHtml::encode(Yii::t('mobile', 'Add video attachment'));
+                    ?>
+                </div>
+            </li>
+            <?php 
+            }
+            ?>
             <li class='location-attachment-button'>
                 <span><?php echo X2Html::fa('fa-location-arrow'); ?></span>
                 <div>
@@ -121,16 +133,6 @@ if (!$this->refresh && $hasCreateAccess) {
                             
                 </div>
             </li>
-            <!--<li class='video-attachment-button'>
-                <span><?php //echo X2Html::fa('fa-file-video-o '); ?></span>
-                <div>
-                    <?php 
-                    //echo CHtml::encode(Yii::t('mobile', 'Add video attachment'));
-                    ?>
-                    
-                            
-                </div>
-            </li>-->
             <li class='file-attachment-button'>
                 <span><?php echo X2Html::fa('file'); ?></span>
                 <div>

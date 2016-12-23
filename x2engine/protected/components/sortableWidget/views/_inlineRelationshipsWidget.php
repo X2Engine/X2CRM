@@ -108,6 +108,43 @@ function refreshQtip() {
 $(function() {
     refreshQtip();
 });
+
+
+$(".editLabelLink").parent()
+    .hover(function() { $(this).find(".editLabelLink").show(); })
+    .mouseleave(function() { $(".editLabelLink").hide(); });
+$(".editLabelLink").click(function() {
+    var promptMsg = "'.Yii::t('app', 'How would you like to label this relationship?').'";
+    var errorMsg = "'.Yii::t('app', 'Failed. Please ensure you have permission in the related modules.').'";
+    var id = $(this).data("id");
+    var model = $(this).data("model");
+    var oldLabel = $(this).data("label");
+    var newLabel = prompt(promptMsg, oldLabel);
+    if (newLabel != null && newLabel !== oldLabel) {
+        if (newLabel === "") {
+            if (!confirm("'.Yii::t('app', 'Remove this label?').'"))
+                return;
+        }
+        $.ajax({
+            type: "POST",
+            url: "'.Yii::app()->createUrl ('/relationships/relabelRelationship', array(
+                'secondId' => $_GET['id'],
+                'secondType' => get_class($model),
+            )).'",
+            data: {
+                firstId: id,
+                firstType: model,
+                label: newLabel
+            },
+            success: function () {
+                $.fn.yiiGridView.update("relationships-grid");
+            },
+            error: function () {
+                alert(errorMsg);
+            }
+        });
+    }
+});
 ');
 
 $relationshipsDataProvider = $this->getDataProvider ();
@@ -164,7 +201,7 @@ $columns = array(
     array(
         'name' => 'label',
         'header' => Yii::t("contacts", 'Label'),
-        'value' => '$data->renderAttribute("label")',
+        'value' => '$data->renderAttribute("label")." ".$data->renderInlineRelabelControls()',
         'type' => 'raw',
     ),
     array(

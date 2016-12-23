@@ -63,7 +63,7 @@ Yii::app()->clientScript->registerScript('loadJqueryVersion',
 
 <div class='center-column-container form left' >
     <b style="font-size:16px"><?php echo Yii::t('app',
-        'X2CRM | Enterprise CRM for Small Business'); ?></b><br>
+        'X2CRM | X2Engine Inc.'); ?></b><br>
     <b><?php echo Yii::t('app', 'Version') . " " . Yii::app()->params->version; ?></b><br>
     <?php
     echo Yii::t('app', 'Open Source License: {link}',
@@ -143,11 +143,12 @@ Yii::app()->clientScript->registerScript('loadJqueryVersion',
         echo implode(', ',
                 array(
             'John Roberts',
-            'Jake Houser',
             'Raymond Colebaugh',
+            'Josef Bustamante',
+            'Isaiah Solomon',
+            'Jake Houser',
             'Steve Lance',
             'Derek Mueller',
-            'Josef Bustamante',
             'Matthew Pearson',
             'Demitri Morgan',
             'Alex Rowe'
@@ -156,7 +157,8 @@ Yii::app()->clientScript->registerScript('loadJqueryVersion',
         <b><?php echo Yii::t('app','Release Contributors');?></b><br>
         <?php 
         echo implode('<br>',array(
-            'Pomazan Bogdan -- Russian Language Translations'
+            'Michael Zhang -- Chinese Language Translations',
+            'Pomazan Bogdan -- Russian Language Translations',
         ));
         ?>
     </div>

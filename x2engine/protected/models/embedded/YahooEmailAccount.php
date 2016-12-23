@@ -62,6 +62,8 @@ class YahooEmailAccount extends EmailAccount {
         return Yii::t('app','Yahoo Email Account');
     }
 
+    // Hide SMTP SSL validation setting
+    public function renderSmtpSslValidation() { }
 }
 
 ?>

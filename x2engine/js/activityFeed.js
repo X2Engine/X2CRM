@@ -64,6 +64,8 @@ function ActivityFeed (argsDict) {
 
     // used to prevent text field expansion if already expanded
     that.editorIsExpanded = false; 
+    
+    that.postType = "";
 
     this._init ();
 
@@ -172,10 +174,13 @@ ActivityFeed.prototype.publishPost = function  () {
             "associationId":$("#Events_associationId").val(),
             "visibility":$("#Events_visibility").val(),
             "subtype":$("#Events_subtype").val(),
+            "recordLinks":$("#Events_recordLinks").val(),
             "geoCoords":$("#geoCoords").val()
         },
         success:function(){
             that.finishMinimizeEditor ();
+            $("#Events_recordLinks").val(''); // clear out associated record links
+            $("#feed_record_links").html('');
         },
         failure:function(){
             window.newPostEditor.focusManager.unlock ();
@@ -311,23 +316,29 @@ ActivityFeed.prototype.setupAndroidPublisher = function  () {
 
 ActivityFeed.prototype.minimizePosts = function (){
     var that = this;
-    $('.items').find ('.event-text').each (function (index, element) {
-        if($(element).html().length>200){
-            var text=element;
-            var oldText=$(element).html();
-            $.ajax({
-                url:"minimizePosts",
-                type:"GET",
-                data:{"minimize":"minimize"},
-                success:function(){
-                    if ($(text).find ('.expandable-details').is (':visible')) {
-                        $(text).find ('.read-less').find ('a').click ();
+    $('.items').find ('.view,.top-level,.activity-feed').each (function (index, element) {
+        var thisItem = element;
+        $(thisItem).find ('.img-box,.test,.feed').each (function (index, element) {
+            that.postType = $(element).attr("title");
+        });
+        $(thisItem).find ('.event-text').each (function (index, element) {
+            if($(element).html().length>200 && that.postType !== "Social Posts"){
+                var text=this.element;
+                var oldText=$(this.element).html();
+                $.ajax({
+                    url:"minimizePosts",
+                    type:"GET",
+                    data:{"minimize":"minimize"},
+                    success:function(){
+                        if ($(text).find ('.expandable-details').is (':visible')) {
+                            $(text).find ('.read-less').find ('a').click ();
+                        }
                     }
-                }
-            });
-        }else{
+                });
+            }else{
 
-        }
+            }
+        });
     });
 }
 
@@ -426,6 +437,7 @@ ActivityFeed.prototype.setupEditorBehavior = function  () {
             that.fileUploader.mediaParams.attachmentText = window.newPostEditor.getData ();
             that.fileUploader.mediaParams.private = $("#file-uploader-private:checked").length > 0;
             that.fileUploader.mediaParams.associationId = $("#Events_associationId").val();
+            that.fileUploader.mediaParams.geoCoords = $("#geoCoords").val();
             that.fileUploader.upload();
             return;
         }
@@ -1163,6 +1175,11 @@ ActivityFeed.prototype.updateEventList = function  () {
                     $newElem = $(text).hide().prependTo("#new-events");
                     that.makePostExpandable ($newElem.find ('.event-text-box').children ('.event-text'));
                     $newElem.fadeIn(1000);
+                    $('.attachment-img').each (function () {
+                        new x2.EnlargeableImage ({
+                            elem: $(this)
+                        });                                       
+                    });
                 }
                 if(data[2]){
                     var comments=data[2];
@@ -1324,6 +1341,9 @@ ActivityFeed.prototype._setUpFilters = function () {
         var eventTypes=auxlib.filter (function (a) {
             return a !== '';
         }, auxlib.getUnselected ($('#simpleEventTypes')));
+        var eventTypesExpansion=auxlib.filter (function (a) {
+            return a !== '';
+        }, auxlib.getUnselected ($('#simpleEventTypesExpansion')));
         var subtypes=[];
         var defaultFilters=[];
         var linkId=$(link).attr("id");
@@ -1332,7 +1352,7 @@ ActivityFeed.prototype._setUpFilters = function () {
         var str2=pieces[0];
         pieces2=str2.split("#");
         window.location = pieces2[0] + "?filters=true&visibility=" + visibility + 
-            "&users=" + users + "&types=" + eventTypes + "&subtypes=" + subtypes + 
+            "&users=" + users + "&typesExpansion="+ eventTypesExpansion + "&types=" + eventTypes +"&subtypes=" + subtypes + 
             "&default=" + defaultFilters;
         return false;
     });

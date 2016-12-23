@@ -833,6 +833,8 @@ class MarketingController extends x2base {
             if (Yii::app()->contEd('pla')) {
                 $settings = array(
                     'enableFingerprinting',
+                    'enableGeolocation',
+                    'disableAnonContactNotifs',
                     'identityThreshold',
                     'maxAnonContacts',
                     'maxAnonActions',
@@ -844,7 +846,19 @@ class MarketingController extends x2base {
                 }
             }
             
-            $admin->save();
+            if ($admin->save()) {
+                // Create lockfile to disable geolocation in webTracker.php,
+                // which is loaded without Yii support
+                $geolocLockFile = implode(DIRECTORY_SEPARATOR, array(
+                    Yii::app()->basePath,
+                    '..',
+                    '.nogeoloc',
+                ));
+                if ($admin->enableGeolocation && file_exists($geolocLockFile))
+                    unlink($geolocLockFile);
+                else if (!$admin->enableGeolocation && !file_exists($geolocLockFile))
+                    touch($geolocLockFile);
+            }
         }
         $this->render('webTracker', array('admin' => $admin));
     }

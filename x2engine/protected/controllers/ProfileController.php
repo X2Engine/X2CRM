@@ -73,6 +73,7 @@ class ProfileController extends x2base {
                     'toggleEmailReport', 'deleteEmailReport', 'sendTestActivityReport',
                     'createProfileWidget','deleteSortableWidget','deleteTheme','previewTheme', 
                     'resetTours', 'disableTours', 'mobileIndex', 'mobileView', 'mobileActivity', 
+                    'beginTwoFactorActivation', 'completeTwoFactorActivation', 'disableTwoFactor',
                     'mobileViewEvent', 'mobileDeleteEvent','mobilePublisher', 'mobileCheckInPublisher'),
                 'users' => array('@'),
             ),
@@ -543,6 +544,31 @@ class ProfileController extends x2base {
             'displayThemeEditor' => $admin->enforceDefaultTheme,
                 
         ));
+    }
+
+    public function actionBeginTwoFactorActivation() {
+        if (!Yii::app()->request->isPostRequest) $this->denied();
+        $model = $this->loadModel(Yii::app()->user->getId());
+        if (!$model->requestTwoFA(true))
+            throw new CHttpException(500, Yii::t('profile', 'Failed to request two factor authentication code!'));
+    }
+
+    public function actionCompleteTwoFactorActivation($code) {
+        if (!Yii::app()->request->isPostRequest) $this->denied();
+        $model = $this->loadModel(Yii::app()->user->getId());
+        if ($model->verifyTwoFACode($code)) {
+            $model->enableTwoFactor = 1;
+            $model->update(array('enableTwoFactor'));
+        } else {
+            throw new CHttpException(500, Yii::t('profile', 'Verification Failed!'));
+        }
+    }
+
+    public function actionDisableTwoFactor() {
+        if (!Yii::app()->request->isPostRequest) $this->denied();
+        $model = $this->loadModel(Yii::app()->user->getId());
+        $model->enableTwoFactor = 0;
+        $model->update(array('enableTwoFactor'));
     }
 
     public function actionManageCredentials() {
@@ -1931,13 +1957,16 @@ class ProfileController extends x2base {
             //die(var_dump($_POST['Social']));
             $location = Yii::app()->params->profile->user->logLocation('activityPost', 'POST');
             $geoCoords = isset($_POST['geoCoords']) ? CJSON::decode($_POST['geoCoords'], true) : null;
-            $isCheckIn = ($geoCoords && (isset($geoCoords['lat']) || !empty($geoCoords['comment'])));
+            $isCheckIn = ($geoCoords && (isset($geoCoords['lat']) || isset($geoCoords['locationEnabled'])));
             if ($location && $isCheckIn) {
                 // Only associate location when a checkin is requested
                 $post->locationId = $location->id;
                 $staticMap = $location->generateStaticMap();
+                $post->text .= '$|&|$' . $geoCoords['comment'] . '$|&|$'; //temporary dividers to be parsed later
                 $geocodedAddress = $location->geocode();
             }
+            if (isset($_POST['recordLinks']) && ($decodedLinks = CJSON::decode($_POST['recordLinks'], true)))
+                $post->recordLinks = $decodedLinks;
             $post->user = Yii::app()->user->getName();
             $post->type = 'feed';
             $post->subtype = $_POST['subtype'];
@@ -1946,6 +1975,7 @@ class ProfileController extends x2base {
             if ($post->save()) {
                 if (!empty($staticMap)) {
                     if (!empty($geocodedAddress)) {
+                        $post->type = 'media';
                         $post->text .= Yii::t('app', 'Checking in at ').$geocodedAddress.' | '.
                             Formatter::formatDateTime(time());
                     }

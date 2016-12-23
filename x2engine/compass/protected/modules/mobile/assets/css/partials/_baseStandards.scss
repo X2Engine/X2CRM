@@ -127,7 +127,7 @@ list view
         @include box-shadow(0px 1px 2px lighten($borderColor, 3%));
     }
 }
-
+/*
 @mixin photo-attachment {
     .photo-attachment-container {
         img {
@@ -139,6 +139,28 @@ list view
     }
 }
 
+@mixin audio-attachment {
+    .audio-attachment-container {
+        audio {
+            max-width: 100%;
+            @media (min-width: 500px) {
+                max-width: 500px;
+            }
+        }
+    }
+}
+
+@mixin video-attachment {
+    .video-attachment-container {
+        video {
+            max-width: 100%;
+            @media (min-width: 500px) {
+                max-width: 500px;
+            }
+        }
+    }
+}
+*/
 /*
 panel
 */

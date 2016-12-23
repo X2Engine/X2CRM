@@ -214,6 +214,12 @@ $publisherMenuHeightBrowser: 64px;
     }
 }
 
+&[data-x2-tab-name='action-history-attachments'] {
+    .publisher-menu-button {
+        display: block !important;
+    }
+}
+
 &.x2touch-android {
     @include publisher-button-animation ($publisherMenuHeight,'makeActivePhoneGap');
     #footer.publisher-menu {
@@ -224,9 +230,16 @@ $publisherMenuHeightBrowser: 64px;
 &.x2touch-browser, &.x2touch-ios {
     @include publisher-button-animation ($publisherMenuHeightBrowser,'makeActiveBrowser');
     #footer.publisher-menu {
+        /*
         .photo-attachment-button {
             display: none;
         }
+        .audio-attachment-button {
+            display: none;
+        }
+        .video-attachment-button {
+            display: none;
+        }*/
         * {
             border: none;
         }
