@@ -39,7 +39,13 @@ Yii::app()->clientScript->registerScriptFile(
     Yii::app()->controller->module->assetsUrl.'/js/RecordCreateController.js');
 
 $this->onPageLoad ("
-    x2.main.controllers['$this->pageId'] = new x2.RecordCreateController ();
+    x2.main.controllers['$this->pageId'] = new x2.RecordCreateController (
+        translations: ".CJSON::encode (array (
+            'Error' => Yii::t('app','Error'),
+            'Export Success' => Yii::t('app','Export Success'),
+            'Would you like to export this contact' => Yii::t('app','Would you like to export this contact'),
+        )).",
+    );
 ", CClientScript::POS_END);
 
 ?>

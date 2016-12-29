@@ -53,6 +53,11 @@ $this->onPageLoad ("
         videoAttrName: ".CJSON::encode ($htmlOptions['name']).",
         translations: ".CJSON::encode (array (
             'Checking in at' => Yii::t('app','Checking in at'),
+            'error code' => Yii::t('app','error code'),
+            'error message' => Yii::t('app','error message'),
+            'Failed to fetch location' => Yii::t('app','Failed to fetch location'),
+            'Error' => Yii::t('app','Error'),
+            
         )).",
     });
 ", CClientScript::POS_END);
