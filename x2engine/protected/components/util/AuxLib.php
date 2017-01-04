@@ -352,6 +352,16 @@ class AuxLib {
     }
 
     /**
+     * Checks if a string is json
+     * @param string a string to be checked 
+     * @return bool this function returns true if the string passed in is json
+     */    
+    public static function isJson($string) {
+     json_decode($string);
+     return (json_last_error() == JSON_ERROR_NONE);
+    }
+
+    /**
      * Reformats and translates dropdown arrays to preserve sorting in {@link CJSON::encode()}
      * @param array an associative array of dropdown options ($value => $label)
      * @return array a 2-D array of values and labels
