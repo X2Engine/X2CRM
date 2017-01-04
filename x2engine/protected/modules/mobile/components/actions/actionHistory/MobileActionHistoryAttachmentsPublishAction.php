@@ -139,19 +139,56 @@ class MobileActionHistoryAttachmentsPublishAction extends MobileAction {
                 //https://mikepultz.com/2013/07/google-speech-api-full-duplex-php-version/
                 $media = $action->media;
                 $key = '';
+                $projectId = '';
                 // make google speech api in php
-                /*if (strpos($media->resolveType(), 'audio') !== false){
+                if (strpos($media->resolveType(), 'audio') !== false){
                     $media = $action->media;
                     $rawAudioWavData = file_get_contents($media->getPath());
                     $rawBase64data = base64_encode($rawAudioWavData);   
 
-                    if($creds->auth->apiKey){
-                        $key = $creds->auth->apiKey;
+                    //check if google service account key file is present
+                    if($creds->auth->serviceAccountKeyFileContents){
+                        $key = $creds->auth->serviceAccountKeyFileContents;
                     } else {
-                       throw new CHttpException (403, Yii::t('app', 'Google API key missing'));
+                       throw new CHttpException (403, Yii::t('app', 'Google key file missing'));
                     }
-                    // pass $rawBase64data to  google speech api and return to $text
-                    $text = '';
+                    
+                    //check if project id is present
+                    if($creds->auth->projectId){
+                        $projectId = $creds->auth->projectId;
+                    } else {
+                       throw new CHttpException (403, Yii::t('app', 'Google project Id missing'));
+                    }
+                    
+                    $gcloud = new ServiceBuilder(array (
+                        'keyFilePath' => $key,
+                        'projectId' => $projectId
+                    ));
+
+                    // Fetch an instance of the Storage Client
+                    $storage = $gcloud->storage();
+
+                    $speech = new SpeechClient(array (
+                        'projectId' => $projectId
+                    ));
+
+                    $operation = $speech->beginRecognizeOperation(
+                        $rawBase64data
+                    );
+
+                    $isComplete = $operation->isComplete();
+
+                    while (!$isComplete) {
+                        sleep(1); // let's wait for a moment...
+                        $operation->reload();
+                        $isComplete = $operation->isComplete();
+                    }
+
+                    $results = $operation->results();
+                    
+                    foreach ($results as $result) {
+                        $text = $result['transcript'];
+                    }
                     
                     $action = new Actions;
                     $action->setAttributes (array (
@@ -173,7 +210,7 @@ class MobileActionHistoryAttachmentsPublishAction extends MobileAction {
                     $action->setActionDescription($text);
                     //$action->includeTextToAction($text);
                         
-                }*/
+                }
                 
                 $this->controller->renderPartial (
                     'application.modules.mobile.views.mobile._actionHistoryAttachments', array (
