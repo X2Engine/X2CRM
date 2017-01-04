@@ -72,6 +72,7 @@ class EventTextFormatterTest extends X2DbTestCase {
             
             'services' => 'Services',
             'media' => 'Media',
+            'profile' => 'Profile',
             'topics' => 'Topics',
             'topicReplies' => 'TopicReplies',
             'docs' => 'Docs'

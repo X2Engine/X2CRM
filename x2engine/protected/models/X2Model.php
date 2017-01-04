@@ -46,6 +46,7 @@ Yii::import('application.components.behaviors.TagBehavior');
 Yii::import('application.components.behaviors.FingerprintBehavior');
 
 Yii::import('application.modules.actions.models.Actions');
+Yii::import('application.modules.docs.models.Docs');
 Yii::import('application.modules.users.models.*');
 Yii::import('application.models.X2Flow');
 

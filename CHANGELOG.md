@@ -1,3 +1,21 @@
+# 6.5.2 #
+12/23/2016
+* General Changelog / Developer Notes
+  * X2Touch Improvements
+    * Added video attachments on iOS
+    * Added audio attachments on iOS and Android
+  * New X2Workflow actions for creating notifications, emails, text messages, and activity feed posts with records in a specified proximity
+  * Activity feed posts can now be associated with arbitrary records
+  * Added Twilio account type and SMS-based two factor authentication
+  * Checkin post formatting improvements
+  * Added weblead form thank you text customization
+  * Fixed Doc template usage with Opportunities
+  * Added option to toggle geolocation functionality
+  * Standard Actions can now be posted to a user's calendar
+  * Added ability to relabel existing relationships
+  * AnonContact webactivity visits can now be filtered from your notifications
+  * Miscellaneous bug fixes
+
 # 6.5.1 #
 11/17/2016
 * General Changelog / Developer Notes
