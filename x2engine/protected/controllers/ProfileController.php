@@ -627,15 +627,13 @@ class ProfileController extends x2base {
         $model->scenario = $model->isNewRecord ? 'create' : 'update';
         if (isset($_FILES['keyFile'])) {
             $temp = CUploadedFile::getInstanceByName('keyFile');
-            $temp->saveAs($filePath = $this->safePath('google_service_account_keyfile.json'));
-            ini_set('auto_detect_line_endings', 1); // Account for Mac based JSON if possible
-            //If the file exists, open it and take json key and save it in the Credentials model
-            if (file_exists($filePath)) {
-                $rawJsonKey = file_get_contents($filePath);
-                $model->serviceAccountKeyFile = $rawJsonKey;
-            } else {
-                throw new Exception('There was an error saving the models file.');
+            $rawJsonKey = file_get_contents($temp->tempName);
+            if (!AuxLib::isJson($rawJsonKey)) {
+                throw new CHttpException(404, Yii::t('app', 'Sorry, this is not a json file.'));
             }
+            //TODO: $rawJsonKey must be cleansed and hashed!
+            $model->serviceAccountKeyFile = $rawJsonKey;
+
         }
         // Apply changes if any:
         if (isset($_POST['Credentials'])) {

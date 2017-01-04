@@ -72,7 +72,7 @@ class MobileActionHistoryAttachmentsPublishAction extends MobileAction {
         $geoLocationCoords = isset ($_POST['geoLocationCoords']) ? $_POST['geoLocationCoords'] : "";
         $attachmentType = '';
         if ($geoLocationCoords == 'set' && isset ($_POST['geoCoords'])) {
-            if($creds && $creds->auth && $creds->auth->apiKey){
+            if(isset($creds->auth->apiKey) && $creds->auth->apiKey){
                 $key = $creds->auth->apiKey;
             } else {
                throw new CHttpException (403, Yii::t('app', 'Google API key missing'));
@@ -136,19 +136,37 @@ class MobileActionHistoryAttachmentsPublishAction extends MobileAction {
             }
         } else if (!strcmp($attachmentType,'file')){
             if ($valid && $action->save ()) {
-                //https://mikepultz.com/2013/07/google-speech-api-full-duplex-php-version/
+
                 $media = $action->media;
                 $key = '';
                 $projectId = '';
+                $pathToKey = '';
                 // make google speech api in php
-                if (strpos($media->resolveType(), 'audio') !== false){
+                if (!strpos($media->resolveType(), 'audio')){
                     $media = $action->media;
                     $rawAudioWavData = file_get_contents($media->getPath());
                     $rawBase64data = base64_encode($rawAudioWavData);   
 
                     //check if google service account key file is present
-                    if($creds->auth->serviceAccountKeyFileContents){
+                    if(isset($creds->auth->serviceAccountKeyFileContents) && !empty($creds->auth->serviceAccountKeyFileContents)){
                         $key = $creds->auth->serviceAccountKeyFileContents;
+                        $tempFilename = hash('sha256', uniqid(rand(), true));
+                        $userFolderPath = implode(DIRECTORY_SEPARATOR, array(
+                            Yii::app()->basePath,
+                            '..',
+                            'uploads',
+                            'protected',
+                            'media',
+                            Yii::app()->params->profile->username
+                        ));
+                        $pathToKey = $userFolderPath.DIRECTORY_SEPARATOR.$tempFilename.'.json';
+                        $associatedKey = Yii::app()->file->set($pathToKey);
+                        $associatedKey->create();
+                        $associatedKey->setContents($key);                
+                        if (!$associatedKey->exists) {
+                            throw new CHttpException (500, Yii::t('app', 'Temp file was not saved'));
+                        }
+
                     } else {
                        throw new CHttpException (403, Yii::t('app', 'Google key file missing'));
                     }
@@ -161,7 +179,7 @@ class MobileActionHistoryAttachmentsPublishAction extends MobileAction {
                     }
                     
                     $gcloud = new ServiceBuilder(array (
-                        'keyFilePath' => $key,
+                        'keyFilePath' => $pathToKey,
                         'projectId' => $projectId
                     ));
 
@@ -189,6 +207,7 @@ class MobileActionHistoryAttachmentsPublishAction extends MobileAction {
                     foreach ($results as $result) {
                         $text = $result['transcript'];
                     }
+                    $associatedKey->delete();
                     
                     $action = new Actions;
                     $action->setAttributes (array (
