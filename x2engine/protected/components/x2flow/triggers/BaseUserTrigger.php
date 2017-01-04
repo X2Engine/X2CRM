@@ -84,5 +84,3 @@ abstract class BaseUserTrigger extends X2FlowTrigger {
     }
 
 }
-
-?>

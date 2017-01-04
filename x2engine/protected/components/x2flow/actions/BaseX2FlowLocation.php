@@ -153,10 +153,10 @@ abstract class BaseX2FlowLocation extends X2FlowAction {
         }
 
         if ($isLink) {
-            $message = sprintf('<a href="%s">%s</a> has %s %d %s away on %s at %s. ', $url . $recordId, $this->getUserFullName($record), $typeText, $distance, $distanceUnits, $date, $time);
+            $message = sprintf('<a href="%s">%s</a> has %s %d %s away on %s at %s. ', $url . $recordId, $this->getRecordFullName($record), $typeText, $distance, $distanceUnits, $date, $time);
             $message .= sprintf('<a href="https://google.com/maps/dir/%f,%f/%f,%f/">Get directions</a>', $recent->lat, $recent->lon, $record->lat, $record->lon);
         } else {
-            $message = sprintf('%s has %s %d %s away on %s at %s. ', $this->getUserFullName($record), $typeText, $distance, $distanceUnits, $date, $time);
+            $message = sprintf('%s has %s %d %s away on %s at %s. ', $this->getRecordFullName($record), $typeText, $distance, $distanceUnits, $date, $time);
         }
 
         return $message;
@@ -213,9 +213,19 @@ abstract class BaseX2FlowLocation extends X2FlowAction {
         return $loginRecord;
     }
 
-    protected function getUserFullName($record) {
+    protected function getRecordFullName($record) {
         $current = $this->getUserFromRecord($record);
         return $current->firstName . ' ' . $current->lastName;
+    }
+
+    protected function getContactFromRecord($record) {
+        $contacts = Contacts::model()->findAll();
+        foreach ($contacts as $current) {
+            if ($record->id === $current->id) {
+                return $current;
+            }
+        }
+        printR('User not found', true);
     }
 
     protected function getUserFromRecord($record) {
@@ -301,12 +311,15 @@ abstract class BaseX2FlowLocation extends X2FlowAction {
             $location->seen .= $new;
         }
         $location->save();
+        X2Flow::trigger('LocationTrigger', array(
+            'model' => $location,
+        ));
     }
 
     function showRecords($records, &$params) {
         printR('- start -', false);
         foreach ($records as $record) {
-            printR($this->getUserFullName($record), false);
+            printR($this->getRecordFullName($record), false);
             printR('miles: ' . $this->getRecordDistance($record, $params), false);
             printR('days: ' . $this->getRecordDays($record, $params), false);
         }

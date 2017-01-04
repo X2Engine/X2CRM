@@ -1,6 +1,5 @@
 <?php
-
-/* * *********************************************************************************
+/***********************************************************************************
  * X2CRM is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2016 X2Engine Inc.
  * 
@@ -34,30 +33,48 @@
  * X2Engine" logo. If the display of the logo is not reasonably feasible for
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2Engine".
- * ******************************************************************************** */
+ **********************************************************************************/
+
+
 
 /**
- * X2FlowTrigger 
+ * @file initialize_pro.php Additional actions to take in Professional Edition
  * 
- * @package application.components.x2flow.actions
+ * This file, even if empty of any PHP to execute, should be left in place; the 
+ * installer uses its existence or lack thereof to determine the edition.
  */
-class LocationTrigger extends X2FlowTrigger {
 
-    public $title = 'Location';
-    public $info = 'Triggers when a new location is added to the database.';
+require_once(implode(DIRECTORY_SEPARATOR,array(__DIR__,'protected','components','util','CommandUtil.php')));
+require_once(implode(DIRECTORY_SEPARATOR,array(__DIR__,'protected','components','util','CrontabUtil.php')));
 
-    public function paramRules() {
-        return array(
-            'title' => Yii::t('studio', $this->title),
-            'info' => Yii::t('studio', $this->info),
-            'modelClass' => 'modelClass',
-            'options' => array(
-                array(
-                    'name' => 'modelClass',
-                    'label' => Yii::t('studio', 'Record Type'),
-                    'type' => 'dropdown', 'options' => X2Flow::getModelTypes()
-                    ))
-        );
+
+/**
+ * Adds new call to X2Engine scheduled task runner to the cron table
+ */
+function editCrontab() {
+    global $config,$silent;
+    if((isset($config['startCron']) ? !$config['startCron'] : true) || empty($config['cron'])) // User doesn't want cron
+        return false;
+    // Test the waters one last time:
+    $u = new CommandUtil();
+    try{
+        $crontab = $u->run('crontab -l')->output();
+    }catch(Exception $e){
+        return false;
     }
-
+    // Generate the cron array:
+    $ca = $silent ? CrontabUtil::parseCrontabLine($config['cron']) :  CrontabUtil::processForm($config['cron']['default']);
+    $ca['tag'] = 'default';
+    $ca = array('default'=>$ca);
+    // Merge with $ca the second arg so that it overwrites preexisting jobs with the unique tag "default" (in the case of reinstallation)
+    $ca = array_merge(CrontabUtil::crontabToArray($crontab),$ca);
+    CrontabUtil::arrayToCrontab($crontab,$ca);
+    $ctFile = implode(DIRECTORY_SEPARATOR,array(__DIR__,'.crontab.tmp'));
+    file_put_contents($ctFile,$crontab);
+    $u->run("crontab $ctFile")->complete();
+    unlink($ctFile);
 }
+
+editCrontab();
+
+?>

@@ -55,16 +55,26 @@ class X2FlowRecordLocation extends BaseX2FlowLocation {
     }
 
     public function execute(&$params) {
+        /*
         $model = $params['model'];
         //printR($model->name);
+        $isContact = is_a($model, 'Contacts');
+        $isUser = is_a($model, 'User');
 
-        return $this->createNotification($params, $model->name);
-        /*
-        if ($params['model']->delete()) {
-            return array(true, "");
-        } else {
-            return array(false, "");
+        if ($isContact) {
+            $record = $this->getContactFromRecord($model);
+            printR($record, true);
+            return $this->createNotification($params, $record->id);
         }
+         *
+         */
+
+        /*
+          if ($params['model']->delete()) {
+          return array(true, "");
+          } else {
+          return array(false, "");
+          }
          *
          */
     }
