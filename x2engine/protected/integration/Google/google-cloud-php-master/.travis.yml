@@ -1,0 +1,26 @@
+language: php
+
+sudo: required
+dist: trusty
+
+matrix:
+    include:
+        - php: 5.5.38
+        - php: 5.6.25
+        - php: 7.0
+        - php: hhvm
+          group: edge
+    fast_finish: true
+
+before_script:
+    - pecl install grpc || echo 'Failed to install grpc'
+    - composer install
+
+script:
+    - ./dev/sh/tests
+    - vendor/bin/phpcs --standard=PSR2 src/
+    - ./dev/sh/build-docs
+
+after_success:
+    - bash <(curl -s https://codecov.io/bash)
+    - ./dev/sh/push-docs

@@ -53,10 +53,19 @@ class GoogleProject extends JSONEmbeddedModel implements AdminOwnedCredentials {
 
      
     /**
-     *  @var string Used for Google+ and Google Maps integration
+     *  @var string Used for Google+ and Google APIs integration
      */
     public $apiKey = '';
-     
+    
+    /**
+     *  @var string the path for the Service Account key file used for Google+ and Google APIs integration
+     */
+    public $serviceAccountKeyFileContents = '';
+    
+    /**
+     *  @var string project id used for Google+ and Google APIs integration
+     */
+    public $projectId = '';
 
     // pseudo-attributes which belong to Admin. These don't get enrypted with the other attributes,
     // but do get rendered in the same form
