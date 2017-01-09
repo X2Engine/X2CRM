@@ -584,7 +584,7 @@ class ProfileController extends x2base {
      * @throws CHttpException
      */
     public function actionCreateUpdateCredentials($id = null, $class = null) {
-
+        
         $this->pageTitle = Yii::t('app', 'Edit Credentials');
         $profile = Yii::app()->params->profile;
         // Create or retrieve model:
@@ -625,19 +625,23 @@ class ProfileController extends x2base {
         }
 
         $model->scenario = $model->isNewRecord ? 'create' : 'update';
-        if (isset($_FILES['keyFile'])) {
-            $temp = CUploadedFile::getInstanceByName('keyFile');
-            $rawJsonKey = file_get_contents($temp->tempName);
-            if (!AuxLib::isJson($rawJsonKey)) {
-                throw new CHttpException(404, Yii::t('app', 'Sorry, this is not a json file.'));
-            }
-            //TODO: $rawJsonKey must be cleansed and hashed!
-            $model->serviceAccountKeyFile = $rawJsonKey;
-
-        }
+        
         // Apply changes if any:
         if (isset($_POST['Credentials'])) {
-            $model->attributes = $_POST['Credentials'];
+            $formCredentials = $_POST['Credentials'];
+            if (isset($_FILES['keyFile']) && !empty($_FILES['keyFile'])) {
+                $temp = CUploadedFile::getInstanceByName('keyFile');
+                if (!empty($temp)) {
+                    $rawJsonKey = file_get_contents($temp->tempName);
+                    if (!AuxLib::isJson($rawJsonKey)) {
+                        throw new CHttpException(404, Yii::t('app', 'Sorry, this is not a json file.'));
+                    }
+                    //TODO: $rawJsonKey must be cleansed and hashed!
+                    $formCredentials['auth']['serviceAccountKeyFileContents'] = $rawJsonKey;                    
+                }
+
+            }
+            $model->attributes = $formCredentials;
             // Check to see if user has permission:
             if (!Yii::app()->user->checkAccess(
                 'CredentialsCreateUpdate', array('model' => $model))) {

@@ -175,10 +175,11 @@ echo CHtml::activeLabel($model, 'apiKey');
 $model->renderProtectedInput ('apiKey');
 
 echo CHtml::activeLabel($model, 'Service Account json key file');
-echo CHtml::form('_googleProjectForm','post',array('enctype'=>'multipart/form-data','id'=>'_googleProjectForm'));
-echo CHtml::fileField('keyFile', '', array('id'=>'keyFile'))."<br>";
+echo CHtml::fileField('keyFile', '', array('id'=>'keyFile'));
+$model->renderProtectedInputHidden ('serviceAccountKeyFileContents');
+echo '<br>';
 echo Yii::t('app','Allowed filetypes: .json'); 
- 
+
 echo CHtml::tag ('h3', array (), Yii::t('app', 'Google Analytics Integration'));
 echo '<hr />';
 echo CHtml::activeLabel($admin, 'gaTracking_public');
