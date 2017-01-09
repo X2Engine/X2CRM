@@ -115,7 +115,18 @@ abstract class JSONEmbeddedModel extends CModel {
         ");
         echo CHtml::activeTextField($this, $field, $this->htmlOptions($field, $htmlOptions));
     }
-
+    
+    public function renderProtectedInputHidden ($field) {
+        $htmlOptions = array ();
+        if ($this->$field) {
+            $htmlOptions['class'] = 'x2-protected-field';
+            $this->$field = self::getProtectedFieldPlaceholder ();
+        }
+        Yii::app()->clientScript->registerScript('renderProtectedInputHidden',"
+        ");
+        echo CHtml::activeTextField($this, $field, $this->htmlOptions($field, $htmlOptions));
+    }
+    
     public function renderInput ($field) {
         $protectedFields = array_flip ($this->getProtectedFields ());
         if (isset ($protectedFields[$field])) {

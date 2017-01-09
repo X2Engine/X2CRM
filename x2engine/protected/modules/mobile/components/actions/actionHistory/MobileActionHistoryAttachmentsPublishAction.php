@@ -138,17 +138,18 @@ class MobileActionHistoryAttachmentsPublishAction extends MobileAction {
             if ($valid && $action->save ()) {
 
                 $media = $action->media;
+                if ($media) $media = array_pop ($media);
                 $key = '';
                 $projectId = '';
                 $pathToKey = '';
                 // make google speech api in php
-                if (!strpos($media->resolveType(), 'audio')){
-                    $media = $action->media;
-                    $rawAudioWavData = file_get_contents($media->getPath());
-                    $rawBase64data = base64_encode($rawAudioWavData);   
-
+                if ($media->isAudio()) {
                     //check if google service account key file is present
-                    if(isset($creds->auth->serviceAccountKeyFileContents) && !empty($creds->auth->serviceAccountKeyFileContents)){
+                    if(isset($creds->auth->apiKey) 
+                        && !empty($creds->auth->apiKey)) {
+                        
+                        $rawAudioWavData = file_get_contents($media->getPath());
+                        $rawBase64data = base64_encode($rawAudioWavData);   
                         $key = $creds->auth->serviceAccountKeyFileContents;
                         $tempFilename = hash('sha256', uniqid(rand(), true));
                         $userFolderPath = implode(DIRECTORY_SEPARATOR, array(
@@ -166,68 +167,96 @@ class MobileActionHistoryAttachmentsPublishAction extends MobileAction {
                         if (!$associatedKey->exists) {
                             throw new CHttpException (500, Yii::t('app', 'Temp file was not saved'));
                         }
+                        /*
+                        //check if project id is present
+                        if($creds->auth->projectId){
+                            $projectId = $creds->auth->projectId;
+                        } else {
+                           throw new CHttpException (403, Yii::t('app', 'Google project Id missing'));
+                        }
+
+                        $gcloud = new ServiceBuilder(array (
+                            'keyFilePath' => $pathToKey,
+                            'projectId' => $projectId
+                        ));
+
+                        // Fetch an instance of the Storage Client
+                        $storage = $gcloud->storage();
+
+                        $speech = new SpeechClient(array (
+                            'projectId' => $projectId
+                        ));
+
+                        $operation = $speech->beginRecognizeOperation(
+                            $rawBase64data
+                        );
+
+                        $isComplete = $operation->isComplete();
+
+                        while (!$isComplete) {
+                            sleep(1); // let's wait for a moment...
+                            $operation->reload();
+                            $isComplete = $operation->isComplete();
+                        }
+
+                        $results = $operation->results();
+
+                        foreach ($results as $result) {
+                            $text = $result['transcript'];
+                        }                        
+                        */
+                        $googlespeechURL = "https://speech.googleapis.com/v1beta1/speech:syncrecognize?key=". $creds->auth->apiKey;
+
+                        $data = array(
+                            "config" => array(
+                                "encoding" => "LINEAR16",
+                                "language_code" => "en-US"
+                            ),
+                           "audio" => array(
+                                "content" => base64_encode($rawBase64data)
+                            )
+                        );
+
+                        $data_string = json_encode($data);                                                              
+
+                        $ch = curl_init($googlespeechURL);                                                                      
+                        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");                                                                     
+                        curl_setopt($ch, CURLOPT_POSTFIELDS, $data_string);                                                                  
+                        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);                                                                      
+                        curl_setopt($ch, CURLOPT_HTTPHEADER, array(                                                                          
+                           'Content-Type: application/json',                                                                                
+                           'Content-Length: ' . strlen($data_string))                                                                       
+                        );                                                                                                                   
+
+                        $result = curl_exec($ch);
+                        $result_array = json_decode($result, true);
+
+                        $text = $result_array;
+                        $associatedKey->delete(); 
+                        
+                        $action = new Actions;
+                        $action->setAttributes (array (
+                            'associationType' => X2Model::getAssociationType (get_class ($model)), 
+                            'associationId' => $model->id,
+                            'associationName' => $model->name,
+                            'dueDate' => time (),
+                            'completeDate' => time (),
+                            'complete' => 'Yes',
+                            'completedBy' => Yii::app()->user->getName (),
+                            'private' => 0,
+                        ), false);
+                        $action->actionDescription = $text;
+                        $action->type = 'note';
+
+                        if(!$action->save ()) {
+                            throw new CHttpException (500, Yii::t('app', 'Publish failed'));
+                        }
+                        $action->setActionDescription($text);
+                        //$action->includeTextToAction($text);
 
                     } else {
                        throw new CHttpException (403, Yii::t('app', 'Google key file missing'));
                     }
-                    
-                    //check if project id is present
-                    if($creds->auth->projectId){
-                        $projectId = $creds->auth->projectId;
-                    } else {
-                       throw new CHttpException (403, Yii::t('app', 'Google project Id missing'));
-                    }
-                    
-                    $gcloud = new ServiceBuilder(array (
-                        'keyFilePath' => $pathToKey,
-                        'projectId' => $projectId
-                    ));
-
-                    // Fetch an instance of the Storage Client
-                    $storage = $gcloud->storage();
-
-                    $speech = new SpeechClient(array (
-                        'projectId' => $projectId
-                    ));
-
-                    $operation = $speech->beginRecognizeOperation(
-                        $rawBase64data
-                    );
-
-                    $isComplete = $operation->isComplete();
-
-                    while (!$isComplete) {
-                        sleep(1); // let's wait for a moment...
-                        $operation->reload();
-                        $isComplete = $operation->isComplete();
-                    }
-
-                    $results = $operation->results();
-                    
-                    foreach ($results as $result) {
-                        $text = $result['transcript'];
-                    }
-                    $associatedKey->delete();
-                    
-                    $action = new Actions;
-                    $action->setAttributes (array (
-                        'associationType' => X2Model::getAssociationType (get_class ($model)), 
-                        'associationId' => $model->id,
-                        'associationName' => $model->name,
-                        'dueDate' => time (),
-                        'completeDate' => time (),
-                        'complete' => 'Yes',
-                        'completedBy' => Yii::app()->user->getName (),
-                        'private' => 0,
-                    ), false);
-                    $action->actionDescription = $text;
-                    $action->type = 'note';
-
-                    if(!$action->save ()) {
-                        throw new CHttpException (500, Yii::t('app', 'Publish failed'));
-                    }
-                    $action->setActionDescription($text);
-                    //$action->includeTextToAction($text);
                         
                 }
                 
