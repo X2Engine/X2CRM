@@ -184,11 +184,8 @@ class GoogleMaps extends X2Widget {
         }
         ',CClientScript::POS_HEAD);
 
-        $key = '';
         $settings = Yii::app()->settings;
-        $creds = Credentials::model()->findByPk($settings->googleCredentialsId);
-        if ($creds && $creds->auth)
-            $key = $creds->auth->apiKey;
+        $key = $settings->getGoogleApiKey('maps');
         $assetUrl = 'https://maps.googleapis.com/maps/api/js?callback=initializeGoogleMapsWidget';
         if (!empty($key))
             $assetUrl .= '&key='.$key;
