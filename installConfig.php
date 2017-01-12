@@ -1,17 +1,18 @@
 <?php
-$host = '127.0.0.1';
-$db='demo';
-$user='testing';
-$pass='aWd3VODVT67P2dNIkcw41mPub';
-$app='X2Engine 5.0';
+$host = 'localhost';
+$db='';
+$user='';
+$pass='';
+$app='X2CRM';
 $currency = 'USD';
 $lang = '';
 $timezone = 'UTC';
-$adminEmail = 'sales@x2engine.com';
+$adminEmail = '';
 $adminPassword = 'admin';
 $adminUsername = 'admin';
-$dummyData = 1;
+$dummyData = 0;
 $baseUrl = '';
+$baseUri = '';
 $unique_id = 'none';
 // Default visible modules (set manually to a comma-delineated list as desired)
 $visibleModules = implode(',',(array) require(dirname(__FILE__).implode(DIRECTORY_SEPARATOR,array('','protected','data','')).'enabledModules.php'));
