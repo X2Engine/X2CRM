@@ -34,7 +34,7 @@
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2Engine".
  **********************************************************************************/
-
+Yii::import('application.extensions.PHP-FFMpeg-master.src.FFMpeg.*');
 class MobileActionHistoryAttachmentsPublishAction extends MobileAction {
 
     /**
@@ -142,15 +142,12 @@ class MobileActionHistoryAttachmentsPublishAction extends MobileAction {
                 $key = '';
                 $projectId = '';
                 $pathToKey = '';
-                // make google speech api in php
-                if ($media->isAudio()) {
+                // Check if the attachment is an audio file and if avconv is installed
+                if ($media->isAudio() && AuxLib::command_exist("avconv")) {
                     //check if google service account key file is present
                     if(isset($creds->auth->apiKey) 
                         && !empty($creds->auth->apiKey)) {
-                        
-                        $rawAudioWavData = file_get_contents($media->getPath());
-                        $rawBase64data = base64_encode($rawAudioWavData);   
-                        $key = $creds->auth->serviceAccountKeyFileContents;
+
                         $tempFilename = hash('sha256', uniqid(rand(), true));
                         $userFolderPath = implode(DIRECTORY_SEPARATOR, array(
                             Yii::app()->basePath,
@@ -160,60 +157,32 @@ class MobileActionHistoryAttachmentsPublishAction extends MobileAction {
                             'media',
                             Yii::app()->params->profile->username
                         ));
-                        $pathToKey = $userFolderPath.DIRECTORY_SEPARATOR.$tempFilename.'.json';
-                        $associatedKey = Yii::app()->file->set($pathToKey);
-                        $associatedKey->create();
-                        $associatedKey->setContents($key);                
-                        if (!$associatedKey->exists) {
-                            throw new CHttpException (500, Yii::t('app', 'Temp file was not saved'));
+                        //get audio file and convert it to flac if avconv is present
+                        $pathToAudioFile = $media->getPath();
+                        $pathToTempFlac = $userFolderPath.DIRECTORY_SEPARATOR.$tempFilename.'.flac';
+                    
+                        //execute command to convert audio file to flac 
+                        exec("avconv -i ".$pathToAudioFile." -c:a flac ".$pathToTempFlac." 2>&1", $output);
+
+                        //incremental sleep to wait for the creation of the flac file 
+                        for ($i=0; $i <= 10; $i++) {
+                            if(file_exists($pathToTempFlac)) {
+                                break;
+                            }
+                            sleep(3); // this should halt for 3 seconds for every loop
                         }
-                        /*
-                        //check if project id is present
-                        if($creds->auth->projectId){
-                            $projectId = $creds->auth->projectId;
-                        } else {
-                           throw new CHttpException (403, Yii::t('app', 'Google project Id missing'));
-                        }
+                        $rawBase64data = file_get_contents($pathToTempFlac);
 
-                        $gcloud = new ServiceBuilder(array (
-                            'keyFilePath' => $pathToKey,
-                            'projectId' => $projectId
-                        ));
-
-                        // Fetch an instance of the Storage Client
-                        $storage = $gcloud->storage();
-
-                        $speech = new SpeechClient(array (
-                            'projectId' => $projectId
-                        ));
-
-                        $operation = $speech->beginRecognizeOperation(
-                            $rawBase64data
-                        );
-
-                        $isComplete = $operation->isComplete();
-
-                        while (!$isComplete) {
-                            sleep(1); // let's wait for a moment...
-                            $operation->reload();
-                            $isComplete = $operation->isComplete();
-                        }
-
-                        $results = $operation->results();
-
-                        foreach ($results as $result) {
-                            $text = $result['transcript'];
-                        }                        
-                        */
                         $googlespeechURL = "https://speech.googleapis.com/v1beta1/speech:syncrecognize?key=". $creds->auth->apiKey;
 
                         $data = array(
                             "config" => array(
-                                "encoding" => "LINEAR16",
-                                "language_code" => "en-US"
+                                'encoding' => 'FLAC',
+                                'sampleRate' => 16000,
+                                'languageCode' => 'en-US'                                
                             ),
                            "audio" => array(
-                                "content" => base64_encode($rawBase64data)
+                                "content" => $rawBase64data
                             )
                         );
 
@@ -230,9 +199,10 @@ class MobileActionHistoryAttachmentsPublishAction extends MobileAction {
 
                         $result = curl_exec($ch);
                         $result_array = json_decode($result, true);
-
+                        
+                        //parse result_array to get text
                         $text = $result_array;
-                        $associatedKey->delete(); 
+                        unlink($pathToTempFlac); 
                         
                         $action = new Actions;
                         $action->setAttributes (array (

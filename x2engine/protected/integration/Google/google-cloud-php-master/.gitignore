@@ -1,6 +1,0 @@
-.DS_Store
-build/
-composer.phar
-composer.lock
-docs/json/**/*.json
-vendor/
