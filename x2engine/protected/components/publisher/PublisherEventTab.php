@@ -81,16 +81,21 @@ class PublisherEventTab extends PublisherTimeTab {
         $timeformat = Formatter::formatTimePicker();
         $ampmformat = Formatter::formatAMPM();
         $region = Yii::app()->locale->getLanguageId(Yii::app()->locale->getId());
+        $monthNamesShort = '""';
         if($region == 'en')
             $region = '';
+        else if ($region == 'fr')
+            $monthNamesShort = CJSON::encode(Formatter::getPlainAbbrMonthNames());
 
         // save default values of fields for when the publisher is submitted and then reset
         Yii::app()->clientScript->registerScript('defaultValues', '
             // set date and time format for when datetimepicker is recreated
-            $("#publisher-form").data("dateformat", "'.$dateformat.'");
-            $("#publisher-form").data("timeformat", "'.$timeformat.'");
-            $("#publisher-form").data("ampmformat", "'.$ampmformat.'");
-            $("#publisher-form").data("region", "'.$region.'");
+            var form$ = x2.publisher.getForm ();
+            form$.data("dateformat", "'.$dateformat.'");
+            form$.data("timeformat", "'.$timeformat.'");
+            form$.data("ampmformat", "'.$ampmformat.'");
+            form$.data("region", "'.$region.'");
+            form$.data("monthNamesShort", '.$monthNamesShort.');
         ', CClientScript::POS_READY);
 
         parent::renderTab ($viewParams);
