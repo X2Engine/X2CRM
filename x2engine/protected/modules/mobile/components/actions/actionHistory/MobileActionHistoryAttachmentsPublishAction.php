@@ -162,7 +162,7 @@ class MobileActionHistoryAttachmentsPublishAction extends MobileAction {
                         $pathToTempFlac = $userFolderPath.DIRECTORY_SEPARATOR.$tempFilename.'.flac';
                     
                         //execute command to convert audio file to flac                       
-                        $returnVal = shell_exec(sprintf("avconv -i %s -sample_rate 16000 -c:a flac %s",escapeshellarg($pathToAudioFile),escapeshellarg($pathToTempFlac)));
+                        $returnVal = shell_exec(sprintf("avconv -i %s -ar 16000 -c:a flac %s",escapeshellarg($pathToAudioFile),escapeshellarg($pathToTempFlac)));
 
                         //incremental sleep to wait for the creation of the flac file 
                         for ($i=0; $i <= 10; $i++) {
@@ -182,7 +182,7 @@ class MobileActionHistoryAttachmentsPublishAction extends MobileAction {
                                 'languageCode' => 'en-US'                                
                             ),
                            "audio" => array(
-                                "content" => $rawBase64data
+                                "content" => base64_encode($rawBase64data)
                             )
                         );
 
@@ -201,8 +201,7 @@ class MobileActionHistoryAttachmentsPublishAction extends MobileAction {
                         $result_array = json_decode($result, true);
                         
                         //parse result_array to get text
-                        throw new CHttpException (500, json_encode($result_array));
-                        $text = $result_array;
+                        $text = $result_array['results'][0]['alternatives'][0]['transcript'];
                         unlink($pathToTempFlac); 
                         
                         $action = new Actions;
