@@ -161,8 +161,8 @@ class MobileActionHistoryAttachmentsPublishAction extends MobileAction {
                         $pathToAudioFile = $media->getPath();
                         $pathToTempFlac = $userFolderPath.DIRECTORY_SEPARATOR.$tempFilename.'.flac';
                     
-                        //execute command to convert audio file to flac 
-                        exec("avconv -i ".$pathToAudioFile." -c:a flac ".$pathToTempFlac." 2>&1", $output);
+                        //execute command to convert audio file to flac                       
+                        $returnVal = shell_exec(sprintf("avconv -i %s -sample_rate 16000 -c:a flac %s",escapeshellarg($pathToAudioFile),escapeshellarg($pathToTempFlac)));
 
                         //incremental sleep to wait for the creation of the flac file 
                         for ($i=0; $i <= 10; $i++) {
@@ -201,6 +201,7 @@ class MobileActionHistoryAttachmentsPublishAction extends MobileAction {
                         $result_array = json_decode($result, true);
                         
                         //parse result_array to get text
+                        throw new CHttpException (500, json_encode($result_array));
                         $text = $result_array;
                         unlink($pathToTempFlac); 
                         
