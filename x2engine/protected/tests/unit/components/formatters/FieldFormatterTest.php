@@ -52,6 +52,7 @@ class FieldFormatterTest extends X2DbTestCase {
     public static function referenceFixtures () {
         return array (
             'contacts' => 'Contacts',
+            'products' => 'Product',
         );
     }
     

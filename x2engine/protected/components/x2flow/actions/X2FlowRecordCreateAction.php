@@ -60,7 +60,7 @@ class X2FlowRecordCreateAction extends X2FlowAction {
 
     public function execute(&$params){
         $action = new Actions;
-        $action->associationType = lcfirst(get_class($params['model']));
+        $action->associationType = X2Model::getAssociationType(get_class($params['model']));
         $action->associationId = $params['model']->id;
         $action->subject = $this->parseOption('subject', $params);
         $action->actionDescription = $this->parseOption('description', $params);
