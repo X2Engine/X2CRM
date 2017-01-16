@@ -181,7 +181,7 @@ class WebFormBehavior extends CBehavior {
 
             $subject = '';
             if($template->subject){
-                $subject = $template->subject;
+                $subject = Docs::replaceVariables($template->subject, $model);
             }
 
             $emailBody = self::formatEmailBodyAttrs ($emailBody, $model);
