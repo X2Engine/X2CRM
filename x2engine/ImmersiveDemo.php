@@ -8,11 +8,12 @@ class ImmersiveDemo {
     private $dbpass = 'SV7SOnNyHPyQfR';
     private $dbname = 'isaiah';
     private $last_post = null;
+    private $last_location = null;
     private $data = null;
 
     /** Constructors */
     function __construct() {
-        $this->data = new ArrayData;
+        $this->data = new ImmersiveDemoData();
     }
 
     public static function new_instance() {
@@ -32,47 +33,72 @@ class ImmersiveDemo {
     public function run() {
         $con = mysqli_connect($this->dbhost, $this->dbuser, $this->dbpass, $this->dbname) or die('Could not connect: ' . mysqli_error($con));
         $this->last_post = mysqli_insert_id($con);
+        
+        
 
         for ($i = 0; $i < 20; $i++) {
-            $type = $this->choose_rand_elem($this->data->types);
+            /*
+              $type = ImmersiveDemo::choose_rand_elem($this->data->types);
 
-            sleep(20);
+              sleep(20);
 
-            switch ($type) {
-                case "event":
-                    $this->post_random_event($con, $this->data);
-                    break;
-                case "notif":
-                    $this->post_random_notif($con, $this->data);
-                    break;
-            }
+              switch ($type) {
+              case "event":
+              $this->post_random_event($con);
+              break;
+              case "notif":
+              $this->post_random_notif($con);
+              break;
+              }
+             * 
+             */
         }
 
         mysqli_close($con);
     }
 
     /** Actions */
-    private function post_random_event($con, $data) {
-        $event_type = $this->choose_rand_elem($data->event_types);
-        $user = $this->choose_rand_elem($data->users);
+    private function post_random_event($con) {
+        $user = ImmersiveDemo::choose_rand_elem(array_values($this->data->users));
 
+        $event_type = ImmersiveDemo::choose_rand_elem($this->data->event_types);
         switch ($event_type) {
             case "post": default:
-                $message = $this->choose_rand_elem($data->event_posts);
-                $this->post_event($con, $user, $message);
+                $post_message = ImmersiveDemo::choose_rand_elem($this->data->event_posts);
 
-                for ($i = 0; $i < 2 && $this->flip_coin(); $i++) {
+                $this->post_event($con, $user, $post_message);
+
+                for ($i = 0; $i < 2 && ImmersiveDemo::flip_coin(); $i++) {
                     sleep(5);
-                    $next_user = $this->choose_rand_elem($data->users, $user);
-                    $comment = $this->choose_rand_elem($data->event_comments, $comment);
+
+                    $next_user = ImmersiveDemo::choose_rand_elem(array_values($this->data->users), $user);
+                    $comment = ImmersiveDemo::choose_rand_elem($this->data->event_comments, $comment);
                     $this->post_comment($con, $next_user, $comment);
                 }
+                break;
+            case "private":
+                $private_message = ImmersiveDemo::choose_rand_elem($this->data->event_posts);
+
+                $key = 0;
+                while ($key === 0 || $key === 2 || ImmersiveDemo::key_value_match($this->data->users, $key, $user)) {
+                    $key = rand(1, 10);
+                }
+
+                $this->post_event_private($con, $key, $user, $private_message);
+                break;
+            case "location":
+                $location = ImmersiveDemo::choose_rand_elem($this->data->event_locations);
+                $userId = array_search($user, $this->data->users);
+
+                $this->post_location($con, $userId, $location["lat"], $location["lon"]);
+
+                $this->post_event_location($con, $user, $location["text"]);
                 break;
         }
     }
 
-    private function post_random_notif($con, $data) {
-        $notif_type = $this->choose_rand_elem($data->notif_types);
+    private function post_random_notif($con) {
+        $notif_type = ImmersiveDemo::choose_rand_elem($this->data->notif_types);
 
         switch ($notif_type) {
             case "custom": default:
@@ -80,11 +106,11 @@ class ImmersiveDemo {
                 $this->post_custom_notif($con, $text);
                 break;
             case "action_reminder":
-                $reminder = $this->choose_rand_elem($data->notif_actionreminder_ids);
+                $reminder = ImmersiveDemo::choose_rand_elem($this->data->notif_actionreminder_ids);
                 $this->post_actionreminder_notif($con, $reminder);
                 break;
             case "action_complete":
-                $complete = $this->choose_rand_elem($data->notif_actioncomplete_ids);
+                $complete = ImmersiveDemo::choose_rand_elem($this->data->notif_actioncomplete_ids);
                 $this->post_actioncomplete_notif($con, $complete);
                 break;
         }
@@ -94,6 +120,19 @@ class ImmersiveDemo {
     private function post_event($con, $user, $text) {
         mysqli_query($con, sprintf("INSERT INTO x2_events (type, text, user, timestamp, lastUpdated) VALUES ('feed', '%s', '%s', %s, %s)", $text, $user, time(), time()));
         $this->last_post = mysqli_insert_id($con);
+    }
+
+    private function post_event_location($con, $user, $text) {
+        mysqli_query($con, sprintf("INSERT INTO x2_events (type, text, user, locationId, timestamp, lastUpdated) VALUES ('feed', '%s', '%s', %s, %s, %s)", $text, $user, $this->last_location, time(), time()));
+    }
+
+    private function post_event_private($con, $key, $user, $text) {
+        mysqli_query($con, sprintf("INSERT INTO x2_events (type, subtype, visibility, associationId, text, user, timestamp, lastUpdated) VALUES ('feed', 'Social Post', 0, %s, '%s', '%s', %s, %s)", $key, $text, $user, time(), time()));
+    }
+
+    private function post_location($con, $userId, $lat, $lon) {
+        mysqli_query($con, sprintf("INSERT INTO x2_locations (recordId, recordType, lat, lon, createDate) VALUES (%s, 'User', %s, %s, %s)", $userId, $lat, $lon, time()));
+        $this->last_location = mysqli_insert_id($con);
     }
 
     private function post_comment($con, $user, $text) {
@@ -113,7 +152,7 @@ class ImmersiveDemo {
     }
 
     /** Helper Functions */
-    private function choose_rand_elem($array, $previous = "") {
+    private static function choose_rand_elem($array, $previous = "") {
         if (count($array) === 0) {
             return "null";
         } else if (count($array) === 1) {
@@ -121,31 +160,33 @@ class ImmersiveDemo {
         }
         $result = "";
         while ($result == "" || $previous == $result) {
-            $rand = rand(0, count($array) - 1);
-            $result = $array[$rand];
+            $result = $array[rand(0, count($array) - 1)];
         }
         return $result;
     }
 
-    private function flip_coin() {
-        $flip = rand(0, 1);
-        return $flip === 0 ? true : false;
+    private static function flip_coin() {
+        return rand(0, 1) === 0 ? true : false;
+    }
+
+    private static function key_value_match($array, $key, $value) {
+        return $array[$key] == $value;
     }
 
 }
 
-class ArrayData {
+class ImmersiveDemoData {
 
     public $users = array(
-        "admin",
-        "bto",
-        "kxu",
-        "apelletier",
-        "ncordova",
-        "chames",
-        "coconner",
-        "rpatel",
-        "acarisella",
+        1 => "admin",
+        3 => "chames",
+        4 => "ncordova",
+        5 => "apelletier",
+        6 => "kxu",
+        7 => "rpatel",
+        8 => "coconner",
+        9 => "bto",
+        10 => "acarisella",
     );
     public $types = array(
         "event",
@@ -153,7 +194,8 @@ class ArrayData {
     );
     public $event_types = array(
         "post",
-        "message",
+        "private",
+        "location",
     );
     public $event_posts = array(
         "I love the color scheme of this new update!",
@@ -165,11 +207,21 @@ class ArrayData {
         "There are some leftover donuts in the fridge. Does anyone want them?",
         "I\'m organizing a company lunch for next Friday. Anybody have requests about where to go? I\'m thinking sushi.",
     );
+    public $event_posts_private = array(
+        "Hey! You are doing a phenomenal job.",
+        "Do you think you could finish the paperwork by 4pm tomorrow?",
+        "You left your donuts in the fridge!",
+        "Do you want to get lunch later?"
+    );
     public $event_comments = array(
         "Definitely!",
         "I disagree.",
         "Yes!",
         "Not really.",
+    );
+    public $event_locations = array(
+        array("text" => "Checking in at Union Square, San Francisco", "lat" => 37.788018, "lon" => -122.407809),
+        array("text" => "Checking in at St. Vartans Park, New York", "lat" => 40.745448, "lon" => -73.973961),
     );
     public $notif_types = array(
         "custom",
