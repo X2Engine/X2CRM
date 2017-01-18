@@ -36,7 +36,6 @@
  **********************************************************************************/
 
 $refresh = !isset ($refresh) ? false : $refresh;
-$audioText = !isset ($audioText) ? '' : $audioText;
 $type = !isset($type) ? 'attachments' : $type;
 
 $htmlOptions = array (
@@ -49,7 +48,6 @@ $this->widget ('application.modules.mobile.components.MobileActionHistory.Mobile
     'model' => $model,
     'refresh' => $refresh,
     'type' => $type,
-    'audioText' => $audioText,
 ));
 
 ?>
