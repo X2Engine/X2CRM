@@ -143,6 +143,9 @@ $('#currency').change(function() {
         <?php echo X2Html::clearfix ();
         echo $form->checkBox($model, 'locationTrackingSwitch'); ?>
         <br><br>
+        <label class='left-label' for="Admin_checkinByDefault"><?php echo Yii::t('admin', 'Enable Checkin Posts by Default'); ?></label>
+        <?php echo X2Html::clearfix ();
+        echo $form->checkBox($model, 'checkinByDefault'); ?>
     </div>
     
     <div class="error">
