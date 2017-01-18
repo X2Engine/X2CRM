@@ -157,11 +157,19 @@ if (!$this->refresh && $hasCreateAccess) {
                     'type' => $type
                 ))
             ));
-            echo $form->textField($action, 'actionDescription',
-                    array(
-                'placeholder' => 'Add a comment...',
-                'class' => 'location-tag',
-            ));
+            if (!strcmp($audioText,'')){
+                echo $form->textField($action, 'actionDescription',
+                        array(
+                    'placeholder' => 'Add a comment...',
+                    'class' => 'location-tag',
+                ));         
+            } else {
+                 echo $form->textField($action, 'actionDescription',
+                        array(
+                    'class' => 'location-tag',
+                    'value' => $this->audioText,
+                ));                  
+            }
         }
         $this->endWidget();
         ?>
@@ -172,7 +180,7 @@ if (!$this->refresh && $hasCreateAccess) {
 <?php 
     echo CHtml::link(X2Html::fa('plus'),'#',array(
         'class' => 'fixed-corner-button publisher-menu-button',
-        'id' => $type==='attachments'?'file-upload-menu-button':'comment-menu-button',
+        'id' => 'publisher-menu-button',
     ));
 ?>
 

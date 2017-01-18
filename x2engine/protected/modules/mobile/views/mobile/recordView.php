@@ -143,39 +143,36 @@ if ($supportsActionHistory) {
 if ($supportsActionHistory) {
         Yii::app()->clientScript->registerScript('hideBothPublisherButtons','
             $("#detail-tab-link").on("click",function(){
-                $("#file-upload-menu-button").attr("style", "display: none !important");
-                $("#comment-menu-button").attr("style", "display: none !important");
+                $("#publisher-menu-button").attr("style", "display: none !important");
             });
         ');
-    ?>
-    </div>
-    <div id='<?php echo MobileHtml::namespaceId ('action-history-attachments');?>' class='action-history-outer'>
-
-    <?php
-        $this->renderPartial ('application.modules.mobile.views.mobile._actionHistory', array (
-            'model' => $model,
-            'type' => 'attachments',
-        ));
-        Yii::app()->clientScript->registerScript('hideUploadButton','
-            $("#history-tab-link").on("click",function(){
-                $("#file-upload-menu-button").attr("style", "display: none !important");
-                $("#comment-menu-button").show();
-            });
-        ');
-        
     ?>
     </div>
     <div id='<?php echo MobileHtml::namespaceId ('action-history');?>' class='action-history-outer'>
 
     <?php
-        $this->renderPartial ('application.modules.mobile.views.mobile._actionHistoryAttachments', array (
+        $this->renderPartial ('application.modules.mobile.views.mobile._actionHistory', array (
             'model' => $model,
             'type' => 'all',
         ));
-        Yii::app()->clientScript->registerScript('hidePublishButton','
+        Yii::app()->clientScript->registerScript('showPublishButto','
+            $("#history-tab-link").on("click",function(){
+                $("#publisher-menu-button").attr("style", "display: block !important");
+            });
+        ');
+        
+    ?>
+    </div>
+    <div id='<?php echo MobileHtml::namespaceId ('action-history-attachments');?>' class='action-history-outer'>
+
+    <?php
+        $this->renderPartial ('application.modules.mobile.views.mobile._actionHistoryAttachments', array (
+            'model' => $model,
+            'type' => 'attachments',
+        ));
+        Yii::app()->clientScript->registerScript('showPublishButton','
             $("#attachment-tab-link").on("click",function(){
-                $("#file-upload-menu-button").show();
-                $("#comment-menu-button").attr("style", "display: none !important");
+                $("#publisher-menu-button").attr("style", "display: block !important");
             });
         ');
     ?>

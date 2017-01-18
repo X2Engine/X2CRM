@@ -201,10 +201,11 @@ class MobileActionHistoryAttachmentsPublishAction extends MobileAction {
                         $result_array = json_decode($result, true);
                         
                         //parse result_array to get text
-                        $text = $result_array['results'][0]['alternatives'][0]['transcript'];
-                        unlink($pathToTempFlac); 
+                        $audioText = $result_array['results'][0]['alternatives'][0]['transcript'];
+                        unlink($pathToTempFlac); //delete created flac file (was only used for audio to text translation anyway) 
+                        //unlink($pathToAudioFile); //delete audio file because the text is aquired by this point
                         
-                        $action = new Actions;
+                        /*$action = new Actions;
                         $action->setAttributes (array (
                             'associationType' => X2Model::getAssociationType (get_class ($model)), 
                             'associationId' => $model->id,
@@ -215,28 +216,35 @@ class MobileActionHistoryAttachmentsPublishAction extends MobileAction {
                             'completedBy' => Yii::app()->user->getName (),
                             'private' => 0,
                         ), false);
-                        $action->actionDescription = $text;
+                        $action->actionDescription = $audioText;
                         $action->type = 'note';
 
                         if(!$action->save ()) {
                             throw new CHttpException (500, Yii::t('app', 'Publish failed'));
                         }
-                        $action->setActionDescription($text);
-                        //$action->includeTextToAction($text);
+                        $action->setActionDescription($audioText);*/
+                        //$action->includeTextToAction($audioText);
 
                     } else {
                        throw new CHttpException (403, Yii::t('app', 'Google key file missing'));
                     }
-                        
-                }
+                    $type = 'all';
+                    $this->controller->renderPartial (
+                        'application.modules.mobile.views.mobile._actionHistory', array (
+                        'model' => $model,
+                        'refresh' => true,
+                        'type' => $type,
+                        'audioText' => $audioText,
+                    ), false, true);
+                } else {
                 
-                $this->controller->renderPartial (
-                    'application.modules.mobile.views.mobile._actionHistoryAttachments', array (
-                    'model' => $model,
-                    'refresh' => true,
-                    'type'=>$type,
-                ), false, true);
-
+                    $this->controller->renderPartial (
+                        'application.modules.mobile.views.mobile._actionHistoryAttachments', array (
+                        'model' => $model,
+                        'refresh' => true,
+                        'type' => $type,
+                    ), false, true);
+                }
                 Yii::app()->end ();
             } else {
                 throw new CHttpException (500, Yii::t('app', 'Publish failed'));

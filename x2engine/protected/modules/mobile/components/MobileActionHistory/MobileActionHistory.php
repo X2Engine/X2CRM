@@ -43,6 +43,8 @@ class MobileActionHistory extends X2Widget {
 
     public $refresh = false;
     
+    public $audioText = '';
+    
     public $type = 'all';
 
     public $instantiateJSClassOnInit = true;
@@ -96,6 +98,7 @@ class MobileActionHistory extends X2Widget {
         $ret = call_user_func_array ('parent::'.__FUNCTION__, func_get_args ()); 
         $this->render ('mobileActionHistory', array (
             'type' => $this->type,
+            'audioText' => $this->audioText,
             'dataProvider' => $this->getDataProvider (),
         ));
         return $ret;

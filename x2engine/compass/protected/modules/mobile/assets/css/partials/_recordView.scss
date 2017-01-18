@@ -192,12 +192,10 @@ $publisherMenuHeightBrowser: 64px;
     }
 }
 
-
 .publisher-menu-button {
     display: none;
 }
-
-
+    
 .location-action-attachment-button {
    height:$publisherMenuHeight/2;
    width: 100%;
@@ -208,15 +206,21 @@ $publisherMenuHeightBrowser: 64px;
    top: 4px;
 }
 
-&[data-x2-tab-name='action-history'] {
+&[data-x2-tab-name='record-details'] {
     .publisher-menu-button {
-        display: block !important;
+        display: none;
+    }
+}
+
+&[data-x2-tab-name='action-history'] {
+    .publisher-menu-button.active {
+        display: block;
     }
 }
 
 &[data-x2-tab-name='action-history-attachments'] {
-    .publisher-menu-button {
-        display: block !important;
+    .publisher-menu-button.active {
+        display: block;
     }
 }
 
