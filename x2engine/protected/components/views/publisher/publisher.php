@@ -82,7 +82,7 @@ $echoTabRow = function ($tabs, $rowNum=1) use ($that) {
     $checkInPlaceholder = Yii::t('app', 'Check-in comment.');
     if (!isset($_SERVER['HTTPS']))
         $checkInPlaceholder .= Yii::t('app', ' Note: for higher accuracy and an embedded static map, visit the site under HTTPS.');
-    ?><div style="margin-top:-45px;">
+    ?><div style="margin-top:-45px; clear: both;">
         <button id="toggle-location-button" class="x2-button" title="<?php echo Yii::t('app', 'Location Check-In'); ?>" style="display:inline-block;"><?php
             echo X2Html::fa('crosshairs fa-lg');
         ?></button>
