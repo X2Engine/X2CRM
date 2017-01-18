@@ -127,7 +127,7 @@ if (!$this->refresh && $hasCreateAccess) {
                 <span><?php echo X2Html::fa('fa-file-audio-o'); ?></span>
                 <div>
                     <?php 
-                    echo CHtml::encode(Yii::t('mobile', 'Add audio attachment'));
+                    echo CHtml::encode(Yii::t('mobile', 'Add audio note'));
                     ?>
 
                             
@@ -157,19 +157,11 @@ if (!$this->refresh && $hasCreateAccess) {
                     'type' => $type
                 ))
             ));
-            if (!strcmp($audioText,'')){
-                echo $form->textField($action, 'actionDescription',
-                        array(
-                    'placeholder' => 'Add a comment...',
-                    'class' => 'location-tag',
-                ));         
-            } else {
-                 echo $form->textField($action, 'actionDescription',
-                        array(
-                    'class' => 'location-tag',
-                    'value' => $this->audioText,
-                ));                  
-            }
+            echo $form->textField($action, 'actionDescription',
+                    array(
+                'placeholder' => 'Add a comment...',
+                'class' => 'location-tag',
+            ));    
         }
         $this->endWidget();
         ?>

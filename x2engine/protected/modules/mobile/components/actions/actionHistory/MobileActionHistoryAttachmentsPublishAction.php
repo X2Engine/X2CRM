@@ -203,9 +203,8 @@ class MobileActionHistoryAttachmentsPublishAction extends MobileAction {
                         //parse result_array to get text
                         $audioText = $result_array['results'][0]['alternatives'][0]['transcript'];
                         unlink($pathToTempFlac); //delete created flac file (was only used for audio to text translation anyway) 
-                        //unlink($pathToAudioFile); //delete audio file because the text is aquired by this point
-                        
-                        /*$action = new Actions;
+                        $action->delete(); //delete audio file attachment action because the text is aquired by this point
+                        $action = new Actions;
                         $action->setAttributes (array (
                             'associationType' => X2Model::getAssociationType (get_class ($model)), 
                             'associationId' => $model->id,
@@ -222,21 +221,13 @@ class MobileActionHistoryAttachmentsPublishAction extends MobileAction {
                         if(!$action->save ()) {
                             throw new CHttpException (500, Yii::t('app', 'Publish failed'));
                         }
-                        $action->setActionDescription($audioText);*/
+                        $action->setActionDescription($audioText);
                         //$action->includeTextToAction($audioText);
 
                     } else {
                        throw new CHttpException (403, Yii::t('app', 'Google key file missing'));
                     }
-                    $type = 'all';
-                    $this->controller->renderPartial (
-                        'application.modules.mobile.views.mobile._actionHistory', array (
-                        'model' => $model,
-                        'refresh' => true,
-                        'type' => $type,
-                        'audioText' => $audioText,
-                    ), false, true);
-                } else {
+                } 
                 
                     $this->controller->renderPartial (
                         'application.modules.mobile.views.mobile._actionHistoryAttachments', array (
@@ -244,7 +235,7 @@ class MobileActionHistoryAttachmentsPublishAction extends MobileAction {
                         'refresh' => true,
                         'type' => $type,
                     ), false, true);
-                }
+                
                 Yii::app()->end ();
             } else {
                 throw new CHttpException (500, Yii::t('app', 'Publish failed'));

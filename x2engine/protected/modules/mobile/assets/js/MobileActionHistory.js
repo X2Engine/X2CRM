@@ -61,7 +61,7 @@ MobileActionHistory.prototype.setUpCommentPublish = function () {
                 if (that.publisherIsActive) togglePublisher$.click ();
                 $.mobile.activePage.append ($(data).find ('.refresh-content'));
                 x2.main.refreshContent ();
-                //that.form$.find ('input[type="text"]').val ('');
+                that.form$.find ('input[type="text"]').val ('');
                 $.mobile.loading ('hide');
             }, function (jqXHR, textStatus, errorThrown) {
                 $.mobile.loading ('hide');
@@ -104,10 +104,6 @@ MobileActionHistory.prototype.setUpPublisher = function () {
     });
          
     that.setUpCommentPublish ();
-    if (that.form$.find ('input[type="text"]').length && 
-            that.form$.find ('input[type="text"]').val().length > 1) {
-        togglePublisher$.click ();
-    }
 };
 
 MobileActionHistory.prototype.init = function () {
