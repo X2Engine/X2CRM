@@ -205,8 +205,10 @@ RecordViewController.prototype.setUpHistoryPagination = function () {
             });
         }
     });
-    
 
+    var homeButton$ = $.mobile.activePage.find('#home-btn');
+    homeButton$.hide();
+    
     
 };
 
