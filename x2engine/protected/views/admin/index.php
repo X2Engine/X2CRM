@@ -403,7 +403,7 @@ $failedLoginsDataProvider = new CActiveDataProvider('FailedLogins',
                     echo CHtml::link(Yii::t('admin', 'Mobile App Form Editor'),
                             array('/admin/editMobileForms'));
                     ?><br><?php
-                    echo Yii::t('admin', 'Edit form layouts for X2Touch.');
+                    echo Yii::t('admin', 'Edit form layouts for X2Touch');
                     ?></div>
 
             </div>
@@ -626,7 +626,7 @@ $failedLoginsDataProvider = new CActiveDataProvider('FailedLogins',
                             array('/admin/massDedupe'));
                     ?><br><?php
                     echo Yii::t('admin',
-                            'View a list of all duplicates in the system and resolve them in bulk.');
+                            'View a list of all duplicates in the system and resolve them in bulk');
                     ?></div>
 
             </div>
@@ -720,14 +720,14 @@ $failedLoginsDataProvider = new CActiveDataProvider('FailedLogins',
                     echo CHtml::link(Yii::t('admin', 'Update X2CRM'),
                             array('/admin/updater'));
                     ?><br><?php
-                    echo Yii::t('admin', 'The X2CRM remote update utility.');
+                    echo Yii::t('admin', 'The X2CRM remote update utility');
                     ?></div>
                 <div class="cell span-6"><?php
                     echo CHtml::link(Yii::t('admin', 'General Settings'),
                             array('/admin/appSettings'));
                     ?><br><?php
                     echo Yii::t('admin',
-                            'Configure session timeout and chat poll rate.');
+                            'Configure session timeout and chat poll rate');
                     ?></div>
                 <div class="cell span-6"><?php
                     echo CHtml::link(Yii::t('admin', 'Activity Feed Settings'),
@@ -759,7 +759,7 @@ $failedLoginsDataProvider = new CActiveDataProvider('FailedLogins',
                             array('/admin/locationSettings'));
                     ?><br><?php
                     echo Yii::t('admin',
-                            'Configure location tracking and tracking rate.');
+                            'Configure location tracking and tracking rate');
                     ?></div>
 
             </div>
@@ -809,7 +809,7 @@ $failedLoginsDataProvider = new CActiveDataProvider('FailedLogins',
                                     'Obtain X2 Hub License Key'),'https://x2crm.com/products/');
                     ?><br><?php
                     echo Yii::t('admin',
-                            'Obtain a license key to use with X2 Hub Services.');
+                            'Obtain a license key to use with X2 Hub Services');
                     ?></div>
                 <div class="cell span-6"><?php
                     echo CHtml::link(Yii::t('admin', 'Configure X2 Hub Integration'),
