@@ -322,8 +322,6 @@ $failedLoginsDataProvider = new CActiveDataProvider('FailedLogins',
                                 'View a log of user sessions with timestamps and statuses');
                         ?></div>
                 <?php } ?>
-
-
                 <div class="cell span-6">
                     <?php
                     echo CHtml::link(Yii::t('users', 'User Login History'),
@@ -333,6 +331,17 @@ $failedLoginsDataProvider = new CActiveDataProvider('FailedLogins',
                     <?php
                     echo Yii::t('app',
                             'Manage X2CRM user account history, including failed and successful logins');
+                    ?>
+                </div>
+                <div class="cell span-6">
+                    <?php
+                    echo CHtml::link(Yii::t('users', 'Manage User Count'),
+                            array('admin/manageUserCount'));
+                    ?>
+                    <br>
+                    <?php
+                    echo Yii::t('app',
+                            'Manage X2CRM user count');
                     ?>
                 </div>
 

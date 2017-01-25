@@ -2547,7 +2547,13 @@ class AdminController extends X2Controller {
       } */
 
     /**
-     * Page for User History
+     * Page for User Location History
+     * 
+     * This page shows users' location history acquired from:
+     *  'address' 'weblead' 'webactivity' 'email open' 'email click' 'email unsub'  
+     *  'user login' 'activityPost' 'mobileIdle' 'mobileActivityPost' 'mobileActionPost' 
+     *  'mobileCheckIn' 'eventRSVP'. It shows the user's username, ip address,
+     *  first and last name, lon and lat, and when it was acquired.
      */
     public function actionUserLocationHistory() {
         $locationHistoryDataProvider  = new CActiveDataProvider ('Locations', array(
@@ -2565,7 +2571,17 @@ class AdminController extends X2Controller {
             'users' => $users,
         ));
     }
-    
+
+    /**
+     * Render a page with options related to user location
+     *
+     * The administrator is allowed to configure the frequency in which the
+     * location info is acquired from user actions. The tracking distance can be
+     * configured to acquire the users' location only when a certain distance 
+     * away from the last the the users' location was acquired. There is also
+     * the option for the admin to turn location on/off, and enable checkin post
+     * location attachments by default.
+     */    
     public function actionLocationSettings() {
 
         $admin = &Yii::app()->settings;
@@ -2587,6 +2603,37 @@ class AdminController extends X2Controller {
         }
         $admin->timeout = ceil($admin->timeout / 60);
         $this->render('locationSettings', array(
+            'model' => $admin,
+        ));
+    }
+
+    /**
+     * Render a page with options for activity feed settings.
+     *
+     * The administrator is allowed to configure what sort of information should
+     * be displayed in the activity feed and for how long. This page sets options
+     * for automated deletion of any chosen types after a set time period to help
+     * keep the database cleaner.
+     */    
+    public function actionManageUserCount() {
+
+        $admin = &Yii::app()->settings;
+        if (isset($_POST['Admin'])) {
+
+            $oldFormat = $admin->contactNameFormat;
+            $admin->attributes = $_POST['Admin'];
+            foreach ($_POST['Admin'] as $attribute => $value) {
+                if ($admin->hasAttribute($attribute)) {
+                    $admin->$attribute = $value;
+                }
+            }
+
+
+            if ($admin->save()) {
+                $this->redirect('manageUserCount');
+            }
+        }
+        $this->render('manageUserCount', array(
             'model' => $admin,
         ));
     }
