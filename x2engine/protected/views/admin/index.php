@@ -325,7 +325,7 @@ $failedLoginsDataProvider = new CActiveDataProvider('FailedLogins',
                 <div class="cell span-6">
                     <?php
                     echo CHtml::link(Yii::t('users', 'User Login History'),
-                            array('admin/userHistory'));
+                            array('/admin/userHistory'));
                     ?>
                     <br>
                     <?php
@@ -336,7 +336,7 @@ $failedLoginsDataProvider = new CActiveDataProvider('FailedLogins',
                 <div class="cell span-6">
                     <?php
                     echo CHtml::link(Yii::t('users', 'Manage User Count'),
-                            array('admin/manageUserCount'));
+                            array('/admin/manageUserCount'));
                     ?>
                     <br>
                     <?php
