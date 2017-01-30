@@ -45,10 +45,16 @@ $this->onPageLoad ("
 ?>
 <div class='refresh-content' data-refresh-selector='.header-content-right'>
     <?php
-    if($model instanceof Contacts) { 
+    $importButtonClass = '';
+    if($model instanceof Contacts || $model instanceof Product) { 
+        if($model instanceof Contacts) {
+            $importButtonClass = 'contact-import-button';
+        } else if ($model instanceof Product) {
+            $importButtonClass = 'product-import-button';
+        }
     ?>
         <div class='header-content-right' style="margin-right: 80px;">
-            <div class='import-button'>
+            <div class='<?php echo $importButtonClass; ?>'>
             <?php
                 echo CHtml::encode (Yii::t('mobile', 'Import'));
             ?>
