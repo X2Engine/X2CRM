@@ -239,7 +239,7 @@ class CampaignMailingBehavior extends EmailDeliveryBehavior {
 
             // Replace links with tracking links
             $url = Yii::app()->controller->createAbsoluteUrl (
-                'click', array ('uid' => $uniqueId, 'type' => 'click'));
+                '/marketing/marketing/click', array ('uid' => $uniqueId, 'type' => 'click'));
             $emailBody = StringUtil::pregReplaceCallback (
                 '/(<a[^>]*href=")([^"]*)("[^>]*>)/', 
                 function (array $matches) use ($url) {
