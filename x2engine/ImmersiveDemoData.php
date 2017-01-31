@@ -33,7 +33,7 @@ class ImmersiveDemoData {
         "There are some leftover donuts in the fridge. Does anyone want them?",
         "I\'m organizing a company lunch for next Friday. Anybody have requests about where to go? I\'m thinking sushi.",
     );
-    public $event_comments = array(
+    public $event_posts_comments = array(
         "Definitely!",
         "I disagree.",
         "Yes!",
