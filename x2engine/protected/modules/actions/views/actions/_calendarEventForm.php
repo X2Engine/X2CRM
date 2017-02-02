@@ -117,8 +117,7 @@ echo $form->textArea($model, 'actionDescription');
         </div>
         <div class='cell'>
             <?php
-            
-            if (!isset($model->associationId)) {
+            if (empty($model->associationId)) {
                 echo $form->label($model, 'associationType');
                 echo $form->renderInput($model, 'associationType');
             } else {
