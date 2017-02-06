@@ -56,7 +56,7 @@ RecordCreateController.prototype.importCallLog = function () {
     this.importButton$.click (function () {
         var firstCall=0;
         var lastCall=20;
-        x2touch.API.getCallLog (function(res){
+        x2touch.API.getCalls (function(res){
             var calls = JSON.parse(res);
             /*for (i=0;i<calls.length;i++){
                 var tel = calls[i].phoneNumber;
@@ -73,7 +73,7 @@ RecordCreateController.prototype.importCallLog = function () {
         "",
         [lastCall,lastCall] //[firstCall,lastCall] take first to last call
         );
-        form$.submit ();
+        //form$.submit ();
     });
 };
 
