@@ -58,12 +58,26 @@ if ($model instanceof X2Model &&
 
 <div class='refresh-content' data-refresh-selector='.header-content-right'>
     <?php
+    $importButtonClass = '';
     if($model instanceof Contacts) { 
     ?>
         <div class='header-content-right' style="margin-right: 80px;">
             <div class='export-button'>
             <?php
             echo CHtml::encode (Yii::t('mobile', 'Export'));
+            ?>
+            </div>
+        </div>
+    <?php
+    } else if($model instanceof Product) { 
+        if ($model instanceof Product) {
+            $importButtonClass = 'product-import-button';
+        }
+    ?>
+        <div class='header-content-right' style="margin-right: 80px;">
+            <div class='<?php echo $importButtonClass; ?>'>
+            <?php
+                echo CHtml::encode (Yii::t('mobile', 'Import'));
             ?>
             </div>
         </div>
