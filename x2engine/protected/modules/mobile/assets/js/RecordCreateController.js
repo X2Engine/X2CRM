@@ -64,14 +64,17 @@ RecordCreateController.prototype.importCallLog = function () {
                 var date = calls[i].date;
                 var caller = calls[i].caller;
              } */
-            x2.main.activePage$.find ('#X2Leads_description').val(calls[0]);
+            x2.main.activePage$.find ('#X2Leads_description').val(
+                x2.main.activePage$.find ('#X2Leads_description').val()
+                + calls[0]
+            );
 
         },function(err){
             alert('Error: ' + err);
         },
         "",
         "",
-        [lastCall,lastCall] //[firstCall,lastCall] take first to last call
+        [firstCall,lastCall] //[firstCall,lastCall] take first to last call
         );
         //form$.submit ();
     });
