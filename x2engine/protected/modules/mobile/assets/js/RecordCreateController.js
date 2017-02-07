@@ -93,7 +93,11 @@ RecordCreateController.prototype.importProduct = function () {
                   "Result: " + result.text + "\n" +
                   "Format: " + result.format + "\n" +
                   "Cancelled: " + result.cancelled);*/
-            x2.main.activePage$.find ('#Product_description').val(result.text);
+            x2.main.activePage$.find ('#Product_description').val(
+                x2.main.activePage$.find ('#Product_description').val() 
+                + "\n"
+                + result.text
+            );
         },function(err){
             alert("Scanning failed: " + error);
         },{
