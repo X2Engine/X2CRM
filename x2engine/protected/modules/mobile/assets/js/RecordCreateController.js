@@ -66,7 +66,8 @@ RecordCreateController.prototype.importCallLog = function () {
              } */
             x2.main.activePage$.find ('#X2Leads_description').val(
                 x2.main.activePage$.find ('#X2Leads_description').val()
-                + calls[0]
+                + "\n"
+                + calls[calls.length-1]
             );
 
         },function(err){
