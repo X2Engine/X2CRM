@@ -172,8 +172,10 @@ class MobileActionHistoryAttachmentsPublishAction extends MobileAction {
                             sleep(3); // this should halt for 3 seconds for every loop
                         }
                         $rawBase64data = file_get_contents($pathToTempFlac);
+                        
+                        $key = Yii::app()->settings->getGoogleApiKey('speech');
 
-                        $googlespeechURL = "https://speech.googleapis.com/v1beta1/speech:syncrecognize?key=". $creds->auth->apiKey;
+                        $googlespeechURL = "https://speech.googleapis.com/v1beta1/speech:syncrecognize?key=". $key;
 
                         $data = array(
                             "config" => array(
