@@ -272,7 +272,7 @@ VALUES
 ('AdminAppSettings',0,'General settings for the application.',NULL,'N;'),
 ('AdminUserLocationHistory',0,'General Location History for the application.',NULL,'N;'),
 ('AdminLocationSettings',0,'General Location settings for the application.',NULL,'N;'),
-('AdminManageUserCount',0,'General user count for the application.',NULL,'N;'),
+('AdminManageUserCount',0,'General max user count for the application.',NULL,'N;'),
 ('AdminApi2Settings',0,'Advance REST API settings.',NULL,'N;'),
 ('AdminManageSessions',0,'Manage user sessions.',NULL,'N;'),
 ('AdminToggleSession',0,'',NULL,'N;'),
