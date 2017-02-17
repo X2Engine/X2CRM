@@ -69,23 +69,39 @@ $form = $this->beginWidget ('ActionActiveForm', array (
 ?>
         </div>
     </div>
-<?php
-    ?> <br> <?php
+
+    <br>
+    <div class='row'>
+    <div class='cell'><?php
     echo $form->label ($model, 'reminder', array (
         'class' => 'reminder-label',
     )); 
     echo $form->renderInput ($model, 'reminder', array (
         'style' => 'display: none;'
     ));
-
     echo CHtml::label (Yii::t('actions', 'Add to Calendar'), 'calendarId');
     $editableCalendars =
         array('' => Yii::t('actions', 'None')) +
         X2CalendarPermissions::getEditableUserCalendarNames();
     echo CHtml::activeDropDownList($model, 'calendarId', $editableCalendars);
+    echo '</div>';
 
-    echo $form->hiddenField($model, 'associationType'); 
-    echo $form->hiddenField($model, 'associationId'); 
+    if (!Yii::app()->user->isGuest &&
+        isset($_POST['showAssociationControls']) && $_POST['showAssociationControls']) {
+            // Render association controls when adding action from email client
+            echo "<div class='cell'>";
+            echo $form->label($model, 'associationType', array(
+                'style' => 'display: inline',
+            ));
+            echo X2Html::hint2(Yii::t('actions', 'By default, the Contact who sent the '.
+                'email will be associated.'));
+            echo $form->renderInput($model, 'associationType');
+            echo '</div>';
+    } else {
+        echo $form->hiddenField($model, 'associationType');
+        echo $form->hiddenField($model, 'associationId');
+    }
+    echo '</div>';
 
     if(Yii::app()->user->isGuest){ 
     ?>

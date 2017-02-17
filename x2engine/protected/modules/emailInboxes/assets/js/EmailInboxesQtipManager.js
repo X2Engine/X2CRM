@@ -230,6 +230,7 @@ EmailInboxesQtipManager.prototype._setUpQuickCreateButtonBehavior = function () 
         var data = {
             actionType: 'ActionFormModel',
             keepForm: true,
+            showAssociationControls: true,
             'ActionFormModel[associationId]': recordId,
             'ActionFormModel[associationType]': 'contacts',
             'ActionFormModel[associationName]': $(link).text ()
