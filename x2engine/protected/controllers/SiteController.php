@@ -106,7 +106,7 @@ class SiteController extends x2base {
                     'stickyPost', 'getEventsBetween', 'mediaWidgetToggle', 'createChartSetting',
                     'deleteChartSetting', 'GetActionsBetweenAction', 'DeleteURL', 'widgetSetting',
                     'removeTmpUpload', 'duplicateCheck', 'resolveDuplicates', 'getSkypeLink',
-                    'mergeRecords', 'ajaxSave', 'layoutPreview','tourSeen'),
+                    'mergeRecords', 'ajaxSave', 'layoutPreview','tourSeen', 'viewEmbedded'),
                 'users' => array('@'),
             ),
             array('allow',
@@ -1412,6 +1412,19 @@ class SiteController extends x2base {
             return X2Model::model($classes[$type])->findByPk($id);
         else
             return null;
+    }
+
+    /**
+     * View a linked page as an iframe to provide X2CRM context
+     */
+    public function actionViewEmbedded($id) {
+        $model = Modules::model()->findByPk($id);
+        if (!$model)
+            throw new CHttpException('400', 'Invalid request.');
+        $this->render('viewEmbedded', array(
+            'title' => $model->title,
+            'url' => $model->linkHref,
+        ));
     }
 
     /**
