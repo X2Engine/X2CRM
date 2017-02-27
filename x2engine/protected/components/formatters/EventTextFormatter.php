@@ -849,33 +849,16 @@ class EventTextFormatter {
             $text .= $event->renderRecordLinks(array('style' => 'margin-bottom: 0px'));
             static::$renderedRecordLinks = true;
         }
-        if (count($event->media) > 1) {
+        if (!empty($event->media)) {
             $index = 0;
             foreach($event->media as $key=>$media) {
                 if ($index == (count($event->media)-1) && count($eventTexts) == 3) {
                     $text .= "<br>";
                     $text .= $eventTexts[1];   
                 }
-                if (!$truncated) {
-                    $text.="<br><br>" . Media::attachmentSocialText($media->getMediaLink(),
-                                    true, true) . "<br>";
-                } else {
-                    $text.="<br><br>" . Media::attachmentSocialText($media->getMediaLink(),
-                                    true, false) . "<br>";
-                }
+                $text.="<br>" . Media::attachmentSocialText($media->getMediaLink(),
+                                false, !$truncated) . "<br>";
                 $index++;
-            }
-        } else if (count($event->media) == 1) {
-            if (count($eventTexts) == 3) {
-                $text.="<br><br>";
-                $text .= $eventTexts[1];   
-            }
-            if (!$truncated) {
-                $text.="<br><br>" . Media::attachmentSocialText($media->getMediaLink(),
-                                true, true);
-            } else {
-                $text.="<br><br>" . Media::attachmentSocialText($media->getMediaLink(),
-                                true, false);
             }
         } else {
             $text.="<br>Media file not found.";
