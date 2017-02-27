@@ -303,9 +303,13 @@ class Locations extends CActiveRecord
                 '&key=' . $key;
             $result = RequestUtil::request(array('url' => $url));
             $data = CJSON::decode($result, true);
-            if ($data)
+            if ($data && isset($data['results']) && isset($data['results'][0])) {
                 return $data['results'][0]['formatted_address'];
-            return $result;
+            } else if ($data && isset($data['status']) && $data['status'] === 'REQUEST_DENIED') {
+                Yii::log('Failed to geocode address. Message was: '.$data['error_message'], 'error', 'php');
+            } else {
+                Yii::log('Received malformed JSON from geocoding request.', 'error', 'php');
+            }
         }
     }
 
