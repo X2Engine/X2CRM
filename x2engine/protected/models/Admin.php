@@ -111,7 +111,7 @@ class Admin extends X2ActiveRecord {
         $settings = Yii::app()->settings;
         if ($settings->hubCredentialsId) {
             $hubCreds = Credentials::model()->findByPk($settings->hubCredentialsId);
-            if ($hubCreds && $hubCreds->auth && $hubCreds->auth->enableGoogleMaps)
+            if ($hubCreds && $hubCreds instanceof X2HubConnector && $hubCreds->auth && $hubCreds->auth->enableGoogleMaps)
                 return true;
         }
         if ($settings->googleIntegration)
