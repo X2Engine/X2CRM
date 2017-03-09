@@ -313,11 +313,12 @@ class WeblistController extends x2base {
 
 				$transaction->commit();
                 $sanitizedGetParams = WebFormAction::sanitizeGetParams ();
+                $thankYouText = isset($webForm->thankYouText) ? $webForm->thankYouText : null;
 				$this->renderPartial(
                     'application.components.views.webFormSubmit',
                     array_merge (array (
                         'type'=>'weblist',
-                        'thankYouText' => $webForm->thankYouText,
+                        'thankYouText' => $thankYouText,
                     ), $sanitizedGetParams));
 			} catch (Exception $e) {
 				$transaction->rollBack();
