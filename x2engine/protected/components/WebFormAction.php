@@ -125,7 +125,8 @@ class WebFormAction extends CAction {
                     $oldest = $duplicates[0];
                 }
 
-                if (Yii::app()->settings->enableFingerprinting && isset ($_POST['fingerprint'])) {
+                if (Yii::app()->settings->enableFingerprinting && isset ($_POST['fingerprint']) &&
+                        isset($extractedParams['fingerprintDetection']) && $extractedParams['fingerprintDetection']) {
                     $attributes = (isset($_POST['fingerprintAttributes']))?
                         json_decode($_POST['fingerprintAttributes'], true) : array();
 
@@ -731,6 +732,7 @@ class WebFormAction extends CAction {
                 $extractedParams['header'] = '';
                 $extractedParams['userEmailTemplate'] = null;
                 $extractedParams['webleadEmailTemplate'] = null;
+                $extractedParams['fingerprintDetection'] = true;
 
                 if (isset ($webForm)) { // new method
                     if (!empty ($webForm->header)) 
@@ -739,6 +741,8 @@ class WebFormAction extends CAction {
                         $extractedParams['userEmailTemplate'] = $webForm->userEmailTemplate;
                     if (!empty ($webForm->webleadEmailTemplate)) 
                         $extractedParams['webleadEmailTemplate'] = $webForm->webleadEmailTemplate;
+                    if (empty ($webForm->fingerprintDetection))
+                        $extractedParams['fingerprintDetection'] = $webForm->fingerprintDetection;
                 } else { // legacy method
                     if(isset($_GET['header'])){ 
                         $webFormLegacy = WebForm::model()->findByPk($_GET['header']);
