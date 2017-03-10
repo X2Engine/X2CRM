@@ -5426,33 +5426,7 @@ class AdminController extends X2Controller {
      * @param int $importId The ID of the import being rolled back
      */
     public function actionRollbackStage($model, $stage, $importId) {
-        $stages = array(
-            // Delete all tag data
-            "tags" => "DELETE a FROM x2_tags a
-                INNER JOIN
-                x2_imports b ON b.modelId=a.itemId AND b.modelType=a.type
-                WHERE b.modelType='$model' AND b.importId='$importId'",
-            // Delete all relationship data
-            "relationships" => "DELETE a FROM x2_relationships a
-                INNER JOIN
-                x2_imports b ON b.modelId=a.firstId AND b.modelType=a.firstType
-                WHERE b.modelType='$model' AND b.importId='$importId'",
-            // Delete any associated actions
-            "actions" => "DELETE a FROM x2_actions a
-                INNER JOIN
-                x2_imports b ON b.modelId=a.associationId AND b.modelType=a.associationType
-                WHERE b.modelType='$model' AND b.importId='$importId'",
-            // Delete the records themselves
-            "records" => "DELETE a FROM " . X2Model::model($model)->tableName() . " a
-                INNER JOIN
-                x2_imports b ON b.modelId=a.id
-                WHERE b.modelType='$model' AND b.importId='$importId'",
-            // Delete the log of the records being imported
-            "import" => "DELETE FROM x2_imports WHERE modelType='$model' AND importId='$importId'",
-        );
-        $sqlQuery = $stages[$stage];
-        $command = Yii::app()->db->createCommand($sqlQuery);
-        $result = $command->execute();
+        $result = $this->rollbackStage($model, $stage, $importId);
         echo $result;
     }
 
