@@ -1,6 +1,5 @@
 <?php
-
-/***********************************************************************************
+/*********************************************************************************
  * X2CRM is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2016 X2Engine Inc.
  * 
@@ -34,37 +33,32 @@
  * X2Engine" logo. If the display of the logo is not reasonably feasible for
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2Engine".
- **********************************************************************************/
+ ********************************************************************************/
 
-$this->actionMenu = array(
-    array('label' => Yii::t('profile', 'View Profile'), 'url' => array('view', 'id' => $profile->id)),
-    array('label' => Yii::t('profile', 'Edit Profile'), 'url' => array('update', 'id' => $profile->id)),
-    array('label' => Yii::t('profile', 'Change Settings'), 'url' => array('settings', 'id' => $profile->id), 'visible' => ($profile->id == Yii::app()->user->id)),
-    array('label' => Yii::t('profile', 'Change Password'), 'url' => array('changePassword', 'id' => $profile->id), 'visible' => ($profile->id == Yii::app()->user->id)),
-    array('label' => Yii::t('profile', 'Manage Apps'), 'url' => array('manageCredentials', 'id' => $profile->id)),
-    
-    array('label' => Yii::t('profile', 'Manage Email Reports'), 'url' => array('manageEmailReports')),
-    
-);
-?>
-
-<div class="page-title"><h2><?php echo $model->pageTitle; ?></h2></div>
-<?php
-X2Html::getFlashes ();
-if (is_a ($model->auth, 'EmailAccount'))
-    Tours::loadTips('profile.createUpdateCredentials');
-?>
-<div style="padding:10px; display:inline-block;">
-<?php
-$this->renderPartial(
-    '_credentialsForm', 
-    array(
-        'model' => $model,
-        'includeTitle' => false,
-        'disableMetaDataForm' => $disableMetaDataForm,
-        'user' => $profile->user
-    ));
+echo Tours::tips (array(
+    array (
+        "content" => "<h3>".Yii::t('admin',"Welcome to the Record Importer!")."</h3> ".Yii::t('admin',"This page allows you to define your mapping of CSV fields to the fields in X2CRM before initiating the import process. There are also various options to process the records after import."),
+        'type' => 'flash',
+    ),
+    array (
+        'content' => Yii::t('admin','First, select which fields in your CSV belong in your fields in X2CRM. You can also select DO NOT MAP to ignore the field, CREATE NEW FIELD to add a new custom field, or APPLY TAGS to treat the column as a list of tags.'),
+        'target' => '#import-map select',
+    ),
+    array (
+        'content' => Yii::t('admin','If you will be processing multiple CSVs, you can export your mapping here to use next time.'),
+        'target' => '#export-map',
+        'highlight' => true
+    ),
+    array (
+        'content' => Yii::t('admin','When this option is checked, records referred to in a lookup field will be created if the do not exist yet.'),
+        'target' => '#create-records-box',
+        'highlight' => true
+    ),
+    array (
+        'content' => Yii::t('admin','Select this option to update your existing records with the data contained in the CSV. This is useful for performing a bulk edit of records in another application such as Excel.'),
+        'target' => '#update-records-box',
+        'highlight' => true
+    ),
+));
 
 ?>
-
-</div>

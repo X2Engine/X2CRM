@@ -57,7 +57,7 @@ Yii::app()->clientScript->registerCss('webTrackerCss',"
 
 ");
 
-$this->pageTitle = Yii::t('marketing','Web Lead Form');
+$this->pageTitle = Yii::t('marketing','Web Tracker Settings');
 $menuOptions = array(
     'all', 'create', 'lists', 'newsletters', 'weblead', 'webtracker', 'x2flow',
 );
@@ -108,6 +108,7 @@ $modTitles = array(
     'contacts' => Modules::displayName(true, "Contacts"),
 );
 
+Tours::loadTips('marketing.webTracker');
 ?>
 <div class="page-title icon marketing">
     <h2><?php echo Yii::t('marketing','Web Tracker Code'); ?></h2>
