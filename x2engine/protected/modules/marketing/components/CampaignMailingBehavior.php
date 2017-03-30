@@ -355,6 +355,23 @@ class CampaignMailingBehavior extends EmailDeliveryBehavior {
                     ->queryAll(true,array(':listId'=>$listId));
     }
 
+    /**
+     * Similar to deliverableItems but only retrieves count
+     */
+    public static function deliverableItemsCount($listId,$unsent = false) {
+        $where = ' WHERE 
+            i.listId=:listId
+            AND i.unsubscribed=0
+            AND (c.doNotEmail!=1 OR c.doNotEmail IS NULL)
+            AND NOT ((c.email IS NULL OR c.email="") AND (i.emailAddress IS NULL OR i.emailAddress=""))';
+        if($unsent)
+            $where .= ' AND i.sent=0';
+        return Yii::app()->db->createCommand('SELECT COUNT(*)
+            FROM x2_list_items AS i
+            LEFT JOIN x2_contacts AS c ON c.id=i.contactId '.$where)
+                ->queryScalar(array(':listId'=>$listId));
+    }
+
     public static function recordEmailSent(Campaign $campaign, Contacts $contact){
         $action = new Actions;
         // Disable the unsightly notifications for loads of emails:
@@ -369,10 +386,30 @@ class CampaignMailingBehavior extends EmailDeliveryBehavior {
         $action->createDate = $now;
         $action->completeDate = $now;
         $action->complete = 'Yes';
-        $action->actionDescription = '<b>'.Yii::t('marketing', 'Campaign').': '.$campaign->name."</b>\n\n"
+        $actionDescription = '<b>'.Yii::t('marketing', 'Campaign').': '.$campaign->name."</b>\n\n"
                 .Yii::t('marketing', 'Subject').": ".Docs::replaceVariables($campaign->subject, $contact)."\n\n".Docs::replaceVariables($campaign->content, $contact);
-        if(!$action->save())
-            throw new CException('Campaing email action history record failed to save with validation errors: '.CJSON::encode($action->errors));
+
+        // Prepare action attributes for direct insertion to skip ActiveRecord overhead
+        $attr = $action->attributes;
+        $attachedAttr = array_merge(array('actionDescription'), $action->getMetaDataFieldNames());
+        $attr = array_diff_assoc($attr, array_fill_keys($attachedAttr, ''));
+        $count = Yii::app()->db->createCommand()
+            ->insert('x2_actions', $attr);
+        if($count < 1)
+            throw new CException('Campaing email action history record failed to save with validation errors: '.CJSON::encode($action));
+        $actionId = Yii::app()->db->schema->commandBuilder
+            ->getLastInsertId('x2_actions');
+        $count = Yii::app()->db->createCommand()
+            ->insert('x2_action_text', array('actionId' => $actionId, 'text' => $actionDescription));
+        if($count < 1)
+            throw new CException('Campaing email action history record failed to save with validation errors: '.CJSON::encode($action));
+
+        // Manually trigger since hooks won't be called
+        $contact->lastActivity = time();
+        $contact->update(array('lastActivity'));
+        X2Flow::trigger('RecordUpdateTrigger', array(
+            'model' => $contact,
+        ));
     }
 
     /////////////////////////////////
@@ -615,7 +652,7 @@ class CampaignMailingBehavior extends EmailDeliveryBehavior {
         // Update the last activity on the campaign
         $this->campaign->lastActivity = time();
         // Finally, if the campaign is totally done, mark as complete.
-        if(count(self::deliverableItems($this->campaign->list->id, true)) == 0) {
+        if(self::deliverableItemsCount($this->campaign->list->id, true) == 0) {
             $this->status['message'] = Yii::t('marketing','All emails sent.');
             $this->campaign->active = 0;
             $this->campaign->complete = 1;

@@ -308,6 +308,10 @@ class Actions extends X2Model {
         return $success;
     }
 
+    public function getMetaDataFieldNames() {
+        return array_keys($this->metaDataTemp);
+    }
+
     /**
      * Retrieve a list of model links, indexed by model name
      * @return array
