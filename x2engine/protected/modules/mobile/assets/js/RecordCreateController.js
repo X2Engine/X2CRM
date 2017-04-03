@@ -141,6 +141,8 @@ RecordCreateController.prototype.setUpForm = function () {
 //    this.submitButton$.click (function () {
 //        that.form$.submit ();
 //    });
+    var homeButton$ = $.mobile.activePage.find('#home-btn');
+    homeButton$.hide();
 };
 
 RecordCreateController.prototype.init = function () {
