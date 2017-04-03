@@ -241,6 +241,10 @@ Yii::app()->clientScript->registerScript('toggleAuthInfo', "
             </div>
         </div>
         <br>
+        <br /><hr />
+
+        <h4><?php echo Yii::t('admin','Email Signature Settings'); ?></h4>
+        <p><?php echo Yii::t('admin','Configure whether to use a global email signature or the users chosen signature.');?></p>
         <div class="row">
             <?php echo $form->labelEx($model, 'emailUseSignature'); ?>
             <?php
