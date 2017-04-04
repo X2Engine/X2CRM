@@ -48,12 +48,14 @@ abstract class BaseX2FlowLocation extends X2FlowAction {
         'webactivity' => 'Website Activity',
         'open' => 'Email Opened',
         'mobileCheckIn' => 'Mobile Check In',
+        'activityPost' => 'Activity Post',
     );
     protected $typeTexts = array(
         'login' => 'logged in',
         'webactivity' => 'had web activity',
         'open' => 'opened an email',
         'mobileCheckIn' => 'checked in on mobile',
+        'activityPost' => 'posted on the Activity Feed',
     );
 
     public function paramRules() {
@@ -171,7 +173,7 @@ abstract class BaseX2FlowLocation extends X2FlowAction {
         $time = intval($this->parseOption('time', $params));
 
         $locations = Locations::model()->findAll('type="' . $this->getKey($this->parseOption('type', $params), $this->typeDropdown) . '"');
-
+        
         $result = array();
         foreach ($locations as $location) {
             $miles = $this->getRecordDistance($location, $params);
@@ -195,9 +197,9 @@ abstract class BaseX2FlowLocation extends X2FlowAction {
                     break;
                 }
             }
-            //if ($location->recordId == Yii::app()->params->profile->id) {
-            //    continue;
-            /* } else */ if (!$found && $miles <= $distance && $days <= $time) {
+            if ($location->recordId == Yii::app()->params->profile->id) {
+                continue;
+            } else if (!$found && $miles <= $distance && $days <= $time) {
                 $result[$location->recordId] = $location;
             }
         }
@@ -241,28 +243,42 @@ abstract class BaseX2FlowLocation extends X2FlowAction {
     protected function getRecordDistance($record1, &$params) {
         $distanceUnits = $this->parseOption('distance_units', $params);
 
-        $radius = ($distanceUnits == 'meters') ? 6373000.0 :
-                ($distanceUnits == 'kilometers') ? 6373.0 :
-                ($distanceUnits == 'feet') ? 20914080.0 :
-                3961.0;
+        $radius = 3961.0;
+        if ($distanceUnits == 'meters') {
+            $radius = 6373000.0;
+        } else if ($distanceUnits == 'kilometers') {
+            $radius = 6373.0;
+        } else if ($distanceUnits == 'feet') {
+            $radius = 20914080.0;
+        }
+
         $record2 = $this->getRecentLoginRecord();
 
-        $dlat = deg2rad(abs($record1->lat - $record2->lat));
-        $dlon = deg2rad(abs($record1->lon - $record2->lon));
-        $a = pow((sin($dlat / 2.0)), 2.0) + cos(deg2rad($record1->lat)) *
-                cos(deg2rad($record2->lat)) * pow((sin($dlon / 2.0)), 2.0);
-        $c = 2.0 * atan2(sqrt($a), sqrt(1.0 - $a));
-        $d = $radius * $c;
+        $latFrom = deg2rad($record2->lat);
+        $lonFrom = deg2rad($record2->lon);
+        $latTo = deg2rad($record1->lat);
+        $lonTo = deg2rad($record1->lon);
 
-        return $d;
+        $latDelta = $latTo - $latFrom;
+        $lonDelta = $lonTo - $lonFrom;
+
+        $angle = 2 * asin(sqrt(pow(sin($latDelta / 2), 2) +
+                                cos($latFrom) * cos($latTo) * pow(sin($lonDelta / 2), 2)));
+        $distance = round($angle * $radius, 2);
+
+        return $distance;
     }
 
     protected function getRecordDays($record1, &$params) {
         $timeUnits = $this->parseOption('time_units', $params);
 
-        $time = ($timeUnits == 'minutes') ? (60.0) :
-                ($timeUnits == 'hours') ? (60.0 * 24.0) :
-                (60.0 * 60.0 * 24.0);
+        $time = 60.0 * 60.0 * 24.0;
+        if ($timeUnits == 'minutes') {
+            $time = 60.0;
+        } else if ($timeUnits == 'hours') {
+            $time = 60.0 * 24.0;
+        }
+
         $record2 = $this->getRecentLoginRecord();
         return floor(abs($record1->createDate - $record2->createDate) / $time);
     }
