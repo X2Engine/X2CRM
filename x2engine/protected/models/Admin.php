@@ -111,7 +111,7 @@ class Admin extends X2ActiveRecord {
         $settings = Yii::app()->settings;
         if ($settings->hubCredentialsId) {
             $hubCreds = Credentials::model()->findByPk($settings->hubCredentialsId);
-            if ($hubCreds && $hubCreds->auth && $hubCreds->auth->enableGoogleMaps)
+            if ($hubCreds && $hubCreds instanceof X2HubConnector && $hubCreds->auth && $hubCreds->auth->enableGoogleMaps)
                 return true;
         }
         if ($settings->googleIntegration)
@@ -250,7 +250,7 @@ class Admin extends X2ActiveRecord {
             array('externalBaseUrl','url','allowEmpty'=>true),
             array('assetBaseUrls','validateUrlArray','allowEmpty'=>false),
             array('externalBaseUrl','match','pattern'=>':/$:','not'=>true,'allowEmpty'=>true,'message'=>Yii::t('admin','Value must not include a trailing slash.')),
-            array('enableWebTracker, disableAnonContactNotifs, locationTrackingSwitch, quoteStrictLock, workflowBackdateReassignment,disableAutomaticRecordTagging,enableAssetDomains, enableUnsubscribeHeader', 'boolean'),
+            array('enableWebTracker, disableAnonContactNotifs, locationTrackingSwitch, quoteStrictLock, workflowBackdateReassignment,disableAutomaticRecordTagging,enableAssetDomains, enableUnsubscribeHeader, checkinByDefault', 'boolean'),
             array('gaTracking_internal,gaTracking_public', 'match', 'pattern' => "/'/", 'not' => true, 'message' => Yii::t('admin', 'Invalid property ID')),
             array ('appDescription', 'length', 'max' => 255),
             array (

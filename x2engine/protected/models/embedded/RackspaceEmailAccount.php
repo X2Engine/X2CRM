@@ -1,4 +1,5 @@
 <?php
+
 /***********************************************************************************
  * X2CRM is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2016 X2Engine Inc.
@@ -35,64 +36,34 @@
  * "Powered by X2Engine".
  **********************************************************************************/
 
+Yii::import('application.models.embedded.*');
 
-
-Yii::import ('application.models.X2Model');
 /**
- * Model for x2_failed_logins table
+ * Authentication data for using a Rackspace account to send email.
+ *
+ * Similar to EmailAccount but with certain details already filled in
+ * @package application.models.embedded
  */
-class SuccessfulLogins extends CActiveRecord {
-    public static function model($className = __CLASS__) {
-        return parent::model($className);
+class RackspaceEmailAccount extends EmailAccount {
+
+    public $email = '';
+    public $imapNoValidate = false;
+    public $imapPort = 993;
+    public $imapSecurity = 'ssl';
+    public $imapServer = 'secure.emailsrvr.com';
+    public $password = '';
+    public $port = 465;
+    public $security = 'ssl';
+    public $senderName = '';
+    public $server = 'secure.emailsrvr.com';
+    public $user = '';
+
+    public function modelLabel() {
+        return Yii::t('app','Rackspace Email Account');
     }
 
-    public function relations() {
-        return array();
-    }
-
-    public function behaviors() {
-        $max = Yii::app()->settings->maxLoginHistory;
-        return array(
-            'RecordLimitBehavior' => array(
-                'class' => 'application.components.behaviors.RecordLimitBehavior',
-                'limit' => $max,
-                'timestampField' => 'timestamp',
-            ),
-        );
-    }
-
-    public function tableName() {
-        return 'x2_login_history';
-    }
-
-    protected function beforeSave() {
-        if ($this->isNewRecord) {
-            $this->timestamp = time();
-        }
-        return parent::beforeSave();
-    }
-
-    public function getUserLink() {
-        $user = User::model()->findByAttributes (array(
-            'username' => $this->username,
-        ));
-        if ($user)
-            return CHtml::link ($user->getAlias(), array('/users/view', 'id' => $user->id));
-    }
-
-    public function getEmail() {
-        $user = User::model()->findByAttributes (array(
-            'username' => $this->username,
-        ));
-        if ($user)
-            return $user->emailAddress;
-    }
-
-    public function attributeLabels() {
-        return array(
-            'username' => Yii::t('admin', 'User'),
-            'IP' => Yii::t('admin', 'IP Address'),
-        );
-    }
+    // Hide SMTP SSL validation setting
+    public function renderSmtpSslValidation() { }
 }
 
+?>

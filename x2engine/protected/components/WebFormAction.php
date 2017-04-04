@@ -197,10 +197,16 @@ class WebFormAction extends CAction {
                 if($success){
                     $location = $model->logLocation('weblead', 'POST');
 
-                    if ($extractedParams['generateLead'])
-                        call_user_func(array($this->controller, 'generateLead'),$model, $extractedParams['leadSource']);
-                    if ($extractedParams['generateAccount'])
-                        call_user_func(array($this->controller, 'generateAccount'),$model);
+                    if ($extractedParams['generateLead']) {
+                        $newLead = call_user_func(array($this->controller, 'generateLead'),$model, $extractedParams['leadSource']);
+                        if ($newLead)
+                            self::addTags ($newLead);
+                    }
+                    if ($extractedParams['generateAccount']) {
+                        $newAccount = call_user_func(array($this->controller, 'generateAccount'),$model);
+                        if ($newAccount)
+                            self::addTags ($newAccount);
+                    }
 
                     self::addTags ($model);
                     $tags = ((!isset($_POST['tags']) || empty($_POST['tags'])) ? 

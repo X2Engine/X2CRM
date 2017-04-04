@@ -46,6 +46,7 @@ Yii::app()->clientScript->registerCssFile($this->module->assetsUrl . '/css/rsvp.
         <b><?php echo Yii::t('calendar', 'What:'); ?> </b><?php echo $action->actionDescription; ?><br>
         <b><?php echo Yii::t('calendar', 'When:'); ?> </b><?php echo Formatter::formatDueDate($action->dueDate, 'long', 'long') ?><br><br>
         <?php echo Yii::t('calendar', 'Please select one of the options below to confirm your status.'); ?>
+        <div id="rsvp-status"></div>
     </div>
     <div>
         <?php echo X2Html::button(Yii::t('calendar', 'Yes'), array('data-value' => 'Yes', 'class' => 'x2-button left rsvp-button' . ($invite->status === 'Yes' ? ' disabled' : ''))); ?>
@@ -55,6 +56,16 @@ Yii::app()->clientScript->registerCssFile($this->module->assetsUrl . '/css/rsvp.
 </div>
 
 <?php
+$confirmationMessage = Yii::t('calendar', 'Thanks for RSVPing! Your attendance has been updated to ');
+$colors = ThemeGenerator::generatePalette(Yii::app()->params->profile->getTheme());
+if ($colors['themeName'] === 'Default') {
+    $highlightColor = 'lightblue';
+    $backgroundColor = '';
+} else {
+    $highlightColor = $colors['highlight2'];
+    $backgroundColor = $colors['content'];
+}
+
 Yii::app()->clientScript->registerScript('rsvp-buttons', "
     $('.rsvp-button').on('click',function(){
         var that = this;
@@ -68,6 +79,10 @@ Yii::app()->clientScript->registerScript('rsvp-buttons', "
             success: function(){
                 $('.rsvp-button').removeClass('disabled');
                 $(that).addClass('disabled');
+                $('#rsvp-status').show()
+                    .html('<p>".$confirmationMessage." \"' + $(that).attr('data-value') + '\"</p>')
+                    .css({'background-color':'".$highlightColor."'})
+                    .animate({'background-color':'".$backgroundColor."'}, 750);
             }
         });
     });

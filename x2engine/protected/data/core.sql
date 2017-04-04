@@ -77,6 +77,7 @@ CREATE TABLE x2_admin(
 	updateInterval			INT				NOT NULL DEFAULT 0,
 	quoteStrictLock			TINYINT,
         locationTrackingSwitch          TINYINT,
+        checkinByDefault          TINYINT DEFAULT 1,
 	googleIntegration		TINYINT,
 	inviteKey				VARCHAR(255),
 	workflowBackdateWindow			INT			NOT NULL DEFAULT -1,

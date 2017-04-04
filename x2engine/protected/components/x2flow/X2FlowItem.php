@@ -277,14 +277,14 @@ abstract class X2FlowItem extends CComponent {
      * @param array $params the parameters passed to trigger ()
      * @return mixed null if the option was not set by the user, the parsed value otherwise
      */
-    public function parseOption($name,&$params) {
+    public function parseOption($name,&$params,$renderFlag=true) {
         $options = &$this->config['options'];
         if(!isset($options[$name]['value']))
             return null;
 
         $type = isset($options[$name]['type'])? $options[$name]['type'] : '';
         
-        return X2Flow::parseValue($options[$name]['value'],$type,$params);
+        return X2Flow::parseValue($options[$name]['value'],$type,$params,$renderFlag);
     }
 
     /**

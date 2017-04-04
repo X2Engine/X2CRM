@@ -106,6 +106,7 @@ class WebFormBehavior extends CBehavior {
         // disable validation to prevent saving from failing if leadSource isn't set
         if ($lead->save (false)) {
             $lead->createRelationship($contact);
+            return $lead;
         }
 
     }
@@ -121,6 +122,7 @@ class WebFormBehavior extends CBehavior {
                 $account->refresh ();
                 $contact->company = $account->nameId;
                 $contact->update ();
+                return $account;
             }
         }
     }
@@ -181,7 +183,7 @@ class WebFormBehavior extends CBehavior {
 
             $subject = '';
             if($template->subject){
-                $subject = $template->subject;
+                $subject = Docs::replaceVariables($template->subject, $model);
             }
 
             $emailBody = self::formatEmailBodyAttrs ($emailBody, $model);

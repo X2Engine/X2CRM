@@ -159,12 +159,15 @@ $defaultSecurity = CJSON::encode($modelClass->security);
             var server = <?php echo $defaultServer; ?>;
             var port = <?php echo $defaultPort; ?>;
             var security = <?php echo $defaultSecurity; ?>;
+            var smtpNoValidate = false;
             if ($('#Credentials_auth_server').length)
                 server = $('#Credentials_auth_server').val();
             if ($('#Credentials_auth_port').length)
                 port = $('#Credentials_auth_port').val();
             if ($('#Credentials_auth_security').length)
                 security = $('#Credentials_auth_security').val();
+            if ($('#Credentials_auth_smtpNoValidate').length)
+                smtpNoValidate = $('#Credentials_auth_smtpNoValidate').is(':checked');
 
             var successMsg = "<?php echo Yii::t('app', 'Authentication successful.'); ?>";
             var failureMsg = "<?php echo Yii::t('app', 'Failed to authenticate! Please check your credentials.'); ?>";
@@ -183,7 +186,8 @@ $defaultSecurity = CJSON::encode($modelClass->security);
                     password: password,
                     server: server,
                     port: port,
-                    security: security
+                    security: security,
+                    smtpNoValidate: smtpNoValidate
                 },
                 complete: function(xhr, textStatus) {
                     $('#verify-credentials-loading').children().remove();

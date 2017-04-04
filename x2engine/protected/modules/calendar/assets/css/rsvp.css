@@ -227,3 +227,10 @@
 .rsvp-button {
   margin: 10px !important;
 }
+
+/* line 44, ../../../../../compass/protected/modules/calendar/assets/css/rsvp.scss */
+#rsvp-status {
+  max-width: 240px;
+  margin: 1rem;
+  border-radius: 4px;
+}

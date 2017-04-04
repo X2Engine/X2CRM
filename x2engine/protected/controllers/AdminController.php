@@ -428,6 +428,7 @@ class AdminController extends X2Controller {
             'failedLoginsBeforeCaptcha',
             'maxFailedLogins',
             'maxLoginHistory',
+            'maxFailedLoginHistory',
             'scanUploads',
             'twoFactorCredentialsId',
         );

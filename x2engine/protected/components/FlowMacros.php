@@ -63,6 +63,10 @@ class FlowMacros extends X2Widget {
         if(isset(Yii::app()->controller->module)){
             $modelType = X2Model::getModelName(Yii::app()->controller->module->getName());
         }
+        if ($modelType === 'Contacts' && Yii::app()->controller->action->id === 'list') {
+            // When viewing a list, instead use the X2List model
+            $modelType = 'X2List';
+        }
         $flows = $this->getFlows($modelType);
         // Only show Flow Macros on records that have flows
         if (empty($flows) || !($model instanceof X2Model)) {

@@ -533,7 +533,7 @@ class EmailDeliveryBehavior extends CBehavior {
         $this->_userProfile = $profile;
     }
 
-    public function testUserCredentials($email, $password, $server, $port, $security) {
+    public function testUserCredentials($email, $password, $server, $port, $security, $smtpNoValidate) {
         require_once(
             realpath(Yii::app()->basePath.'/components/phpMailer/PHPMailerAutoload.php'));
         $phpMail = new PHPMailer(true);
@@ -545,9 +545,19 @@ class EmailDeliveryBehavior extends CBehavior {
         $phpMail->Host = $server;
         $phpMail->Port = $port;
         $phpMail->SMTPSecure = $security;
+        $smtpOptions = array();
+        if ($smtpNoValidate) {
+            $smtpOptions = array(
+                'ssl' => array(
+                    'verify_peer' => false,
+                    'verify_peer_name' => false,
+                    'allow_self_signed' => true,
+                ),
+            );
+        }
 
         try {
-            $validCredentials = $phpMail->SmtpConnect();
+            $validCredentials = $phpMail->SmtpConnect($smtpOptions);
         } catch(phpmailerException $error) {
             $validCredentials = false;
         }

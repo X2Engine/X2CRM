@@ -280,7 +280,7 @@ table.page-title .fc-header-left {
 /* line 92, ../../../../../compass/protected/modules/calendar/assets/css/calendarLayout.scss */
 #calendar td.fc-today {
   border: 1px solid black;
-  background: #F4F4F4;
+  background: #F9F9F9;
 }
 /* line 95, ../../../../../compass/protected/modules/calendar/assets/css/calendarLayout.scss */
 #calendar td.fc-today div div.fc-day-number {
@@ -336,7 +336,7 @@ table.page-title .fc-header-left {
 #publisher.ui-tabs .ui-tabs-nav > li.ui-state-active {
   border-color: #D1D1D1;
   border-bottom-color: #eee;
-  background: #F4F4F4;
+  background: #F9F9F9;
   /* @theme border-bottom-color: content */
   /* @theme background: content */
 }
@@ -376,22 +376,21 @@ table.page-title .fc-header-left {
 }
 
 /* line 178, ../../../../../compass/protected/modules/calendar/assets/css/calendarLayout.scss */
-.calendar-checkbox {
-  float: left;
-  margin-right: 5px;
-}
-
-/* line 183, ../../../../../compass/protected/modules/calendar/assets/css/calendarLayout.scss */
-.calendar-edit-button {
-  float: right;
-}
-
-/* line 187, ../../../../../compass/protected/modules/calendar/assets/css/calendarLayout.scss */
-.calendar-name {
+li.user-calendar-entry {
   display: flex;
 }
 
-/* line 191, ../../../../../compass/protected/modules/calendar/assets/css/calendarLayout.scss */
+/* line 182, ../../../../../compass/protected/modules/calendar/assets/css/calendarLayout.scss */
+.calendar-checkbox {
+  margin-right: 5px;
+}
+
+/* line 186, ../../../../../compass/protected/modules/calendar/assets/css/calendarLayout.scss */
+.calendar-edit-button {
+  margin-left: auto;
+}
+
+/* line 193, ../../../../../compass/protected/modules/calendar/assets/css/calendarLayout.scss */
 .x2-button.icon.edit.minimal {
   border: none;
   background: none;

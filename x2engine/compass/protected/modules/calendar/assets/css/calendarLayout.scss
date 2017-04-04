@@ -175,17 +175,19 @@ table.page-title {
    -o-border-radius: 0px 0px 4px 4px;
 }
 
+li.user-calendar-entry {
+    display: flex;
+}
+
 .calendar-checkbox{
-    float:left;
     margin-right: 5px;
 }
 
 .calendar-edit-button{
-    float: right;
+    margin-left: auto;
 }
 
 .calendar-name{
-    display: flex;
 }
 
 .x2-button.icon.edit.minimal {

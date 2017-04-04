@@ -525,6 +525,7 @@ class QuotesController extends x2base {
         $Quotes = Modules::displayName();
         $Quote = Modules::displayName(false);
         $modelId = isset($model) ? $model->id : 0;
+        $isInvoice = (isset($model) && $model->type === 'invoice');
 
         /**
          * To show all options:
@@ -618,6 +619,7 @@ class QuotesController extends x2base {
                 'name' => 'convert',
                 'label' => Yii::t('quotes', 'Convert To Invoice'),
                 'url' => array ('convertToInvoice', 'id' => $modelId),
+                'visible' => !$isInvoice,
             ),
             array(
                 'name' => 'duplicate',

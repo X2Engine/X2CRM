@@ -689,8 +689,11 @@ class ProfileController extends x2base {
         $attributes = array('email', 'password', 'server', 'port', 'security');
         foreach ($attributes as $attr)
             ${$attr} = isset($_POST[$attr])? $_POST[$attr] : "";
+        $smtpNoValidate = false;
+        if (isset($_POST['smtpNoValidate']) && $_POST['smtpNoValidate'] === 'true')
+            $smtpNoValidate = true;
         $this->attachBehavior('EmailDeliveryBehavior', new EmailDeliveryBehavior);
-        $valid = $this->testUserCredentials($email, $password, $server, $port, $security);
+        $valid = $this->testUserCredentials($email, $password, $server, $port, $security, $smtpNoValidate);
         if (!$valid) echo "Failed";
     }
 

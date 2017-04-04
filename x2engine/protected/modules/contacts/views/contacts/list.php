@@ -127,7 +127,7 @@ $('#removeFromList').unbind('click').click(function() {
 
 $massActions = array(
     'MassTag', 'MassTagRemove', 'MassUpdateFields', 'MassAddToList', 
-    'NewListFromSelection'
+    'NewListFromSelection', 'MassExecuteMacro'
 );
 
 if ($listModel->type === 'static') {

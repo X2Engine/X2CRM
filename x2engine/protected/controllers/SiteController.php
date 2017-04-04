@@ -111,7 +111,7 @@ class SiteController extends x2base {
             ),
             array('allow',
                 'actions' => array('motd'),
-                'users' => array('admin'),
+                'expression' => 'Yii::app()->params->isAdmin',
             ),
             array('deny',
                 'users' => array('*')
