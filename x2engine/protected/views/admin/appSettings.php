@@ -142,6 +142,39 @@ $('#currency').change(function() {
     </div>
     <div class="form">
         <?php
+        echo $form->labelEx($model, 'loginCredsTimeout');
+        $this->widget('zii.widgets.jui.CJuiSlider', array(
+            'value' => $model->loginCredsTimeout,
+            // additional javascript options for the slider plugin
+            'options' => array(
+                'min' => 1,
+                'max' => 365,
+                'step' => 1,
+                'change' => "js:function(event,ui) {
+					$('#loginCredsTimeout').val(ui.value);
+					$('#save-button').addClass('highlight');
+				}",
+                'slide' => "js:function(event,ui) {
+					$('#loginCredsTimeout').val(ui.value);
+				}",
+            ),
+            'htmlOptions' => array(
+                'style' => 'margin:10px 0;',
+                'class'=>'x2-wide-slider',
+                'id' => 'loginCredsTimeoutSlider'
+            ),
+        ));
+
+        echo $form->textField($model, 'loginCredsTimeout', array('id' => 'loginCredsTimeout'));
+        ?>
+        <br>
+        <?php echo Yii::t('admin', 'Set all mobile users Single sign-on token expiration time (in days). Default is 30.'); ?><br>
+        <br>
+        <label for="Admin_tokenPersist"><?php echo Yii::t('admin', 'Persist token indefinitely?'); ?></label>
+        <?php echo $form->checkBox($model, 'tokenPersist'); ?>
+    </div>
+    <div class="form">
+        <?php
         echo $form->labelEx($model,'batchTimeout');
         $this->widget('zii.widgets.jui.CJuiSlider', array(
             'value' => $model->batchTimeout,
