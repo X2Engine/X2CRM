@@ -145,11 +145,6 @@ if ($model->hasErrors () && !isset($_COOKIE['sessionToken'])) {
     </div>
     
     <script type="text/javascript">
-        /*function getCookie(name){
-            var value = "; " + document.cookie;
-            var parts = value.split("; " + name + "=");
-            if (parts.length == 2) return parts.pop().split(";").shift();
-        }*/
 
         function setCookie(cname, cvalue, exdays) {
             var d = new Date();

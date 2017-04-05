@@ -91,7 +91,7 @@ class CommonSiteControllerBehavior extends CBehavior {
                         ->queryScalar(); // get the correctly capitalized username  
  
                 //create new sessionToken and save to server
-                $sessionIdToken = uniqid();
+                $sessionIdToken = PasswordUtil::getToken(32);
                 
                 $sessionToken = new SessionToken;
                 $sessionToken->id = $sessionIdToken;
