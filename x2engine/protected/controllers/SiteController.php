@@ -1419,7 +1419,7 @@ class SiteController extends x2base {
      */
     public function actionViewEmbedded($id) {
         $model = Modules::model()->findByPk($id);
-        if (!$model)
+        if (!$model || !$model->linkOpenInFrame)
             throw new CHttpException('400', 'Invalid request.');
         $this->render('viewEmbedded', array(
             'title' => $model->title,
