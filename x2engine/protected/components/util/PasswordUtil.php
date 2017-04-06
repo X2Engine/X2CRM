@@ -81,6 +81,12 @@ class PasswordUtil {
      * $length = length of pretty random, pretty unique, alphanumeric string. 
      *
      * Other cited sources: http://us1.php.net/manual/en/function.openssl-random-pseudo-bytes.php#104322
+     * 
+     * Alternative extensions/libraries for more options based on the article: 
+     * https://paragonie.com/blog/2015/07/how-safely-generate-random-strings-and-integers-in-php
+     * - https://github.com/paragonie/random_compat
+     * - https://github.com/ircmaxell/RandomLib
+     * - https://pecl.php.net/package/libsodium
      */
     public static function crypto_rand_secure($min, $max) {
         $range = $max - $min;
