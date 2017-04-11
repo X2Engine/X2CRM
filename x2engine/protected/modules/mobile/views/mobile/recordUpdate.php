@@ -70,9 +70,7 @@ if ($model instanceof X2Model &&
         </div>
     <?php
     } else if($model instanceof Product) { 
-        if ($model instanceof Product) {
-            $importButtonClass = 'product-import-button';
-        }
+        $importButtonClass = 'product-import-button';
     ?>
         <div class='header-content-right' style="margin-right: 80px;">
             <div class='<?php echo $importButtonClass; ?>'>
