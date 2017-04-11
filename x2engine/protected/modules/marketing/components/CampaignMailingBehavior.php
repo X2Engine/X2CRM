@@ -652,6 +652,21 @@ class CampaignMailingBehavior extends EmailDeliveryBehavior {
             $campaigns = Campaign::model()->findAllByAttributes(
                     array('complete' => 0, 'active' => 1, 'type' => 'Email'), 'launchdate > 0 AND launchdate < :time', array(':time' => time()));
             foreach($campaigns as $campaign){
+                if ($campaign->list->type != 'campaign') {
+                    // A campaign with a launch date but whose list is not yet a campaign type,
+                    // has not yet been launched.
+                    $newList = $campaign->list->staticDuplicate();
+                    if(!isset($newList) || empty($campaign->subject))
+                        continue;
+                    $newList->type = 'campaign';
+                    if($newList->save()) {
+                        $campaign->list = $newList;
+                        $campaign->listId = $newList->nameId;
+                        $campaign->update('listId');
+                    } else {
+                        continue;
+                    }
+                }
                 try{
                     list($sent, $errors) = self::campaignMailing($campaign);
                 }catch(CampaignMailingException $e){
