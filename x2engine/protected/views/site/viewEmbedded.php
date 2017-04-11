@@ -1,4 +1,5 @@
-/*!*********************************************************************************
+<?php
+/***********************************************************************************
  * X2CRM is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2016 X2Engine Inc.
  * 
@@ -34,51 +35,21 @@
  * "Powered by X2Engine".
  **********************************************************************************/
 
-@import "colors";
+?>
 
-.admin-form-container {
-    .choice-container-outer {
-        padding: 13px;
-        .alternation-text {
-            font-weight: bold;
-            padding: 5px 0;
-        }
-        .choice-container {
-            height: 120px;
-            h3 {
-                margin: 0;
-                margin-bottom: 5px;
-                font-size: 13px;
-                font-weight: bold;
-            }
-            input:disabled {
-                background: white !important;
-            }
-            padding: 10px 8px;
-            border: 1px solid $selectionGreen;
-            &:not(.selected-choice) {
-                background: $lightestGray;
-                border: 1px solid $gray;
-                opacity: 0.7;
-                &, * {
-                    cursor: pointer;
-                }
-            }
-            .multi-type-autocomplete-container label {
-                visibility: hidden;
-                height: 0;
-            }
-        }
-        .extra-options-container {
-            padding-top: 8px;
-            input {
-                display: inline-block;
-                margin-right: 4px !important;
-            }
-            label { 
-                position: relative;
-                top: -2px;
-            }
-        }
-    }
-}
+<div class='page-title'>
+<h2><?php echo CHtml::encode($title); ?></h2>
+
+<?php
+    echo CHtml::link( 
+        X2Html::fa('fa-external-link fa-lg'),
+        $url,
+         array(
+            'class'=>'x2-button icon right',
+            'title'=> Yii::t('app', 'Open link in new tab'),
+            'target'=>'BLANK',
+        )
+    );
+?>
+</div>
+<iframe src="<?php echo $url; ?>" width="100%" height="800px" /></iframe>

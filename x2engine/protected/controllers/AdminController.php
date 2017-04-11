@@ -3148,6 +3148,7 @@ class AdminController extends X2Controller {
                 if ($type === 'link') {
                     $module->title = $model->topLinkText;
                     $module->linkHref = $model->topLinkUrl;
+                    $module->linkOpenInFrame = $model->openInFrame;
                 } else {
                     $module->linkRecordType = $model->recordType;
                     $module->linkRecordId = $model->recordId;
