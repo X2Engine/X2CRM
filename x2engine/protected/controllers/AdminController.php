@@ -2566,6 +2566,44 @@ class AdminController extends X2Controller {
         ));
     }
     
+    /**
+     * Render a grid of all hidden records of a specific type. This is helpful in
+     * situations where a record has been hidden inadvertantly, eg by the duplicate checker.
+     */
+    public function actionLocateMissingRecords($modelName = null) {
+        $skipModules = array(
+            'Groups', 'Media', 'Product', 'Quote', 'Charts', 'Reports', 'Services', 'Topics', 'EmailInboxes'
+        );
+        $model = $models = $dataProvider = null;
+        if (!is_null($modelName)) {
+            if (in_array($modelName, $skipModules)) {
+                throw new CHttpException(400, Yii::t('admin',
+                    'The model you have requested cannot be hidden'));
+            }
+            $model = X2Model::model($modelName);
+            $model = new $model('search');
+            $criteria = new CDbCriteria;
+            $assignmentAttr = $model->getAssignmentAttr();
+            $visibilityAttr = $model->getVisibilityAttr();
+            $condition = "($assignmentAttr='Anyone' AND 
+                $visibilityAttr = ".X2PermissionsBehavior::VISIBILITY_PRIVATE.")";
+            $criteria->addCondition($condition);
+            $dataProvider = $model->searchBase($criteria, null, true);
+            $dataProvider->sort->params = array('modelName' => $modelName);
+        } else {
+            $models = array_diff(Modules::getNamesOfModelsOfModules(), $skipModules);
+            sort($models);
+        }
+
+        $this->render('locateMissingRecords', array(
+            'modelName' => $modelName,
+            'model' => $model,
+            'dataProvider' => $dataProvider,
+            'models' => $models,
+	        'moduleName' => X2Model::getModuleName($modelName),
+        ));
+    }
+
     public function actionLocationSettings() {
 
         $admin = &Yii::app()->settings;
