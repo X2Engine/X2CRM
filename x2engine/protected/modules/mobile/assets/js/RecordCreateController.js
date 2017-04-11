@@ -41,7 +41,8 @@ x2.RecordCreateController = (function () {
 function RecordCreateController (argsDict) {
     var argsDict = typeof argsDict === 'undefined' ? {} : argsDict;
     var defaultArgs = {
-        DEBUG: x2.DEBUG && false
+        DEBUG: x2.DEBUG && false,
+        translations: {},
     };
     auxlib.applyArgs (this, defaultArgs, argsDict);
     x2.Controller.call (this, argsDict);
@@ -78,7 +79,7 @@ RecordCreateController.prototype.importContact = function () {
             x2.main.activePage$.find ('#Contacts_assignedTo_assignedToDropdown').val("");
             x2.main.activePage$.find ('#Contacts_visibility').val("");
         },function(err){
-            alert('Error: ' + err);
+            alert(that.translations['Error']+': ' + err);
         });
         form$.submit ();
     });
@@ -121,12 +122,12 @@ RecordCreateController.prototype.exportContact = function () {
     this.importButton$ = $('#header .export-button');
     //pass in contact info to be saved in device's contacts
     this.importButton$.click (function () {
-        if (confirm('Would you like to export this contact?')) {
+        if (confirm(that.translations['Would you like to export this contact']+'?')) {
             // Save it!
             x2touch.API.setContact (function (contact) {
-                alert("Export Success");
+                alert(that.translations['Export Success']);
             }, function(contactError){
-                alert("Error = " + contactError.code);
+                alert(that.translations['Error']+' = ' + contactError.code);
             },contactInfo);
         } else {
             // Do nothing!
