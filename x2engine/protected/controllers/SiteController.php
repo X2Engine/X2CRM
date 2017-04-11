@@ -762,7 +762,7 @@ class SiteController extends x2base {
             $event->locationId = $location->id;
             $staticMap = $location->generateStaticMap();
             $event->text .= '$|&|$' . $geoCoords['comment'] . '$|&|$'; //temporary dividers to be parsed later
-            $geocodedAddress = $location->geocode();
+            $geocodedAddress = isset($geoCoords['address']) ? $geoCoords['address'] : $location->geocode();
         }
         $event->type = 'media';
         $event->subtype = 'Social Post';

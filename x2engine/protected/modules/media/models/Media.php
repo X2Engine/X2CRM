@@ -679,7 +679,7 @@ class Media extends X2Model {
 
                 $media = X2Model::model('Media')->findByPk($matches[1]);
                 if (isset($media)) {
-                    $str = Yii::t('media', 'File:') . ' ';
+                    $str = $makeLink ? Yii::t('media', 'File:') . ' ' : '';
 
                     return self::getImageText($str, $makeLink, $makeImage, $media);
                 }
@@ -688,7 +688,7 @@ class Media extends X2Model {
             if (count($matches) == 2) {
                 $media = X2Model::model('Media')->findByAttributes(array('fileName' => $matches[1]));
                 if (isset($media)) {
-                    $str = Yii::t('media', 'Google Drive:') . ' ';
+                    $str = $makeLink ? Yii::t('media', 'Google Drive:') . ' ' : '';
 
                     return self::getImageText($str, $makeLink, $makeImage, $media);
                 }

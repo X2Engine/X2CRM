@@ -1966,7 +1966,7 @@ class ProfileController extends x2base {
                 $post->locationId = $location->id;
                 $staticMap = $location->generateStaticMap();
                 $post->text .= '$|&|$' . $geoCoords['comment'] . '$|&|$'; //temporary dividers to be parsed later
-                $geocodedAddress = $location->geocode();
+                $geocodedAddress = isset($geoCoords['address']) ? $geoCoords['address'] : $location->geocode();
             }
             if (isset($_POST['recordLinks']) && ($decodedLinks = CJSON::decode($_POST['recordLinks'], true)))
                 $post->recordLinks = $decodedLinks;
@@ -1977,8 +1977,8 @@ class ProfileController extends x2base {
             $post->timestamp = time();
             if ($post->save()) {
                 if (!empty($staticMap)) {
+                    $post->type = 'media';
                     if (!empty($geocodedAddress)) {
-                        $post->type = 'media';
                         $post->text .= Yii::t('app', 'Checking in at ').$geocodedAddress.' | '.
                             Formatter::formatDateTime(time());
                     }
