@@ -84,6 +84,17 @@ class ActiveDateRangeInput extends X2Widget {
         return $this->_JSClassParams;
     }
 
+    public function getDatePickerOptions() {
+        $datePickerOptions = array (
+            'dateFormat' => Formatter::formatDatePicker ('medium'),
+            'timeFormat' => Formatter::formatTimePicker (),
+            'ampm' => Formatter::formatAMPM (),
+        );
+        if (Yii::app()->getLanguage() === 'fr')
+            $datePickerOptions['monthNamesShort'] = Formatter::getPlainAbbrMonthNames();
+        return $datePickerOptions;
+    }
+
     public function run () {
         $this->registerPackages ();
         $this->instantiateJSClass ();
