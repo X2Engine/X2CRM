@@ -10,7 +10,7 @@
  * OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
  * 
  * This program is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * ANY WARRANTY; without even the implied warranty of MERCtHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE.  See the GNU Affero General Public License for more
  * details.
  * 
@@ -38,6 +38,7 @@ DROP TABLE IF EXISTS x2_admin;
 CREATE TABLE x2_admin(
 	id						INT				NOT NULL AUTO_INCREMENT PRIMARY KEY,
 	timeout					INT,
+        maxUserCount			INT				DEFAULT 100000,
 	webLeadEmail			VARCHAR(255),
 	webLeadEmailAccount		INT NOT NULL DEFAULT -1,
 	webTrackerCooldown		INT				DEFAULT 60,

@@ -225,15 +225,16 @@ class Admin extends X2ActiveRecord {
             array('emailType,emailFromName, emailFromAddr', 'requiredIfSysDefault', 'field' => 'emailBulkAccount'),
             array('serviceCaseFromEmailName, serviceCaseFromEmailAddress', 'requiredIfSysDefault', 'field' => 'serviceCaseEmailAccount'),
             array('serviceCaseEmailSubject, serviceCaseEmailMessage', 'required'),
-            array('batchTimeout, timeout, webTrackerCooldown, chatPollTime, locationTrackingFrequency, '
+            array('batchTimeout, timeout, webTrackerCooldown, chatPollTime, locationTrackingFrequency, maxUserCount,'
                 . 'ignoreUpdates, rrId, onlineOnly, emailBatchSize, emailInterval, emailPort, '
                 . 'installDate, updateDate, updateInterval, workflowBackdateWindow, '
-                . 'workflowBackdateRange, locationTrackingDistance', 
+                . 'workflowBackdateRange, locationTrackingDistance',
                 'numerical', 'integerOnly' => true),
             // accounts, sales,
             array('chatPollTime', 'numerical', 'max' => 100000, 'min' => 100),
             array('locationTrackingFrequency', 'numerical', 'max' => 60, 'min' => 1),
             array('locationTrackingDistance', 'numerical', 'max' => 10, 'min' => 1),
+            array('maxUserCount', 'numerical', 'max' => 100000, 'min' => 1),
             array('currency', 'length', 'max' => 3),
             array('emailUseAuth, emailUseSignature', 'length', 'max' => 10),
             array('emailType, emailSecurity,gaTracking_internal,gaTracking_public', 'length', 'max' => 20),
@@ -337,6 +338,7 @@ class Admin extends X2ActiveRecord {
             'emailNotificationAccount' => Yii::t('admin','Send As (when notifying users)'),
             'batchTimeout' => Yii::t('admin','Time limit on batch actions'),
             'massActionsBatchSize' => Yii::t('admin','Batch size for grid view mass actions'),
+            'maxUserCount' => Yii::t('admin', 'Manage User Count'),
             'externalBaseUrl' => Yii::t('admin','External / Public Base URL'),
             'externalBaseUri' => Yii::t('admin','External / Public Base URI'),
             'appName' => Yii::t('admin','Application Name'),
@@ -354,7 +356,7 @@ class Admin extends X2ActiveRecord {
             'triggerLogMax' => Yii::t('admin','Maximum number of X2Workflow trigger logs'),
             
             'locationTrackingFrequency' => Yii::t('admin', 'Location Tracking Frequency'), 
-            'locationTrackingDistance' => Yii::t('admin', 'Location Tracking Distance'),  
+            'locationTrackingDistance' => Yii::t('admin', 'Location Tracking Distance'), 
             'locationTracking' => Yii::t('admin', 'Location Tracking'), 
              
             'enableFingerprinting' => Yii::t('marketing', 'Enable Fingerprinting'),

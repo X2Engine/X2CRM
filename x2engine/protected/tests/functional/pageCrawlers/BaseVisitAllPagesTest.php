@@ -309,6 +309,7 @@ abstract class BaseVisitAllPagesTest extends X2WebTestCase {
         'admin/setDefaultTheme',
         'admin/userLocationHistory',
         'admin/locationSettings',
+        'admin/manageUserCount',
         'admin/setLeadRouting',
         'admin/setServiceRouting',
         'admin/translationManager',
