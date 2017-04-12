@@ -131,7 +131,7 @@ QuickCreate.prototype.openQuickCreateDialog = function () {
             that._dialog.dialog('open');
             
             auxlib.onClickOutside (
-                '.ui-dialog, .ui-datepicker',
+                '.ui-dialog, .ui-datepicker, .ui-datepicker-header',
                 function () { 
                     if ($(that._dialog).closest ('.ui-dialog').length) 
                         that._dialog.dialog ('close'); 
