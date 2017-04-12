@@ -51,12 +51,6 @@ $('#maxUserCount').change(function(){
 });
 
 
-$('#currency').change(function() {
-	if($('#currency').val() == 'other')
-		$('#currency2').fadeIn(300);
-	else
-		$('#currency2').fadeOut(300);
-});
 ", CClientScript::POS_READY);
 ?>
 <div class="page-title"><h2><?php echo Yii::t('admin', 'Manage User Count'); ?></h2></div>
