@@ -448,7 +448,9 @@ CREATE TABLE x2_relationships (
 	firstLabel				VARCHAR(100),
 	secondType				VARCHAR(100),
 	secondId				INT,
-	secondLabel				VARCHAR(100)
+	secondLabel				VARCHAR(100),
+	INDEX (firstId),
+	INDEX (secondId)
 ) COLLATE = utf8_general_ci;
 /*&*/
 /* The following needs to be dropped first; there is a foreign key constraint */
