@@ -39,7 +39,15 @@ Yii::app()->clientScript->registerScriptFile(
     Yii::app()->controller->assetsUrl.'/js/EventCommentPublisherController.js');
 
 $this->onPageLoad ("
-    x2.main.controllers['$this->pageId'] = new x2.EventCommentPublisherController ();
+    x2.main.controllers['$this->pageId'] = new x2.EventCommentPublisherController ({
+        translations: ".CJSON::encode (array (
+            'error code' => Yii::t('app','error code'),
+            'error message' => Yii::t('app','error message'),
+            'failed to parse response from server' => Yii::t('app','failed to parse response from server'),
+            'Error' => Yii::t('app','Error'),
+            'Upload failed' => Yii::t('app','Upload failed'),
+        )).",
+    });
 ", CClientScript::POS_END);
 
 

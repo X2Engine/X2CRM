@@ -2571,17 +2571,45 @@ class AdminController extends X2Controller {
             'users' => $users,
         ));
     }
-
+    
     /**
-     * Render a page with options related to user location
-     *
-     * The administrator is allowed to configure the frequency in which the
-     * location info is acquired from user actions. The tracking distance can be
-     * configured to acquire the users' location only when a certain distance 
-     * away from the last the the users' location was acquired. There is also
-     * the option for the admin to turn location on/off, and enable checkin post
-     * location attachments by default.
-     */    
+     * Render a grid of all hidden records of a specific type. This is helpful in
+     * situations where a record has been hidden inadvertantly, eg by the duplicate checker.
+     */
+    public function actionLocateMissingRecords($modelName = null) {
+        $skipModules = array(
+            'Groups', 'Media', 'Product', 'Quote', 'Charts', 'Reports', 'Services', 'Topics', 'EmailInboxes'
+        );
+        $model = $models = $dataProvider = null;
+        if (!is_null($modelName)) {
+            if (in_array($modelName, $skipModules)) {
+                throw new CHttpException(400, Yii::t('admin',
+                    'The model you have requested cannot be hidden'));
+            }
+            $model = X2Model::model($modelName);
+            $model = new $model('search');
+            $criteria = new CDbCriteria;
+            $assignmentAttr = $model->getAssignmentAttr();
+            $visibilityAttr = $model->getVisibilityAttr();
+            $condition = "($assignmentAttr='Anyone' AND 
+                $visibilityAttr = ".X2PermissionsBehavior::VISIBILITY_PRIVATE.")";
+            $criteria->addCondition($condition);
+            $dataProvider = $model->searchBase($criteria, null, true);
+            $dataProvider->sort->params = array('modelName' => $modelName);
+        } else {
+            $models = array_diff(Modules::getNamesOfModelsOfModules(), $skipModules);
+            sort($models);
+        }
+
+        $this->render('locateMissingRecords', array(
+            'modelName' => $modelName,
+            'model' => $model,
+            'dataProvider' => $dataProvider,
+            'models' => $models,
+	        'moduleName' => X2Model::getModuleName($modelName),
+        ));
+    }
+
     public function actionLocationSettings() {
 
         $admin = &Yii::app()->settings;
@@ -3157,6 +3185,7 @@ class AdminController extends X2Controller {
                 if ($type === 'link') {
                     $module->title = $model->topLinkText;
                     $module->linkHref = $model->topLinkUrl;
+                    $module->linkOpenInFrame = $model->openInFrame;
                 } else {
                     $module->linkRecordType = $model->recordType;
                     $module->linkRecordId = $model->recordId;

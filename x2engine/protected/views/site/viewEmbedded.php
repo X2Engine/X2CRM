@@ -35,52 +35,21 @@
  * "Powered by X2Engine".
  **********************************************************************************/
 
-Yii::app()->clientScript->registerScriptFile(
-    Yii::app()->controller->module->assetsUrl.'/js/RecordCreateController.js');
-
-$this->onPageLoad ("
-    x2.main.controllers['$this->pageId'] = new x2.RecordCreateController (
-        translations: ".CJSON::encode (array (
-            'Error' => Yii::t('app','Error'),
-            'Export Success' => Yii::t('app','Export Success'),
-            'Would you like to export this contact' => Yii::t('app','Would you like to export this contact'),
-        )).",
-    );
-", CClientScript::POS_END);
-
 ?>
-<div class='refresh-content' data-refresh-selector='.header-content-right'>
-    <?php
-    $importButtonClass = '';
-    if($model instanceof Contacts || $model instanceof Product) { 
-        if($model instanceof Contacts) {
-            $importButtonClass = 'contact-import-button';
-        } else if ($model instanceof Product) {
-            $importButtonClass = 'product-import-button';
-        }
-    ?>
-        <div class='header-content-right' style="margin-right: 80px;">
-            <div class='<?php echo $importButtonClass; ?>'>
-            <?php
-                echo CHtml::encode (Yii::t('mobile', 'Import'));
-            ?>
-            </div>
-        </div>
-    <?php
-    }
-    ?>
-    <div class='header-content-right'>
-        <div class='submit-button disabled'>
-        <?php
-        echo CHtml::encode (Yii::t('mobile', 'Create'));
-        ?>
-        </div>
-    </div>
-</div>
+
+<div class='page-title'>
+<h2><?php echo CHtml::encode($title); ?></h2>
+
 <?php
-
-$this->renderPartial ('application.modules.mobile.views.mobile._recordForm', array (
-    'model' => $model
-));
-
+    echo CHtml::link( 
+        X2Html::fa('fa-external-link fa-lg'),
+        $url,
+         array(
+            'class'=>'x2-button icon right',
+            'title'=> Yii::t('app', 'Open link in new tab'),
+            'target'=>'BLANK',
+        )
+    );
 ?>
+</div>
+<iframe src="<?php echo $url; ?>" width="100%" height="800px" /></iframe>

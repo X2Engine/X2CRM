@@ -116,9 +116,18 @@ $this->insertMenu($menuOptions, $model, $authParams);
 
     if($model->type === 'Email'){
         if($model->launchDate && $model->active && !$model->complete){
-            $this->widget('EmailProgressControl',array(
-                'campaign' => $model,
-            ));
+            if ($model->launchDate > time()) {
+                echo '<div class="campaign-schedule-notice"><p>';
+                echo Yii::t('marketing', 'Campaign is scheduled to launch at ').
+                    Formatter::formatDateTime($model->launchDate);
+                echo '</p>';
+                echo CHtml::ajaxButton(Yii::t('marketing', 'Validate'), 'validate', array('data' => array('id' => $model->id), 'complete' => 'function(data) { console.log(data); alert(data.responseJSON.message); }'), array('class' => 'x2-button', 'style' => 'display: inline-block'));
+                echo '</div>';
+            } else {
+                $this->widget('EmailProgressControl',array(
+                    'campaign' => $model,
+                ));
+            }
         }
     } 
 

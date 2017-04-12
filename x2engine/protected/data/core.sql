@@ -289,6 +289,7 @@ CREATE TABLE x2_modules (
     linkRecordId            INT,
     linkHref                VARCHAR(250),
     linkOpenInNewTab        TINYINT         DEFAULT 0,
+    linkOpenInFrame         TINYINT         DEFAULT 0,
     moduleType              ENUM('module', 'link', 'recordLink', 'pseudoModule') DEFAULT 'module'
 ) ENGINE InnoDB COLLATE = utf8_general_ci;
 /*&*/

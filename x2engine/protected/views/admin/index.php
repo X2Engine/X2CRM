@@ -637,6 +637,14 @@ $failedLoginsDataProvider = new CActiveDataProvider('FailedLogins',
                     echo Yii::t('admin',
                             'View a list of all duplicates in the system and resolve them in bulk');
                     ?></div>
+                <div class="cell span-6"><?php
+                    echo CHtml::link(
+                            Yii::t('admin', 'Locate Missing Records'),
+                            array('/admin/locateMissingRecords'));
+                    ?><br><?php
+                    echo Yii::t('admin',
+                            'View a list of all hidden records of a particular type in the system.');
+                    ?></div>
 
             </div>
             <div id="tabs-9">

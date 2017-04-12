@@ -104,7 +104,7 @@ abstract class x2base extends X2Controller {
             'X2PermissionsBehavior' => array(
                 'class' => 'application.components.permissions.'.Yii::app()->params->controllerPermissions),
             'UserMailerBehavior' => array(
-                'class' => 'UserMailerBehavior'),
+                'class' => 'application.components.behaviors.UserMailerBehavior'),
         );
     }
 
