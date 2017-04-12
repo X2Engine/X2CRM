@@ -141,15 +141,17 @@ class Locations extends CActiveRecord
     }
 
     public function getLocationLink($text = null, $nonX2googleMaps=false) {
+        if (!Yii::app()->settings->enableMaps) return;
         if ($nonX2googleMaps) {
             $provider = 'https://google.com/maps/?q='.$this->lat.','.$this->lon;
             return $provider;   
         }
+        $coords = '('.$this->lat.', '.$this->lon.')';
         if (is_null($text)) {
             if (!empty($this->comment))
                 $text = $this->comment;
             else
-                $text = '('.$this->lat.', '.$this->lon.')';
+                $text = $coords;
         }
         $modelParam = ($this->recordType === 'Contacts') ? 'contactId' : 'userId';
         return CHtml::link($text, array(
@@ -157,6 +159,8 @@ class Locations extends CActiveRecord
             $modelParam => $this->recordId,
             'noHeatMap' => 1,
             'locationType' => array($this->type),
+        ), array(
+            'title' => $coords
         ));
     }
     
