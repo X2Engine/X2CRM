@@ -1,6 +1,5 @@
 <?php
-
-/***********************************************************************************
+/*********************************************************************************
  * X2CRM is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2016 X2Engine Inc.
  * 
@@ -34,37 +33,39 @@
  * X2Engine" logo. If the display of the logo is not reasonably feasible for
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2Engine".
- **********************************************************************************/
+ ********************************************************************************/
 
-$this->actionMenu = array(
-    array('label' => Yii::t('profile', 'View Profile'), 'url' => array('view', 'id' => $profile->id)),
-    array('label' => Yii::t('profile', 'Edit Profile'), 'url' => array('update', 'id' => $profile->id)),
-    array('label' => Yii::t('profile', 'Change Settings'), 'url' => array('settings', 'id' => $profile->id), 'visible' => ($profile->id == Yii::app()->user->id)),
-    array('label' => Yii::t('profile', 'Change Password'), 'url' => array('changePassword', 'id' => $profile->id), 'visible' => ($profile->id == Yii::app()->user->id)),
-    array('label' => Yii::t('profile', 'Manage Apps'), 'url' => array('manageCredentials', 'id' => $profile->id)),
-    
-    array('label' => Yii::t('profile', 'Manage Email Reports'), 'url' => array('manageEmailReports')),
-    
-);
+echo Tours::tips (array(
+    array (
+        "content" => "<h3>".Yii::t('profile',"Welcome to the credentials configuration!")."</h3> ".Yii::t('profile',"This page allows you to add credentials for an email account to use within X2CRM. "),
+        'type' => 'flash',
+    ),
+    array (
+        'content' => Yii::t('profile','Here you can give a name to these credentials as you would like them to appear within the system.'),
+        'target' => '#Credentials_name',
+    ),
+    array (
+        'content' => Yii::t('profile','Your credentials can be owned either by your user or the system. You can also mark the credentials as private, or allow other users to use your credentials on your behalf.'),
+        'target' => '#Credentials_userId',
+    ),
+    array (
+        'content' => Yii::t('profile','The first half of this form is dedicated to the SMTP settings for your email account.'),
+        'target' => '#Credentials_auth_senderName',
+    ),
+    array (
+        'content' => Yii::t('profile','The second half of this form is dedicated to the IMAP settings for your email account.'),
+        'target' => '#Credentials_auth_imapPort',
+    ),
+    array (
+        'content' => Yii::t('profile','You can select this checkbox to prevent these credentials from being used in the Email Inbox module.'),
+        'target' => '#Credentials_auth_disableInbox',
+        'highlight' => true
+    ),
+    array (
+        'content' => Yii::t('profile','Before saving, you can verify your credentials by testing an SMTP connection.'),
+        'target' => '.credentials-verify',
+        'highlight' => true
+    ),
+));
+
 ?>
-
-<div class="page-title"><h2><?php echo $model->pageTitle; ?></h2></div>
-<?php
-X2Html::getFlashes ();
-if (is_a ($model->auth, 'EmailAccount'))
-    Tours::loadTips('profile.createUpdateCredentials');
-?>
-<div style="padding:10px; display:inline-block;">
-<?php
-$this->renderPartial(
-    '_credentialsForm', 
-    array(
-        'model' => $model,
-        'includeTitle' => false,
-        'disableMetaDataForm' => $disableMetaDataForm,
-        'user' => $profile->user
-    ));
-
-?>
-
-</div>

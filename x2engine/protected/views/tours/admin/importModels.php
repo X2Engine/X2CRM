@@ -1,6 +1,5 @@
 <?php
-
-/***********************************************************************************
+/*********************************************************************************
  * X2CRM is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2016 X2Engine Inc.
  * 
@@ -34,37 +33,25 @@
  * X2Engine" logo. If the display of the logo is not reasonably feasible for
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2Engine".
- **********************************************************************************/
+ ********************************************************************************/
 
-$this->actionMenu = array(
-    array('label' => Yii::t('profile', 'View Profile'), 'url' => array('view', 'id' => $profile->id)),
-    array('label' => Yii::t('profile', 'Edit Profile'), 'url' => array('update', 'id' => $profile->id)),
-    array('label' => Yii::t('profile', 'Change Settings'), 'url' => array('settings', 'id' => $profile->id), 'visible' => ($profile->id == Yii::app()->user->id)),
-    array('label' => Yii::t('profile', 'Change Password'), 'url' => array('changePassword', 'id' => $profile->id), 'visible' => ($profile->id == Yii::app()->user->id)),
-    array('label' => Yii::t('profile', 'Manage Apps'), 'url' => array('manageCredentials', 'id' => $profile->id)),
-    
-    array('label' => Yii::t('profile', 'Manage Email Reports'), 'url' => array('manageEmailReports')),
-    
-);
-?>
-
-<div class="page-title"><h2><?php echo $model->pageTitle; ?></h2></div>
-<?php
-X2Html::getFlashes ();
-if (is_a ($model->auth, 'EmailAccount'))
-    Tours::loadTips('profile.createUpdateCredentials');
-?>
-<div style="padding:10px; display:inline-block;">
-<?php
-$this->renderPartial(
-    '_credentialsForm', 
-    array(
-        'model' => $model,
-        'includeTitle' => false,
-        'disableMetaDataForm' => $disableMetaDataForm,
-        'user' => $profile->user
-    ));
+echo Tours::tips (array(
+    array (
+        "content" => "<h3>".Yii::t('admin',"Welcome to the Record Importer!")."</h3> ".Yii::t('admin',"This page allows you to upload a CSV file of records, such as from an Excel export, into your CRM."),
+        'type' => 'flash',
+    ),
+    array (
+        'content' => Yii::t('admin','You can select a CSV file to upload here.'),
+        'target' => '#data',
+    ),
+    array (
+        'content' => Yii::t('admin','If the source application uses a different delimeter or enclosure, you can customize the CSV format here.'),
+        'target' => '#importModels > h3:nth-child(8) > i:nth-child(1)',
+    ),
+    array (
+        'content' => Yii::t('admin','If you have an import mapping from a previous import, you can upload it here.'),
+        'target' => '#importModels h3:nth-child(10) > i:nth-child(1)',
+    ),
+));
 
 ?>
-
-</div>

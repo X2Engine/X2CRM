@@ -1,6 +1,5 @@
 <?php
-
-/***********************************************************************************
+/*********************************************************************************
  * X2CRM is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2016 X2Engine Inc.
  * 
@@ -34,37 +33,27 @@
  * X2Engine" logo. If the display of the logo is not reasonably feasible for
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2Engine".
- **********************************************************************************/
+ ********************************************************************************/
 
-$this->actionMenu = array(
-    array('label' => Yii::t('profile', 'View Profile'), 'url' => array('view', 'id' => $profile->id)),
-    array('label' => Yii::t('profile', 'Edit Profile'), 'url' => array('update', 'id' => $profile->id)),
-    array('label' => Yii::t('profile', 'Change Settings'), 'url' => array('settings', 'id' => $profile->id), 'visible' => ($profile->id == Yii::app()->user->id)),
-    array('label' => Yii::t('profile', 'Change Password'), 'url' => array('changePassword', 'id' => $profile->id), 'visible' => ($profile->id == Yii::app()->user->id)),
-    array('label' => Yii::t('profile', 'Manage Apps'), 'url' => array('manageCredentials', 'id' => $profile->id)),
-    
-    array('label' => Yii::t('profile', 'Manage Email Reports'), 'url' => array('manageEmailReports')),
-    
-);
-?>
-
-<div class="page-title"><h2><?php echo $model->pageTitle; ?></h2></div>
-<?php
-X2Html::getFlashes ();
-if (is_a ($model->auth, 'EmailAccount'))
-    Tours::loadTips('profile.createUpdateCredentials');
-?>
-<div style="padding:10px; display:inline-block;">
-<?php
-$this->renderPartial(
-    '_credentialsForm', 
-    array(
-        'model' => $model,
-        'includeTitle' => false,
-        'disableMetaDataForm' => $disableMetaDataForm,
-        'user' => $profile->user
-    ));
+echo Tours::tips (array(
+    array (
+        "content" => "<h3>".Yii::t('admin',"Welcome to X2Packager!")."</h3> ".Yii::t('admin',"The packager allows the administrator to quickly create and apply bundles of customizations to the CRM. This can include various studio components, such as themes, fields, form layouts, and modules."),
+        'type' => 'flash',
+    ),
+    array (
+        'content' => Yii::t('admin','Packages that have previously been applied to the system will be listed here, including details about that package. You will also be able to revert specific packages from this grid.'),
+        'target' => '#packages-grid .page-title h2',
+        'highlight' => true
+    ),
+    array (
+        'content' => Yii::t('admin','To apply an existing package, select and upload the zip archive here.'),
+        'target' => '#import-data',
+    ),
+    array (
+        'content' => Yii::t('admin','You can supply a name and description here when creating your own package. Then, select the components that you would like to include below, before exporting the package.'),
+        'target' => '#packageDescription',
+        'highlight' => true
+    ),
+));
 
 ?>
-
-</div>

@@ -1,6 +1,5 @@
 <?php
-
-/***********************************************************************************
+/*********************************************************************************
  * X2CRM is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2016 X2Engine Inc.
  * 
@@ -34,37 +33,26 @@
  * X2Engine" logo. If the display of the logo is not reasonably feasible for
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2Engine".
- **********************************************************************************/
+ ********************************************************************************/
 
-$this->actionMenu = array(
-    array('label' => Yii::t('profile', 'View Profile'), 'url' => array('view', 'id' => $profile->id)),
-    array('label' => Yii::t('profile', 'Edit Profile'), 'url' => array('update', 'id' => $profile->id)),
-    array('label' => Yii::t('profile', 'Change Settings'), 'url' => array('settings', 'id' => $profile->id), 'visible' => ($profile->id == Yii::app()->user->id)),
-    array('label' => Yii::t('profile', 'Change Password'), 'url' => array('changePassword', 'id' => $profile->id), 'visible' => ($profile->id == Yii::app()->user->id)),
-    array('label' => Yii::t('profile', 'Manage Apps'), 'url' => array('manageCredentials', 'id' => $profile->id)),
-    
-    array('label' => Yii::t('profile', 'Manage Email Reports'), 'url' => array('manageEmailReports')),
-    
-);
-?>
-
-<div class="page-title"><h2><?php echo $model->pageTitle; ?></h2></div>
-<?php
-X2Html::getFlashes ();
-if (is_a ($model->auth, 'EmailAccount'))
-    Tours::loadTips('profile.createUpdateCredentials');
-?>
-<div style="padding:10px; display:inline-block;">
-<?php
-$this->renderPartial(
-    '_credentialsForm', 
-    array(
-        'model' => $model,
-        'includeTitle' => false,
-        'disableMetaDataForm' => $disableMetaDataForm,
-        'user' => $profile->user
-    ));
+echo Tours::tips (array(
+    array (
+        "content" => "<h3>".Yii::t('studio',"Welcome to the X2Workflow designer!")."</h3> ".Yii::t('studio',"This visual workflow designer allows you to build automation rules to take action when various events occur, such as web activity on your site or a campaign email click."),
+        'type' => 'flash',
+    ),
+    array (
+        'content' => Yii::t('studio','First you will want to select your trigger, the event which will initiate your automation rules.'),
+        'target' => '#trigger-selector',
+    ),
+    array (
+        'content' => Yii::t('studio','There various actions available to automate tasks, including emailing contacts and updating record details. There are also flow control actions, like conditions and split paths, to allow more flexible workflows.'),
+        'target' => '#flow-actions .portlet-title',
+    ),
+    array (
+        'content' => Yii::t('studio','This is the visual workflow designer area, which allows you to drag and drop actions from the left hand menu to organize your workflow logic.'),
+        'target' => '#trigger',
+        'highlight' => true
+    ),
+));
 
 ?>
-
-</div>
