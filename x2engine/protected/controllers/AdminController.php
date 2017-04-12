@@ -2617,11 +2617,6 @@ class AdminController extends X2Controller {
 
             $oldFormat = $admin->contactNameFormat;
             $admin->attributes = $_POST['Admin'];
-            foreach ($_POST['Admin'] as $attribute => $value) {
-                if ($admin->hasAttribute($attribute)) {
-                    $admin->$attribute = $value;
-                }
-            }
             $admin->timeout *= 60; //convert from minutes to seconds
 
 
@@ -2644,18 +2639,12 @@ class AdminController extends X2Controller {
      * keep the database cleaner.
      */    
     public function actionManageUserCount() {
-
+        
         $admin = &Yii::app()->settings;
         if (isset($_POST['Admin'])) {
 
             $oldFormat = $admin->contactNameFormat;
             $admin->attributes = $_POST['Admin'];
-            foreach ($_POST['Admin'] as $attribute => $value) {
-                if ($admin->hasAttribute($attribute)) {
-                    $admin->$attribute = $value;
-                }
-            }
-
 
             if ($admin->save()) {
                 $this->redirect('manageUserCount');
@@ -2683,11 +2672,6 @@ class AdminController extends X2Controller {
             // $admin->ignoreUpdates = 1;
             $oldFormat = $admin->contactNameFormat;
             $admin->attributes = $_POST['Admin'];
-            foreach ($_POST['Admin'] as $attribute => $value) {
-                if ($admin->hasAttribute($attribute)) {
-                    $admin->$attribute = $value;
-                }
-            }
             if (isset($_POST['currency'])) {
                 if ($_POST['currency'] == 'other') {
                     $admin->currency = $_POST['currency2'];
