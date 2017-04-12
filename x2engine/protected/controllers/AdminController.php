@@ -2968,6 +2968,9 @@ class AdminController extends X2Controller {
         if (isset($_POST['field']) && $_POST['field'] != "") {
             $id = $_POST['field'];
             $field = Fields::model()->findByPk($id);
+            $listsUsingField = false;
+            if ($field->modelName === 'Contacts')
+                $listsUsingField = $field->checkListCriteria();
             if ($getCount) {
                 $nonNull = $field->countNonNull();
                 if ($nonNull) {
@@ -2978,7 +2981,24 @@ class AdminController extends X2Controller {
                 } else {
                     echo Yii::t('admin', 'The field appears to be empty. Deleting it will not result in any data loss.');
                 }
+                if ($listsUsingField) {
+                    echo '<br /><br />';
+                    echo Yii::t('admin', 'This field is used as criteria for the following '.
+                        'lists. You can remove them manually, or proceed to remove these '.
+                        'criteria automatically. Note: This may change the contents of your list.');
+                    echo '<ul>';
+                    foreach ($listsUsingField as $list) {
+                        echo '<li>'.$list.'</li>';
+                    }
+                    echo '</ul>';
+                }
                 Yii::app()->end();
+            }
+            if ($listsUsingField) {
+                foreach ($listsUsingField as $id => $link) {
+                    Yii::app()->db->createCommand()
+                        ->delete('x2_list_criteria', 'id = :id', array(':id' => $id));
+                }
             }
             $field->delete();
         }
