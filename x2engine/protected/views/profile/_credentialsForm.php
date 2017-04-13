@@ -61,7 +61,8 @@ if($model->isNewRecord)
 else
 	$action = array('/profile/createUpdateCredentials','id'=>$model->id);
 
-echo CHtml::beginForm($action);
+echo CHtml::beginForm($action, 'post', array('enctype' => 'multipart/form-data'));
+
 ?>
 
 <!-- Credentials metadata -->

@@ -34,7 +34,6 @@
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2Engine".
  **********************************************************************************/
-
 class MobileActionHistoryAttachmentsPublishAction extends MobileAction {
 
     /**
@@ -72,15 +71,15 @@ class MobileActionHistoryAttachmentsPublishAction extends MobileAction {
         $geoLocationCoords = isset ($_POST['geoLocationCoords']) ? $_POST['geoLocationCoords'] : "";
         $attachmentType = '';
         if ($geoLocationCoords == 'set' && isset ($_POST['geoCoords'])) {
-            if($creds && $creds->auth && $creds->auth->apiKey){
+            if ($creds && $creds->auth && !empty($creds->auth->apiKey)) {
                 $key = $creds->auth->apiKey;
             } else {
-               throw new CHttpException (403, Yii::t('app', 'Google API key missing'));
+                throw new CHttpException (403, Yii::t('app', 'Google API key missing'));
             }
             $decodedResponse = json_decode(filter_input(INPUT_POST, 'geoCoords', FILTER_DEFAULT),true);
             $location = Yii::app()->params->profile->user->logLocation('mobileActionPost', 'POST');
             $action->location = $location;
-            if(!empty($decodedResponse)){
+            if(!empty($decodedResponse)) {
                 /* 
                  * get static map here
                  */
@@ -136,52 +135,105 @@ class MobileActionHistoryAttachmentsPublishAction extends MobileAction {
             }
         } else if (!strcmp($attachmentType,'file')){
             if ($valid && $action->save ()) {
-                //https://mikepultz.com/2013/07/google-speech-api-full-duplex-php-version/
+
                 $media = $action->media;
-                $key = '';
-                // make google speech api in php
-                /*if (strpos($media->resolveType(), 'audio') !== false){
-                    $media = $action->media;
-                    $rawAudioWavData = file_get_contents($media->getPath());
-                    $rawBase64data = base64_encode($rawAudioWavData);   
+                if ($media) $media = array_pop ($media);
+                $key = Yii::app()->settings->getGoogleApiKey('speech');
 
-                    if($creds->auth->apiKey){
-                        $key = $creds->auth->apiKey;
-                    } else {
-                       throw new CHttpException (403, Yii::t('app', 'Google API key missing'));
-                    }
-                    // pass $rawBase64data to  google speech api and return to $text
-                    $text = '';
+                // Check if the attachment is an audio file and if avconv is installed
+                if ($media->isAudio() && AuxLib::command_exist("avconv")) {
+                    //check if google service account key file is present
+                    if(isset($key) 
+                        && !empty($key)) {
+
+                        $tempFilename = hash('sha256', uniqid(rand(), true));
+                        $userFolderPath = implode(DIRECTORY_SEPARATOR, array(
+                            Yii::app()->basePath,
+                            '..',
+                            'uploads',
+                            'protected',
+                            'media',
+                            Yii::app()->params->profile->username
+                        ));
+                        //get audio file and convert it to flac if avconv is present
+                        $pathToAudioFile = $media->getPath();
+                        $pathToTempFlac = $userFolderPath.DIRECTORY_SEPARATOR.$tempFilename.'.flac';
                     
-                    $action = new Actions;
-                    $action->setAttributes (array (
-                        'associationType' => X2Model::getAssociationType (get_class ($model)), 
-                        'associationId' => $model->id,
-                        'associationName' => $model->name,
-                        'dueDate' => time (),
-                        'completeDate' => time (),
-                        'complete' => 'Yes',
-                        'completedBy' => Yii::app()->user->getName (),
-                        'private' => 0,
-                    ), false);
-                    $action->actionDescription = $text;
-                    $action->type = 'note';
+                        //execute command to convert audio file to flac                       
+                        $returnVal = shell_exec(sprintf("avconv -i %s -ar 16000 -c:a flac %s",escapeshellarg($pathToAudioFile),escapeshellarg($pathToTempFlac)));
 
-                    if(!$action->save ()) {
-                        throw new CHttpException (500, Yii::t('app', 'Publish failed'));
-                    }
-                    $action->setActionDescription($text);
-                    //$action->includeTextToAction($text);
+                        //incremental sleep to wait for the creation of the flac file 
+                        for ($i=0; $i <= 10; $i++) {
+                            if(file_exists($pathToTempFlac)) {
+                                break;
+                            }
+                            sleep(3); // this should halt for 3 seconds for every loop
+                        }
+                        $rawBase64data = file_get_contents($pathToTempFlac);
+
+                        $googlespeechURL = "https://speech.googleapis.com/v1beta1/speech:syncrecognize?key=". $key;
+
+                        $data = array(
+                            "config" => array(
+                                'encoding' => 'FLAC',
+                                'sampleRate' => 16000,
+                                'languageCode' => 'en-US'                                
+                            ),
+                           "audio" => array(
+                                "content" => base64_encode($rawBase64data)
+                            )
+                        );
+
+                        $data_string = json_encode($data);                                                              
+
+                        $ch = curl_init($googlespeechURL);                                                                      
+                        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");                                                                     
+                        curl_setopt($ch, CURLOPT_POSTFIELDS, $data_string);                                                                  
+                        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);                                                                      
+                        curl_setopt($ch, CURLOPT_HTTPHEADER, array(                                                                          
+                           'Content-Type: application/json',                                                                                
+                           'Content-Length: ' . strlen($data_string))                                                                       
+                        );                                                                                                                   
+
+                        $result = curl_exec($ch);
+                        $result_array = json_decode($result, true);
                         
-                }*/
-                
-                $this->controller->renderPartial (
-                    'application.modules.mobile.views.mobile._actionHistoryAttachments', array (
-                    'model' => $model,
-                    'refresh' => true,
-                    'type'=>$type,
-                ), false, true);
+                        //parse result_array to get text
+                        $audioText = $result_array['results'][0]['alternatives'][0]['transcript'];
+                        unlink($pathToTempFlac); //delete created flac file (was only used for audio to text translation anyway) 
+                        $action->delete(); //delete audio file attachment action because the text is aquired by this point
+                        $action = new Actions;
+                        $action->setAttributes (array (
+                            'associationType' => X2Model::getAssociationType (get_class ($model)), 
+                            'associationId' => $model->id,
+                            'associationName' => $model->name,
+                            'dueDate' => time (),
+                            'completeDate' => time (),
+                            'complete' => 'Yes',
+                            'completedBy' => Yii::app()->user->getName (),
+                            'private' => 0,
+                        ), false);
+                        $action->actionDescription = $audioText;
+                        $action->type = 'note';
 
+                        if(!$action->save ()) {
+                            throw new CHttpException (500, Yii::t('app', 'Publish failed'));
+                        }
+                        $action->setActionDescription($audioText);
+                        //$action->includeTextToAction($audioText);
+
+                    } else {
+                       throw new CHttpException (403, Yii::t('app', 'Google key file missing'));
+                    }
+                } 
+                
+                    $this->controller->renderPartial (
+                        'application.modules.mobile.views.mobile._actionHistoryAttachments', array (
+                        'model' => $model,
+                        'refresh' => true,
+                        'type' => $type,
+                    ), false, true);
+                
                 Yii::app()->end ();
             } else {
                 throw new CHttpException (500, Yii::t('app', 'Publish failed'));
