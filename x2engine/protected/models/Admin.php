@@ -251,7 +251,10 @@ class Admin extends X2ActiveRecord {
             array('externalBaseUrl','url','allowEmpty'=>true),
             array('assetBaseUrls','validateUrlArray','allowEmpty'=>false),
             array('externalBaseUrl','match','pattern'=>':/$:','not'=>true,'allowEmpty'=>true,'message'=>Yii::t('admin','Value must not include a trailing slash.')),
-            array('enableWebTracker, disableAnonContactNotifs, locationTrackingSwitch, quoteStrictLock, workflowBackdateReassignment,disableAutomaticRecordTagging,enableAssetDomains, enableUnsubscribeHeader, checkinByDefault', 'boolean'),
+            array('enableWebTracker, disableAnonContactNotifs, locationTrackingSwitch, quoteStrictLock, workflowBackdateReassignment,disableAutomaticRecordTagging,enableAssetDomains, enableUnsubscribeHeader, checkinByDefault, sessionLog, userActionBackdating, properCaseNames', 'boolean'),
+            array('historyPrivacy', 'in', 'range' => array('default', 'user', 'group')),
+            array('contactNameFormat', 'in', 'range' => array('firstName lastName', 'lastName, firstName')),
+            array('corporateAddress', 'length', 'max' => 4096),
             array('gaTracking_internal,gaTracking_public', 'match', 'pattern' => "/'/", 'not' => true, 'message' => Yii::t('admin', 'Invalid property ID')),
             array ('appDescription', 'length', 'max' => 255),
             array (

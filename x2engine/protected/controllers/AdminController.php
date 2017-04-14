@@ -2639,11 +2639,8 @@ class AdminController extends X2Controller {
      * keep the database cleaner.
      */    
     public function actionManageUserCount() {
-        
         $admin = &Yii::app()->settings;
         if (isset($_POST['Admin'])) {
-
-            $oldFormat = $admin->contactNameFormat;
             $admin->attributes = $_POST['Admin'];
 
             if ($admin->save()) {
