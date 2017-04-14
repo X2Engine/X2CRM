@@ -1538,7 +1538,7 @@ class SiteController extends x2base {
         $model = Profile::model()->findByAttributes(array(
             'username' => $username,
         ));
-        if ($model->enableTwoFactor) {
+        if ($model && $model->enableTwoFactor) {
             if (!$model->requestTwoFA(true))
                 throw new CHttpException(500, Yii::t('profile', 'Failed to request two factor authentication code!'));
             else echo 'yes';
