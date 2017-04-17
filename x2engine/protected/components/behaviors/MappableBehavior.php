@@ -102,7 +102,7 @@ class MappableBehavior extends CActiveRecordBehavior {
             }
             $location->save();
             X2Flow::trigger('LocationTrigger', array(
-                //'model' => $location,
+                'model' => $location,
             ));
         } else if ($location->lat != $lat || $location->lon != $lon) {
             $location->lat = $lat;
