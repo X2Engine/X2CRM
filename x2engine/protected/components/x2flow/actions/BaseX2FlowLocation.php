@@ -137,9 +137,6 @@ abstract class BaseX2FlowLocation extends X2FlowAction {
     }
 
     protected function createMessage(&$params, $record, $isLink) {
-        $url = 'http://x2developer.com/~isaiah/x2engine/index.php/profile/';
-        $recordUser = $this->getUserFromRecord($record);
-        $recordId = $recordUser->id;
         $recent = $this->getRecentLoginRecord();
         $distance = $this->getRecordDistance($record, $params);
         $distanceUnits = $this->parseOption('distance_units', $params);
@@ -154,11 +151,9 @@ abstract class BaseX2FlowLocation extends X2FlowAction {
             }
         }
 
+        $message = sprintf('%s has %s %d %s away on %s at %s. ', $this->getRecordFullName($record), $typeText, $distance, $distanceUnits, $date, $time);
         if ($isLink) {
-            $message = sprintf('<a href="%s">%s</a> has %s %d %s away on %s at %s. ', $url . $recordId, $this->getRecordFullName($record), $typeText, $distance, $distanceUnits, $date, $time);
             $message .= sprintf('<a href="https://google.com/maps/dir/%f,%f/%f,%f/">Get directions</a>', $recent->lat, $recent->lon, $record->lat, $record->lon);
-        } else {
-            $message = sprintf('%s has %s %d %s away on %s at %s. ', $this->getRecordFullName($record), $typeText, $distance, $distanceUnits, $date, $time);
         }
 
         return $message;
@@ -197,9 +192,7 @@ abstract class BaseX2FlowLocation extends X2FlowAction {
                     break;
                 }
             }
-            if ($location->recordId == Yii::app()->params->profile->id) {
-                continue;
-            } else if (!$found && $miles <= $distance && $days <= $time) {
+            if (!$found && $miles <= $distance && $days <= $time) {
                 $result[$location->recordId] = $location;
             }
         }
@@ -216,28 +209,8 @@ abstract class BaseX2FlowLocation extends X2FlowAction {
     }
 
     protected function getRecordFullName($record) {
-        $current = $this->getUserFromRecord($record);
+        $current = User::model()->findByPk($record->recordId);
         return $current->firstName . ' ' . $current->lastName;
-    }
-
-    protected function getContactFromRecord($record) {
-        $contacts = Contacts::model()->findAll();
-        foreach ($contacts as $current) {
-            if ($record->id === $current->id) {
-                return $current;
-            }
-        }
-        printR('User not found', true);
-    }
-
-    protected function getUserFromRecord($record) {
-        $users = User::model()->findAll();
-        foreach ($users as $current) {
-            if ($record->recordId === $current->id) {
-                return $current;
-            }
-        }
-        printR('User not found', true);
     }
 
     protected function getRecordDistance($record1, &$params) {
