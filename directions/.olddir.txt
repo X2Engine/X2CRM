@@ -1,0 +1,29 @@
+REINSTALL
+
+1. Clear remote instance's public html
+	- sudo chmod -R 775 public_html/
+	- cd public_html/
+	- rm -rf *
+	- mysql -u <username> -p
+		> (enter password)
+		> drop database <database>
+		> create database <database>
+2. Rsync from local directory (Where x2engine/ is viewable)
+	- rsync -avz ./x2engine/ isaiah@x2developer.com:public_html
+3. Set permissions in remote instance
+	- sudo chmod -R 775 ./public_html
+	- sudo chown -R www-data:isaiah ./public_html
+4. Install X2Engine
+	- x2util reinstall
+5. Move files into x2engine/ directory
+	- cd public_html/
+	- mkdir x2engine
+	- mv * x2engine/
+
+
+PUSH TO GITHUB
+
+1. Set git url
+	- git remote set-url origin https://<user>@github.com/X2Engine/X2CRM.git
+2. Push branch to Github
+	- git push --set-upstream origin <branch>
