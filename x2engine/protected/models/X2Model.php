@@ -1296,7 +1296,23 @@ abstract class X2Model extends X2ActiveRecord {
     }
 
     /**
-     * Like getModelTypes () except that only types of models whic support relationships are 
+     * Returns all possible models that support location, either as a regular array or associative
+     * (key and value are the same)
+     * @return array
+     */
+    public static function getModelTypesWhichSupportLocation() {
+        $modelTypes = self::getModelTypes();
+        $filteredTypes = array();
+        foreach ($modelTypes as $type => $title) {
+            if (X2Model::Model ($type)->asa('users') || X2Model::Model ($type)->asa('contacts')) {
+                $filteredTypes[] = $type;
+            }
+        }
+        return $filteredTypes;
+    }
+
+    /**
+     * Like getModelTypes () except that only types of models which support relationships are 
      * returned. 
      * 
      * if $assoc is true, the return array will appear as so:
@@ -2639,16 +2655,18 @@ abstract class X2Model extends X2ActiveRecord {
         $anyone = true, $showGroups = true, $showSeparator = true) {
 
         $users = User::getNames();
-        if ($anyone !== true)
+        if ($anyone !== true) {
             unset($users['Anyone']);
+        }
 
         if ($showGroups === true) {
             $groups = Groups::getNames();
             if (count($groups) > 0) {
-                if ($showSeparator)
+                if ($showSeparator) {
                     $users = $users + array('' => '--------------------') + $groups;
-                else
+                } else {
                     $users = $users + $groups;
+                }
             }
         }
         return $users;

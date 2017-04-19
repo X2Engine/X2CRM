@@ -37,50 +37,62 @@
  * ******************************************************************************** */
 
 /**
- * X2FlowTrigger
- *
+ * X2FlowAction that deletes a model
+ * 
  * @package application.components.x2flow.actions
  */
-abstract class BaseUserTrigger extends X2FlowTrigger {
+class X2FlowRecordLocation extends BaseX2FlowLocation {
+
+    public $title = 'Create Notification from Record';
+    public $info = 'Create notification based on location of X2 user.';
 
     public function paramRules() {
-        return array(
-            'title' => Yii::t('studio', $this->title),
-            'info' => Yii::t('studio', $this->info),
-            'options' => array(
-                array(
-                    'name' => 'user',
-                    'label' => Yii::t('studio', 'User'),
-                    'type' => 'dropdown',
-                    'options' => array('Anyone' => Yii::t('admin', 'Anyone')) +
-                    X2Model::getAssignmentOptions(false, false),
-                    'operators' => array(
-                        '=',
-                        '<>',
-                        'list',
-                        'notList'
-                    ),
-                    'optional' => true,
-                ),
-            )
+        $parentRules = parent::paramRules();
+        $parentRules['options'] = array_merge(
+                array(), $parentRules['options']
         );
+        return $parentRules;
     }
 
-    public static function evalComparison($subject, $operator, $value = null, Fields $field = null) {
-        $value = self::parseArray($operator, $value);
-        if (is_array($value) && in_array('Anyone', $value)) {
-            if ($operator === 'list') {
-                return true;
-            } elseif ($operator === 'notList') {
-                return false;
-            }
-        } elseif ($value === 'Anyone' && $operator === '=') {
-            return true;
-        } elseif ($value === 'Anyone' && $operator === '<>') {
-            return false;
-        }
+    public function execute(&$params) {
+        /*
+        $model = $params['model'];
+        //printR($model->name);
+        $isContact = is_a($model, 'Contacts');
+        $isUser = is_a($model, 'User');
 
-        return parent::evalComparison($subject, $operator, $value);
+        if ($isContact) {
+            $record = $this->getContactFromRecord($model);
+            printR($record, true);
+            return $this->createNotification($params, $record->id);
+        }
+         *
+         */
+
+        /*
+          if ($params['model']->delete()) {
+          return array(true, "");
+          } else {
+          return array(false, "");
+          }
+         *
+         */
+    }
+
+    private function createNotification(&$params, $text) {
+        $notif = new Notification;
+        $notif->user = $this->parseOption('to', $params);
+        $notif->createdBy = 'API';
+        $notif->createDate = time();
+        $notif->type = 'custom';
+        $notif->text = $text;
+
+        if ($notif->save()) {
+            return array(true, "");
+        } else {
+            $errors = $notif->getErrors();
+            return array(false, array_shift($errors));
+        }
     }
 
 }
