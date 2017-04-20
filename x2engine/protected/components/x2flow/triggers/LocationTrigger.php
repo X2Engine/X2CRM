@@ -37,50 +37,27 @@
  * ******************************************************************************** */
 
 /**
- * X2FlowTrigger
- *
+ * X2FlowTrigger 
+ * 
  * @package application.components.x2flow.actions
  */
-abstract class BaseUserTrigger extends X2FlowTrigger {
+class LocationTrigger extends X2FlowTrigger {
+
+    public $title = 'Location';
+    public $info = 'Triggers when a new location is added to the database.';
 
     public function paramRules() {
         return array(
             'title' => Yii::t('studio', $this->title),
             'info' => Yii::t('studio', $this->info),
+            'modelClass' => 'modelClass',
             'options' => array(
                 array(
-                    'name' => 'user',
-                    'label' => Yii::t('studio', 'User'),
-                    'type' => 'dropdown',
-                    'options' => array('Anyone' => Yii::t('admin', 'Anyone')) +
-                    X2Model::getAssignmentOptions(false, false),
-                    'operators' => array(
-                        '=',
-                        '<>',
-                        'list',
-                        'notList'
-                    ),
-                    'optional' => true,
-                ),
-            )
+                    'name' => 'modelClass',
+                    'label' => Yii::t('studio', 'Record Type'),
+                    'type' => 'dropdown', 'options' => X2Flow::getModelTypes()
+                    ))
         );
-    }
-
-    public static function evalComparison($subject, $operator, $value = null, Fields $field = null) {
-        $value = self::parseArray($operator, $value);
-        if (is_array($value) && in_array('Anyone', $value)) {
-            if ($operator === 'list') {
-                return true;
-            } elseif ($operator === 'notList') {
-                return false;
-            }
-        } elseif ($value === 'Anyone' && $operator === '=') {
-            return true;
-        } elseif ($value === 'Anyone' && $operator === '<>') {
-            return false;
-        }
-
-        return parent::evalComparison($subject, $operator, $value);
     }
 
 }
