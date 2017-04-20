@@ -246,13 +246,14 @@ class X2Flow extends X2ActiveRecord {
      * @return mixed Null or return value of extractRetValFromTrace
      */
     public static function trigger($triggerName, $params = array()){
-        if(self::$_triggerDepth > self::MAX_TRIGGER_DEPTH) // ...have we delved too deep?
+        if(self::$_triggerDepth > self::MAX_TRIGGER_DEPTH) { // ...have we delved too deep?
             return;
+        }
 
         $triggeredAt = time ();
-
+        
         if(isset($params['model']) &&
-           (!is_object($params['model']) || !($params['model'] instanceof X2Model))) {
+           (!is_object($params['model']) || (!($params['model'] instanceof X2Model)))) {
             // Invalid model provided
             return false;
         }
@@ -279,7 +280,7 @@ class X2Flow extends X2ActiveRecord {
         $triggerInfo = array (
             'triggerName' => Yii::t('studio', X2FlowItem::getTitle ($triggerName))
         );
-        if (isset ($params['model']) && is_subclass_of($params['model'],'X2Model') &&
+        if (isset ($params['model']) && (is_subclass_of($params['model'],'X2Model')) &&
             $params['model']->asa ('LinkableBehavior')) {
             $triggerInfo['modelLink'] =
                 Yii::t('studio', 'View record: ').$params['model']->getLink ();

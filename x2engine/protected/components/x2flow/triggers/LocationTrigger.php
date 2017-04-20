@@ -43,7 +43,7 @@
  */
 class LocationTrigger extends X2FlowTrigger {
 
-    public $title = 'Location';
+    public $title = 'User Location Trigger';
     public $info = 'Triggers when a new location is added to the database.';
 
     public function paramRules() {
@@ -55,8 +55,9 @@ class LocationTrigger extends X2FlowTrigger {
                 array(
                     'name' => 'modelClass',
                     'label' => Yii::t('studio', 'Record Type'),
-                    'type' => 'dropdown', 'options' => X2Flow::getModelTypes()
-                    ))
+                    'type' => 'dropdown',
+                    'options' => array("User", "Contact")),
+            )
         );
     }
 
