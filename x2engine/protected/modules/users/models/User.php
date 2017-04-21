@@ -36,7 +36,7 @@
  * "Powered by X2Engine".
  * ******************************************************************************** */
 
-// Yii::import('application.models.X2Model');
+Yii::import('application.models.X2Model');
 
 /**
  * This is the model class for table "x2_users".
@@ -49,7 +49,7 @@
  *  in the general application settings.
  * @package application.modules.users.models
  */
-class User extends CActiveRecord {
+class User extends X2ActiveRecord {
 
     const STATUS_ACTIVE = 1;
     const STATUS_INACTIVE = 0;
@@ -766,6 +766,16 @@ class User extends CActiveRecord {
      */
     public function getAlias() {
         return (empty($this->userAlias)) ? $this->username : $this->userAlias;
+    }
+    
+    /**
+     * Returns the full name of the user.
+     */
+    public function getFullName(){
+        if(!isset($this->_fullName)){
+            $this->_fullName = Formatter::fullName($this->firstName, $this->lastName);
+        }
+        return $this->_fullName;
     }
 
     /**

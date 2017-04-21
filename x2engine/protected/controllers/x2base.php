@@ -255,7 +255,7 @@ abstract class x2base extends X2Controller {
             $log->recordId=$model->id;
             $log->timestamp=time();
             $log->save();
-            printR($model, true);
+            //printR($model, true);
             X2Flow::trigger('RecordViewTrigger',array('model'=>$model));
         }
 

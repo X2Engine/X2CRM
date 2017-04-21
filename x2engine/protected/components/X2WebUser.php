@@ -58,10 +58,10 @@ class X2WebUser extends CWebUser {
             X2Flow::trigger('UserLoginTrigger', array(
                 'user' => $this->getName()
             ));
-            $model = Contacts::model()->
+            //$model = Contacts::model()->
             //$model = User::model()->findByAlias($this->getName());
             //printR($model, true);
-            X2Flow::trigger('LocationTrigger', array('model' => $model));
+            //X2Flow::trigger('LocationTrigger', array('model' => $model));
         }
     }
 
