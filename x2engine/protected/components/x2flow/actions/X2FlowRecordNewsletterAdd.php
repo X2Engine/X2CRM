@@ -36,35 +36,35 @@
  **********************************************************************************/
 
 /**
- * X2FlowAction that adds a comment to a record
+ * X2FlowAction that adds a contact to a newsletter contact list
  *
  * @package application.components.x2flow.actions
  */
 class X2FlowRecordNewsletterAdd extends X2FlowAction {
-	public $title = 'Add to Newsletter';
-	public $info = 'Add this record to a newsletter list.';
+    public $title = 'Add to Newsletter';
+    public $info = 'Add this record to a newsletter list.';
 
-	public function paramRules() {
-		return array_merge (parent::paramRules (), array (
-			'title' => Yii::t('studio',$this->title),
-			'info' => Yii::t('studio',$this->info),
-			'modelRequired' => 'Contacts',
-			'options' => array(
-				array(
+    public function paramRules() {
+        return array_merge (parent::paramRules (), array (
+            'title' => Yii::t('studio',$this->title),
+            'info' => Yii::t('studio',$this->info),
+            'modelRequired' => 'Contacts',
+            'options' => array(
+                array(
                     'name'=>'listId',
                     'label'=>Yii::t('studio', 'List'),
                     'type'=>'link',
                     'linkType'=>'X2List',
                     'linkSource'=>Yii::app()->controller->createUrl(
-					    CActiveRecord::model('X2List')->autoCompleteSource, array (
+                        CActiveRecord::model('X2List')->autoCompleteSource, array (
                             'weblist' => 1
                         )
                     )
-				)
+                )
             )));
-	}
+    }
 
-	public function execute(&$params) {
+    public function execute(&$params) {
         $listIdentifier=$this->parseOption('listId',$params);
         if(is_numeric($listIdentifier)){
             $list = CActiveRecord::model('X2List')->findByPk($listIdentifier);
@@ -73,11 +73,11 @@ class X2FlowRecordNewsletterAdd extends X2FlowAction {
                 array('name'=>$listIdentifier));
         }
 
-		if($list !== null && $list->modelName === get_class($params['model'])) {
-			if ($list->addIds($params['model']->id, true)) {
+        if($list !== null && $list->modelName === get_class($params['model'])) {
+            if ($list->addIds($params['model']->id, true)) {
                 return array (true, "");
-            } else AuxLib::debugLog('failed');
-		} 
+            }
+        }
         return array (false, "");
-	}
+    }
 }
