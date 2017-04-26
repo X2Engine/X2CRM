@@ -122,7 +122,24 @@ class X2ListTest extends X2DbTestCase {
                 , array_map($emailsInList, $staticClone->listItems));
     }
     
+    public function testAddIds() {
+        $contact = $this->contacts('listTest3');
+        $staticList = $this->lists('testUser');
+        $newsletter = $this->lists('testNewsletter');
+        $prevStaticCount = $staticList->count;
+        $prevNewsletterCount = $newsletter->count;
 
+        $this->assertTrue($staticList->addIds($contact->id));
+        $this->assertEquals($staticList->count, $prevStaticCount + 1);
+
+        // Should fail to add a contact to a newsletter without the $allowNewsletter param
+        $this->assertFalse($newsletter->addIds($contact->id));
+        $this->assertEquals($newsletter->count, $prevNewsletterCount);
+
+        // Should now succeed when adding the contact
+        $this->assertTrue($newsletter->addIds($contact->id, true));
+        $this->assertEquals($newsletter->count, $prevNewsletterCount + 1);
+    }
 }
 
 ?>
