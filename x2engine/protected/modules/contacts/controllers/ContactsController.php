@@ -1595,6 +1595,7 @@ class ContactsController extends x2base {
             array(
                 'name' => 'quotes',
                 'label' => Yii::t('quotes', 'Quotes/Invoices'), 'url' => 'javascript:void(0)',
+                'visible' => (bool) Yii::app()->user->checkAccess('QuotesBasicAccess'),
                 'linkOptions' => array('onclick' => 'x2.inlineQuotes.toggle(); return false;')),
             array(
                 'name' => 'subscribe',
