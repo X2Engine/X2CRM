@@ -96,8 +96,8 @@ if ($isMyProfile) {
         if ($isMyProfile) $dashboard->renderContainer(2); 
         ?>
 
-        <div id='activity-feed-container-outer' style="width: <?php echo $width ?>">
-            <?php $this->renderPartial('_activityFeed', $activityFeedParams); ?>
-        </div>  
+        <!--<div id='activity-feed-container-outer' style="width: <?php //echo $width ?>">
+            <?php //$this->renderPartial('_activityFeed', $activityFeedParams); ?>
+        </div> -->
 
 </div>
