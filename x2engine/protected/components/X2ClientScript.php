@@ -952,6 +952,11 @@ class X2ClientScript extends NLSClientScript {
         $enableGeolocation = Yii::app()->settings->enableGeolocation;
         $noDNT = (!isset ($_SERVER['HTTP_DNT']) || $_SERVER['HTTP_DNT'] != 1);
         if ($onLocationButton) {
+            $key = Yii::app()->settings->getGoogleApiKey('geocoding');
+            $assetUrl = 'https://maps.googleapis.com/maps/api/js';
+            if (!empty($key))
+                $assetUrl .= '?key='.$key;
+            Yii::app()->clientScript->registerScriptFile($assetUrl, CClientScript::POS_END);
             Yii::app()->clientScript->registerScript('geolocationJs', '
                 $("#toggle-location-button").click(function (evt) {
                     evt.preventDefault();
@@ -977,8 +982,22 @@ class X2ClientScript extends NLSClientScript {
                               lon: position.coords.longitude,
                               locationEnabled: true
                             };
-
                             $("'.$selector.'").val(JSON.stringify (pos));
+
+                            if (typeof google !== "undefined") {
+                                var latLng = {
+                                    lat: position.coords.latitude,
+                                    lng: position.coords.longitude
+                                }
+                                var geocoder = new google.maps.Geocoder();
+                                geocoder.geocode( {"location": latLng}, function(results, status) {
+                                    if (status == google.maps.GeocoderStatus.OK) {
+                                        var pos = JSON.parse($("'.$selector.'").val());
+                                        pos.address = results[0].formatted_address;
+                                        $("'.$selector.'").val(JSON.stringify (pos));
+                                    }
+                                });
+                            }
                           }, function() {
                             console.log("error fetching geolocation data");
                           });

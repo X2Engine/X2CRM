@@ -71,11 +71,7 @@ class MobileActionHistoryAttachmentsPublishAction extends MobileAction {
         $geoLocationCoords = isset ($_POST['geoLocationCoords']) ? $_POST['geoLocationCoords'] : "";
         $attachmentType = '';
         if ($geoLocationCoords == 'set' && isset ($_POST['geoCoords'])) {
-            if (creds && $creds->auth && 
-                $creds->auth->apiKey && 
-                !empty($creds->auth->apiKey) && 
-                isset($creds->auth->apiKey)) 
-            {
+            if ($creds && $creds->auth && !empty($creds->auth->apiKey)) {
                 $key = $creds->auth->apiKey;
             } else {
                 throw new CHttpException (403, Yii::t('app', 'Google API key missing'));

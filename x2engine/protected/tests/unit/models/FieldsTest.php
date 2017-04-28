@@ -68,6 +68,22 @@ class FieldsTest extends X2TestCase {
         $this->assertEquals(2,(int) $f->countNonNull());
     }
 
+    public function testCheckListCriteria() {
+        $f = new Fields;
+        $f->modelName = 'Contacts';
+        $f->fieldName = 'email';
+        Yii::app()->fixture->load(array('listCriteria' => 'X2ListCriterion'));
+        Yii::app()->fixture->load(array('lists' => 'X2List'));
+        $lists = $f->checkListCriteria();
+        $this->assertEquals(1, count($lists));
+        reset($lists);
+        $criteriaId = key($lists);
+        $this->assertEquals(38, $criteriaId);
+        $matched = preg_match('/href="[^?]+\?id=(\d+)"/', $lists[$criteriaId], $matches);
+        $this->assertEquals(1, $matched);
+        $this->assertEquals(22, $matches[1]);
+    }
+
     public function setup () {
         $this->_testColumnName = null;
         $this->_testTableName = null;

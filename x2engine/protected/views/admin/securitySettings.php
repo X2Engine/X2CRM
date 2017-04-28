@@ -38,7 +38,7 @@
 
 
 Yii::app()->clientScript->registerCssFile(Yii::app()->theme->baseUrl.'/css/admin/securitySettings.css');
-
+Tours::loadTips('admin.securitySettings');
 ?>
 
 <div class="page-title"><h2><?php echo Yii::t('admin', 'Security Settings'); ?></h2></div>

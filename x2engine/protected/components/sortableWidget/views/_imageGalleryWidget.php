@@ -43,6 +43,10 @@ Yii::app()->clientScript->registerCss('imageGalleryCss',"
     margin-right: -4px;
 }
 
+.GalleryEditor .image-preview {
+    height: inherit;
+}
+
 .GalleryEditor .x2-button {
     cursor: pointer;
 }
@@ -56,7 +60,7 @@ Yii::app()->clientScript->registerCss('imageGalleryCss',"
     display: inline-block;
 }
 
-.GalleryEditor [type='checkbox'] {
+.GalleryEditor .select_all[type='checkbox'] {
     position: relative;
     top: 3px;
 }

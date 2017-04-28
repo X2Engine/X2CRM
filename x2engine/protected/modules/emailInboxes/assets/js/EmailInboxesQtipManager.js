@@ -217,16 +217,33 @@ EmailInboxesQtipManager.prototype._setUpQuickCreateButtonBehavior = function () 
         on ('click._setUpQuickCreateButtonBehavior2', '.contact-action-button', 
             function () {
 
+        var messageContainer$ = $('#message-container');
+        // decode and remove email message
+        var messageBody = auxlib.htmlDecode (
+            messageContainer$.find ('.message-body-temp').html ());
+        var subject = auxlib.htmlDecode (
+            $.trim (messageContainer$.find ('.message-subject').html ()));
+
         var qtip = $(this).closest ('.qtip').data ('qtip');
         var link = qtip.options.position.target;
 		var recordId = $(link).attr("href").match(/\d+$/)[0];
-        var attributes = {};
-        attributes.associationId = recordId;
-        attributes.associationType = 'contacts';
-        attributes.associationName = $(link).text ();
+        var data = {
+            actionType: 'ActionFormModel',
+            keepForm: true,
+            showAssociationControls: true,
+            'ActionFormModel[associationId]': recordId,
+            'ActionFormModel[associationType]': 'contacts',
+            'ActionFormModel[associationName]': $(link).text ()
+        };
+        if (subject !== 'undefined') {
+            data['ActionFormModel[subject]'] = subject;
+        }
+        if (messageBody !== 'undefined') {
+            data['ActionFormModel[actionDescription]'] = messageBody;
+        }
         new x2.QuickCreate ({
             modelType: 'Actions',
-            attributes: attributes,
+            data: data,
             success: function (modelId) {
             }
         });

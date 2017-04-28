@@ -56,17 +56,9 @@ class ActionOverdueTrigger extends X2FlowTrigger {
                     'name'=>'duration',
                     'label'=>Yii::t('studio', 'Time Overdue (s)'),
                     'type'=>'numeric',
+                    'defaultOperator'=>'>=',
                     'optional'=>1
                 ),
 			));
-	}
-	
-	public static function checkCondition($condition,&$params) {
-		if(isset($condition['name']) && $condition['name'] === 'duration') {
-			if(empty($condition['value']))
-				return array ($params['model']->dueDate < time(), '');
-			return array ($params['model']->dueDate < time() - (int)$condition['value'], '');
-		}
-		return parent::checkCondition($condition,$params);
 	}
 }
