@@ -198,6 +198,9 @@ class WebFormAction extends CAction {
 
                 if ($success) {
                     $location = $model->logLocation('weblead', 'POST');
+                    X2Flow::trigger('LocationTrigger', array(
+                        'model' => $model
+                    ));
 
                     if ($extractedParams['generateLead']) {
                         $newLead = call_user_func(array($this->controller, 'generateLead'), $model, $extractedParams['leadSource']);

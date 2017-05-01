@@ -50,10 +50,8 @@ class LocationTrigger extends X2FlowTrigger {
         return array(
             'title' => Yii::t('studio', $this->title),
             'info' => Yii::t('studio', $this->info),
-            //'modelClass' => 'modelClass',
-            
-            'options' => array(
-            )
+            'modelClass' => 'Contacts',
+            'options' => array()
         );
     }
 

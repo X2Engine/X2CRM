@@ -101,8 +101,6 @@ class MappableBehavior extends CActiveRecordBehavior {
                 $location->comment = $comment;
             }
             $location->save();
-            X2Flow::trigger('LocationTrigger', array(
-            ));
         } else if ($location->lat != $lat || $location->lon != $lon) {
             $location->lat = $lat;
             $location->lon = $lon;
@@ -113,8 +111,6 @@ class MappableBehavior extends CActiveRecordBehavior {
                 $location->comment = $comment;
             }
             $location->save();
-            X2Flow::trigger('LocationTrigger', array(
-            ));
         }
         return $location;
     }

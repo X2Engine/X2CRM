@@ -578,26 +578,6 @@ class EventTextFormatter {
         }
     }
 
-    private static function formatWeb_activity($event, $params, $htmlOptions) {
-        if (X2Model::getModelOfTypeWithId($event->associationType,
-                        $event->associationId)) {
-            $text = "";
-            
-            if ($event->associationType === 'AnonContact') {
-                $text = Yii::t('app', "Anonymous contact ");
-            }
-            
-            $text .= X2Model::getModelLink($event->associationId,
-                            $event->associationType) . " " . Yii::t('app',
-                            "is currently on your website!") . (!empty($event->text)
-                                ? " " . $event->text : "");
-        } else {
-            $text = Yii::t('app',
-                            "A contact was on your website, but that contact cannot be found.");
-        }
-        return $text;
-    }
-
     private static function formatCase_escalated($event, $params, $htmlOptions) {
         $authorText = static::getAuthorText($event, $htmlOptions);
         if (X2Model::getModelOfTypeWithId($event->associationType,
