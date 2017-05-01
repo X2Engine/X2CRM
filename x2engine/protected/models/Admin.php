@@ -225,12 +225,17 @@ class Admin extends X2ActiveRecord {
             array('emailType,emailFromName, emailFromAddr', 'requiredIfSysDefault', 'field' => 'emailBulkAccount'),
             array('serviceCaseFromEmailName, serviceCaseFromEmailAddress', 'requiredIfSysDefault', 'field' => 'serviceCaseEmailAccount'),
             array('serviceCaseEmailSubject, serviceCaseEmailMessage', 'required'),
+<<<<<<< HEAD
+            array('batchTimeout, timeout, loginCredsTimeout, webTrackerCooldown, chatPollTime, locationTrackingFrequency, '
+=======
             array('batchTimeout, timeout, webTrackerCooldown, chatPollTime, locationTrackingFrequency, maxUserCount,'
+>>>>>>> deedb16f491c405e3091f21bf819de596b5b3bf2
                 . 'ignoreUpdates, rrId, onlineOnly, emailBatchSize, emailInterval, emailPort, '
                 . 'installDate, updateDate, updateInterval, workflowBackdateWindow, '
                 . 'workflowBackdateRange, locationTrackingDistance',
                 'numerical', 'integerOnly' => true),
             // accounts, sales,
+            array('loginCredsTimeout', 'numerical', 'max' => 365, 'min' => 1),
             array('chatPollTime', 'numerical', 'max' => 100000, 'min' => 100),
             array('locationTrackingFrequency', 'numerical', 'max' => 60, 'min' => 1),
             array('locationTrackingDistance', 'numerical', 'max' => 10, 'min' => 1),
@@ -289,6 +294,7 @@ class Admin extends X2ActiveRecord {
             // 'accounts' => Yii::t('admin','Accounts'),
             // 'sales' => Yii::t('admin','Opportunities'),
             'timeout' => Yii::t('admin', 'Session Timeout'),
+            'loginCredsTimeout' => Yii::t('admin', 'Login Credentials Timeout'),
             'webLeadEmail' => Yii::t('admin', 'Web Lead Email'),
             'enableWebTracker' => Yii::t('admin', 'Enable Web Tracker'),
             'disableAnonContactNotifs' => Yii::t('admin', 'Disable AnonContact Notifications'),
