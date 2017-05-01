@@ -41,7 +41,8 @@ x2.RecordCreateController = (function () {
 function RecordCreateController (argsDict) {
     var argsDict = typeof argsDict === 'undefined' ? {} : argsDict;
     var defaultArgs = {
-        DEBUG: x2.DEBUG && false
+        DEBUG: x2.DEBUG && false,
+        translations: {},
     };
     auxlib.applyArgs (this, defaultArgs, argsDict);
     x2.Controller.call (this, argsDict);
@@ -51,7 +52,7 @@ RecordCreateController.prototype = auxlib.create (x2.Controller.prototype);
 
 RecordCreateController.prototype.importContact = function () {
     var that = this;
-    this.importButton$ = $('#header .import-button');
+    this.importButton$ = $('#header .contact-import-button');
     this.importButton$.click (function () {
         x2touch.API.getContact (function(contactInfo){
             x2.main.activePage$.find ('#Contacts_firstName').val(contactInfo.name.givenName);
@@ -78,7 +79,41 @@ RecordCreateController.prototype.importContact = function () {
             x2.main.activePage$.find ('#Contacts_assignedTo_assignedToDropdown').val("");
             x2.main.activePage$.find ('#Contacts_visibility').val("");
         },function(err){
-            alert('Error: ' + err);
+            alert(that.translations['Error']+': ' + err);
+        });
+        form$.submit ();
+    });
+};
+
+RecordCreateController.prototype.importProduct = function () {
+    var that = this;
+    this.importButton$ = $('#header .product-import-button');
+    this.importButton$.click (function () {
+        x2touch.API.barcodeScanner (function(result){
+            /*alert("We got a barcode\n" +
+                  "Result: " + result.text + "\n" +
+                  "Format: " + result.format + "\n" +
+                  "Cancelled: " + result.cancelled);*/
+            x2.main.activePage$.find ('#Product_description').val(
+                x2.main.activePage$.find ('#Product_description').val() 
+                + "\n"
+                + result.text
+            );
+        },function(err){
+            alert("Scanning failed: " + error);
+        },{
+            /*
+            preferFrontCamera : true, // iOS and Android
+            showFlipCameraButton : true, // iOS and Android
+            showTorchButton : true, // iOS and Android
+            torchOn: true, // Android, launch with the torch switched on (if available)
+            prompt : "Place a barcode inside the scan area", // Android
+            resultDisplayDuration: 500, // Android, display scanned text for X ms. 0 suppresses it entirely, default 1500
+            formats : "QR_CODE,PDF_417", // default: all but PDF_417 and RSS_EXPANDED
+            orientation : "landscape", // Android only (portrait|landscape), default unset so it rotates with the device
+            disableAnimations : true, // iOS
+            disableSuccessBeep: false // iOS
+             */
         });
         form$.submit ();
     });
@@ -121,12 +156,12 @@ RecordCreateController.prototype.exportContact = function () {
     this.importButton$ = $('#header .export-button');
     //pass in contact info to be saved in device's contacts
     this.importButton$.click (function () {
-        if (confirm('Would you like to export this contact?')) {
+        if (confirm(that.translations['Would you like to export this contact']+'?')) {
             // Save it!
             x2touch.API.setContact (function (contact) {
-                alert("Export Success");
+                alert(that.translations['Export Success']);
             }, function(contactError){
-                alert("Error = " + contactError.code);
+                alert(that.translations['Error']+' = ' + contactError.code);
             },contactInfo);
         } else {
             // Do nothing!
@@ -151,6 +186,7 @@ RecordCreateController.prototype.init = function () {
         that.form$ = $.mobile.activePage.find ('form');
         that.exportContact ();
         that.importContact ();
+        that.importProduct ();
         that.setUpForm ();
     }, this.constructor.name));
 };

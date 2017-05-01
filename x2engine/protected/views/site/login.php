@@ -245,7 +245,7 @@ Yii::app()->clientScript->registerGeolocationScript();
                 <div class="row twoFactorCodeControls" style="display:none;">
                     <?php
                     echo '<p class="hint">'.Yii::t('app', 'Please enter your two factor authentication verification code.').'</p>';
-                    echo $form->textField($model, 'twoFactorCode');
+                    echo $form->textField($model, 'twoFactorCode', array('autocomplete' => 'off'));
                     ?>
                 </div>
                 <div class="row" id='signin-button-container'>

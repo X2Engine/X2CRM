@@ -584,6 +584,13 @@ x2.WebFormDesigner = (function() {
         } else {
             $('#thankYouText').val ('');
         }
+        if (typeof form.fingerprintDetection !== 'undefined') {
+            if (parseInt (form.fingerprintDetection, 10) === 1) {
+                $('#fingerprint-detection-checkbox').prop ('checked', true);
+            } else {
+                $('#fingerprint-detection-checkbox').prop ('checked', false);
+            }
+        }
 
         this._updateExtraFields (form);
         this._updateCustomFields (form);

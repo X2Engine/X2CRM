@@ -238,4 +238,24 @@ class X2ListItem extends CActiveRecord {
 			}
 		}
 	}
+
+    /**
+     * Render a link to view the location the email was opened
+     */
+    public static function getLocationLink($uniqueId) {
+        $listItem = X2ListItem::model()->findByAttributes(array('uniqueId' => $uniqueId));
+        if (!$listItem || empty($listItem->opened)) return;
+        // Find campaignEmailOpened Action from this contact at the time of opening
+        $locationId = Yii::app()->db->createCommand()
+            ->select('locationId')
+            ->from('x2_actions')
+            ->where('type = "campaignEmailOpened" AND associationType = "contacts" '.
+                'AND associationId = :contactId AND createDate = :time',
+                array(':contactId' => $listItem->contactId, ':time' => $listItem->opened))
+            ->queryScalar();
+        if ($locationId) {
+            $location = Locations::model()->findByPk($locationId);
+            return $location->getLocationLink(X2Html::fa('crosshairs'));
+        }
+    }
 }

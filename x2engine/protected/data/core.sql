@@ -10,7 +10,7 @@
  * OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
  * 
  * This program is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * ANY WARRANTY; without even the implied warranty of MERCtHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE.  See the GNU Affero General Public License for more
  * details.
  * 
@@ -36,48 +36,50 @@
 DROP TABLE IF EXISTS x2_admin;
 /*&*/
 CREATE TABLE x2_admin(
-	id						INT				NOT NULL AUTO_INCREMENT PRIMARY KEY,
-	timeout					INT,
+	id                              INT				NOT NULL AUTO_INCREMENT PRIMARY KEY,
+	timeout                         INT,
+        loginCredsTimeout               INT                             DEFAULT 30,
+        tokenPersist                    TINYINT         DEFAULT 1,
 	webLeadEmail			VARCHAR(255),
 	webLeadEmailAccount		INT NOT NULL DEFAULT -1,
 	webTrackerCooldown		INT				DEFAULT 60,
 	enableWebTracker		TINYINT			DEFAULT 1,
 	enableGeolocation		TINYINT			DEFAULT 1,
-	currency				VARCHAR(3)		NULL,
+	currency                        VARCHAR(3)		NULL,
 	chatPollTime			INT				DEFAULT 3000,
-        locationTrackingFrequency			INT				DEFAULT 60,
-        defaultTheme            INT             NULL,
+        locationTrackingFrequency       INT				DEFAULT 60,
+        defaultTheme                    INT             NULL,
 	ignoreUpdates			TINYINT			DEFAULT 0,
-	rrId					INT				DEFAULT 0,
+	rrId                            INT				DEFAULT 0,
 	leadDistribution		VARCHAR(255),
-	onlineOnly				TINYINT,
-        actionPublisherTabs     TEXT,
-	disableAutomaticRecordTagging		TINYINT			DEFAULT 0,
+	onlineOnly                      TINYINT,
+        actionPublisherTabs             TEXT,
+	disableAutomaticRecordTagging   TINYINT			DEFAULT 0,
 	emailBulkAccount		INT	NOT NULL DEFAULT -1,
 	emailNotificationAccount	INT NOT NULL DEFAULT -1,
 	emailFromName			VARCHAR(255)	NOT NULL DEFAULT "X2Engine",
 	emailFromAddr			VARCHAR(255)	NOT NULL DEFAULT '',
 	emailBatchSize			INT				NOT NULL DEFAULT 200,
 	emailInterval			INT				NOT NULL DEFAULT 60,
-        emailCount              INT             NOT NULL DEFAULT 0,
-        emailStartTime          BIGINT          DEFAULT NULL,
+        emailCount                      INT             NOT NULL DEFAULT 0,
+        emailStartTime                  BIGINT          DEFAULT NULL,
 	emailUseSignature		VARCHAR(5)		DEFAULT "user",
 	emailSignature			TEXT,
-	emailType				VARCHAR(20)		DEFAULT "mail",
-	emailHost				VARCHAR(255),
-	emailPort				INT				DEFAULT 25,
+	emailType                       VARCHAR(20)		DEFAULT "mail",
+	emailHost                       VARCHAR(255),
+	emailPort                       INT				DEFAULT 25,
 	emailUseAuth			VARCHAR(5)		DEFAULT "user",
-	emailUser				VARCHAR(255),
-	emailPass				VARCHAR(255),
+	emailUser                       VARCHAR(255),
+	emailPass                       VARCHAR(255),
 	emailSecurity			VARCHAR(10),
-	enableColorDropdownLegend   TINYINT         DEFAULT 0,
-        enforceDefaultTheme     TINYINT         DEFAULT 0,
-	installDate				BIGINT			NOT NULL,
-	updateDate				BIGINT			NOT NULL,
+	enableColorDropdownLegend       TINYINT         DEFAULT 0,
+        enforceDefaultTheme             TINYINT         DEFAULT 0,
+	installDate                     BIGINT			NOT NULL,
+	updateDate                      BIGINT			NOT NULL,
 	updateInterval			INT				NOT NULL DEFAULT 0,
 	quoteStrictLock			TINYINT,
         locationTrackingSwitch          TINYINT,
-        checkinByDefault          TINYINT DEFAULT 1,
+        checkinByDefault                TINYINT DEFAULT 1,
 	googleIntegration		TINYINT,
 	inviteKey				VARCHAR(255),
 	workflowBackdateWindow			INT			NOT NULL DEFAULT -1,
@@ -288,6 +290,7 @@ CREATE TABLE x2_modules (
     linkRecordId            INT,
     linkHref                VARCHAR(250),
     linkOpenInNewTab        TINYINT         DEFAULT 0,
+    linkOpenInFrame         TINYINT         DEFAULT 0,
     moduleType              ENUM('module', 'link', 'recordLink', 'pseudoModule') DEFAULT 'module'
 ) ENGINE InnoDB COLLATE = utf8_general_ci;
 /*&*/
@@ -462,7 +465,9 @@ CREATE TABLE x2_relationships (
 	firstLabel				VARCHAR(100),
 	secondType				VARCHAR(100),
 	secondId				INT,
-	secondLabel				VARCHAR(100)
+	secondLabel				VARCHAR(100),
+	INDEX (firstId),
+	INDEX (secondId)
 ) COLLATE = utf8_general_ci;
 /*&*/
 /* The following needs to be dropped first; there is a foreign key constraint */
