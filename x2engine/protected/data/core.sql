@@ -10,7 +10,7 @@
  * OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
  * 
  * This program is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * ANY WARRANTY; without even the implied warranty of MERCtHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE.  See the GNU Affero General Public License for more
  * details.
  * 
@@ -290,6 +290,7 @@ CREATE TABLE x2_modules (
     linkRecordId            INT,
     linkHref                VARCHAR(250),
     linkOpenInNewTab        TINYINT         DEFAULT 0,
+    linkOpenInFrame         TINYINT         DEFAULT 0,
     moduleType              ENUM('module', 'link', 'recordLink', 'pseudoModule') DEFAULT 'module'
 ) ENGINE InnoDB COLLATE = utf8_general_ci;
 /*&*/
@@ -449,7 +450,9 @@ CREATE TABLE x2_relationships (
 	firstLabel				VARCHAR(100),
 	secondType				VARCHAR(100),
 	secondId				INT,
-	secondLabel				VARCHAR(100)
+	secondLabel				VARCHAR(100),
+	INDEX (firstId),
+	INDEX (secondId)
 ) COLLATE = utf8_general_ci;
 /*&*/
 /* The following needs to be dropped first; there is a foreign key constraint */

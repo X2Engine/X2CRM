@@ -164,7 +164,9 @@ class PasswordUtil {
     }
     
     public static function createSalt() {
-        if (function_exists('mcrypt_create_iv')) {
+        if (version_compare(PHP_VERSION, '7.0.0') >= 0 && function_exists('random_bytes')) {
+            return base64_encode(random_bytes(self::PBKDF2_SALT_BYTES));
+        } elseif (function_exists('mcrypt_create_iv')) {
             return base64_encode(mcrypt_create_iv(self::PBKDF2_SALT_BYTES,
                             MCRYPT_DEV_URANDOM));
         } elseif (function_exists('openssl_random_pseudo_bytes')) {

@@ -141,15 +141,17 @@ class Locations extends CActiveRecord
     }
 
     public function getLocationLink($text = null, $nonX2googleMaps=false) {
+        if (!Yii::app()->settings->enableMaps) return;
         if ($nonX2googleMaps) {
             $provider = 'https://google.com/maps/?q='.$this->lat.','.$this->lon;
             return $provider;   
         }
+        $coords = '('.$this->lat.', '.$this->lon.')';
         if (is_null($text)) {
             if (!empty($this->comment))
                 $text = $this->comment;
             else
-                $text = '('.$this->lat.', '.$this->lon.')';
+                $text = $coords;
         }
         $modelParam = ($this->recordType === 'Contacts') ? 'contactId' : 'userId';
         return CHtml::link($text, array(
@@ -157,6 +159,8 @@ class Locations extends CActiveRecord
             $modelParam => $this->recordId,
             'noHeatMap' => 1,
             'locationType' => array($this->type),
+        ), array(
+            'title' => $coords
         ));
     }
     
@@ -303,9 +307,13 @@ class Locations extends CActiveRecord
                 '&key=' . $key;
             $result = RequestUtil::request(array('url' => $url));
             $data = CJSON::decode($result, true);
-            if ($data)
+            if ($data && isset($data['results']) && isset($data['results'][0])) {
                 return $data['results'][0]['formatted_address'];
-            return $result;
+            } else if ($data && isset($data['status']) && $data['status'] === 'REQUEST_DENIED') {
+                Yii::log('Failed to geocode address. Message was: '.$data['error_message'], 'error', 'php');
+            } else {
+                Yii::log('Received malformed JSON from geocoding request.', 'error', 'php');
+            }
         }
     }
 

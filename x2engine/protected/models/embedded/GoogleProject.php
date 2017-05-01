@@ -53,10 +53,19 @@ class GoogleProject extends JSONEmbeddedModel implements AdminOwnedCredentials {
 
      
     /**
-     *  @var string Used for Google+ and Google Maps integration
+     *  @var string Used for Google+ and Google APIs integration
      */
     public $apiKey = '';
-     
+    
+    /**
+     *  @var string the path for the Service Account key file used for Google+ and Google APIs integration
+     */
+    public $serviceAccountKeyFileContents = '';
+    
+    /**
+     *  @var string project id used for Google+ and Google APIs integration
+     */
+    public $projectId = '';
 
     // pseudo-attributes which belong to Admin. These don't get enrypted with the other attributes,
     // but do get rendered in the same form
@@ -64,7 +73,7 @@ class GoogleProject extends JSONEmbeddedModel implements AdminOwnedCredentials {
     private $_gaTracking_public;
 
     public function getProtectedFields () {
-        return array ('clientId', 'clientSecret', 'apiKey');
+        return array ('clientId', 'clientSecret', 'apiKey', 'serviceAccountKeyFileContents', 'projectId');
     }
 
     public function renderForm () {
@@ -83,10 +92,10 @@ class GoogleProject extends JSONEmbeddedModel implements AdminOwnedCredentials {
     }
 
     public function rules(){
-        return array(
-             
-            array('apiKey', 'safe'),
-             
+        return array(      
+            array('apiKey', 'safe'),          
+            array('projectId', 'safe'),         
+            array ('serviceAccountKeyFileContents', 'safe'),          
             array('clientId,clientSecret', 'safe'),
         );
     }
@@ -133,6 +142,8 @@ class GoogleProject extends JSONEmbeddedModel implements AdminOwnedCredentials {
             'clientSecret' => Yii::t('app','Client Secret'),
              
             'apiKey' => Yii::t('app','API Key'),
+            'serviceAccountKeyFileContents' => Yii::t('app','Service Account File Key'),
+            'projectId' => Yii::t('app','Google API Project ID'),
              
             'gaTracking_public' => Yii::t('app','Google Analytics Property ID (public)'),
             'gaTracking_internal' => Yii::t('app','Google Analytics Property ID (internal)'),

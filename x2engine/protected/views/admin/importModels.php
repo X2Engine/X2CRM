@@ -37,6 +37,8 @@
  **********************************************************************************/
 
 Yii::app()->clientScript->registerCssFile(Yii::app()->theme->baseUrl.'/css/importexport.css');
+if (!empty($model))
+    Tours::loadTips('admin.importModels');
 ?>
 <div class="page-title"><h2><?php echo Yii::t('admin','Import {model} from Template', array('{model}'=>(empty($model)? "" : X2Model::getModelTitle ($model)))); ?></h2></div>
 <div class="form">

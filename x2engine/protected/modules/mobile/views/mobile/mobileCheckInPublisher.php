@@ -51,6 +51,8 @@ $this->onPageLoad ("
         translations: ".CJSON::encode (array (
             'Checking in at' => Yii::t('app','Checking in at'),
             'Thanks for checking in!' => Yii::t('app','Thanks for checking in!'),
+            'error code' => Yii::t('app','error code'),
+            'error message' => Yii::t('app','error message'),
         )).",
     });
 ", CClientScript::POS_END);

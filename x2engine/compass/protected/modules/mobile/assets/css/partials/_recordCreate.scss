@@ -94,7 +94,7 @@
         color: grey !important;
     }
     
-    .import-button {
+    .contact-import-button, .product-import-button {
         @include header-text-button;
         color: grey !important;
     }

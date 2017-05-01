@@ -86,6 +86,11 @@ $('#create-top-bar-link').click (function () {
             echo $form->textField ($model, 'topLinkUrl');
             echo $form->label ($model, 'topLinkText');
             echo $form->textField ($model, 'topLinkText');
+            echo '<br />';
+            echo $form->checkBox ($model, 'openInFrame');
+            echo $form->label ($model, 'openInFrame', array (
+                'style' => 'display: inline;',
+            ));
             ?>
             </div>
             <?php

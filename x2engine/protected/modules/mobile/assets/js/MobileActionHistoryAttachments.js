@@ -54,7 +54,7 @@ MobileActionHistoryAttachments.prototype.setUpLocationPhotoUpload = function () 
     this.form$ = form$;
     var publisher$ = $.mobile.activePage.find ('.publisher-menu');
     var buttons$ = publisher$.find ('ul li');
-    var togglePublisher$ = $.mobile.activePage.find ('#file-upload-menu-button');
+    var togglePublisher$ = $.mobile.activePage.find ('#publisher-menu-button');
 
     new x2.LocationButton ({
         element$: buttons$.filter ('.location-attachment-button'),
@@ -97,7 +97,7 @@ MobileActionHistoryAttachments.prototype.setUpVideoUpload = function () {
     this.form$ = form$;
     var publisher$ = $.mobile.activePage.find ('.publisher-menu');
     var buttons$ = publisher$.find ('ul li');
-    var togglePublisher$ = $.mobile.activePage.find ('#file-upload-menu-button');
+    var togglePublisher$ = $.mobile.activePage.find ('#publisher-menu-button');
 
 
     new x2.VideoButton ({
@@ -142,7 +142,7 @@ MobileActionHistoryAttachments.prototype.setUpAudioUpload = function () {
     this.form$ = form$;
     var publisher$ = $.mobile.activePage.find ('.publisher-menu');
     var buttons$ = publisher$.find ('ul li');
-    var togglePublisher$ = $.mobile.activePage.find ('#file-upload-menu-button');
+    var togglePublisher$ = $.mobile.activePage.find ('#publisher-menu-button');
 
     new x2.AudioButton ({
         element$: buttons$.filter ('.audio-attachment-button'),
@@ -186,7 +186,7 @@ MobileActionHistoryAttachments.prototype.setUpPhotoUpload = function () {
     this.form$ = form$;
     var publisher$ = $.mobile.activePage.find ('.publisher-menu');
     var buttons$ = publisher$.find ('ul li');
-    var togglePublisher$ = $.mobile.activePage.find ('#file-upload-menu-button');
+    var togglePublisher$ = $.mobile.activePage.find ('#publisher-menu-button');
     new x2.CameraButton ({
         element$: buttons$.filter ('.photo-attachment-button'),
         success: function (data) {
@@ -223,7 +223,7 @@ MobileActionHistoryAttachments.prototype.setUpPhotoUpload = function () {
 MobileActionHistoryAttachments.prototype.setUpFileUpload = function () {
     var that = this;
     var form$ = $.mobile.activePage.find ('.publisher-file-upload-form');
-    var togglePublisher$ = $.mobile.activePage.find ('#file-upload-menu-button');
+    var togglePublisher$ = $.mobile.activePage.find ('#publisher-menu-button');
     this.form$ = form$;
     that.form$.off ('change.setUpFileUpload').on ('change.setUpFileUpload', function () {
         $.mobile.loading ('show');

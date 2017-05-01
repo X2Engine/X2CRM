@@ -305,9 +305,10 @@ foreach($modules as $moduleItem){
         }
     } elseif ($moduleItem->moduleType === 'link') {
         if (isset ($moduleItem->linkHref)) {
+            $linkHref = $moduleItem->linkOpenInFrame ? $this->createUrl('site/viewEmbedded', array('id' => $moduleItem->id)) : $moduleItem->linkHref;
             $menuItems[] = array (
                 'label' => $moduleItem->title,
-                'url' => $moduleItem->linkHref,
+                'url' => $linkHref,
                 'itemOptions' => array ('class' => 'top-bar-module-link'),
                 'linkOptions' => $moduleItem->linkOpenInNewTab ? 
                     array ('target' => '_blank') : array (),

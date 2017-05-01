@@ -43,6 +43,7 @@ class CreatePageFormModel extends X2FormModel {
     public $recordId;
     public $recordName;
     public $openInNewTab = false;
+    public $openInFrame = false;
     public $dummyAttribute;
     public $record;
 
@@ -70,7 +71,7 @@ class CreatePageFormModel extends X2FormModel {
                 'recordType', 'validateRecordType',
             ),
             array (
-                'openInNewTab', 'boolean',
+                'openInNewTab,openInFrame', 'boolean',
             ),
             array (
                 'topLinkUrl', 'requireOneExclusive', 
@@ -92,6 +93,7 @@ class CreatePageFormModel extends X2FormModel {
             'recordName' => Yii::t('app', 'Select a record:'),
             'recordType' => Yii::t('app', 'Record type'),
             'recordName' => Yii::t('app', 'Record name'),
+            'openInFrame' => Yii::t('app', 'Open link in a frame?'),
             'openInNewTab' => Yii::t('app', 'Open link in new tab when clicked?'),
         );
     }

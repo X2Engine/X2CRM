@@ -506,6 +506,41 @@ class MarketingController extends x2base {
         $this->redirect(array('view', 'id' => $id, 'launch' => true));
     }
 
+    public function actionValidate($id){
+        $campaign = $this->loadModel($id);
+        $errors = array();
+
+        if(!isset($campaign)){
+            $errors[] = Yii::t('app', 'The requested page does not exist.');
+        }
+
+        if(!isset($campaign->list)){
+            $errors[] = Yii::t('marketing', 'Contact List cannot be blank.');
+        }
+
+        if(empty($campaign->subject) && $campaign->type === 'Email'){
+            $errors[] = Yii::t('marketing', 'Subject cannot be blank.');
+        }
+
+        if($campaign->launchDate != 0 && $campaign->launchDate < time()){
+            $errors[] = Yii::t('marketing', 'The campaign has already been launched.');
+        }
+
+        if(($campaign->list->type == 'dynamic' && 
+            X2Model::model($campaign->list->modelName)
+                ->count($campaign->list->queryCriteria()) < 1) || 
+            ($campaign->list->type != 'dynamic' && count($campaign->list->listItems) < 1)){
+
+            $errors[] = Yii::t('marketing', 'The contact list is empty.');
+        }
+
+        if (empty($errors)) {
+            $this->respond(Yii::t('marketing', 'This campaign is ready to launch!'));
+        } else {
+            $this->respond(Yii::t('marketing', "The following issues must be corrected before your campaign can be launched:\n").implode("\n", $errors), true);
+        }
+    }
+
     /**
      * Deactivate a campaign to halt mailings, or resume paused campaign
      *

@@ -127,7 +127,7 @@ if (!$this->refresh && $hasCreateAccess) {
                 <span><?php echo X2Html::fa('fa-file-audio-o'); ?></span>
                 <div>
                     <?php 
-                    echo CHtml::encode(Yii::t('mobile', 'Add audio attachment'));
+                    echo CHtml::encode(Yii::t('mobile', 'Add audio note'));
                     ?>
 
                             
@@ -161,7 +161,7 @@ if (!$this->refresh && $hasCreateAccess) {
                     array(
                 'placeholder' => 'Add a comment...',
                 'class' => 'location-tag',
-            ));
+            ));    
         }
         $this->endWidget();
         ?>
@@ -172,7 +172,7 @@ if (!$this->refresh && $hasCreateAccess) {
 <?php 
     echo CHtml::link(X2Html::fa('plus'),'#',array(
         'class' => 'fixed-corner-button publisher-menu-button',
-        'id' => $type==='attachments'?'file-upload-menu-button':'comment-menu-button',
+        'id' => 'publisher-menu-button',
     ));
 ?>
 

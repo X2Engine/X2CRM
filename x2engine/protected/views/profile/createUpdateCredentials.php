@@ -51,6 +51,8 @@ $this->actionMenu = array(
 <div class="page-title"><h2><?php echo $model->pageTitle; ?></h2></div>
 <?php
 X2Html::getFlashes ();
+if (is_a ($model->auth, 'EmailAccount'))
+    Tours::loadTips('profile.createUpdateCredentials');
 ?>
 <div style="padding:10px; display:inline-block;">
 <?php

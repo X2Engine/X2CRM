@@ -183,6 +183,10 @@ class InlineQuotes extends X2Widget {
     }
 
 	public function run() {
+        // Ensure user has access to view the quotes
+        if (!Yii::app()->user->checkAccess('QuotesBasicAccess')) {
+            return;
+        }
         // Permissions that affect the behavior of the widget:
         $canDo = array();
         foreach(array('QuickDelete','QuickUpdate','QuickCreate') as $subAction) {

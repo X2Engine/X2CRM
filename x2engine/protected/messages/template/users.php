@@ -1,5 +1,6 @@
 <?php return array (
   'Create User' => '',
+  'Sorry, we are not creating anymore user accounts at this time.' => '',
   'Invite Users' => '',
   'The specified username is reserved for system usage.' => '',
   'Username cannot contain trailing or leading whitespace.' => '',

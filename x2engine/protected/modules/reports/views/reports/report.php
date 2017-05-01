@@ -66,6 +66,9 @@ if ($report === null) {
 <a id="report-settings-save-button" class="x2-button">
    <?php echo CHtml::encode (Yii::t('reports', 'Save Report')); ?>
 </a>
+<a id="quick-create-list" class="x2-button">
+   <?php echo CHtml::encode (Yii::t('reports', 'Create Contact List')); ?>
+</a>
 <?php
 } else {
 ?>

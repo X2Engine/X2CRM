@@ -95,20 +95,20 @@ EventPublisherController.prototype.setUpForm = function () {
                            locationButtonOn = true;
                        } catch (e) {
                            alert(e);
-                           alert("Failed to fetch location.");
+                           alert(that.translations['Failed to fetch location']);
                        }
 
                        x2.main.refreshContent ();
                        $.mobile.loading ('hide');
                    }, function (jqXHR, textStatus, errorThrown) {
                        $.mobile.loading ('hide');
-                       x2.main.alert (textStatus, 'Error');
+                       x2.main.alert (textStatus, that.translations['Error']);
                    }
                ); 
                that.form$.find ('#geoLocationCoords').val("unset");
             }, function (error) {
-                alert('code: '    + error.code    + '\n' +
-                      'message: ' + error.message + '\n');
+                alert(that.translations['code']+ ': ' + error.code    + '\n' +
+                     that.translations['message']+ ': ' + error.message + '\n');
             }, {});             
         } else {
             that.form$.find ('#geoCoords').val("");
