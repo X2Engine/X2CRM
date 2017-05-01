@@ -204,6 +204,10 @@ class Contacts extends X2Model {
 
         parent::afterUpdate();
     }
+    
+    public function findById($id) {
+        return X2Model::model('Contacts')->findByPk($id);
+    }
 
     /**
      * Gets an array of names for an assignment dropdown menu
@@ -238,6 +242,12 @@ class Contacts extends X2Model {
         return $names;
     }
 
+    /**
+     * Gets contact links
+     * 
+     * @param type $contacts
+     * @return type
+     */
     public static function getContactLinks($contacts) {
         if (!is_array($contacts)) {
             $contacts = explode(' ', $contacts);

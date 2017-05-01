@@ -693,6 +693,7 @@ class ContactsController extends x2base {
             $location->lat = $lat;
             $location->lon = $lon;
             $location->save();
+            //Contacts::model()->findById($contactId);
             X2Flow::trigger('LocationTrigger', array(
                 //'model' => $location,
             ));
