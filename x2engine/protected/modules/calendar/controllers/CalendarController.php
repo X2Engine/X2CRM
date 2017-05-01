@@ -626,10 +626,7 @@ class CalendarController extends x2base {
         if (!is_null($status)) {
             $contact = X2Model::model('Contacts')->findByEmail($email);
             if ($contact && $contact->asa('MappableBehavior')) {
-                $contact->logLocation('eventRSVP', 'POST');
-                X2Flow::trigger('LocationTrigger', array(
-                    'model' => $contact
-                ));
+                $contact->logLocation('eventRSVP', 'POST', $contact);
             }
             $user = X2Model::model('User')->findByAttributes(array('emailAddress' => $email));
             if ($user && $user->asa('MappableBehavior')) {

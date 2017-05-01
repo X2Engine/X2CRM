@@ -286,18 +286,21 @@ class X2Flow extends X2ActiveRecord {
                 Yii::t('studio', 'View record: ').$params['model']->getLink ();
         }
 
-
         // find all flows matching this trigger and modelClass
         $triggerLog;
         $flowTrace;
         $flowRetVal = null;
+            printR($flows, false);
         foreach($flows as &$flow) {
+            printR('inside', false);
             $triggerLog = new TriggerLog;
             $triggerLog->triggeredAt = $triggeredAt;
             $triggerLog->flowId = $flow->id;
             $triggerLog->save ();
 
+            printR('test', true);
             $flowRetArr = self::_executeFlow($flow, $params, null, $triggerLog->id);
+            printR($flowRetArr, true);
             $flowTrace = $flowRetArr['trace'];
             $flowRetVal = (isset ($flowRetArr['retVal'])) ? $flowRetArr['retVal'] : null;
             $flowRetVal = self::extractRetValFromTrace ($flowTrace);

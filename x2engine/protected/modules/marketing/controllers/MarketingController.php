@@ -671,10 +671,7 @@ class MarketingController extends x2base {
         $contact = $item->contact;
         $list = $item->list;
         if (!is_null($contact)) {
-            $location = $contact->logLocation($type, false);
-            X2Flow::trigger('LocationTrigger', array(
-                'model' => $contact
-            ));
+            $location = $contact->logLocation($type, false, $contact);
         }
 
         $event = new Events;
