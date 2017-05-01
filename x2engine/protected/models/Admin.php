@@ -225,11 +225,7 @@ class Admin extends X2ActiveRecord {
             array('emailType,emailFromName, emailFromAddr', 'requiredIfSysDefault', 'field' => 'emailBulkAccount'),
             array('serviceCaseFromEmailName, serviceCaseFromEmailAddress', 'requiredIfSysDefault', 'field' => 'serviceCaseEmailAccount'),
             array('serviceCaseEmailSubject, serviceCaseEmailMessage', 'required'),
-<<<<<<< HEAD
             array('batchTimeout, timeout, loginCredsTimeout, webTrackerCooldown, chatPollTime, locationTrackingFrequency, '
-=======
-            array('batchTimeout, timeout, webTrackerCooldown, chatPollTime, locationTrackingFrequency, maxUserCount,'
->>>>>>> deedb16f491c405e3091f21bf819de596b5b3bf2
                 . 'ignoreUpdates, rrId, onlineOnly, emailBatchSize, emailInterval, emailPort, '
                 . 'installDate, updateDate, updateInterval, workflowBackdateWindow, '
                 . 'workflowBackdateRange, locationTrackingDistance',
