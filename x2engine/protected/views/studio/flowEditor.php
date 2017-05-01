@@ -35,7 +35,7 @@
  * "Powered by X2Engine".
  **********************************************************************************/
 
-
+Tours::loadTips('studio.flowEditor');
 
 $profile = Yii::app()->params->profile;
 $miscLayoutSettings = $profile->miscLayoutSettings;

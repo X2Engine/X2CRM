@@ -162,4 +162,22 @@ if($this->edition == 'pro'):
     ))
     ?>
 </div>
+<div class="row webform-tab-content" id="fingerprint-detection-input-container" data-tab='advanced-tab'>
+    <h4>
+        <?php echo Yii::t('marketing','X2Identity duplicate detection') .':'; ?>
+    </h4>
+    <p class="fieldhelp" style="width: 100%">
+        <?php echo Yii::t('marketing','Configure whether duplicate detection will be performed '.
+            'using the lead\'s fingerprint. This setting should be disabled for any form used '.
+            'from a single device to capture leads.'); ?>
+    </p>
+    <div class="row">
+        <label class='left-label' for='fingerprintDetection'>
+            <?php echo Yii::t('app', 'Enable duplicate detection by fingerprint: '); ?>
+        </label>
+        <input id='fingerprint-detection-checkbox' type='checkbox'  name='fingerprintDetection'>
+    </div>
+
+    <br/>
+</div>
 <?php endif;  ?>

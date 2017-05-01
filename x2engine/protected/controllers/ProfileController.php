@@ -584,7 +584,7 @@ class ProfileController extends x2base {
      * @throws CHttpException
      */
     public function actionCreateUpdateCredentials($id = null, $class = null) {
-
+        
         $this->pageTitle = Yii::t('app', 'Edit Credentials');
         $profile = Yii::app()->params->profile;
         // Create or retrieve model:
@@ -625,10 +625,23 @@ class ProfileController extends x2base {
         }
 
         $model->scenario = $model->isNewRecord ? 'create' : 'update';
-
+        
         // Apply changes if any:
         if (isset($_POST['Credentials'])) {
-            $model->attributes = $_POST['Credentials'];
+            $formCredentials = $_POST['Credentials'];
+            if (isset($_FILES['keyFile']) && !empty($_FILES['keyFile'])) {
+                $temp = CUploadedFile::getInstanceByName('keyFile');
+                if (!empty($temp)) {
+                    $rawJsonKey = file_get_contents($temp->tempName);
+                    if (!AuxLib::isJson($rawJsonKey)) {
+                        throw new CHttpException(404, Yii::t('app', 'Sorry, this is not a json file.'));
+                    }
+                    //TODO: $rawJsonKey must be cleansed and hashed!
+                    $formCredentials['auth']['serviceAccountKeyFileContents'] = $rawJsonKey;                    
+                }
+
+            }
+            $model->attributes = $formCredentials;
             // Check to see if user has permission:
             if (!Yii::app()->user->checkAccess(
                 'CredentialsCreateUpdate', array('model' => $model))) {
@@ -676,8 +689,11 @@ class ProfileController extends x2base {
         $attributes = array('email', 'password', 'server', 'port', 'security');
         foreach ($attributes as $attr)
             ${$attr} = isset($_POST[$attr])? $_POST[$attr] : "";
+        $smtpNoValidate = false;
+        if (isset($_POST['smtpNoValidate']) && $_POST['smtpNoValidate'] === 'true')
+            $smtpNoValidate = true;
         $this->attachBehavior('EmailDeliveryBehavior', new EmailDeliveryBehavior);
-        $valid = $this->testUserCredentials($email, $password, $server, $port, $security);
+        $valid = $this->testUserCredentials($email, $password, $server, $port, $security, $smtpNoValidate);
         if (!$valid) echo "Failed";
     }
 
@@ -1963,7 +1979,7 @@ class ProfileController extends x2base {
                 $post->locationId = $location->id;
                 $staticMap = $location->generateStaticMap();
                 $post->text .= '$|&|$' . $geoCoords['comment'] . '$|&|$'; //temporary dividers to be parsed later
-                $geocodedAddress = $location->geocode();
+                $geocodedAddress = isset($geoCoords['address']) ? $geoCoords['address'] : $location->geocode();
             }
             if (isset($_POST['recordLinks']) && ($decodedLinks = CJSON::decode($_POST['recordLinks'], true)))
                 $post->recordLinks = $decodedLinks;
@@ -1974,8 +1990,8 @@ class ProfileController extends x2base {
             $post->timestamp = time();
             if ($post->save()) {
                 if (!empty($staticMap)) {
+                    $post->type = 'media';
                     if (!empty($geocodedAddress)) {
-                        $post->type = 'media';
                         $post->text .= Yii::t('app', 'Checking in at ').$geocodedAddress.' | '.
                             Formatter::formatDateTime(time());
                     }

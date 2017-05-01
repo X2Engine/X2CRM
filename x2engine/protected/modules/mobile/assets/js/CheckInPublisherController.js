@@ -103,8 +103,8 @@ CheckInPublisherController.prototype.setUpForm = function () {
        ); 
         that.form$.find ('#geoLocationCoords').val("unset");
     }, function (error) {
-        alert('code: '    + error.code    + '\n' +
-              'message: ' + error.message + '\n');
+        alert(that.translations['error code']+': ' + error.code    + '\n' +
+              that.translations['error message']+': ' + error.message + '\n');
     }, {});
         
 };

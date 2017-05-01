@@ -111,6 +111,15 @@ class UsersController extends x2base {
      * If creation is successful, the browser will be redirected to the 'view' page.
      */
     public function actionCreate() {
+        $admin = &Yii::app()->settings;
+        $userCount = Yii::app()->db->createCommand(
+                "SELECT COUNT(*) FROM x2_users;"
+        )->queryAll();
+        $userCountParsed = $userCount[0]["COUNT(*)"];
+        if ($userCountParsed >= $admin->maxUserCount) {
+            $this->render('userLimit',array());
+        }
+        
         $model=new User;
         $groups=array();
         foreach(Groups::model()->findAll() as $group){

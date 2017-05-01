@@ -85,8 +85,8 @@ natcasesort($attributeLabels);
 
 $comparisonList = array(
     '='=>Yii::t('contacts','equals'),
-    '>'=>Yii::t('contacts','greater than'),
-    '<'=>Yii::t('contacts','less than'),
+    '>'=>Yii::t('contacts','greater than or equal to'),
+    '<'=>Yii::t('contacts','less than or equal to'),
     '<>'=>Yii::t('contacts','not equal to'),
     'list'=>Yii::t('contacts','in list'),
     'notList'=>Yii::t('contacts','not in list'),

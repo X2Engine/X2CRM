@@ -125,7 +125,8 @@ class WebFormAction extends CAction {
                     $oldest = $duplicates[0];
                 }
 
-                if (Yii::app()->settings->enableFingerprinting && isset ($_POST['fingerprint'])) {
+                if (Yii::app()->settings->enableFingerprinting && isset ($_POST['fingerprint']) &&
+                        isset($extractedParams['fingerprintDetection']) && $extractedParams['fingerprintDetection']) {
                     $attributes = (isset($_POST['fingerprintAttributes']))?
                         json_decode($_POST['fingerprintAttributes'], true) : array();
 
@@ -197,10 +198,16 @@ class WebFormAction extends CAction {
                 if($success){
                     $location = $model->logLocation('weblead', 'POST');
 
-                    if ($extractedParams['generateLead'])
-                        call_user_func(array($this->controller, 'generateLead'),$model, $extractedParams['leadSource']);
-                    if ($extractedParams['generateAccount'])
-                        call_user_func(array($this->controller, 'generateAccount'),$model);
+                    if ($extractedParams['generateLead']) {
+                        $newLead = call_user_func(array($this->controller, 'generateLead'),$model, $extractedParams['leadSource']);
+                        if ($newLead)
+                            self::addTags ($newLead);
+                    }
+                    if ($extractedParams['generateAccount']) {
+                        $newAccount = call_user_func(array($this->controller, 'generateAccount'),$model);
+                        if ($newAccount)
+                            self::addTags ($newAccount);
+                    }
 
                     self::addTags ($model);
                     $tags = ((!isset($_POST['tags']) || empty($_POST['tags'])) ? 
@@ -725,6 +732,7 @@ class WebFormAction extends CAction {
                 $extractedParams['header'] = '';
                 $extractedParams['userEmailTemplate'] = null;
                 $extractedParams['webleadEmailTemplate'] = null;
+                $extractedParams['fingerprintDetection'] = true;
 
                 if (isset ($webForm)) { // new method
                     if (!empty ($webForm->header)) 
@@ -733,6 +741,8 @@ class WebFormAction extends CAction {
                         $extractedParams['userEmailTemplate'] = $webForm->userEmailTemplate;
                     if (!empty ($webForm->webleadEmailTemplate)) 
                         $extractedParams['webleadEmailTemplate'] = $webForm->webleadEmailTemplate;
+                    if (empty ($webForm->fingerprintDetection))
+                        $extractedParams['fingerprintDetection'] = $webForm->fingerprintDetection;
                 } else { // legacy method
                     if(isset($_GET['header'])){ 
                         $webFormLegacy = WebForm::model()->findByPk($_GET['header']);

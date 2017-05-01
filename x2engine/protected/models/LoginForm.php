@@ -125,7 +125,7 @@ class LoginForm extends X2FormModel {
         $profile = Profile::model()->findByAttributes(array(
             'username' => $this->username,
         ));
-        if ($profile && property_exists('Profile', 'enableTwoFactor') && property_exists('LoginForm', 'twoFactorCode')) {
+        if ($profile && isset($profile->enableTwoFactor) && isset($this->twoFactorCode)) {
             if ($profile->enableTwoFactor) {
                 if (!$profile->verifyTwoFACode($this->twoFactorCode)) {
                     $this->addError('username', Yii::t('app', 'Incorrect username or password. Note, usernames are case sensitive.'));

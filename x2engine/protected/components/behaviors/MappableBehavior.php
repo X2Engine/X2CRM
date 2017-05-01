@@ -1,5 +1,6 @@
 <?php
-/***********************************************************************************
+
+/* * *********************************************************************************
  * X2CRM is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2016 X2Engine Inc.
  * 
@@ -33,7 +34,7 @@
  * X2Engine" logo. If the display of the logo is not reasonably feasible for
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2Engine".
- **********************************************************************************/
+ * ******************************************************************************** */
 
 /**
  * MappableBehavior class file.
@@ -41,6 +42,7 @@
  * @package application.components 
  */
 class MappableBehavior extends CActiveRecordBehavior {
+
     public $recordType;
 
     public function logLocation($type, $method = 'GET', $param = 'geoCoords') {
@@ -85,24 +87,36 @@ class MappableBehavior extends CActiveRecordBehavior {
                 'type' => null,
             ));
         }
-        if(!isset($location)){
+        if (!isset($location)) {
             $location = new Locations;
             $location->recordId = $this->owner->id;
             $location->recordType = get_class($this->owner);
             $location->lat = $lat;
             $location->lon = $lon;
             $location->type = $type;
-            if ($logIp) $location->ipAddress = $logIp;
-            if ($comment) $location->comment = $comment;
-            $location->save();
-        }else{
-            if($location->lat != $lat || $location->lon != $lon){
-                $location->lat = $lat;
-                $location->lon = $lon;
-                if ($logIp) $location->ipAddress = $logIp;
-                if ($comment) $location->comment = $comment;
-                $location->save();
+            if ($logIp) {
+                $location->ipAddress = $logIp;
             }
+            if ($comment) {
+                $location->comment = $comment;
+            }
+            $location->save();
+            X2Flow::trigger('LocationTrigger', array(
+                'model' => $location,
+            ));
+        } else if ($location->lat != $lat || $location->lon != $lon) {
+            $location->lat = $lat;
+            $location->lon = $lon;
+            if ($logIp) {
+                $location->ipAddress = $logIp;
+            }
+            if ($comment) {
+                $location->comment = $comment;
+            }
+            $location->save();
+            X2Flow::trigger('LocationTrigger', array(
+                'model' => $location,
+            ));
         }
         return $location;
     }
@@ -115,12 +129,13 @@ class MappableBehavior extends CActiveRecordBehavior {
             'recordId' => $this->owner->id,
             'recordType' => get_class($this->owner),
         );
-        if ($type)
+        if ($type) {
             $params['type'] = $type;
+        }
         $locations = array();
         foreach (Locations::model()->findAllByAttributes($params) as $loc) {
             // Provide an appropriate description and link for locations
-            switch($loc->type) {
+            switch ($loc->type) {
                 case "weblead":
                     $infoText = Yii::t('app', 'Submitted Weblead Form');
                     break;
@@ -156,13 +171,14 @@ class MappableBehavior extends CActiveRecordBehavior {
             }
             $action = $loc->action;
             $event = $loc->event;
-            if ($action)
+            if ($action) {
                 $infoText = CHtml::link($infoText, $action->getUrl(), array(
-                    'class' => 'action-frame-link',
-                    'data-action-id' => $action->id,
+                            'class' => 'action-frame-link',
+                            'data-action-id' => $action->id,
                 ));
-            else if ($event)
-                $infoText = $infoText.': '. $event->getText();
+            } else if ($event) {
+                $infoText = $infoText . ': ' . $event->getText();
+            }
             $locations[] = array(
                 'lat' => (float) $loc['lat'],
                 'lng' => (float) $loc['lon'],
@@ -173,4 +189,5 @@ class MappableBehavior extends CActiveRecordBehavior {
         }
         return $locations;
     }
+
 }

@@ -110,6 +110,10 @@ PublisherTab.prototype._setUpAjaxSuccessHandler = function () {
     that._form$ = that._element.find ('form');
 
     x2.X2Form.getInstance (that._form$).onAjaxSuccess = function (data) {
+        var persistData = ['dateformat', 'timeformat', 'ampmformat', 'region', 'monthNamesShort'];
+        var dataVals = {};
+        // Save default locale settings to replace after resetting form
+        $.each(persistData, function(i, v) { dataVals[v] = that._form$.data(v); });
         that._form$.replaceWith (data.page);
         that._setUpAjaxSuccessHandler ();
         if (!$(that._elemSelector).find ('.error').length) {
@@ -120,6 +124,7 @@ PublisherTab.prototype._setUpAjaxSuccessHandler = function () {
                 $(that._elemSelector).closest ('.ui-dialog').remove ();
             }
         }
+        $.each(dataVals, function(i, v) { that._form$.data(i, v); });
     };
 };
 

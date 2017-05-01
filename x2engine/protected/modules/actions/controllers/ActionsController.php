@@ -275,7 +275,7 @@ class ActionsController extends x2base {
             if ($model instanceof ActionFormModelBase) {
                 $model->setAttributes ($post);
 
-                if ($model->validate ()) {
+                if ($model->validate () && !isset($_POST['keepForm'])) {
                     $model = $model->getAction (); // convert to active record
                 }
             } else { // ($model instanceof Actions)
@@ -299,7 +299,7 @@ class ActionsController extends x2base {
 
         if (isset($_POST['x2ajax'])) {
             // allows form to be refreshed
-            if (!$model->hasErrors ()) $model = new $modelType;
+            if (!$model->hasErrors () && !isset($_POST['keepForm'])) $model = new $modelType;
             $this->renderInlineForm ($model);
         } else {
             $this->render('create', array(

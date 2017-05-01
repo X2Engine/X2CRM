@@ -38,7 +38,7 @@
 
 
 Yii::app()->clientScript->registerCssFile(Yii::app()->theme->baseUrl.'/css/packager.css');
-
+Tours::loadTips('admin.packager');
 ?>
 
 <div class="page-title"><h2><?php 

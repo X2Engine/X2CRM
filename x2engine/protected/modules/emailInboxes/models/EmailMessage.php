@@ -474,10 +474,11 @@ class EmailMessage extends CModel {
             $action = 'downloadAttachment';
         }
         return Yii::app()->controller->createUrl ('emailInboxes/'.$action, array (
+            'id' => $this->inbox->id,
             'uid' => $this->uid,
             'part' => $attachment['part'],
             'emailFolder' => $this->inbox->getCurrentFolder (),
-        ));
+        ), '&amp;'); // encode ampersand to prepare for {@link purifyAttributes}
     }
 
     /**

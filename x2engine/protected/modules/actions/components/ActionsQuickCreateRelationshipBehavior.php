@@ -72,6 +72,7 @@ class ActionsQuickCreateRelationshipBehavior extends QuickCreateRelationshipBeha
                         'Form', array (
                     'model' => $model,
                     'email' => $email,
+                    'namespace' => get_class ($this),
                 ), true, true)
             ));
         } else {

@@ -51,7 +51,7 @@ MobileActionHistory.prototype = auxlib.create (x2.Widget.prototype);
 MobileActionHistory.prototype.setUpCommentPublish = function () {
     var that = this;
     var form$ = $.mobile.activePage.find ('.publisher-comment-form');
-    var togglePublisher$ = $.mobile.activePage.find ('#comment-menu-button');
+    var togglePublisher$ = $.mobile.activePage.find ('#publisher-menu-button');
     this.form$ = form$;
     that.form$.off ('change.setUpCommentPublish').on ('change.setUpCommentPublish', function () {
         $.mobile.loading ('show');

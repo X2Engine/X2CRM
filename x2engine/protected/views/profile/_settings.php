@@ -164,7 +164,7 @@ $form = $this->beginWidget('X2ActiveForm', array(
                         $model, 'enableTwoFactor', array('style' => 'display:inline;'));
                 echo X2Html::hint2 (
                     Yii::t('app', 'Enable two factor authentication to require a verification code on login'));
-                echo CHtml::textField('code', '', array('class' => 'twofa-activation', 'style' => 'display: none', 'placeholder' => Yii::t('profile', 'Verification Code')));
+                echo CHtml::textField('code', '', array('class' => 'twofa-activation', 'style' => 'display: none', 'placeholder' => Yii::t('profile', 'Verification Code'), 'autocomplete' => 'off'));
                 echo CHtml::button(Yii::t('profile', 'Activate'), array('class' => 'twofa-activation', 'style' => 'display: none'));
             } else {
                 // Two factor auth is not yet configured

@@ -147,6 +147,7 @@ class Credentials extends CActiveRecord {
         'SendgridAccount',
         'SESAccount',
         'YahooEmailAccount',
+        'RackspaceEmailAccount',
         'TwilioAccount',
         'TwitterApp',
         'GoogleProject',
@@ -164,6 +165,7 @@ class Credentials extends CActiveRecord {
         'Office365EmailAccount',
         'OutlookEmailAccount',
         'YahooEmailAccount',
+        'RackspaceEmailAccount',
     );
 
     public function afterDelete () {
@@ -331,6 +333,7 @@ class Credentials extends CActiveRecord {
                 'SendgridAccount',
                 'SESAccount',
                 'YahooEmailAccount',
+                'RackspaceEmailAccount',
             ),
 			'sms' => array(
                 'TwilioAccount',
@@ -358,6 +361,7 @@ class Credentials extends CActiveRecord {
 			'SendgridAccount' => array('email'),
 			'SESAccount' => array('email'),
 			'YahooEmailAccount' => array('email'),
+            'RackspaceEmailAccount' => array('email'),
 			'TwilioAccount' => array('sms'),
             'TwitterApp' => array ('twitter'),
             'GoogleProject' => array ('googleProject'),

@@ -201,7 +201,7 @@ X2Html::getFlashes ();
         ?>
             <a href='<?php echo Yii::app()->createAbsoluteUrl ('profile/mobileActivity'); ?>' 
               style='margin-left: 40px;' 
-              class='ui-btn-left ui-btn show-left-menu-button-right'>
+              class='ui-btn-left ui-btn show-left-menu-button-right' id='home-btn'>
                 <i class='fa fa-home'></i>
             </a>
             <?php

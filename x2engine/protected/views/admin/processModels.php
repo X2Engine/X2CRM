@@ -37,6 +37,7 @@
  **********************************************************************************/
 
 Yii::app()->clientScript->registerCssFile (Yii::app()->theme->baseUrl.'/css/importexport.css');
+Tours::loadTips('admin.processModels');
 ?>
 <script>
 var record=0;

@@ -106,12 +106,12 @@ class SiteController extends x2base {
                     'stickyPost', 'getEventsBetween', 'mediaWidgetToggle', 'createChartSetting',
                     'deleteChartSetting', 'GetActionsBetweenAction', 'DeleteURL', 'widgetSetting',
                     'removeTmpUpload', 'duplicateCheck', 'resolveDuplicates', 'getSkypeLink',
-                    'mergeRecords', 'ajaxSave', 'layoutPreview','tourSeen'),
+                    'mergeRecords', 'ajaxSave', 'layoutPreview','tourSeen', 'viewEmbedded'),
                 'users' => array('@'),
             ),
             array('allow',
                 'actions' => array('motd'),
-                'users' => array('admin'),
+                'expression' => 'Yii::app()->params->isAdmin',
             ),
             array('deny',
                 'users' => array('*')
@@ -762,7 +762,7 @@ class SiteController extends x2base {
             $event->locationId = $location->id;
             $staticMap = $location->generateStaticMap();
             $event->text .= '$|&|$' . $geoCoords['comment'] . '$|&|$'; //temporary dividers to be parsed later
-            $geocodedAddress = $location->geocode();
+            $geocodedAddress = isset($geoCoords['address']) ? $geoCoords['address'] : $location->geocode();
         }
         $event->type = 'media';
         $event->subtype = 'Social Post';
@@ -1415,6 +1415,19 @@ class SiteController extends x2base {
     }
 
     /**
+     * View a linked page as an iframe to provide X2CRM context
+     */
+    public function actionViewEmbedded($id) {
+        $model = Modules::model()->findByPk($id);
+        if (!$model || !$model->linkOpenInFrame)
+            throw new CHttpException('400', 'Invalid request.');
+        $this->render('viewEmbedded', array(
+            'title' => $model->title,
+            'url' => $model->linkHref,
+        ));
+    }
+
+    /**
      * View all notifications for the current web user.
      */
     public function actionViewNotifications() {
@@ -1525,7 +1538,7 @@ class SiteController extends x2base {
         $model = Profile::model()->findByAttributes(array(
             'username' => $username,
         ));
-        if ($model->enableTwoFactor) {
+        if ($model && $model->enableTwoFactor) {
             if (!$model->requestTwoFA(true))
                 throw new CHttpException(500, Yii::t('profile', 'Failed to request two factor authentication code!'));
             else echo 'yes';

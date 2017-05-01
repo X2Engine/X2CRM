@@ -92,6 +92,12 @@ $contactList = $model->list;
                 'htmlOptions' => array('style' => 'text-align: center;'),
                 'headerHtmlOptions' => array('style' => 'width: 7%;')
             ),
+            array(
+                'name' => 'openedAt',
+                'header' => Yii::t('marketing', 'Opened At'),
+                'type' => 'raw',
+                'value' => '$data["opened"] ? Formatter::formatDateTime($data["opened"])." ".X2ListItem::getLocationLink($data["uniqueId"]):""',
+            ),
         ));
 
         if ($model->enableRedirectLinks) {
@@ -136,6 +142,7 @@ $contactList = $model->list;
             'clicked' => 80,
             'unsubscribed' => 80,
             'doNotEmail' => 80,
+            'openedAt' => 120,
         ),
         'id' => 'campaign-grid',
         'template'=> '<div class="page-title">{title}'

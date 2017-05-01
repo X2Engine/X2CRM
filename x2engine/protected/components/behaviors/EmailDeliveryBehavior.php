@@ -115,10 +115,16 @@ class EmailDeliveryBehavior extends CBehavior {
         $tokenizedHeader = str_replace(',',$delimiter,strtr($header,$tokens));
         $headerPieces = explode($delimiter,strtr($tokenizedHeader,$values));
         $headerArray = array();
-        foreach($headerPieces as $recipient){
+        $skipNext = false;
+        foreach($headerPieces as $i => $recipient){
             $recipient = trim($recipient);
             if(empty($recipient))
                 continue;
+            if ($skipNext) {
+                // if this piece was used to reconstruct on the last iteration
+                $skipNext = false;
+                continue;
+            }
             $matches = array();
             $emailValidator = new CEmailValidator;
 
@@ -132,12 +138,23 @@ class EmailDeliveryBehavior extends CBehavior {
 
                 // (with or without quotes)
                 if(count($matches) == 3 && $emailValidator->validateValue($matches[2])){  
-                    $headerArray[] = array($matches[1], $matches[2]);
+                    $headerArray[] = array(trim($matches[1], "' "), $matches[2]);
                 }else{
                     if (!$ignoreInvalidAddresses)
                         throw new CException(Yii::t('app', 'Invalid email address list.'));
                 }
             }else{
+                if ($i < count($headerPieces) - 1) {
+                    // Maybe quotes were left off? Check if the next piece is part of this address
+                    $testRecipient = trim($recipient) . ',' . $headerPieces[$i+1];
+                    if (preg_match('/^"?((?:\\\\"|[^"])*[^\s])"?\s*<(.+)>$/i', $testRecipient, $matches)){
+                        if(count($matches) == 3 && $emailValidator->validateValue($matches[2])) {
+                            $headerArray[] = array(trim($matches[1], "' "), $matches[2]);
+                            $skipNext = true;
+                            continue;
+                        }
+                    }
+                }
                 if (!$ignoreInvalidAddresses)
                     throw new CException(Yii::t('app', 'Invalid email address list:'.$recipient));
             }
@@ -533,7 +550,7 @@ class EmailDeliveryBehavior extends CBehavior {
         $this->_userProfile = $profile;
     }
 
-    public function testUserCredentials($email, $password, $server, $port, $security) {
+    public function testUserCredentials($email, $password, $server, $port, $security, $smtpNoValidate) {
         require_once(
             realpath(Yii::app()->basePath.'/components/phpMailer/PHPMailerAutoload.php'));
         $phpMail = new PHPMailer(true);
@@ -545,9 +562,19 @@ class EmailDeliveryBehavior extends CBehavior {
         $phpMail->Host = $server;
         $phpMail->Port = $port;
         $phpMail->SMTPSecure = $security;
+        $smtpOptions = array();
+        if ($smtpNoValidate) {
+            $smtpOptions = array(
+                'ssl' => array(
+                    'verify_peer' => false,
+                    'verify_peer_name' => false,
+                    'allow_self_signed' => true,
+                ),
+            );
+        }
 
         try {
-            $validCredentials = $phpMail->SmtpConnect();
+            $validCredentials = $phpMail->SmtpConnect($smtpOptions);
         } catch(phpmailerException $error) {
             $validCredentials = false;
         }

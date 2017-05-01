@@ -114,6 +114,11 @@ class CreateWebFormAction extends CAction {
             } else {
                 $model->requireCaptcha = 0;
             }
+            if(isset($_POST['fingerprintDetection'])) {
+                $model->fingerprintDetection = 1;
+            } else {
+                $model->fingerprintDetection = 0;
+            }
             if(isset($_POST['redirectUrl'])) {
                 $model->redirectUrl = $_POST['redirectUrl'];
             }
