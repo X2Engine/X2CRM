@@ -728,9 +728,12 @@ class X2List extends X2Model {
     /**
      * Adds the specified ID(s) to this list (if they're not already in there)
      * @param mixed $ids a single integer or an array of integer IDs
+     * @param bool $allowNewsletter whether to allow contacts to be added to a newsletter
      */
-    public function addIds($ids){
-        if($this->type !== 'static')
+    public function addIds($ids, $allowNewsletter = false){
+        // only allow adding records to static lists and newsletters (if specified)
+        $addToNewsletter = $this->type === 'weblist' && $allowNewsletter;
+        if($this->type !== 'static' && !$addToNewsletter)
             return false;
 
         $ids = (array) $ids;
@@ -747,6 +750,16 @@ class X2List extends X2Model {
                 continue;
             $listItem = new X2ListItem();
             $listItem->listId = $this->id;
+            if ($addToNewsletter) {
+                // Populate email so it appears in newsletter list view
+                $email = Yii::app()->db->createCommand()
+                    ->select('email')
+                    ->from('x2_contacts')
+                    ->where('id = :id', array(':id' => $id))
+                    ->queryScalar();
+                if ($email)
+				    $listItem->emailAddress = $email;
+            }
             $listItem->contactId = $id;
             $listItem->save();
         }

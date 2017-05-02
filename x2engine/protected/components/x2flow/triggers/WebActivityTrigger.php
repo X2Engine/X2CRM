@@ -1,5 +1,6 @@
 <?php
-/***********************************************************************************
+
+/* * *********************************************************************************
  * X2CRM is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2016 X2Engine Inc.
  * 
@@ -33,9 +34,7 @@
  * X2Engine" logo. If the display of the logo is not reasonably feasible for
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2Engine".
- **********************************************************************************/
-
-
+ * ******************************************************************************** */
 
 /**
  * X2FlowTrigger 
@@ -43,33 +42,35 @@
  * @package application.components.x2flow.actions
  */
 class WebActivityTrigger extends X2FlowTrigger {
-	public $title = 'Contact Web Activity';
-	public $info = 'Triggered when a contact visits a webpage';
-	
-	public function paramRules() {
-        $options = array (
+
+    public $title = 'Contact Web Activity';
+    public $info = 'Triggered when a contact visits a webpage';
+
+    public function paramRules() {
+        $options = array(
             array(
-                'name'=>'url',
-                'label'=>Yii::t('studio','URL'),
-                'optional'=>1,
-                'operators'=>array('=','<>','list','notList','contains','noContains')
+                'name' => 'url',
+                'label' => Yii::t('studio', 'URL'),
+                'optional' => 1,
+                'operators' => array('=', '<>', 'list', 'notList', 'contains', 'noContains')
             ),
         );
 
-         
-        $options[] = array(
-            'name'=>'probability',
-            'label'=>Yii::t('studio','Match Probability'),
-            'optional'=>1,
-            'operators'=>array('=','<','>')
-        );
-          
 
-		return array(
-			'title' => Yii::t('studio',$this->title),
-			'info' => Yii::t('studio',$this->info),
-			'modelClass' => 'Contacts',
-			'options' => $options
+        $options[] = array(
+            'name' => 'probability',
+            'label' => Yii::t('studio', 'Match Probability'),
+            'optional' => 1,
+            'operators' => array('=', '<', '>')
         );
-	}
+
+
+        return array(
+            'title' => Yii::t('studio', $this->title),
+            'info' => Yii::t('studio', $this->info),
+            'modelClass' => 'Contacts',
+            'options' => $options
+        );
+    }
+
 }

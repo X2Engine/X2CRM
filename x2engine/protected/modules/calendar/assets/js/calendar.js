@@ -96,7 +96,8 @@ CalendarManager.prototype.insertDate = function(date, view, publisherName){
     var dateformat = form$.data('dateformat');
     var timeformat = form$.data('timeformat');
     var ampmformat = form$.data('ampmformat');
-    var region = x2.publisher.getForm ().data('region');
+    var region = form$.data('region');
+    var monthNamesShort = form$.data('monthNamesShort');
 
     if(typeof(dateformat) == 'undefined') {
         dateformat = 'M d, yy';
@@ -110,6 +111,9 @@ CalendarManager.prototype.insertDate = function(date, view, publisherName){
     if(typeof(region) == 'undefined') {
         region = '';
     }
+    if(typeof(monthNamesShort) == 'undefined') {
+        monthNamesShort = '';
+    }
 
 
     form$.find ('.action-due-date').datetimepicker("destroy");
@@ -122,6 +126,7 @@ CalendarManager.prototype.insertDate = function(date, view, publisherName){
                 'dateFormat':dateformat,
                 'timeFormat':timeformat,
                 'ampm':ampmformat,
+                'monthNamesShort':monthNamesShort,
                 'changeMonth':true,
                 'changeYear':true, 
                 'defaultDate': newDate.begin
@@ -140,6 +145,7 @@ CalendarManager.prototype.insertDate = function(date, view, publisherName){
                 'dateFormat':dateformat,
                 'timeFormat':timeformat,
                 'ampm':ampmformat,
+                'monthNamesShort':monthNamesShort,
                 'changeMonth':true,
                 'changeYear':true,
                 'defaultDate': newDate.end

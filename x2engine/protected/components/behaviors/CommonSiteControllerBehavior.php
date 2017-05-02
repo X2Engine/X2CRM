@@ -65,96 +65,70 @@ class CommonSiteControllerBehavior extends CBehavior {
         $activeUser = null;
         $sessionToken = null;
         $sessionIdToken = null;
-        if($isMobile){
-            if(empty(Yii::app()->request->cookies['sessionToken']->value)){
-                if(isset($_POST['LoginForm']))
-                    $model->attributes = $_POST['LoginForm']; // get user input data
-
-                $userModel = $model->getUser();
-                $isRealUser = $userModel instanceof User;
-                $effectiveUsername = $isRealUser ? $userModel->username : $model->username;
-                $isActiveUser = $isRealUser && $userModel->status == User::STATUS_ACTIVE;
-                /* increment count on every session with this user/IP, to prevent brute force attacks 
-                   using session_id spoofing or whatever */
-                Yii::app()->db->createCommand(
-                    'UPDATE x2_sessions SET status=status-1,lastUpdated=:time WHERE user=:name AND 
-                    CAST(IP AS CHAR)=:ip AND status BETWEEN -2 AND 0')
-                        ->bindValues(
-                            array(':time' => time(), ':name' => $effectiveUsername, ':ip' => $ip))
-                        ->execute();
-
-                $activeUser = Yii::app()->db->createCommand() // see if this is an actual, active user
-                        ->select('username')
-                        ->from('x2_users')
-                        ->where('username=:name AND status=1', array(':name' => $model->username))
-                        ->limit(1)
-                        ->queryScalar(); // get the correctly capitalized username  
- 
-                //create new sessionToken and save to server
-                $sessionIdToken = uniqid();
-                
-                $sessionToken = new SessionToken;
-                $sessionToken->id = $sessionIdToken;
-                $sessionToken->user = $model->getSessionUserName();
-                $sessionToken->lastUpdated = time();
-                $sessionToken->status = 0;
-                $sessionToken->IP = $ip;
-                
-            } else {
-                
-                $sessionTokenCookie = Yii::app()->request->cookies['sessionToken']->value;
-                $sessionTokenModel = X2Model::model('SessionToken')->findByPk($sessionTokenCookie);
-                
-                $userModel =  User::model()->findByAlias($sessionTokenModel->user);
-                $isRealUser = $userModel instanceof User;
-                $effectiveUsername = $isRealUser ? $userModel->username : null;
-                $isActiveUser = $isRealUser && $userModel->status == User::STATUS_ACTIVE;
- 
-                /* increment count on every session with this user/IP, to prevent brute force attacks 
-                   using session_id spoofing or whatever */
-                if($sessionTokenModel !== null){
-                    Yii::app()->db->createCommand(
-                        'UPDATE x2_sessions_token SET status=status-1 WHERE user=:name AND 
-                        CAST(IP AS CHAR)=:ip AND status BETWEEN -2 AND 0')
-                            ->bindValues(
-                                array(':name' => $sessionTokenModel->user, ':ip' => $ip))
-                            ->execute();
-                }
-
-                $activeUser = Yii::app()->db->createCommand() // see if this is an actual, active user
-                        ->select('username')
-                        ->from('x2_users')
-                        ->where('username=:name AND status=1', array(':name' => $sessionTokenModel->user))
-                        ->limit(1)
-                        ->queryScalar(); // get the correctly capitalized username 
-                
-
-            }
-        } else {
+        if(empty(Yii::app()->request->cookies['sessionToken']->value)){
             if(isset($_POST['LoginForm']))
                 $model->attributes = $_POST['LoginForm']; // get user input data
 
-                $userModel = $model->getUser();
-                $isRealUser = $userModel instanceof User;
-                $effectiveUsername = $isRealUser ? $userModel->username : $model->username;
-                $isActiveUser = $isRealUser && $userModel->status == User::STATUS_ACTIVE;
-                /* increment count on every session with this user/IP, to prevent brute force attacks 
-                   using session_id spoofing or whatever */
+            $userModel = $model->getUser();
+            $isRealUser = $userModel instanceof User;
+            $effectiveUsername = $isRealUser ? $userModel->username : $model->username;
+            $isActiveUser = $isRealUser && $userModel->status == User::STATUS_ACTIVE;
+            /* increment count on every session with this user/IP, to prevent brute force attacks 
+               using session_id spoofing or whatever */
+            Yii::app()->db->createCommand(
+                'UPDATE x2_sessions SET status=status-1,lastUpdated=:time WHERE user=:name AND 
+                CAST(IP AS CHAR)=:ip AND status BETWEEN -2 AND 0')
+                    ->bindValues(
+                        array(':time' => time(), ':name' => $effectiveUsername, ':ip' => $ip))
+                    ->execute();
+
+            $activeUser = Yii::app()->db->createCommand() // see if this is an actual, active user
+                    ->select('username')
+                    ->from('x2_users')
+                    ->where('username=:name AND status=1', array(':name' => $model->username))
+                    ->limit(1)
+                    ->queryScalar(); // get the correctly capitalized username  
+
+            //create new sessionToken and save to server
+            $sessionIdToken = PasswordUtil::getToken(32);
+
+            $sessionToken = new SessionToken;
+            $sessionToken->id = $sessionIdToken;
+            $sessionToken->user = $model->getSessionUserName();
+            $sessionToken->lastUpdated = time();
+            $sessionToken->status = 0;
+            $sessionToken->IP = $ip;
+
+        } else {
+
+            $sessionTokenCookie = Yii::app()->request->cookies['sessionToken']->value;
+            $sessionTokenModel = X2Model::model('SessionToken')->findByPk($sessionTokenCookie);
+
+            $userModel =  User::model()->findByAlias($sessionTokenModel->user);
+            $isRealUser = $userModel instanceof User;
+            $effectiveUsername = $isRealUser ? $userModel->username : null;
+            $isActiveUser = $isRealUser && $userModel->status == User::STATUS_ACTIVE;
+
+            /* increment count on every session with this user/IP, to prevent brute force attacks 
+               using session_id spoofing or whatever */
+            if($sessionTokenModel !== null){
                 Yii::app()->db->createCommand(
-                    'UPDATE x2_sessions SET status=status-1,lastUpdated=:time WHERE user=:name AND 
+                    'UPDATE x2_sessions_token SET status=status-1 WHERE user=:name AND 
                     CAST(IP AS CHAR)=:ip AND status BETWEEN -2 AND 0')
                         ->bindValues(
-                            array(':time' => time(), ':name' => $effectiveUsername, ':ip' => $ip))
+                            array(':name' => $sessionTokenModel->user, ':ip' => $ip))
                         ->execute();
+            }
 
-                $activeUser = Yii::app()->db->createCommand() // see if this is an actual, active user
-                        ->select('username')
-                        ->from('x2_users')
-                        ->where('username=:name AND status=1', array(':name' => $model->username))
-                        ->limit(1)
-                        ->queryScalar(); // get the correctly capitalized username  
-                      
+            $activeUser = Yii::app()->db->createCommand() // see if this is an actual, active user
+                    ->select('username')
+                    ->from('x2_users')
+                    ->where('username=:name AND status=1', array(':name' => $sessionTokenModel->user))
+                    ->limit(1)
+                    ->queryScalar(); // get the correctly capitalized username 
+
         }
+
 
         if(isset($_SESSION['sessionId']))
             $sessionId = $_SESSION['sessionId'];

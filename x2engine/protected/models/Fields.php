@@ -195,6 +195,26 @@ class Fields extends CActiveRecord {
             )->queryScalar();
     }
 
+    /**
+     * Check for use of this field in dynamic list criteria
+     * @return array Links to lists using this field in criteria
+     */
+    public function checkListCriteria() {
+        $lists = Yii::app()->db->createCommand()
+            ->select('l.id, l.name, c.id as criteriaId')
+            ->from('x2_list_criteria c')
+            ->join('x2_lists l', 'l.id = c.listId')
+            ->where('c.attribute = :attr', array(':attr' => $this->fieldName))
+            ->queryAll();
+        if (!empty($lists)) {
+            $listNames = array();
+            foreach ($lists as $list) {
+                $listNames[$list['criteriaId']] = CHtml::link($list['name'], array('/contacts/contacts/list?id='.$list['id']));
+            }
+            return $listNames;
+        }
+    }
+
     public static function getLinkTypes () {
         return Yii::app()->db->createCommand ("
             SELECT distinct(modelName)

@@ -258,8 +258,8 @@ class FormView extends RecordView {
         );
 
         $layout = FormLayout::model()->findByAttributes($attributes);
-
-        return CJSON::decode($layout->layout);
+        if ($layout)
+            return CJSON::decode($layout->layout);
     }
 
     public function renderLabel ($field) {

@@ -39,7 +39,8 @@ x2.EventCommentPublisherController = (function () {
 function EventCommentPublisherController (argsDict) {
     var argsDict = typeof argsDict === 'undefined' ? {} : argsDict;
     var defaultArgs = {
-        DEBUG: x2.DEBUG && false
+        DEBUG: x2.DEBUG && false,
+        translations: {},
     };
     auxlib.applyArgs (this, defaultArgs, argsDict);
     x2.Controller.call (this, argsDict);
@@ -96,12 +97,12 @@ EventCommentPublisherController.prototype.setUpForm = function () {
                         $.mobile.loading ('hide');
                     } else {
                         $.mobile.loading ('hide');
-                        x2.main.alert ('Upload failed', 'Error');
+                        x2.main.alert (that.translations['Upload failed'], that.translations['Error']);
                     }
                 },
                 function (error) {
                     $.mobile.loading ('hide');
-                    x2.main.alert (error.body, 'Error');
+                    x2.main.alert (error.body, that.translations['Error']);
                 }
             );
         }
@@ -128,12 +129,12 @@ EventCommentPublisherController.prototype.setUpForm = function () {
                         $.mobile.loading ('hide');
                     } else {
                         $.mobile.loading ('hide');
-                        x2.main.alert ('Upload failed', 'Error');
+                        x2.main.alert (that.translations['Upload failed'], that.translations['Error']);
                     }
                 },
                 function (error) {
                     $.mobile.loading ('hide');
-                    x2.main.alert (error.body, 'Error');
+                    x2.main.alert (error.body, that.translations['Error']);
                 }
             );
         }
@@ -160,20 +161,20 @@ EventCommentPublisherController.prototype.setUpForm = function () {
                                 $.mobile.activePage.find ('.reply-box').val()+" - "+theAddress
                             );
                        } catch (e) {
-                           alert("failed to parse response from server");
+                           alert(that.translations['failed to parse response from server']);
                        }
 
                        x2.main.refreshContent ();
                        $.mobile.loading ('hide');
                    }, function (jqXHR, textStatus, errorThrown) {
                        $.mobile.loading ('hide');
-                       x2.main.alert (textStatus, 'Error');
+                       x2.main.alert (textStatus, that.translations['Error']);
                    }
                ); 
                this.form$.find ('#geoLocationCoords').val("unset");
             }, function (error) {
-                alert('code: '    + error.code    + '\n' +
-                      'message: ' + error.message + '\n');
+                alert(that.translations['error code']+': ' + error.code    + '\n' +
+                      that.translations['error message']+': ' + error.message + '\n');
             }, {});         
         
         } 

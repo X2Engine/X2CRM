@@ -62,6 +62,9 @@ class MobileActiveForm extends X2ActiveForm {
             'locationPhotoAttrName' => $this->locationPhotoAttrName,
             'audioAttrName' => $this->audioAttrName,
             'videoAttrName' => $this->videoAttrName,
+            'translations' => ".CJSON::encode (array (
+                'Upload failed' => Yii::t('app','Upload failed'),
+            )).",
             'redirectUrl' => $this->redirectUrl ? $this->redirectUrl : AuxLib::getRequestUrl (),
         ));
     }
