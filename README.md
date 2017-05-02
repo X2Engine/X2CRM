@@ -1,20 +1,33 @@
-# 6.5.2 #
-12/23/2016
+# 6.6 #
+{releaseDate}
 * General Changelog / Developer Notes
+  * Campaign Improvements
+    * Email campaigns can now be scheduled
+    * Added email opened time and location to campaign launch grid
+    * Improved database performance of campaign email sends
   * X2Touch Improvements
-    * Added video attachments on iOS
-    * Added audio attachments on iOS and Android
-  * New X2Workflow actions for creating notifications, emails, text messages, and activity feed posts with records in a specified proximity
-  * Activity feed posts can now be associated with arbitrary records
-  * Added Twilio account type and SMS-based two factor authentication
-  * Checkin post formatting improvements
-  * Added weblead form thank you text customization
-  * Fixed Doc template usage with Opportunities
-  * Added option to toggle geolocation functionality
-  * Standard Actions can now be posted to a user's calendar
-  * Added ability to relabel existing relationships
-  * AnonContact webactivity visits can now be filtered from your notifications
+    * Added barcode scanner to import product barcode identifier
+    * Mobile publisher now supports voice to text notes
+  * X2Workflow Improvements
+    * New Location Trigger to support general workflow operations when a Location is logged
+    * Added AddToNewsletter workflow action to manage web leads on newsletter contact lists
+  * Added new feature tours
+  * Improved email client IMAP server compatibility, including with Dovecot, Exchange, Office365, and Rackspace
+  * Added new import console command with 'rollback' operation
+  * Added an admin page to locate missing records that may have been inadvertently hidden
+  * New RackspaceEmail account type
+  * Fixed bug in email subject replacement
+  * Enabled mass execute macro on Contact list grids
+  * Added option to weblead form designer to disable dupe detection by X2Identity on a per-form basis
+  * X2Packager stability fixes
+  * Fixed date format issue under French locale
+  * Miscellaneous UI enhancements
   * Miscellaneous bug fixes
+* Tracked Bug Fixes:
+  * [3703](http://x2software.com/index.php/bugReports/3703): Undefined index: X2List
+  * [5825](http://x2software.com/index.php/bugReports/5825): Call to a member function asa() on null
+  * [5966](http://x2software.com/index.php/bugReports/5966): Trying to get property of non-object
+  * [5971](http://x2software.com/index.php/bugReports/5971): Function mcrypt_create_iv() is deprecated
 
 # Introduction #
 Welcome to X2CRM!
