@@ -44,7 +44,7 @@
         'identity'=>Yii::app()->user->id,                      // the user, Yii::app()->user->id ?
         'selector'=>'#chat',                // were it will be inserted
         'minPostLen'=>2,                    // min and
-        'maxPostLen'=>10,                   // max string size for post
+        'maxPostLen'=>300,                   // max string size for post
         'model'=>new ChatHandler(),    // the class handler. **** FOR DEMO, READ MORE LATER IN THIS DOC ****
         'data'=>'any data',                 // data passed to the handler
         // success and error handlers, both optionals.
