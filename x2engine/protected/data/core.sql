@@ -38,6 +38,7 @@ DROP TABLE IF EXISTS x2_admin;
 CREATE TABLE x2_admin(
 	id                              INT				NOT NULL AUTO_INCREMENT PRIMARY KEY,
 	timeout                         INT,
+    maxUserCount                   INT                             DEFAULT 100000,
         loginCredsTimeout               INT                             DEFAULT 30,
         tokenPersist                    TINYINT         DEFAULT 1,
 	webLeadEmail			VARCHAR(255),
