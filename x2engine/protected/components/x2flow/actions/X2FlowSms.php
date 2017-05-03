@@ -37,7 +37,7 @@
  * ******************************************************************************** */
 
 /**
- * X2FlowAction that creates a notification
+ * X2FlowAction that sends an SMS via Twilio
  *
  * @package application.components.x2flow.actions
  */
@@ -46,6 +46,11 @@ class X2FlowSms extends X2FlowAction {
     public $title = 'Send SMS';
     public $info = 'Send an SMS. (Twilio Account Required)';
 
+    /**
+     * Sets parameter rules for action
+     * 
+     * @return type
+     */
     public function paramRules() {
         $credentials = Credentials::getCredentialOptions(null, 'twoFactorCredentialsId', 'sms');
 
@@ -73,6 +78,12 @@ class X2FlowSms extends X2FlowAction {
         );
     }
 
+    /**
+     * Executes action
+     * 
+     * @param type $params
+     * @return type
+     */
     public function execute(&$params) {
         $to = $this->formatPhoneNumber($this->parseOption('to', $params));
         $message = $this->parseOption('message', $params);
@@ -87,6 +98,12 @@ class X2FlowSms extends X2FlowAction {
         return array(true, YII_UNIT_TESTING ? $message : "");
     }
 
+    /**
+     * Formats a provided phone number to just integers
+     * 
+     * @param type $number
+     * @return type
+     */
     private function formatPhoneNumber($number) {
         return str_replace(' ', '', str_replace(')', '', str_replace('(', '', str_replace('-', '', $number))));
     }
