@@ -344,11 +344,13 @@ class ContactsController extends x2base {
         // Optional search parameter for autocomplete
         $qterm = isset($_GET['term']) ? $_GET['term'] . '%' : '';
         $static = isset($_GET['static']) && $_GET['static'];
+        $weblist = isset($_GET['weblist']) && $_GET['weblist'];
         $result = Yii::app()->db->createCommand()
                 ->select('id,name as value')
                 ->from('x2_lists')
                 ->where(
                         ($static ? 'type="static" AND ' : '') .
+                        ($weblist ? 'type="weblist" AND ' : '').
                         'modelName="Contacts" AND type!="campaign" 
                     AND name LIKE :qterm' . $condition, array(':qterm' => $qterm))
                 ->order('name ASC')
@@ -1593,6 +1595,7 @@ class ContactsController extends x2base {
             array(
                 'name' => 'quotes',
                 'label' => Yii::t('quotes', 'Quotes/Invoices'), 'url' => 'javascript:void(0)',
+                'visible' => (bool) Yii::app()->user->checkAccess('QuotesBasicAccess'),
                 'linkOptions' => array('onclick' => 'x2.inlineQuotes.toggle(); return false;')),
             array(
                 'name' => 'subscribe',

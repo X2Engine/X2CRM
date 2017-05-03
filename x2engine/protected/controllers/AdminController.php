@@ -1336,6 +1336,15 @@ class AdminController extends X2Controller {
         $count = 0;
         $importedContacts = false; // if Contacts were included in this package
         $errors = array();
+        $readIdFields = array( // Models which require their ID for relations
+            'AuthItem',
+            'AuthItemChild',
+            'Fields',
+            'Roles',
+            'RoleToPermission',
+            'Workflow',
+            'WorkflowStage',
+        );
 
         $csv = fopen($recordsFile, 'r');
         while (false !== ($arr = fgetcsv($csv)) && !is_null($arr)) {
@@ -1354,7 +1363,8 @@ class AdminController extends X2Controller {
                 if (class_exists($currentModel)) {
                     $model = new $currentModel;
                     foreach ($attributes as $key => $value) {
-                        if ($model->hasAttribute($key) && isset($value)) {
+                        if ((($key !== 'id' && $key !== 'nameId') || in_array($currentModel, $readIdFields))
+                                && $model->hasAttribute($key) && isset($value)) {
                             if ($value == "")
                                 $value = null;
                             $model->$key = $value;
@@ -4516,6 +4526,7 @@ class AdminController extends X2Controller {
             "description",
             "createDate",
             "lastUpdated",
+            "lastActivity",
             "updatedBy",
         );
 
@@ -4537,11 +4548,12 @@ class AdminController extends X2Controller {
                     // Export associated dropdown values
                     $dropdown = Dropdowns::model()->findByPk($field->linkType);
                     if ($dropdown) {
+                        $parent = empty($dropdown->parent) ? 'NULL' : "'".$dropdown->parent."'";
                         $sql .= "/*&*/INSERT INTO x2_dropdowns " .
                                 "(name, options, multi, parent, parentVal) " .
                                 "VALUES " .
                                 "('$dropdown->name', '$dropdown->options', '$dropdown->multi', " .
-                                "'$dropdown->parent', '$dropdown->parentVal');";
+                                "$parent, '$dropdown->parentVal');";
                         // Temporarily set the linkType to the dropdowns name: this is to avoid
                         // messy ID conflicts when importing a module to existing installations
                         $linkType = $dropdown->name;

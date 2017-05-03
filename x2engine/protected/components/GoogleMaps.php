@@ -54,6 +54,8 @@ class GoogleMaps extends X2Widget {
     public $modelParam = 'contactId';
 
     public function run() {
+        if (!Yii::app()->settings->enableMaps)
+            return;
     
         if((!isset($this->location) || empty($this->location)) && (!isset($this->activityLocations) || empty($this->activityLocations)))
             return;
