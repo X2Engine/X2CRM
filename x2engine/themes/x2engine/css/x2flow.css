@@ -68,6 +68,9 @@
 /* line 71, ../../../compass/themes/x2engine/css/x2flow.scss */
 #flow-actions .portlet-content {
   padding: 0;
+  height:250px;
+  overflow:hidden;
+  overflow-y:scroll;
 }
 
 /* line 75, ../../../compass/themes/x2engine/css/x2flow.scss */
