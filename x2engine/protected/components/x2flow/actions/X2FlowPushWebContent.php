@@ -1,5 +1,6 @@
 <?php
-/***********************************************************************************
+
+/* * *********************************************************************************
  * X2CRM is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2016 X2Engine Inc.
  * 
@@ -33,33 +34,32 @@
  * X2Engine" logo. If the display of the logo is not reasonably feasible for
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2Engine".
- **********************************************************************************/
-
-
+ * ******************************************************************************** */
 
 /**
  * Push Web Content Action
  *
  * @package application.components.x2flow.actions
  */
-class X2FlowPushWebContent  extends X2FlowAction {
-	public $title = 'Push Web Content';
-	public $info = 'Display custom web content to a contact visiting your website. This action terminates the flow.';
+class X2FlowPushWebContent extends X2FlowAction {
 
-	public function paramRules() {
-		return array_merge (parent::paramRules (), array (
-			'title' => Yii::t('studio', $this->title),
-			'info' => Yii::t('studio', $this->info),
-			'options' => array(
-				array(
-                    'name' => 'content', 
-                    'label' => Yii::t('studio', 'Message'), 
+    public $title = 'Push Web Content';
+    public $info = 'Display custom web content to a contact visiting your website. This action terminates the flow.';
+
+    public function paramRules() {
+        return array_merge(parent::paramRules(), array(
+            'title' => Yii::t('studio', $this->title),
+            'info' => Yii::t('studio', $this->info),
+            'options' => array(
+                array(
+                    'name' => 'content',
+                    'label' => Yii::t('studio', 'Message'),
                     'optional' => 1,
                     'type' => 'richtext'
                 ),
-			)
+            )
         ));
-	}
+    }
 
     /**
      * Returns a JS script which inserts the specified content into the DOM by replacing the
@@ -68,30 +68,30 @@ class X2FlowPushWebContent  extends X2FlowAction {
      * @param string $content the html content to place in the DOM
      * @param object $model the model with which to perform attribute replacement
      */
-    public static function getPushWebContentScript ($content, $model=null, $flowId) {
+    public static function getPushWebContentScript($content, $model = null, $flowId) {
         //AuxLib::debugLog ('getPushWebContentScript');
         if ($model) {
-            $targetedContent = Formatter::replaceVariables (
-                $content, $model);
+            $targetedContent = Formatter::replaceVariables(
+                            $content, $model);
         } else {
             $targetedContent = $content;
         }
 
         //AuxLib::debugLogR ($_COOKIE);
 
-        $targetedContent = preg_replace ("/\n/", '', $targetedContent);
-        $targetedContentScript = 'document.write ('.  
-            //CJSON::encode (html_entity_decode ($targetedContent)) .  ');';
-            CJSON::encode ($targetedContent) .  ');';
-        return array (true, "", $targetedContentScript);
-
+        $targetedContent = preg_replace("/\n/", '', $targetedContent);
+        $targetedContentScript = 'document.write (' .
+                //CJSON::encode (html_entity_decode ($targetedContent)) .  ');';
+                CJSON::encode($targetedContent) . ');';
+        return array(true, "", $targetedContentScript);
     }
 
-	public function execute(&$params, $triggerLogId=null, $flow=null) {
-        if (!isset ($params['model'])) return array (false, '');
-        return self::getPushWebContentScript (
-            $this->parseOption ('content', $params),
-            $params['model'], $flow->id
+    public function execute(&$params, $triggerLogId = null, $flow = null) {
+        if (!isset($params['model']))
+            return array(false, '');
+        return self::getPushWebContentScript(
+                        $this->parseOption('content', $params), $params['model'], $flow->id
         );
-	}
+    }
+
 }

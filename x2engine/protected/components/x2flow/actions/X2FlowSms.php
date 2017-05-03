@@ -37,62 +37,58 @@
  * ******************************************************************************** */
 
 /**
- * X2FlowAction that deletes a model
- * 
+ * X2FlowAction that creates a notification
+ *
  * @package application.components.x2flow.actions
  */
-class X2FlowRecordLocation extends BaseX2FlowLocation {
+class X2FlowSms extends X2FlowAction {
 
-    public $title = 'Create Notification from Record';
-    public $info = 'Create notification based on location of X2 user.';
+    public $title = 'Send SMS';
+    public $info = 'Send an SMS. (Twilio Account Required)';
 
     public function paramRules() {
-        $parentRules = parent::paramRules();
-        $parentRules['options'] = array_merge(
-                array(), $parentRules['options']
+        $credentials = Credentials::getCredentialOptions(null, 'twoFactorCredentialsId', 'sms');
+
+        return array_merge(
+                parent::paramRules(), array(
+            'title' => Yii::t('studio', $this->title),
+            'info' => Yii::t('studio', $this->info),
+            'options' => array(
+                array(
+                    'name' => 'from',
+                    'label' => Yii::t('studio', 'Send As'),
+                    'type' => 'dropdown',
+                    'options' => $credentials['credentials']
+                ),
+                array(
+                    'name' => 'to',
+                    'label' => 'Send To (Phone number)',
+                ),
+                array(
+                    'name' => 'message',
+                    'label' => 'Message',
+                ),
+            )
+                )
         );
-        return $parentRules;
     }
 
     public function execute(&$params) {
-        /*
-        $model = $params['model'];
-        //printR($model->name);
-        $isContact = is_a($model, 'Contacts');
-        $isUser = is_a($model, 'User');
-
-        if ($isContact) {
-            $record = $this->getContactFromRecord($model);
-            printR($record, true);
-            return $this->createNotification($params, $record->id);
-        }
-         *
-         */
-
-        /*
-          if ($params['model']->delete()) {
-          return array(true, "");
-          } else {
-          return array(false, "");
-          }
-         *
-         */
+        $to = $this->formatPhoneNumber($this->parseOption('to', $params));
+        $message = $this->parseOption('message', $params);
+        $from = Credentials::model()->findByPk($this->parseOption('from', $params));
+        $twilio = Yii::app()->controller->attachBehavior('TwilioBehavior', new TwilioBehavior);
+        $twilio->initialize(array(
+            'sid' => $from->auth->sid,
+            'token' => $from->auth->token,
+            'from' => $from->auth->from,
+        ));
+        $twilio->sendSMSMessage($to, $message);
+        return array(true, YII_UNIT_TESTING ? $message : "");
     }
 
-    private function createNotification(&$params, $text) {
-        $notif = new Notification;
-        $notif->user = $this->parseOption('to', $params);
-        $notif->createdBy = 'API';
-        $notif->createDate = time();
-        $notif->type = 'custom';
-        $notif->text = $text;
-
-        if ($notif->save()) {
-            return array(true, "");
-        } else {
-            $errors = $notif->getErrors();
-            return array(false, array_shift($errors));
-        }
+    private function formatPhoneNumber($number) {
+        return str_replace(' ', '', str_replace(')', '', str_replace('(', '', str_replace('-', '', $number))));
     }
 
 }
