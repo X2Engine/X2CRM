@@ -119,8 +119,7 @@ $config = array(
     'preload' => array('log'),
     // autoloading model and component classes
     'import' => array(
-		'application.extensions.yiichat.*',	
-	    'application.components.behaviors.ApplicationConfigBehavior',
+        'application.components.behaviors.ApplicationConfigBehavior',
         'application.components.X2UrlRule',
         'application.components.ThemeGenerator.ThemeGenerator',
         'application.components.formatters.*',
