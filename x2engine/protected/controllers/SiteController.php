@@ -94,8 +94,8 @@ class SiteController extends x2base {
                     'groupChat', 'newMessage', 'getMessages', 'checkNotifications', 'updateNotes',
                     'addPersonalNote', 'getNotes', 'getURLs', 'addSite', 'deleteMessage',
                     'fullscreen', 'widgetState', 'widgetOrder', 'saveGridviewSettings',
-                    'saveFormSettings', 'saveWidgetHeight', 'inlineEmail', 'tmpUpload', 'upload',
-                    'uploadProfilePicture', 'index', 'contact', 'viewNotifications', 'inlineEmail',
+                    'saveFormSettings', 'saveWidgetHeight', 'yiichat', 'inlineEmail', 'tmpUpload', 'upload',
+                    'uploadProfilePicture', 'index', 'contact', 'viewNotifications', 'yiichat', 'inlineEmail',
                     'toggleShowTags', 'appendTag', 'removeTag', 'printRecord',
                     'createRecords', 'toggleVisibility', 'page', 'showWidget', 'hideWidget',
                     'reorderWidgets', 'minimizeWidget', 'publishPost', 'getEvents', 'loadComments',
@@ -134,7 +134,8 @@ class SiteController extends x2base {
             // They can be accessed via: index.php?r=site/page&view=FileName
             'page' => array(
                 'class' => 'CViewAction',
-            ),
+			),
+			'yiichat'=>array('class'=>'YiiChatAction'),
             'inlineEmail' => array(
                 'class' => 'InlineEmailAction',
             ),
