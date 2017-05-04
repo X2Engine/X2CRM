@@ -296,21 +296,8 @@ $this->leftPortlets[] = array(
     'options' => array('title' => Yii::t('studio', 'Flow Actions'), 'id' => 'flow-actions'),
     'content' => $actionMenuHtml
 );
-
-// if(!empty($flowData))
-    // Yii::app()->clientScript->registerScript('vcrListCookie', 'var flowData = '.CJSON::encode($flowData), CClientScript::POS_READY);
-
-
-
-
-
 ?>
-<!--
-<div class="page-title"></div><span class="no-bold"></span>
 
-
-        'summaryText' => Yii::t('app', '<b>{start}&ndash;{end}</b> of <b>{count}</b>'),
--->
 <div class="page-title icon x2flow">
     <h2><?php echo $model->isNewRecord? Yii::t('studio', 'Create Workflow') : Yii::t('admin', 'Update Workflow'); ?></h2>
     <a class="x2-button highlight right" id="save-button" href="javascript:void(0);"><?php echo Yii::t('app', 'Save'); ?></a>
