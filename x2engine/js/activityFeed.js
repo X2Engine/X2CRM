@@ -165,13 +165,21 @@ ActivityFeed.prototype.publishPost = function  () {
 
     that.initMinimizeEditor ();
 
+    var associatedId = $("#Events_associationId").val();
+    if (window.location.href.includes("profile/view")) {
+        var re = new RegExp('/');
+        associatedId = window.location.href.split(re);
+        associatedId = associatedId[associatedId.length-1];
+    }
+    var editedString = window.location.href.replace("view/","");
+    window.history.pushState(window.location.href, "Title", editedString);
     $.ajax({
-        url:"publishPost",
+        url: "publishPost",
         type:"POST",
         data:{
             //"text":window.newPostEditor.getData(),
             "text":editorText,
-            "associationId":$("#Events_associationId").val(),
+            "associationId":associatedId,
             "visibility":$("#Events_visibility").val(),
             "subtype":$("#Events_subtype").val(),
             "recordLinks":$("#Events_recordLinks").val(),
