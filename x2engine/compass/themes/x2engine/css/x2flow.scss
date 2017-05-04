@@ -521,6 +521,10 @@ $edgeColor: #CCCCCC;
     background-image: url(../images/x2flow/X2FlowRecordComment.png);
 }
 
+.X2FlowSms {
+    background-image: url(../images/x2flow/X2FlowRecordComment.png);
+}
+
 .EmailOpenTrigger {
     background-image: url(../images/x2flow/NewsletterEmailOpenTrigger.png);
 }
@@ -531,6 +535,10 @@ $edgeColor: #CCCCCC;
 
 .InboundEmailTrigger {
     background-image: url(../images/x2flow/X2FlowInboundEmail.png);
+}
+
+.X2FlowRecordChange {
+    background-image: url(../images/x2flow/X2FlowRecordReassign.png);
 }
 
 .X2FlowRecordComment {
@@ -545,8 +553,6 @@ $edgeColor: #CCCCCC;
     background-image: url(../images/x2flow/X2FlowCreateAction.png);
 }
 
-/* X2FlowRecordCreateAction.png */
-
 .X2FlowRecordDelete {
     background-image: url(../images/x2flow/X2FlowRecordDelete.png);
 }
@@ -555,14 +561,16 @@ $edgeColor: #CCCCCC;
     background-image: url(../images/x2flow/X2FlowEmail.png);
 }
 
-/* X2FlowRecordEmail.png */
-
 .X2FlowRecordListAdd {
     background-image: url(../images/x2flow/X2FlowRecordListAdd.png);
 }
 
 .X2FlowRecordListRemove {
     background-image: url(../images/x2flow/X2FlowRecordListRemove.png);
+}
+
+.X2FlowRecordNewsletterAdd {
+    background-image: url(../images/x2flow/X2FlowRecordListAdd.png);
 }
 
 .X2FlowRecordReassign {
@@ -674,6 +682,12 @@ $edgeColor: #CCCCCC;
     .X2FlowLocationText {
         background-image: url(../images/x2flow/small/X2FlowRecordComment.png);
     }
+    .X2FlowSms {
+        background-image: url(../images/x2flow/small/X2FlowRecordComment.png);
+    }
+    .X2FlowRecordChange {
+        background-image: url(../images/x2flow/small/X2FlowRecordReassign.png);
+    }
     .X2FlowRecordComment {
         background-image: url(../images/x2flow/small/X2FlowRecordComment.png);
     }
@@ -694,6 +708,9 @@ $edgeColor: #CCCCCC;
     }
     .X2FlowRecordListRemove {
         background-image: url(../images/x2flow/small/X2FlowRecordListRemove.png);
+    }
+    .X2FlowRecordNewsletterAdd {
+        background-image: url(../images/x2flow/small/X2FlowRecordListAdd.png);
     }
     .X2FlowRecordReassign {
         background-image: url(../images/x2flow/small/X2FlowRecordReassign.png);

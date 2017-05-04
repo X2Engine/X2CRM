@@ -85,9 +85,6 @@ class X2FlowWait extends X2FlowAction {
                     'type' => 'dropdown',
                     'options' => $units
                 ),
-            // array('name'=>'user','label'=>'User','type'=>'assignment','options'=>$assignmentOptions),	// just users, no groups or 'anyone'
-            // array('name'=>'type','label'=>'Type','type'=>'dropdown','options'=>$notifTypes),
-            // array('name'=>'timeOfDay','type'=>'time','label'=>'Time of Day','optional'=>1),
         )));
     }
 
