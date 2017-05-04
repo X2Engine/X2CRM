@@ -1,6 +1,5 @@
 <?php
-
-/* * *********************************************************************************
+/***********************************************************************************
  * X2CRM is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2016 X2Engine Inc.
  * 
@@ -34,65 +33,25 @@
  * X2Engine" logo. If the display of the logo is not reasonably feasible for
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2Engine".
- * ******************************************************************************** */
+ **********************************************************************************/
 
-/**
- * X2FlowAction that deletes a model
- * 
- * @package application.components.x2flow.actions
- */
-class X2FlowRecordLocation extends BaseX2FlowLocation {
+?>
 
-    public $title = 'Create Notification from Record';
-    public $info = 'Create notification based on location of X2 user.';
+<div id='chat'></div>
+<?php 
+  $this->widget('YiiChatWidget',array(
+        'chat_id'=>'123',                   // a chat identificator
+        'identity'=>Yii::app()->user->id,                      // the user, Yii::app()->user->id ?
+        'selector'=>'#chat',                // were it will be inserted
+        'minPostLen'=>2,                    // min and
+        'maxPostLen'=>300,                   // max string size for post
+        'model'=>new ChatHandler(),    // the class handler. **** FOR DEMO, READ MORE LATER IN THIS DOC ****
+        'data'=>'any data',                 // data passed to the handler
+        // success and error handlers, both optionals.
+        'onSuccess'=>new CJavaScriptExpression(
+            "function(code, text, post_id){   }"),
+        'onError'=>new CJavaScriptExpression(
+            "function(errorcode, info){  }"),
+    ));
 
-    public function paramRules() {
-        $parentRules = parent::paramRules();
-        $parentRules['options'] = array_merge(
-                array(), $parentRules['options']
-        );
-        return $parentRules;
-    }
-
-    public function execute(&$params) {
-        /*
-        $model = $params['model'];
-        //printR($model->name);
-        $isContact = is_a($model, 'Contacts');
-        $isUser = is_a($model, 'User');
-
-        if ($isContact) {
-            $record = $this->getContactFromRecord($model);
-            printR($record, true);
-            return $this->createNotification($params, $record->id);
-        }
-         *
-         */
-
-        /*
-          if ($params['model']->delete()) {
-          return array(true, "");
-          } else {
-          return array(false, "");
-          }
-         *
-         */
-    }
-
-    private function createNotification(&$params, $text) {
-        $notif = new Notification;
-        $notif->user = $this->parseOption('to', $params);
-        $notif->createdBy = 'API';
-        $notif->createDate = time();
-        $notif->type = 'custom';
-        $notif->text = $text;
-
-        if ($notif->save()) {
-            return array(true, "");
-        } else {
-            $errors = $notif->getErrors();
-            return array(false, array_shift($errors));
-        }
-    }
-
-}
+?>
