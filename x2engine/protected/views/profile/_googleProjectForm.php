@@ -174,13 +174,7 @@ $model->renderProtectedInput ('projectId');
 echo CHtml::activeLabel($model, 'apiKey');
 $model->renderProtectedInput ('apiKey');
 
-<<<<<<< HEAD
-echo CHtml::activeLabel($model, 'Service Account json key file');
-echo CHtml::fileField('keyFile', '', array('id'=>'keyFile'));
-$model->renderProtectedInputHidden ('serviceAccountKeyFileContents');
-echo '<br>';
-echo Yii::t('app','Allowed filetypes: .json'); 
-=======
+
 /*
  * For taking in Google JSON server key file
  * 
@@ -191,7 +185,6 @@ echo Yii::t('app','Allowed filetypes: .json');
  * echo Yii::t('app','Allowed filetypes: .json'); 
  * 
  */
->>>>>>> 23f337d10a0e12c764813e8a0dd7a428db5976fb
 
 echo CHtml::tag ('h3', array (), Yii::t('app', 'Google Analytics Integration'));
 echo '<hr />';

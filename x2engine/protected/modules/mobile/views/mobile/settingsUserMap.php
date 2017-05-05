@@ -69,6 +69,18 @@ $this->onPageLoad ("
         ?>
         </div>
     </div>
+    <div class="field-container">
+        <div class="field-label"><?php 
+            echo CHtml::encode ($profile->getField ('translatetolanguage')->attributeLabel); 
+        ?></div>
+        <div class="field-value">
+        <?php
+        echo X2Model::renderModelInput ($profile, $profile->getField ('language'), array (
+            'class' => 'profile-translate-to-language',
+        ));
+        ?>
+        </div>
+    </div>
     <?php
      
     if (Yii::app()->params->isPhoneGap) {
