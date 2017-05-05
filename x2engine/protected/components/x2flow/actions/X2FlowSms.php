@@ -85,7 +85,7 @@ class X2FlowSms extends X2FlowAction {
      * @return type
      */
     public function execute(&$params) {
-        $to = $this->formatPhoneNumber($this->parseOption('to', $params));
+        $to = $this->formatPhoneNumber($this->parseOption('to', $params, false));
         $message = $this->parseOption('message', $params);
         $from = Credentials::model()->findByPk($this->parseOption('from', $params));
         $twilio = Yii::app()->controller->attachBehavior('TwilioBehavior', new TwilioBehavior);
@@ -105,7 +105,7 @@ class X2FlowSms extends X2FlowAction {
      * @return type
      */
     private function formatPhoneNumber($number) {
-        return str_replace(' ', '', str_replace(')', '', str_replace('(', '', str_replace('-', '', $number))));
+        return str_replace(array(' ', ')', '(', '-'), '', $number);
     }
 
 }
