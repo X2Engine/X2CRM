@@ -141,7 +141,7 @@ class MobileActionHistoryAttachmentsPublishAction extends MobileAction {
                 $key = Yii::app()->settings->getGoogleApiKey('speech');
 
                 // Check if the attachment is an audio file and if avconv is installed
-                if ($media->isAudio() && AuxLib::command_exist("avconv")) {
+                if ($media->isAudio() &&  !AuxLib::isAndroid() && AuxLib::command_exist("avconv")) {
                     //check if google service account key file is present
                     if(isset($key) 
                         && !empty($key)) {
