@@ -93,24 +93,39 @@ class MobilePublisherAction extends MobileAction {
                 //AuxLib::debugLogR ('valid');
                 $event = new Events;
                 $eventTextLocation = '';
-                if (!empty($model->textLocation))
+                if (!empty($model->textLocation)) {
                     $eventTextLocation = $model->text . '$|&|$' . ' ' . '$|&|$' . 
                               $model->textLocation . ' | '. 
                               Formatter::formatDateTime(time());
-                else 
+                } else {
                     $eventTextLocation = $model->text . '$|&|$' . ' ' . '$|&|$';
+                }
                     
-                $event->setAttributes (array (
-                    'visibility' => X2PermissionsBehavior::VISIBILITY_PUBLIC,
-                    'user' => $profile->username,
-                    'type' => 'media',
-                    'text' => $eventTextLocation,
-                    'photo' => $model->photo,
-                    'audio' => $model->audio
-                    //'video' => $model->video
-                ), false);
-                if ($location)
+                if ($model->photo || $model->audio) {
+                    $event->setAttributes (array (
+                        'visibility' => X2PermissionsBehavior::VISIBILITY_PUBLIC,
+                        'user' => $profile->username,
+                        'type' => 'media',
+                        'text' => $eventTextLocation,
+                        'photo' => $model->photo,
+                        'audio' => $model->audio
+                        //'video' => $model->video
+                    ), false);
+                } else {
+                    $event->setAttributes (array (
+                        'visibility' => X2PermissionsBehavior::VISIBILITY_PUBLIC,
+                        'user' => $profile->username,
+                        'type' => 'feed',
+                        'text' => $eventTextLocation,
+                        'photo' => $model->photo,
+                        'audio' => $model->audio
+                        //'video' => $model->video
+                    ), false);                    
+                }
+                
+                if ($location) {
                     $event->locationId = $location->id;
+                }
                 if ($key && !empty($decodedResult) && !empty($model->textLocation)) {
                     if ($event->saveRaw ($profile,$decodedResult)) {
                         if (!isset ($_FILES['EventPublisherFormModel'])) {
