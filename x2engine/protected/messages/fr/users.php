@@ -45,4 +45,8 @@
   'You should now have access as "{user}" with the new password specified.' => 'Vous devriez maintenant avoir accès comme {user} avec le nouveau mot de passe spécifié.',
   'View {users} Map' => 'Voir {users} Plan',
   'User Location Map' => 'Localisation utilisateur Carte',
+  'Inactive' => 'Inactif',
+  'Are you sure you want to deactivate this users two factor auth requirement?' => 'Êtes-vous sûr de vouloir désactiver cette exigence d&#39;authentification de deux utilisateurs?',
+  'Successfully deactivated two factor auth' => 'Désactivé avec succès deux facteurs auth',
+  'Sorry, we are not creating anymore user accounts at this time.' => 'Désolé, nous ne créons plus de comptes d&#39;utilisateurs pour le moment.',
 );

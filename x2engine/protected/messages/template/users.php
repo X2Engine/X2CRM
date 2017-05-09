@@ -46,4 +46,7 @@
   'Invalid reset link.' => '',
   'View {users} Map' => '',
   'User Location Map' => '',
+  'Inactive' => '',
+  'Are you sure you want to deactivate this users two factor auth requirement?' => '',
+  'Successfully deactivated two factor auth' => '',
 );

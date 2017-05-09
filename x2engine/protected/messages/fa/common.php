@@ -618,4 +618,10 @@
   'Check-in comment' => 'چک در نظر',
   'Email Opened' => 'ایمیل باز',
   'Email Clicked' => 'ایمیل کلیک',
+  'X2 Hub Services' => 'X2 خدمات توپی',
+  'Manage User Count' => 'مدیریت تعداد کاربر',
+  'Error' => 'خطا',
+  'View {module} on Map' => 'نمایش {module} بر روی نقشه',
+  'Disabled' => 'معلول',
+  'Enabled' => 'فعال',
 );

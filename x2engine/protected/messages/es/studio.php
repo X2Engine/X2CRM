@@ -194,4 +194,9 @@
   'Changed to {recordLink}.' => 'Cambiado a {recordLink} .',
   'Unable to change record.' => 'No se puede cambiar de registro.',
   'Invalid configuration.' => 'Configuración no válida.',
+  'Welcome to the X2Workflow designer!' => '¡Bienvenido al diseñador de X2Workflow!',
+  'This visual workflow designer allows you to build automation rules to take action when various events occur, such as web activity on your site or a campaign email click.' => 'Este diseñador de flujo de trabajo visual le permite crear reglas de automatización para tomar acción cuando se producen varios eventos, como la actividad web en su sitio o un clic de correo electrónico de la campaña.',
+  'First you will want to select your trigger, the event which will initiate your automation rules.' => 'Primero usted querrá seleccionar su gatillo, el evento que iniciará sus reglas de automatización.',
+  'There various actions available to automate tasks, including emailing contacts and updating record details. There are also flow control actions, like conditions and split paths, to allow more flexible workflows.' => 'Hay varias acciones disponibles para automatizar tareas, incluyendo enviar contactos por correo electrónico y actualizar los detalles del registro. También hay acciones de control de flujo, como condiciones y rutas de división, para permitir flujos de trabajo más flexibles.',
+  'This is the visual workflow designer area, which allows you to drag and drop actions from the left hand menu to organize your workflow logic.' => 'Este es el área de diseño de flujo de trabajo visual, que le permite arrastrar y soltar acciones desde el menú de la izquierda para organizar su lógica de flujo de trabajo.',
 );

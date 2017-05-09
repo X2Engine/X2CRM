@@ -194,4 +194,9 @@
   'Changed to {recordLink}.' => '変更{recordLink}',
   'Unable to change record.' => 'レコードを変更することができません。',
   'Invalid configuration.' => '無効な設定。',
+  'Welcome to the X2Workflow designer!' => 'X2Workflowデザイナーへようこそ！',
+  'This visual workflow designer allows you to build automation rules to take action when various events occur, such as web activity on your site or a campaign email click.' => 'このビジュアルワークフローデザイナでは、サイトのWebアクティビティやキャンペーンの電子メールのクリックなど、さまざまなイベントが発生したときにアクションを実行するための自動化ルールを作成できます。',
+  'First you will want to select your trigger, the event which will initiate your automation rules.' => '最初に、自動化ルールを開始するイベントであるトリガーを選択します。',
+  'There various actions available to automate tasks, including emailing contacts and updating record details. There are also flow control actions, like conditions and split paths, to allow more flexible workflows.' => '連絡先を電子メールで送信し、レコードの詳細を更新するなどのタスクを自動化するために利用できるさまざまなアクションがあり。より柔軟なワークフローを可能にするために、条件とスプリットパスと同様に、制御動作を流れもあります。',
+  'This is the visual workflow designer area, which allows you to drag and drop actions from the left hand menu to organize your workflow logic.' => 'これは視覚的なワークフローデザイナ領域で、左のメニューからアクションをドラッグ＆ドロップして、ワークフローロジックを整理できます。',
 );

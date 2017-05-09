@@ -78,4 +78,8 @@
   'Save Map' => 'שמור מפה',
   'View ' => 'נוף',
   'Clear Marker' => 'דה מרקר נקה',
+  'Seen by' => 'נראה ע&quot;י',
+  'Hide Directions' => 'הסתר את ההוראות',
+  'Clear Route' => 'נתיב ברור',
+  'View Contact Map' => 'הצג מפת איש קשר',
 );

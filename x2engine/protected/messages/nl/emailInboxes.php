@@ -61,7 +61,6 @@
   'Auto-log inbound emails' => 'Auto-log inkomende e-mails',
   'From' => 'Van',
   'Copy to Sent Folder' => 'Kopiëren naar map Verzonden',
-  'Disabled' => 'invalide',
   'Failed to associate message "{subject}" with {type} {model}' => 'Mislukt bericht associëren &quot; {subject} &quot; met {type} {model}',
   'Message "{subject}" already associated with {type} {model}' => 'Message &quot; {subject} &quot; reeds in verband met {type} {model}',
   'Disable Quota Operations' => 'Uitschakelen Quota Operations',

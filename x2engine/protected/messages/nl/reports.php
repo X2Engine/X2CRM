@@ -62,4 +62,5 @@
   'Save Changes' => 'Wijzigingen opslaan',
   'Please supply the full path to the report on the Jasper Server, e.g., /Reports/MyReport. This can be found by right clicking on your report in the Jasper Server and selecting "Properties."' => 'Gelieve het volledige pad naar het rapport over de Jasper-server, bijvoorbeeld / Reports / MyReport. Dit kan gevonden worden door rechts te klikken op uw rapport in de Jasper-server en te kiezen voor &#39;Eigenschappen&#39;.',
   'Failed to load external report. Please check your Jasper Server credential details.' => 'Kan extern rapport te laden. Controleer uw Jasper Server referenties details.',
+  'Create Contact List' => 'Maak contactlijst aan',
 );

@@ -618,4 +618,10 @@
   'Check-in comment' => 'צ&#39;ק-אין תגובה',
   'Email Opened' => 'דוא&quot;ל נפתח',
   'Email Clicked' => 'דוא&quot;ל שנלחץ',
+  'X2 Hub Services' => 'X2 שירותים לרכזת',
+  'Manage User Count' => 'ניהול ספירת משתמשים',
+  'Error' => 'שְׁגִיאָה',
+  'View {module} on Map' => 'הצג {module} במפה',
+  'Disabled' => 'נָכֶה',
+  'Enabled' => 'מאופשר',
 );

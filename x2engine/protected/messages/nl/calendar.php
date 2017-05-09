@@ -83,4 +83,5 @@
   'When:' => 'Wanneer:',
   'Please select one of the options below to confirm your status.' => 'Selecteer een van de onderstaande opties om je status te bevestigen.',
   'Maybe' => 'Kan zijn',
+  'Thanks for RSVPing! Your attendance has been updated to ' => 'Bedankt voor RSVPing! Uw aanwezigheid is bijgewerkt aan',
 );
