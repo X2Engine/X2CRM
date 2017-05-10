@@ -559,7 +559,7 @@ class ApiController extends x2base {
             $this->_sendResponse(400, 'Invalid phone number format.');
             return;
         }
-        
+
         $number = $matches[0];
 
         // Creates model criteria
@@ -653,10 +653,9 @@ class ApiController extends x2base {
         if ($failure) {
             $message = 'Saving notifications failed.';
         } else {
-            /* X2Flow::trigger('RecordVoipInboundTrigger', array(
-              'model' => $contact,
-              'number' => $matches[0]
-              )); */
+            X2Flow::trigger('VoipInboundTrigger', array(
+                'model' => $contact
+            ));
             $message = 'Notifications created for user(s): ' .
                     implode(',', $usersSuccess);
 
