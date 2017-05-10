@@ -194,4 +194,9 @@
   'Changed to {recordLink}.' => 'Gewijzigd in {recordLink} .',
   'Unable to change record.' => 'Niet in staat om op te nemen veranderen.',
   'Invalid configuration.' => 'Ongeldige configuratie.',
+  'Welcome to the X2Workflow designer!' => 'Welkom bij de X2Workflow ontwerper!',
+  'This visual workflow designer allows you to build automation rules to take action when various events occur, such as web activity on your site or a campaign email click.' => 'Met deze visuele workflow ontwerper kunt u automatiseringsregels bouwen om actie te ondernemen wanneer er verschillende gebeurtenissen optreden, zoals webactiviteit op uw site of een campagne e-mail klik.',
+  'First you will want to select your trigger, the event which will initiate your automation rules.' => 'Eerst zal u uw trigger selecteren, het evenement dat uw automatiseringsregels zal starten.',
+  'There various actions available to automate tasks, including emailing contacts and updating record details. There are also flow control actions, like conditions and split paths, to allow more flexible workflows.' => 'Er zijn verschillende acties beschikbaar om taken te automatiseren, inclusief contactpersonen en het bijwerken van recordgegevens. Er zijn ook flow control acties, zoals voorwaarden en split paths, om flexibele workflows mogelijk te maken.',
+  'This is the visual workflow designer area, which allows you to drag and drop actions from the left hand menu to organize your workflow logic.' => 'Dit is de visuele workflow ontwerper gebied, waarmee u te slepen en acties dalen van het menu aan de linkerkant om uw werkstroomlogica te organiseren.',
 );

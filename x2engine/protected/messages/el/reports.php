@@ -62,4 +62,5 @@
   'Save Changes' => 'Αποθήκευσε τις αλλαγές',
   'Please supply the full path to the report on the Jasper Server, e.g., /Reports/MyReport. This can be found by right clicking on your report in the Jasper Server and selecting "Properties."' => 'Παρακαλώ δώστε την πλήρη διαδρομή για την έκθεση σχετικά με την Jasper Server, π.χ., / Εκθέσεις / MyReport. Αυτό μπορεί να βρεθεί κάνοντας δεξί κλικ για την έκθεσή σας στην Jasper Server και επιλέγοντας &quot;Ιδιότητες&quot;.',
   'Failed to load external report. Please check your Jasper Server credential details.' => 'Αποτυχία φόρτωσης εξωτερική έκθεση. Παρακαλώ ελέγξτε Τζάσπερ διακομιστή διαπιστευτηρίων τα στοιχεία σας.',
+  'Create Contact List' => 'Δημιουργία λίστας επαφών',
 );

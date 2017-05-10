@@ -78,4 +78,8 @@
   'Save Map' => '保存地图',
   'View ' => '视图',
   'Clear Marker' => '清除标记',
+  'Seen by' => '看到了',
+  'Hide Directions' => '隐藏地图',
+  'Clear Route' => '清除路线',
+  'View Contact Map' => '查看联系地图',
 );

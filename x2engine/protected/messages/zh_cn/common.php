@@ -618,4 +618,10 @@
   'Check-in comment' => '入住评论',
   'Email Opened' => '电子邮件开业',
   'Email Clicked' => '电子邮件已点击',
+  'X2 Hub Services' => 'X2 Hub服务',
+  'Manage User Count' => '管理用户计数',
+  'Error' => '错误',
+  'View {module} on Map' => '在地图上查看{module}',
+  'Disabled' => '残',
+  'Enabled' => '启用',
 );

@@ -83,4 +83,5 @@
   'When:' => 'いつ：',
   'Please select one of the options below to confirm your status.' => '自分のステータスを確認するには、以下のいずれかのオプションを選択してください。',
   'Maybe' => '多分',
+  'Thanks for RSVPing! Your attendance has been updated to ' => 'RSVPingありがとう！あなたの出席が更新されました',
 );

@@ -61,7 +61,6 @@
   'Auto-log inbound emails' => 'Auto-journal emails entrants',
   'From' => 'De',
   'Copy to Sent Folder' => 'Copier dans un dossier Envoyés',
-  'Disabled' => 'désactivé',
   'Failed to associate message "{subject}" with {type} {model}' => 'Impossible d&#39;associer un message &quot; {subject} &quot; avec {type} {model}',
   'Message "{subject}" already associated with {type} {model}' => 'Message &quot; {subject} &quot; déjà associé à {type} {model}',
   'Disable Quota Operations' => 'Désactiver les opérations de quotas',

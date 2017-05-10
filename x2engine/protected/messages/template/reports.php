@@ -62,4 +62,5 @@
   'Save Changes' => '',
   'Please supply the full path to the report on the Jasper Server, e.g., /Reports/MyReport. This can be found by right clicking on your report in the Jasper Server and selecting "Properties."' => '',
   'Failed to load external report. Please check your Jasper Server credential details.' => '',
+  'Create Contact List' => '',
 );

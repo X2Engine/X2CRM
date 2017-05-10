@@ -120,4 +120,6 @@
   'Event Status' => 'Status de Evento',
   'Calendar Color' => 'calendário Cor',
   'Enter email addresses, one per line' => 'Digite os endereços de e-mail, linha um por',
+  'Add to Calendar' => 'Adicionar ao calendário',
+  'By default, the Contact who sent the email will be associated.' => 'Por padrão, o contato que enviou o e-mail será associado.',
 );

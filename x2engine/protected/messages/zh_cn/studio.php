@@ -194,4 +194,9 @@
   'Changed to {recordLink}.' => '改为{recordLink} 。',
   'Unable to change record.' => '无法更改的记录。',
   'Invalid configuration.' => '无效的配置。',
+  'Welcome to the X2Workflow designer!' => '欢迎来到X2Workflow设计师！',
+  'This visual workflow designer allows you to build automation rules to take action when various events occur, such as web activity on your site or a campaign email click.' => '这种可视化工作流程设计器允许您构建自动化规则，以在各种事件发生时采取行动，例如您网站上的网络活动或广告系列电子邮件点击。',
+  'First you will want to select your trigger, the event which will initiate your automation rules.' => '首先，您将要选择您的触发器，该事件将启动您的自动化规则。',
+  'There various actions available to automate tasks, including emailing contacts and updating record details. There are also flow control actions, like conditions and split paths, to allow more flexible workflows.' => '有各种可用于自动执行任务的操作，包括发送联系人和更新记录详细信息。还有流量控制操作，如条件和拆分路径，以允许更灵活的工作流程。',
+  'This is the visual workflow designer area, which allows you to drag and drop actions from the left hand menu to organize your workflow logic.' => '这是可视化工作流设计器区域，它允许您从左侧菜单中拖放操作以组织工作流逻辑。',
 );

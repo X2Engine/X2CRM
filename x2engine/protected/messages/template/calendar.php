@@ -83,4 +83,5 @@
   'When:' => '',
   'Please select one of the options below to confirm your status.' => '',
   'Maybe' => '',
+  'Thanks for RSVPing! Your attendance has been updated to ' => '',
 );

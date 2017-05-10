@@ -62,4 +62,5 @@
   'Save Changes' => 'שמור שינויים',
   'Please supply the full path to the report on the Jasper Server, e.g., /Reports/MyReport. This can be found by right clicking on your report in the Jasper Server and selecting "Properties."' => 'נא למלא את הנתיב המלא הדיווח על שרת ג&#39;ספר, למשל, / דוחות / הדוח_שלי. זה ניתן למצוא על ידי לחיצה ימנית על הדוח שלך שרת ג&#39;ספר ובחירת &quot;מאפיינים&quot;.',
   'Failed to load external report. Please check your Jasper Server credential details.' => 'נכשל ניסיון לטעון דו&quot;ח חיצוני. אנא קראו פרטי אישורי שרת ג&#39;ספר שלך.',
+  'Create Contact List' => 'צור רשימת אנשי קשר',
 );

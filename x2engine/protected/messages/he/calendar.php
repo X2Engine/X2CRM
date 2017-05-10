@@ -83,4 +83,5 @@
   'When:' => 'מתי:',
   'Please select one of the options below to confirm your status.' => 'אנא בחר אחת מהאפשרויות להלן כדי לאשר את מצבך.',
   'Maybe' => 'אולי',
+  'Thanks for RSVPing! Your attendance has been updated to ' => 'תודה על RSVPing! הנוכחות שלך עודכנה',
 );

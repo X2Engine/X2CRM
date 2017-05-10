@@ -78,4 +78,8 @@
   'Save Map' => '保存地図',
   'View ' => 'ビュー',
   'Clear Marker' => 'クリアマーカー',
+  'Seen by' => 'で見られる',
+  'Hide Directions' => '方向を隠す',
+  'Clear Route' => 'クリアルート',
+  'View Contact Map' => 'お問い合わせマップを表示',
 );

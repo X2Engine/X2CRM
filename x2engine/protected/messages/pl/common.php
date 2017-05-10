@@ -618,4 +618,10 @@
   'Check-in comment' => 'Zameldowanie komentarz',
   'Email Opened' => 'email otwarty',
   'Email Clicked' => 'Email Kliknięte',
+  'X2 Hub Services' => 'Usługi Hubów X2',
+  'Manage User Count' => 'Zarządzaj licznikami użytkowników',
+  'Error' => 'Błąd',
+  'View {module} on Map' => 'Wyświetl {module} na mapie',
+  'Disabled' => 'Niepełnosprawny',
+  'Enabled' => 'Włączone',
 );
