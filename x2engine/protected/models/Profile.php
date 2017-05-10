@@ -178,6 +178,7 @@ class Profile extends X2ActiveRecord {
                     } else {
                         throw new CHttpException (500, Yii::t('app', 'Failed to fetch location photo'));
                     }
+                    curl_close($ch);
                 }
 
 

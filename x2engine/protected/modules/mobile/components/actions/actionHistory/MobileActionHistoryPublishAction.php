@@ -66,10 +66,38 @@ class MobileActionHistoryPublishAction extends MobileAction {
         $valid = false;
         if ($type === 'all' && isset($_POST['Actions'])){
             $valid = true;
-            $action->actionDescription = $_POST['Actions']['actionDescription'];
-            $action->type = 'note';
-        }
+            $settings = Yii::app()->settings;
+            $creds = Credentials::model()->findByPk($settings->googleCredentialsId);
+            $languages =  array('en' => 'English');
+            if ($creds && $creds->auth && !empty($creds->auth->apiKey)) {
+                $key = $creds->auth->apiKey;
+                $url = 'https://translation.googleapis.com/language/translate/v2/languages?'
+                        .'&key=' . $key . '&target=' .$profile->translatetolanguage . '&q='.$_POST['Actions']['actionDescription'];
 
+                //open connection
+                $ch = curl_init();
+
+                //set the url, number of POST vars, POST data
+                curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+                curl_setopt($ch,CURLOPT_URL, $url);
+
+                //execute post
+                $result = curl_exec($ch);
+                $http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+
+                if($http_code === 200){
+                    //close connection
+                    $result_translatedText = json_decode($result);
+
+
+                } else {
+                    throw new CHttpException (500, Yii::t('app', 'Failed to fetch location photo'));
+                }
+                curl_close($ch);
+                $action->actionDescription = $result_translatedText;
+                $action->type = 'note';
+            }
+        }
         if ($valid && $action->save ()) {
             $this->controller->renderPartial (
                 'application.modules.mobile.views.mobile._actionHistory', array (
