@@ -151,10 +151,33 @@ class Profile extends X2ActiveRecord {
 
             if($http_code === 200){
                 //close connection
-                $result_array = json_decode($result);
+                $result_array_short = json_decode($result);
 
-                for ($i = 0; $i < count($result_array->{'data'}->{'languages'}); $i++) {
-                    $languages[$result_array->{'data'}->{'languages'}[$i]->{'language'}]=$result_array->{'data'}->{'languages'}[$i]->{'language'};
+                for ($i = 0; $i < count($result_array_short->{'data'}->{'languages'}); $i++) {
+                    $url = 'https://translation.googleapis.com/language/translate/v2/languages?'
+                    .'&key=' . $key . '&target=' . $result_array_short->{'data'}->{'languages'}[$i]->{'language'};
+                    //open connection
+                    $ch = curl_init();
+
+                    //set the url, number of POST vars, POST data
+                    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+                    curl_setopt($ch,CURLOPT_URL, $url);
+
+                    //execute post
+                    $result = curl_exec($ch);
+                    $http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+
+                    if($http_code === 200){
+                        $result_array = json_decode($result);
+                        for ($x = 0; $x < count($result_array->{'data'}->{'languages'}); $x++) {
+                            if ($result_array->{'data'}->{'languages'}[$x]->{'language'} == $result_array_short->{'data'}->{'languages'}[$i]->{'language'}){
+                                $languages[$result_array_short->{'data'}->{'languages'}[$i]->{'language'}] = $result_array->{'data'}->{'languages'}[$x]->{'name'};
+                            }
+                        }
+
+                    } else {
+                        throw new CHttpException (500, Yii::t('app', 'Failed to fetch location photo'));
+                    }
                 }
 
 

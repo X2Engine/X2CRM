@@ -75,7 +75,7 @@ $this->onPageLoad ("
         ?></div>
         <div class="field-value">
         <?php
-        echo X2Model::renderModelInput ($profile, $profile->getField ('language'), array (
+        echo X2Model::renderModelInput ($profile, $profile->getField ('translatetolanguage'), array (
             'class' => 'profile-translate-to-language',
         ));
         ?>
