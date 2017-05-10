@@ -62,4 +62,5 @@
   'Save Changes' => 'Salva I Cambiamenti',
   'Please supply the full path to the report on the Jasper Server, e.g., /Reports/MyReport. This can be found by right clicking on your report in the Jasper Server and selecting "Properties."' => 'Si prega di fornire il percorso completo del report sul server di Jasper, ad esempio, / Reports / MyReport. Questo può essere trovato facendo clic destro sul vostro rapporto in Jasper Server e selezionando &quot;Proprietà&quot;.',
   'Failed to load external report. Please check your Jasper Server credential details.' => 'Impossibile caricare relazione esterna. Si prega di verificare i dati delle credenziali Jasper Server.',
+  'Create Contact List' => 'Crea elenco contatti',
 );

@@ -120,4 +120,6 @@
   'Event Status' => 'イベントステータス',
   'Calendar Color' => 'カレンダーの色',
   'Enter email addresses, one per line' => 'メールアドレスを入力し、1あたりのライン',
+  'Add to Calendar' => 'カレンダーに追加',
+  'By default, the Contact who sent the email will be associated.' => 'デフォルトでは、電子メールを送信した連絡先が関連付けられます。',
 );

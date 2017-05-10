@@ -194,4 +194,9 @@
   'Changed to {recordLink}.' => 'Άλλαξε σε {recordLink} .',
   'Unable to change record.' => 'Δεν μπορείτε να αλλάξετε ρεκόρ.',
   'Invalid configuration.' => 'Μη έγκυρη διαμόρφωση.',
+  'Welcome to the X2Workflow designer!' => 'Καλώς ήλθατε στον σχεδιαστή του X2Workflow!',
+  'This visual workflow designer allows you to build automation rules to take action when various events occur, such as web activity on your site or a campaign email click.' => 'Αυτός ο οπτικός σχεδιασμός ροής εργασίας σάς επιτρέπει να δημιουργήσετε κανόνες αυτοματισμού για να αναλάβετε δράση όταν συμβαίνουν διάφορα συμβάντα, όπως η δραστηριότητα ιστού στον ιστότοπό σας ή ένα κλικ ηλεκτρονικού ταχυδρομείου καμπάνιας.',
+  'First you will want to select your trigger, the event which will initiate your automation rules.' => 'Πρώτα θα θελήσετε να επιλέξετε τη σκανδάλη σας, το συμβάν που θα ξεκινήσει τους κανόνες αυτοματοποίησης.',
+  'There various actions available to automate tasks, including emailing contacts and updating record details. There are also flow control actions, like conditions and split paths, to allow more flexible workflows.' => 'Υπάρχουν διάφορες διαθέσιμες ενέργειες για την αυτοματοποίηση εργασιών, συμπεριλαμβανομένης της αποστολής ηλεκτρονικών μηνυμάτων επαφών και της ενημέρωσης των λεπτομερειών των εγγραφών. Υπάρχουν επίσης ενέργειες ελέγχου ροής, όπως συνθήκες και διαχωρισμένες διαδρομές, για να επιτρέπονται πιο ευέλικτες ροές εργασίας.',
+  'This is the visual workflow designer area, which allows you to drag and drop actions from the left hand menu to organize your workflow logic.' => 'Αυτή είναι η περιοχή σχεδίασης ροής εργασίας, η οποία σας επιτρέπει να μεταφέρετε και να αποθέσετε ενέργειες από το αριστερό μενού για να οργανώσετε τη λογική της ροής εργασίας σας.',
 );

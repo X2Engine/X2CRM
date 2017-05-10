@@ -26,4 +26,8 @@
   'Web Address' => '',
   'Add photo attachment' => '',
   'Add file attachment' => '',
+  'Failed to retrieve static map. Please ensure that Google Integration is enabled.' => '',
+  'Add video attachment' => '',
+  'Add location attachment' => '',
+  'Add audio note' => '',
 );

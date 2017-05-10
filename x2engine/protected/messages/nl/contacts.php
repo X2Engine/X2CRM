@@ -78,4 +78,8 @@
   'Save Map' => 'Opslaan Kaart',
   'View ' => 'Uitzicht',
   'Clear Marker' => 'Clear Marker',
+  'Seen by' => 'Gezien door',
+  'Hide Directions' => 'Verberg routebeschrijving',
+  'Clear Route' => 'Duidelijke route',
+  'View Contact Map' => 'Bekijk contactkaart',
 );

@@ -83,4 +83,5 @@
   'When:' => 'چه زمانی:',
   'Please select one of the options below to confirm your status.' => 'لطفا یکی از گزینه های زیر را برای تأیید وضعیت خود را انتخاب کنید.',
   'Maybe' => 'شاید',
+  'Thanks for RSVPing! Your attendance has been updated to ' => 'با تشکر برای RSVPing! حضور شما شده است به روز شده',
 );

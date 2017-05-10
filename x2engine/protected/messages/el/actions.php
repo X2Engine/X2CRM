@@ -120,4 +120,6 @@
   'Event Status' => 'Κατάσταση Εκδήλωση',
   'Calendar Color' => 'Ημερολόγιο χρώμα',
   'Enter email addresses, one per line' => 'Εισάγετε τις διευθύνσεις ηλεκτρονικού ταχυδρομείου, μια γραμμή ανά',
+  'Add to Calendar' => 'Προσθήκη στο ημερολόγιο',
+  'By default, the Contact who sent the email will be associated.' => 'Από προεπιλογή, η επαφή που έστειλε το μήνυμα ηλεκτρονικού ταχυδρομείου θα συσχετιστεί.',
 );

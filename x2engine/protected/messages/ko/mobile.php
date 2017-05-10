@@ -26,4 +26,8 @@
   'Web Address' => '웹 주소',
   'Add photo attachment' => '사진 첨부 파일 추가',
   'Add file attachment' => '첨부 파일 추가',
+  'Failed to retrieve static map. Please ensure that Google Integration is enabled.' => '정적지도를 가져 오지 못했습니다. Google 통합이 활성화되어 있는지 확인하십시오.',
+  'Add video attachment' => '동영상 첨부 파일 추가',
+  'Add location attachment' => '위치 첨부 파일 추가',
+  'Add audio note' => '음성 메모 추가',
 );

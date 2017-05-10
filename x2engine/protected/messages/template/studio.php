@@ -201,4 +201,9 @@
   'Changed to {recordLink}.' => '',
   'Unable to change record.' => '',
   'Invalid configuration.' => '',
+  'Welcome to the X2Workflow designer!' => '',
+  'This visual workflow designer allows you to build automation rules to take action when various events occur, such as web activity on your site or a campaign email click.' => '',
+  'First you will want to select your trigger, the event which will initiate your automation rules.' => '',
+  'There various actions available to automate tasks, including emailing contacts and updating record details. There are also flow control actions, like conditions and split paths, to allow more flexible workflows.' => '',
+  'This is the visual workflow designer area, which allows you to drag and drop actions from the left hand menu to organize your workflow logic.' => '',
 );

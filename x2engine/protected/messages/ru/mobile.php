@@ -27,4 +27,8 @@
   'Add photo attachment' => 'Прикрепить фотографию',
   'Add file attachment' => 'Прикрепить файл',
   'Delete Record' => 'Удалить запись',
+  'Failed to retrieve static map. Please ensure that Google Integration is enabled.' => 'Не удалось получить статическую карту. Убедитесь, что включена интеграция Google.',
+  'Add video attachment' => 'Добавить вложение видео',
+  'Add location attachment' => 'Добавить приложение для местоположения',
+  'Add audio note' => 'Добавить звуковую заметку',
 );

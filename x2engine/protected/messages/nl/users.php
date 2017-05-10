@@ -45,4 +45,8 @@
   'You should now have access as "{user}" with the new password specified.' => 'Je hebt nu toegang als {user} met het nieuwe wachtwoord opgegeven.',
   'View {users} Map' => 'Bekijk {users} Map',
   'User Location Map' => 'Gebruiker Location Map',
+  'Inactive' => 'Inactief',
+  'Are you sure you want to deactivate this users two factor auth requirement?' => 'Weet u zeker dat u deze gebruikers twee factuurautoriteiten wilt deactiveren?',
+  'Successfully deactivated two factor auth' => 'Twee factor auth is succesvol gedeactiveerd',
+  'Sorry, we are not creating anymore user accounts at this time.' => 'Sorry, we creëren nog geen gebruikersaccounts op dit moment.',
 );
