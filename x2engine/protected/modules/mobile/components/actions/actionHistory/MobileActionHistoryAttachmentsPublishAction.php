@@ -207,9 +207,9 @@ class MobileActionHistoryAttachmentsPublishAction extends MobileAction {
                         $translateCheck = isset ($_POST['translateCheck']) ? $_POST['translateCheck'] : "";  
                         $result_translatedText = '';
                         if ($translateCheck === 'TRUE'){
-                            $url = 'https://translation.googleapis.com/language/translate/v2/languages?'
-                            .'&key=' . $key . '&target=' . 'en';
-
+                            $url = 'https://translation.googleapis.com/language/translate/v2/detect?key=' 
+                                    . $key . '&q=' . $audioText;
+                                
                             //set the url, number of POST vars, POST data
                             curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
                             curl_setopt($ch,CURLOPT_URL, $url);
@@ -217,7 +217,25 @@ class MobileActionHistoryAttachmentsPublishAction extends MobileAction {
                             //execute post
                             $result = curl_exec($ch);
                             $http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+                            $languageDetected = '';
+                            if($http_code === 200){
+                                $result_array = json_decode($result);
+                                $languageDetected = $result_array->{'data'}->{'detections'}[0]->{'language'};
+                            } else {
+                                throw new CHttpException (500, Yii::t('app', 'Failed to fetch location photo'));
+                            }
 
+                            $url = 'https://translation.googleapis.com/language/translate/v2/languages?'
+                            .'&key=' . $key . '&target=' . $languageDetected;
+                            
+                            //set the url, number of POST vars, POST data
+                            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+                            curl_setopt($ch,CURLOPT_URL, $url);
+
+                            //execute post
+                            $result = curl_exec($ch);
+                            $http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+                            
                             if($http_code === 200){
                                 $result_array = json_decode($result);
                                 for ($x = 0; $x < count($result_array->{'data'}->{'languages'}); $x++) {
