@@ -43,7 +43,7 @@
  */
 class LocationTrigger extends X2FlowTrigger {
 
-    public $title = 'Contact Location Trigger';
+    public $title = 'Contact Location';
     public $info = 'Triggers when a contact\'s location is logged.';
 
     public function paramRules() {
