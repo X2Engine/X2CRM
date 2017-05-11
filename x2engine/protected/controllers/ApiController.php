@@ -546,7 +546,8 @@ class ApiController extends x2base {
 
         // Checks if a phone number was given
         if (!isset($data)) {
-            $this->_sendResponse(400, 'Phone number required as "data" URL parameter.');
+            $this->_sendResponse(400, 'Phone number required as "data" '
+                    . 'URL parameter.');
             return;
         }
 
@@ -567,8 +568,8 @@ class ApiController extends x2base {
             'condition' => "modelType='Contacts' AND number LIKE :number",
             'params' => array(':number' => "%$number%")
         ));
-        $phoneCrit->join = 'join x2_contacts on modelId=x2_contacts.id AND ' .
-                Contacts::model()->getHiddenCondition('x2_contacts');
+        $phoneCrit->join = 'join x2_contacts on modelId=x2_contacts.id AND '
+                . Contacts::model()->getHiddenCondition('x2_contacts');
 
         // Finds phone number through model given model criteria
         $phoneNumber = PhoneNumber::model()->find($phoneCrit);
@@ -584,8 +585,8 @@ class ApiController extends x2base {
 
         // Checks if contact not found
         if (!isset($contact)) {
-            $this->_sendResponse(404, 'Phone number record refers to a ' .
-                    'contact that no longer exists.');
+            $this->_sendResponse(404, 'Phone number record refers to a '
+                    . 'contact that no longer exists.');
             return;
         }
 
@@ -599,8 +600,8 @@ class ApiController extends x2base {
         // If contact is not assigned to any specific user
         if ($contact->assignedTo == 'Anyone' || $contact->assignedTo == null) {
             $users = User::model()->findAll();
-            $assignees = array_map(function($u) {
-                return $u->username;
+            $assignees = array_map(function($user) {
+                return $user->username;
             }, $users);
         }
 
@@ -641,7 +642,8 @@ class ApiController extends x2base {
             $action->type = 'call';
             $action->complete = 'Yes';
             $action->completedBy = 'Anyone';
-            $action->actionText = Yii::t('app', 'Phone system reported inbound call from contact.');
+            $action->actionText = Yii::t('app', 'Phone system reported'
+                            . ' inbound call from contact.');
             $action->save();
         }
 
@@ -653,9 +655,11 @@ class ApiController extends x2base {
         if ($failure) {
             $message = 'Saving notifications failed.';
         } else {
+            // Voip inbound trigger
             X2Flow::trigger('VoipInboundTrigger', array(
                 'model' => $contact
             ));
+
             $message = 'Notifications created for user(s): ' .
                     implode(',', $usersSuccess);
 
