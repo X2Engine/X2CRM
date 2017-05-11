@@ -200,8 +200,63 @@ class MobileActionHistoryAttachmentsPublishAction extends MobileAction {
                         
                         //parse result_array to get text
                         $audioText = $result_array['results'][0]['alternatives'][0]['transcript'];
+                        $action->actionDescription = $audioText;
                         unlink($pathToTempFlac); //delete created flac file (was only used for audio to text translation anyway) 
                         $action->delete(); //delete audio file attachment action because the text is aquired by this point
+                        $translateCheck = isset ($_POST['translateCheck']) ? $_POST['translateCheck'] : "";  
+                        $result_translatedText = '';
+                        if ($translateCheck === 'TRUE'){
+                            $url = 'https://translation.googleapis.com/language/translate/v2/languages?'
+                            .'&key=' . $key . '&target=' . 'en';
+                            //open connection
+                            $ch = curl_init();
+
+                            //set the url, number of POST vars, POST data
+                            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+                            curl_setopt($ch,CURLOPT_URL, $url);
+
+                            //execute post
+                            $result = curl_exec($ch);
+                            $http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+
+                            if($http_code === 200){
+                                $result_array = json_decode($result);
+                                for ($x = 0; $x < count($result_array->{'data'}->{'languages'}); $x++) {
+                                    $nameOfLanguage = $result_array->{'data'}->{'languages'}[$x]->{'name'};
+                                    if (strpos($audioText, $nameOfLanguage) !== false){
+                                        $splicedString = explode($nameOfLanguage, $audioText);
+                                        $stringNeedingTranslation = $splicedString[1];
+                                        $url = 'https://translation.googleapis.com/language/translate/v2/languages?'
+                                                .'&key=' . $key . '&target=' .$nameOfLanguage . '&q='.$stringNeedingTranslation;
+
+                                        //open connection
+                                        $ch = curl_init();
+
+                                        //set the url, number of POST vars, POST data
+                                        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+                                        curl_setopt($ch,CURLOPT_URL, $url);
+
+                                        //execute post
+                                        $result = curl_exec($ch);
+                                        $http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+
+                                        if($http_code === 200){
+                                            //close connection
+                                            $result_translatedText = json_decode($result);
+                                            $action->actionDescription = $result_translatedText;
+
+                                        } else {
+                                            throw new CHttpException (500, Yii::t('app', 'Failed to fetch location photo'));
+                                        } 
+                                        curl_close($ch);
+                                    }
+                                }
+
+                            } else {
+                                throw new CHttpException (500, Yii::t('app', 'Failed to fetch location photo'));
+                            }
+                            curl_close($ch);
+                        }
                         $action = new Actions;
                         $action->setAttributes (array (
                             'associationType' => X2Model::getAssociationType (get_class ($model)), 
@@ -213,7 +268,7 @@ class MobileActionHistoryAttachmentsPublishAction extends MobileAction {
                             'completedBy' => Yii::app()->user->getName (),
                             'private' => 0,
                         ), false);
-                        $action->actionDescription = $audioText;
+                        
                         $action->type = 'note';
 
                         if(!$action->save ()) {
