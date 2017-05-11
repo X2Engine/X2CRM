@@ -186,10 +186,11 @@ class MobileActionHistoryAttachmentsPublishAction extends MobileAction {
 
                         $data_string = json_encode($data);                                                              
 
-                        $ch = curl_init($googlespeechURL);                                                                      
+                        $ch = curl_init();                                                                      
                         curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");                                                                     
                         curl_setopt($ch, CURLOPT_POSTFIELDS, $data_string);                                                                  
-                        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);                                                                      
+                        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);  
+                        curl_setopt($ch,CURLOPT_URL, $googlespeechURL);
                         curl_setopt($ch, CURLOPT_HTTPHEADER, array(                                                                          
                            'Content-Type: application/json',                                                                                
                            'Content-Length: ' . strlen($data_string))                                                                       
@@ -208,8 +209,6 @@ class MobileActionHistoryAttachmentsPublishAction extends MobileAction {
                         if ($translateCheck === 'TRUE'){
                             $url = 'https://translation.googleapis.com/language/translate/v2/languages?'
                             .'&key=' . $key . '&target=' . 'en';
-                            //open connection
-                            $ch = curl_init();
 
                             //set the url, number of POST vars, POST data
                             curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
@@ -229,9 +228,6 @@ class MobileActionHistoryAttachmentsPublishAction extends MobileAction {
                                         $url = 'https://translation.googleapis.com/language/translate/v2/languages?'
                                                 .'&key=' . $key . '&target=' .$nameOfLanguage . '&q='.$stringNeedingTranslation;
 
-                                        //open connection
-                                        $ch = curl_init();
-
                                         //set the url, number of POST vars, POST data
                                         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
                                         curl_setopt($ch,CURLOPT_URL, $url);
@@ -248,15 +244,14 @@ class MobileActionHistoryAttachmentsPublishAction extends MobileAction {
                                         } else {
                                             throw new CHttpException (500, Yii::t('app', 'Failed to fetch location photo'));
                                         } 
-                                        curl_close($ch);
                                     }
                                 }
 
                             } else {
                                 throw new CHttpException (500, Yii::t('app', 'Failed to fetch location photo'));
                             }
-                            curl_close($ch);
                         }
+                        curl_close($ch);
                         $action = new Actions;
                         $action->setAttributes (array (
                             'associationType' => X2Model::getAssociationType (get_class ($model)), 
