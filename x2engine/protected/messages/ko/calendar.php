@@ -83,4 +83,5 @@
   'When:' => '언제:',
   'Please select one of the options below to confirm your status.' => '상태를 확인하기 위해 아래 옵션 중 하나를 선택하십시오.',
   'Maybe' => '아마도',
+  'Thanks for RSVPing! Your attendance has been updated to ' => '회신 해 주셔서 감사합니다! 참석자 수는 (으)로 업데이트되었습니다.',
 );

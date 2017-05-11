@@ -195,4 +195,9 @@
   'Changed to {recordLink}.' => 'Изменен {recordLink} .',
   'Unable to change record.' => 'Невозможно изменить запись.',
   'Invalid configuration.' => 'Недопустимая конфигурация.',
+  'Welcome to the X2Workflow designer!' => 'Добро пожаловать в дизайнер X2Workflow!',
+  'This visual workflow designer allows you to build automation rules to take action when various events occur, such as web activity on your site or a campaign email click.' => 'Этот визуальный конструктор рабочего процесса позволяет создавать правила автоматизации для принятия мер при возникновении различных событий, таких как веб-активность на вашем сайте или клик по электронной почте кампании.',
+  'First you will want to select your trigger, the event which will initiate your automation rules.' => 'Сначала вы захотите выбрать свой триггер, событие, которое инициирует ваши правила автоматизации.',
+  'There various actions available to automate tasks, including emailing contacts and updating record details. There are also flow control actions, like conditions and split paths, to allow more flexible workflows.' => 'Существуют различные действия, позволяющие автоматизировать задачи, включая отправку контактов по электронной почте и обновление данных записи. Существуют также действия по управлению потоком, такие как условия и разбитые пути, чтобы обеспечить более гибкие рабочие процессы.',
+  'This is the visual workflow designer area, which allows you to drag and drop actions from the left hand menu to organize your workflow logic.' => 'Это область визуального рабочего процесса, которая позволяет перетаскивать действия из меню левой руки, чтобы организовать логику рабочего процесса.',
 );

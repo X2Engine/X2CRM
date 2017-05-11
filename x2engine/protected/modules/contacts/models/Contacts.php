@@ -129,6 +129,13 @@ class Contacts extends X2Model {
         ));
     }
 
+    public function afterDelete() {
+        parent::afterDelete();
+        // Remove associated X2ListItems
+        Yii::app()->db->createCommand()
+            ->delete('x2_list_items', 'contactId = :id', array(':id' => $this->id));
+    }
+
     /**
      * Updates tracking key after find
      */

@@ -26,4 +26,8 @@
   'Web Address' => 'Webadres',
   'Add photo attachment' => 'Voeg foto attachment',
   'Add file attachment' => 'Voeg bestandsbijlage',
+  'Failed to retrieve static map. Please ensure that Google Integration is enabled.' => 'Kan de statische kaart niet ophalen. Zorg ervoor dat Google Integration is ingeschakeld.',
+  'Add video attachment' => 'Voeg videobestand toe',
+  'Add location attachment' => 'Voeg locatiebijlage toe',
+  'Add audio note' => 'Voeg audio notitie toe',
 );

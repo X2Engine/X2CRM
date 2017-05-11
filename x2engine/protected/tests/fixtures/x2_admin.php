@@ -39,6 +39,8 @@ return array(
 '0' => array (
   'id' => '1',
   'timeout' => '3600',
+  'loginCredsTimeout' => '30',
+  'tokenPersist' => '1',
   'webLeadEmail' => 'test@example.com',
   'webLeadEmailAccount' => '-1',
   'webTrackerCooldown' => '60',

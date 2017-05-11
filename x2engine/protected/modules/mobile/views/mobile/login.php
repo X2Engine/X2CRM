@@ -145,11 +145,6 @@ if ($model->hasErrors () && !isset($_COOKIE['sessionToken'])) {
     </div>
     
     <script type="text/javascript">
-        /*function getCookie(name){
-            var value = "; " + document.cookie;
-            var parts = value.split("; " + name + "=");
-            if (parts.length == 2) return parts.pop().split(";").shift();
-        }*/
 
         function setCookie(cname, cvalue, exdays) {
             var d = new Date();
@@ -176,8 +171,15 @@ if ($model->hasErrors () && !isset($_COOKIE['sessionToken'])) {
         if(isset($_COOKIE['sessionToken'])){
             $sessionTokenCookie = $_COOKIE['sessionToken'];
             $sessionTokenModel = X2Model::model('SessionToken')->findByPk($sessionTokenCookie);
+            $admin = &Yii::app()->settings;
+            
             if($sessionTokenModel === null)
                 unset(Yii::app()->request->cookies['sessionToken']);
+            if ($admin->tokenPersist === 0) {
+                if ($sessionTokenModel->lastUpdated + $admin->loginCredsTimeout >= time()) 
+                    unset(Yii::app()->request->cookies['sessionToken']);
+                
+            }         
         }
         
         if(isset($_COOKIE['sessionToken'])) {

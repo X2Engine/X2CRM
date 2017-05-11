@@ -952,11 +952,13 @@ class X2ClientScript extends NLSClientScript {
         $enableGeolocation = Yii::app()->settings->enableGeolocation;
         $noDNT = (!isset ($_SERVER['HTTP_DNT']) || $_SERVER['HTTP_DNT'] != 1);
         if ($onLocationButton) {
-            $key = Yii::app()->settings->getGoogleApiKey('geocoding');
-            $assetUrl = 'https://maps.googleapis.com/maps/api/js';
-            if (!empty($key))
-                $assetUrl .= '?key='.$key;
-            Yii::app()->clientScript->registerScriptFile($assetUrl, CClientScript::POS_END);
+            if (Yii::app()->settings->enableMaps) {
+                $key = Yii::app()->settings->getGoogleApiKey('geocoding');
+                $assetUrl = 'https://maps.googleapis.com/maps/api/js';
+                if (!empty($key))
+                    $assetUrl .= '?key='.$key;
+                Yii::app()->clientScript->registerScriptFile($assetUrl, CClientScript::POS_END);
+            }
             Yii::app()->clientScript->registerScript('geolocationJs', '
                 $("#toggle-location-button").click(function (evt) {
                     evt.preventDefault();

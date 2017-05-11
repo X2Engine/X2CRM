@@ -26,4 +26,8 @@
   'Web Address' => 'آدرس وب',
   'Add photo attachment' => 'اضافه کردن پیوست عکس',
   'Add file attachment' => 'اضافه کردن فایل پیوست',
+  'Failed to retrieve static map. Please ensure that Google Integration is enabled.' => 'برای بازیابی نقشه های استاتیک شکست خورده است. لطفا اطمینان حاصل شود که ادغام گوگل را فعال کنید.',
+  'Add video attachment' => 'اضافه کردن پیوست های ویدئویی',
+  'Add location attachment' => 'اضافه کردن پیوست محل',
+  'Add audio note' => 'اضافه کردن توجه داشته باشید صوتی',
 );

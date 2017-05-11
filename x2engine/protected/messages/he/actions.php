@@ -120,4 +120,6 @@
   'Event Status' => 'סטטוס אירוע',
   'Calendar Color' => 'צבע לוח שנה',
   'Enter email addresses, one per line' => 'זן כתובות דוא&quot;ל, אחת בכל שורה',
+  'Add to Calendar' => 'הוסף ליומן',
+  'By default, the Contact who sent the email will be associated.' => 'כברירת מחדל, איש הקשר ששלח את האימייל ישויך.',
 );

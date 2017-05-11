@@ -7,7 +7,6 @@
   'One or more relationships could not be deleted.' => '',
   'Request type not supported for this action.' => '',
   'Tags not added.' => '',
-  'Error' => '',
   'Cannot delete; no parameters specified for finding a relationship record to delete.' => '',
   'No relationships deleted; none were found matching specfied parameters.' => '',
   'Couldn\'t perform {a} on model {m}' => '',

@@ -78,4 +78,8 @@
   'Save Map' => '',
   'View ' => '',
   'Clear Marker' => '',
+  'Seen by' => '',
+  'Hide Directions' => '',
+  'Clear Route' => '',
+  'View Contact Map' => '',
 );

@@ -618,4 +618,10 @@
   'Check-in comment' => 'チェックインのコメント',
   'Email Opened' => 'メール開設',
   'Email Clicked' => 'メールのClicked',
+  'X2 Hub Services' => 'X2ハブサービス',
+  'Manage User Count' => 'ユーザーカウントの管理',
+  'Error' => 'エラー',
+  'View {module} on Map' => 'ビュー{module}地図上の',
+  'Disabled' => '無効',
+  'Enabled' => '有効',
 );

@@ -78,4 +78,8 @@
   'Save Map' => 'ذخیره نقشه',
   'View ' => 'چشم انداز',
   'Clear Marker' => 'پاک نشانگر',
+  'Seen by' => 'دیده شده توسط',
+  'Hide Directions' => 'مخفی کردن دستورالعمل',
+  'Clear Route' => 'پاک کردن مسیر',
+  'View Contact Map' => 'نمایش نقشه تماس',
 );

@@ -37,61 +37,75 @@
  * ******************************************************************************** */
 
 /**
- * Push Web Content Action
+ * X2FlowAction that sends an SMS via Twilio
  *
  * @package application.components.x2flow.actions
  */
-class X2FlowPushWebContent extends X2FlowAction {
+class X2FlowSms extends X2FlowAction {
 
-    public $title = 'Push Web Content';
-    public $info = 'Display custom web content to a contact visiting your website. This action terminates the flow.';
+    public $title = 'Send SMS';
+    public $info = 'Send an SMS. (Twilio Account Required)';
 
+    /**
+     * Sets parameter rules for action
+     * 
+     * @return type
+     */
     public function paramRules() {
-        return array_merge(parent::paramRules(), array(
+        $credentials = Credentials::getCredentialOptions(null, 'twoFactorCredentialsId', 'sms');
+
+        return array_merge(
+                parent::paramRules(), array(
             'title' => Yii::t('studio', $this->title),
             'info' => Yii::t('studio', $this->info),
             'options' => array(
                 array(
-                    'name' => 'content',
-                    'label' => Yii::t('studio', 'Message'),
-                    'optional' => 1,
-                    'type' => 'richtext'
+                    'name' => 'from',
+                    'label' => Yii::t('studio', 'Send As'),
+                    'type' => 'dropdown',
+                    'options' => $credentials['credentials']
+                ),
+                array(
+                    'name' => 'to',
+                    'label' => 'Send To (Phone number)',
+                ),
+                array(
+                    'name' => 'message',
+                    'label' => 'Message',
                 ),
             )
-        ));
+                )
+        );
     }
 
     /**
-     * Returns a JS script which inserts the specified content into the DOM by replacing the
-     * targeted content script.
+     * Executes action
      * 
-     * @param string $content the html content to place in the DOM
-     * @param object $model the model with which to perform attribute replacement
+     * @param type $params
+     * @return type
      */
-    public static function getPushWebContentScript($content, $model = null, $flowId) {
-        //AuxLib::debugLog ('getPushWebContentScript');
-        if ($model) {
-            $targetedContent = Formatter::replaceVariables(
-                            $content, $model);
-        } else {
-            $targetedContent = $content;
-        }
-
-        //AuxLib::debugLogR ($_COOKIE);
-
-        $targetedContent = preg_replace("/\n/", '', $targetedContent);
-        $targetedContentScript = 'document.write (' .
-                //CJSON::encode (html_entity_decode ($targetedContent)) .  ');';
-                CJSON::encode($targetedContent) . ');';
-        return array(true, "", $targetedContentScript);
+    public function execute(&$params) {
+        $to = $this->formatPhoneNumber($this->parseOption('to', $params, false));
+        $message = $this->parseOption('message', $params);
+        $from = Credentials::model()->findByPk($this->parseOption('from', $params));
+        $twilio = Yii::app()->controller->attachBehavior('TwilioBehavior', new TwilioBehavior);
+        $twilio->initialize(array(
+            'sid' => $from->auth->sid,
+            'token' => $from->auth->token,
+            'from' => $from->auth->from,
+        ));
+        $twilio->sendSMSMessage($to, $message);
+        return array(true, YII_UNIT_TESTING ? $message : "");
     }
 
-    public function execute(&$params, $triggerLogId = null, $flow = null) {
-        if (!isset($params['model']))
-            return array(false, '');
-        return self::getPushWebContentScript(
-                        $this->parseOption('content', $params), $params['model'], $flow->id
-        );
+    /**
+     * Formats a provided phone number to just integers
+     * 
+     * @param type $number
+     * @return type
+     */
+    private function formatPhoneNumber($number) {
+        return str_replace(array(' ', ')', '(', '-'), '', $number);
     }
 
 }

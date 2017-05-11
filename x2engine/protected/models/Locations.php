@@ -141,11 +141,11 @@ class Locations extends CActiveRecord
     }
 
     public function getLocationLink($text = null, $nonX2googleMaps=false) {
-        if (!Yii::app()->settings->enableMaps) return;
         if ($nonX2googleMaps) {
             $provider = 'https://google.com/maps/?q='.$this->lat.','.$this->lon;
             return $provider;   
         }
+        if (!Yii::app()->settings->enableMaps) return;
         $coords = '('.$this->lat.', '.$this->lon.')';
         if (is_null($text)) {
             if (!empty($this->comment))
