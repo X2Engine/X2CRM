@@ -62,4 +62,5 @@
   'Save Changes' => '変更内容を保存',
   'Please supply the full path to the report on the Jasper Server, e.g., /Reports/MyReport. This can be found by right clicking on your report in the Jasper Server and selecting "Properties."' => ' MyReportというジャスパーサーバ、例えば、/レポートのレポートへのフルパスを入力してください。これは、ジャスパーServerおよび選択でレポートを右クリックして見つけることができる &quot;プロパティ&quot;。',
   'Failed to load external report. Please check your Jasper Server credential details.' => '外部レポートの読み込みに失敗しました。あなたのジャスパーサーバーの資格情報の詳細を確認してください。',
+  'Create Contact List' => '連絡先リストを作成します。',
 );

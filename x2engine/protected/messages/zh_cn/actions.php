@@ -120,4 +120,6 @@
   'Event Status' => '事件状态',
   'Calendar Color' => '日历颜色',
   'Enter email addresses, one per line' => '输入电子邮件地址，每行一个',
+  'Add to Calendar' => '添加到日历',
+  'By default, the Contact who sent the email will be associated.' => '默认情况下，发送电子邮件的联系人将被关联。',
 );

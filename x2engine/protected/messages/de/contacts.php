@@ -78,4 +78,8 @@
   'Save Map' => 'Speichern Karte',
   'View ' => 'Aussicht',
   'Clear Marker' => 'Marker löschen',
+  'Seen by' => 'Gesehen von',
+  'Hide Directions' => 'Hide Richtungen',
+  'Clear Route' => 'Klare Route',
+  'View Contact Map' => 'Kontaktkarte anzeigen',
 );

@@ -120,4 +120,6 @@
   'Event Status' => 'Статус события',
   'Calendar Color' => 'Цвет метки календаря',
   'Enter email addresses, one per line' => 'Введите адреса электронной почты, по одному в строке',
+  'Add to Calendar' => 'Добавить в календарь',
+  'By default, the Contact who sent the email will be associated.' => 'По умолчанию контакт, который отправил электронное письмо, будет связан.',
 );

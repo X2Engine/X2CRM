@@ -194,4 +194,9 @@
   'Changed to {recordLink}.' => 'שונתה, וכעת היא {recordLink} .',
   'Unable to change record.' => 'לא ניתן לשנות את השיא.',
   'Invalid configuration.' => 'תצורה לא חוקי.',
+  'Welcome to the X2Workflow designer!' => 'ברוכים הבאים למעצב X2Workflow!',
+  'This visual workflow designer allows you to build automation rules to take action when various events occur, such as web activity on your site or a campaign email click.' => 'זה מעצב זרימת עבודה חזותית מאפשרת לך לבנות כללים אוטומציה לנקוט פעולה כאשר אירועים שונים להתרחש, כגון פעילות אינטרנט באתר שלך או לחץ על הקליק דוא&quot;ל.',
+  'First you will want to select your trigger, the event which will initiate your automation rules.' => 'ראשית אתה רוצה לבחור את ההדק, את האירוע אשר ייזום את כללי אוטומציה.',
+  'There various actions available to automate tasks, including emailing contacts and updating record details. There are also flow control actions, like conditions and split paths, to allow more flexible workflows.' => 'קיימות פעולות שונות הזמינות לביצוע משימות אוטומטיות, כולל שליחת הודעות דוא&quot;ל ועדכון פרטי שיא. יש גם פעולות בקרת זרימה, כמו תנאים ושבילים מפוצלים, כדי לאפשר זרימות עבודה גמישות יותר.',
+  'This is the visual workflow designer area, which allows you to drag and drop actions from the left hand menu to organize your workflow logic.' => 'זהו אזור חזותית עבודה מעצב, אשר מאפשר לך לגרור ולשחרר פעולות מתפריט יד שמאל לארגן את היגיון העבודה שלך.',
 );

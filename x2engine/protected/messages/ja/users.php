@@ -45,4 +45,8 @@
   'You should now have access as "{user}" with the new password specified.' => 'これで、 &quot;としてのアクセスが必要です{user}指定した新しいパスワードを使用して&quot;。',
   'View {users} Map' => 'ビュー{users}の地図',
   'User Location Map' => 'ユーザーのロケーションマップ',
+  'Inactive' => '非アクティブ',
+  'Are you sure you want to deactivate this users two factor auth requirement?' => 'このユーザーの2つの要素の認証要件を無効にしてもよろしいですか？',
+  'Successfully deactivated two factor auth' => '正常に2つの要因の認証を無効にしました',
+  'Sorry, we are not creating anymore user accounts at this time.' => '申し訳ありませんが、現在はユーザーアカウントを作成していません。',
 );

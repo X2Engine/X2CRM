@@ -194,4 +194,9 @@
   'Changed to {recordLink}.' => '로 변경 {recordLink} .',
   'Unable to change record.' => '기록을 변경할 수 없습니다.',
   'Invalid configuration.' => '잘못된 구성.',
+  'Welcome to the X2Workflow designer!' => 'X2Workflow 디자이너에 오신 것을 환영합니다!',
+  'This visual workflow designer allows you to build automation rules to take action when various events occur, such as web activity on your site or a campaign email click.' => '이 시각적 워크 플로 디자이너를 사용하면 사이트의 웹 활동 또는 캠페인 전자 메일 클릭과 같은 다양한 이벤트가 발생할 때 조치를 취할 수있는 자동화 규칙을 작성할 수 있습니다.',
+  'First you will want to select your trigger, the event which will initiate your automation rules.' => '먼저 자동화 규칙을 시작할 이벤트 인 트리거를 선택해야합니다.',
+  'There various actions available to automate tasks, including emailing contacts and updating record details. There are also flow control actions, like conditions and split paths, to allow more flexible workflows.' => '연락처를 전자 메일로 보내고 레코드 세부 정보를 업데이트하는 등 다양한 작업을 자동화하여 작업을 자동화 할 수 있습니다. 또한 유연한 워크 플로를 허용하기 위해 조건 및 분할 경로와 같은 흐름 제어 작업이 있습니다.',
+  'This is the visual workflow designer area, which allows you to drag and drop actions from the left hand menu to organize your workflow logic.' => '시각적 워크 플로 디자이너 영역입니다. 왼쪽 메뉴에서 작업을 끌어다 놓아 워크 플로 논리를 구성 할 수 있습니다.',
 );

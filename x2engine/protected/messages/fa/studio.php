@@ -194,4 +194,9 @@
   'Changed to {recordLink}.' => 'تغییر به {recordLink} .',
   'Unable to change record.' => 'قادر به تغییر رکورد.',
   'Invalid configuration.' => 'پیکربندی نامعتبر است.',
+  'Welcome to the X2Workflow designer!' => 'به طراح X2Workflow خوش آمدید!',
+  'This visual workflow designer allows you to build automation rules to take action when various events occur, such as web activity on your site or a campaign email click.' => 'این طراح گردش کار بصری اجازه می دهد تا شما را به ساخت قوانین اتوماسیون به اقدامات زمانی که رویدادهای مختلف رخ می دهد، از جمله فعالیت های وب را در سایت خود و یا یک ایمیل کمپین کلیک کنید.',
+  'First you will want to select your trigger, the event which will initiate your automation rules.' => 'در ابتدا شما می خواهید را انتخاب ماشه خود را، این رویداد که قوانین خود را آغاز و اتوماسیون خواهد شد.',
+  'There various actions available to automate tasks, including emailing contacts and updating record details. There are also flow control actions, like conditions and split paths, to allow more flexible workflows.' => 'اقدامات مختلف در دسترس وجود دارد به طور خودکار وظایف، از جمله ایمیل مخاطبین و به روز رسانی جزئیات رکورد. همچنین جریان اقدامات کنترل، مانند شرایط و مسیرهای تقسیم، اجازه می دهد گردش انعطاف پذیر تر است.',
+  'This is the visual workflow designer area, which allows you to drag and drop actions from the left hand menu to organize your workflow logic.' => 'این منطقه طراح گردش کار بصری، که اجازه می دهد تا شما را به کشیدن و رها کردن اقدامات از منوی سمت چپ برای سازماندهی منطق گردش کار خود را است.',
 );

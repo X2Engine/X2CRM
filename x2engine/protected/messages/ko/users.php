@@ -45,4 +45,8 @@
   'You should now have access as "{user}" with the new password specified.' => '이제 &quot;로 접근해야한다 {user} 지정한 새 암호를 &quot;.',
   'View {users} Map' => '보기 {users} 지도',
   'User Location Map' => '사용자 위치지도',
+  'Inactive' => '비활성',
+  'Are you sure you want to deactivate this users two factor auth requirement?' => '사용자에게 2 가지 요소 인증 요구 사항을 비활성화 하시겠습니까?',
+  'Successfully deactivated two factor auth' => '두 요소 인증을 성공적으로 비활성화했습니다.',
+  'Sorry, we are not creating anymore user accounts at this time.' => '죄송합니다. 지금은 더 이상 사용자 계정을 만들지 않습니다.',
 );

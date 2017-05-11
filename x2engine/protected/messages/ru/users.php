@@ -46,4 +46,8 @@
   'View {users} Map' => 'Просмотр {users} Карта',
   'User Location Map' => 'Пользователь Location Map',
   'User Login History' => 'Пользователь Войти История',
+  'Inactive' => 'Неактивный',
+  'Are you sure you want to deactivate this users two factor auth requirement?' => 'Вы уверены, что хотите деактивировать это требование для двух пользователей с коэффициентом auth?',
+  'Successfully deactivated two factor auth' => 'Успешно деактивировано два фактора auth',
+  'Sorry, we are not creating anymore user accounts at this time.' => 'К сожалению, в настоящее время мы не создаем учетные записи пользователей.',
 );

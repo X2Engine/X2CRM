@@ -61,7 +61,6 @@
   'Auto-log inbound emails' => 'Авто-логгирование входящих писем',
   'From' => 'Из',
   'Copy to Sent Folder' => 'Копировать в папку Отправленные',
-  'Disabled' => 'Отключено',
   'Failed to associate message "{subject}" with {type} {model}' => 'Не удалось связать сообщение "{subject}" с {type} {model}',
   'Message "{subject}" already associated with {type} {model}' => 'Сообщение "{subject}" уже связано с {type} {model}',
   'Disable Quota Operations' => 'Отключить операции с коммерческими предложениями',
