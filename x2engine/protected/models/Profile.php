@@ -157,7 +157,6 @@ class Profile extends X2ActiveRecord {
                     $url = 'https://translation.googleapis.com/language/translate/v2/languages?'
                     .'&key=' . $key . '&target=' . $result_array_short->{'data'}->{'languages'}[$i]->{'language'};
                     //open connection
-                    $ch = curl_init();
 
                     //set the url, number of POST vars, POST data
                     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
@@ -178,7 +177,6 @@ class Profile extends X2ActiveRecord {
                     } else {
                         throw new CHttpException (500, Yii::t('app', 'Failed to fetch location photo'));
                     }
-                    curl_close($ch);
                 }
 
 
