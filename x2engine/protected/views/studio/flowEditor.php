@@ -336,11 +336,6 @@ $this->leftPortlets[] = array(
             ?>
         </div>
         <div class="cell">
-            <?php echo $form->label($model, 'name'); ?>
-            <?php echo $form->textField($model, 'name'); ?>
-            <?php echo $form->hiddenField($model, 'flow', array('id' => 'flowDataField')); ?>
-        </div>
-        <div class="cell">
             <?php echo $form->label($model, 'active'); ?>
             <?php echo $form->dropdownList($model, 'active', array(1 => Yii::t('app', 'Yes'), 0 => Yii::t('app', 'No'))); ?>
         </div>
@@ -354,8 +349,15 @@ $this->leftPortlets[] = array(
     </div>
     <div class="row">
         <div class="cell">
+            <?php echo $form->label($model, 'name'); ?>
+            <?php echo $form->textField($model, 'name'); ?>
+            <?php echo $form->hiddenField($model, 'flow', array('id' => 'flowDataField')); ?>
+        </div>
+    </div>
+    <div class="row" style="width:100%">
+        <div class="cell" style="width:95%">
             <?php echo $form->label($model, 'description'); ?>
-            <?php echo $form->textArea($model, 'description',array('style'=>'height:75px')); ?>
+            <?php echo $form->textArea($model, 'description',array('style'=>'width:100%')); ?>
         </div>
     </div>
     <div id='targeted-content-embed-code-container'
