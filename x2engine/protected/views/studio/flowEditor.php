@@ -49,7 +49,7 @@ if (isset ($miscLayoutSettings['x2flowShowLabels'])) {
 
 $newRecord = $model->isNewRecord;
 
-$modelsWithInsertableAttrs = array (
+$modelsWithInsertableAttrs = array(
     'Accounts', 'Actions', 'Contacts', 'Docs', 'Groups', 'Campaign', 'Media', 'Opportunity',
     'Product', 'Quote', 'Services', 'BugReports');
 
@@ -154,6 +154,7 @@ $cs->registerScriptFile(Yii::app()->theme->getBaseUrl().'/css/listview/jquery.yi
 Yii::app()->clientScript->registerScript('flowEditorScript', '
 $(function flowEditorMain () {
 
+
     $("#show-trace-button").on ("click", function () {
         if ($("#x2flow-trace-box").is (":visible")) {
             $("#x2flow-trace-box").slideUp ();
@@ -202,6 +203,93 @@ $(function flowEditorMain () {
         }
     });
 
+/**
+ * Trigger arrays
+ */
+var triggersForAny = [
+    "Newsletter Email Clicked", "Newsletter Email Opened", "Splitter",
+    "Unsubscribed from Newsletter", "Periodic Trigger", "Conditional Switch",
+    "Campaign Web Activity (no contact available)", 
+    "Macro Executed", "User Signed In", "User Signed Out"
+];
+
+var triggersThatPassActions = [
+    "Action Completed", "Action Overdue", "Action Marked Incomplete"
+];
+
+var triggersThatPassUsers = [
+    "Macro Executed", "User Signed In", "User Signed Out"
+];
+
+var triggersThatPassWorkflows = [
+    "Process Stage Completed", "Process Completed", "Process Stage Reverted",
+    "Process Stage Started", "Process Started"
+];
+
+var triggersThatPassRecords = [
+    "Campaign Email Clicked", "Campaign Email Opened", "Email Opened",
+    "Unsubscribed from Campaign", "Campaign Web Activity", "Inbound Email",
+    "Outbound Email", "Record Created", "Record Deleted", "Tag Added",
+    "Tag Removed", "Record Updated", "Record Viewed", "New Web Lead",
+    "Targeted Content Requested", "Contact Web Activity"
+];
+
+/**
+ * Action arrays
+ */
+var actionsForAny = [
+    "Remote API Call", "Create Action", "Send SMS", "Wait", "Push Web Content",
+    "Post to Activity Feed", "Create Popup Notification", "Email",
+    "Create Location-Based Activity Feed Post", "Create Location-Based Email",
+    "Create Location-Based Notification", "Create Location-Based SMS"
+];
+
+var actionsWithRecordRequired = [
+    "Change Record", "Add Comment", "Create Record", "Create Action for Record",
+    "Delete Record", "Email Contact", "Add to List", "Remove from List",
+    "Add to Newsletter","Reassign Record", "Add or Remove Tags", "Update Record"
+];
+
+var actionsWithWorkflowRequired = [
+    "Complete Process Stage", "Revert Process Stage", "Start Process Stage"
+];
+
+    $( window ).load(function() {
+        var trigger = $("#trigger-selector option:selected").text();
+    
+        $("#item-box").children().each(function () {
+            var itemTitle = this.title;
+            if ($.inArray(trigger, triggersThatPassRecords) == -1
+                && $.inArray(itemTitle, actionsWithRecordRequired) != -1) {
+                $(this).hide();
+            } else if ($.inArray(trigger, triggersThatPassWorkflows) == -1
+                && $.inArray(itemTitle, actionsWithWorkflowRequired) != -1) {
+                $(this).hide();
+            } else {
+                $(this).show();
+            }
+        });
+    });
+
+    $("#trigger-selector").change(function(e) {
+        var trigger = $("#trigger-selector option:selected").text();
+    
+        $("#item-box").children().each(function () {
+            var itemTitle = this.title;
+            if ($.inArray(trigger, triggersThatPassRecords) == -1
+                && $.inArray(itemTitle, actionsWithRecordRequired) != -1) {
+                $(this).hide();
+            } else if ($.inArray(trigger, triggersThatPassWorkflows) == -1
+                && $.inArray(itemTitle, actionsWithWorkflowRequired) != -1) {
+                $(this).hide();
+            } else {
+                $(this).show();
+            }
+        });
+    });
+        
+    
+
 })
 
 ', CClientScript::POS_END);
@@ -236,14 +324,15 @@ $this->actionMenu[] = array (
     'url' => array ('importFlow'),
 );
 
+$actionMenuHtml = '<div id="item-box">';
+ob_start();
+?>
 
-$actionMenuHtml = '
-<div id="item-box">
 <div class="x2flow-node X2FlowSwitch" style="">
-    <span>'.Yii::t('studio', 'Condition').'</span>
+    <span><?php echo Yii::t('studio', 'Condition'); ?></span>
     <div class="icon">
-        <div class="x2flow-yes-label">'.Yii::t('app', 'Yes').'</div>
-        <div class="x2flow-no-label">'.Yii::t('app', 'No').'</div>
+        <div class="x2flow-yes-label"><?php echo Yii::t('app', 'Yes') ?></div>
+        <div class="x2flow-no-label"><?php echo Yii::t('app', 'No') ?></div>
     </div>
     <div class="x2flow-branch-wrapper">
         <div class="x2flow-branch">
@@ -257,7 +346,7 @@ $actionMenuHtml = '
     </div>
 </div>
 <div class="x2flow-node X2FlowSplitter" style="">
-    <span>'.Yii::t('studio', 'Split Path').'</span>
+    <span><?php echo Yii::t('studio', 'Split Path'); ?></span>
     <div class="icon">
         <div class="icon-inner">
         </div>
@@ -272,25 +361,29 @@ $actionMenuHtml = '
             <div class="x2flow-node x2flow-empty"></div>
         </div>
     </div>
- </div>';
-
-foreach($actionTypes as $type => $title) {
-    $actionMenuHtml .=
-        '<div class="x2flow-node x2flow-action '.$type.
-          ($showLabels ? "" : " no-label").'"
-          title="'.addslashes(Yii::t('studio', $title)).'"'.
-          ((($type === 'X2FlowPushWebContent' && 
-              $model->triggerType !== 'TargetedContentRequestTrigger') ||
-            ($type === 'X2FlowPushWebPage' && 
-              $model->triggerType !== 'TargetedPageRequestTrigger')) ? 
-              'style="display: none;"' : '').'>
-            <div class="x2flow-icon-label" '.($showLabels ? "": "style='display: none;'").'>'.
-                Yii::t('studio', $title).
-            '</div>
-            <span>'.Yii::t('studio', $title).'</span>
-         </div>';
-}
-$actionMenuHtml .= '</div>';
+</div>
+ 
+<?php
+foreach($actionTypes as $type => $title):
+?>
+    
+<div class="x2flow-node x2flow-action
+    <?php echo $type . ($showLabels ? "" : " no-label") ?>"
+    title="<?php echo addslashes(Yii::t('studio', $title)) ?>"
+    <?php echo ((($type === 'X2FlowPushWebContent' && $model->triggerType
+        !== 'TargetedContentRequestTrigger') || ($type === 'X2FlowPushWebPage'
+        && $model->triggerType !== 'TargetedPageRequestTrigger'))
+        ? 'style="display: none;"' : '')?>>
+    <div class="x2flow-icon-label"
+        <?php echo ($showLabels ? "" : "style='display: none;'")?>>
+        <?php echo Yii::t('studio', $title)?>
+    </div>
+    <span> <?php echo Yii::t('studio', $title)?> </span>
+</div>
+    
+<?php
+endforeach;
+$actionMenuHtml .= ob_get_clean() . '</div>';
 
 $this->leftPortlets[] = array(
     'options' => array('title' => Yii::t('studio', 'Flow Actions'), 'id' => 'flow-actions'),
@@ -299,36 +392,47 @@ $this->leftPortlets[] = array(
 ?>
 
 <div class="page-title icon x2flow">
-    <h2><?php echo $model->isNewRecord? Yii::t('studio', 'Create Workflow') : Yii::t('admin', 'Update Workflow'); ?></h2>
-    <a class="x2-button highlight right" id="save-button" href="javascript:void(0);"><?php echo Yii::t('app', 'Save'); ?></a>
-    <?php
-    if (isset ($triggerLogsDataProvider)) {
-    ?>
+    <h2>
+        <?php echo $model->isNewRecord? Yii::t('studio', 'Create Workflow')
+                : Yii::t('admin', 'Update Workflow'); ?>
+    </h2>
+    <a class="x2-button highlight right" id="save-button" href="javascript:void(0);">
+        <?php echo Yii::t('app', 'Save'); ?>
+    </a>
+    <?php if (isset ($triggerLogsDataProvider)): ?>
     <a class="x2-button right" id="show-trace-button" href="javascript:void(0);">
         <?php echo Yii::t('studio', 'Show Trigger Logs'); ?>
     </a>
-    <?php
-    }
-    ?>
+    <?php endif; ?>
 </div>
+
+<?php
+/**
+ * This is where the individual flow fields are displayed
+ */
+?>
 <div class="form x2flow-start">
+    
     <?php 
-    $form = $this->beginWidget(
-        'CActiveForm', array('id' => 'submitForm', 'enableAjaxValidation' => false)); 
+    $form = $this->beginWidget('CActiveForm', array('id' => 'submitForm',
+        'enableAjaxValidation' => false)); 
     echo $form->errorSummary($model); 
     echo X2Html::getFlashes (); 
     ?>
+    
     <div class="row">
         <div class="form x2flow-trash"></div>
-        <!--<div class="cell">
-            <div class="x2flow-node x2flow-trigger x2flow-empty" id="trigger" title="<?php echo addslashes(Yii::t('studio', 'Select a trigger')); ?>"></div>
-        </div>-->
+        <div class="cell">
+            <?php echo $form->label($model, 'name'); ?>
+            <?php echo $form->textField($model, 'name'); ?>
+            <?php echo $form->hiddenField($model, 'flow',
+                    array('id' => 'flowDataField')); ?>
+        </div>
         <div class="cell">
             <?php 
                 asort ($triggerTypes);
-                $allTriggers = array_merge(
-                    array('x2flow-empty' => Yii::t('studio', 'Select a trigger')), 
-                    $triggerTypes);
+                $allTriggers = array_merge(array('x2flow-empty' => Yii::t(
+                        'studio', 'Select a trigger')), $triggerTypes);
                 echo $form->label($model, 'triggerType'); 
                 echo CHtml::dropdownList('trigger-selector', '', $allTriggers,
                     array('id' => 'trigger-selector'
@@ -337,43 +441,40 @@ $this->leftPortlets[] = array(
         </div>
         <div class="cell">
             <?php echo $form->label($model, 'active'); ?>
-            <?php echo $form->dropdownList($model, 'active', array(1 => Yii::t('app', 'Yes'), 0 => Yii::t('app', 'No'))); ?>
+            <?php echo $form->dropdownList($model, 'active', array(1 => Yii::t(
+                    'app', 'Yes'), 0 => Yii::t('app', 'No'))); ?>
         </div>
         <div class="cell right" id='x2flow-show-labels-checkbox-container'>
             <input id='x2flow-show-labels-checkbox' type='checkbox' class='right'
-             <?php echo ($showLabels ? "checked='checked'" : ''); ?>>
+                <?php echo ($showLabels ? "checked='checked'" : ''); ?>>
             <label for='x2flow-show-labels-checkbox' class='right'>
                 <?php echo CHtml::encode (Yii::t('studio', 'Toggle Node Labels')); ?>
             </label>
         </div>
     </div>
-    <div class="row">
-        <div class="cell">
-            <?php echo $form->label($model, 'name'); ?>
-            <?php echo $form->textField($model, 'name'); ?>
-            <?php echo $form->hiddenField($model, 'flow', array('id' => 'flowDataField')); ?>
-        </div>
-    </div>
     <div class="row" style="width:100%">
-        <div class="cell" style="width:95%">
+        <div class="cell" style="width:99%">
             <?php echo $form->label($model, 'description'); ?>
-            <?php echo $form->textArea($model, 'description',array('style'=>'width:100%')); ?>
+            <?php echo $form->textArea($model, 'description',
+                    array('style'=>'width:100%')); ?>
         </div>
     </div>
     <div id='targeted-content-embed-code-container'
-     <?php echo ($model->triggerType !== 'TargetedContentRequestTrigger') ? 
+    <?php echo ($model->triggerType !== 'TargetedContentRequestTrigger') ? 
         'style="display: none;"' : ''; ?> class='row'>
         
         <h4><?php echo Yii::t('app', 'Embed Code:'); ?></h4>
         <span class='x2-hint'
             title='<?php echo Yii::t('app', 
-                'The web content returned by '.
-                'this flow will replace the embed code when a visitor comes to your page. Use '.
-                'the Push Web Content flow action to create targeted web content.');  
+                'The web content returned by this flow will replace the embed '
+                    . 'code when a visitor comes to your page. Use the Push Web'
+                    . ' Content flow action to create targeted web content.');  
             ?>'>&nbsp;[?]</span>
-        <p><?php 
+        <p>
+            <?php 
             echo Yii::t('app', 'Copy and paste this code into your website.'); 
-        ?></p>
+            ?>
+        </p>
         <textarea <?php 
          echo (!isset ($model->id) ? // flow not yet saved
             'disabled="true" placeholder="'.
@@ -387,17 +488,35 @@ $this->leftPortlets[] = array(
     </div>
     <?php $this->endWidget(); ?>
 </div>
+
+<!--
+<?php
+foreach($actionTypes as $type => $title) {
+    echo $title;
+}
+?>
+-->
+
+<?php
+/**
+ * This is the main flow stage
+ */
+?>
 <div class="form x2flow-main" id="x2flow-main">
     <div class="x2flow-node x2flow-trigger x2flow-empty
-     <?php echo ($showLabels ? "" : " no-label"); ?>"
-     id="trigger" title="<?php echo addslashes(Yii::t('studio', 'Select a trigger')); ?>">
-        <div class="x2flow-icon-label" <?php echo ($showLabels ? "": "style='display: none;'") ?>></div>
+        <?php echo ($showLabels ? "" : " no-label"); ?>" id="trigger"
+        title="<?php echo addslashes(Yii::t('studio', 'Select a trigger')); ?>">
+        
+        <div class="x2flow-icon-label"
+            <?php echo ($showLabels ? "": "style='display: none;'") ?>>
+        </div>
     </div>
     <div class="x2flow-branch">
         <div class="bracket hidden"></div>
         <div class="x2flow-node x2flow-empty"></div>
     </div>
 </div>
+
 <?php
 /*
 <b>Free For All</b><br>
@@ -417,7 +536,13 @@ This option will filter your routing rule so that leads only go to a subset of t
 i.e. if you set custom rules to go to 4 different users, but 2 are logged in, only those 2 will get the leads
  */
 ?>
-<div class="form" id="x2flow-config-box">
+<div class="row" style="width:100%">
+    <!--
+<div class="cell" style="float:left;width:35%;">
+    HELLO
+</div>
+    -->
+    <div class="form cell" id="x2flow-config-box"> <!--style="margin-left:35%;"-->
     <div id="x2flow-main-config"></div><hr>
     <div id="x2flow-conditions" class="x2-sortlist"><ol></ol></div>
     <div id="x2flow-attributes" class="x2-sortlist">
@@ -434,14 +559,15 @@ i.e. if you set custom rules to go to 4 different users, but 2 are logged in, on
             'type', '', X2FlowTrigger::getGenericConditions(),
             array(
                 'id' => 'x2flow-condition-type',
-                'style' => 'display:none;'
-            )); 
+                'style' => 'display:none;height:30px;margin-right:10px;'
+            ));
         echo CHtml::button(
             Yii::t('studio', 'Add Condition'),
             array(
                 'id' => 'x2flow-add-condition',
                 'class' => 'x2-button',
-                'style' => 'display:none;'
+                'style' => 'display:none;height:30px;padding-top:3px;'
+                . 'padding-bottom:3px;padding-left:20px;padding-right:20px;'
             )); 
         ?>
     </div>
@@ -461,6 +587,7 @@ i.e. if you set custom rules to go to 4 different users, but 2 are logged in, on
             'style' => 'display:none;'
         )); 
     ?>
+</div>
 </div>
 
 <?php

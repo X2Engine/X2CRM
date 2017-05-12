@@ -677,6 +677,7 @@ window.flowEditor = {
             flowEditor.openItemConfig();
             x2.flow.hideShowCronUI ();
             //$('.x2flow-main').find ('.x2flow-node.selected').removeClass ('selected');
+            
         });
 
         // listen for changes in model type; remove attribute conditions from the previous type
