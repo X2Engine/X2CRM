@@ -197,7 +197,7 @@ class WebFormAction extends CAction {
                 //TODO: upload profile picture url from webleadfb
 
                 if ($success) {
-                    $location = $model->logLocation('weblead', 'POST', $model);
+                    $location = $model->logLocation('weblead', 'POST');
 
                     if ($extractedParams['generateLead']) {
                         $newLead = call_user_func(array($this->controller, 'generateLead'), $model, $extractedParams['leadSource']);

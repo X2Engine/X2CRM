@@ -671,7 +671,7 @@ class MarketingController extends x2base {
         $contact = $item->contact;
         $list = $item->list;
         if (!is_null($contact)) {
-            $location = $contact->logLocation($type, false, $contact);
+            $location = $contact->logLocation($type, false);
         }
 
         $event = new Events;

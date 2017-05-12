@@ -163,7 +163,7 @@ class WebListenerAction extends CAction {
                 if (!isset($retArr['probability']) || $retArr['probability'] >= 100)
                     self::setKey($contact->trackingKey);
 
-                $location = $contact->logLocation('webactivity', 'GET', $contact);
+                $location = $contact->logLocation('webactivity', 'GET');
 
                 if ($location) {
                     $latest = Yii::app()->db->createCommand()

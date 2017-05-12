@@ -45,7 +45,7 @@ class MappableBehavior extends CActiveRecordBehavior {
 
     public $recordType;
 
-    public function logLocation($type, $method = 'GET', $model = null, $param = 'geoCoords') {
+    public function logLocation($type, $method = 'GET', $param = 'geoCoords') {
         $ip = Yii::app()->controller->getRealIP();
         $logIp = false;
         $coords = false;
@@ -64,7 +64,7 @@ class MappableBehavior extends CActiveRecordBehavior {
             $logIp = $ip;
         }
         if ($coords && array_key_exists('lat', $coords) && array_key_exists('lon', $coords)) {
-            $location = $this->updateLocation($coords['lat'], $coords['lon'], $type, $logIp, $comment, $model);
+            $location = $this->updateLocation($coords['lat'], $coords['lon'], $type, $logIp, $comment);
             return $location;
         }
     }
@@ -78,7 +78,7 @@ class MappableBehavior extends CActiveRecordBehavior {
      * @param string|false $logIp IP Address to log, if requested
      * @param string $comment Comment to log if requested
      */
-    public function updateLocation($lat, $lon, $type = null, $logIp = false, $comment = null, $model = null) {
+    public function updateLocation($lat, $lon, $type = null, $logIp = false, $comment = null) {
         if (is_null($type)) {
             // Look for existing address Location
             $location = Locations::model()->findByAttributes(array(
@@ -112,8 +112,8 @@ class MappableBehavior extends CActiveRecordBehavior {
             }
             $location->save();
         }
-        if (isset($model)) {
-            X2Flow::trigger('LocationTrigger', array('model' => $model));
+        if (get_class($this->owner) == 'Contacts') {
+            X2Flow::trigger('LocationTrigger', array('model' => $this->owner));
         }
         return $location;
     }
