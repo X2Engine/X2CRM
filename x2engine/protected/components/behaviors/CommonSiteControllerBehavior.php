@@ -97,6 +97,7 @@ class CommonSiteControllerBehavior extends CBehavior {
             $sessionToken->lastUpdated = time();
             $sessionToken->status = 0;
             $sessionToken->IP = $ip;
+            $sessionToken->save();
 
         } else {
 
