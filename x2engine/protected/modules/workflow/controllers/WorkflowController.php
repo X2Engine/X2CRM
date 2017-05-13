@@ -946,7 +946,6 @@ class WorkflowController extends x2base {
                 'name'=>'create',
                 'label'=>Yii::t('app','Create'),
                 'url'=>array('create'),
-                'visible'=>Yii::app()->params->isAdmin
             ),
             array(
                 'name'=>'edit',
@@ -954,7 +953,6 @@ class WorkflowController extends x2base {
                     '{process}' => $Process,
                 )), 
                 'url'=>array('update', 'id'=>$modelId), 
-                'visible'=>Yii::app()->params->isAdmin
             ),
             array(
                 'name'=>'funnel',
@@ -976,7 +974,6 @@ class WorkflowController extends x2base {
                 'url'=>'#', 
                 'linkOptions'=>array('submit'=>array('delete','id'=>$modelId),
                 'confirm'=>Yii::t('app','Are you sure you want to delete this item?')), 
-                'visible'=>Yii::app()->params->isAdmin
             ),
         );
 

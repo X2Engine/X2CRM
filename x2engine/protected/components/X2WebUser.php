@@ -1,5 +1,6 @@
 <?php
-/***********************************************************************************
+
+/* * *********************************************************************************
  * X2CRM is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2016 X2Engine Inc.
  * 
@@ -33,7 +34,7 @@
  * X2Engine" logo. If the display of the logo is not reasonably feasible for
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2Engine".
- **********************************************************************************/
+ * ******************************************************************************** */
 
 class X2WebUser extends CWebUser {
 
@@ -43,7 +44,7 @@ class X2WebUser extends CWebUser {
      */
     private $_roles;
 
-    public function checkAccess($operation, $params = array()){
+    public function checkAccess($operation, $params = array()) {
         return Yii::app()->getAuthManager()->checkAccess($operation, $this->getId(), $params);
     }
 
@@ -52,8 +53,8 @@ class X2WebUser extends CWebUser {
      *
      * @param $fromCookie whether the login was automatic (cookie-based)
      */
-    protected function afterLogin($fromCookie){
-        if(!$fromCookie){
+    protected function afterLogin($fromCookie) {
+        if (!$fromCookie) {
             X2Flow::trigger('UserLoginTrigger', array(
                 'user' => $this->getName()
             ));
@@ -65,7 +66,7 @@ class X2WebUser extends CWebUser {
      *
      * @return boolean whether or not to logout
      */
-    protected function beforeLogout(){
+    protected function beforeLogout() {
         X2Flow::trigger('UserLogoutTrigger', array(
             'user' => $this->getName()
         ));
@@ -75,8 +76,8 @@ class X2WebUser extends CWebUser {
     /**
      * Retrieves roles for the user
      */
-    public function getRoles(){
-        if(!isset($this->_roles)){
+    public function getRoles() {
+        if (!isset($this->_roles)) {
             $this->_roles = Roles::getUserRoles($this->getId());
         }
         return $this->_roles;
