@@ -43,20 +43,15 @@
  */
 class LocationTrigger extends X2FlowTrigger {
 
-    public $title = 'Location';
-    public $info = 'Triggers when a new location is added to the database.';
+    public $title = 'Contact Location';
+    public $info = 'Triggers when a contact\'s location is logged.';
 
     public function paramRules() {
         return array(
             'title' => Yii::t('studio', $this->title),
             'info' => Yii::t('studio', $this->info),
-            'modelClass' => 'modelClass',
-            'options' => array(
-                array(
-                    'name' => 'modelClass',
-                    'label' => Yii::t('studio', 'Record Type'),
-                    'type' => 'dropdown', 'options' => X2Flow::getModelTypes()
-                    ))
+            'modelClass' => 'Contacts',
+            'options' => array()
         );
     }
 

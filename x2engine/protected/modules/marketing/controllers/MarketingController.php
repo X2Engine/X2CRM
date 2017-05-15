@@ -1,5 +1,6 @@
 <?php
-/***********************************************************************************
+
+/* * *********************************************************************************
  * X2CRM is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2016 X2Engine Inc.
  * 
@@ -33,7 +34,7 @@
  * X2Engine" logo. If the display of the logo is not reasonably feasible for
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2Engine".
- **********************************************************************************/
+ * ******************************************************************************** */
 
 /**
  * Controller to handle creating and mailing campaigns.
@@ -41,17 +42,17 @@
  * @package application.modules.marketing.controllers
  */
 class MarketingController extends x2base {
-    
+
     public $modelClass = 'Campaign';
 
-    public function behaviors(){
+    public function behaviors() {
         return array_merge(parent::behaviors(), array(
             'CampaignMailingBehavior' => array('class' => 'application.modules.marketing.components.CampaignMailingBehavior'),
-            'ResponseBehavior' => array('class' => 'application.components.ResponseBehavior', 'isConsole' => false,'errorCode'=>200),
+            'ResponseBehavior' => array('class' => 'application.components.ResponseBehavior', 'isConsole' => false, 'errorCode' => 200),
         ));
     }
 
-    public function accessRules(){
+    public function accessRules() {
         return array(
             array('allow', // allow all users
                 'actions' => array('click', 'doNotEmailLinkClick'),
@@ -59,10 +60,10 @@ class MarketingController extends x2base {
             ),
             array('allow', // allow authenticated user to perform the following actions
                 'actions' => array(
-					'index', 'view', 'create', 'createFromTag', 'update', 'search', 'delete', 
-                    'launch', 
-					'toggle', 'complete', 'getItems', 'inlineEmail', 'mail', 'deleteWebForm',
-					'webleadForm', 'getCampaignChartData'),
+                    'index', 'view', 'create', 'createFromTag', 'update', 'search', 'delete',
+                    'launch',
+                    'toggle', 'complete', 'getItems', 'inlineEmail', 'mail', 'deleteWebForm',
+                    'webleadForm', 'getCampaignChartData'),
                 'users' => array('@'),
             ),
             array('allow', // allow admin user to perform 'admin' action
@@ -75,7 +76,7 @@ class MarketingController extends x2base {
         );
     }
 
-    public function actions(){
+    public function actions() {
         return array_merge(parent::actions(), array(
             'webleadForm' => array(
                 'class' => 'CreateWebFormAction',
@@ -90,29 +91,26 @@ class MarketingController extends x2base {
      * Deletes a web form record with the specified id 
      * @param int $id
      */
-    public function actionDeleteWebForm ($id) {
-        $model = WebForm::model ()->findByPk ($id); 
+    public function actionDeleteWebForm($id) {
+        $model = WebForm::model()->findByPk($id);
         $name = $model->name;
         $success = false;
 
         if ($model) {
-            $success = $model->delete ();
+            $success = $model->delete();
         }
-        AuxLib::ajaxReturn (
-            $success,  
-            Yii::t('app', "Deleted '$name'"),
-            Yii::t('app', 'Unable to delete web form')
+        AuxLib::ajaxReturn(
+                $success, Yii::t('app', "Deleted '$name'"), Yii::t('app', 'Unable to delete web form')
         );
     }
 
-    
     /**
      * View anonymous contacts that have been spotted by
      * the tracker
      */
     public function actionAnonContactIndex() {
         $model = new AnonContact('search');
-        $this->render('anonContactIndex', array('model'=>$model));
+        $this->render('anonContactIndex', array('model' => $model));
     }
 
     /**
@@ -124,19 +122,19 @@ class MarketingController extends x2base {
         if (!isset($model))
             throw new CHttpException(404, "The requested page does not exist.");
         $this->render('anonContactView', array(
-            'model'=>$model,
-            'modelName'=>'AnonContact',
+            'model' => $model,
+            'modelName' => 'AnonContact',
         ));
     }
 
-    public function actionAnonContactDelete ($id) {
+    public function actionAnonContactDelete($id) {
         $model = X2Model::model('AnonContact')->findByPk($id);
-        if(!isset($model)){
+        if (!isset($model)) {
             Yii::app()->user->setFlash(
-                'error', Yii::t('app', 'The requested page does not exist.'));
+                    'error', Yii::t('app', 'The requested page does not exist.'));
             $this->redirect(array('anonContactIndex'));
         }
-        $model->delete ();
+        $model->delete();
         $this->redirect(array('anonContactIndex'));
     }
 
@@ -145,62 +143,58 @@ class MarketingController extends x2base {
      */
     public function actionFingerprintIndex() {
         $model = new Fingerprint('search');
-        $this->render('fingerprintIndex', array('model'=>$model));
+        $this->render('fingerprintIndex', array('model' => $model));
     }
-    
 
     /**
      * Returns a JSON array of the names of all campaigns filtered by a search term.
      *
      * @return string A JSON array of strings
      */
-    public function actionGetItems($modelType){
-        $term = $_GET['term'].'%';
-         
+    public function actionGetItems($modelType) {
+        $term = $_GET['term'] . '%';
+
         if ($modelType === 'AnonContact') {
-		    if(Yii::app()->user->checkAccess('MarketingAdminAccess')) {
-                LinkableBehavior::getItems ($term, 'id', 'id', 'AnonContact');
+            if (Yii::app()->user->checkAccess('MarketingAdminAccess')) {
+                LinkableBehavior::getItems($term, 'id', 'id', 'AnonContact');
             } else {
-                throw new CHttpException (403, Yii::t('marketing', 'You do no have permission to'.
-                    ' perform this action'));
+                throw new CHttpException(403, Yii::t('marketing', 'You do no have permission to' .
+                        ' perform this action'));
             }
         } else {
-         
-            LinkableBehavior::getItems ($term);
-         
-        }
-         
-    }
-    
 
+            LinkableBehavior::getItems($term);
+        }
+    }
 
     /**
      * Displays a particular model.
      *
      * @param integer $id the ID of the model to be displayed
      */
-    public function actionView($id){
+    public function actionView($id) {
         $model = $this->loadModel($id);
-        if (!$this->checkPermissions($model, 'view')) $this->denied ();
+        if (!$this->checkPermissions($model, 'view'))
+            $this->denied();
 
         if (isset($_GET['ajax']) && $_GET['ajax'] == 'campaign-grid') {
             $this->renderPartial('campaignGrid', array('model' => $model));
             return;
         }
 
-        if(!isset($model)){
+        if (!isset($model)) {
             Yii::app()->user->setFlash(
-                'error', Yii::t('app', 'The requested page does not exist.'));
+                    'error', Yii::t('app', 'The requested page does not exist.'));
             $this->redirect(array('index'));
         }
 
-        if(isset($model->list)){
+        if (isset($model->list)) {
             //set this as the list we are viewing, for use by vcr controls
             Yii::app()->user->setState('contacts-list', $model->list->id);
         }
 
         // add campaign to user's recent item list
-        User::addRecentItem('p', $id, Yii::app()->user->getId()); 
+        User::addRecentItem('p', $id, Yii::app()->user->getId());
 
         $this->view($model, 'marketing');
     }
@@ -210,10 +204,10 @@ class MarketingController extends x2base {
      *
      * @param integer $id the ID of the model to be displayed
      */
-    public function actionViewContent($id){
+    public function actionViewContent($id) {
         $model = $this->loadModel($id);
 
-        if(!isset($model)){
+        if (!isset($model)) {
             Yii::app()->user->setFlash('error', Yii::t('app', 'The requested page does not exist.'));
             $this->redirect(array('index'));
         }
@@ -229,7 +223,7 @@ class MarketingController extends x2base {
      * @param type $id
      * @return type
      */
-    public function loadModel($id){
+    public function loadModel($id) {
         return Campaign::load($id);
     }
 
@@ -237,20 +231,20 @@ class MarketingController extends x2base {
      * Creates a new model.
      * If creation is successful, the browser will be redirected to the 'view' page.
      */
-    public function actionCreate(){
+    public function actionCreate() {
         $model = new Campaign;
         $model->type = 'Email'; //default choice for now
 
-        if(isset($_POST['Campaign'])){
+        if (isset($_POST['Campaign'])) {
             $model->setX2Fields($_POST['Campaign']);
 
             $model->content = Fields::getPurifier()->purify($model->content);
             $model->content = Formatter::restoreInsertableAttributes($model->content);
             $model->createdBy = Yii::app()->user->getName();
-            if($model->save()){
-                if(isset($_POST['AttachmentFiles'])){
-                    if(isset($_POST['AttachmentFiles']['id'])){
-                        foreach($_POST['AttachmentFiles']['id'] as $mediaId){
+            if ($model->save()) {
+                if (isset($_POST['AttachmentFiles'])) {
+                    if (isset($_POST['AttachmentFiles']['id'])) {
+                        foreach ($_POST['AttachmentFiles']['id'] as $mediaId) {
                             $attachment = new CampaignAttachment;
                             $attachment->campaign = $model->id;
                             $attachment->media = $mediaId;
@@ -260,7 +254,7 @@ class MarketingController extends x2base {
                 }
                 $this->redirect(array('view', 'id' => $model->id));
             }
-        }elseif(isset($_GET['Campaign'])){
+        } elseif (isset($_GET['Campaign'])) {
             //preload the create form with query params
             $model->setAttributes($_GET['Campaign']);
             $model->setX2Fields($_GET['Campaign']);
@@ -278,16 +272,16 @@ class MarketingController extends x2base {
      *
      * @param string $tag
      */
-    public function actionCreateFromTag($tag){
+    public function actionCreateFromTag($tag) {
         //enusre tag sanity
-        if(empty($tag) || strlen(trim($tag)) == 0){
+        if (empty($tag) || strlen(trim($tag)) == 0) {
             Yii::app()->user->setFlash('error', Yii::t('marketing', 'Invalid tag value'));
             $this->redirect(Yii::app()->request->getUrlReferrer());
         }
 
         //ensure sacred hash
-        if(substr($tag, 0, 1) != '#'){
-            $tag = '#'.$tag;
+        if (substr($tag, 0, 1) != '#') {
+            $tag = '#' . $tag;
         }
 
         //only works for contacts
@@ -306,7 +300,7 @@ class MarketingController extends x2base {
 
         //create static list
         $list = new X2List;
-        $list->name = Yii::t('marketing', 'Contacts for tag').' '.$tag;
+        $list->name = Yii::t('marketing', 'Contacts for tag') . ' ' . $tag;
         $list->modelName = $modelType;
         $list->type = 'campaign';
         $list->count = count($ids);
@@ -317,7 +311,7 @@ class MarketingController extends x2base {
 
         //create campaign
         $campaign = new Campaign;
-        $campaign->name = Yii::t('marketing', 'Mailing for tag').' '.$tag;
+        $campaign->name = Yii::t('marketing', 'Mailing for tag') . ' ' . $tag;
         $campaign->type = 'Email';
         $campaign->visibility = 1;
         $campaign->assignedTo = Yii::app()->user->getName();
@@ -327,26 +321,26 @@ class MarketingController extends x2base {
         $campaign->lastUpdated = $now;
 
         $transaction = Yii::app()->db->beginTransaction();
-        try{
-            if(!$list->save())
+        try {
+            if (!$list->save())
                 throw new Exception(array_shift(array_shift($list->getErrors())));
             $campaign->listId = $list->nameId;
-            if(!$campaign->save())
+            if (!$campaign->save())
                 throw new Exception(array_shift(array_shift($campaign->getErrors())));
 
-            foreach($ids as $id){
+            foreach ($ids as $id) {
                 $listItem = new X2ListItem;
                 $listItem->listId = $list->id;
                 $listItem->contactId = $id;
-                if(!$listItem->save())
+                if (!$listItem->save())
                     throw new Exception(array_shift(array_shift($listItem->getErrors())));
             }
 
             $transaction->commit();
             $this->redirect($this->createUrl('update', array('id' => $campaign->id)));
-        }catch(Exception $e){
+        } catch (Exception $e) {
             $transaction->rollBack();
-            Yii::app()->user->setFlash('error', Yii::t('marketing', 'Could not create mailing').': '.$e->getMessage());
+            Yii::app()->user->setFlash('error', Yii::t('marketing', 'Could not create mailing') . ': ' . $e->getMessage());
             $this->redirect(Yii::app()->request->getUrlReferrer());
         }
     }
@@ -357,25 +351,25 @@ class MarketingController extends x2base {
      *
      * @param integer $id the ID of the model to be updated
      */
-    public function actionUpdate($id){
+    public function actionUpdate($id) {
         $model = $this->loadModel($id);
 
-        if(!isset($model)){
+        if (!isset($model)) {
             Yii::app()->user->setFlash('error', Yii::t('app', 'The requested page does not exist.'));
             $this->redirect(array('index'));
         }
 
-        if(isset($_POST['Campaign'])){
+        if (isset($_POST['Campaign'])) {
             $oldAttributes = $model->attributes;
             $model->setX2Fields($_POST['Campaign']);
             $model->content = Fields::getPurifier()->purify($model->content);
             $model->content = Formatter::restoreInsertableAttributes($model->content);
 
-            if($model->save()){
+            if ($model->save()) {
                 CampaignAttachment::model()->deleteAllByAttributes(array('campaign' => $model->id));
-                if(isset($_POST['AttachmentFiles'])){
-                    if(isset($_POST['AttachmentFiles']['id'])){
-                        foreach($_POST['AttachmentFiles']['id'] as $mediaId){
+                if (isset($_POST['AttachmentFiles'])) {
+                    if (isset($_POST['AttachmentFiles']['id'])) {
+                        foreach ($_POST['AttachmentFiles']['id'] as $mediaId) {
                             $attachment = new CampaignAttachment;
                             $attachment->campaign = $model->id;
                             $attachment->media = $mediaId;
@@ -396,11 +390,11 @@ class MarketingController extends x2base {
      *
      * @param integer $id the ID of the model to be deleted
      */
-    public function actionDelete($id){
-        if(Yii::app()->request->isPostRequest){
+    public function actionDelete($id) {
+        if (Yii::app()->request->isPostRequest) {
             $model = $this->loadModel($id);
 
-            if(!isset($model)){
+            if (!isset($model)) {
                 Yii::app()->user->setFlash('error', Yii::t('app', 'The requested page does not exist.'));
                 $this->redirect(array('index'));
             }
@@ -413,15 +407,15 @@ class MarketingController extends x2base {
             // $event->user=Yii::app()->user->getName();
             // $event->save();
             $list = $model->list;
-            if(isset($list) && $list->type == "campaign")
+            if (isset($list) && $list->type == "campaign")
                 $list->delete();
             // $this->cleanUpTags($model);	// now in TagBehavior
             $model->delete();
 
             // if AJAX request (triggered by deletion via admin grid view), we should not redirect the browser
-            if(!isset($_GET['ajax']))
+            if (!isset($_GET['ajax']))
                 $this->redirect(isset($_POST['returnUrl']) ? $_POST['returnUrl'] : array('index'));
-        } else{
+        } else {
             Yii::app()->user->setFlash('error', Yii::t('app', 'Invalid request. Please do not repeat this request again.'));
             $this->redirect(array('index'));
         }
@@ -430,12 +424,12 @@ class MarketingController extends x2base {
     /**
      * Lists all models.
      */
-    public function actionIndex(){
+    public function actionIndex() {
         $model = new Campaign('search');
         $this->render('index', array('model' => $model));
     }
 
-    public function actionAdmin(){
+    public function actionAdmin() {
         $this->redirect('index');
     }
 
@@ -450,33 +444,33 @@ class MarketingController extends x2base {
      *
      * @param integer $id ID of the campaign to launch
      */
-    public function actionLaunch($id){
+    public function actionLaunch($id) {
         $campaign = $this->loadModel($id);
 
-        if(!isset($campaign)){
+        if (!isset($campaign)) {
             Yii::app()->user->setFlash('error', Yii::t('app', 'The requested page does not exist.'));
             $this->redirect(array('index'));
         }
 
-        if(!isset($campaign->list)){
+        if (!isset($campaign->list)) {
             Yii::app()->user->setFlash('error', Yii::t('marketing', 'Contact List cannot be blank.'));
             $this->redirect(array('view', 'id' => $id));
         }
 
-        if(empty($campaign->subject) && $campaign->type === 'Email'){
+        if (empty($campaign->subject) && $campaign->type === 'Email') {
             Yii::app()->user->setFlash('error', Yii::t('marketing', 'Subject cannot be blank.'));
             $this->redirect(array('view', 'id' => $id));
         }
 
-        if($campaign->launchDate != 0 && $campaign->launchDate < time()){
+        if ($campaign->launchDate != 0 && $campaign->launchDate < time()) {
             Yii::app()->user->setFlash('error', Yii::t('marketing', 'The campaign has already been launched.'));
             $this->redirect(array('view', 'id' => $id));
         }
 
-        if(($campaign->list->type == 'dynamic' && 
-            X2Model::model($campaign->list->modelName)
-                ->count($campaign->list->queryCriteria()) < 1) || 
-            ($campaign->list->type != 'dynamic' && count($campaign->list->listItems) < 1)){
+        if (($campaign->list->type == 'dynamic' &&
+                        X2Model::model($campaign->list->modelName)
+                        ->count($campaign->list->queryCriteria()) < 1) ||
+                ($campaign->list->type != 'dynamic' && count($campaign->list->listItems) < 1)) {
 
             Yii::app()->user->setFlash('error', Yii::t('marketing', 'The contact list is empty.'));
             $this->redirect(array('view', 'id' => $id));
@@ -484,14 +478,14 @@ class MarketingController extends x2base {
 
         //Duplicate the list for campaign tracking, leave original untouched
         //only if the list is not already a campaign list
-        if($campaign->list->type != "campaign"){
+        if ($campaign->list->type != "campaign") {
             $newList = $campaign->list->staticDuplicate();
-            if(!isset($newList)){
+            if (!isset($newList)) {
                 Yii::app()->user->setFlash('error', Yii::t('marketing', 'The contact list is empty.'));
                 $this->redirect(array('view', 'id' => $id));
             }
             $newList->type = 'campaign';
-            if($newList->save()) {
+            if ($newList->save()) {
                 $campaign->list = $newList;
                 $campaign->listId = $newList->nameId;
             } else {
@@ -506,30 +500,30 @@ class MarketingController extends x2base {
         $this->redirect(array('view', 'id' => $id, 'launch' => true));
     }
 
-    public function actionValidate($id){
+    public function actionValidate($id) {
         $campaign = $this->loadModel($id);
         $errors = array();
 
-        if(!isset($campaign)){
+        if (!isset($campaign)) {
             $errors[] = Yii::t('app', 'The requested page does not exist.');
         }
 
-        if(!isset($campaign->list)){
+        if (!isset($campaign->list)) {
             $errors[] = Yii::t('marketing', 'Contact List cannot be blank.');
         }
 
-        if(empty($campaign->subject) && $campaign->type === 'Email'){
+        if (empty($campaign->subject) && $campaign->type === 'Email') {
             $errors[] = Yii::t('marketing', 'Subject cannot be blank.');
         }
 
-        if($campaign->launchDate != 0 && $campaign->launchDate < time()){
+        if ($campaign->launchDate != 0 && $campaign->launchDate < time()) {
             $errors[] = Yii::t('marketing', 'The campaign has already been launched.');
         }
 
-        if(($campaign->list->type == 'dynamic' && 
-            X2Model::model($campaign->list->modelName)
-                ->count($campaign->list->queryCriteria()) < 1) || 
-            ($campaign->list->type != 'dynamic' && count($campaign->list->listItems) < 1)){
+        if (($campaign->list->type == 'dynamic' &&
+                        X2Model::model($campaign->list->modelName)
+                        ->count($campaign->list->queryCriteria()) < 1) ||
+                ($campaign->list->type != 'dynamic' && count($campaign->list->listItems) < 1)) {
 
             $errors[] = Yii::t('marketing', 'The contact list is empty.');
         }
@@ -537,7 +531,7 @@ class MarketingController extends x2base {
         if (empty($errors)) {
             $this->respond(Yii::t('marketing', 'This campaign is ready to launch!'));
         } else {
-            $this->respond(Yii::t('marketing', "The following issues must be corrected before your campaign can be launched:\n").implode("\n", $errors), true);
+            $this->respond(Yii::t('marketing', "The following issues must be corrected before your campaign can be launched:\n") . implode("\n", $errors), true);
         }
     }
 
@@ -546,10 +540,10 @@ class MarketingController extends x2base {
      *
      * @param integer $id The ID of the campaign to toggle
      */
-    public function actionToggle($id){
+    public function actionToggle($id) {
         $campaign = $this->loadModel($id);
 
-        if(!isset($campaign)){
+        if (!isset($campaign)) {
             Yii::app()->user->setFlash('error', Yii::t('app', 'The requested page does not exist.'));
             $this->redirect(array('index'));
         }
@@ -566,10 +560,10 @@ class MarketingController extends x2base {
      *
      * @param integer $id The ID of the campaign to complete
      */
-    public function actionComplete($id){
+    public function actionComplete($id) {
         $campaign = $this->loadModel($id);
 
-        if(!isset($campaign)){
+        if (!isset($campaign)) {
             Yii::app()->user->setFlash('error', Yii::t('app', 'The requested page does not exist.'));
             $this->redirect(array('index'));
         }
@@ -588,38 +582,37 @@ class MarketingController extends x2base {
      * @param type $campaignId
      * @param type $itemId
      */
-    public function actionMailIndividual($campaignId,$itemId) {
+    public function actionMailIndividual($campaignId, $itemId) {
         $this->itemId = $itemId;
         $this->campaign = Campaign::model()->findByPk($campaignId);
         $email = $this->recipient->email;
-        if($this->campaign instanceof Campaign && $this->listItem instanceof X2ListItem) {
+        if ($this->campaign instanceof Campaign && $this->listItem instanceof X2ListItem) {
             $this->sendIndividualMail();
             $this->response['fullStop'] = $this->fullStop;
             $status = $this->status;
             // Actual SMTP (or elsewise) delivery error that should stop the batch:
-            $error = ($status['code']!=200 && $this->undeliverable) || $this->fullStop;
+            $error = ($status['code'] != 200 && $this->undeliverable) || $this->fullStop;
             $this->response['status'] = $this->status;
-            $this->respond($status['message'],$error);
+            $this->respond($status['message'], $error);
         } else {
-            $this->respond(Yii::t('marketing','Specified campaign does not exist.'),1);
+            $this->respond(Yii::t('marketing', 'Specified campaign does not exist.'), 1);
         }
     }
 
-    public function actionDoNotEmailLinkClick ($x2_key) {
-        $contact = Contacts::model ()->findByAttributes (array (
+    public function actionDoNotEmailLinkClick($x2_key) {
+        $contact = Contacts::model()->findByAttributes(array(
             'trackingKey' => $x2_key,
         ));
         if ($contact !== null) {
             $contact->doNotEmail = true;
-            if ($contact->update ()) {
+            if ($contact->update()) {
                 if (Yii::app()->settings->doNotEmailPage) {
                     echo Yii::app()->settings->doNotEmailPage;
                 } else {
-                    echo Admin::getDoNotEmailDefaultPage ();
+                    echo Admin::getDoNotEmailDefaultPage();
                 }
             }
         }
-
     }
 
     /**
@@ -635,7 +628,7 @@ class MarketingController extends x2base {
      * @param string $email For unsub types, this is the urlencoded email address
      *  of the person unsubscribing
      */
-    public function actionClick($uid, $type, $url = null, $email = null){
+    public function actionClick($uid, $type, $url = null, $email = null) {
         // If the request is coming from within the web application, ignore it.
         $referrer = isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : '';
         $baseUrl = Yii::app()->request->getBaseUrl(true);
@@ -648,30 +641,29 @@ class MarketingController extends x2base {
 
         $now = time();
         $item = CActiveRecord::model('X2ListItem')
-            ->with('contact', 'list')->findByAttributes(array('uniqueId' => $uid));
+                        ->with('contact', 'list')->findByAttributes(array('uniqueId' => $uid));
 
         // It should never happen that we have a list item without a campaign,
         // but it WILL happen on any old db where x2_list_items does not cascade on delete
         // we can't track anything if the listitem was deleted, but at least prevent breaking links
-        if($item === null || $item->list->campaign === null){
-            if($type == 'click'){
+        if ($item === null || $item->list->campaign === null) {
+            if ($type == 'click') {
                 // campaign redirect link click
                 $this->redirect(htmlspecialchars_decode($url, ENT_NOQUOTES));
-            }elseif($type == 'open'){
+            } elseif ($type == 'open') {
                 //return a one pixel transparent gif
                 header('Content-Type: image/gif');
                 echo base64_decode('R0lGODlhAQABAIABAP///wAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==');
-            }elseif($type == 'unsub' && !empty($email)){
+            } elseif ($type == 'unsub' && !empty($email)) {
                 Contacts::model()
-                    ->updateAll(
-                        array('doNotEmail' => true), 'email=:email', array(':email' => $email));
+                        ->updateAll(
+                                array('doNotEmail' => true), 'email=:email', array(':email' => $email));
                 X2ListItem::model()
-                    ->updateAll(
-                        array('unsubscribed' => time()), 
-                        'emailAddress=:email AND unsubscribed=0', array('email' => $email));
+                        ->updateAll(
+                                array('unsubscribed' => time()), 'emailAddress=:email AND unsubscribed=0', array('email' => $email));
                 $message = Yii::t('marketing', 'You have been unsubscribed');
-                echo '<html><head><title>'.$message.'</title></head><body>'.$message.
-                    '</body></html>';
+                echo '<html><head><title>' . $message . '</title></head><body>' . $message .
+                '</body></html>';
             }
             return;
         }
@@ -691,9 +683,9 @@ class MarketingController extends x2base {
         $action->updatedBy = 'API';
         $skipActionEvent = true;
 
-        if($contact !== null){
+        if ($contact !== null) {
             $skipActionEvent = false;
-            if($email === null)
+            if ($email === null)
                 $email = $contact->email;
 
             $action->associationType = 'contacts';
@@ -705,14 +697,14 @@ class MarketingController extends x2base {
             $event->associationId = $action->associationId;
             $event->associationType = 'Contacts';
 
-            if($action->assignedTo !== '' && $action->assignedTo !== 'Anyone'){
+            if ($action->assignedTo !== '' && $action->assignedTo !== 'Anyone') {
                 $notif->user = $contact->assignedTo;
                 $notif->modelType = 'Contacts';
                 $notif->modelId = $contact->id;
                 $notif->createDate = $now;
                 $notif->value = $item->list->campaign->getLink();
             }
-        }elseif($list !== null){
+        } elseif ($list !== null) {
             $action = new Actions;
             $action->type = 'note';
             $action->createDate = $now;
@@ -728,19 +720,18 @@ class MarketingController extends x2base {
             $action->assignedTo = $list->assignedTo;
         }
 
-        if($type == 'unsub'){
+        if ($type == 'unsub') {
             $item->unsubscribe();
 
             // find any weblists associated with the email address and create unsubscribe actions 
             // for each of them
-            $sql = 
-                'SELECT t.* 
+            $sql = 'SELECT t.* 
                 FROM x2_lists as t 
                 JOIN x2_list_items as li ON t.id=li.listId 
                 WHERE li.emailAddress=:email AND t.type="weblist";';
             $weblists = Yii::app()->db->createCommand($sql)
-                ->queryAll(true, array('email' => $email));
-            foreach($weblists as $weblist){
+                    ->queryAll(true, array('email' => $email));
+            foreach ($weblists as $weblist) {
                 $weblistAction = new Actions();
                 $weblistAction->disableBehavior('changelog');
                 //$weblistAction->id = 0; // this causes primary key contraint violation errors
@@ -751,69 +742,69 @@ class MarketingController extends x2base {
                 $weblistAction->associationName = $weblist['name'];
                 $weblistAction->visibility = $weblist['visibility'];
                 $weblistAction->assignedTo = $weblist['assignedTo'];
-                $weblistAction->actionDescription = Yii::t('marketing', 'Campaign').': '.
-                    $item->list->campaign->name."\n\n".$email." ".
-                    Yii::t('marketing', 'has unsubscribed').".";
+                $weblistAction->actionDescription = Yii::t('marketing', 'Campaign') . ': ' .
+                        $item->list->campaign->name . "\n\n" . $email . " " .
+                        Yii::t('marketing', 'has unsubscribed') . ".";
                 $weblistAction->save();
             }
 
             $action->type = 'email_unsubscribed';
             $notif->type = 'email_unsubscribed';
 
-            if($contact === null) {
-                $action->actionDescription = Yii::t('marketing', 'Campaign').': '.
-                $item->list->campaign->name."\n\n".$item->emailAddress.' '.
-                Yii::t('marketing', 'has unsubscribed').".";
+            if ($contact === null) {
+                $action->actionDescription = Yii::t('marketing', 'Campaign') . ': ' .
+                        $item->list->campaign->name . "\n\n" . $item->emailAddress . ' ' .
+                        Yii::t('marketing', 'has unsubscribed') . ".";
             } else {
-                $action->actionDescription = Yii::t('marketing', 'Campaign').': '.
-                    $item->list->campaign->name."\n\n".
-                    Yii::t('marketing', 'Contact has unsubscribed').".\n".
-                    Yii::t('marketing', '\'Do Not Email\' has been set').".";
+                $action->actionDescription = Yii::t('marketing', 'Campaign') . ': ' .
+                        $item->list->campaign->name . "\n\n" .
+                        Yii::t('marketing', 'Contact has unsubscribed') . ".\n" .
+                        Yii::t('marketing', '\'Do Not Email\' has been set') . ".";
             }
 
             $message = Yii::t('marketing', 'You have been unsubscribed');
-            echo '<html><head><title>'.$message.'</title></head><body>'.$message.'</body></html>';
-        } elseif($type == 'open'){
+            echo '<html><head><title>' . $message . '</title></head><body>' . $message . '</body></html>';
+        } elseif ($type == 'open') {
             //return a one pixel transparent gif
             header('Content-Type: image/gif');
             echo base64_decode('R0lGODlhAQABAIABAP///wAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==');
             // Check if it has been marked as opened already, or if the contact
             // no longer exists. If so, exit; nothing more need be done.
-            if($item->opened != 0)
+            if ($item->opened != 0)
                 Yii::app()->end();
             // This needs to happen before the skip option to accomodate the case of newsletters
-            $item->markOpened(); 
-            if($skipActionEvent)
+            $item->markOpened();
+            if ($skipActionEvent)
                 Yii::app()->end();
             $action->disableBehavior('changelog');
             $action->type = 'campaignEmailOpened';
             $event->type = 'email_opened';
             $notif->type = 'email_opened';
             $event->save();
-            if($contact === null) {
-                $action->actionDescription = Yii::t('marketing', 'Campaign').': '.
-                    $item->list->campaign->name."\n\n".$item->emailAddress.' '.
-                    Yii::t('marketing', 'has opened the email').".";
+            if ($contact === null) {
+                $action->actionDescription = Yii::t('marketing', 'Campaign') . ': ' .
+                        $item->list->campaign->name . "\n\n" . $item->emailAddress . ' ' .
+                        Yii::t('marketing', 'has opened the email') . ".";
             } else {
-                $action->actionDescription = Yii::t('marketing', 'Campaign').': '.
-                    $item->list->campaign->name."\n\n".
-                    Yii::t('marketing', 'Contact has opened the email').".";
+                $action->actionDescription = Yii::t('marketing', 'Campaign') . ': ' .
+                        $item->list->campaign->name . "\n\n" .
+                        Yii::t('marketing', 'Contact has opened the email') . ".";
             }
-        } elseif($type == 'click'){
+        } elseif ($type == 'click') {
             // redirect link click
             $item->markClicked($url);
 
             $action->type = 'email_clicked';
             $notif->type = 'email_clicked';
 
-            if($contact === null) {
-                $action->actionDescription = Yii::t('marketing', 'Campaign').': '.
-                    $item->list->campaign->name."\n\n".
-                    Yii::t('marketing', 'Contact has clicked a link').":\n".urldecode($url);
+            if ($contact === null) {
+                $action->actionDescription = Yii::t('marketing', 'Campaign') . ': ' .
+                        $item->list->campaign->name . "\n\n" .
+                        Yii::t('marketing', 'Contact has clicked a link') . ":\n" . urldecode($url);
             } else {
-                $action->actionDescription = Yii::t('marketing', 'Campaign').': '.
-                    $item->list->campaign->name."\n\n".$item->emailAddress.' '.
-                    Yii::t('marketing', 'has clicked a link').":\n".urldecode($url);
+                $action->actionDescription = Yii::t('marketing', 'Campaign') . ': ' .
+                        $item->list->campaign->name . "\n\n" . $item->emailAddress . ' ' .
+                        Yii::t('marketing', 'has clicked a link') . ":\n" . urldecode($url);
             }
             $this->redirect(htmlspecialchars_decode($url, ENT_NOQUOTES));
         }
@@ -825,46 +816,46 @@ class MarketingController extends x2base {
         $notif->save();  // it will simply not validate and not be saved
     }
 
-    public function actionRemoveWebLeadFormCustomHtml () {
-        if(!empty($_POST) && !empty ($_POST['id'])) {
-            $model = WebForm::model()->findByPk ($_POST['id']);
+    public function actionRemoveWebLeadFormCustomHtml() {
+        if (!empty($_POST) && !empty($_POST['id'])) {
+            $model = WebForm::model()->findByPk($_POST['id']);
             if ($model) {
                 $model->header = '';
-                if ($model->save ()) {
-                    echo CJSON::encode (
-                        array ('success', $model->attributes));
+                if ($model->save()) {
+                    echo CJSON::encode(
+                            array('success', $model->attributes));
                     return;
                 }
             }
         }
-        echo CJSON::encode (
-            array ('error', Yii::t('marketing', 'Custom HTML could not be removed.')));
+        echo CJSON::encode(
+                array('error', Yii::t('marketing', 'Custom HTML could not be removed.')));
     }
 
-    public function actionSaveWebLeadFormCustomHtml () {
-        if(!empty($_POST) && !empty ($_POST['id']) && !empty ($_POST['html'])){
-            $model = WebForm::model()->findByPk ($_POST['id']);
+    public function actionSaveWebLeadFormCustomHtml() {
+        if (!empty($_POST) && !empty($_POST['id']) && !empty($_POST['html'])) {
+            $model = WebForm::model()->findByPk($_POST['id']);
             if ($model) {
                 $model->header = $_POST['html'];
-                if ($model->save ()) {
-                    echo CJSON::encode (array ('success', $model->attributes));
+                if ($model->save()) {
+                    echo CJSON::encode(array('success', $model->attributes));
                     return;
                 }
             }
         }
-        echo CJSON::encode (
-            array ('error', Yii::t('marketing', 'Custom HTML could not be saved.')));
+        echo CJSON::encode(
+                array('error', Yii::t('marketing', 'Custom HTML could not be saved.')));
     }
 
     /**
      * Get the web tracker code to insert into your website
      */
-    public function actionWebTracker(){
+    public function actionWebTracker() {
         $admin = Yii::app()->settings;
-        if(isset($_POST['Admin']['enableWebTracker'], $_POST['Admin']['webTrackerCooldown'])){
+        if (isset($_POST['Admin']['enableWebTracker'], $_POST['Admin']['webTrackerCooldown'])) {
             $admin->enableWebTracker = $_POST['Admin']['enableWebTracker'];
             $admin->webTrackerCooldown = $_POST['Admin']['webTrackerCooldown'];
-            
+
             if (Yii::app()->contEd('pla')) {
                 $settings = array(
                     'enableFingerprinting',
@@ -880,7 +871,7 @@ class MarketingController extends x2base {
                         $admin->$setting = $_POST['Admin'][$setting];
                 }
             }
-            
+
             if ($admin->save()) {
                 // Create lockfile to disable geolocation in webTracker.php,
                 // which is loaded without Yii support
@@ -902,44 +893,42 @@ class MarketingController extends x2base {
      * Export the web tracker code to upload to your website
      */
     public function actionExportWebTracker() {
-        $srcFile = implode (DIRECTORY_SEPARATOR, array(Yii::app()->basePath, '..', 'webTracker.php'));
+        $srcFile = implode(DIRECTORY_SEPARATOR, array(Yii::app()->basePath, '..', 'webTracker.php'));
         $dstFile = $this->attachBehavior('ImportExportBehavior', new ImportExportBehavior)
-            ->safePath('webTracker.js');
+                ->safePath('webTracker.js');
 
         // Evaluate and capture webTracker.php
-        ob_start ();
+        ob_start();
         require_once ($srcFile);
-        $trackerCode = ob_get_contents ();
-        ob_end_clean ();
+        $trackerCode = ob_get_contents();
+        ob_end_clean();
 
         // Adjust webListener URL as it would be generated in an incorrect context
-        $trackerCode = preg_replace ('/(index.php\/)?marketing\/exportWebTracker\//', '', $trackerCode);
-        $trackerCode = preg_replace ('/return \'https?:\/\//', 'return \'//', $trackerCode);
+        $trackerCode = preg_replace('/(index.php\/)?marketing\/exportWebTracker\//', '', $trackerCode);
+        $trackerCode = preg_replace('/return \'https?:\/\//', 'return \'//', $trackerCode);
 
         // Retrieve current license header
         $headerLength = 35; // in lines
-        $fh = fopen ($srcFile, 'r');
-        fgets ($fh); // skip first line (open PHP tag)
+        $fh = fopen($srcFile, 'r');
+        fgets($fh); // skip first line (open PHP tag)
         $header = '';
         for ($i = 0; $i < $headerLength; $i++)
-            $header .= fgets ($fh);
-        fclose ($fh);
+            $header .= fgets($fh);
+        fclose($fh);
 
         // Write to temporary file and send to browser
-        $fh = fopen ($dstFile, 'w');
-        fwrite ($fh, $header);
-        fwrite ($fh, $trackerCode);
-        fclose ($fh);
-        $this->sendFile ('webTracker.js', @file_get_contents($dstFile), 'text/javascript');
+        $fh = fopen($dstFile, 'w');
+        fwrite($fh, $header);
+        fwrite($fh, $trackerCode);
+        fclose($fh);
+        $this->sendFile('webTracker.js', @file_get_contents($dstFile), 'text/javascript');
     }
 
-	
-	public function actionGetCampaignChartData(
-		$id, $modelName, $startTimestamp, $endTimestamp) {
-        echo CJSON::encode(CampaignChartWidget::getChartData (
-			$id, $modelName, $startTimestamp, $endTimestamp));
+    public function actionGetCampaignChartData(
+    $id, $modelName, $startTimestamp, $endTimestamp) {
+        echo CJSON::encode(CampaignChartWidget::getChartData(
+                        $id, $modelName, $startTimestamp, $endTimestamp));
     }
-	
 
     /**
      * Create a menu for Marketing
@@ -950,7 +939,7 @@ class MarketingController extends x2base {
     public function insertMenu($selectOptions = array(), $model = null, $menuParams = null) {
         $Contact = Modules::displayName(false, "Contacts");
         $modelId = isset($model) ? $model->id : 0;
-        $marketingAdmin = Yii::app()->user->checkAccess ('MarketingAdminAccess');
+        $marketingAdmin = Yii::app()->user->checkAccess('MarketingAdminAccess');
 
         /**
          * To show all options:
@@ -959,7 +948,6 @@ class MarketingController extends x2base {
          *     'newsletters', 'weblead', 'webtracker', 'x2flow', 'email',
          * );
          */
-        
         /**
          * Additionally, the following platinum options can be used:
          * $plaOptions = array(
@@ -967,32 +955,30 @@ class MarketingController extends x2base {
          * );
          * $menuOptions = array_merge($menuOptions, $plaOptions);
          */
-        
-
         $menuItems = array(
             array(
-                'name'=>'all',
-                'label'=>Yii::t('marketing','All Campaigns'),
-                'url'=>array('index')
+                'name' => 'all',
+                'label' => Yii::t('marketing', 'All Campaigns'),
+                'url' => array('index')
             ),
             array(
-                'name'=>'create',
-                'label'=>Yii::t('marketing','Create Campaign'),
-                'url'=>array('create')
+                'name' => 'create',
+                'label' => Yii::t('marketing', 'Create Campaign'),
+                'url' => array('create')
             ),
-            RecordViewLayoutManager::getViewActionMenuListItem ($modelId),
+            RecordViewLayoutManager::getViewActionMenuListItem($modelId),
             array(
-                'name'=>'viewAnon',
+                'name' => 'viewAnon',
                 'label' => Yii::t('module', 'View'),
-                'url'=>array('anonContactView', 'id' => $modelId),
+                'url' => array('anonContactView', 'id' => $modelId),
             ),
             array(
-                'name'=>'edit',
+                'name' => 'edit',
                 'label' => Yii::t('module', 'Update'),
                 'url' => array('update', 'id' => $modelId)
             ),
             array(
-                'name'=>'delete',
+                'name' => 'delete',
                 'label' => Yii::t('module', 'Delete'),
                 'url' => '#',
                 'linkOptions' => array(
@@ -1001,69 +987,67 @@ class MarketingController extends x2base {
             ),
             array(
                 'name' => 'deleteAnon',
-                'label' => Yii::t('contacts', 'Delete'), 
-                'url' => '#', 
+                'label' => Yii::t('contacts', 'Delete'),
+                'url' => '#',
                 'linkOptions' => array(
                     'submit' => array('/marketing/anonContactDelete', 'id' => $modelId),
                     'confirm' => 'Are you sure you want to delete this anonymous contact?')
             ),
             array(
-                'name'=>'lists',
-                'label'=>Yii::t('contacts','{module} Lists', array('{module}'=>$Contact)),
-                'url'=>array('/contacts/contacts/lists')),
+                'name' => 'lists',
+                'label' => Yii::t('contacts', '{module} Lists', array('{module}' => $Contact)),
+                'url' => array('/contacts/contacts/lists')),
             array(
-                'name'=>'import',
-                'label'=>Yii::t('marketing', 'Import Campaigns'),
-                'url'=>array('admin/importModels', 'model'=>'Campaign'),
+                'name' => 'import',
+                'label' => Yii::t('marketing', 'Import Campaigns'),
+                'url' => array('admin/importModels', 'model' => 'Campaign'),
             ),
             array(
-                'name'=>'export',
-                'label'=>Yii::t('marketing', 'Export Campaigns'),
-                'url'=>array('admin/exportModels', 'model'=>'Campaign'),
+                'name' => 'export',
+                'label' => Yii::t('marketing', 'Export Campaigns'),
+                'url' => array('admin/exportModels', 'model' => 'Campaign'),
             ),
             array(
-                'name'=>'newsletters',
+                'name' => 'newsletters',
                 'label' => Yii::t('marketing', 'Newsletters'),
                 'url' => array('/marketing/weblist/index'),
                 'visible' => (Yii::app()->contEd('pro'))
             ),
             array(
-                'name'=>'weblead',
+                'name' => 'weblead',
                 'label' => Yii::t('marketing', 'Web Lead Form'),
                 'url' => array('webleadForm')
             ),
             array(
-                'name'=>'webtracker',
+                'name' => 'webtracker',
                 'label' => Yii::t('marketing', 'Web Tracker'),
                 'url' => array('webTracker'),
                 'visible' => (Yii::app()->contEd('pro'))
             ),
-        
             array(
-                'name'=>'anoncontacts',
+                'name' => 'anoncontacts',
                 'label' => Yii::t('marketing', 'Anonymous Contacts'),
-                'url'=>array('anonContactIndex'),
+                'url' => array('anonContactIndex'),
                 'visible' => $marketingAdmin && Yii::app()->contEd('pla')
             ),
             array(
-                'name'=>'fingerprints',
+                'name' => 'fingerprints',
                 'label' => Yii::t('marketing', 'Fingerprints'),
                 'url' => array('fingerprintIndex'),
                 'visible' => $marketingAdmin && Yii::app()->contEd('pla')
             ),
-        
             array(
-                'name'=>'x2flow',
+                'name' => 'x2flow',
                 'label' => Yii::t('app', 'X2Workflow'),
                 'url' => array('/studio/flowIndex'),
                 'visible' => (Yii::app()->contEd('pro'))
             ),
             array(
-                'name'=>'email',
+                'name' => 'email',
                 'label' => Yii::t('app', 'Send Email'), 'url' => '#',
                 'linkOptions' => array('onclick' => 'toggleEmailForm(); return false;')
             ),
-            RecordViewLayoutManager::getEditLayoutActionMenuListItem (),
+            RecordViewLayoutManager::getEditLayoutActionMenuListItem(),
         );
 
         $this->prepareMenu($menuItems, $selectOptions);

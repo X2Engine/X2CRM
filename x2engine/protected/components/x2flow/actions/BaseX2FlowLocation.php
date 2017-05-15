@@ -300,9 +300,6 @@ abstract class BaseX2FlowLocation extends X2FlowAction {
             $location->seen .= $new;
         }
         $location->save();
-        X2Flow::trigger('LocationTrigger', array(
-            'model' => $location,
-        ));
     }
 
     function showRecords($records, &$params) {
