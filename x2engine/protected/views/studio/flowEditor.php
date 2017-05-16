@@ -37,28 +37,17 @@
 
 Tours::loadTips('studio.flowEditor');
 
-$profile = Yii::app()->params->profile;
-$miscLayoutSettings = $profile->miscLayoutSettings;
+$miscLayoutSettings = Yii::app()->params->profile->miscLayoutSettings;
 
-$showLabels;
-if (isset ($miscLayoutSettings['x2flowShowLabels'])) { 
-    $showLabels = $miscLayoutSettings['x2flowShowLabels'];
-} else {
-    $showLabels = true;
-}
+$showLabels = isset($miscLayoutSettings['x2flowShowLabels'])
+        ? $miscLayoutSettings['x2flowShowLabels'] : true;
 
-$newRecord = $model->isNewRecord;
-
-$modelsWithInsertableAttrs = array(
-    'Accounts', 'Actions', 'Contacts', 'Docs', 'Groups', 'Campaign', 'Media', 'Opportunity',
-    'Product', 'Quote', 'Services', 'BugReports');
-
-
+$modelsWithInsertableAttrs = X2Model::$modelsWithInsertableAttributes;
 $insertableAttributes = array();
 foreach ($modelsWithInsertableAttrs as $modelName) {
     $insertableAttributes[$modelName] = array ();
     foreach(X2Model::model($modelName)->attributeLabels() as $fieldName => $label) {
-        $insertableAttributes[$modelName][$label] = '{'.$fieldName.'}';
+        $insertableAttributes[$modelName][$label] = '{' . $fieldName . '}';
     }
 }
 
@@ -97,25 +86,35 @@ Yii::app()->clientScript->registerPackages (array (
     ),
 ), true);
 
-
+// Declare variables to pass to JS files
 $passVarsToClientScript = '
     x2.flow = {};
     x2.flow.translations = {};
-    x2.flow.requiresCron = '.CJSON::encode ($requiresCron).';
-    x2.flow.showLabels = '.($showLabels ? 'true' : 'false').';
+    x2.flow.requiresCron = ' . CJSON::encode ($requiresCron) . ';
+    x2.flow.showLabels = ' . ($showLabels ? 'true' : 'false') . ';
     x2.flow.insertableAttributes = '.
-        CJSON::encode ($insertableAttributes).';
-    x2.flowData = '.CJSON::encode($model->flow).';
+        CJSON::encode ($insertableAttributes) . ';
+    x2.flowData = ' . CJSON::encode($model->flow) . ';
     x2.fieldUtils = new x2.FlowFields ({
-        operatorList: '.CJSON::encode(X2FlowTrigger::getFieldComparisonOptions()).',
-        visibilityOptions: '.CJSON::encode(array(
+        operatorList: ' . CJSON::encode(X2FlowTrigger::getFieldComparisonOptions()) . ',
+        visibilityOptions: ' . CJSON::encode(array(
             array(1, Yii::t('app', 'Public')),
             array(0, Yii::t('app', 'Private')),
             array(2, Yii::t('app', 'User\'s Groups'))
-        )).',
-        allTags: '.CJSON::encode(Tags::getAllTags()).',
+        )) . ',
+        allTags: ' . CJSON::encode(Tags::getAllTags()) . ',
         templateSelector: "#condition-templates"
     });
+
+    x2.anyModelTriggers = JSON.parse(' . CJSON::encode(X2FlowTrigger::getAnyModelTriggers()) . ');
+    x2.actionModelTriggers = JSON.parse(' . CJSON::encode(X2FlowTrigger::getActionModelTriggers()) . ');
+    x2.userModelTriggers = JSON.parse(' . CJSON::encode(X2FlowTrigger::getUserModelTriggers()) . ');
+    x2.processModelTriggers = JSON.parse(' . CJSON::encode(X2FlowTrigger::getProcessModelTriggers()) . ');
+    x2.recordModelTriggers = JSON.parse(' . CJSON::encode(X2FlowTrigger::getRecordModelTriggers()) . ');
+
+    x2.anyModelActions = JSON.parse(' . CJSON::encode(X2FlowAction::getAnyModelActions()) . ');
+    x2.recordModelActions = JSON.parse(' . CJSON::encode(X2FlowAction::getRecordModelActions()) . ');
+    x2.processModelActions = JSON.parse(' . CJSON::encode(X2FlowAction::getProcessModelActions()) . ');
 ';
 
 // pass array of predefined theme uploadedBy attributes to client
@@ -124,185 +123,50 @@ foreach ($translations as $key => $val) {
         $key. "'] = '" . addslashes ($val) . "';\n";
 }
 
-Yii::app()->clientScript->registerScript(
-    'passVarsToX2FlowScript', $passVarsToClientScript,
-    CClientScript::POS_END);
+// Include variable script
+Yii::app()->clientScript->registerScript('passVarsToX2FlowScript',
+        $passVarsToClientScript, CClientScript::POS_END);
 
 $assets = Yii::app()->getAssetManager()->publish(
     Yii::getPathOfAlias('application.extensions.CJuiDateTimePicker').DIRECTORY_SEPARATOR.'assets'
 );
 
+// Url paths
+$baseUrl = Yii::app()->getBaseUrl();
+$themeBaseUrl = Yii::app()->theme->getBaseUrl() . '/css';
+$workflowJsUrl = Yii::app()->getBaseUrl() . '/js/X2Flow';
+
+/**
+ * JavaScript scripts
+ */
 $cs = Yii::app()->getClientScript();
+
+$cs->registerPackage ('emailEditor');
+
 $cs->registerCssFile($assets.'/jquery-ui-timepicker-addon.css');
 $cs->registerScriptFile($assets.'/jquery-ui-timepicker-addon.js', CClientScript::POS_END);
-// TODO: if the number of item-specific front-end classes gets large, it will probably be worth
-// refactoring the JS class registration so that they get registered via ajax when the flow item
-// is dragged into the flow
-$cs->registerScriptFile(
-    Yii::app()->getBaseUrl().'/js/X2Flow/X2FlowItem.js', CClientScript::POS_END);
-$cs->registerScriptFile(
-    Yii::app()->getBaseUrl().'/js/X2Flow/X2FlowApiCall.js', CClientScript::POS_END);
-$cs->registerScriptFile(Yii::app()->getBaseUrl().'/js/X2Flow/x2flowEditor.js', CClientScript::POS_END);
-$cs->registerCssFile(Yii::app()->theme->getBaseUrl().'/css/x2flow.css');
 
-// used for rich editing in item config forms
-Yii::app()->clientScript->registerPackage ('emailEditor');
+$cs->registerCssFile($themeBaseUrl . '/x2flow.css');
+$cs->registerScriptFile($themeBaseUrl . '/listview/jquery.yiigridview.js');
 
-$cs->registerScriptFile(Yii::app()->theme->getBaseUrl().'/css/listview/jquery.yiigridview.js');
-
-
-Yii::app()->clientScript->registerScript('flowEditorScript', '
-$(function flowEditorMain () {
-
-
-    $("#show-trace-button").on ("click", function () {
-        if ($("#x2flow-trace-box").is (":visible")) {
-            $("#x2flow-trace-box").slideUp ();
-        } else {
-            $("#x2flow-trace-box").slideDown ();
-            $("html,body").animate({
-                scrollTop: ($("#x2flow-trace-box").offset().top - 100)
-            }, 300);
-        }
-    });
-
-    // shows/hides flow item labels
-    $("#x2flow-show-labels-checkbox").on ("change", function () {
-        if (this.checked) { // show labels
-            $(".x2flow-main").find (".x2flow-icon-label").show ();
-            $(".x2flow-node.x2flow-action").each (function () {
-                if ($(this).children ().first ().hasClass ("x2flow-icon-label")) {
-                    $(this).children ().first ().attr ("style", "");
-                }
-            });
-            $(".x2flow-node").each (function () {
-                if ($(this).children ().first ().hasClass ("x2flow-icon-label")) {
-                    $(this).removeClass ("no-label"); // used to position arrows
-                }
-            });
-            $("#trigger").find (".x2flow-icon-label").attr ("style", "");
-            $("#trigger").removeClass ("no-label");
-            auxlib.saveMiscLayoutSetting ("x2flowShowLabels", 1);
-            x2.flow.showLabels = true;
-        } else { // hide labels
-            $(".x2flow-main").find (".x2flow-icon-label").hide ();
-            $(".x2flow-node.x2flow-action").each (function () {
-                if ($(this).children ().first ().hasClass ("x2flow-icon-label")) {
-                    $(this).children ().first ().attr ("style", "display: none;");
-                }
-            });
-            $(".x2flow-node").each (function () {
-                if ($(this).children ().first ().hasClass ("x2flow-icon-label")) {
-                    $(this).addClass ("no-label"); // used to position arrows
-                }
-            });
-            $("#trigger").find (".x2flow-icon-label").attr ("style", "display: none;");
-            $("#trigger").addClass ("no-label");
-            auxlib.saveMiscLayoutSetting ("x2flowShowLabels", 0);
-            x2.flow.showLabels = false;
-        }
-    });
+$cs->registerScriptFile($workflowJsUrl . '/X2FlowItem.js', CClientScript::POS_END);
+$cs->registerScriptFile($workflowJsUrl . '/X2FlowEditor.js', CClientScript::POS_END);
+$cs->registerScriptFile($workflowJsUrl . '/X2FlowApiCall.js', CClientScript::POS_END);
 
 /**
- * Trigger arrays
+ * Action Menu UI
  */
-var triggersForAny = [
-    "Newsletter Email Clicked", "Newsletter Email Opened", "Splitter",
-    "Unsubscribed from Newsletter", "Periodic Trigger", "Conditional Switch",
-    "Campaign Web Activity (no contact available)", 
-    "Macro Executed", "User Signed In", "User Signed Out"
-];
-
-var triggersThatPassActions = [
-    "Action Completed", "Action Overdue", "Action Marked Incomplete"
-];
-
-var triggersThatPassUsers = [
-    "Macro Executed", "User Signed In", "User Signed Out"
-];
-
-var triggersThatPassWorkflows = [
-    "Process Stage Completed", "Process Completed", "Process Stage Reverted",
-    "Process Stage Started", "Process Started"
-];
-
-var triggersThatPassRecords = [
-    "Campaign Email Clicked", "Campaign Email Opened", "Email Opened",
-    "Unsubscribed from Campaign", "Campaign Web Activity", "Inbound Email",
-    "Outbound Email", "Record Created", "Record Deleted", "Tag Added",
-    "Tag Removed", "Record Updated", "Record Viewed", "New Web Lead",
-    "Targeted Content Requested", "Contact Web Activity"
-];
-
-/**
- * Action arrays
- */
-var actionsForAny = [
-    "Remote API Call", "Create Action", "Send SMS", "Wait", "Push Web Content",
-    "Post to Activity Feed", "Create Popup Notification", "Email",
-    "Create Location-Based Activity Feed Post", "Create Location-Based Email",
-    "Create Location-Based Notification", "Create Location-Based SMS"
-];
-
-var actionsWithRecordRequired = [
-    "Change Record", "Add Comment", "Create Record", "Create Action for Record",
-    "Delete Record", "Email Contact", "Add to List", "Remove from List",
-    "Add to Newsletter","Reassign Record", "Add or Remove Tags", "Update Record"
-];
-
-var actionsWithWorkflowRequired = [
-    "Complete Process Stage", "Revert Process Stage", "Start Process Stage"
-];
-
-    $( window ).load(function() {
-        var trigger = $("#trigger-selector option:selected").text();
-    
-        $("#item-box").children().each(function () {
-            var itemTitle = this.title;
-            if ($.inArray(trigger, triggersThatPassRecords) == -1
-                && $.inArray(itemTitle, actionsWithRecordRequired) != -1) {
-                $(this).hide();
-            } else if ($.inArray(trigger, triggersThatPassWorkflows) == -1
-                && $.inArray(itemTitle, actionsWithWorkflowRequired) != -1) {
-                $(this).hide();
-            } else {
-                $(this).show();
-            }
-        });
-    });
-
-    $("#trigger-selector").change(function(e) {
-        var trigger = $("#trigger-selector option:selected").text();
-    
-        $("#item-box").children().each(function () {
-            var itemTitle = this.title;
-            if ($.inArray(trigger, triggersThatPassRecords) == -1
-                && $.inArray(itemTitle, actionsWithRecordRequired) != -1) {
-                $(this).hide();
-            } else if ($.inArray(trigger, triggersThatPassWorkflows) == -1
-                && $.inArray(itemTitle, actionsWithWorkflowRequired) != -1) {
-                $(this).hide();
-            } else {
-                $(this).show();
-            }
-        });
-    });
-        
-    
-
-})
-
-', CClientScript::POS_END);
-
-
 $this->actionMenu = array(
-    array('label' => Yii::t('studio', 'Manage Workflows'), 'url' => array('flowIndex')),
+    array(
+        'label' => Yii::t('studio', 'Manage Workflows'),
+        'url' => array('flowIndex')
+    )
 );
+
 if($model->isNewRecord) {
     $this->actionMenu[] = array('label' => Yii::t('studio', 'Create Workflow'));
 } else {
     $this->actionMenu[] = array('label' => Yii::t('studio', 'Create Workflow'), 'url' => array('flowDesigner'));
-    // $this->actionMenu[] = array('label' => Yii::t('module', 'Edit'), 'url' => array('flowDesigner', 'id' => $model->id));
     $this->actionMenu[] = array('label' => Yii::t('module', 'Update'));
     $this->actionMenu[] = array('label' => Yii::t('module', 'Delete'), 'url' => '#', 'linkOptions' => array('csrf' => true, 'submit' => array('deleteFlow', 'id' => $model->id), 'confirm' => Yii::t('app', 'Are you sure you want to delete this item?')));
 }
@@ -312,18 +176,21 @@ $this->actionMenu[] = array (
     'url' => array ('triggerLogs')
 );
 
-
 if (!$model->isNewRecord) {
     $this->actionMenu[] = array (
         'label' => Yii::t('studio', 'Export Workflow'), 
         'url' => array ('exportFlow', 'flowId' => $model->id),
     );
 }
+
 $this->actionMenu[] = array (
     'label' => Yii::t('studio', 'Import Workflow'), 
     'url' => array ('importFlow'),
 );
 
+/**
+ * Workflow Actions
+ */
 $actionMenuHtml = '<div id="item-box">';
 ob_start();
 ?>

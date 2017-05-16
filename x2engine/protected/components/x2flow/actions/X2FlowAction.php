@@ -42,6 +42,44 @@
 abstract class X2FlowAction extends X2FlowItem {
 
     public $trigger = null;
+    
+
+    /**
+     * Action arrays
+     */
+    private static $anyModelActions = array(
+        "Remote API Call", "Create Action", "Send SMS", "Wait", "Push Web Content",
+        "Post to Activity Feed", "Create Popup Notification", "Email",
+        "Create Location-Based Activity Feed Post", "Create Location-Based Email",
+        "Create Location-Based Notification", "Create Location-Based SMS"
+    );
+
+    private static $recordModelActions = array(
+        "Change Record", "Add Comment", "Create Record", "Create Action for Record",
+        "Delete Record", "Email Contact", "Add to List", "Remove from List",
+        "Add to Newsletter","Reassign Record", "Add or Remove Tags", "Update Record"
+    );
+
+    private static $processModelActions = array(
+        "Complete Process Stage", "Revert Process Stage", "Start Process Stage"
+    );
+    
+    /**
+     * Gets array of trigger text that pass specific model
+     * 
+     * @return type
+     */
+    public static function getAnyModelActions() {
+        return json_encode(self::$anyModelActions);
+    }
+    
+    public static function getRecordModelActions() {
+        return json_encode(self::$recordModelActions);
+    }
+
+    public static function getProcessModelActions() {
+        return json_encode(self::$processModelActions);
+    }
 
     /**
      * Runs the automation action with provided params.
