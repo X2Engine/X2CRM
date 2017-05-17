@@ -1,5 +1,5 @@
 # 6.6 #
-{releaseDate}
+5/17/2017
 * General Changelog / Developer Notes
   * Campaign Improvements
     * Email campaigns can now be scheduled
