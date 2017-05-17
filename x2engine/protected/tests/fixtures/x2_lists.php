@@ -11,7 +11,7 @@ return array(
 		'logicType' => 'AND',
 		'modelName' => 'Contacts',
 		'visibility' => '1',
-		'count' => '1',
+		'count' => '2',
 		'createDate' => '1371871507',
 		'lastUpdated' => '1372728516',
 	),

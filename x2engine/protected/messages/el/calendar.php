@@ -83,4 +83,5 @@
   'When:' => 'Πότε:',
   'Please select one of the options below to confirm your status.' => 'Παρακαλώ επιλέξτε μία από τις παρακάτω επιλογές για να επιβεβαιώσουν την κατάστασή σας.',
   'Maybe' => 'Μπορεί',
+  'Thanks for RSVPing! Your attendance has been updated to ' => 'Ευχαριστώ για το RSVPing! Η παρακολούθησή σας έχει ενημερωθεί',
 );

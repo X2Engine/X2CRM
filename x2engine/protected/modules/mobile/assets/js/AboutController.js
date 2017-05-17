@@ -71,7 +71,7 @@ AboutController.prototype.setApplicationName = function () {
 
 AboutController.prototype.init = function () {
     x2.Controller.prototype.init.call (this);
-    console.log ('set app name');
+
     var that = this;
     this.documentEvents.push (x2.main.onPageShow (function () {
         that.setApplicationName ();

@@ -7,7 +7,6 @@
   'One or more relationships could not be deleted.' => 'Один или больше связей не могут быть удалены.',
   'Request type not supported for this action.' => 'Тип запроса не поддерживается для этого действия.',
   'Tags not added.' => 'Тэги не добавляют.',
-  'Error' => 'Ошибка',
   'Cannot delete; no parameters specified for finding a relationship record to delete.' => 'Не удается удалить; нет параметров указаных для нахождения записи о связи для удаления.',
   'No relationships deleted; none were found matching specfied parameters.' => 'Нет удаленных связей; не найдено ни согласно соответствующим параметрам.',
   'Couldn\'t perform {a} on model {m}' => 'Не возможно выполнить {a} от модели {m}',

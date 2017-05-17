@@ -104,7 +104,7 @@ abstract class x2base extends X2Controller {
             'X2PermissionsBehavior' => array(
                 'class' => 'application.components.permissions.'.Yii::app()->params->controllerPermissions),
             'UserMailerBehavior' => array(
-                'class' => 'UserMailerBehavior'),
+                'class' => 'application.components.behaviors.UserMailerBehavior'),
         );
     }
 
@@ -255,6 +255,7 @@ abstract class x2base extends X2Controller {
             $log->recordId=$model->id;
             $log->timestamp=time();
             $log->save();
+            //printR($model, true);
             X2Flow::trigger('RecordViewTrigger',array('model'=>$model));
         }
 

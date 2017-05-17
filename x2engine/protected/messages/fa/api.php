@@ -7,7 +7,6 @@
   'One or more relationships could not be deleted.' => 'یک یا چند روابط نمی تواند حذف شود.',
   'Request type not supported for this action.' => 'درخواست نوع برای این اقدام پشتیبانی نمی شود.',
   'Tags not added.' => 'برچسب ها اضافه شده است.',
-  'Error' => 'خطا',
   'Cannot delete; no parameters specified for finding a relationship record to delete.' => 'نمی توانید حذف کنید بدون پارامتر مشخص شده برای پیدا کردن یک رابطه رکورد را حذف کنید.',
   'No relationships deleted; none were found matching specfied parameters.' => 'رابطه حذف هیچ تطبیق پارامترهای specfied یافت شد.',
   'Couldn\'t perform {a} on model {m}' => 'نمیشد تی \\ &#39;انجام {a} در مدل {m}',

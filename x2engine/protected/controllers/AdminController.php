@@ -428,6 +428,7 @@ class AdminController extends X2Controller {
             'failedLoginsBeforeCaptcha',
             'maxFailedLogins',
             'maxLoginHistory',
+            'maxFailedLoginHistory',
             'scanUploads',
             'twoFactorCredentialsId',
         );
@@ -1335,6 +1336,15 @@ class AdminController extends X2Controller {
         $count = 0;
         $importedContacts = false; // if Contacts were included in this package
         $errors = array();
+        $readIdFields = array( // Models which require their ID for relations
+            'AuthItem',
+            'AuthItemChild',
+            'Fields',
+            'Roles',
+            'RoleToPermission',
+            'Workflow',
+            'WorkflowStage',
+        );
 
         $csv = fopen($recordsFile, 'r');
         while (false !== ($arr = fgetcsv($csv)) && !is_null($arr)) {
@@ -1353,7 +1363,8 @@ class AdminController extends X2Controller {
                 if (class_exists($currentModel)) {
                     $model = new $currentModel;
                     foreach ($attributes as $key => $value) {
-                        if ($model->hasAttribute($key) && isset($value)) {
+                        if ((($key !== 'id' && $key !== 'nameId') || in_array($currentModel, $readIdFields))
+                                && $model->hasAttribute($key) && isset($value)) {
                             if ($value == "")
                                 $value = null;
                             $model->$key = $value;
@@ -2546,7 +2557,13 @@ class AdminController extends X2Controller {
       } */
 
     /**
-     * Page for User History
+     * Page for User Location History
+     * 
+     * This page shows users' location history acquired from:
+     *  'address' 'weblead' 'webactivity' 'email open' 'email click' 'email unsub'  
+     *  'user login' 'activityPost' 'mobileIdle' 'mobileActivityPost' 'mobileActionPost' 
+     *  'mobileCheckIn' 'eventRSVP'. It shows the user's username, ip address,
+     *  first and last name, lon and lat, and when it was acquired.
      */
     public function actionUserLocationHistory() {
         $locationHistoryDataProvider  = new CActiveDataProvider ('Locations', array(
@@ -2565,6 +2582,44 @@ class AdminController extends X2Controller {
         ));
     }
     
+    /**
+     * Render a grid of all hidden records of a specific type. This is helpful in
+     * situations where a record has been hidden inadvertantly, eg by the duplicate checker.
+     */
+    public function actionLocateMissingRecords($modelName = null) {
+        $skipModules = array(
+            'Groups', 'Media', 'Product', 'Quote', 'Charts', 'Reports', 'Services', 'Topics', 'EmailInboxes'
+        );
+        $model = $models = $dataProvider = null;
+        if (!is_null($modelName)) {
+            if (in_array($modelName, $skipModules)) {
+                throw new CHttpException(400, Yii::t('admin',
+                    'The model you have requested cannot be hidden'));
+            }
+            $model = X2Model::model($modelName);
+            $model = new $model('search');
+            $criteria = new CDbCriteria;
+            $assignmentAttr = $model->getAssignmentAttr();
+            $visibilityAttr = $model->getVisibilityAttr();
+            $condition = "($assignmentAttr='Anyone' AND 
+                $visibilityAttr = ".X2PermissionsBehavior::VISIBILITY_PRIVATE.")";
+            $criteria->addCondition($condition);
+            $dataProvider = $model->searchBase($criteria, null, true);
+            $dataProvider->sort->params = array('modelName' => $modelName);
+        } else {
+            $models = array_diff(Modules::getNamesOfModelsOfModules(), $skipModules);
+            sort($models);
+        }
+
+        $this->render('locateMissingRecords', array(
+            'modelName' => $modelName,
+            'model' => $model,
+            'dataProvider' => $dataProvider,
+            'models' => $models,
+	        'moduleName' => X2Model::getModuleName($modelName),
+        ));
+    }
+
     public function actionLocationSettings() {
 
         $admin = &Yii::app()->settings;
@@ -2572,11 +2627,6 @@ class AdminController extends X2Controller {
 
             $oldFormat = $admin->contactNameFormat;
             $admin->attributes = $_POST['Admin'];
-            foreach ($_POST['Admin'] as $attribute => $value) {
-                if ($admin->hasAttribute($attribute)) {
-                    $admin->$attribute = $value;
-                }
-            }
             $admin->timeout *= 60; //convert from minutes to seconds
 
 
@@ -2586,6 +2636,28 @@ class AdminController extends X2Controller {
         }
         $admin->timeout = ceil($admin->timeout / 60);
         $this->render('locationSettings', array(
+            'model' => $admin,
+        ));
+    }
+
+    /**
+     * Render a page with options for activity feed settings.
+     *
+     * The administrator is allowed to configure what sort of information should
+     * be displayed in the activity feed and for how long. This page sets options
+     * for automated deletion of any chosen types after a set time period to help
+     * keep the database cleaner.
+     */    
+    public function actionManageUserCount() {
+        $admin = &Yii::app()->settings;
+        if (isset($_POST['Admin'])) {
+            $admin->attributes = $_POST['Admin'];
+
+            if ($admin->save()) {
+                $this->redirect('manageUserCount');
+            }
+        }
+        $this->render('manageUserCount', array(
             'model' => $admin,
         ));
     }
@@ -2607,11 +2679,6 @@ class AdminController extends X2Controller {
             // $admin->ignoreUpdates = 1;
             $oldFormat = $admin->contactNameFormat;
             $admin->attributes = $_POST['Admin'];
-            foreach ($_POST['Admin'] as $attribute => $value) {
-                if ($admin->hasAttribute($attribute)) {
-                    $admin->$attribute = $value;
-                }
-            }
             if (isset($_POST['currency'])) {
                 if ($_POST['currency'] == 'other') {
                     $admin->currency = $_POST['currency2'];
@@ -2929,6 +2996,9 @@ class AdminController extends X2Controller {
         if (isset($_POST['field']) && $_POST['field'] != "") {
             $id = $_POST['field'];
             $field = Fields::model()->findByPk($id);
+            $listsUsingField = false;
+            if ($field->modelName === 'Contacts')
+                $listsUsingField = $field->checkListCriteria();
             if ($getCount) {
                 $nonNull = $field->countNonNull();
                 if ($nonNull) {
@@ -2939,7 +3009,24 @@ class AdminController extends X2Controller {
                 } else {
                     echo Yii::t('admin', 'The field appears to be empty. Deleting it will not result in any data loss.');
                 }
+                if ($listsUsingField) {
+                    echo '<br /><br />';
+                    echo Yii::t('admin', 'This field is used as criteria for the following '.
+                        'lists. You can remove them manually, or proceed to remove these '.
+                        'criteria automatically. Note: This may change the contents of your list.');
+                    echo '<ul>';
+                    foreach ($listsUsingField as $list) {
+                        echo '<li>'.$list.'</li>';
+                    }
+                    echo '</ul>';
+                }
                 Yii::app()->end();
+            }
+            if ($listsUsingField) {
+                foreach ($listsUsingField as $id => $link) {
+                    Yii::app()->db->createCommand()
+                        ->delete('x2_list_criteria', 'id = :id', array(':id' => $id));
+                }
             }
             $field->delete();
         }
@@ -3109,6 +3196,7 @@ class AdminController extends X2Controller {
                 if ($type === 'link') {
                     $module->title = $model->topLinkText;
                     $module->linkHref = $model->topLinkUrl;
+                    $module->linkOpenInFrame = $model->openInFrame;
                 } else {
                     $module->linkRecordType = $model->recordType;
                     $module->linkRecordId = $model->recordId;
@@ -4438,6 +4526,7 @@ class AdminController extends X2Controller {
             "description",
             "createDate",
             "lastUpdated",
+            "lastActivity",
             "updatedBy",
         );
 
@@ -4459,11 +4548,12 @@ class AdminController extends X2Controller {
                     // Export associated dropdown values
                     $dropdown = Dropdowns::model()->findByPk($field->linkType);
                     if ($dropdown) {
+                        $parent = empty($dropdown->parent) ? 'NULL' : "'".$dropdown->parent."'";
                         $sql .= "/*&*/INSERT INTO x2_dropdowns " .
                                 "(name, options, multi, parent, parentVal) " .
                                 "VALUES " .
                                 "('$dropdown->name', '$dropdown->options', '$dropdown->multi', " .
-                                "'$dropdown->parent', '$dropdown->parentVal');";
+                                "$parent, '$dropdown->parentVal');";
                         // Temporarily set the linkType to the dropdowns name: this is to avoid
                         // messy ID conflicts when importing a module to existing installations
                         $linkType = $dropdown->name;
@@ -5425,33 +5515,7 @@ class AdminController extends X2Controller {
      * @param int $importId The ID of the import being rolled back
      */
     public function actionRollbackStage($model, $stage, $importId) {
-        $stages = array(
-            // Delete all tag data
-            "tags" => "DELETE a FROM x2_tags a
-                INNER JOIN
-                x2_imports b ON b.modelId=a.itemId AND b.modelType=a.type
-                WHERE b.modelType='$model' AND b.importId='$importId'",
-            // Delete all relationship data
-            "relationships" => "DELETE a FROM x2_relationships a
-                INNER JOIN
-                x2_imports b ON b.modelId=a.firstId AND b.modelType=a.firstType
-                WHERE b.modelType='$model' AND b.importId='$importId'",
-            // Delete any associated actions
-            "actions" => "DELETE a FROM x2_actions a
-                INNER JOIN
-                x2_imports b ON b.modelId=a.associationId AND b.modelType=a.associationType
-                WHERE b.modelType='$model' AND b.importId='$importId'",
-            // Delete the records themselves
-            "records" => "DELETE a FROM " . X2Model::model($model)->tableName() . " a
-                INNER JOIN
-                x2_imports b ON b.modelId=a.id
-                WHERE b.modelType='$model' AND b.importId='$importId'",
-            // Delete the log of the records being imported
-            "import" => "DELETE FROM x2_imports WHERE modelType='$model' AND importId='$importId'",
-        );
-        $sqlQuery = $stages[$stage];
-        $command = Yii::app()->db->createCommand($sqlQuery);
-        $result = $command->execute();
+        $result = $this->rollbackStage($model, $stage, $importId);
         echo $result;
     }
 

@@ -128,8 +128,8 @@ $this->widget('X2GridViewGeneric', array(
 			'headerHtmlOptions'=>array('class'=>'contact-count'),
 			'htmlOptions'=>array('class'=>'contact-count'),
             'filter' => '',
-			//'value'=>'Yii::app()->locale->numberFormatter->formatDecimal($data["count"])',
-			'value'=>'Yii::app()->locale->numberFormatter->formatDecimal($data->calculateCount ())',
+            // Show estimated count for dynamic lists to avoid multiple expensive calculations
+			'value'=>'Yii::app()->locale->numberFormatter->formatDecimal(($data["type"] == "dynamic") ? $data["count"] : $data->calculateCount ())',
 		),
         array (
             'id' => 'C_gvControls',

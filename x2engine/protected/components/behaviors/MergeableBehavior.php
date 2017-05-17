@@ -108,16 +108,13 @@ class MergeableBehavior extends CActiveRecordBehavior {
                 //Maintain ID of model used to set this value in case of unique fields
                 $oldModelId = $oldModel->id;
             }
-        }
-        $this->owner->{$field->fieldName} = $value;
-        if ($field->uniqueConstraint) {
-            //If there is a unique constraint, we need to set the value of the model that was used to null
-            $tmpModel = X2Model::model(get_class($this->owner))->findByPk($oldModelId);
-            if($tmpModel){
-                $tmpModel->{$field->fieldName} = null;
-                $tmpModel->update(array($field->fieldName));
+            if ($field->uniqueConstraint) {
+                //If there is a unique constraint, we need to set the value of the model that was used to null
+                $oldModel->{$field->fieldName} = null;
+                $oldModel->update(array($field->fieldName));
             }
         }
+        $this->owner->{$field->fieldName} = $value;
     }
 
     /**

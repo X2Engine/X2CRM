@@ -75,6 +75,48 @@ class PasswordUtil {
         }
         return $diff === 0;
     }
+    
+    /*
+     * Based on Scott's answer: http://stackoverflow.com/a/13733588/179104
+     * $length = length of pretty random, pretty unique, alphanumeric string. 
+     *
+     * Other cited sources: http://us1.php.net/manual/en/function.openssl-random-pseudo-bytes.php#104322
+     * 
+     * Alternative extensions/libraries for more options based on the article: 
+     * https://paragonie.com/blog/2015/07/how-safely-generate-random-strings-and-integers-in-php
+     * - https://github.com/paragonie/random_compat
+     * - https://github.com/ircmaxell/RandomLib
+     * - https://pecl.php.net/package/libsodium
+     */
+    public static function crypto_rand_secure($min, $max) {
+        $range = $max - $min;
+        
+        if ($range < 1) return $min; // not so random...
+        $log = ceil(log($range, 2));
+        $bytes = (int) ($log / 8) + 1; // length in bytes
+        $bits = (int) $log + 1; // length in bits
+        $filter = (int) (1 << $bits) - 1; // set all lower bits to 1
+        do {
+            $rnd = hexdec(bin2hex(openssl_random_pseudo_bytes($bytes)));
+            $rnd = $rnd & $filter; // discard irrelevant bits
+        } while ($rnd > $range);
+        return $min + $rnd;
+    }
+
+    public static function getToken($length) {
+        $token = "";
+        $codeAlphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+        $codeAlphabet.= "abcdefghijklmnopqrstuvwxyz";
+        $codeAlphabet.= "0123456789";
+        $max = strlen($codeAlphabet); // edited
+        
+        for ($i=0; $i < $length; $i++) {
+            
+            $token .= $codeAlphabet[PasswordUtil::crypto_rand_secure(0, $max-1)];
+        }
+
+        return $token;
+    }
 
     /*
      * PBKDF2 key derivation function as defined by RSA's PKCS #5: https://www.ietf.org/rfc/rfc2898.txt
@@ -122,7 +164,9 @@ class PasswordUtil {
     }
     
     public static function createSalt() {
-        if (function_exists('mcrypt_create_iv')) {
+        if (version_compare(PHP_VERSION, '7.0.0') >= 0 && function_exists('random_bytes')) {
+            return base64_encode(random_bytes(self::PBKDF2_SALT_BYTES));
+        } elseif (function_exists('mcrypt_create_iv')) {
             return base64_encode(mcrypt_create_iv(self::PBKDF2_SALT_BYTES,
                             MCRYPT_DEV_URANDOM));
         } elseif (function_exists('openssl_random_pseudo_bytes')) {

@@ -308,6 +308,10 @@ class Actions extends X2Model {
         return $success;
     }
 
+    public function getMetaDataFieldNames() {
+        return array_keys($this->metaDataTemp);
+    }
+
     /**
      * Retrieve a list of model links, indexed by model name
      * @return array
@@ -810,13 +814,12 @@ class Actions extends X2Model {
      * Fires the onAfterCreate event in {@link X2Model::afterCreate}
      */
     public function afterCreate(){
-        if($this->type === 'event') {
+        if($this->type === 'event')
             $this->createCalendarFeedEvent ();
-            if(!empty($this->calendarId) && empty($this->remoteCalendarUrl)){
-                $calendar = X2Calendar::model()->findByPk($this->calendarId);
-                if($calendar && $calendar->asa('syncBehavior')){
-                    $calendar->syncActionToCalendar($this);
-                }
+        if(($this->type === 'event' || empty($this->type)) && !empty($this->calendarId) && empty($this->remoteCalendarUrl)){
+            $calendar = X2Calendar::model()->findByPk($this->calendarId);
+            if($calendar && $calendar->asa('syncBehavior')){
+                $calendar->syncActionToCalendar($this);
             }
         }
         if(empty ($this->type) || in_array($this->type, array('call','time','note'))){
@@ -868,7 +871,7 @@ class Actions extends X2Model {
     }
     
     public function afterUpdate() {
-        if ($this->type === 'event' && !empty($this->calendarId) && !empty($this->remoteCalendarUrl)) {
+        if (($this->type === 'event' || empty($this->type)) && !empty($this->calendarId) && !empty($this->remoteCalendarUrl)) {
             $calendar = X2Calendar::model()->findByPk($this->calendarId);
             if ($calendar && $calendar->asa('syncBehavior')) {
                 $calendar->syncActionToCalendar($this);

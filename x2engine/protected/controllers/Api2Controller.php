@@ -226,7 +226,7 @@ class Api2Controller extends CController {
             $hook = ApiHook::model()->findByPk($_id);
             if(!$hook instanceof ApiHook)
                 $this->send(404,'"Hook not found." -Smee');
-            elseif(!$hook->userId != Yii::app()->getSuId())
+            elseif($hook->userId != Yii::app()->getSuId())
                 $this->send(403,'You cannot delete other API users\' hooks in X2Engine.');
             $hook->setScenario('delete.remote');
             if($hook->delete()) {

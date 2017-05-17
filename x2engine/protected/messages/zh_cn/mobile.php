@@ -26,4 +26,8 @@
   'Web Address' => '网址',
   'Add photo attachment' => '添加照片附件',
   'Add file attachment' => '添加文件附件',
+  'Failed to retrieve static map. Please ensure that Google Integration is enabled.' => '无法检索静态地图。请确保Google Integration已启用。',
+  'Add video attachment' => '添加视频附件',
+  'Add location attachment' => '添加位置附件',
+  'Add audio note' => '添加音频注释',
 );

@@ -275,7 +275,8 @@ $this->renderPartial ('_feedFilters');
         </div>
         <?php
             Yii::app()->clientScript->registerGeolocationScript(true);
-            Yii::app()->clientScript->registerCheckinScript("#feed-form input[type=\'submit\'", true);
+            $checkinByDefault = Yii::app()->settings->checkinByDefault;
+            Yii::app()->clientScript->registerCheckinScript("#feed-form input[type=\'submit\'", $checkinByDefault);
         ?>
     </div>
     <?php $this->endWidget(); ?>

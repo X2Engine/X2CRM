@@ -1,6 +1,6 @@
 <?php
 
-/***********************************************************************************
+/* * *********************************************************************************
  * X2CRM is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2016 X2Engine Inc.
  * 
@@ -34,7 +34,7 @@
  * X2Engine" logo. If the display of the logo is not reasonably feasible for
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2Engine".
- **********************************************************************************/
+ * ******************************************************************************** */
 
 /**
  * @package application.modules.contacts.controllers
@@ -132,12 +132,12 @@ class ContactsController extends x2base {
     public function behaviors() {
         return array_merge(parent::behaviors(), array(
             'MobileControllerBehavior' => array(
-                'class' => 
-                    'application.modules.mobile.components.behaviors.MobileControllerBehavior'
+                'class' =>
+                'application.modules.mobile.components.behaviors.MobileControllerBehavior'
             ),
             'MobileActionHistoryBehavior' => array(
-                'class' => 
-                    'application.modules.mobile.components.behaviors.MobileActionHistoryBehavior'
+                'class' =>
+                'application.modules.mobile.components.behaviors.MobileActionHistoryBehavior'
             ),
             'LeadRoutingBehavior' => array(
                 'class' => 'LeadRoutingBehavior'
@@ -178,7 +178,7 @@ class ContactsController extends x2base {
                 $this->portlets['TimeZone']['params']['model'] = &$contact;
             }
             // Only load the Google Maps widget if we're on a Contact with an address
-            if(isset($this->portlets['GoogleMaps']) && Yii::app()->settings->enableMaps) {
+            if (isset($this->portlets['GoogleMaps']) && Yii::app()->settings->enableMaps) {
                 $this->portlets['GoogleMaps']['params']['location'] = $contact->cityAddress;
                 $this->portlets['GoogleMaps']['params']['activityLocations'] = $contact->getMapLocations();
                 $this->portlets['GoogleMaps']['params']['defaultFilter'] = Locations::getDefaultContactTypes();
@@ -198,11 +198,11 @@ class ContactsController extends x2base {
             } else {
                 $contact->duplicateChecked();
                 // add contact to user's recent item list
-                User::addRecentItem('c', $id, Yii::app()->user->getId()); 
+                User::addRecentItem('c', $id, Yii::app()->user->getId());
                 parent::view($contact, 'contacts');
             }
         } else {
-            $this->denied ();
+            $this->denied();
         }
     }
 
@@ -232,7 +232,7 @@ class ContactsController extends x2base {
         // Set our widget info
         if (isset($this->portlets['TimeZone']))
             $this->portlets['TimeZone']['params']['model'] = &$contact;
-        if(isset($this->portlets['GoogleMaps']))
+        if (isset($this->portlets['GoogleMaps']))
             $this->portlets['GoogleMaps']['params']['location'] = $contact->cityAddress;
 
         if ($this->checkPermissions($contact, 'view')) {
@@ -256,18 +256,18 @@ class ContactsController extends x2base {
      * @deprecated
      *
      */
-    /*public function actionViewRelationships($id) {
-        $model = $this->loadModel($id);
-        $dataProvider = new CActiveDataProvider('Relationships', array(
-            'criteria' => array(
-                'condition' => '(firstType="Contacts" AND firstId="' . $id . '") OR (secondType="Contacts" AND secondId="' . $id . '")',
-            )
-        ));
-        $this->render('viewOpportunities', array(
-            'dataProvider' => $dataProvider,
-            'model' => $model,
-        ));
-    } */
+    /* public function actionViewRelationships($id) {
+      $model = $this->loadModel($id);
+      $dataProvider = new CActiveDataProvider('Relationships', array(
+      'criteria' => array(
+      'condition' => '(firstType="Contacts" AND firstId="' . $id . '") OR (secondType="Contacts" AND secondId="' . $id . '")',
+      )
+      ));
+      $this->render('viewOpportunities', array(
+      'dataProvider' => $dataProvider,
+      'model' => $model,
+      ));
+      } */
 
     /**
      * Used for accounts auto-complete method.  May be obsolete.
@@ -301,8 +301,8 @@ class ContactsController extends x2base {
     public function actionGetItems() {
         $model = new Contacts('search');
         $visCriteria = $model->getAccessCriteria();
-        list($fullNameCol,$fullNameParam) = Formatter::fullNameSelect(
-            'firstName', 'lastName', 'value');
+        list($fullNameCol, $fullNameParam) = Formatter::fullNameSelect(
+                        'firstName', 'lastName', 'value');
         // This is necessary because the query won't work if one simply compares
         // the alias "value" as "value LIKE :qterm".
         list($fullNameCol2, $fullNameParam2) = Formatter::fullNameSelect('firstName', 'lastName');
@@ -313,12 +313,12 @@ class ContactsController extends x2base {
             ORDER BY firstName ASC';
         $command = Yii::app()->db->createCommand($sql);
 
-        $params = array(':qterm' => $_GET['term'] . '%') + $fullNameParam + $fullNameParam2 + 
-            $visCriteria->params;
+        $params = array(':qterm' => $_GET['term'] . '%') + $fullNameParam + $fullNameParam2 +
+                $visCriteria->params;
         $result = $command->queryAll(true, $params);
         foreach (array_keys($result) as $key) {
             $result[$key]['assignedTo'] = implode(
-                ', ', $model->getAssigneeNames($result[$key]['assignedTo']));
+                    ', ', $model->getAssigneeNames($result[$key]['assignedTo']));
         }
         echo CJSON::encode($result);
         exit;
@@ -344,14 +344,15 @@ class ContactsController extends x2base {
         // Optional search parameter for autocomplete
         $qterm = isset($_GET['term']) ? $_GET['term'] . '%' : '';
         $static = isset($_GET['static']) && $_GET['static'];
+        $weblist = isset($_GET['weblist']) && $_GET['weblist'];
         $result = Yii::app()->db->createCommand()
                 ->select('id,name as value')
                 ->from('x2_lists')
                 ->where(
-                    ($static ? 'type="static" AND ' : '').
-                    'modelName="Contacts" AND type!="campaign" 
-                    AND name LIKE :qterm' . $condition, 
-                    array(':qterm' => $qterm))
+                        ($static ? 'type="static" AND ' : '') .
+                        ($weblist ? 'type="weblist" AND ' : '').
+                        'modelName="Contacts" AND type!="campaign" 
+                    AND name LIKE :qterm' . $condition, array(':qterm' => $qterm))
                 ->order('name ASC')
                 ->queryAll();
         echo CJSON::encode($result);
@@ -380,7 +381,7 @@ class ContactsController extends x2base {
         $this->redirect(array('view', 'id' => $id));
     }
 
-     /**
+    /**
      * Loads a Google Maps interface with Contact location data plotted on it
      * This will generate a Google Map frame on a page with several possible
      * additional features. By default it provides a heat map of contact location
@@ -391,24 +392,24 @@ class ContactsController extends x2base {
      * @param array $params Additional filter parameters to limit the visible dataset
      * @param int $loadMap The ID of a saved map to re-load previously saved settings
      */
-    public function actionGoogleMaps($contactId = null, $params = array(), $loadMap = null){
+    public function actionGoogleMaps($contactId = null, $params = array(), $loadMap = null) {
         if (!Yii::app()->settings->enableMaps) {
             throw new CHttpException(403, 'Please enable Google Integration to use this page.');
         }
-        if(isset($_POST['contactId']))
+        if (isset($_POST['contactId']))
             $contactId = $_POST['contactId'];
-        if(isset($_POST['params'])){
+        if (isset($_POST['params'])) {
             $params = $_POST['params'];
         }
-        if(isset($_GET['userId']))
+        if (isset($_GET['userId']))
             $userId = $_GET['userId'];
         $noHeatMap = isset($_GET['noHeatMap']) && $_GET['noHeatMap'] ? true : false;
         // Check for a location type from a link
         if (!isset($params['locationType']) && isset($_GET['locationType']))
             $params['locationType'] = $_GET['locationType'];
-        if(!empty($loadMap)){ // If we have a map ID, duplicate whatever information was saved there
+        if (!empty($loadMap)) { // If we have a map ID, duplicate whatever information was saved there
             $map = Maps::model()->findByPk($loadMap);
-            if(isset($map)){
+            if (isset($map)) {
                 $contactId = $map->contactId;
                 $params = json_decode($map->params, true);
                 if (isset($params['tags']) && is_array($params['tags']))
@@ -419,7 +420,7 @@ class ContactsController extends x2base {
         $parameters = array();
         $tagCount = 0;
         $tagFlag = false;
-        $contactFields = array_flip (Contacts::model()->attributeNames());
+        $contactFields = array_flip(Contacts::model()->attributeNames());
         $time = Formatter::formatDateTime(time());
         if (isset($params['timestamp'])) {
             $time = $params['timestamp'];
@@ -428,29 +429,30 @@ class ContactsController extends x2base {
         }
 
         // Loop through params and add conditions to limit the contact data set
-        foreach($params as $field => $value){
+        foreach ($params as $field => $value) {
             // prevents SQL injection by verifying field name
-            if ($field != 'tags' && !isset ($contactFields[$field])) continue; 
-            if($field != 'tags' && $value != ''){
+            if ($field != 'tags' && !isset($contactFields[$field]))
+                continue;
+            if ($field != 'tags' && $value != '') {
                 if ($field === 'assignedTo' && $value === 'Anyone') {
-                    $conditions.=" AND (x2_contacts.$field='Anyone' OR x2_contacts.$field='')";
+                    $conditions .= " AND (x2_contacts.$field='Anyone' OR x2_contacts.$field='')";
                 } else {
-                    $conditions.=" AND x2_contacts.$field=:$field";
+                    $conditions .= " AND x2_contacts.$field=:$field";
                     $parameters[":$field"] = $value;
                 }
-            }elseif($value != ''){
+            } elseif ($value != '') {
                 $tagFlag = true;
-                if(!is_array($value)){
+                if (!is_array($value)) {
                     $value = explode(",", $value);
                 }
                 $tagCount = count($value);
                 $tagStr = "(";
-                for($i = 0; $i < count($value); $i++){
-                    $tagStr.=':tag'.$i.', ';
+                for ($i = 0; $i < count($value); $i++) {
+                    $tagStr .= ':tag' . $i . ', ';
                     $parameters[":tag$i"] = $value[$i];
                 }
-                $tagStr = substr($tagStr, 0, strlen($tagStr) - 2).")";
-                $conditions.=" AND x2_tags.type='Contacts' AND x2_tags.tag IN $tagStr";
+                $tagStr = substr($tagStr, 0, strlen($tagStr) - 2) . ")";
+                $conditions .= " AND x2_tags.type='Contacts' AND x2_tags.tag IN $tagStr";
             }
         }
         if (isset($params['locationType']) && is_array($params['locationType'])) {
@@ -468,9 +470,10 @@ class ContactsController extends x2base {
                     $conditions .= ' x2_locations.type IN (';
                     $renderComma = false;
                     foreach ($locationType as $i => $locType) {
-                        if ($renderComma) $conditions .= ', ';
-                        $conditions .= ':locType'.$i;
-                        $parameters[':locType'.$i] = $locType;
+                        if ($renderComma)
+                            $conditions .= ', ';
+                        $conditions .= ':locType' . $i;
+                        $parameters[':locType' . $i] = $locType;
                         $renderComma = true;
                     }
                     $conditions .= ')';
@@ -495,7 +498,7 @@ class ContactsController extends x2base {
          * we need a double join to grab all the requisite data, otherwise we
          * only need to join x2_contacts to x2_locations
          */
-        if($tagFlag){
+        if ($tagFlag) {
             $locations = Yii::app()->db->createCommand()
                     ->select('x2_locations.*')
                     ->from('x2_locations')
@@ -503,9 +506,9 @@ class ContactsController extends x2base {
                     ->join('x2_tags', 'x2_tags.itemId=x2_locations.recordId')
                     ->where($conditions, $parameters)
                     ->group('x2_tags.itemId')
-                    ->having('COUNT(x2_tags.itemId)>='.$tagCount)
+                    ->having('COUNT(x2_tags.itemId)>=' . $tagCount)
                     ->queryAll();
-        }else{
+        } else {
             $locations = Yii::app()->db->createCommand()
                     ->select('x2_locations.*')
                     ->from('x2_locations')
@@ -515,17 +518,17 @@ class ContactsController extends x2base {
         }
         $locationCodes = array();
         // Loop through the SQL result and convert the data to an array that Google can read
-        foreach($locations as $location){
-            if(isset($location['lat']) && isset($location['lon'])){
+        foreach ($locations as $location) {
+            if (isset($location['lat']) && isset($location['lon'])) {
                 $tempArr['lat'] = $location['lat'];
                 $tempArr['lng'] = $location['lon'];
                 $recordLink = X2Model::getModelLink($location['recordId'], $location['recordType']);
                 if (!empty($location['type'])) {
                     $locTypes = Locations::getLocationTypes();
-                    $tempArr['info'] = $locTypes[$location['type']] .' '.
-                        Yii::t('contacts', 'by').' '.$recordLink;
+                    $tempArr['info'] = $locTypes[$location['type']] . ' ' .
+                            Yii::t('contacts', 'by') . ' ' . $recordLink;
                 } else {
-                    $tempArr['info'] = Yii::t('contacts', 'Stated address of ').' '.$recordLink;
+                    $tempArr['info'] = Yii::t('contacts', 'Stated address of ') . ' ' . $recordLink;
                 }
                 $tempArr['time'] = Formatter::formatDateTime($location['createDate']);
                 $locationCodes[] = $tempArr;
@@ -536,44 +539,44 @@ class ContactsController extends x2base {
          * will be centered. If we have a Contact ID, center it on that contact's
          * location. Otherwise center it on the first location in the set
          */
-        if(isset($contactId) || isset($userId)){
+        if (isset($contactId) || isset($userId)) {
             $location = X2Model::model('Locations')->findByAttributes(array(
                 'recordId' => (isset($userId) ? $userId : $contactId),
                 'recordType' => (isset($userId) ? 'User' : 'Contacts'),
                 'type' => (isset($params['locationType']) ? $params['locationType'] : null),
             ));
-            if(isset($location)){
+            if (isset($location)) {
                 $loc = array("lat" => $location->lat, "lng" => $location->lon);
                 $markerLoc = array("lat" => $location->lat, "lng" => $location->lon);
                 $markerFlag = true;
                 $zoom = 12;
-            }elseif(count($locationCodes) > 0){
+            } elseif (count($locationCodes) > 0) {
                 $loc = $locationCodes[0];
                 $markerFlag = "false";
-            }else{
+            } else {
                 $loc = array('lat' => 0, 'lng' => 0);
                 $markerFlag = "false";
             }
-        }else{
-            if(isset($locationCodes[0])){
+        } else {
+            if (isset($locationCodes[0])) {
                 $loc = $locationCodes[0];
-            }else{
+            } else {
                 $loc = array('lat' => 0, 'lng' => 0);
             }
             $markerFlag = "false";
         }
         // If we already have a map, use the previous center & zoom settings
-        if(isset($map)){
+        if (isset($map)) {
             $loc['lat'] = $map->centerLat;
             $loc['lng'] = $map->centerLng;
             $zoom = $map->zoom;
         }
         if (isset($contactId)) {
             $contactName = Yii::app()->db->createCommand()
-                ->select('name')
-                ->from('x2_contacts')
-                ->where('id = :id', array(':id' => $contactId))
-                ->queryScalar();
+                    ->select('name')
+                    ->from('x2_contacts')
+                    ->where('id = :id', array(':id' => $contactId))
+                    ->queryScalar();
         }
         /*
          * This view file is actually really complicated as it uses a lot of
@@ -588,16 +591,15 @@ class ContactsController extends x2base {
             'contactId' => isset($contactId) ? $contactId : 0,
             'contactName' => isset($contactName) ? $contactName : '',
             'timestamp' => $time,
-            'assignment' => 
-                isset($_POST['params']['assignedTo']) || isset($params['assignedTo']) ?
-                    (isset($_POST['params']['assignedTo']) ? 
-                        $_POST['params']['assignedTo'] : $params['assignedTo']) 
-                    : '',
-            'leadSource' => 
-                isset($_POST['params']['leadSource']) ? 
+            'assignment' =>
+            isset($_POST['params']['assignedTo']) || isset($params['assignedTo']) ?
+                    (isset($_POST['params']['assignedTo']) ?
+                            $_POST['params']['assignedTo'] : $params['assignedTo']) : '',
+            'leadSource' =>
+            isset($_POST['params']['leadSource']) ?
                     $_POST['params']['leadSource'] : '',
-            'tags' => ((isset($params['tags']) && !empty($params['tags'])) ? 
-                Tags::parseTags($params['tags']) : array()),
+            'tags' => ((isset($params['tags']) && !empty($params['tags'])) ?
+                    Tags::parseTags($params['tags']) : array()),
             'zoom' => isset($zoom) ? $zoom : null,
             'mapFlag' => isset($map) ? 'true' : 'false',
             'noHeatMap' => $noHeatMap,
@@ -608,11 +610,11 @@ class ContactsController extends x2base {
     /**
      * An AJAX called function to save map settings.
      */
-    public function actionSaveMap(){
+    public function actionSaveMap() {
         if (!Yii::app()->settings->enableMaps) {
             throw new CHttpException(403, 'Please enable Google Integration to use this page.');
         }
-        if(isset($_POST['centerLat']) && isset($_POST['centerLng']) && isset($_POST['mapName'])){
+        if (isset($_POST['centerLat']) && isset($_POST['centerLng']) && isset($_POST['mapName'])) {
             $zoom = $_POST['zoom'];
             $centerLat = $_POST['centerLat'];
             $centerLng = $_POST['centerLng'];
@@ -630,10 +632,10 @@ class ContactsController extends x2base {
             $map->centerLat = $centerLat;
             $map->centerLng = $centerLng;
             $map->params = json_encode($params);
-            if($map->save()){
-
-            }else{
-
+            if ($map->save()) {
+                
+            } else {
+                
             }
         }
     }
@@ -641,18 +643,18 @@ class ContactsController extends x2base {
     /**
      * Display an index of saved maps.
      */
-    public function actionSavedMaps(){
+    public function actionSavedMaps() {
         if (!Yii::app()->settings->enableMaps) {
             throw new CHttpException(403, 'Please enable Google Integration to use this page.');
         }
-        if(Yii::app()->user->checkAccess('ContactsAdmin')){
+        if (Yii::app()->user->checkAccess('ContactsAdmin')) {
             $dataProvider = new CActiveDataProvider('Maps');
-        }else{
+        } else {
             $dataProvider = new CActiveDataProvider('Maps', array(
-                        'criteria' => array(
-                            'condition' => 'owner="'.Yii::app()->user->getName().'"',
-                        )
-                    ));
+                'criteria' => array(
+                    'condition' => 'owner="' . Yii::app()->user->getName() . '"',
+                )
+            ));
         }
         $this->render('savedMaps', array(
             'dataProvider' => $dataProvider,
@@ -663,12 +665,12 @@ class ContactsController extends x2base {
      * Delete a saved map
      * @param int $id ID of the map to delete
      */
-    public function actionDeleteMap($id){
+    public function actionDeleteMap($id) {
         if (!Yii::app()->settings->enableMaps) {
             throw new CHttpException(403, 'Please enable Google Integration to use this page.');
         }
         $map = Maps::model()->findByPk($id);
-        if(isset($map) && ($map->owner == Yii::app()->user->getName() || Yii::app()->user->checkAccess('ContactsAdmin')) && Yii::app()->request->isPostRequest){
+        if (isset($map) && ($map->owner == Yii::app()->user->getName() || Yii::app()->user->checkAccess('ContactsAdmin')) && Yii::app()->request->isPostRequest) {
             $map->delete();
         }
         $this->redirect('savedMaps');
@@ -677,28 +679,30 @@ class ContactsController extends x2base {
     /**
      * An AJAX called function to update the location of a Contact record
      * @param int $contactId The ID of the contact
-     * @param float $lat The lattitutde of the location
+     * @param float $lat The latitude of the location
      * @param float $lon The longitude of the location
      */
-    public function actionUpdateLocation($contactId, $lat, $lon){
+    public function actionUpdateLocation($contactId, $lat, $lon) {
         $location = Locations::model()->findByAttributes(array(
             'recordId' => $contactId,
             'recordType' => 'Contacts',
             'type' => null,
         ));
-        if(!isset($location)){
+        if (!isset($location)) {
             $location = new Locations;
             $location->recordId = $contactId;
             $location->recordType = 'Contacts';
             $location->lat = $lat;
             $location->lon = $lon;
             $location->save();
-        }else{
-            if($location->lat != $lat || $location->lon != $lon){
-                $location->lat = $lat;
-                $location->lon = $lon;
-                $location->save();
-            }
+        } else if ($location->lat != $lat || $location->lon != $lon) {
+            $location->lat = $lat;
+            $location->lon = $lon;
+            $location->save();
+        }
+        $contact = Contacts::model()->findById($contactId);
+        if (isset($contact)) {
+            X2Flow::trigger('LocationTrigger', array('model' => $contact));
         }
     }
 
@@ -709,18 +713,17 @@ class ContactsController extends x2base {
     public function actionShareContact($id) {
         $users = User::getNames();
         $model = $this->loadModel($id);
-        $body = "\n\n\n\n".Yii::t('contacts', '{module} Record Details', array(
-            '{module}'=>Modules::displayName(false)
-        ))." <br />
-<br />".Yii::t('contacts', 'Name').": $model->firstName $model->lastName
-<br />".Yii::t('contacts', 'E-Mail').": $model->email
-<br />".Yii::t('contacts', 'Phone').": $model->phone
-<br />".Yii::t('contacts', 'Account').": $model->company
-<br />".Yii::t('contacts', 'Address').": $model->address
+        $body = "\n\n\n\n" . Yii::t('contacts', '{module} Record Details', array(
+                    '{module}' => Modules::displayName(false)
+                )) . " <br />
+<br />" . Yii::t('contacts', 'Name') . ": $model->firstName $model->lastName
+<br />" . Yii::t('contacts', 'E-Mail') . ": $model->email
+<br />" . Yii::t('contacts', 'Phone') . ": $model->phone
+<br />" . Yii::t('contacts', 'Account') . ": $model->company
+<br />" . Yii::t('contacts', 'Address') . ": $model->address
 <br />$model->city, $model->state $model->zipcode
 <br />" . Yii::t('contacts', 'Background Info') . ": $model->backgroundInfo
-<br />" . Yii::t('app', 'Link') . ": " . CHtml::link($model->name,
-            $this->createAbsoluteUrl('/contacts/contacts/view', array('id' => $model->id)));
+<br />" . Yii::t('app', 'Link') . ": " . CHtml::link($model->name, $this->createAbsoluteUrl('/contacts/contacts/view', array('id' => $model->id)));
 
         $body = trim($body);
 
@@ -742,7 +745,7 @@ class ContactsController extends x2base {
             $emailFrom = Credentials::model()->getDefaultUserAccount(Credentials::$sysUseId['systemNotificationEmail'], 'email');
             if ($emailFrom == Credentials::LEGACY_ID)
                 if (!Yii::app()->params->profile->emailAddress) {
-                    Yii::app()->user->setFlash ('error', Yii::t('app', 'Email could not be sent: user profile does not have an email address.'));
+                    Yii::app()->user->setFlash('error', Yii::t('app', 'Email could not be sent: user profile does not have an email address.'));
                     $hasError = true;
                 } else {
                     $emailFrom = array(
@@ -846,7 +849,7 @@ class ContactsController extends x2base {
                     Contacts::model()->deleteAll($criteria);
                 }
             }
-            echo CHtml::encode ($model->id);
+            echo CHtml::encode($model->id);
         }
     }
 
@@ -860,7 +863,7 @@ class ContactsController extends x2base {
             $action = $_POST['action'];
             $oldId = $_POST['id'];
             if ($ref == 'create' && is_null($action) || $action == 'null') {
-                echo CHtml::encode ($oldId);
+                echo CHtml::encode($oldId);
                 return;
             } elseif ($ref == 'create') {
                 $oldRecord = X2Model::model('Contacts')->findByPk($oldId);
@@ -899,7 +902,7 @@ class ContactsController extends x2base {
                 $newRecord->save();
                 if ($action === '') {
                     $newRecord->delete();
-                    echo CHtml::encode ($oldId);
+                    echo CHtml::encode($oldId);
                     return;
                 } else {
                     if (isset($oldRecord)) {
@@ -928,7 +931,7 @@ class ContactsController extends x2base {
                         }
                     }
 
-                    echo CHtml::encode ($newId);
+                    echo CHtml::encode($newId);
                 }
             }
         }
@@ -948,13 +951,13 @@ class ContactsController extends x2base {
             if (isset($_POST['x2ajax'])) {
                 $ajaxErrors = $this->quickCreate($model);
             } else {
-                if ($model->validate () && $model->checkForDuplicates()) {
+                if ($model->validate() && $model->checkForDuplicates()) {
                     Yii::app()->user->setState('json_attributes', json_encode($model->attributes));
                     $this->redirect($this->createUrl('/site/duplicateCheck', array(
-                        'moduleName' => 'contacts',
-                        'modelName' => 'Contacts',
-                        'id' => null,
-                        'ref' => 'create',
+                                'moduleName' => 'contacts',
+                                'modelName' => 'Contacts',
+                                'id' => null,
+                                'ref' => 'create',
                     )));
                 } else {
                     if ($model->save()) {
@@ -1026,9 +1029,9 @@ class ContactsController extends x2base {
                 Yii::app()->clientScript->scriptMap['*.js'] = false;
                 Yii::app()->clientScript->scriptMap['*.css'] = false;
                 if (isset($x2ajaxCreateError) && $x2ajaxCreateError == true) {
-                    $this->widget ('FormView', array(
+                    $this->widget('FormView', array(
                         'model' => $model
-                    ), true, true);
+                            ), true, true);
                     // $page = $this->renderPartial(
                     //     'application.components.views.@FORMVIEW', 
                     //     array(
@@ -1040,15 +1043,15 @@ class ContactsController extends x2base {
                     //     true
                     // );
                     echo json_encode(
-                        array(
-                            'status' => 'userError',
-                            'page' => $page,
-                        )
+                            array(
+                                'status' => 'userError',
+                                'page' => $page,
+                            )
                     );
                 } else {
-                    $this->widget ('FormView', array(
+                    $this->widget('FormView', array(
                         'model' => $model,
-                    ), false, true);
+                            ), false, true);
                     // $this->renderPartial(
                     //    'application.components.views.@FORMVIEW', 
                     //     array(
@@ -1071,18 +1074,17 @@ class ContactsController extends x2base {
 
     // Displays all visible Contact Lists
     public function actionLists() {
-        $filter = new X2List ('search');
+        $filter = new X2List('search');
         $criteria = new CDbCriteria();
         $criteria->addCondition('type="static" OR type="dynamic"');
         if (!Yii::app()->params->isAdmin) {
-            $condition = 
-                'visibility="1" OR assignedTo="Anyone" OR 
+            $condition = 'visibility="1" OR assignedTo="Anyone" OR 
                  assignedTo="' . Yii::app()->user->getName() . '"';
             /* x2temp */
             $groupLinks = Yii::app()->db->createCommand()
-                ->select('groupId')
-                ->from('x2_group_to_user')
-                ->where('userId=' . Yii::app()->user->getId())->queryColumn();
+                            ->select('groupId')
+                            ->from('x2_group_to_user')
+                            ->where('userId=' . Yii::app()->user->getId())->queryColumn();
             if (!empty($groupLinks))
                 $condition .= ' OR assignedTo IN (' . implode(',', $groupLinks) . ')';
 
@@ -1101,7 +1103,7 @@ class ContactsController extends x2base {
         //$criteria->offset = isset($_GET['page']) ? $_GET['page'] * $perPage - 3 : -3;
         //$criteria->limit = $perPage;
         $criteria->order = 'createDate DESC';
-        $filter->compareAttributes ($criteria);
+        $filter->compareAttributes($criteria);
 
         $contactLists = X2Model::model('X2List')->findAll($criteria);
 
@@ -1112,7 +1114,7 @@ class ContactsController extends x2base {
         $allContacts = new X2List;
         $allContacts->attributes = array(
             'id' => 'all',
-            'name' => Yii::t('contacts', 'All {module}', array('{module}'=>Modules::displayName())),
+            'name' => Yii::t('contacts', 'All {module}', array('{module}' => Modules::displayName())),
             'description' => '',
             'type' => 'dynamic',
             'visibility' => 1,
@@ -1124,7 +1126,7 @@ class ContactsController extends x2base {
         $newContacts->attributes = array(
             'id' => 'new',
             'assignedTo' => Yii::app()->user->getName(),
-            'name' => Yii::t('contacts', 'New {module}', array('{module}'=>Modules::displayName())),
+            'name' => Yii::t('contacts', 'New {module}', array('{module}' => Modules::displayName())),
             'description' => '',
             'type' => 'dynamic',
             'visibility' => 1,
@@ -1136,7 +1138,7 @@ class ContactsController extends x2base {
         $myContacts->attributes = array(
             'id' => 'my',
             'assignedTo' => Yii::app()->user->getName(),
-            'name' => Yii::t('contacts', 'My {module}', array('{module}'=>Modules::displayName())),
+            'name' => Yii::t('contacts', 'My {module}', array('{module}' => Modules::displayName())),
             'description' => '',
             'type' => 'dynamic',
             'visibility' => 1,
@@ -1150,18 +1152,18 @@ class ContactsController extends x2base {
             $newContacts,
         );
 
-        $filteredPseudoLists = $filter->filter ($contactListData);
+        $filteredPseudoLists = $filter->filter($contactListData);
         $lists = array_merge($filteredPseudoLists, $contactLists);
         $dataProvider = new CArrayDataProvider($lists, array(
             'pagination' => array('pageSize' => $perPage),
             'sort' => array(
                 'attributes' => array(
-                    'name' => array (
+                    'name' => array(
                         'asc' => 'name asc, id desc',
                         'desc' => 'name desc, id desc',
                     ),
                     // secondary order is needed to fix https://github.com/yiisoft/yii/issues/2082
-                    'type' => array (
+                    'type' => array(
                         'asc' => 'type asc, id desc',
                         'desc' => 'type desc, id desc',
                     ),
@@ -1169,7 +1171,7 @@ class ContactsController extends x2base {
 //                        'asc' => 'count asc, id desc',
 //                        'desc' => 'count desc, id desc',
 //                    ),
-                    'assignedTo' => array (
+                    'assignedTo' => array(
                         'asc' => 'assignedTo asc, id desc',
                         'desc' => 'assignedTo desc, id desc',
                     ),
@@ -1231,7 +1233,7 @@ class ContactsController extends x2base {
         ));
     }
 
-    public function actionCreateList($ajax=false) {
+    public function actionCreateList($ajax = false) {
         $list = new X2List;
         $list->modelName = 'Contacts';
         $list->type = 'dynamic';
@@ -1287,7 +1289,7 @@ class ContactsController extends x2base {
                     'static' => Yii::t('contacts', 'Static')
                 ),
                 'itemModel' => $contactModel,
-            ), false);
+                    ), false);
             echo $this->processOutput($html);
             return;
         }
@@ -1429,45 +1431,45 @@ class ContactsController extends x2base {
      * works for exporting particular lists of Contacts
      * @param int $listId The ID of the list to be exported, if null it will be all Contacts
      */
-    /*public function actionExportContacts($listId = null){
-        unset($_SESSION['contactExportFile'], $_SESSION['exportContactCriteria'], $_SESSION['contactExportMeta']);
-        if(is_null($listId)){
-            $file = "contact_export.csv";
-            $listName = CHtml::link(Yii::t('contacts', 'All Contacts'), array('/contacts/contacts/index'), array('style' => 'text-decoration:none;'));
-            $_SESSION['exportContactCriteria'] = array('with' => array()); // Forcefully disable eager loading so it doesn't go super-slow)
-        }else{
-            $list = X2List::load($listId);
-            $criteria = $list->queryCriteria();
-            $criteria->with = array();
-            $_SESSION['exportContactCriteria'] = $criteria;
-            $file = "list".$listId.".csv";
-            $listName = CHtml::link(Yii::t('contacts', 'List')." $listId: ".$list->name, array('/contacts/contacts/list','id'=>$listId), array('style' => 'text-decoration:none;'));
-        }
-        $filePath = $this->safePath($file);
-        $_SESSION['contactExportFile'] = $file;
-        $attributes = X2Model::model('Contacts')->attributes;
-        $meta = array_keys($attributes);
-        if(isset($list)){
-            // Figure out gridview settings to export those columns
-            $gridviewSettings = json_decode(Yii::app()->params->profile->gridviewSettings, true);
-            if(isset($gridviewSettings['contacts_list'.$listId])){
-                $tempMeta = array_keys($gridviewSettings['contacts_list'.$listId]);
-                $meta = array_intersect($tempMeta, $meta);
-            }
-        }
-        // Set up metadata
-        $_SESSION['contactExportMeta'] = $meta;
-        $fp = fopen($filePath, 'w+');
-        fputcsv($fp, $meta);
-        fclose($fp);
-        $this->render('exportContacts', array(
-            'listId' => $listId,
-            'listName' => $listName,
-        ));
-    } */
-    
-    public function actionDelete($id){
-        if(Yii::app()->request->isPostRequest){
+    /* public function actionExportContacts($listId = null){
+      unset($_SESSION['contactExportFile'], $_SESSION['exportContactCriteria'], $_SESSION['contactExportMeta']);
+      if(is_null($listId)){
+      $file = "contact_export.csv";
+      $listName = CHtml::link(Yii::t('contacts', 'All Contacts'), array('/contacts/contacts/index'), array('style' => 'text-decoration:none;'));
+      $_SESSION['exportContactCriteria'] = array('with' => array()); // Forcefully disable eager loading so it doesn't go super-slow)
+      }else{
+      $list = X2List::load($listId);
+      $criteria = $list->queryCriteria();
+      $criteria->with = array();
+      $_SESSION['exportContactCriteria'] = $criteria;
+      $file = "list".$listId.".csv";
+      $listName = CHtml::link(Yii::t('contacts', 'List')." $listId: ".$list->name, array('/contacts/contacts/list','id'=>$listId), array('style' => 'text-decoration:none;'));
+      }
+      $filePath = $this->safePath($file);
+      $_SESSION['contactExportFile'] = $file;
+      $attributes = X2Model::model('Contacts')->attributes;
+      $meta = array_keys($attributes);
+      if(isset($list)){
+      // Figure out gridview settings to export those columns
+      $gridviewSettings = json_decode(Yii::app()->params->profile->gridviewSettings, true);
+      if(isset($gridviewSettings['contacts_list'.$listId])){
+      $tempMeta = array_keys($gridviewSettings['contacts_list'.$listId]);
+      $meta = array_intersect($tempMeta, $meta);
+      }
+      }
+      // Set up metadata
+      $_SESSION['contactExportMeta'] = $meta;
+      $fp = fopen($filePath, 'w+');
+      fputcsv($fp, $meta);
+      fclose($fp);
+      $this->render('exportContacts', array(
+      'listId' => $listId,
+      'listName' => $listName,
+      ));
+      } */
+
+    public function actionDelete($id) {
+        if (Yii::app()->request->isPostRequest) {
             $model = $this->loadModel($id);
             $model->clearTags();
             $model->delete();
@@ -1546,162 +1548,160 @@ class ContactsController extends x2base {
 
         $menuItems = array(
             array(
-                'name'=>'all',
-                'label'=>Yii::t('contacts','All {module}', array('{module}'=>$Contacts)),
-                'url'=>array('index')
+                'name' => 'all',
+                'label' => Yii::t('contacts', 'All {module}', array('{module}' => $Contacts)),
+                'url' => array('index')
             ),
             array(
-                'name'=>'lists',
-                'label'=>Yii::t('contacts','Lists'),
-                'url'=>array('lists')
+                'name' => 'lists',
+                'label' => Yii::t('contacts', 'Lists'),
+                'url' => array('lists')
             ),
             array(
-                'name'=>'create',
-                'label'=>Yii::t('contacts','Create {module}', array('{module}'=>$Contact)),
-                'url'=>array('create')
+                'name' => 'create',
+                'label' => Yii::t('contacts', 'Create {module}', array('{module}' => $Contact)),
+                'url' => array('create')
             ),
-            RecordViewLayoutManager::getViewActionMenuListItem ($modelId),
+            RecordViewLayoutManager::getViewActionMenuListItem($modelId),
             array(
-                'name'=>'edit',
-                'label' => Yii::t('contacts', 'Edit {module}', array('{module}' => $Contact)), 
+                'name' => 'edit',
+                'label' => Yii::t('contacts', 'Edit {module}', array('{module}' => $Contact)),
                 'url' => array('update', 'id' => $modelId),
             ),
             array(
-                'name'=>'save',
-                'label'=>Yii::t('contacts','Save {module}', array('{module}'=>$Contact)),
-                'url'=>'#',
-                'linkOptions'=>array('onclick'=>"$('#save-button').click();return false;")
+                'name' => 'save',
+                'label' => Yii::t('contacts', 'Save {module}', array('{module}' => $Contact)),
+                'url' => '#',
+                'linkOptions' => array('onclick' => "$('#save-button').click();return false;")
             ),
             array(
-                'name'=>'share',
-                'label' => Yii::t('contacts', 'Share {module}', array('{module}' => $Contact)), 
+                'name' => 'share',
+                'label' => Yii::t('contacts', 'Share {module}', array('{module}' => $Contact)),
                 'url' => array('shareContact', 'id' => $modelId)
             ),
             array(
-                'name'=>'delete',
-                'label' => Yii::t('contacts', 'Delete {module}', array('{module}' => $Contact)), 
+                'name' => 'delete',
+                'label' => Yii::t('contacts', 'Delete {module}', array('{module}' => $Contact)),
                 'url' => '#', 'linkOptions' => array('submit' => array('delete', 'id' => $modelId),
-                'confirm' => 'Are you sure you want to delete this item?')
+                    'confirm' => 'Are you sure you want to delete this item?')
             ),
             array(
-                'name'=>'email',
+                'name' => 'email',
                 'label' => Yii::t('app', 'Send Email'), 'url' => '#',
                 'linkOptions' => array('onclick' => 'toggleEmailForm(); return false;')),
             ModelFileUploader::menuLink(),
             array(
-                'name'=>'quotes',
+                'name' => 'quotes',
                 'label' => Yii::t('quotes', 'Quotes/Invoices'), 'url' => 'javascript:void(0)',
+                'visible' => (bool) Yii::app()->user->checkAccess('QuotesBasicAccess'),
                 'linkOptions' => array('onclick' => 'x2.inlineQuotes.toggle(); return false;')),
             array(
-                'name'=>'subscribe',
+                'name' => 'subscribe',
                 'label' => Yii::t('quotes', 'Subscribe'),
                 'url' => '#',
                 'linkOptions' => array(
                     'class' => 'x2-subscribe-button',
                     'onclick' => 'return subscribe($(this));',
-                    'title' => Yii::t('contacts', 'Receive email updates every time information for {name} changes',
-                        array('{name}' => (isset($model->firstName, $model->lastName) ?
-                            CHtml::encode($model->firstName.' '.$model->lastName) : "")))
-            )),
+                    'title' => Yii::t('contacts', 'Receive email updates every time information for {name} changes', array('{name}' => (isset($model->firstName, $model->lastName) ?
+                        CHtml::encode($model->firstName . ' ' . $model->lastName) : "")))
+                )),
             array(
-                'name'=>'unsubscribe',
+                'name' => 'unsubscribe',
                 'label' => Yii::t('quotes', 'Unsubscribe'),
                 'url' => '#',
                 'linkOptions' => array(
                     'class' => 'x2-subscribe-button',
                     'onclick' => 'return subscribe($(this));',
-                    'title' => Yii::t('contacts', 'Receive email updates every time information for {name} changes',
-                        array('{name}' => (isset($model->firstName, $model->lastName) ?
-                            CHtml::encode($model->firstName.' '.$model->lastName) : "")))
-            )),
+                    'title' => Yii::t('contacts', 'Receive email updates every time information for {name} changes', array('{name}' => (isset($model->firstName, $model->lastName) ?
+                        CHtml::encode($model->firstName . ' ' . $model->lastName) : "")))
+                )),
             array(
-                'name'=>'createList',
-                'label'=>Yii::t('contacts','Create List'),
-                'url'=>array('createList')
+                'name' => 'createList',
+                'label' => Yii::t('contacts', 'Create List'),
+                'url' => array('createList')
             ),
             array(
-                'name'=>'viewList',
-                'label'=>Yii::t('contacts','View List'),
-                'url'=>array('list','id'=>$modelId)
+                'name' => 'viewList',
+                'label' => Yii::t('contacts', 'View List'),
+                'url' => array('list', 'id' => $modelId)
             ),
             array(
-                'name'=>'editList',
-                'label'=>Yii::t('contacts','Edit List'),
-                'url'=>array('updateList','id'=>$modelId)
+                'name' => 'editList',
+                'label' => Yii::t('contacts', 'Edit List'),
+                'url' => array('updateList', 'id' => $modelId)
             ),
             array(
-                'name'=>'deleteList',
-                'label'=>Yii::t('contacts','Delete List'),
-                'url'=>'#',
-                'linkOptions'=>array(
-                    'submit'=>array('deleteList','id'=>$modelId),
-                    'confirm'=>'Are you sure you want to delete this item?')
+                'name' => 'deleteList',
+                'label' => Yii::t('contacts', 'Delete List'),
+                'url' => '#',
+                'linkOptions' => array(
+                    'submit' => array('deleteList', 'id' => $modelId),
+                    'confirm' => 'Are you sure you want to delete this item?')
             ),
             array(
-                'name'=>'import',
-                'label'=>Yii::t('contacts','Import {module}', array('{module}'=>$Contacts)),
-                'url'=>array('admin/importModels', 'model'=>'Contacts')
+                'name' => 'import',
+                'label' => Yii::t('contacts', 'Import {module}', array('{module}' => $Contacts)),
+                'url' => array('admin/importModels', 'model' => 'Contacts')
             ),
             array(
-                'name'=>'export',
-                'label'=>Yii::t('contacts', 'Export {module}', array('{module}'=>$Contacts)),
-                'url'=>array('admin/exportModels', 'model'=>'Contacts')
+                'name' => 'export',
+                'label' => Yii::t('contacts', 'Export {module}', array('{module}' => $Contacts)),
+                'url' => array('admin/exportModels', 'model' => 'Contacts')
             ),
             array(
-                'name'=>'viewOnMap',
+                'name' => 'viewOnMap',
                 'label' => Yii::t('contacts', 'View {module} on Map', array('{module}' => $Contact)),
                 'url' => array('googleMaps', 'contactId' => $modelId, 'noHeatMap' => 1),
                 'visible' => (bool) Yii::app()->settings->enableMaps,
             ),
             array(
-                'name'=>'map',
-                'label'=>Yii::t('contacts','View Contact Map'),
-                'url'=>array('googleMaps'),
+                'name' => 'map',
+                'label' => Yii::t('contacts', 'View Contact Map'),
+                'url' => array('googleMaps'),
                 'visible' => (bool) Yii::app()->settings->enableMaps,
             ),
             array(
-                'name'=>'savedMaps',
-                'label'=>Yii::t('contacts','Saved Maps'),
-                'url'=>array('savedMaps'),
+                'name' => 'savedMaps',
+                'label' => Yii::t('contacts', 'Saved Maps'),
+                'url' => array('savedMaps'),
                 'visible' => (bool) Yii::app()->settings->enableMaps,
             ),
             array(
-                'name'=>'quick',
-                'label'=>Yii::t('app', 'Quick Create'),
-                'url'=>array('/site/createRecords', 'ret'=>'contacts'),
-                'linkOptions'=>array(
-                    'id'=>'x2-create-multiple-records-button',
-                    'class'=>'x2-hint',
-                    'title'=>Yii::t('app', 'Create a {contact}, {account}, and {opportunity}.', 
-                        array(
-                            '{contact}' => $Contact,
-                            '{account}' => Modules::displayName(false, "Accounts"),
-                            '{opportunity}' => Modules::displayName(false, "Opportunities"),
-                        )))
+                'name' => 'quick',
+                'label' => Yii::t('app', 'Quick Create'),
+                'url' => array('/site/createRecords', 'ret' => 'contacts'),
+                'linkOptions' => array(
+                    'id' => 'x2-create-multiple-records-button',
+                    'class' => 'x2-hint',
+                    'title' => Yii::t('app', 'Create a {contact}, {account}, and {opportunity}.', array(
+                        '{contact}' => $Contact,
+                        '{account}' => Modules::displayName(false, "Accounts"),
+                        '{opportunity}' => Modules::displayName(false, "Opportunities"),
+                    )))
             ),
             array(
                 'name' => 'print',
                 'label' => Yii::t('app', 'Print Record'),
                 'url' => '#',
-                'linkOptions' => array (
-                    'onClick'=>"window.open('".
-                        Yii::app()->createUrl('/site/printRecord', array (
-                            'modelClass' => 'Contacts',
-                            'id' => $modelId,
-                            'pageTitle' => Yii::t('app', 'Contact').': '.(isset($model) ? 
-                                $model->name : "")
-                        ))."');"
+                'linkOptions' => array(
+                    'onClick' => "window.open('" .
+                    Yii::app()->createUrl('/site/printRecord', array(
+                        'modelClass' => 'Contacts',
+                        'id' => $modelId,
+                        'pageTitle' => Yii::t('app', 'Contact') . ': ' . (isset($model) ?
+                        $model->name : "")
+                    )) . "');"
                 )
             ),
             array(
-                'name'=>'addRecordAlias',
-                'label'=>Yii::t('contacts', 'Add Social Profile'),
+                'name' => 'addRecordAlias',
+                'label' => Yii::t('contacts', 'Add Social Profile'),
                 'url' => '#',
-                'linkOptions' => array (
+                'linkOptions' => array(
                     'id' => 'record-aliases-action-menu-link'
                 )
             ),
-            RecordViewLayoutManager::getEditLayoutActionMenuListItem (),
+            RecordViewLayoutManager::getEditLayoutActionMenuListItem(),
         );
 
         $this->prepareMenu($menuItems, $selectOptions);

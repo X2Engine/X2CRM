@@ -65,6 +65,13 @@ class SuccessfulLogins extends CActiveRecord {
         return 'x2_login_history';
     }
 
+    protected function beforeSave() {
+        if ($this->isNewRecord) {
+            $this->timestamp = time();
+        }
+        return parent::beforeSave();
+    }
+
     public function getUserLink() {
         $user = User::model()->findByAttributes (array(
             'username' => $this->username,

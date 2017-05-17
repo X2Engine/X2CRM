@@ -48,13 +48,32 @@ class EmailDeliveryBehaviorTest extends X2TestCase {
      */
     public function testAddressHeaderToArray() {
         $addressHeader = '"Butts, Seymour" <seymour@butts.com>, "I.P. Freely"<ip@free.ly>, johnsmith@gmail.com, <only@email.com>';
-        $addressHeaderArray = EmailDeliveryBehavior::addressHeaderToArray($addressHeader);
-        $this->assertEquals(array(
+        $addressArray = array(
             array('Butts, Seymour','seymour@butts.com'),
             array('I.P. Freely','ip@free.ly'),
             array('','johnsmith@gmail.com'),
-            array('','only@email.com')
-        ),$addressHeaderArray);
+            array('','only@email.com'),
+        );
+        $addressHeaderArray = EmailDeliveryBehavior::addressHeaderToArray($addressHeader);
+        $this->assertEquals($addressArray,$addressHeaderArray);
+
+        // Test adjustments to handle a few other unexpected formats
+        $unexpectedAddressHeader = 'Quotes-Test, No <noquotes@email.com>, "\'Twice, Quoted\'" <twice@email.com>, \'Quoted, Single\' <single@email.com>, No Quotes <noquotes@email.com>, \'Single Quoted\' <single@email.com>, "\'Twice Quoted\'" <twice@email.com>';
+        $unexpectedAddressArray = array(
+            array('Quotes-Test, No','noquotes@email.com'),
+            array("Twice, Quoted", 'twice@email.com'),
+            array('Quoted, Single','single@email.com'),
+            array('No Quotes','noquotes@email.com'),
+            array('Single Quoted','single@email.com'),
+            array("Twice Quoted", 'twice@email.com'),
+        );
+        $addressHeaderArray = EmailDeliveryBehavior::addressHeaderToArray($unexpectedAddressHeader);
+        $this->assertEquals($unexpectedAddressArray,$addressHeaderArray);
+
+        // Test compatibility with a header composed of combined formats
+        $combined = $unexpectedAddressHeader . ', ' . $addressHeader;
+        $addressHeaderArray = EmailDeliveryBehavior::addressHeaderToArray($combined);
+        $this->assertEquals(array_merge($unexpectedAddressArray, $addressArray),$addressHeaderArray);
     }
 
 }

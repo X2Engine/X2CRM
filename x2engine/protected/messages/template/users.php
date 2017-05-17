@@ -1,5 +1,6 @@
 <?php return array (
   'Create User' => '',
+  'Sorry, we are not creating anymore user accounts at this time.' => '',
   'Invite Users' => '',
   'The specified username is reserved for system usage.' => '',
   'Username cannot contain trailing or leading whitespace.' => '',
@@ -45,4 +46,7 @@
   'Invalid reset link.' => '',
   'View {users} Map' => '',
   'User Location Map' => '',
+  'Inactive' => '',
+  'Are you sure you want to deactivate this users two factor auth requirement?' => '',
+  'Successfully deactivated two factor auth' => '',
 );

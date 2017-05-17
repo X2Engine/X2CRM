@@ -428,7 +428,7 @@ class CalendarController extends x2base {
      */
     public function getFeed($calendarId, $start, $end){
         $calendar = X2Calendar::model()->findByPk($calendarId);
-        if($calendar->asa('syncBehavior')){
+        if($calendar && $calendar->asa('syncBehavior')){
             $calendar->sync();
         }
         $actions = $this->calendarActions($calendarId,$start,$end);

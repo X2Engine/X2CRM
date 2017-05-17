@@ -151,7 +151,7 @@ class DetailView extends RecordView {
         $html .= '</span>';
         $html .= '</div>';
 
-        if ($this->canEdit($field)) {
+        if ($this->canEdit($field) && !$field->readOnly) {
             $html .= $this->renderInlineButtons();
         }
 

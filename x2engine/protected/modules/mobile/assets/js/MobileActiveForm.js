@@ -44,6 +44,7 @@ function MobileActiveForm (argsDict) {
         locationAttrName: null,
         redirectUrl: null,
         submitButtonSelector: null,
+        translations: {},
         validate: function () { return true; }
     };
     auxlib.applyArgs (this, defaultArgs, argsDict);
@@ -87,7 +88,7 @@ MobileActiveForm.prototype.setUpPhotoSubmission = function () {
                         }
                     },
                     function (error) {
-                        x2.main.alert ('Upload failed');
+                        x2.main.alert (that.translations['Upload failed']);
                         $.mobile.loading ('hide');
                     }
                 );

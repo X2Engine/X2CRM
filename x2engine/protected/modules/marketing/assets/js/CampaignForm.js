@@ -58,7 +58,7 @@ x2.CampaignForm = (function() {
         CF.setUpForm();
 
         // quick create form for contact lists
-        CF.quickCreateForm = $('#quick-create-list-form')
+        CF.quickCreateForm = $('#quick-create-list-form');
 
         // Set up Quick Create Form
         CF.setUpQuickCreate();

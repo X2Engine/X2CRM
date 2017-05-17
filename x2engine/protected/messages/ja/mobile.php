@@ -26,4 +26,8 @@
   'Web Address' => 'Webアドレス',
   'Add photo attachment' => '写真の添付ファイルを追加します。',
   'Add file attachment' => '添付ファイルを追加します。',
+  'Failed to retrieve static map. Please ensure that Google Integration is enabled.' => '静的マップの取得に失敗しました。 Googleインテグレーションが有効になっていることを確認してください。',
+  'Add video attachment' => 'ビデオ添付ファイルを追加',
+  'Add location attachment' => '場所の添付ファイルを追加する',
+  'Add audio note' => '音声メモを追加する',
 );

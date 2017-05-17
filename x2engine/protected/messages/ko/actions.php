@@ -120,4 +120,6 @@
   'Event Status' => '이벤트 상태',
   'Calendar Color' => '달력 색상',
   'Enter email addresses, one per line' => '이메일 주소를 입력 한 당 라인',
+  'Add to Calendar' => '캘린더에 추가',
+  'By default, the Contact who sent the email will be associated.' => '기본적으로 전자 메일을 보낸 사람은 연결됩니다.',
 );

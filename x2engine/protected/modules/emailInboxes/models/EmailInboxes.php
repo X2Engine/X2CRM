@@ -1101,6 +1101,7 @@ class EmailInboxes extends X2Model {
                 'imap-mail.outlook.com',
                 'imap.mail.yahoo.com',
                 'imap.secureserver.net',
+                'imap.mail.ru',
             );
             if (!($this->settings['disableQuota'] ||
                in_array($this->credentials->auth->imapServer, $incompatibleImapServers))) {
@@ -1494,7 +1495,7 @@ class EmailInboxes extends X2Model {
             if (count($message->attachments) > 0)
                 $message->parseInlineAttachments();
         } else {
-            $message->body = $body['plain'];
+            $message->body = nl2br($body['plain']);
         }
     }
 
@@ -1658,6 +1659,7 @@ class EmailInboxes extends X2Model {
             $structureEncoding = $this->getStructureMimetype ($structure);
             $disposition = isset($structure->ifdisposition) && $structure->ifdisposition ?
                 $structure->disposition : false;
+            $disposition = strtoupper($disposition);
             if (!in_array ($disposition, array ('ATTACHMENT', 'INLINE')) && 
                 $structureEncoding === 'TEXT/HTML') {
                 $body['html'] = $this->decodeBodyPart ($uid, $structure, $part);
@@ -1671,7 +1673,7 @@ class EmailInboxes extends X2Model {
 
                 $filename = $structure->dparameters[0]->value;
                 $size = $structure->bytes;
-                $type = ($structure->disposition === 'ATTACHMENT' ? 'attachment' : 'inline');
+                $type = ($disposition === 'ATTACHMENT' ? 'attachment' : 'inline');
                 $mimeType = $this->getStructureMimetype($structure, true);
                 $partNumber = is_null($part) ? 1 : $part;
                 if (isset($structure->id))  {

@@ -205,8 +205,12 @@ RecordViewController.prototype.setUpHistoryPagination = function () {
             });
         }
     });
-    
 
+    if (x2.main.platform === 'iOS') {
+        var homeButton$ = $.mobile.activePage.find('#home-btn');
+        homeButton$.hide();
+    }
+    
     
 };
 

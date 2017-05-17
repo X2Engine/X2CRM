@@ -114,6 +114,7 @@ $form = $this->beginWidget ('GridReportForm', array (
     echo $form->filterConditionList ($formModel, 'anyFilters');
     ?>
     <br/>
+    <div id="quick-create-list-form" style="display:none"></div>
     <?php
     echo $form->generateReportButton ();
 $this->endWidget ();

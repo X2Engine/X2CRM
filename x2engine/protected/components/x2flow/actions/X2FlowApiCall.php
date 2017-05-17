@@ -197,7 +197,7 @@ class X2FlowApiCall extends X2FlowAction {
             } 
 
             if ($method !== 'GET' && $this->parseOption ('jsonPayload', $params)) {
-                $data = $this->parseOption ('jsonBlob', $params);
+                $data = $this->parseOption ('jsonBlob', $params, false);
             } elseif(isset($this->config['attributes']) && !empty($this->config['attributes'])){
                 $data = array();
                 foreach($this->config['attributes'] as $param){

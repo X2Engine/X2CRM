@@ -83,4 +83,5 @@
   'When:' => '什么时候：',
   'Please select one of the options below to confirm your status.' => '请选择下面的一个选项，以确认您的身份。',
   'Maybe' => '也许',
+  'Thanks for RSVPing! Your attendance has been updated to ' => '感谢您的回覆！您的考勤已更新至',
 );

@@ -83,4 +83,5 @@
   'When:' => 'Когда:',
   'Please select one of the options below to confirm your status.' => 'Пожалуйста, выберите один из вариантов ниже, чтобы подтвердить свой статус.',
   'Maybe' => 'Может быть',
+  'Thanks for RSVPing! Your attendance has been updated to ' => 'Спасибо, что ответили! Ваша посещаемость обновлена ​​до:',
 );

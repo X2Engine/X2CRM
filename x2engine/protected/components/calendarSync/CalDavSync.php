@@ -166,7 +166,8 @@ abstract class CalDavSync extends CalendarSync {
                 ));
                 if (isset($actionMetaData)) {
                     $action = X2Model::model('Actions')->findByPk($actionMetaData->actionId);
-                    $action->delete();
+                    if ($action)
+                        $action->delete();
                 }
             }
         }
@@ -274,7 +275,7 @@ abstract class CalDavSync extends CalendarSync {
             }
             if (isset($actionMetaData)) {
                 $action = X2Model::model('Actions')->findByPk($actionMetaData->actionId);
-                if ($action->etag !== $eventEtag) {
+                if ($action && $action->etag !== $eventEtag) {
                     $this->updateAction($action, $eventVObj, array(
                         'etag' => $eventEtag,
                     ));

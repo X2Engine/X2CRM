@@ -126,22 +126,40 @@ class X2HubConnector extends JSONEmbeddedModel implements AdminOwnedCredentials 
     }
 
     public function renderInputs(){
+        Yii::app()->clientScript->registerCss('hubConfigStyling', '
+            #hubServiceConfig input[type="checkbox"] {
+                margin-right: 8px;
+            }
+            #hubServiceConfig label {
+                display: inline;
+            }
+            #hubServiceConfig label:after {
+                content: "";
+                display: block;
+            }
+        ');
+
         echo $this->getInstructions ();
+
 		echo CHtml::tag ('h3', array (), $this->exoModel->getAttributeLabel ($this->exoAttr));
 		echo '<hr />';
         echo CHtml::activeLabel($this, 'unique_id');
         $this->renderInput ('unique_id');
         echo CHtml::activeLabel($this, 'hubEnabled');
         $this->renderInput ('hubEnabled');
+
 		echo CHtml::tag ('h4', array (), Yii::t('', 'Services'));
-        echo CHtml::activeLabel($this, 'enableTwoFactor');
+        echo '<div id="hubServiceConfig">';
         $this->renderInput ('enableTwoFactor');
-        echo CHtml::activeLabel($this, 'enableGoogleCalendar');
+        echo CHtml::activeLabel ($this, 'enableTwoFactor');
         $this->renderInput ('enableGoogleCalendar');
-        echo CHtml::activeLabel($this, 'enableGoogleMaps');
+        echo CHtml::activeLabel ($this, 'enableGoogleCalendar');
         $this->renderInput ('enableGoogleMaps');
-        echo CHtml::activeLabel($this, 'enableGoogleSpeech');
+        echo CHtml::activeLabel ($this, 'enableGoogleMaps');
         $this->renderInput ('enableGoogleSpeech');
+        echo CHtml::activeLabel ($this, 'enableGoogleSpeech');
+        echo '</div>';
+
         echo CHtml::errorSummary($this);
         echo '<br>';
         echo '<br>';

@@ -120,4 +120,6 @@
   'color' => '',
   'Calendar Color' => '',
   'Enter email addresses, one per line' => '',
+  'Add to Calendar' => '',
+  'By default, the Contact who sent the email will be associated.' => '',
 );
