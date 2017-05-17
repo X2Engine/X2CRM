@@ -36,45 +36,33 @@
  **********************************************************************************/
 
 /**
- * X2FlowAction that completes a workflow stage
+ * X2FlowAction that reverts a workflow stage
  * 
  * @package application.components.x2flow.actions
  */
-class X2FlowWorkflowCompleteStage extends BaseX2FlowWorkflowStageAction {
-	public $title = 'Complete Process Stage';
+class X2FlowProcessRevertStage extends BaseX2FlowWorkflowStageAction {
+	public $title = 'Revert Process Stage';
 	public $info = '';
 	
-	public function paramRules() {
-        $paramRules = parent::paramRules ();
-        $paramRules['options'][] = array(
-            'name'=>'stageComment',
-            'label'=>Yii::t('studio','Stage Comment'),
-            'optional'=>1,
-            'type'=>'richtext'
-        );
-        return $paramRules;
-	}
-
 	public function execute(&$params) {
         $workflowId = $this->parseOption ('workflowId', $params);
         $stageNumber = $this->parseOption ('stageNumber', $params);
-        $stageComment = $this->parseOption ('stageComment', $params);
 
         $model = $params['model'];
+
         $type = lcfirst (X2Model::getModuleName (get_class ($model)));
         $modelId = $model->id;
 
         $workflowStatus = Workflow::getWorkflowStatus($workflowId,$modelId,$type);
         $message = '';
-
         if (Workflow::validateAction (
-            'complete', $workflowStatus, $stageNumber, $stageComment, $message)) {
+            'revert', $workflowStatus, $stageNumber, '', $message)) {
 
             list ($started, $workflowStatus) = 
-                Workflow::completeStage (
-                    $workflowId, $stageNumber, $model, $stageComment, false, $workflowStatus);
+                Workflow::revertStage (
+                    $workflowId, $stageNumber, $model, $workflowStatus);
             assert ($started);
-            return array (true, Yii::t('studio', 'Stage "{stageName}" completed for {recordName}', 
+            return array (true, Yii::t('studio', 'Stage "{stageName}" reverted for {recordName}', 
                 array (
                     '{stageName}' => $workflowStatus['stages'][$stageNumber]['name'],
                     '{recordName}' => $model->getLink (),

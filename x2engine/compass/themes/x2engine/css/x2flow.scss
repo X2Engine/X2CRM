@@ -646,21 +646,21 @@ $edgeColor: #CCCCCC;
 /**
  * Process Start Stage Stage Action
  */
-.X2FlowWorkflowStartStage {
+.X2FlowProcessStartStage {
     background-image: url(../images/x2flow/X2FlowWorkflowStartStage.png);
 }
 
 /**
  * Process Complete Stage Stage Action
  */
-.X2FlowWorkflowCompleteStage {
+.X2FlowProcessCompleteStage {
     background-image: url(../images/x2flow/X2FlowWorkflowCompleteStage.png);
 }
 
 /**
  * Process Revert Stage Stage action
  */
-.X2FlowWorkflowRevertStage {
+.X2FlowProcessRevertStage {
     background-image: url(../images/x2flow/X2FlowWorkflowRevertStage.png);
 }
 
@@ -801,13 +801,16 @@ $edgeColor: #CCCCCC;
     .X2FlowWorkflowStart {
         background-image: url(../images/x2flow/small/X2FlowWorkflowStart.png);
     }
-    .X2FlowWorkflowRevertStage {
+    
+    //TODO: Change Process Image Names
+    
+    .X2FlowProcessRevertStage {
         background-image: url(../images/x2flow/small/X2FlowWorkflowRevertStage.png);
     }
-    .X2FlowWorkflowStartStage {
+    .X2FlowProcessStartStage {
         background-image: url(../images/x2flow/small/X2FlowWorkflowStartStage.png);
     }
-    .X2FlowWorkflowCompleteStage {
+    .X2FlowProcessCompleteStage {
         background-image: url(../images/x2flow/small/X2FlowWorkflowCompleteStage.png);
     }
     .X2FlowPushWebContent {
