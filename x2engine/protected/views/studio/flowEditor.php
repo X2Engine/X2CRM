@@ -92,8 +92,7 @@ $passVarsToClientScript = '
     x2.flow.translations = {};
     x2.flow.requiresCron = ' . CJSON::encode ($requiresCron) . ';
     x2.flow.showLabels = ' . ($showLabels ? 'true' : 'false') . ';
-    x2.flow.insertableAttributes = '.
-        CJSON::encode ($insertableAttributes) . ';
+    x2.flow.insertableAttributes = ' . CJSON::encode ($insertableAttributes) . ';
     x2.flowData = ' . CJSON::encode($model->flow) . ';
     x2.fieldUtils = new x2.FlowFields ({
         operatorList: ' . CJSON::encode(X2FlowTrigger::getFieldComparisonOptions()) . ',
@@ -106,15 +105,15 @@ $passVarsToClientScript = '
         templateSelector: "#condition-templates"
     });
 
-    x2.anyModelTriggers = JSON.parse(' . CJSON::encode(X2FlowTrigger::getAnyModelTriggers()) . ');
-    x2.actionModelTriggers = JSON.parse(' . CJSON::encode(X2FlowTrigger::getActionModelTriggers()) . ');
-    x2.userModelTriggers = JSON.parse(' . CJSON::encode(X2FlowTrigger::getUserModelTriggers()) . ');
-    x2.processModelTriggers = JSON.parse(' . CJSON::encode(X2FlowTrigger::getProcessModelTriggers()) . ');
-    x2.recordModelTriggers = JSON.parse(' . CJSON::encode(X2FlowTrigger::getRecordModelTriggers()) . ');
+    x2.anyModelTriggers = JSON.parse(' . CJSON::encode(json_encode(X2FlowTrigger::getAnyModelTriggers())) . ');
+    x2.actionModelTriggers = JSON.parse(' . CJSON::encode(json_encode(X2FlowTrigger::getActionModelTriggers())) . ');
+    x2.userModelTriggers = JSON.parse(' . CJSON::encode(json_encode(X2FlowTrigger::getUserModelTriggers())) . ');
+    x2.processModelTriggers = JSON.parse(' . CJSON::encode(json_encode(X2FlowTrigger::getProcessModelTriggers())) . ');
+    x2.recordModelTriggers = JSON.parse(' . CJSON::encode(json_encode(X2FlowTrigger::getRecordModelTriggers())) . ');
 
-    x2.anyModelActions = JSON.parse(' . CJSON::encode(X2FlowAction::getAnyModelActions()) . ');
-    x2.recordModelActions = JSON.parse(' . CJSON::encode(X2FlowAction::getRecordModelActions()) . ');
-    x2.processModelActions = JSON.parse(' . CJSON::encode(X2FlowAction::getProcessModelActions()) . ');
+    x2.anyModelActions = JSON.parse(' . CJSON::encode(json_encode(X2FlowAction::getAnyModelActions())) . ');
+    x2.recordModelActions = JSON.parse(' . CJSON::encode(json_encode(X2FlowAction::getRecordModelActions())) . ');
+    x2.processModelActions = JSON.parse(' . CJSON::encode(json_encode(X2FlowAction::getProcessModelActions())) . ');
 ';
 
 // pass array of predefined theme uploadedBy attributes to client
@@ -139,6 +138,7 @@ $workflowJsUrl = Yii::app()->getBaseUrl() . '/js/X2Flow';
 /**
  * JavaScript scripts
  */
+
 $cs = Yii::app()->getClientScript();
 
 $cs->registerPackage ('emailEditor');
@@ -156,6 +156,7 @@ $cs->registerScriptFile($workflowJsUrl . '/X2FlowApiCall.js', CClientScript::POS
 /**
  * Action Menu UI
  */
+
 $this->actionMenu = array(
     array(
         'label' => Yii::t('studio', 'Manage Workflows'),
@@ -191,71 +192,6 @@ $this->actionMenu[] = array (
 /**
  * Workflow Actions
  */
-$actionMenuHtml = '<div id="item-box">';
-ob_start();
-?>
-
-<div class="x2flow-node X2FlowSwitch" style="">
-    <span><?php echo Yii::t('studio', 'Condition'); ?></span>
-    <div class="icon">
-        <div class="x2flow-yes-label"><?php echo Yii::t('app', 'Yes') ?></div>
-        <div class="x2flow-no-label"><?php echo Yii::t('app', 'No') ?></div>
-    </div>
-    <div class="x2flow-branch-wrapper">
-        <div class="x2flow-branch">
-            <div class="bracket"></div>
-            <div class="x2flow-node x2flow-empty"></div>
-        </div>
-        <div class="x2flow-branch">
-            <div class="bracket"></div>
-            <div class="x2flow-node x2flow-empty"></div>
-        </div>
-    </div>
-</div>
-<div class="x2flow-node X2FlowSplitter" style="">
-    <span><?php echo Yii::t('studio', 'Split Path'); ?></span>
-    <div class="icon">
-        <div class="icon-inner">
-        </div>
-    </div>
-    <div class="x2flow-branch-wrapper">
-        <div class="x2flow-branch">
-            <div class="bracket"></div>
-            <div class="x2flow-node x2flow-empty"></div>
-        </div>
-        <div class="x2flow-branch">
-            <div class="bracket"></div>
-            <div class="x2flow-node x2flow-empty"></div>
-        </div>
-    </div>
-</div>
- 
-<?php
-foreach($actionTypes as $type => $title):
-?>
-    
-<div class="x2flow-node x2flow-action
-    <?php echo $type . ($showLabels ? "" : " no-label") ?>"
-    title="<?php echo addslashes(Yii::t('studio', $title)) ?>"
-    <?php echo ((($type === 'X2FlowPushWebContent' && $model->triggerType
-        !== 'TargetedContentRequestTrigger') || ($type === 'X2FlowPushWebPage'
-        && $model->triggerType !== 'TargetedPageRequestTrigger'))
-        ? 'style="display: none;"' : '')?>>
-    <div class="x2flow-icon-label"
-        <?php echo ($showLabels ? "" : "style='display: none;'")?>>
-        <?php echo Yii::t('studio', $title)?>
-    </div>
-    <span> <?php echo Yii::t('studio', $title)?> </span>
-</div>
-    
-<?php
-endforeach;
-$actionMenuHtml .= ob_get_clean() . '</div>';
-
-$this->leftPortlets[] = array(
-    'options' => array('title' => Yii::t('studio', 'Flow Actions'), 'id' => 'flow-actions'),
-    'content' => $actionMenuHtml
-);
 ?>
 
 <div class="page-title icon x2flow">
@@ -278,8 +214,8 @@ $this->leftPortlets[] = array(
  * This is where the individual flow fields are displayed
  */
 ?>
+
 <div class="form x2flow-start">
-    
     <?php 
     $form = $this->beginWidget('CActiveForm', array('id' => 'submitForm',
         'enableAjaxValidation' => false)); 
@@ -354,15 +290,49 @@ $this->leftPortlets[] = array(
         ?></textarea>
     </div>
     <?php $this->endWidget(); ?>
+    
+    <?php
+    /**
+     * Lists of actions
+     */
+    ?>
+    <div id="actions-bank" class="cell" style="width:99%; display:none;">
+        <h4>Actions Bank</h4>
+        <?php
+        /**
+         * Actions available to all triggers
+         */
+        $title = 'all';
+        $actions = array_filter($actionTypes, function($element) {
+            return in_array($element, X2FlowAction::getAnyModelActions());
+        });
+        include 'workflowActions.php';
+        ?>
+    
+        <?php
+        /**
+         * Actions available to only records
+         */
+        $title = 'records';
+        $actions = array_filter($actionTypes, function($element) {
+            return in_array($element, X2FlowAction::getRecordModelActions());
+        });
+        include 'workflowActions.php';
+        ?>
+        
+        <?php
+        /**
+         * Actions only available to processes
+         */
+        $title = 'processes';
+        $actions = array_filter($actionTypes, function($element) {
+            return in_array($element, X2FlowAction::getProcessModelActions());
+        });
+        include 'workflowActions.php';
+        ?>
+    </div>
+    
 </div>
-
-<!--
-<?php
-foreach($actionTypes as $type => $title) {
-    echo $title;
-}
-?>
--->
 
 <?php
 /**

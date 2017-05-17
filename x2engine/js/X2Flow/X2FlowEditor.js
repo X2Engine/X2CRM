@@ -146,7 +146,7 @@ $(function () {
          */
         _mouseCapture: function (e) {
             return $(e.target).is(
-                    '#item-box *, .X2FlowSwitch .icon, .X2FlowSplitter .icon, ' +
+                    '.actions *, .X2FlowSwitch .icon, .X2FlowSplitter .icon, ' +
                     '.X2FlowSplitter .icon-inner, ' +
                     '.x2flow-node:not(.x2flow-trigger, .X2FlowSwitch, .X2FlowSplitter, .x2flow-empty)');
             //parents(".x2flow-node").length;
@@ -163,7 +163,6 @@ $(function () {
             this.deleteTarget = $();
             this.deleteButton.detach();
 
-            // this.nodeParent = this.node.parent();
             this.futureTarget = this.node.parent();
             this.nodeBefore = this.node.prev();
             if (this.options.clone || this.nodeBefore.length === 0)
@@ -174,22 +173,14 @@ $(function () {
                 x: e.pageX - offset.left,
                 y: e.pageY - offset.top
             };
-            if (this.node.parent().is("#item-box")) {
-                this.mouseOffset.x = offset.left + 24;
-                this.mouseOffset.y = 24;
-            }
 
-            // if(node.children(".icon").length)
-            // this.mouseOffset.x = this.mouseOffset.x - 14;
-
-            // this.placeholder = node.clone()
-            // .disableSelection()
+            //console.log(this.node.parent().attr('id'));
 
             // create a copy of the node to be dragged around
             this.helper = this.node.clone().disableSelection();
 
             if (this.options.clone) {
-                this.node = this.node.clone().appendTo("#item-box");    // copy the original
+                this.node = this.node.clone().appendTo(this.node.parent());    // copy the original
             }
 
             this.node.addClass("x2flow-placeholder");
@@ -252,8 +243,8 @@ $(function () {
                 if (this.options.clone) { // if this is a new item being dragged in,
                     // move the placeholder back to the menu box;
                     this.nodeBefore = this.futureTarget.children().last();
-                    if (this.futureTarget.attr("id") !== "item-box") {
-                        this.futureTarget = $("#item-box");
+                    if (this.futureTarget.attr("id") !== this.node.parent().attr('id')) {
+                        this.futureTarget = this.node.parent();
                         clearTimeout(this.moveTimer);
                         this.moveTimer = setTimeout(function () {
                             self._moveNode();
@@ -297,7 +288,7 @@ $(function () {
             this.dropTargets.removeClass("x2flow-active x2flow-hover");
             this.futureTarget = $();
 
-            if (this.node.parent().attr("id") === "item-box") {
+            if (typeof this.node.parent().attr("id") !== 'undefined') {
                 this.node.remove();
             } else {
                 if (this.hoverTarget !== null && this.hoverTarget.hasClass("x2flow-trash")) {
@@ -477,12 +468,8 @@ $(function () {
         }
     });
 
-
-
-    $("#item-box").flowDraggable({distance: 0, clone: true});
+    $(".actions").flowDraggable({distance: 0, clone: true});
     $("#x2flow-main").flowDraggable({distance: 20, clone: false});
-
-
 
     window.flowEditor = {
 
@@ -682,8 +669,6 @@ $(function () {
 
                 flowEditor.openItemConfig();
                 x2.flow.hideShowCronUI();
-                //$('.x2flow-main').find ('.x2flow-node.selected').removeClass ('selected');
-
             });
 
             // listen for changes in model type; remove attribute conditions from the previous type
@@ -755,7 +740,7 @@ $(function () {
             x2.flow.hideShowCronUI();
         },
         _targetedContentRequestTriggerChange: function () {
-            $('#item-box').find('.X2FlowPushWebContent').show();
+            $('.actions').find('.X2FlowPushWebContent').show();
             $('#targeted-content-embed-code-container').fadeIn(1000);
         },
 
@@ -775,7 +760,7 @@ $(function () {
             /*$('.x2flow-main').find ('.x2flow-node.X2FlowPushWebContent').each (function () {
              that._deleteNode ($(this));
              });*/
-            $('#item-box').find('.X2FlowPushWebContent').hide();
+            $('.actions').find('.X2FlowPushWebContent').hide();
             $('#targeted-content-embed-code-container').hide();
             return true;
         },
@@ -842,7 +827,7 @@ $(function () {
             for (var i in items) {
                 var item = items[i];
                 if (item.type === "X2FlowSwitch" || item.type === 'X2FlowSplitter') {
-                    var flowSwitch = $("#item-box ." + item.type).clone().data("config", item);
+                    var flowSwitch = $(".actions ." + item.type).clone().data("config", item);
                     var rightChildName = item.type === 'X2FlowSwitch' ? 'trueBranch' : 'upperBranch';
                     var leftChildName = item.type === 'X2FlowSwitch' ? 'falseBranch' : 'lowerBranch';
 
@@ -862,7 +847,7 @@ $(function () {
 
                     branch = branch.add(flowSwitch);
                 } else {
-                    var template = $("#item-box ." + item.type);
+                    var template = $(".actions ." + item.type);
                     if (template.length) {
                         var flowItem = template.clone().data("config", item);
                         if (flowItem.attr('style') &&
@@ -1622,7 +1607,7 @@ $(function () {
                 }
             });
         },
-        
+
         loadHeaders: function (headers) {
             // loop through any saved headers
             for (var i in headers) {
@@ -1633,7 +1618,7 @@ $(function () {
                         .appendTo("#x2flow-headers ol");
             }
         },
-        
+
         loadConditions: function (conditions) {
             var that = this;
             // console.debug(conditions);
@@ -1869,21 +1854,22 @@ $(function () {
      */
     function hideActions() {
         var trigger = $("#trigger-selector option:selected").text();
-        
-        console.log($("#trigger-selector option:selected"));
 
-        $("#item-box").children().each(function () {
-            var itemTitle = this.title;
-            if ($.inArray(trigger, x2.recordModelTriggers) === -1
-                    && $.inArray(itemTitle, x2.recordModelActions) !== -1) {
-                $(this).hide();
-            } else if ($.inArray(trigger, x2.processModelTriggers) === -1
-                    && $.inArray(itemTitle, x2.processModelActions) !== -1) {
-                $(this).hide();
-            } else {
-                $(this).show();
-            }
-        });
+        if (trigger === 'Select a trigger') {
+            $('#actions-bank').hide();
+        } else {
+            $('#actions-bank').show();
+        }
+        if ($.inArray(trigger, x2.recordModelTriggers) === -1) {
+            $('#records').hide();
+        } else {
+            $('#records').show();
+        }
+        if ($.inArray(trigger, x2.processModelTriggers) === -1) {
+            $('#processes').hide();
+        } else {
+            $('#processes').show();
+        }
     }
 
     /**
@@ -1897,6 +1883,9 @@ $(function () {
      * Hide actions on trigger change
      */
     $("#trigger-selector").change(function (e) {
+        $('.x2flow-branch li').remove();
+        $('.x2flow-branch .x2flow-node.x2flow-empty').remove();
+        $('.x2flow-branch').append('<div class="x2flow-node x2flow-empty"></div>');
         hideActions();
     });
 

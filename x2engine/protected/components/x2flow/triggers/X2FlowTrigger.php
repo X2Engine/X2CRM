@@ -88,23 +88,23 @@ abstract class X2FlowTrigger extends X2FlowItem {
      * @return type
      */
     public static function getAnyModelTriggers() {
-        return json_encode(self::$anyModelTriggers);
+        return self::$anyModelTriggers;
     }
     
     public static function getActionModelTriggers() {
-        return json_encode(self::$actionModelTriggers);
+        return self::$actionModelTriggers;
     }
 
     public static function getUserModelTriggers() {
-        return json_encode(self::$userModelTriggers);
+        return self::$userModelTriggers;
     }
 
     public static function getProcessModelTriggers() {
-        return json_encode(self::$processModelTriggers);
+        return self::$processModelTriggers;
     }
 
     public static function getRecordModelTriggers() {
-        return json_encode(self::$recordModelTriggers);
+        return self::$recordModelTriggers;
     }
 
     /**

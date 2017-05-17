@@ -70,31 +70,7 @@ $edgeColor: #CCCCCC;
 
 #flow-actions .portlet-content {
     padding: 0;
-    /*
-    height:500px;
-    overflow:hidden;
-    overflow-y:scroll;
-    */
 }
-
-#item-box {
-    /* width:122px; */
-    /* height:500px; */
-    /* overflow-y:scroll; */
-    /* float:left; */
-    /* padding-left:8px;
-    text-align:center; */
-    /* padding:10px; */
-    /*min-height:476px; */
-    /*height:476px; */
-    /*overflow:auto;*/
-    overflow-y: hidden;
-    .x2flow-placeholder {
-        display: none;
-    }
-}
-
-/* #item-box .x2flow-node:hover {opacity:1.0;} */
 
 .form {
     &.x2flow-trash {
@@ -146,7 +122,6 @@ $edgeColor: #CCCCCC;
 /* .x2flow-node:last-child {margin-bottom:0;} */
 
 .x2flow-action, .x2flow-empty, .x2flow-trigger {
-    /* float:left; */
     height: 32px;
     width: 40px;
     border: 2px solid #999;
@@ -205,8 +180,6 @@ $edgeColor: #CCCCCC;
     }
 }
 
-/* #x2flow-main .x2flow-action.x2flow-placeholder:after {left:58px;top:5px;} */
-
 .X2FlowSwitch, .X2FlowSplitter {
     &:before, &:after {
         display: none;
@@ -234,9 +207,6 @@ $edgeColor: #CCCCCC;
         background-color: #1862bd;
     }
 }
-
-/* #13427f */
-/* #1153a3 */
 
 /* placeholder elements with striped backgrounds */
 
@@ -269,14 +239,12 @@ $edgeColor: #CCCCCC;
     }
 }
 
-/* .x2flow-branch.x2flow-hover {background-color:#ffeeee;} */
-
 .X2FlowSwitch, .X2FlowSplitter {
     position: relative;
     /* background:#fff; */
 }
 
-#item-box {
+.actions {
     .X2FlowSwitch,
     .X2FlowSplitter {
         .icon {
@@ -287,8 +255,6 @@ $edgeColor: #CCCCCC;
         }
     }
 }
-
-/* .X2FlowSwitch-valign {display:block-cell;} */
 
 .X2FlowSwitch, .X2FlowSplitter {
     .icon {
@@ -362,13 +328,10 @@ $edgeColor: #CCCCCC;
     background-image: url(../images/x2flow/switch-placeholder.png) !important;
 }
 
-/* container for the switch's 2 sub-branches */
-
 .x2flow-branch-wrapper {
     display: inline-block;
     vertical-align: middle;
     margin-left: -27px;
-    /* background:#fff; */
     .x2flow-branch {
         &:first-child {
             margin-bottom: 46px;
@@ -378,8 +341,6 @@ $edgeColor: #CCCCCC;
         }
     }
 }
-
-/*.x2flow-branch-wrapper .x2flow-branch:first-child {margin-bottom:33px;}*/
 
 #item-delete {
     display: none;
@@ -394,8 +355,6 @@ $edgeColor: #CCCCCC;
     }
 }
 
-/* helpers: hide flow lines when a node is being dragged */
-
 .X2FlowSwitch.x2flow-helper,
 .X2FlowSplitter.x2flow-helper {
     background: none;
@@ -407,20 +366,11 @@ $edgeColor: #CCCCCC;
     }
 }
 
-.x2flow-node.x2flow-helper {
-    /* cursor:move; */
-    /* opacity:0.5; */
-    /* -moz-box-shadow:        0 5px 20px 0 rgba(0,0,0,0.5);
-    -webkit-box-shadow:        0 5px 20px 0 rgba(0,0,0,0.5);
-    box-shadow:                        0 5px 20px 0 rgba(0,0,0,0.5); */
-}
-
 .X2FlowSwitch .x2flow-branch,
 .X2FlowSplitter .x2flow-branch {
     clear: both;
     padding-left: 36px;
     position: relative;
-    /* margin-top:-16px; */
 }
 
 .x2flow-branch .bracket {
@@ -432,7 +382,6 @@ $edgeColor: #CCCCCC;
 .X2FlowSplitter .x2flow-branch .bracket {
     background-position: left center;
     background-repeat: no-repeat;
-    /* background:red; */
     width: 36px;
     height: 100%;
     position: absolute;
@@ -441,16 +390,12 @@ $edgeColor: #CCCCCC;
     margin: -33px 0;
     padding: 33px 0;
     background-image: url(../images/x2flow/bracket-bottom2.gif);
-    /* top:0; */
-    /* margin:0 -20px 10px -20px; */
 }
 
 .x2flow-branch-wrapper .x2flow-branch:first-child > .bracket {
     bottom: 0;
     background-image: url(../images/x2flow/bracket-top2.gif);
 }
-
-/* .x2flow-branch-wrapper .x2flow-branch:last-child > .bracket {top:0;background-image:url(../images/x2flow/bracket-bottom.gif);} */
 
 /* placeholders (for dragging in non-clone mode) are just grey outlines */
 
@@ -469,8 +414,6 @@ $edgeColor: #CCCCCC;
 }
 
 .x2flow-action.x2flow-placeholder, .x2flow-trigger.x2flow-placeholder {
-    /*         width:49px;
-            height:39px; */
     border: 2px solid #ccc;
     border-color: #ccc;
 }
@@ -619,7 +562,28 @@ $edgeColor: #CCCCCC;
     background-image: url(../images/x2flow/X2FlowPushWebContent.png);
 }
 
-#item-box {
+::-webkit-scrollbar:horizontal { 
+    display: none;
+    //height: 3px; 
+}
+
+.actions {
+    //overflow: hidden;
+    //overflow-x: scroll;
+    //white-space: nowrap;
+    height: auto;
+    width: 100%;
+    //margin-left:10%;
+    margin-bottom: 0px;
+    padding-left: 0px;
+    
+    ::-webkit-scrollbar:horizontal {
+        height: 0px;
+    }
+
+    .x2flow-placeholder {
+        display: none;
+    }
     .x2flow-branch-wrapper {
         display: none;
     }
@@ -627,20 +591,22 @@ $edgeColor: #CCCCCC;
         background-repeat: no-repeat;
         height: auto;
         min-height: 22px;
-        padding: 2px 0 2px 26px;
-        width: 124px;
-        margin: 0;
-        border: 1px solid #999;
-        border-width: 1px 0 0 0;
+        padding: 2px 13px 2px 26px;
+        width: auto;
+        margin: 5px;
+        border: 1px solid #fff;
+        border-width: 1px 1px 1px 1px;
         background-color: #eee;
         background-position: 3px center;
-        -moz-border-radius: 0;
-        -o-border-radius: 0;
-        -webkit-border-radius: 0;
-        border-radius: 0;
+        -moz-border-radius: 10px;
+        -o-border-radius: 10px;
+        -webkit-border-radius: 10px;
+        border-radius: 10px;
         cursor: pointer;
         &:hover {
             background-color: #fff;
+            border: 1px solid #eee;
+            border-width: 1px 1px 1px 1px;
         }
         span {
             display: block;
@@ -749,10 +715,6 @@ $edgeColor: #CCCCCC;
         background-image: url(../images/x2flow/small/X2FlowPushWebContent.png);
     }
 }
-
-/* X2FlowRecordCreateAction.png */
-
-/* X2FlowRecordEmail.png */
 
 .ActionCompleteTrigger {
     background-image: url(../images/x2flow/ActionCompleteTrigger.png);
@@ -895,7 +857,6 @@ $edgeColor: #CCCCCC;
 }
 
 #x2flow-config-box {
-    /* height:120px; */
     padding: 5px 19px;
     min-height: 150px;
 }
@@ -1002,7 +963,7 @@ div.x2flow-placeholder div {
     }
 }
 
-#item-box .x2flow-node > div.x2flow-icon-label, .x2flow-node.x2flow-placeholder > div.x2flow-icon-label {
+.actions .x2flow-node > div.x2flow-icon-label, .x2flow-node.x2flow-placeholder > div.x2flow-icon-label {
     display: none;
 }
 
@@ -1064,7 +1025,7 @@ trigger logs
 }
 
 #x2flow-trace-box {
-        padding: 0;
+    padding: 0;
 }
 
 #trigger-log-dialog {

@@ -70,15 +70,15 @@ abstract class X2FlowAction extends X2FlowItem {
      * @return type
      */
     public static function getAnyModelActions() {
-        return json_encode(self::$anyModelActions);
+        return self::$anyModelActions;
     }
     
     public static function getRecordModelActions() {
-        return json_encode(self::$recordModelActions);
+        return self::$recordModelActions;
     }
 
     public static function getProcessModelActions() {
-        return json_encode(self::$processModelActions);
+        return self::$processModelActions;
     }
 
     /**
