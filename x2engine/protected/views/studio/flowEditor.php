@@ -105,15 +105,10 @@ $passVarsToClientScript = '
         templateSelector: "#condition-templates"
     });
 
-    x2.anyModelTriggers = JSON.parse(' . CJSON::encode(json_encode(X2FlowTrigger::getAnyModelTriggers())) . ');
     x2.actionModelTriggers = JSON.parse(' . CJSON::encode(json_encode(X2FlowTrigger::getActionModelTriggers())) . ');
     x2.userModelTriggers = JSON.parse(' . CJSON::encode(json_encode(X2FlowTrigger::getUserModelTriggers())) . ');
     x2.processModelTriggers = JSON.parse(' . CJSON::encode(json_encode(X2FlowTrigger::getProcessModelTriggers())) . ');
     x2.recordModelTriggers = JSON.parse(' . CJSON::encode(json_encode(X2FlowTrigger::getRecordModelTriggers())) . ');
-
-    x2.anyModelActions = JSON.parse(' . CJSON::encode(json_encode(X2FlowAction::getAnyModelActions())) . ');
-    x2.recordModelActions = JSON.parse(' . CJSON::encode(json_encode(X2FlowAction::getRecordModelActions())) . ');
-    x2.processModelActions = JSON.parse(' . CJSON::encode(json_encode(X2FlowAction::getProcessModelActions())) . ');
 ';
 
 // pass array of predefined theme uploadedBy attributes to client
@@ -133,7 +128,7 @@ $assets = Yii::app()->getAssetManager()->publish(
 // Url paths
 $baseUrl = Yii::app()->getBaseUrl();
 $themeBaseUrl = Yii::app()->theme->getBaseUrl() . '/css';
-$workflowJsUrl = Yii::app()->getBaseUrl() . '/js/X2Flow';
+$workflowJsUrl = $baseUrl . '/js/X2Flow';
 
 /**
  * JavaScript scripts
@@ -306,7 +301,7 @@ $this->actionMenu[] = array (
         $actions = array_filter($actionTypes, function($element) {
             return in_array($element, X2FlowAction::getAnyModelActions());
         });
-        include 'workflowActions.php';
+        include 'actionsInclude.php';
         ?>
     
         <?php
@@ -317,7 +312,7 @@ $this->actionMenu[] = array (
         $actions = array_filter($actionTypes, function($element) {
             return in_array($element, X2FlowAction::getRecordModelActions());
         });
-        include 'workflowActions.php';
+        include 'actionsInclude.php';
         ?>
         
         <?php
@@ -328,7 +323,7 @@ $this->actionMenu[] = array (
         $actions = array_filter($actionTypes, function($element) {
             return in_array($element, X2FlowAction::getProcessModelActions());
         });
-        include 'workflowActions.php';
+        include 'actionsInclude.php';
         ?>
     </div>
     

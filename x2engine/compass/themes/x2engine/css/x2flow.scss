@@ -397,8 +397,9 @@ $edgeColor: #CCCCCC;
     background-image: url(../images/x2flow/bracket-top2.gif);
 }
 
-/* placeholders (for dragging in non-clone mode) are just grey outlines */
-
+/**
+ * Workflow placeholder
+ */
 .x2flow-placeholder {
     background: #fff;
     border-color: #ccc;
@@ -418,168 +419,266 @@ $edgeColor: #CCCCCC;
     border-color: #ccc;
 }
 
+/**
+ * Wait Stage Action
+ */
 .X2FlowWait {
     background-image: url(../images/x2flow/X2FlowWait2.png);
 }
 
+/**
+ * Api Stage Action
+ */
 .X2FlowApiCall {
     background-image: url(../images/x2flow/X2FlowApiCall.png);
 }
 
+/**
+ * Launch Campaign Stage Action
+ */
 .X2FlowCampaignLaunch {
     background-image: url(../images/x2flow/X2FlowCampaignLaunch.png);
 }
 
+/**
+ * Create Action Stage Action
+ */
 .X2FlowCreateAction {
     background-image: url(../images/x2flow/X2FlowCreateAction.png);
 }
 
+/**
+ * Create Activity Post Stage Action
+ */
 .X2FlowCreateEvent {
     background-image: url(../images/x2flow/X2FlowCreateEvent.png);
 }
 
+/**
+ * Create Notification Stage Action
+ */
 .X2FlowCreateNotif {
     background-image: url(../images/x2flow/X2FlowCreateNotif.png);
 }
 
+/**
+ * Create Reminder Stage Action
+ */
 .X2FlowCreateReminder {
     background-image: url(../images/x2flow/X2FlowCreateReminder.png);
 }
 
+/**
+ * Create Email Stage Action
+ */
 .X2FlowEmail {
     background-image: url(../images/x2flow/X2FlowEmail.png);
 }
 
+/**
+ * Create Location Activity Feed Post Stage Action
+ */
 .X2FlowLocationActivityFeed {
     background-image: url(../images/x2flow/X2FlowLocation.png);
 }
 
+/**
+ * Create Location Notification Stage Action
+ */
 .X2FlowLocationNotification {
     background-image: url(../images/x2flow/X2FlowLocation.png);
 }
 
+/**
+ * Create Location Email Stage Action
+ */
 .X2FlowLocationEmail {
     background-image: url(../images/x2flow/X2FlowLocation.png);
 }
 
+/**
+ * Create Location SMS Stage Action
+ */
 .X2FlowLocationText {
     background-image: url(../images/x2flow/X2FlowRecordComment.png);
 }
 
+/**
+ * Create SMS Stage Action
+ */
 .X2FlowSms {
     background-image: url(../images/x2flow/X2FlowRecordComment.png);
 }
 
+/**
+ * Email Open Stage Trigger
+ */
 .EmailOpenTrigger {
     background-image: url(../images/x2flow/NewsletterEmailOpenTrigger.png);
 }
 
+/**
+ * Outbound Email Stage Trigger
+ */
 .OutboundEmailTrigger {
     background-image: url(../images/x2flow/X2FlowOutboundEmail.png);
 }
 
+/**
+ * Inbound Email Stage Trigger
+ */
 .InboundEmailTrigger {
     background-image: url(../images/x2flow/X2FlowInboundEmail.png);
 }
 
+/**
+ * Record Change Stage Action
+ */
 .X2FlowRecordChange {
     background-image: url(../images/x2flow/X2FlowRecordReassign.png);
 }
 
+/**
+ * Record Comment Stage Action
+ */
 .X2FlowRecordComment {
     background-image: url(../images/x2flow/X2FlowRecordComment.png);
 }
 
+/**
+ * Record Create Stage Action
+ */
 .X2FlowRecordCreate {
     background-image: url(../images/x2flow/X2FlowRecordCreate.png);
 }
 
+/**
+ * Record Create Action Stage Action
+ */
 .X2FlowRecordCreateAction {
     background-image: url(../images/x2flow/X2FlowCreateAction.png);
 }
 
+/**
+ * Record Change Stage Action
+ */
 .X2FlowRecordChange {
     background-image: url(../images/x2flow/X2FlowRecordUpdate.png);
 }
 
+/**
+ * Record Delete Stage Action
+ */
 .X2FlowRecordDelete {
     background-image: url(../images/x2flow/X2FlowRecordDelete.png);
 }
 
+/**
+ * Record Email Stage Action
+ */
 .X2FlowRecordEmail {
     background-image: url(../images/x2flow/X2FlowEmail.png);
 }
 
+/**
+ * Record List Add Stage Action
+ */
 .X2FlowRecordListAdd {
     background-image: url(../images/x2flow/X2FlowRecordListAdd.png);
 }
 
+/**
+ * Record List Remove Stage Action
+ */
 .X2FlowRecordListRemove {
     background-image: url(../images/x2flow/X2FlowRecordListRemove.png);
 }
 
+/**
+ * Record Newsletter Add Stage Action
+ */
 .X2FlowRecordNewsletterAdd {
     background-image: url(../images/x2flow/X2FlowRecordListAdd.png);
 }
 
+/**
+ * Record Reassign Stage Action
+ */
 .X2FlowRecordReassign {
     background-image: url(../images/x2flow/X2FlowRecordReassign.png);
 }
 
+/**
+ * Record Tag Stage Action
+ */
 .X2FlowRecordTag {
     background-image: url(../images/x2flow/X2FlowRecordTag.png);
 }
 
+/**
+ * Record Update Stage Action
+ */
 .X2FlowRecordUpdate {
     background-image: url(../images/x2flow/X2FlowRecordUpdate.png);
 }
 
+/**
+ * Process Complete Stage Action
+ */
 .X2FlowWorkflowComplete {
     background-image: url(../images/x2flow/X2FlowWorkflowComplete.png);
 }
 
+/**
+ * Process Revert Stage Action
+ */
 .X2FlowWorkflowRevert {
     background-image: url(../images/x2flow/X2FlowWorkflowRevert.png);
 }
 
+/**
+ * Process Start Stage Action
+ */
 .X2FlowWorkflowStart {
     background-image: url(../images/x2flow/X2FlowWorkflowStart.png);
 }
 
+/**
+ * Process Start Stage Stage Action
+ */
 .X2FlowWorkflowStartStage {
     background-image: url(../images/x2flow/X2FlowWorkflowStartStage.png);
 }
 
+/**
+ * Process Complete Stage Stage Action
+ */
 .X2FlowWorkflowCompleteStage {
     background-image: url(../images/x2flow/X2FlowWorkflowCompleteStage.png);
 }
 
+/**
+ * Process Revert Stage Stage action
+ */
 .X2FlowWorkflowRevertStage {
     background-image: url(../images/x2flow/X2FlowWorkflowRevertStage.png);
 }
 
+/**
+ * Push Web Content Stage Action
+ */
 .X2FlowPushWebContent {
     background-image: url(../images/x2flow/X2FlowPushWebContent.png);
 }
 
-::-webkit-scrollbar:horizontal { 
-    display: none;
-    //height: 3px; 
-}
-
+/**
+ * Workflow action draggable
+ */
 .actions {
-    //overflow: hidden;
-    //overflow-x: scroll;
-    //white-space: nowrap;
     height: auto;
     width: 100%;
-    //margin-left:10%;
     margin-bottom: 0px;
     padding-left: 0px;
-    
-    ::-webkit-scrollbar:horizontal {
-        height: 0px;
-    }
 
     .x2flow-placeholder {
         display: none;

@@ -36,7 +36,7 @@
  **********************************************************************************/
 
 /**
- * X2FlowAction that starts a workflow stage
+ * X2FlowAction that starts a process stage
  * 
  * @package application.components.x2flow.actions
  */
