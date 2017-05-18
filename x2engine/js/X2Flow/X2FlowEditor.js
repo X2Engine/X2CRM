@@ -169,12 +169,16 @@ $(function () {
                 this.nodeBefore = null;
 
             var offset = this.node.offset();
+            var nodeCenter = this.node.width() / 2;
+            
+            var startOffset = {
+                left: offset.left + nodeCenter,
+                top: offset.top
+            };
             this.mouseOffset = {
-                x: e.pageX - offset.left,
+                x: e.pageX - offset.left - nodeCenter,
                 y: e.pageY - offset.top
             };
-
-            //console.log(this.node.parent().attr('id'));
 
             // create a copy of the node to be dragged around
             this.helper = this.node.clone().disableSelection();
@@ -205,11 +209,10 @@ $(function () {
             this._calculateDropZones();
 
             this.helper
-                    // .width(this.node.width())    // lock width to fix the stupid margin issue
                     .addClass("x2flow-helper")
                     .disableSelection()
                     .css({position: "absolute", "z-index": "1"})
-                    .offset(offset)
+                    .offset(startOffset)
                     .appendTo("body");
         },
         /**

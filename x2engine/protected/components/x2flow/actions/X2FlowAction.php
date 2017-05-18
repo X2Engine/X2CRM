@@ -42,7 +42,6 @@
 abstract class X2FlowAction extends X2FlowItem {
 
     public $trigger = null;
-    
 
     /**
      * Action arrays
