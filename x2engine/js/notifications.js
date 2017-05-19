@@ -137,6 +137,7 @@ x2.Notifs.prototype._run = function () {
     var that = this;
     that._setUpNotifRetrieval ();
     that._setUpUIBehavior ();
+    that._setUpMobileNotifRetrieval ();
 };
 
 /*
@@ -242,6 +243,90 @@ x2.Notifs.prototype._setUpNotifRetrieval = function () {
     } else {
         that._getUpdates();        // no IWC, we're on our own here so we gotta just do the AJAX
     }
+
+};
+
+/*
+Binds event handlers responsible for notifications UI behavior 
+*/
+x2.Notifs.prototype._setUpMobileNotifRetrieval = function () {
+    if(!x2.Notifs.fetchNotificationUpdates) return false;
+    var that = this;
+
+    $.ajax({
+        type: 'GET',
+        url: auxlib.createUrl ('/notifications/get'),
+        data: {
+            lastNotifId: that._lastNotifId,
+            lastEventId: that._lastEventId,
+            lastTimestamp: that._lastTimestamp
+        },
+        dataType: 'json'
+    }).done(function(response) {
+
+        if (that._iwcMode) {
+            // call checkMasterId, which will then call getUpdates
+            that._notifTimeout = setTimeout(
+                function () { that._checkMasterId (); }, x2.notifUpdateInterval);    
+        } else {
+            // there's no IWC, so call getUpdates directly
+            that._notifTimeout = setTimeout(that._getUpdates, x2.notifUpdateInterval);        
+        }
+
+        // if there's no new data, we're done
+        if (response == null || typeof response != 'object')    
+            return;
+
+        if(typeof response.sessionError != 'undefined' && that._hasFocus) {
+            x2.Notifs.fetchNotificationUpdates = confirm(response.sessionError);
+            if(x2.Notifs.fetchNotificationUpdates) {
+                window.location = window.location;
+            }
+        }
+
+        //x2.DEBUG && console.log ('ajax response');
+        
+        try {
+            var data = response; //$.parseJSON(response);
+
+            if (data.notifData.length) {
+                //notifCount = data.notifCount;
+                
+                // add new notifications to the notif box (prepend)
+                that._addNotifications(data.notifData, false, firstCall);        
+                var notifCount = $('#notifications').children ('.notif').length; 
+
+                if (!firstCall) {
+                    x2.Notifs.playNotificationSound();
+                    x2touch.API.dialog(data.notifData[0].text,
+                        function (results) {
+                            alert("You selected button number " + results.buttonIndex 
+                                    + " and entered " + results.input1);
+                        },
+                        "X2CRM Notification",
+                        ['OK','Exit'],
+                        "You've got a X2Notification!"
+                    );
+                }
+            }
+            if (data.chatData) {
+                if (that._iwcMode && !firstCall) {    // tell other windows about it
+                    $.jStorage.publish("x2iwc_chat", {
+                        origin: that._windowId,
+                        data: data.chatData
+                    });
+                }
+                that.addFeedMessages(data.chatData);
+            }
+        } catch (e) {
+        }    // ignore if JSON is being an idiot
+    }).fail(function() {
+        clearTimeout(that._notifTimeout);
+    });
+
+    return false;
+
+
 
 };
 
