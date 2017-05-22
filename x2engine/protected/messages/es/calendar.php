@@ -83,4 +83,5 @@
   'When:' => 'Cuando:',
   'Please select one of the options below to confirm your status.' => 'Por favor, seleccione una de las opciones siguientes para confirmar su estado.',
   'Maybe' => 'Tal vez',
+  'Thanks for RSVPing! Your attendance has been updated to ' => '¡Gracias por RSVPing! Su asistencia se ha actualizado para',
 );

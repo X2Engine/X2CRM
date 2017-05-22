@@ -120,4 +120,6 @@
   'Event Status' => 'رویداد وضعیت',
   'Calendar Color' => 'تقویم رنگ',
   'Enter email addresses, one per line' => 'آدرس ایمیل را وارد کنید، خط یکی در هر',
+  'Add to Calendar' => 'اضافه کردن به تقویم',
+  'By default, the Contact who sent the email will be associated.' => 'طور پیش فرض، تماس فرستنده ایمیل، همراه خواهد بود.',
 );

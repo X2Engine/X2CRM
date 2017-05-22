@@ -45,4 +45,8 @@
   'You should now have access as "{user}" with the new password specified.' => 'Πρέπει τώρα να έχετε πρόσβαση ως {user} με το νέο κωδικό πρόσβασης που ορίζεται.',
   'View {users} Map' => 'Δείτε {users} Χάρτης',
   'User Location Map' => 'Χρήστη Τοποθεσία Χάρτης',
+  'Inactive' => 'Αδρανής',
+  'Are you sure you want to deactivate this users two factor auth requirement?' => 'Είστε βέβαιοι ότι θέλετε να απενεργοποιήσετε αυτήν την απαίτηση δύο χρηστών για τον παράγοντα auth;',
+  'Successfully deactivated two factor auth' => 'Απενεργοποιήθηκε με επιτυχία δύο εξουσιοδότηση παράγοντα',
+  'Sorry, we are not creating anymore user accounts at this time.' => 'Δυστυχώς, δεν δημιουργούμε πλέον λογαριασμούς χρηστών αυτή τη στιγμή.',
 );

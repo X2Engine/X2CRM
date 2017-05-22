@@ -26,4 +26,8 @@
   'Web Address' => 'Ηλεκτρονική διεύθυνση',
   'Add photo attachment' => 'Προσθήκη συνημμένου φωτογραφία',
   'Add file attachment' => 'Προσθήκη συνημμένου αρχείου',
+  'Failed to retrieve static map. Please ensure that Google Integration is enabled.' => 'Αποτυχία ανάκτησης στατικού χάρτη. Βεβαιωθείτε ότι η ενοποίηση Google είναι ενεργοποιημένη.',
+  'Add video attachment' => 'Προσθέστε συνημμένο βίντεο',
+  'Add location attachment' => 'Προσθέστε συνημμένο τοποθεσίας',
+  'Add audio note' => 'Προσθέστε ηχητική σημείωση',
 );

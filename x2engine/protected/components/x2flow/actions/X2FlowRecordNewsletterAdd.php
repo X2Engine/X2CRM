@@ -34,7 +34,6 @@
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2Engine".
  **********************************************************************************/
-
 /**
  * X2FlowAction that adds a contact to a newsletter contact list
  *
@@ -43,7 +42,6 @@
 class X2FlowRecordNewsletterAdd extends X2FlowAction {
     public $title = 'Add to Newsletter';
     public $info = 'Add this record to a newsletter list.';
-
     public function paramRules() {
         return array_merge (parent::paramRules (), array (
             'title' => Yii::t('studio',$this->title),
@@ -63,7 +61,6 @@ class X2FlowRecordNewsletterAdd extends X2FlowAction {
                 )
             )));
     }
-
     public function execute(&$params) {
         $listIdentifier=$this->parseOption('listId',$params);
         if(is_numeric($listIdentifier)){
@@ -72,7 +69,6 @@ class X2FlowRecordNewsletterAdd extends X2FlowAction {
             $list = CActiveRecord::model('X2List')->findByAttributes(
                 array('name'=>$listIdentifier));
         }
-
         if($list !== null && $list->modelName === get_class($params['model'])) {
             if ($list->addIds($params['model']->id, true)) {
                 return array (true, "");

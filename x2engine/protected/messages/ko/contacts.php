@@ -78,4 +78,8 @@
   'Save Map' => '저장지도',
   'View ' => '전망',
   'Clear Marker' => '지우기 마커',
+  'Seen by' => '봤어요',
+  'Hide Directions' => '길 찾기 숨기기',
+  'Clear Route' => '명확한 경로',
+  'View Contact Map' => '연락처지도보기',
 );

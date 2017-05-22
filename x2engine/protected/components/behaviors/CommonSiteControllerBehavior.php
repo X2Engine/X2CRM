@@ -45,11 +45,10 @@ class CommonSiteControllerBehavior extends CBehavior {
     /**
      * Displays the login page
      * @param object $formModel
-     * @param bool $isMobile Whether this was called from mobile site controller
      */
     public function login (LoginForm $model, $isMobile=false){
         ob_start();
-        if($isMobile && SessionToken::cleanSessionTokenCookie()) {
+        if(SessionToken::cleanSessionTokenCookie()) {
             unset(Yii::app()->request->cookies['sessionToken']);
             setcookie("sessionToken", "", time() - 3600);
            echo "<script type=\"text/javascript\">
@@ -98,6 +97,7 @@ class CommonSiteControllerBehavior extends CBehavior {
             $sessionToken->lastUpdated = time();
             $sessionToken->status = 0;
             $sessionToken->IP = $ip;
+            $sessionToken->save();
 
         } else {
 
@@ -176,14 +176,13 @@ class CommonSiteControllerBehavior extends CBehavior {
             $this->recordSuccessfulLogin ($activeUser, $ip);
             $userModel->logLocation('login', 'POST');
 
-            if($isMobile){
-                $cookie = new CHttpCookie('sessionToken', $sessionIdToken);
-                $cookie->expire = time () + 518400; // //60*60*24*6 = 6 days
-                Yii::app()->request->cookies['sessionToken'] = $cookie;
-                echo "<script type=\"text/javascript\">
-                        window.localStorage.setItem(\"sessionToken\","+$sessionIdToken +");
-                        </script>";
-            }
+            $cookie = new CHttpCookie('sessionToken', $sessionIdToken);
+            $cookie->expire = time () + 518400; // //60*60*24*6 = 6 days
+            Yii::app()->request->cookies['sessionToken'] = $cookie;
+            echo "<script type=\"text/javascript\">
+                    window.localStorage.setItem(\"sessionToken\","+$sessionIdToken +");
+                    </script>";
+
             if($model->rememberMe){
                 foreach(array('username','rememberMe') as $attr) {
                     $cookieName = CHtml::resolveName ($model, $attr);
@@ -202,18 +201,15 @@ class CommonSiteControllerBehavior extends CBehavior {
             // We're not using the isAdmin parameter of the application
             // here because isAdmin in this context hasn't been set yet.
             $isAdmin = Yii::app()->user->checkAccess('AdminIndex');
-            if($isAdmin && !$isMobile) {
+            if($isAdmin) {
                 $this->owner->attachBehavior('updaterBehavior', new UpdaterBehavior);
                 $this->owner->checkUpdates();   // check for updates if admin
             } else
                 Yii::app()->session['versionCheck'] = true; // ...or don't
 
             $session->status = 1;
-            $session->save();
-            if($isMobile){
-                $sessionToken->status = 1;
-                $sessionToken->save();                
-            }
+            $session->save();            
+            
             SessionLog::logSession($model->username, $sessionId, 'login');
             $_SESSION['playLoginSound'] = true;
 
@@ -244,7 +240,7 @@ class CommonSiteControllerBehavior extends CBehavior {
             // We're not using the isAdmin parameter of the application
             // here because isAdmin in this context hasn't been set yet.
             $isAdmin = Yii::app()->user->checkAccess('AdminIndex');
-            if($isAdmin && !$isMobile) {
+            if($isAdmin) {
                 $this->owner->attachBehavior('updaterBehavior', new UpdaterBehavior);
                 $this->owner->checkUpdates();   // check for updates if admin
             } else
@@ -252,7 +248,7 @@ class CommonSiteControllerBehavior extends CBehavior {
 
             $session->status = 1;
             $session->save();
-            if($isMobile && Yii::app()->request->cookies['sessionToken']->value != null){
+            if(Yii::app()->request->cookies['sessionToken']->value != null){
                 SessionLog::logSession(Yii::app()->user->name, Yii::app()->request->cookies['sessionToken']->value, 'login');
             }
             $_SESSION['playLoginSound'] = true;

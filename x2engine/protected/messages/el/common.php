@@ -618,4 +618,10 @@
   'Check-in comment' => 'Το check-in σχόλιο',
   'Email Opened' => 'email Άνοιξε',
   'Email Clicked' => 'email έγινε κλικ',
+  'X2 Hub Services' => 'Υπηρεσίες X2 Hub',
+  'Manage User Count' => 'Διαχείριση της καταμέτρησης χρηστών',
+  'Error' => 'Λάθος',
+  'View {module} on Map' => 'Δείτε {module} στο χάρτη',
+  'Disabled' => 'άτομα με ειδικές ανάγκες',
+  'Enabled' => 'Ενεργοποίηση',
 );

@@ -618,4 +618,10 @@
   'Check-in comment' => '체크인 코멘트',
   'Email Opened' => '이메일 개설',
   'Email Clicked' => '이메일 클릭 수',
+  'X2 Hub Services' => 'X2 허브 서비스',
+  'Manage User Count' => '사용자 수 관리',
+  'Error' => '오류',
+  'View {module} on Map' => '보기 {module} 지도',
+  'Disabled' => '장애인',
+  'Enabled' => '사용',
 );

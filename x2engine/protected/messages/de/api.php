@@ -7,7 +7,6 @@
   'One or more relationships could not be deleted.' => 'Eine oder mehrere Beziehungen konnte nicht gelöscht werden.',
   'Request type not supported for this action.' => 'Angeforderter Typ wird nicht für diese Aufgabe unterstützt.',
   'Tags not added.' => 'Schlagwörter nicht hinzugefügt.',
-  'Error' => 'Fehler',
   'Cannot delete; no parameters specified for finding a relationship record to delete.' => 'Kann nicht löschen; keine Parameter für die Suche nach einer Beziehung der zu löschenden Datensatz angegeben.',
   'No relationships deleted; none were found matching specfied parameters.' => 'Keine Beziehungen gelöscht; es wurden keine Treffer für die angegebenen Parameter gefunden.',
   'Couldn\'t perform {a} on model {m}' => 'Konnte {a} im Modul {m} nicht durchführen.',

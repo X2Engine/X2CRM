@@ -26,4 +26,8 @@
   'Web Address' => 'Webadresse',
   'Add photo attachment' => 'In Fotoanhang',
   'Add file attachment' => 'In Dateianhang',
+  'Failed to retrieve static map. Please ensure that Google Integration is enabled.' => 'Fehler beim Abrufen der statischen Karte. Bitte stellen Sie sicher, dass Google Integration aktiviert ist.',
+  'Add video attachment' => 'Video-Anhang hinzufügen',
+  'Add location attachment' => 'Standort hinzufügen',
+  'Add audio note' => 'Audio-Note hinzufügen',
 );

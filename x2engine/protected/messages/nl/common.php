@@ -618,4 +618,10 @@
   'Check-in comment' => 'Check-in commentaar',
   'Email Opened' => 'E-mail Geopend',
   'Email Clicked' => 'E-mail Clicked',
+  'X2 Hub Services' => 'X2 Hub Services',
+  'Manage User Count' => 'Gebruikerscijfer beheren',
+  'Error' => 'Fout',
+  'View {module} on Map' => 'Bekijk {module} op een kaart',
+  'Disabled' => 'invalide',
+  'Enabled' => 'Ingeschakeld',
 );

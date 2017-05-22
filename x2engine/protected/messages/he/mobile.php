@@ -26,4 +26,8 @@
   'Web Address' => 'כתובת אינטרנט',
   'Add photo attachment' => 'להוסיף תמונה מצורפת',
   'Add file attachment' => 'הוספת קובץ מצורף',
+  'Failed to retrieve static map. Please ensure that Google Integration is enabled.' => 'אחזור המפה הסטטית נכשל. ודא ששילוב של Google מופעל.',
+  'Add video attachment' => 'הוסף קובץ מצורף בווידאו',
+  'Add location attachment' => 'הוסף קובץ מצורף למיקום',
+  'Add audio note' => 'להוסיף הערת אודיו',
 );

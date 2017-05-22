@@ -120,4 +120,6 @@
   'Event Status' => 'Event Status',
   'Calendar Color' => 'Kalender Color',
   'Enter email addresses, one per line' => 'Geef e-mailadressen, één per regel',
+  'Add to Calendar' => 'Toevoegen aan Agenda',
+  'By default, the Contact who sent the email will be associated.' => 'Standaard wordt de contactpersoon die de e-mail verzonden, geassocieerd.',
 );

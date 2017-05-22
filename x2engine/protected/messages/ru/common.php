@@ -614,4 +614,10 @@
   'Check-in comment' => 'Прибытие в комментарии',
   'Email Opened' => 'Email Открыта',
   'Email Clicked' => 'Email Кликов',
+  'X2 Hub Services' => 'Услуги концентратора X2',
+  'Manage User Count' => 'Управление количеством пользователей',
+  'Error' => 'ошибка',
+  'View {module} on Map' => 'Просмотреть {module} на карте',
+  'Disabled' => 'Отключено',
+  'Enabled' => 'Включено',
 );
