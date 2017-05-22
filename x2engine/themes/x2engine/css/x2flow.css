@@ -944,27 +944,27 @@
 }
 
 /* line 843, ../../../compass/themes/x2engine/css/x2flow.scss */
-.WorkflowCompleteStageTrigger {
+.ProcessCompleteStageTrigger {
   background-image: url(../images/x2flow/WorkflowCompleteStageTrigger.png);
 }
 
 /* line 847, ../../../compass/themes/x2engine/css/x2flow.scss */
-.WorkflowCompleteTrigger {
+.ProcessCompleteTrigger {
   background-image: url(../images/x2flow/WorkflowCompleteTrigger.png);
 }
 
 /* line 851, ../../../compass/themes/x2engine/css/x2flow.scss */
-.WorkflowRevertStageTrigger {
+.ProcessRevertStageTrigger {
   background-image: url(../images/x2flow/WorkflowRevertStageTrigger.png);
 }
 
 /* line 855, ../../../compass/themes/x2engine/css/x2flow.scss */
-.WorkflowStartStageTrigger {
+.ProcessStartStageTrigger {
   background-image: url(../images/x2flow/WorkflowStartStageTrigger.png);
 }
 
 /* line 859, ../../../compass/themes/x2engine/css/x2flow.scss */
-.WorkflowStartTrigger {
+.ProcessStartTrigger {
   background-image: url(../images/x2flow/WorkflowStartTrigger.png);
 }
 

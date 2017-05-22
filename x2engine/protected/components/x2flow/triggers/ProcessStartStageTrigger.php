@@ -40,7 +40,7 @@
  * 
  * @package application.components.x2flow.actions
  */
-class WorkflowStartStageTrigger extends BaseWorkflowStageTrigger {
+class ProcessStartStageTrigger extends BaseProcessStageTrigger {
 	public $title = 'Process Stage Started';
 	public $info = '';
 }

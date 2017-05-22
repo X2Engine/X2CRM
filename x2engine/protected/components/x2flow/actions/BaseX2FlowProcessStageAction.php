@@ -40,7 +40,7 @@
  * 
  * @package application.components.x2flow.actions
  */
-abstract class BaseX2FlowWorkflowStageAction extends X2FlowAction {
+abstract class BaseX2FlowProcessStageAction extends X2FlowAction {
 	public $title;
 	public $info;
 	

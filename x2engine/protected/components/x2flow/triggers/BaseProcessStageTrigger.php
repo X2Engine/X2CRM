@@ -40,7 +40,7 @@
  * 
  * @package application.components.x2flow.actions
  */
-abstract class BaseWorkflowStageTrigger extends X2FlowTrigger {
+abstract class BaseProcessStageTrigger extends X2FlowTrigger {
 	public $title;
 	public $info;
 	

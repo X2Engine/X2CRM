@@ -40,7 +40,7 @@
  * 
  * @package application.components.x2flow.actions
  */
-class WorkflowRevertStageTrigger extends BaseWorkflowStageTrigger {
+class ProcessRevertStageTrigger extends BaseProcessStageTrigger {
 	public $title = 'Process Stage Reverted';
 	public $info = '';
 }

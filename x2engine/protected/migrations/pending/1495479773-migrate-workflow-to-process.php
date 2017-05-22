@@ -36,40 +36,25 @@
  * "Powered by X2Engine".
  * ******************************************************************************** */
 
-$migrateCalendars = function() {
-    $userData = Yii::app()->db->createCommand()
-            ->select('username, firstName, lastName')
-            ->from('x2_users')
-            ->where('status = 1')
-            ->queryAll();
-    $users = array();
-    foreach ($userData as $row) {
-        $users[$row['username']] = $row['firstName'] . ' ' . $row['lastName'];
-    }
-    $time = time();
-    foreach ($users as $user => $fullName) {
-        $data = array(
-            'name' => $fullName . "'s Calendar",
-            'createdBy' => $user,
-            'updatedBy' => $user,
-            'createDate' => $time,
-            'lastUpdated' => $time,
-        );
-        Yii::app()->db->createCommand()
-                ->insert('x2_calendars', $data);
-        $calId = Yii::app()->db->createCommand()
-                ->select('id')
-                ->from('x2_calendars')
-                ->where('createdBy = :user', array(':user' => $user))
-                ->queryScalar();
-        Yii::app()->db->createCommand()
-                ->update('x2_profile', array('defaultCalendar' => $calId), 'username = :user', array(':user' => $user));
-
-        Yii::app()->db->createCommand()
-                ->update('x2_actions', array('calendarId' => $calId), "type = 'event' AND assignedTo = :user", array(':user' => $user));
-    }
+$migrateWorkflows = function() {
     Yii::app()->db->createCommand()
-            ->update('x2_users', array('showCalendars' => null));
+            ->update('x2_flows', array(
+                'triggerType', "REPLACE(triggerType, 'BaseWorkflowStageTrigger', 'BaseProcessStageTrigger')",
+                'triggerType', "REPLACE(triggerType, 'BaseWorkflowTrigger', 'BaseProcessTrigger')",
+                'triggerType', "REPLACE(triggerType, 'WorkflowCompleteStageTrigger', 'ProcessCompleteStageTrigger')",
+                'triggerType', "REPLACE(triggerType, 'WorkflowCompleteTrigger', 'ProcessCompleteTrigger')",
+                'triggerType', "REPLACE(triggerType, 'WorkflowRevertStageTrigger', 'ProcessRevertStageTrigger')",
+                'triggerType', "REPLACE(triggerType, 'WorkflowStartStageTrigger', 'ProcessStartStageTrigger')",
+                'triggerType', "REPLACE(triggerType, 'WorkflowStartTrigger', 'ProcessStartTrigger')"
+    ));
+    
+    Yii::app()->db->createCommand()
+            ->update('x2_flows', array(
+                'flow', "REPLACE(flow, 'BaseX2FlowWorkflowStageAction', 'BaseX2FlowProcessStageAction')",
+                'flow', "REPLACE(flow, 'X2FlowWorkflowCompleteStage', 'X2FlowProcessCompleteStage')",
+                'flow', "REPLACE(flow, 'X2FlowWorkflowRevertStage', 'X2FlowProcessRevertStage')",
+                'flow', "REPLACE(flow, 'X2FlowWorkflowStartStage', 'X2FlowProcessStartStage')"
+    ));
 };
 
-$migrateCalendars();
+$migrateWorkflows();

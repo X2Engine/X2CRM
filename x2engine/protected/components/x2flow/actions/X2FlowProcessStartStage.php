@@ -40,7 +40,7 @@
  * 
  * @package application.components.x2flow.actions
  */
-class X2FlowProcessStartStage extends BaseX2FlowWorkflowStageAction {
+class X2FlowProcessStartStage extends BaseX2FlowProcessStageAction {
 	public $title = 'Start Process Stage';
 	public $info = '';
 	

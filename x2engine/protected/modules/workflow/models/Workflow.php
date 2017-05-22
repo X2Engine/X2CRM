@@ -1287,7 +1287,7 @@ class Workflow extends X2ActiveRecord {
                            // $nextAction->actionDescription = $comment;
                            $nextAction->save();
    
-                           X2Flow::trigger('WorkflowStartStageTrigger',array(
+                           X2Flow::trigger('ProcessStartStageTrigger',array(
                                'workflow'=>$nextAction->workflow,
                                'model'=>$model,
                                'workflowId'=>$nextAction->workflow->id,
@@ -1313,7 +1313,7 @@ class Workflow extends X2ActiveRecord {
                 $workflowStatus = Workflow::getWorkflowStatus($workflowId,$modelId,$type);    
                 $completed = true;
 
-                X2Flow::trigger('WorkflowCompleteStageTrigger',array(
+                X2Flow::trigger('ProcessCompleteStageTrigger',array(
                     'workflow'=>$action->workflow,
                     'model'=>$model,
                     'workflowId'=>$action->workflow->id,
@@ -1322,7 +1322,7 @@ class Workflow extends X2ActiveRecord {
                 
                 
                 if($workflowStatus['completed'])
-                    X2Flow::trigger('WorkflowCompleteTrigger',array(
+                    X2Flow::trigger('ProcessCompleteTrigger',array(
                         'workflow'=>$action->workflow,
                         'model'=>$model,
                         'workflowId'=>$action->workflow->id
@@ -1383,7 +1383,7 @@ class Workflow extends X2ActiveRecord {
             
             $model->updateLastActivity();
 
-            X2Flow::trigger('WorkflowStartStageTrigger',array(
+            X2Flow::trigger('ProcessStartStageTrigger',array(
                 'workflow'=>$action->workflow,
                 'model'=>$model,
                 'workflowId'=>$action->workflow->id,
@@ -1391,7 +1391,7 @@ class Workflow extends X2ActiveRecord {
             ));
             
             if(!$workflowStatus['started'])
-                X2Flow::trigger('WorkflowStartTrigger',array(
+                X2Flow::trigger('ProcessStartTrigger',array(
                     'workflow'=>$action->workflow,
                     'model'=>$model,
                     'workflowId'=>$action->workflow->id,
@@ -1455,7 +1455,7 @@ class Workflow extends X2ActiveRecord {
                 
                 self::updateWorkflowChangelog($action,'revert',$model);
 
-                X2Flow::trigger('WorkflowRevertStageTrigger',array(
+                X2Flow::trigger('ProcessRevertStageTrigger',array(
                     'workflow'=>$action->workflow,
                     'model'=>$model,
                     'workflowId'=>$action->workflow->id,
@@ -1481,7 +1481,7 @@ class Workflow extends X2ActiveRecord {
                 ));
                 foreach($subsequentActions as &$action) {
                     self::updateWorkflowChangelog($action,'revert',$model);
-                    X2Flow::trigger('WorkflowRevertStageTrigger',array(
+                    X2Flow::trigger('ProcessRevertStageTrigger',array(
                         'workflow'=>$action->workflow,
                         'model'=>$model,
                         'workflowId'=>$action->workflow->id,

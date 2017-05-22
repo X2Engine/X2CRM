@@ -40,7 +40,7 @@
  * 
  * @package application.components.x2flow.actions
  */
-class X2FlowProcessRevertStage extends BaseX2FlowWorkflowStageAction {
+class X2FlowProcessRevertStage extends BaseX2FlowProcessStageAction {
 	public $title = 'Revert Process Stage';
 	public $info = '';
 	
