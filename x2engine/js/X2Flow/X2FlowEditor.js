@@ -246,6 +246,7 @@ $(function () {
                 if (this.options.clone) { // if this is a new item being dragged in,
                     // move the placeholder back to the menu box;
                     this.nodeBefore = this.futureTarget.children().last();
+                    
                     if (this.futureTarget.attr("id") !== this.node.parent().attr('id')) {
                         this.futureTarget = this.node.parent();
                         clearTimeout(this.moveTimer);

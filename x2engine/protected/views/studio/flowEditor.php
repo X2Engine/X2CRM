@@ -219,7 +219,6 @@ $this->actionMenu[] = array (
     ?>
     
     <div class="row">
-        <div class="form x2flow-trash"></div>
         <div class="cell">
             <?php echo $form->label($model, 'name'); ?>
             <?php echo $form->textField($model, 'name'); ?>
@@ -291,7 +290,7 @@ $this->actionMenu[] = array (
      * Lists of actions
      */
     ?>
-    <div id="actions-bank" class="cell" style="width:99%; display:none;">
+    <div id="actions-bank" class="cell">
         <h4>Actions Bank</h4>
         <?php
         /**
@@ -325,6 +324,8 @@ $this->actionMenu[] = array (
         });
         include 'actionsInclude.php';
         ?>
+        
+            <div class="form x2flow-trash"></div>
     </div>
     
 </div>

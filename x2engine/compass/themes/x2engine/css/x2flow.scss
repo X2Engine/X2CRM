@@ -72,14 +72,22 @@ $edgeColor: #CCCCCC;
     padding: 0;
 }
 
+#delete-actions {
+    width:99%;
+    height:40px;
+    position:relative;
+}
+
 .form {
     &.x2flow-trash {
         height: 40px;
-        width: 60px;
-        float: right;
+        width: 99%;
+        position:relative;
+        border: 2px solid #eee;
         padding: 0;
         background: url(../images/x2flow/trashcan.png) center 6px no-repeat white;
         &.x2flow-active {
+            border: 2px solid #ff8080;
             background-position: center -30px;
         }
         &.x2flow-hover {
@@ -254,6 +262,11 @@ $edgeColor: #CCCCCC;
             }
         }
     }
+}
+
+#actions-bank {
+    width:99%;
+    display:none;
 }
 
 .X2FlowSwitch, .X2FlowSplitter {
@@ -801,9 +814,9 @@ $edgeColor: #CCCCCC;
     .X2FlowWorkflowStart {
         background-image: url(../images/x2flow/small/X2FlowWorkflowStart.png);
     }
-    
+
     //TODO: Change Process Image Names
-    
+
     .X2FlowProcessRevertStage {
         background-image: url(../images/x2flow/small/X2FlowWorkflowRevertStage.png);
     }
