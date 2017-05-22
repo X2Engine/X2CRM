@@ -222,7 +222,7 @@ class MobileActionHistoryAttachmentsPublishAction extends MobileAction {
                                 $result_array = json_decode($result);
                                 $languageDetected = $result_array->{'data'}->{'detections'}[0]->{'language'};
                             } else {
-                                throw new CHttpException (500, Yii::t('app', 'Failed to fetch location photo'));
+                                throw new CHttpException (500, Yii::t('app', 'Failed to detect language'));
                             }
 
                             $url = 'https://translation.googleapis.com/language/translate/v2/languages?'
@@ -260,13 +260,13 @@ class MobileActionHistoryAttachmentsPublishAction extends MobileAction {
                                             $action->actionDescription = $result_translatedText;
 
                                         } else {
-                                            throw new CHttpException (500, Yii::t('app', 'Failed to fetch location photo'));
+                                            throw new CHttpException (500, Yii::t('app', 'Failed to fetch language'));
                                         } 
                                     }
                                 }
 
                             } else {
-                                throw new CHttpException (500, Yii::t('app', 'Failed to fetch location photo'));
+                                throw new CHttpException (500, Yii::t('app', 'Failed to translate message'));
                             }
                         }
                         curl_close($ch);

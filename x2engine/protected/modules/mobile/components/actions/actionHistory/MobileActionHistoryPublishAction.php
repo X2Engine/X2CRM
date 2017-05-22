@@ -91,7 +91,7 @@ class MobileActionHistoryPublishAction extends MobileAction {
 
 
                 } else {
-                    throw new CHttpException (500, Yii::t('app', 'Failed to fetch location photo'));
+                    throw new CHttpException (500, Yii::t('app', 'Failed to fetch translation'));
                 }
                 curl_close($ch);
                 $action->actionDescription = $result_translatedText;
