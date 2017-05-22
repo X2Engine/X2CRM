@@ -87,10 +87,11 @@ $edgeColor: #CCCCCC;
         padding: 0;
         background: url(../images/x2flow/trashcan.png) center 6px no-repeat white;
         &.x2flow-active {
-            border: 2px solid #ff8080;
+            border: 2px solid #cc0000;
             background-position: center -30px;
         }
         &.x2flow-hover {
+            border: 2px solid #ff4d4d;
             background-position: center -66px;
         }
     }
