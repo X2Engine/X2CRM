@@ -37,24 +37,47 @@
  * ******************************************************************************** */
 
 $migrateWorkflows = function() {
-    Yii::app()->db->createCommand()
-            ->update('x2_flows', array(
-                'triggerType', "REPLACE(triggerType, 'BaseWorkflowStageTrigger', 'BaseProcessStageTrigger')",
-                'triggerType', "REPLACE(triggerType, 'BaseWorkflowTrigger', 'BaseProcessTrigger')",
-                'triggerType', "REPLACE(triggerType, 'WorkflowCompleteStageTrigger', 'ProcessCompleteStageTrigger')",
-                'triggerType', "REPLACE(triggerType, 'WorkflowCompleteTrigger', 'ProcessCompleteTrigger')",
-                'triggerType', "REPLACE(triggerType, 'WorkflowRevertStageTrigger', 'ProcessRevertStageTrigger')",
-                'triggerType', "REPLACE(triggerType, 'WorkflowStartStageTrigger', 'ProcessStartStageTrigger')",
-                'triggerType', "REPLACE(triggerType, 'WorkflowStartTrigger', 'ProcessStartTrigger')"
-    ));
-    
-    Yii::app()->db->createCommand()
-            ->update('x2_flows', array(
-                'flow', "REPLACE(flow, 'BaseX2FlowWorkflowStageAction', 'BaseX2FlowProcessStageAction')",
-                'flow', "REPLACE(flow, 'X2FlowWorkflowCompleteStage', 'X2FlowProcessCompleteStage')",
-                'flow', "REPLACE(flow, 'X2FlowWorkflowRevertStage', 'X2FlowProcessRevertStage')",
-                'flow', "REPLACE(flow, 'X2FlowWorkflowStartStage', 'X2FlowProcessStartStage')"
-    ));
+    $triggers = array(
+        'BaseWorkflowStageTrigger' => 'BaseProcessStageTrigger',
+        'BaseWorkflowTrigger' => 'BaseProcessTrigger',
+        'WorkflowCompleteStageTrigger' => 'ProcessCompleteStageTrigger',
+        'WorkflowCompleteTrigger' => 'ProcessCompleteTrigger',
+        'WorkflowRevertStageTrigger' => 'ProcessRevertStageTrigger',
+        'WorkflowStartStageTrigger' => 'ProcessStartStageTrigger',
+        'WorkflowStartTrigger' => 'ProcessStartTrigger'
+    );
+    $actions = array(
+        'BaseX2FlowWorkflowStageAction' => 'BaseX2FlowProcessStageAction',
+        'X2FlowWorkflowCompleteStage' => 'X2FlowProcessCompleteStage',
+        'X2FlowWorkflowRevertStage' => 'X2FlowProcessRevertStage',
+        'X2FlowWorkflowStartStage' => 'X2FlowProcessStartStage'
+    );
+
+    $data = Yii::app()->db->createCommand()
+            ->select('triggerType, flow')
+            ->from('x2_flows')
+            ->queryAll();
+
+    foreach ($data as $row) {
+        $triggerType = $row['triggerType'];
+        $flow = $row['flow'];
+
+        foreach ($triggers as $old => $new) {
+            $triggerType = str_replace($old, $new, $triggerType);
+            $flow = str_replace($old, $new, $flow);
+            Yii::app()->db->createCommand()
+                    ->update('x2_flows', array(
+                        'triggerType' => $triggerType,
+                        'flow' => $flow
+                    ));
+        }
+
+        foreach ($actions as $old => $new) {
+            $flow = str_replace($old, $new, $flow);
+            Yii::app()->db->createCommand()
+                    ->update('x2_flows', array('flow' => $flow));
+        }
+    }
 };
 
 $migrateWorkflows();
