@@ -38,10 +38,10 @@
 /**
  * @package application.tests.unit.components.x2flow.actions
  */
-class X2FlowWorkflowStartStageTest extends X2FlowTestBase {
+class X2FlowProcessStartStageTest extends X2FlowTestBase {
 
     public $fixtures = array (
-        'x2flow' => array ('X2Flow', '.X2FlowWorkflowStartStageTest'),
+        'x2flow' => array ('X2Flow', '.X2FlowProcessStartStageTest'),
     );
 
     /**

@@ -39,7 +39,7 @@
 /**
  * @package application.tests.unit.components.x2flow.triggers
  */
-class WorkflowStartStageTriggerTest extends X2FlowTestBase {
+class ProcessStartStageTriggerTest extends X2FlowTestBase {
 
     public $fixtures = array (
         'contacts' => array ('Contacts', '.WorkflowTests'),
@@ -48,7 +48,7 @@ class WorkflowStartStageTriggerTest extends X2FlowTestBase {
 
     public static function referenceFixtures(){
         return array(
-            'x2flow' => array ('X2Flow', '.WorkflowStartStageTriggerTest'),
+            'x2flow' => array ('X2Flow', '.ProcessStartStageTriggerTest'),
             'workflows' => array ('Workflow', '.WorkflowTests'),
             'workflowStages' => array ('WorkflowStage', '.WorkflowTests'),
             'roleToWorkflow' => array (':x2_role_to_workflow', '.WorkflowTests'),
