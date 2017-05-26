@@ -84,7 +84,7 @@ class ProcessStartStageTriggerTest extends X2FlowTestBase {
         $this->clearLogs ();
         $retVal = Workflow::completeStage (
             $workflow->id, 5, $model, '');
-        $newLog = $this->getTraceByFlowId ($this->x2flow ('flow1')->id);
+        $newLog = $this->getTraceByFlowId ($this->x2flow['flow1']->id);
         $this->assertFalse ($this->checkTrace ($newLog));
     }
 
