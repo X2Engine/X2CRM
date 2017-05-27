@@ -68,11 +68,11 @@ class MobileActionHistoryPublishAction extends MobileAction {
             $valid = true;
             $settings = Yii::app()->settings;
             $creds = Credentials::model()->findByPk($settings->googleCredentialsId);
-            $languages =  array('en' => 'English');
+            $matches = array();
             if ($creds && $creds->auth && !empty($creds->auth->apiKey)) {
                 $key = $creds->auth->apiKey;
-                $url = 'https://translation.googleapis.com/language/translate/v2/languages?'
-                        .'&key=' . $key . '&target=' .$profile->translatetolanguage . '&q='.$_POST['Actions']['actionDescription'];
+                $url = 'https://translation.googleapis.com/language/translate/v2?'
+                        .'&key=' . $key . '&target=' . $profile->translatetolanguage . '&q=' . $_POST['Actions']['actionDescription'];
 
                 //open connection
                 $ch = curl_init();
@@ -94,7 +94,7 @@ class MobileActionHistoryPublishAction extends MobileAction {
                     throw new CHttpException (500, Yii::t('app', 'Failed to fetch translation'));
                 }
                 curl_close($ch);
-                $action->actionDescription = $result_translatedText;
+                $action->actionDescription = $result_translatedText->{'data'}->{'translations'}[0]->{'translatedText'};
                 $action->type = 'note';
             }
         }

@@ -35,6 +35,11 @@
  * "Powered by X2Engine".
  **********************************************************************************/
 
+/**
+ * 
+ * Settings page for mobile X2Touch
+ * (before settings.php was used
+ */
 
 Yii::app()->clientScript->registerScriptFile(
     Yii::app()->controller->module->assetsUrl.'/js/SettingsController.js');

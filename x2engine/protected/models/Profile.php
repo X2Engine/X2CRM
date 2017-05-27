@@ -170,7 +170,8 @@ class Profile extends X2ActiveRecord {
                         $result_array = json_decode($result);
                         for ($x = 0; $x < count($result_array->{'data'}->{'languages'}); $x++) {
                             if ($result_array->{'data'}->{'languages'}[$x]->{'language'} == $result_array_short->{'data'}->{'languages'}[$i]->{'language'}){
-                                $languages[$result_array_short->{'data'}->{'languages'}[$i]->{'language'}] = $result_array->{'data'}->{'languages'}[$x]->{'name'};
+                                $languages[$result_array_short->{'data'}->{'languages'}[$i]->{'language'}] = 
+                                        $result_array->{'data'}->{'languages'}[$x]->{'name'} . ' (' .$result_array_short->{'data'}->{'languages'}[$i]->{'language'}. ')';
                             }
                         }
 

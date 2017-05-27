@@ -243,7 +243,7 @@ class MobileActionHistoryAttachmentsPublishAction extends MobileAction {
                                     if (strpos($audioText, $nameOfLanguage) !== false){
                                         $splicedString = explode($nameOfLanguage, $audioText);
                                         $stringNeedingTranslation = $splicedString[1];
-                                        $url = 'https://translation.googleapis.com/language/translate/v2/languages?'
+                                        $url = 'https://translation.googleapis.com/language/translate/v2?'
                                                 .'&key=' . $key . '&target=' .$nameOfLanguage . '&q='.$stringNeedingTranslation;
 
                                         //set the url, number of POST vars, POST data
@@ -257,7 +257,7 @@ class MobileActionHistoryAttachmentsPublishAction extends MobileAction {
                                         if($http_code === 200){
                                             //close connection
                                             $result_translatedText = json_decode($result);
-                                            $action->actionDescription = $result_translatedText;
+                                            $action->actionDescription = $result_translatedText->{'data'}->{'translations'}[0]->{'translatedText'};
 
                                         } else {
                                             throw new CHttpException (500, Yii::t('app', 'Failed to fetch language'));
