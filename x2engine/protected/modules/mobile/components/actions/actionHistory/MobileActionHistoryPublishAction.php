@@ -71,9 +71,11 @@ class MobileActionHistoryPublishAction extends MobileAction {
             $matches = array();
             if ($creds && $creds->auth && !empty($creds->auth->apiKey)) {
                 $key = $creds->auth->apiKey;
+                $stringToTranslate = str_replace(' ','%20',$_POST['Actions']['actionDescription']);
                 $url = 'https://translation.googleapis.com/language/translate/v2?'
-                        .'&key=' . $key . '&target=' . $profile->translatetolanguage . '&q=' . $_POST['Actions']['actionDescription'];
-
+                        .'&key=' . $key . '&target=' . $profile->translatetolanguage 
+                        . '&q=' . $stringToTranslate;
+                
                 //open connection
                 $ch = curl_init();
 

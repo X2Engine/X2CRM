@@ -243,8 +243,10 @@ class MobileActionHistoryAttachmentsPublishAction extends MobileAction {
                                     if (strpos($audioText, $nameOfLanguage) !== false){
                                         $splicedString = explode($nameOfLanguage, $audioText);
                                         $stringNeedingTranslation = $splicedString[1];
+                                        $stringToTranslate = str_replace(' ','%20',$stringNeedingTranslation);
                                         $url = 'https://translation.googleapis.com/language/translate/v2?'
-                                                .'&key=' . $key . '&target=' .$nameOfLanguage . '&q='.$stringNeedingTranslation;
+                                                .'&key=' . $key . '&target=' 
+                                                . $nameOfLanguage . '&q='. $stringToTranslate;
 
                                         //set the url, number of POST vars, POST data
                                         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
