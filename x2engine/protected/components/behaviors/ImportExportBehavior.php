@@ -345,7 +345,7 @@ class ImportExportBehavior extends CBehavior {
      */
     protected function fixCsvLineEndings($csvFile) {
         $text = file_get_contents($csvFile);
-        $replacement = preg_replace('/\r([^\n])/m', "\r\n\\1", $text);
+        $replacement = preg_replace('/\r([^\n])?/m', "\r\n\\1", $text);
         file_put_contents($csvFile, $replacement);
     }
 

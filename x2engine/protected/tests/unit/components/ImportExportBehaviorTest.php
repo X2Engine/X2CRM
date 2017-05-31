@@ -38,6 +38,154 @@
 Yii::import ('application.components.behaviors.ImportExportBehavior');
 
 class ImportExportBehaviorTest extends X2TestCase {
+    public function testSendFile() {
+        $component = new CComponent;
+        $component->attachBehavior ('importexport', new ImportExportBehavior);
+
+        $this->assertFalse($component->sendFile('/etc/shadow'));
+        $this->assertFalse($component->sendFile('../../../../../../etc/hosts'));
+        $this->assertFalse($component->sendFile('nonexistent'));
+    }
+
+    public function testSafePath() {
+        $component = new CComponent;
+        $component->attachBehavior ('importexport', new ImportExportBehavior);
+
+        $path = $component->safePath();
+        $expected = implode(DIRECTORY_SEPARATOR, array(
+            Yii::app()->basePath, 'data', 'data.csv'
+        ));
+        $this->assertEquals($expected, $path);
+
+        $path = $component->safePath('update_backup.sql');
+        $expected = implode(DIRECTORY_SEPARATOR, array(
+            Yii::app()->basePath, 'data', 'update_backup.sql'
+        ));
+        $this->assertEquals($expected, $path);
+
+        $path = $component->safePath('../config/config.php');
+        $expected = implode(DIRECTORY_SEPARATOR, array(
+            Yii::app()->basePath, 'data', '..', 'config', 'config.php'
+        ));
+        $this->assertEquals($expected, $path);
+    }
+
+    public function testGetImportDelimeter() {
+        $component = new CComponent;
+        $component->attachBehavior ('importexport', new ImportExportBehavior);
+
+        $_SESSION = array();
+        $this->assertEquals(',', $component->getImportDelimeter());
+        $_SESSION['importDelimeter'] = '|';
+        $this->assertEquals('|', $component->getImportDelimeter());
+    }
+
+    public function testGetImportEnclosure() {
+        $component = new CComponent;
+        $component->attachBehavior ('importexport', new ImportExportBehavior);
+
+        $_SESSION = array();
+        $this->assertEquals('"', $component->getImportEnclosure());
+        $_SESSION['importEnclosure'] = '|';
+        $this->assertEquals('|', $component->getImportEnclosure());
+    }
+
+    public function testGetNextImportId() {
+        $component = new CComponent;
+        $component->attachBehavior ('importexport', new ImportExportBehavior);
+        $fn = TestingAuxLib::setPublic('ImportExportBehavior', 'getNextImportId');
+
+        $import = new Imports;
+        $import->importId = 22;
+        $import->modelId = 12345;
+        $import->modelType = 'Contacts';
+        $import->save();
+        $this->assertEquals(23, $fn());
+        $import->delete();
+
+        $this->assertEquals(1, $fn());
+    }
+
+    public function testAvailableImportMaps() {
+        $component = new CComponent;
+        $component->attachBehavior ('importexport', new ImportExportBehavior);
+
+        foreach($component->availableImportMaps() as $file => $map) {
+            $this->assertEquals(1, preg_match('/^[\w-]+\.json$/', $file, $matches));
+            $fileName = $component->safePath('importMaps/'.$file);
+            $this->assertTrue(is_file($fileName));
+        }
+    }
+
+    public function testNormalizeImportMap() {
+        $component = new CComponent;
+        $component->attachBehavior ('importexport', new ImportExportBehavior);
+
+        $expected = array(
+            'fieldA' => null,
+            'fieldB' => 'B',
+            'fieldC' => null,
+        );
+        $map = array(
+            'fieldB' => 'B',
+        );
+        $fields = array('fieldA', 'fieldB', 'fieldC');
+        $this->assertEquals($expected, $component->normalizeImportMap($map, $fields));
+    }
+
+    public function testCalculateCsvLength() {
+        $component = new CComponent;
+        $component->attachBehavior ('importexport', new ImportExportBehavior);
+
+        $csvFile = $component->safePath('test.csv');
+        $csvData = "one,two,three\n";
+        $csvData .= "1,2,3\n";
+        $csvData .= "4,5,6\n";
+        $csvData .= "7,8,9\n";
+        file_put_contents($csvFile, $csvData);
+        $this->assertEquals(3, $component->calculateCsvLength($csvFile));
+    }
+
+    public function testFixCsvLineEndings() {
+        $component = new CComponent;
+        $component->attachBehavior ('importexport', new ImportExportBehavior);
+
+        $csvFile = $component->safePath('test.csv');
+        $csvData = "one,two,three\r";
+        $csvData .= "1,2,3\r";
+        $csvData .= "4,5,6\r";
+        file_put_contents($csvFile, $csvData);
+
+        $fixedCsvData = "one,two,three\r\n";
+        $fixedCsvData .= "1,2,3\r\n";
+        $fixedCsvData .= "4,5,6\r\n";
+        $component->fixCsvLineEndings($csvFile);
+        $output = file_get_contents($csvFile);
+        $this->assertEquals($fixedCsvData, $output);
+    }
+
+    public function testReadExportFormatOptions() {
+        $component = new CComponent;
+        $component->attachBehavior ('importexport', new ImportExportBehavior);
+
+        $defaultParams = array(
+            'exportDestination' => 'download',
+            'compressOutput' => false,
+        );
+        $this->assertEquals($defaultParams, $component->readExportFormatOptions(array()));
+
+        $expected = array(
+            'exportDestination' => 'server',
+            'compressOutput' => true,
+            'server-path' => '/tmp',
+        );
+        $this->assertEquals($expected, $component->readExportFormatOptions(array(
+            'compressOutput' => 'true',
+            'exportDestination' => 'server',
+            'server-path' => '/tmp',
+        )));
+    }
+
     public function testFixupImportedContactName () {
         $admin = Yii::app()->settings;
         $fixupImportedContactName = TestingAuxLib::setPublic (
