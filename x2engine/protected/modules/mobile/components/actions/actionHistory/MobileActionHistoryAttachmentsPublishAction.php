@@ -207,8 +207,9 @@ class MobileActionHistoryAttachmentsPublishAction extends MobileAction {
                         $translateCheck = isset ($_POST['translateCheck']) ? $_POST['translateCheck'] : "";  
                         $result_translatedText = '';
                         if ($translateCheck === 'TRUE'){
-                            $url = 'https://translation.googleapis.com/language/translate/v2/detect?key=' 
-                                    . $key . '&q=' . $audioText;
+                            $stringToTranslate = str_replace(' ','%20',$audioText);
+                            $url = 'https://translation.googleapis.com/language/translate/v2/detect?' 
+                                    . '&key=' . $key . '&q=' . $stringToTranslate;
                                 
                             //set the url, number of POST vars, POST data
                             curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
@@ -226,7 +227,7 @@ class MobileActionHistoryAttachmentsPublishAction extends MobileAction {
                             }
 
                             $url = 'https://translation.googleapis.com/language/translate/v2/languages?'
-                            .'&key=' . $key . '&target=' . $languageDetected;
+                            . '&key=' . $key . '&target=' . $languageDetected;
                             
                             //set the url, number of POST vars, POST data
                             curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
@@ -245,7 +246,7 @@ class MobileActionHistoryAttachmentsPublishAction extends MobileAction {
                                         $stringNeedingTranslation = $splicedString[1];
                                         $stringToTranslate = str_replace(' ','%20',$stringNeedingTranslation);
                                         $url = 'https://translation.googleapis.com/language/translate/v2?'
-                                                .'&key=' . $key . '&target=' 
+                                                . '&key=' . $key . '&target=' 
                                                 . $nameOfLanguage . '&q='. $stringToTranslate;
 
                                         //set the url, number of POST vars, POST data
