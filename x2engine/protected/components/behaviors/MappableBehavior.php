@@ -46,7 +46,10 @@ class MappableBehavior extends CActiveRecordBehavior {
     public $recordType;
 
     public function logLocation($type, $method = 'GET', $param = 'geoCoords') {
-        $ip = Yii::app()->controller->getRealIP();
+        if (Yii::app()->controller)
+            $ip = Yii::app()->controller->getRealIP();
+        else
+            $ip = null;
         $logIp = false;
         $coords = false;
         $comment = null;

@@ -83,5 +83,15 @@ return array(
         'ipAddress' => '10.0.0.7',
         'createDate' => 0,
     ),*/
+    'testAnyonesLoc' => array(
+        'id' => 10,
+        'recordId' => 12345,
+        'recordType' => 'Contacts',
+        'lat' => 36.9914,
+        'lon' => 122.0609,
+        'type' => NULL,
+        'ipAddress' => '10.0.0.6',
+        'createDate' => 0,
+    ),
 );
 ?>
