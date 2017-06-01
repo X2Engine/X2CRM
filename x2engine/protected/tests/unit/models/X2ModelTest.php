@@ -56,6 +56,7 @@ class X2ModelTest extends X2DbTestCase {
     public $fixtures = array(
         'contact' => 'Contacts',
         'account' => 'Accounts',
+        'modules' => 'Modules',
     );
 
     private $_nameFields;
@@ -169,6 +170,9 @@ class X2ModelTest extends X2DbTestCase {
         
         $this->assertEquals('list item', X2Model::getRecordName('X2List'));
         $this->assertEquals('list items', X2Model::getRecordName('X2List', true));
+        
+        $this->assertEquals('nonexistent', X2Model::getRecordName('nonexistent'));
+        $this->assertEquals('nonexistent', X2Model::getRecordName('nonexistent', true));
     }
 
     /**
@@ -353,6 +357,227 @@ class X2ModelTest extends X2DbTestCase {
         $this->assertModelArrayEquality (array ($contact1, $contact2), $contacts);
     }
 
+    public function testGetAllRecordNames() {
+        $recordNames = X2Model::getAllRecordNames();
+        $this->assertTrue(is_array($recordNames) && !empty($recordNames));
+        $this->assertTrue(in_array('contact', $recordNames));
+        $this->assertTrue(in_array('Contacts', array_keys($recordNames)));
+    }
+
+    public function testGetModelsFromNames() {
+        $models = X2Model::getModelsFromNames(array('Contacts', 'Accounts'));
+        $this->assertTrue(is_array($models));
+        $this->assertTrue($models[0] instanceof Contacts);
+        $this->assertTrue($models[1] instanceof Accounts);
+    }
+
+    public function testGetTableNames() {
+        $models = X2Model::getModelsFromNames(array('Contacts', 'Accounts'));
+        $tableNames = X2Model::getTableNames($models);
+        $this->assertTrue(is_array($tableNames));
+        $this->assertEquals('x2_contacts', $tableNames[0]);
+        $this->assertEquals('x2_accounts', $tableNames[1]);
+    }
+
+    public function testGetModelNames() {
+        $modelNames = X2Model::getModelNames();
+        $this->assertTrue(is_array($modelNames) && !empty($modelNames));
+        $this->assertTrue(in_array('Product', array_keys($modelNames)));
+        $this->assertTrue(in_array('Products', $modelNames));
+        $this->assertTrue(in_array('Campaign', array_keys($modelNames)));
+        $this->assertTrue(in_array('Marketing', $modelNames));
+        $this->assertTrue(in_array('X2Leads', array_keys($modelNames)));
+        $this->assertTrue(in_array('Leads', $modelNames));
+    }
+
+    public function testIsModuleModelName() {
+        $this->assertTrue(X2Model::isModuleModelName('Contacts'));
+        $this->assertTrue(X2Model::isModuleModelName('Accounts'));
+        $this->assertTrue(X2Model::isModuleModelName('Campaign'));
+        $this->assertTrue(X2Model::isModuleModelName('X2Leads'));
+        $this->assertFalse(X2Model::isModuleModelName('NonExistent'));
+    }
+
+    public function testGetModuleModelNames() {
+        $modelNames = X2Model::getModuleModelNames();
+        $this->assertTrue(is_array($modelNames));
+        $this->assertTrue(in_array('Contacts', $modelNames));
+        $this->assertTrue(in_array('Accounts', $modelNames));
+        $this->assertTrue(in_array('Product', $modelNames));
+        $this->assertTrue(in_array('Campaign', $modelNames));
+        $this->assertTrue(in_array('X2Leads', $modelNames));
+    }
+
+    public function testGetModules() {
+        $modules = X2Model::getModules();
+        $this->assertTrue(is_array($modules) && !empty($modules));
+        foreach ($modules as $module) {
+            $this->assertTrue($module instanceof Modules);
+        }
+    }
+
+    public function testGetModuleModelsByName() {
+        $modules = X2Model::getModuleModelsByName();
+        $this->assertTrue(is_array($modules) && !empty($modules));
+        $this->assertTrue(array_key_exists('Contacts', $modules));
+        $this->assertTrue($modules['Contacts'] instanceof Contacts);
+        $this->assertTrue(array_key_exists('Accounts', $modules));
+        $this->assertTrue($modules['Accounts'] instanceof Accounts);
+        $this->assertTrue(array_key_exists('Campaign', $modules));
+        $this->assertTrue($modules['Campaign'] instanceof Campaign);
+    }
+
+    public function testGetAssociationTypeOptions() {
+        $associationTypes = X2Model::getAssociationTypeOptions();
+        $this->assertTrue(is_array($associationTypes) && !empty($associationTypes));
+        $this->assertTrue(array_key_exists('contacts', $associationTypes));
+        $this->assertEquals('Contacts', $associationTypes['contacts']);
+        $this->assertTrue(array_key_exists('accounts', $associationTypes));
+        $this->assertEquals('Accounts', $associationTypes['accounts']);
+        $this->assertTrue(array_key_exists('x2Leads', $associationTypes));
+        $this->assertEquals('Leads', $associationTypes['x2Leads']);
+    }
+
+    public function testGetModelTitle() {
+        $this->assertEquals('Calendar', X2Model::getModelTitle('Calendar'));
+        $this->assertEquals('Calendar', X2Model::getModelTitle('X2Calendar'));
+        $this->assertEquals('Contacts', X2Model::getModelTitle('Contacts'));
+        $this->assertEquals('Contact', X2Model::getModelTitle('Contacts', true));
+        $this->assertEquals('Accounts', X2Model::getModelTitle('Accounts'));
+        $this->assertEquals('Account', X2Model::getModelTitle('Accounts', true));
+        $this->assertEquals('Products', X2Model::getModelTitle('Products'));
+        $this->assertEquals('Product', X2Model::getModelTitle('Products', true));
+    }
+
+    public function testGetTranslatedModelTitles() {
+        $modelTitles = X2Model::getTranslatedModelTitles();
+        $this->assertTrue(is_array($modelTitles) && !empty($modelTitles));
+        $this->assertTrue(array_key_exists('Contacts', $modelTitles));
+        $this->assertEquals('Contacts', $modelTitles['Contacts']);
+        $this->assertTrue(array_key_exists('AnonContact', $modelTitles));
+        $this->assertEquals('Anonymous Contacts', $modelTitles['AnonContact']);
+        $this->assertTrue(array_key_exists('Fingerprint', $modelTitles));
+        $this->assertEquals('Fingerprints', $modelTitles['Fingerprint']);
+    }
+
+
+    public function testGetMediaLookupFields() {
+        $contact = new Contacts;
+        $lookupFields = $contact->getMediaLookupFields();
+        $this->assertTrue(is_array($lookupFields) && empty($lookupFields));
+
+        $field = new Fields;
+        $field->modelName = 'Contacts';
+        $field->fieldName = 'c_mediaLookup';
+        $field->attributeLabel = 'Media Lookup';
+        $field->type = 'link';
+        $field->linkType = 'Media';
+        $this->assertTrue($field->save());
+        $lookupFields = $contact->getMediaLookupFields();
+        $this->assertTrue(is_array($lookupFields) && !empty($lookupFields));
+        $this->assertTrue($lookupFields[0] instanceof Fields);
+        $this->assertEquals('c_mediaLookup', $lookupFields[0]->fieldName);
+        $field->delete();
+    }
+
+    public function testGetLinkedAttribute() {
+        $contact = $this->contact('testAnyone');
+        $type = $contact->getLinkedAttribute('company', 'type');
+        $this->assertEquals('Manufacturing', $type);
+        $phone = $contact->getLinkedAttribute('company', 'phone');
+        $this->assertEquals('831-555-5555', $phone);
+
+        $contact = $this->contact('testUser');
+        $type = $contact->getLinkedAttribute('company', 'type');
+        $this->assertNull($type);
+    }
+
+    public function testRenderLinkedAttribute() {
+        $contact = $this->contact('testAnyone');
+        $type = $contact->renderLinkedAttribute('company', 'type');
+        $this->assertEquals('Manufacturing', $type);
+        $phone = $contact->renderLinkedAttribute('company', 'phone');
+        $this->assertEquals('<a href="tel:831-555-5555">831-555-5555</a>', $phone);
+
+        $contact = $this->contact('testUser');
+        $type = $contact->renderLinkedAttribute('company', 'type');
+        $this->assertNull($type);
+    }
+
+    public function testGetStaticLinkedModels() {
+        $contact = $this->contact('testAnyone');
+        $models = $contact->getStaticLinkedModels();
+        $this->assertTrue(is_array($models) && !empty($models));
+        $this->assertTrue(array_key_exists('company', $models));
+        $this->assertTrue($models['company'] instanceof Accounts);
+    }
+
+    public function testGetDefaultFormLayout() {
+        $layout = X2Model::getDefaultFormLayout('Product');
+        $expected = array('sections' => array(array(
+            'collapsible' => false,
+            'title' => 'Product Info',
+            'rows' => array(array(
+                'cols' => array(array(
+                    'items' => array(
+                        array(
+                            'name' => 'formItem_adjustment',
+                            'labelType' => 'left', 'readOnly' => '0',
+                            'height' => 30, 'width' => 155,
+                        ),
+                        array(
+                            'name' => 'formItem_currency',
+                            'labelType' => 'left', 'readOnly' => '0',
+                            'height' => 30, 'width' => 155,
+                        ),
+                        array(
+                            'name' => 'formItem_description',
+                            'labelType' => 'left', 'readOnly' => '0',
+                            'height' => 30, 'width' => 155,
+                        ),
+                        array(
+                            'name' => 'formItem_id',
+                            'labelType' => 'left', 'readOnly' => '0',
+                            'height' => 30, 'width' => 155,
+                        ),
+                        array(
+                            'name' => 'formItem_inventory',
+                            'labelType' => 'left', 'readOnly' => '0',
+                            'height' => 30, 'width' => 155,
+                        ),
+                        array(
+                            'name' => 'formItem_name',
+                            'labelType' => 'left', 'readOnly' => '0',
+                            'height' => 30, 'width' => 155,
+                        ),
+                        array(
+                            'name' => 'formItem_price',
+                            'labelType' => 'left', 'readOnly' => '0',
+                            'height' => 30, 'width' => 155,
+                        ),
+                        array(
+                            'name' => 'formItem_status',
+                            'labelType' => 'left', 'readOnly' => '0',
+                            'height' => 30, 'width' => 155,
+                        ),
+                        array(
+                            'name' => 'formItem_type',
+                            'labelType' => 'left', 'readOnly' => '0',
+                            'height' => 30, 'width' => 155,
+                        ),
+                    ),
+                )),
+            )),
+        )));
+        $this->assertEquals($expected, json_decode($layout, true));
+    }
+
+    public function testGetModelOfTypeWithName() {
+        $this->assertNull(X2Model::getModelOfTypeWithName('Nonexistent', 'missing'));
+        $model = X2Model::getModelOfTypeWithName('Contacts', 'Testfirstname Testlastname');
+        $this->assertTrue($model instanceof Contacts);
+        $this->assertEquals('Testfirstname Testlastname', $model->name);
+    }
 }
 
 ?>
