@@ -313,6 +313,36 @@ $(function() {
                             });
                     }
                 });
+                boxButtons.unshift({
+                    html: '<span title="<?php 
+                        echo CHtml::encode (Yii::t('app', 'Close and Create New')); 
+                    ?>" class="fa fa-check fa-lg"></span>', 
+                    'class': 'event-close-create-button',
+                    click: function() {
+                        var dialogOuter$ = $(this).closest ('.ui-dialog');
+                        dialogOuter$.find ('.event-close-create-button').hide ();
+                        dialogOuter$.find ('.ui-dialog-title').append ($('<span>', {
+                            html: '&nbsp;<?php echo CHtml::encode (Yii::t('app', '(Close and Create New)')); ?>'
+                        }));
+                        var that = this;  
+                        dialogOuter$.find ('.event-delete-button').unbind ('click').
+                            bind ('click', function () {
+                                $(that).x2Dialog ('close');
+                            });
+                        dialogOuter$.find ('.save-event-button').unbind ('click').bind ('click',
+                            function () {
+                                $.ajax({
+                                    type: 'post',
+                                    url: yii.scriptUrl + '/actions/complete?id=' + event.id,
+                                    data: $(viewAction).find('form').serializeArray(),
+                                    success: function() {
+                                        $('#calendar').fullCalendar('refetchEvents');
+                                    }
+                                }); 
+                                $(that).x2Dialog('close');
+                            });
+                    }
+                });
                 /*if (event.type === 'event') {
                     boxButtons.unshift({
                         html: '<span title="<?php 
@@ -379,7 +409,7 @@ $(function() {
                             click: function() {
                                 $.post('<?php echo $urls['completeAction']; ?>', {id: event.id});
                                 event.complete = 'Yes';
-                                $(this).x2Dialog('close');
+                                //$(this).x2Dialog('close');
                             }
                         });
                     }
