@@ -6,6 +6,8 @@ return array(
         'id' => 1 ,
         'username' => 'testUser1',
         'userAlias' => 'testUser1',
+        'firstName' => 'Test',
+        'lastName' => 'User1',
         'emailAddress' => 'user1@user.com',
 		'password' => '5f4dcc3b5aa765d61d8327deb882cf99', // "password"
         'status' => 1

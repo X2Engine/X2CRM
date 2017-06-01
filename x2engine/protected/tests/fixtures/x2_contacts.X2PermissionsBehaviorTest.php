@@ -185,6 +185,20 @@ return array(
         'trackingKey' => 'CHxXpwRuiR5xLUYgcBUQVsshO07AUEua',
         'dupeCheck' => '1',
     ),
+	'contactMultiassignment' => array(
+		'id' => 1194,
+		'name' => 'Testfirstname Testlastname',
+        'nameId' => 'Testfirstname Testlastname_1194',
+        'company' => 'Black Mesa_1',
+		'firstName' => 'Testfirstname',
+		'lastName' => 'Testlastname',
+		'email' => 'contact@test.com',
+		'assignedTo' => 'testUser1, 3',
+		'visibility' => 0,
+		'phone' => '(234) 918-2348',
+		'phone2' => '398-103-6291',
+		'trackingKey' => '12345678901234567890'
+	),
 );
 
 ?>

@@ -154,6 +154,7 @@ class X2PermissionsBehaviorTest extends X2DbTestCase {
         $contactUserPrivate = $this->contacts ('contactUserPrivate');
         $contactOtherPrivate = $this->contacts ('contactOtherPrivate');
         $contactInvisible = $this->contacts ('contactInvisible');
+        $contactMultiassignment = $this->contacts ('contactMultiassignment');
 
         // private read only access
         $auth->setAccess ('ContactsReadOnlyAccess', $user->id, array (), false);
@@ -300,20 +301,6 @@ class X2PermissionsBehaviorTest extends X2DbTestCase {
 
         $criteria = Contacts::model ()->getAccessCriteria ();
         $contacts = Contacts::model ()->findAll ($criteria);
-        $this->assertEquals (5, count ($contacts));
-        $this->assertEquals (5, count (array_intersect (
-            array (
-                $contactGroup->id,
-                $contactGroupmate->id,
-                $contactAnyone->id,
-                $contactUserPrivate->id,
-                $contactOtherPrivate->id,
-            ),
-            array_map (function ($contact) { return $contact->id; }, $contacts)
-        )));
-
-        $criteria = Contacts::model ()->getAccessCriteria ('t', 'X2PermissionsBehavior', true);
-        $contacts = Contacts::model ()->findAll ($criteria);
         $this->assertEquals (6, count ($contacts));
         $this->assertEquals (6, count (array_intersect (
             array (
@@ -322,7 +309,23 @@ class X2PermissionsBehaviorTest extends X2DbTestCase {
                 $contactAnyone->id,
                 $contactUserPrivate->id,
                 $contactOtherPrivate->id,
+                $contactMultiassignment->id,
+            ),
+            array_map (function ($contact) { return $contact->id; }, $contacts)
+        )));
+
+        $criteria = Contacts::model ()->getAccessCriteria ('t', 'X2PermissionsBehavior', true);
+        $contacts = Contacts::model ()->findAll ($criteria);
+        $this->assertEquals (7, count ($contacts));
+        $this->assertEquals (7, count (array_intersect (
+            array (
+                $contactGroup->id,
+                $contactGroupmate->id,
+                $contactAnyone->id,
+                $contactUserPrivate->id,
+                $contactOtherPrivate->id,
                 $contactInvisible->id,
+                $contactMultiassignment->id,
             ),
             array_map (function ($contact) { return $contact->id; }, $contacts)
         )));
@@ -350,4 +353,37 @@ class X2PermissionsBehaviorTest extends X2DbTestCase {
         $this->assertNull (PhoneNumber::model()->find($phoneCrit));
     }
 
+    public function testGetVisibilityOptions() {
+        $expected = array(
+            0 => 'Private',
+            1 => 'Public',
+            2 => 'User\'s Groups',
+        );
+        $this->assertEquals($expected, X2PermissionsBehavior::getVisibilityOptions());
+    }
+
+    public function testGetAssigneeNames() {
+        $contact = $this->contacts('contactGroupmate');
+        $expected = array(
+            'Test User1',
+        );
+        $this->assertEquals($expected, $contact->getAssigneeNames());
+
+        $contact = $this->contacts('contactGroup');
+        $expected = array(
+            'group1',
+        );
+        $this->assertEquals($expected, $contact->getAssigneeNames());
+
+        $contact = $this->contacts('contactAnyone');
+        $expected = array();
+        $this->assertEquals($expected, $contact->getAssigneeNames());
+
+        $contact = $this->contacts('contactMultiassignment');
+        $expected = array(
+            'Test User1',
+            'group3',
+        );
+        $this->assertEquals($expected, $contact->getAssigneeNames());
+    }
 }
