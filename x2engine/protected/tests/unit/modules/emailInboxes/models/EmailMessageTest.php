@@ -39,7 +39,7 @@ Yii::import ('application.modules.emailInboxes.*');
 Yii::import ('application.modules.emailInboxes.controllers.*');
 Yii::import ('application.modules.emailInboxes.modules.*');
 
-class EmailInboxesControllerTest extends X2DbTestCase {
+class EmailMessageTest extends X2DbTestCase {
 
     public $fixtures = array (
         'inboxes' => 'EmailInboxes',
