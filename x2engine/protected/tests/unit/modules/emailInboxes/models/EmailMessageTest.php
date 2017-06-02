@@ -134,13 +134,16 @@ class EmailMessageTest extends X2DbTestCase {
     }
 
     public function testRenderDate() {
+        // Note: this test may fail when executed in isolation due to timezone
+        // mismatches when all fixture data is loaded and updated. Currently
+        // tests values expected when full unit test suite is executed.
         $message = $this->getTestEmail(array(
             'date' => '1496440164'
         ));
         $testValues = array(
-            'dynamic' => '<span title="June 2, 2017, 9:49:24 PM">9:49 PM</span>',
+            'dynamic' => '<span title="June 2, 2017, 2:49:24 PM">2:49 PM</span>',
             'full' => 'June 2, 2017',
-            'hours' => '9:49 PM',
+            'hours' => '2:49 PM',
             'missing' => null,
         );
         foreach ($testValues as $format => $expected) {
@@ -149,9 +152,9 @@ class EmailMessageTest extends X2DbTestCase {
 
         $message->date = '1496353764';
         $testValues = array(
-            'dynamic' => '<span title="June 1, 2017, 9:49:24 PM">Jun 1</span>',
+            'dynamic' => '<span title="June 1, 2017, 2:49:24 PM">Jun 1</span>',
             'full' => 'June 1, 2017',
-            'hours' => '9:49 PM',
+            'hours' => '2:49 PM',
         );
         foreach ($testValues as $format => $expected) {
             $this->assertEquals($expected, $message->renderDate($format));
