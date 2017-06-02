@@ -550,6 +550,10 @@ $edgeColor: #CCCCCC;
     background-image: url(../images/x2flow/X2FlowCreateAction.png);
 }
 
+.X2FlowRecordChange {
+    background-image: url(../images/x2flow/X2FlowRecordUpdate.png);
+}
+
 .X2FlowRecordDelete {
     background-image: url(../images/x2flow/X2FlowRecordDelete.png);
 }
@@ -795,6 +799,10 @@ $edgeColor: #CCCCCC;
 
 .PeriodicTrigger {
     background-image: url(../images/Clock.png);
+}
+
+.LocationTrigger {
+    background-image: url(../images/x2flow/X2FlowLocation.png);
 }
 
 .RecordCreateTrigger {

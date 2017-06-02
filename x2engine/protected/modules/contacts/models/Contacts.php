@@ -1,6 +1,6 @@
 <?php
 
-/***********************************************************************************
+/* * *********************************************************************************
  * X2CRM is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2016 X2Engine Inc.
  * 
@@ -34,7 +34,7 @@
  * X2Engine" logo. If the display of the logo is not reasonably feasible for
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2Engine".
- **********************************************************************************/
+ * ******************************************************************************** */
 
 Yii::import('application.models.X2Model');
 
@@ -46,13 +46,13 @@ Yii::import('application.models.X2Model');
 class Contacts extends X2Model {
 
     public $name;
-
     public $verifyCode; // CAPTCHA for weblead form
 
     /**
      * Returns the static model of the specified AR class.
      * @return Contacts the static model class
      */
+
     public static function model($className = __CLASS__) {
         return parent::model($className);
     }
@@ -64,9 +64,7 @@ class Contacts extends X2Model {
         // NOTE: you may need to adjust the relation name and the related
         // class name for the relations automatically generated below.
         return array_merge(parent::relations(), array(
-            
             'fingerprint' => array(self::BELONGS_TO, 'Fingerprint', 'fingerprintId'),
-            
         ));
     }
 
@@ -77,17 +75,20 @@ class Contacts extends X2Model {
         return 'x2_contacts';
     }
 
+    /**
+     * Gets contact behaviors
+     * 
+     * @return type
+     */
     public function behaviors() {
         return array_merge(parent::behaviors(), array(
             'LinkableBehavior' => array(
                 'class' => 'LinkableBehavior',
                 'module' => 'contacts',
             ),
-            
             'FingerprintBehavior' => array(
                 'class' => 'FingerprintBehavior',
             ),
-            
             'ERememberFiltersBehavior' => array(
                 'class' => 'application.components.behaviors.ERememberFiltersBehavior',
                 'defaults' => array(),
@@ -108,11 +109,16 @@ class Contacts extends X2Model {
         ));
     }
 
+    /**
+     * Defines contact rules
+     * 
+     * @return array validation rules for model attributes.
+     */
     public function rules() {
-        $rules = array_merge(parent::rules (), array(
+        $rules = array_merge(parent::rules(), array(
             array(
                 'verifyCode', 'captcha', 'allowEmpty' => !CCaptcha::checkRequirements(),
-                    'on' => 'webFormWithCaptcha', 'captchaAction' => 'site/webleadCaptcha')
+                'on' => 'webFormWithCaptcha', 'captchaAction' => 'site/webleadCaptcha')
         ));
         return $rules;
     }
@@ -130,6 +136,9 @@ class Contacts extends X2Model {
             ->delete('x2_list_items', 'contactId = :id', array(':id' => $this->id));
     }
 
+    /**
+     * Updates tracking key after find
+     */
     public function afterFind() {
         parent::afterFind();
         if ($this->trackingKey === null && self::$autoPopulateFields) {
@@ -139,6 +148,8 @@ class Contacts extends X2Model {
     }
 
     /**
+     * Sets tracking key before save
+     * 
      * @return boolean whether or not to save
      */
     public function beforeSave() {
@@ -183,7 +194,7 @@ class Contacts extends X2Model {
                 }
             }
 
-            $message .="<br>\nYou can unsubscribe to these messages by going to $modelLink and clicking Unsubscribe.<br>\n<br>\n";
+            $message .= "<br>\nYou can unsubscribe to these messages by going to $modelLink and clicking Unsubscribe.<br>\n<br>\n";
 
             $adminProfile = Yii::app()->params->adminProfile;
             foreach ($result as $subscription) {
@@ -198,23 +209,20 @@ class Contacts extends X2Model {
             }
         }
 
-
         parent::afterUpdate();
     }
+    
+    public function findById($id) {
+        return X2Model::model('Contacts')->findByPk($id);
+    }
 
+    /**
+     * Gets an array of names for an assignment dropdown menu
+     * 
+     * @return type
+     */
     public static function getNames() {
-
-        $criteria = $this->getAccessCriteria();
-
-        // $condition = 'visibility="1" OR assignedTo="Anyone"  OR assignedTo="'.Yii::app()->user->getName().'"';
-        // /* x2temp */
-        // $groupLinks = Yii::app()->db->createCommand()->select('groupId')->from('x2_group_to_user')->where('userId='.Yii::app()->user->getId())->queryColumn();
-        // if(!empty($groupLinks))
-        // $condition .= ' OR assignedTo IN ('.implode(',',$groupLinks).')';
-        // $condition .= 'OR (visibility=2 AND assignedTo IN
-        // (SELECT username FROM x2_group_to_user WHERE groupId IN
-        // (SELECT groupId FROM x2_group_to_user WHERE userId='.Yii::app()->user->getId().')))';
-        $contactArray = X2Model::model('Contacts')->findAll($condition);
+        $contactArray = X2Model::model('Contacts')->findAll();
         $names = array(0 => 'None');
         foreach ($contactArray as $user) {
             $first = $user->firstName;
@@ -226,8 +234,8 @@ class Contacts extends X2Model {
     }
 
     /**
-     *    Returns all public contacts.
-     *    @return $names An array of strings containing the names of contacts.
+     * Gets all public contacts.
+     * @return $names An array of strings containing the names of contacts.
      */
     public static function getAllNames() {
         $contactArray = X2Model::model('Contacts')->findAll($condition = 'visibility=1');
@@ -241,25 +249,37 @@ class Contacts extends X2Model {
         return $names;
     }
 
+    /**
+     * Gets contact links
+     * 
+     * @param type $contacts
+     * @return type
+     */
     public static function getContactLinks($contacts) {
-        if (!is_array($contacts))
+        if (!is_array($contacts)) {
             $contacts = explode(' ', $contacts);
+        }
 
         $links = array();
         foreach ($contacts as &$id) {
             if ($id != 0) {
                 $model = X2Model::model('Contacts')->findByPk($id);
-                if (isset($model))
+                if (isset($model)) {
                     $links[] = CHtml::link($model->name, array('/contacts/contacts/view', 'id' => $id));
+                }
                 //$links.=$link.', ';
             }
         }
-        //$links=substr($links,0,strlen($links)-2);
         return implode(', ', $links);
     }
 
+    /**
+     * Gets contact mailing list
+     * 
+     * @param type $criteria
+     * @return type
+     */
     public static function getMailingList($criteria) {
-
         $mailingList = array();
 
         $arr = X2Model::model('Contacts')->findAll();
@@ -275,10 +295,15 @@ class Contacts extends X2Model {
     /**
      * An alias for search ()
      */
-	public function searchAll($pageSize=null, CDbCriteria $criteria = null) {
-        return $this->search ($pageSize, $criteria);
+    public function searchAll($pageSize = null, CDbCriteria $criteria = null) {
+        return $this->search($pageSize, $criteria);
     }
 
+    /**
+     * Searches in current user's contacts
+     * 
+     * @return type
+     */
     public function searchMyContacts() {
         $criteria = new CDbCriteria;
 
@@ -297,9 +322,13 @@ class Contacts extends X2Model {
         return $this->searchBase($criteria);
     }
 
+    /**
+     * Searches newest contacts
+     * 
+     * @return type
+     */
     public function searchNewContacts() {
         $criteria = new CDbCriteria;
-        // $condition = 'assignedTo="'.Yii::app()->user->getName().'" AND createDate > '.mktime(0,0,0);
         $condition = 't.createDate > ' . mktime(0, 0, 0);
         $accessLevel = Yii::app()->user->checkAccess('ContactsView') ? 1 : 0;
         $conditions = $this->getAccessConditions($accessLevel);
@@ -319,8 +348,8 @@ class Contacts extends X2Model {
     /**
      * Adds tag filtering to search base 
      */
-    public function search($pageSize=null, CDbCriteria $criteria = null) {
-        if ($criteria === null){
+    public function search($pageSize = null, CDbCriteria $criteria = null) {
+        if ($criteria === null) {
             $criteria = new CDbCriteria;
         }
 
@@ -332,6 +361,12 @@ class Contacts extends X2Model {
         return $this->searchBase($criteria);
     }
 
+    /**
+     * Searches for an account given an id
+     * 
+     * @param type $id
+     * @return type
+     */
     public function searchAccount($id) {
         $criteria = new CDbCriteria;
         $criteria->compare('company', $id);
@@ -340,7 +375,7 @@ class Contacts extends X2Model {
     }
 
     /**
-     * Returns a DataProvider for all the contacts in the specified list,
+     * Gets a DataProvider for all the contacts in the specified list,
      * using this Contact model's attributes as a search filter
      */
     public function searchList($id, $pageSize = null) {
@@ -376,24 +411,25 @@ class Contacts extends X2Model {
         // try up to 100 times to guess a unique key
         for ($i = 0; $i < 100; $i++) {
             $key = '';
-            for ($j = 0; $j < 32; $j++)    // generate a random 32 char alphanumeric string
+            for ($j = 0; $j < 32; $j++) {// generate a random 32 char alphanumeric string
                 $key .= substr($chars, rand(0, strlen($chars) - 1), 1);
+            }
 
             // check if this key is already used
-            if (X2Model::model('Contacts')->exists('trackingKey="' . $key . '"'))
+            if (X2Model::model('Contacts')->exists('trackingKey="' . $key . '"')) {
                 continue;
-            else
+            } else {
                 return $key;
+            }
         }
         return null;
     }
-
-    
 
     /**
      * Sets values of attributes with values of corresponding attributes in the anon contact record.
      * Also migrates over actions and notifications associated with the anon contact. Finally,
      * the anonymous contact is deleted.
+     * 
      * @param AnonContact $anonContact The anonymous contact record whose attributes will be
      *  merged in with this contact
      */
@@ -419,4 +455,5 @@ class Contacts extends X2Model {
         $this->update(array('fingerprintId'));
         $anonContact->delete();
     }
+
 }
