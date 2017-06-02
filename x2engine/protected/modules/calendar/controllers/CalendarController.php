@@ -75,6 +75,7 @@ class CalendarController extends x2base {
                     'view',
                     'viewAction',
                     'editAction',
+                    'newAction',
                     'moveAction',
                     'resizeAction',
                     'saveAction',
@@ -457,6 +458,22 @@ class CalendarController extends x2base {
             Yii::app()->clientScript->scriptMap['*.js'] = false;
             Yii::app()->clientScript->scriptMap['*.css'] = false;
             $this->renderPartial('editAction', array('model' => $model, 'isEvent' => $isEvent), false, true);
+        }
+    }
+    
+    /**
+     *    Ajax requests call this function, which returns a form to create a new action 
+     *   from an event clicked in the calendar.
+     */
+    public function actionNewAction(){
+        if(isset($_POST['ActionId'])){ // ensure we are getting sane post data
+            $id = $_POST['ActionId'];
+            $model = Actions::model()->with('invites')->findByPk($id);
+            $isEvent = json_decode($_POST['IsEvent']);
+
+            Yii::app()->clientScript->scriptMap['*.js'] = false;
+            Yii::app()->clientScript->scriptMap['*.css'] = false;
+            $this->renderPartial('newAction', array('model' => $model, 'isEvent' => $isEvent), false, true);
         }
     }
 
