@@ -339,7 +339,6 @@ $(function() {
                                         $('#calendar').fullCalendar('refetchEvents');
                                     }
                                 }); 
-                                //$(that).x2Dialog('close');
                                 dialogOuter$.find ('.save-event-button').hide ();
                                 dialogOuter$.find ('.event-delete-button').hide ();
                                 dialogOuter$.find ('.event-copy-button').hide ();
@@ -348,7 +347,7 @@ $(function() {
                                     '<?php echo $urls['newAction']; ?>', {
                                         'ActionId': event.id, 'IsEvent': event.type=='event'
                                     }, function(data) {
-                                        $(viewAction).append(data);
+                                        $(viewAction).empty().append(data);
                                         //open dialog after its filled with action/event
                                         viewAction.x2Dialog('open'); 
                                     }
