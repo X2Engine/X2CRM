@@ -283,6 +283,114 @@ class ActionsTest extends X2DbTestCase {
         }, $reminders);
         $this->assertEquals (array ('testuser'), $assignees);
     }
+
+    public function testGetFormTypes() {
+        $expected = array(
+            'Actions',
+            'CalendarEventFormModel',
+            'ActionFormModel',
+            'TimeFormModel',
+            'EventFormModel',
+            'ProductsFormModel',
+            'CallFormModel',
+            'NoteFormModel',
+        );
+        $this->assertEquals($expected, Actions::getFormTypes());
+    }
+
+    public function testGetAttributeLabel() {
+        $action = new Actions;
+        foreach (array('time', 'call') as $type) {
+            $action->type = $type;
+            $this->assertEquals('Start', $action->getAttributeLabel('dueDate', true));
+            $this->assertEquals('Time Started', $action->getAttributeLabel('dueDate'));
+        }
+        $action->type = 'event';
+        $this->assertEquals('Start', $action->getAttributeLabel('dueDate', true));
+        $this->assertEquals('Start Date', $action->getAttributeLabel('dueDate'));
+
+        foreach (array('time', 'call') as $type) {
+            $action->type = $type;
+            $this->assertEquals('End', $action->getAttributeLabel('completeDate', true));
+            $this->assertEquals('Time Ended', $action->getAttributeLabel('completeDate'));
+        }
+        $action->type = 'event';
+        $this->assertEquals('End', $action->getAttributeLabel('completeDate', true));
+        $this->assertEquals('End Date', $action->getAttributeLabel('completeDate'));
+
+        $this->assertEquals('Action Description', $action->getAttributeLabel('actionDescription'));
+        $this->assertEquals('Type', $action->getAttributeLabel('eventSubtype'));
+        $this->assertEquals('Status', $action->getAttributeLabel('eventStatus'));
+    }
+
+    public function testGetRelevantTimestamp() {
+        $action = new Actions;
+        $action->createDate = 1;
+        $action->completeDate = 2;
+        // Mapping of relevant date field to expected relevant action types
+        $expectations = array(
+            'completeDate' => array('attachment', 'email', 'emailFrom', 'email_quote', 'email_invoice', 'emailOpened', 'emailOpened_quote', 'email_opened_invoice', 'event', 'note', 'webactivity', 'workflow'),
+            'createDate' => array('quotesDeleted', 'quotes', 'time', 'NONEXISTENT', ''),
+        );
+        foreach ($expectations as $field => $types) {
+            foreach ($types as $type) {
+                $action->type = $type;
+                $this->assertEquals($action->$field, $action->getRelevantTimestamp());
+            }
+        }
+    }
+
+    public function testGetActionsDummyQuote() {
+        $action = new Actions;
+        $quote = $action->getActionsDummyQuote();
+        $this->assertTrue($quote instanceof Quote);
+        $this->assertEquals('dummyQuote', $quote->name);
+    }
+
+    public function testGetPriorityLabels() {
+        $expected = array(
+            1 => 'Low',
+            2 => 'Medium',
+            3 => 'High',
+        );
+        $this->assertEquals($expected, Actions::getPriorityLabels());
+    }
+
+    public function testGetPriorityLabel() {
+        $action = new Actions;
+        $this->assertEquals('Low', $action->getPriorityLabel());
+        $action->priority = 2;
+        $this->assertEquals('Medium', $action->getPriorityLabel());
+        $action->priority = 3;
+        $this->assertEquals('High', $action->getPriorityLabel());
+        $action->priority = 100;
+        $this->assertEquals('Low', $action->getPriorityLabel());
+    }
+
+    public function testIsMultiassociated() {
+        $action = new Actions;
+        $this->assertFalse($action->isMultiassociated());
+        $action->associationType = Actions::ASSOCIATION_TYPE_MULTI;
+        $this->assertTrue($action->isMultiassociated());
+        $action->associationType = 'contacts';
+        $this->assertFalse($action->isMultiassociated());
+    }
+
+    public function testFormatTimeLength() {
+        $expectations = array(
+            1 => '1 second',
+            60 => '1 minute',
+            3600 => '1 hour',
+            7200 => '2 hours',
+            86400 => '1 day',
+            864000 => '10 days',
+            5184000 => '2 months',
+        );
+        foreach ($expectations as $seconds => $expected) {
+            $this->assertEquals($expected, Actions::formatTimeLength($seconds));
+        }
+        $this->assertEquals('5 seconds', Actions::formatTimeLength(-5));
+    }
 }
 
 ?>
