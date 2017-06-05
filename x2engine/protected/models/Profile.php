@@ -129,7 +129,7 @@ class Profile extends X2ActiveRecord {
         return $languages;
     }
     
-    public function getTranslateToLanguageOptions () {
+    public static function getTranslateToLanguageOptions () {
         $settings = Yii::app()->settings;
         $creds = Credentials::model()->findByPk($settings->googleCredentialsId);
         $languages =  array('en' => 'English');

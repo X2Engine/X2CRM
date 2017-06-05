@@ -45,6 +45,8 @@ CREATE TABLE x2_admin(
 	webLeadEmailAccount		INT NOT NULL DEFAULT -1,
 	webTrackerCooldown		INT				DEFAULT 60,
 	enableWebTracker		TINYINT			DEFAULT 1,
+        translatingText                 TINYINT			DEFAULT 1,
+        translatetolanguage             VARCHAR(255),
 	enableGeolocation		TINYINT			DEFAULT 1,
 	currency                        VARCHAR(3)		NULL,
 	chatPollTime			INT				DEFAULT 3000,

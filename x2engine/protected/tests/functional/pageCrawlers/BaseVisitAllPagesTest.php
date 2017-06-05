@@ -295,7 +295,8 @@ abstract class BaseVisitAllPagesTest extends X2WebTestCase {
         'admin/manageDropDowns',
         'admin/manageFields',
         'admin/manageModules',
-        'admin/manageRoles',
+		'admin/manageRoles',
+		'admin/manageTranslations'.
         'admin/manageSessions',
         'admin/manageTags',
          

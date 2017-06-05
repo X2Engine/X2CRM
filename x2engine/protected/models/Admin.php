@@ -252,12 +252,15 @@ class Admin extends X2ActiveRecord {
             array('externalBaseUrl','url','allowEmpty'=>true),
             array('assetBaseUrls','validateUrlArray','allowEmpty'=>false),
             array('externalBaseUrl','match','pattern'=>':/$:','not'=>true,'allowEmpty'=>true,'message'=>Yii::t('admin','Value must not include a trailing slash.')),
-            array('enableWebTracker, disableAnonContactNotifs, locationTrackingSwitch, quoteStrictLock, workflowBackdateReassignment,disableAutomaticRecordTagging,enableAssetDomains, enableUnsubscribeHeader, checkinByDefault, sessionLog, userActionBackdating, properCaseNames', 'boolean'),
+            array('enableWebTracker, disableAnonContactNotifs, locationTrackingSwitch, quoteStrictLock, '
+                . 'workflowBackdateReassignment,disableAutomaticRecordTagging,enableAssetDomains, '
+                . 'enableUnsubscribeHeader, checkinByDefault, sessionLog, userActionBackdating, '
+                . 'properCaseNames, translatingText', 'boolean'),
             array('historyPrivacy', 'in', 'range' => array('default', 'user', 'group')),
             array('contactNameFormat', 'in', 'range' => array('firstName lastName', 'lastName, firstName')),
             array('corporateAddress', 'length', 'max' => 4096),
             array('gaTracking_internal,gaTracking_public', 'match', 'pattern' => "/'/", 'not' => true, 'message' => Yii::t('admin', 'Invalid property ID')),
-            array ('appDescription', 'length', 'max' => 255),
+            array ('appDescription, translatetolanguage', 'length', 'max' => 255),
             array (
                 'appName,x2FlowRespectsDoNotEmail,doNotEmailPage,doNotEmailLinkText',
                 'safe'
@@ -293,6 +296,7 @@ class Admin extends X2ActiveRecord {
             'loginCredsTimeout' => Yii::t('admin', 'Login Credentials Timeout'),
             'webLeadEmail' => Yii::t('admin', 'Web Lead Email'),
             'enableWebTracker' => Yii::t('admin', 'Enable Web Tracker'),
+            'translatingText' => Yii::t('admin', 'Enable Translating Text'),
             'disableAnonContactNotifs' => Yii::t('admin', 'Disable AnonContact Notifications'),
             'webTrackerCooldown' => Yii::t('admin', 'Web Tracker Cooldown'),
             'currency' => Yii::t('admin', 'Currency'),

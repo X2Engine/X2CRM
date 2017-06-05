@@ -2347,6 +2347,59 @@ class AdminController extends X2Controller {
     }
 
     /**
+     * A catch all page for translations.
+     *
+     * This action renders a page with a dropdown of languages to translate text
+     * into.
+     */
+    public function actionManageTranslations() {
+        $admin = &Yii::app()->settings;
+        
+        $dataProvider = new CActiveDataProvider('Roles');
+        $roles = Yii::app()->db->createCommand()
+                ->select('id, name')
+                ->from('x2_roles')
+                ->queryAll();
+        $languagesToTranslateTo = Profile::getTranslateToLanguageOptions();
+        $model = new Roles;
+        $model->timeout = 60;
+        $roleInput = FilterUtil::filterArrayInput ($_POST, 'Roles');
+        if (!empty($roleInput)) {
+            $model->attributes = $roleInput;
+            $model->users = '';
+            $viewPermissions = FilterUtil::filterArrayInput ($_POST, 'viewPermissions');
+            $editPermissions = FilterUtil::filterArrayInput ($_POST, 'editPermissions');
+            $users = FilterUtil::filterArrayInput ($roleInput, 'users');
+            $model->timeout *= 60;
+            if ($model->timeout === 0) {
+                $model->timeout = null;
+            }
+            $model->setUsers($users);
+            $model->setViewPermissions($viewPermissions);
+            $model->setEditPermissions($editPermissions);
+
+            if ($model->save()) {
+                
+            } else {
+                foreach ($model->getErrors() as $err)
+                    $errors = $err;
+                $errors = implode(',', $errors);
+                Yii::app()->user->setFlash('error', Yii::t('admin', "Unable to save role: {errors}", array('{errors}' => $errors)));
+            }
+            $this->redirect('manageTranslations');
+        }
+
+
+        $this->render('manageTranslations', array(
+            'dataProvider' => $dataProvider,
+            'model' => $model,
+            'roles' => $roles,
+            'admin' => $admin,
+            'languagesToTranslateTo' => $languagesToTranslateTo,
+        ));
+    }
+    
+    /**
      * A catch all page for roles.
      *
      * This action renders a page with forms for the creation, editing, and deletion

@@ -282,6 +282,12 @@ $failedLoginsDataProvider = new CActiveDataProvider('FailedLogins',
                     echo Yii::t('admin', 'Create and manage user roles');
                     ?></div>
                 <div class="cell span-6"><?php
+                    echo CHtml::link(Yii::t('admin', 'Manage Translations'),
+                            array('/admin/manageTranslations'));
+                    ?><br><?php
+                    echo Yii::t('admin', 'Select a language for translating text');
+                    ?></div>
+                <div class="cell span-6"><?php
                     echo CHtml::link(Yii::t('app', 'Groups'),
                             array('/groups/groups/index'));
                     ?><br><?php
