@@ -466,14 +466,64 @@ class CalendarController extends x2base {
      *   from an event clicked in the calendar.
      */
     public function actionNewAction(){
-        if(isset($_POST['ActionId'])){ // ensure we are getting sane post data
-            $id = $_POST['ActionId'];
-            $model = Actions::model()->with('invites')->findByPk($id);
-            $isEvent = json_decode($_POST['IsEvent']);
 
-            Yii::app()->clientScript->scriptMap['*.js'] = false;
-            Yii::app()->clientScript->scriptMap['*.css'] = false;
-            $this->renderPartial('newAction', array('model' => $model, 'isEvent' => $isEvent), false, true);
+        if ((Yii::app()->user->isGuest && 
+            !Yii::app()->user->checkAccess($_POST['Actions']['associationType'].'View'))) {
+
+            $this->denied ();
+        }
+
+        $formTypes = Actions::getFormTypes ();
+        foreach ($formTypes as $type) { // determine which kind of action we're creating
+            if (isset ($_POST[$type])) {
+                $post = $_POST[$type];
+                $modelType = $type;
+                break;
+            }
+        }
+        if (!isset ($modelType) && isset ($_POST['actionType']) && 
+            in_array ($_POST['actionType'], $formTypes)) {
+
+            $modelType = $_POST['actionType'];
+        } elseif (!isset ($modelType)) {
+            $modelType = 'Actions';
+        }
+        $model = new $modelType;
+
+        if (isset ($post)){
+            if ($model instanceof ActionFormModelBase) {
+                $model->setAttributes ($post);
+
+                if ($model->validate () && !isset($_POST['keepForm'])) {
+                    $model = $model->getAction (); // convert to active record
+                }
+            } else { // ($model instanceof Actions)
+                $model->setX2Fields ($post);
+            }
+
+            if (!$model->hasErrors () && isset($_POST['x2ajax'])) {
+                $location = Yii::app()->params->profile->user->logLocation('activityPost', 'POST');
+                $geoCoords = isset($_POST['geoCoords']) ? CJSON::decode($_POST['geoCoords']) : null;
+                $isCheckIn = ($geoCoords && (isset($geoCoords['lat']) || isset($geoCoords['locationEnabled'])));
+                if ($location && $isCheckIn)
+                    $model->locationId = $location->id;
+                $this->quickCreate($model);
+            } elseif(!$model->hasErrors () && $model->save()){
+                $this->redirect(array('index'));
+            }
+        }
+        if(empty($model->assignedTo)){
+            $model->assignedTo = Yii::app()->user->getName();
+        }
+
+        if (isset($_POST['x2ajax'])) {
+            // allows form to be refreshed
+            if (!$model->hasErrors () && !isset($_POST['keepForm'])) $model = new $modelType;
+            $this->renderInlineForm ($model);
+        } else {
+            $this->render('newAction', array(
+                'model' => $model,
+            ));
         }
     }
 
