@@ -185,14 +185,13 @@ if ($model->hasErrors () && !isset($_COOKIE['sessionToken'])) {
         if(isset($_COOKIE['sessionToken'])) {
             $model->sessionToken = $_COOKIE['sessionToken'];
             echo $form->hiddenField ($model, 'sessionToken');
-        } else {
-            if ($hasProfile) $model->username = $profile->username;
-            echo $form->textField($model, 'username', 
-                array(
-                    'placeholder'=>Yii::t('app','Username')
-                )
-            ); 
         }
+        if ($hasProfile) $model->username = $profile->username;
+        echo $form->textField($model, 'username', 
+            array(
+                'placeholder'=>Yii::t('app','Username')
+            )
+        ); 
         
         ?>
     </div>
