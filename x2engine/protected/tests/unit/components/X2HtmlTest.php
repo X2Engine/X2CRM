@@ -36,6 +36,21 @@
  **********************************************************************************/
 
 class X2HtmlTest extends X2TestCase {
+    public function testSanitizeAttribute() {
+        $testVals = array(
+            'admin\' OR 1 = 1--' => 'adminOR11--',
+            '<script>alert("xss");</script>' => 'scriptalertxssscript',
+        );
+        foreach ($testVals as $input => $expected) {
+            $this->assertEquals($expected, X2Html::sanitizeAttribute($input));
+        }
+    }
+
+    public function testClearfix() {
+        $expected = '<span class="clearfix"></span>';
+        $this->assertEquals($expected, X2Html::clearfix());
+    }
+
     public function testRenderPhoneLink() {
         $expected = '<a href="tel:+831-123-4567">831-123-4567</a>';
         $this->assertEquals($expected, X2Html::renderPhoneLink('831-123-4567'));
@@ -47,6 +62,14 @@ class X2HtmlTest extends X2TestCase {
     public function testRenderEmailLink() {
         $expected = '<a href="mailto:test@example.com">test@example.com</a>';
         $this->assertEquals($expected, X2Html::renderEmailLink('test@example.com'));
+    }
+
+    public function testRenderSkypeLink() {
+        ob_start();
+        X2Html::renderSkypeLink('Bill.Gates');
+        $link = ob_get_clean();
+        $this->assertEquals(1, preg_match('/Skype.ui/', $link, $matches));
+        $this->assertEquals(1, preg_match('/participants: \["Bill.Gates"\]/', $link, $matches));
     }
 
     public function testLoadingIcon() {
@@ -74,6 +97,14 @@ class X2HtmlTest extends X2TestCase {
 
         $expected = '<span class="x2-hint x2-question-mark fa fa-question-circle myClass" title="testing"></span>';
         $this->assertEquals($expected, X2Html::hint2('testing', array('class' => 'myClass')));
+    }
+
+    public function testSettingsButton() {
+        $expected = '<span class=" fa-lg fa fa-cog x2-settings-button"></span>';
+        $this->assertEquals($expected, X2Html::settingsButton());
+
+        $expected = '<span class="myClass fa-lg fa fa-cog x2-settings-button" id="mySettings"></span>';
+        $this->assertEquals($expected, X2Html::settingsButton('', array('class' => 'myClass', 'id' => 'mySettings')));
     }
 
     public function testRenderPageTitle() {
@@ -157,6 +188,20 @@ class X2HtmlTest extends X2TestCase {
             'docs.php?page=How-to-&quot;Blank&quot;',
         );
         $this->assertEquals($expected, X2Html::encodeArray($testArray));
+    }
+
+    public function testDefaultAvatar() {
+        $expected = '<i style="font-size: px;" class="default-avatar icon-profile-large"> </i>';
+        $this->assertEquals($expected, X2Html::defaultAvatar());
+
+        $expected = '<i style="font-size: 32px;" class="default-avatar icon-profile-large"> </i>';
+        $this->assertEquals($expected, X2Html::defaultAvatar(32));
+    }
+
+    public function testCsrfToken() {
+        $token = Yii::app()->request->csrfToken;
+        $expected = '<input type="hidden" value="'.$token.'" name="YII_CSRF_TOKEN" id="YII_CSRF_TOKEN" />';
+        $this->assertEquals($expected, X2Html::csrfToken());
     }
 }
 ?>
