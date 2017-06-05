@@ -380,7 +380,8 @@ class X2ModelTest extends X2DbTestCase {
     }
 
     public function testGetModelNames() {
-        $modelNames = X2Model::getModelNames();
+        $criteria = new CDbCriteria;
+        $modelNames = X2Model::getModelNames($criteria);
         $this->assertTrue(is_array($modelNames) && !empty($modelNames));
         $this->assertTrue(in_array('Product', array_keys($modelNames)));
         $this->assertTrue(in_array('Products', $modelNames));
