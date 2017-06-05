@@ -141,20 +141,10 @@ class EmailMessageTest extends X2DbTestCase {
             'date' => '1496440164'
         ));
         $testValues = array(
-            'dynamic' => '<span title="June 2, 2017, 2:49:24 PM">2:49 PM</span>',
+            'dynamic' => '<span title="June 2, 2017, 2:49:24 PM">Jun 2</span>',
             'full' => 'June 2, 2017',
             'hours' => '2:49 PM',
             'missing' => null,
-        );
-        foreach ($testValues as $format => $expected) {
-            $this->assertEquals($expected, $message->renderDate($format));
-        }
-
-        $message->date = '1496353764';
-        $testValues = array(
-            'dynamic' => '<span title="June 1, 2017, 2:49:24 PM">Jun 1</span>',
-            'full' => 'June 1, 2017',
-            'hours' => '2:49 PM',
         );
         foreach ($testValues as $format => $expected) {
             $this->assertEquals($expected, $message->renderDate($format));
