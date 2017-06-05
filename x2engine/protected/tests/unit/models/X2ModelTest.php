@@ -364,6 +364,16 @@ class X2ModelTest extends X2DbTestCase {
         $this->assertTrue(in_array('Contacts', array_keys($recordNames)));
     }
 
+    public function testGetField() {
+        $contact = $this->contact('testAnyone');
+        $field = $contact->getField('name');
+        $this->assertTrue($field instanceof Fields);
+        $this->assertEquals('name', $field->fieldName);
+
+        $field = $contact->getField('nonexistent');
+        $this->assertNull($field);
+    }
+
     public function testGetFieldComparisonOptions() {
         $expected = array(
             '=' => 'equals',
