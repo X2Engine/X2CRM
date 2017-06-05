@@ -364,6 +364,26 @@ class X2ModelTest extends X2DbTestCase {
         $this->assertTrue(in_array('Contacts', array_keys($recordNames)));
     }
 
+    public function testGetFieldComparisonOptions() {
+        $expected = array(
+            '=' => 'equals',
+            '>' => 'greater than',
+            '<' => 'less than',
+            '>=' => 'greater than or equal to',
+            '<=' => 'less than or equal to',
+            '<>' => 'not equal to',
+            'list' => 'in list',
+            'notList' => 'not in list',
+            'empty' => 'empty',
+            'notEmpty' => 'not empty',
+            'contains' => 'contains',
+            'noContains' => 'does not contain',
+            'before' => 'before',
+            'after' => 'after',
+        );
+        $this->assertEquals($expected, X2Model::getFieldComparisonOptions());
+    }
+
     public function testGetModelsFromNames() {
         $models = X2Model::getModelsFromNames(array('Contacts', 'Accounts'));
         $this->assertTrue(is_array($models));
@@ -410,6 +430,7 @@ class X2ModelTest extends X2DbTestCase {
     }
 
     public function testGetModules() {
+        TestingAuxLib::setPrivateProperty('X2Model', '_modules', null);
         $modules = X2Model::getModules();
         $this->assertTrue(is_array($modules) && !empty($modules));
         foreach ($modules as $module) {
@@ -493,6 +514,11 @@ class X2ModelTest extends X2DbTestCase {
         $this->assertNull($type);
     }
 
+    public function testRenderErroneousField() {
+        $expected = '<span class="erroneous-field">Field could not be found</span>';
+        $this->assertEquals($expected, X2Model::renderErroneousField());
+    }
+
     public function testRenderLinkedAttribute() {
         $contact = $this->contact('testAnyone');
         $type = $contact->renderLinkedAttribute('company', 'type');
@@ -511,6 +537,37 @@ class X2ModelTest extends X2DbTestCase {
         $this->assertTrue(is_array($models) && !empty($models));
         $this->assertTrue(array_key_exists('company', $models));
         $this->assertTrue($models['company'] instanceof Accounts);
+    }
+
+    public function testGetSummaryFields() {
+        $contact = new Contacts;
+        $fields = $contact->getSummaryFields();
+        $this->assertTrue(is_array($fields));
+        $this->assertTrue(in_array('assignedTo', $fields));
+        $this->assertFalse(in_array('name', $fields));
+        $this->assertFalse(in_array('email', $fields));
+        $this->assertFalse(in_array('phone', $fields));
+
+        $contact->name = 'test';
+        $fields = $contact->getSummaryFields();
+        $this->assertTrue(is_array($fields));
+        $this->assertTrue(in_array('name', $fields));
+        $this->assertFalse(in_array('email', $fields));
+        $this->assertFalse(in_array('phone', $fields));
+
+        $contact->email = 'test@example.com';
+        $fields = $contact->getSummaryFields();
+        $this->assertTrue(is_array($fields));
+        $this->assertTrue(in_array('name', $fields));
+        $this->assertTrue(in_array('email', $fields));
+        $this->assertFalse(in_array('phone', $fields));
+
+        $contact->phone = '831-555-1234';
+        $fields = $contact->getSummaryFields();
+        $this->assertTrue(is_array($fields));
+        $this->assertTrue(in_array('name', $fields));
+        $this->assertTrue(in_array('email', $fields));
+        $this->assertTrue(in_array('phone', $fields));
     }
 
     public function testGetDefaultFormLayout() {
@@ -571,6 +628,13 @@ class X2ModelTest extends X2DbTestCase {
             )),
         )));
         $this->assertEquals($expected, json_decode($layout, true));
+    }
+
+    public function testGetModelOfTypeWithId() {
+        $this->assertNull(X2Model::getModelOfTypeWithId('Nonexistent', 0));
+        $model = X2Model::getModelOfTypeWithId('contacts', 12345, true);
+        $this->assertTrue($model instanceof Contacts);
+        $this->assertEquals('Testfirstname Testlastname', $model->name);
     }
 
     public function testGetModelOfTypeWithName() {
