@@ -288,6 +288,7 @@ VALUES
 ('AdminRollbackImport',0,'',NULL,'N;'),
 ('AdminRollbackStage',0,'',NULL,'N;'),
 ('AdminManageTags',0,'',NULL,'N;'),
+('AdminManageTranslations',0,'',NULL,'N;'),
 ('AdminDeleteTag',0,'',NULL,'N;'),
 ('AdminConvertCustomModules',0,'',NULL,'N;'),
 ('AdminCreateModule',0,'Create a new module.',NULL,'N;'),
