@@ -135,7 +135,7 @@ class Media extends X2Model {
             $count = 1;
             $newName = $this->fileName;
             $ext = CFileHelper::getExtension ($newName);
-            $base = preg_replace ('/\.'.preg_quote ($ext).'$/', '', $newName);
+            $base = preg_replace ('/(\(\d+\))?\.'.preg_quote ($ext).'$/', '', $newName);
             while ($found) {
                 $newName = "$base($count).$ext";
                 $found = (int) Media::model()->countByAttributes(array('fileName' => $newName));

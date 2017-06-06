@@ -159,6 +159,77 @@ class MediaTest extends X2DbTestCase {
                 $this->assertEquals($bytes, $fn ($readable));
             }
         }
+
+    public function testResolveNameConflicts() {
+        $media = $this->media('bg');
+        $dupe = new Media;
+        $dupe->fileName = $media->fileName;
+        $dupe->resolveNameConflicts();
+        $this->assertEquals('Divers(1).jpg', $dupe->fileName);
+        $this->assertTrue($dupe->save());
+        $dupe2 = new Media;
+        $dupe2->fileName = $dupe->fileName;
+        $dupe2->resolveNameConflicts();
+        $this->assertEquals('Divers(2).jpg', $dupe2->fileName);
+        $this->assertTrue($dupe->delete());
+    }
+
+    public function testIsAudio() {
+        $audioFiles = array('audio/wav', 'audio/mp3', 'audio/flac');
+        $notAudioFiles = array('application/exe', 'application/json', 'video/mpeg');
+        $media = new Media;
+        foreach ($audioFiles as $type) {
+            $media->mimetype = $type;
+            $this->assertTrue($media->isAudio());
+        }
+        foreach ($notAudioFiles as $type) {
+            $media->mimetype = $type;
+            $this->assertFalse($media->isAudio());
+        }
+    }
+
+    public function testIsVideo() {
+        $videoFiles = array('video/mpeg', 'video/wmv', 'video/mp4');
+        $notVideoFiles = array('application/exe', 'application/json', 'audio/mp3');
+        $media = new Media;
+        foreach ($videoFiles as $type) {
+            $media->mimetype = $type;
+            $this->assertTrue($media->isVideo());
+        }
+        foreach ($notVideoFiles as $type) {
+            $media->mimetype = $type;
+            $this->assertFalse($media->isVideo());
+        }
+    }
+
+    public function testIsImageExt() {
+        $imageFiles = array('test.jpg', 'avatar.png', 'background.bmp');
+        $notImageFiles = array('freeDownload.exe', 'package.json', 'recording.wav');
+        foreach ($imageFiles as $file) {
+            $this->assertTrue(Media::isImageExt($file));
+        }
+        foreach ($notImageFiles as $file) {
+            $this->assertFalse(Media::isImageExt($file));
+        }
+    }
+
+    public function testGetServerMaxUploadSize() {
+        $uploadSize = rtrim(ini_get('upload_max_filesize'), 'M');
+        $postSize = rtrim(ini_get('post_max_size'), 'M');
+        if ($uploadSize < $postSize)
+            $expected = $uploadSize;
+        else
+            $expected = $postSize;
+        $maxUploadSize = Media::getServerMaxUploadSize();
+        $this->assertEquals($expected, $maxUploadSize);
+    }
+
+    public function testForbiddenFileTypes() {
+        $types = explode(', ', Media::forbiddenFileTypes());
+        foreach (array('exe', 'bat', 'js', 'php', 'rb', 'py') as $type) {
+            $this->assertTrue(in_array($type, $types));
+        }
+    }
 }
 
 ?>
