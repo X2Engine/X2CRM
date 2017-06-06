@@ -97,5 +97,19 @@ return array(
         'createDate' => '1396032689',
         'lastUpdated' => '1396032689',
     ),
+    'staticTestCountStatus' => array(
+        'id' => '19',
+        'assignedTo' => 'admin',
+        'name' => 'TestCountStatus',
+        'nameId' => 'TestCountStatus',
+        'description' => 'testing',
+        'type' => 'static',
+        'logicType' => 'AND',
+        'modelName' => 'Contacts',
+        'visibility' => '1',
+        'count' => '4',
+        'createDate' => '1396032689',
+        'lastUpdated' => '1396032689',
+    ),
 );
 ?>

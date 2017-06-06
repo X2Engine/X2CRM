@@ -140,6 +140,80 @@ class X2ListTest extends X2DbTestCase {
         $this->assertTrue($newsletter->addIds($contact->id, true));
         $this->assertEquals($newsletter->count, $prevNewsletterCount + 1);
     }
+
+    public function testGetAttributeLabels() {
+        $expected = array(
+            'id' => 'ID',
+            'assignedTo' => 'Owner',
+            'name' => 'Name',
+            'description' => 'Description',
+            'type' => 'Type',
+            'logicType' => 'Logic Type',
+            'modelName' => 'Record Type',
+            'visibility' => 'Visibility',
+            'count' => 'Members',
+            'createDate' => 'Create Date',
+            'lastUpdated' => 'Last Updated',
+        );
+        $list = new X2List;
+        $this->assertEquals($expected, $list->attributeLabels());
+    }
+
+    public function testGetComparisonList() {
+        $expected = array(
+            '=' => 'equals',
+            '>' => 'greater than',
+            '<' => 'less than',
+            '<>' => 'not equal to',
+            'contains' => 'contains',
+            'noContains' => 'does not contain',
+            'empty' => 'empty',
+            'notEmpty' => 'not empty',
+            'list' => 'in list',
+            'notList' => 'not in list',
+        );
+        $this->assertEquals($expected, X2List::getComparisonList());
+    }
+
+    public function testGetDefaultRoute() {
+        $list = new X2List;
+        $this->assertEquals('/contacts/contacts/list', $list->getDefaultRoute());
+    }
+
+    public function testCreateLink() {
+        $list = new X2List;
+        $list->name = 'test';
+        $this->assertEquals('test', $list->createLink());
+        $list->id = 23;
+        $this->assertEquals(1, preg_match('|/contacts/list/id/23|', $list->createLink(), $matches));
+    }
+
+    public function testCalculateCount() {
+        $list = $this->lists('staticDuplicateStatic');
+        $this->assertEquals(3, $list->calculateCount());
+    }
+
+    public function testStatusCount() {
+        $list = $this->lists('staticTestCountStatus');
+        $expectations = array(
+            'nonexistentType' => 0,
+            'sent' => 4,
+            'opened' => 3,
+            'clicked' => 2,
+            'unsubscribed' => 1,
+        );
+        foreach ($expectations as $type => $expected) {
+            $this->assertEquals($expected, $list->statusCount($type));
+        }
+    }
+
+    public function testGetRoute() {
+        $this->assertEquals(array('/contacts/contacts/index'), X2List::getRoute('all'));
+        $this->assertEquals(array('/contacts/contacts/newContacts'), X2List::getRoute('new'));
+        $this->assertEquals(array('/contacts/contacts/myContacts'), X2List::getRoute(null));
+        $this->assertEquals(array('/contacts/contacts/myContacts'), X2List::getRoute('my'));
+        $this->assertEquals(array('/contacts/contacts/list', 'id' => 23), X2List::getRoute(23));
+    }
 }
 
 ?>
