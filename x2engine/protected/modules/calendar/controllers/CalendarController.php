@@ -530,10 +530,11 @@ class CalendarController extends x2base {
             $id = $_POST['id'];
 
             $action = Actions::model()->findByPk($id);
-            $action->complete = "Yes";
-            $action->completedBy = Yii::app()->user->getName();
-            $action->completeDate = time();
-            $action->update();
+            if (!$action) {
+                throw new CHttpException(404);
+            } else if (!$action->complete()) {
+                throw new CHttpException(500, Yii::t('calendar', 'Failed to complete action'));
+            }
         }
     }
 
@@ -543,10 +544,11 @@ class CalendarController extends x2base {
             $id = $_POST['id'];
 
             $action = Actions::model()->findByPk($id);
-            $action->complete = "No";
-            $action->completedBy = null;
-            $action->completeDate = null;
-            $action->update();
+            if (!$action) {
+                throw new CHttpException(404);
+            } else if (!$action->uncomplete()) {
+                throw new CHttpException(500, Yii::t('calendar', 'Failed to uncomplete action'));
+            }
         }
     }
 
