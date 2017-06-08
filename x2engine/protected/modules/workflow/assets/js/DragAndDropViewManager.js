@@ -362,7 +362,10 @@ DragAndDropViewManager.prototype._checkPermission = function (stageA, stageB) {
         return this.stagePermissions[stageA - 1];
     }
 
-    var stageRange = [stageA, stageB].sort ();
+    if (stageA <= stageB)
+        var stageRange = [stageA, stageB];
+    else
+        var stageRange = [stageB, stageA];
 
     hasPermission = auxlib.reduce (function (a, b) { return a & b; }, 
         this.stagePermissions.slice (stageRange[0] - 1, stageRange[1]));
