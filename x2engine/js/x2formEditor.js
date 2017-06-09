@@ -120,6 +120,9 @@ $(function() {
 				$(data).last().appendTo('#preview-view');
 				$('#preview').show();
 				$('#formEditor').hide();
+				$('#save-button').click (function (event) {
+					event.preventDefault ();
+				});
 			}
 		});
 		// deselectAll();
