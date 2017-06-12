@@ -320,8 +320,8 @@ function createValueCell(field) {
         case 'dropdown':
         case 'assignment':
         case 'optionalAssignment':
-            //we maintain a hidden field along with the multiselect to hold a comma
-            //separated list of the multiselect values, in order to post them as one field
+            //we maintain a hidden field along with the multiselect to hold a JSON
+            //encoded list of the multiselect values, in order to post them as one field
             hidden = $('<input type="hidden">');
             hidden.attr('name', 'X2List[value][]');
             input = createDropdown(fieldOptions[field]);
@@ -329,11 +329,15 @@ function createValueCell(field) {
             input.attr('multiple', 'multiple');
             input.on('change', function(e) {
                 //user change - update hidden field
-                hidden.val(input.val());
+                hidden.val(JSON.stringify(input.val()));
             });
             hidden.on('change', function(e) {
                 //programatic change - update the multiselect
-                input.val($(this).val().split(','));
+                var value = $(this).val();
+                if (value) {
+                    var decoded = JSON.parse(value);
+                    input.val(decoded);
+                }
             });
             break;
         case 'varchar':

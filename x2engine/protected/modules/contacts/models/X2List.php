@@ -358,10 +358,10 @@ class X2List extends X2Model {
                             $search->addCondition('('.'t.'.$criterion->attribute.'="" OR '.'t.'.$criterion->attribute.' IS NULL)', $logicMode);
                             break;
                         case 'list':
-                            $search->addInCondition('t.'.$criterion->attribute, explode(',', $criterion->value), $logicMode);
+                            $search->addInCondition('t.'.$criterion->attribute, CJSON::decode($criterion->value), $logicMode);
                             break;
                         case 'notList':
-                            $search->addNotInCondition('t.'.$criterion->attribute, explode(',', $criterion->value), $logicMode);
+                            $search->addNotInCondition('t.'.$criterion->attribute, CJSON::decode($criterion->value), $logicMode);
                             break;
                         case 'noContains':
                             $search->compare('t.'.$criterion->attribute, '<>'.$criterion->value, true, $logicMode);
