@@ -1790,6 +1790,37 @@ class Actions extends X2Model {
     public function isMultiassociated() {
         return $this->associationType === self::ASSOCIATION_TYPE_MULTI;
     }
+    
+    /**
+     * Renders the action associated model fields (e.g., contacts).
+     * @param type $fieldName - type of field you want to render, an identifier
+     * @param type $action - the action model being passed in
+     * @param type $htmlOptions
+     */
+    public function renderAssociationField($fieldName, $action, $htmlOptions = array()){
+        $model = NULL;
+        if ($action->associationType == 'contacts') {
+            $model = Contacts::model()->findByPk($action->associationId);
+        } else if ($action->associationType == 'accounts') {
+            $model = Accounts::model()->findByPk($action->associationId);
+        }
+        
+        switch ($fieldName && $model) {
+            case 'email':
+                if ($model->email) {
+                    return $model->email;
+                }
+            case 'phoneNumber':
+                if ($model->phone) {
+                    return $model->phone;
+                } else if ($model->phone2) {
+                    return $model->phone2;
+                }
+            default:
+                return "";
+        }        
+        return "";
+    }
 
     public function renderMultiassociations($makeLinks = true) {
         if ($makeLinks) {
