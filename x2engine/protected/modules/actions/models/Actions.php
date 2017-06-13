@@ -1803,6 +1803,10 @@ class Actions extends X2Model {
             $model = Contacts::model()->findByPk($action->associationId);
         } else if ($action->associationType == 'accounts') {
             $model = Accounts::model()->findByPk($action->associationId);
+        } else if ($action->associationType == 'users') {
+            $model = User::model()->findByPk($action->associationId);
+        } else if ($action->associationType == 'services') {
+            $model = Services::model()->findByPk($action->associationId);
         }
         
         switch ($fieldName && $model) {
