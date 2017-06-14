@@ -383,6 +383,151 @@ class CrontabUtilTest extends X2TestCase {
 
 
 	}
+
+    public function testCronJobToForm() {
+        $valuesIn = array(
+            'tag' => 'helloworld',
+            'desc' => 'Hello, world',
+            'min' => array('0', '30'),
+            'hour' => '*',
+            'dayOfMonth' => '*',
+            'month' => '*',
+            'dayOfWeek' => array('1'),
+            'cmd' => 'curl http://google.com'
+        );
+        $expected = array(
+            'tag' => 'helloworld',
+            'desc' => 'Hello, world',
+            'min' => array('0', '30'),
+            'all_min' => 0,
+            'hour' => array(),
+            'all_hour' => 1,
+            'dayOfMonth' => array(),
+            'all_dayOfMonth' => 1,
+            'month' => array(),
+            'all_month' => 1,
+            'dayOfWeek' => array('1'),
+            'all_dayOfWeek' => 0,
+            'use_schedule' => 0,
+            'cmd' => 'curl http://google.com'
+        );
+        $this->assertEquals($expected, CrontabUtil::cronJobToForm($valuesIn));
+
+        $valuesIn = array(
+            'tag' => 'update',
+            'desc' => 'Refresh system package info',
+            'cmd' => 'apt-get update',
+            'schedule' => 'daily'
+        );
+        $expected = array(
+            'tag' => 'update',
+            'desc' => 'Refresh system package info',
+            'min' => array(),
+            'all_min' => 1,
+            'hour' => array(),
+            'all_hour' => 1,
+            'dayOfMonth' => array(),
+            'all_dayOfMonth' => 1,
+            'month' => array(),
+            'all_month' => 1,
+            'dayOfWeek' => array(),
+            'all_dayOfWeek' => 1,
+            'schedule' => 'daily',
+            'use_schedule' => 1,
+            'cmd' => 'apt-get update'
+        );
+        $this->assertEquals($expected, CrontabUtil::cronJobToForm($valuesIn));
+
+        $valuesIn = array(
+            'tag' => 'app_update',
+            'desc' => 'Update X2Engine',
+            'cmd' => '/path/to/crm/protected/yiic update app --lock=1',
+            'schedule' => 'monthly'
+        );
+        $expected = array(
+            'tag' => 'app_update',
+            'desc' => 'Update X2Engine',
+            'min' => array(),
+            'all_min' => 1,
+            'hour' => array(),
+            'all_hour' => 1,
+            'dayOfMonth' => array(),
+            'all_dayOfMonth' => 1,
+            'month' => array(),
+            'all_month' => 1,
+            'dayOfWeek' => array(),
+            'all_dayOfWeek' => 1,
+            'schedule' => 'monthly',
+            'use_schedule' => 1,
+            'cmd' => '/path/to/crm/protected/yiic update app --lock=1'
+        );
+        $this->assertEquals($expected, CrontabUtil::cronJobToForm($valuesIn));
+    }
+
+    public function testInputName() {
+        $this->assertEquals('crontab[tag][hours]', CrontabUtil::inputName('crontab', 'tag', 'hours'));
+        $this->assertEquals('crontab[tag][hours][]', CrontabUtil::inputName('crontab', 'tag', 'hours', true));
+    }
+
+    public function testJsName() {
+        $this->assertEquals('crontab_tag', CrontabUtil::jsName('crontab', 'tag'));
+        $this->assertEquals('crontab_hours__tag', CrontabUtil::jsName('crontab[hours]', 'tag'));
+    }
+
+    public function testTimeList() {
+        $expectations = array(
+            '*' => array(),
+            '1' => array(1),
+            '0,15,30,45' => array(0, 15, 30, 45),
+            1 => 1,
+        );
+        foreach ($expectations as $timeField => $expected) {
+            $this->assertEquals($expected, CrontabUtil::timeList($timeField));
+        }
+    }
+
+    public function testSchedForm() {
+        $valuesIn = array(
+            'tag' => 'app_update',
+            'desc' => 'Update X2Engine',
+            'cmd' => '/path/to/crm/protected/yiic update app --lock=1',
+            'schedule' => 'monthly'
+        );
+
+        // Test default generated form
+        $form = CrontabUtil::schedForm(CrontabUtil::cronJobToForm($valuesIn));
+        $this->assertMarkupMatches($form, 'cron', 'default');
+
+        // Test generated form with custom name and tag
+        $form = CrontabUtil::schedForm(CrontabUtil::cronJobToForm($valuesIn), 'myCron', null, 'updater');
+        $this->assertMarkupMatches($form, 'myCron', 'updater');
+    }
+
+    /**
+     * Helper method for verifying correctness of markup generated from schedForm().
+     * Searches the generated markup for expected fields and JS calls
+     */
+    private function assertMarkupMatches($markup, $name, $tag) {
+        $inputName = function ($field, $isArray = true) use($name, $tag) {
+            $append = $isArray ? '[]' : '';
+            return $name.'['.$tag.']['.$field.']'.$append;
+        };
+        $jsns = 'cronForm.'.$name.'_'.$tag;
+
+        $this->assertEquals(1, preg_match('/<select multiple size="7" name="'.preg_quote($inputName('dayOfWeek')).'" >/', $markup, $matches));
+        $this->assertEquals(1, preg_match('/<select multiple size="10" name="'.preg_quote($inputName('month')).'" >/', $markup, $matches));
+        $this->assertEquals(1, preg_match('/<select multiple size="10" name="'.preg_quote($inputName('dayOfMonth')).'" >/', $markup, $matches));
+        $this->assertEquals(1, preg_match('/<select multiple size="10" name="'.preg_quote($inputName('hour')).'" >/', $markup, $matches));
+        $this->assertEquals(1, preg_match('/<select multiple size="10" name="'.preg_quote($inputName('min')).'" >/', $markup, $matches));
+
+        $this->assertEquals(1, preg_match('/'.preg_quote($jsns).'\.scheduleField = "'.preg_quote($inputName('schedule', false)).'"/', $markup, $matches), $inputName('schedule', false));
+        $this->assertEquals(1, preg_match('/'.preg_quote($jsns).'\.scheduleModeField = "'.preg_quote($inputName('use_schedule', false)).'"/', $markup, $matches));
+        $this->assertEquals(1, preg_match('/'.preg_quote($jsns).'\.enableField = function()/', $markup, $matches));
+        $this->assertEquals(1, preg_match('/'.preg_quote($jsns).'\.radioButtonValue = function()/', $markup, $matches));
+        $this->assertEquals(1, preg_match('/'.preg_quote($jsns).'\.scheduleMode = function()/', $markup, $matches));
+        $this->assertEquals(1, preg_match('/'.preg_quote($jsns).'\.setup = function()/', $markup, $matches));
+        $this->assertEquals(1, preg_match('/'.preg_quote($jsns).'\.setup()/', $markup, $matches));
+    }
 }
 
 ?>

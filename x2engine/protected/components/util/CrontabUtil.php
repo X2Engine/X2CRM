@@ -529,7 +529,7 @@ class CrontabUtil {
                                 $installer_t('Wednesday'),
                                 $installer_t('Thursday'),
                                 $installer_t('Friday'),
-                                $installer_t('Sautrday')
+                                $installer_t('Saturday')
                             );
                             $dayOfWeek = self::timeList(isset($data['dayOfWeek']) ? $data['dayOfWeek'] : array());
 
