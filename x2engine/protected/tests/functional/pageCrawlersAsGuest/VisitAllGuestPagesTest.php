@@ -36,8 +36,13 @@
  **********************************************************************************/
 
 Yii::import('application.tests.functional.pageCrawlers.VisitAllPagesTest');
+Yii::import('application.tests.functional.pageCrawlers.BaseVisitAllPagesTest');
 
-class VisitAllGuestPages extends BaseVisitAllPagesTest {
+/**
+ * Visit password reset, help, and mobile login page
+ * @package application.tests.functional
+ */
+class VisitAllGuestPagesTest extends BaseVisitAllPagesTest {
 
     public $autoLogin = false;
 
