@@ -199,9 +199,10 @@ class X2HtmlTest extends X2TestCase {
     }
 
     public function testCsrfToken() {
-        $_COOKIE['YII_CSRF_TOKEN'] = 'X2CSRF';
+        $_COOKIE['YII_CSRF_TOKEN'] = 'NOOP';
+        ob_start();
         $token = Yii::app()->request->getCsrfToken();
-        $this->assertEquals('X2CSRF', $token);
+        ob_get_clean();
         $expected = '<input type="hidden" value="'.$token.'" name="YII_CSRF_TOKEN" id="YII_CSRF_TOKEN" />';
         $this->assertEquals($expected, X2Html::csrfToken());
     }
