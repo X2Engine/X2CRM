@@ -526,7 +526,8 @@ class X2ModelTest extends X2DbTestCase {
 
     public function testRenderErroneousField() {
         $expected = '<span class="erroneous-field">Field could not be found</span>';
-        $this->assertEquals($expected, X2Model::renderErroneousField());
+        $contact = new Contacts;
+        $this->assertEquals($expected, $contact->renderErroneousField());
     }
 
     public function testRenderLinkedAttribute() {

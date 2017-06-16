@@ -101,7 +101,7 @@ class X2HtmlTest extends X2TestCase {
 
     public function testSettingsButton() {
         $expected = '<span class=" fa-lg fa fa-cog x2-settings-button"></span>';
-        $this->assertEquals($expected, X2Html::settingsButton());
+        $this->assertEquals($expected, X2Html::settingsButton('', array()));
 
         $expected = '<span class="myClass fa-lg fa fa-cog x2-settings-button" id="mySettings"></span>';
         $this->assertEquals($expected, X2Html::settingsButton('', array('class' => 'myClass', 'id' => 'mySettings')));
