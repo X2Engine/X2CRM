@@ -1809,20 +1809,24 @@ class Actions extends X2Model {
             $model = Services::model()->findByPk($action->associationId);
         }
         
-        switch ($fieldName && $model) {
-            case 'email':
-                if ($model->email) {
-                    return $model->email;
-                }
-            case 'phoneNumber':
-                if ($model->phone) {
-                    return $model->phone;
-                } else if ($model->phone2) {
-                    return $model->phone2;
-                }
-            default:
-                return "";
-        }        
+        if ($model) {
+            switch ($fieldName) {
+                case 'email':
+                    if ($model->email) {
+                        return $model->email;
+                    }
+                case 'phoneNumber':
+                    if ($model->phone) {
+                        return $model->phone;
+                    } else if ($model->phone2) {
+                        return $model->phone2;
+                    }
+                default:
+                    return "";
+            }   
+        } else {
+            return "";
+        }
         return "";
     }
 
