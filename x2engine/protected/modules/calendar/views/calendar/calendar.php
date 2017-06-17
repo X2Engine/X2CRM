@@ -339,10 +339,8 @@ $(function() {
                                         $('#calendar').fullCalendar('refetchEvents');
                                     }
                                 }); 
-                                dialogOuter$.find ('.save-event-button').hide ();
                                 dialogOuter$.find ('.event-delete-button').hide ();
                                 dialogOuter$.find ('.event-copy-button').hide ();
-                                dialogOuter$.find ('.save-event-button').hide ();
                                 $.post(
                                     '<?php echo $urls['newAction']; ?>', {
                                         'ActionId': event.id, 'IsEvent': event.type=='event'
@@ -350,6 +348,9 @@ $(function() {
                                         $(viewAction).empty().append(data);
                                         //open dialog after its filled with action/event
                                         viewAction.x2Dialog('open'); 
+                                               dialogOuter$.find ('.save-event-button').bind ('click',function () {
+                                                    viewAction.x2Dialog('close');
+                                                });
                                     }
                                 );   
                             });
