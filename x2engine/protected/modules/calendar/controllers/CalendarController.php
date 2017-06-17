@@ -521,9 +521,9 @@ class CalendarController extends x2base {
             if (!$model->hasErrors () && !isset($_POST['keepForm'])) $model = new $modelType;
             $this->renderInlineForm ($model);
         } else {
-            $this->render('newAction', array(
+            $this->renderPartial('newAction', array(
                 'model' => $model,
-            ));
+            ), false, true);
         }
     }
 
