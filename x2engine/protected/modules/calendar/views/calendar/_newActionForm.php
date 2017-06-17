@@ -39,14 +39,6 @@
 $modelList = !isset ($modelList) ? Fields::getDisplayedModelNamesList() : $modelList;
 $actionModel = !isset ($actionModel) ? $model : $actionModel;
 
-Yii::app()->clientScript->registerCss('actionsFormCss',"
-    #Actions_actionDescription {
-        box-sizing: border-box;
-    }
-");
-
-Yii::app()->clientScript->registerCssFile(
-    Yii::app()->controller->module->assetsUrl.'/css/actionForms.css');
 
 
 $themeUrl = Yii::app()->theme->getBaseUrl();
@@ -304,7 +296,7 @@ $backdating = !(Yii::app()->user->checkAccess('ActionsAdmin') ||
         <div id="action-calendarId" style="display:none;" class="row">
             <br>
             <?php
-            $editableCalendars =              
+            $editableCalendars =
                 X2CalendarPermissions::getEditableUserCalendarNames() + array(0 => Yii::t('actions', 'None'));
             echo CHtml::activeDropDownList($actionModel, 'calendarId', $editableCalendars);
             ?>
