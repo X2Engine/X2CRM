@@ -297,7 +297,7 @@ $backdating = !(Yii::app()->user->checkAccess('ActionsAdmin') ||
             <br>
             <?php
             $editableCalendars =
-                X2CalendarPermissions::getEditableUserCalendarNames() + array('' => Yii::t('actions', 'None'));
+                X2CalendarPermissions::getEditableUserCalendarNames() + array(0 => Yii::t('actions', 'None'));
             echo CHtml::activeDropDownList($actionModel, 'calendarId', $editableCalendars);
             ?>
         </div>

@@ -353,6 +353,7 @@ $(function() {
                                     }
                                 );   
                             });
+                        dialogOuter$.find ('.save-event-button').click();
                     }
                 });
                 /*if (event.type === 'event') {
