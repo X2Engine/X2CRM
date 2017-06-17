@@ -89,11 +89,19 @@ class X2CalendarPermissions extends CActiveRecord
                     ))
                     ->leftJoin('x2_calendar_permissions b', 'a.id = b.calendarId');
         }
+        $calendarQuery->where('a.createdBy = :user',
+                        array(
+                    ':user' => Yii::app()->user->name
+                ))
+                ->leftJoin('x2_calendar_permissions b', 'a.id = b.calendarId');
         $calendars = $calendarQuery->queryAll();
-        $ret = array();
+        $usersCalendar = $calendarQuery->queryAll();
+        $retOrdered = array();
         foreach($calendars as $arr){
-            $ret[$arr['id']] = $arr['name'];
+            if ($usersCalendar[0]['id'] !=  $arr['id']) {
+                $retOrdered[$arr['id']] = $arr['name'];
+            }
         }
-        return $ret;
+        return array($usersCalendar[0]['id'] => $usersCalendar[0]['name']) + $retOrdered;
     }
 }

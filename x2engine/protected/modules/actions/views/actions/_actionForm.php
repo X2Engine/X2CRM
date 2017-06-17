@@ -81,8 +81,7 @@ $form = $this->beginWidget ('ActionActiveForm', array (
     ));
     echo CHtml::label (Yii::t('actions', 'Add to Calendar'), 'calendarId');
     $editableCalendars =
-        array('' => Yii::t('actions', 'None')) +
-        X2CalendarPermissions::getEditableUserCalendarNames();
+        X2CalendarPermissions::getEditableUserCalendarNames() + array('' => Yii::t('actions', 'None'));
     echo CHtml::activeDropDownList($model, 'calendarId', $editableCalendars);
     echo '</div>';
 
