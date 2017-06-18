@@ -314,6 +314,18 @@ if(!$backdating &&
 } 
 ?>
 </div>
+<div class="cell buttons" style="float:right;">
+     <?php 
+     echo CHtml::htmlButton(
+         $actionModel->isNewRecord ? Yii::t('app', 'Save') : Yii::t('app', 'Save'),
+         array(
+             'type' => 'submit',
+             'class' => 'x2-button',
+             'id' => 'save-button1',
+             'name' => 'submit'
+         )); 
+     ?>
+ </div>
 <?php 
 $this->endWidget(); 
 
@@ -382,7 +394,7 @@ $(function () {
     });
 
 	$("#action-form input, #action-form select, #action-form textarea").change(function(){
-		$("#save-button, #save-button2").addClass("highlight"); 
+		$("#save-button,  #save-button1, #save-button2").addClass("highlight"); 
 	});
 });
 ', CClientScript::POS_END);
