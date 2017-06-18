@@ -347,10 +347,9 @@ $(function() {
                                     }, function(data) {
                                         $(viewAction).empty().append(data);
                                         //open dialog after its filled with action/event
-                                        viewAction.x2Dialog('open'); 
-                                               dialogOuter$.find ('.save-event-button').bind ('click',function () {
-                                                    viewAction.x2Dialog('close');
-                                                });
+                                        dialogOuter$.find ('.save-event-button').bind ('click',function () {
+                                            viewAction.x2Dialog('close');
+                                        });
                                     }
                                 );   
                             });
