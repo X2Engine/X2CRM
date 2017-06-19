@@ -48,9 +48,7 @@ abstract class X2FlowAction extends X2FlowItem {
      */
     private static $anyModelActions = array(
         "Remote API Call", "Create Action", "Send SMS", "Wait", "Push Web Content",
-        "Post to Activity Feed", "Create Popup Notification", "Email",
-        "Create Location-Based Activity Feed Post", "Create Location-Based Email",
-        "Create Location-Based Notification", "Create Location-Based SMS"
+        "Post to Activity Feed", "Create Popup Notification", "Email"
     );
 
     private static $recordModelActions = array(

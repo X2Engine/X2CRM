@@ -220,12 +220,6 @@ $this->actionMenu[] = array (
     
     <div class="row">
         <div class="cell">
-            <?php echo $form->label($model, 'name'); ?>
-            <?php echo $form->textField($model, 'name'); ?>
-            <?php echo $form->hiddenField($model, 'flow',
-                    array('id' => 'flowDataField')); ?>
-        </div>
-        <div class="cell">
             <?php 
                 asort ($triggerTypes);
                 $allTriggers = array_merge(array('x2flow-empty' => Yii::t(
@@ -247,6 +241,14 @@ $this->actionMenu[] = array (
             <label for='x2flow-show-labels-checkbox' class='right'>
                 <?php echo CHtml::encode (Yii::t('studio', 'Toggle Node Labels')); ?>
             </label>
+        </div>
+    </div>
+    <div class="row">
+        <div class="cell">
+            <?php echo $form->label($model, 'name'); ?>
+            <?php echo $form->textField($model, 'name'); ?>
+            <?php echo $form->hiddenField($model, 'flow',
+                    array('id' => 'flowDataField')); ?>
         </div>
     </div>
     <div class="row" style="width:100%">
