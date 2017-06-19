@@ -313,7 +313,7 @@ $(function() {
                             });
                     }
                 });
-                if (event.type!='event') {
+                if (event.type != 'event' && event.complete != 'Yes') {
                     boxButtons.unshift({
                         html: '<span title="<?php 
                             echo CHtml::encode (Yii::t('app', 'Close and Create New')); 
@@ -420,6 +420,7 @@ $(function() {
                     if(event.complete == 'Yes') {
                         boxButtons.unshift({  // prepend button
                             text: '<?php echo CHtml::encode (Yii::t('actions', 'Uncomplete')); ?>',
+                            'class': 'save-event-button',
                             click: function() {
                                 $.post('<?php echo $urls['uncompleteAction']; ?>', {id: event.id});
                                 event.complete = 'No';
