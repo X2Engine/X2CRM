@@ -8,6 +8,9 @@ require_once($testDir.DIRECTORY_SEPARATOR.'WebTestConfig.php');
 if (file_exists($testDir . DIRECTORY_SEPARATOR . 'vendor' . DIRECTORY_SEPARATOR . 'autoload.php')) {
     require_once($testDir . DIRECTORY_SEPARATOR . 'vendor' . DIRECTORY_SEPARATOR . 'autoload.php');
 }
+if (file_exists('/home/travis/.composer/vendor' . DIRECTORY_SEPARATOR . 'autoload.php')) {
+    require_once('/home/travis/.composer/vendor' . DIRECTORY_SEPARATOR . 'autoload.php');
+}
 $yiit=implode(DIRECTORY_SEPARATOR,array($testDir,'..','..','framework','yiit.php'));
 $config=require_once(implode(DIRECTORY_SEPARATOR,array($testDir,'..','config','test.php')));
 PHPUnit_Extensions_SeleniumTestCase::shareSession(true);
