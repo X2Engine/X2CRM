@@ -142,11 +142,17 @@ $edgeColor: #CCCCCC;
     cursor: pointer;
 }
 
+#x2flow-stage {
+    overflow-x: auto;
+    background: url(../images/x2flow/grid.gif) left center;
+}
+
 #x2flow-main {
     overflow-x: auto;
     white-space: nowrap;
     font-size: 0;
-    background: url(../images/x2flow/grid.gif) left center;
+    background-color: transparent;
+    border-color: transparent;
     .x2flow-action::after {
         content: "";
         width: 24px;
@@ -266,8 +272,18 @@ $edgeColor: #CCCCCC;
 }
 
 #actions-bank {
-    width:99%;
+    width:95%;
     display:none;
+    border: 1px solid black;
+    border-width: 1px 1px 1px 1px;
+    border-color: #999;
+    background-color: #fff;
+    -moz-border-radius: 5px;
+    -o-border-radius: 5px;
+    -webkit-border-radius: 5px;
+    border-radius: 5px;
+    padding: 10px;
+    margin: 10px;
 }
 
 .X2FlowSwitch, .X2FlowSplitter {
@@ -487,34 +503,6 @@ $edgeColor: #CCCCCC;
  */
 .X2FlowEmail {
     background-image: url(../images/x2flow/X2FlowEmail.png);
-}
-
-/**
- * Create Location Activity Feed Post Stage Action
- */
-.X2FlowLocationActivityFeed {
-    background-image: url(../images/x2flow/X2FlowLocation.png);
-}
-
-/**
- * Create Location Notification Stage Action
- */
-.X2FlowLocationNotification {
-    background-image: url(../images/x2flow/X2FlowLocation.png);
-}
-
-/**
- * Create Location Email Stage Action
- */
-.X2FlowLocationEmail {
-    background-image: url(../images/x2flow/X2FlowLocation.png);
-}
-
-/**
- * Create Location SMS Stage Action
- */
-.X2FlowLocationText {
-    background-image: url(../images/x2flow/X2FlowRecordComment.png);
 }
 
 /**

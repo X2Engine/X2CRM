@@ -290,8 +290,18 @@ $this->actionMenu[] = array (
      * Lists of actions
      */
     ?>
-    <div id="actions-bank" class="cell">
-        <h4>Actions Bank</h4>
+    
+</div>
+
+<?php
+/**
+ * This is the main flow stage
+ */
+?>
+
+<div id="x2flow-stage">
+    <div id="actions-bank">
+        <div style="font-size:12pt;font-weight:bold;margin:10px;">Drag and Drop Actions</div>
         <?php
         /**
          * Actions available to all triggers
@@ -325,28 +335,20 @@ $this->actionMenu[] = array (
         include 'actionsInclude.php';
         ?>
         
-            <div class="form x2flow-trash"></div>
     </div>
-    
-</div>
+    <div class="form x2flow-main" id="x2flow-main">  
+        <div class="x2flow-node x2flow-trigger x2flow-empty
+            <?php echo ($showLabels ? "" : " no-label"); ?>" id="trigger"
+            title="<?php echo addslashes(Yii::t('studio', 'Select a trigger')); ?>">
 
-<?php
-/**
- * This is the main flow stage
- */
-?>
-<div class="form x2flow-main" id="x2flow-main">
-    <div class="x2flow-node x2flow-trigger x2flow-empty
-        <?php echo ($showLabels ? "" : " no-label"); ?>" id="trigger"
-        title="<?php echo addslashes(Yii::t('studio', 'Select a trigger')); ?>">
-        
-        <div class="x2flow-icon-label"
-            <?php echo ($showLabels ? "": "style='display: none;'") ?>>
+            <div class="x2flow-icon-label"
+                <?php echo ($showLabels ? "": "style='display: none;'") ?>>
+            </div>
         </div>
-    </div>
-    <div class="x2flow-branch">
-        <div class="bracket hidden"></div>
-        <div class="x2flow-node x2flow-empty"></div>
+        <div class="x2flow-branch">
+            <div class="bracket hidden"></div>
+            <div class="x2flow-node x2flow-empty"></div>
+        </div>
     </div>
 </div>
 
@@ -370,11 +372,6 @@ i.e. if you set custom rules to go to 4 different users, but 2 are logged in, on
  */
 ?>
 <div class="row" style="width:100%">
-    <!--
-<div class="cell" style="float:left;width:35%;">
-    HELLO
-</div>
-    -->
     <div class="form cell" id="x2flow-config-box"> <!--style="margin-left:35%;"-->
     <div id="x2flow-main-config"></div><hr>
     <div id="x2flow-conditions" class="x2-sortlist"><ol></ol></div>
@@ -521,4 +518,4 @@ $stages = count($workflowIds) ?
         </li>
     </ol>
 </div>
-<!-- end templates -->
+<!-- end templates l -->
