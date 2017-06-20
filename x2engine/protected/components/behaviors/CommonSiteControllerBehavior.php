@@ -54,7 +54,6 @@ class CommonSiteControllerBehavior extends CBehavior {
            echo "<script type=\"text/javascript\">
                 window.localStorage.removeItem(\"sessionToken\");
                 </script>";
-            return;
         }
         Session::cleanUpSessions();
         SessionToken::cleanUpSessions();
