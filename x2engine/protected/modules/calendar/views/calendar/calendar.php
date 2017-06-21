@@ -321,7 +321,7 @@ $(function() {
                             var dialogOuter$ = $(this).closest ('.ui-dialog');
                             dialogOuter$.find ('.event-close-create-button').hide ();
                             dialogOuter$.find ('.ui-dialog-title').append ($('<span>', {
-                                html: '&nbsp;<?php echo CHtml::encode (Yii::t('app', '(Close and Create New)')); ?>'
+                                html: '&nbsp;<?php echo CHtml::encode (Yii::t('app', '(Complete and Create New Action)')); ?>'
                             }));
                             var that = this;  
                             dialogOuter$.find ('.event-delete-button').unbind ('click').
