@@ -315,9 +315,7 @@ $(function() {
                 });
                 if (event.type != 'event' && event.complete != 'Yes') {
                     boxButtons.unshift({
-                        html: '<span title="<?php 
-                            echo CHtml::encode (Yii::t('app', 'Close and Create New')); 
-                        ?>" class="fa fa-check fa-lg"></span>', 
+                        text: '<?php echo CHtml::encode (Yii::t('app', 'Complete and Create New Action')); ?>', // delete event, 
                         'class': 'event-close-create-button',
                         click: function() {
                             var dialogOuter$ = $(this).closest ('.ui-dialog');
@@ -353,9 +351,11 @@ $(function() {
                                         }, function(data) {
                                             $(viewAction).empty().append(data);                                     
                                             //open dialog after its filled with action/event
-                                            $("textarea#Actions_actionDescription").val(
-                                                name + ":" + phoneNumber.innerHTML + " - "
-                                            );
+                                            if (phoneNumber != null) {
+                                                $("textarea#Actions_actionDescription").val(
+                                                    name + ":" + phoneNumber.innerHTML + " - "
+                                                );
+                                            }
                                             dialogOuter$.find ('#save-button1').bind ('click',function () {
                                                 $.ajax({
                                                    type: 'post',
