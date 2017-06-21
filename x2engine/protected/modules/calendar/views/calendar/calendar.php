@@ -344,12 +344,18 @@ $(function() {
                                     dialogOuter$.find ('.event-delete-button').hide ();
                                     dialogOuter$.find ('.event-copy-button').hide ();
                                     dialogOuter$.find ('.save-event-button').hide ();
+                                    var phoneNumber = document.getElementById("phoneNumber");
+                                    var e = document.getElementById("Actions_assignedTo_assignedToDropdown");
+                                    var name = e.options[e.selectedIndex].value;
                                     $.post(
-                                        '<?php echo $urls['newAction']; ?>', {
+                                        '<?php echo $urls['newAction']; ?>', { 
                                             'ActionId': event.id, 'IsEvent': event.type=='event'
                                         }, function(data) {
                                             $(viewAction).empty().append(data);                                     
                                             //open dialog after its filled with action/event
+                                            $("textarea#Actions_actionDescription").val(
+                                                name + ":" + phoneNumber.innerHTML + " - "
+                                            );
                                             dialogOuter$.find ('#save-button1').bind ('click',function () {
                                                 $.ajax({
                                                    type: 'post',
