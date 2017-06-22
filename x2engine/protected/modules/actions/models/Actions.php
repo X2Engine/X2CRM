@@ -1811,6 +1811,12 @@ class Actions extends X2Model {
         
         if ($model) {
             switch ($fieldName) {
+                case 'name':
+                    if ($model->firstName && $model->lastName) {
+                        return $model->firstName . ' ' . $model->lastName;
+                    } else if ($model->name) {
+                        return $model->name;
+                    }
                 case 'email':
                     if ($model->email) {
                         return $model->email;

@@ -137,6 +137,7 @@ $backdating = !(Yii::app()->user->checkAccess('ActionsAdmin') ||
                     ?>
                 </div>
                 <div class="cell">
+                    <!--<input type="hidden" name="associationId" id="associationId">-->
                     <?php 
                     echo $form->hiddenField($actionModel, 'associationId');
                     if(!$actionModel->isTimedType) {

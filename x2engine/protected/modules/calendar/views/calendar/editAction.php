@@ -158,6 +158,8 @@ $form = $this->beginWidget('CActiveForm', array(
         ?>
     </div>
     <div class="cell dialog-cell">
+        <?php echo $form->label($model, 'name', array('class' => 'dialog-label')); ?>
+       <div id="name"> <?php echo $model->renderAssociationField('name',$model); ?>  </div>
         <?php echo $form->label($model, 'email', array('class' => 'dialog-label')); ?>
        <div id="email"> <?php echo $model->renderAssociationField('email',$model); ?>  </div>
         <?php echo $form->label($model, 'phoneNumber', array('class' => 'dialog-label')); ?> 

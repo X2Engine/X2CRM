@@ -343,19 +343,28 @@ $(function() {
                                     dialogOuter$.find ('.event-copy-button').hide ();
                                     dialogOuter$.find ('.save-event-button').hide ();
                                     var phoneNumber = document.getElementById("phoneNumber");
-                                    var e = document.getElementById("Actions_assignedTo_assignedToDropdown");
-                                    var name = e.options[e.selectedIndex].value;
+                                    var name = document.getElementById("name");
                                     $.post(
                                         '<?php echo $urls['newAction']; ?>', { 
                                             'ActionId': event.id, 'IsEvent': event.type=='event'
                                         }, function(data) {
                                             $(viewAction).empty().append(data);                                     
                                             //open dialog after its filled with action/event
-                                            if (phoneNumber != null) {
+                                            if (phoneNumber != null 
+                                                && name != null 
+                                                && !$.trim($('#phoneNumber').html()).length 
+                                                && !$.trim($('#name').html()).length) {
                                                 $("textarea#Actions_actionDescription").val(
-                                                    name + ":" + phoneNumber.innerHTML + " - "
+                                                    name.innerHTML + " : " + phoneNumber.innerHTML + " - "
                                                 );
                                             }
+                                            $("select#Actions_associationType").val (event.associationType);
+                                            $("input#associationName").val (name);
+                                            $("select#Actions_priority").val (event.priority);
+                                            $("select#Actions_visibility").val (event.visibility);
+                                            $("select#Actions_notificationUsers").val (event.notificationUsers);
+                                            $("select#Actions_notificationTime").val (event.notificationTime);
+                                            //$("input#associationId").val (event.associationId);
                                             dialogOuter$.find ('#save-button1').bind ('click',function () {
                                                 $.ajax({
                                                    type: 'post',
