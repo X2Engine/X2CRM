@@ -138,7 +138,7 @@ foreach($userCalendars as $user){
 
 $(function() {
 
-    $('#calendar').fullCalendar({
+        $('#calendar').fullCalendar({
         theme: true,
         weekMode: 'liquid',
         header: {
@@ -175,8 +175,9 @@ $(function() {
             $(element).css('font-size', '0.8em');
             /*if(view.name == 'month' || view.name == 'basicWeek')
                 $(element).find('.fc-event-time').remove();*/
-            if(event.associationType == 'contacts')
-                element.attr('title', event.associationName);
+            if(event.associationType == 'contacts') {
+                element.attr('title', "name:"+event.associationName);
+            }
         },
         // Day Clicked!! Scroll to Publisher and set date to the day that was clicked
         dayClick: function(date, allDay, jsEvent, view) { 
@@ -344,6 +345,8 @@ $(function() {
                                     dialogOuter$.find ('.save-event-button').hide ();
                                     var phoneNumber = document.getElementById("phoneNumber");
                                     var name = document.getElementById("name");
+                                    var e = document.getElementById("Actions_reminder");
+                                    var reminder = e.options[e.selectedIndex].value;
                                     $.post(
                                         '<?php echo $urls['newAction']; ?>', { 
                                             'ActionId': event.id, 'IsEvent': event.type=='event'
@@ -359,12 +362,18 @@ $(function() {
                                                 );
                                             }
                                             $("select#Actions_associationType").val (event.associationType);
-                                            $("input#associationName").val (name);
+                                            $("#associationName").val (name.innerHTML.trim());
                                             $("select#Actions_priority").val (event.priority);
                                             $("select#Actions_visibility").val (event.visibility);
+                                            if (reminder == 'yes')
+                                                document.getElementById("Actions_reminder").checked = true;
+                                            else 
+                                                document.getElementById("Actions_reminder").checked = false;
                                             $("select#Actions_notificationUsers").val (event.notificationUsers);
-                                            $("select#Actions_notificationTime").val (event.notificationTime);
-                                            //$("input#associationId").val (event.associationId);
+                                            $("select#Actions_notificationTime").val (event.notificationTime);                                    
+                                            var str = event.associationUrl;
+                                            var res = str.split("/");          
+                                            $("input#associationId").val (res.pop());
                                             dialogOuter$.find ('#save-button1').bind ('click',function () {
                                                 $.ajax({
                                                    type: 'post',

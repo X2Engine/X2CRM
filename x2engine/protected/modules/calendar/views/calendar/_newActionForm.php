@@ -122,6 +122,7 @@ $backdating = !(Yii::app()->user->checkAccess('ActionsAdmin') ||
                     echo $form->label($actionModel, 'associationName');
                     $this->widget('zii.widgets.jui.CJuiAutoComplete', array(
                         'name' => 'auto_select',
+                        'id' => 'associationName',
                         'value' => $actionModel->associationName,
                         'source' => $linkSource,
                         'options' => array(
@@ -137,9 +138,8 @@ $backdating = !(Yii::app()->user->checkAccess('ActionsAdmin') ||
                     ?>
                 </div>
                 <div class="cell">
-                    <!--<input type="hidden" name="associationId" id="associationId">-->
+                    <input type="hidden" name="Actions[associationId]" id="associationId">
                     <?php 
-                    echo $form->hiddenField($actionModel, 'associationId');
                     if(!$actionModel->isTimedType) {
                             if($actionModel->type == 'event')
                                 echo $form->label($actionModel, 'startDate');
