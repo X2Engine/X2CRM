@@ -1739,11 +1739,11 @@ class Actions extends X2Model {
                     array ('calendar' => Yii::t('app', 'Select an option')) +
                         X2Model::getAssociationTypeOptions ());
             case 'reminder':
-                $reminderInput = parent::renderInput (
+                /*$reminderInput = parent::renderInput (
                     $fieldName, array (
                         'class' => 'reminder-checkbox',
-                    ));
-                $reminderInput .= $this->renderReminderConfig($htmlOptions);
+                    ));*/
+                $reminderInput = $this->renderReminderConfig($htmlOptions);
                 return $reminderInput;
             default:
                 return parent::renderInput($fieldName, $htmlOptions);

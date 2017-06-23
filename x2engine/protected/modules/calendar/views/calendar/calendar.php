@@ -345,8 +345,29 @@ $(function() {
                                     dialogOuter$.find ('.save-event-button').hide ();
                                     var phoneNumber = document.getElementById("phoneNumber");
                                     var name = document.getElementById("name");
+                                    var priority, visibility, notificationUsers, notificationTime, reminder, color  = null;
+                                    /*var visibility = null;
+                                    var notificationUsers = null;
+                                    var notificationTime = null;
+                                    var reminder = null;*/
                                     var e = document.getElementById("Actions_reminder");
-                                    var reminder = e.options[e.selectedIndex].value;
+                                    if (e)
+                                        reminder = e.options[e.selectedIndex].value;
+                                    e = document.getElementById("Actions_priority");
+                                    if (e)
+                                        priority = e.options[e.selectedIndex].value;
+                                    e = document.getElementById("Actions_visibility");
+                                    if (e)
+                                        visibility = e.options[e.selectedIndex].value;
+                                    e = document.getElementById("Actions_notificationUsers");
+                                    if (e)
+                                        notificationUsers = e.options[e.selectedIndex].value;
+                                    e = document.getElementById("Actions_notificationTime");
+                                    if (e)
+                                        notificationTime = e.options[e.selectedIndex].value;  
+                                    e = document.getElementById("Actions_color");
+                                    if (e)
+                                        color = e.options[e.selectedIndex].value;  
                                     $.post(
                                         '<?php echo $urls['newAction']; ?>', { 
                                             'ActionId': event.id, 'IsEvent': event.type=='event'
@@ -361,19 +382,23 @@ $(function() {
                                                     name.innerHTML + " : " + phoneNumber.innerHTML + " - "
                                                 );
                                             }
-                                            $("select#Actions_associationType").val (event.associationType);
-                                            $("#associationName").val (name.innerHTML.trim());
-                                            $("select#Actions_priority").val (event.priority);
-                                            $("select#Actions_visibility").val (event.visibility);
-                                            if (reminder == 'yes')
-                                                document.getElementById("Actions_reminder").checked = true;
-                                            else 
-                                                document.getElementById("Actions_reminder").checked = false;
-                                            $("select#Actions_notificationUsers").val (event.notificationUsers);
-                                            $("select#Actions_notificationTime").val (event.notificationTime);                                    
+                                            $("select#Actions_associationType").val (event.associationType).change();
+                                            $("#associationName").val (name.innerHTML.trim()).change();
+                                            if (priority)
+                                                $("select#Actions_priority").val (priority).change();
+                                            if (visibility)
+                                                $("select#Actions_visibility").val (visibility).change();
+                                            if (reminder)
+                                                $("select#Actions_reminder").val (reminder).change();
+                                            if (notificationUsers)
+                                                $("select#Actions_notificationUsers").val (notificationUsers).change();
+                                            if (notificationTime)
+                                                $("select#Actions_notificationTime").val (notificationTime).change();   
+                                            if (color)
+                                                $("select#Actions_color").val (color).change();                                              
                                             var str = event.associationUrl;
                                             var res = str.split("/");          
-                                            $("input#associationId").val (res.pop());
+                                            $("input#associationId").val (res.pop()).change();
                                             dialogOuter$.find ('#save-button1').bind ('click',function () {
                                                 $.ajax({
                                                    type: 'post',
