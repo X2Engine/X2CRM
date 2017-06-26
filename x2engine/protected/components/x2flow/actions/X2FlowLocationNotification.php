@@ -40,7 +40,7 @@
  * @package application.components.x2flow.actions
  */
 class X2FlowLocationNotification extends BaseX2FlowLocation {
-    public $title = 'Create Location-Based Notification';
+    public $title = 'Location Notification';
     public $info = 'Create a notification based on specific location criteria.';
     public $flag = 'n';
     public function paramRules() {

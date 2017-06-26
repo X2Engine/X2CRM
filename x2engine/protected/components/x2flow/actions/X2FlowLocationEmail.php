@@ -40,7 +40,7 @@
  * @package application.components.x2flow.actions
  */
 class X2FlowLocationEmail extends BaseX2FlowLocation {
-    public $title = 'Create Location-Based Email';
+    public $title = 'Location Email';
     public $info = 'Create an email based on specific location criteria. (Email Account Required)';
     public $flag = 'e';
     public function paramRules() {

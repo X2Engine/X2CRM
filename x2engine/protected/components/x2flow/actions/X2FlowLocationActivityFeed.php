@@ -40,7 +40,7 @@
  * @package application.components.x2flow.actions
  */
 class X2FlowLocationActivityFeed extends BaseX2FlowLocation {
-    public $title = 'Create Location-Based Activity Feed Post';
+    public $title = 'Location Activity Post';
     public $info = 'Create an Activity Feed post based on specific location criteria.';
     public $flag = 'a';
     public function paramRules() {

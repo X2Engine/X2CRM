@@ -513,6 +513,25 @@ $edgeColor: #CCCCCC;
 }
 
 /**
+ * Create SMS Stage Action
+ */
+.X2FlowLocationText {
+    background-image: url(../images/x2flow/X2FlowRecordComment.png);
+}
+
+.X2FlowLocationActivityFeed {
+    background-image: url(../images/x2flow/X2FlowLocation.png);
+}
+
+.X2FlowLocationEmail {
+    background-image: url(../images/x2flow/X2FlowLocation.png);
+}
+
+.X2FlowLocationNotification {
+    background-image: url(../images/x2flow/X2FlowLocation.png);
+}
+
+/**
  * Email Open Stage Trigger
  */
 .EmailOpenTrigger {

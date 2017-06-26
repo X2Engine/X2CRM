@@ -213,7 +213,7 @@ $this->actionMenu[] = array (
  */
 ?>
 <div>
-<div id="x2flow-start" class="form">
+<div id="x2flow-start" class="form x2flow-start">
     <?php 
     $form = $this->beginWidget('CActiveForm', array('id' => 'submitForm',
         'enableAjaxValidation' => false)); 

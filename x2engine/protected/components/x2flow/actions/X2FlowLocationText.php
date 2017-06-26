@@ -40,7 +40,7 @@
  * @package application.components.x2flow.actions
  */
 class X2FlowLocationText extends BaseX2FlowLocation {
-    public $title = 'Create Location-Based SMS';
+    public $title = 'Location SMS';
     public $info = 'Create a text message based on specific location criteria. (Twilio Account Required)';
     public $flag = 't';
     public function paramRules() {
