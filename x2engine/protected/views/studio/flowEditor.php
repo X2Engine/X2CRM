@@ -109,6 +109,9 @@ $passVarsToClientScript = '
     x2.userModelTriggers = JSON.parse(' . CJSON::encode(json_encode(X2FlowTrigger::getUserModelTriggers())) . ');
     x2.processModelTriggers = JSON.parse(' . CJSON::encode(json_encode(X2FlowTrigger::getProcessModelTriggers())) . ');
     x2.recordModelTriggers = JSON.parse(' . CJSON::encode(json_encode(X2FlowTrigger::getRecordModelTriggers())) . ');
+        
+    x2.processModelActions = JSON.parse(' . CJSON::encode(json_encode(X2FlowAction::getProcessModelActions())) . ');
+    x2.recordModelActions = JSON.parse(' . CJSON::encode(json_encode(X2FlowAction::getRecordModelActions())) . ');
 ';
 
 // pass array of predefined theme uploadedBy attributes to client
@@ -209,8 +212,8 @@ $this->actionMenu[] = array (
  * This is where the individual flow fields are displayed
  */
 ?>
-
-<div class="form x2flow-start">
+<div>
+<div id="x2flow-start" class="form">
     <?php 
     $form = $this->beginWidget('CActiveForm', array('id' => 'submitForm',
         'enableAjaxValidation' => false)); 
@@ -286,13 +289,7 @@ $this->actionMenu[] = array (
         ?></textarea>
     </div>
     <?php $this->endWidget(); ?>
-    
-    <?php
-    /**
-     * Lists of actions
-     */
-    ?>
-    
+</div>
 </div>
 
 <?php
@@ -300,39 +297,14 @@ $this->actionMenu[] = array (
  * This is the main flow stage
  */
 ?>
-
 <div id="x2flow-stage">
     <div id="actions-bank">
-        <div style="font-size:12pt;font-weight:bold;margin:10px;">Drag and Drop Actions</div>
+        <h2 style="margin: 10px;">Drag and Drop Actions</h2>
         <?php
-        /**
-         * Actions available to all triggers
-         */
-        $title = 'all';
         $actions = array_filter($actionTypes, function($element) {
-            return in_array($element, X2FlowAction::getAnyModelActions());
-        });
-        include 'actionsInclude.php';
-        ?>
-    
-        <?php
-        /**
-         * Actions available to only records
-         */
-        $title = 'records';
-        $actions = array_filter($actionTypes, function($element) {
-            return in_array($element, X2FlowAction::getRecordModelActions());
-        });
-        include 'actionsInclude.php';
-        ?>
-        
-        <?php
-        /**
-         * Actions only available to processes
-         */
-        $title = 'processes';
-        $actions = array_filter($actionTypes, function($element) {
-            return in_array($element, X2FlowAction::getProcessModelActions());
+            return in_array($element, array_merge(X2FlowAction::getAnyModelActions(),
+                    X2FlowAction::getRecordModelActions(),
+                    X2FlowAction::getProcessModelActions()));
         });
         include 'actionsInclude.php';
         ?>
@@ -356,70 +328,59 @@ $this->actionMenu[] = array (
 
 <?php
 /*
-<b>Free For All</b><br>
-Assigns all web leads to "Anyone" and users can re-assign to themselves.<br><br>
-<b>Even Distribution</b><br>
-Assigns web leads to whomever has the lowest number of uncompleted actions, evening out the number of uncompleted actions between users.<br><br>
-<b>Round Robin</b><br>
-Assigns leads to each user going through the list one by one. <br><br>
-<b>Custom Round Robin</b><br>
-Same as above but allows you to set custom rules.  i.e. if a contact comes in with a specific value, it will be distributed to a group of users you specify.
-This option will not work unless you create custom rules.<br><br>
-<b>Single User</b><br>
-The Single User option will assign all leads to the specified user.
-<br><br><br>
-<b>Online Only</b><br>
-This option will filter your routing rule so that leads only go to a subset of the users who are logged in.
-i.e. if you set custom rules to go to 4 different users, but 2 are logged in, only those 2 will get the leads
+ * This is the flow config area 
  */
 ?>
 <div class="row" style="width:100%">
-    <div class="form cell" id="x2flow-config-box"> <!--style="margin-left:35%;"-->
-    <div id="x2flow-main-config"></div><hr>
-    <div id="x2flow-conditions" class="x2-sortlist"><ol></ol></div>
-    <div id="x2flow-attributes" class="x2-sortlist">
-        <label class='x2flow-api-attributes-section-header' style='display: none;'><?php 
-            echo Yii::t('studio', 'Attributes:'); ?></label>
-        <ol></ol></div>
-    <div id="x2flow-headers" class="x2-sortlist">
-        <label class='x2flow-api-attributes-section-header' style='display: none;'><?php 
-            echo Yii::t('studio', 'Headers:'); ?></label>
-        <ol></ol></div>
-    <div>
+    <div class="form cell" id="x2flow-config-box">
+        <div id="x2flow-main-config"></div>
+        <hr id="x2flow-conditions-hr" style="margin: 5px 0px 5px 0px;">
+        <div id="x2flow-conditions" class="x2-sortlist"><ol></ol></div>
+        <div id="x2flow-attributes" class="x2-sortlist">
+            <label class='x2flow-api-attributes-section-header' style='display: none;'><?php 
+                echo Yii::t('studio', 'Attributes:'); ?></label>
+            <ol></ol>
+        </div>
+        <div id="x2flow-headers" class="x2-sortlist">
+            <label class='x2flow-api-attributes-section-header' style='display: none;'><?php 
+                echo Yii::t('studio', 'Headers:'); ?></label>
+            <ol></ol>
+        </div>
+        <div style="padding-top: 5px; padding-bottom: 5px;">
+            <?php 
+            echo CHtml::dropdownList(
+                'type', '', X2FlowTrigger::getGenericConditions(),
+                array(
+                    'id' => 'x2flow-condition-type',
+                    'style' => 'display:none;height:30px;margin-right:10px;'
+                ));
+            echo CHtml::button(
+                Yii::t('studio', 'Add Condition'),
+                array(
+                    'id' => 'x2flow-add-condition',
+                    'class' => 'x2-button',
+                    'style' => 'display:none;height:30px;padding-top:3px;'
+                    . 'padding-bottom:3px;padding-left:20px;padding-right:20px;'
+                )); 
+            ?>
+        </div>
         <?php 
-        echo CHtml::dropdownList(
-            'type', '', X2FlowTrigger::getGenericConditions(),
-            array(
-                'id' => 'x2flow-condition-type',
-                'style' => 'display:none;height:30px;margin-right:10px;'
-            ));
         echo CHtml::button(
-            Yii::t('studio', 'Add Condition'),
+            Yii::t('studio', 'Add Attribute'),
             array(
-                'id' => 'x2flow-add-condition',
+                'id' => 'x2flow-add-attribute',
                 'class' => 'x2-button',
-                'style' => 'display:none;height:30px;padding-top:3px;'
-                . 'padding-bottom:3px;padding-left:20px;padding-right:20px;'
+                'style' => 'display:none;'
+            )); 
+        echo CHtml::button(
+            Yii::t('studio', 'Add Header'),
+            array(
+                'id' => 'x2flow-add-header',
+                'class' => 'x2-button',
+                'style' => 'display:none;'
             )); 
         ?>
     </div>
-    <?php 
-    echo CHtml::button(
-        Yii::t('studio', 'Add Attribute'),
-        array(
-            'id' => 'x2flow-add-attribute',
-            'class' => 'x2-button',
-            'style' => 'display:none;'
-        )); 
-    echo CHtml::button(
-        Yii::t('studio', 'Add Header'),
-        array(
-            'id' => 'x2flow-add-header',
-            'class' => 'x2-button',
-            'style' => 'display:none;'
-        )); 
-    ?>
-</div>
 </div>
 
 <?php
@@ -437,10 +398,9 @@ if (isset ($triggerLogsDataProvider) && isset ($model->id)) {
 
 <!-- HTML templates -->
 <div id="item-delete"></div>
-<div id="condition-templates" style="display:none;">
+<div id="condition-templates" style="display:none; margin-top: 15px;">
     <ol>
         <li>
-            <div class="handle"></div>
             <fieldset></fieldset>
             <a href="javascript:void(0)" class="del"></a>
         </li>
@@ -486,10 +446,9 @@ $workflowIds = array_keys($workflows);
 $stages = count($workflowIds) ? 
     Workflow::getStagesByNumber($workflowIds[0]) : array('---');
 ?>
-<div id="workflow-condition-template" style="display:none;">
+<div id="workflow-condition-template" style="display:none; margin-top: 15px;">
     <ol>
         <li>
-            <div class="handle"></div>
             <fieldset>
                 <div class="cell x2fields-workflow-id">
                     <div class="cell inline-label"><?php 

@@ -37,12 +37,11 @@
 
 /**
  * Before including, set an $actions variable that has a list of actions to
- * display, as well as a $title variable to name the <ul>
+ * display
  */
 ?>
 
-<ul id="<?php echo $title ?>" class="actions">
-    <?php if ($title === 'all'): ?>
+<ul id="all" class="actions">
     <li class="x2flow-node X2FlowSwitch">
         <span><?php echo Yii::t('studio', 'Condition'); ?></span>
         <div class="icon">
@@ -77,7 +76,6 @@
             </div>
         </div>
     </li>
-    <?php endif; ?>
 
     <?php
     foreach ($actions as $type => $title):

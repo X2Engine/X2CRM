@@ -170,7 +170,7 @@ $(function () {
 
             var offset = this.node.offset();
             var nodeCenter = this.node.width() / 2;
-            
+
             var startOffset = {
                 left: offset.left + nodeCenter,
                 top: offset.top
@@ -246,7 +246,7 @@ $(function () {
                 if (this.options.clone) { // if this is a new item being dragged in,
                     // move the placeholder back to the menu box;
                     this.nodeBefore = this.futureTarget.children().last();
-                    
+
                     if (this.futureTarget.attr("id") !== this.node.parent().attr('id')) {
                         this.futureTarget = this.node.parent();
                         clearTimeout(this.moveTimer);
@@ -417,7 +417,7 @@ $(function () {
             if (this.node.hasClass("X2FlowSwitch") ||
                     this.node.hasClass("X2FlowSplitter")) {
                 // if we're dragging a switch, it has to go at the end
-                return null
+                return null;
             }
 
             // ignore the placeholder itself, the bracket element, and any .empty boxes
@@ -1224,11 +1224,11 @@ $(function () {
             $("#x2flow-main-config, #x2flow-conditions ol, #x2flow-attributes ol, #x2flow-headers ol").
                     empty();
 
-            // if we're just clearning stuff, we're done
+            // if we're just cleaning stuff, we're done
             if (this.currentItem.length === 0)
                 return;
 
-            $("#x2flow-add-condition, #x2flow-condition-type, #x2flow-add-attribute").hide();
+            $("#x2flow-add-condition, #x2flow-condition-type, #x2flow-add-attribute, #x2flow-conditions-hr").hide();
 
             var isTrigger =
                     (this.currentItem.hasClass("x2flow-trigger") ||
@@ -1267,21 +1267,19 @@ $(function () {
                     var form = flowEditor.createMainConfigForm(params, isTrigger, config.options);
 
                     $("#x2flow-main-config").append(
-                            $('<h2>').text(params.title)).append(form);
+                            $('<h2 style="display: inline; margin-right: 0px;">').text(params.title)).append(form);
                     if (that.showIdItems.indexOf(config.type) > -1) {
                         $("#x2flow-main-config h2").after(
                                 $('<div>', {
                                     'class': 'x2flow-action-id'
                                 }).append(
-                                $('<span>').text('ID: '),
-                                $('<span>').text(config.id),
+                                $('<span>').text(' (ID: ' + config.id + ') '),
                                 x2.forms.hint(x2.flow.translations['idHint' + config.type])
                                 )
-                                );
+                        );
                     }
                     x2.forms.initializeDefaultFields();
                     x2.fieldUtils.updateDependentDropdowns(form);
-                    // $("#x2flow-main-config select").change();    // trigger modelClass event, etc
 
                     // create attribute and/or generic condition lists
                     flowEditor.loadAttributes(config.attributes);
@@ -1296,8 +1294,8 @@ $(function () {
                         var ckeditorParams = {
                             //fullPage: true,
                             fullPage: false,
-                            height: 130,
-                        }
+                            height: 130
+                        };
 
                         if (itemType === 'X2FlowPushWebContent' ||
                                 itemType === 'TargetedContentRequestTrigger') {
@@ -1335,32 +1333,45 @@ $(function () {
         },
 
         /**
-         * Creates main configuration form
+         * Initializes main configuration form for provided node under main stage
          */
         createMainConfigForm: function (params, isTrigger, prevOptions) {
             DEBUG && console.log(params);
+            
+            // If prevOptions is undefined, initialize to empty object
             if (prevOptions === undefined)
                 prevOptions = {};
 
+            // Loads node description
             var form = $(document.createElement('div'));
             if (params.info) {
                 form.html($('<div>', {text: params.info, "class": 'x2-flow-config-info'}));
             }
 
+            // If options available, append an <hr> for UI purposes
+            if (params.options.length > 0) {
+                form.append('<hr style="margin-top: 5px; margin-bottom: 5px;">');
+            }
+
+            // Iterate through parameter options
             for (var i in params.options) {
                 var optionParams = params.options[i];
+
+                // If attribute, add then skip to next option
                 if (optionParams.name === 'attributes' || optionParams.name === 'headers') {
                     $("#x2flow-add-attribute").show();
                     continue;
                 }
 
+                // Creates container for field
                 var row = $(document.createElement('div')).addClass('row').appendTo(form);
+
+                // Creates fieldset container
                 var fieldset = $(document.createElement('fieldset')).attr("name", optionParams.name).
                         appendTo(row);
-                var val = undefined,
-                        op = undefined,
-                        dropdownCache = undefined;
+                var val = undefined, op = undefined, dropdownCache = undefined;
 
+                // If htmlOptions provided, add to flowEditor
                 if (typeof optionParams.htmlOptions !== 'undefined') {
                     flowEditor.addHtmlOptions(fieldset, optionParams.htmlOptions);
                 }
@@ -1376,9 +1387,9 @@ $(function () {
                     }
                 }
 
+                // Displays field label
                 if (optionParams.label !== undefined) {
                     $(document.createElement('label')).html(optionParams.label).appendTo(fieldset);
-                    //.attr('for', optionParams.name)
                 }
 
                 if (optionParams.operators !== undefined) {
@@ -1403,7 +1414,6 @@ $(function () {
                         appendTo(fieldset);
 
                 fieldOptions.name = "value";
-                //var input = x2.fieldUtils.createInput(fieldOptions).appendTo(valueCell);
                 var input = x2.fieldUtils.createInput(fieldOptions);
                 $(valueCell).append(input);
 
@@ -1426,8 +1436,9 @@ $(function () {
                 });
             }
 
+            // If displayed node is trigger, show add-condition options
             if (isTrigger) {
-                $("#x2flow-add-condition, #x2flow-condition-type").show();
+                $("#x2flow-add-condition, #x2flow-condition-type, #x2flow-conditions-hr").show();
 
                 if (flowEditor.getModelClass() === null) {
                     $("#x2flow-condition-type option:first").attr("disabled", "disabled");
@@ -1440,6 +1451,7 @@ $(function () {
                 }
             }
 
+            // Sets up email form if node is X2FlowRecordEmail or X2FlowEmail
             if (params['class'] === 'X2FlowRecordEmail' || params['class'] === 'X2FlowEmail') {
                 this.setUpEmailForm(form);
             }
@@ -1859,21 +1871,30 @@ $(function () {
     function hideActions() {
         var trigger = $("#trigger-selector option:selected").text();
 
+        // If no trigger selected, hide actions bank
         if (trigger === 'Select a trigger') {
             $('#actions-bank').hide();
         } else {
             $('#actions-bank').show();
         }
-        if ($.inArray(trigger, x2.recordModelTriggers) === -1) {
-            $('#records').hide();
-        } else {
-            $('#records').show();
-        }
-        if ($.inArray(trigger, x2.processModelTriggers) === -1) {
-            $('#processes').hide();
-        } else {
-            $('#processes').show();
-        }
+
+        $('#all').children().each(function () {
+            // Hides record actions if record model not passed
+            if ($.inArray(trigger, x2.recordModelTriggers) === -1 &&
+                    $.inArray(this.title, x2.recordModelActions) !== -1) {
+                $(this).hide();
+            } else if ($.inArray(this.title, x2.recordModelActions) !== -1) {
+                $(this).show();
+            }
+
+            // Hides process actions if process model not passed
+            if ($.inArray(trigger, x2.processModelTriggers) === -1 &&
+                    $.inArray(this.title, x2.processModelActions) !== -1) {
+                $(this).hide();
+            } else if ($.inArray(this.title, x2.processModelActions) !== -1) {
+                $(this).show();
+            }
+        });
     }
 
     /**

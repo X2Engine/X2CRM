@@ -38,7 +38,11 @@
 
 $edgeColor: #CCCCCC;
 
-.x2flow-main, .x2flow-start {
+#x2flow-start {
+    padding: 19px;
+}
+
+.x2flow-main {
     border: 1px solid #c5c5c5;
 }
 
@@ -143,6 +147,8 @@ $edgeColor: #CCCCCC;
 }
 
 #x2flow-stage {
+    border: 0px solid #C2C2C2;
+    border-width: 1px 0px 1px 0px;
     overflow-x: auto;
     background: url(../images/x2flow/grid.gif) left center;
 }
@@ -272,18 +278,12 @@ $edgeColor: #CCCCCC;
 }
 
 #actions-bank {
-    width:95%;
+    width:93%;
     display:none;
-    border: 1px solid black;
-    border-width: 1px 1px 1px 1px;
-    border-color: #999;
+    border: 1px solid #C2C2C2;
     background-color: #fff;
-    -moz-border-radius: 5px;
-    -o-border-radius: 5px;
-    -webkit-border-radius: 5px;
-    border-radius: 5px;
     padding: 10px;
-    margin: 10px;
+    margin: 20px 19px 20px 19px;
 }
 
 .X2FlowSwitch, .X2FlowSplitter {
@@ -695,19 +695,17 @@ $edgeColor: #CCCCCC;
         padding: 2px 13px 2px 26px;
         width: auto;
         margin: 5px;
-        border: 1px solid #fff;
-        border-width: 1px 1px 1px 1px;
+        border: 1px solid white;
         background-color: #eee;
         background-position: 3px center;
-        -moz-border-radius: 10px;
-        -o-border-radius: 10px;
-        -webkit-border-radius: 10px;
-        border-radius: 10px;
+        -moz-border-radius: 15px;
+        -o-border-radius: 15px;
+        -webkit-border-radius: 15px;
+        border-radius: 15px;
         cursor: pointer;
         &:hover {
             background-color: #fff;
             border: 1px solid #eee;
-            border-width: 1px 1px 1px 1px;
         }
         span {
             display: block;
@@ -961,7 +959,10 @@ $edgeColor: #CCCCCC;
 }
 
 #x2flow-config-box {
-    padding: 5px 19px;
+    padding-top: 25px;
+    padding-right: 19px;
+    padding-bottom: 5px;
+    padding-left: 19px;
     min-height: 150px;
 }
 
@@ -970,14 +971,18 @@ $edgeColor: #CCCCCC;
         background: url(../images/loading.gif) right 10px top 10px no-repeat white;
     }
     fieldset {
-        margin: 0 0 0 40px;
+        margin: 0px 0px 0px 0px;
         padding: 0;
         border: none;
     }
 }
 
+#x2flow-conditions {
+    margin: 10px 10px;
+}
+
 #x2flow-conditions fieldset {
-    margin: 0 0 0 40px;
+    margin: 10px;
 }
 
 #x2flow-main-config {
@@ -993,11 +998,7 @@ $edgeColor: #CCCCCC;
             margin-left: 5px;
         }
     }
-    .x2flow-config-info {
-        margin-bottom: 9px;
-    }
     label {
-        float: left;
         width: 160px;
         margin-top: 5px;
         margin-right: 14px;
@@ -1008,6 +1009,11 @@ $edgeColor: #CCCCCC;
     .row {
         overflow: hidden;
     }
+}
+
+.x2-flow-config-info {
+    margin-top: 9px;
+    margin-bottom: 9px;
 }
 
 #x2flow-add-condition {
@@ -1101,7 +1107,6 @@ label toggle checkbox
     vertical-align: middle;
     display: inline;
     margin-top: 14px;
-    margin-right: 20px;
 }
 
 /* 
