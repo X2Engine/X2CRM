@@ -346,15 +346,11 @@ $(function() {
                                     var phoneNumber = document.getElementById("phoneNumber");
                                     var name = document.getElementById("name");
                                     var priority, visibility, notificationUsers, notificationTime, reminder, color  = null;
-                                    /*var visibility = null;
-                                    var notificationUsers = null;
-                                    var notificationTime = null;
-                                    var reminder = null;*/
                                     var e = document.getElementById("Actions_reminder");
                                     if (e)
                                         reminder = e.options[e.selectedIndex].value;
-                                    e = document.getElementById("Actions_priority");
-                                    if (e)
+                                    e = document.getElementById("Actions_Priority");
+                                    if (e) 
                                         priority = e.options[e.selectedIndex].value;
                                     e = document.getElementById("Actions_visibility");
                                     if (e)
@@ -379,15 +375,31 @@ $(function() {
                                                 && !$.trim($('#phoneNumber').html()).length 
                                                 && !$.trim($('#name').html()).length) {
                                                 $("textarea#Actions_actionDescription").val(
-                                                    name.innerHTML + " : " + phoneNumber.innerHTML + " - "
+                                                    name.innerHTML + ": " + phoneNumber.innerHTML + " - "
                                                 );
                                             }
                                             $("select#Actions_associationType").val (event.associationType).change();
                                             $("#associationName").val (name.innerHTML.trim()).change();
-                                            if (priority)
+                                            if (priority) {
+                                                if (priority === "Low") {
+                                                    priority = '1';
+                                                } else if (priority === "Medium") {
+                                                    priority = '2';
+                                                } else {
+                                                    priority = '3';
+                                                }
                                                 $("select#Actions_priority").val (priority).change();
-                                            if (visibility)
+                                            }
+                                            if (visibility) {
+                                                if (visibility === "Private") {
+                                                    visibility = '0';
+                                                } else if (visibility === "Public") {
+                                                    visibility = '1';
+                                                } else {
+                                                    visibility = '2';
+                                                }                                               
                                                 $("select#Actions_visibility").val (visibility).change();
+                                            }
                                             if (reminder)
                                                 $("select#Actions_reminder").val (reminder).change();
                                             if (notificationUsers)

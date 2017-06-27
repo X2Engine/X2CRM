@@ -177,13 +177,23 @@ $backdating = !(Yii::app()->user->checkAccess('ActionsAdmin') ||
                     ?>
                 </div>
                 <div class="cell">
+                    <div id="action-reminders">
+                        <br>
+                        <?php 
+                        echo $actionModel->renderInput ('reminder');
+                        ?>
+                    </div>
                     <?php 
                     echo $form->label($actionModel, 'priority');
-                    echo $actionModel->renderInput ('priority'); 
-                    //if($actionModel->type == 'event'){
-                        echo $form->label($actionModel, 'color');
-                        echo $actionModel->renderInput('color');
-                    //}
+                    ?>
+                    <select id="Actions_priority" name="Actions[priority]">
+                        <option value="1">Low</option>
+                        <option value="2">Medium</option>
+                        <option value="3">High</option>
+                    </select>
+                    <?php
+                    echo $form->label($actionModel, 'color');
+                    echo $actionModel->renderInput('color');
                     ?>
                 </div>
                 <div class="cell">
@@ -198,8 +208,12 @@ $backdating = !(Yii::app()->user->checkAccess('ActionsAdmin') ||
                 <div class="cell">
                     <?php 
                     echo $form->label($actionModel, 'visibility');
-                    echo $actionModel->renderInput ('visibility');
                     ?>
+                    <select id="Actions_visibility" name="Actions[visibility]">
+                        <option value="0">Private</option>
+                        <option value="1">Public</option>
+                        <option value="2">User's Groups</option>
+                    </select>
                 </div>
             </div>
         </div>
