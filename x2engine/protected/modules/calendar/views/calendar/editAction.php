@@ -133,12 +133,16 @@ $form = $this->beginWidget('CActiveForm', array(
     </div>
 
     <div class="cell dialog-cell">
-        <?php echo $form->label($model, 'priority', array('class' => 'dialog-label')); ?>
-        <select id="Actions_Priority" name="Actions[priority]">
+        <?php echo $form->label($model, 'priority', array('class' => 'dialog-label'));
+                echo $form->dropDownList($model, 'priority', Actions::getPriorityLabels(), 
+                        array('id' => 'dialog_Actions_priority','onChange' => 'giveSaveButtonFocus();'));
+
+        ?>
+        <!--<select id="Actions_Priority" name="Actions[priority]">
             <option value="Low">Low</option>
             <option value="Medium">Medium</option>
             <option value="High">High</option>
-        </select>
+        </select>-->
         <?php echo $form->label($model, 'color', array('class' => 'dialog-label')); ?>
         <?php
         echo $model->renderInput('color', array('onChange' => 'giveSaveButtonFocus();'));
@@ -178,12 +182,18 @@ $form = $this->beginWidget('CActiveForm', array(
         }
 
         echo $form->label($model, 'visibility', array('class' => 'dialog-label'));
+        $visibility = array(1 => Yii::t('actions', 'Public'), 0 => Yii::t('actions', 'Private'));
+        echo $form->dropDownList(
+                $model, 'visibility', $visibility, array(
+            'id' => 'dialog_Actions_visibility',
+            'onChange' => 'giveSaveButtonFocus();'
+        ));
         ?>
-        <select id="Actions_visibility" name="Actions[visibility]">
+        <!--<select id="Actions_visibility" name="Actions[visibility]">
             <option value="Public">Public</option>
             <option value="Private">Private</option>
             <option value="Users_Groups">User's Groups</option>
-        </select>
+        </select>-->
     </div>
 
     <div class="cell dialog-cell">

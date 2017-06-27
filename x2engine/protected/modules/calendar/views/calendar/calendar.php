@@ -349,10 +349,10 @@ $(function() {
                                     var e = document.getElementById("Actions_reminder");
                                     if (e)
                                         reminder = e.options[e.selectedIndex].value;
-                                    e = document.getElementById("Actions_Priority");
+                                    e = document.getElementById("dialog_Actions_priority");
                                     if (e) 
                                         priority = e.options[e.selectedIndex].value;
-                                    e = document.getElementById("Actions_visibility");
+                                    e = document.getElementById("dialog_Actions_visibility");
                                     if (e)
                                         visibility = e.options[e.selectedIndex].value;
                                     e = document.getElementById("Actions_notificationUsers");
@@ -380,26 +380,8 @@ $(function() {
                                             }
                                             $("select#Actions_associationType").val (event.associationType).change();
                                             $("#associationName").val (name.innerHTML.trim()).change();
-                                            if (priority) {
-                                                if (priority === "Low") {
-                                                    priority = '1';
-                                                } else if (priority === "Medium") {
-                                                    priority = '2';
-                                                } else {
-                                                    priority = '3';
-                                                }
-                                                $("select#Actions_priority").val (priority).change();
-                                            }
-                                            if (visibility) {
-                                                if (visibility === "Private") {
-                                                    visibility = '0';
-                                                } else if (visibility === "Public") {
-                                                    visibility = '1';
-                                                } else {
-                                                    visibility = '2';
-                                                }                                               
-                                                $("select#Actions_visibility").val (visibility).change();
-                                            }
+                                            $("select#Actions_priority").val (priority).change();
+                                            $("select#Actions_visibility").val (visibility).change();
                                             if (reminder)
                                                 $("select#Actions_reminder").val (reminder).change();
                                             if (notificationUsers)
