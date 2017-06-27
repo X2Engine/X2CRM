@@ -138,11 +138,6 @@ $form = $this->beginWidget('CActiveForm', array(
                         array('id' => 'dialog_Actions_priority','onChange' => 'giveSaveButtonFocus();'));
 
         ?>
-        <!--<select id="Actions_Priority" name="Actions[priority]">
-            <option value="Low">Low</option>
-            <option value="Medium">Medium</option>
-            <option value="High">High</option>
-        </select>-->
         <?php echo $form->label($model, 'color', array('class' => 'dialog-label')); ?>
         <?php
         echo $model->renderInput('color', array('onChange' => 'giveSaveButtonFocus();'));
@@ -189,11 +184,6 @@ $form = $this->beginWidget('CActiveForm', array(
             'onChange' => 'giveSaveButtonFocus();'
         ));
         ?>
-        <!--<select id="Actions_visibility" name="Actions[visibility]">
-            <option value="Public">Public</option>
-            <option value="Private">Private</option>
-            <option value="Users_Groups">User's Groups</option>
-        </select>-->
     </div>
 
     <div class="cell dialog-cell">

@@ -375,7 +375,7 @@ $(function() {
                                                 && !$.trim($('#phoneNumber').html()).length 
                                                 && !$.trim($('#name').html()).length) {
                                                 $("textarea#Actions_actionDescription").val(
-                                                    name.innerHTML + ": " + phoneNumber.innerHTML + " - "
+                                                    name.innerHTML.trim() + ": " + phoneNumber.innerHTML.trim() + " - "
                                                 );
                                             }
                                             $("select#Actions_associationType").val (event.associationType).change();
