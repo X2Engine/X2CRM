@@ -44,7 +44,7 @@
 class X2FlowSms extends X2FlowAction {
 
     public $title = 'Send SMS';
-    public $info = 'Send an SMS. (Twilio Account Required)';
+    public $info = 'Send an SMS to specific phone number (Twilio Account Required)';
 
     /**
      * Sets parameter rules for action
@@ -72,6 +72,7 @@ class X2FlowSms extends X2FlowAction {
                 array(
                     'name' => 'message',
                     'label' => 'Message',
+                    'type' => 'text',
                 ),
             )
                 )

@@ -50,10 +50,11 @@ class MappableBehavior extends CActiveRecordBehavior {
         $logIp = false;
         $coords = false;
         $comment = null;
-        if ($method === 'GET' && isset($_GET[$param]))
+        if ($method === 'GET' && isset($_GET[$param])) {
             $geoCoords = $_GET[$param];
-        else if ($method === 'POST' && isset($_POST[$param]))
+        } else if ($method === 'POST' && isset($_POST[$param])) {
             $geoCoords = $_POST[$param];
+        }
         if ($method && isset($geoCoords)) {
             $coords = json_decode($geoCoords, true);
             $comment = isset($coords['comment']) ? $coords['comment'] : null;

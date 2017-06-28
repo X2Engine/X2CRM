@@ -43,33 +43,56 @@
  */
 class X2FlowRecordTag extends X2FlowAction {
 
-    public $title = 'Add or Remove Tags';
+    /**
+     * Fields
+     */
+    public $title = 'Edit Tags';
     public $info = 'Enter a comma-separated list of tags to add to the record';
 
+    /**
+     * Parameter rules
+     * 
+     * @return type
+     */
     public function paramRules() {
         $tagActions = array(
             'add' => Yii::t('studio', 'Add'),
             'remove' => Yii::t('studio', 'Remove'),
             'clear' => Yii::t('studio', 'Clear All'),
         );
+
         return array_merge(parent::paramRules(), array(
             'title' => Yii::t('studio', $this->title),
             'info' => Yii::t('studio', $this->info),
             'modelRequired' => 1,
             'options' => array(
                 array(
-                    'name' => 'tags',
+                    'name' => 'action',
+                    'label' => Yii::t('studio', 'Action'),
+                    'type' => 'dropdown',
+                    'options' => $tagActions
+                ),
+                array(
+                    'name' => 'tags (optional)',
                     'label' => Yii::t('studio', 'Tags'),
                     'type' => 'tags',
                     'optional' => true
-                ),
-                array('name' => 'action', 'label' => Yii::t('studio', 'Action'), 'type' => 'dropdown', 'options' => $tagActions),
+                )
         )));
     }
 
+    /**
+     * Execute action
+     * 
+     * @param type $params
+     * @param type $triggerLogId
+     * @return type
+     */
     public function execute(&$params) {
+        // Gets tags
         $tags = $this->parseOption('tags', $params);
 
+        // Does tag action
         $retVal = null;
         $model = $params['model'];
         switch ($this->parseOption('action', $params)) {
@@ -83,7 +106,11 @@ class X2FlowRecordTag extends X2FlowAction {
                 $retVal = $model->clearTags();
                 break;
         }
+
+        // Checks if action was successful
         if ($retVal) {
+
+            // Checks if subclass of X2Model
             if (is_subclass_of($model, 'X2Model')) {
                 return array(
                     true,

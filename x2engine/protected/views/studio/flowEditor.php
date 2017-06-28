@@ -112,7 +112,11 @@ $passVarsToClientScript = '
         
     x2.processModelActions = JSON.parse(' . CJSON::encode(json_encode(X2FlowAction::getProcessModelActions())) . ');
     x2.recordModelActions = JSON.parse(' . CJSON::encode(json_encode(X2FlowAction::getRecordModelActions())) . ');
+    x2.test = JSON.parse(' . CJSON::encode(json_encode(array_keys(CActiveRecord::model("Locations")->getAttributes()))) . ');
 ';
+
+//$attrs = array_keys(CActiveRecord::model("Locations")->getAttributes());
+//printR($attrs, true);
 
 // pass array of predefined theme uploadedBy attributes to client
 foreach ($translations as $key => $val) {
@@ -188,7 +192,7 @@ $this->actionMenu[] = array (
 );
 
 /**
- * Workflow Actions
+ * Top actions bar
  */
 ?>
 

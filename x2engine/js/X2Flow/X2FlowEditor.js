@@ -1869,7 +1869,8 @@ $(function () {
      * Hides workflow actions based on chosen trigger
      */
     function hideActions() {
-        var trigger = $("#trigger-selector option:selected").text();
+        var option = $("#trigger-selector option:selected");
+        var trigger = option.text();
 
         // If no trigger selected, hide actions bank
         if (trigger === 'Select a trigger') {

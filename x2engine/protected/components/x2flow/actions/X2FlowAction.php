@@ -48,14 +48,13 @@ abstract class X2FlowAction extends X2FlowItem {
      */
     private static $anyModelActions = array(
         "Remote API Call", "Create Action", "Send SMS", "Wait", "Push Web Content",
-        "Post to Activity Feed", "Create Popup Notification", "Email",
-        "Location Activity Post", "Location Email", "Location Notification", "Location SMS"
+        "Post to Activity Feed", "Create Notification", "Email"
     );
 
     private static $recordModelActions = array(
         "Change Record", "Add Comment", "Create Record", "Create Action for Record",
         "Delete Record", "Email Contact", "Add to List", "Remove from List",
-        "Add to Newsletter","Reassign Record", "Add or Remove Tags", "Update Record"
+        "Add to Newsletter","Reassign Record", "Edit Tags", "Update Record"
     );
 
     private static $processModelActions = array(
