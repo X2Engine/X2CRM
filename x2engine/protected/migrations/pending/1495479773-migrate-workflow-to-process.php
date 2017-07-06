@@ -1,5 +1,6 @@
 <?php
-/***********************************************************************************
+
+/* * *********************************************************************************
  * X2CRM is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2016 X2Engine Inc.
  * 
@@ -33,31 +34,50 @@
  * X2Engine" logo. If the display of the logo is not reasonably feasible for
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2Engine".
- **********************************************************************************/
+ * ******************************************************************************** */
 
-/**
- * @package application.tests.unit.components.x2flow.actions
- */
-class X2FlowWorkflowStartStageTest extends X2FlowTestBase {
-
-    public $fixtures = array (
-        'x2flow' => array ('X2Flow', '.X2FlowWorkflowStartStageTest'),
+$migrateWorkflows = function() {
+    $triggers = array(
+        'BaseWorkflowStageTrigger' => 'BaseProcessStageTrigger',
+        'BaseWorkflowTrigger' => 'BaseProcessTrigger',
+        'WorkflowCompleteStageTrigger' => 'ProcessCompleteStageTrigger',
+        'WorkflowCompleteTrigger' => 'ProcessCompleteTrigger',
+        'WorkflowRevertStageTrigger' => 'ProcessRevertStageTrigger',
+        'WorkflowStartStageTrigger' => 'ProcessStartStageTrigger',
+        'WorkflowStartTrigger' => 'ProcessStartTrigger'
+    );
+    $actions = array(
+        'BaseX2FlowWorkflowStageAction' => 'BaseX2FlowProcessStageAction',
+        'X2FlowWorkflowCompleteStage' => 'X2FlowProcessCompleteStage',
+        'X2FlowWorkflowRevertStage' => 'X2FlowProcessRevertStage',
+        'X2FlowWorkflowStartStage' => 'X2FlowProcessStartStage'
     );
 
-    /**
-     * Trigger flow with a model that doesn't support workflows. 
-     */
-    public function testInvalidModelType () {
-        $params = array (
-            'user' => 'admin'
-        );
-        $retVal = $this->executeFlow (
-            X2Flow::model ()->findByAttributes ($this->x2flow['flow1']), $params);
+    $data = Yii::app()->db->createCommand()
+            ->select('triggerType, flow')
+            ->from('x2_flows')
+            ->queryAll();
 
-        // assert flow executed with error indicating that model was invalid
-        $this->assertFalse ($this->checkTrace ($retVal['trace']));
+    foreach ($data as $row) {
+        $triggerType = $row['triggerType'];
+        $flow = $row['flow'];
 
+        foreach ($triggers as $old => $new) {
+            $triggerType = str_replace($old, $new, $triggerType);
+            $flow = str_replace($old, $new, $flow);
+            Yii::app()->db->createCommand()
+                    ->update('x2_flows', array(
+                        'triggerType' => $triggerType,
+                        'flow' => $flow
+                    ));
+        }
+
+        foreach ($actions as $old => $new) {
+            $flow = str_replace($old, $new, $flow);
+            Yii::app()->db->createCommand()
+                    ->update('x2_flows', array('flow' => $flow));
+        }
     }
-}
+};
 
-?>
+$migrateWorkflows();

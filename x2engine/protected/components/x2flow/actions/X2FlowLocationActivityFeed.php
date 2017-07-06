@@ -1,5 +1,4 @@
 <?php
-
 /* * *********************************************************************************
  * X2CRM is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2016 X2Engine Inc.
@@ -35,25 +34,20 @@
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2Engine".
  * ******************************************************************************** */
-
 /**
  * X2FlowAction that creates a notification
  *
  * @package application.components.x2flow.actions
  */
 class X2FlowLocationActivityFeed extends BaseX2FlowLocation {
-
-    public $title = 'Create Location-Based Activity Feed Post';
+    public $title = 'Location Activity Post';
     public $info = 'Create an Activity Feed post based on specific location criteria.';
     public $flag = 'a';
-
     public function paramRules() {
         return parent::paramRules();
     }
-
     public function execute(&$params) {
         $locations = $this->getNearbyUserRecords($params, $this->flag);
-
         if (count($locations) > 0) {
             $user = $this->parseOption('to', $params);
             $message = $this->createLongMessage(
@@ -64,19 +58,15 @@ class X2FlowLocationActivityFeed extends BaseX2FlowLocation {
             }
             return $this->createActivityFeedEvent($params, $user, $message);
         }
-
         return array(true, "No post to be sent");
     }
-
     private function createActivityFeedEvent(&$params, $user, $text) {
         $event = new Events;
-
         $event->user = $user;
         $event->type = 'feed';
         $event->subtype = $this->parseOption('type', $params);
         $event->text = $text;
         $event->visibility = 0;
-
         if ($event->save()) {
             return array(true, "");
         }
@@ -84,5 +74,4 @@ class X2FlowLocationActivityFeed extends BaseX2FlowLocation {
         $errors = $event->getErrors();
         return array(false, array_shift($errors));
     }
-
 }

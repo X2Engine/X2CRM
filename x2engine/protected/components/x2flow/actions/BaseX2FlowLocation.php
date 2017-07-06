@@ -201,6 +201,7 @@ abstract class BaseX2FlowLocation extends X2FlowAction {
     }
 
     protected function getRecentLoginRecord() {
+        // TODO: move location functions to location model
         $userId = Yii::app()->params->profile->id;
         $loginRecord = Locations::model()->findBySql('SELECT * FROM' .
                 ' x2_locations WHERE type="login" AND recordId=' . $userId .

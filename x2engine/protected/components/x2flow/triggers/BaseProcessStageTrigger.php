@@ -40,8 +40,44 @@
  * 
  * @package application.components.x2flow.actions
  */
-class WorkflowRevertStageTrigger extends BaseWorkflowStageTrigger {
-	public $title = 'Process Stage Reverted';
-	public $info = '';
-}
+abstract class BaseProcessStageTrigger extends X2FlowTrigger {
+	public $title;
+	public $info;
+	
+	public function paramRules() {
+		$workflows = Workflow::getList(false);	// no "none" options
+		$workflowIds = array_keys($workflows);
+		$stages = count($workflowIds)? Workflow::getStagesByNumber($workflowIds[0]) : array('---');
+        $stages = array ('' => Yii::t('app', 'Any')) + $stages;
 
+		return array(
+            'title'=>Yii::t('studio',$this->title),
+            'modelClass'=>'modelClass',
+			'options' => array(
+				array(
+                    'name'=>'workflowId',
+                    'label'=>Yii::t('studio','Process'),
+                    'type'=>'dropdown',
+                    'options'=>$workflows
+                ),
+				array(
+                    'name'=>'stageNumber',
+                    'label'=>Yii::t('studio','Stage'),
+                    'type'=>'dependentDropdown',
+                    'dependency' => 'workflowId',
+                    'options'=>$stages,
+                    'optional' => true,
+                    'optionsSource' => Yii::app()->createUrl ('/workflow/workflow/getStageNames')
+                ),
+
+				array(
+                    'name'=>'modelClass',
+                    'label'=>Yii::t('studio', 'Associated Record Type'),
+                    'type'=>'dropdown',
+                    'options'=>X2Model::getModelTypesWhichSupportWorkflow (true),
+                ),
+            )
+
+		);
+	}
+}

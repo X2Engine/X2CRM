@@ -60,6 +60,7 @@ class FlowDesignerAction extends CAction {
             $flow->name = $_POST['X2Flow']['name'];
             $flow->description = filter_var($_POST['X2Flow']['description'], FILTER_SANITIZE_STRING, array('flags' => FILTER_FLAG_NO_ENCODE_QUOTES));
             $flowData['flowName'] = $flow->name;
+            $flowData['flowDesc'] = $flow->description;
             $flow->flow = CJSON::encode ($flowData);
             $flow->active = $_POST['X2Flow']['active'];
 

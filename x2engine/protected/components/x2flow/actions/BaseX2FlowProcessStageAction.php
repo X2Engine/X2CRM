@@ -36,35 +36,69 @@
  **********************************************************************************/
 
 /**
- * X2FlowTrigger 
+ * X2FlowAction that starts a workflow stage
  * 
  * @package application.components.x2flow.actions
  */
-abstract class BaseWorkflowTrigger extends X2FlowTrigger {
+abstract class BaseX2FlowProcessStageAction extends X2FlowAction {
 	public $title;
 	public $info;
 	
 	public function paramRules() {
 		$workflows = Workflow::getList(false);	// no "none" options
+		$workflowIds = array_keys($workflows);
+		$stages = count($workflowIds)? Workflow::getStagesByNumber($workflowIds[0]) : array('---');
 
-		return array(
-            'title'=>Yii::t('studio',$this->title),
+		return array_merge (parent::paramRules (), array (
+            'title'=>$this->title,
             'modelClass'=>'modelClass',
+            'modelRequired' => 1,
 			'options' => array(
 				array(
                     'name'=>'workflowId',
-                    'label'=>Yii::t('studio','Process'),
+                    'label'=>'Process',
                     'type'=>'dropdown',
                     'options'=>$workflows
                 ),
 				array(
-                    'name'=>'modelClass',
-                    'label'=>Yii::t('studio', 'Associated Record Type'),
-                    'type'=>'dropdown',
-                    'options'=>X2Model::getModelTypesWhichSupportWorkflow(true)
+                    'name'=>'stageNumber',
+                    'label'=>'Stage',
+                    'type'=>'dependentDropdown',
+                    'dependency' => 'workflowId',
+                    'options'=>$stages,
+                    'optionsSource' => Yii::app()->createUrl ('/workflow/workflow/getStageNames')
                 ),
             )
-
-		);
+		));
 	}
+
+    /**
+     * Validates type of model that triggered the flow
+     */
+    public function validate (&$params=array (), $flowId=null) {
+        if(!isset($params['model'])){
+            return array (
+                false, 
+                Yii::t('studio', "Workflow stage actions must have an associated model.")
+            );
+        }
+        $model = $params['model'];
+        $modelName = get_class ($model);
+
+        // ensure that model can be associated with workflows
+        if (!$model instanceof X2Model) { 
+            return array (
+                false, 
+                Yii::t('studio', "Processes are not associated with records of this type")
+            );
+        } elseif (!$model->supportsWorkflow) {
+            return array (
+                false, 
+                Yii::t('studio', "{recordName} are not associated with processes", 
+                array ('{recordName}' => ucfirst (X2Model::getRecordName ($modelName))))
+            );
+        }
+        return parent::validate ($params, $flowId);
+    }
+
 }

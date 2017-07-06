@@ -1,5 +1,4 @@
 <?php
-
 /* * *********************************************************************************
  * X2CRM is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2016 X2Engine Inc.
@@ -35,18 +34,15 @@
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2Engine".
  * ******************************************************************************** */
-
 /**
  * X2FlowAction that creates a notification
  *
  * @package application.components.x2flow.actions
  */
 class X2FlowLocationText extends BaseX2FlowLocation {
-
-    public $title = 'Create Location-Based SMS';
+    public $title = 'Location SMS';
     public $info = 'Create a text message based on specific location criteria. (Twilio Account Required)';
     public $flag = 't';
-
     public function paramRules() {
         $credentials = Credentials::getCredentialOptions(null, 'twoFactorCredentialsId', 'sms');
         
@@ -62,7 +58,6 @@ class X2FlowLocationText extends BaseX2FlowLocation {
         );
         return $parentRules;
     }
-
     public function execute(&$params) {
         $locations = $this->getNearbyUserRecords($params, $flag);
         
@@ -83,7 +78,6 @@ class X2FlowLocationText extends BaseX2FlowLocation {
         
         return array(true, Yii::t('app', "No SMS to be sent"));
     }
-
     private function sendSms($params, $number, $text) {
         $from = Credentials::model()->findByPk($this->parseOption('from', $params));
         $twilio = Yii::app()->controller->attachBehavior('TwilioBehavior', new TwilioBehavior);
@@ -95,9 +89,7 @@ class X2FlowLocationText extends BaseX2FlowLocation {
         $twilio->sendSMSMessage($number, $text);
         return array(true, YII_UNIT_TESTING ? $text : "");
     }
-
     private function formatPhoneNumber($number) {
         return str_replace(' ', '', str_replace(')', '', str_replace('(', '', str_replace('-', '', $number))));
     }
-
 }

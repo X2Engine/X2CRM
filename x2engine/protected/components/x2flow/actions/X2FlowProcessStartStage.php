@@ -1,5 +1,4 @@
 <?php
-
 /***********************************************************************************
  * X2CRM is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2016 X2Engine Inc.
@@ -37,57 +36,40 @@
  **********************************************************************************/
 
 /**
- * @package application.tests.unit.components.x2flow.triggers
+ * X2FlowAction that starts a process stage
+ * 
+ * @package application.components.x2flow.actions
  */
-class WorkflowStartStageTriggerTest extends X2FlowTestBase {
+class X2FlowProcessStartStage extends BaseX2FlowProcessStageAction {
+	public $title = 'Start Process Stage';
+	public $info = '';
+	
+	public function execute(&$params) {
+        $workflowId = $this->parseOption ('workflowId', $params);
+        $stageNumber = $this->parseOption ('stageNumber', $params);
 
-    public $fixtures = array (
-        'contacts' => array ('Contacts', '.WorkflowTests'),
-        'actions' => array ('Actions', '.WorkflowTests'),
-    );
+        $model = $params['model'];
+        $type = lcfirst (X2Model::getModuleName (get_class ($model)));
+        $modelId = $model->id;
 
-    public static function referenceFixtures(){
-        return array(
-            'x2flow' => array ('X2Flow', '.WorkflowStartStageTriggerTest'),
-            'workflows' => array ('Workflow', '.WorkflowTests'),
-            'workflowStages' => array ('WorkflowStage', '.WorkflowTests'),
-            'roleToWorkflow' => array (':x2_role_to_workflow', '.WorkflowTests'),
-        );
-    }
-    
-    public function setUp(){
-        TestingAuxLib::loadControllerMock ();
-        return parent::setUp();
-    }
-    
-    public function tearDown(){
-        TestingAuxLib::restoreController();
-        parent::tearDown();
-    }
+        $workflowStatus = Workflow::getWorkflowStatus($workflowId,$modelId,$type);
+        $message = '';
+        if (Workflow::validateAction (
+            'start', $workflowStatus, $stageNumber, '', $message)) {
 
-    /**
-     * Trigger the flow by completing a workflow stage on the contact. Assert that the flow 
-     * executes without errors.
-     */
-    public function testFlowExecution () {
-        $this->clearLogs ();
-        $workflow = $this->workflows ('workflow2'); 
-        $model = $this->contacts ('contact935');
-        // complete stage 4, autostarting stage 5. This should trigger the flow
-        $retVal = Workflow::completeStage (
-            $workflow->id, 4, $model, 'test comment');
-        $newLog = $this->getTraceByFlowId ($this->x2flow ('flow1')->id);
-        $this->assertTrue ($this->checkTrace ($newLog));
-
-        // complete stage 5. This shouldn't trigger the flow since the flow checks that stage
-        // 4 was completed
-        $this->clearLogs ();
-        $retVal = Workflow::completeStage (
-            $workflow->id, 5, $model, '');
-        $newLog = $this->getTraceByFlowId ($this->x2flow ('flow1')->id);
-        $this->assertFalse ($this->checkTrace ($newLog));
-    }
-
+            list ($started, $workflowStatus) = 
+                Workflow::startStage (
+                    $workflowId, $stageNumber, $model, $workflowStatus);
+            assert ($started);
+            return array (true, Yii::t('studio', 'Stage "{stageName}" started for {recordName}', 
+                array (
+                    '{stageName}' => $workflowStatus['stages'][$stageNumber]['name'],
+                    '{recordName}' => $model->getLink (),
+                )
+            ));
+        } else {
+            return array (false, $message);
+        }
+		
+	}
 }
-
-?>

@@ -1,5 +1,4 @@
 <?php
-
 /* * *********************************************************************************
  * X2CRM is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2016 X2Engine Inc.
@@ -35,25 +34,20 @@
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2Engine".
  * ******************************************************************************** */
-
 /**
  * X2FlowAction that creates a notification
  *
  * @package application.components.x2flow.actions
  */
 class X2FlowLocationNotification extends BaseX2FlowLocation {
-
-    public $title = 'Create Location-Based Notification';
+    public $title = 'Location Notification';
     public $info = 'Create a notification based on specific location criteria.';
     public $flag = 'n';
-
     public function paramRules() {
         return parent::paramRules();
     }
-
     public function execute(&$params) {
         $locations = $this->getNearbyUserRecords($params, $this->flag);
-
         if (count($locations) > 0) {
             $message = $this->createLongMessage(
                     $params, $locations, '<br/>', true
@@ -63,25 +57,19 @@ class X2FlowLocationNotification extends BaseX2FlowLocation {
             }
             return $this->createNotification($params, $message);
         }
-
         return array(true, "No notification to be sent");
     }
-
     private function createNotification(&$params, $text) {
         $notif = new Notification;
-
         $notif->user = $this->parseOption('to', $params);
         $notif->createdBy = 'API';
         $notif->createDate = time();
         $notif->type = 'custom';
         $notif->text = $text;
-
         if ($notif->save()) {
             return array(true, "");
         }
-
         $errors = $notif->getErrors();
         return array(false, array_shift($errors));
     }
-
 }

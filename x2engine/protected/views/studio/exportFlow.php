@@ -94,6 +94,7 @@ $this->actionMenu = array(
     </div>
     <div>
     <?php
+    //printR($flow, true);
     echo Yii::t('studio', 'You are currently exporting ').CHtml::link (CHtml::encode ($flow->name), $this->createUrl ('/studio/flowDesigner', array ('id' => $flow->id)));
     ?>
     </div>

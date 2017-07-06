@@ -40,7 +40,8 @@
  * 
  * @package application.components.x2flow.actions
  */
-class WorkflowCompleteTrigger extends BaseWorkflowTrigger {
-	public $title = 'Process Completed';
+class ProcessStartTrigger extends BaseProcessTrigger {
+	public $title = 'Process Started';
 	public $info = '';
 }
+

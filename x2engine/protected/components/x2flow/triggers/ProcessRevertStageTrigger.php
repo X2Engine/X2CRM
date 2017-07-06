@@ -36,40 +36,12 @@
  **********************************************************************************/
 
 /**
- * X2FlowAction that starts a workflow stage
+ * X2FlowTrigger 
  * 
  * @package application.components.x2flow.actions
  */
-class X2FlowWorkflowStartStage extends BaseX2FlowWorkflowStageAction {
-	public $title = 'Start Process Stage';
+class ProcessRevertStageTrigger extends BaseProcessStageTrigger {
+	public $title = 'Process Stage Reverted';
 	public $info = '';
-	
-	public function execute(&$params) {
-        $workflowId = $this->parseOption ('workflowId', $params);
-        $stageNumber = $this->parseOption ('stageNumber', $params);
-
-        $model = $params['model'];
-        $type = lcfirst (X2Model::getModuleName (get_class ($model)));
-        $modelId = $model->id;
-
-        $workflowStatus = Workflow::getWorkflowStatus($workflowId,$modelId,$type);
-        $message = '';
-        if (Workflow::validateAction (
-            'start', $workflowStatus, $stageNumber, '', $message)) {
-
-            list ($started, $workflowStatus) = 
-                Workflow::startStage (
-                    $workflowId, $stageNumber, $model, $workflowStatus);
-            assert ($started);
-            return array (true, Yii::t('studio', 'Stage "{stageName}" started for {recordName}', 
-                array (
-                    '{stageName}' => $workflowStatus['stages'][$stageNumber]['name'],
-                    '{recordName}' => $model->getLink (),
-                )
-            ));
-        } else {
-            return array (false, $message);
-        }
-		
-	}
 }
+

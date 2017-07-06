@@ -49,8 +49,8 @@ Yii::app()->clientScript->registerCss('flowIndexCss',"
 ");
 
 $this->actionMenu = array(
-	array('label'=>Yii::t('studio','Manage Workflows')),
-	array(
+    array('label'=>Yii::t('studio','Manage Workflows')),
+    array(
         'label'=>Yii::t('studio','Create Workflow'),
         'url'=>array('flowDesigner'),
         'visible'=>Yii::app()->contEd('pro'),

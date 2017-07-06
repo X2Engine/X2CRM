@@ -74,8 +74,8 @@ class X2FlowTriggerTest extends X2FlowTestBase {
                 'MultiChildNode',
                 'BaseTagTrigger',
                 'BaseUserTrigger',
-                'BaseWorkflowStageTrigger',
-                'BaseWorkflowTrigger'
+                'BaseProcessStageTrigger',
+                'BaseProcessTrigger'
             ));
     }
 

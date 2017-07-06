@@ -46,7 +46,7 @@ Yii::import('application.components.x2flow.actions.X2FlowAction');
 class X2FlowActionTest extends X2FlowTestBase {
 
     public function testGetActionInstances() {
-        $this->assertGetInstances($this,'Action',array('X2FlowAction', 'BaseX2FlowWorkflowStageAction', 'BaseX2FlowEmail', 'BaseX2FlowLocation'));
+        $this->assertGetInstances($this,'Action',array('X2FlowAction', 'BaseX2FlowProcessStageAction', 'BaseX2FlowEmail', 'BaseX2FlowLocation'));
     }
 }
 

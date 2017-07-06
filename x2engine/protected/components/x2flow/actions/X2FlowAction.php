@@ -44,6 +44,41 @@ abstract class X2FlowAction extends X2FlowItem {
     public $trigger = null;
 
     /**
+     * Action arrays
+     */
+    private static $anyModelActions = array(
+        "Remote API Call", "Create Action", "Send SMS", "Wait", "Push Web Content",
+        "Post to Activity Feed", "Create Notification", "Email"
+    );
+
+    private static $recordModelActions = array(
+        "Change Record", "Add Comment", "Create Record", "Create Action for Record",
+        "Delete Record", "Email Contact", "Add to List", "Remove from List",
+        "Add to Newsletter","Reassign Record", "Edit Tags", "Update Record"
+    );
+
+    private static $processModelActions = array(
+        "Complete Process Stage", "Revert Process Stage", "Start Process Stage"
+    );
+    
+    /**
+     * Gets array of trigger text that pass specific model
+     * 
+     * @return type
+     */
+    public static function getAnyModelActions() {
+        return self::$anyModelActions;
+    }
+    
+    public static function getRecordModelActions() {
+        return self::$recordModelActions;
+    }
+
+    public static function getProcessModelActions() {
+        return self::$processModelActions;
+    }
+
+    /**
      * Runs the automation action with provided params.
      * @return boolean the result of the execution
      */
@@ -172,6 +207,6 @@ abstract class X2FlowAction extends X2FlowItem {
     }
 
     public static function getActionInstances() {
-        return self::getInstances('actions',array(__CLASS__, 'BaseX2FlowWorkflowStageAction', 'BaseX2FlowEmail', 'BaseX2FlowLocation'));
+        return self::getInstances('actions',array(__CLASS__, 'BaseX2FlowProcessStageAction', 'BaseX2FlowEmail', 'BaseX2FlowLocation'));
     }
 }

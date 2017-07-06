@@ -306,6 +306,7 @@ class StudioController extends x2base {
             if ($this->validateImportedFlow ($flow)) {
                 $model = new X2Flow;
                 $model->name = $flow['flowName'];
+                $model->description = $flow['flowDesc'];
                 $model->triggerType = $flow['trigger']['type'];
                 $model->flow = CJSON::encode ($flow);
                 $model->active = false;

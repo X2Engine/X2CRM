@@ -1,5 +1,4 @@
 <?php
-
 /* * *********************************************************************************
  * X2CRM is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2016 X2Engine Inc.
@@ -35,18 +34,15 @@
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2Engine".
  * ******************************************************************************** */
-
 /**
  * X2FlowAction that creates a notification
  *
  * @package application.components.x2flow.actions
  */
 class X2FlowLocationEmail extends BaseX2FlowLocation {
-
-    public $title = 'Create Location-Based Email';
+    public $title = 'Location Email';
     public $info = 'Create an email based on specific location criteria. (Email Account Required)';
     public $flag = 'e';
-
     public function paramRules() {
         $parentRules = parent::paramRules();
         $parentRules['options'] = array_merge(array(
@@ -60,7 +56,6 @@ class X2FlowLocationEmail extends BaseX2FlowLocation {
         );
         return $parentRules;
     }
-
     protected function getCreditOps() {
         if (Yii::app()->isInSession) {
             $credOptsDict = Credentials::getCredentialOptions(null, true);
@@ -77,7 +72,6 @@ class X2FlowLocationEmail extends BaseX2FlowLocation {
         }
         return $credOpts;
     }
-
     public function execute(&$params) {
         $locations = $this->getNearbyUserRecords($params, $this->flag);
         
@@ -98,14 +92,11 @@ class X2FlowLocationEmail extends BaseX2FlowLocation {
         
         return array(true, Yii::t('app', "No email to be sent"));
     }
-
     protected function sendEmail(&$params, $to, $subject, $text) {
         $options = &$this->config['options'];
         $historyFlag = false;
-
         $email = $this->prepareEmail($params, $to, $subject, $text);
         list ($success, $message) = $this->checkDoNotEmailFields($email);
-
         if (!$email->prepareBody()) {
             return array(false, array_shift($email->getErrors()));
         } else if (!$success) {
@@ -114,7 +105,6 @@ class X2FlowLocationEmail extends BaseX2FlowLocation {
             $historyFlag = $options['logEmail']['value'];
             $email->targetModel = $params['model'];
         }
-
         $result = $email->send($historyFlag);
         
         if (isset($result['code']) && $result['code'] == 200) {
@@ -127,24 +117,20 @@ class X2FlowLocationEmail extends BaseX2FlowLocation {
         
         return array(false, Yii::t('app', "Email could not be sent"));
     }
-
     protected function prepareEmail(&$params, $to, $subject, $text) {
         $email = new InlineEmail;
-
         // make subject optional in order to support legacy flows
         $email->requireSubjectOnCustom = false;
         $email->to = $to;
         $email->subject = $subject;
         $email->scenario = 'custom';
         $email->message = InlineEmail::emptyBody($text);
-
         $email->credId = $this->parseOption('from', $params);
         if ($email->credentials && $email->credentials->user) {
             $email->setUserProfile($email->credentials->user->profile);
         }
         return $email;
     }
-
     protected function checkDoNotEmailFields(InlineEmail $eml) {
         if (Yii::app()->settings->x2FlowRespectsDoNotEmail &&
                 !$eml->checkDoNotEmailFields()) {
@@ -154,5 +140,4 @@ class X2FlowLocationEmail extends BaseX2FlowLocation {
         }
         return array(true, '');
     }
-
 }
