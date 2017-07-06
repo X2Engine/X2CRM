@@ -526,132 +526,156 @@ class ApiController extends x2base {
      * Software-based telephony systems such as Asterisk can thus immediately
      * notify sales reps of a phone call by making a cURL request to a url
      * formatted as follows:
-     *
-     * api/voip/data/[phone number]
+     * ~/index.php/api/voip/data/<phone number>/[phone number]
      *
      * (Note: the phone number itself must not contain anything but digits, i.e.
      * no periods or dashes.)
      *
      * For Asterisk, one possible integration method is to insert into the
-     * dialplan, at the appropriate position, a call to a script that uses
+     * dial plan, at the appropriate position, a call to a script that uses
      * {@link http://phpagi.sourceforge.net/ PHPAGI} to extract the phone
      * number. The script can then make the necessary request to this action.
-     * @param bool $actionHist If set to 1, create an action history item for the contact.
+     * 
+     * @param bool $actionHist If set to 1, create an action history item for
+     * the contact.
      */
     public function actionVoip($actionHist = 0) {
-        $data = $_GET['data'];
-        
-        if (isset($data)) {
-            $matches = array();
-            if (preg_match('^((+)([0-9.-/\s]{5,})|([0-9.-/\s]{5,}))*$', $data, $matches)) {
-                $number = ltrim($matches[0]);
-                $phoneCrit = new CDbCriteria(array(
-                    'condition' => "modelType='Contacts' AND number LIKE :number",
-                    'params' => array(':number' => "%$number%")
-                ));
-                $phoneCrit->join = 'join x2_contacts on modelId=x2_contacts.id AND ' .
-                        Contacts::model()->getHiddenCondition('x2_contacts');
-                $phoneNumber = PhoneNumber::model()->find($phoneCrit);
-                if (!empty($phoneNumber)) {
-                    $contact = X2Model::model('Contacts')->findByPk($phoneNumber->modelId);
-                    if (isset($contact)) {
+        $data = $_GET['id'];
 
-                        $contact->disableBehavior('changelog');
-                        $contact->updateLastActivity();
-
-                        $assignees = array($contact->assignedTo);
-                        if ($contact->assignedTo == 'Anyone' || $contact->assignedTo == null) {
-                            $users = User::model()->findAll();
-                            $assignees = array_map(function($u) {
-                                return $u->username;
-                            }, $users);
-                        }
-                        $multiUser = count($assignees) > 1;
-                        $usersSuccess = array();
-                        $usersFailure = array();
-                        // Format the phone number:
-                        $formattedNumber = '';
-                        $strNumber = (string) $number;
-                        $strl = strlen($strNumber);
-                        $formattedNumber = substr($strNumber, $strl - 4, $strl);
-                        $formattedNumber = substr($strNumber, $strl - 7, 3) . "-$formattedNumber";
-                        if ($strl >= 10) {
-                            $formattedNumber = substr($strNumber, $strl - 10, 3) . "-$formattedNumber";
-                            if ($strl > 10) {
-                                $formattedNumber = substr($strNumber, 0, $strl - 10) . "-$formattedNumber";
-                            }
-                        }
-                        $time = time();
-                        // Create notifications:
-                        foreach ($assignees as $user) {
-                            $notif = new Notification;
-                            $notif->type = 'voip_call';
-                            $notif->user = $user;
-                            $notif->modelType = 'Contacts';
-                            $notif->modelId = $contact->id;
-                            $notif->value = $formattedNumber;
-                            $notif->createDate = $time;
-                            if ($notif->save()) {
-                                $usersSuccess[] = $user;
-                            } else {
-                                $usersFailure = array();
-                            }
-                        }
-                        if ($actionHist) {
-                            // Create an action:
-                            $action = new Actions();
-                            $action->assignedTo = 'Anyone';
-                            $action->visibility = 1;
-                            $action->associationId = $contact->id;
-                            $action->associationType = 'contacts';
-                            $action->associationName = $contact->name;
-                            $action->dueDate = $time;
-                            $action->createDate = $time;
-                            $action->completeDate = $time;
-                            $action->lastUpdated = $time;
-                            $action->type = 'call';
-                            $action->complete = 'Yes';
-                            $action->completedBy = 'Anyone';
-                            $action->save();
-                            $action->actionText = Yii::t('app', 'Phone system reported inbound call from contact.');
-                        }
-
-                        $failure = count($usersSuccess) == 0;
-                        $partialFailure = count($usersFailure) > 0;
-                        if ($failure) {
-                            $message = 'Saving notifications failed.';
-                        } else {
-                            /* X2Flow::trigger('RecordVoipInboundTrigger', array(
-                              'model' => $contact,
-                              'number' => $matches[0]
-                              )); */
-                            $message = 'Notifications created for user(s): ' . implode(',', $usersSuccess);
-                            if ($partialFailure) {
-                                $message .= '; saving notifications failed for users(s): ' . implode(',', $usersFailure);
-                            }
-                        }
-
-                        // Create an event record for the feed:
-                        $event = new Events();
-                        $event->type = 'voip_call';
-                        $event->associationType = get_class($contact);
-                        $event->associationId = $contact->id;
-                        $event->save();
-
-                        $this->_sendResponse($failure ? 500 : 200, $message);
-                    } else {
-                        $this->_sendResponse(
-                                404, 'Phone number record refers to a contact that no longer exists.');
-                    }
-                } else {
-                    $this->_sendResponse(404, 'No matching phone number found.');
-                }
-            } else {
-                $this->_sendResponse(400, 'Invalid phone number format.');
-            }
-        } else {
-            $this->_sendResponse(400, 'Phone number required as "data" URL parameter.');
+        // Checks if a phone number was given
+        if (!isset($data)) {
+            $this->_sendResponse(400, 'Phone number required as "data" '
+                    . 'URL parameter.');
+            return;
         }
+
+        // Create array to store phone number from regex
+        $matches = array();
+
+        // Checks if phone number format is correct
+        if (!preg_match('/^\s*(?:\+?(\d{1,3}))?[-. (]*(\d{3})[-. )]*(\d{3})' .
+                        '[-. ]*(\d{4})(?: *x(\d+))?\s*$/', $data, $matches)) {
+            $this->_sendResponse(400, 'Invalid phone number format.');
+            return;
+        }
+
+        $number = $matches[0];
+
+        // Creates model criteria
+        $phoneCrit = new CDbCriteria(array(
+            'condition' => "modelType='Contacts' AND number LIKE :number",
+            'params' => array(':number' => "%$number%")
+        ));
+        $phoneCrit->join = 'join x2_contacts on modelId=x2_contacts.id AND '
+                . Contacts::model()->getHiddenCondition('x2_contacts');
+
+        // Finds phone number through model given model criteria
+        $phoneNumber = PhoneNumber::model()->find($phoneCrit);
+
+        // Check if phone number was not found through model
+        if (empty($phoneNumber)) {
+            $this->_sendResponse(404, 'No matching phone number found.');
+            return;
+        }
+
+        // Find contact through phone number
+        $contact = Contacts::model()->findByPk($phoneNumber->modelId);
+
+        // Checks if contact not found
+        if (!isset($contact)) {
+            $this->_sendResponse(404, 'Phone number record refers to a '
+                    . 'contact that no longer exists.');
+            return;
+        }
+
+        // Disables changelog behavior and updates last activity
+        $contact->disableBehavior('changelog');
+        $contact->updateLastActivity();
+
+        // Gets users that contact is assigned to
+        $assignees = array($contact->assignedTo);
+
+        // If contact is not assigned to any specific user
+        if ($contact->assignedTo == 'Anyone' || $contact->assignedTo == null) {
+            $users = User::model()->findAll();
+            $assignees = array_map(function($user) {
+                return $user->username;
+            }, $users);
+        }
+
+        // Create arrays to keep track of successes and failures
+        $usersSuccess = array();
+        $usersFailure = array();
+
+        // Creates notifications to assigned users
+        $time = time();
+        $formattedNumber = PhoneNumber::model()->formatPhoneNumber($number);
+        foreach ($assignees as $user) {
+            $notif = new Notification();
+            $notif->type = 'voip_call';
+            $notif->user = $user;
+            $notif->modelType = 'Contacts';
+            $notif->modelId = $contact->id;
+            $notif->value = $formattedNumber;
+            $notif->createDate = $time;
+            if ($notif->save()) {
+                $usersSuccess[] = $user;
+            } else {
+                $usersFailure = array();
+            }
+        }
+
+        // Create action history for voip
+        if ($actionHist) {
+            $action = new Actions();
+            $action->assignedTo = 'Anyone';
+            $action->visibility = 1;
+            $action->associationId = $contact->id;
+            $action->associationType = 'contacts';
+            $action->associationName = $contact->name;
+            $action->dueDate = $time;
+            $action->createDate = $time;
+            $action->completeDate = $time;
+            $action->lastUpdated = $time;
+            $action->type = 'call';
+            $action->complete = 'Yes';
+            $action->completedBy = 'Anyone';
+            $action->actionText = Yii::t('app', 'Phone system reported'
+                            . ' inbound call from contact.');
+            $action->save();
+        }
+
+        // Checks for failures
+        $failure = count($usersSuccess) == 0;
+        $partialFailure = count($usersFailure) > 0;
+
+        // If failure
+        if ($failure) {
+            $message = 'Saving notifications failed.';
+        } else {
+            // Voip inbound trigger
+            X2Flow::trigger('VoipInboundTrigger', array(
+                'model' => $contact
+            ));
+
+            $message = 'Notifications created for user(s): ' .
+                    implode(',', $usersSuccess);
+
+            // If partial failure
+            if ($partialFailure) {
+                $message .= '; saving notifications failed for users(s): ' .
+                        implode(',', $usersFailure);
+            }
+        }
+
+        // Create an event record for the feed:
+        $event = new Events();
+        $event->type = 'voip_call';
+        $event->associationType = get_class($contact);
+        $event->associationId = $contact->id;
+        $event->save();
+
+        $this->_sendResponse($failure ? 500 : 200, $message);
     }
 
     /**
