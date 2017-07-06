@@ -138,6 +138,10 @@ class MobileActiveForm extends X2ActiveForm {
     public function mobileLocationCoordinates() {
         return '<input type="hidden" name="geoLocationCoords" id="geoLocationCoords">';
     }
+    
+    public function isTranslate() {
+        return '<input type="hidden" name="translateCheck" id="translateCheck">';
+    }
 }
 
 ?>

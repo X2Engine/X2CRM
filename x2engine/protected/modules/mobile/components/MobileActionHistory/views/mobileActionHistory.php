@@ -133,6 +133,17 @@ if (!$this->refresh && $hasCreateAccess) {
                             
                 </div>
             </li>
+            <li class='audio-translate-attachment-button'>
+                <span><?php echo X2Html::fa('fa-file-audio-o'); ?></span>
+                <div>
+                    <?php 
+                    echo CHtml::encode(Yii::t('mobile', 'Add audio translated note'));
+                    echo $form->isTranslate ();
+                    ?>
+
+                            
+                </div>
+            </li>
             <li class='file-attachment-button'>
                 <span><?php echo X2Html::fa('file'); ?></span>
                 <div>

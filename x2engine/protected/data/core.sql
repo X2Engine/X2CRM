@@ -382,6 +382,7 @@ CREATE TABLE x2_profile(
 	disableAutomaticRecordTagging		TINYINT			DEFAULT 0,
     disableTimeInTitle      TINYINT DEFAULT 0,
 	language				VARCHAR(40)		DEFAULT "",
+        translatetolanguage             	VARCHAR(40)		DEFAULT "",
 	timeZone				VARCHAR(100)	DEFAULT "",
 	resultsPerPage			INT DEFAULT		20,
 	widgets					VARCHAR(255),

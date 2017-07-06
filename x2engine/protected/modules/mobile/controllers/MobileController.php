@@ -130,6 +130,10 @@ class MobileController extends X2Controller {
                 $_POST['Profile'],
                 array_flip (array ('language'))
             );
+            $attrs = array_intersect_key (
+                $_POST['Profile'],
+                array_flip (array ('translatetolanguage'))
+            );
             $profile->setAttributes ($attrs);
             if ($profile->save ()) {
                 $this->redirect ('settings');
