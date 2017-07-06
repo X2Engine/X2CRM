@@ -1,0 +1,44 @@
+<phpunit bootstrap="../../../build/bootstrap.php"
+		colors="false"
+		convertErrorsToExceptions="true"
+		convertNoticesToExceptions="true"
+		convertWarningsToExceptions="true"
+		stopOnFailure="false">
+
+	<selenium>
+		<!--<browser name="Firefox" browser="*firefox" host="52.25.250.35" port="4444" timeout="30000" />-->
+		<browser name="Chrome" browser="*googlechrome" host="127.0.0.1" port="4444" timeout="30000" />
+		<!--<browser name="Internet Explorer" browser="*iexplore" host="52.25.250.35" port="4444" timeout="30000" />-->
+        <!--<browser name="Opera" browser="*opera" host="52.25.250.35" port="4444" timeout="30000" />-->
+</selenium>
+<filter>
+  <whitelist processUncoveredFilesFromWhitelist="true">
+    <directory suffix=".php">../components</directory>
+    <directory suffix=".php">../models</directory>
+    <directory suffix=".php">../modules</directory>
+    <exclude>
+      <file>../components/GoogleAuthenticator.php</file>
+      <file>../components/x2flow/shortcodes.php</file>
+      <file>../components/TranslationManager.php</file>
+      <file>../models/formModels/MobileFormEditor.php</file>
+      <directory suffix=".php">../components/ThemeGenerator/templates</directory>
+      <directory suffix=".php">../components/phpMailer</directory>
+      <directory suffix=".php">../components/sortableWidget/views</directory>
+      <directory suffix=".php">../components/views</directory>
+      <directory suffix=".php">../components/WebFormDesigner/views</directory>
+      <directory suffix=".php">../components/LGPL</directory>
+      <directory suffix=".php">../components/TwitterAPI</directory>
+      <directory suffix=".php">../components/leftWidget/views</directory>
+      <directory suffix=".php">../components/x2flow/actions/incomplete</directory>
+      <directory suffix=".php">../components/x2flow/triggers/incomplete</directory>
+      <directory suffix=".php">../modules/*/controllers</directory>
+      <directory suffix=".php">../modules/*/views</directory>
+      <directory suffix=".php">../modules/*/components/views</directory>
+      <directory suffix=".php">../modules/*/components/actions</directory>
+      <directory suffix=".php">../modules/mobile/*</directory>
+      <directory suffix=".php">../modules/*/components/reports</directory>
+    </exclude>
+  </whitelist>
+</filter>
+
+</phpunit>

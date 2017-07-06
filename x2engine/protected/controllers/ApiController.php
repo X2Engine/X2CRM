@@ -523,12 +523,10 @@ class ApiController extends x2base {
      *
      * Given a phone number, if a contact matching that phone number exists, a
      * notification assigned to that contact's assignee will be created.
-     * 
      * Software-based telephony systems such as Asterisk can thus immediately
      * notify sales reps of a phone call by making a cURL request to a url
      * formatted as follows:
-     *
-     * ~/index.php/api/voip/data/<phone number>
+     * ~/index.php/api/voip/data/<phone number>/[phone number]
      *
      * (Note: the phone number itself must not contain anything but digits, i.e.
      * no periods or dashes.)

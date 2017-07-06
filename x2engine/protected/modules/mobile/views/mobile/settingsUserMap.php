@@ -35,6 +35,11 @@
  * "Powered by X2Engine".
  **********************************************************************************/
 
+/**
+ * 
+ * Settings page for mobile X2Touch
+ * (before settings.php was used
+ */
 
 Yii::app()->clientScript->registerScriptFile(
     Yii::app()->controller->module->assetsUrl.'/js/SettingsController.js');
@@ -65,6 +70,18 @@ $this->onPageLoad ("
         <?php
         echo X2Model::renderModelInput ($profile, $profile->getField ('language'), array (
             'class' => 'profile-language',
+        ));
+        ?>
+        </div>
+    </div>
+    <div class="field-container">
+        <div class="field-label"><?php 
+            echo CHtml::encode ($profile->getField ('translatetolanguage')->attributeLabel); 
+        ?></div>
+        <div class="field-value">
+        <?php
+        echo X2Model::renderModelInput ($profile, $profile->getField ('translatetolanguage'), array (
+            'class' => 'profile-translate-to-language',
         ));
         ?>
         </div>

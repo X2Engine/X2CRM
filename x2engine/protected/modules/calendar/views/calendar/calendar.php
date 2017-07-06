@@ -138,7 +138,7 @@ foreach($userCalendars as $user){
 
 $(function() {
 
-    $('#calendar').fullCalendar({
+        $('#calendar').fullCalendar({
         theme: true,
         weekMode: 'liquid',
         header: {
@@ -175,8 +175,9 @@ $(function() {
             $(element).css('font-size', '0.8em');
             /*if(view.name == 'month' || view.name == 'basicWeek')
                 $(element).find('.fc-event-time').remove();*/
-            if(event.associationType == 'contacts')
-                element.attr('title', event.associationName);
+            if(event.associationType == 'contacts') {
+                element.attr('title', "name:"+event.associationName);
+            }
         },
         // Day Clicked!! Scroll to Publisher and set date to the day that was clicked
         dayClick: function(date, allDay, jsEvent, view) { 
@@ -313,6 +314,103 @@ $(function() {
                             });
                     }
                 });
+                if (event.type != 'event' && event.complete != 'Yes') {
+                    boxButtons.unshift({
+                        text: '<?php echo CHtml::encode (Yii::t('app', 'Complete and Create New Action')); ?>', // delete event, 
+                        'class': 'event-close-create-button',
+                        click: function() {
+                            var dialogOuter$ = $(this).closest ('.ui-dialog');
+                            dialogOuter$.find ('.event-close-create-button').hide ();
+                            dialogOuter$.find ('.ui-dialog-title').append ($('<span>', {
+                                html: '&nbsp;<?php echo CHtml::encode (Yii::t('app', '(Complete and Create New Action)')); ?>'
+                            }));
+                            var that = this;  
+                            dialogOuter$.find ('.event-delete-button').unbind ('click').
+                                bind ('click', function () {
+                                    $(that).x2Dialog ('close');
+                                });
+                            dialogOuter$.find ('.save-event-button').unbind ('click').bind ('click',
+                                function () {
+                                    $.ajax({
+                                        type: 'post',
+                                        url: yii.scriptUrl + '/actions/complete?id=' + event.id,
+                                        data: $(viewAction).find('form').serializeArray(),
+                                        success: function() {
+                                            $('#calendar').fullCalendar('refetchEvents');
+                                        }
+                                    }); 
+                                    dialogOuter$.find ('.save-event-button').hide ();
+                                    dialogOuter$.find ('.event-delete-button').hide ();
+                                    dialogOuter$.find ('.event-copy-button').hide ();
+                                    dialogOuter$.find ('.save-event-button').hide ();
+                                    var phoneNumber = document.getElementById("phoneNumber");
+                                    var name = document.getElementById("name");
+                                    var priority, visibility, notificationUsers, notificationTime, reminder, color  = null;
+                                    var e = document.getElementById("Actions_reminder");
+                                    if (e)
+                                        reminder = e.options[e.selectedIndex].value;
+                                    e = document.getElementById("dialog_Actions_priority");
+                                    if (e) 
+                                        priority = e.options[e.selectedIndex].value;
+                                    e = document.getElementById("dialog_Actions_visibility");
+                                    if (e)
+                                        visibility = e.options[e.selectedIndex].value;
+                                    e = document.getElementById("Actions_notificationUsers");
+                                    if (e)
+                                        notificationUsers = e.options[e.selectedIndex].value;
+                                    e = document.getElementById("Actions_notificationTime");
+                                    if (e)
+                                        notificationTime = e.options[e.selectedIndex].value;  
+                                    e = document.getElementById("Actions_color");
+                                    if (e)
+                                        color = e.options[e.selectedIndex].value;  
+                                    $.post(
+                                        '<?php echo $urls['newAction']; ?>', { 
+                                            'ActionId': event.id, 'IsEvent': event.type=='event'
+                                        }, function(data) {
+                                            $(viewAction).empty().append(data);                                     
+                                            //open dialog after its filled with action/event
+                                            if (phoneNumber != null 
+                                                && name != null 
+                                                && !$.trim($('#phoneNumber').html()).length 
+                                                && !$.trim($('#name').html()).length) {
+                                                $("textarea#Actions_actionDescription").val(
+                                                    name.innerHTML.trim() + ": " + phoneNumber.innerHTML.trim() + " - "
+                                                );
+                                            }
+                                            $("select#Actions_associationType").val (event.associationType).change();
+                                            $("#associationName").val (name.innerHTML.trim()).change();
+                                            $("select#Actions_priority").val (priority).change();
+                                            $("select#Actions_visibility").val (visibility).change();
+                                            if (reminder)
+                                                $("select#Actions_reminder").val (reminder).change();
+                                            if (notificationUsers)
+                                                $("select#Actions_notificationUsers").val (notificationUsers).change();
+                                            if (notificationTime)
+                                                $("select#Actions_notificationTime").val (notificationTime).change();   
+                                            if (color)
+                                                $("select#Actions_color").val (color).change();                                              
+                                            var str = event.associationUrl;
+                                            var res = str.split("/");          
+                                            $("input#associationId").val (res.pop()).change();
+                                            dialogOuter$.find ('#save-button1').bind ('click',function () {
+                                                $.ajax({
+                                                   type: 'post',
+                                                   url: yii.scriptUrl + '/actions/create',
+                                                   data: dialogOuter$.find('form').serializeArray(),
+                                                   success: function() {
+                                                       $('#calendar').fullCalendar('refetchEvents');
+                                                   }
+                                               });                                               
+                                                viewAction.x2Dialog('close');
+                                            });                                        
+                                        }
+                                    );   
+                                });
+                            dialogOuter$.find ('.save-event-button').click();
+                        }
+                    });
+                }
                 /*if (event.type === 'event') {
                     boxButtons.unshift({
                         html: '<span title="<?php 
@@ -365,6 +463,7 @@ $(function() {
                     if(event.complete == 'Yes') {
                         boxButtons.unshift({  // prepend button
                             text: '<?php echo CHtml::encode (Yii::t('actions', 'Uncomplete')); ?>',
+                            'class': 'save-event-button',
                             click: function() {
                                 $.post('<?php echo $urls['uncompleteAction']; ?>', {id: event.id});
                                 event.complete = 'No';
@@ -379,7 +478,7 @@ $(function() {
                             click: function() {
                                 $.post('<?php echo $urls['completeAction']; ?>', {id: event.id});
                                 event.complete = 'Yes';
-                                $(this).x2Dialog('close');
+                                //$(this).x2Dialog('close');
                             }
                         });
                     }

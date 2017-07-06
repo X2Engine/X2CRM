@@ -58,7 +58,6 @@ MobileActionHistory.prototype.setUpCommentPublish = function () {
         x2.mobileForm.submitWithFiles (
             that.form$, 
             function (data) {
-                if (that.publisherIsActive) togglePublisher$.click ();
                 $.mobile.activePage.append ($(data).find ('.refresh-content'));
                 x2.main.refreshContent ();
                 that.form$.find ('input[type="text"]').val ('');

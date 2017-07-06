@@ -39,14 +39,6 @@
 $modelList = !isset ($modelList) ? Fields::getDisplayedModelNamesList() : $modelList;
 $actionModel = !isset ($actionModel) ? $model : $actionModel;
 
-Yii::app()->clientScript->registerCss('actionsFormCss',"
-    #Actions_actionDescription {
-        box-sizing: border-box;
-    }
-");
-
-Yii::app()->clientScript->registerCssFile(
-    Yii::app()->controller->module->assetsUrl.'/css/actionForms.css');
 
 
 $themeUrl = Yii::app()->theme->getBaseUrl();
@@ -130,6 +122,7 @@ $backdating = !(Yii::app()->user->checkAccess('ActionsAdmin') ||
                     echo $form->label($actionModel, 'associationName');
                     $this->widget('zii.widgets.jui.CJuiAutoComplete', array(
                         'name' => 'auto_select',
+                        'id' => 'associationName',
                         'value' => $actionModel->associationName,
                         'source' => $linkSource,
                         'options' => array(
@@ -145,8 +138,8 @@ $backdating = !(Yii::app()->user->checkAccess('ActionsAdmin') ||
                     ?>
                 </div>
                 <div class="cell">
+                    <input type="hidden" name="Actions[associationId]" id="associationId">
                     <?php 
-                    echo $form->hiddenField($actionModel, 'associationId');
                     if(!$actionModel->isTimedType) {
                             if($actionModel->type == 'event')
                                 echo $form->label($actionModel, 'startDate');
@@ -184,13 +177,23 @@ $backdating = !(Yii::app()->user->checkAccess('ActionsAdmin') ||
                     ?>
                 </div>
                 <div class="cell">
+                    <div id="action-reminders">
+                        <br>
+                        <?php 
+                        echo $actionModel->renderInput ('reminder');
+                        ?>
+                    </div>
                     <?php 
                     echo $form->label($actionModel, 'priority');
-                    echo $actionModel->renderInput ('priority'); 
-                    if($actionModel->type == 'event'){
-                        echo $form->label($actionModel, 'color');
-                        echo $actionModel->renderInput('color');
-                    }
+                    ?>
+                    <select id="Actions_priority" name="Actions[priority]">
+                        <option value="1">Low</option>
+                        <option value="2">Medium</option>
+                        <option value="3">High</option>
+                    </select>
+                    <?php
+                    echo $form->label($actionModel, 'color');
+                    echo $actionModel->renderInput('color');
                     ?>
                 </div>
                 <div class="cell">
@@ -205,8 +208,12 @@ $backdating = !(Yii::app()->user->checkAccess('ActionsAdmin') ||
                 <div class="cell">
                     <?php 
                     echo $form->label($actionModel, 'visibility');
-                    echo $actionModel->renderInput ('visibility');
                     ?>
+                    <select id="Actions_visibility" name="Actions[visibility]">
+                        <option value="0">Private</option>
+                        <option value="1">Public</option>
+                        <option value="2">User's Groups</option>
+                    </select>
                 </div>
             </div>
         </div>
@@ -228,6 +235,10 @@ $backdating = !(Yii::app()->user->checkAccess('ActionsAdmin') ||
         ?></span>
         <div id="action-reminders">
             <br>
+            <select id="Actions_reminder" name="Actions[reminder]">
+                <option value="No">No</option>
+                <option value="Yes">Yes</option>
+            </select>
             <?php 
             echo $actionModel->renderInput ('reminder');
             ?>
@@ -304,7 +315,7 @@ $backdating = !(Yii::app()->user->checkAccess('ActionsAdmin') ||
         <div id="action-calendarId" style="display:none;" class="row">
             <br>
             <?php
-            $editableCalendars =              
+            $editableCalendars =
                 X2CalendarPermissions::getEditableUserCalendarNames() + array(0 => Yii::t('actions', 'None'));
             echo CHtml::activeDropDownList($actionModel, 'calendarId', $editableCalendars);
             ?>
@@ -323,17 +334,17 @@ if(!$backdating &&
 ?>
 </div>
 <div class="cell buttons" style="float:right;">
-    <?php 
-    echo CHtml::htmlButton(
-        $actionModel->isNewRecord ? Yii::t('app', 'Save') : Yii::t('app', 'Save'),
-        array(
-            'type' => 'submit',
-            'class' => 'x2-button',
-            'id' => 'save-button1',
-            'name' => 'submit'
-        )); 
-    ?>
-</div>
+     <?php 
+     echo CHtml::htmlButton(
+         $actionModel->isNewRecord ? Yii::t('app', 'Save') : Yii::t('app', 'Save'),
+         array(
+             'type' => 'submit',
+             'class' => 'x2-button',
+             'id' => 'save-button1',
+             'name' => 'submit'
+         )); 
+     ?>
+ </div>
 <?php 
 $this->endWidget(); 
 
@@ -402,7 +413,7 @@ $(function () {
     });
 
 	$("#action-form input, #action-form select, #action-form textarea").change(function(){
-		$("#save-button, #save-button1, #save-button2").addClass("highlight"); 
+		$("#save-button,  #save-button1, #save-button2").addClass("highlight"); 
 	});
 });
 ', CClientScript::POS_END);

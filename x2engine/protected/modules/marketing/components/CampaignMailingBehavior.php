@@ -216,8 +216,8 @@ class CampaignMailingBehavior extends EmailDeliveryBehavior {
                 if($media){
                     if($file = $media->getPath()){
                         if(file_exists($file)){ // check file exists
-                            if($url = $media->getFullUrl()){
-                                $emailBody .= CHtml::link($media->fileName, $media->fullUrl).
+                            if ($media->getPublicUrl()) {
+                                $emailBody .= CHtml::link($media->fileName, $media->getPublicUrl()).
                                     "<br>\n";
                             }
                         }

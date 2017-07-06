@@ -51,8 +51,12 @@ SettingsController.prototype.setUpForm = function () {
     var that = this;
     var settingsView$ = $.mobile.activePage.find ('.detail-view');
     var languageInput$ = settingsView$.find ('.profile-language');
+    var translateToLanguageInput$ = settingsView$.find ('.profile-translate-to-language');
     var form$ = settingsView$.find ('form');
     languageInput$.change (function () {
+        form$.submit (); 
+    });
+    translateToLanguageInput$.change (function () {
         form$.submit (); 
     });
 

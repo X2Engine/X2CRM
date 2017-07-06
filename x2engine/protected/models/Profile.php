@@ -128,7 +128,70 @@ class Profile extends X2ActiveRecord {
         }
         return $languages;
     }
+    
+    public function getTranslateToLanguageOptions () {
+        $settings = Yii::app()->settings;
+        $creds = Credentials::model()->findByPk($settings->googleCredentialsId);
+        $languages =  array('en' => 'English');
+        if ($creds && $creds->auth && !empty($creds->auth->apiKey)) {
+            $key = $creds->auth->apiKey;
+            $url = 'https://translation.googleapis.com/language/translate/v2/languages?'
+                    .'&key=' . $key;
 
+            //open connection
+            $ch = curl_init();
+
+            //set the url, number of POST vars, POST data
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+            curl_setopt($ch,CURLOPT_URL, $url);
+
+            //execute post
+            $result = curl_exec($ch);
+            $http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+
+            if($http_code === 200){
+                //close connection
+                $result_array_short = json_decode($result);
+
+                for ($i = 0; $i < count($result_array_short->{'data'}->{'languages'}); $i++) {
+                    $url = 'https://translation.googleapis.com/language/translate/v2/languages?'
+                    .'&key=' . $key . '&target=' . $result_array_short->{'data'}->{'languages'}[$i]->{'language'};
+                    //open connection
+
+                    //set the url, number of POST vars, POST data
+                    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+                    curl_setopt($ch,CURLOPT_URL, $url);
+
+                    //execute post
+                    $result = curl_exec($ch);
+                    $http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+
+                    if($http_code === 200){
+                        $result_array = json_decode($result);
+                        for ($x = 0; $x < count($result_array->{'data'}->{'languages'}); $x++) {
+                            if ($result_array->{'data'}->{'languages'}[$x]->{'language'} == $result_array_short->{'data'}->{'languages'}[$i]->{'language'}){
+                                $languages[$result_array_short->{'data'}->{'languages'}[$i]->{'language'}] = 
+                                        $result_array->{'data'}->{'languages'}[$x]->{'name'} . ' (' .$result_array_short->{'data'}->{'languages'}[$i]->{'language'}. ')';
+                            }
+                        }
+
+                    } else {
+                        throw new CHttpException (500, Yii::t('app', 'Failed to fetch location photo'));
+                    }
+                }
+
+
+            } else {
+                throw new CHttpException (500, Yii::t('app', 'Failed to fetch location photo'));
+            }
+            curl_close($ch);
+        } else {
+            throw new CHttpException (403, Yii::t('app', 'Google API key missing'));
+        }
+
+        return $languages;
+    }
+    
     /**
      * Obtain the name of the language given its 2-5 letter code.
      *
@@ -205,6 +268,15 @@ class Profile extends X2ActiveRecord {
                         'includeEmpty' => false,
                         'linkType' => function () use ($that) {
                             return $that->getLanguageOptions ();
+                        },
+                    ),
+                    array (
+                        'fieldName' => 'translatetolanguage',
+                        'attributeLabel' => 'Translate To Language',
+                        'type' => 'dropdown',
+                        'includeEmpty' => false,
+                        'linkType' => function () use ($that) {
+                            return $that->getTranslateToLanguageOptions ();
                         },
                     ),
                     array (
@@ -336,7 +408,7 @@ class Profile extends X2ActiveRecord {
             array('isActive', 'numerical'),
             array('fullName', 'length', 'max' => 60),
             array('username, updatedBy', 'length', 'max' => 20),
-            array('officePhone, extension, cellPhone, language', 'length', 'max' => 40),
+            array('officePhone, extension, cellPhone, language, translatetolanguage', 'length', 'max' => 40),
             array('timeZone', 'length', 'max' => 100),
             array('widgets, tagLine, emailAddress', 'length', 'max' => 255),
             array('widgetOrder', 'length', 'max' => 512),
@@ -344,7 +416,7 @@ class Profile extends X2ActiveRecord {
             array('notes, avatar, gridviewSettings, formSettings, widgetSettings', 'safe'),
             // The following rule is used by search().
             // Please remove those attributes that should not be searched.
-            array('id, fullName, username, officePhone, extension, cellPhone, emailAddress, lastUpdated, language', 'safe', 'on' => 'search'),
+            array('id, fullName, username, officePhone, extension, cellPhone, emailAddress, lastUpdated, language, translatetolanguage', 'safe', 'on' => 'search'),
         );
     }
 
@@ -380,6 +452,7 @@ class Profile extends X2ActiveRecord {
             'disableTimeInTitle' => Yii::t('profile','Disable timer display in page title?'),
             'disableNotifPopup' => Yii::t('profile', 'Disable notifications pop-up?'),
             'language' => Yii::t('profile', 'Language'),
+            'translatetolanguage' => Yii::t('profile', 'Translate To Language'),
             'timeZone' => Yii::t('profile', 'Time Zone'),
             'widgets' => Yii::t('profile', 'Widgets'),
             // 'groupChat'=>Yii::t('profile','Enable group chat?'),

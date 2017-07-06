@@ -54,8 +54,6 @@ class CommonSiteControllerBehavior extends CBehavior {
            echo "<script type=\"text/javascript\">
                 window.localStorage.removeItem(\"sessionToken\");
                 </script>";
-            $this->owner->redirect($this->owner->createUrl('/mobile/login'));
-            return;
         }
         Session::cleanUpSessions();
         SessionToken::cleanUpSessions();
@@ -97,6 +95,7 @@ class CommonSiteControllerBehavior extends CBehavior {
             $sessionToken->lastUpdated = time();
             $sessionToken->status = 0;
             $sessionToken->IP = $ip;
+            $sessionToken->save();
 
         } else {
 

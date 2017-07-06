@@ -832,7 +832,7 @@ body.no-widgets {
     }
 }
 
-@media (max-width: 1040px) {
+@media (max-width: 658px) {
     div {
         &.page-title-fixed-outer div.page-title {
             margin-right: 0px;
@@ -850,6 +850,9 @@ body.no-widgets {
     #content-container {
         padding-right: 0;
         margin-right: 0;
+    }
+    #sidebar-left-widget-box {
+        display: none;
     }
     #sidebar-right {
         display: none;

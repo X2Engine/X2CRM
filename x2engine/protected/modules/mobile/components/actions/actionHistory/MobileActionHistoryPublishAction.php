@@ -66,10 +66,40 @@ class MobileActionHistoryPublishAction extends MobileAction {
         $valid = false;
         if ($type === 'all' && isset($_POST['Actions'])){
             $valid = true;
-            $action->actionDescription = $_POST['Actions']['actionDescription'];
-            $action->type = 'note';
-        }
+            $settings = Yii::app()->settings;
+            $creds = Credentials::model()->findByPk($settings->googleCredentialsId);
+            $matches = array();
+            if ($creds && $creds->auth && !empty($creds->auth->apiKey)) {
+                $key = $creds->auth->apiKey;
+                $stringToTranslate = str_replace(' ','%20',$_POST['Actions']['actionDescription']);
+                $url = 'https://translation.googleapis.com/language/translate/v2?'
+                        .'&key=' . $key . '&target=' . $profile->translatetolanguage 
+                        . '&q=' . $stringToTranslate;
+                
+                //open connection
+                $ch = curl_init();
 
+                //set the url, number of POST vars, POST data
+                curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+                curl_setopt($ch,CURLOPT_URL, $url);
+
+                //execute post
+                $result = curl_exec($ch);
+                $http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+
+                if($http_code === 200){
+                    //close connection
+                    $result_translatedText = json_decode($result);
+
+
+                } else {
+                    throw new CHttpException (500, Yii::t('app', 'Failed to fetch translation'));
+                }
+                curl_close($ch);
+                $action->actionDescription = $result_translatedText->{'data'}->{'translations'}[0]->{'translatedText'};
+                $action->type = 'note';
+            }
+        }
         if ($valid && $action->save ()) {
             $this->controller->renderPartial (
                 'application.modules.mobile.views.mobile._actionHistory', array (

@@ -1,5 +1,4 @@
 <?php
-
 /* * *********************************************************************************
  * X2CRM is a customer relationship management program developed by
  * X2Engine, Inc. Copyright (C) 2011-2016 X2Engine Inc.
@@ -36,51 +35,17 @@
  * "Powered by X2Engine".
  * ******************************************************************************** */
 
-class X2WebUser extends CWebUser {
 
-    /**
-     * Roles that the user currently has
-     * @var type
-     */
-    private $_roles;
+$menuOptions = array(
+    'list', 'create',
+);
+$this->insertMenu($menuOptions);
 
-    public function checkAccess($operation, $params = array()) {
-        return Yii::app()->getAuthManager()->checkAccess($operation, $this->getId(), $params);
-    }
-
-    /**
-     * Runs the user_login automation trigger
-     *
-     * @param $fromCookie whether the login was automatic (cookie-based)
-     */
-    protected function afterLogin($fromCookie) {
-        if (!$fromCookie) {
-            X2Flow::trigger('UserLoginTrigger', array(
-                'user' => $this->getName()
-            ));
-        }
-    }
-
-    /**
-     * Runs the user_logout automation trigger
-     *
-     * @return boolean whether or not to logout
-     */
-    protected function beforeLogout() {
-        X2Flow::trigger('UserLogoutTrigger', array(
-            'user' => $this->getName()
-        ));
-        return parent::beforeLogout();
-    }
-
-    /**
-     * Retrieves roles for the user
-     */
-    public function getRoles() {
-        if (!isset($this->_roles)) {
-            $this->_roles = Roles::getUserRoles($this->getId());
-        }
-        return $this->_roles;
-    }
-
-}
+?>
+<div class="page-title icon actions"><h2>
+    <?php
+        echo Yii::t('actions','Create {module}', array(
+            '{module}' => 'Action',
+    )); ?>
+</h2></div>
+<?php echo $this->renderPartial('_newActionForm', array('actionModel'=>$model)); ?>

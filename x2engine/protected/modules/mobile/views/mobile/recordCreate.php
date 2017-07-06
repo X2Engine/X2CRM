@@ -39,24 +39,26 @@ Yii::app()->clientScript->registerScriptFile(
     Yii::app()->controller->module->assetsUrl.'/js/RecordCreateController.js');
 
 $this->onPageLoad ("
-    x2.main.controllers['$this->pageId'] = new x2.RecordCreateController (
+    x2.main.controllers['$this->pageId'] = new x2.RecordCreateController ({
         translations: ".CJSON::encode (array (
             'Error' => Yii::t('app','Error'),
             'Export Success' => Yii::t('app','Export Success'),
             'Would you like to export this contact' => Yii::t('app','Would you like to export this contact'),
         )).",
-    );
+    });
 ", CClientScript::POS_END);
 
 ?>
 <div class='refresh-content' data-refresh-selector='.header-content-right'>
     <?php
     $importButtonClass = '';
-    if($model instanceof Contacts || $model instanceof Product) { 
+    if($model instanceof Contacts || $model instanceof Product || $model instanceof X2Leads) { 
         if($model instanceof Contacts) {
             $importButtonClass = 'contact-import-button';
         } else if ($model instanceof Product) {
             $importButtonClass = 'product-import-button';
+        } else if ($model instanceof X2Leads) {
+            $importButtonClass = 'lead-import-button';
         }
     ?>
         <div class='header-content-right' style="margin-right: 80px;">

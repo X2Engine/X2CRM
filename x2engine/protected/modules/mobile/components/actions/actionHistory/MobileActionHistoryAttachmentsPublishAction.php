@@ -139,7 +139,7 @@ class MobileActionHistoryAttachmentsPublishAction extends MobileAction {
                 $media = $action->media;
                 if ($media) $media = array_pop ($media);
                 $key = Yii::app()->settings->getGoogleApiKey('speech');
-
+        
                 // Check if the attachment is an audio file and if avconv is installed
                 if ($media->isAudio() &&  !AuxLib::isAndroid() && AuxLib::command_exist("avconv")) {
                     //check if google service account key file is present
@@ -186,10 +186,11 @@ class MobileActionHistoryAttachmentsPublishAction extends MobileAction {
 
                         $data_string = json_encode($data);                                                              
 
-                        $ch = curl_init($googlespeechURL);                                                                      
+                        $ch = curl_init();                                                                      
                         curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");                                                                     
                         curl_setopt($ch, CURLOPT_POSTFIELDS, $data_string);                                                                  
-                        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);                                                                      
+                        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);  
+                        curl_setopt($ch,CURLOPT_URL, $googlespeechURL);
                         curl_setopt($ch, CURLOPT_HTTPHEADER, array(                                                                          
                            'Content-Type: application/json',                                                                                
                            'Content-Length: ' . strlen($data_string))                                                                       
@@ -200,8 +201,78 @@ class MobileActionHistoryAttachmentsPublishAction extends MobileAction {
                         
                         //parse result_array to get text
                         $audioText = $result_array['results'][0]['alternatives'][0]['transcript'];
+                        $action->actionDescription = $audioText;
                         unlink($pathToTempFlac); //delete created flac file (was only used for audio to text translation anyway) 
                         $action->delete(); //delete audio file attachment action because the text is aquired by this point
+                        $translateCheck = isset ($_POST['translateCheck']) ? $_POST['translateCheck'] : "";  
+                        $result_translatedText = '';
+                        if ($translateCheck === 'TRUE'){
+                            $stringToTranslate = str_replace(' ','%20',$audioText);
+                            $url = 'https://translation.googleapis.com/language/translate/v2/detect?' 
+                                    . '&key=' . $key . '&q=' . $stringToTranslate;
+                                
+                            //set the url, number of POST vars, POST data
+                            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+                            curl_setopt($ch,CURLOPT_URL, $url);
+
+                            //execute post
+                            $result = curl_exec($ch);
+                            $http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+                            $languageDetected = '';
+                            if($http_code === 200){
+                                $result_array = json_decode($result);
+                                $languageDetected = $result_array->{'data'}->{'detections'}[0]->{'language'};
+                            } else {
+                                throw new CHttpException (500, Yii::t('app', 'Failed to detect language'));
+                            }
+
+                            $url = 'https://translation.googleapis.com/language/translate/v2/languages?'
+                            . '&key=' . $key . '&target=' . $languageDetected;
+                            
+                            //set the url, number of POST vars, POST data
+                            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+                            curl_setopt($ch,CURLOPT_URL, $url);
+
+                            //execute post
+                            $result = curl_exec($ch);
+                            $http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+                            
+                            if($http_code === 200){
+                                $result_array = json_decode($result);
+                                for ($x = 0; $x < count($result_array->{'data'}->{'languages'}); $x++) {
+                                    $nameOfLanguage = $result_array->{'data'}->{'languages'}[$x]->{'name'};
+                                    if (strpos($audioText, $nameOfLanguage) !== false){
+                                        $splicedString = explode($nameOfLanguage, $audioText);
+                                        $stringNeedingTranslation = $splicedString[1];
+                                        $stringToTranslate = str_replace(' ','%20',$stringNeedingTranslation);
+                                        $url = 'https://translation.googleapis.com/language/translate/v2?'
+                                                . '&key=' . $key . '&target=' 
+                                                . $nameOfLanguage . '&q='. $stringToTranslate;
+
+                                        //set the url, number of POST vars, POST data
+                                        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+                                        curl_setopt($ch,CURLOPT_URL, $url);
+
+                                        //execute post
+                                        $result = curl_exec($ch);
+                                        $http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+
+                                        if($http_code === 200){
+                                            //close connection
+                                            $result_translatedText = json_decode($result);
+                                            $action->actionDescription = $result_translatedText->{'data'}->{'translations'}[0]->{'translatedText'};
+
+                                        } else {
+                                            throw new CHttpException (500, Yii::t('app', 'Failed to fetch language'));
+                                        } 
+                                    }
+                                }
+
+                            } else {
+                                throw new CHttpException (500, Yii::t('app', 'Failed to translate message'));
+                            }
+                        }
+                        curl_close($ch);
                         $action = new Actions;
                         $action->setAttributes (array (
                             'associationType' => X2Model::getAssociationType (get_class ($model)), 
@@ -213,7 +284,7 @@ class MobileActionHistoryAttachmentsPublishAction extends MobileAction {
                             'completedBy' => Yii::app()->user->getName (),
                             'private' => 0,
                         ), false);
-                        $action->actionDescription = $audioText;
+                        
                         $action->type = 'note';
 
                         if(!$action->save ()) {
@@ -222,6 +293,7 @@ class MobileActionHistoryAttachmentsPublishAction extends MobileAction {
                         $action->setActionDescription($audioText);
                         //$action->includeTextToAction($audioText);
 
+      
                     } else {
                        throw new CHttpException (403, Yii::t('app', 'Google key file missing'));
                     }
