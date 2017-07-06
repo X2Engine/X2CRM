@@ -427,6 +427,7 @@ VALUES
 ('CalendarSyncActionsToGoogleCalendar',0,'',NULL,'N;'),
 ('CalendarTogglePortletVisible',0,'',NULL,'N;'),
 ('CalendarToggleUserCalendarsVisible',0,'',NULL,'N;'),
+('CalendarNewAction',0,'',NULL,'N;'),
 ('CalendarUncompleteAction',0,'',NULL,'N;'),
 ('CalendarUpdate',0,'',NULL,'N;'),
 ('CalendarUpdateAccess',1,'',NULL,'N;'),

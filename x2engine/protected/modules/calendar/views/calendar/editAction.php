@@ -133,9 +133,10 @@ $form = $this->beginWidget('CActiveForm', array(
     </div>
 
     <div class="cell dialog-cell">
-        <?php echo $form->label($model, 'priority', array('class' => 'dialog-label')); ?>
-        <?php
-        echo $form->dropDownList($model, 'priority', Actions::getPriorityLabels(), array('onChange' => 'giveSaveButtonFocus();'));
+        <?php echo $form->label($model, 'priority', array('class' => 'dialog-label'));
+                echo $form->dropDownList($model, 'priority', Actions::getPriorityLabels(), 
+                        array('id' => 'dialog_Actions_priority','onChange' => 'giveSaveButtonFocus();'));
+
         ?>
         <?php echo $form->label($model, 'color', array('class' => 'dialog-label')); ?>
         <?php
@@ -156,6 +157,14 @@ $form = $this->beginWidget('CActiveForm', array(
             'onChange' => 'giveSaveButtonFocus();',
         ));
         ?>
+    </div>
+    <div class="cell dialog-cell">
+        <?php echo $form->label($model, 'name', array('class' => 'dialog-label')); ?>
+       <div id="name"> <?php echo $model->renderAssociationField('name',$model); ?>  </div>
+        <?php echo $form->label($model, 'email', array('class' => 'dialog-label')); ?>
+       <div id="email"> <?php echo $model->renderAssociationField('email',$model); ?>  </div>
+        <?php echo $form->label($model, 'phoneNumber', array('class' => 'dialog-label')); ?> 
+        <div id="phoneNumber"><?php echo $model->renderAssociationField('phoneNumber',$model); ?> </div>
     </div>
 
     <div class="cell dialog-cell">

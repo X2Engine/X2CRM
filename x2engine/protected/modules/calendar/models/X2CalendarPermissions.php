@@ -76,9 +76,12 @@ class X2CalendarPermissions extends CActiveRecord
         }
         return $ret;
     }
-    
+
     public static function getEditableUserCalendarNames() {
         $calendarQuery = Yii::app()->db->createCommand()
+                ->selectDistinct('a.id, a.name')
+                ->from('x2_calendars a');
+        $calendarQueryUser = Yii::app()->db->createCommand()
                 ->selectDistinct('a.id, a.name')
                 ->from('x2_calendars a');
         if (!Yii::app()->params->isAdmin) {
@@ -89,11 +92,19 @@ class X2CalendarPermissions extends CActiveRecord
                     ))
                     ->leftJoin('x2_calendar_permissions b', 'a.id = b.calendarId');
         }
+        $calendarQueryUser->where('a.createdBy = :user',
+                        array(
+                    ':user' => Yii::app()->user->name
+                ))
+                ->leftJoin('x2_calendar_permissions b', 'a.id = b.calendarId');
         $calendars = $calendarQuery->queryAll();
+        $usersCalendar = $calendarQueryUser->queryAll();
         $ret = array();
         foreach($calendars as $arr){
-            $ret[$arr['id']] = $arr['name'];
+            if ($usersCalendar[0]['id'] !==  $arr['id']) {
+                $ret[$arr['id']] = $arr['name'];
+            }
         }
-        return $ret;
+        return array($usersCalendar[0]['id'] => $usersCalendar[0]['name']) + $ret;
     }
 }

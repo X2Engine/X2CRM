@@ -91,7 +91,7 @@ class X2CalendarPermissionsTest extends X2DbTestCase {
         $editable = array_keys (X2CalendarPermissions::getEditableUserCalendarNames ());
         //Admin can edit all calendars
         $this->assertEquals (ArrayUtil::sort(Yii::app()->db->createCommand ("
-                SELECT id
+                SELECT DISTINCT id
                 FROM x2_calendars
             ")->queryColumn ()), 
             ArrayUtil::sort ($editable));

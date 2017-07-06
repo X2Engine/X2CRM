@@ -179,6 +179,7 @@ class X2Calendar extends CActiveRecord
             'viewAction' => Yii::app()->createUrl('/calendar/viewAction'),
             'saveAction' => Yii::app()->createUrl('/actions/actions/quickUpdate'),
             'editAction' => Yii::app()->createUrl('/calendar/editAction'),
+            'newAction' => Yii::app()->createUrl('/calendar/newAction'),
             'completeAction' => Yii::app()->createUrl('/calendar/completeAction'),
             'uncompleteAction' => Yii::app()->createUrl('/calendar/uncompleteAction'),
             'deleteAction' => Yii::app()->createUrl('/calendar/deleteAction'),
