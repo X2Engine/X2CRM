@@ -52,11 +52,13 @@ $this->onPageLoad ("
 <div class='refresh-content' data-refresh-selector='.header-content-right'>
     <?php
     $importButtonClass = '';
-    if($model instanceof Contacts || $model instanceof Product) { 
+    if($model instanceof Contacts || $model instanceof Product || $model instanceof X2Leads) { 
         if($model instanceof Contacts) {
             $importButtonClass = 'contact-import-button';
         } else if ($model instanceof Product) {
             $importButtonClass = 'product-import-button';
+        } else if ($model instanceof X2Leads) {
+            $importButtonClass = 'lead-import-button';
         }
     ?>
         <div class='header-content-right' style="margin-right: 80px;">
