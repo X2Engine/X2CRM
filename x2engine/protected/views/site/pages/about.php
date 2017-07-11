@@ -151,7 +151,8 @@ Yii::app()->clientScript->registerScript('loadJqueryVersion',
             'Derek Mueller',
             'Matthew Pearson',
             'Demitri Morgan',
-            'Alex Rowe'
+            'Alex Rowe',
+            'Peter Czupil'
         ));
         ?><br><br>
         <b><?php echo Yii::t('app','Release Contributors');?></b><br>
@@ -241,6 +242,7 @@ Yii::app()->clientScript->registerScript('loadJqueryVersion',
             echo Yii::t('app', 'Powered by X2Engine');
         ?></a>. Copyright &copy; 2011-<?php echo date('Y'); ?> X2Engine Inc.<br>
         <br>
+        <?php if(Yii::app()->params->edition==='opensource'): ?>
         <?php
         echo Yii::t('app', 'Released as free software under the');
         ?> <a href="<?php echo Yii::app()->getBaseUrl(); ?>/LICENSE.txt" title="GNU Affero General Public License version 3">GNU Affero GPL v3</a>.<br><br>
@@ -259,6 +261,16 @@ Yii::app()->clientScript->registerScript('loadJqueryVersion',
             EXPRESS OR IMPLIED, INCLUDING WITHOUT LIMITATION THE IMPLIED WARRANTIES OF
             MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, TITLE, AND NON-INFRINGEMENT.
         </b>
+        <?php else: ?>
+        <b>X2Engine Inc. grants you a perpetual, non-exclusive, non-transferable license
+            to install and use this Software for your internal business purposes only
+            for the number of users purchased by you. Your use of this Software for
+            additional users is not covered by this license and requires a separate
+            license purchase for such users. You shall not distribute, license, or
+            sublicense the Software. Title, ownership, and all intellectual property
+            rights in the Software belong exclusively to X2Engine.<br><br>
+        </b>
+        <?php endif; ?>
     </div><br>
 </div>
 <div id="about-map">
