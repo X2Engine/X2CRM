@@ -43,12 +43,7 @@
  */
 class ApplicationConfigBehaviorTest extends X2TestCase {
 
-    /**
-     * No longer used due to edition switch
-     * @deprecated 
-     */
     public function testContEd(){
-        $this->markTestSkipped();
         $oldEd = Yii::app()->edition;
         switch(Yii::app()->edition){
             case 'pla':
@@ -70,12 +65,7 @@ class ApplicationConfigBehaviorTest extends X2TestCase {
         }
     }
 
-    /**
-     * No longer used due to edition switch
-     * @deprecated 
-     */
     public function testGetEdition() {
-        $this->markTestSkipped();
         if(YII_DEBUG) {
             switch(PRO_VERSION) {
                 case 1:
@@ -91,7 +81,6 @@ class ApplicationConfigBehaviorTest extends X2TestCase {
             $this->assertEquals('pla',Yii::app()->edition,'Automatically-determined; should be "pla" for the superset');
         }
     }
-    
 }
 
 ?>

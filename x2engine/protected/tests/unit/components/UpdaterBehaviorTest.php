@@ -769,11 +769,6 @@ class UpdaterBehaviorTest extends FileOperTestCase {
     }
 
     
-    /**
-     * No longer used after edition change.
-     * @deprecated
-     */
-    /*
     public function testCheckPartner() {
         
         $ube = $this->instantiateUBe();
@@ -784,9 +779,6 @@ class UpdaterBehaviorTest extends FileOperTestCase {
         );
         $this->assertEquals($expected,$ube->checkPartner());
     }
-     * 
-     */
-    
 
     public function testCheckUpdates() {
         $ube = $this->instantiateUBe();
