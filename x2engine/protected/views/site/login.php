@@ -322,6 +322,8 @@ Yii::app()->clientScript->registerGeolocationScript();
                 <div id="login-version">
                     <a href='#' id='dark-theme-button' class='fa fa-adjust text-link'></a>
                     <span>X2CRM Version <?php echo Yii::app()->params->version; ?>, <a href="https://www.x2crm.com">X2Engine, Inc.</a></span>
+                    <span><?php echo Yii::app()->getEditionLabel(true); ?>
+                    </span>
                 </div>
                 <div style='display:none' class="row theme-selection">
                     <span class="switch" >

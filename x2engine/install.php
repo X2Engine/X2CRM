@@ -571,7 +571,11 @@ $timezones = array(
 			<?php
 			include(realpath('protected/components/UpdatesForm.php'));
 			// Configuration for the updates / optional info form:
+                        $editions = array('pro', 'pla', 'ent'); // Previous editions added for completeness
 			$edition = 'opensource';
+                        foreach ($editions as $ed)
+                                if (file_exists("initialize_$ed.php"))
+                                    $edition = $ed;
 			$form = new UpdatesForm(
 							array(
 								'x2_version' => $version,

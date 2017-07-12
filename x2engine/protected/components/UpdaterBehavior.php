@@ -1026,9 +1026,6 @@ class UpdaterBehavior extends ResponseBehavior {
         if($lastException instanceof Exception) {
             throw new CException(Yii::t('admin','Encountered an issue after applying database changes. The error message given was {msg}.',array('{msg}'=>$lastException->getMessage())));
         }else{
-            $admin = CActiveRecord::model('Admin')->findByPk(1);
-            $admin->edition = 'opensource';
-            $admin->save();
             return false;
         }
     }

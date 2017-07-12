@@ -766,8 +766,15 @@ if (empty($config['visibleModules'])) { // Web install. Determine based on $_POS
 }
 
 
-// Deterine edition info
-$config['edition'] = 'opensource';
+// Determine edition info
+if (!empty($_POST['edition'])) {
+    $config['edition'] = $_POST['edition'];
+} else {
+    $config['edition'] = 'opensource';
+    foreach ($editions as $ed)
+        if (file_exists("initialize_$ed.php"))
+            $editions = $ed;
+}
 
 //////////////////////////////
 // Post-configuration tasks //

@@ -53,13 +53,15 @@
     }
     ?><!-- -->
 	<b>X2CRM <?php echo Yii::app()->params->version; ?>
-	</b> |
+        <?php echo Yii::app()->editionLabel; ?></b> |
 	<a href="http://www.x2crm.com/">Powered by X2Engine</a> |  
 	<?php echo CHtml::link('X2Touch',array('/x2touch')); ?>  | 
         <?php echo CHtml::link(Yii::t('app','About'),array('/site/page','view'=>'about')); ?>
     <br>
     Copyright &copy; 2011-<?php echo date('Y'); ?> X2Engine Inc.
-		Released as free software under the <a href="<?php echo Yii::app()->getBaseUrl(); ?>/LICENSE.txt" title="GNU Affero General Public License version 3">GNU Affero GPL v3</a>
+        <?php if(Yii::app()->edition==='opensource') { ?>
+		Released as free software without warranties under the <a href="<?php echo Yii::app()->getBaseUrl(); ?>/LICENSE.txt" title="GNU Affero General Public License version 3">GNU Affero GPL v3</a>.
+	<?php } ?>
 	<br>
 	<?php
     echo CHtml::link(

@@ -71,12 +71,46 @@ $failedLoginsDataProvider = new CActiveDataProvider('FailedLogins',
     <div class="form x2-layout-island license-info-section">
         <div class="row" style="margin-left: 0px;">
             <div class='cell span-10'>
-                <b>X2CRM | X2Engine - Enterprise CRM for Small Business</b><br>
+                   <b><?php echo Yii::app()->getEditionLabel(true); ?></b><br>
             </div>
             <div class='cell span-9'>
                 <b><?php echo Yii::t('app', 'Version') . " " . Yii::app()->params->version; ?></b><br>
             </div>
         </div>
+        <?php
+
+if (Yii::app()->contEd ('pro')) { 
+?>
+    <div class="row">
+        <div class='cell span-9'>
+            <?php  
+            echo '<strong>'.Yii::t('app','License').'</strong>:&nbsp;<tt>'.
+                Yii::app()->settings->unique_id.'</tt><br />';
+            ?>
+        </div>
+        <div class='cell span-9'>
+            <?php  
+            echo Yii::app()->settings->renderMaxUsers ();
+            ?>
+        </div>
+    </div>
+    <div class="row">
+        <div class='cell span-18'>
+            <?php  
+            echo Yii::app()->settings->renderProductKeyExpirationDate ();
+            ?>
+        </div>
+    </div>
+<?php
+}
+ 
+?>
+    <?php if (Yii::app()->edition != 'pla' || Yii::app()->edition != 'ent') { ?>
+    <div class="row">
+        <div class="cell span-9" title="<?php echo CHtml::encode (Yii::t('admin','Upgrade X2CRM to get exclusive features and service. License key and registration info required.')); ?>"><?php echo CHtml::link(Yii::t('admin','Upgrade X2CRM'),array('/admin/updater','scenario'=>'upgrade')); ?>
+        </div>
+    </div>
+    <?php } ?>
         <div class="row">
             <?php
             echo Yii::t('app', 'Web: {website}',
