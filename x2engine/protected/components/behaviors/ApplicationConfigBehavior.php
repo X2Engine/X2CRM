@@ -532,7 +532,7 @@ Yii::app()->clientScript->registerScript(sprintf('%x', crc32(Yii::app()->name)),
      * @return boolean
      */
     public function contEd($edition) {
-        return true;
+        return (bool) $this->editionHierarchy[$this->getEdition()][$edition];
     }
 
     /**
