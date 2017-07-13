@@ -773,7 +773,7 @@ if (!empty($_POST['edition'])) {
     $config['edition'] = 'opensource';
     foreach ($editions as $ed)
         if (file_exists("initialize_$ed.php"))
-            $editions = $ed;
+            $config['edition'] = $ed;
 }
 
 //////////////////////////////
