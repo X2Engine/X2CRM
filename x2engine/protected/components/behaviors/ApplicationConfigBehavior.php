@@ -653,7 +653,39 @@ Yii::app()->clientScript->registerScript(sprintf('%x', crc32(Yii::app()->name)),
      * @return string
      */
     public function getEdition() {
-        return 'opensource';
+        if(!isset($this->_edition)){
+            if(YII_DEBUG){
+                switch(PRO_VERSION) {
+                    case 1:
+                        $this->_edition = 'pro';
+                        break;
+                    case 2:
+                        $this->_edition = 'pla';
+                        break;
+                    case 3:
+                        $this->_edition = 'ent';
+                    default:
+                        $this->_edition = 'opensource';
+                }
+            }else{
+                $this->_edition = 'opensource';
+                foreach(array('pla', 'pro', 'ent') as $ed){
+                    $logo = "images/x2engine_crm_$ed.png";
+                    $logoPath = implode(DIRECTORY_SEPARATOR, array(
+                        $this->owner->basePath,
+                        '..',
+                        FileUtil::rpath($logo)
+                    ));
+                    if(file_exists($logoPath)){
+                        if(md5_file($logoPath) == self::$_logoHashes[$ed]){
+                            $this->_edition = $ed;
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+        return $this->_edition;
     }
 
     /**

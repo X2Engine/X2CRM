@@ -773,7 +773,7 @@ class UpdaterBehaviorTest extends FileOperTestCase {
         
         $ube = $this->instantiateUBe();
         $expected = array(
-            'about' => '3ba18b7816cfbae73f59c1a86a860f1d',
+            'about' => 'fb6675b51b7c53ea9fdd2059dd506dba',
             'footer' => '75c98b390e04c0f48dd7d8b948da2905',
             'login' => '0c9b402dbca317a1cee1a9a85b19b559',
         );
